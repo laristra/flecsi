@@ -165,12 +165,12 @@ struct test_mesh_2d_t :
   {
     return entities<0, 0>(e);
   } // vertices
-
+/*
   template<
     typename E,
     size_t M
   >
-  auto const &
+  auto
   vertices( 
     flecsi::topology::domain_entity<M, E> & e
   )
@@ -178,6 +178,12 @@ struct test_mesh_2d_t :
   {
     return entities<0, 0>(e);
   } // vertices
+*/
+
+  auto
+  vertices() {
+    return entities<0, 0>();
+  } // cells
 
 }; // struct test_mesh_2d_t
 

@@ -33,7 +33,6 @@
 #include "flecsi/utils/reorder.h"
 #include "flecsi/topology/index_space.h"
 #include "flecsi/topology/entity_storage.h"
-#include "flecsi/topology/partition.h"
 
 namespace flecsi {
 namespace topology {
@@ -854,29 +853,25 @@ public:
     Get the normal (non-binding) connectivity of a domain.
    */
   virtual const connectivity_t & get_connectivity(
-      size_t domain, size_t from_dim, size_t to_dim,
-      size_t partition=0) const = 0;
+      size_t domain, size_t from_dim, size_t to_dim) const = 0;
 
   /*!
     Get the normal (non-binding) connectivity of a domain.
    */
   virtual connectivity_t & get_connectivity(
-      size_t domain, size_t from_dim, size_t to_dim,
-      size_t partition=0) = 0;
+      size_t domain, size_t from_dim, size_t to_dim) = 0;
 
   /*!
     Get the binding connectivity of specified domains.
    */
   virtual const connectivity_t & get_connectivity(size_t from_domain,
-      size_t to_domain, size_t from_dim, size_t to_dim,
-      size_t partition=0) const = 0;
+      size_t to_domain, size_t from_dim, size_t to_dim) const = 0;
 
   /*!
     Get the binding connectivity of specified domains.
    */
   virtual connectivity_t & get_connectivity(
-      size_t from_domain, size_t to_domain, size_t from_dim, size_t to_dim,
-      size_t partition=0) = 0;
+      size_t from_domain, size_t to_domain, size_t from_dim, size_t to_dim) = 0;
 
   /*!
     This method should be called to construct and entity rather than
@@ -891,7 +886,6 @@ public:
 
   virtual void append_to_index_space_(size_t domain,
     size_t dimension,
-    size_t partition,
     std::vector<mesh_entity_base_*>& ents,
     std::vector<id_t>& ids) = 0;
 
@@ -937,8 +931,7 @@ void unserialize_dimension_(mesh_topology_base_t<ST>& mesh,
     ids.push_back(global_id);
   }
 
-  // TODO: fix - pg
-  mesh.append_to_index_space_(M, D, all, ents, ids);
+  mesh.append_to_index_space_(M, D, ents, ids);
 }
 
 template<
