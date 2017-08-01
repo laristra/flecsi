@@ -39,17 +39,19 @@ struct mpi_storage_policy_t {
 
   using field_id_t = size_t;
   using registration_function_t = std::function<void(size_t)>;
+  using field_registration_function_t = std::function<void(size_t, size_t)>;
   using unique_fid_t = utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
-  using data_value_t = std::pair<field_id_t, registration_function_t>;
-  using field_entry_t = std::unordered_map<size_t, data_value_t>;
-  // Field and client registration interfaces are the same for now.
-  using client_entry_t = field_entry_t;
+  using field_value_t = std::pair<field_id_t, field_registration_function_t>;
+  using client_value_t = std::pair<field_id_t, registration_function_t>;
+
+  using field_entry_t = std::unordered_map<size_t, field_value_t>;
+  using client_entry_t = std::unordered_map<size_t, client_value_t>;
 
   bool
   register_field(
     size_t client_key,
     size_t key,
-    const registration_function_t & callback
+    const field_registration_function_t & callback
   )
   {
     //TODO:
@@ -70,7 +72,7 @@ struct mpi_storage_policy_t {
   {
     for(auto & c: field_registry_) {
       for(auto & d: c.second) {
-        d.second.second(d.second.first);
+        d.second.second(d.first, d.second.first);
       } // for
     } // for
   } // register_all

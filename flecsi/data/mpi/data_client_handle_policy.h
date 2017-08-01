@@ -47,6 +47,14 @@ struct data_client_handle_adjacency
 
 struct mpi_data_client_handle_policy_t
 {
+  // FIXME: This needs to be exposed at a higher level
+  static constexpr size_t MAX_ADJACENCIES = 20;
+  static constexpr size_t MAX_ENTITIES = 5;
+
+  size_t num_handle_entities;
+  size_t num_handle_adjacencies;
+  data_client_handle_entity handle_entities[MAX_ENTITIES];
+  data_client_handle_adjacency handle_adjacencies[MAX_ADJACENCIES];
 }; // struct data_client_handle_policy_t
 
 } // namespace flecsi
