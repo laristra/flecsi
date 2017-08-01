@@ -91,6 +91,7 @@ namespace execution {
       > & h
     )
     {
+ if (!h.global && !h.color){
       auto& flecsi_context = context_t::instance();
 
       bool read_phase = false;
@@ -197,6 +198,7 @@ namespace execution {
         launcher.add_arrival_barrier(*(h.pbarrier_as_owner_ptr));   // phase READ
 
       }
+}
     } // handle
 
     //------------------------------------------------------------------------//

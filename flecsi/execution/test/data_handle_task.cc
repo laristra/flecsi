@@ -59,13 +59,13 @@ void data_handle_dump(handle_t<double, drw, dro, dro> x) {
 }
 
 void global_data_handle_dump(global_handle_t<double, drw> x) {
-  clog(info) << "label: " << x.label() << std::endl;
-  clog(info) << "combined size: " << x.size() << std::endl;
+  clog(info) << "global label: " << x.label() << std::endl;
+  clog(info) << "global combined size: " << x.size() << std::endl;
 }
 
 void color_data_handle_dump(color_handle_t<double, drw> x) {
-  clog(info) << "label: " << x.label() << std::endl;
-  clog(info) << "combined size: " << x.size() << std::endl;
+  clog(info) << "global label: " << x.label() << std::endl;
+  clog(info) << "global combined size: " << x.size() << std::endl;
 }
 
 void exclusive_writer(handle_t<double, dwd, dno, dno> x) {
@@ -82,11 +82,30 @@ void exclusive_reader(handle_t<double, dro, dno, dno> x) {
   }
 }
 
+void color_writer(color_handle_t<double, dwd> x) {
+  clog(info) << "color exclusive writer write" << std::endl;
+  for (int i = 0; i < x.size(); i++) {
+    x(i) = static_cast<double>(i);
+  }
+}
+
+void color_reader(color_handle_t<double, dro> x) {
+  clog(info) << "color exclusive reader read: " << std::endl;
+  for (int i = 0; i < x.size(); i++) {
+    ASSERT_EQ(x(i), static_cast<double>(i));
+  }
+}
+
+
+
 flecsi_register_task(task1, loc, single);
 flecsi_register_task(data_handle_dump, loc, single);
 flecsi_register_task(global_data_handle_dump, loc, single);
+flecsi_register_task(color_data_handle_dump, loc, single);
 flecsi_register_task(exclusive_writer, loc, single);
 flecsi_register_task(exclusive_reader, loc, single);
+flecsi_register_task(color_writer, loc, single);
+flecsi_register_task(color_reader, loc, single);
 
 flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
@@ -139,8 +158,9 @@ void driver(int argc, char ** argv) {
  //get color handle
   auto color_handle=flecsi_get_handle(ch, ns, density, double, color, 0);
 
-//  flecsi_execute_task(color_data_handle_dump, single, color_handle);
- 
+  flecsi_execute_task(color_data_handle_dump, single, color_handle);
+  flecsi_execute_task(color_writer, single, color_handle);
+  flecsi_execute_task(color_reader, single, color_handle);
 
 } // driver
 

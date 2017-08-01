@@ -414,9 +414,16 @@ public:
       color_index_space_.logical_region =
         runtime_->create_logical_region(ctx_,
           color_index_space_.index_space, color_index_space_.field_space);   
-        attach_name(color_index_space_, color_index_space_.logical_region,
+      attach_name(color_index_space_, color_index_space_.logical_region,
         "color logical region");   
 
+      LegionRuntime::Arrays::Blockify<1> coloring(1);
+      color_index_space_.index_partition =
+				runtime_->create_index_partition(ctx_,
+				color_index_space_.index_space, coloring);
+
+      attach_name(color_index_space_, color_index_space_.index_partition,
+				"color partitioning");
     }//scope
 
   }//finalize

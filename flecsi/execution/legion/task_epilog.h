@@ -89,6 +89,7 @@ namespace execution {
       > & h
     )
     {
+ if (!h.global && !h.color){
       bool write_phase = false;
 
       if ( (SHARED_PERMISSIONS == dwd) || (SHARED_PERMISSIONS == drw) )
@@ -119,6 +120,7 @@ namespace execution {
         }
 
       } // write_phase
+}
     } // handle
 
     //------------------------------------------------------------------------//

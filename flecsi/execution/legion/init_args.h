@@ -118,12 +118,19 @@ namespace execution {
         gh_rr.add_field(h.fid);
         region_reqs.push_back(gh_rr);
       }
-      else {
+      else if(h.global){
         Legion::RegionRequirement rr(h.color_region,  
           READ_ONLY, EXCLUSIVE, h.color_region);
         rr.add_field(h.fid);
         region_reqs.push_back(rr);
       }//if
+      else if (h.color){
+        Legion::RegionRequirement rr(h.color_region,
+          privilege_mode(EXCLUSIVE_PERMISSIONS),
+          EXCLUSIVE, h.color_region);
+        rr.add_field(h.fid);
+        region_reqs.push_back(rr);
+      }
     } // handle
 
     template<

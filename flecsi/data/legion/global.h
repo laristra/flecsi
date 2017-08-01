@@ -122,7 +122,7 @@ struct global_handle_t : public data_handle__<T, P, 0, 0> {
   size_t
   size() const
   { 
-    base_t::combined_size;
+    return size_;
   } // size
  
   //--------------------------------------------------------------------------//
@@ -210,7 +210,7 @@ struct global_handle_t : public data_handle__<T, P, 0, 0> {
 
   private:
     std::string label_ = "";
-    size_t size_=0;
+    size_t size_=1;
 //    T* data_ = nullptr;
 //     T* buffer = nullptr;
 }; // struct global_handle_t

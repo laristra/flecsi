@@ -472,20 +472,16 @@ runtime_driver(
 
     auto color_ispace = data.color_index_space();
 
-    Legion::IndexPartition color_ip;
-    LegionRuntime::Arrays::Blockify<1> coloring(1);
-    color_ip = runtime->create_index_partition(ctx, color_ispace.index_space,
-      coloring);
     Legion::LogicalPartition color_lp = runtime->get_logical_partition(ctx,
-        color_ispace.logical_region, color_ip);
+        color_ispace.logical_region, color_ispace.index_partition);
 
     Legion::LogicalRegion color_lregion2 =
         runtime->get_logical_subregion_by_color(ctx, color_lp, color);
 
     Legion::RegionRequirement color_reg_req(color_lregion2,
-          READ_ONLY, SIMULTANEOUS, color_ispace.logical_region);
+          READ_WRITE, SIMULTANEOUS, color_ispace.logical_region);
 
-    color_reg_req.add_flags(NO_ACCESS_FLAG);
+   // color_reg_req.add_flags(NO_ACCESS_FLAG);
     for(const field_info_t& field_info : context_.registered_fields()){
        if(field_info.storage_type == data::color ){
          color_reg_req.add_field(field_info.fid);
@@ -762,11 +758,13 @@ spmd_task(
     Legion::DomainColoring excl_shared_coloring;
     LegionRuntime::Arrays::Rect<2> exclusive_rect(
         LegionRuntime::Arrays::make_point(my_color, 0),
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive - 1));
+        LegionRuntime::Arrays::make_point(my_color,
+          coloring_info.exclusive - 1));
     excl_shared_coloring[EXCLUSIVE_PART]
                          = Legion::Domain::from_rect<2>(exclusive_rect);
     LegionRuntime::Arrays::Rect<2> shared_rect(
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive),
+        LegionRuntime::Arrays::make_point(my_color,
+        coloring_info.exclusive),
         LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
             + coloring_info.shared - 1));
     excl_shared_coloring[SHARED_PART]
@@ -847,7 +845,7 @@ spmd_task(
 
     for(size_t owner = 0; owner < num_owners[consecutive_index]; owner++)
       fix_ghost_refs_launcher.add_region_requirement(
-          Legion::RegionRequirement(ghost_owners_lregions[idx_space][owner],
+         Legion::RegionRequirement(ghost_owners_lregions[idx_space][owner],
               READ_ONLY, EXCLUSIVE, ghost_owners_lregions[idx_space][owner])
               .add_field(ghost_owner_pos_fid));
 
