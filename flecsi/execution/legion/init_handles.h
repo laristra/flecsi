@@ -124,8 +124,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     } // if
   } // for
 
-  //region += num_regions;
-
   #ifndef MAPPER_COMPACTION
     // Create the concatenated buffer E+S+G
     h.combined_data = new T[h.combined_size];
@@ -244,7 +242,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     auto& context_ = context_t::instance();
 
     auto storage = h.set_storage(new typename T::storage_t);
-    h.initialize_storage();
 
     //------------------------------------------------------------------------//
     // Mapping entity data from Legion and initializing mesh storage.
@@ -253,7 +250,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     std::unordered_map<size_t, size_t> region_map;
 
     for(size_t i{0}; i<h.num_handle_entities; ++i) {
-      data_client_handle_entity & ent = h.handle_entities[i];
+      data_client_handle_entity_t & ent = h.handle_entities[i];
 
       const size_t index_space = ent.index_space;
       const size_t dim = ent.dim;
@@ -288,22 +285,24 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       ++region;
     } // for
 
+    h.initialize_storage();
+
     //------------------------------------------------------------------------//
     // Mapping adjacency data from Legion and initializing mesh storage.
     //------------------------------------------------------------------------//
 
     for(size_t i = 0; i < h.num_handle_adjacencies; ++i) {
-      data_client_handle_adjacency& adj = h.handle_adjacencies[i];
+      data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
 
       const size_t adj_index_space = adj.adj_index_space;
       const size_t from_index_space = adj.from_index_space;
       const size_t to_index_space = adj.to_index_space;
 
-      Legion::LogicalRegion lr = regions[region].get_logical_region();
+      Legion::PhysicalRegion pr = regions[region_map[from_index_space]];
+      Legion::LogicalRegion lr = pr.get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = regions[region_map[from_index_space]].
-        get_field_accessor(adj.offset_fid).
+      auto ac = pr.get_field_accessor(adj.offset_fid).
         template typeify<LegionRuntime::Arrays::Point<2>>();
 
       Legion::Domain d = 
@@ -318,7 +317,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       offsets += bo[1];
 
       size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
-      clog(info) << "NUM OFFSETS: " << num_offsets << std::endl;
 
       // Store these for translation to CRS
       adj.offsets_buf = offsets;

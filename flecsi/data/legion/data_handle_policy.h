@@ -9,21 +9,24 @@
 #include <legion.h>
 #include <legion_stl.h>
 
-///
-/// \file
-/// \date Initial file creation: Apr 04, 2017
-///
+#include "flecsi/runtime/types.h"
+
+//----------------------------------------------------------------------------//
+/// @file
+/// @date Initial file creation: Apr 04, 2017
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 
-///
-/// \class legion_data_handle_policy_t data_handle_policy.h
-/// \brief legion_data_handle_policy_t provides...
-///
+//----------------------------------------------------------------------------//
+//! The legion_data_handle_policy_t type provides backend storage for
+//! interfacing to the Legion runtime.
+//!
+//! @ingroup data
+//----------------------------------------------------------------------------//
+
 struct legion_data_handle_policy_t
 {
-  using field_id_t = Legion::FieldID;
-
   legion_data_handle_policy_t(){}
 
   legion_data_handle_policy_t(const legion_data_handle_policy_t& p) = default;

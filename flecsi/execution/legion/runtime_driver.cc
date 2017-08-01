@@ -14,12 +14,13 @@
 #include <legion_utilities.h>
 #include <limits>
 
+#include "flecsi/data/legion/legion_data.h"
 #include "flecsi/data/storage.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/legion_tasks.h"
 #include "flecsi/execution/legion/mapper.h"
 #include "flecsi/execution/legion/internal_field.h"
-#include "flecsi/data/legion/legion_data.h"
+#include "flecsi/runtime/types.h"
 #include "flecsi/utils/common.h"
 
 clog_register_tag(runtime_driver);
@@ -54,7 +55,6 @@ runtime_driver(
   context_.wait_on_mpi(ctx, runtime);
 
   using field_info_t = context_t::field_info_t;
-  using field_id_t = Legion::FieldID;
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
@@ -115,6 +115,9 @@ runtime_driver(
   clog(info) << "MPI num_colors is " << num_colors << std::endl;
   }
 
+  //--------------------------------------------------------------------------//
+  //  Create Legion index spaces and logical regions
+  //-------------------------------------------------------------------------//
   auto coloring_info = context_.coloring_info_map();
 
 
@@ -128,52 +131,23 @@ runtime_driver(
 
   data.finalize(coloring_info);
 
-  std::map<size_t, std::vector<field_id_t>> fields_map;
-
-  size_t num_phase_barriers =0;
-
-  for(auto is: context_.coloring_map()) {
-    size_t idx_space = is.first;
-    for(const field_info_t& field_info : context_.registered_fields()){
-        if(field_info.index_space == idx_space){
-          fields_map[idx_space].push_back(field_info.fid);
-          num_phase_barriers++;
-        } // if
-      } // for
-
-      {
-      clog_tag_guard(runtime_driver);
-      clog(trace) << "fields_map[" <<idx_space<<"] has "<<
-        fields_map[idx_space].size()<< " fields"<<std::endl;
-      } // scope
-  } // for
-
-  std::map<size_t, std::map<field_id_t, std::vector<Legion::PhaseBarrier>>>
-    phase_barriers_map;
+  //-------------------------------------------------------------------------//
+  //  Create Legion reduction 
+  //-------------------------------------------------------------------------//
 
   double min = std::numeric_limits<double>::min();
   Legion::DynamicCollective max_reduction =
   runtime->create_dynamic_collective(ctx, num_colors, MaxReductionOp::redop_id,
              &min, sizeof(min));
 
-  for(auto idx_space : coloring_info){
-    std::map<field_id_t , std::vector<Legion::PhaseBarrier>> inner;
-    for (const field_id_t& field_id : fields_map[idx_space.first]){
-      for(int color = 0; color < num_colors; color++){
-        const flecsi::coloring::coloring_info_t& color_info = 
-          idx_space.second[color];
-
-        inner[field_id].push_back(runtime->create_phase_barrier(ctx,
-             1 + color_info.shared_users.size()));
-      }//color
-    }//field_info
-    phase_barriers_map[idx_space.first]=inner;
-  }//indx_space
-
+  //-------------------------------------------------------------------------//
+  // Excute Legion task to maps between pre-compacted and compacted
+  // data placement
+  //-------------------------------------------------------------------------//
+  
   auto ghost_owner_pos_fid =
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
  
-  // Map between pre-compacted and compacted data placement
   const auto pos_compaction_id =
     context_.task_id<__flecsi_internal_task_key(owner_pos_compaction_task)>();
   
@@ -198,6 +172,56 @@ runtime_driver(
   
   runtime->execute_index_space(ctx, pos_compaction_launcher);
 
+  //--------------------------------------------------------------------------//
+  //  Create Phase barriers per each Field
+  //-------------------------------------------------------------------------//
+
+  // map of index space to the field_ids that are mapped to this index space
+  std::map<size_t, std::vector<field_id_t>> fields_map;
+
+  //total number of Phase Barriers 
+  size_t num_phase_barriers =0;
+
+  for(auto is: context_.coloring_map()) {
+    size_t idx_space = is.first;
+    for(const field_info_t& field_info : context_.registered_fields()){
+        if(field_info.index_space == idx_space){
+          fields_map[idx_space].push_back(field_info.fid);
+          num_phase_barriers++;
+        } // if
+      } // for
+
+    {
+      clog_tag_guard(runtime_driver);
+      clog(trace) << "fields_map[" <<idx_space<<"] has "<<
+        fields_map[idx_space].size()<< " fields"<<std::endl;
+    } // scope
+  } // for
+
+
+  // the key is index_space id, internal map key if field id 
+  std::map<size_t, std::map<field_id_t, std::vector<Legion::PhaseBarrier>>>
+      phase_barriers_map;
+
+  //fill the map
+  for(auto idx_space : coloring_info){
+    std::map<field_id_t , std::vector<Legion::PhaseBarrier>> inner;
+    for (const field_id_t& field_id : fields_map[idx_space.first]){
+      for(int color = 0; color < num_colors; color++){
+        const flecsi::coloring::coloring_info_t& color_info = 
+          idx_space.second[color];
+
+        inner[field_id].push_back(runtime->create_phase_barrier(ctx,
+             1 + color_info.shared_users.size()));
+      }//color
+    }//field_info
+    phase_barriers_map[idx_space.first]=inner;
+  }//indx_space
+
+  //--------------------------------------------------------------------------//
+  //   Create Legion must epoch launcher and add Region requirements
+  //-------------------------------------------------------------------------//
+  
   // Must epoch launch
   Legion::MustEpochLauncher must_epoch_launcher;
 
@@ -210,6 +234,7 @@ runtime_driver(
   clog_tag_guard(runtime_driver);
   clog(trace) << "spmd_task is: " << spmd_id << std::endl;
   } // scope
+
 
   // Add colors to must_epoch_launcher
   for(size_t color(0); color<num_colors; ++color) {
@@ -230,26 +255,36 @@ runtime_driver(
         pbarriers_as_owner.push_back(
           phase_barriers_map[idx_space][field_id][color]);
       
+        {
+        clog_tag_guard(runtime_driver);
         clog(trace) << " Color " << color << " idx_space " << idx_space 
         << ", fid = " << field_id<<
           " has " << color_info.ghost_owners.size() << 
           " ghost owners" << std::endl;
+        } // scope
 
         for(auto owner : color_info.ghost_owners) {
+          {
+          clog_tag_guard(runtime_driver);
           clog(trace) << owner << std::endl;
+          } // scope
+
           owners_pbarriers[idx_space][field_id].push_back(
             phase_barriers_map[idx_space][field_id][owner]);
        
         }
       
       }//for field_info
+
       num_ghost_owners.push_back(color_info.ghost_owners.size());
     } // for idx_space
 
     size_t num_idx_spaces = context_.coloring_map().size();
-
-   //data serialization:
-
+   
+    //-----------------------------------------------------------------------//
+    // data serialization:
+    //-----------------------------------------------------------------------//
+    
     // #1 serialize num_indx_spaces & num_phase_barriers
     args_serializers[color].serialize(&num_idx_spaces, sizeof(size_t));
     args_serializers[color].serialize(&num_phase_barriers, sizeof(size_t));
@@ -276,33 +311,38 @@ runtime_driver(
         for(auto pb:owners_pbarriers[idx_space][field_id])
            owners_pbarriers_buf.push_back(pb);
     }//for
-
+  
     size_t num_owners_pbarriers = owners_pbarriers_buf.size();
     args_serializers[color].serialize(&num_owners_pbarriers, sizeof(size_t));
     args_serializers[color].serialize(&owners_pbarriers_buf[0],
       num_owners_pbarriers * sizeof(Legion::PhaseBarrier));
 
+    // #6 serialize reduction
     args_serializers[color].serialize(&max_reduction,
         sizeof(Legion::DynamicCollective));
 
-  using adjacency_triple_t = context_t::adjacency_triple_t;
+    // #7 serialize adjacency info
+    using adjacency_triple_t = context_t::adjacency_triple_t;
   
-  std::vector<adjacency_triple_t> adjacencies_vec;
+    std::vector<adjacency_triple_t> adjacencies_vec;
   
-  for(auto& itr : context_.adjacency_info()){
-    const coloring::adjacency_info_t& ai = itr.second;
-    auto t = std::make_tuple(ai.index_space, ai.from_index_space,
-      ai.to_index_space);
-    adjacencies_vec.push_back(t);
-  }
+    for(auto& itr : context_.adjacency_info()){
+      const coloring::adjacency_info_t& ai = itr.second;
+      auto t = std::make_tuple(ai.index_space, ai.from_index_space,
+        ai.to_index_space);
+      adjacencies_vec.push_back(t);
+    }//for
 
-  size_t num_adjacencies = adjacencies_vec.size();
+    size_t num_adjacencies = adjacencies_vec.size();
 
-  args_serializers[color].serialize(&num_adjacencies, sizeof(size_t));
-  args_serializers[color].serialize(&adjacencies_vec[0], num_adjacencies
-    * sizeof(adjacency_triple_t));
-
+    args_serializers[color].serialize(&num_adjacencies, sizeof(size_t));
+    args_serializers[color].serialize(&adjacencies_vec[0], num_adjacencies
+      * sizeof(adjacency_triple_t));
+   
+   //-----------------------------------------------------------------------//
    //add region requirements to the spmd_launcher
+   //-----------------------------------------------------------------------//
+   
     Legion::TaskLauncher spmd_launcher(spmd_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(),
                              args_serializers[color].get_used_bytes()));
@@ -325,11 +365,9 @@ runtime_driver(
 
       reg_req.add_field(ghost_owner_pos_fid);
 
-      for(const field_info_t& field_info : context_.registered_fields()){
-        if(field_info.index_space == idx_space){
-          reg_req.add_field(field_info.fid);
-        }
-      }
+      for (const field_id_t& field_id : fields_map[idx_space]){
+          reg_req.add_field(field_id);
+      }//for field_info
 
       for(auto& itr : context_.adjacency_info()){
         if(itr.first == idx_space){
@@ -367,10 +405,8 @@ runtime_driver(
           SIMULTANEOUS, flecsi_ispace.logical_region);
         owner_reg_req.add_flags(NO_ACCESS_FLAG);
         owner_reg_req.add_field(ghost_owner_pos_fid);
-        for(const field_info_t& field_info : context_.registered_fields()){
-          if(field_info.index_space == idx_space){
-            owner_reg_req.add_field(field_info.fid);
-          }
+        for (const field_id_t& field_id : fields_map[idx_space]){
+            owner_reg_req.add_field(field_id);
         }
 
         spmd_launcher.add_region_requirement(owner_reg_req);
@@ -409,9 +445,11 @@ runtime_driver(
   auto future = runtime->execute_must_epoch(ctx, must_epoch_launcher);
   future.wait_all_results();
 
+  //-----------------------------------------------------------------------//
   // Finish up Legion runtime and fall back out to MPI.
+  // ----------------------------------------------------------------------//
 
-  //FIXME runtime->destroy_dynamic_collective(ctx, max_reduction);
+  runtime->destroy_dynamic_collective(ctx, max_reduction);
 
   for(auto& itr_idx : phase_barriers_map) {
     const size_t idx = itr_idx.first;
@@ -440,8 +478,6 @@ spmd_task(
   Legion::Runtime * runtime
 )
 {
-  using field_id_t = Legion::FieldID;
-
   const int my_color = task->index_point.point_data[0];
 
   // spmd_task is an inner task
@@ -462,7 +498,13 @@ spmd_task(
 
   clog_assert(task->arglen > 0, "spmd_task called without arguments");
 
+  //---------------------------------------------------------------------//
+  // Deserialize task arguments
+  // --------------------------------------------------------------------//
+
   Legion::Deserializer args_deserializer(task->args, task->arglen);
+ 
+  //#1 serialize num_indx_spaces & num_phase_barriers
   size_t num_idx_spaces;
   size_t num_phase_barriers;
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
@@ -473,7 +515,7 @@ spmd_task(
   clog_assert(task->regions.size() >= num_idx_spaces,
       "fewer regions than data handles");
 
-  // Deserialize field info
+  // #2 deserialize field info
   size_t num_fields;
   args_deserializer.deserialize(&num_fields, sizeof(size_t));
 
@@ -483,11 +525,13 @@ spmd_task(
   args_deserializer.deserialize(field_info_buf,
                                 sizeof(field_info_t) * num_fields);
 
+  // add field_info into the context (map between name, hash, is and field)
   for(size_t i = 0; i < num_fields; ++i){
     field_info_t& fi = field_info_buf[i];
     context_.put_field_info(fi);
   }//end for i
 
+  //if there is no information about fields in the context, add it there
   if (context_.registered_fields().size()==0)
   {
     for(size_t i = 0; i < num_fields; ++i){
@@ -496,7 +540,7 @@ spmd_task(
     }
   }
 
-  //the key is IS
+ // map of index space to the field_ids that are mapped to this index space
   std::map<size_t, std::vector<field_id_t>> fields_map;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
@@ -507,7 +551,7 @@ spmd_task(
       }
   }//end for is
 
-
+  // #3 deserialize pbarriers_as_owner
   Legion::PhaseBarrier* pbarriers_as_owner =
     new Legion::PhaseBarrier [num_phase_barriers];
   args_deserializer.deserialize((void*)pbarriers_as_owner,
@@ -520,10 +564,12 @@ spmd_task(
 			pbarriers_as_owner[i]<<std::endl;
     } // scope
 
+  // #4 deserialize num_ghost_owners[
   size_t* num_owners = new size_t [num_idx_spaces];
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
       * num_idx_spaces);
 
+  // fille index_space_data_map with pbarriers_as_owner
   size_t indx = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
@@ -534,16 +580,17 @@ spmd_task(
     }//end field_info
   }//end for idx_space
 
-  // Deserialize ghost_owners_pbarriers
+  //#5 Deserialize ghost_owners_pbarriers
   size_t num_owners_pbarriers;
   args_deserializer.deserialize(&num_owners_pbarriers, sizeof(size_t));
 
   Legion::PhaseBarrier* ghost_owners_pbarriers =
     new Legion::PhaseBarrier [num_owners_pbarriers];
-
+  
   args_deserializer.deserialize((void*)ghost_owners_pbarriers,
     sizeof(Legion::PhaseBarrier) * num_owners_pbarriers);
 
+  // fill index_space_data_map with ghost_owners_pbarriers
   indx=0;
   size_t consec_indx = 0;
   for(auto is: context_.coloring_map()) {
@@ -556,23 +603,28 @@ spmd_task(
          ispace_dmap[idx_space].ghost_owners_pbarriers[field_id][owner] =
             ghost_owners_pbarriers[indx];
          indx++;
+         {
+         clog_tag_guard(runtime_driver);
          clog(trace) <<my_color <<" has ghost_owners_pbarrier "<<
              ghost_owners_pbarriers[indx-1]<<std::endl;
+         } // scope
       }//owner
     }//field_id
     consec_indx++;
   }//idx_space
+
   // Prevent these objects destructors being called until after driver()
   std::map<size_t, std::vector<Legion::LogicalRegion>>
     ghost_owners_lregions;
   std::vector<Legion::IndexPartition> primary_ghost_ips(num_idx_spaces);
   std::vector<Legion::IndexPartition> exclusive_shared_ips(num_idx_spaces);
 
+  //fill ispace_dmap with logical regions
   size_t region_index = 0;
   size_t consecutive_index = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-
+    
     ispace_dmap[idx_space].color_region = regions[region_index]
                                                   .get_logical_region();
 
@@ -700,7 +752,8 @@ spmd_task(
       = ghost_owners_lregions[idx_space];
 
 
-    // Fix ghost reference/pointer to point to compacted position of shared that it needs
+    // Fix ghost reference/pointer to point to compacted position of
+    // shared that it needs
     Legion::TaskLauncher fix_ghost_refs_launcher(context_.task_id<
       __flecsi_internal_task_key(owner_pos_correction_task)>(),
       Legion::TaskArgument(nullptr, 0));
@@ -734,6 +787,7 @@ spmd_task(
   //
   // This depends on the ordering of the BLIS data structure setup.
   // Currently, this is Exclusive - Shared - Ghost.
+
   for(auto is: context_.coloring_map()) {
     std::map<size_t, size_t> _map;
     size_t counter(0);
@@ -763,11 +817,13 @@ spmd_task(
     ctx, runtime, task, regions);
 #endif
 
+  // #6 deserialize reduction
   Legion::DynamicCollective max_reduction;
   args_deserializer.deserialize((void*)&max_reduction,
     sizeof(Legion::DynamicCollective));
   context_.set_max_reduction(max_reduction);
 
+  // #7 deserialize adjacency info
   size_t num_adjacencies;
   args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
    

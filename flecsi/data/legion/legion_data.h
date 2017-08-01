@@ -33,9 +33,10 @@
 /// \date Initial file creation: Jun 7, 2017
 ///
 
-namespace flecsi{
+clog_register_tag(legion_data);
 
-namespace data{
+namespace flecsi {
+namespace data {
 
 class legion_data_t{
 public:
@@ -129,19 +130,25 @@ public:
     // Determine max size of a color partition
     is.total_num_entities = 0;
     for(auto color_idx : coloring_info_map){
+      {
+      clog_tag_guard(legion_data);
       clog(trace) << "index: " << index_space_id << " color: " << 
         color_idx.first << " " << color_idx.second << std::endl;
+      } // scope
       
       is.total_num_entities = std::max(is.total_num_entities,
         color_idx.second.exclusive + color_idx.second.shared + 
         color_idx.second.ghost);
     } // for color_idx
     
+    {
+    clog_tag_guard(legion_data);
     clog(trace) << "total_num_entities " << is.total_num_entities << std::endl;
+    } // scope
 
     // Create expanded index space
-    Rect<2> expanded_bounds = 
-      Rect<2>(Point<2>::ZEROES(), make_point(num_colors_, is.total_num_entities));
+    Rect<2> expanded_bounds = Rect<2>(Point<2>::ZEROES(),
+      make_point(num_colors_, is.total_num_entities));
     
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
     
@@ -232,7 +239,7 @@ public:
     for(size_t color = 0; color < num_colors_; ++color){
       Rect<2> subrect(make_point(color, 0), make_point(color,
         adjacency_info.color_sizes[color] - 1));
-      
+
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
 

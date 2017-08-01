@@ -866,12 +866,14 @@ struct storage_type__<dense>
     handle_t<DATA_TYPE, 0, 0, 0> h;
 
     auto& context = execution::context_t::instance();
+  
+    using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
 
     // get field_info for this data handle
     // TODO: lookup rather than hardcoded 0
     auto field_infos = context.registered_fields();
     auto field_info = *(std::find_if(field_infos.begin(), field_infos.end(), [](auto& fi) {
-      return fi.data_client_hash == typeid(DATA_CLIENT_TYPE).hash_code() &&
+      return fi.data_client_hash == typeid(client_type).hash_code() &&
         fi.namespace_hash == NAMESPACE &&
         fi.name_hash == NAME;
     }));

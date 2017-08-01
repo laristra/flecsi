@@ -132,7 +132,7 @@ namespace execution {
       std::unordered_map<size_t, size_t> region_map;
 
       for(size_t i{0}; i<h.num_handle_entities; ++i) {
-        data_client_handle_entity & ent = h.handle_entities[i];
+        data_client_handle_entity_t & ent = h.handle_entities[i];
 
         const size_t index_space = ent.index_space;
         const size_t dim = ent.dim;
@@ -148,7 +148,7 @@ namespace execution {
       } // for
 
       for(size_t i{0}; i < h.num_handle_adjacencies; ++i){
-        data_client_handle_adjacency& adj = h.handle_adjacencies[i];
+        data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
 
         const size_t adj_index_space = adj.adj_index_space;
         const size_t from_index_space = adj.from_index_space;

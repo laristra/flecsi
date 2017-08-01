@@ -25,18 +25,19 @@
 #include <functional>
 #include <cinchlog.h>
 
-#include "flecsi/execution/common/launch.h"
-#include "flecsi/execution/common/processor.h"
-#include "flecsi/utils/common.h"
-#include "flecsi/utils/const_string.h"
-#include "flecsi/execution/mpi/runtime_driver.h"
-#include "flecsi/coloring/coloring_types.h"
-
 #if !defined(ENABLE_MPI)
   #error ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
 #include <mpi.h>
+
+#include "flecsi/coloring/coloring_types.h"
+#include "flecsi/execution/common/launch.h"
+#include "flecsi/execution/common/processor.h"
+#include "flecsi/execution/mpi/runtime_driver.h"
+#include "flecsi/runtime/types.h"
+#include "flecsi/utils/common.h"
+#include "flecsi/utils/const_string.h"
 
 namespace flecsi {
 namespace execution {
@@ -182,7 +183,6 @@ struct mpi_context_policy_t
   //--------------------------------------------------------------------------//
   // Gathers info about registered data fields.
   //--------------------------------------------------------------------------//
-  using field_id_t = size_t;
 
   struct field_info_t{
     size_t data_client_hash;

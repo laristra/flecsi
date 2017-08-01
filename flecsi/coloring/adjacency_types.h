@@ -35,6 +35,26 @@ struct adjacency_info_t {
 
 }; // struct adjacency_info_t
 
+inline
+std::ostream &
+operator << (
+  std::ostream & stream,
+  const adjacency_info_t & ai
+)
+{
+  stream << std::endl << "index space: " << ai.index_space <<
+    " from index space: " << ai.from_index_space <<
+    " to index space: " << ai.to_index_space;
+
+  stream << " color sizes [ ";
+  for(auto i: ai.color_sizes) {
+    stream << i << " ";
+  } // for
+  stream << "]";
+
+  return stream;
+} // operator <<
+
 } // namespace coloring
 } // namespace flecsi
 

@@ -54,7 +54,11 @@ namespace execution {
 void specialization_tlt_init(int argc, char ** argv) {
   clog(trace) << "In specialization top-level-task init" << std::endl;
 
-  flecsi_execute_mpi_task(add_colorings, 0);
+  coloring_map_t map;
+  map.vertices = 1;
+  map.cells = 0;
+
+  flecsi_execute_mpi_task(add_colorings, map);
 
 } // specialization_tlt_init
 
@@ -87,6 +91,21 @@ void driver(int argc, char ** argv) {
 
     flecsi_execute_task(read_task, single, handle2, my_color, cycle);
   }
+
+  // Permutation test
+  bool delay = false;
+  flecsi_execute_task(write_task, single, handle1, my_color, 0, delay);
+  flecsi_execute_task(write_task, single, handle2, my_color, 0, delay);
+  flecsi_execute_task(read_task, single, handle1, my_color, 0);
+  flecsi_execute_task(read_task, single, handle2, my_color, 0);
+
+  flecsi_execute_task(write_task, single, handle2, my_color, 1, delay);
+  flecsi_execute_task(read_task, single, handle1, my_color, 0);
+  flecsi_execute_task(read_task, single, handle2, my_color, 1);
+
+  flecsi_execute_task(write_task, single, handle1, my_color, 2, delay);
+  flecsi_execute_task(read_task, single, handle1, my_color, 2);
+  flecsi_execute_task(read_task, single, handle2, my_color, 1);
 
 } // driver
 

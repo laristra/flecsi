@@ -546,7 +546,9 @@ public:
     static_assert(std::is_convertible<S,T>::value,
                   "invalid index space cast");
 
-    return *reinterpret_cast<index_space<S,STORAGE2,OWNED2,SORTED2,F2,STORAGE_TYPE2>*>(this);
+    auto res = reinterpret_cast<index_space<S,STORAGE2,OWNED2,SORTED2,F2,STORAGE_TYPE2>*>(this);
+    assert( res != nullptr && "invalid cast"  );
+    return *res;
   }
 
   template<
@@ -563,7 +565,9 @@ public:
     static_assert(std::is_convertible<S,T>::value,
                   "invalid index space cast");
 
-    return *reinterpret_cast<const index_space<S,STORAGE2,OWNED2,SORTED2,F2, STORAGE_TYPE2>*>(this);
+    auto res = reinterpret_cast<index_space<S,STORAGE2,OWNED2,SORTED2,F2,STORAGE_TYPE2>*>(this);
+    assert( res != nullptr && "invalid cast"  );
+    return *res;
   }
 
   auto

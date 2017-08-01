@@ -84,6 +84,10 @@ client_hash()
 //! Create a hash key suitable for registering a field with the low-level
 //! field registry.
 //!
+//! \note This hash sets the most significant bit to '0' to be used as
+//!       a boolean that distinguishes normal fields from internal
+//!       data client fields.
+//!
 //! @tparam NAMESPACE A namespace identifier.
 //! @tparam NAME      A name identifier.
 //!
@@ -98,8 +102,23 @@ inline
 constexpr size_t
 field_hash()
 {
-  return NAMESPACE ^ NAME;
+  return (NAMESPACE ^ NAME) & ~(1ul<<63);
 } // field_hash__
+
+//----------------------------------------------------------------------------//
+//! Check if the given key identifies an internal field.
+//!
+//! @param key The hash key.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+bool
+inline
+is_internal(size_t key)
+{
+  return key & (1ul<<63);
+} // is_internal
 
 ////////////////////////////////////////////////////////////////////////////////
 // Client entities hash interface.
@@ -319,6 +338,10 @@ client_adjacency_to_dimension(
 //! Create a hash key suitable for registering internal client field data with
 //! the low-level field registry.
 //!
+//! \note This hash sets the most significant bit to '1' to be used as
+//!       a boolean that distinguishes data client fields from normal
+//!       fields.
+//!
 //! @tparam INDEX_SPACE The index space id of the associated field.
 //!
 //! @ingroup utils
@@ -332,14 +355,14 @@ inline
 constexpr size_t
 client_internal_field_hash()
 {
-  return (NAME << 8) | INDEX_SPACE;
+  return ((NAME << 8) | INDEX_SPACE) | (1ul<<63);
 } // field_hash__
 
 inline
 size_t
 client_internal_field_hash(size_t name, size_t index_space)
 {
-  return (name << 8) | index_space;
+  return ((name << 8) | index_space) | (1ul<<63);
 } // field_hash__
 
 inline

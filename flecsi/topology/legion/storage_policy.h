@@ -67,26 +67,17 @@ struct legion_topology_storage_policy_t
     auto s = is.storage();
     s->set_buffer(entities, num_entities);
 
-    clog(info) << "########### " << dim << " ##########" << std::endl;
     if(read) {
       for(size_t i{0}; i<num_entities; ++i) {
         is.push_back(id_t::make(dim, i));
       } // for
     } // if
 
-    for(auto& from_domain : topology) {
-      auto& to_domain_connectivty = from_domain[domain];
-      for(size_t to_dim = 0; to_dim <= ND; ++to_dim) {
-        auto& conn = to_domain_connectivty.get(dim, to_dim);
-        conn.set_entity_storage(s);
-      } // for
-    } // for
-
-    for(auto& from_domain : topology) {
-      auto& to_domain_connectivty = from_domain[domain];
-      for(size_t from_dim = 0; from_dim <= ND; ++from_dim) {
-        auto& conn = to_domain_connectivty.get(from_dim, dim);
-        conn.set_entity_storage(s);
+    for(auto& domain_connectivities : topology) {
+      auto& domain_connectivity = domain_connectivities[domain];
+      for(size_t d = 0; d <= ND; ++d) {
+        domain_connectivity.get(dim, d).set_entity_storage(s);
+        domain_connectivity.get(d, dim).set_entity_storage(s);
       } // for
     } // for
   } // init_entities
@@ -106,7 +97,6 @@ struct legion_topology_storage_policy_t
     // We may wish to store the buffer pointers coming from Legion directly
     // into the connectivity
 
-    clog(info) << "NUM_POSITIONS: " << num_positions << std::endl;
     auto& conn = topology[from_domain][to_domain].get(from_dim, to_dim);
     size_t index_offset = 0;
     for(size_t i = 0; i < num_positions; ++i){
@@ -114,10 +104,7 @@ struct legion_topology_storage_policy_t
       size_t offset = pi.x[0];
       size_t count = pi.x[1];
 
-      clog(info) << "INDEX_OFFSET: " << index_offset << std::endl;
-      clog(info) << "COUNT: " << count << std::endl;
       for(size_t j = index_offset; j < index_offset + count; ++j){
-        clog(info) << "INDEX: " << indices[j] << std::endl;
         conn.push(utils::id_t::make(to_dim, indices[j]));
       }
 
@@ -125,9 +112,6 @@ struct legion_topology_storage_policy_t
 
       index_offset += count;
     } // for
-
-    auto & v = conn.from_index_vec();
-    clog(info) << "FROM SIZE: " << v.size() << std::endl;
   } // init_connectivities
 
   template<
@@ -154,15 +138,13 @@ struct legion_topology_storage_policy_t
     auto & is = index_spaces[M][dim].template cast<dtype>();
     size_t entity_id = is.size();
 
-    clog(info) << "BUFFER SIZE: " << is.storage()->size() << std::endl;
-
     auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity_id;
     ent = new (placement_ptr) T(std::forward<S>(args)...);
 
     id_t global_id = id_t::make<M>(dim, entity_id);
     ent->template set_global_id<M>(global_id);
 
-    is.push_back( static_cast<dtype>(ent) );
+    is.push_back(global_id);
 
     return ent;
   } // make
