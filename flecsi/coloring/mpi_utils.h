@@ -6,40 +6,32 @@
 #ifndef flecsi_coloring_mpi_utils_h
 #define flecsi_coloring_mpi_utils_h
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Nov 23, 2016
+//----------------------------------------------------------------------------//
+
 #if !defined(ENABLE_MPI)
   #error ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
 #include <mpi.h>
 
-///
-/// \file
-/// \date Initial file creation: Nov 23, 2016
-///
-
 namespace flecsi {
 namespace coloring {
 
-template<typename T> struct mpi_typetraits {};
+//----------------------------------------------------------------------------//
+//! Wrapper to convert from C++ types to MPI types.
+//!
+//! @tparam TYPE The C++ P.O.D. type, e.g., double.
+//!
+//! @ingroup coloring
+//----------------------------------------------------------------------------//
 
-//template<>
-//struct mpi_typetraits<idx_t>
-//{
-//  inline static
-//  MPI_Datatype
-//  type()
-//  {
-//    if(sizeof(idx_t) == 8) {
-//      return MPI_UNSIGNED_LONG_LONG;
-//    }
-//    else {
-//      return MPI_UNSIGNED;
-//    } // if
-//  }
-//}; // mpi_typetraits
+template<typename TYPE> struct mpi_typetraits__ {};
 
 template<>
-struct mpi_typetraits<size_t>
+struct mpi_typetraits__<size_t>
 {
   inline static
   MPI_Datatype
@@ -52,10 +44,10 @@ struct mpi_typetraits<size_t>
       return MPI_UNSIGNED;
     } // if
   }
-}; // mpi_typetraits
+}; // mpi_typetraits__
 
 template<>
-struct mpi_typetraits<int>
+struct mpi_typetraits__<int>
 {
   inline static
   MPI_Datatype
@@ -63,10 +55,10 @@ struct mpi_typetraits<int>
   {
     return MPI_INT;
   }
-}; // mpi_typetraits
+}; // mpi_typetraits__
 
 template<>
-struct mpi_typetraits<double>
+struct mpi_typetraits__<double>
 {
   inline static
   MPI_Datatype
@@ -74,7 +66,8 @@ struct mpi_typetraits<double>
   {
     return MPI_DOUBLE;
   }
-}; // mpi_typetraits
+}; // mpi_typetraits__
+
 } // namespace coloring
 } // namespace flecsi
 

@@ -299,6 +299,9 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
       auto& fm = itr->second;
 
+      // This field resides in the main entities (BLIS) index space, but
+      // is unique to an adjacency, so it is registered using the
+      // adjacency hash.      
       for(auto& fitr : fm){
         if(fitr.second.key == 
            utils::hash::client_internal_field_hash(
