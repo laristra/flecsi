@@ -67,16 +67,6 @@ struct mpi_storage_policy_t {
     return true;
   }
 
-  void
-  register_all()
-  {
-    for(auto & c: field_registry_) {
-      for(auto & d: c.second) {
-        d.second.second(d.first, d.second.first);
-      } // for
-    } // for
-  } // register_all
-
   auto const &
   field_registry()
   const

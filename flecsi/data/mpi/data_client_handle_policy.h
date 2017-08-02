@@ -19,7 +19,7 @@ namespace flecsi {
 //! FIXME: Description of class
 
 //----------------------------------------------------------------------------//
-struct data_client_handle_entity
+struct data_client_handle_entity_t
 {
   using field_id_t = size_t;
 
@@ -31,7 +31,7 @@ struct data_client_handle_entity
 //  Legion::LogicalRegion color_region;
 }; // struct data_client_handle_entity
 
-struct data_client_handle_adjacency
+struct data_client_handle_adjacency_t
 {
   size_t adj_index_space;
   size_t from_index_space;
@@ -53,8 +53,8 @@ struct mpi_data_client_handle_policy_t
 
   size_t num_handle_entities;
   size_t num_handle_adjacencies;
-  data_client_handle_entity handle_entities[MAX_ENTITIES];
-  data_client_handle_adjacency handle_adjacencies[MAX_ADJACENCIES];
+  data_client_handle_entity_t handle_entities[MAX_ENTITIES];
+  data_client_handle_adjacency_t handle_adjacencies[MAX_ADJACENCIES];
 }; // struct data_client_handle_policy_t
 
 } // namespace flecsi

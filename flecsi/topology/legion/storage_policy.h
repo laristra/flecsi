@@ -12,7 +12,7 @@
 #include <arrays.h>
 
 #include "flecsi/topology/mesh_storage.h"
-#include "flecsi/topology/legion/entity_storage.h"
+#include "entity_storage.h"
 
 #include <array>
 

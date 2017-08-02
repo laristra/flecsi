@@ -254,11 +254,11 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
             break;
         } // if
       } // for
-
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(ent.index_space);
       clog_assert(ritr != ism.end(), "invalid index space");
-      //ent.color_region = ritr->second.color_region;
-
+      ent.color_region = ritr->second.color_region;
+#endif
       ++entity_index;
     } // for
 

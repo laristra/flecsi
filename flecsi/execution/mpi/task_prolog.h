@@ -82,7 +82,7 @@ namespace execution {
     {
       auto& flecsi_context = context_t::instance();
 
-      const int my_color = flecsi_context.rank;
+      const int my_color = flecsi_context.color();
       auto &coloring_info = flecsi_context.coloring_info(h.index_space);
 
       auto &my_coloring_info = flecsi_context.coloring_info(h.index_space).at(my_color);

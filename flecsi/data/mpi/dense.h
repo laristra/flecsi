@@ -881,7 +881,7 @@ struct storage_type__<dense>
 
     // get color_info for this field.
     // TODO: lookup rather than hardcoded 0
-    auto color_info = (context.coloring_info(field_info.index_space)).at(context.rank);
+    auto color_info = (context.coloring_info(field_info.index_space)).at(context.color());
 
     // get field_data
     auto &field_data = context.registered_field_data(field_info.fid);

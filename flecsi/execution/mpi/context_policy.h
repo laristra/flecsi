@@ -69,6 +69,16 @@ struct mpi_context_policy_t
   );
 
   //--------------------------------------------------------------------------//
+  //! Return the color for which the context was initialized.
+  //--------------------------------------------------------------------------//
+
+  size_t
+  color()
+  {
+    return color_;
+  } // color
+
+  //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
 
@@ -218,7 +228,7 @@ struct mpi_context_policy_t
   void register_field_data(field_info_t& field_info,
                            std::unordered_map<size_t, coloring::coloring_info_t>& infos) {
     clog(info) << "index space: " << field_info.index_space << std::endl;
-    auto info = infos[rank];
+    auto info = infos[color_];
     auto combined_size = 0;
     clog(info) << "number of exclusive: " << info.exclusive << std::endl;
     combined_size += info.exclusive ;
@@ -338,9 +348,9 @@ struct mpi_context_policy_t
     return fitr->second;
   }
 
-  int rank;
-
 private:
+
+  int color_ = 0;
 
   // Define the map type using the task_hash_t hash function.
 //  std::unordered_map<
