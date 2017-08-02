@@ -14,12 +14,19 @@
 
 namespace flecsi {
 
-  enum privilege_t : size_t{
+  enum privilege_t : size_t
+  {
     dno = 0,
     dro = 1,
     dwd = 2,
     drw = 3
-  };
+#if 0
+    wo,
+    rw,
+    ro,
+    ur
+#endif
+  }; // enum privilege_t
 
 } // namespace flecsi
 

@@ -106,7 +106,7 @@ void initialize_mesh(mesh<dwd> m) {
 
   m.init<0>();
 
-  #if 1
+  #if 0
     for(auto v: vertices) {
         point_t p = v->coordinates();
         clog(error) << "!!!! color: " << context.color() << " coordinates: (" <<
@@ -119,7 +119,7 @@ void initialize_mesh(mesh<dwd> m) {
     } // for
   #endif
 
-  #if 1
+  #if 0
     for(auto v: m.vertices()) {
       const size_t vid = v->template id<0>();
 
@@ -128,7 +128,7 @@ void initialize_mesh(mesh<dwd> m) {
     } // for
   #endif
 
-#if 1
+#if 0
   for(auto c: m.cells()) {
     const size_t cid = c->template id<0>();
 
@@ -211,7 +211,7 @@ void print_mesh(mesh<dro> m, field<dro, dro, dro> p) {
   for(auto c: m.cells()) {
     const size_t cid = c->template id<0>();
 
-#if 0
+#if 1
     {
     clog_tag_guard(devel_handle);
     clog(trace) << "color: " << context.color() << " cell id: (" <<
@@ -225,15 +225,15 @@ void print_mesh(mesh<dro> m, field<dro, dro, dro> p) {
     for(auto v: m.vertices(c)) {
       const size_t vid = v->template id<0>();
 
-#if 0
+#if 1
       {
       clog_tag_guard(devel_handle);
       clog(trace) << "color: " << context.color() << " vertex id: (" <<
         vid << ", " << vertex_map[vid] << ") " << vcount << std::endl;
 
-      point_t p = v->coordinates();
+      point_t coord = v->coordinates();
       clog(trace) << "color: " << context.color() << " coordinates: (" <<
-        p[0] << ", " << p[1] << ")" << std::endl;
+        coord[0] << ", " << coord[1] << ")" << std::endl;
       } // scope
 #endif
 
@@ -351,7 +351,7 @@ void driver(int argc, char ** argv) {
 
   flecsi_execute_task(initialize_pressure, single, mh, ph);
   //flecsi_execute_task(update_pressure, single, mh, ph);
-  //flecsi_execute_task(print_mesh, single, mh, ph);
+  flecsi_execute_task(print_mesh, single, mh, ph);
 
 } // driver
 

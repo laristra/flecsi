@@ -15,7 +15,7 @@ DEVEL(dcrs) {
   clog_set_output_rank(0);
 
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  std::set<size_t> naive = flecsi::coloring::naive_coloring(sd);
+  std::set<size_t> naive = flecsi::coloring::naive_coloring<2,2>(sd);
 
   {
   clog_tag_guard(dcrs);
