@@ -39,7 +39,7 @@ namespace flecsi
   for more information on the vector_t interface.
  */
 template <typename T, size_t D>
-using space_vector = utils::dimensioned_array<T, D, 2>;
+using space_vector = utils::dimensioned_array__<T, D, 2>;
 
 /*!
   \function point_to_vector(const point<T, D> & a)
@@ -56,7 +56,7 @@ using space_vector = utils::dimensioned_array<T, D, 2>;
   \return Space vector with the contents of point \e p.
  */
 template <typename T, size_t D>
-space_vector<T, D> point_to_vector(const point<T, D> & p)
+space_vector<T, D> point_to_vector(const point__<T, D> & p)
 {
   space_vector<T, D> sv;
   for (size_t d(0); d < D; ++d)
@@ -142,7 +142,7 @@ T cross_magnitude(const space_vector<T, 3> & a, const space_vector<T, 3> & b)
   a and b we use x = b[0] - a[0] and y = b[1] - a[1]
  */
 template <typename T>
-space_vector<T, 2> normal(const point<T, 2> & a, const point<T, 2> & b)
+space_vector<T, 2> normal(const point__<T, 2> & a, const point__<T, 2> & b)
 {
   space_vector<T, 2> tmp(a[1] - b[1], b[0] - a[0]);
   return tmp;
