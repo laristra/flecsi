@@ -98,6 +98,7 @@ struct legion_topology_storage_policy_t
     // into the connectivity
 
     auto& conn = topology[from_domain][to_domain].get(from_dim, to_dim);
+    conn.init(); // init connectivity (adds the starting 0 in from_index_vec)
     size_t index_offset = 0;
     for(size_t i = 0; i < num_positions; ++i){
       auto& pi = positions[i]; 

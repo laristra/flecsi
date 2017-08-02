@@ -6,30 +6,43 @@
 #ifndef flecsi_coloring_dcrs_utils_h
 #define flecsi_coloring_dcrs_utils_h
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Nov 24, 2016
+//----------------------------------------------------------------------------//
+
 #if !defined(ENABLE_MPI)
   #error ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
 #include <mpi.h>
 
-#include "flecsi/topology/mesh_definition.h"
-#include "flecsi/topology/closure_utils.h"
 #include "flecsi/coloring/crs.h"
-
-///
-/// \file
-/// \date Initial file creation: Nov 24, 2016
-///
+#include "flecsi/topology/closure_utils.h"
+#include "flecsi/topology/mesh_definition.h"
 
 namespace flecsi {
 namespace coloring {
 
 clog_register_tag(dcrs_utils);
 
+//----------------------------------------------------------------------------//
+//! Create a naive coloring suitable for calling a distributed-memory
+//! coloring tool, e.g., ParMETIS.
+//!
+//! @tparam DIMENSION      The entity dimension for which to create a naive
+//!                        coloring.
+//! @tparam MESH_DIMENSION The dimension of the mesh definition.
+//----------------------------------------------------------------------------//
+
+template<
+  size_t DIMENSION,
+  size_t MESH_DIMENSION
+>
 inline
 std::set<size_t>
 naive_coloring(
-  topology::mesh_definition__<2> & md
+  topology::mesh_definition__<MESH_DIMENSION> & md
 )
 {
   std::set<size_t> indices;
@@ -43,13 +56,12 @@ naive_coloring(
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-
   //--------------------------------------------------------------------------//
   // Create a naive initial distribution of the indices
   //--------------------------------------------------------------------------//
 
-	size_t quot = md.num_entities(2)/size;
-	size_t rem = md.num_entities(2)%size;
+	size_t quot = md.num_entities(DIMENSION)/size;
+	size_t rem = md.num_entities(DIMENSION)%size;
 
   clog_one(info) << "quot: " << quot << " rem: " << rem << std::endl;
 
@@ -73,56 +85,33 @@ naive_coloring(
   return indices;
 } // naive_coloring
 
-#if 0
-template<
-  size_t FD,
-  size_t TD
->
-dcrs_t
-make_dcrs(
-  topology::mesh_definition__<2> & md,
-  std::set<size_t> indices
-)
-{
-}
+//----------------------------------------------------------------------------//
+//! Create distributed CRS representation of the graph defined by entities
+//! of FROM_DIMENSION to TO_DIMENSION through THRU_DIMENSION. The return
+//! object will be populated with a naive partitioning suitable for use
+//! with coloring tools, e.g., ParMETIS.
+//!
+//! @tparam FROM_DIMENSION The topological dimension of the entity for which
+//!                        the partitioning is requested.
+//! @tparam TO_DIMENSION   The topological dimension to search for neighbors.
+//! @tparam THRU_DIMENSION The topological dimension through which the neighbor
+//!                        connection exists.
+//!
+//! @param md The mesh definition.
+//!
+//! @ingroup coloring
+//----------------------------------------------------------------------------//
 
-template<
-  size_t DIMENSION,
-  size_t THRU
->
-dcrs_t
-make_dcrs(
-  topology::mesh_definition__<2> & md,
-  std::set<size_t> indices
-)
-{
-  // Start to initialize the return object.
-	dcrs_t dcrs;
-	dcrs.distribution.push_back(0);
-} // make_dcrs
-
-#endif
-
-/// Create an initial naive partitioning
-///
-/// \tparam FROM_DIM The topological dimension of the entity for which
-///                  the partitioning is requested.
-/// \tparam TO_DIM The topological dimension to search for neighbors.
-/// \tparam THRU_DIM The topological dimension through which the neighbor
-///                  connection exists.
-///
-/// \param md The mesh definition.
-///
 template< 
-  std::size_t D, 
-  std::size_t FROM_DIM=D, 
-  std::size_t TO_DIM=D, 
-  std::size_t THRU_DIM = D-1
+  std::size_t DIMENSION,
+  std::size_t FROM_DIMENSION=DIMENSION,
+  std::size_t TO_DIMENSION=DIMENSION,
+  std::size_t THRU_DIMENSION = DIMENSION-1
 >
 inline
 dcrs_t
 make_dcrs(
-  const typename topology::mesh_definition__<D> & md
+  const typename topology::mesh_definition__<DIMENSION> & md
 )
 {
 	int size;
@@ -135,8 +124,8 @@ make_dcrs(
   // Create a naive initial distribution of the indices
   //--------------------------------------------------------------------------//
 
-	size_t quot = md.num_entities(FROM_DIM)/size;
-	size_t rem = md.num_entities(FROM_DIM)%size;
+	size_t quot = md.num_entities(FROM_DIMENSION)/size;
+	size_t rem = md.num_entities(FROM_DIMENSION)%size;
 
   // Each rank gets the average number of indices, with higher ranks
   // getting an additional index for non-zero remainders.
@@ -167,11 +156,15 @@ make_dcrs(
     // a matching criteria of "md.dimension()" vertices. The dimension
     // argument will pick neighbors that are adjacent across facets, e.g.,
     // across edges in two dimension, or across faces in three dimensions.
-    auto neighbors =
-      topology::entity_neighbors<FROM_DIM,TO_DIM,THRU_DIM>(
-        md, 
-        dcrs.distribution[rank] + i
-      );
+    auto neighbors = topology::entity_neighbors<
+      FROM_DIMENSION,
+      TO_DIMENSION,
+      THRU_DIMENSION
+    >
+    (
+      md, 
+      dcrs.distribution[rank] + i
+    );
 
 #if 0
       if(rank == 1) {
@@ -183,11 +176,11 @@ make_dcrs(
       } // if
 #endif
 
-      for(auto n: neighbors) {
-        dcrs.indices.push_back(n);
-      } // for
+    for(auto n: neighbors) {
+      dcrs.indices.push_back(n);
+    } // for
 
-      dcrs.offsets.push_back(dcrs.offsets[i] + neighbors.size());
+    dcrs.offsets.push_back(dcrs.offsets[i] + neighbors.size());
   } // for
 
   return dcrs;

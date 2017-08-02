@@ -25,12 +25,14 @@ namespace topology {
 //! @ingroup mesh-topology
 //----------------------------------------------------------------------------//
 
-template<size_t D>
+template<
+  size_t DIMENSION
+>
 class mesh_definition__
 {
 public:
 
-  using point_t = point<double, D>;
+  using point_t = point__<double, DIMENSION>;
 
   /// Default constructor
   mesh_definition__() {}
@@ -52,7 +54,7 @@ public:
   size_t
   dimension()
   {
-    return D;
+    return DIMENSION;
   } // dimension
 
   //--------------------------------------------------------------------------//
@@ -64,29 +66,48 @@ public:
   virtual size_t num_entities(size_t dimension) const = 0;
 
   //--------------------------------------------------------------------------//
-  //! Abstract interface to get the entities of entities
+  //! Abstract interface to get the entities of dimension \em to that define
+  //! the entity of dimension \em from with the given identifier \em id.
+  //!
+  //! @param from_dimension The dimension of the entity for which the
+  //!                       definition is being requested.
+  //! @param to_dimension   The dimension of the entities of the definition.
+  //! @param id             The id of the entity for which the definition is
+  //!                       being requested.
   //--------------------------------------------------------------------------//
 
-  virtual std::vector<size_t>
-    entities(size_t from_dim, size_t to_dim, size_t from_entity_id) 
-    const = 0;
-
+  virtual
+  std::vector<size_t>
+  entities(
+    size_t from_dimension,
+    size_t to_dimension,
+    size_t id
+  )
+  const = 0;
 
   //--------------------------------------------------------------------------//
-  //! Abstract interface to get the number of entities.
+  //! Abstract interface to get the entities of dimension \em to that define
+  //! the entity of dimension \em from with the given identifier \em id.
+  //!
+  //! @param from_dimension The dimension of the entity for which the
+  //!                       definition is being requested.
+  //! @param to_dimension   The dimension of the entities of the definition.
+  //! @param id             The id of the entity for which the definition is
+  //!                       being requested.
   //--------------------------------------------------------------------------//
 
-  /// Return the set of vertices of a particular entity.
-  /// \param [in] dimension  The entity dimension to query.
-  /// \param [in] entity_id  The id of the entity in question.
-  /// \remark This version returns a set.
-  virtual std::set<size_t> 
-  entities_set(size_t from_dim, size_t to_dim, size_t entity_id) 
+  virtual
+  std::set<size_t> 
+  entities_set(
+    size_t from_dimension,
+    size_t to_dimension,
+    size_t id
+  )
   const
   {
-    auto vvec = entities(from_dim, to_dim, entity_id);
+    auto vvec = entities(from_dimension, to_dimension, id);
     return std::set<size_t>(vvec.begin(), vvec.end());
-  }
+  } // entities_set
 
 }; // class mesh_definition__
 

@@ -13,7 +13,7 @@ const size_t output_rank(0);
 
 TEST(dcrs, naive_coloring) {
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  auto naive = flecsi::coloring::naive_coloring(sd);
+  auto naive = flecsi::coloring::naive_coloring<2,2>(sd);
 
   clog_set_output_rank(0);
 
