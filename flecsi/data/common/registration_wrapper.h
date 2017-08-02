@@ -245,7 +245,7 @@ struct client_registration_wrapper__<
 
       const size_t offset_key = utils::hash::client_internal_field_hash<
         utils::const_string_t("__flecsi_internal_adjacency_offset__").hash(),
-        from_index_space
+        INDEX_TYPE::value
       >();
 
       storage_t::instance().register_field(client_key,

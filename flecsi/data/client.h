@@ -303,7 +303,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
         if(fitr.second.key == 
            utils::hash::client_internal_field_hash(
            utils::const_string_t("__flecsi_internal_adjacency_offset__").
-           hash(), hi.from_index_space)){
+           hash(), hi.index_space)){
           adj.offset_fid = fitr.second.fid;
           break;
         }
