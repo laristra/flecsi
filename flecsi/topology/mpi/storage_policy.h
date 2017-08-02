@@ -6,7 +6,6 @@
 #ifndef flecsi_topology_mpi_topology_storage_policy_h
 #define flecsi_topology_mpi_topology_storage_policy_h
 
-#include "flecsi/topology/mesh_storage.h"
 
 #include <array>
 #include <unordered_map>
@@ -14,12 +13,14 @@
 #include <iostream>
 #include <vector>
 
+#include "flecsi/topology/mesh_storage.h"
+
 #include "flecsi/data/data_client.h"
 #include "flecsi/topology/mesh_utils.h"
 #include "flecsi/utils/array_ref.h"
 #include "flecsi/utils/reorder.h"
 #include "flecsi/topology/index_space.h"
-#include "flecsi/topology/entity_storage.h"
+#include "flecsi/topology/legion/entity_storage.h"
 
 ///
 /// \file
@@ -40,7 +41,8 @@ struct mpi_topology_storage_policy_t
   using id_t = utils::id_t;
 
   using index_spaces_t = 
-    std::array<index_space<mesh_entity_base_*, true, true, true>, ND + 1>;
+    std::array<index_space<mesh_entity_base_*, true, true, true,
+    void, entity_storage__ >, ND + 1>;
 
   // array of array of domain_connectivity
   std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
@@ -96,7 +98,7 @@ struct mpi_topology_storage_policy_t
     id_t global_id = id_t::make<M>(dim, entity_id);
     ent->template set_global_id<M>(global_id);
 
-    is.push_back(ent);
+    is.push_back(global_id);
 
     return ent;
   } // make
