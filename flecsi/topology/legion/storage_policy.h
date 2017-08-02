@@ -61,6 +61,9 @@ struct legion_topology_storage_policy_t
     mesh_entity_base_* entities,
     size_t size,
     size_t num_entities,
+    size_t num_exclusive,
+    size_t num_shared,
+    size_t num_ghost,
     bool read
   )
   {
@@ -70,6 +73,11 @@ struct legion_topology_storage_policy_t
 
     auto s = is.storage();
     s->set_buffer(entities, num_entities);
+
+    for(size_t partition = 1; partition < num_partitions; ++partition){
+      auto& isp = index_spaces[partition][domain][dim];
+      isp.storage()->set_buffer(entities, num_entities);      
+    }
 
     if(read) {
       for(size_t i{0}; i<num_entities; ++i) {

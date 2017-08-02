@@ -143,6 +143,31 @@ namespace execution {
         Legion::RegionRequirement rr(ent.color_region,
           privilege_mode(PERMISSIONS), EXCLUSIVE, ent.color_region);
 
+        Legion::IndexSpace is = ent.exclusive_region.get_index_space();
+
+        Legion::Domain d = 
+          runtime->get_index_space_domain(context, is);
+
+        auto dr = d.get_rect<2>();
+
+        ent.num_exclusive = dr.hi[1] - dr.lo[1] + 1;
+
+        is = ent.shared_region.get_index_space();
+
+        d = runtime->get_index_space_domain(context, is);
+
+        dr = d.get_rect<2>();
+
+        ent.num_shared = dr.hi[1] - dr.lo[1] + 1;
+
+        is = ent.ghost_region.get_index_space();
+
+        d = runtime->get_index_space_domain(context, is);
+
+        dr = d.get_rect<2>();
+
+        ent.num_ghost = dr.hi[1] - dr.lo[1] + 1;
+
         rr.add_field(ent.fid);
         region_reqs.push_back(rr);
       } // for

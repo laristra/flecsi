@@ -25,8 +25,14 @@ struct data_client_handle_entity_t
   size_t dim;
   size_t domain;
   size_t size;
+  size_t num_exclusive;
+  size_t num_shared;
+  size_t num_ghost;
   field_id_t fid;
   Legion::LogicalRegion color_region;
+  Legion::LogicalRegion exclusive_region;
+  Legion::LogicalRegion shared_region;
+  Legion::LogicalRegion ghost_region;
 }; // struct data_client_handle_entity_t
 
 //----------------------------------------------------------------------------//
