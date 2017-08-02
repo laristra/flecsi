@@ -41,6 +41,8 @@ template<
 >
 struct legion_topology_storage_policy_t
 {
+  static constexpr size_t num_partitions = 8;
+
   using id_t = utils::id_t;
 
   using index_spaces_t = 
@@ -50,7 +52,7 @@ struct legion_topology_storage_policy_t
   // array of array of domain_connectivity
   std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
 
-  std::array<index_spaces_t, NM> index_spaces;
+  std::array<std::array<index_spaces_t, NM>, num_partitions> index_spaces;
 
   void
   init_entities(
@@ -62,7 +64,9 @@ struct legion_topology_storage_policy_t
     bool read
   )
   {
-    auto& is = index_spaces[domain][dim];
+    // TODO: fix for all index spaces
+
+    auto& is = index_spaces[all][domain][dim];
 
     auto s = is.storage();
     s->set_buffer(entities, num_entities);
@@ -79,11 +83,12 @@ struct legion_topology_storage_policy_t
         domain_connectivity.get(dim, d).set_entity_storage(s);
         domain_connectivity.get(d, dim).set_entity_storage(s);
       } // for
-    } // for
+    } // for      
   } // init_entities
 
   void
   init_connectivity(
+    size_t partition,
     size_t from_domain,
     size_t to_domain,
     size_t from_dim,
@@ -99,6 +104,7 @@ struct legion_topology_storage_policy_t
 
     auto& conn = topology[from_domain][to_domain].get(from_dim, to_dim);
     conn.init(); // init connectivity (adds the starting 0 in from_index_vec)
+
     size_t index_offset = 0;
     for(size_t i = 0; i < num_positions; ++i){
       auto& pi = positions[i]; 
@@ -136,7 +142,7 @@ struct legion_topology_storage_policy_t
 
     T* ent;
     size_t dim = entity_dimension(ent);
-    auto & is = index_spaces[M][dim].template cast<dtype>();
+    auto & is = index_spaces[all][M][dim].template cast<dtype>();
     size_t entity_id = is.size();
 
     auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity_id;
