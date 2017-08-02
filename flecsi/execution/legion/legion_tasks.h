@@ -388,7 +388,7 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
       reinterpret_cast<uint8_t *>(acc_shared.template raw_rect_ptr<2>(
         owner_rect, owner_sub_rect, byte_offset));
 
-    data_shared += byte_offset[1];
+    //data_shared += byte_offset[1];
 
     {
     clog_tag_guard(legion_tasks);
@@ -401,7 +401,7 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     uint8_t * ghost_data =
       reinterpret_cast<uint8_t *>(acc_ghost.template raw_rect_ptr<2>(
         ghost_rect, ghost_sub_rect, byte_offset));
-    ghost_data += byte_offset[1];
+    //ghost_data += byte_offset[1];
 
     for(Legion::Domain::DomainPointIterator ghost_itr(ghost_domain);
          ghost_itr; ghost_itr++) {
