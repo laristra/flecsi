@@ -267,7 +267,7 @@ public:
     for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
       for (size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim) {
         auto& master = 
-          base_t::ms_->index_spaces[all][to_domain][to_dim];
+          base_t::ms_->index_spaces[to_domain][to_dim];
 
         for (size_t from_domain = 0; from_domain < MT::num_domains;
              ++from_domain) {
@@ -280,21 +280,6 @@ public:
       } // for
     } // for
   } // intialize_storage
-
-  // Add and entity to a mesh domain and assign its id per domain
-  template<
-    size_t D,
-    size_t M = 0
-  >
-  void
-  add_entity(
-    mesh_entity_base_t<MT::num_domains> * ent,
-    partition_t partition = all
- )
-  {
-    using etype = entity_type<D, M>;
-    base_t::ms_->add_entity<D, M>(static_cast<etype*>(ent), partition);
-  } // add_entity
 
   // A mesh is constructed by creating cells and vertices and associating
   // vertices with cells as in this method.
@@ -409,9 +394,23 @@ public:
     size_t M = 0
     >
   decltype(auto)
-  num_entities(partition_t partition = all) const
+  num_entities() const
   {
-    return base_t::ms_->index_spaces[partition][M][D].size();
+    return base_t::ms_->index_spaces[M][D].size();
+  } // num_entities
+
+  /*!
+   Return the number of entities contained in specified topological dimension
+   and domain.
+   */
+  template<
+    size_t D,
+    size_t M = 0
+    >
+  decltype(auto)
+  num_entities(partition_t partition) const
+  {
+    return base_t::ms_->partition_index_spaces[partition][M][D].size();
   } // num_entities
 
   /*!
@@ -479,11 +478,33 @@ public:
   >
   const auto &
   get_index_space_(
-    size_t dim,
-    partition_t partition = all
+    size_t dim
   ) const
   {
-    return base_t::ms_->index_spaces[partition][M][dim];
+    return base_t::ms_->index_spaces[M][dim];
+  } // get_entities_
+
+  template<
+    size_t M = 0
+  >
+  auto &
+  get_index_space_(
+    size_t dim
+  )
+  {
+    return base_t::ms_->index_spaces[M][dim];
+  } // get_entities_
+
+  template<
+    size_t M = 0
+  >
+  const auto &
+  get_index_space_(
+    size_t dim,
+    partition_t partition
+  ) const
+  {
+    return base_t::ms_->partition_index_spaces[partition][M][dim];
   } // get_entities_
 
   template<
@@ -492,10 +513,10 @@ public:
   auto &
   get_index_space_(
     size_t dim,
-    partition_t partition = all
+    partition_t partition
   )
   {
-    return base_t::ms_->index_spaces[partition][M][dim];
+    return base_t::ms_->partition_index_spaces[partition][M][dim];
   } // get_entities_
 
   /*!
@@ -507,12 +528,43 @@ public:
   >
   auto
   get_entity(
-    id_t global_id,
-    partition_t partition = all
+    id_t global_id
   ) const
   {
     using etype = entity_type<D, M>;
-    return static_cast<etype *>(base_t::ms_->index_spaces[partition][M][D][global_id.entity()]);
+    return static_cast<etype *>(base_t::ms_->index_spaces[M][D][global_id.entity()]);
+  } // get_entity
+
+  /*!
+    Get an entity in domain M of topological dimension D with specified id.
+  */
+  template<
+    size_t M = 0
+  >
+  auto
+  get_entity(
+    size_t dim,
+    id_t global_id
+  )
+  {
+    return base_t::ms_->index_spaces[M][dim][global_id.entity()];
+  } // get_entity
+
+  /*!
+    Get an entity in domain M of topological dimension D with specified id.
+  */
+  template<
+    size_t D,
+    size_t M = 0
+  >
+  auto
+  get_entity(
+    id_t global_id,
+    partition_t partition
+  ) const
+  {
+    using etype = entity_type<D, M>;
+    return static_cast<etype *>(base_t::ms_->partition_index_spaces[partition][M][D][global_id.entity()]);
   } // get_entity
 
   /*!
@@ -525,10 +577,10 @@ public:
   get_entity(
     size_t dim,
     id_t global_id,
-    partition_t partition = all
+    partition_t partition
   )
   {
-    return base_t::ms_->index_spaces[partition][M][dim][global_id.entity()];
+    return base_t::ms_->partition_index_spaces[partition][M][dim][global_id.entity()];
   } // get_entity
 
   /*!
@@ -630,11 +682,27 @@ public:
     size_t M = 0
   >
   auto
-  entities(partition_t partition = all) const
+  entities() const
   {
     using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
-    return base_t::ms_->index_spaces[partition][M][D].template slice<dtype>();
+    return base_t::ms_->index_spaces[M][D].template slice<dtype>();
+  } // entities
+
+  /*!
+    Get the top-level entities of topological dimension D of the specified
+    domain M. e.g: cells of the mesh.
+  */
+  template<
+    size_t D,
+    size_t M = 0
+  >
+  auto
+  entities(partition_t partition) const
+  {
+    using etype = entity_type<D, M>;
+    using dtype = domain_entity<M, etype>;
+    return base_t::ms_->partition_index_spaces[partition][M][D].template slice<dtype>();
   } // entities
 
   /*!
@@ -646,9 +714,23 @@ public:
     size_t M = 0
   >
   auto
-  entity_ids(partition_t partition = all) const
+  entity_ids() const
   {
-    return base_t::ms_->index_spaces[partition][M][D].ids();
+    return base_t::ms_->index_spaces[M][D].ids();
+  } // entity_ids
+
+  /*!
+    Get the top-level entity id's of topological dimension D of the specified
+    domain M. e.g: cells of the mesh.
+  */
+  template<
+    size_t D,
+    size_t M = 0
+  >
+  auto
+  entity_ids(partition_t partition) const
+  {
+    return base_t::ms_->partition_index_spaces[partition][M][D].ids();
   } // entity_ids
 
   /*!
@@ -932,7 +1014,7 @@ public:
     for(size_t domain = 0; domain < MT::num_domains; ++domain){
       for(size_t dimension = 0; dimension <= MT::num_dimensions; ++dimension){
         uint64_t num_entities = 
-          base_t::ms_->entities[all][domain][dimension].size();
+          base_t::ms_->entities[domain][dimension].size();
         std::memcpy(buf + pos, &num_entities, sizeof(num_entities));
         pos += sizeof(num_entities);
       }
@@ -1046,7 +1128,7 @@ public:
     std::vector<mesh_entity_base_*>& ents,
     std::vector<id_t>& ids) override
   {
-    auto& is =  base_t::ms_->index_spaces[all][domain][dim];
+    auto& is =  base_t::ms_->index_spaces[domain][dim];
     is.append_(ents, ids);
   }
 
@@ -1105,11 +1187,21 @@ private:
   size_t
   num_entities_(
     size_t dim,
-    size_t domain=0,
-    partition_t partition = all
+    size_t domain=0
   ) const
   {
-    return base_t::ms_->index_spaces[partition][domain][dim].size();
+    return base_t::ms_->index_spaces[domain][dim].size();
+  } // num_entities_
+
+  // Get the number of entities in a given domain and topological dimension
+  size_t
+  num_entities_(
+    size_t dim,
+    size_t domain,
+    partition_t partition
+  ) const
+  {
+    return base_t::ms_->partition_index_spaces[partition][domain][dim].size();
   } // num_entities_
 
   /*!
@@ -1200,11 +1292,11 @@ private:
     using entity_type = entity_type<DimensionToBuild, Domain>;
 
     auto& is = 
-      base_t::ms_->index_spaces[all][Domain][DimensionToBuild].
+      base_t::ms_->index_spaces[Domain][DimensionToBuild].
       template cast<domain_entity<Domain, entity_type>>();
     
     auto& cis = 
-      base_t::ms_->index_spaces[all][Domain][UsingDimension].
+      base_t::ms_->index_spaces[Domain][UsingDimension].
       template cast<domain_entity<Domain, cell_type>>();
 
     for (size_t c = 0; c < _num_cells; ++c) {
@@ -1643,7 +1735,7 @@ private:
     connection_vector_t cell_conn(_num_cells);
 
     // Get cell definitions from domain 0
-    auto & cells = base_t::ms_->index_spaces[all][FM][MT::num_dimensions];
+    auto & cells = base_t::ms_->index_spaces[FM][MT::num_dimensions];
 
     static constexpr size_t M0 = 0;
 
@@ -1690,7 +1782,7 @@ private:
 
       size_t pos = 0;
 
-      auto& is = base_t::ms_->index_spaces[all][TM][TD].template cast<
+      auto& is = base_t::ms_->index_spaces[TM][TD].template cast<
         domain_entity<TM, to_entity_type>>();
 
       for (size_t i = 0; i < n; ++i) {

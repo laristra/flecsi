@@ -932,8 +932,7 @@ void unserialize_dimension_(mesh_topology_base_t<ST>& mesh,
     ids.push_back(global_id);
   }
 
-  // TODO: fix - pg
-  mesh.append_to_index_space_(M, D, partition_t::all, ents, ids);
+  mesh.append_to_index_space_(M, D, ents, ids);
 }
 
 template<
