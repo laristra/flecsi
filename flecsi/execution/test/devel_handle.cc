@@ -52,7 +52,7 @@ flecsi_register_field(mesh_t, data, pressure, double, dense,
 // Initialization task
 //----------------------------------------------------------------------------//
 
-void initialize_mesh(mesh<dwd> m) {
+void initialize_mesh(mesh<wo> m) {
 
   {
   clog_tag_guard(devel_handle);
@@ -167,7 +167,7 @@ flecsi_register_task(initialize_mesh, loc, single);
 // Initialize pressure
 //----------------------------------------------------------------------------//
 
-void initialize_pressure(mesh<dro> m, field<drw, drw, dro> p) {
+void initialize_pressure(mesh<ro> m, field<rw, rw, ro> p) {
   size_t count(0);
 
   auto & context = execution::context_t::instance();
@@ -183,7 +183,7 @@ flecsi_register_task(initialize_pressure, loc, single);
 // Update pressure
 //----------------------------------------------------------------------------//
 
-void update_pressure(mesh<dro> m, field<drw, drw, dro> p) {
+void update_pressure(mesh<ro> m, field<rw, rw, ro> p) {
   size_t count(0);
 
   for(auto c: m.cells()) {
@@ -198,7 +198,7 @@ flecsi_register_task(update_pressure, loc, single);
 //----------------------------------------------------------------------------//
 
 #if 1
-void print_mesh(mesh<dro> m, field<dro, dro, dro> p) {
+void print_mesh(mesh<ro> m, field<ro, ro, ro> p) {
   {
   clog_tag_guard(devel_handle);
   clog(info) << "print_mesh task" << std::endl;
@@ -244,7 +244,7 @@ void print_mesh(mesh<dro> m, field<dro, dro, dro> p) {
 
 #else
 
-void print_mesh(mesh<dro> m) {
+void print_mesh(mesh<ro> m) {
   {
   clog_tag_guard(devel_handle);
   clog(info) << "print_mesh task" << std::endl;

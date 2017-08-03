@@ -128,12 +128,12 @@ using handle_t =
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
-void task1(client_handle_t<test_mesh_t, dro> mesh) {
+void task1(client_handle_t<test_mesh_t, ro> mesh) {
   //np(y);
 } // task1
 
-void fill_task(client_handle_t<test_mesh_t, dwd> mesh,
-  handle_t<double, drw, drw, dro> pressure) {
+void fill_task(client_handle_t<test_mesh_t, wo> mesh,
+  handle_t<double, rw, rw, ro> pressure) {
   clog(info) << "IN FILL TASK" << std::endl;
 
   auto & context = execution::context_t::instance();
@@ -189,8 +189,8 @@ void fill_task(client_handle_t<test_mesh_t, dwd> mesh,
   } // for
 } // fill_task
 
-void print_task(client_handle_t<test_mesh_t, dro> mesh,
-  handle_t<double, dro, dro, dro> pressure) {
+void print_task(client_handle_t<test_mesh_t, ro> mesh,
+  handle_t<double, ro, ro, ro> pressure) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 

@@ -99,10 +99,13 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
   // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
   for(size_t r = 0; r < num_regions; ++r) {
-    if(permissions[r] == 0) {
+    if(permissions[r] == size_t(reserved)) {
       data[r] = nullptr;
       sizes[r] = 0;
       prs[r] = Legion::PhysicalRegion();
+
+      clog(error) << "reserved permissions mode used on region " <<
+        r << std::endl;
     }
     else {
       prs[r] = regions[region + r];
@@ -124,107 +127,107 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     } // if
   } // for
 
-  #ifndef MAPPER_COMPACTION
-    // Create the concatenated buffer E+S+G
-    h.combined_data = new T[h.combined_size];
+#ifndef MAPPER_COMPACTION
+  // Create the concatenated buffer E+S+G
+  h.combined_data = new T[h.combined_size];
 
-    // Set additional fields needed by the data handle/accessor
-    // and copy into the combined buffer. Note that exclusive_data, etc.
-    // aliases the combined buffer for its respective region.
-    size_t pos = 0;
+  // Set additional fields needed by the data handle/accessor
+  // and copy into the combined buffer. Note that exclusive_data, etc.
+  // aliases the combined buffer for its respective region.
+  size_t pos{0};
 
-    for(size_t r = 0; r<num_regions; ++r) {
-      switch(r) {
-        case 0: // Exclusive
-          h.exclusive_size = sizes[r];
-          h.exclusive_pr = prs[r];
-          h.exclusive_data = h.exclusive_size == 0 ? 
-            nullptr : h.combined_data + pos;
-          h.exclusive_buf = data[r];
-          h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
-          break;
-        case 1: // Shared
-          h.shared_size = sizes[r];
-          h.shared_pr = prs[r];
-          h.shared_data = h.shared_size == 0 ? 
-            nullptr : h.combined_data + pos;
-          h.shared_buf = data[r];
-          h.shared_priv = SHARED_PERMISSIONS;
-          break;
-        case 2: // Ghost
-          h.ghost_size = sizes[r];
-          h.ghost_pr = prs[r];
-          h.ghost_data = h.ghost_size == 0 ? 
-            nullptr : h.combined_data + pos;
-          h.ghost_buf = data[r];
-          h.ghost_priv = GHOST_PERMISSIONS;
-          break;
-        default:
-          assert(false);
-      } // switch
+  for(size_t r{0}; r<num_regions; ++r) {
+    switch(r) {
+      case 0: // Exclusive
+        h.exclusive_size = sizes[r];
+        h.exclusive_pr = prs[r];
+        h.exclusive_data = h.exclusive_size == 0 ? 
+          nullptr : h.combined_data + pos;
+        h.exclusive_buf = data[r];
+        h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
+        break;
+      case 1: // Shared
+        h.shared_size = sizes[r];
+        h.shared_pr = prs[r];
+        h.shared_data = h.shared_size == 0 ? 
+          nullptr : h.combined_data + pos;
+        h.shared_buf = data[r];
+        h.shared_priv = SHARED_PERMISSIONS;
+        break;
+      case 2: // Ghost
+        h.ghost_size = sizes[r];
+        h.ghost_pr = prs[r];
+        h.ghost_data = h.ghost_size == 0 ? 
+          nullptr : h.combined_data + pos;
+        h.ghost_buf = data[r];
+        h.ghost_priv = GHOST_PERMISSIONS;
+        break;
+      default:
+        clog_fatal("invalid permissions case");
+    } // switch
 
-      std::memcpy(h.combined_data + pos, data[r], sizes[r] * sizeof(T));
-      pos += sizes[r];
-    } // for
-  #else
-    {
-    Legion::LogicalRegion lr = regions[region].get_logical_region();
-    Legion::IndexSpace is = lr.get_index_space();
+    std::memcpy(h.combined_data + pos, data[r], sizes[r] * sizeof(T));
+    pos += sizes[r];
+  } // for
+#else
+  {
+  Legion::LogicalRegion lr = regions[region].get_logical_region();
+  Legion::IndexSpace is = lr.get_index_space();
 
-    //we need to get Rect for the parent index space in purpose to loop over
-    //compacted physical instance
-    Legion::IndexPartition parent_ip =
-      runtime->get_parent_index_partition(is);
-    Legion::IndexSpace parent_is =
-      runtime->get_parent_index_space(parent_ip);
+  //we need to get Rect for the parent index space in purpose to loop over
+  //compacted physical instance
+  Legion::IndexPartition parent_ip =
+    runtime->get_parent_index_partition(is);
+  Legion::IndexSpace parent_is =
+    runtime->get_parent_index_space(parent_ip);
 
-    Legion::Domain parent_dom =
-      runtime->get_index_space_domain(context, parent_is);
-    LegionRuntime::Arrays::Rect<2> parent_rect = parent_dom.get_rect<2>();
+  Legion::Domain parent_dom =
+    runtime->get_index_space_domain(context, parent_is);
+  LegionRuntime::Arrays::Rect<2> parent_rect = parent_dom.get_rect<2>();
 
-    LegionRuntime::Arrays::Rect<2> sr;
-    LegionRuntime::Accessor::ByteOffset bo[2];
+  LegionRuntime::Arrays::Rect<2> sr;
+  LegionRuntime::Accessor::ByteOffset bo[2];
 
-    //get an accessor to the first element in exclusive LR:
-    auto ac = prs[0].get_field_accessor(h.fid).template typeify<T>();
-    h.combined_data = ac.template raw_rect_ptr<2>(parent_rect, sr, bo);
-    //h.combined_data += bo[1];
-    } // scope
+  //get an accessor to the first element in exclusive LR:
+  auto ac = prs[0].get_field_accessor(h.fid).template typeify<T>();
+  h.combined_data = ac.template raw_rect_ptr<2>(parent_rect, sr, bo);
+  //h.combined_data += bo[1];
+  } // scope
 
-    size_t pos = 0;
-    for(size_t r = 0; r < num_regions; ++r) {
-      switch(r) {
-        case 0: // Exclusive
-          h.exclusive_size = sizes[r];
-          h.exclusive_pr = prs[r];
-          h.exclusive_data = h.exclusive_size == 0 ?
-            nullptr : h.combined_data;
-          h.exclusive_buf = data[r];
-          h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
-          break;
-        case 1: // Shared
-          h.shared_size = sizes[r];
-          h.shared_pr = prs[r];
-          h.shared_data = h.shared_size == 0 ?
-            nullptr : h.combined_data + pos;
-          h.shared_buf = data[r];
-          h.shared_priv = SHARED_PERMISSIONS;
-          break;
-        case 2: // Ghost
-          h.ghost_size = sizes[r];
-          h.ghost_pr = prs[r];
-          h.ghost_data = h.ghost_size == 0 ?
-            nullptr : h.combined_data + pos;
-          h.ghost_buf = data[r];
-          h.ghost_priv = GHOST_PERMISSIONS;
-          break;
-        default:
-          assert(false);
-      } // switch
+  size_t pos{0};
+  for(size_t r{0}; r<num_regions; ++r) {
+    switch(r) {
+      case 0: // Exclusive
+        h.exclusive_size = sizes[r];
+        h.exclusive_pr = prs[r];
+        h.exclusive_data = h.exclusive_size == 0 ?
+          nullptr : h.combined_data;
+        h.exclusive_buf = data[r];
+        h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
+        break;
+      case 1: // Shared
+        h.shared_size = sizes[r];
+        h.shared_pr = prs[r];
+        h.shared_data = h.shared_size == 0 ?
+          nullptr : h.combined_data + pos;
+        h.shared_buf = data[r];
+        h.shared_priv = SHARED_PERMISSIONS;
+        break;
+      case 2: // Ghost
+        h.ghost_size = sizes[r];
+        h.ghost_pr = prs[r];
+        h.ghost_data = h.ghost_size == 0 ?
+          nullptr : h.combined_data + pos;
+        h.ghost_buf = data[r];
+        h.ghost_priv = GHOST_PERMISSIONS;
+        break;
+      default:
+        clog_fatal("invalid permissions case");
+    } // switch
 
-      pos +=sizes[r];
-    } // for
-  #endif
+    pos +=sizes[r];
+  } // for
+#endif
 
   region += num_regions;
 
@@ -277,10 +280,11 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       auto ents = reinterpret_cast<topology::mesh_entity_base_*>(ents_raw);
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
+ 
+      bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
 
-      bool read = PERMISSIONS == dro || PERMISSIONS == drw;
       storage->init_entities(ent.domain, ent.dim, ents, ent.size,
-        num_ents, ent.num_exclusive, ent.num_shared, ent.num_ghost, read);
+        num_ents, ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
 
       ++region;
     } // for
@@ -291,7 +295,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     // Mapping adjacency data from Legion and initializing mesh storage.
     //------------------------------------------------------------------------//
 
-    for(size_t i = 0; i < h.num_handle_adjacencies; ++i) {
+    for(size_t i{0}; i<h.num_handle_adjacencies; ++i) {
       data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
 
       const size_t adj_index_space = adj.adj_index_space;
@@ -305,8 +309,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       auto ac = pr.get_field_accessor(adj.offset_fid).
         template typeify<LegionRuntime::Arrays::Point<2>>();
 
-      Legion::Domain d = 
-        runtime->get_index_space_domain(context, is); 
+      Legion::Domain d = runtime->get_index_space_domain(context, is); 
 
       LegionRuntime::Arrays::Rect<2> dr = d.get_rect<2>();
       LegionRuntime::Arrays::Rect<2> sr;
@@ -340,10 +343,12 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       adj.indices_buf = indices;
       adj.num_indices = num_indices;
 
+      bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
+
       // TODO: fix
-      if((PERMISSIONS == dro) || (PERMISSIONS == drw)) {
+      if(_read) {
         storage->init_connectivity(adj.from_domain, adj.to_domain,
-        adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
+          adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
       } // if
 
       ++region;

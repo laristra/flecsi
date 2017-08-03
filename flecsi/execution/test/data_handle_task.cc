@@ -34,11 +34,11 @@ using handle_t =
   data::mpi::dense_handle_t<T, EP, SP, GP>;
 #endif
 
-void task1(handle_t<double, dro, dno, dno> x, double y) {
+void task1(handle_t<double, ro, ro, ro> x, double y) {
   //np(y);
 } // task1
 
-void data_handle_dump(handle_t<double, drw, dro, dro> x) {
+void data_handle_dump(handle_t<double, rw, ro, ro> x) {
   clog(info) << "label: " << x.label() << std::endl;
   clog(info) << "combined size: " << x.size() << std::endl;
   clog(info) << "exclusive size: " << x.exclusive_size() << std::endl;
@@ -46,14 +46,14 @@ void data_handle_dump(handle_t<double, drw, dro, dro> x) {
   clog(info) << "ghost size: " << x.ghost_size() << std::endl;
 }
 
-void exclusive_writer(handle_t<double, dwd, dno, dno> x) {
+void exclusive_writer(handle_t<double, wo, ro, ro> x) {
   clog(info) << "exclusive writer write" << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
     x(i) = static_cast<double>(i);
   }
 }
 
-void exclusive_reader(handle_t<double, dro, dno, dno> x) {
+void exclusive_reader(handle_t<double, ro, ro, ro> x) {
   clog(info) << "exclusive reader read: " << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
     ASSERT_EQ(x(i), static_cast<double>(i));

@@ -215,7 +215,13 @@ public:
   template<size_t D, size_t M = 0>
   using entity_type = typename find_entity_<MT, D, M>::type;
 
-  // insert comment here
+  //--------------------------------------------------------------------------//
+  // This type definition is needed so that data client handles can be
+  // specialized for particular data client types, e.g., mesh topologies vs.
+  // tree topologies. It is also useful for detecting illegal usage, such as
+  // when a user adds data members.
+  //--------------------------------------------------------------------------//
+
   using type_identifier_t = mesh_topology_t;
 
   // Don't allow the mesh to be copied or copy constructed

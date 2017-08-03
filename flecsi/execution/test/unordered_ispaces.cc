@@ -40,15 +40,15 @@ flecsi::data::mpi::dense_handle_t<T, EP, SP, GP>;
 #endif
 
 void check_entities_task(
-        handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> cell_ID,
-        handle_t<double, flecsi::dro, flecsi::dro, flecsi::dro> test,
+        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
+        handle_t<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
         int my_color, size_t cycle, size_t index_id);
 
 flecsi_register_task(check_entities_task, loc, single);
 
 void set_primary_entities_task(
-        handle_t<size_t, flecsi::drw, flecsi::drw, flecsi::dno> cell_ID,
-        handle_t<double, flecsi::drw, flecsi::drw, flecsi::dno> test,
+        handle_t<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
+        handle_t<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
         int my_color, size_t cycle, size_t index_id);
 flecsi_register_task(set_primary_entities_task, loc, single);
 
@@ -520,8 +520,8 @@ void add_colorings(int dummy) {
 //----------------------------------------------------------------------------//
 
 void set_primary_entities_task(
-        handle_t<size_t, flecsi::drw, flecsi::drw, flecsi::dno> cell_ID,
-        handle_t<double, flecsi::drw, flecsi::drw, flecsi::dno> test,
+        handle_t<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
+        handle_t<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
         int my_color, size_t cycle, size_t index_id) {
 
   clog(trace) << "Rank " << my_color << " WRITING " << std::endl;
@@ -561,8 +561,8 @@ void set_primary_entities_task(
 } // set_primary_entities_task
 
 void check_entities_task(
-        handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> cell_ID,
-        handle_t<double, flecsi::dro, flecsi::dro, flecsi::dro> test,
+        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
+        handle_t<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
         int my_color, size_t cycle, size_t index_id) {
   clog(trace) << "Rank " << my_color << " READING " << std::endl;
 
