@@ -108,18 +108,18 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       prs[r] = regions[region + r];
       Legion::LogicalRegion lr = prs[r].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
-
+  
       auto ac = prs[r].get_field_accessor(h.fid).template typeify<T>();
 
       Legion::Domain domain = 
         runtime->get_index_space_domain(context, is); 
 
-     if (!h.global && !h.color){
+      if (!h.global && !h.color){
         LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
         LegionRuntime::Arrays::Rect<2> sr;
         LegionRuntime::Accessor::ByteOffset bo[2];
         data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
-        data[r] += bo[1];
+        //data[r] += bo[1];
         sizes[r] = sr.hi[1] - sr.lo[1] + 1;
         h.combined_size += sizes[r];
       }else{
@@ -127,9 +127,9 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
         LegionRuntime::Arrays::Rect<1> sr;
         LegionRuntime::Accessor::ByteOffset bo[2];
         data[r] = ac.template raw_rect_ptr<1>(dr, sr, bo);
-        data[r] += bo[1];
+       // data[r] += bo[1];
         sizes[r] = sr.hi[1] - sr.lo[1] + 1;
-        h.combined_size += sizes[r];      
+        h.combined_size += sizes[r];
         h.combined_data = data[r];
         h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
         h.exclusive_buf = data[r];
@@ -206,7 +206,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     //get an accessor to the first element in exclusive LR:
     auto ac = prs[0].get_field_accessor(h.fid).template typeify<T>();
     h.combined_data = ac.template raw_rect_ptr<2>(parent_rect, sr, bo);
-    h.combined_data += bo[1];
+    //h.combined_data += bo[1];
     } // scope
 
     size_t pos = 0;
@@ -290,16 +290,16 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       LegionRuntime::Accessor::ByteOffset bo[2];
 
       auto ents_raw =
-        static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
+        static_cast<uint8_t*>(ac.template raw_rect_ptr<2>(dr, sr, bo));
       //ents_raw += bo[1] * ent.size;
-      ents_raw += bo[1];
+      //ents_raw += bo[1];
       auto ents = reinterpret_cast<topology::mesh_entity_base_*>(ents_raw);
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
 
       bool read = PERMISSIONS == dro || PERMISSIONS == drw;
       storage->init_entities(ent.domain, ent.dim, ents, ent.size,
-        num_ents, read);
+        num_ents, ent.num_exclusive, ent.num_shared, ent.num_ghost, read);
 
       ++region;
     } // for
@@ -333,7 +333,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       LegionRuntime::Arrays::Point<2> * offsets =
         ac.template raw_rect_ptr<2>(dr, sr, bo);
-      offsets += bo[1];
+      //offsets += bo[1];
 
       size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
 
@@ -352,7 +352,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       dr = d.get_rect<2>();
 
       uint64_t * indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
-      indices += bo[1];
+      //indices += bo[1];
 
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
@@ -361,7 +361,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       // TODO: fix
       if((PERMISSIONS == dro) || (PERMISSIONS == drw)) {
-        storage->init_connectivity(adj.from_domain, adj.to_domain,
+        storage->init_connectivity(all, adj.from_domain, adj.to_domain,
         adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
       } // if
 

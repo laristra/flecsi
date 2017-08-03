@@ -14,11 +14,11 @@
 namespace flecsi {
 
   enum partition_t : size_t{
-    ex = 0x001b,
-    sh = 0x010b,
-    gh = 0x100b,
-    pr = 0x011b,
-    pg = 0x111b
+    exclusive = 0b110,
+    shared    = 0b101,
+    ghost     = 0b011,
+    owned     = 0b100,
+    all       = 0b000
   };
 
 } // namespace flecsi

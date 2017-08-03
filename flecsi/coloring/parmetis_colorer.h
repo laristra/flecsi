@@ -6,6 +6,11 @@
 #ifndef flecsi_coloring_parmetis_colorer_h
 #define flecsi_coloring_parmetis_colorer_h
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Nov 24, 2016
+//----------------------------------------------------------------------------//
+
 #include "flecsi/coloring/colorer.h"
 
 #include <set>
@@ -23,41 +28,38 @@
 
 #include "flecsi/coloring/mpi_utils.h"
 
-///
-/// \file
-/// \date Initial file creation: Nov 24, 2016
-///
-
 namespace flecsi {
 namespace coloring {
 
-///
-/// \class colorer_t parmetis_colorer.h
-/// \brief colorer_t provides a ParMETIS implementation of the
-///        colorer_t interface.
-///
+//----------------------------------------------------------------------------//
+//! The colorer_t type provides a ParMETIS implementation of the
+//! colorer_t interface.
+//----------------------------------------------------------------------------//
+
 struct parmetis_colorer_t
   : public colorer_t
 {
-  /// Default constructor
+  //! Default constructor
   parmetis_colorer_t() {}
 
-  /// Copy constructor (disabled)
+  //! Copy constructor (disabled)
   parmetis_colorer_t(const parmetis_colorer_t &) = delete;
 
-  /// Assignment operator (disabled)
+  //! Assignment operator (disabled)
   parmetis_colorer_t & operator = (const parmetis_colorer_t &) = delete;
 
-  /// Destructor
+  //! Destructor
   ~parmetis_colorer_t() {}
 
-  ///
-  /// Implementation of color method. See \ref colorer_t::color.
-  ///
+  //--------------------------------------------------------------------------//
+  //! Implementation of color method. See \ref colorer_t::color.
+  //--------------------------------------------------------------------------//
+
   std::set<size_t>
   color(
     const dcrs_t & dcrs
-  ) override
+  )
+  override
   {
     int size;
     int rank;
@@ -171,8 +173,8 @@ struct parmetis_colorer_t
 
     // Do all-to-all to find out where everything belongs.
     std::vector<idx_t> recv_cnts(size);
-    result = MPI_Alltoall(&send_cnts[0], 1, mpi_typetraits<idx_t>::type(),
-      &recv_cnts[0], 1, mpi_typetraits<idx_t>::type(), MPI_COMM_WORLD);
+    result = MPI_Alltoall(&send_cnts[0], 1, mpi_typetraits__<idx_t>::type(),
+      &recv_cnts[0], 1, mpi_typetraits__<idx_t>::type(), MPI_COMM_WORLD);
 
 #if 0
     if(rank == 0) {
@@ -193,8 +195,9 @@ struct parmetis_colorer_t
       if(recv_cnts[r]) {
         rbuffers[r].resize(recv_cnts[r]);
         requests.push_back({});
-        MPI_Irecv(&rbuffers[r][0], recv_cnts[r], mpi_typetraits<idx_t>::type(),
-          r, 0, MPI_COMM_WORLD, &requests[requests.size()-1]);
+        MPI_Irecv(&rbuffers[r][0], recv_cnts[r],
+          mpi_typetraits__<idx_t>::type(), r, 0, MPI_COMM_WORLD,
+          &requests[requests.size()-1]);
       } // if
     } // for
 
@@ -203,7 +206,7 @@ struct parmetis_colorer_t
       if(send_cnts[r]) {
         sbuffers[r].resize(send_cnts[r]);
         MPI_Send(&sbuffers[r][0], send_cnts[r],
-          mpi_typetraits<idx_t>::type(),
+          mpi_typetraits__<idx_t>::type(),
           r, 0, MPI_COMM_WORLD);
       } // if
     } // for

@@ -250,9 +250,12 @@ struct client_registration_wrapper__<
         from_index_space
       >;
 
+      // This field resides in the main entities (BLIS) index space, but
+      // is unique to an adjacency, so it is registered using the
+      // adjacency hash.
       const size_t offset_key = utils::hash::client_internal_field_hash<
         utils::const_string_t("__flecsi_internal_adjacency_offset__").hash(),
-        from_index_space
+        INDEX_TYPE::value
       >();
 
       storage_t::instance().register_field(client_key,

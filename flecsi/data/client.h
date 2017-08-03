@@ -257,7 +257,12 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
       auto ritr = ism.find(ent.index_space);
       clog_assert(ritr != ism.end(), "invalid index space");
+      
       ent.color_region = ritr->second.color_region;
+      
+      ent.exclusive_region = ritr->second.exclusive_lr;
+      ent.shared_region = ritr->second.shared_lr;
+      ent.ghost_region = ritr->second.ghost_lr;
 
       ++entity_index;
     } // for
@@ -299,11 +304,14 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
       auto& fm = itr->second;
 
+      // This field resides in the main entities (BLIS) index space, but
+      // is unique to an adjacency, so it is registered using the
+      // adjacency hash.      
       for(auto& fitr : fm){
         if(fitr.second.key == 
            utils::hash::client_internal_field_hash(
            utils::const_string_t("__flecsi_internal_adjacency_offset__").
-           hash(), hi.from_index_space)){
+           hash(), hi.index_space)){
           adj.offset_fid = fitr.second.fid;
           break;
         }
