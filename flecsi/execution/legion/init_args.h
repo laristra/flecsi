@@ -65,11 +65,13 @@ namespace execution {
     //! @param mode privilege
     //------------------------------------------------------------------------//
 
-    static Legion::PrivilegeMode
+    static
+    Legion::PrivilegeMode
     privilege_mode(
       size_t mode
-    ){
-      switch(mode){
+    )
+    {
+      switch(mode) {
         case size_t(dno):
           return NO_ACCESS;
         case size_t(dro):
@@ -80,8 +82,8 @@ namespace execution {
           return READ_WRITE;
         default:
           assert(false);
-      }
-    }
+      } // switch
+    } // privilege_mode
 
     template<
       typename T,
@@ -99,7 +101,6 @@ namespace execution {
       > & h
     )
     {
-
       Legion::MappingTagID tag = EXCLUSIVE_LR;
 
       Legion::RegionRequirement ex_rr(h.exclusive_lr,

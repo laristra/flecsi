@@ -373,6 +373,10 @@ struct client_data__
     std::string const & name
   )
   {
+    static_assert(sizeof(DATA_CLIENT_TYPE) ==
+      sizeof(typename DATA_CLIENT_TYPE::type_identifier_t),
+      "Data clients may not add data members");
+
     using wrapper_t = client_registration_wrapper__<
       typename DATA_CLIENT_TYPE::type_identifier_t,
       NAMESPACE_HASH,
