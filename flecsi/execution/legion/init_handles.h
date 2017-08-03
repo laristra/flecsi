@@ -280,7 +280,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       bool read = PERMISSIONS == dro || PERMISSIONS == drw;
       storage->init_entities(ent.domain, ent.dim, ents, ent.size,
-        num_ents, read);
+        num_ents, ent.num_exclusive, ent.num_shared, ent.num_ghost, read);
 
       ++region;
     } // for
@@ -342,7 +342,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       // TODO: fix
       if((PERMISSIONS == dro) || (PERMISSIONS == drw)) {
-        storage->init_connectivity(adj.from_domain, adj.to_domain,
+        storage->init_connectivity(all, adj.from_domain, adj.to_domain,
         adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
       } // if
 
