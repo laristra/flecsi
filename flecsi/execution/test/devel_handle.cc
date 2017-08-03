@@ -79,7 +79,7 @@ void initialize_mesh(mesh<wo> m) {
     vertices.push_back(m.make<vertex_t>(p));
   } // for
 
-  size_t count(0);
+  size_t count{0};
   for(auto & cm: cell_map) {
     const size_t mid = cm.second;
 
