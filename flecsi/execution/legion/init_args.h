@@ -72,16 +72,16 @@ namespace execution {
     )
     {
       switch(mode) {
-        case size_t(dno):
+        case size_t(reserved):
           return NO_ACCESS;
-        case size_t(dro):
+        case size_t(ro):
           return READ_ONLY;
-        case size_t(dwd):
+        case size_t(wo):
           return WRITE_DISCARD;
-        case size_t(drw):
+        case size_t(rw):
           return READ_WRITE;
         default:
-          assert(false);
+          clog_fatal("invalid privilege mode");
       } // switch
     } // privilege_mode
 
@@ -146,8 +146,7 @@ namespace execution {
 
         Legion::IndexSpace is = ent.exclusive_region.get_index_space();
 
-        Legion::Domain d = 
-          runtime->get_index_space_domain(context, is);
+        Legion::Domain d = runtime->get_index_space_domain(context, is);
 
         auto dr = d.get_rect<2>();
 
