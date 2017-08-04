@@ -36,6 +36,7 @@ struct legion_data_handle_policy_t
   // across multiple ranks/colors and should be used ONLY as read-only data
 
   field_id_t fid;
+  field_id_t id_fid;
   size_t index_space;
   size_t data_client_hash;
 
