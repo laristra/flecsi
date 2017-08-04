@@ -368,7 +368,6 @@ public:
     sorted_(SORTED), s_(storage ? new storage_t : nullptr)
   {
     assert((STORAGE || !storage) && "invalid instantiation");
-    static_assert(OWNED, "expected OWNED");
   }
 
   /*!
@@ -850,6 +849,22 @@ public:
   id_vec() const
   {
     return *v_;
+  }
+
+  id_vector_t&
+  id_vec()
+  {
+    return *v_;
+  }
+
+  void
+  set_id_vec(id_vector_t* v){
+    if(owned_){
+      delete v_;
+    }
+
+    v_ = v;
+    owned_ = false;
   }
 
   id_t*
@@ -1336,6 +1351,18 @@ public:
   )
   {
     return item->index_space_id();
+  }
+
+  void
+  set_begin(size_t begin)
+  {
+    begin_ = begin;
+  }
+
+  void
+  set_end(size_t end)
+  {
+    end_ = end;
   }
 
 private:

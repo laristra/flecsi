@@ -257,7 +257,12 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
       auto ritr = ism.find(ent.index_space);
       clog_assert(ritr != ism.end(), "invalid index space");
+      
       ent.color_region = ritr->second.color_region;
+      
+      ent.exclusive_region = ritr->second.exclusive_lr;
+      ent.shared_region = ritr->second.shared_lr;
+      ent.ghost_region = ritr->second.ghost_lr;
 
       ++entity_index;
     } // for
@@ -299,6 +304,9 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
       auto& fm = itr->second;
 
+      // This field resides in the main entities (BLIS) index space, but
+      // is unique to an adjacency, so it is registered using the
+      // adjacency hash.      
       for(auto& fitr : fm){
         if(fitr.second.key == 
            utils::hash::client_internal_field_hash(
@@ -370,6 +378,10 @@ struct client_data__
     std::string const & name
   )
   {
+    static_assert(sizeof(DATA_CLIENT_TYPE) ==
+      sizeof(typename DATA_CLIENT_TYPE::type_identifier_t),
+      "Data clients may not add data members");
+
     using wrapper_t = client_registration_wrapper__<
       typename DATA_CLIENT_TYPE::type_identifier_t,
       NAMESPACE_HASH,
@@ -378,6 +390,7 @@ struct client_data__
 
     const size_t client_key = 
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+    // TODO: move to hash.h
     const size_t key = NAMESPACE_HASH ^ NAME_HASH;
 
     return storage_t::instance().register_client(client_key, key,

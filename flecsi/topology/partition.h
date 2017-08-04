@@ -13,12 +13,11 @@
 
 namespace flecsi {
 
-  enum class partition_t : size_t{
-    exclusive = 0x001b,
-    shared    = 0x010b,
-    ghost     = 0x100b,
-    owned     = 0x011b,
-    all       = 0x111b
+  enum partition_t : size_t{
+    exclusive = 0b001,
+    shared    = 0b010,
+    ghost     = 0b100,
+    owned     = 0b011
   };
 
 } // namespace flecsi

@@ -140,7 +140,7 @@ public:
         color_idx.second.exclusive + color_idx.second.shared + 
         color_idx.second.ghost);
     } // for color_idx
-    
+
     {
     clog_tag_guard(legion_data);
     clog(trace) << "total_num_entities " << is.total_num_entities << std::endl;

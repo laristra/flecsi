@@ -41,7 +41,8 @@ class mesh_entity_t;
 template <size_t ND, size_t NM>
 struct serial_topology_storage_policy_t
 {
-  
+  static constexpr size_t num_partitions = 0;
+
   using id_t = utils::id_t;
 
   using index_spaces_t = 
@@ -52,6 +53,9 @@ struct serial_topology_storage_policy_t
   std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
 
   std::array<index_spaces_t, NM> index_spaces;
+  
+  std::array<std::array<index_spaces_t, NM>, num_partitions> 
+    partition_index_spaces;
 
   ~serial_topology_storage_policy_t()
   {

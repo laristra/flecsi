@@ -19,10 +19,10 @@
   flecsi namespace.
 
 - Add new permissions:
+  na - no access / not applicable
+  ro - read only
   wo - write only
   rw - read write
-  ro - read only
-  ur - update read
 
   Also fix behavior in task mappings
 
@@ -34,3 +34,6 @@
   owned
 
 - Determine whether or not ghost copies are per variable
+
+NOTE: Currently, we cannot accommodate communication latency hiding because
+we do not have an implementation of the na permissions.

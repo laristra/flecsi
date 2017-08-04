@@ -20,12 +20,13 @@
 //! @date Initial file creation: May 19, 2017
 //----------------------------------------------------------------------------//
 
-#include <vector>
+#include <legion.h>
 #include <type_traits>
-
-#include "legion.h"
+#include <vector>
 
 #include "flecsi/utils/tuple_walker.h"
+
+clog_register_tag(epilog);
 
 namespace flecsi {
 namespace execution {
@@ -89,36 +90,44 @@ namespace execution {
       > & h
     )
     {
-      bool write_phase = false;
+      bool write_phase{(SHARED_PERMISSIONS == wo) ||
+        (SHARED_PERMISSIONS == rw)};
 
-      if ( (SHARED_PERMISSIONS == dwd) || (SHARED_PERMISSIONS == drw) )
-        write_phase = true;
-
-        if (write_phase) {
+      if(write_phase) {
         const int my_color = runtime->find_local_MPI_rank();
+
+        {
         clog(trace) << "rank " << my_color << " WRITE PHASE EPILOGUE" <<
-			std::endl;
+          std::endl;
 
         clog(trace) << "rank " << my_color << " advances " <<
-	  *(h.pbarrier_as_owner_ptr) <<  std::endl;
+          *(h.pbarrier_as_owner_ptr) <<  std::endl;
+        } // scope
 
         *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(context,
-            *(h.pbarrier_as_owner_ptr));             // phase READ
 
-        // as slave
-        for (size_t owner=0; owner<h.ghost_owners_pbarriers_ptrs.size(); owner++) {
+        // Phase READ
+        *(h.pbarrier_as_owner_ptr));
+
+        const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
+
+        // As user
+        for(size_t owner=0; owner<_pbp_size; owner++) {
+          {
+          clog_tag_guard(epilog);
           clog(trace) << "rank " << my_color << " arrives & advances " <<
-              *(h.ghost_owners_pbarriers_ptrs[owner]) << 
-              std::endl;
+            *(h.ghost_owners_pbarriers_ptrs[owner]) << std::endl;
+          } // scope
 
-          h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);  // phase READ
+          // Phase READ
+          h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);
           *(h.ghost_owners_pbarriers_ptrs[owner]) =
-	    runtime->advance_phase_barrier(context,
-              *(h.ghost_owners_pbarriers_ptrs)[owner]);       // phase READ
+            runtime->advance_phase_barrier(context,
 
-        }
-
-      } // write_phase
+          // Phase READ
+          *(h.ghost_owners_pbarriers_ptrs)[owner]);
+        } // for
+      } // if
     } // handle
 
     //------------------------------------------------------------------------//
@@ -132,11 +141,13 @@ namespace execution {
     >
     static
     typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
-    handle(T &)
+    handle(
+      T &
+    )
     {
     } // handle
 
-    Legion::Runtime* runtime;
+    Legion::Runtime * runtime;
     Legion::Context & context;
 
   }; // struct task_epilog_t
@@ -145,3 +156,8 @@ namespace execution {
 } // namespace flecsi
 
 #endif // flecsi_execution_legion_task_epilog_h
+
+/*~-------------------------------------------------------------------------~-*
+ * Formatting options for vim.
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~-------------------------------------------------------------------------~-*/

@@ -33,13 +33,15 @@ namespace execution {
 
 void specialization_tlt_init(int argc, char ** argv) {
 
-  clog(info) << "In specialization top-level-task init" << std::endl;
+  clog(error) << "In specialization top-level-task init" << std::endl;
 
   coloring_map_t map;
   map.vertices = 1;
   map.cells = 0;
 
   flecsi_execute_mpi_task(add_colorings, map);
+
+  clog(error) << "after add_coloring" << std::endl;
 
 } // specialization_tlt_init
 
@@ -48,7 +50,7 @@ void specialization_tlt_init(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void specialization_spmd_init(int argc, char ** argv) {
-  clog(info) << "In specialization spmd init" << std::endl;
+  clog(error) << "In specialization spmd init" << std::endl;
 } // specialization_spmd_ini
 
 //----------------------------------------------------------------------------//
@@ -57,7 +59,7 @@ void specialization_spmd_init(int argc, char ** argv) {
 
 void driver(int argc, char ** argv) {
 
-  clog(info) << "In driver" << std::endl;
+  clog(error) << "In driver" << std::endl;
 
 } // driver
 

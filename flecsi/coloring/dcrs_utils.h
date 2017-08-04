@@ -99,7 +99,7 @@ naive_coloring(
 //!
 //! @param md The mesh definition.
 //!
-//! @ingroup colorer
+//! @ingroup coloring
 //----------------------------------------------------------------------------//
 
 template< 

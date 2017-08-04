@@ -16,6 +16,11 @@
 #define flecsi_legion_dense_h
 
 //----------------------------------------------------------------------------//
+//! @file legion/dense.h
+//! @date Initial file creation: Apr 7, 2016
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
 // Using this approach allows us to have only one storage_type__
 // definintion that can be used by all data policies -> code reuse...
@@ -33,48 +38,54 @@
 #include "flecsi/utils/hash.h"
 #include "flecsi/utils/index_space.h"
 
-///
-// \file legion/dense.h
-// \authors bergen
-// \date Initial file creation: Apr 7, 2016
-///
-
 namespace flecsi {
 namespace data {
 namespace legion {
 
-//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
-// Helper type definitions.
-//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
-
 //----------------------------------------------------------------------------//
-// Dense handle.
+//! The dense_handle_t type provides logically array-based access to data
+//! variables that have been registered in the data model.
+//!
+//! @tparam T                     The type of the data variable. If this type
+//!                               is not consistent with the type used to
+//!                               register the data, bad things can happen.
+//!                               However, it can be useful to reinterpret
+//!                               the type, e.g., when writing raw bytes.
+//!                               This class is part of the low-level
+//!                               \e flecsi interface, so it is assumed that
+//!                               you know what you are doing...
+//! @tparam EXCLUSIVE_PERMISSIONS The permissions to the exclusive indices.
+//! @tparam SHARED_PERMISSIONS    The permissions to the shared indices.
+//! @tparam GHOST_PERMISSIONS     The permissions to the ghost indices.
+//!
+//! @ingroup data
 //----------------------------------------------------------------------------//
 
-///
-// \brief dense_handle_t provides logically array-based access to data
-//        variables that have been registered in the data model.
-//
-// \tparam T The type of the data variable. If this type is not
-//           consistent with the type used to register the data, bad things
-//           can happen. However, it can be useful to reinterpret the type,
-//           e.g., when writing raw bytes. This class is part of the
-//           low-level \e flecsi interface, so it is assumed that you
-//           know what you are doing...
-///
 template<
   typename T,
-  size_t EP,
-  size_t SP,
-  size_t GP
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
 >
-struct dense_handle_t : public data_handle__<T, EP, SP, GP>
+struct dense_handle_t :
+  public data_handle__<
+           T,
+           EXCLUSIVE_PERMISSIONS,
+           SHARED_PERMISSIONS,
+           GHOST_PERMISSIONS
+         >
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using base_t = data_handle__<T, EP, SP, GP>;
+  using base_t =
+    data_handle__<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    >;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -94,7 +105,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     // have write permissions 
 
     if(base_t::exclusive_data){
-      if(base_t::exclusive_priv > privilege_t::dro){
+      if(base_t::exclusive_priv > privilege_t::ro){
         std::memcpy(base_t::exclusive_buf, base_t::exclusive_data,
                     base_t::exclusive_size * sizeof(T));
       }
@@ -102,7 +113,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     }
 
     if(base_t::shared_data){
-      if(base_t::shared_priv > privilege_t::dro){
+      if(base_t::shared_priv > privilege_t::ro){
         std::memcpy(base_t::shared_buf, base_t::shared_data,
                     base_t::shared_size * sizeof(T));
       }
@@ -391,11 +402,17 @@ struct storage_type__<dense>
 
   template<
     typename T,
-    size_t EP,
-    size_t SP,
-    size_t GP
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
   >
-  using handle_t = dense_handle_t<T, EP, SP, GP>;
+  using handle_t =
+    dense_handle_t<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    >;
 
   //--------------------------------------------------------------------------//
   // Data handles.
@@ -483,6 +500,9 @@ struct storage_type__<dense>
     const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle
   )
   {
+    static_assert(VERSION < utils::hash::field_max_versions,
+      "max field version exceeded");
+
     handle_t<DATA_TYPE, 0, 0, 0> h;
 
     auto& context = execution::context_t::instance();
@@ -490,7 +510,7 @@ struct storage_type__<dense>
     auto& field_info = 
       context.get_field_info(
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
-      utils::hash::field_hash<NAMESPACE, NAME>());
+      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
     size_t index_space = field_info.index_space;
     auto& ism = context.index_space_data_map();
@@ -502,11 +522,15 @@ struct storage_type__<dense>
     h.pbarrier_as_owner_ptr =
       &ism[index_space].pbarriers_as_owner[field_info.fid];
     h.ghost_owners_pbarriers_ptrs.resize(0);
-    for(size_t i=0;
-      i < ism[index_space].ghost_owners_pbarriers[field_info.fid].size() ;
-      i++)
-        h.ghost_owners_pbarriers_ptrs.push_back(&(ism[index_space]
-                            .ghost_owners_pbarriers[field_info.fid][i]));
+
+    const size_t _pb_size{
+      ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
+
+    for(size_t i=0; i<_pb_size; i++) {
+        h.ghost_owners_pbarriers_ptrs.push_back(
+          &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
+    } // for
+
     h.ghost_owners_lregions = ism[index_space].ghost_owners_lregions;
     h.color_region = ism[index_space].color_region;
     h.global_to_local_color_map_ptr =
