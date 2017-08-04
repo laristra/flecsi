@@ -84,16 +84,12 @@ void exclusive_reader(handle_t<double, dro, dno, dno> x) {
 
 void color_writer(color_handle_t<double, dwd> x) {
   clog(info) << "color exclusive writer write" << std::endl;
-  for (int i = 0; i < x.size(); i++) {
-    x(i) = static_cast<double>(i);
-  }
+    x = static_cast<double>(16);
 }
 
 void color_reader(color_handle_t<double, dro> x) {
   clog(info) << "color exclusive reader read: " << std::endl;
-  for (int i = 0; i < x.size(); i++) {
-    ASSERT_EQ(x(i), static_cast<double>(i));
-  }
+    ASSERT_EQ(x, static_cast<double>(16));
 }
 
 
