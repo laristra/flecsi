@@ -165,7 +165,7 @@ struct client_registration_wrapper__<
       using id_wrapper_t = field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
-        id_t,
+        utils::id_t,
         entity_hash,
         0,
         1,
@@ -233,7 +233,7 @@ struct client_registration_wrapper__<
       using index_wrapper_t = field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
-        size_t,
+        utils::id_t,
         adjacency_hash,
         0,
         1,

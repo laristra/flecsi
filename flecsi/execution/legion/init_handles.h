@@ -333,14 +333,13 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       is = lr.get_index_space();
 
       auto ac3 = regions[region].get_field_accessor(adj.index_fid).template
-        typeify<uint64_t>();
+        typeify<utils::id_t>();
 
       d = runtime->get_index_space_domain(context, is); 
 
       dr = d.get_rect<2>();
 
-      uint64_t * indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
-      //indices += bo[1];
+      utils::id_t * indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
 
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
@@ -349,11 +348,9 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
 
-      // TODO: fix
-      if(_read) {
-        storage->init_connectivity(adj.from_domain, adj.to_domain,
-          adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
-      } // if
+      storage->init_connectivity(adj.from_domain, adj.to_domain,
+        adj.from_dim, adj.to_dim, offsets, num_offsets,
+        indices, num_indices, _read);
 
       ++region;
     } // for

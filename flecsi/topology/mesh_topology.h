@@ -1035,7 +1035,7 @@ public:
           for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
             const connectivity_t& c = dc.get(from_dim, to_dim);
 
-            auto& tv = c.to_id_vec();
+            auto& tv = c.to_id_storage();
             uint64_t num_to = tv.size();
             std::memcpy(buf + pos, &num_to, sizeof(num_to));
             pos += sizeof(num_to);
@@ -1104,7 +1104,7 @@ public:
           for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
             connectivity_t& c = dc.get(from_dim, to_dim);
 
-            auto& tv = c.to_id_vec();
+            auto& tv = c.to_id_storage();
             uint64_t num_to;
             std::memcpy(&num_to, buf + pos, sizeof(num_to));
             pos += sizeof(num_to);
