@@ -69,6 +69,9 @@ struct field_data__
     std::string const & name
   )
   {
+    static_assert(VERSIONS <= utils::hash::field_max_versions,
+      "max field versions exceeded");
+
     using wrapper_t = field_registration_wrapper__<
       DATA_CLIENT_TYPE,
       STORAGE_TYPE,
@@ -81,9 +84,11 @@ struct field_data__
 
     const size_t client_key = 
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
-    const size_t key = utils::hash::field_hash<NAMESPACE_HASH, NAME_HASH>();
 
-    for(size_t i(0); i<VERSIONS; ++i) {
+    for(size_t version(0); version<VERSIONS; ++version) {
+      const size_t key =
+        utils::hash::field_hash<NAMESPACE_HASH, NAME_HASH>(version);
+
       if(!storage_t::instance().register_field(client_key, key,
         wrapper_t::register_callback)) {
         return false;
@@ -126,6 +131,9 @@ struct field_data__
     const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle
   )
   {
+    static_assert(VERSION < utils::hash::field_max_versions,
+      "max field version exceeded");
+    
     using storage_type_t =
       typename DATA_POLICY::template storage_type__<STORAGE_TYPE>;
 

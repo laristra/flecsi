@@ -23,6 +23,7 @@
 #define CELL_ID 0
 #define VERT_ID 2   // Ensure it's OK if user does non-sequential
 #define VERSIONS 1
+#define VERT_VERSIONS 3
 
 using namespace flecsi;
 using namespace supplemental;
@@ -57,9 +58,9 @@ flecsi_register_field(empty_mesh_t, name_space, cell_ID, size_t, dense,
 flecsi_register_field(empty_mesh_t, name_space, test, double, dense,
     VERSIONS, CELL_ID);
 flecsi_register_field(empty_mesh_t, name_space, vert_ID, size_t, dense,
-    VERSIONS, VERT_ID);
+    VERT_VERSIONS, VERT_ID);
 flecsi_register_field(empty_mesh_t, name_space, vert_test, double, dense,
-    VERSIONS, VERT_ID);
+    VERT_VERSIONS, VERT_ID);
 
 namespace flecsi {
 namespace execution {

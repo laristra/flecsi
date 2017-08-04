@@ -32,6 +32,9 @@ namespace utils {
 
 namespace hash {
 
+constexpr size_t field_hash_version_bits = 3; 
+constexpr size_t field_max_versions = 1 << 3; 
+
 //----------------------------------------------------------------------------//
 //! Hashing function for client registration.
 //!
@@ -100,10 +103,28 @@ template<
 >
 inline
 constexpr size_t
-field_hash()
+field_hash(size_t version)
 {
-  return (NAMESPACE ^ NAME) & ~(1ul<<63);
+  return ((NAMESPACE ^ NAME) << field_hash_version_bits | 
+    version) & ~(1ul<<63);
 } // field_hash__
+
+inline
+size_t
+field_hash(size_t nspace, size_t name, size_t version)
+{
+  return ((nspace ^ name) << field_hash_version_bits | 
+    version) & ~(1ul<<63);
+} // field_hash__
+
+inline
+constexpr size_t
+field_hash_version(
+  size_t key
+)
+{
+  return bit_range<(1ul << field_hash_version_bits) - 1, 0>(key);
+} // client_entity_index
 
 //----------------------------------------------------------------------------//
 //! Check if the given key identifies an internal field.

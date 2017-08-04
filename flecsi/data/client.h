@@ -390,6 +390,7 @@ struct client_data__
 
     const size_t client_key = 
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+    // TODO: move to hash.h
     const size_t key = NAMESPACE_HASH ^ NAME_HASH;
 
     return storage_t::instance().register_client(client_key, key,

@@ -742,8 +742,8 @@ struct legion_context_policy_t
 
     field_info_map_[{data_client_hash, index_space}].emplace(fid, field_info);
     
-    field_map_.insert({{field_info.data_client_hash,
-      field_info.namespace_hash ^ field_info.name_hash}, {index_space, fid}});
+    field_map_.insert({{field_info.data_client_hash, field_info.key},
+      {index_space, fid}});
   } // put_field_info
 
   //--------------------------------------------------------------------------//

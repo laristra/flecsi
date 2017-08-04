@@ -500,6 +500,9 @@ struct storage_type__<dense>
     const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle
   )
   {
+    static_assert(VERSION < utils::hash::field_max_versions,
+      "max field version exceeded");
+
     handle_t<DATA_TYPE, 0, 0, 0> h;
 
     auto& context = execution::context_t::instance();
@@ -507,7 +510,7 @@ struct storage_type__<dense>
     auto& field_info = 
       context.get_field_info(
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
-      utils::hash::field_hash<NAMESPACE, NAME>());
+      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
     size_t index_space = field_info.index_space;
     auto& ism = context.index_space_data_map();
