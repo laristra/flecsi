@@ -15,11 +15,11 @@ namespace flecsi {
 namespace topology {
 
 template<typename T>
-class entity_storage__{
+class topology_storage__{
 public:
-  entity_storage__(){}
+  topology_storage__(){}
 
-  entity_storage__(
+  topology_storage__(
     T* buf,
     size_t size
   )

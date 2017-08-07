@@ -251,8 +251,13 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
           utils::const_string_t("__flecsi_internal_entity_data__").
           hash(), ent.index_space)) {
             ent.fid = fitr.second.fid;
-            break;
         } // if
+        else if(fitr.second.key == 
+          utils::hash::client_internal_field_hash(
+          utils::const_string_t("__flecsi_internal_entity_id__").
+          hash(), ent.index_space)) {
+            ent.id_fid = fitr.second.fid;
+        }
       } // for
 
       auto ritr = ism.find(ent.index_space);

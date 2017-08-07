@@ -390,15 +390,19 @@ class connectivity_t
   void clear()
   {
     index_space_.clear();
-    from_index_vec_.clear();
+    offsets_.clear();
   } // clear
 
   /*!
     Initialize the offset array.
    */
   void init() {
+    if(!enabled_){
+      return;
+    }
+
     clear();
-    from_index_vec_.push_back(0);
+    offsets_.push_back(0);
   }
 
   /*!
@@ -412,7 +416,7 @@ class connectivity_t
     clear();
 
     // the first offset is always 0
-    from_index_vec_.push_back(0);
+    offsets_.push_back(0);
 
     // populate the to id's and add from offsets for each connectivity group
 
@@ -430,7 +434,7 @@ class connectivity_t
         ++from;
       } // for
 
-      from_index_vec_.push_back(from);
+      offsets_.push_back(from);
     } // for
 
     index_space_.end_push_(start);
@@ -446,16 +450,16 @@ class connectivity_t
     clear();
 
     size_t n = num_conns.size();
-    from_index_vec_.resize(n + 1);
+    offsets_.resize(n + 1);
 
     uint64_t size = 0;
 
     for (size_t i = 0; i < n; ++i) {
-      from_index_vec_[i] = size;
+      offsets_[i] = size;
       size += num_conns[i];
     } // for
 
-    from_index_vec_[n] = size;
+    offsets_[n] = size;
 
     index_space_.resize_(size);
     index_space_.fill_(id_t(0));
@@ -466,7 +470,7 @@ class connectivity_t
     from connection vector.
    */
   void end_from() {
-    from_index_vec_.push_back(index_space_.size());
+    offsets_.push_back(index_space_.size());
   } // end_from
 
   /*!
@@ -481,22 +485,23 @@ class connectivity_t
    */
   std::ostream & dump( std::ostream & stream )
   {
-    for (size_t i = 1; i < from_index_vec_.size(); ++i) {
-      for (size_t j = from_index_vec_[i - 1]; j < from_index_vec_[i]; ++j) {
+    for (size_t i = 0; i < offsets_.size(); ++i) {
+      for (size_t j = offsets_[i]; j < offsets_.next(i); ++j) {
         stream << index_space_(j).entity() << std::endl;
         // stream << to_id_vec_[j] << std::endl;
       }
       stream << std::endl;
     }
 
-    stream << "=== id_vec" << std::endl;
+    stream << "=== indices" << std::endl;
     for (id_t id : index_space_.ids()) {
       stream << id.entity() << std::endl;
     } // for
 
-    stream << "=== group_vec" << std::endl;
-    for (size_t index : from_index_vec_) {
-      stream << index << std::endl;
+    stream << "=== offsets" << std::endl;
+    stream << 0 << std::endl;
+    for (size_t i = 1; i < offsets_.size(); ++i) {
+      stream << offsets_.next(i - 1) << std::endl;
     } // for
     return stream;
   } // dump
@@ -507,20 +512,16 @@ class connectivity_t
   } // dump
 
   /*!
-    Get the from index vector.
-   */
-  const index_vector_t & get_from_index_vec() const { return from_index_vec_; }
-  /*!
     Get the to id's vector.
    */
-  const id_vector_t & get_entities() const { return index_space_.id_vec(); }
+  const auto & get_entities() const { return index_space_.id_storage(); }
   /*!
     Get the entities of the specified from index.
    */
   id_t * get_entities(size_t index)
   {
-    assert(index < from_index_vec_.size() - 1);
-    return index_space_.id_array() + from_index_vec_[index];
+    assert(index < offsets_.size() - 1);
+    return index_space_.id_array() + offsets_[index];
   }
 
   /*!
@@ -528,9 +529,9 @@ class connectivity_t
    */
   id_t * get_entities(size_t index, size_t & count)
   {
-    assert(index < from_index_vec_.size() - 1);
-    uint64_t start = from_index_vec_[index];
-    count = from_index_vec_[index + 1] - start;
+    assert(index < offsets_.size() - 1);
+    uint64_t start = offsets_[index];
+    count = offsets_.next(index) - start;
     return index_space_.id_array() + start;
   }
 
@@ -540,9 +541,9 @@ class connectivity_t
    */
   auto get_entity_vec(size_t index) const
   {
-    assert(index < from_index_vec_.size() - 1);
-    auto start = from_index_vec_[index];
-    auto count = from_index_vec_[index + 1] - start;
+    assert(index < offsets_.size() - 1);
+    auto start = offsets_[index];
+    auto count = offsets_.next(index) - start;
     return utils::make_array_ref( index_space_.id_array() + start, count );
   }
 
@@ -552,9 +553,9 @@ class connectivity_t
    */
   void reverse_entities(size_t index)
   {
-    assert(index < from_index_vec_.size() - 1);
-    auto start = from_index_vec_[index];
-    auto end = from_index_vec_[index + 1];
+    assert(index < offsets_.size() - 1);
+    auto start = offsets_[index];
+    auto end = offsets_.next(index);
     std::reverse(index_space_.index_begin_() + start,
                  index_space_.index_begin_() + end);
   }
@@ -566,9 +567,9 @@ class connectivity_t
   template< class U >
   void reorder_entities(size_t index, U && order)
   {
-    assert(index < from_index_vec_.size() - 1);
-    auto start = from_index_vec_[index];
-    auto count = from_index_vec_[index + 1] - start;
+    assert(index < offsets_.size() - 1);
+    auto start = offsets_[index];
+    auto count = offsets_.next(index) - start;
     assert( order.size() == count );
     utils::reorder(
       order.begin(), order.end(), index_space_.id_array() + start );
@@ -583,13 +584,13 @@ class connectivity_t
    */
   void set(size_t from_local_id, id_t to_id, size_t pos)
   {
-    index_space_(from_index_vec_[from_local_id] + pos) = to_id;
+    index_space_(offsets_[from_local_id] + pos) = to_id;
   }
 
   /*!
     Return the number of from entities.
    */
-  size_t from_size() const { return from_index_vec_.size() - 1; }
+  size_t from_size() const { return offsets_.size() - 1; }
   /*!
     Return the number of to entities.
    */
@@ -603,16 +604,16 @@ class connectivity_t
     clear();
 
     size_t n = conns.size();
-    from_index_vec_.resize(n + 1);
+    offsets_.resize(n + 1);
 
     size_t size = 0;
 
     for (size_t i = 0; i < n; i++) {
-      from_index_vec_[i] = size;
+      offsets_[i] = size;
       size += conns[i].size();
     }
 
-    from_index_vec_[n] = size;
+    offsets_[n] = size;
 
     index_space_.begin_push_(size);
 
@@ -626,24 +627,14 @@ class connectivity_t
     }
   }
 
-  const index_vector_t & from_index_vec() const
+  const auto& to_id_storage() const
   {
-    return from_index_vec_;
+    return index_space_.id_storage();
   }
 
-  index_vector_t & from_index_vec()
+  auto& to_id_storage()
   {
-    return from_index_vec_;
-  }
-
-  const auto& to_id_vec() const
-  {
-    return index_space_.id_vec();
-  }
-
-  auto& to_id_vec()
-  {
-    return index_space_.id_vec_();
+    return index_space_.id_storage_();
   }
 
   auto& get_index_space(){
@@ -654,9 +645,37 @@ class connectivity_t
     return index_space_;
   }
 
+  auto
+  range(size_t i)
+  const
+  {
+    return offsets_.range(i);
+  }
+
+  auto&
+  offsets()
+  {
+    return offsets_;
+  }
+
+  const auto&
+  offsets()
+  const
+  {
+    return offsets_;
+  }
+
+  void
+  set_enabled(bool enabled)
+  {
+    enabled_ = enabled;
+  }
+
   index_space<mesh_entity_base_*, false, true, false,
     void, entity_storage_t> index_space_;
-  index_vector_t from_index_vec_;
+  
+  offset_storage_t offsets_;
+  bool enabled_ = false;
 
 }; // class connectivity_t
 
