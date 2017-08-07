@@ -107,7 +107,7 @@ field_hash(size_t version)
 {
   return ((NAMESPACE ^ NAME) << field_hash_version_bits | 
     version) & ~(1ul<<63);
-} // field_hash__
+} // field_hash
 
 inline
 size_t
@@ -115,7 +115,7 @@ field_hash(size_t nspace, size_t name, size_t version)
 {
   return ((nspace ^ name) << field_hash_version_bits | 
     version) & ~(1ul<<63);
-} // field_hash__
+} // field_hash
 
 inline
 constexpr size_t
@@ -394,6 +394,46 @@ client_internal_field_index_space(
 {
   return bit_range<0xff, 8>(key);
 } // client_internal_field_index_space
+
+////////////////////////////////////////////////////////////////////////////////
+// Intermediate map hash interface.
+////////////////////////////////////////////////////////////////////////////////
+
+//----------------------------------------------------------------------------//
+//! Create a hash key suitable for mapping intermediate entity types.
+//!
+//! @tparam DIMENSION The entity dimension.
+//! @tparam DOMAIN    The entity domain.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+template<
+  size_t DIMENSION,
+  size_t DOMAIN_
+>
+inline
+constexpr size_t
+intermediate_hash()
+{
+  return (DIMENSION << 32) ^ DOMAIN_;
+} // intermediate_hash
+
+//----------------------------------------------------------------------------//
+//! Create a hash key suitable for mapping intermediate entity types.
+//!
+//! @tparam DIMENSION The entity dimension.
+//! @tparam DOMAIN    The entity domain.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+inline
+size_t
+intermediate_hash(size_t dimension, size_t domain)
+{
+  return (dimension << 32) ^ domain;
+} // intermediate_hash
 
 } // namespace hash
 
