@@ -169,6 +169,7 @@ namespace execution {
         ent.num_ghost = dr.hi[1] - dr.lo[1] + 1;
 
         rr.add_field(ent.fid);
+        rr.add_field(ent.id_fid);
         region_reqs.push_back(rr);
       } // for
 

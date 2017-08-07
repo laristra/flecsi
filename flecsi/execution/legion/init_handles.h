@@ -252,6 +252,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
     std::unordered_map<size_t, size_t> region_map;
 
+    bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
+
     for(size_t i{0}; i<h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
@@ -280,16 +282,16 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       auto ents = reinterpret_cast<topology::mesh_entity_base_*>(ents_raw);
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
- 
-      bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
 
-      storage->init_entities(ent.domain, ent.dim, ents, ent.size,
+      auto ac2 = regions[region].get_field_accessor(ent.id_fid).
+        template typeify<utils::id_t>();
+      auto ids = ac2.template raw_rect_ptr<2>(dr, sr, bo);
+
+      storage->init_entities(ent.domain, ent.dim, ents, ids, ent.size,
         num_ents, ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
 
       ++region;
     } // for
-
-    h.initialize_storage();
 
     //------------------------------------------------------------------------//
     // Mapping adjacency data from Legion and initializing mesh storage.
@@ -322,37 +324,35 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
 
       // Store these for translation to CRS
-      adj.offsets_buf = offsets;
       adj.num_offsets = num_offsets;
 
       lr = regions[region].get_logical_region();
       is = lr.get_index_space();
 
       auto ac3 = regions[region].get_field_accessor(adj.index_fid).template
-        typeify<uint64_t>();
+        typeify<utils::id_t>();
 
       d = runtime->get_index_space_domain(context, is); 
 
       dr = d.get_rect<2>();
 
-      uint64_t * indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
-      //indices += bo[1];
+      utils::id_t * indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
 
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
-      adj.indices_buf = indices;
       adj.num_indices = num_indices;
 
-      bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
-
-      // TODO: fix
-      if(_read) {
-        storage->init_connectivity(adj.from_domain, adj.to_domain,
-          adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
-      } // if
+      storage->init_connectivity(adj.from_domain, adj.to_domain,
+        adj.from_dim, adj.to_dim, offsets, num_offsets,
+        indices, num_indices, _read);
 
       ++region;
     } // for
+
+    if(!_read){
+      h.initialize_storage();
+    }
+
   } // handle
 
   //-----------------------------------------------------------------------//
