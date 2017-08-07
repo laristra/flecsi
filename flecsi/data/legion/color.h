@@ -50,7 +50,7 @@ namespace legion {
 //----------------------------------------------------------------------------//
 
 ///-------------------------------------------------------------------------//
-//! color_handle_t provide an access to color variables that have
+//! The color_handle_t provide an access to color variables that have
 //! been registered in data model
 //!
 //! \tparam T The type of the data variable. If this type is not
@@ -59,19 +59,35 @@ namespace legion {
 //!           e.g., when writing raw bytes. This class is part of the
 //!           low-level \e flecsi interface, so it is assumed that you
 //!           know what you are doing...
+//!
+//! @tparam PERMISSIONS The permissions to the handle
+//!
+//! @ingroup data
 ///--------------------------------------------------------------------------//
 
 template<
   typename T,
-  size_t P
+  size_t PERMISSIONS
 >
-struct color_handle_t : public data_handle__<T, P, 0, 0> {
-
+struct color_handle_t :
+  public data_handle__<
+    T,
+    PERMISSIONS,
+    0,
+    0
+    >
+{
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using base_t = data_handle__<T, P, 0, 0>;
+  using base_t =
+    data_handle__<
+    T,
+    PERMISSIONS,
+    0,
+    0
+    >;
 
   //--------------------------------------------------------------------------//
   // Constructors.

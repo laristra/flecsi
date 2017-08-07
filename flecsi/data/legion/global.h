@@ -48,7 +48,7 @@ namespace legion {
 //----------------------------------------------------------------------------//
 
 ///-------------------------------------------------------------------------//
-//! global_handle_t provide an access to global variables that have
+//! The global_handle_t provide an access to global variables that have
 //! been registered in data model
 //!
 //! \tparam T The type of the data variable. If this type is not
@@ -57,19 +57,33 @@ namespace legion {
 //!           e.g., when writing raw bytes. This class is part of the
 //!           low-level \e flecsi interface, so it is assumed that you
 //!           know what you are doing...
+//!
+//! @tparam PERMISSIONS The permissions to the handle.
 ///--------------------------------------------------------------------------//
 
 template<
   typename T,
-  size_t P
+  size_t PERMISSIONS
 >
-struct global_handle_t : public data_handle__<T, P, 0, 0> {
-
+struct global_handle_t :
+  public data_handle__<
+  T,
+  PERMISSIONS,
+  0,
+  0
+  >
+{
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using base_t = data_handle__<T, P, 0, 0>;
+  using base_t =
+    data_handle__<
+    T,
+    PERMISSIONS,
+    0,
+    0
+    >;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -165,37 +179,116 @@ struct global_handle_t : public data_handle__<T, P, 0, 0> {
     return this->operator()(e->template id<0>());
   } // operator ()
 
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
   //
-  // \param index The index of the data variable to return.
+  // \brief Provide logical access to the data for this data variable. 
+  // \This is the non const operator version.
   ///
-  const T &
-  operator () (
-    size_t index
-  ) const
-  {
-    assert(index <  base_t::combined_size && "index out of range");
- //   return *(data_+index);
-    return *(base_t::combined_data+index);
-  } // operator ()
-
-
-  //
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  T &
-  operator () (
-    size_t index
+  T&
+  operator = (
+  const  T other
   )
   {
-    assert(index < base_t::combined_size && "index out of range");
-    return *(base_t::combined_data+index);
-  } // operator ()
+   assert(base_t::combined_data !=nullptr &&"color object was allocated");
+   base_t::combined_data[0]=other;
+   return base_t::combined_data[0];
+  }//operator =
+
+  ///
+  // \brief Provide logical access to the data for this data variable. 
+  // \This is the const operator version.
+  ///
+  const T&
+  operator = (
+    const T other
+  ) const
+  {
+   assert( base_t::combined_data !=nullptr &&"color object was allocated");
+    base_t::combined_data[0]=other;
+    return base_t::combined_data[0];
+  }//operator =
+
+
+  ///
+  // \brief Provide output operator for the handle data
+  ///
+  friend
+  std::ostream&
+  operator  <<  (
+    std::ostream& os,
+    const global_handle_t & h
+  )
+  {
+    os << h.data();
+    return os;
+  }
+
+  ///
+  // \brief Provode operator< for the handle data
+  ///
+  friend
+  bool
+  operator < (
+    const global_handle_t & h,
+    const T & r
+  )
+  {
+        return h.data() < r;
+  }
+
+  ///
+  // \brief Provode operator> for the handle data
+  /// 
+  friend
+  bool
+  operator> (
+    const global_handle_t& lhs,
+    const T& rhs
+  )
+  {
+    return rhs < lhs;
+  }
+
+  ///
+  // \brief Provode operator<= for the handle data
+  ///
+  friend
+  bool
+  operator <= (
+    const global_handle_t& lhs,
+    const T& rhs
+  )
+  {
+    return !(lhs > rhs);
+  }
+
+  ///
+  // \brief Provode operator>= for the handle data
+  ///
+  friend
+  bool
+  operator >= (
+    const global_handle_t& lhs,
+    const T& rhs
+  )
+  {
+    return !(lhs < rhs);
+  }
+
+  ///
+  // \brief Provode operator== for the handle data
+  ///
+  friend
+  bool
+  operator ==
+  (
+    const global_handle_t& h,
+    const T& r
+  )
+  {
+    return h.data() == r;
+  }
+
+  T& operator() (size_t index) =delete;
 
   ///
   // \brief Test to see if this handle is empty
@@ -235,105 +328,13 @@ struct storage_type__<global> {
 
   template<
     typename T,
-    size_t P
+    size_t PERMISSIONS
   >
-  using handle_t = global_handle_t<T, P>;
+  using handle_t = global_handle_t<T, PERMISSIONS>;
 
   //--------------------------------------------------------------------------//
   // Data handles.
   //--------------------------------------------------------------------------//
-
-  ///
-  //
-  ///
-  template<
-    typename T,
-    size_t NS
-  >
-  static
-  decltype(auto)
-  get_handle(
-    const data_client_t & data_client,
-    const utils::const_string_t & key
-  )
-  {
-    return {};
-  } // get_handle
-
-
-  ///
-  /// FIXME documentation
-  ///
-  template<
-    typename T,
-    size_t NS,
-    typename Predicate
-  >
-  static
-  decltype(auto)
-  get_handles(
-    const data_client_t & data_client,
-    size_t version,
-    Predicate && predicate,
-    bool sorted
-  )
-  {
-
-  }
-
-  ///
-  /// FIXME documentation
-  ///
-  template<
-    typename T,
-    typename Predicate
-  >
-  static
-  decltype(auto)
-  get_handles(
-    const data_client_t & data_client,
-    size_t version,
-    Predicate && predicate,
-    bool sorted
-  )
-  {
-
-  }
-
-  ///
-  /// FIXME documentation
-  ///
-  template<
-    typename T,
-    size_t NS
-  >
-  static
-  decltype(auto)
-  get_handles(
-    const data_client_t & data_client,
-    size_t version,
-    bool sorted
-  )
-  {
-
-  }
-
-  ///
-  /// FIXME documentation
-  ///
-  template<
-    typename T
-  >
-  static
-  decltype(auto)
-  get_handles(
-    const data_client_t & data_client,
-    size_t version,
-    bool sorted
-  )
-  {
-
-  }
 
   template<
     typename DATA_CLIENT_TYPE,
