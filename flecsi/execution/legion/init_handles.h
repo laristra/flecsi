@@ -252,6 +252,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
     std::unordered_map<size_t, size_t> region_map;
 
+    bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
+
     for(size_t i{0}; i<h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
@@ -285,15 +287,11 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
         template typeify<utils::id_t>();
       auto ids = ac2.template raw_rect_ptr<2>(dr, sr, bo);
 
-      bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
-
       storage->init_entities(ent.domain, ent.dim, ents, ids, ent.size,
         num_ents, ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
 
       ++region;
     } // for
-
-    h.initialize_storage();
 
     //------------------------------------------------------------------------//
     // Mapping adjacency data from Legion and initializing mesh storage.
@@ -346,14 +344,17 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       adj.indices_buf = indices;
       adj.num_indices = num_indices;
 
-      bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
-
       storage->init_connectivity(adj.from_domain, adj.to_domain,
         adj.from_dim, adj.to_dim, offsets, num_offsets,
         indices, num_indices, _read);
 
       ++region;
     } // for
+
+    if(!_read){
+      h.initialize_storage();
+    }
+
   } // handle
 
   //-----------------------------------------------------------------------//

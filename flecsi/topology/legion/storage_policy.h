@@ -80,7 +80,7 @@ struct legion_topology_storage_policy_t
     auto& is = index_spaces[domain][dim];
 
     auto s = is.storage();
-    s->set_buffer(entities, num_entities, read ? num_entities : 0);
+    s->set_buffer(entities, num_entities, read);
 
     if(read){
       is.set_end(num_entities);
@@ -90,7 +90,7 @@ struct legion_topology_storage_policy_t
     size_t ghost_end = shared_end + num_ghost;
 
     auto& id_storage = is.id_storage();
-    id_storage.set_buffer(ids, num_entities, read ? num_entities : 0);
+    id_storage.set_buffer(ids, num_entities, read);
 
     for(size_t partition = 0; partition < num_partitions; ++partition){
       auto& isp = partition_index_spaces[partition][domain][dim];
@@ -148,22 +148,14 @@ struct legion_topology_storage_policy_t
     auto& conn = topology[from_domain][to_domain].get(from_dim, to_dim);
 
     auto& id_storage = conn.get_index_space().id_storage();
-    id_storage.set_buffer(indices, num_indices, read ? num_indices : 0);
+    id_storage.set_buffer(indices, num_indices, read);
 
     if(read){
       conn.get_index_space().set_end(num_indices);
     }
 
-    auto& fv = conn.from_index_vec();
-
-    if(read){
-      size_t offset = 0;
-      for(size_t i = 0; i < num_offsets; ++i){
-        auto& pi = offsets[i]; 
-        offset += pi.x[1];
-        fv.push_back(offset);
-      } // for      
-    }
+    conn.offsets().storage().set_buffer(offsets, num_offsets, read);
+    conn.set_enabled(true);
 
   } // init_connectivities
 
