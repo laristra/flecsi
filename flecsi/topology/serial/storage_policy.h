@@ -41,7 +41,7 @@ class mesh_entity_t;
 template <size_t ND, size_t NM>
 struct serial_topology_storage_policy_t
 {
-  static constexpr size_t num_partitions = 1;
+  static constexpr size_t num_partitions = 0;
 
   using id_t = utils::id_t;
 
@@ -52,13 +52,16 @@ struct serial_topology_storage_policy_t
   // array of array of domain_connectivity
   std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
 
-  std::array<std::array<index_spaces_t, NM>, num_partitions> index_spaces;
+  std::array<index_spaces_t, NM> index_spaces;
+  
+  std::array<std::array<index_spaces_t, NM>, num_partitions> 
+    partition_index_spaces;
 
   ~serial_topology_storage_policy_t()
   {
     for (size_t m = 0; m < NM; ++m) {
       for (size_t d = 0; d <= ND; ++d) {
-        auto & is = index_spaces[all][m][d];
+        auto & is = index_spaces[m][d];
         for (auto ent : is) {
           delete ent;
         }
@@ -82,7 +85,7 @@ struct serial_topology_storage_policy_t
 
     using dtype = domain_entity<M, T>;
 
-    auto & is = index_spaces[all][M][dim].template cast<dtype>();
+    auto & is = index_spaces[M][dim].template cast<dtype>();
 
     id_t global_id = id_t::make<M>(dim, is.size());
 

@@ -340,20 +340,22 @@ struct storage_type__<global> {
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
-    size_t VERSION
+    size_t VERSION, 
+    size_t PERMISSIONS
   >
   static
   handle_t<DATA_TYPE, 0>
   get_handle(
-    const data_client_t & data_client
+    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle
   )
   {
     handle_t<DATA_TYPE, 0> h;
     auto& context = execution::context_t::instance();
 
     auto& field_info =
-      context.get_field_info(typeid(DATA_CLIENT_TYPE).hash_code(),
-      NAMESPACE ^ NAME);
+      context.get_field_info(
+        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
+      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
     size_t index_space = field_info.index_space;
     auto& ism = context.index_space_data_map();

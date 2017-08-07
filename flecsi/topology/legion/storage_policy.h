@@ -41,7 +41,7 @@ template<
 >
 struct legion_topology_storage_policy_t
 {
-  static constexpr size_t num_partitions = 8;
+  static constexpr size_t num_partitions = 5;
 
   using id_t = utils::id_t;
 
@@ -49,10 +49,17 @@ struct legion_topology_storage_policy_t
     std::array<index_space<mesh_entity_base_*, true, true, true,
       void, entity_storage__>, ND + 1>;
 
+  using partition_index_spaces_t = 
+    std::array<index_space<mesh_entity_base_*, false, false, true,
+      void, entity_storage__>, ND + 1>;
+
   // array of array of domain_connectivity
   std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
 
-  std::array<std::array<index_spaces_t, NM>, num_partitions> index_spaces;
+  std::array<index_spaces_t, NM> index_spaces;
+
+  std::array<std::array<partition_index_spaces_t, NM>, num_partitions> 
+    partition_index_spaces;
 
   void
   init_entities(
@@ -69,14 +76,39 @@ struct legion_topology_storage_policy_t
   {
     // TODO: fix for all index spaces
 
-    auto& is = index_spaces[all][domain][dim];
+    auto& is = index_spaces[domain][dim];
 
     auto s = is.storage();
     s->set_buffer(entities, num_entities);
 
-    for(size_t partition = 1; partition < num_partitions; ++partition){
-      auto& isp = index_spaces[partition][domain][dim];
-      isp.storage()->set_buffer(entities, num_entities);      
+    size_t shared_end = num_exclusive + num_shared;
+    size_t ghost_end = shared_end + num_ghost;
+
+    for(size_t partition = 0; partition < num_partitions; ++partition){
+      auto& isp = partition_index_spaces[partition][domain][dim];
+      isp.set_storage(s);
+      isp.set_id_vec(&is.id_vec());
+
+      switch(partition_t(partition)){
+        case exclusive:
+          isp.set_begin(0);
+          isp.set_end(num_exclusive);
+          break;
+        case shared:
+          isp.set_begin(num_exclusive);
+          isp.set_end(shared_end);
+          break;
+        case ghost:
+          isp.set_begin(shared_end);
+          isp.set_end(ghost_end);
+          break;
+        case owned:
+          isp.set_begin(0);
+          isp.set_end(shared_end);
+          break;
+        default:
+          break;
+      }      
     }
 
     if(read) {
@@ -96,7 +128,6 @@ struct legion_topology_storage_policy_t
 
   void
   init_connectivity(
-    size_t partition,
     size_t from_domain,
     size_t to_domain,
     size_t from_dim,
@@ -150,7 +181,7 @@ struct legion_topology_storage_policy_t
 
     T* ent;
     size_t dim = entity_dimension(ent);
-    auto & is = index_spaces[all][M][dim].template cast<dtype>();
+    auto & is = index_spaces[M][dim].template cast<dtype>();
     size_t entity_id = is.size();
 
     auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity_id;
