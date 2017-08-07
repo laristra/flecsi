@@ -372,6 +372,7 @@ struct storage_type__<color> {
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
     h.color = true;
+    h.state = context.execution_state();
 
     return h;
   }

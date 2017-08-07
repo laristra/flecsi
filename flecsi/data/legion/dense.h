@@ -537,6 +537,7 @@ struct storage_type__<dense>
       &ism[index_space].global_to_local_color_map;
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
+    h.state = context.execution_state();
 
     return h;
   } // get_handle

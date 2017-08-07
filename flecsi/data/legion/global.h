@@ -365,6 +365,7 @@ struct storage_type__<global> {
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
     h.global = true;
+    h.state = context.execution_state();
 
     return h;
   }

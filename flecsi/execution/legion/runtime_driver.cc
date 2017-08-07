@@ -546,6 +546,7 @@ spmd_task(
 
   // Add additional setup.
   context_t & context_ = context_t::instance();
+  context_.advance_state();
 
   auto& ispace_dmap = context_.index_space_data_map();
 
@@ -943,6 +944,8 @@ spmd_task(
   specialization_spmd_init(args.argc, args.argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
+
+  context_.advance_state();
   // run default or user-defined driver 
   driver(args.argc, args.argv); 
 

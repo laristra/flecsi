@@ -24,6 +24,7 @@
 
 #include "legion.h"
 
+#include "flecsi/execution/common/execution_state.h"
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client_handle.h"
 
@@ -119,10 +120,13 @@ namespace execution {
         gh_rr.add_field(h.fid);
         region_reqs.push_back(gh_rr);
       }else if(h.global){
+        if (h.state <SPECIALIZATION_SPMD_INIT){
+        }else{
           Legion::RegionRequirement rr(h.color_region,
             READ_ONLY, EXCLUSIVE, h.color_region);
           rr.add_field(h.fid);
           region_reqs.push_back(rr);
+        }//if
       }//if
       else if (h.color){
         Legion::RegionRequirement rr(h.color_region,

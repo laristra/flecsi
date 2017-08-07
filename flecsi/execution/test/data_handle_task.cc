@@ -13,6 +13,8 @@
 #include <cinchtest.h>
 
 #include "flecsi/execution/execution.h"
+#include "flecsi/execution/context.h"
+#include "flecsi/execution/common/execution_state.h"
 #include "flecsi/io/simple_definition.h"
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/data/data.h"
@@ -119,6 +121,11 @@ namespace execution {
 void specialization_tlt_init(int argc, char ** argv) {
   clog(info) << "In specialization top-level-task init" << std::endl;
 
+  auto & context = execution::context_t::instance();
+ 
+  ASSERT_EQ(context.execution_state(),
+    static_cast<size_t>(SPECIALIZATION_TLT_INIT));
+
   coloring_map_t map;
   map.vertices = 1;
   map.cells = 0;
@@ -132,6 +139,9 @@ void specialization_tlt_init(int argc, char ** argv) {
 
 void driver(int argc, char ** argv) {
   clog(info) << "In driver" << std::endl;
+
+  auto & context = execution::context_t::instance();
+  ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
 
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
