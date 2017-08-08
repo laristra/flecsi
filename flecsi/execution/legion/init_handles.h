@@ -254,14 +254,14 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
     bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
 
+    LegionRuntime::Arrays::Rect<2> dr;
+    LegionRuntime::Arrays::Rect<2> sr;
+    LegionRuntime::Accessor::ByteOffset bo[2];
+
     for(size_t i{0}; i<h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
-      const size_t index_space = ent.index_space;
-      const size_t dim = ent.dim;
-      const size_t domain = ent.domain;
-
-      region_map[index_space] = region;
+      region_map[ent.index_space] = region;
 
       Legion::LogicalRegion lr = regions[region].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
@@ -271,14 +271,10 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       Legion::Domain d = 
         runtime->get_index_space_domain(context, is); 
 
-      LegionRuntime::Arrays::Rect<2> dr = d.get_rect<2>();
-      LegionRuntime::Arrays::Rect<2> sr;
-      LegionRuntime::Accessor::ByteOffset bo[2];
+      dr = d.get_rect<2>();
 
       auto ents_raw =
         static_cast<uint8_t*>(ac.template raw_rect_ptr<2>(dr, sr, bo));
-      //ents_raw += bo[1] * ent.size;
-      //ents_raw += bo[1];
       auto ents = reinterpret_cast<topology::mesh_entity_base_*>(ents_raw);
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
@@ -300,11 +296,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     for(size_t i{0}; i<h.num_handle_adjacencies; ++i) {
       data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
 
-      const size_t adj_index_space = adj.adj_index_space;
-      const size_t from_index_space = adj.from_index_space;
-      const size_t to_index_space = adj.to_index_space;
-
-      Legion::PhysicalRegion pr = regions[region_map[from_index_space]];
+      Legion::PhysicalRegion pr = regions[region_map[adj.from_index_space]];
       Legion::LogicalRegion lr = pr.get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
@@ -313,13 +305,10 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       Legion::Domain d = runtime->get_index_space_domain(context, is); 
 
-      LegionRuntime::Arrays::Rect<2> dr = d.get_rect<2>();
-      LegionRuntime::Arrays::Rect<2> sr;
-      LegionRuntime::Accessor::ByteOffset bo[2];
+      dr = d.get_rect<2>();
 
       LegionRuntime::Arrays::Point<2> * offsets =
         ac.template raw_rect_ptr<2>(dr, sr, bo);
-      //offsets += bo[1];
 
       size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
 
