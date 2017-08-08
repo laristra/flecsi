@@ -185,8 +185,8 @@ public:
   set_buffer(item_t buf, size_t capacity, bool initialized)
   {
     buf_ = buf;
-    size_ = initialized ? capacity_ : 0;
     capacity_ = capacity;
+    size_ = initialized ? capacity_ : 0;
   }
 
   item_t
