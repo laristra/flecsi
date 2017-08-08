@@ -22,7 +22,7 @@ using topology_storage__ = array_buffer__<T>;
 class offset_storage_{
 public:
 
-  size_t
+  const size_t
   operator[](size_t i)
   const
   {
