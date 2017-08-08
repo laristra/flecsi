@@ -92,6 +92,8 @@ struct cell_t : public flecsi::topology::mesh_entity_t<2, 1>
 
 struct test_mesh_2d_policy_t
 {
+  using id_t = flecsi::utils::id_t;
+
   flecsi_register_number_dimensions(2);
   flecsi_register_number_domains(1);
 
@@ -115,7 +117,8 @@ struct test_mesh_2d_policy_t
   static flecsi::topology::mesh_entity_base_t<num_domains> *
   create_entity(
     flecsi::topology::mesh_topology_base_t<ST>* mesh,
-    size_t num_vertices
+    size_t num_vertices,
+    id_t const & id
   )
   {
 #if 0

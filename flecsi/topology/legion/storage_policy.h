@@ -6,23 +6,22 @@
 #ifndef flecsi_topology_legion_topology_storage_policy_h
 #define flecsi_topology_legion_topology_storage_policy_h
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Apr 04, 2017
+//----------------------------------------------------------------------------//
+
+#include <array>
+#include <arrays.h>
 #include <legion.h>
 #include <legion_stl.h>
 #include <legion_utilities.h>
-#include <arrays.h>
 
 #include "flecsi/topology/mesh_storage.h"
+#include "flecsi/topology/mesh_types.h"
 #include "flecsi/topology/legion/entity_storage.h"
-
-#include <array>
-
 #include "flecsi/topology/index_space.h"
 #include "flecsi/utils/id.h"
-
-///
-/// \file
-/// \date Initial file creation: Apr 04, 2017
-///
 
 namespace flecsi {
 namespace topology {
@@ -189,6 +188,36 @@ struct legion_topology_storage_policy_t
 
     auto& id_storage = is.id_storage();
     id_storage.push_back(global_id);
+
+    is.pushed();
+
+    return ent;
+  } // make
+
+  template<
+    class T,
+    size_t M,
+    class... S
+  >
+  T *
+  make(
+    id_t const & id,
+    S && ... args
+  )
+  {
+    using dtype = domain_entity<M, T>;
+
+    T* ent;
+    size_t dim = entity_dimension(ent);
+    auto & is = index_spaces[M][dim].template cast<dtype>();
+
+    auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + id.entity();
+    ent = new (placement_ptr) T(std::forward<S>(args)...);
+
+    ent->template set_global_id<M>(id);
+
+    auto& id_storage = is.id_storage();
+    id_storage.push_back(id);
 
     is.pushed();
 
