@@ -54,11 +54,11 @@ struct mpi_storage_policy_t {
     const field_registration_function_t & callback
   )
   {
-    //TODO:
     if(field_registry_.find(client_key) != field_registry_.end()) {
-      clog_assert(field_registry_[client_key].find(key) ==
-        field_registry_[client_key].end(),
-        "field key already exists");
+      if(field_registry_[client_key].find(key) !=
+        field_registry_[client_key].end()) {
+        clog(warn) << "field key already exists" << std::endl;
+      } // if
     } // if
 
     field_registry_[client_key][key] =

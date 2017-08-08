@@ -128,11 +128,11 @@ using handle_t =
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
-void task1(client_handle_t<test_mesh_t, dro> mesh) {
+void task1(client_handle_t<test_mesh_t, ro> mesh) {
   //np(y);
 } // task1
 
-void fill_task(client_handle_t<test_mesh_t, dwd> mesh) {
+void fill_task(client_handle_t<test_mesh_t, wo> mesh) {
   clog(info) << "IN FILL TASK" << std::endl;
 
   auto & context = execution::context_t::instance();
@@ -183,7 +183,7 @@ void fill_task(client_handle_t<test_mesh_t, dwd> mesh) {
   clog(info) << "MESH INIT" << std::endl;
 } // fill_task
 
-void print_task(client_handle_t<test_mesh_t, dro> mesh) {
+void print_task(client_handle_t<test_mesh_t, ro> mesh) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 

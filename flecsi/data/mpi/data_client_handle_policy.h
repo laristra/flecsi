@@ -23,6 +23,7 @@ struct data_client_handle_entity_t
 {
   using field_id_t = size_t;
 
+  data_client_handle_entity_t() : index_space(0), dim(0), domain(0), size(0), fid(0) {}
   size_t index_space;
   size_t dim;
   size_t domain;

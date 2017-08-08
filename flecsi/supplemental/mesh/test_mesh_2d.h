@@ -154,6 +154,11 @@ struct test_mesh_2d_t :
     return entities<2, 0>();
   } // cells
 
+  auto
+  cells(flecsi::partition_t p) {
+    return entities<2, 0>(p);
+  } // cells
+
   template<
     typename E,
     size_t M
