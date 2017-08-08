@@ -72,12 +72,13 @@
 #include <type_traits>
 #include <memory>
 
+#include "flecsi/execution/context.h"
+#include "flecsi/topology/mesh_storage.h"
+#include "flecsi/topology/mesh_types.h"
+#include "flecsi/topology/partition.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/set_intersection.h"
 #include "flecsi/utils/static_verify.h"
-#include "flecsi/topology/mesh_types.h"
-#include "flecsi/topology/mesh_storage.h"
-#include "flecsi/topology/partition.h"
 
 namespace flecsi {
 namespace topology {
@@ -1345,6 +1346,74 @@ private:
         // will always occur in the same order for the same entity.
         std::sort(ev.begin(), ev.end());
 
+        //
+        // The following set of steps use the vertices that define
+        // the entity to be created to lookup the id so
+        // that the topology creates it at the correct offset.
+        // This requires:
+        //
+        // 1) lookup the MIS vertex ids
+        // 2) create a vector of the MIS vertex ids
+        // 3) lookup the MIS id of the entity
+        // 4) lookup the CIS id of the entity
+        //
+        // The CIS id of the entity is passed to the create_entity
+        // method. The specialization developer must pass this
+        // information to 'make' so that the coloring id of the
+        // entity is consitent with the id/offset of the entity
+        // created by the topology.
+        //
+
+        // Lookup the index space for the vertices from the mesh
+        // specialization.
+        constexpr size_t vertex_index_space =
+          find_index_space_from_dimension__<
+            std::tuple_size<typename MT::entity_types>::value,
+            typename MT::entity_types,
+            0
+          >::find();
+
+        // Lookup the index space for the entity type being created.
+        constexpr size_t entity_index_space =
+          find_index_space_from_dimension__<
+            std::tuple_size<typename MT::entity_types>::value,
+            typename MT::entity_types,
+            DimensionToBuild
+          >::find();
+
+        auto & context_ = flecsi::execution::context_t::instance();
+
+        // Get the reverse map of the vertex ids. This map takes
+        // local compacted vertex ids to mesh index space ids.
+        // CIS -> MIS.
+        auto & reverse_vertex_map =
+          context_.reverse_index_map(vertex_index_space);
+
+        std::vector<size_t> vertices_mis;
+        vertices_mis.reserve(m);
+
+        // Push the MIS vertex ids onto a vector to search for the
+        // associated entity.
+        for(id_t * aptr{a}; aptr<(a+m); ++aptr) {
+          vertices_mis.push_back(reverse_vertex_map[aptr->entity()]);
+        } // for
+
+        // Get the reverse map of the intermediate ids. This map takes
+        // vertices defining an entity to the entity id in MIS.
+        auto & reverse_intermediate_map =
+          context_.reverse_intermediate_map(DimensionToBuild, Domain);
+
+        // Lookup the MIS id of the entity.
+        const auto entity_id_mis = reverse_intermediate_map.at(vertices_mis);
+
+        // Get the index map for the entity.
+        auto & entity_index_map = context_.index_map(entity_index_space);
+
+        // Lookup the CIS id of the entity.
+        const auto entity_id = entity_index_map.at(entity_id_mis);
+
+        id_t id = id_t::make<Domain>(DimensionToBuild, entity_id);
+
         // Emplace the sorted vertices into the entity map
         auto itr = entity_vertices_map.emplace(
             std::move(ev), id_t::make<DimensionToBuild, Domain>(
@@ -1363,10 +1432,12 @@ private:
             std::max(max_cell_entity_conns, conns.size());
 
           auto ent =
-            MT::template create_entity<Domain, DimensionToBuild>(this, m);
+            MT::template create_entity<Domain, DimensionToBuild>(this, m, id);
 
+#if 0
           // A new entity was added, so we advance the id counter.
           ++entity_id;
+#endif
         } // if
       } // for
     } // for

@@ -152,18 +152,19 @@ struct context__ : public CONTEXT_POLICY
   //! @param domain    The entity domain.
   //--------------------------------------------------------------------------//
 
-  std::unordered_map<size_t, size_t> &
+  auto const &
   intermediate_map(
     size_t dimension,
     size_t domain
   )
+  const
   {
     const size_t key = utils::hash::intermediate_hash(dimension, domain);
 
     clog_assert(intermediate_map_.find(key) != intermediate_map_.end(),
       "invalid index space");
 
-    return intermediate_map_[key];
+    return intermediate_map_.at(key);
   } // intermediate_map
 
   //--------------------------------------------------------------------------//
@@ -173,18 +174,19 @@ struct context__ : public CONTEXT_POLICY
   //! @param domain    The entity domain.
   //--------------------------------------------------------------------------//
 
-  std::unordered_map<size_t, size_t> &
+  auto const &
   reverse_intermediate_map(
     size_t dimension,
     size_t domain
   )
+  const
   {
     const size_t key = utils::hash::intermediate_hash(dimension, domain);
 
     clog_assert(reverse_intermediate_map_.find(key) !=
       reverse_intermediate_map_.end(), "invalid index space");
 
-    return reverse_intermediate_map_[key];
+    return reverse_intermediate_map_.at(key);
   } // reverse_intermediate_map
 
   //--------------------------------------------------------------------------//
