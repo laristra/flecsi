@@ -29,6 +29,7 @@
 #include "flecsi/coloring/adjacency_types.h"
 #include "flecsi/coloring/coloring_types.h"
 #include "flecsi/coloring/index_coloring.h"
+#include "flecsi/runtime/types.h"
 
 clog_register_tag(context);
 
@@ -50,6 +51,85 @@ struct context__ : public CONTEXT_POLICY
   using index_coloring_t = flecsi::coloring::index_coloring_t;
   using coloring_info_t = flecsi::coloring::coloring_info_t;
   using adjacency_info_t = flecsi::coloring::adjacency_info_t;
+
+  //--------------------------------------------------------------------------//
+  //! The unique_tid_t type create a unique id generator for registering
+  //! tasks.
+  //--------------------------------------------------------------------------//
+
+  //using unique_tid_t = utils::unique_id_t<task_id_t, FLECSI_GENERATED_ID_MAX>;
+
+  //--------------------------------------------------------------------------//
+  //! Adjacency triple: index space, from index space, to index space
+  //--------------------------------------------------------------------------//
+
+  using adjacency_triple_t = std::tuple<size_t, size_t, size_t>;
+
+  //--------------------------------------------------------------------------//
+  // Gathers info about registered data fields.
+  //--------------------------------------------------------------------------//
+
+  struct field_info_t{
+    size_t data_client_hash;
+    size_t storage_type;
+    size_t size;
+    size_t namespace_hash;
+    size_t name_hash;
+    size_t versions;
+    field_id_t fid;
+    size_t index_space;
+    size_t key;
+  }; // struct field_info_t
+
+  //--------------------------------------------------------------------------//
+  // Field info map for fields in SPMD task, key1 =
+  // (data client hash, index space), key2 = fid
+  //--------------------------------------------------------------------------//
+
+  using field_info_map_t =
+    std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
+
+  //--------------------------------------------------------------------------//
+  // Function interface.
+  //--------------------------------------------------------------------------//
+
+  //--------------------------------------------------------------------------//
+  //! FIXME: This interface needs to be updated.
+  //--------------------------------------------------------------------------//
+
+  template<
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE),
+    size_t KEY
+  >
+  bool
+  register_function(
+  )
+  {
+    clog_assert(function_registry_.find(KEY) == function_registry_.end(),
+                "function has already been registered");
+
+    const std::size_t addr = reinterpret_cast<std::size_t>(FUNCTION);
+    clog(info) << "Registering function: " << addr << std::endl;
+
+    function_registry_[KEY] =
+      reinterpret_cast<void *>(FUNCTION);
+    return true;
+  } // register_function
+
+  //--------------------------------------------------------------------------//
+  //! FIXME: Add description.
+  //--------------------------------------------------------------------------//
+
+  void *
+  function(
+    size_t key
+  )
+  {
+    return function_registry_[key];
+  } // function
+
 
   //--------------------------------------------------------------------------//
   //! Myer's singleton instance.
@@ -312,6 +392,117 @@ struct context__ : public CONTEXT_POLICY
     return adjacency_info_;
   } // adjacencies
 
+  //--------------------------------------------------------------------------//
+  //! Register field info for index space and field id.
+  //!
+  //! @param index_space virtual index space
+  //! @param field allocated field id
+  //! @param field_info field info as registered
+  //--------------------------------------------------------------------------//
+
+  void register_field_info(field_info_t& field_info){
+    field_info_vec_.emplace_back(std::move(field_info));
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return registered fields
+  //--------------------------------------------------------------------------//
+
+  const std::vector<field_info_t>&
+  registered_fields()
+  const
+  {
+    return field_info_vec_;
+  }
+  //--------------------------------------------------------------------------//
+  //! Add an adjacency index space.
+  //!
+  //! @param index_space index space to add.
+  //--------------------------------------------------------------------------//
+
+  void
+  add_adjacency_triple(const adjacency_triple_t& triple)
+  {
+    adjacencies_.emplace(std::get<0>(triple), triple);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return set of all adjacency index spaces.
+  //--------------------------------------------------------------------------//
+
+  auto&
+  adjacencies()
+  const
+  {
+    return adjacencies_;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Put field info for index space and field id.
+  //!
+  //! @param field_info field info as registered
+  //--------------------------------------------------------------------------//
+
+  void
+  put_field_info(
+    const field_info_t& field_info
+  )
+  {
+    size_t index_space = field_info.index_space;
+    size_t data_client_hash = field_info.data_client_hash;
+    field_id_t fid = field_info.fid;
+
+    field_info_map_[{data_client_hash, index_space}].emplace(fid, field_info);
+
+    field_map_.insert({{field_info.data_client_hash, field_info.key},
+                       {index_space, fid}});
+  } // put_field_info
+
+  //--------------------------------------------------------------------------//
+  //! Get registered field info map for read access.
+  //--------------------------------------------------------------------------//
+
+  const field_info_map_t&
+  field_info_map()
+  const
+  {
+    return field_info_map_;
+  } // field_info_map
+
+  //--------------------------------------------------------------------------//
+  //! Get field map for read access.
+  //--------------------------------------------------------------------------//
+  const std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
+  field_map()
+  const
+  {
+    return field_map_;
+  } // field_info_map
+  //--------------------------------------------------------------------------//
+  //! Lookup registered field info from data client and namespace hash.
+  //! @param data_client_hash data client type hash
+  //! @param namespace_hash namespace/field name hash
+  //!-------------------------------------------------------------------------//
+
+  const field_info_t&
+  get_field_info(
+    size_t data_client_hash,
+    size_t namespace_hash)
+  const
+  {
+    auto itr = field_map_.find({data_client_hash, namespace_hash});
+    clog_assert(itr != field_map_.end(), "invalid field");
+
+    auto iitr = field_info_map_.find({data_client_hash, itr->second.first});
+    clog_assert(iitr != field_info_map_.end(), "invalid index_space");
+
+    auto fitr = iitr->second.find(itr->second.second);
+    clog_assert(fitr != iitr->second.end(), "invalid fid");
+
+    return fitr->second;
+  }
+
+
 private:
 
   // Default constructor
@@ -325,6 +516,38 @@ private:
   context__ & operator = (const context__ &) = delete;
   context__(context__ &&) = delete;
   context__ & operator = (context__ &&) = delete;
+
+  //--------------------------------------------------------------------------//
+  // Function data members.
+  //--------------------------------------------------------------------------//
+
+  std::unordered_map<size_t, void *>
+    function_registry_;
+  //--------------------------------------------------------------------------//
+  // Field info vector for registered fields in TLT
+  //--------------------------------------------------------------------------//
+
+  std::vector<field_info_t> field_info_vec_;
+
+  //--------------------------------------------------------------------------//
+  // Field info map for fields in SPMD task, key1 = (data client hash, index space), key2 = fid
+  //--------------------------------------------------------------------------//
+
+  field_info_map_t field_info_map_;
+
+  //--------------------------------------------------------------------------//
+  // Map of adjacency triples. key: adjacency index space
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, adjacency_triple_t> adjacencies_;
+
+  //--------------------------------------------------------------------------//
+  // Field map, key1 = (data client hash, name/namespace hash)
+  // value = (index space, fid)
+  //--------------------------------------------------------------------------//
+
+  std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
+    field_map_;
 
   // key: virtual index space id
   // value: coloring indices (exclusive, shared, ghost)

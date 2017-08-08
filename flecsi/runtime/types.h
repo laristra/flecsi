@@ -38,6 +38,14 @@
 
   using field_id_t = Legion::FieldID;
 
+  //--------------------------------------------------------------------------//
+  //! The task_id_t type is used to uniquely identify tasks that have
+  //! been registered with the runtime.
+  //!
+  //! @ingroup execution
+  //--------------------------------------------------------------------------//
+
+  using task_id_t = Legion::TaskID;
   }
 
 // MPI Policy
