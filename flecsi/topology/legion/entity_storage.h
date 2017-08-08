@@ -22,17 +22,23 @@ using topology_storage__ = array_buffer__<T>;
 class offset_storage_{
 public:
 
-  size_t
+  const size_t
   operator[](size_t i)
   const
   {
     return s_[i].x[0];
   }
 
-  auto&
-  operator[](size_t i)
+  void
+  set(size_t i, size_t offset)
   {
-    return s_[i].x[0];
+    if(i > 0){
+      s_[i].x[0] = offset;
+      s_[i - 1].x[1] = offset - s_[i - 1].x[0];
+    }
+    else{
+      s_[0].x[0] = 0;
+    }    
   }
 
   size_t
@@ -88,7 +94,7 @@ public:
   void
   resize(size_t n)
   {
-    s_.resize(n);
+    s_.resize(n - 1);
   }
 
   size_t
@@ -96,7 +102,7 @@ public:
   const
   {
     return s_.size();
-  }   
+  }
 
 private:
   topology_storage__<LegionRuntime::Arrays::Point<2>> s_;  

@@ -907,13 +907,12 @@ public:
     partition.push_back(0);
 
     for(size_t from_id = 0; from_id < n; ++from_id){
-      auto to_ids = c1.get_index_space().ids(o1[from_id], o1.next(from_id));
+      auto to_ids = c1.get_index_space().ids(o1.range(from_id));
       cp.offset.push_back(offset);
 
       for(auto to_id : to_ids){
         auto ret_ids =
-          c2.get_index_space().ids(
-            o2[to_id.entity()], o2.next(to_id.entity()));
+          c2.get_index_space().ids(o2.range(to_id.entity()));
 
         for(auto ret_id : ret_ids){
           if(ret_id.entity() != from_id){
