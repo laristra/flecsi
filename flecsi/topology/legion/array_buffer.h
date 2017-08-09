@@ -21,7 +21,7 @@ class domain_entity;
 
 template<typename item_t>
 struct array_buffer_type__{
-  using type = item_t*;
+  using type = item_t;
 };
 
 template<size_t M, typename E>
@@ -29,9 +29,9 @@ struct array_buffer_type__<domain_entity<M, E>>{
   using type = E*;
 };
 
-template<typename item_t>
-struct array_buffer_type__<item_t*>{
-  using type = item_t*;
+template<>
+struct array_buffer_type__<utils::id_t>{
+  using type = utils::id_t*;
 };
 
 template<typename T>

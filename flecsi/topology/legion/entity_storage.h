@@ -19,40 +19,6 @@ namespace topology {
 template<typename T>
 using topology_storage__ = array_buffer__<T>;
 
-class offset_storage_{
-public:
-
-  size_t
-  get(size_t i)
-  const
-  {
-    return s_[i].x[0];
-  }
-
-  size_t
-  next(size_t i)
-  const
-  {
-    return s_[i].x[0] + s_[i].x[1];
-  }
-
-  size_t
-  count(size_t i)
-  const
-  {
-    return s_[i].x[1];
-  }
-
-  auto&
-  storage()
-  {
-    return s_;
-  }  
-
-private:
-  topology_storage__<LegionRuntime::Arrays::Point<2>> s_;  
-};
-
 } // namespace topology
 } // namespace flecsi
 

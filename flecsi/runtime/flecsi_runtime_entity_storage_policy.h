@@ -30,8 +30,6 @@
   template<typename T>
   using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
 
-  using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::topology_storage__<T>
-
   }
 
 // Legion, MPI+Legion Policy
@@ -43,8 +41,6 @@
 
   template<typename T>
   using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
-
-  using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 
   }
 

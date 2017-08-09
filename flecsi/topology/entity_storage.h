@@ -19,8 +19,6 @@ namespace topology {
 template<typename T>
 using entity_storage_t = FLECSI_RUNTIME_ENTITY_STORAGE_TYPE<T>;
 
-using offset_storage_t = FLECSI_RUNTIME_OFFSET_STORAGE_TYPE;
-
 } // namespace topology
 } // namespace flecsi
 
