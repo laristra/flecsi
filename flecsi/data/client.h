@@ -292,8 +292,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     h.num_handle_adjacencies = binding_walker.adjacency_info.size();
 
     for(adjacency_info_t& hi : binding_walker.adjacency_info){
-      data_client_handle_adjacency_t & adj = 
-        h.handle_adjacencies[handle_index];
+      data_client_handle_adjacency_t & adj = h.handle_adjacencies[handle_index];
 
       adj.adj_index_space = hi.index_space;
       adj.from_index_space = hi.from_index_space;
