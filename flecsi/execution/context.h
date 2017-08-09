@@ -66,6 +66,17 @@ struct context__ : public CONTEXT_POLICY
   } // instance
 
   //--------------------------------------------------------------------------//
+  //! Return the color for which the context was initialized.
+  //--------------------------------------------------------------------------//
+
+  size_t
+  color()
+  const
+  {
+    return CONTEXT_POLICY::color();
+  } // color
+
+  //--------------------------------------------------------------------------//
   //! Add an index map. This map can be used to go between mesh and locally
   //! compacted index spaces.
   //!
