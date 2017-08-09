@@ -160,12 +160,6 @@ public:
     size_ = 0;
   }
 
-  bool
-  empty()
-  const{
-    return size_ == 0;
-  }
-
   void
   resize(size_t n)
   {
@@ -182,10 +176,10 @@ public:
   }
 
   void
-  set_buffer(item_t buf, size_t capacity, bool initialized)
+  set_buffer(item_t buf, size_t capacity, size_t size)
   {
     buf_ = buf;
-    size_ = initialized ? capacity_ : 0;
+    size_ = size;
     capacity_ = capacity;
   }
 
