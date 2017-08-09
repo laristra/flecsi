@@ -6,7 +6,7 @@
 #ifndef flecsi_topology_legion_entity_storage_policy_h
 #define flecsi_topology_legion_entity_storage_policy_h
 
-#include "flecsi/topology/legion/array_buffer.h"
+#include "flecsi/topology/common/array_buffer.h"
 
 ///
 /// \file

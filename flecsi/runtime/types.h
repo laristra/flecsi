@@ -54,7 +54,7 @@
   namespace flecsi {
 
   using field_id_t = size_t;
-
+  using task_id_t = size_t;
   }
 
 #endif // FLECSI_RUNTIME_MODEL

@@ -18,6 +18,23 @@ namespace flecsi {
 //----------------------------------------------------------------------------//
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
+
+struct data_client_handle_entity_t
+{
+  size_t index_space;
+  size_t dim;
+  size_t domain;
+  size_t size;
+  size_t num_exclusive;
+  size_t num_shared;
+  size_t num_ghost;
+  field_id_t fid;
+  field_id_t id_fid;
+}; // struct data_client_handle_entity_t
+
+//----------------------------------------------------------------------------//
+//! FIXME: Description of class
+//----------------------------------------------------------------------------//
 struct data_client_handle_adjacency
 {
   size_t adj_index_space;

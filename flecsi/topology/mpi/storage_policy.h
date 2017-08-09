@@ -14,10 +14,10 @@
 #include <iostream>
 #include <vector>
 
-#include "flecsi/data/data_client.h"
+
 #include "flecsi/topology/mesh_utils.h"
-#include "flecsi/utils/array_ref.h"
-#include "flecsi/utils/reorder.h"
+#include "flecsi/topology/mesh_storage.h"
+#include "flecsi/topology/mesh_types.h"
 #include "flecsi/topology/index_space.h"
 #include "flecsi/topology/entity_storage.h"
 
