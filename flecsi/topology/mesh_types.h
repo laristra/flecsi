@@ -499,7 +499,7 @@ class connectivity_t
     } // for
 
     stream << "=== offsets" << std::endl;
-    for (size_t i = 0; i < offsets_.size() + 1; ++i) {
+    for (size_t i = 0; i < offsets_.size(); ++i) {
       stream << offsets_[i] << std::endl;
     } // for
     return stream;
