@@ -455,11 +455,11 @@ class connectivity_t
     uint64_t size = 0;
 
     for (size_t i = 0; i < n; ++i) {
-      offsets_.set(i, size);
+      offsets_[i] = size;
       size += num_conns[i];
     } // for
 
-    offsets_.set(n, size);
+    offsets_[n] = size;
 
     index_space_.resize_(size);
     index_space_.fill_(id_t(0));

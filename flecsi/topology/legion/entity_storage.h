@@ -29,16 +29,10 @@ public:
     return s_[i].x[0];
   }
 
-  void
-  set(size_t i, size_t offset)
+  auto&
+  operator[](size_t i)
   {
-    if(i > 0){
-      s_[i].x[0] = offset;
-      s_[i - 1].x[1] = offset - s_[i - 1].x[0];
-    }
-    else{
-      s_[0].x[0] = 0;
-    }    
+    return s_[i].x[0];
   }
 
   size_t
@@ -94,7 +88,7 @@ public:
   void
   resize(size_t n)
   {
-    s_.resize(n - 1);
+    s_.resize(n);
   }
 
   size_t
@@ -102,7 +96,7 @@ public:
   const
   {
     return s_.size();
-  }
+  }   
 
 private:
   topology_storage__<LegionRuntime::Arrays::Point<2>> s_;  
