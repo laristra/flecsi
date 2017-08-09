@@ -637,14 +637,6 @@ public:
     return id_range_(*v_, begin, end);
   }
 
-  id_range_
-  ids(
-    const std::pair<size_t, size_t>& p
-  ) const
-  {
-    return id_range_(*v_, p.first, p.second);
-  }
-
   template<
     class S = T
   >
@@ -656,18 +648,6 @@ public:
   {
     return index_space<S, false, false, SORTED, F, STORAGE_TYPE>(
       *this, begin, end);
-  }
-
-  template<
-    class S = T
-  >
-  auto
-  slice(
-    const std::pair<size_t, size_t>& p
-  ) const
-  {
-    return index_space<S, false, false, SORTED, F, STORAGE_TYPE>(
-      *this, p.first, p.second);
   }
 
   template<

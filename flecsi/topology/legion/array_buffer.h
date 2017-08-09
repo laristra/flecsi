@@ -21,7 +21,7 @@ class domain_entity;
 
 template<typename item_t>
 struct array_buffer_type__{
-  using type = item_t*;
+  using type = item_t;
 };
 
 template<size_t M, typename E>
@@ -29,9 +29,9 @@ struct array_buffer_type__<domain_entity<M, E>>{
   using type = E*;
 };
 
-template<typename item_t>
-struct array_buffer_type__<item_t*>{
-  using type = item_t*;
+template<>
+struct array_buffer_type__<utils::id_t>{
+  using type = utils::id_t*;
 };
 
 template<typename T>
@@ -160,12 +160,6 @@ public:
     size_ = 0;
   }
 
-  bool
-  empty()
-  const{
-    return size_ == 0;
-  }
-
   void
   resize(size_t n)
   {
@@ -182,11 +176,11 @@ public:
   }
 
   void
-  set_buffer(item_t buf, size_t capacity, bool initialized)
+  set_buffer(item_t buf, size_t capacity, size_t size)
   {
     buf_ = buf;
+    size_ = size;
     capacity_ = capacity;
-    size_ = initialized ? capacity_ : 0;
   }
 
   item_t

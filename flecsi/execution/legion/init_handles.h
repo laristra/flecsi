@@ -252,16 +252,14 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
     std::unordered_map<size_t, size_t> region_map;
 
-    bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
-
-    LegionRuntime::Arrays::Rect<2> dr;
-    LegionRuntime::Arrays::Rect<2> sr;
-    LegionRuntime::Accessor::ByteOffset bo[2];
-
     for(size_t i{0}; i<h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
-      region_map[ent.index_space] = region;
+      const size_t index_space = ent.index_space;
+      const size_t dim = ent.dim;
+      const size_t domain = ent.domain;
+
+      region_map[index_space] = region;
 
       Legion::LogicalRegion lr = regions[region].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
@@ -271,10 +269,14 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       Legion::Domain d = 
         runtime->get_index_space_domain(context, is); 
 
-      dr = d.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> dr = d.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> sr;
+      LegionRuntime::Accessor::ByteOffset bo[2];
 
       auto ents_raw =
         static_cast<uint8_t*>(ac.template raw_rect_ptr<2>(dr, sr, bo));
+      //ents_raw += bo[1] * ent.size;
+      //ents_raw += bo[1];
       auto ents = reinterpret_cast<topology::mesh_entity_base_*>(ents_raw);
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
@@ -283,11 +285,15 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
         template typeify<utils::id_t>();
       auto ids = ac2.template raw_rect_ptr<2>(dr, sr, bo);
 
+      bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
+
       storage->init_entities(ent.domain, ent.dim, ents, ids, ent.size,
         num_ents, ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
 
       ++region;
     } // for
+
+    h.initialize_storage();
 
     //------------------------------------------------------------------------//
     // Mapping adjacency data from Legion and initializing mesh storage.
@@ -296,7 +302,11 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     for(size_t i{0}; i<h.num_handle_adjacencies; ++i) {
       data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
 
-      Legion::PhysicalRegion pr = regions[region_map[adj.from_index_space]];
+      const size_t adj_index_space = adj.adj_index_space;
+      const size_t from_index_space = adj.from_index_space;
+      const size_t to_index_space = adj.to_index_space;
+
+      Legion::PhysicalRegion pr = regions[region_map[from_index_space]];
       Legion::LogicalRegion lr = pr.get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
@@ -305,14 +315,18 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       Legion::Domain d = runtime->get_index_space_domain(context, is); 
 
-      dr = d.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> dr = d.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> sr;
+      LegionRuntime::Accessor::ByteOffset bo[2];
 
       LegionRuntime::Arrays::Point<2> * offsets =
         ac.template raw_rect_ptr<2>(dr, sr, bo);
+      //offsets += bo[1];
 
       size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
 
       // Store these for translation to CRS
+      adj.offsets_buf = offsets;
       adj.num_offsets = num_offsets;
 
       lr = regions[region].get_logical_region();
@@ -329,7 +343,10 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
+      adj.indices_buf = indices;
       adj.num_indices = num_indices;
+
+      bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
 
       storage->init_connectivity(adj.from_domain, adj.to_domain,
         adj.from_dim, adj.to_dim, offsets, num_offsets,
@@ -337,11 +354,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       ++region;
     } // for
-
-    if(!_read){
-      h.initialize_storage();
-    }
-
   } // handle
 
   //-----------------------------------------------------------------------//
