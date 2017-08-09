@@ -853,7 +853,8 @@ private:
   std::vector<field_info_t> field_info_vec_;
 
   //--------------------------------------------------------------------------//
-  // Field info map for fields in SPMD task, key1 = (data client hash, index space), key2 = fid
+  // Field info map for fields in SPMD task, key1 =
+  // (data client hash, index space), key2 = fid
   //--------------------------------------------------------------------------//
 
   field_info_map_t field_info_map_;
