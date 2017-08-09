@@ -26,12 +26,19 @@ public:
   operator[](size_t i)
   const
   {
-    return s_[i].x[0];
+    size_t size = s_.size();
+    return i == size ? s_[size - 1].x[0] + s_[size - 1].x[1] : s_[i].x[0];
   }
 
   void
   set(size_t i, size_t offset)
   {
+    size_t size = s_.size();
+    if(i == size){
+      s_[size - 1].x[1] = offset - s_[size - 1].x[0];
+      return;
+    }
+
     if(i > 0){
       s_[i].x[0] = offset;
       s_[i - 1].x[1] = offset - s_[i - 1].x[0];
@@ -41,26 +48,12 @@ public:
     }    
   }
 
-  size_t
-  next(size_t i)
-  const
-  {
-    return s_[i].x[0] + s_[i].x[1];
-  }
-
   std::pair<size_t, size_t>
   range(size_t i)
   const
   {
     size_t begin = s_[i].x[0];
     return {begin, begin + s_[i].x[1]};
-  }
-
-  size_t
-  count(size_t i)
-  const
-  {
-    return s_[i].x[1];
   }
 
   void
@@ -76,17 +69,28 @@ public:
   }
 
   void
+  init()
+  {
+    assert(s_.empty());
+    s_[0].x[0] = 0;
+    s_.pushed();
+  }
+
+  void
   push_back(size_t offset)
   {
-    size_t size = s_.size();
+    assert(!s_.empty());
 
-    if(size > 0){
-      s_[size].x[0] = offset;
+    size_t size = s_.size();
+    size_t capacity = s_.capacity();
+
+    if(size == capacity){
       s_[size - 1].x[1] = offset - s_[size - 1].x[0];
+      return;
     }
-    else{
-      s_[0].x[0] = 0;
-    }
+
+    s_[size].x[0] = offset;
+    s_[size - 1].x[1] = offset - s_[size - 1].x[0];
 
     s_.pushed();
   }
