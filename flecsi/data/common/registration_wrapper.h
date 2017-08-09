@@ -247,7 +247,7 @@ struct client_registration_wrapper__<
         utils::const_string_t("__flecsi_internal_adjacency_index__").hash(),
         INDEX_TYPE::value
       >();
-
+      int ispace = INDEX_TYPE::value;
       storage_t::instance().register_field(client_key,
         index_key, index_wrapper_t::register_callback);
 
@@ -324,7 +324,7 @@ struct client_registration_wrapper__<
         utils::const_string_t("__flecsi_internal_field_hash_base__").hash(),
         INDEX_TYPE::value
       >();
-
+      int ispace = INDEX_TYPE::value;
       storage_t::instance().register_field(client_key,
         key, wrapper_t::register_callback);
     } // handle_type

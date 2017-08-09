@@ -259,15 +259,15 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
             ent.id_fid = fitr.second.fid;
         }
       } // for
-
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(ent.index_space);
       clog_assert(ritr != ism.end(), "invalid index space");
       
       ent.color_region = ritr->second.color_region;
-      
       ent.exclusive_region = ritr->second.exclusive_lr;
       ent.shared_region = ritr->second.shared_lr;
       ent.ghost_region = ritr->second.ghost_lr;
+#endif
 
       ++entity_index;
     } // for

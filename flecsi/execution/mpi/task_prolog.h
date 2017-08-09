@@ -80,16 +80,16 @@ namespace execution {
       > & h
     )
     {
-      auto& flecsi_context = context_t::instance();
-
-      const int my_color = flecsi_context.rank;
-      auto &coloring_info = flecsi_context.coloring_info(h.index_space);
-
-      auto &my_coloring_info = flecsi_context.coloring_info(h.index_space).at(my_color);
-
+      auto& context = context_t::instance();
+      const int my_color = context.color();
+      auto &my_coloring_info =
+        context.coloring_info(h.index_space).at(my_color);
+      
       std::vector<int> peers;
-      std::set_union(my_coloring_info.shared_users.begin(), my_coloring_info.shared_users.end(),
-                     my_coloring_info.ghost_owners.begin(), my_coloring_info.ghost_owners.end(),
+      std::set_union(my_coloring_info.shared_users.begin(),
+                     my_coloring_info.shared_users.end(),
+                     my_coloring_info.ghost_owners.begin(),
+                     my_coloring_info.ghost_owners.end(),
                      std::back_inserter(peers));
 
       MPI_Group comm_grp, rma_group;
@@ -105,19 +105,19 @@ namespace execution {
                      &win);
 
       // 2. iterate through each ghost cell and MPI_Get from the peer.
-      // FIXME: the group for MPI_Win_post are the "origin" processes, i.e. the peer
-      // processes calling MPI_Get to get our shared cells. Thus granting access of
-      // local window to these processes. This is the set union of the entry_info.shared
-      // of shared cells.
-      // On the other hand, the group for MPI_Win_start are the 'target' processes, i.e. the
-      // peer processes this rank is going to get ghost cells from. This is the union of
-      // entry_info.rank of ghost cells.
+      // FIXME: the group for MPI_Win_post are the "origin" processes, i.e.
+      // the peer processes calling MPI_Get to get our shared cells. Thus
+      // granting access of local window to these processes. This is the set
+      // union of the entry_info.shared of shared cells.
+      // On the other hand, the group for MPI_Win_start are the 'target'
+      // processes, i.e. the peer processes this rank is going to get ghost
+      // cells from. This is the union of entry_info.rank of ghost cells.
       MPI_Win_post(rma_group, 0, win);
       MPI_Win_start(rma_group, 0, win);
 
 
       std::vector<T> buffer(my_coloring_info.ghost);
-      auto index_coloring = flecsi_context.coloring(h.index_space);
+      auto index_coloring = context.coloring(h.index_space);
 
       int i = 0;
       for (auto ghost : index_coloring.ghost) {
@@ -126,7 +126,7 @@ namespace execution {
                             << std::endl;
         MPI_Get(h.ghost_data+i, 1, MPI_UNSIGNED_LONG_LONG,
                 ghost.rank, ghost.offset,
-                1, flecsi::coloring::mpi_typetraits<T>::type(), win);
+                1, flecsi::coloring::mpi_typetraits__<T>::type(), win);
         i++;
       }
 
@@ -143,6 +143,69 @@ namespace execution {
 
     } // handle
 
+    template<
+      typename T,
+      size_t PERMISSIONS
+    >
+    void
+    handle(
+      data_client_handle__<T, PERMISSIONS> & h
+    )
+    {
+      auto& context_ = context_t::instance();
+
+      auto storage = h.set_storage(new typename T::storage_t);
+
+      for(size_t i{0}; i<h.num_handle_entities; ++i) {
+        data_client_handle_entity_t & ent = h.handle_entities[i];
+
+        const size_t index_space = ent.index_space;
+        const size_t dim = ent.dim;
+        const size_t domain = ent.domain;
+
+//        auto infos = context_.coloring_info(index_space);
+//        auto info = infos[context_.color()];
+//
+//        info.
+
+//        region_map[index_space] = region;
+//
+//        Legion::LogicalRegion lr = regions[region].get_logical_region();
+//        Legion::IndexSpace is = lr.get_index_space();
+//
+//        auto ac = regions[region].get_field_accessor(ent.fid);
+//
+//        Legion::Domain d =
+//          runtime->get_index_space_domain(context, is);
+//
+//        LegionRuntime::Arrays::Rect<2> dr = d.get_rect<2>();
+//        LegionRuntime::Arrays::Rect<2> sr;
+//        LegionRuntime::Accessor::ByteOffset bo[2];
+//
+//        auto ents_raw =
+//          static_cast<uint8_t*>(ac.template raw_rect_ptr<2>(dr, sr, bo));
+//        //ents_raw += bo[1] * ent.size;
+//        //ents_raw += bo[1];
+//        auto ents = reinterpret_cast<topology::mesh_entity_base_*>(ents_raw);
+//
+//        size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
+//
+//        bool read = PERMISSIONS == dro || PERMISSIONS == drw;
+        // TODO: How to get number of entities?
+        // TODO: How to allocate memory?
+        // TODO: we don't even know the type of the entity
+        // TODO: we should get ents from some persistent memory storage rather than
+        // new allocation every time.
+        auto ents = new char [100*32];
+        storage->init_entities(ent.domain, ent.dim,
+                               reinterpret_cast<topology::mesh_entity_base_*>(ents), ent.size,
+                               100, 100, 0, 0, false);//num_ents, read);
+//
+//        ++region;
+      } // for
+      h.initialize_storage();
+
+    } // handle
     //------------------------------------------------------------------------//
     //! FIXME: Need to document.
     //------------------------------------------------------------------------//

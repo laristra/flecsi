@@ -877,23 +877,30 @@ struct storage_type__<dense>
         fi.namespace_hash == NAMESPACE &&
         fi.name_hash == NAME;
     }));
-    //auto field_info = context.registered_fields()[0];
 
     // get color_info for this field.
-    // TODO: lookup rather than hardcoded 0
-    auto color_info = (context.coloring_info(field_info.index_space)).at(context.rank);
+    auto color_info = (context.coloring_info(field_info.index_space)).at(context.color());
 
-    // get field_data
-    auto &field_data = context.registered_field_data(field_info.fid);
+    auto& registered_field_data = context.registered_field_data();
+    auto field_data = registered_field_data.find(field_info.fid);
+    if (field_data == registered_field_data.end()) {
+      size_t size = field_info.size * (color_info.exclusive +
+                                       color_info.shared +
+                                       color_info.ghost);
+      execution::context_t::instance().register_field_data(field_info.fid,
+                                                           size);
+    }
 
+    auto data = registered_field_data[field_info.fid].data();
     // populate data member of data_handle_t
     auto &hb = dynamic_cast<data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
 
+    hb.fid = field_info.fid;
     hb.index_space = field_info.index_space;
 
     hb.exclusive_size = color_info.exclusive;
     hb.combined_data = hb.exclusive_buf = hb.exclusive_data =
-      reinterpret_cast<DATA_TYPE *>(field_data.data());
+      reinterpret_cast<DATA_TYPE *>(data);
     hb.combined_size = color_info.exclusive;
 
     hb.shared_size = color_info.shared;
@@ -903,6 +910,7 @@ struct storage_type__<dense>
     hb.ghost_size = color_info.ghost;
     hb.ghost_data = hb.shared_data + hb.shared_size;
     hb.combined_size += color_info.ghost;
+
 
     return h;
   }

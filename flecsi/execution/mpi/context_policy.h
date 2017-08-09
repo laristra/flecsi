@@ -69,6 +69,16 @@ struct mpi_context_policy_t
   );
 
   //--------------------------------------------------------------------------//
+  //! Return the color for which the context was initialized.
+  //--------------------------------------------------------------------------//
+
+  size_t
+  color()
+  {
+    return color_;
+  } // color
+
+  //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
 
@@ -129,51 +139,28 @@ struct mpi_context_policy_t
     return index_space_data_map_;
   }
 
-  //--------------------------------------------------------------------------//
-  // Field info map for fields in SPMD task, key1 = (data client hash, index space), key2 = fid
-  //--------------------------------------------------------------------------//
-  struct field_info_t{
-    size_t data_client_hash;
-    size_t storage_type;
-    size_t size;
-    size_t namespace_hash;
-    size_t name_hash;
-    size_t versions;
-    field_id_t fid;
-    size_t index_space;
-    size_t key;
-  }; // struct field_info_t
-
-  using field_info_map_t =
-  std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
-
-
-  void register_field_data(field_info_t& field_info,
-                           std::unordered_map<size_t, coloring::coloring_info_t>& infos) {
-    clog(info) << "index space: " << field_info.index_space << std::endl;
-    auto info = infos[rank];
-    auto combined_size = 0;
-    clog(info) << "number of exclusive: " << info.exclusive << std::endl;
-    combined_size += info.exclusive ;
-
-    clog(info) << "number of shared: " << info.shared << std::endl;
-    combined_size += info.shared ;
-
-    clog(info) << "number of ghost: " << info.ghost << std::endl;
-    combined_size += info.ghost ;
+  void register_field_data(field_id_t fid,
+                           size_t size) {
     // TODO: VERSIONS
-    field_data.insert({field_info.fid, std::vector<uint8_t>(combined_size * field_info.size)});
+    field_data.insert({fid, std::vector<uint8_t>(size)});
   }
 
-  std::vector<uint8_t> &
-  registered_field_data(field_id_t fid)
+//  std::vector<uint8_t> &
+//  registered_field_data(field_id_t fid)
+//  {
+//    return field_data[fid];
+//  }
+
+  std::map<field_id_t, std::vector<uint8_t>>&
+  registered_field_data()
   {
-    return field_data[fid];
+    return field_data;
   }
-
   int rank;
 
 private:
+
+  int color_ = 0;
 
   // Define the map type using the task_hash_t hash function.
 //  std::unordered_map<

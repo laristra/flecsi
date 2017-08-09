@@ -22,7 +22,7 @@ struct mpi_data_handle_policy_t
   // information from the context which is data that is the same
   // across multiple ranks/colors and should be used ONLY as read-only data
 
-  //field_id_t fid;
+  field_id_t fid;
   size_t index_space;
 }; // class mpi_data_handle_policy_t
 

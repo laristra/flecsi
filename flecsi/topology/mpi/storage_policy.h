@@ -6,7 +6,6 @@
 #ifndef flecsi_topology_mpi_topology_storage_policy_h
 #define flecsi_topology_mpi_topology_storage_policy_h
 
-#include "flecsi/topology/mesh_storage.h"
 
 #include <array>
 #include <unordered_map>
@@ -14,12 +13,15 @@
 #include <iostream>
 #include <vector>
 
+#include "flecsi/topology/mesh_storage.h"
 
+#include "flecsi/data/data_client.h"
+//>>>>>>> mpi_dense_handle
 #include "flecsi/topology/mesh_utils.h"
 #include "flecsi/topology/mesh_storage.h"
 #include "flecsi/topology/mesh_types.h"
 #include "flecsi/topology/index_space.h"
-#include "flecsi/topology/entity_storage.h"
+#include "flecsi/topology/mpi/entity_storage.h"
 
 ///
 /// \file
@@ -37,15 +39,87 @@ namespace topology {
 template <size_t ND, size_t NM>
 struct mpi_topology_storage_policy_t
 {
+    static constexpr size_t num_partitions = 5;
   using id_t = utils::id_t;
 
   using index_spaces_t = 
-    std::array<index_space<mesh_entity_base_*, true, true, true>, ND + 1>;
+    std::array<index_space<mesh_entity_base_*, true, true, true,
+    void, topology_storage__  >, ND + 1>;
+
+  using partition_index_spaces_t =
+    std::array<index_space<mesh_entity_base_*, false, false, true,
+      void, topology_storage__ >, ND + 1>;
 
   // array of array of domain_connectivity
   std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
 
   std::array<index_spaces_t, NM> index_spaces;
+
+  std::array<std::array<partition_index_spaces_t, NM>, num_partitions>
+    partition_index_spaces;
+
+  void
+  init_entities(
+    size_t domain,
+    size_t dim,
+    mesh_entity_base_* entities,
+    size_t size,
+    size_t num_entities,
+    size_t num_exclusive,
+    size_t num_shared,
+    size_t num_ghost,
+    bool read
+  )
+  {
+    auto& is = index_spaces[domain][dim];
+
+    auto s = is.storage();
+    s->set_buffer(entities, num_entities);
+
+    size_t shared_end = num_exclusive + num_shared;
+    size_t ghost_end = shared_end + num_ghost;
+
+    for(size_t partition = 0; partition < num_partitions; ++partition){
+      auto& isp = partition_index_spaces[partition][domain][dim];
+      isp.set_storage(s);
+      isp.set_id_storage(&is.id_storage());
+
+      switch(partition_t(partition)){
+        case exclusive:
+          isp.set_begin(0);
+          isp.set_end(num_exclusive);
+          break;
+        case shared:
+          isp.set_begin(num_exclusive);
+          isp.set_end(shared_end);
+          break;
+        case ghost:
+          isp.set_begin(shared_end);
+          isp.set_end(ghost_end);
+          break;
+        case owned:
+          isp.set_begin(0);
+          isp.set_end(shared_end);
+          break;
+        default:
+          break;
+      }
+    }
+
+    if(read) {
+      for(size_t i{0}; i<num_entities; ++i) {
+        is.push_back(id_t::make(dim, i));
+      } // for
+    } // if
+
+    for(auto& domain_connectivities : topology) {
+      auto& domain_connectivity = domain_connectivities[domain];
+      for(size_t d = 0; d <= ND; ++d) {
+        domain_connectivity.get(dim, d).set_entity_storage(s);
+        domain_connectivity.get(d, dim).set_entity_storage(s);
+      } // for
+    } // for
+  } // init_entities
 
   template<size_t D, size_t M, typename ET>
   void
@@ -96,7 +170,7 @@ struct mpi_topology_storage_policy_t
     id_t global_id = id_t::make<M>(dim, entity_id);
     ent->template set_global_id<M>(global_id);
 
-    is.push_back(ent);
+    is.push_back(global_id);
 
     return ent;
   } // make

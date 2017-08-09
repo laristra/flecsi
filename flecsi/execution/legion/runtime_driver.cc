@@ -163,8 +163,7 @@ runtime_driver(
 
     Legion::LogicalPartition color_lpart = runtime->get_logical_partition(ctx,
         flecsi_ispace.logical_region, flecsi_ispace.index_partition);
-    
-    pos_compaction_launcher.add_region_requirement(
+        pos_compaction_launcher.add_region_requirement(
         Legion::RegionRequirement(color_lpart, 0/*projection ID*/,
             WRITE_DISCARD, EXCLUSIVE, flecsi_ispace.logical_region))
                 .add_field(ghost_owner_pos_fid);

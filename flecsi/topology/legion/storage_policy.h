@@ -18,8 +18,10 @@
 #include <legion_utilities.h>
 
 #include "flecsi/topology/mesh_storage.h"
+
 #include "flecsi/topology/mesh_types.h"
 #include "flecsi/topology/legion/entity_storage.h"
+
 #include "flecsi/topology/index_space.h"
 #include "flecsi/utils/id.h"
 

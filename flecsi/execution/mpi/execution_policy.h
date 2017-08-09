@@ -240,7 +240,7 @@ struct mpi_execution_policy_t
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
 
-    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, std::forward_as_tuple(args ...));
+    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, task_args);//std::forward_as_tuple(task_args ...));
 
     // TODO: Do we nee to run taks_epilog ??
     return fut;
