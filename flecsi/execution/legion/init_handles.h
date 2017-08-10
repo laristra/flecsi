@@ -280,14 +280,10 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       auto ents = reinterpret_cast<topology::mesh_entity_base_*>(ents_raw);
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
-
-      auto ac2 = regions[region].get_field_accessor(ent.id_fid).
-        template typeify<utils::id_t>();
-      auto ids = ac2.template raw_rect_ptr<2>(dr, sr, bo);
-
+ 
       bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
 
-      storage->init_entities(ent.domain, ent.dim, ents, ids, ent.size,
+      storage->init_entities(ent.domain, ent.dim, ents, ent.size,
         num_ents, ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
 
       ++region;

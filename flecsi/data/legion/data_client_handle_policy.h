@@ -29,7 +29,6 @@ struct data_client_handle_entity_t
   size_t num_shared;
   size_t num_ghost;
   field_id_t fid;
-  field_id_t id_fid;
   Legion::LogicalRegion color_region;
   Legion::LogicalRegion exclusive_region;
   Legion::LogicalRegion shared_region;

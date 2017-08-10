@@ -65,7 +65,6 @@ struct legion_topology_storage_policy_t
     size_t domain,
     size_t dim,
     mesh_entity_base_* entities,
-    utils::id_t* ids,
     size_t size,
     size_t num_entities,
     size_t num_exclusive,
