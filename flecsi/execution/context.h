@@ -20,6 +20,7 @@
 //! @date Initial file creation: Oct 19, 2015
 //----------------------------------------------------------------------------//
 
+#include <algorithm>
 #include <cstddef>
 #include <map>
 #include <unordered_map>
@@ -348,15 +349,30 @@ private:
     {
       size_t h{0};
       for(auto i: v) {
-        h ^= i;
+        h |= i;
       } // for
 
       return h;
     } // operator ()
   }; // struct vector_hash_t
 
+  struct vector_equal_t
+  {
+    bool
+    operator () (
+      std::vector<size_t> a,
+      std::vector<size_t> b
+    )
+    const
+    {
+      std::sort( a.begin(), a.end() );
+      std::sort( b.begin(), b.end() );
+      return (a == b );
+    } // operator ()
+  }; // struct vector_hash_t
+
   std::map<size_t, std::unordered_map<std::vector<size_t>, size_t,
-    vector_hash_t>> reverse_intermediate_map_;
+    vector_hash_t, vector_equal_t>> reverse_intermediate_map_;
 
   // key: virtual index space.
   // value: map of color to coloring info
