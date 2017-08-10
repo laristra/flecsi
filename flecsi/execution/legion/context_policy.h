@@ -693,6 +693,28 @@ struct legion_context_policy_t
   }
 
   //--------------------------------------------------------------------------//
+  //! Set DynamicCollective for <double> in reduction
+  //!
+  //! @param min_reduction Legion DynamicCollective for <double> max reduction
+  //--------------------------------------------------------------------------//
+
+  void
+  set_min_reduction(Legion::DynamicCollective& min_reduction)
+  {
+    min_reduction_ = min_reduction;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Get DynamicCollective for <double> max reduction
+  //--------------------------------------------------------------------------//
+
+  auto&
+  min_reduction()
+  {
+    return min_reduction_;
+  }
+
+  //--------------------------------------------------------------------------//
   //! Register field info for index space and field id.
   //!
   //! @param index_space virtual index space
@@ -892,6 +914,7 @@ private:
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   Legion::DynamicCollective max_reduction_;
+  Legion::DynamicCollective min_reduction_;
 
 }; // class legion_context_policy_t
 

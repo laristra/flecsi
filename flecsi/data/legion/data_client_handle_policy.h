@@ -29,7 +29,6 @@ struct data_client_handle_entity_t
   size_t num_shared;
   size_t num_ghost;
   field_id_t fid;
-  field_id_t id_fid;
   Legion::LogicalRegion color_region;
   Legion::LogicalRegion exclusive_region;
   Legion::LogicalRegion shared_region;
@@ -57,7 +56,7 @@ struct data_client_handle_adjacency_t
   Legion::LogicalRegion from_color_region;
   Legion::LogicalRegion from_primary_region;
   LegionRuntime::Arrays::Point<2> * offsets_buf;
-  utils::id_t * indices_buf;
+  uint64_t * indices_buf;
 }; // struct data_client_handle_adjacency_t
 
 //----------------------------------------------------------------------------//

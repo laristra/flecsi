@@ -17,7 +17,7 @@ namespace flecsi {
 namespace topology {
 
 template<typename T>
-using topology_storage__ = array_buffer__<T>;
+using entity_storage__ = array_buffer__<T>;
 
 } // namespace topology
 } // namespace flecsi

@@ -18,7 +18,7 @@ namespace flecsi {
 namespace topology {
 
 template<typename T>
-using topology_storage__ = std::vector<T>;
+using entity_storage__ = std::vector<T>;
 
 } // namespace topology
 } // namespace flecsi

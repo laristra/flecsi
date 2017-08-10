@@ -513,7 +513,7 @@ class connectivity_t
   /*!
     Get the to id's vector.
    */
-  const auto & get_entities() const { return index_space_.id_storage(); }
+  const id_vector_t & get_entities() const { return index_space_.id_vec(); }
   /*!
     Get the entities of the specified from index.
    */
@@ -636,14 +636,14 @@ class connectivity_t
     return from_index_vec_;
   }
 
-  const auto& to_id_storage() const
+  const auto& to_id_vec() const
   {
-    return index_space_.id_storage();
+    return index_space_.id_vec();
   }
 
-  auto& to_id_storage()
+  auto& to_id_vec()
   {
-    return index_space_.id_storage_();
+    return index_space_.id_vec_();
   }
 
   auto& get_index_space(){

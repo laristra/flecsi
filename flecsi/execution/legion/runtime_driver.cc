@@ -140,6 +140,11 @@ runtime_driver(
   runtime->create_dynamic_collective(ctx, num_colors, MaxReductionOp::redop_id,
              &min, sizeof(min));
 
+  double max = std::numeric_limits<double>::max();
+  Legion::DynamicCollective min_reduction =
+  runtime->create_dynamic_collective(ctx, num_colors, MinReductionOp::redop_id,
+             &max, sizeof(max));
+
   //-------------------------------------------------------------------------//
   // Excute Legion task to maps between pre-compacted and compacted
   // data placement
@@ -320,6 +325,8 @@ runtime_driver(
     // #6 serialize reduction
     args_serializers[color].serialize(&max_reduction,
         sizeof(Legion::DynamicCollective));
+    args_serializers[color].serialize(&min_reduction,
+        sizeof(Legion::DynamicCollective));
 
     // #7 serialize adjacency info
     using adjacency_triple_t = context_t::adjacency_triple_t;
@@ -450,6 +457,7 @@ runtime_driver(
   // ----------------------------------------------------------------------//
 
   runtime->destroy_dynamic_collective(ctx, max_reduction);
+  runtime->destroy_dynamic_collective(ctx, min_reduction);
 
   for(auto& itr_idx : phase_barriers_map) {
     const size_t idx = itr_idx.first;
@@ -897,6 +905,11 @@ spmd_task(
   args_deserializer.deserialize((void*)&max_reduction,
     sizeof(Legion::DynamicCollective));
   context_.set_max_reduction(max_reduction);
+  
+  Legion::DynamicCollective min_reduction;
+  args_deserializer.deserialize((void*)&min_reduction,
+    sizeof(Legion::DynamicCollective));
+  context_.set_min_reduction(min_reduction);
 
   // #7 deserialize adjacency info
   size_t num_adjacencies;

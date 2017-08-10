@@ -74,6 +74,22 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
           adj.offsets_buf[j].x[0] = from_index_vec[j];
           adj.offsets_buf[j].x[1] = from_index_vec[j+1] - from_index_vec[j];
         } // for
+
+        // Write back indices
+        auto & ents = conn.get_entities();
+        clog_assert(ents.size() == adj.num_indices, 
+          "Size mismatch in adjacency from (" << adj.from_domain << ", " << 
+          adj.from_dim << ") to (" << adj.to_domain << ", " << adj.to_dim <<
+          ").  Expected " << adj.num_indices << ", got " <<
+          ents.size()
+        );
+
+        clog_assert(adj.num_indices == conn.to_size(),
+          "connectivity indices size mismatch");
+
+        for(size_t j{0}; j<adj.num_indices; ++j) {
+          adj.indices_buf[j] = ents[j].entity();
+        } // for
       } // for
     } // if
 
