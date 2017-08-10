@@ -74,11 +74,7 @@ public:
 
   using ref_t = typename array_buf_ref_type__<T>::type;
 
-  array_buffer__()
-  : buf_(nullptr),
-  size_(0),
-  capacity_(0)
-  {}
+  array_buffer__(){}
 
   ref_t
   operator[](size_t index)
@@ -101,13 +97,6 @@ public:
   {
     return size_;
   } // size
-
-  size_t
-  capacity()
-  const
-  {
-    return capacity_;
-  } // capacity
 
   item_t
   begin()
@@ -140,31 +129,18 @@ public:
   >
   void insert(Args && ... args){}
 
-  void
-  push_back(
-    const ref_t& x
-  )
-  {
-    assert(size_ < capacity_ && "array buffer capacity exceeded");
-    buf_[size_++] = x;
-  }
+  template<
+    typename ... Args
+  >
+  void push_back(Args && ... args){}
 
   void
-  pushed()
-  {
-    ++size_;
-  }
-  
-  void
-  clear(){
-    size_ = 0;
-  }
+  clear(){}
 
   void
   resize(size_t n)
   {
-    assert(n <= capacity_);
-    size_ = n;
+    assert(false && "unimplemented");
   }
 
   void
@@ -172,15 +148,6 @@ public:
   {
     buf_ = buf;
     size_ = size;
-    capacity_ = size;
-  }
-
-  void
-  set_buffer(item_t buf, size_t capacity, size_t size)
-  {
-    buf_ = buf;
-    size_ = size;
-    capacity_ = capacity;
   }
 
   item_t
@@ -220,7 +187,6 @@ public:
 private:
   item_t buf_;
   size_t size_;  
-  size_t capacity_;  
 };
 
 } // namespace topology
