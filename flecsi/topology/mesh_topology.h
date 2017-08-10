@@ -1270,8 +1270,10 @@ private:
     connection_vector_t entity_vertex_conn;
 
     // Helper variables
-    size_t entity_id = 0;
     size_t max_cell_entity_conns = 1;
+
+    // keep track of the local ids, since they may be added out of order
+    std::vector<size_t> entity_ids;
 
     domain_connectivity<MT::num_dimensions> & dc = 
       base_t::ms_->topology[Domain][Domain];
@@ -1381,13 +1383,14 @@ private:
             DimensionToBuild
           >::find();
 
+
         auto & context_ = flecsi::execution::context_t::instance();
 
-        // Get the reverse map of the vertex ids. This map takes
+        // Get the map of the vertex ids. This map takes
         // local compacted vertex ids to mesh index space ids.
         // CIS -> MIS.
-        auto & reverse_vertex_map =
-          context_.reverse_index_map(vertex_index_space);
+        auto & vertex_map =
+          context_.index_map(vertex_index_space);
 
         std::vector<size_t> vertices_mis;
         vertices_mis.reserve(m);
@@ -1395,7 +1398,7 @@ private:
         // Push the MIS vertex ids onto a vector to search for the
         // associated entity.
         for(id_t * aptr{a}; aptr<(a+m); ++aptr) {
-          vertices_mis.push_back(reverse_vertex_map[aptr->entity()]);
+          vertices_mis.push_back(vertex_map[aptr->entity()]);
         } // for
 
         // Get the reverse map of the intermediate ids. This map takes
@@ -1407,7 +1410,7 @@ private:
         const auto entity_id_mis = reverse_intermediate_map.at(vertices_mis);
 
         // Get the index map for the entity.
-        auto & entity_index_map = context_.index_map(entity_index_space);
+        auto & entity_index_map = context_.reverse_index_map(entity_index_space);
 
         // Lookup the CIS id of the entity.
         const auto entity_id = entity_index_map.at(entity_id_mis);
@@ -1421,12 +1424,13 @@ private:
 
         // Add this id to the cell to entity connections
         conns.push_back(itr.first->second);
-
+        
         // If the insertion took place
         if (itr.second) {
           // what does this do?
           id_vector_t ev2 = id_vector_t(a, a + m);
           entity_vertex_conn.emplace_back(std::move(ev2));
+          entity_ids.emplace_back( entity_id );
 
           max_cell_entity_conns =
             std::max(max_cell_entity_conns, conns.size());
@@ -1434,13 +1438,17 @@ private:
           auto ent =
             MT::template create_entity<Domain, DimensionToBuild>(this, m, id);
 
-#if 0
-          // A new entity was added, so we advance the id counter.
-          ++entity_id;
-#endif
         } // if
       } // for
     } // for
+  
+    // sort the entity connectivity. Entities may have been created out of
+    // order.  Sort them using the list of entity ids we kept track of
+    utils::reorder_destructive(
+      entity_ids.begin(),
+      entity_ids.end(),
+      entity_vertex_conn.begin()
+    );
 
     // Set the connectivity information from the created entities to
     // the vertices.

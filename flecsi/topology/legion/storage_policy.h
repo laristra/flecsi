@@ -201,7 +201,7 @@ struct legion_topology_storage_policy_t
   >
   T *
   make(
-    id_t const & id,
+    id_t id,
     S && ... args
   )
   {

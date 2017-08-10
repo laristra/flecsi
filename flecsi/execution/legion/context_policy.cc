@@ -75,6 +75,7 @@ legion_context_policy_t::initialize(
   Legion::Runtime::configure_MPI_interoperability(rank);
 
   Runtime::register_reduction_op<MaxReductionOp>(MaxReductionOp::redop_id);
+  Runtime::register_reduction_op<MinReductionOp>(MinReductionOp::redop_id);
 
   // Start the Legion runtime
   Runtime::start(argc, argv, true);
