@@ -155,6 +155,7 @@ struct legion_context_policy_t
 
   size_t
   color()
+  const
   {
     return color_;
   } // color
@@ -663,6 +664,7 @@ private:
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   Legion::DynamicCollective max_reduction_;
+  Legion::DynamicCollective min_reduction_;
 
 }; // class legion_context_policy_t
 

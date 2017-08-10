@@ -135,7 +135,11 @@ namespace execution {
       for(size_t i{0}; i<h.num_handle_entities; ++i) {
         data_client_handle_entity_t & ent = h.handle_entities[i];
 
-        region_map[ent.index_space] = region_reqs.size();
+        const size_t index_space = ent.index_space;
+        const size_t dim = ent.dim;
+        const size_t domain = ent.domain;
+
+        region_map[index_space] = region_reqs.size();
 
         Legion::RegionRequirement rr(ent.color_region,
           privilege_mode(PERMISSIONS), EXCLUSIVE, ent.color_region);
@@ -165,15 +169,17 @@ namespace execution {
         ent.num_ghost = dr.hi[1] - dr.lo[1] + 1;
 
         rr.add_field(ent.fid);
-        rr.add_field(ent.id_fid);
         region_reqs.push_back(rr);
       } // for
 
       for(size_t i{0}; i < h.num_handle_adjacencies; ++i){
         data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
 
-        region_reqs[region_map[adj.from_index_space]].
-          add_field(adj.offset_fid);
+        const size_t adj_index_space = adj.adj_index_space;
+        const size_t from_index_space = adj.from_index_space;
+        const size_t to_index_space = adj.to_index_space;
+
+        region_reqs[region_map[from_index_space]].add_field(adj.offset_fid);
 
         Legion::RegionRequirement adj_rr(adj.adj_region,
           privilege_mode(PERMISSIONS), EXCLUSIVE, adj.adj_region);

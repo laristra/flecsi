@@ -281,28 +281,28 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       NOCI
       )
 
-#    cinch_add_unit(data_client_handle
-#      SOURCES
-#        test/data_client_handle.cc
-#        ../supplemental/coloring/add_colorings.cc
-#        ${DRIVER_INITIALIZATION}
-#        ${RUNTIME_DRIVER}
-#      INPUTS
-#        test/simple2d-8x8.msh
-#        test/simple2d-16x16.msh
-#      LIBRARIES
-#        flecsi
-#        ${CINCH_RUNTIME_LIBRARIES}
-#        ${COLORING_LIBRARIES}
-#      DEFINES
-#        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-#        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-#        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-#        -DFLECSI_8_8_MESH
-#      POLICY ${UNIT_POLICY}
-#      THREADS 2
-#      NOCI
-#      )
+    cinch_add_unit(data_client_handle
+      SOURCES
+        test/data_client_handle.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        -DFLECSI_8_8_MESH
+      POLICY ${UNIT_POLICY}
+      THREADS 2
+      NOCI
+      )
 
 
 endif()
@@ -386,27 +386,27 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
       NOCI
     )
 
-#    cinch_add_unit(cell_to_cell_connectivity
-#      SOURCES
-#        test/legion/cell_to_cell_connectivity_drivers.cc
-#        ../supplemental/coloring/add_colorings.cc
-#        ${DRIVER_INITIALIZATION}
-#        ${RUNTIME_DRIVER}
-#      INPUTS
-#        test/simple2d-8x8.msh
-#        test/simple2d-16x16.msh
-#      LIBRARIES
-#        flecsi
-#        ${CINCH_RUNTIME_LIBRARIES}
-#        ${COLORING_LIBRARIES}
-#      DEFINES
-#        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-#        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-#        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-#      POLICY LEGION
-#      THREADS 2
-#      NOCI
-#    )
+    cinch_add_unit(cell_to_cell_connectivity
+      SOURCES
+        test/legion/cell_to_cell_connectivity_drivers.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+      POLICY LEGION
+      THREADS 2
+      NOCI
+    )
 
     cinch_add_unit(gid_to_lid_map
       SOURCES
@@ -430,29 +430,29 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     )
 
 
-    cinch_add_unit(data_client_handle
-      SOURCES
-        test/data_client_handle.cc
-        ../supplemental/coloring/add_colorings.cc
-        ${DRIVER_INITIALIZATION}
-        ${RUNTIME_DRIVER}
-      INPUTS
-        test/simple2d-8x8.msh
-        test/simple2d-16x16.msh
-        test/data_client_handle.blessed
-      LIBRARIES
-        flecsi
-        ${CINCH_RUNTIME_LIBRARIES}
-        ${COLORING_LIBRARIES}
-      DEFINES
-        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-        -DFLECSI_8_8_MESH
-      POLICY LEGION
-      THREADS 2
-      NOCI
-    )
+#    cinch_add_unit(data_client_handle
+#      SOURCES
+#        test/data_client_handle.cc
+#        ../supplemental/coloring/add_colorings.cc
+#        ${DRIVER_INITIALIZATION}
+#        ${RUNTIME_DRIVER}
+#      INPUTS
+#        test/simple2d-8x8.msh
+#        test/simple2d-16x16.msh
+#        test/data_client_handle.blessed
+#      LIBRARIES
+#        flecsi
+#        ${CINCH_RUNTIME_LIBRARIES}
+#        ${COLORING_LIBRARIES}
+#      DEFINES
+#        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+#        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+#        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+#        -DFLECSI_8_8_MESH
+#      POLICY LEGION
+#      THREADS 2
+#      NOCI
+#    )
 
   endif()
 

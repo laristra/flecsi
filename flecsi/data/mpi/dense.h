@@ -870,23 +870,21 @@ struct storage_type__<dense>
     using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
 
     // get field_info for this data handle
-    // TODO: lookup rather than hardcoded 0
-    auto field_infos = context.registered_fields();
-    auto field_info = *(std::find_if(field_infos.begin(), field_infos.end(), [](auto& fi) {
-      return fi.data_client_hash == typeid(client_type).hash_code() &&
-        fi.namespace_hash == NAMESPACE &&
-        fi.name_hash == NAME;
-    }));
+    auto& field_info =
+      context.get_field_info(
+        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
+      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
     // get color_info for this field.
-    auto color_info = (context.coloring_info(field_info.index_space)).at(context.color());
+    auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
 
     auto& registered_field_data = context.registered_field_data();
-    auto field_data = registered_field_data.find(field_info.fid);
-    if (field_data == registered_field_data.end()) {
+    auto fieldDataIter = registered_field_data.find(field_info.fid);
+    if (fieldDataIter == registered_field_data.end()) {
       size_t size = field_info.size * (color_info.exclusive +
                                        color_info.shared +
                                        color_info.ghost);
+      // TODO: deal with VERSION
       execution::context_t::instance().register_field_data(field_info.fid,
                                                            size);
     }
@@ -897,6 +895,7 @@ struct storage_type__<dense>
 
     hb.fid = field_info.fid;
     hb.index_space = field_info.index_space;
+    hb.data_client_hash = field_info.data_client_hash;
 
     hb.exclusive_size = color_info.exclusive;
     hb.combined_data = hb.exclusive_buf = hb.exclusive_data =
@@ -910,7 +909,6 @@ struct storage_type__<dense>
     hb.ghost_size = color_info.ghost;
     hb.ghost_data = hb.shared_data + hb.shared_size;
     hb.combined_size += color_info.ghost;
-
 
     return h;
   }

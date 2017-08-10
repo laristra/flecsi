@@ -251,13 +251,8 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
           utils::const_string_t("__flecsi_internal_entity_data__").
           hash(), ent.index_space)) {
             ent.fid = fitr.second.fid;
+            break;
         } // if
-        else if(fitr.second.key == 
-          utils::hash::client_internal_field_hash(
-          utils::const_string_t("__flecsi_internal_entity_id__").
-          hash(), ent.index_space)) {
-            ent.id_fid = fitr.second.fid;
-        }
       } // for
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(ent.index_space);
@@ -292,8 +287,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     h.num_handle_adjacencies = binding_walker.adjacency_info.size();
 
     for(adjacency_info_t& hi : binding_walker.adjacency_info){
-      data_client_handle_adjacency_t & adj = 
-        h.handle_adjacencies[handle_index];
+      data_client_handle_adjacency_t & adj = h.handle_adjacencies[handle_index];
 
       adj.adj_index_space = hi.index_space;
       adj.from_index_space = hi.from_index_space;

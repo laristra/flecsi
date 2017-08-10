@@ -29,6 +29,7 @@ namespace execution {
 void
 remap_shared_entities()
 {
+  // TODO: Is this superseded by index_map/reverse_index_map?
   auto& flecsi_context = context_t::instance();
   const int my_color = flecsi_context.color();
 

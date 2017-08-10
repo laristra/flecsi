@@ -608,12 +608,13 @@ public:
 
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
+    const index_vector_t & fv = c.get_from_index_vec();
 
     using etype = entity_type<D, TM>;
     using dtype = domain_entity<TM, etype>;
 
     auto ents = c.get_index_space().slice<dtype>(
-      c.range(e->template id<FM>()));
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
     return ents;
   } // entities
 
@@ -634,11 +635,13 @@ public:
   {
     connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
+    const index_vector_t & fv = c.get_from_index_vec();
 
     using etype = entity_type<D, TM>;
     using dtype = domain_entity<TM, etype>;
 
-    return c.get_index_space().slice<dtype>(c.range(e->template id<FM>()));
+    return c.get_index_space().slice<dtype>(
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
 
   /*!
@@ -772,7 +775,9 @@ public:
   {
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
-    return c.get_index_space().ids(c.range(e->template id<FM>()));
+    const index_vector_t & fv = c.get_from_index_vec();
+    return c.get_index_space().ids(
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
 
   /*!
@@ -891,11 +896,11 @@ public:
 
     const connectivity_t& c1 = get_connectivity(domain, dim, to_dim);
     assert(!c1.empty() && "empty connectivity c1");
-    const auto& o1 = c1.offsets();
+    const index_vector_t& fv1 = c1.get_from_index_vec();
 
     const connectivity_t& c2 = get_connectivity(domain, to_dim, dim);
     assert(!c2.empty() && "empty connectivity c2");
-    const auto& o2 = c2.offsets();
+    const index_vector_t& fv2 = c2.get_from_index_vec();
 
     mesh_graph_partition<int_t> cp;
     cp.offset.reserve(pn);
@@ -907,12 +912,13 @@ public:
     partition.push_back(0);
 
     for(size_t from_id = 0; from_id < n; ++from_id){
-      auto to_ids = c1.get_index_space().ids(o1.range(from_id));
+      auto to_ids = c1.get_index_space().ids(fv1[from_id], fv1[from_id + 1]);
       cp.offset.push_back(offset);
 
       for(auto to_id : to_ids){
         auto ret_ids =
-          c2.get_index_space().ids(o2.range(to_id.entity()));
+          c2.get_index_space().ids(
+            fv2[to_id.entity()], fv2[to_id.entity() + 1]);
 
         for(auto ret_id : ret_ids){
           if(ret_id.entity() != from_id){
@@ -1030,7 +1036,7 @@ public:
           for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
             const connectivity_t& c = dc.get(from_dim, to_dim);
 
-            auto& tv = c.to_id_storage();
+            auto& tv = c.to_id_vec();
             uint64_t num_to = tv.size();
             std::memcpy(buf + pos, &num_to, sizeof(num_to));
             pos += sizeof(num_to);
@@ -1045,7 +1051,8 @@ public:
             std::memcpy(buf + pos, tv.data(), bytes);
             pos += bytes;
 
-            uint64_t num_from = c.offsets().size();
+            auto& fv = c.from_index_vec();
+            uint64_t num_from = fv.size();
             std::memcpy(buf + pos, &num_from, sizeof(num_from));
             pos += sizeof(num_from);
 
@@ -1056,8 +1063,7 @@ public:
               buf = (char*)std::realloc(buf, size);
             }
 
-            // TODO - FIX FOR OFFSETS STORAGE
-            //std::memcpy(buf + pos, fv.data(), bytes);
+            std::memcpy(buf + pos, fv.data(), bytes);
             pos += bytes;
           }
         }
@@ -1099,7 +1105,7 @@ public:
           for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
             connectivity_t& c = dc.get(from_dim, to_dim);
 
-            auto& tv = c.to_id_storage();
+            auto& tv = c.to_id_vec();
             uint64_t num_to;
             std::memcpy(&num_to, buf + pos, sizeof(num_to));
             pos += sizeof(num_to);
@@ -1108,15 +1114,14 @@ public:
             tv.assign(ta, ta + num_to);
             pos += num_to * sizeof(id_vector_t::value_type);
 
-            // TODO - FIX FOR OFFSETS STORAGE
-            // auto& fv = c.from_index_vec();
-            // uint64_t num_from;
-            // std::memcpy(&num_from, buf + pos, sizeof(num_from));
-            // pos += sizeof(num_from);
-            // auto fa = (index_vector_t::value_type*)(buf + pos);
-            // fv.resize(num_from);
-            // fv.assign(fa, fa + num_from);
-            // pos += num_from * sizeof(index_vector_t::value_type);
+            auto& fv = c.from_index_vec();
+            uint64_t num_from;
+            std::memcpy(&num_from, buf + pos, sizeof(num_from));
+            pos += sizeof(num_from);
+            auto fa = (index_vector_t::value_type*)(buf + pos);
+            fv.resize(num_from);
+            fv.assign(fa, fa + num_from);
+            pos += num_from * sizeof(index_vector_t::value_type);
           }
         }
       }
@@ -1265,8 +1270,10 @@ private:
     connection_vector_t entity_vertex_conn;
 
     // Helper variables
-    size_t entity_id = 0;
     size_t max_cell_entity_conns = 1;
+
+    // keep track of the local ids, since they may be added out of order
+    std::vector<size_t> entity_ids;
 
     domain_connectivity<MT::num_dimensions> & dc = 
       base_t::ms_->topology[Domain][Domain];
@@ -1376,13 +1383,14 @@ private:
             DimensionToBuild
           >::find();
 
+
         auto & context_ = flecsi::execution::context_t::instance();
 
-        // Get the reverse map of the vertex ids. This map takes
+        // Get the map of the vertex ids. This map takes
         // local compacted vertex ids to mesh index space ids.
         // CIS -> MIS.
-        auto & reverse_vertex_map =
-          context_.reverse_index_map(vertex_index_space);
+        auto & vertex_map =
+          context_.index_map(vertex_index_space);
 
         std::vector<size_t> vertices_mis;
         vertices_mis.reserve(m);
@@ -1390,7 +1398,7 @@ private:
         // Push the MIS vertex ids onto a vector to search for the
         // associated entity.
         for(id_t * aptr{a}; aptr<(a+m); ++aptr) {
-          vertices_mis.push_back(reverse_vertex_map[aptr->entity()]);
+          vertices_mis.push_back(vertex_map[aptr->entity()]);
         } // for
 
         // Get the reverse map of the intermediate ids. This map takes
@@ -1402,7 +1410,7 @@ private:
         const auto entity_id_mis = reverse_intermediate_map.at(vertices_mis);
 
         // Get the index map for the entity.
-        auto & entity_index_map = context_.index_map(entity_index_space);
+        auto & entity_index_map = context_.reverse_index_map(entity_index_space);
 
         // Lookup the CIS id of the entity.
         const auto entity_id = entity_index_map.at(entity_id_mis);
@@ -1416,12 +1424,13 @@ private:
 
         // Add this id to the cell to entity connections
         conns.push_back(itr.first->second);
-
+        
         // If the insertion took place
         if (itr.second) {
           // what does this do?
           id_vector_t ev2 = id_vector_t(a, a + m);
           entity_vertex_conn.emplace_back(std::move(ev2));
+          entity_ids.emplace_back( entity_id );
 
           max_cell_entity_conns =
             std::max(max_cell_entity_conns, conns.size());
@@ -1429,13 +1438,17 @@ private:
           auto ent =
             MT::template create_entity<Domain, DimensionToBuild>(this, m, id);
 
-#if 0
-          // A new entity was added, so we advance the id counter.
-          ++entity_id;
-#endif
         } // if
       } // for
     } // for
+  
+    // sort the entity connectivity. Entities may have been created out of
+    // order.  Sort them using the list of entity ids we kept track of
+    utils::reorder_destructive(
+      entity_ids.begin(),
+      entity_ids.end(),
+      entity_vertex_conn.begin()
+    );
 
     // Set the connectivity information from the created entities to
     // the vertices.

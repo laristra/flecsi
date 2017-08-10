@@ -26,6 +26,7 @@
   namespace flecsi {
 
   using field_id_t = size_t;
+  using task_id_t = size_t;
 
   }
 
@@ -37,15 +38,8 @@
   namespace flecsi {
 
   using field_id_t = Legion::FieldID;
-
-  //--------------------------------------------------------------------------//
-  //! The task_id_t type is used to uniquely identify tasks that have
-  //! been registered with the runtime.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
-
   using task_id_t = Legion::TaskID;
+
   }
 
 // MPI Policy
@@ -55,6 +49,7 @@
 
   using field_id_t = size_t;
   using task_id_t = size_t;
+
   }
 
 #endif // FLECSI_RUNTIME_MODEL

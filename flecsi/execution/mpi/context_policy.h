@@ -145,12 +145,6 @@ struct mpi_context_policy_t
     field_data.insert({fid, std::vector<uint8_t>(size)});
   }
 
-//  std::vector<uint8_t> &
-//  registered_field_data(field_id_t fid)
-//  {
-//    return field_data[fid];
-//  }
-
   std::map<field_id_t, std::vector<uint8_t>>&
   registered_field_data()
   {

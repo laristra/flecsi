@@ -6,8 +6,6 @@
 #ifndef flecsi_topology_legion_array_buffer_h
 #define flecsi_topology_legion_array_buffer_h
 
-#include "flecsi/utils/id.h"
-
 ///
 /// \file
 /// \date Initial file creation: Apr 04, 2017
@@ -21,7 +19,7 @@ class domain_entity;
 
 template<typename item_t>
 struct array_buffer_type__{
-  using type = item_t*;
+  using type = item_t;
 };
 
 template<size_t M, typename E>
@@ -29,70 +27,31 @@ struct array_buffer_type__<domain_entity<M, E>>{
   using type = E*;
 };
 
-template<typename item_t>
-struct array_buffer_type__<item_t*>{
-  using type = item_t*;
-};
-
-template<typename T>
-struct array_buf_ref_type__{
-  using type = T&;
-};
-
-template<typename S>
-struct array_buf_ref_type__<S*>{
-  using type = S*;
-};
-
-template<size_t M, class E>
-struct array_buf_ref_type__<domain_entity<M, E>>{
-  using type = E*;
-};
-
-template<typename T, bool B>
-struct array_buf_ref_get__{
-  static T get(T a, size_t i){
-    return &a[i];
-  }
-};
-
-template<typename T>
-struct array_buf_ref_get__<T, false>{
-  static auto get(T a, size_t i) -> decltype(a[i]){
-    return a[i];
-  }
-};
-
 template<typename T>
 class array_buffer__{
 public:
   using item_t = typename array_buffer_type__<T>::type;
 
-  using iterator = item_t;
-  
-  using const_iterator = item_t;
+  array_buffer__(){}
 
-  using ref_t = typename array_buf_ref_type__<T>::type;
+  array_buffer__(
+    item_t* buf,
+    size_t size
+  )
+  : buf_(buf),
+  size_(size){}
 
-  array_buffer__()
-  : buf_(nullptr),
-  size_(0),
-  capacity_(0)
-  {}
-
-  ref_t
+  item_t
   operator[](size_t index)
   {
-    return array_buf_ref_get__<
-      item_t, std::is_pointer<ref_t>::value>::get(buf_, index);
+    return buf_ + index;
   }
 
-  const ref_t
+  const item_t
   operator[](size_t index)
   const
   {
-    return array_buf_ref_get__<
-      const item_t, std::is_pointer<ref_t>::value>::get(buf_, index);
+    return buf_ + index;
   }
 
   size_t
@@ -102,13 +61,6 @@ public:
     return size_;
   } // size
 
-  size_t
-  capacity()
-  const
-  {
-    return capacity_;
-  } // capacity
-
   item_t
   begin()
   {
@@ -138,39 +90,21 @@ public:
   template<
     typename ... Args
   >
-  void insert(Args && ... args){}
+  void insert(Args && ... args){
+    assert(false && "attempt to resize topology storage array buffer");
+  }
+
+  template<
+    typename ... Args
+  >
+  void push_back(Args && ... args){
+    assert(false && "attempt to resize topology storage array buffer");
+  }
 
   void
-  push_back(
-    const ref_t& x
-  )
+  clear()
   {
-    assert(size_ < capacity_ && "array buffer capacity exceeded");
-    buf_[size_++] = x;
-  }
-
-  void
-  pushed()
-  {
-    ++size_;
-  }
-  
-  void
-  clear(){
-    size_ = 0;
-  }
-
-  bool
-  empty()
-  const{
-    return size_ == 0;
-  }
-
-  void
-  resize(size_t n)
-  {
-    assert(n <= capacity_);
-    size_ = n;
+    assert(false && "attempt to resize topology storage array buffer");
   }
 
   void
@@ -178,15 +112,6 @@ public:
   {
     buf_ = buf;
     size_ = size;
-    capacity_ = size;
-  }
-
-  void
-  set_buffer(item_t buf, size_t capacity, bool initialized)
-  {
-    buf_ = buf;
-    size_ = initialized ? capacity_ : 0;
-    capacity_ = capacity;
   }
 
   item_t
@@ -195,38 +120,9 @@ public:
     return buf_;
   }
 
-  item_t
-  data()
-  {
-    return buf_;
-  }
-
-  const item_t
-  data()
-  const
-  {
-    return buf_;
-  }
-
-  template<
-    typename ... Args
-  >
-  void
-  assign(Args && ... args)
-  {
-    assert(false && "unimplemented");
-  }
-
-  void
-  reserve(size_t n)
-  {
-    assert(false && "unimplemented");
-  }
-
 private:
   item_t buf_;
   size_t size_;  
-  size_t capacity_;  
 };
 
 } // namespace topology
@@ -238,3 +134,4 @@ private:
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/
+
