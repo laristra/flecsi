@@ -140,6 +140,11 @@ runtime_driver(
   runtime->create_dynamic_collective(ctx, num_colors, MaxReductionOp::redop_id,
              &min, sizeof(min));
 
+  double max = std::numeric_limits<double>::max();
+  Legion::DynamicCollective min_reduction =
+  runtime->create_dynamic_collective(ctx, num_colors, MinReductionOp::redop_id,
+             &max, sizeof(max));
+
   //-------------------------------------------------------------------------//
   // Excute Legion task to maps between pre-compacted and compacted
   // data placement
@@ -320,6 +325,8 @@ runtime_driver(
     // #6 serialize reduction
     args_serializers[color].serialize(&max_reduction,
         sizeof(Legion::DynamicCollective));
+    args_serializers[color].serialize(&min_reduction,
+        sizeof(Legion::DynamicCollective));
 
     // #7 serialize adjacency info
     using adjacency_triple_t = context_t::adjacency_triple_t;
@@ -450,6 +457,7 @@ runtime_driver(
   // ----------------------------------------------------------------------//
 
   runtime->destroy_dynamic_collective(ctx, max_reduction);
+  runtime->destroy_dynamic_collective(ctx, min_reduction);
 
   for(auto& itr_idx : phase_barriers_map) {
     const size_t idx = itr_idx.first;
@@ -807,6 +815,93 @@ spmd_task(
     context_.add_index_map(is.first, _map);
   } // for
 
+  //////////////////////////////////////////////////////////////////////////////
+  // FIX for Legion cluster fuck reordering nightmare...
+  //////////////////////////////////////////////////////////////////////////////
+
+  for(auto is: context_.coloring_map()) {
+    size_t index_space = is.first;
+
+    auto& _cis_to_gis = context_.cis_to_gis_map(index_space);
+    auto& _gis_to_cis = context_.gis_to_cis_map(index_space);
+
+    auto & _color_map = context_.coloring_info(index_space);
+
+    std::vector<size_t> _rank_offsets(context_.colors());
+
+    for(size_t c{0}; c<context_.colors(); ++c) {
+      auto & _color_info = _color_map.at(c);
+
+      for(size_t sc{0}; sc<c; ++sc) {
+        _rank_offsets[sc] += (_color_info.exclusive + _color_info.shared);
+      } // for
+    } // for
+
+    size_t cid{0};
+    for(auto entity: is.second.exclusive) {
+      size_t gid = _rank_offsets[entity.rank] + entity.offset;
+      _cis_to_gis[cid] = gid;
+      _gis_to_cis[gid] = cid;
+      ++cid;
+    } // for
+
+    for(auto entity: is.second.shared) {
+      size_t gid = _rank_offsets[entity.rank] + entity.offset;
+      _cis_to_gis[cid] = gid;
+      _gis_to_cis[gid] = cid;
+      ++cid;
+    } // for
+
+    for(auto entity: is.second.ghost) {
+      size_t gid = _rank_offsets[entity.rank] + entity.offset;
+      _cis_to_gis[cid] = gid;
+      _gis_to_cis[gid] = cid;
+      ++cid;
+    } // for
+
+#if 0
+    for(auto & im: context_.index_map(is.first)) {
+    } // for
+#endif
+
+  std::cerr << "START" << std::endl;
+  if(is.first == 2) {
+    for(auto _cis: _cis_to_gis) {
+      std::cerr << "cis " << _cis.first << " " << _cis.second << std::endl;
+    } // for
+  } // if
+
+  } // for
+
+#if 0
+  // FIXME: find actual cell index space
+  const size_t cell_index_space = 0;
+
+  auto & _cell_map = context_.index_map(cell_index_space);
+  auto & _color_map = context_.coloring_info(cell_index_space);
+
+  std::vector<size_t> _rank_offsets(color_map.size());
+
+  for(size_t c{0}; c<context_.colors(); ++c) {
+    const auto & _color_info = _color_map[c];
+    for(size_t sc{0}; sc<c; ++sc) {
+      _rank_offsets[sc] += (_color_info.exclusive + _color_info.shared +
+        _color_info.ghost);
+    } // for
+  } // for
+    
+  } // for
+
+  for(auto entity_info: cell_map) {
+
+
+    const size_t gid = 
+  } // for
+#endif
+
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
@@ -822,6 +917,11 @@ spmd_task(
   args_deserializer.deserialize((void*)&max_reduction,
     sizeof(Legion::DynamicCollective));
   context_.set_max_reduction(max_reduction);
+  
+  Legion::DynamicCollective min_reduction;
+  args_deserializer.deserialize((void*)&min_reduction,
+    sizeof(Legion::DynamicCollective));
+  context_.set_min_reduction(min_reduction);
 
   // #7 deserialize adjacency info
   size_t num_adjacencies;

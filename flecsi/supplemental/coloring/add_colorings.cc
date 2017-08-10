@@ -33,7 +33,7 @@ namespace execution {
 
 void add_colorings(coloring_map_t map) {
 
-  clog_set_output_rank(1);
+  clog_set_output_rank(0);
 
   // Get the context instance.
   context_t & context_ = context_t::instance();

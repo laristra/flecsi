@@ -303,14 +303,10 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       auto ents = reinterpret_cast<topology::mesh_entity_base_*>(ents_raw);
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
-
-      auto ac2 = regions[region].get_field_accessor(ent.id_fid).
-        template typeify<utils::id_t>();
-      auto ids = ac2.template raw_rect_ptr<2>(dr, sr, bo);
-
+ 
       bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
 
-      storage->init_entities(ent.domain, ent.dim, ents, ids, ent.size,
+      storage->init_entities(ent.domain, ent.dim, ents, ent.size,
         num_ents, ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
 
       ++region;
@@ -356,13 +352,14 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       is = lr.get_index_space();
 
       auto ac3 = regions[region].get_field_accessor(adj.index_fid).template
-        typeify<utils::id_t>();
+        typeify<uint64_t>();
 
       d = runtime->get_index_space_domain(context, is); 
 
       dr = d.get_rect<2>();
 
-      utils::id_t * indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
+      uint64_t * indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
+      //indices += bo[1];
 
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
@@ -371,9 +368,11 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
 
-      storage->init_connectivity(adj.from_domain, adj.to_domain,
-        adj.from_dim, adj.to_dim, offsets, num_offsets,
-        indices, num_indices, _read);
+      // TODO: fix
+      if(_read) {
+        storage->init_connectivity(adj.from_domain, adj.to_domain,
+          adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
+      } // if
 
       ++region;
     } // for
