@@ -820,7 +820,12 @@ spmd_task(
   //////////////////////////////////////////////////////////////////////////////
 
   for(auto is: context_.coloring_map()) {
-    auto & _color_map = context_.coloring_info(is.first);
+    size_t index_space = is.first;
+
+    auto& _cis_to_gis = context_.cis_to_gis_map(index_space);
+    auto& _gis_to_cis = context_.gis_to_cis_map(index_space);
+
+    auto & _color_map = context_.coloring_info(index_space);
 
     std::vector<size_t> _rank_offsets(context_.colors());
 
@@ -832,19 +837,26 @@ spmd_task(
       } // for
     } // for
 
-    std::map<size_t, size_t> _cis_to_gis;
-
-    size_t count{0};
+    size_t cid{0};
     for(auto entity: is.second.exclusive) {
-      _cis_to_gis[count++] = _rank_offsets[entity.rank] + entity.offset;
+      size_t gid = _rank_offsets[entity.rank] + entity.offset;
+      _cis_to_gis[cid] = gid;
+      _gis_to_cis[gid] = cid;
+      ++cid;
     } // for
 
     for(auto entity: is.second.shared) {
-      _cis_to_gis[count++] = _rank_offsets[entity.rank] + entity.offset;
+      size_t gid = _rank_offsets[entity.rank] + entity.offset;
+      _cis_to_gis[cid] = gid;
+      _gis_to_cis[gid] = cid;
+      ++cid;
     } // for
 
     for(auto entity: is.second.ghost) {
-      _cis_to_gis[count++] = _rank_offsets[entity.rank] + entity.offset;
+      size_t gid = _rank_offsets[entity.rank] + entity.offset;
+      _cis_to_gis[cid] = gid;
+      _gis_to_cis[gid] = cid;
+      ++cid;
     } // for
 
 #if 0

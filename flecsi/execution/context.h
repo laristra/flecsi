@@ -126,6 +126,22 @@ struct context__ : public CONTEXT_POLICY
     return index_map_[index_space];
   } // index_map
 
+  std::map<size_t, size_t> &
+  cis_to_gis_map(
+    size_t index_space
+  )
+  {
+    return cis_to_gis_map_[index_space];
+  }
+
+  std::map<size_t, size_t> &
+  gis_to_cis_map(
+    size_t index_space
+  )
+  {
+    return gis_to_cis_map_[index_space];
+  }
+
   //--------------------------------------------------------------------------//
   //! Return the index map associated with the given index space.
   //!
@@ -360,10 +376,11 @@ private:
 #if 0
   std::map<size_t, std::map<size_t, size_t>> cis_to_mis_map_;
   std::map<size_t, std::map<size_t, size_t>> mis_to_cis_map_;
+#endif
 
+  // key: mesh index space entity id
   std::map<size_t, std::map<size_t, size_t>> cis_to_gis_map_;
   std::map<size_t, std::map<size_t, size_t>> gis_to_cis_map_;
-#endif
 
   // key: intermediate entity to vertex ids
   std::map<size_t, std::unordered_map<size_t, std::vector<size_t>>>
