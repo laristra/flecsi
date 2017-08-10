@@ -69,9 +69,12 @@ legion_context_policy_t::initialize(
   Runtime::add_registration_callback(mapper_registration);
 
   // Configure interoperability layer.
-  int rank;
+  int rank, size;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
   color_ = rank;
+  colors_ = size;
+
   Legion::Runtime::configure_MPI_interoperability(rank);
 
   Runtime::register_reduction_op<MaxReductionOp>(MaxReductionOp::redop_id);

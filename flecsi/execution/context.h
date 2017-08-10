@@ -77,6 +77,17 @@ struct context__ : public CONTEXT_POLICY
   } // color
 
   //--------------------------------------------------------------------------//
+  //! Return the number of colors.
+  //--------------------------------------------------------------------------//
+
+  size_t
+  colors()
+  const
+  {
+    return CONTEXT_POLICY::colors();
+  } // color
+
+  //--------------------------------------------------------------------------//
   //! Add an index map. This map can be used to go between mesh and locally
   //! compacted index spaces.
   //!
@@ -344,6 +355,14 @@ private:
   // key: mesh index space entity id
   std::map<size_t, std::map<size_t, size_t>> index_map_;
   std::map<size_t, std::map<size_t, size_t>> reverse_index_map_;
+
+#if 0
+  std::map<size_t, std::map<size_t, size_t>> cis_to_mis_map_;
+  std::map<size_t, std::map<size_t, size_t>> mis_to_cis_map_;
+
+  std::map<size_t, std::map<size_t, size_t>> cis_to_gis_map_;
+  std::map<size_t, std::map<size_t, size_t>> gis_to_cis_map_;
+#endif
 
   // key: intermediate entity to vertex ids
   std::map<size_t, std::unordered_map<size_t, std::vector<size_t>>>
