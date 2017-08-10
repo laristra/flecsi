@@ -130,7 +130,9 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 #ifndef MAPPER_COMPACTION
   // Create the concatenated buffer E+S+G
   h.combined_data = new T[h.combined_size];
-
+#ifdef COMPACTED_STORAGE_SORT
+  T * temp_data = new T[h.combined_size];
+#endif
   // Set additional fields needed by the data handle/accessor
   // and copy into the combined buffer. Note that exclusive_data, etc.
   // aliases the combined buffer for its respective region.
@@ -166,9 +168,30 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
         clog_fatal("invalid permissions case");
     } // switch
 
+#ifndef COMPACTED_STORAGE_SORT
     std::memcpy(h.combined_data + pos, data[r], sizes[r] * sizeof(T));
+#else
+    std::memcpy(temp_data + pos, data[r], sizes[r] * sizeof(T));
+#endif
     pos += sizes[r];
-  } // for
+  }
+#ifdef COMPACTED_STORAGE_SORT
+   std::cout <<"IRINA DEBUG"<<std::endl;
+   for (int i=0; i< h.combined_size; i++)
+    std::cout <<h.combined_data[i] << "  "<<std::endl;
+
+   context_t & context_ = context_t::instance();
+
+   auto& gis_to_cis = context_.gis_to_cis_map(h.index_space);
+   
+//   for(auto& citr : gis_to_cis){
+//       size_t c = citr.second;
+
+   std::memcpy( h.combined_data, temp_data, h.combined_size * sizeof(T));
+   delete []temp_data;
+#endif
+
+  // for
 #else
   {
   Legion::LogicalRegion lr = regions[region].get_logical_region();
