@@ -614,6 +614,29 @@ struct legion_context_policy_t
   }
 
   //--------------------------------------------------------------------------//
+  //! Set DynamicCollective for <double> in reduction
+  //!
+  //! @param min_reduction Legion DynamicCollective for <double> max reduction
+  //--------------------------------------------------------------------------//
+
+  void
+  set_min_reduction(Legion::DynamicCollective& min_reduction)
+  {
+    min_reduction_ = min_reduction;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Get DynamicCollective for <double> max reduction
+  //--------------------------------------------------------------------------//
+
+  auto&
+  min_reduction()
+  {
+    return min_reduction_;
+  }
+
+
+  //--------------------------------------------------------------------------//
   //! Compute internal field id for from/to index space pair for connectivity.
   //! @param from_index_space from index space
   //! @param to_index_space to index space
