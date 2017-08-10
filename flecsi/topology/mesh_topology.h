@@ -1308,7 +1308,22 @@ private:
       base_t::ms_->index_spaces[Domain][UsingDimension].
       template cast<domain_entity<Domain, cell_type>>();
 
-    for (size_t c = 0; c < _num_cells; ++c) {
+    // Lookup the index space for the entity type being created.
+    constexpr size_t cell_index_space =
+      find_index_space_from_dimension__<
+        std::tuple_size<typename MT::entity_types>::value,
+        typename MT::entity_types,
+        DimensionToBuild
+      >::find();
+
+    auto & context_ = flecsi::execution::context_t::instance();
+
+    auto& gis_to_cis = context_.gis_to_cis_map(cell_index_space);
+
+    for(auto& citr : gis_to_cis){
+      size_t c = citr.second;
+
+    //for (size_t c = 0; c < _num_cells; ++c) {
       // Get the cell object
 
       auto cell = static_cast<cell_type*>(cis[c]);
@@ -1382,9 +1397,6 @@ private:
             typename MT::entity_types,
             DimensionToBuild
           >::find();
-
-
-        auto & context_ = flecsi::execution::context_t::instance();
 
         // Get the map of the vertex ids. This map takes
         // local compacted vertex ids to mesh index space ids.
