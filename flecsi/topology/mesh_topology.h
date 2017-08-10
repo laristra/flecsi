@@ -1313,7 +1313,7 @@ private:
       find_index_space_from_dimension__<
         std::tuple_size<typename MT::entity_types>::value,
         typename MT::entity_types,
-        DimensionToBuild
+        UsingDimension
       >::find();
 
     auto & context_ = flecsi::execution::context_t::instance();
