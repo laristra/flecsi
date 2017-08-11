@@ -216,10 +216,7 @@ struct legion_topology_storage_policy_t
 
     ent->template set_global_id<M>(id);
 
-    auto& id_storage = is.id_storage();
-    id_storage.push_back(id);
-
-    is.pushed();
+    is.push_back( id );
 
     return ent;
   } // make
