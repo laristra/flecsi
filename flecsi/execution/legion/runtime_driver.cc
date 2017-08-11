@@ -829,12 +829,12 @@ spmd_task(
 
     std::vector<size_t> _rank_offsets(context_.colors());
 
+    size_t offset = 0;
+
     for(size_t c{0}; c<context_.colors(); ++c) {
       auto & _color_info = _color_map.at(c);
-
-      for(size_t sc{0}; sc<c; ++sc) {
-        _rank_offsets[sc] += (_color_info.exclusive + _color_info.shared);
-      } // for
+      _rank_offsets[c] = offset;
+      offset += (_color_info.exclusive + _color_info.shared);
     } // for
 
     size_t cid{0};
