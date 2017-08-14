@@ -1,0 +1,60 @@
+/*~--------------------------------------------------------------------------~*
+ *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+ * /@@/////  /@@          @@////@@ @@////// /@@
+ * /@@       /@@  @@@@@  @@    // /@@       /@@
+ * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+ * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+ * /@@       /@@/@@//// //@@    @@       /@@/@@
+ * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+ * //       ///  //////   //////  ////////  //
+ *
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
+ *~--------------------------------------------------------------------------~*/
+
+#ifndef flecsi_utils_offset_h
+#define flecsi_utils_offset_h
+
+//!
+//! \file
+//! \date Initial file creation: Aug 14, 2017
+//!
+
+namespace flecsi {
+namespace utils {
+
+template<size_t COUNT_BITS>
+class offset__{
+public:
+  static_assert(COUNT_BITS <= 32, "COUNT_BITS max exceeded");
+
+  static constexpr uint64_t count_mask = (1ul << COUNT_BITS) - 1;
+
+  offset__(uint64_t start, uint32_t count){
+    o_ = start << COUNT_BITS | count;
+  }
+
+  offset__(const offset__& prev, uint32_t count){
+    o_ = prev.end() << COUNT_BITS | count;
+  }
+
+  uint64_t start() const{
+    return o_ >> COUNT_BITS;
+  }
+
+  uint32_t count() const{
+    return o_ & count_mask;
+  }
+
+  uint64_t end() const{
+    return start() + count();
+  }
+
+private:
+  uint64_t o_;
+};
+
+} // namespace utils
+} // namespace flecsi
+
+#endif // flecsi_utils_offset_h
