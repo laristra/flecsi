@@ -402,7 +402,7 @@ class connectivity_t
     }
 
     clear();
-    offsets_.push_back(0);
+    offsets_.init();
   }
 
   /*!
@@ -416,7 +416,7 @@ class connectivity_t
     clear();
 
     // the first offset is always 0
-    offsets_.push_back(0);
+    offsets_.init();
 
     // populate the to id's and add from offsets for each connectivity group
 
@@ -486,7 +486,7 @@ class connectivity_t
   std::ostream & dump( std::ostream & stream )
   {
     for (size_t i = 0; i < offsets_.size(); ++i) {
-      for (size_t j = offsets_[i]; j < offsets_.next(i); ++j) {
+      for (size_t j = offsets_[i]; j < offsets_[i + 1]; ++j) {
         stream << index_space_(j).entity() << std::endl;
         // stream << to_id_vec_[j] << std::endl;
       }
@@ -499,9 +499,8 @@ class connectivity_t
     } // for
 
     stream << "=== offsets" << std::endl;
-    stream << 0 << std::endl;
-    for (size_t i = 1; i < offsets_.size(); ++i) {
-      stream << offsets_.next(i - 1) << std::endl;
+    for (size_t i = 0; i < offsets_.size(); ++i) {
+      stream << offsets_[i] << std::endl;
     } // for
     return stream;
   } // dump
@@ -531,7 +530,7 @@ class connectivity_t
   {
     assert(index < offsets_.size() - 1);
     uint64_t start = offsets_[index];
-    count = offsets_.next(index) - start;
+    count = offsets_[index + 1] - start;
     return index_space_.id_array() + start;
   }
 
@@ -543,7 +542,7 @@ class connectivity_t
   {
     assert(index < offsets_.size() - 1);
     auto start = offsets_[index];
-    auto count = offsets_.next(index) - start;
+    auto count = offsets_[index + 1] - start;
     return utils::make_array_ref( index_space_.id_array() + start, count );
   }
 
@@ -555,7 +554,7 @@ class connectivity_t
   {
     assert(index < offsets_.size() - 1);
     auto start = offsets_[index];
-    auto end = offsets_.next(index);
+    auto end = offsets_[index + 1];
     std::reverse(index_space_.index_begin_() + start,
                  index_space_.index_begin_() + end);
   }
@@ -569,7 +568,7 @@ class connectivity_t
   {
     assert(index < offsets_.size() - 1);
     auto start = offsets_[index];
-    auto count = offsets_.next(index) - start;
+    auto count = offsets_[index + 1] - start;
     assert( order.size() == count );
     utils::reorder(
       order.begin(), order.end(), index_space_.id_array() + start );
@@ -609,11 +608,11 @@ class connectivity_t
     size_t size = 0;
 
     for (size_t i = 0; i < n; i++) {
-      offsets_[i] = size;
+      offsets_.set(i, size);
       size += conns[i].size();
     }
 
-    offsets_[n] = size;
+    offsets_.set(n, size);
 
     index_space_.begin_push_(size);
 
