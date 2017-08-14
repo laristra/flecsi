@@ -826,14 +826,14 @@ spmd_task(
 
     auto & _color_map = context_.coloring_info(index_space);
 
-    std::vector<size_t> _rank_offsets(context_.colors());
+    std::vector<size_t> _rank_offsets(context_.colors()+1, 0);
+
+    size_t offset = 0;
 
     for(size_t c{0}; c<context_.colors(); ++c) {
       auto & _color_info = _color_map.at(c);
-
-      for(size_t sc{0}; sc<c; ++sc) {
-        _rank_offsets[sc] += (_color_info.exclusive + _color_info.shared);
-      } // for
+      _rank_offsets[c] = offset;
+      offset += (_color_info.exclusive + _color_info.shared);
     } // for
 
     size_t cid{0};
@@ -858,45 +858,8 @@ spmd_task(
       ++cid;
     } // for
 
-#if 0
-    for(auto & im: context_.index_map(is.first)) {
-    } // for
-#endif
-
-  std::cerr << "START" << std::endl;
-  if(is.first == 2) {
-    for(auto _cis: _cis_to_gis) {
-      std::cerr << "cis " << _cis.first << " " << _cis.second << std::endl;
-    } // for
-  } // if
-
   } // for
 
-#if 0
-  // FIXME: find actual cell index space
-  const size_t cell_index_space = 0;
-
-  auto & _cell_map = context_.index_map(cell_index_space);
-  auto & _color_map = context_.coloring_info(cell_index_space);
-
-  std::vector<size_t> _rank_offsets(color_map.size());
-
-  for(size_t c{0}; c<context_.colors(); ++c) {
-    const auto & _color_info = _color_map[c];
-    for(size_t sc{0}; sc<c; ++sc) {
-      _rank_offsets[sc] += (_color_info.exclusive + _color_info.shared +
-        _color_info.ghost);
-    } // for
-  } // for
-    
-  } // for
-
-  for(auto entity_info: cell_map) {
-
-
-    const size_t gid = 
-  } // for
-#endif
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////

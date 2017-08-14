@@ -169,6 +169,24 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     std::memcpy(h.combined_data + pos, data[r], sizes[r] * sizeof(T));
     pos += sizes[r];
   } // for
+#ifdef COMPACTED_STORAGE_SORT
+  h.combined_data_sort = new T [h.combined_size];
+
+  context_t & context_ = context_t::instance();
+
+   auto& gis_to_cis = context_.gis_to_cis_map(h.index_space);
+
+   size_t indx=0;
+   for(auto& citr : gis_to_cis){
+       size_t c = citr.second;
+       assert (c<h.combined_size);
+       h.combined_data_sort[indx]= h.combined_data[c];
+       indx++;
+   }
+
+
+#endif
+
 #else
   {
   Legion::LogicalRegion lr = regions[region].get_logical_region();

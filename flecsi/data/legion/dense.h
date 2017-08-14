@@ -122,11 +122,16 @@ struct dense_handle_t :
 
     // ghost is never mapped with write permissions
 
-    if(base_t::master && base_t::combined_data){
 #ifndef MAPPER_COMPACTION
+    if(base_t::master && base_t::combined_data){
       delete[] base_t::combined_data;
-#endif
     }
+#ifdef COMPACTED_STORAGE_SORT
+    if(base_t::master && base_t::combined_data_sort){
+      delete[] base_t::combined_data_sort;
+    }
+#endif
+#endif
   }
   
   ///
@@ -338,7 +343,11 @@ struct dense_handle_t :
   {
     assert(index < base_t::combined_size && "index out of range");
 #ifndef MAPPER_COMPACTION
+#ifndef COMPACTED_STORAGE_SORT
     return base_t::combined_data[index];
+#else
+    return base_t::combined_data_sort[index];
+#endif
 #else
     return *(base_t::combined_data+index);
 #endif
@@ -357,7 +366,11 @@ struct dense_handle_t :
   {
     assert(index < base_t::combined_size && "index out of range");
 #ifndef MAPPER_COMPACTION
+#ifndef COMPACTED_STORAGE_SORT
     return base_t::combined_data[index];
+#else
+    return base_t::combined_data_sort[index];
+#endif
 #else
     return *(base_t::combined_data+index);
 #endif

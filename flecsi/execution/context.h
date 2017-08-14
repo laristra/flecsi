@@ -214,7 +214,15 @@ struct context__ : public CONTEXT_POLICY
     return cis_to_gis_map_[index_space];
   }
 
-  std::map<size_t, size_t> &
+  const auto &
+  gis_to_cis_map(
+    size_t index_space
+  ) const
+  {
+    return gis_to_cis_map_.at(index_space);
+  }
+
+  auto &
   gis_to_cis_map(
     size_t index_space
   )
