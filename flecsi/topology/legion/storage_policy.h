@@ -74,8 +74,6 @@ struct legion_topology_storage_policy_t
     bool read
   )
   {
-    // TODO: fix for all index spaces
-
     auto& is = index_spaces[domain][dim];
 
     auto s = is.storage();

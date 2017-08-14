@@ -342,7 +342,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
 
       // Store these for translation to CRS
-      adj.offsets_buf = offsets;
       adj.num_offsets = num_offsets;
 
       lr = regions[region].get_logical_region();
@@ -359,7 +358,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
-      adj.indices_buf = indices;
       adj.num_indices = num_indices;
 
       storage->init_connectivity(adj.from_domain, adj.to_domain,
