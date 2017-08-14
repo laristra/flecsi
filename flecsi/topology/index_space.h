@@ -76,7 +76,8 @@ class index_space
 public:
   using id_t = typename std::remove_pointer<T>::type::id_t;
 
-  using id_vector_t = std::vector<id_t>;
+  using id_storage_t = STORAGE_TYPE<id_t>;
+
   using storage_t = STORAGE_TYPE<T>;
 
   using item_t = typename std::remove_pointer<T>::type;
@@ -107,13 +108,13 @@ public:
     {}
 
     id_range_(
-      const id_vector_t& items
+      const id_storage_t& items
     )
     : items_(&items), begin_(0), end_(items_->size())
     {}
 
     id_range_(
-      const id_vector_t& items,
+      const id_storage_t& items,
       size_t begin,
       size_t end
       )
@@ -130,20 +131,20 @@ public:
       end_ = r.end_;
     }
 
-    typename id_vector_t::const_iterator
+    typename id_storage_t::const_iterator
     begin() const
     {
       return items_->begin() + begin_;
     }
 
-    typename id_vector_t::const_iterator
+    typename id_storage_t::const_iterator
     end() const
     {
       return items_->begin() + end_;
     }
 
   private:
-    const id_vector_t* items_;
+    const id_storage_t* items_;
     size_t begin_;
     size_t end_;
   };
@@ -167,7 +168,7 @@ public:
 
     iterator_base_(
       storage_t* s,
-      const id_vector_t& items,
+      const id_storage_t& items,
       size_t index,
       size_t end
     )
@@ -176,7 +177,7 @@ public:
 
     iterator_base_(
       const storage_t* s,
-      const id_vector_t& items,
+      const id_storage_t& items,
       size_t index,
       size_t end
     )
@@ -223,7 +224,7 @@ public:
     }
 
    protected:
-    const id_vector_t* items_;
+    const id_storage_t* items_;
     size_t index_;
     size_t end_;
     storage_t* s_;
@@ -249,7 +250,7 @@ public:
 
     iterator_(
       storage_t* s,
-      const id_vector_t& items,
+      const id_storage_t& items,
       size_t index,
       size_t end
     )
@@ -258,7 +259,7 @@ public:
 
     iterator_(
       const storage_t* s,
-      const id_vector_t& items,
+      const id_storage_t& items,
       size_t index,
       size_t end
     )
@@ -325,7 +326,7 @@ public:
 
     iterator_(
       storage_t* s,
-      const id_vector_t& items,
+      const id_storage_t& items,
       size_t index,
       size_t end
     )
@@ -334,7 +335,7 @@ public:
 
     iterator_(
       const storage_t* s,
-      const id_vector_t& items,
+      const id_storage_t& items,
       size_t index,
       size_t end
     )
@@ -364,7 +365,7 @@ public:
   index_space(
     bool storage = STORAGE
   )
-  : v_(new id_vector_t), begin_(0), end_(0), owned_(true),
+  : v_(new id_storage_t), begin_(0), end_(0), owned_(true),
     sorted_(SORTED), s_(storage ? new storage_t : nullptr)
   {
     assert((STORAGE || !storage) && "invalid instantiation");
@@ -402,7 +403,7 @@ public:
   index_space(
     const index_space& is
   )
-  : v_(OWNED ? new id_vector_t(*is.v_) : is.v_),
+  : v_(OWNED ? new id_storage_t(*is.v_) : is.v_),
     begin_(is.begin_), end_(is.end_), owned_(OWNED), sorted_(is.sorted_),
     s_(is.s_)
   {
@@ -483,7 +484,7 @@ public:
     if(OWNED)
     {
       delete v_;
-      v_ = new id_vector_t(*is.v_);
+      v_ = new id_storage_t(*is.v_);
       owned_ = true;
     }
     else{
@@ -845,20 +846,20 @@ public:
     return ret;
   }
 
-  const id_vector_t&
-  id_vec() const
+  const id_storage_t&
+  id_storage() const
   {
     return *v_;
   }
 
-  id_vector_t&
-  id_vec()
+  id_storage_t&
+  id_storage()
   {
     return *v_;
   }
 
   void
-  set_id_vec(id_vector_t* v){
+  set_id_storage(id_storage_t* v){
     if(owned_){
       delete v_;
     }
@@ -1054,13 +1055,13 @@ public:
   {
     if(!OWNED && !owned_)
     {
-      v_ = new id_vector_t(*v_);
+      v_ = new id_storage_t(*v_);
       owned_ = true;
     }
 
     if(!SORTED && !sorted_)
     {
-      auto vc = const_cast<id_vector_t*>(v_);
+      auto vc = const_cast<id_storage_t*>(v_);
       std::sort(vc->begin(), vc->end());
       sorted_ = true;
     }
@@ -1073,7 +1074,7 @@ public:
   {
     prepare_();
 
-    id_vector_t ret;
+    id_storage_t ret;
 
     if(r.sorted_)
     {
@@ -1085,7 +1086,7 @@ public:
       ret.resize(itr - ret.begin());
     }
     else{
-      id_vector_t v2(*r.v_);
+      id_storage_t v2(*r.v_);
       std::sort(v2.begin(), v2.end());
 
       ret.resize(std::min(v_->size(), v2.size()));
@@ -1121,7 +1122,7 @@ public:
   {
     prepare_();
 
-    id_vector_t ret;
+    id_storage_t ret;
 
     if(r.sorted_)
     {
@@ -1133,7 +1134,7 @@ public:
      ret.resize(itr - ret.begin());
     }
     else{
-      id_vector_t v2(*r.v_);
+      id_storage_t v2(*r.v_);
 
       std::sort(v2.begin(), v2.end());
 
@@ -1170,7 +1171,7 @@ public:
   {
     prepare_();
 
-    id_vector_t ret(v_->size());
+    id_storage_t ret(v_->size());
 
     if(r.sorted_)
     {
@@ -1180,7 +1181,7 @@ public:
       ret.resize(itr - ret.begin());
     }
     else{
-      id_vector_t v2(*r.v_);
+      id_storage_t v2(*r.v_);
 
       std::sort(v2.begin(), v2.end());
 
@@ -1215,7 +1216,7 @@ public:
   {
     if(!OWNED && !owned_)
     {
-      v_ = new id_vector_t(*v_);
+      v_ = new id_storage_t(*v_);
       owned_ = true;
     }
 
@@ -1244,7 +1245,7 @@ public:
   {
     if(!OWNED && !owned_)
     {
-      v_ = new id_vector_t(*v_);
+      v_ = new id_storage_t(*v_);
       owned_ = true;
     }
 
@@ -1261,13 +1262,19 @@ public:
   }
 
   void
+  pushed()
+  {
+    ++end_;
+  }
+
+  void
   append(
     const index_space& is
   )
   {
     if(!OWNED && !owned_)
     {
-      v_ = new id_vector_t(*v_);
+      v_ = new id_storage_t(*v_);
       owned_ = true;
     }
 
@@ -1371,7 +1378,7 @@ private:
 
   friend class connectivity_t;
 
-  id_vector_t* v_;
+  id_storage_t* v_;
   size_t begin_;
   size_t end_;
   bool owned_;
@@ -1483,8 +1490,8 @@ private:
   /*!
     Private methods for efficiently populating an index space.
    */
-  id_vector_t&
-  id_vec_()
+  id_storage_t&
+  id_storage_()
   {
     return *v_;
   }
@@ -1492,7 +1499,7 @@ private:
   /*!
     Private methods for efficiently populating an index space.
    */
-  typename id_vector_t::iterator
+  typename id_storage_t::iterator
   index_begin_()
   {
     return v_->begin();
@@ -1501,7 +1508,7 @@ private:
   /*!
     Private methods for efficiently populating an index space.
    */
-  typename id_vector_t::iterator
+  typename id_storage_t::iterator
   index_end_()
   {
     return v_->end();

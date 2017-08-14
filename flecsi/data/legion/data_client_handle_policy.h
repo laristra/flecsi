@@ -57,7 +57,7 @@ struct data_client_handle_adjacency_t
   Legion::LogicalRegion from_color_region;
   Legion::LogicalRegion from_primary_region;
   LegionRuntime::Arrays::Point<2> * offsets_buf;
-  uint64_t * indices_buf;
+  utils::id_t * indices_buf;
 }; // struct data_client_handle_adjacency_t
 
 //----------------------------------------------------------------------------//
