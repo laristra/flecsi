@@ -24,6 +24,7 @@
 #include "flecsi/topology/mesh_topology.h"
 #include "flecsi/utils/hash.h"
 #include "flecsi/utils/tuple_walker.h"
+#include "flecsi/utils/common.h"
 
 //clog_register_tag(registration);
 
@@ -254,7 +255,7 @@ struct client_registration_wrapper__<
       using offset_wrapper_t = field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
-        LegionRuntime::Arrays::Point<2>,
+        utils::offset_t,
         adjacency_hash,
         0,
         1,

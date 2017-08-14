@@ -357,7 +357,8 @@ class connectivity_t
 {
  public:
 
-  using id_t = flecsi::utils::id_t;
+  using id_t = utils::id_t;
+  using offset_t = utils::offset_t;
 
   connectivity_t(const connectivity_t&) = delete;
 
@@ -394,18 +395,6 @@ class connectivity_t
   } // clear
 
   /*!
-    Initialize the offset array.
-   */
-  void init() {
-    if(!enabled_){
-      return;
-    }
-
-    clear();
-    offsets_.init();
-  }
-
-  /*!
     Initialize the connectivity information from a given connectivity
     vector.
 
@@ -415,26 +404,20 @@ class connectivity_t
 
     clear();
 
-    // the first offset is always 0
-    offsets_.init();
-
     // populate the to id's and add from offsets for each connectivity group
 
     size_t start = index_space_.begin_push_();
 
     size_t n = cv.size();
 
-    size_t from = 0;
-
     for (size_t i = 0; i < n; ++i) {
       const id_vector_t & iv = cv[i];
 
       for (id_t id : iv) {
         index_space_.batch_push_(id);
-        ++from;
       } // for
 
-      offsets_.push_back(from);
+      offsets_.add_count(iv.size());
     } // for
 
     index_space_.end_push_(start);
@@ -450,28 +433,19 @@ class connectivity_t
     clear();
 
     size_t n = num_conns.size();
-    offsets_.resize(n + 1);
+    offsets_.resize(n);
 
     uint64_t size = 0;
 
     for (size_t i = 0; i < n; ++i) {
-      offsets_.set(i, size);
-      size += num_conns[i];
+      uint32_t count = num_conns[i];
+      offsets_.add_count(count);
+      size += count;
     } // for
-
-    offsets_.set(n, size);
 
     index_space_.resize_(size);
     index_space_.fill_(id_t(0));
   } // resize
-
-  /*!
-    End a from entity group by setting the end offset in the
-    from connection vector.
-   */
-  void end_from() {
-    offsets_.push_back(index_space_.size());
-  } // end_from
 
   /*!
     Push a single id into the current from group.
@@ -486,9 +460,9 @@ class connectivity_t
   std::ostream & dump( std::ostream & stream )
   {
     for (size_t i = 0; i < offsets_.size(); ++i) {
-      for (size_t j = offsets_[i]; j < offsets_[i + 1]; ++j) {
-        stream << index_space_(j).entity() << std::endl;
-        // stream << to_id_vec_[j] << std::endl;
+      offset_t oi = offsets_[i];
+      for (size_t j = 0; j < oi.count(); ++j) {
+        stream << index_space_(oi.start() + j).entity() << std::endl;
       }
       stream << std::endl;
     }
@@ -499,8 +473,9 @@ class connectivity_t
     } // for
 
     stream << "=== offsets" << std::endl;
-    for (size_t i = 0; i < offsets_.size() + 1; ++i) {
-      stream << offsets_[i] << std::endl;
+    for (size_t i = 0; i < offsets_.size(); ++i) {
+      offset_t oi = offsets_[i];
+      stream << oi.start() << " : " << oi.count() << std::endl;
     } // for
     return stream;
   } // dump
@@ -519,8 +494,8 @@ class connectivity_t
    */
   id_t * get_entities(size_t index)
   {
-    assert(index < offsets_.size() - 1);
-    return index_space_.id_array() + offsets_[index];
+    assert(index < offsets_.size());
+    return index_space_.id_array() + offsets_[index].start();
   }
 
   /*!
@@ -528,10 +503,10 @@ class connectivity_t
    */
   id_t * get_entities(size_t index, size_t & count)
   {
-    assert(index < offsets_.size() - 1);
-    uint64_t start = offsets_[index];
-    count = offsets_[index + 1] - start;
-    return index_space_.id_array() + start;
+    assert(index < offsets_.size());
+    offset_t o = offsets_[index];
+    count = o.count();
+    return index_space_.id_array() + o.start();
   }
 
 
@@ -540,10 +515,10 @@ class connectivity_t
    */
   auto get_entity_vec(size_t index) const
   {
-    assert(index < offsets_.size() - 1);
-    auto start = offsets_[index];
-    auto count = offsets_[index + 1] - start;
-    return utils::make_array_ref( index_space_.id_array() + start, count );
+    assert(index < offsets_.size());
+    offset_t o = offsets_[index];
+    return utils::make_array_ref(
+      index_space_.id_array() + o.start(), o.count());
   }
 
 
@@ -552,11 +527,10 @@ class connectivity_t
    */
   void reverse_entities(size_t index)
   {
-    assert(index < offsets_.size() - 1);
-    auto start = offsets_[index];
-    auto end = offsets_[index + 1];
-    std::reverse(index_space_.index_begin_() + start,
-                 index_space_.index_begin_() + end);
+    assert(index < offsets_.size());
+    offset_t o = offsets_[index];
+    std::reverse(index_space_.index_begin_() + o.start(),
+                 index_space_.index_begin_() + o.end());
   }
 
 
@@ -566,30 +540,30 @@ class connectivity_t
   template< class U >
   void reorder_entities(size_t index, U && order)
   {
-    assert(index < offsets_.size() - 1);
-    auto start = offsets_[index];
-    auto count = offsets_[index + 1] - start;
-    assert( order.size() == count );
+    assert(index < offsets_.size());
+    offset_t o = offsets_[index];
+    assert(order.size() == o.count());
     utils::reorder(
-      order.begin(), order.end(), index_space_.id_array() + start );
+      order.begin(), order.end(), index_space_.id_array() + o.start());
   }
 
   /*!
     True if the connectivity is empty (hasn't been populated).
    */
   bool empty() const { return index_space_.empty(); }
+  
   /*!
     Set a single connection.
    */
   void set(size_t from_local_id, id_t to_id, size_t pos)
   {
-    index_space_(offsets_[from_local_id] + pos) = to_id;
+    index_space_(offsets_[from_local_id].start() + pos) = to_id;
   }
 
   /*!
     Return the number of from entities.
    */
-  size_t from_size() const { return offsets_.size() - 1; }
+  size_t from_size() const { return offsets_.size(); }
   /*!
     Return the number of to entities.
    */
@@ -603,16 +577,15 @@ class connectivity_t
     clear();
 
     size_t n = conns.size();
-    offsets_.resize(n + 1);
+    offsets_.resize(n);
 
     size_t size = 0;
 
     for (size_t i = 0; i < n; i++) {
-      offsets_.set(i, size);
-      size += conns[i].size();
+      uint32_t count = conns[i].size();
+      offsets_.add_count(count);
+      size += count;
     }
-
-    offsets_.set(n, size);
 
     index_space_.begin_push_(size);
 
@@ -670,12 +643,39 @@ class connectivity_t
     enabled_ = enabled;
   }
 
+  void
+  add_count(uint32_t count)
+  {
+    offsets_.add_count(count);
+  }
+
+  /*!
+    End a from entity group by setting the end offset in the
+    from connection vector.
+  */
+  void end_from() {
+    offsets_.add_end(index_space_.size());
+  } // end_from
+
+  void
+  start()
+  {
+    start_ = index_space_.size();
+  }
+
+  size_t
+  count()
+  const
+  {
+    return index_space_.size() - start_;
+  }
+
   index_space<mesh_entity_base_*, false, true, false,
     void, entity_storage_t> index_space_;
   
   offset_storage_t offsets_;
   bool enabled_ = false;
-
+  size_t start_ = 0;
 }; // class connectivity_t
 
 /*!

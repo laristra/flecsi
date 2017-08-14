@@ -8,6 +8,8 @@
 
 #include "flecsi/topology/legion/array_buffer.h"
 
+#include "flecsi/utils/offset.h"
+
 ///
 /// \file
 /// \date Initial file creation: Apr 04, 2017
@@ -22,38 +24,35 @@ using topology_storage__ = array_buffer__<T>;
 class offset_storage_{
 public:
 
-  const size_t
+  using offset_t = utils::offset_t;
+
+  const offset_t
   operator[](size_t i)
   const
   {
-    size_t size = s_.size();
-    return i == size ? s_[size - 1].x[0] + s_[size - 1].x[1] : s_[i].x[0];
+    return s_[i];
   }
 
   void
-  set(size_t i, size_t offset)
+  add_count(uint32_t count)
   {
-    size_t size = s_.size();
-    if(i == size){
-      s_[size - 1].x[1] = offset - s_[size - 1].x[0];
-      return;
-    }
+    offset_t o(start_, count);
+    s_.push_back(o);
+    start_ += count;
+  }
 
-    if(i > 0){
-      s_[i].x[0] = offset;
-      s_[i - 1].x[1] = offset - s_[i - 1].x[0];
-    }
-    else{
-      s_[0].x[0] = 0;
-    }    
+  void
+  add_end(size_t end)
+  {
+    add_count(end - start_);
   }
 
   std::pair<size_t, size_t>
   range(size_t i)
   const
   {
-    size_t begin = s_[i].x[0];
-    return {begin, begin + s_[i].x[1]};
+    size_t begin = s_[i].start();
+    return {begin, begin + s_[i].count()};
   }
 
   void
@@ -69,36 +68,9 @@ public:
   }
 
   void
-  init()
-  {
-    assert(s_.empty());
-    s_[0].x[0] = 0;
-    s_.pushed();
-  }
-
-  void
-  push_back(size_t offset)
-  {
-    assert(!s_.empty());
-
-    size_t size = s_.size();
-    size_t capacity = s_.capacity();
-
-    if(size == capacity){
-      s_[size - 1].x[1] = offset - s_[size - 1].x[0];
-      return;
-    }
-
-    s_[size].x[0] = offset;
-    s_[size - 1].x[1] = offset - s_[size - 1].x[0];
-
-    s_.pushed();
-  }
-
-  void
   resize(size_t n)
   {
-    s_.resize(n - 1);
+    s_.resize(n);
   }
 
   size_t
@@ -109,7 +81,8 @@ public:
   }
 
 private:
-  topology_storage__<LegionRuntime::Arrays::Point<2>> s_;  
+  topology_storage__<offset_t> s_;
+  size_t start_ = 0;  
 };
 
 } // namespace topology
@@ -121,4 +94,3 @@ private:
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/
-

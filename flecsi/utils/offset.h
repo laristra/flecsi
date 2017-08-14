@@ -29,6 +29,7 @@ public:
   static_assert(COUNT_BITS <= 32, "COUNT_BITS max exceeded");
 
   static constexpr uint64_t count_mask = (1ul << COUNT_BITS) - 1;
+  static constexpr uint32_t count_max = 1ul << COUNT_BITS;
 
   offset__(uint64_t start, uint32_t count){
     o_ = start << COUNT_BITS | count;
@@ -48,6 +49,13 @@ public:
 
   uint64_t end() const{
     return start() + count();
+  }
+
+  void
+  set_count(uint32_t count)
+  {
+    assert(count < count_max);
+    o_ |= count;
   }
 
 private:

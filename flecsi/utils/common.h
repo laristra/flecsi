@@ -27,7 +27,7 @@
 #include <typeinfo>
 
 #include "flecsi/utils/id.h"
-
+#include "flecsi/utils/offset.h"
 
 #ifndef FLECSI_ID_PBITS
 #define FLECSI_ID_PBITS 20
@@ -55,6 +55,8 @@ namespace utils {
 
 using id_t =
   id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_GBITS>;
+
+using offset_t = offset__<16>;
 
 //----------------------------------------------------------------------------//
 // Index type

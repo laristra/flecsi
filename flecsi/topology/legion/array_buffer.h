@@ -95,6 +95,21 @@ public:
       const item_t, std::is_pointer<ref_t>::value>::get(buf_, index);
   }
 
+  ref_t
+  back()
+  {
+    return array_buf_ref_get__<
+      item_t, std::is_pointer<ref_t>::value>::get(buf_, size_ - 1);
+  }
+
+  const ref_t
+  back()
+  const
+  {
+    return array_buf_ref_get__<
+      item_t, std::is_pointer<ref_t>::value>::get(buf_, size_ - 1);
+  }
+
   size_t
   size()
   const

@@ -131,7 +131,7 @@ struct legion_topology_storage_policy_t
     size_t to_domain,
     size_t from_dim,
     size_t to_dim,
-    LegionRuntime::Arrays::Point<2>* offsets,
+    utils::offset_t* offsets,
     size_t num_offsets,
     utils::id_t* indices,
     size_t num_indices,

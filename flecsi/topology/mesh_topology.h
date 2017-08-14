@@ -263,14 +263,6 @@ public:
       } // for
     } // for
 
-    // initialize all lower connectivities because the user might
-    // specify different combinations of connections
-    for (size_t i = 1; i < MT::num_dimensions+1; ++i) {
-      for (size_t j = 0; j < i; ++j) {
-        get_connectivity_(0, i, j).init();
-      } // for
-    } // for
-
     for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
       for (size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim) {
         auto& master = 
@@ -1159,7 +1151,7 @@ private:
       c.push(v->template global_id<M>());
     } // for
 
-    c.end_from();
+    c.add_count(verts.size());
   } // init_cell
 
   template<
@@ -1182,7 +1174,7 @@ private:
       c.push(e->template global_id<M>());
     } // for
 
-    c.end_from();
+    c.add_count(subs.size());
   } // init_entity
 
   // Get the number of entities in a given domain and topological dimension

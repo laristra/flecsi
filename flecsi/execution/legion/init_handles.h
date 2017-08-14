@@ -319,14 +319,13 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       Legion::IndexSpace is = lr.get_index_space();
 
       auto ac = pr.get_field_accessor(adj.offset_fid).
-        template typeify<LegionRuntime::Arrays::Point<2>>();
+        template typeify<utils::offset_t>();
 
       Legion::Domain d = runtime->get_index_space_domain(context, is); 
 
       dr = d.get_rect<2>();
 
-      LegionRuntime::Arrays::Point<2> * offsets =
-        ac.template raw_rect_ptr<2>(dr, sr, bo);
+      utils::offset_t * offsets = ac.template raw_rect_ptr<2>(dr, sr, bo);
 
       size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
 
