@@ -23,8 +23,14 @@ class offset_storage_{
 public:
 
   size_t
-  get(size_t i)
+  operator[](size_t i)
   const
+  {
+    return s_[i].x[0];
+  }
+
+  auto&
+  operator[](size_t i)
   {
     return s_[i].x[0];
   }
@@ -36,6 +42,14 @@ public:
     return s_[i].x[0] + s_[i].x[1];
   }
 
+  std::pair<size_t, size_t>
+  range(size_t i)
+  const
+  {
+    size_t begin = s_[i].x[0];
+    return {begin, begin + s_[i].x[1]};
+  }
+
   size_t
   count(size_t i)
   const
@@ -43,11 +57,46 @@ public:
     return s_[i].x[1];
   }
 
+  void
+  clear()
+  {
+    s_.clear();
+  }
+
   auto&
   storage()
   {
     return s_;
-  }  
+  }
+
+  void
+  push_back(size_t offset)
+  {
+    size_t size = s_.size();
+
+    if(size > 0){
+      s_[size].x[0] = offset;
+      s_[size - 1].x[1] = offset - s_[size - 1].x[0];
+    }
+    else{
+      s_[0].x[0] = 0;
+    }
+
+    s_.pushed();
+  }
+
+  void
+  resize(size_t n)
+  {
+    s_.resize(n);
+  }
+
+  size_t
+  size()
+  const
+  {
+    return s_.size();
+  }   
 
 private:
   topology_storage__<LegionRuntime::Arrays::Point<2>> s_;  
