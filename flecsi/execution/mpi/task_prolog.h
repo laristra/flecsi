@@ -163,43 +163,34 @@ namespace execution {
         const size_t dim = ent.dim;
         const size_t domain = ent.domain;
 
-//        auto infos = context_.coloring_info(index_space);
-//        auto info = infos[context_.color()];
-//
-//        info.
+        // get color_info for this field.
+        auto& color_info = (context_.coloring_info(index_space)).at(context_.color());
+        ent.num_exclusive = color_info.exclusive;
+        ent.num_shared = color_info.shared;
+        ent.num_ghost = color_info.ghost;
 
-//        region_map[index_space] = region;
-//
-//        Legion::LogicalRegion lr = regions[region].get_logical_region();
-//        Legion::IndexSpace is = lr.get_index_space();
-//
-//        auto ac = regions[region].get_field_accessor(ent.fid);
-//
-//        Legion::Domain d =
-//          runtime->get_index_space_domain(context, is);
-//
-//        LegionRuntime::Arrays::Rect<2> dr = d.get_rect<2>();
-//        LegionRuntime::Arrays::Rect<2> sr;
-//        LegionRuntime::Accessor::ByteOffset bo[2];
-//
-//        auto ents_raw =
-//          static_cast<uint8_t*>(ac.template raw_rect_ptr<2>(dr, sr, bo));
-//        //ents_raw += bo[1] * ent.size;
-//        //ents_raw += bo[1];
-//        auto ents = reinterpret_cast<topology::mesh_entity_base_*>(ents_raw);
-//
-//        size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
-//
-//        bool read = PERMISSIONS == dro || PERMISSIONS == drw;
+        auto num_entities = ent.num_exclusive + ent.num_shared + ent.num_ghost;
+
+        auto& registered_field_data = context_.registered_field_data();
+        auto fieldDataIter = registered_field_data.find(ent.fid);
+        if (fieldDataIter == registered_field_data.end()) {
+          size_t size = ent.size * num_entities;
+
+          execution::context_t::instance().register_field_data(ent.fid,
+                                                               size);
+        }
+        auto data = reinterpret_cast<topology::mesh_entity_base_*>(registered_field_data[ent.fid].data());
         // TODO: How to get number of entities?
         // TODO: How to allocate memory?
         // TODO: we don't even know the type of the entity
         // TODO: we should get ents from some persistent memory storage rather than
         // new allocation every time.
-        auto ents = new char [100*32];
+        bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
         storage->init_entities(ent.domain, ent.dim,
-                               reinterpret_cast<topology::mesh_entity_base_*>(ents), ent.size,
-                               100, 100, 0, 0, false);//num_ents, read);
+                               data, ent.size,
+                               num_entities, ent.num_exclusive,
+                               ent.num_shared, ent.num_ghost,
+                               _read);
 //
 //        ++region;
       } // for

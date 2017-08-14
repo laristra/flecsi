@@ -74,6 +74,7 @@ struct mpi_context_policy_t
 
   size_t
   color()
+  const
   {
     return color_;
   } // color

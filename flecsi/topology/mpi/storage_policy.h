@@ -44,11 +44,11 @@ struct mpi_topology_storage_policy_t
 
   using index_spaces_t = 
     std::array<index_space<mesh_entity_base_*, true, true, true,
-    void, topology_storage__  >, ND + 1>;
+    void, entity_storage__ >, ND + 1>;
 
   using partition_index_spaces_t =
     std::array<index_space<mesh_entity_base_*, false, false, true,
-      void, topology_storage__ >, ND + 1>;
+      void, entity_storage__ >, ND + 1>;
 
   // array of array of domain_connectivity
   std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
@@ -82,7 +82,7 @@ struct mpi_topology_storage_policy_t
     for(size_t partition = 0; partition < num_partitions; ++partition){
       auto& isp = partition_index_spaces[partition][domain][dim];
       isp.set_storage(s);
-      isp.set_id_storage(&is.id_storage());
+      isp.set_id_vec(&is.id_vec());
 
       switch(partition_t(partition)){
         case exclusive:
