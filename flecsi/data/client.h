@@ -108,9 +108,11 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
   }; // struct entity_walker_t
 
+  template<typename MESH_TYPE>
   struct connectivity_walker_t :
-    public flecsi::utils::tuple_walker__<connectivity_walker_t>
+    public flecsi::utils::tuple_walker__<connectivity_walker_t<MESH_TYPE>>
   {
+    using entity_types_t = typename MESH_TYPE::entity_types;
 
     template<
       typename TUPLE_ENTRY_TYPE
@@ -132,10 +134,12 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       hi.index_space = INDEX_TYPE::value;
       
       hi.from_index_space = 
-        entity_index_space_map[typeid(FROM_ENTITY_TYPE).hash_code()];
+        topology::find_index_space__<std::tuple_size<entity_types_t>::value,
+        entity_types_t, FROM_ENTITY_TYPE>::find();
       
       hi.to_index_space = 
-        entity_index_space_map[typeid(TO_ENTITY_TYPE).hash_code()];
+        topology::find_index_space__<std::tuple_size<entity_types_t>::value,
+        entity_types_t, TO_ENTITY_TYPE>::find();
 
       hi.from_domain = DOMAIN_TYPE::value;
 
@@ -149,13 +153,14 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     } // handle_type
 
     std::vector<adjacency_info_t> adjacency_info;
-    std::map<size_t, size_t> entity_index_space_map;
 
   }; // struct connectivity_walker_t
 
+  template<typename MESH_TYPE>
   struct binding_walker_t :
-    public flecsi::utils::tuple_walker__<binding_walker_t>
+    public flecsi::utils::tuple_walker__<binding_walker_t<MESH_TYPE>>
   {
+    using entity_types_t = typename MESH_TYPE::entity_types;
 
     template<
       typename TUPLE_ENTRY_TYPE
@@ -179,10 +184,12 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       hi.index_space = INDEX_TYPE::value;
       
       hi.from_index_space = 
-        entity_index_space_map[typeid(FROM_ENTITY_TYPE).hash_code()];
+        topology::find_index_space__<std::tuple_size<entity_types_t>::value,
+        entity_types_t, FROM_ENTITY_TYPE>::find();
       
       hi.to_index_space = 
-        entity_index_space_map[typeid(TO_ENTITY_TYPE).hash_code()];
+        topology::find_index_space__<std::tuple_size<entity_types_t>::value,
+        entity_types_t, TO_ENTITY_TYPE>::find();
 
       hi.from_domain = FROM_DOMAIN_TYPE::value;
 
@@ -196,8 +203,6 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     } // handle_type
 
     std::vector<adjacency_info_t> adjacency_info;
-    std::map<size_t, size_t> entity_index_space_map;
-
   }; // struct binding_walker_t
 
   template<
@@ -267,14 +272,10 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       ++entity_index;
     } // for
 
-    connectivity_walker_t connectivity_walker;
-    connectivity_walker.entity_index_space_map = 
-      std::move(entity_walker.entity_index_space_map);
+    connectivity_walker_t<POLICY_TYPE> connectivity_walker;
     connectivity_walker.template walk_types<connectivities>();
 
-    binding_walker_t binding_walker;
-    binding_walker.entity_index_space_map = 
-      std::move(connectivity_walker.entity_index_space_map);
+    binding_walker_t<POLICY_TYPE> binding_walker;
     binding_walker.adjacency_info = 
       std::move(connectivity_walker.adjacency_info);
     binding_walker.template walk_types<bindings>();
