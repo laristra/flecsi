@@ -23,17 +23,17 @@ using topology_storage__ = std::vector<T>;
 class offset_storage_{
 public:
 
-  size_t
+  const size_t
   operator[](size_t i)
   const
   {
     return s_[i];
   }
 
-  auto&
-  operator[](size_t i)
+  void
+  set(size_t i, size_t offset)
   {
-    return s_[i];
+    s_[i] = offset;
   }
 
   size_t
