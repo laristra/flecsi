@@ -6,6 +6,8 @@
 #ifndef flecsi_topology_legion_array_buffer_h
 #define flecsi_topology_legion_array_buffer_h
 
+#include "flecsi/utils/id.h"
+
 ///
 /// \file
 /// \date Initial file creation: Apr 04, 2017
@@ -27,31 +29,66 @@ struct array_buffer_type__<domain_entity<M, E>>{
   using type = E*;
 };
 
+template<>
+struct array_buffer_type__<utils::id_t>{
+  using type = utils::id_t*;
+};
+
+template<typename T>
+struct array_buf_ref_type__{
+  using type = T&;
+};
+
+template<typename S>
+struct array_buf_ref_type__<S*>{
+  using type = S*;
+};
+
+template<size_t M, class E>
+struct array_buf_ref_type__<domain_entity<M, E>>{
+  using type = E*;
+};
+
+template<typename T, bool B>
+struct array_buf_ref_get__{
+  static T get(T a, size_t i){
+    return &a[i];
+  }
+};
+
+template<typename T>
+struct array_buf_ref_get__<T, false>{
+  static auto get(T a, size_t i) -> decltype(a[i]){
+    return a[i];
+  }
+};
+
 template<typename T>
 class array_buffer__{
 public:
   using item_t = typename array_buffer_type__<T>::type;
 
+  using iterator = item_t;
+  
+  using const_iterator = item_t;
+
+  using ref_t = typename array_buf_ref_type__<T>::type;
+
   array_buffer__(){}
 
-  array_buffer__(
-    item_t* buf,
-    size_t size
-  )
-  : buf_(buf),
-  size_(size){}
-
-  item_t
+  ref_t
   operator[](size_t index)
   {
-    return buf_ + index;
+    return array_buf_ref_get__<
+      item_t, std::is_pointer<ref_t>::value>::get(buf_, index);
   }
 
-  const item_t
+  const ref_t
   operator[](size_t index)
   const
   {
-    return buf_ + index;
+    return array_buf_ref_get__<
+      const item_t, std::is_pointer<ref_t>::value>::get(buf_, index);
   }
 
   size_t
@@ -90,21 +127,20 @@ public:
   template<
     typename ... Args
   >
-  void insert(Args && ... args){
-    assert(false && "attempt to resize topology storage array buffer");
-  }
+  void insert(Args && ... args){}
 
   template<
     typename ... Args
   >
-  void push_back(Args && ... args){
-    assert(false && "attempt to resize topology storage array buffer");
-  }
+  void push_back(Args && ... args){}
 
   void
-  clear()
+  clear(){}
+
+  void
+  resize(size_t n)
   {
-    assert(false && "attempt to resize topology storage array buffer");
+    assert(false && "unimplemented");
   }
 
   void
@@ -118,6 +154,34 @@ public:
   buffer()
   {
     return buf_;
+  }
+
+  item_t
+  data()
+  {
+    return buf_;
+  }
+
+  const item_t
+  data()
+  const
+  {
+    return buf_;
+  }
+
+  template<
+    typename ... Args
+  >
+  void
+  assign(Args && ... args)
+  {
+    assert(false && "unimplemented");
+  }
+
+  void
+  reserve(size_t n)
+  {
+    assert(false && "unimplemented");
   }
 
 private:
@@ -134,4 +198,3 @@ private:
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/
-
