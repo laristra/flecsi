@@ -507,6 +507,21 @@ struct MaxReductionOp {
 
 };
 
+struct MinReductionOp {
+  static const Legion::ReductionOpID redop_id = (size_t(1) << 20) - 4096;
+
+  typedef double LHS;
+  typedef double RHS;
+  static const double identity;
+
+  template <bool EXCLUSIVE>
+  static void apply(LHS &lhs, RHS rhs);
+
+  template <bool EXCLUSIVE>
+  static void fold(RHS &rhs1, RHS rhs2);
+
+};
+
 } // namespace execution 
 } // namespace flecsi
 

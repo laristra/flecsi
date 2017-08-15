@@ -20,6 +20,7 @@
 //! @date Initial file creation: Oct 19, 2015
 //----------------------------------------------------------------------------//
 
+#include <algorithm>
 #include <cstddef>
 #include <map>
 #include <unordered_map>
@@ -66,6 +67,28 @@ struct context__ : public CONTEXT_POLICY
   } // instance
 
   //--------------------------------------------------------------------------//
+  //! Return the color for which the context was initialized.
+  //--------------------------------------------------------------------------//
+
+  size_t
+  color()
+  const
+  {
+    return CONTEXT_POLICY::color();
+  } // color
+
+  //--------------------------------------------------------------------------//
+  //! Return the number of colors.
+  //--------------------------------------------------------------------------//
+
+  size_t
+  colors()
+  const
+  {
+    return CONTEXT_POLICY::colors();
+  } // color
+
+  //--------------------------------------------------------------------------//
   //! Add an index map. This map can be used to go between mesh and locally
   //! compacted index spaces.
   //!
@@ -103,6 +126,30 @@ struct context__ : public CONTEXT_POLICY
     return index_map_[index_space];
   } // index_map
 
+  std::map<size_t, size_t> &
+  cis_to_gis_map(
+    size_t index_space
+  )
+  {
+    return cis_to_gis_map_[index_space];
+  }
+
+  const auto &
+  gis_to_cis_map(
+    size_t index_space
+  ) const
+  {
+    return gis_to_cis_map_.at(index_space);
+  }
+
+  auto &
+  gis_to_cis_map(
+    size_t index_space
+  )
+  {
+    return gis_to_cis_map_[index_space];
+  }
+
   //--------------------------------------------------------------------------//
   //! Return the index map associated with the given index space.
   //!
@@ -119,6 +166,75 @@ struct context__ : public CONTEXT_POLICY
 
     return reverse_index_map_[index_space];
   } // reverse_index_map
+
+  //--------------------------------------------------------------------------//
+  //! Add an intermediate map. This map can be used to go between mesh and
+  //! locally compacted index spaces for intermediate entities.
+  //!
+  //! @param dimension        The entity dimension.
+  //! @param domain           The entity domain.
+  //! @param intermediate_map The map to add.
+  //--------------------------------------------------------------------------//
+
+  void
+  add_intermediate_map(
+    size_t dimension,
+    size_t domain,
+    std::unordered_map<size_t, std::vector<size_t>> & intermediate_map
+  )
+  {
+    const size_t key = utils::hash::intermediate_hash(dimension, domain);
+    intermediate_map_[key] = intermediate_map;
+
+    for(auto i: intermediate_map) {
+      reverse_intermediate_map_[key][i.second] = i.first;
+    } // for
+  } // add_intermediate_map
+
+  //--------------------------------------------------------------------------//
+  //! Return the intermediate map associated with the given dimension and
+  //! domain.
+  //!
+  //! @param dimension The entity dimension.
+  //! @param domain    The entity domain.
+  //--------------------------------------------------------------------------//
+
+  auto const &
+  intermediate_map(
+    size_t dimension,
+    size_t domain
+  )
+  const
+  {
+    const size_t key = utils::hash::intermediate_hash(dimension, domain);
+
+    clog_assert(intermediate_map_.find(key) != intermediate_map_.end(),
+      "invalid index space");
+
+    return intermediate_map_.at(key);
+  } // intermediate_map
+
+  //--------------------------------------------------------------------------//
+  //! Return the index map associated with the given index space.
+  //!
+  //! @param dimension The entity dimension.
+  //! @param domain    The entity domain.
+  //--------------------------------------------------------------------------//
+
+  auto const &
+  reverse_intermediate_map(
+    size_t dimension,
+    size_t domain
+  )
+  const
+  {
+    const size_t key = utils::hash::intermediate_hash(dimension, domain);
+
+    clog_assert(reverse_intermediate_map_.find(key) !=
+      reverse_intermediate_map_.end(), "invalid index space");
+
+    return reverse_intermediate_map_.at(key);
+  } // reverse_intermediate_map
 
   //--------------------------------------------------------------------------//
   //! Add an index coloring.
@@ -264,6 +380,54 @@ private:
   // key: mesh index space entity id
   std::map<size_t, std::map<size_t, size_t>> index_map_;
   std::map<size_t, std::map<size_t, size_t>> reverse_index_map_;
+
+#if 0
+  std::map<size_t, std::map<size_t, size_t>> cis_to_mis_map_;
+  std::map<size_t, std::map<size_t, size_t>> mis_to_cis_map_;
+#endif
+
+  // key: mesh index space entity id
+  std::map<size_t, std::map<size_t, size_t>> cis_to_gis_map_;
+  std::map<size_t, std::map<size_t, size_t>> gis_to_cis_map_;
+
+  // key: intermediate entity to vertex ids
+  std::map<size_t, std::unordered_map<size_t, std::vector<size_t>>>
+    intermediate_map_;
+
+  struct vector_hash_t
+  {
+    size_t
+    operator () (
+      std::vector<size_t> const & v
+    )
+    const
+    {
+      size_t h{0};
+      for(auto i: v) {
+        h |= i;
+      } // for
+
+      return h;
+    } // operator ()
+  }; // struct vector_hash_t
+
+  struct vector_equal_t
+  {
+    bool
+    operator () (
+      std::vector<size_t> a,
+      std::vector<size_t> b
+    )
+    const
+    {
+      std::sort( a.begin(), a.end() );
+      std::sort( b.begin(), b.end() );
+      return (a == b );
+    } // operator ()
+  }; // struct vector_hash_t
+
+  std::map<size_t, std::unordered_map<std::vector<size_t>, size_t,
+    vector_hash_t, vector_equal_t>> reverse_intermediate_map_;
 
   // key: virtual index space.
   // value: map of color to coloring info

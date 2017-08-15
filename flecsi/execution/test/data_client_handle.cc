@@ -76,13 +76,15 @@ public:
     return {2, 2, 2, 2};
   }
 
-};
+}; // class cell
 
 class test_mesh_types_t{
 public:
   static constexpr size_t num_dimensions = 2;
 
   static constexpr size_t num_domains = 1;
+
+  using id_t = flecsi::utils::id_t;
 
   using entity_types = std::tuple<
     std::tuple<index_space_<0>, domain_<0>, cell>,
@@ -96,7 +98,8 @@ public:
 
   template<size_t M, size_t D, typename ST>
   static mesh_entity_base_t<num_domains>*
-  create_entity(mesh_topology_base_t<ST>* mesh, size_t num_vertices){
+  create_entity(mesh_topology_base_t<ST>* mesh, size_t num_vertices,
+    id_t const & id){
     switch(M){
       case 0:{
         switch(D){

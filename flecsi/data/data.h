@@ -13,6 +13,7 @@
 
 #include "flecsi/data/client.h"
 #include "flecsi/data/field.h"
+#include "flecsi/data/common/data_types.h"
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_data_client
@@ -129,8 +130,6 @@
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-
-
 #define flecsi_get_handle(client_handle, nspace, name, data_type,              \
   storage_type, version)                                                       \
 /* MACRO IMPLEMENTATION */                                                     \
@@ -161,6 +160,14 @@
 //!
 //! @ingroup data
 //----------------------------------------------------------------------------//
+
+#define flecsi_get_global(nspace, name, data_type, version)                    \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* WARNING: This macro returns a handle. Don't add terminations! */          \
+  flecsi_get_handle(flecsi_get_client_handle(                                  \
+    flecsi::data::global_data_client_t, nspace, name),                                       \
+    nspace, name, data_type, global, version)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_get_client_handle

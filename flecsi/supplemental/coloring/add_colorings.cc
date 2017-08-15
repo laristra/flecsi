@@ -20,6 +20,7 @@
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
+#include "flecsi/supplemental/coloring/coloring_functions.h"
 #include "flecsi/supplemental/coloring/tikz.h"
 #include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
@@ -32,7 +33,7 @@ namespace execution {
 
 void add_colorings(coloring_map_t map) {
 
-  clog_set_output_rank(1);
+  clog_set_output_rank(0);
 
   // Get the context instance.
   context_t & context_ = context_t::instance();
@@ -233,6 +234,7 @@ void add_colorings(coloring_map_t map) {
   //--------------------------------------------------------------------------//
   //--------------------------------------------------------------------------//
 
+#if 0
   // Form the vertex closure
   auto vertex_closure = flecsi::topology::entity_closure<2,0>(sd, closure);
 
@@ -355,6 +357,13 @@ void add_colorings(coloring_map_t map) {
   vertex_color_info.exclusive = vertices.exclusive.size();
   vertex_color_info.shared = vertices.shared.size();
   vertex_color_info.ghost = vertices.ghost.size();
+#endif
+
+  flecsi::coloring::index_coloring_t vertices;
+  coloring::coloring_info_t vertex_color_info;
+
+  color_entity<2, 0>(sd, communicator.get(), closure, remote_info_map,
+    shared_cells_map, closure_intersection_map, vertices, vertex_color_info);
 
   {
   clog_tag_guard(coloring);
@@ -377,7 +386,7 @@ void add_colorings(coloring_map_t map) {
   clog(info) << "vertex coloring info color " << ci.first
     << ci.second << std::endl;
   } // for
-  }
+  } // scope
 
   // Add colorings to the context.
   context_.add_coloring(map.cells, cells, cell_coloring_info);

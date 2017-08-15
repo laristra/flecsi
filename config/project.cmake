@@ -254,7 +254,12 @@ add_definitions(-DENABLE_LEGION_TLS)
 #
 option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper to compact your shared/exclusive and ghost data" ON)
 if (ENABLE_MAPPER_COMPACTION)
-add_definitions(-DMAPPER_COMPACTION)
+  add_definitions(-DMAPPER_COMPACTION)
+else()
+  option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" ON)
+  if(COMPACTED_STORAGE_SORT)
+    add_definitions(-DCOMPACTED_STORAGE_SORT)
+  endif()
 endif()
 
 #

@@ -138,6 +138,11 @@ struct global_handle_t :
   { 
     return size_;
   } // size
+
+  T & data() const
+  {
+    return *base_t::combined_data;
+  }//data
  
   //--------------------------------------------------------------------------//
   // Operators.

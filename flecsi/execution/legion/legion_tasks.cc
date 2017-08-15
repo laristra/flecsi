@@ -159,6 +159,42 @@ MaxReductionOp::fold<false>(RHS &rhs1, RHS rhs2) {
     } while (!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
 }
 
+const double MinReductionOp::identity = std::numeric_limits<double>::max();
+
+template<>
+void
+MinReductionOp::apply<true>(LHS &lhs, RHS rhs) {
+    lhs = std::min(lhs, rhs);
+}
+
+template<>
+void
+MinReductionOp::apply<false>(LHS &lhs, RHS rhs) {
+    int64_t *target = (int64_t *)&lhs;
+    union { int64_t as_int; double as_T; } oldval, newval;
+    do {
+        oldval.as_int = *target;
+        newval.as_T = std::min(oldval.as_T, rhs);
+    } while (!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
+}
+
+template<>
+void
+MinReductionOp::fold<true>(RHS &rhs1, RHS rhs2) {
+    rhs1 = std::min(rhs1, rhs2);
+}
+
+template<>
+void
+MinReductionOp::fold<false>(RHS &rhs1, RHS rhs2) {
+    int64_t *target = (int64_t *)&rhs1;
+    union { int64_t as_int; double as_T; } oldval, newval;
+    do {
+        oldval.as_int = *target;
+        newval.as_T = std::min(oldval.as_T, rhs2);
+    } while (!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
+}
+
 
 } // namespace execution 
 } // namespace flecsi

@@ -131,14 +131,15 @@ void write_task(
   for (auto exclusive_itr = index_coloring->second.exclusive.begin();
     exclusive_itr != index_coloring->second.exclusive.end(); ++exclusive_itr) {
     flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
-    cell_ID(index) = exclusive.id + cycle;
+    cell_ID.exclusive(index) = exclusive.id + cycle;
     index++;
   } // exclusive_itr
 
+  index =0;
   for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
       index_coloring->second.shared.end(); ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
-    cell_ID(index) = shared.id + cycle;
+    cell_ID.shared(index) = shared.id + cycle;
     index++;
   } // shared_itr
 } // write_task

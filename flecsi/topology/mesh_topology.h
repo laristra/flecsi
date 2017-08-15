@@ -72,12 +72,13 @@
 #include <type_traits>
 #include <memory>
 
+#include "flecsi/execution/context.h"
+#include "flecsi/topology/mesh_storage.h"
+#include "flecsi/topology/mesh_types.h"
+#include "flecsi/topology/partition.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/set_intersection.h"
 #include "flecsi/utils/static_verify.h"
-#include "flecsi/topology/mesh_types.h"
-#include "flecsi/topology/mesh_storage.h"
-#include "flecsi/topology/partition.h"
 
 namespace flecsi {
 namespace topology {
@@ -1269,8 +1270,10 @@ private:
     connection_vector_t entity_vertex_conn;
 
     // Helper variables
-    size_t entity_id = 0;
     size_t max_cell_entity_conns = 1;
+
+    // keep track of the local ids, since they may be added out of order
+    std::vector<size_t> entity_ids;
 
     domain_connectivity<MT::num_dimensions> & dc = 
       base_t::ms_->topology[Domain][Domain];
@@ -1305,7 +1308,22 @@ private:
       base_t::ms_->index_spaces[Domain][UsingDimension].
       template cast<domain_entity<Domain, cell_type>>();
 
-    for (size_t c = 0; c < _num_cells; ++c) {
+    // Lookup the index space for the entity type being created.
+    constexpr size_t cell_index_space =
+      find_index_space_from_dimension__<
+        std::tuple_size<typename MT::entity_types>::value,
+        typename MT::entity_types,
+        UsingDimension
+      >::find();
+
+    auto & context_ = flecsi::execution::context_t::instance();
+
+    auto& gis_to_cis = context_.gis_to_cis_map(cell_index_space);
+
+    for(auto& citr : gis_to_cis){
+      size_t c = citr.second;
+
+    //for (size_t c = 0; c < _num_cells; ++c) {
       // Get the cell object
 
       auto cell = static_cast<cell_type*>(cis[c]);
@@ -1345,6 +1363,72 @@ private:
         // will always occur in the same order for the same entity.
         std::sort(ev.begin(), ev.end());
 
+        //
+        // The following set of steps use the vertices that define
+        // the entity to be created to lookup the id so
+        // that the topology creates it at the correct offset.
+        // This requires:
+        //
+        // 1) lookup the MIS vertex ids
+        // 2) create a vector of the MIS vertex ids
+        // 3) lookup the MIS id of the entity
+        // 4) lookup the CIS id of the entity
+        //
+        // The CIS id of the entity is passed to the create_entity
+        // method. The specialization developer must pass this
+        // information to 'make' so that the coloring id of the
+        // entity is consitent with the id/offset of the entity
+        // created by the topology.
+        //
+
+        // Lookup the index space for the vertices from the mesh
+        // specialization.
+        constexpr size_t vertex_index_space =
+          find_index_space_from_dimension__<
+            std::tuple_size<typename MT::entity_types>::value,
+            typename MT::entity_types,
+            0
+          >::find();
+
+        // Lookup the index space for the entity type being created.
+        constexpr size_t entity_index_space =
+          find_index_space_from_dimension__<
+            std::tuple_size<typename MT::entity_types>::value,
+            typename MT::entity_types,
+            DimensionToBuild
+          >::find();
+
+        // Get the map of the vertex ids. This map takes
+        // local compacted vertex ids to mesh index space ids.
+        // CIS -> MIS.
+        auto & vertex_map =
+          context_.index_map(vertex_index_space);
+
+        std::vector<size_t> vertices_mis;
+        vertices_mis.reserve(m);
+
+        // Push the MIS vertex ids onto a vector to search for the
+        // associated entity.
+        for(id_t * aptr{a}; aptr<(a+m); ++aptr) {
+          vertices_mis.push_back(vertex_map[aptr->entity()]);
+        } // for
+
+        // Get the reverse map of the intermediate ids. This map takes
+        // vertices defining an entity to the entity id in MIS.
+        auto & reverse_intermediate_map =
+          context_.reverse_intermediate_map(DimensionToBuild, Domain);
+
+        // Lookup the MIS id of the entity.
+        const auto entity_id_mis = reverse_intermediate_map.at(vertices_mis);
+
+        // Get the index map for the entity.
+        auto & entity_index_map = context_.reverse_index_map(entity_index_space);
+
+        // Lookup the CIS id of the entity.
+        const auto entity_id = entity_index_map.at(entity_id_mis);
+
+        id_t id = id_t::make<Domain>(DimensionToBuild, entity_id);
+
         // Emplace the sorted vertices into the entity map
         auto itr = entity_vertices_map.emplace(
             std::move(ev), id_t::make<DimensionToBuild, Domain>(
@@ -1352,24 +1436,32 @@ private:
 
         // Add this id to the cell to entity connections
         conns.push_back(itr.first->second);
-
+      
         // If the insertion took place
         if (itr.second) {
+
           // what does this do?
           id_vector_t ev2 = id_vector_t(a, a + m);
           entity_vertex_conn.emplace_back(std::move(ev2));
+          entity_ids.emplace_back( entity_id );
 
           max_cell_entity_conns =
             std::max(max_cell_entity_conns, conns.size());
 
           auto ent =
-            MT::template create_entity<Domain, DimensionToBuild>(this, m);
+            MT::template create_entity<Domain, DimensionToBuild>(this, m, id);
 
-          // A new entity was added, so we advance the id counter.
-          ++entity_id;
         } // if
       } // for
     } // for
+  
+    // sort the entity connectivity. Entities may have been created out of
+    // order.  Sort them using the list of entity ids we kept track of
+    utils::reorder_destructive(
+      entity_ids.begin(),
+      entity_ids.end(),
+      entity_vertex_conn.begin()
+    );
 
     // Set the connectivity information from the created entities to
     // the vertices.
@@ -1399,10 +1491,27 @@ private:
     if (!out_conn.empty()) {
       return;
     } // if
+   
+    // find the to index space and get the mapping from global to local
+    constexpr size_t to_index_space =
+      find_index_space_from_dimension__<
+        std::tuple_size<typename MT::entity_types>::value,
+        typename MT::entity_types,
+        TD
+      >::find();
+
+    const auto & context_ = flecsi::execution::context_t::instance();
+    const auto& gis_to_cis = context_.gis_to_cis_map(to_index_space);
+
+    // get the list of "to" entities
+    const auto & to_entities = entities<TD, TM>();
 
     index_vector_t pos(num_entities_(FD, FM), 0);
 
-    for (auto to_entity : entities<TD, TM>()) {
+    // now loop in order of global mapping
+    for(auto& citr : gis_to_cis){
+      auto cis = citr.second;
+      auto to_entity = to_entities[cis];
       for (id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
         ++pos[from_id.entity()];
       }
@@ -1411,8 +1520,12 @@ private:
     out_conn.resize(pos);
 
     std::fill(pos.begin(), pos.end(), 0);
+    
 
-    for (auto to_entity : entities<TD, TM>()) {
+    // now loop in order of global mapping
+    for(auto& citr : gis_to_cis){
+      auto cis = citr.second;
+      auto to_entity = to_entities[cis];
       for (id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
         out_conn.set(from_id.entity(), to_entity->template global_id<TM>(),
             pos[from_id.entity()]++);

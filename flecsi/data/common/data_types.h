@@ -17,9 +17,15 @@
 namespace flecsi {
 namespace data {
 
+struct global_data_client_t
+{
+  using type_identifier_t = global_data_client_t;
+};
+
 // Generic bitfield type
 using bitset_t = std::bitset<8>;
 
+#if 0
 class global_data_client_t : public data::data_client_t
 {
   public:
@@ -36,7 +42,7 @@ class global_data_client_t : public data::data_client_t
     global_data_client_t(const global_data_client_t&);
     global_data_client_t& operator=(const global_data_client_t&);
 };
-
+#endif
 
 } // namespace data
 } // namespace flecsi

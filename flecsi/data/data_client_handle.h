@@ -67,7 +67,11 @@ struct data_client_type__{};
 template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS, typename DATA_POLICY>
 struct data_client_type__<
   flecsi::data_client_handle_base__<
-    DATA_CLIENT_TYPE, PERMISSIONS, DATA_POLICY>>
+    DATA_CLIENT_TYPE,
+    PERMISSIONS,
+    DATA_POLICY
+  >
+>
 {
   using type = DATA_CLIENT_TYPE;
 };
