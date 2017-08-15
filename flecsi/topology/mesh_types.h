@@ -433,7 +433,6 @@ class connectivity_t
     clear();
 
     size_t n = num_conns.size();
-    offsets_.resize(n);
 
     uint64_t size = 0;
 
@@ -577,7 +576,6 @@ class connectivity_t
     clear();
 
     size_t n = conns.size();
-    offsets_.resize(n);
 
     size_t size = 0;
 
@@ -657,25 +655,11 @@ class connectivity_t
     offsets_.add_end(index_space_.size());
   } // end_from
 
-  void
-  start()
-  {
-    start_ = index_space_.size();
-  }
-
-  size_t
-  count()
-  const
-  {
-    return index_space_.size() - start_;
-  }
-
   index_space<mesh_entity_base_*, false, true, false,
     void, entity_storage_t> index_space_;
   
   offset_storage_t offsets_;
   bool enabled_ = false;
-  size_t start_ = 0;
 }; // class connectivity_t
 
 /*!

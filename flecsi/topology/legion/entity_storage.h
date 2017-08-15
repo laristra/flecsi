@@ -51,26 +51,20 @@ public:
   range(size_t i)
   const
   {
-    size_t begin = s_[i].start();
-    return {begin, begin + s_[i].count()};
+    return s_[i].range();
   }
 
   void
   clear()
   {
     s_.clear();
+    start_ = 0;
   }
 
   auto&
   storage()
   {
     return s_;
-  }
-
-  void
-  resize(size_t n)
-  {
-    s_.resize(n);
   }
 
   size_t

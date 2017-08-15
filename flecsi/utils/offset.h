@@ -58,6 +58,14 @@ public:
     o_ |= count;
   }
 
+  std::pair<size_t, size_t>
+  range()
+  const
+  {
+    uint64_t s = start(); 
+    return {s, s + count()};    
+  }
+
 private:
   uint64_t o_;
 };
