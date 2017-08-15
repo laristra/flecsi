@@ -95,8 +95,6 @@
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-
-
 #define flecsi_get_handle(client_handle, nspace, name, data_type,              \
   storage_type, version)                                                       \
 /* MACRO IMPLEMENTATION */                                                     \

@@ -46,8 +46,42 @@ namespace data {
 template<typename DATA_CLIENT>
 struct data_client_policy_handler__{};
 
+//----------------------------------------------------------------------------//
+//! FIXME: Description of class
+//----------------------------------------------------------------------------//
+
+template<>
+struct data_client_policy_handler__<global_client_handle_t>
+{
+  
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH
+  >
+  static
+  data_client_handle__<DATA_CLIENT_TYPE, 0>
+  get_client_handle()
+  {
+    data_client_handle__<DATA_CLIENT_TYPE, 0> h;
+
+    h.client_hash = 
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+    h.namespace_hash = NAMESPACE_HASH;
+    h.name_hash = NAME_HASH;
+
+    return h;
+  } // get_client_handle
+
+}; // struct data_client_policy_handler__
+
+//----------------------------------------------------------------------------//
+//! FIXME: Description of class
+//----------------------------------------------------------------------------//
+
 template<typename POLICY_TYPE>
-struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
+struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
+{
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
   using field_id_t = Legion::FieldID;
 #else
@@ -209,7 +243,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
   data_client_handle__<DATA_CLIENT_TYPE, 0>
   get_client_handle()
   {
-    using entity_types_t = typename POLICY_TYPE::entity_types;
+    using entity_types = typename POLICY_TYPE::entity_types;
     using connectivities = typename POLICY_TYPE::connectivities;
     using bindings = typename POLICY_TYPE::bindings;
 
@@ -225,7 +259,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     h.namespace_hash = NAMESPACE_HASH;
 
     entity_walker_t entity_walker;
-    entity_walker.template walk_types<entity_types_t>();
+    entity_walker.template walk_types<entity_types>();
 
     h.num_handle_entities = entity_walker.entity_info.size();
 
@@ -347,7 +381,8 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     }
 
     return h;
-  }
+  } // get_client_handle
+
 }; // struct data_client_policy_handler__
 
 
@@ -410,9 +445,10 @@ struct client_data__
       data_client_policy_handler__<
         typename DATA_CLIENT_TYPE::type_identifier_t
       >;
+
     return data_client_policy_handler_t::template 
       get_client_handle<DATA_CLIENT_TYPE, NAMESPACE_HASH, NAME_HASH>();
-  }
+  } // get_client_handle
 
 }; // struct client_data__
 
