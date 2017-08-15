@@ -78,6 +78,28 @@
       ({ EXPAND_AND_STRINGIFY(name) })
 
 //----------------------------------------------------------------------------//
+//! @def flecsi_get_global
+//!
+//! Access global data.
+//!
+//! @param nspace       The namespace to use to access the variable.
+//! @param name         The name of the data variable to access.
+//! @param data_type    The data type to access, e.g., double or my_type_t.
+//! @param version      The version number of the data to access. This
+//!                     parameter can be used to manage multiple data versions,
+//!                     e.g., for new and old state.
+//!
+//! @ingroup data
+//----------------------------------------------------------------------------//
+
+#define flecsi_get_global(nspace, name, data_type, version)                    \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* WARNING: This macro returns a handle. Don't add terminations! */          \
+  flecsi_get_handle(flecsi_get_client_handle(global_data_client_t,             \
+    nspace, name), nspace, name, data_type, flecsi::data::global, version)
+
+//----------------------------------------------------------------------------//
 //! @def flecsi_get_handle
 //!
 //! Access data with a data_client_t instance.
@@ -94,8 +116,6 @@
 //!
 //! @ingroup data
 //----------------------------------------------------------------------------//
-
-
 
 #define flecsi_get_handle(client_handle, nspace, name, data_type,              \
   storage_type, version)                                                       \
