@@ -105,6 +105,57 @@ public:
   }
 
   void
+  init_global_handles()
+{
+    using namespace Legion;
+    using namespace LegionRuntime;
+    using namespace Arrays;
+
+    using namespace execution;
+
+    context_t & context = context_t::instance();
+
+    // Create global index space
+    const size_t index_space_id = execution::internal_index_space::global_is;
+
+    index_spaces_.insert(index_space_id);
+
+    global_index_space_.index_space_id = index_space_id;
+
+    Rect<1> bounds(Point<1>(0),Point<1>(1));
+
+    Domain dom(Domain::from_rect<1>(bounds));
+
+    global_index_space_.index_space = runtime_->create_index_space(ctx_, dom);
+    attach_name(global_index_space_,
+      global_index_space_.index_space, "global index space");
+
+    // Read user + FleCSI registered field spaces
+    global_index_space_.field_space = runtime_->create_field_space(ctx_);
+
+    attach_name(global_index_space_,
+      global_index_space_.field_space, "global field space");
+
+   FieldAllocator allocator =
+      runtime_->create_field_allocator(ctx_, global_index_space_.field_space);
+
+   using field_info_t = context_t::field_info_t;
+
+    for(const field_info_t& fi : context.registered_fields()){
+      if(fi.storage_type == global){
+        allocator.allocate_field(fi.size, fi.fid);
+      }//if
+    }//for
+     
+    global_index_space_.logical_region =
+      runtime_->create_logical_region(ctx_,
+        global_index_space_.index_space, global_index_space_.field_space);
+    attach_name(global_index_space_, global_index_space_.logical_region,
+      "global logical region");  
+ 
+  }//init_global_handles
+
+  void
   init_from_coloring_info_map(
     const indexed_coloring_info_map_t& indexed_coloring_info_map
   )
@@ -117,30 +168,6 @@ public:
       add_index_space(idx_space.first, idx_space.second);
     }
 
-   // Create global index space
-    {
-      const size_t index_space_id = execution::internal_index_space::global_is;
-
-      index_spaces_.insert(index_space_id);
-
-      global_index_space_.index_space_id = index_space_id;
-
-      Rect<1> bounds(Point<1>(0),Point<1>(1));
-
-      Domain dom(Domain::from_rect<1>(bounds));
-
-      global_index_space_.index_space = runtime_->create_index_space(ctx_, dom);
-      attach_name(global_index_space_,
-        global_index_space_.index_space, "global index space");
-
-      // Read user + FleCSI registered field spaces
-      global_index_space_.field_space = runtime_->create_field_space(ctx_);
-
-      attach_name(global_index_space_,
-          global_index_space_.field_space, "global field space");
-
-     }//scope
-
      // Create color index space
     {
       const size_t index_space_id =
@@ -149,10 +176,6 @@ public:
       index_spaces_.insert(index_space_id);
 
       color_index_space_.index_space_id = index_space_id;
-
-//      Rect<1> bounds(Point<1>(0),Point<1>(4));
-
-//      Domain dom(Domain::from_rect<1>(bounds));
 
       color_index_space_.index_space =
         runtime_->create_index_space(ctx_, color_domain_);
@@ -378,28 +401,7 @@ public:
       attach_name(is, is.index_partition, "color partitioning");
     }
 
-   //create logical regions for global_index_space_ and
-   //color_index_space_
-   {
-     FieldAllocator allocator =
-        runtime_->create_field_allocator(ctx_, global_index_space_.field_space);
-
-     using field_info_t = context_t::field_info_t;
-
-      for(const field_info_t& fi : context.registered_fields()){
-        if(fi.storage_type == global){
-          allocator.allocate_field(fi.size, fi.fid);
-        }//if
-      }//for
-     
-      global_index_space_.logical_region =
-        runtime_->create_logical_region(ctx_,
-          global_index_space_.index_space, global_index_space_.field_space);
-      attach_name(global_index_space_, global_index_space_.logical_region,
-        "global logical region");  
- 
-    }//scope
-
+   //create logical regions for color_index_space_
    {
      FieldAllocator allocator =
         runtime_->create_field_allocator(ctx_, color_index_space_.field_space);

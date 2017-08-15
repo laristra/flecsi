@@ -121,6 +121,10 @@ namespace execution {
         region_reqs.push_back(gh_rr);
       }else if(h.global){
         if (h.state <SPECIALIZATION_SPMD_INIT){
+          Legion::RegionRequirement rr(h.color_region,
+            privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.color_region);
+          rr.add_field(h.fid);
+          region_reqs.push_back(rr);
         }else{
           Legion::RegionRequirement rr(h.color_region,
             READ_ONLY, EXCLUSIVE, h.color_region);
