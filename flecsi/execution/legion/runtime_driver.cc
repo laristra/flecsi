@@ -92,9 +92,6 @@ runtime_driver(
   } // for
 
 
-//  for(const field_info_t& field_info : context_.registered_fields()){
-//    context_.put_field_info(field_info);
-//  }
 
   int num_colors;
   MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
@@ -107,9 +104,21 @@ runtime_driver(
   
   data.init_global_handles();
 
+  size_t number_of_global_fields = 0;
   for(const field_info_t& field_info : context_.registered_fields()){
-std::cout <<"IRINA DEBUG, registered fids = " << field_info.fid<<std::endl;
     context_.put_field_info(field_info);
+    if (field_info.storage_type == global)
+      number_of_global_fields++;
+  }
+
+  if (number_of_global_fields > 0)
+  {
+    auto& ispace_dmap = context_.index_space_data_map();
+    size_t global_index_space =
+      execution::internal_index_space::global_is;
+
+    ispace_dmap[global_index_space].color_region =
+        data.global_index_space().logical_region;
   }
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
@@ -203,7 +212,6 @@ std::cout <<"IRINA DEBUG, registered fids = " << field_info.fid<<std::endl;
   //total number of Phase Barriers 
   size_t num_phase_barriers =0;
 
-  size_t number_of_global_fields = 0;
   size_t number_of_color_fields = 0;
 
   for(auto is: context_.coloring_map()) {

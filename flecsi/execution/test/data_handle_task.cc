@@ -32,6 +32,8 @@ template<typename T, size_t EP, size_t SP, size_t GP>
 using handle_t =
   data::legion::dense_handle_t<T, EP, SP, GP>;
 
+using global_t = double;
+
 template<typename T, size_t P>
 using global_handle_t =
   data::legion::global_handle_t<T, P>;
@@ -73,15 +75,25 @@ void color_data_handle_dump(color_handle_t<double, rw> x) {
 void exclusive_writer(handle_t<double, wo, ro, ro> x) {
   clog(info) << "exclusive writer write" << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
-    x.exclusive(i) = static_cast<double>(i);
+    x(i) = static_cast<double>(i);
   }
 }
 
 void exclusive_reader(handle_t<double, ro, ro, ro> x) {
   clog(info) << "exclusive reader read: " << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
-    ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
+    ASSERT_EQ(x(i), static_cast<double>(i));
   }
+}
+
+void global_writer(global_handle_t<double, wo> x) {
+  clog(info) << "global writer write" << std::endl;
+    x = static_cast<double>(3.14);
+}
+
+void global_reader(global_handle_t<double, ro> x) {
+  clog(info) << "global reader read: " << std::endl;
+    ASSERT_EQ(x, static_cast<double>(3.14));
 }
 
 void color_writer(color_handle_t<double, wo> x) {
@@ -102,12 +114,14 @@ flecsi_register_task(global_data_handle_dump, loc, single);
 flecsi_register_task(color_data_handle_dump, loc, single);
 flecsi_register_task(exclusive_writer, loc, single);
 flecsi_register_task(exclusive_reader, loc, single);
+flecsi_register_task(global_writer, loc, single);
+flecsi_register_task(global_reader, loc, single);
 flecsi_register_task(color_writer, loc, single);
 flecsi_register_task(color_reader, loc, single);
 
 flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
-flecsi_register_field(empty_mesh_2d_t, ns, velocity, double, global, 1);
+flecsi_register_global( ns, velocity, double, 1);
 
 flecsi_register_field(empty_mesh_2d_t, ns, density, double, color, 1);
 
@@ -131,6 +145,12 @@ void specialization_tlt_init(int argc, char ** argv) {
   map.cells = 0;
 
   flecsi_execute_mpi_task(add_colorings, map);
+
+  auto global_handle = flecsi_get_global(ns, velocity, double, 0);
+  flecsi_execute_task(global_data_handle_dump, single, global_handle);
+  flecsi_execute_task(global_writer, single, global_handle);
+  flecsi_execute_task(global_reader, single, global_handle);
+
 } // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
@@ -157,7 +177,7 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task(exclusive_reader, single, h);
 
   //get global handle
-  auto global_handle=flecsi_get_handle(ch, ns, velocity, double, global, 0);
+  auto global_handle=flecsi_get_global(ns, velocity, double, 0);
 
   flecsi_execute_task(global_data_handle_dump, single, global_handle);
 
@@ -167,6 +187,7 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task(color_data_handle_dump, single, color_handle);
   flecsi_execute_task(color_writer, single, color_handle);
   flecsi_execute_task(color_reader, single, color_handle);
+
 
 } // driver
 
