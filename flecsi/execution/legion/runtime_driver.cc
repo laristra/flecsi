@@ -60,6 +60,58 @@ runtime_driver(
 
   using field_info_t = context_t::field_info_t;
 
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for entries in the client registry.
+  //
+  // NOTE: This needs to be called before the field registry below because
+  //       The client callbacks register field callbacks with the field
+  //       registry.
+  //--------------------------------------------------------------------------//
+
+  auto & client_registry =
+    flecsi::data::storage_t::instance().client_registry();
+
+  for(auto & c: client_registry) {
+    for(auto & d: c.second) {
+      d.second.second(d.second.first);
+    } // for
+  } // for
+
+
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for entries in the field registry.
+  //--------------------------------------------------------------------------//
+
+  auto & field_registry =
+    flecsi::data::storage_t::instance().field_registry();
+
+  for(auto & c: field_registry) {
+    for(auto & f: c.second) {
+      f.second.second(f.first, f.second.first);
+    } // for
+  } // for
+
+
+//  for(const field_info_t& field_info : context_.registered_fields()){
+//    context_.put_field_info(field_info);
+//  }
+
+  int num_colors;
+  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "MPI num_colors is " << num_colors << std::endl;
+  }
+
+  data::legion_data_t data(ctx, runtime, num_colors);
+  
+  data.init_global_handles();
+
+  for(const field_info_t& field_info : context_.registered_fields()){
+std::cout <<"IRINA DEBUG, registered fids = " << field_info.fid<<std::endl;
+    context_.put_field_info(field_info);
+  }
+
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
   clog_tag_guard(runtime_driver);
@@ -83,49 +135,9 @@ runtime_driver(
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
   //--------------------------------------------------------------------------//
-  // Invoke callbacks for entries in the client registry.
-  //
-  // NOTE: This needs to be called before the field registry below because
-  //       The client callbacks register field callbacks with the field
-  //       registry.
-  //--------------------------------------------------------------------------//
-
-  auto & client_registry =
-    flecsi::data::storage_t::instance().client_registry(); 
-
-  for(auto & c: client_registry) {
-    for(auto & d: c.second) {
-      d.second.second(d.second.first);
-    } // for
-  } // for
-
-  //--------------------------------------------------------------------------//
-  // Invoke callbacks for entries in the field registry.
-  //--------------------------------------------------------------------------//
-
-  auto & field_registry =
-    flecsi::data::storage_t::instance().field_registry();
-
-  for(auto & c: field_registry) {
-    for(auto & f: c.second) {
-      f.second.second(f.first, f.second.first);
-    } // for
-  } // for
-
-  int num_colors;
-  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
-  {
-  clog_tag_guard(runtime_driver);
-  clog(info) << "MPI num_colors is " << num_colors << std::endl;
-  }
-
-  //--------------------------------------------------------------------------//
   //  Create Legion index spaces and logical regions
   //-------------------------------------------------------------------------//
   auto coloring_info = context_.coloring_info_map();
-
-
-  data::legion_data_t data(ctx, runtime, num_colors);
 
   data.init_from_coloring_info_map(coloring_info);
 
@@ -593,10 +605,12 @@ spmd_task(
                                 sizeof(field_info_t) * num_fields);
 
   // add field_info into the context (map between name, hash, is and field)
-  for(size_t i = 0; i < num_fields; ++i){
-    field_info_t& fi = field_info_buf[i];
-    context_.put_field_info(fi);
-  }//end for i
+  if( (context_.field_info_map()).size()==0){
+    for(size_t i = 0; i < num_fields; ++i){
+      field_info_t& fi = field_info_buf[i];
+      context_.put_field_info(fi);
+    }//end for i
+  }//if
 
   //if there is no information about fields in the context, add it there
   if (context_.registered_fields().size()==0)
