@@ -539,17 +539,18 @@ void set_primary_entities_task(
     flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
     clog(trace) << "Rank " << my_color << " exclusive " <<  exclusive.id <<
         std::endl;
-    cell_ID(index) = exclusive.id + cycle;
-    test(index) = double(exclusive.id + cycle);
+    cell_ID.exclusive(index) = exclusive.id + cycle;
+    test.exclusive(index) = double(exclusive.id + cycle);
     index++;
   } // exclusive_itr
 
+  index=0;
   for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
       index_coloring->second.shared.end(); ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
     clog(trace) << "Rank " << my_color << " shared " <<  shared.id << std::endl;
-    cell_ID(index) = shared.id + cycle;
-    test(index) = double(shared.id + cycle);
+    cell_ID.shared(index) = shared.id + cycle;
+    test.shared(index) = double(shared.id + cycle);
     index++;
   } // shared_itr
 

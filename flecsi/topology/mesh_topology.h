@@ -1436,9 +1436,10 @@ private:
 
         // Add this id to the cell to entity connections
         conns.push_back(itr.first->second);
-        
+      
         // If the insertion took place
         if (itr.second) {
+
           // what does this do?
           id_vector_t ev2 = id_vector_t(a, a + m);
           entity_vertex_conn.emplace_back(std::move(ev2));
@@ -1490,10 +1491,27 @@ private:
     if (!out_conn.empty()) {
       return;
     } // if
+   
+    // find the to index space and get the mapping from global to local
+    constexpr size_t to_index_space =
+      find_index_space_from_dimension__<
+        std::tuple_size<typename MT::entity_types>::value,
+        typename MT::entity_types,
+        TD
+      >::find();
+
+    const auto & context_ = flecsi::execution::context_t::instance();
+    const auto& gis_to_cis = context_.gis_to_cis_map(to_index_space);
+
+    // get the list of "to" entities
+    const auto & to_entities = entities<TD, TM>();
 
     index_vector_t pos(num_entities_(FD, FM), 0);
 
-    for (auto to_entity : entities<TD, TM>()) {
+    // now loop in order of global mapping
+    for(auto& citr : gis_to_cis){
+      auto cis = citr.second;
+      auto to_entity = to_entities[cis];
       for (id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
         ++pos[from_id.entity()];
       }
@@ -1502,8 +1520,12 @@ private:
     out_conn.resize(pos);
 
     std::fill(pos.begin(), pos.end(), 0);
+    
 
-    for (auto to_entity : entities<TD, TM>()) {
+    // now loop in order of global mapping
+    for(auto& citr : gis_to_cis){
+      auto cis = citr.second;
+      auto to_entity = to_entities[cis];
       for (id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
         out_conn.set(from_id.entity(), to_entity->template global_id<TM>(),
             pos[from_id.entity()]++);

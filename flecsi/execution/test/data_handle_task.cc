@@ -49,14 +49,14 @@ void data_handle_dump(handle_t<double, rw, ro, ro> x) {
 void exclusive_writer(handle_t<double, wo, ro, ro> x) {
   clog(info) << "exclusive writer write" << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
-    x(i) = static_cast<double>(i);
+    x.exclusive(i) = static_cast<double>(i);
   }
 }
 
 void exclusive_reader(handle_t<double, ro, ro, ro> x) {
   clog(info) << "exclusive reader read: " << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
-    ASSERT_EQ(x(i), static_cast<double>(i));
+    ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
   }
 }
 

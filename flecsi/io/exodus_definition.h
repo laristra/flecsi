@@ -1265,7 +1265,6 @@ public:
 
     // check the integer type used in the exodus file
     auto int64 = base_t::is_int64(exoid);
-
     //--------------------------------------------------------------------------
     // read coordinates
 
@@ -1391,15 +1390,51 @@ public:
         // reserve storage for insertion of cell faces
         cell_faces.reserve( results.size() );
         // now install each face
+        vector<index_t> elem_fs;
         for ( auto vs : results ) {
-          vector<index_t> elem_fs;
-          elem_fs.emplace_back( try_emplace( face_vertices, {vs[0], vs[1], vs[5], vs[4]} ) );
-          elem_fs.emplace_back( try_emplace( face_vertices, {vs[1], vs[2], vs[6], vs[5]} ) );
-          elem_fs.emplace_back( try_emplace( face_vertices, {vs[2], vs[3], vs[7], vs[6]} ) );
-          elem_fs.emplace_back( try_emplace( face_vertices, {vs[3], vs[0], vs[4], vs[7]} ) );
-          elem_fs.emplace_back( try_emplace( face_vertices, {vs[0], vs[3], vs[2], vs[1]} ) );
-          elem_fs.emplace_back( try_emplace( face_vertices, {vs[4], vs[5], vs[6], vs[7]} ) );
-          cell_faces.emplace_back( std::move(elem_fs) );
+          // clear previous results
+          elem_fs.clear();
+          // select face points based on the element type
+          switch(block_type) {
+          case base_t::block_t::hex:
+            elem_fs.emplace_back(
+              try_emplace( face_vertices, {vs[0], vs[1], vs[5], vs[4]} )
+            );
+            elem_fs.emplace_back(
+              try_emplace( face_vertices, {vs[1], vs[2], vs[6], vs[5]} )
+            );
+            elem_fs.emplace_back(
+              try_emplace( face_vertices, {vs[2], vs[3], vs[7], vs[6]} )
+            );
+            elem_fs.emplace_back(
+              try_emplace( face_vertices, {vs[3], vs[0], vs[4], vs[7]} )
+            );
+            elem_fs.emplace_back(
+              try_emplace( face_vertices, {vs[0], vs[3], vs[2], vs[1]} )
+            );
+            elem_fs.emplace_back(
+              try_emplace( face_vertices, {vs[4], vs[5], vs[6], vs[7]} )
+            );
+            break;
+          case base_t::block_t::tet:
+            elem_fs.emplace_back(
+              try_emplace( face_vertices, {vs[0], vs[1], vs[3]} )
+            );
+            elem_fs.emplace_back(
+              try_emplace( face_vertices, {vs[1], vs[2], vs[3]} )
+            );
+            elem_fs.emplace_back(
+              try_emplace( face_vertices, {vs[2], vs[0], vs[3]} )
+            );
+            elem_fs.emplace_back(
+              try_emplace( face_vertices, {vs[0], vs[2], vs[1]} )
+            );
+            break;
+          default:
+            raise_implemented_error( "Unknown block type" );
+          }
+          // now add the face
+          cell_faces.emplace_back( elem_fs );
         }
 
       }
@@ -1411,6 +1446,65 @@ public:
       cell_vertices.size() == exo_params.num_elem,
       "Mismatch in read blocks"
     );
+    
+   
+    //--------------------------------------------------------------------------
+    // build the edges
+    
+    // make storage for the face edges
+    auto num_faces = face_vertices.size();
+    
+    auto & face_edges = entities_[2][1];
+    face_edges.resize( num_faces );
+  
+    // create an edge table to filter out duplicate point sets
+    edge_table__<index_t> edge_table;
+
+    // loop over cells, adding all of their edges to the table
+    size_t face_id = 0;
+    for ( const auto & verts : face_vertices ) {
+      // reference the storage for this cell's edges
+      auto & edges = face_edges[face_id++];
+      // reserve space for the cell edges
+      edges.reserve( verts.size() );
+      // now add the edgees of this cell
+      for ( 
+        auto v0 = std::prev( verts.end() ), v1 = verts.begin();
+        v1 != verts.end();
+        v0=v1, ++v1
+      ) {
+        auto res = edge_table.insert( *v0, *v1 );
+        edges.push_back( res.id ); 
+      }
+    } // for
+    
+    clog_assert( face_id == num_faces, "Faces dont match" );
+
+    // make storage for the edge vertices
+    auto num_edges = edge_table.size();
+
+    auto & edge_vertices = entities_[1][0];
+    edge_vertices.resize( num_edges );
+
+    // now transfer the filtered edges
+    size_t edge_id = 0;
+    for ( const auto & edge : edge_table )
+      edge_vertices[edge_id++] = { edge.first, edge.second };
+    clog_assert( edge_id == num_edges, "Edges dont match" );
+  
+    std::cout << "done with edges" << std::endl;
+#if 0
+    //--------------------------------------------------------------------------
+    // Create the remainder of the connectivities
+
+    entities_[1][2].resize(num_edges);
+    entities_[0][2].resize(num_vertices);
+    entities_[0][1].resize(num_vertices);
+
+    detail::transpose( entities_[2][1], entities_[1][2] );
+    detail::transpose( entities_[2][0], entities_[0][2] );
+    detail::transpose( entities_[1][0], entities_[0][1] );
+#endif
 
     //--------------------------------------------------------------------------
     // close the file
