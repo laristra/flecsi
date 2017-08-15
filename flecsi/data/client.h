@@ -11,6 +11,7 @@
 //! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
 
+#include "flecsi/data/common/data_types.h"
 #include "flecsi/data/common/registration_wrapper.h"
 #include "flecsi/data/storage.h"
 #include "flecsi/data/data_client_handle.h"
@@ -51,7 +52,7 @@ struct data_client_policy_handler__{};
 //----------------------------------------------------------------------------//
 
 template<>
-struct data_client_policy_handler__<global_client_handle_t>
+struct data_client_policy_handler__<global_data_client_t>
 {
   
   template<

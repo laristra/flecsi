@@ -17,6 +17,8 @@
 namespace flecsi {
 namespace data {
 
+struct global_data_client_t {};
+
 // Generic bitfield type
 using bitset_t = std::bitset<8>;
 
