@@ -44,6 +44,7 @@ public:
   void
   add_end(size_t end)
   {
+    assert(end > start_);
     add_count(end - start_);
   }
 

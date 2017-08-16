@@ -157,7 +157,7 @@ public:
 
   void
   push_back(
-    const ref_t& x
+    const ref_t x
   )
   {
     assert(size_ < capacity_ && "array buffer capacity exceeded");

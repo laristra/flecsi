@@ -79,15 +79,24 @@ struct legion_topology_storage_policy_t
     auto s = is.storage();
     s->set_buffer(entities, num_entities, read);
 
-    if(read){
-      is.set_end(num_entities);
-    }
+    auto& id_storage = is.id_storage();
+    id_storage.set_buffer(ids, num_entities, read);
+
+    for(auto& domain_connectivities : topology) {
+      auto& domain_connectivity = domain_connectivities[domain];
+      for(size_t d = 0; d <= ND; ++d) {
+        domain_connectivity.get(d, dim).set_entity_storage(s);
+      } // for
+    } // for
+
+    if(!read){
+      return;
+    }      
+
+    is.set_end(num_entities);
 
     size_t shared_end = num_exclusive + num_shared;
     size_t ghost_end = shared_end + num_ghost;
-
-    auto& id_storage = is.id_storage();
-    id_storage.set_buffer(ids, num_entities, read);
 
     for(size_t partition = 0; partition < num_partitions; ++partition){
       auto& isp = partition_index_spaces[partition][domain][dim];
@@ -115,13 +124,6 @@ struct legion_topology_storage_policy_t
           break;
       }      
     }
-
-    for(auto& domain_connectivities : topology) {
-      auto& domain_connectivity = domain_connectivities[domain];
-      for(size_t d = 0; d <= ND; ++d) {
-        domain_connectivity.get(d, dim).set_entity_storage(s);
-      } // for
-    } // for      
   } // init_entities
 
   void
@@ -146,24 +148,12 @@ struct legion_topology_storage_policy_t
     auto& id_storage = conn.get_index_space().id_storage();
     id_storage.set_buffer(indices, num_indices, read);
 
+    conn.offsets().storage().set_buffer(offsets, num_offsets, read);
+
     if(read){
       conn.get_index_space().set_end(num_indices);
     }
-
-    conn.offsets().storage().set_buffer(offsets, num_offsets, read);
-    conn.set_enabled(true);
-
   } // init_connectivities
-
-  template<
-    size_t D,
-    size_t N
-  >
-  size_t
-  entity_dimension(mesh_entity_t<D, N>*)
-  {
-    return D;
-  }
 
   template<
     class T,
@@ -174,15 +164,13 @@ struct legion_topology_storage_policy_t
   {
     using dtype = domain_entity<M, T>;
 
-    T* ent;
-    size_t dim = entity_dimension(ent);
-    auto & is = index_spaces[M][dim].template cast<dtype>();
+    auto & is = index_spaces[M][T::dimension].template cast<dtype>();
     size_t entity_id = is.size();
 
     auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity_id;
-    ent = new (placement_ptr) T(std::forward<S>(args)...);
+    auto ent = new (placement_ptr) T(std::forward<S>(args)...);
 
-    id_t global_id = id_t::make<M>(dim, entity_id);
+    id_t global_id = id_t::make<M>(T::dimension, entity_id);
     ent->template set_global_id<M>(global_id);
 
     auto& id_storage = is.id_storage();
@@ -206,13 +194,10 @@ struct legion_topology_storage_policy_t
   {
     using dtype = domain_entity<M, T>;
     
-    T* ent;
-    size_t dim = entity_dimension(ent);
-    
-    auto & is = index_spaces[M][dim].template cast<dtype>();
+    auto & is = index_spaces[M][T::dimension].template cast<dtype>();
 
     auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + id.entity();
-    ent = new (placement_ptr) T(std::forward<S>(args)...);
+    auto ent = new (placement_ptr) T(std::forward<S>(args)...);
 
     ent->template set_global_id<M>(id);
 

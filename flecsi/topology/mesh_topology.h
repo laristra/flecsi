@@ -531,7 +531,8 @@ public:
   ) const
   {
     using etype = entity_type<D, M>;
-    return static_cast<etype *>(base_t::ms_->index_spaces[M][D][global_id.entity()]);
+    return static_cast<etype *>(
+      base_t::ms_->index_spaces[M][D][global_id.entity()]);
   } // get_entity
 
   /*!
@@ -563,7 +564,8 @@ public:
   ) const
   {
     using etype = entity_type<D, M>;
-    return static_cast<etype *>(base_t::ms_->partition_index_spaces[partition][M][D][global_id.entity()]);
+    return static_cast<etype *>(
+      base_t::ms_->partition_index_spaces[partition][M][D][global_id.entity()]);
   } // get_entity
 
   /*!
@@ -579,7 +581,8 @@ public:
     partition_t partition
   )
   {
-    return base_t::ms_->partition_index_spaces[partition][M][dim][global_id.entity()];
+    return base_t::ms_->partition_index_spaces[partition]
+      [M][dim][global_id.entity()];
   } // get_entity
 
   /*!
@@ -604,9 +607,7 @@ public:
     using etype = entity_type<D, TM>;
     using dtype = domain_entity<TM, etype>;
 
-    auto ents = c.get_index_space().slice<dtype>(
-      c.range(e->template id<FM>()));
-    return ents;
+    return c.get_index_space().slice<dtype>(c.range(e->template id<FM>()));
   } // entities
 
   /*!
@@ -698,7 +699,8 @@ public:
   {
     using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
-    return base_t::ms_->partition_index_spaces[partition][M][D].template slice<dtype>();
+    return base_t::ms_->partition_index_spaces[partition]
+      [M][D].template slice<dtype>();
   } // entities
 
   /*!

@@ -636,12 +636,6 @@ class connectivity_t
   }
 
   void
-  set_enabled(bool enabled)
-  {
-    enabled_ = enabled;
-  }
-
-  void
   add_count(uint32_t count)
   {
     offsets_.add_count(count);
@@ -659,7 +653,6 @@ class connectivity_t
     void, entity_storage_t> index_space_;
   
   offset_storage_t offsets_;
-  bool enabled_ = false;
 }; // class connectivity_t
 
 /*!
