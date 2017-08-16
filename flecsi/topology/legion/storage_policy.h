@@ -201,14 +201,15 @@ struct legion_topology_storage_policy_t
   >
   T *
   make(
-    id_t const & id,
+    id_t id,
     S && ... args
   )
   {
     using dtype = domain_entity<M, T>;
-
+    
     T* ent;
     size_t dim = entity_dimension(ent);
+    
     auto & is = index_spaces[M][dim].template cast<dtype>();
 
     auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + id.entity();
@@ -216,7 +217,10 @@ struct legion_topology_storage_policy_t
 
     ent->template set_global_id<M>(id);
 
-    is.push_back( id );
+    auto& id_storage = is.id_storage();
+    id_storage.push_back(id);
+
+    is.pushed();
 
     return ent;
   } // make
