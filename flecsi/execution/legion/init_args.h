@@ -103,6 +103,9 @@ namespace execution {
     )
     {
       if (!h.global && !h.color){
+        clog_assert(h.state>SPECIALIZATION_TLT_INIT, "accessing  data         \
+          handle from specialization_tlt_init is not supported");
+
         Legion::MappingTagID tag = EXCLUSIVE_LR;
 
         Legion::RegionRequirement ex_rr(h.exclusive_lr,
@@ -126,6 +129,8 @@ namespace execution {
           rr.add_field(h.fid);
           region_reqs.push_back(rr);
         }else{
+          clog_assert(EXCLUSIVE_PERMISSIONS==size_t(ro), "you are not allowed  \
+            to modify global data in specialization_spmd_init or driver");
           Legion::RegionRequirement rr(h.color_region,
             READ_ONLY, EXCLUSIVE, h.color_region);
           rr.add_field(h.fid);
@@ -133,6 +138,8 @@ namespace execution {
         }//if
       }//if
       else if (h.color){
+        clog_assert(h.state>SPECIALIZATION_TLT_INIT, "accessing color data    \
+          handle from specialization_tlt_init is not supported");
         Legion::RegionRequirement rr(h.color_region,
           privilege_mode(EXCLUSIVE_PERMISSIONS),
           EXCLUSIVE, h.color_region);

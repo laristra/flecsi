@@ -62,14 +62,14 @@ void data_handle_dump(handle_t<double, rw, ro, ro> x) {
   clog(info) << "ghost size: " << x.ghost_size() << std::endl;
 }
 
-void global_data_handle_dump(global_handle_t<double, rw> x) {
+void global_data_handle_dump(global_handle_t<double, ro> x) {
   clog(info) << "global label: " << x.label() << std::endl;
   clog(info) << "global combined size: " << x.size() << std::endl;
 }
 
-void color_data_handle_dump(color_handle_t<double, rw> x) {
-  clog(info) << "global label: " << x.label() << std::endl;
-  clog(info) << "global combined size: " << x.size() << std::endl;
+void color_data_handle_dump(color_handle_t<double, ro> x) {
+  clog(info) << "color label: " << x.label() << std::endl;
+  clog(info) << "color combined size: " << x.size() << std::endl;
 }
 
 void exclusive_writer(handle_t<double, wo, ro, ro> x) {
