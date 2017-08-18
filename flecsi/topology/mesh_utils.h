@@ -167,7 +167,11 @@ struct find_index_space__<0, TUPLE, ENTITY> {
     \tparam D The dimension to match.
     \tparam M The domain to match.
    */
-  static constexpr size_t find() { return 1; } // find_from
+  static constexpr size_t find()
+  {
+    assert(false && "failed to find index space");
+    return 1; 
+  } // find_from
 
 }; // struct find_index_space__
 
