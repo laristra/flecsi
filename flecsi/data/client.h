@@ -132,8 +132,8 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
       ei.domain = DOMAIN_TYPE::value;
       ei.size = sizeof(ENTITY_TYPE);
 
-      entity_info.emplace_back(std::move(ei));
-
+      //entity_info.emplace_back(std::move(ei));
+      entity_info.push_back(ei);
       entity_index_space_map.emplace(typeid(ENTITY_TYPE).hash_code(),
         INDEX_TYPE::value);
     } // handle_type
