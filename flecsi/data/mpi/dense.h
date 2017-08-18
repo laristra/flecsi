@@ -248,8 +248,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < base::primary_size && "index out of range");
-    return base::primary_data[index];
+    assert(index < base::combined_size && "index out of range");
+    return base::combined_data[index];
   } // operator []
 
   ///
@@ -263,8 +263,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
-    assert(index < base::primary_size && "index out of range");
-    return base::primary_data[index];
+    assert(index < base::combined_size && "index out of range");
+    return base::combined_data[index];
   } // operator []
 
   ///
@@ -404,8 +404,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < base::primary_size && "index out of range");
-    return base::primary_data[index];
+    assert(index < base::combined_size && "index out of range");
+    return base::combined_data[index];
   } // operator ()
 
   ///

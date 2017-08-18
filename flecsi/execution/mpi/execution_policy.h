@@ -30,6 +30,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/mpi/task_wrapper.h"
 #include "flecsi/execution/mpi/task_prolog.h"
+#include "flecsi/execution/mpi/finalize_handles.h"
 
 //#include "flecsi/utils/const_string.h"
 //#include "flecsi/utils/tuple_walker.h"
@@ -241,6 +242,9 @@ struct mpi_execution_policy_t
     task_prolog.walk(task_args);
 
     auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, task_args);//std::forward_as_tuple(task_args ...));
+
+    finalize_handles_t finalize_handles;
+    finalize_handles.walk(task_args);
 
     // TODO: Do we nee to run taks_epilog ??
     return fut;

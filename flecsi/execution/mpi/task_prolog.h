@@ -120,6 +120,7 @@ namespace execution {
       std::vector<T> buffer(my_coloring_info.ghost);
       auto index_coloring = context.coloring(h.index_space);
 
+      // FIXME: What do we do when T is a user defined data type?
       int i = 0;
       for (auto ghost : index_coloring.ghost) {
         clog_rank(warn, 1) << "ghost id: " <<  ghost.id << ", rank: " << ghost.rank
@@ -136,7 +137,6 @@ namespace execution {
 
       MPI_Group_free(&rma_group);
       MPI_Win_free(&win);
-
 
       for (int i = 0; i < h.ghost_size; i++) {
         clog_rank(warn, 1) << "ghost data: " << h.ghost_data[i] << std::endl;
@@ -211,8 +211,8 @@ namespace execution {
         const size_t from_index_space = adj.from_index_space;
         const size_t to_index_space = adj.to_index_space;
 
-        // 1. get number of indices, should it be the total number of of entities
-        // in the from_index_space?
+        // 1. get number of indices, it is the total number of entities in the
+        // index space times the "degree", TODO: here I hardcoded it to 4.
         // get color_info for this field.
         auto& color_info = (context_.coloring_info(from_index_space)).at(color);
         adj.num_indices = 4*(color_info.exclusive + color_info.shared + color_info.ghost);
@@ -221,7 +221,6 @@ namespace execution {
         auto& registered_field_data = context_.registered_field_data();
         auto fieldDataIter = registered_field_data.find(adj.index_fid);
         if (fieldDataIter == registered_field_data.end()) {
-          // TODO: what is the element type?
           size_t size = sizeof(utils::id_t) * adj.num_indices;
           execution::context_t::instance().register_field_data(adj.index_fid,
                                                                size);
@@ -230,11 +229,10 @@ namespace execution {
         clog(trace) << "num_indices: " << adj.num_indices << std::endl;
 
         // 2. get number of offset, it should be number of cells?
-        adj.num_offsets = adj.num_indices / 4;
+        adj.num_offsets = (color_info.exclusive + color_info.shared + color_info.ghost);
         // 3. allocate field data for index_buf and offset_buf.
         fieldDataIter = registered_field_data.find(adj.offset_fid);
         if (fieldDataIter == registered_field_data.end()) {
-          //auto finfo = context_.fi
           // TODO: what is the element type?
           size_t size = sizeof(size_t) * adj.num_offsets;
 

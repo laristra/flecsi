@@ -171,15 +171,13 @@ struct mpi_topology_storage_policy_t
   {
     using dtype = domain_entity<M, T>;
 
-    T* ent;
-    size_t dim = entity_dimension(ent);
-    auto & is = index_spaces[M][dim].template cast<dtype>();
+    auto & is = index_spaces[M][T::dimension].template cast<dtype>();
     size_t entity_id = is.size();
 
     auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity_id;
-    ent = new (placement_ptr) T(std::forward<S>(args)...);
+    auto ent = new (placement_ptr) T(std::forward<S>(args)...);
 
-    id_t global_id = id_t::make<M>(dim, entity_id);
+    id_t global_id = id_t::make<M>(T::dimension, entity_id);
     ent->template set_global_id<M>(global_id);
 
     auto& id_storage = is.id_storage();
