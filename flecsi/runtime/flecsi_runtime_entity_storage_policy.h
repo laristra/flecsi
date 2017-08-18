@@ -37,7 +37,7 @@
 // Legion, MPI+Legion Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include "flecsi/topology/legion/entity_storage.h"
+  #include "flecsi/topology/common/entity_storage.h"
 
   namespace flecsi {
 
@@ -51,7 +51,7 @@
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/topology/mpi/entity_storage.h"
+  #include "flecsi/topology/common/entity_storage.h"
 
   namespace flecsi {
 

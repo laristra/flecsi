@@ -16,12 +16,11 @@
 #include "flecsi/topology/mesh_storage.h"
 
 #include "flecsi/data/data_client.h"
-//>>>>>>> mpi_dense_handle
 #include "flecsi/topology/mesh_utils.h"
 #include "flecsi/topology/mesh_storage.h"
 #include "flecsi/topology/mesh_types.h"
 #include "flecsi/topology/index_space.h"
-#include "flecsi/topology/mpi/entity_storage.h"
+#include "flecsi/topology/common/entity_storage.h"
 
 ///
 /// \file
