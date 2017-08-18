@@ -24,6 +24,7 @@
 #include "flecsi/topology/mesh_topology.h"
 #include "flecsi/utils/hash.h"
 #include "flecsi/utils/tuple_walker.h"
+#include "flecsi/utils/common.h"
 
 //clog_register_tag(registration);
 
@@ -162,6 +163,24 @@ struct client_registration_wrapper__<
       storage_t::instance().register_field(client_key,
         key, wrapper_t::register_callback);
 
+      using id_wrapper_t = field_registration_wrapper__<
+        CLIENT_TYPE,
+        flecsi::data::dense,
+        utils::id_t,
+        entity_hash,
+        0,
+        1,
+        INDEX_TYPE::value
+      >;
+
+      const size_t id_key = utils::hash::client_internal_field_hash<
+        utils::const_string_t("__flecsi_internal_entity_id__").hash(),
+        INDEX_TYPE::value
+      >();
+
+      storage_t::instance().register_field(client_key,
+        id_key, id_wrapper_t::register_callback);
+
     } // handle_type
 
   }; // struct entity_walker_t
@@ -215,7 +234,7 @@ struct client_registration_wrapper__<
       using index_wrapper_t = field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
-        size_t,
+        utils::id_t,
         adjacency_hash,
         0,
         1,
@@ -236,7 +255,7 @@ struct client_registration_wrapper__<
       using offset_wrapper_t = field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
-        LegionRuntime::Arrays::Point<2>,
+        utils::offset_t,
         adjacency_hash,
         0,
         1,

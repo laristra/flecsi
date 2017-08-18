@@ -263,14 +263,6 @@ public:
       } // for
     } // for
 
-    // initialize all lower connectivities because the user might
-    // specify different combinations of connections
-    for (size_t i = 1; i < MT::num_dimensions+1; ++i) {
-      for (size_t j = 0; j < i; ++j) {
-        get_connectivity_(0, i, j).init();
-      } // for
-    } // for
-
     for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
       for (size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim) {
         auto& master = 
@@ -539,7 +531,8 @@ public:
   ) const
   {
     using etype = entity_type<D, M>;
-    return static_cast<etype *>(base_t::ms_->index_spaces[M][D][global_id.entity()]);
+    return static_cast<etype *>(
+      base_t::ms_->index_spaces[M][D][global_id.entity()]);
   } // get_entity
 
   /*!
@@ -571,7 +564,8 @@ public:
   ) const
   {
     using etype = entity_type<D, M>;
-    return static_cast<etype *>(base_t::ms_->partition_index_spaces[partition][M][D][global_id.entity()]);
+    return static_cast<etype *>(
+      base_t::ms_->partition_index_spaces[partition][M][D][global_id.entity()]);
   } // get_entity
 
   /*!
@@ -587,7 +581,8 @@ public:
     partition_t partition
   )
   {
-    return base_t::ms_->partition_index_spaces[partition][M][dim][global_id.entity()];
+    return base_t::ms_->partition_index_spaces[partition]
+      [M][dim][global_id.entity()];
   } // get_entity
 
   /*!
@@ -608,14 +603,11 @@ public:
 
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
-    const index_vector_t & fv = c.get_from_index_vec();
 
     using etype = entity_type<D, TM>;
     using dtype = domain_entity<TM, etype>;
 
-    auto ents = c.get_index_space().slice<dtype>(
-      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
-    return ents;
+    return c.get_index_space().slice<dtype>(c.range(e->template id<FM>()));
   } // entities
 
   /*!
@@ -635,13 +627,11 @@ public:
   {
     connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
-    const index_vector_t & fv = c.get_from_index_vec();
 
     using etype = entity_type<D, TM>;
     using dtype = domain_entity<TM, etype>;
 
-    return c.get_index_space().slice<dtype>(
-      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
+    return c.get_index_space().slice<dtype>(c.range(e->template id<FM>()));
   } // entities
 
   /*!
@@ -709,7 +699,8 @@ public:
   {
     using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
-    return base_t::ms_->partition_index_spaces[partition][M][D].template slice<dtype>();
+    return base_t::ms_->partition_index_spaces[partition]
+      [M][D].template slice<dtype>();
   } // entities
 
   /*!
@@ -775,9 +766,7 @@ public:
   {
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
-    const index_vector_t & fv = c.get_from_index_vec();
-    return c.get_index_space().ids(
-      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
+    return c.get_index_space().ids(c.range(e->template id<FM>()));
   } // entities
 
   /*!
@@ -896,11 +885,11 @@ public:
 
     const connectivity_t& c1 = get_connectivity(domain, dim, to_dim);
     assert(!c1.empty() && "empty connectivity c1");
-    const index_vector_t& fv1 = c1.get_from_index_vec();
+    const auto& o1 = c1.offsets();
 
     const connectivity_t& c2 = get_connectivity(domain, to_dim, dim);
     assert(!c2.empty() && "empty connectivity c2");
-    const index_vector_t& fv2 = c2.get_from_index_vec();
+    const auto& o2 = c2.offsets();
 
     mesh_graph_partition<int_t> cp;
     cp.offset.reserve(pn);
@@ -912,13 +901,12 @@ public:
     partition.push_back(0);
 
     for(size_t from_id = 0; from_id < n; ++from_id){
-      auto to_ids = c1.get_index_space().ids(fv1[from_id], fv1[from_id + 1]);
+      auto to_ids = c1.get_index_space().ids(o1.range(from_id));
       cp.offset.push_back(offset);
 
       for(auto to_id : to_ids){
         auto ret_ids =
-          c2.get_index_space().ids(
-            fv2[to_id.entity()], fv2[to_id.entity() + 1]);
+          c2.get_index_space().ids(o2.range(to_id.entity()));
 
         for(auto ret_id : ret_ids){
           if(ret_id.entity() != from_id){
@@ -1036,7 +1024,7 @@ public:
           for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
             const connectivity_t& c = dc.get(from_dim, to_dim);
 
-            auto& tv = c.to_id_vec();
+            auto& tv = c.to_id_storage();
             uint64_t num_to = tv.size();
             std::memcpy(buf + pos, &num_to, sizeof(num_to));
             pos += sizeof(num_to);
@@ -1051,8 +1039,7 @@ public:
             std::memcpy(buf + pos, tv.data(), bytes);
             pos += bytes;
 
-            auto& fv = c.from_index_vec();
-            uint64_t num_from = fv.size();
+            uint64_t num_from = c.offsets().size();
             std::memcpy(buf + pos, &num_from, sizeof(num_from));
             pos += sizeof(num_from);
 
@@ -1063,7 +1050,8 @@ public:
               buf = (char*)std::realloc(buf, size);
             }
 
-            std::memcpy(buf + pos, fv.data(), bytes);
+            // TODO - FIX FOR OFFSETS STORAGE
+            //std::memcpy(buf + pos, fv.data(), bytes);
             pos += bytes;
           }
         }
@@ -1105,7 +1093,7 @@ public:
           for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
             connectivity_t& c = dc.get(from_dim, to_dim);
 
-            auto& tv = c.to_id_vec();
+            auto& tv = c.to_id_storage();
             uint64_t num_to;
             std::memcpy(&num_to, buf + pos, sizeof(num_to));
             pos += sizeof(num_to);
@@ -1114,14 +1102,15 @@ public:
             tv.assign(ta, ta + num_to);
             pos += num_to * sizeof(id_vector_t::value_type);
 
-            auto& fv = c.from_index_vec();
-            uint64_t num_from;
-            std::memcpy(&num_from, buf + pos, sizeof(num_from));
-            pos += sizeof(num_from);
-            auto fa = (index_vector_t::value_type*)(buf + pos);
-            fv.resize(num_from);
-            fv.assign(fa, fa + num_from);
-            pos += num_from * sizeof(index_vector_t::value_type);
+            // TODO - FIX FOR OFFSETS STORAGE
+            // auto& fv = c.from_index_vec();
+            // uint64_t num_from;
+            // std::memcpy(&num_from, buf + pos, sizeof(num_from));
+            // pos += sizeof(num_from);
+            // auto fa = (index_vector_t::value_type*)(buf + pos);
+            // fv.resize(num_from);
+            // fv.assign(fa, fa + num_from);
+            // pos += num_from * sizeof(index_vector_t::value_type);
           }
         }
       }
@@ -1164,7 +1153,7 @@ private:
       c.push(v->template global_id<M>());
     } // for
 
-    c.end_from();
+    c.add_count(verts.size());
   } // init_cell
 
   template<
@@ -1187,7 +1176,7 @@ private:
       c.push(e->template global_id<M>());
     } // for
 
-    c.end_from();
+    c.add_count(subs.size());
   } // init_entity
 
   // Get the number of entities in a given domain and topological dimension
