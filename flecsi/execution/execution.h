@@ -32,7 +32,7 @@ clog_register_tag(execution);
 //!
 //! This macro returns the inferred return type for a user task.
 //!
-//! @param task      The task to register. This is normally just a function.
+//! @param task The task to register. This is normally just a function.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
@@ -45,7 +45,7 @@ clog_register_tag(execution);
 //!
 //! This macro returns the inferred argument type for a user task.
 //!
-//! @param task      The task to register. This is normally just a function.
+//! @param task The task to register. This is normally just a function.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
