@@ -867,8 +867,14 @@ public:
     owned_ = false;
   }
 
-  id_t*
+  const id_t*
   id_array() const
+  {
+    return v_->data();
+  }
+
+  id_t*
+  id_array() 
   {
     return v_->data();
   }
