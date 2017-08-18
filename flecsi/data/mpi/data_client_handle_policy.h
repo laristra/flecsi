@@ -49,9 +49,12 @@ struct data_client_handle_adjacency_t
   size_t to_domain;
   size_t from_dim;
   size_t to_dim;
+  size_t num_offsets;
+  size_t num_indices;
   field_id_t index_fid;
-  field_id_t entity_fid;
   field_id_t offset_fid;
+  size_t * offsets_buf;
+  uint64_t * indices_buf;
 };
 
 struct mpi_data_client_handle_policy_t

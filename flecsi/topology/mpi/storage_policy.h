@@ -121,24 +121,46 @@ struct mpi_topology_storage_policy_t
     } // for
   } // init_entities
 
-  template<size_t D, size_t M, typename ET>
   void
-  add_entity(
-    ET* ent,
-    size_t partition_id = 0
+  init_connectivity(
+    size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
+    size_t to_dim,
+    size_t * positions,
+    uint64_t* indices,
+    size_t num_positions
   )
   {
-    using dtype = domain_entity<M, ET>;
+    // TODO - this is an initial implementation for testing purposes.
+    // We may wish to store the buffer pointers coming from Legion directly
+    // into the connectivity
+    auto& conn = topology[from_domain][to_domain].get(from_dim, to_dim);
 
-    auto & is = index_spaces[M][D].template cast<dtype>();
+    auto& id_storage = conn.get_index_space().id_storage();
+    id_storage.set_buffer(indices, num_indices, read);
 
-    id_t global_id = id_t::make<D, M>(is.size(), partition_id);
+    conn.offsets().storage().set_buffer(offsets, num_offsets, read);
 
-    auto typed_ent = static_cast<mesh_entity_base_t<NM>*>(ent);
+    if(read){
+      conn.get_index_space().set_end(num_indices);
+    }
 
-    typed_ent->template set_global_id<M>(global_id);
-    is.push_back(ent);
-  }
+//    size_t index_offset = 0;
+//    for(size_t i = 0; i < num_positions; ++i){
+//      auto& pi = positions[i];
+//      size_t offset = pi.x[0];
+//      size_t count = pi.x[1];
+//
+//      for(size_t j = index_offset; j < index_offset + count; ++j){
+//        conn.push(utils::id_t::make(to_dim, indices[j]));
+//      }
+//
+//      conn.end_from();
+//
+//      index_offset += count;
+//    } // for
+  } // init_connectivities
 
   template<
     size_t D,

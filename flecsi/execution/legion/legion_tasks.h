@@ -444,6 +444,7 @@ __flecsi_internal_legion_task(fill_connectivity_task, void)
 
   using namespace execution;
 
+  clog(trace) << "fill connectivity" << std::endl;
   using tuple_t = std::tuple<size_t, size_t, size_t>;
 
   context_t& context = context_t::instance();

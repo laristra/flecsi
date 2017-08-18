@@ -343,6 +343,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       adj.offsets_buf = offsets;
       adj.num_offsets = num_offsets;
 
+      clog(trace) << "num_offsets: " << num_offsets << std::endl;
+
       lr = regions[region].get_logical_region();
       is = lr.get_index_space();
 
@@ -360,6 +362,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       adj.indices_buf = indices;
       adj.num_indices = num_indices;
+
+      clog(trace) << "num_indices: " << num_indices << std::endl;
 
       bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
 

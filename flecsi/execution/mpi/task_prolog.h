@@ -80,6 +80,7 @@ namespace execution {
       > & h
     )
     {
+      // TODO: skip internal data handle
       auto& context = context_t::instance();
       const int my_color = context.color();
       auto &my_coloring_info =
@@ -156,6 +157,8 @@ namespace execution {
 
       auto storage = h.set_storage(new typename T::storage_t);
 
+      int color = context_.color();
+
       for(size_t i{0}; i<h.num_handle_entities; ++i) {
         data_client_handle_entity_t & ent = h.handle_entities[i];
 
@@ -164,13 +167,14 @@ namespace execution {
         const size_t domain = ent.domain;
 
         // get color_info for this field.
-        auto& color_info = (context_.coloring_info(index_space)).at(context_.color());
+        auto& color_info = (context_.coloring_info(index_space)).at(color);
         ent.num_exclusive = color_info.exclusive;
         ent.num_shared = color_info.shared;
         ent.num_ghost = color_info.ghost;
 
         auto num_entities = ent.num_exclusive + ent.num_shared + ent.num_ghost;
 
+        // see if the field data is registered for this entity field.
         auto& registered_field_data = context_.registered_field_data();
         auto fieldDataIter = registered_field_data.find(ent.fid);
         if (fieldDataIter == registered_field_data.end()) {
@@ -180,10 +184,6 @@ namespace execution {
                                                                size);
         }
         auto data = reinterpret_cast<topology::mesh_entity_base_*>(registered_field_data[ent.fid].data());
-        // TODO: How to get number of entities?
-        // TODO: How to allocate memory?
-        // TODO: we don't even know the type of the entity
-        // TODO: we should get ents from some persistent memory storage rather than
         // new allocation every time.
         bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
         storage->init_entities(ent.domain, ent.dim,
@@ -191,10 +191,64 @@ namespace execution {
                                num_entities, ent.num_exclusive,
                                ent.num_shared, ent.num_ghost,
                                _read);
-//
-//        ++region;
       } // for
+
       h.initialize_storage();
+
+      for(size_t i{0}; i<h.num_handle_adjacencies; ++i) {
+        data_client_handle_adjacency_t &adj = h.handle_adjacencies[i];
+
+        const size_t adj_index_space = adj.adj_index_space;
+        const size_t from_index_space = adj.from_index_space;
+        const size_t to_index_space = adj.to_index_space;
+
+        // 1. get number of indices, should it be the total number of of entities
+        // in the from_index_space?
+        // get color_info for this field.
+        auto& color_info = (context_.coloring_info(from_index_space)).at(color);
+        adj.num_indices = color_info.exclusive + color_info.shared + color_info.ghost;
+
+        // see if the field data is registered for this entity field.
+//        auto hash = utils::hash::client_internal_field_hash(
+//          utils::const_string_t("__flecsi_internal_adjacency_offset__").hash(),
+//          adj_index_space);
+        auto& registered_field_data = context_.registered_field_data();
+        auto fieldDataIter = registered_field_data.find(adj.index_fid);
+        if (fieldDataIter == registered_field_data.end()) {
+          //auto finfo = context_.fi
+          // TODO: what is the element type?
+          size_t size = sizeof(size_t) * adj.num_indices;
+
+          execution::context_t::instance().register_field_data(adj.index_fid,
+                                                               size);
+        }
+        adj.indices_buf = reinterpret_cast<size_t *>(registered_field_data[adj.index_fid].data());
+        clog(trace) << "num_indices: " << adj.num_indices << std::endl;
+
+        // 2. get number of offset, should it be the same as number of indices?
+        adj.num_offsets = adj.num_indices * 4;
+        // 3. allocate field data for index_buf and offset_buf.
+        fieldDataIter = registered_field_data.find(adj.index_fid);
+        if (fieldDataIter == registered_field_data.end()) {
+          //auto finfo = context_.fi
+          // TODO: what is the element type?
+          size_t size = 2 * sizeof(size_t) * adj.num_offsets;
+
+          execution::context_t::instance().register_field_data(adj.offset_fid,
+                                                               size);
+        }
+        adj.offsets_buf = reinterpret_cast<size_t *>(registered_field_data[adj.offset_fid].data());
+        clog(trace) << "num_offsets: " << adj.num_offsets << std::endl;
+
+        bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
+
+        // TODO: fix
+        if(_read) {
+          storage->init_connectivity(adj.from_domain, adj.to_domain,
+                                     adj.from_dim, adj.to_dim, adj.offsets_buf,
+                                     adj.indices_buf, adj.num_offsets);
+        } // if
+      }
 
     } // handle
     //------------------------------------------------------------------------//

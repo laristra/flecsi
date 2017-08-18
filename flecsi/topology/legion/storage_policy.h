@@ -150,7 +150,7 @@ struct legion_topology_storage_policy_t
       auto& pi = positions[i]; 
       size_t offset = pi.x[0];
       size_t count = pi.x[1];
-
+      clog(trace) << "offset: " << offset << ", count: " << count << std::endl;
       for(size_t j = index_offset; j < index_offset + count; ++j){
         conn.push(utils::id_t::make(to_dim, indices[j]));
       }
