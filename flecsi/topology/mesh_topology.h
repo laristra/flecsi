@@ -1307,7 +1307,7 @@ private:
 
     auto & context_ = flecsi::execution::context_t::instance();
 
-    auto& gis_to_cis = context_.gis_to_cis_map(cell_index_space);
+    auto& gis_to_cis = context_.reverse_index_map(cell_index_space);
 
     for(auto& citr : gis_to_cis){
       size_t c = citr.second;
@@ -1480,27 +1480,14 @@ private:
     if (!out_conn.empty()) {
       return;
     } // if
-   
-    // find the to index space and get the mapping from global to local
-    constexpr size_t to_index_space =
-      find_index_space_from_dimension__<
-        std::tuple_size<typename MT::entity_types>::value,
-        typename MT::entity_types,
-        TD
-      >::find();
-
-    const auto & context_ = flecsi::execution::context_t::instance();
-    const auto& gis_to_cis = context_.gis_to_cis_map(to_index_space);
-
+    
     // get the list of "to" entities
     const auto & to_entities = entities<TD, TM>();
 
     index_vector_t pos(num_entities_(FD, FM), 0);
 
-    // now loop in order of global mapping
-    for(auto& citr : gis_to_cis){
-      auto cis = citr.second;
-      auto to_entity = to_entities[cis];
+    // Count how many connectivities go into each slot
+    for (auto to_entity : to_entities) {
       for (id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
         ++pos[from_id.entity()];
       }
@@ -1511,16 +1498,61 @@ private:
     std::fill(pos.begin(), pos.end(), 0);
     
 
-    // now loop in order of global mapping
-    for(auto& citr : gis_to_cis){
-      auto cis = citr.second;
-      auto to_entity = to_entities[cis];
-      for (id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
-        out_conn.set(from_id.entity(), to_entity->template global_id<TM>(),
-            pos[from_id.entity()]++);
+    // now do the actual transpose
+    for (auto to_entity : to_entities) {
+      for (auto from_id : entity_ids<FD, TM, FM>(to_entity)) {
+        auto from_lid = from_id.entity();
+        out_conn.set(from_lid, to_entity->template global_id<TM>(),
+            pos[from_lid]++);
       }
     }
 
+    // now we need to sort the connecvtivity arrays:
+    // .. we have to make sure the order of connectivity information apears in
+    //    in order of global id
+
+    // we need the context to get the global-to-local mapping
+    const auto & context_ = flecsi::execution::context_t::instance();
+
+    // find the from index space and get the mapping from global to local
+    constexpr size_t to_index_space =
+      find_index_space_from_dimension__<
+        std::tuple_size<typename MT::entity_types>::value,
+        typename MT::entity_types,
+        TD
+      >::find();
+
+    const auto& to__cis_to_gis = context_.index_map(to_index_space);
+
+    // do the final sort of the connectivity arrays
+    for (auto from_id : entity_ids<FD, TM>()) {
+      // get the connectivity array
+      size_t count;
+      auto conn = out_conn.get_entities( from_id.entity(), count );
+      // pack it into a list of id and global id pairs
+      std::vector< std::pair<size_t, id_t> > gids( count );
+      std::transform(
+        conn, conn+count, gids.begin(),
+        [&](auto id) {
+          return std::make_pair( to__cis_to_gis.at(id.entity()), id );
+        }
+      );
+      // sort via global id 
+      std::sort(
+        gids.begin(),
+        gids.end(),
+        []( auto a, auto b ) {
+          return a.first < b.first;
+        }
+      );
+      // upack the results
+      std::transform(
+        gids.begin(), gids.end(), conn,
+        [](auto id_pair) {
+          return id_pair.second;
+        }
+      );
+    }
   } // transpose
 
   /*!
@@ -1565,9 +1597,10 @@ private:
 
     connectivity_t & c2 = get_connectivity_(TM, TD, D);
     assert(!c2.empty());
+    
+    // Iterate through entities in "from" topological dimension
+    for(auto from_entity : entities<FD, FM>()){
 
-    // Iterate through entities in from topological dimension
-    for (auto from_entity : entities<FD, FM>()) {
       id_t from_id = from_entity->template global_id<FM>();
       id_vector_t & ents = conns[from_id.entity()];
       ents.reserve(max_size);

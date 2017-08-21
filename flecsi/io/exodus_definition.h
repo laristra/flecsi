@@ -10,7 +10,6 @@
 /// \date Initial file creation: Nov 21, 2016
 
 // user includes
-#include "flecsi/io/edge_table.h"
 #include "flecsi/topology/mesh_definition.h"
 #include "flecsi/utils/logging.h"
 
@@ -22,25 +21,148 @@
 #include <cstring>
 #include <fstream>
 #include <map>
+#include <memory>
 #include <unordered_map>
 #include <string>
+#include <vector>
 
 namespace flecsi {
 namespace io {
 
 namespace detail {
   
-template< typename T, typename U >
-void transpose( T && in, U && out )
+//==============================================================================
+//! \brief Find or insert a list within a list of lists..
+//! \return An index of where it was inserted or found.
+//==============================================================================
+template<
+  typename CONNECTIVITY_TYPE,
+  typename INSERT_TYPE
+>
+std::pair<size_t, bool>
+try_emplace( CONNECTIVITY_TYPE & connectivity, INSERT_TYPE && to_insert )
 {
-  using size_type = typename std::decay_t<T>::size_type;
 
+  using std::make_pair;
+  using std::forward;
+
+  // now find the list
+  auto it = std::find( connectivity.begin(), connectivity.end(), to_insert );
+
+  // if it was not found, insert it
+  if ( it == connectivity.end() ) {
+    connectivity.emplace_back( std::move(to_insert) );
+    return make_pair( connectivity.size() - 1, true );
+  }
+  // it was found, just return the index
+  else {
+    return make_pair( std::distance( connectivity.begin(), it ), false );
+  }
+
+}
+
+//==============================================================================
+//! \brief Transpose a connectivity array
+//==============================================================================
+template< typename CONNECTIVITY_TYPE >
+void transpose( const CONNECTIVITY_TYPE & in, CONNECTIVITY_TYPE & out )
+{
   // invert the list
   auto num_from = in.size();
   
-  for ( size_type from=0; from<num_from; ++from )
-    for ( auto to : std::forward<T>(in)[from] ) 
-      std::forward<U>(out)[ to ].push_back( from );
+  for ( size_t from=0; from<num_from; ++from ) {
+    for ( auto to : in[from] ) {
+      if ( to >= out.size() ) out.resize( to+1 );
+      out[ to ].push_back( from );
+    }
+  }
+
+}
+
+//==============================================================================
+//! \brief Create connectivity through
+//==============================================================================
+template<
+  typename CONNECTIVITY_TYPE, 
+  typename FUNCTION
+>
+void build_connectivity(
+  const CONNECTIVITY_TYPE & cell_to_vertex,
+  CONNECTIVITY_TYPE & cell_to_edge,
+  CONNECTIVITY_TYPE & edge_to_vertex,
+  CONNECTIVITY_TYPE & sorted_edge_to_vertex,
+  FUNCTION && build_edges_from_vertices
+)
+{
+
+  // resize the new connectivity
+  cell_to_edge.reserve( cell_to_edge.size() + cell_to_vertex.size() );
+
+  // loop over cells, adding all of their edges to the table
+  for ( const auto & these_verts : cell_to_vertex ) {
+
+    // reference the storage for this cell's edges
+    cell_to_edge.resize( cell_to_edge.size() + 1 );
+    auto & these_edges = cell_to_edge.back();
+    
+    // now build the edges for the cell
+    CONNECTIVITY_TYPE new_edges;
+    std::forward<FUNCTION>( build_edges_from_vertices )(
+      these_verts, new_edges
+    );
+    
+    // now look for exsiting vertex pairs in the edge-to-vertex master list
+    // or add a new edge to the list.  add the matched edge id to the 
+    // cell-to-edge list
+    for ( auto && vs : new_edges ) {
+      // sort the vertices
+      auto sorted_vs = vs;
+      std::sort( sorted_vs.begin(), sorted_vs.end() );
+      // Try the insertion
+      //   res.first has the id of the location inserted,
+      //   res.second is a boolean saying whether the insertion happend
+      auto res = try_emplace( sorted_edge_to_vertex, std::move(sorted_vs) );
+      // if there was an insertion, add the un-perturbed list of vertices 
+      // to the master list
+      if ( res.second ) edge_to_vertex.emplace_back( std::move(vs) );
+      // now add the edge id to the cell->edges connectitivity
+      these_edges.push_back( res.first ); 
+    }
+
+  } // for
+}
+
+//==============================================================================
+//! \brief Intersect two connectivity arrays array
+//==============================================================================
+template< typename CONNECTIVITY_TYPE >
+void intersect(
+  const CONNECTIVITY_TYPE & cell_to_face,
+  const CONNECTIVITY_TYPE & face_to_edge,
+  CONNECTIVITY_TYPE & cell_to_edge
+) {
+    
+  // resize the result array to size
+  cell_to_edge.reserve( cell_to_edge.size() + cell_to_face.size() );
+  
+  // loop over cells, collecting their face edges
+  for ( const auto & these_faces : cell_to_face ) {
+    
+    // reference the storage for this cells edges
+    cell_to_edge.resize( cell_to_edge.size() + 1 );
+    auto & these_edges = cell_to_edge.back();
+    
+    // now add the edges of this cell
+    for ( auto f : these_faces ) 
+      for ( auto e : face_to_edge.at(f) )
+        these_edges.push_back( e );
+
+    // sort them and remove the non-unique ones
+    std::sort( these_edges.begin(), these_edges.end() );
+    auto last = std::unique( these_edges.begin(), these_edges.end() );
+    these_edges.erase( last, these_edges.end() );
+
+  } // cells
 
 }
 
@@ -432,34 +554,44 @@ public:
   //! \param [in] exo_id  The exodus file id.
   //! \return the status of the file
   //============================================================================
-  template< typename U, typename V >
+  template< typename U, typename ENTITY_CONN >
   static void write_block( 
     int exoid, 
 		size_t blk_id, 
 		const std::string & name,
 		ex_entity_type entity_type,
 		const char * entity_description, 
-		const sparse_matrix<V> & entities
+    size_t num_entities,
+		ENTITY_CONN && entity_conn
   ) {
 
     // some type aliases
     using ex_index_t = U;
   
-    if ( entities.empty() ) return;
-	
 		// check if face data is provided instead of node data	
 		auto is_face_data = (num_dims == 3 && entity_type == EX_ELEM_BLOCK);
 	
+    // guess how many elements are in each connectivity slot
+    auto num_conn_guess = num_dims * num_dims;
+
     // build the connectivitiy list for the block
     vector<ex_index_t> entity_nodes;
     vector<int> entity_node_counts;
-    entity_nodes.reserve( entities.size() * num_dims );
-    entity_node_counts.reserve( entities.size() );
-    
-    for ( auto verts : entities ) {
-      entity_node_counts.push_back( verts.size() );
-      for (auto v: verts)
-        entity_nodes.push_back( v + 1 ); // 1-based ids
+    entity_nodes.reserve( num_entities * num_conn_guess );
+    entity_node_counts.reserve( num_entities );
+   
+    // temporary storage for each connecitivity slot
+    vector<ex_index_t> temp_entity_nodes;
+    temp_entity_nodes.reserve( num_conn_guess );
+
+    for ( size_t e=0; e<num_entities; ++e ) {
+      // get the connectivity from the user-provided function
+      std::forward<ENTITY_CONN>(entity_conn)( e, temp_entity_nodes );
+      // store them in the master list ( exodus wants 1-index arrays )
+      for ( auto i : temp_entity_nodes ) entity_nodes.emplace_back( i + 1 );
+      entity_node_counts.push_back( temp_entity_nodes.size() );
+      // reset temp storage
+      temp_entity_nodes.clear();
     }
 
     // the total size needed to hold the element connectivity
@@ -745,16 +877,23 @@ public:
   //! \param [in] exo_id  The exodus file id.
   //! \return the status of the file
   //============================================================================
-  template< typename U, typename V >
+  template< typename U, typename CONN_TYPE >
   static void write_face_block( 
     int exoid, 
 		size_t blk_id, 
 		const std::string & name,
-		const sparse_matrix<V> & faces
+    size_t num_faces,
+		CONN_TYPE && face_conn
   ) {
 		
 		write_block<U>( 
-			exoid, blk_id, name, EX_FACE_BLOCK, "nsided", faces
+			exoid,
+      blk_id,
+      name,
+      EX_FACE_BLOCK,
+      "nsided",
+      num_faces,
+      std::forward<CONN_TYPE>(face_conn)
 		);
 	
 	}
@@ -780,22 +919,28 @@ public:
   //! \param [in] exo_id  The exodus file id.
   //! \return the status of the file
   //============================================================================
-  template< typename U, typename V >
+  template< typename U, typename CONN_TYPE >
   static void write_element_block( 
     int exoid, 
 		size_t blk_id, 
 		const std::string & name,
-		const sparse_matrix<V> & elements 
+    size_t num_elems,
+		CONN_TYPE && element_conn
   ) {
 	
 		auto entity_desc = ( num_dims == 3 ) ? "nfaced" : "nsided";	
 		write_block<U>( 
-			exoid, blk_id, name, EX_ELEM_BLOCK, entity_desc, elements
+			exoid,
+      blk_id,
+      name,
+      EX_ELEM_BLOCK,
+      entity_desc,
+      num_elems,
+      std::forward<CONN_TYPE>(element_conn)
 		);
 	
   }
   
-
 
 };
 
@@ -914,7 +1059,7 @@ public:
     auto num_elem_blk = exo_params.num_elem_blk;
     vector<index_t> elem_blk_ids;
 
-		auto & cell_vertices = entities_[2][0];
+		auto & cell_vertices_ref = entities_[2][0];
     
     // get the element block ids 
     if ( int64 )
@@ -930,70 +1075,61 @@ public:
     for ( int iblk=0; iblk<num_elem_blk; iblk++ ) {
       if ( int64 )
         base_t::template read_element_block<long long>( 
-          exoid, elem_blk_ids[iblk], cell_vertices
+          exoid, elem_blk_ids[iblk], cell_vertices_ref
         );
       else
         base_t::template read_element_block<int>( 
-          exoid, elem_blk_ids[iblk], cell_vertices
+          exoid, elem_blk_ids[iblk], cell_vertices_ref
         );
     }
 
     // check some assertions
     clog_assert( 
-      cell_vertices.size() == exo_params.num_elem,
+      cell_vertices_ref.size() == exo_params.num_elem,
       "Mismatch in read blocks"
     );
     
     //--------------------------------------------------------------------------
     // build the edges
     
-    // make storage for the cell edges
-    auto num_cells = cell_vertices.size();
-    
-    auto & cell_edges = entities_[2][1];
-    cell_edges.resize( num_cells );
-  
-    // create an edge table to filter out duplicate point sets
-    edge_table__<index_t> edge_table;
+    // reference storage for the cell edges and edge vertices
+    auto & cell_edges_ref = entities_[2][1];
+    auto & edge_vertices_ref = entities_[1][0];
 
-    // loop over cells, adding all of their edges to the table
-    size_t cell_id = 0;
-    for ( const auto & verts : cell_vertices ) {
-      // reference the storage for this cell's edges
-      auto & edges = cell_edges[cell_id++];
-      // reserve space for the cell edges
-      edges.reserve( verts.size() );
-      // now add the edgees of this cell
-      for ( 
-        auto v0 = std::prev( verts.end() ), v1 = verts.begin();
-        v1 != verts.end();
-        v0=v1, ++v1
-      ) {
-        auto res = edge_table.insert( *v0, *v1 );
-        edges.push_back( res.id ); 
+    // temprary storage for matching edges
+    auto edge_vertices_sorted = std::make_unique<sparse_matrix<index_t>>();
+
+    // build the connecitivity array
+    detail::build_connectivity(
+      cell_vertices_ref,
+      cell_edges_ref,
+      edge_vertices_ref,
+      *edge_vertices_sorted,
+      [](const auto & vs, auto & edge_vs)
+      {
+        using connectivity_type = std::decay_t< decltype(edge_vs) >;
+        using list_type = std::decay_t< decltype(*edge_vs.begin()) >;
+        for ( 
+          auto v0 = std::prev( vs.end() ), v1 = vs.begin();
+          v1 != vs.end();
+          v0=v1, ++v1
+        ) 
+          edge_vs.emplace_back( list_type{ *v0, *v1 } );
       }
-    } // for
-    
-    clog_assert( cell_id == num_cells, "Cells dont match" );
+    );
+
+    // clear temporary storage
+    edge_vertices_sorted.reset();
 
     // make storage for the edge vertices
-    auto num_edges = edge_table.size();
-
-    auto & edge_vertices = entities_[1][0];
-    edge_vertices.resize( num_edges );
-
-    // now transfer the filtered edges
-    size_t edge_id = 0;
-    for ( const auto & edge : edge_table )
-      edge_vertices[edge_id++] = { edge.first, edge.second };
-    clog_assert( edge_id == num_edges, "Edges dont match" );
+    auto num_edges = edge_vertices_ref.size();
     
     //--------------------------------------------------------------------------
     // Create the remainder of the connectivities
 
-    entities_[1][2].resize(num_edges);
-    entities_[0][2].resize(num_vertices);
-    entities_[0][1].resize(num_vertices);
+    entities_[1][2].reserve(num_edges);
+    entities_[0][2].reserve(num_vertices);
+    entities_[0][1].reserve(num_vertices);
 
     detail::transpose( entities_[2][1], entities_[1][2] );
     detail::transpose( entities_[2][0], entities_[0][2] );
@@ -1012,7 +1148,14 @@ public:
   //!
   //! \return Exodus error code. 0 on success.
   //============================================================================
-  void write( const std::string &name )
+  template< typename U = int >
+  void write(
+    const std::string &name,
+    const std::initializer_list< std::pair<const char *, std::vector<U> > > &
+      element_sets = {},
+    const std::initializer_list< std::pair<const char *, std::vector<U> > > &
+      node_sets = {}
+  ) const
   {
 
     clog(info) << "Writing mesh to: " << name << std::endl;
@@ -1025,11 +1168,20 @@ public:
 
     // write the initialization parameters
     auto exo_params = base_t::make_params();
+    auto num_cells = num_entities( dimension() );
     exo_params.num_nodes = num_entities( 0 );
-    exo_params.num_elem = num_entities( dimension() );
-    exo_params.num_elem_blk = 1; 
+    exo_params.num_node_sets = node_sets.size(); 
+    exo_params.num_elem_blk = element_sets.size() ? element_sets.size() : 1; 
+    
+    if ( element_sets.size() ) {
+      for ( const auto & set : element_sets )
+        exo_params.num_elem += set.second.size();
+    }
+    else
+      exo_params.num_elem = num_cells;
+    
     base_t::write_params(exoid, exo_params);
-
+    
     // check the integer type used in the exodus file
     auto int64 = base_t::is_int64(exoid);
 
@@ -1042,15 +1194,78 @@ public:
     // element blocks
     
 		const auto & cell_vertices = entities_.at(2).at(0);
+    int elem_blk_id = 1;
+
+    // add the whole element block
+    if ( !element_sets.size() ) {
+
+      auto cell_vertices_func = [&]( auto c, auto & vert_list ) 
+      {
+        const auto & vs = cell_vertices[c];
+        vert_list.insert( vert_list.end(), vs.begin(), vs.end() );
+      };
+
+      if ( int64 )
+        base_t::template write_element_block<long long>( 
+          exoid, elem_blk_id++, "cells", num_cells, cell_vertices_func
+        );
+      else
+        base_t::template write_element_block<int>( 
+          exoid, elem_blk_id++, "cells", num_cells, cell_vertices_func
+        );
+
+    } // element block
+
+    // or add the element sets
+    for ( const auto & set : element_sets ) {
+
+      const auto & set_name = set.first;
+      const auto & set_elements = set.second;
+      auto num_cells_set = set_elements.size();
+
+      if ( num_cells_set == 0 ) continue;
+        
+      auto cell_vertices_func = [&]( auto c, auto & vert_list ) 
+      {
+        const auto & vs = cell_vertices[ set_elements[c] ];
+        vert_list.insert( vert_list.end(), vs.begin(), vs.end() );
+      };
+
+      if ( int64 )
+        base_t::template write_element_block<long long>( 
+          exoid, elem_blk_id++, set_name, num_cells_set, cell_vertices_func
+        );
+      else
+        base_t::template write_element_block<int>( 
+          exoid, elem_blk_id++, set_name, num_cells_set, cell_vertices_func
+        );
+
+    } // sets
+  
+    //--------------------------------------------------------------------------
+    // Node sets
     
-    if ( int64 )
-      base_t::template write_element_block<long long>( 
-        exoid, 1, "cells", cell_vertices
-      );
-    else
-      base_t::template write_element_block<int>( 
-        exoid, 1, "cells", cell_vertices
-      );
+    int node_set_id = 1;
+    
+    for ( const auto & set : node_sets ) {
+
+      const auto & set_name = set.first;
+      const auto & set_nodes = set.second;
+      auto num_nodes_set = set_nodes.size();
+      
+      if ( num_nodes_set == 0 ) continue;
+        
+      if ( int64 )
+        base_t::template write_node_set<long long>(
+          exoid, ++node_set_id, set_name, set_nodes
+        );
+      else
+        base_t::template write_node_set<int>(
+          exoid, ++node_set_id, set_name, set_nodes
+        );
+
+    } // sets
+  
 
     //--------------------------------------------------------------------------
     // close the file
@@ -1197,50 +1412,6 @@ public:
   /// Destructor
   ~exodus_definition__() = default;
 
-
-  //============================================================================
-  //! \brief Find or insert a list within a list of lists..
-  //! \return An index of where it was inserted or found.
-  //============================================================================
-  template< typename U >
-  static size_t try_emplace( sparse_matrix<U> & list, vector<U> elem )
-  {
-  
-    // now rotate the values so the lowest one is first
-    auto lowest = std::min_element( elem.begin(), elem.end() );
-    std::rotate( elem.begin(), lowest, elem.end() );
-    
-    // make a copy because its gonna get reversed
-    auto copy = elem;
-  
-    // now find the list
-    auto it = std::find_if( 
-      list.begin(),
-      list.end(),
-      [&](const auto & vals) {
-        if ( vals.size() != copy.size() ) 
-          return false;
-        else if ( std::equal(vals.begin(), vals.end(), copy.begin()) )
-          return true;
-        else {
-          std::reverse( std::next(copy.begin()), copy.end() );
-          return std::equal( vals.begin(), vals.end(), copy.begin() );
-        }
-      }
-    );
-  
-    // if it was not found, insert it
-    if ( it == list.end() ) {
-      list.emplace_back( std::move(elem) );
-      return list.size() - 1;
-    }
-    // it was found, just return the index
-    else {
-      return std::distance( list.begin(), it );
-    }
-  
-  }
-
   //============================================================================
   //! \brief Implementation of exodus mesh read for burton specialization.
   //!
@@ -1265,6 +1436,7 @@ public:
 
     // check the integer type used in the exodus file
     auto int64 = base_t::is_int64(exoid);
+
     //--------------------------------------------------------------------------
     // read coordinates
 
@@ -1276,7 +1448,7 @@ public:
     auto num_face_blk = exo_params.num_face_blk;
     vector<index_t> face_blk_ids;
 	
-		auto & face_vertices = entities_[2][0];
+		auto & face_vertices_ref = entities_[2][0];
 
     // get the face block ids 
     if ( int64 )
@@ -1293,14 +1465,14 @@ public:
 			// first get the vertices
       if ( int64 )
         base_t::template read_face_block<long long>( 
-            exoid, face_blk_ids[iblk], face_vertices
+            exoid, face_blk_ids[iblk], face_vertices_ref
           );
       else
         base_t::template read_face_block<int>( 
-            exoid, face_blk_ids[iblk], face_vertices
+            exoid, face_blk_ids[iblk], face_vertices_ref
           );
     	// rotate the vertices so the lowest one is first
-			for ( auto & vs : face_vertices ) {
+			for ( auto & vs : face_vertices_ref ) {
     		auto lowest = std::min_element( vs.begin(), vs.end() );
     		std::rotate( vs.begin(), lowest, vs.end() );
 			}
@@ -1312,9 +1484,12 @@ public:
     auto num_elem_blk = exo_params.num_elem_blk;
     vector<index_t> elem_blk_ids;
   			
-		auto & cell_faces = entities_[3][2];     
-  	auto & cell_vertices = entities_[3][0];     
-    
+		auto & cell_faces_ref = entities_[3][2];     
+  	auto & cell_vertices_ref = entities_[3][0];     
+
+    // temprary storage for matching faces
+    auto face_vertices_sorted = std::make_unique<sparse_matrix<index_t>>();
+
     // get the element block ids 
     if ( int64 )
       elem_blk_ids = base_t::template read_block_ids<long long>( 
@@ -1358,23 +1533,16 @@ public:
       {
 	 
         // insert the faces into the cell face list
-        cell_faces.insert( 
-          cell_faces.end(), results.begin(), results.end() 
+        cell_faces_ref.insert( 
+          cell_faces_ref.end(), results.begin(), results.end() 
         );
-        // reserve storage for insertion of cell vertices
-        cell_vertices.reserve( results.size() );
+
         // collect the cell vertices
-        for ( auto & fs : results ) {
-          vector<index_t> elem_vs;
-          for (auto f : fs ) {
-            const auto & vs = face_vertices[f];
-            elem_vs.insert( elem_vs.end(), vs.begin(), vs.end() );
-          }
-          std::sort( elem_vs.begin(), elem_vs.end() );
-          auto last = std::unique( elem_vs.begin(), elem_vs.end() );
-          elem_vs.erase( last, elem_vs.end() );
-          cell_vertices.emplace_back( std::move( elem_vs ) );
-        }
+        detail::intersect(
+          results, // i.e. cell_faces for this block
+          face_vertices_ref,
+          cell_vertices_ref
+        );
       
       }
 
@@ -1384,128 +1552,111 @@ public:
       {
         
         // insert the faces into the cell vertex list
-        cell_vertices.insert( 
-          cell_vertices.end(), results.begin(), results.end() 
+        cell_vertices_ref.insert( 
+          cell_vertices_ref.end(), results.begin(), results.end() 
         );
-        // reserve storage for insertion of cell faces
-        cell_faces.reserve( results.size() );
-        // now install each face
-        vector<index_t> elem_fs;
-        for ( auto vs : results ) {
-          // clear previous results
-          elem_fs.clear();
-          // select face points based on the element type
-          switch(block_type) {
-          case base_t::block_t::hex:
-            elem_fs.emplace_back(
-              try_emplace( face_vertices, {vs[0], vs[1], vs[5], vs[4]} )
-            );
-            elem_fs.emplace_back(
-              try_emplace( face_vertices, {vs[1], vs[2], vs[6], vs[5]} )
-            );
-            elem_fs.emplace_back(
-              try_emplace( face_vertices, {vs[2], vs[3], vs[7], vs[6]} )
-            );
-            elem_fs.emplace_back(
-              try_emplace( face_vertices, {vs[3], vs[0], vs[4], vs[7]} )
-            );
-            elem_fs.emplace_back(
-              try_emplace( face_vertices, {vs[0], vs[3], vs[2], vs[1]} )
-            );
-            elem_fs.emplace_back(
-              try_emplace( face_vertices, {vs[4], vs[5], vs[6], vs[7]} )
-            );
-            break;
-          case base_t::block_t::tet:
-            elem_fs.emplace_back(
-              try_emplace( face_vertices, {vs[0], vs[1], vs[3]} )
-            );
-            elem_fs.emplace_back(
-              try_emplace( face_vertices, {vs[1], vs[2], vs[3]} )
-            );
-            elem_fs.emplace_back(
-              try_emplace( face_vertices, {vs[2], vs[0], vs[3]} )
-            );
-            elem_fs.emplace_back(
-              try_emplace( face_vertices, {vs[0], vs[2], vs[1]} )
-            );
-            break;
-          default:
-            raise_implemented_error( "Unknown block type" );
-          }
-          // now add the face
-          cell_faces.emplace_back( elem_fs );
-        }
 
-      }
+        // build the connecitivity array
+        detail::build_connectivity(
+          results, // i.e. cell_vertices for each block
+          cell_faces_ref,
+          face_vertices_ref,
+          *face_vertices_sorted,
+          [=](const auto & vs, auto & face_vs)
+          {
+            using connectivity_type = std::decay_t< decltype(face_vs) >;
+            using list_type = std::decay_t< decltype(*face_vs.begin()) >;
+            // hardcoded for hex
+            if ( block_type == base_t::block_t::hex ) {
+              face_vs.emplace_back( list_type{vs[0], vs[1], vs[5], vs[4]} );
+              face_vs.emplace_back( list_type{vs[1], vs[2], vs[6], vs[5]} );
+              face_vs.emplace_back( list_type{vs[2], vs[3], vs[7], vs[6]} );
+              face_vs.emplace_back( list_type{vs[3], vs[0], vs[4], vs[7]} );
+              face_vs.emplace_back( list_type{vs[0], vs[3], vs[2], vs[1]} );
+              face_vs.emplace_back( list_type{vs[4], vs[5], vs[6], vs[7]} );
+            }
+            // this is for a tet
+            else if ( block_type == base_t::block_t::tet ) {
+              face_vs.emplace_back( list_type{vs[0], vs[1], vs[3]} );
+              face_vs.emplace_back( list_type{vs[1], vs[2], vs[3]} );
+              face_vs.emplace_back( list_type{vs[2], vs[0], vs[3]} );
+              face_vs.emplace_back( list_type{vs[0], vs[2], vs[1]} );
+            } // block type
+          }
+        );
+
+      } // block type 
 
     } // blocks
-    
+   
+    // clear temporary storage
+    face_vertices_sorted.reset();
+
     // check some assertions
     clog_assert( 
-      cell_vertices.size() == exo_params.num_elem,
+      cell_vertices_ref.size() == exo_params.num_elem,
       "Mismatch in read blocks"
     );
     
-   
     //--------------------------------------------------------------------------
     // build the edges
     
     // make storage for the face edges
-    auto num_faces = face_vertices.size();
-    
-    auto & face_edges = entities_[2][1];
-    face_edges.resize( num_faces );
-  
-    // create an edge table to filter out duplicate point sets
-    edge_table__<index_t> edge_table;
+    auto & face_edges_ref = entities_[2][1];
+    auto & edge_vertices_ref = entities_[1][0];
 
-    // loop over cells, adding all of their edges to the table
-    size_t face_id = 0;
-    for ( const auto & verts : face_vertices ) {
-      // reference the storage for this cell's edges
-      auto & edges = face_edges[face_id++];
-      // reserve space for the cell edges
-      edges.reserve( verts.size() );
-      // now add the edgees of this cell
-      for ( 
-        auto v0 = std::prev( verts.end() ), v1 = verts.begin();
-        v1 != verts.end();
-        v0=v1, ++v1
-      ) {
-        auto res = edge_table.insert( *v0, *v1 );
-        edges.push_back( res.id ); 
+    // temprary storage for matching edges
+    auto edge_vertices_sorted = std::make_unique<sparse_matrix<index_t>>();
+
+    // build the connecitivity array
+    detail::build_connectivity(
+      face_vertices_ref,
+      face_edges_ref,
+      edge_vertices_ref,
+      *edge_vertices_sorted,
+      [](const auto & vs, auto & edge_vs)
+      {
+        using connectivity_type = std::decay_t< decltype(edge_vs) >;
+        using list_type = std::decay_t< decltype(*edge_vs.begin()) >;
+        for ( 
+          auto v0 = std::prev( vs.end() ), v1 = vs.begin();
+          v1 != vs.end();
+          v0=v1, ++v1
+        ) 
+          edge_vs.emplace_back( list_type{ *v0, *v1 } );
       }
-    } // for
-    
-    clog_assert( face_id == num_faces, "Faces dont match" );
+    );
+
+    // clear temporary storage
+    edge_vertices_sorted.reset();
 
     // make storage for the edge vertices
-    auto num_edges = edge_table.size();
+    auto num_edges = edge_vertices_ref.size();
 
-    auto & edge_vertices = entities_[1][0];
-    edge_vertices.resize( num_edges );
-
-    // now transfer the filtered edges
-    size_t edge_id = 0;
-    for ( const auto & edge : edge_table )
-      edge_vertices[edge_id++] = { edge.first, edge.second };
-    clog_assert( edge_id == num_edges, "Edges dont match" );
+    // Determine cell edges
+    auto & cell_edges_ref = entities_[3][1];
+    detail::intersect( cell_faces_ref, face_edges_ref, cell_edges_ref );
   
-    std::cout << "done with edges" << std::endl;
-#if 0
     //--------------------------------------------------------------------------
     // Create the remainder of the connectivities
 
-    entities_[1][2].resize(num_edges);
-    entities_[0][2].resize(num_vertices);
-    entities_[0][1].resize(num_vertices);
+    auto num_vertices = vertices_.size() / dimension();
+    auto num_faces = face_vertices_ref.size();
 
-    detail::transpose( entities_[2][1], entities_[1][2] );
-    detail::transpose( entities_[2][0], entities_[0][2] );
+    entities_[0][1].reserve(num_vertices);
+    entities_[0][2].reserve(num_vertices);
+    entities_[0][3].reserve(num_vertices);
+    entities_[1][2].reserve(num_edges);
+    entities_[1][3].reserve(num_edges);
+    entities_[2][3].reserve(num_faces);
+
     detail::transpose( entities_[1][0], entities_[0][1] );
-#endif
-
+    detail::transpose( entities_[2][0], entities_[0][2] );
+    detail::transpose( entities_[3][0], entities_[0][3] );
+    detail::transpose( entities_[2][1], entities_[1][2] );
+    detail::transpose( entities_[3][1], entities_[1][3] );
+    detail::transpose( entities_[3][2], entities_[2][3] );
+   
     //--------------------------------------------------------------------------
     // close the file
     base_t::close( exoid );
@@ -1519,7 +1670,14 @@ public:
   //!
   //! \return Exodus error code. 0 on success.
   //============================================================================
-  void write( const std::string &name )
+  template< typename U = int >
+  void write(
+    const std::string &name,
+    const std::initializer_list< std::pair<const char *, std::vector<U> > > &
+      element_sets = {},
+    const std::initializer_list< std::pair<const char *, std::vector<U> > > &
+      node_sets = {}
+  ) const
   {
 
     clog(info) << "Writing mesh to: " << name << std::endl;
@@ -1532,11 +1690,21 @@ public:
 
     // write the initialization parameters
     auto exo_params = base_t::make_params();
+    auto num_faces = num_entities( dimension()-1 );
+    auto num_cells = num_entities( dimension() );
     exo_params.num_nodes = num_entities( 0 );
-    exo_params.num_elem = num_entities( dimension() );
-    exo_params.num_elem_blk = 1; 
-  	exo_params.num_face = num_entities( dimension()-1 );
+  	exo_params.num_face = num_faces;
   	exo_params.num_face_blk = 1;
+    exo_params.num_node_sets = node_sets.size(); 
+    exo_params.num_elem_blk = element_sets.size() ? element_sets.size() : 1; 
+    
+    if ( element_sets.size() ) {
+      for ( const auto & set : element_sets )
+        exo_params.num_elem += set.second.size();
+    }
+    else
+      exo_params.num_elem = num_cells;
+
     base_t::write_params(exoid, exo_params);
 
     // check the integer type used in the exodus file
@@ -1552,13 +1720,19 @@ public:
 
 		const auto & face_vertices = entities_.at(2).at(0);
    
+    auto face_vertices_func = [&]( auto f, auto & vert_list ) 
+    {
+      const auto & vs = face_vertices[f];
+      vert_list.insert( vert_list.end(), vs.begin(), vs.end() );
+    };
+
     if ( int64 )
       base_t::template write_face_block<long long>( 
-        exoid, 1, "faces", face_vertices
+        exoid, 1, "faces", num_faces, face_vertices_func
       );
     else
       base_t::template write_face_block<int>( 
-        exoid, 1, "faces", face_vertices
+        exoid, 1, "faces", num_faces, face_vertices_func
       );
 
 
@@ -1566,15 +1740,78 @@ public:
     // element blocks
 
 		const auto & cell_faces = entities_.at(3).at(2);
+    int elem_blk_id = 1;
+
+    // add the whole element block
+    if ( !element_sets.size() ) {
+      
+      auto cell_faces_func = [&]( auto c, auto & face_list ) 
+      {
+        const auto & fs = cell_faces[c];
+        face_list.insert( face_list.end(), fs.begin(), fs.end() );
+      };
+
+      if ( int64 )
+        base_t::template write_element_block<long long>( 
+          exoid, elem_blk_id++, "cells", num_cells, cell_faces_func
+        );
+      else
+        base_t::template write_element_block<int>( 
+          exoid, elem_blk_id++, "cells", num_cells, cell_faces_func
+        );
+
+    } // element block
+
+    // or add the element sets
+    for ( const auto & set : element_sets ) {
+
+      const auto & set_name = set.first;
+      const auto & set_elements = set.second;
+      auto num_cells_set = set_elements.size();
+      
+      if ( num_cells_set == 0 ) continue;
+        
+      auto cell_faces_func = [&]( auto c, auto & face_list ) 
+      {
+        const auto & fs = cell_faces[ set_elements[c] ];
+        face_list.insert( face_list.end(), fs.begin(), fs.end() );
+      };
+
+      if ( int64 )
+        base_t::template write_element_block<long long>( 
+          exoid, elem_blk_id++, set_name, num_cells_set, cell_faces_func
+        );
+      else
+        base_t::template write_element_block<int>( 
+          exoid, elem_blk_id++, set_name, num_cells_set, cell_faces_func
+        );
+
+    } // sets
+  
+
+    //--------------------------------------------------------------------------
+    // Node sets
     
-    if ( int64 )
-      base_t::template write_element_block<long long>( 
-        exoid, 1, "cells", cell_faces
-      );
-    else
-      base_t::template write_element_block<int>( 
-        exoid, 1, "cells", cell_faces
-      );
+    int node_set_id = 1;
+    
+    for ( const auto & set : node_sets ) {
+
+      const auto & set_name = set.first;
+      const auto & set_nodes = set.second;
+      auto num_nodes_set = set_nodes.size();
+      
+      if ( num_nodes_set == 0 ) continue;
+        
+      if ( int64 )
+        base_t::template write_node_set<long long>(
+          exoid, ++node_set_id, set_name, set_nodes
+        );
+      else
+        base_t::template write_node_set<int>(
+          exoid, ++node_set_id, set_name, set_nodes
+        );
+
+    } // sets
 
     //--------------------------------------------------------------------------
     // close the file
