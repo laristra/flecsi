@@ -83,6 +83,9 @@ namespace execution {
         default:
           clog_fatal("invalid privilege mode");
       } // switch
+      // should never get here, but this is needed 
+      // to avoid compiler warnings
+      return NO_ACCESS;
     } // privilege_mode
 
     template<

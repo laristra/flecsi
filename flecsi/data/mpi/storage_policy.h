@@ -24,6 +24,7 @@
 #include "flecsi/data/common/data_hash.h"
 #include "flecsi/data/data_constants.h"
 #include "flecsi/runtime/types.h"
+#include "flecsi/utils/logging.h"
 
 // Include partial specializations
 //#include "flecsi/data/mpi/global.h"
