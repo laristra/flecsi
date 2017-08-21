@@ -115,7 +115,7 @@ struct context__ : public CONTEXT_POLICY
   //! @param index_space The map key.
   //--------------------------------------------------------------------------//
 
-  std::map<size_t, size_t> &
+  auto &
   index_map(
     size_t index_space
   )
@@ -126,7 +126,26 @@ struct context__ : public CONTEXT_POLICY
     return index_map_[index_space];
   } // index_map
 
-  std::map<size_t, size_t> &
+  const auto &
+  index_map(
+    size_t index_space
+  ) const
+  {
+    clog_assert(index_map_.find(index_space) != index_map_.end(),
+      "invalid index space");
+
+    return index_map_.at(index_space);
+  } // index_map
+
+  const auto &
+  cis_to_gis_map(
+    size_t index_space
+  ) const
+  {
+    return cis_to_gis_map_.at(index_space);
+  }
+
+  auto &
   cis_to_gis_map(
     size_t index_space
   )
@@ -156,7 +175,7 @@ struct context__ : public CONTEXT_POLICY
   //! @param index_space The map key.
   //--------------------------------------------------------------------------//
 
-  std::map<size_t, size_t> &
+  auto &
   reverse_index_map(
     size_t index_space
   )
@@ -165,6 +184,17 @@ struct context__ : public CONTEXT_POLICY
       reverse_index_map_.end(), "invalid index space");
 
     return reverse_index_map_[index_space];
+  } // reverse_index_map
+
+  const auto &
+  reverse_index_map(
+    size_t index_space
+  ) const
+  {
+    clog_assert(reverse_index_map_.find(index_space) !=
+      reverse_index_map_.end(), "invalid index space");
+
+    return reverse_index_map_.at(index_space);
   } // reverse_index_map
 
   //--------------------------------------------------------------------------//

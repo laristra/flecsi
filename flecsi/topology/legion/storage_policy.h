@@ -119,7 +119,7 @@ struct legion_topology_storage_policy_t
     for(auto& domain_connectivities : topology) {
       auto& domain_connectivity = domain_connectivities[domain];
       for(size_t d = 0; d <= ND; ++d) {
-        domain_connectivity.get(dim, d).set_entity_storage(s);
+        // domain_connectivity.get(dim, d).set_entity_storage(s);
         domain_connectivity.get(d, dim).set_entity_storage(s);
       } // for
     } // for      
