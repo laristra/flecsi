@@ -22,6 +22,7 @@
 #include "flecsi/execution/legion/internal_field.h"
 #include "flecsi/runtime/types.h"
 #include "flecsi/utils/common.h"
+#include "flecsi/data/data_constants.h" 
 
 clog_register_tag(runtime_driver);
 
@@ -40,6 +41,9 @@ runtime_driver(
   Legion::Runtime * runtime
 )
 {
+  using namespace data;
+  //using data::storage_label_type_t;
+
   {
   clog_tag_guard(runtime_driver);
   clog(info) << "In Legion runtime driver" << std::endl;
@@ -55,6 +59,67 @@ runtime_driver(
   context_.wait_on_mpi(ctx, runtime);
 
   using field_info_t = context_t::field_info_t;
+
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for entries in the client registry.
+  //
+  // NOTE: This needs to be called before the field registry below because
+  //       The client callbacks register field callbacks with the field
+  //       registry.
+  //--------------------------------------------------------------------------//
+
+  auto & client_registry =
+    flecsi::data::storage_t::instance().client_registry();
+
+  for(auto & c: client_registry) {
+    for(auto & d: c.second) {
+      d.second.second(d.second.first);
+    } // for
+  } // for
+
+
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for entries in the field registry.
+  //--------------------------------------------------------------------------//
+
+  auto & field_registry =
+    flecsi::data::storage_t::instance().field_registry();
+
+  for(auto & c: field_registry) {
+    for(auto & f: c.second) {
+      f.second.second(f.first, f.second.first);
+    } // for
+  } // for
+
+
+
+  int num_colors;
+  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "MPI num_colors is " << num_colors << std::endl;
+  }
+
+  data::legion_data_t data(ctx, runtime, num_colors);
+  
+  data.init_global_handles();
+
+  size_t number_of_global_fields = 0;
+  for(const field_info_t& field_info : context_.registered_fields()){
+    context_.put_field_info(field_info);
+    if (field_info.storage_type == global)
+      number_of_global_fields++;
+  }
+
+  if (number_of_global_fields > 0)
+  {
+    auto& ispace_dmap = context_.index_space_data_map();
+    size_t global_index_space =
+      execution::internal_index_space::global_is;
+
+    ispace_dmap[global_index_space].color_region =
+        data.global_index_space().logical_region;
+  }
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
@@ -79,49 +144,9 @@ runtime_driver(
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
   //--------------------------------------------------------------------------//
-  // Invoke callbacks for entries in the client registry.
-  //
-  // NOTE: This needs to be called before the field registry below because
-  //       The client callbacks register field callbacks with the field
-  //       registry.
-  //--------------------------------------------------------------------------//
-
-  auto & client_registry =
-    flecsi::data::storage_t::instance().client_registry(); 
-
-  for(auto & c: client_registry) {
-    for(auto & d: c.second) {
-      d.second.second(d.second.first);
-    } // for
-  } // for
-
-  //--------------------------------------------------------------------------//
-  // Invoke callbacks for entries in the field registry.
-  //--------------------------------------------------------------------------//
-
-  auto & field_registry =
-    flecsi::data::storage_t::instance().field_registry();
-
-  for(auto & c: field_registry) {
-    for(auto & f: c.second) {
-      f.second.second(f.first, f.second.first);
-    } // for
-  } // for
-
-  int num_colors;
-  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
-  {
-  clog_tag_guard(runtime_driver);
-  clog(info) << "MPI num_colors is " << num_colors << std::endl;
-  }
-
-  //--------------------------------------------------------------------------//
   //  Create Legion index spaces and logical regions
   //-------------------------------------------------------------------------//
   auto coloring_info = context_.coloring_info_map();
-
-
-  data::legion_data_t data(ctx, runtime, num_colors);
 
   data.init_from_coloring_info_map(coloring_info);
 
@@ -187,14 +212,25 @@ runtime_driver(
   //total number of Phase Barriers 
   size_t num_phase_barriers =0;
 
+  size_t number_of_color_fields = 0;
+
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
+      if((field_info.storage_type != global) &&
+        (field_info.storage_type != color)){
         if(field_info.index_space == idx_space){
           fields_map[idx_space].push_back(field_info.fid);
           num_phase_barriers++;
         } // if
-      } // for
+      }//if
+      else if(field_info.storage_type == global){
+        number_of_global_fields++;
+      }
+      else if(field_info.storage_type == color){
+        number_of_color_fields++;
+      }
+    } // for
 
     {
       clog_tag_guard(runtime_driver);
@@ -293,6 +329,9 @@ runtime_driver(
     // #1 serialize num_indx_spaces & num_phase_barriers
     args_serializers[color].serialize(&num_idx_spaces, sizeof(size_t));
     args_serializers[color].serialize(&num_phase_barriers, sizeof(size_t));
+    args_serializers[color].serialize(&number_of_global_fields, sizeof(size_t));
+    args_serializers[color].serialize(&number_of_color_fields, sizeof(size_t));
+   
 
     // #2 serialize field info
     size_t num_fields = context_.registered_fields().size();
@@ -413,11 +452,11 @@ runtime_driver(
         owner_reg_req.add_flags(NO_ACCESS_FLAG);
         owner_reg_req.add_field(ghost_owner_pos_fid);
         for (const field_id_t& field_id : fields_map[idx_space]){
-            owner_reg_req.add_field(field_id);
+          owner_reg_req.add_field(field_id);
         }
-
         spmd_launcher.add_region_requirement(owner_reg_req);
-      } // for ghost_owner
+
+      }// for ghost_owner
 
     } // for idx_space
 
@@ -442,7 +481,42 @@ runtime_driver(
       }
 
       spmd_launcher.add_region_requirement(reg_req);
-    }
+    }//adjacency_indx
+
+    auto global_ispace = data.global_index_space();
+    Legion::RegionRequirement global_reg_req(global_ispace.logical_region,
+          READ_ONLY, SIMULTANEOUS, global_ispace.logical_region);
+
+    global_reg_req.add_flags(NO_ACCESS_FLAG);
+    for(const field_info_t& field_info : context_.registered_fields()){
+      if(field_info.storage_type == data::global ){
+         global_reg_req.add_field(field_info.fid);
+       }//if
+     }//for
+
+     if (number_of_global_fields>0)
+       spmd_launcher.add_region_requirement(global_reg_req);
+
+    auto color_ispace = data.color_index_space();
+
+    Legion::LogicalPartition color_lp = runtime->get_logical_partition(ctx,
+        color_ispace.logical_region, color_ispace.index_partition);
+
+    Legion::LogicalRegion color_lregion2 =
+        runtime->get_logical_subregion_by_color(ctx, color_lp, color);
+
+    Legion::RegionRequirement color_reg_req(color_lregion2,
+          READ_WRITE, SIMULTANEOUS, color_ispace.logical_region);
+
+   // color_reg_req.add_flags(NO_ACCESS_FLAG);
+    for(const field_info_t& field_info : context_.registered_fields()){
+       if(field_info.storage_type == data::color ){
+         color_reg_req.add_field(field_info.fid);
+       }//if
+     }//for
+
+     if (number_of_color_fields>0)
+       spmd_launcher.add_region_requirement(color_reg_req);
 
     Legion::DomainPoint point(color);
     must_epoch_launcher.add_single_task(point, spmd_launcher);
@@ -486,6 +560,8 @@ spmd_task(
   Legion::Runtime * runtime
 )
 {
+  using namespace data;
+
   const int my_color = task->index_point.point_data[0];
 
   // spmd_task is an inner task
@@ -498,6 +574,7 @@ spmd_task(
 
   // Add additional setup.
   context_t & context_ = context_t::instance();
+  context_.advance_state();
 
   auto& ispace_dmap = context_.index_space_data_map();
 
@@ -515,13 +592,23 @@ spmd_task(
   //#1 serialize num_indx_spaces & num_phase_barriers
   size_t num_idx_spaces;
   size_t num_phase_barriers;
+  size_t number_of_global_fields;
+  size_t number_of_color_fields;
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
   args_deserializer.deserialize(&num_phase_barriers, sizeof(size_t));
+  args_deserializer.deserialize(&number_of_global_fields, sizeof(size_t));
+  args_deserializer.deserialize(&number_of_color_fields, sizeof(size_t));
 
-  clog_assert(regions.size() >= num_idx_spaces,
+  {
+  size_t total_num_idx_spaces = num_idx_spaces;
+  if (number_of_global_fields>0) total_num_idx_spaces++;
+  if (number_of_color_fields>0) total_num_idx_spaces++;
+
+  clog_assert(regions.size() >= (total_num_idx_spaces),
       "fewer regions than data handles");
-  clog_assert(task->regions.size() >= num_idx_spaces,
+  clog_assert(task->regions.size() >= (total_num_idx_spaces),
       "fewer regions than data handles");
+  }//scope
 
   // #2 deserialize field info
   size_t num_fields;
@@ -534,10 +621,12 @@ spmd_task(
                                 sizeof(field_info_t) * num_fields);
 
   // add field_info into the context (map between name, hash, is and field)
-  for(size_t i = 0; i < num_fields; ++i){
-    field_info_t& fi = field_info_buf[i];
-    context_.put_field_info(fi);
-  }//end for i
+  if( (context_.field_info_map()).size()==0){
+    for(size_t i = 0; i < num_fields; ++i){
+      field_info_t& fi = field_info_buf[i];
+      context_.put_field_info(fi);
+    }//end for i
+  }//if
 
   //if there is no information about fields in the context, add it there
   if (context_.registered_fields().size()==0)
@@ -553,10 +642,13 @@ spmd_task(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
+      if((field_info.storage_type != global) &&
+        (field_info.storage_type != color)){
         if(field_info.index_space == idx_space){
           fields_map[idx_space].push_back(field_info.fid);
         }
-      }
+      }//if
+    }//for
   }//end for is
 
   // #3 deserialize pbarriers_as_owner
@@ -697,11 +789,13 @@ spmd_task(
     Legion::DomainColoring excl_shared_coloring;
     LegionRuntime::Arrays::Rect<2> exclusive_rect(
         LegionRuntime::Arrays::make_point(my_color, 0),
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive - 1));
+        LegionRuntime::Arrays::make_point(my_color,
+          coloring_info.exclusive - 1));
     excl_shared_coloring[EXCLUSIVE_PART]
                          = Legion::Domain::from_rect<2>(exclusive_rect);
     LegionRuntime::Arrays::Rect<2> shared_rect(
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive),
+        LegionRuntime::Arrays::make_point(my_color,
+        coloring_info.exclusive),
         LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
             + coloring_info.shared - 1));
     excl_shared_coloring[SHARED_PART]
@@ -782,7 +876,7 @@ spmd_task(
 
     for(size_t owner = 0; owner < num_owners[consecutive_index]; owner++)
       fix_ghost_refs_launcher.add_region_requirement(
-          Legion::RegionRequirement(ghost_owners_lregions[idx_space][owner],
+         Legion::RegionRequirement(ghost_owners_lregions[idx_space][owner],
               READ_ONLY, EXCLUSIVE, ghost_owners_lregions[idx_space][owner])
               .add_field(ghost_owner_pos_fid));
 
@@ -790,6 +884,7 @@ spmd_task(
 
     consecutive_index++;
   } // for idx_space
+  
 
   // Setup maps from mesh to compacted (local) index space and vice versa
   //
@@ -908,11 +1003,34 @@ spmd_task(
     region_index++;
   }
 
+  //adding information for the global and color handles to the ispace_map
+  if (number_of_global_fields>0){
+
+    size_t global_index_space =
+      execution::internal_index_space::global_is;
+
+    ispace_dmap[global_index_space].color_region =
+        regions[region_index].get_logical_region();
+
+    region_index++;
+  }//end if
+
+  if(number_of_color_fields>0){
+
+    size_t color_index_space =
+      execution::internal_index_space::color_is;
+
+    ispace_dmap[color_index_space].color_region =
+      regions[region_index].get_logical_region();  
+  }//end if
+
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   specialization_spmd_init(args.argc, args.argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
+
+  context_.advance_state();
   // run default or user-defined driver 
   driver(args.argc, args.argv); 
 

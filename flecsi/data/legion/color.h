@@ -12,8 +12,10 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_legion_global_h
-#define flecsi_legion_global_h
+#ifndef flecsi_legion_color_h
+#define flecsi_legion_color_h
+
+#include <ostream>
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
@@ -34,7 +36,7 @@
 #include "flecsi/data/common/privilege.h"
 
 ///
-// \file legion/global.h
+// \file legion/color.h
 // \authors Demeshko
 // \date Initial file creation: July, 2017
 ///
@@ -48,7 +50,7 @@ namespace legion {
 //----------------------------------------------------------------------------//
 
 ///-------------------------------------------------------------------------//
-//! The global_handle_t provide an access to global variables that have
+//! The color_handle_t provide an access to color variables that have
 //! been registered in data model
 //!
 //! \tparam T The type of the data variable. If this type is not
@@ -58,20 +60,22 @@ namespace legion {
 //!           low-level \e flecsi interface, so it is assumed that you
 //!           know what you are doing...
 //!
-//! @tparam PERMISSIONS The permissions to the handle.
+//! @tparam PERMISSIONS The permissions to the handle
+//!
+//! @ingroup data
 ///--------------------------------------------------------------------------//
 
 template<
   typename T,
   size_t PERMISSIONS
 >
-struct global_handle_t :
+struct color_handle_t :
   public data_handle__<
-  T,
-  PERMISSIONS,
-  0,
-  0
-  >
+    T,
+    PERMISSIONS,
+    0,
+    0
+    >
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -89,23 +93,23 @@ struct global_handle_t :
   // Constructors.
   //--------------------------------------------------------------------------//
 
-   global_handle_t()
+   color_handle_t()
    {
-    base_t::global=true;
+    base_t::color=true;
    }
 
   //--------------------------------------------------------------------------//
   // Destructor.
   //--------------------------------------------------------------------------//
 
-  ~global_handle_t(){}
+  ~color_handle_t(){}
 
 
   ///
   // Copy constructor.
   ///
   template<size_t P2>
-  global_handle_t(const global_handle_t<T, P2> & a)
+  color_handle_t(const color_handle_t<T, P2> & a)
     : base_t(reinterpret_cast<const base_t&>(a)),
       label_(a.label()),
       size_(a.size())
@@ -184,7 +188,7 @@ struct global_handle_t :
     return this->operator()(e->template id<0>());
   } // operator ()
 
-  //
+  ///
   // \brief Provide logical access to the data for this data variable. 
   // \This is the non const operator version.
   ///
@@ -220,12 +224,12 @@ struct global_handle_t :
   std::ostream&
   operator  <<  (
     std::ostream& os,
-    const global_handle_t & h
+    const color_handle_t & h
   )
   {
     os << h.data();
     return os;
-  }
+  } 
 
   ///
   // \brief Provode operator< for the handle data
@@ -233,7 +237,7 @@ struct global_handle_t :
   friend
   bool
   operator < (
-    const global_handle_t & h,
+    const color_handle_t & h,
     const T & r
   )
   {
@@ -246,7 +250,7 @@ struct global_handle_t :
   friend
   bool
   operator> (
-    const global_handle_t& lhs,
+    const color_handle_t& lhs,
     const T& rhs
   )
   {
@@ -259,11 +263,11 @@ struct global_handle_t :
   friend
   bool
   operator <= (
-    const global_handle_t& lhs,
+    const color_handle_t& lhs,
     const T& rhs
   )
   {
-    return !(lhs > rhs);
+    return !(lhs > rhs); 
   }
 
   ///
@@ -272,11 +276,11 @@ struct global_handle_t :
   friend
   bool
   operator >= (
-    const global_handle_t& lhs,
+    const color_handle_t& lhs,
     const T& rhs
   )
   {
-    return !(lhs < rhs);
+    return !(lhs < rhs); 
   }
 
   ///
@@ -284,14 +288,14 @@ struct global_handle_t :
   ///
   friend
   bool
-  operator ==
+  operator == 
   (
-    const global_handle_t& h,
+    const color_handle_t& h,
     const T& r
   )
   {
     return h.data() == r;
-  }
+  } 
 
   T& operator() (size_t index) =delete;
 
@@ -303,15 +307,12 @@ struct global_handle_t :
   operator bool() const
   {
    return base_t::combined_data !=nullptr;
-   // return data_ != nullptr;
   } // operator bool
 
   private:
     std::string label_ = "";
     size_t size_=1;
-//    T* data_ = nullptr;
-//     T* buffer = nullptr;
-}; // struct global_handle_t
+}; // struct color_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -322,10 +323,10 @@ struct global_handle_t :
 //----------------------------------------------------------------------------//
 
 ///
-// FIXME: Global storage type.
+// FIXME: Color storage type.
 ///
 template<>
-struct storage_type__<global> {
+struct storage_type__<color> {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -333,21 +334,20 @@ struct storage_type__<global> {
 
   template<
     typename T,
-    size_t PERMISSIONS
+    size_t P
   >
-  using handle_t = global_handle_t<T, PERMISSIONS>;
+  using handle_t = color_handle_t<T, P>;
 
   //--------------------------------------------------------------------------//
   // Data handles.
   //--------------------------------------------------------------------------//
-
   template<
     typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
-    size_t VERSION, 
-    size_t PERMISSIONS
+    size_t VERSION,
+    size_t PERMISSIONS 
   >
   static
   handle_t<DATA_TYPE, 0>
@@ -355,6 +355,8 @@ struct storage_type__<global> {
     const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle
   )
   {
+    static_assert(VERSION < utils::hash::field_max_versions,
+      "max field version exceeded");
     handle_t<DATA_TYPE, 0> h;
     auto& context = execution::context_t::instance();
 
@@ -369,7 +371,7 @@ struct storage_type__<global> {
     h.color_region = ism[index_space].color_region;
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
-    h.global = true;
+    h.color = true;
     h.state = context.execution_state();
 
     return h;
@@ -382,7 +384,7 @@ struct storage_type__<global> {
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_legion_global_h
+#endif // flecsi_legion_color_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -21,6 +21,7 @@ set(execution_HEADERS
   common/function_handle.h
   common/launch.h
   common/processor.h
+  common/execution_state.h
   context.h
   default_driver.h
   execution.h
@@ -65,6 +66,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/init_handles.h
     legion/internal_field.h
     legion/internal_task.h
+    legion/internal_index_space.h 
     legion/legion_tasks.h
     legion/mapper.h
     legion/finalize_handles.h

@@ -90,7 +90,6 @@ void driver(int argc, char ** argv) {
     entity_itr != entries.end(); ++entity_itr) {
     flecsi::coloring::entity_info_t entity = *entity_itr;
     gid_to_lid_map[lid++] = entity.id;
-std::cout <<"IRINADEBUG"<< entity.id<<std::endl;
   }
 
   std::map<size_t, size_t> index_map = context_.index_map(INDEX_ID);

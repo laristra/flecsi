@@ -29,6 +29,7 @@ namespace data {
 
 enum storage_label_type_t : size_t {
   global,
+  color,
   dense,
   sparse,
   scoped,

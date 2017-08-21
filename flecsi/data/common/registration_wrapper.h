@@ -24,6 +24,7 @@
 #include "flecsi/topology/mesh_topology.h"
 #include "flecsi/utils/hash.h"
 #include "flecsi/utils/tuple_walker.h"
+#include "flecsi/execution/legion/internal_index_space.h"
 
 //clog_register_tag(registration);
 
@@ -66,7 +67,13 @@ struct field_registration_wrapper__
     fi.namespace_hash = NAMESPACE_HASH;
     fi.name_hash = NAME_HASH;
     fi.versions = VERSIONS;
-    fi.index_space = INDEX_SPACE;
+    if (STORAGE_TYPE == global)
+      fi.index_space = execution::internal_index_space::global_is;
+    else if (STORAGE_TYPE == color)
+      fi.index_space = execution::internal_index_space::color_is;
+    else
+      fi.index_space = INDEX_SPACE;
+  
     fi.fid = fid;
     fi.key = key;
 
