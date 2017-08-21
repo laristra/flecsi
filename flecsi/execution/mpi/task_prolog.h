@@ -126,9 +126,10 @@ namespace execution {
         clog_rank(warn, 1) << "ghost id: " <<  ghost.id << ", rank: " << ghost.rank
                             << ", offset: " << ghost.offset
                             << std::endl;
-        MPI_Get(h.ghost_data+i, 1, MPI_UNSIGNED_LONG_LONG,
-                ghost.rank, ghost.offset,
-                1, flecsi::coloring::mpi_typetraits__<T>::type(), win);
+        MPI_Get(h.ghost_data+i, 1,
+                flecsi::coloring::mpi_typetraits__<T>::type(),
+                ghost.rank, ghost.offset, 1,
+                flecsi::coloring::mpi_typetraits__<T>::type(), win);
         i++;
       }
 
@@ -137,11 +138,6 @@ namespace execution {
 
       MPI_Group_free(&rma_group);
       MPI_Win_free(&win);
-
-      for (int i = 0; i < h.ghost_size; i++) {
-        clog_rank(warn, 1) << "ghost data: " << h.ghost_data[i] << std::endl;
-      }
-
     } // handle
 
     template<
@@ -226,7 +222,6 @@ namespace execution {
                                                                size);
         }
         adj.indices_buf = reinterpret_cast<size_t *>(registered_field_data[adj.index_fid].data());
-        clog(trace) << "num_indices: " << adj.num_indices << std::endl;
 
         // 2. get number of offset, it should be number of cells?
         adj.num_offsets = (color_info.exclusive + color_info.shared + color_info.ghost);
@@ -240,7 +235,6 @@ namespace execution {
                                                                size);
         }
         adj.offsets_buf = reinterpret_cast<size_t *>(registered_field_data[adj.offset_fid].data());
-        clog(trace) << "num_offsets: " << adj.num_offsets << std::endl;
 
         storage->init_connectivity(adj.from_domain, adj.to_domain,
                                    adj.from_dim, adj.to_dim,

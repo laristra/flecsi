@@ -353,16 +353,6 @@ void color_cells( const MD & md, const std::string & output_prefix )
   // output the result
   //----------------------------------------------------------------------------
   
-  constexpr auto num_dims = MD::dimension();
-
-  using real_t = typename MD::real_t;
-  using point_t = std::array< real_t, num_dims >;
-  using exodus_t = flecsi::io::exodus_base__< num_dims, real_t >;  
-  
-                          
-  //------------------------------------
-  // Open the file
-
   // figure out this ranks file name
   std::stringstream output_filename;
   output_filename << output_prefix;
@@ -370,115 +360,32 @@ void color_cells( const MD & md, const std::string & output_prefix )
   output_filename << std::setfill('0') << std::setw(6) << rank;
   output_filename << ".exo";
 
-  // open the exodus file
-  auto exoid = exodus_t::open( output_filename.str(), std::ios_base::out );
-
-  //------------------------------------
-  // Set exodus parameters
-
-  // set exodus parameters
-  auto num_nodes = md.num_entities( 0 );
-  auto num_faces = num_dims==3 ? md.num_entities( num_dims-1 ) : 0;
-  auto num_elems = 
-    exclusive_cells.size() + shared_cells.size() + ghost_cells.size();;
-
-  auto exo_params = exodus_t::make_params();
-  exo_params.num_nodes = num_nodes;
-  if ( num_dims == 3 ) {
-    exo_params.num_face = num_faces;
-    exo_params.num_face_blk = 1;
-  }
-  exo_params.num_elem = num_elems;
-  exo_params.num_elem_blk = 
-    !exclusive_cells.empty() + !shared_cells.empty() + !ghost_cells.empty();
-  exo_params.num_node_sets = 
-    !exclusive_vertices.empty() + !shared_vertices.empty() + 
-    !ghost_vertices.empty();
-
-  exodus_t::write_params(exoid, exo_params);
-
-  //------------------------------------
-  // Write the coordinates
-
-  vector<real_t> vertex_coord( num_nodes * num_dims );
-  
-  for ( size_t i=0; i<num_nodes; ++i ) {
-    const auto & vert = md.template vertex<point_t>(i);
-    for ( int d=0; d<num_dims; ++d ) 
-      vertex_coord[ d*num_nodes + i ] = vert[d];
-  }
-
-  exodus_t::write_point_coords( exoid, vertex_coord );
-  
-  //------------------------------------
-  // Write the faces
-  
-  if ( num_dims == 3 ) {
-    exodus_t::template write_face_block<int>( 
-      exoid, 1, "faces", md.entities(2,0)
-    );
-  }
-
-  //------------------------------------
-  // Write Exclusive Cells / vertices
-  
-  // the block id and side set counter
-  int elem_blk_id = 0;
-  int node_set_id = 0;
-
-  // 3d wants cell faces, 2d wants cell vertices
-  auto to_dim = (num_dims == 3) ? 2 : 0;
-  const auto & cell_entities = md.entities(cell_dim, to_dim);
-
-  // lambda function to convert to integer lists
-  auto to_list = [&](const auto & list_in)
-    -> std::vector<std::vector<size_t>>
-  {
-    std::vector<std::vector<size_t>> list_out;
-    list_out.reserve( list_in.size() );
-    for ( auto & e : list_in )
-      list_out.emplace_back( cell_entities[e.id] );
-    return list_out;
-  };
-
-  // write the cells
-  exodus_t::template write_element_block<int>( 
-    exoid, ++elem_blk_id, "exclusive cells", to_list(exclusive_cells) 
-  );
-  exodus_t::template write_element_block<int>( 
-    exoid, ++elem_blk_id, "shared cells", to_list(shared_cells)
-  );
-  exodus_t::template write_element_block<int>( 
-    exoid, ++elem_blk_id, "ghost cells", to_list(ghost_cells)
-  );
-    
   // lambda function to convert to integer lists
   auto to_vec = [](const auto & list_in)
-    -> std::vector<size_t>
   {
-    std::vector<size_t> list_out;
+    using value_type = typename std::decay_t< decltype(list_in.begin()->id) >;
+    std::vector< value_type > list_out;
     list_out.reserve( list_in.size() );
     for ( auto & e : list_in )
       list_out.push_back( e.id );
     return list_out;
   };
 
-  // write the vertices
-  exodus_t::template write_node_set<int>(
-    exoid, ++node_set_id, "exclusive vertices", to_vec(exclusive_vertices)
+  // write the exodus file
+  using std::make_pair;
+  md.write(
+    output_filename.str(),
+    { 
+      make_pair( "exclusive cells", to_vec(exclusive_cells) ),
+      make_pair( "shared cells", to_vec(shared_cells) ),
+      make_pair( "ghost cells", to_vec(ghost_cells) )
+    },
+    { 
+      make_pair( "exclusive vertices", to_vec(exclusive_vertices) ),
+      make_pair( "shared vertices", to_vec(shared_vertices) ),
+      make_pair( "ghost vertices", to_vec(ghost_vertices) )
+    }
   );
-  exodus_t::template write_node_set<int>( 
-    exoid, ++node_set_id, "shared vertices", to_vec(shared_vertices)
-  );
-  exodus_t::template write_node_set<int>( 
-    exoid, ++node_set_id, "ghost vertices", to_vec(ghost_vertices)
-  );
-
-      
-  //------------------------------------
-  // Close the file
-
-  exodus_t::close( exoid );
 
 } // somerhing
   
