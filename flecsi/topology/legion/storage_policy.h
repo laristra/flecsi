@@ -188,7 +188,7 @@ struct legion_topology_storage_policy_t
   >
   T *
   make(
-    id_t id,
+    const id_t& id,
     S && ... args
   )
   {
@@ -196,13 +196,20 @@ struct legion_topology_storage_policy_t
     
     auto & is = index_spaces[M][T::dimension].template cast<dtype>();
 
-    auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + id.entity();
+    size_t entity = id.entity();
+
+    auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity;
     auto ent = new (placement_ptr) T(std::forward<S>(args)...);
 
     ent->template set_global_id<M>(id);
 
     auto& id_storage = is.id_storage();
-    id_storage.push_back(id);
+
+    if(id_storage.size() <= entity){
+      id_storage.resize(entity + 1);
+    }
+
+    id_storage[entity] = id;
 
     is.pushed();
 
