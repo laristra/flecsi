@@ -15,8 +15,6 @@
 #include <string>
 #include <tuple>
 
-#include <arrays.h>
-
 #include "flecsi/execution/context.h"
 #include "flecsi/data/data_constants.h"
 #include "flecsi/data/storage.h"

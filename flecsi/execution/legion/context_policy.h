@@ -40,6 +40,7 @@
 #include "flecsi/execution/legion/internal_field.h"
 #include "flecsi/execution/legion/runtime_driver.h"
 #include "flecsi/execution/legion/runtime_state.h"
+#include "flecsi/execution/legion/future.h"
 #include "flecsi/runtime/types.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
@@ -635,6 +636,35 @@ struct legion_context_policy_t
     return min_reduction_;
   }
 
+  //-------------------------------------------------------------------------//
+  //! Perform reduction of the minimum value
+  //! @param task future
+  //-------------------------------------------------------------------------//
+
+  template <typename T>
+  auto&
+  reduce_min(legion_future__<T> & local_future)
+  {
+    Legion::DynamicCollective& min_reduction = min_reduction_;
+
+    auto legion_runtime = Legion::Runtime::get_runtime();
+    auto legion_context = Legion::Runtime::get_context();
+
+    local_future.defer_dynamic_collective_arrival(
+      legion_runtime, legion_context, min_reduction
+    );
+
+    min_reduction =
+      legion_runtime->advance_dynamic_collective(legion_context, min_reduction);
+
+    auto global_future = legion_runtime->get_dynamic_collective_result(
+      legion_context, min_reduction
+    );
+
+    auto global_min_ = global_future.get_result<double>();
+
+    return global_min_;
+  }
 
   //--------------------------------------------------------------------------//
   //! Compute internal field id for from/to index space pair for connectivity.

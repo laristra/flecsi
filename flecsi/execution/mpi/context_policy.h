@@ -151,6 +151,84 @@ struct mpi_context_policy_t
   {
     return field_data;
   }
+
+
+  //--------------------------------------------------------------------------//
+  //! return <double> max reduction
+  //--------------------------------------------------------------------------//
+
+  auto&
+  max_reduction()
+  { 
+    return max_reduction_;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Set max_reduction
+  //!
+  //! @param double max_reduction
+  //--------------------------------------------------------------------------//
+
+  void
+  set_max_reduction(double& max_reduction)
+  {
+    max_reduction_ = max_reduction;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Perform reduction for the maximum value type <double>
+  //!
+  //! @param 
+  //--------------------------------------------------------------------------//
+
+  auto
+  reduce_max()
+  {
+    double global_max_;
+    MPI_Reduce(&max_reduction_, &global_max_, 1, MPI_FLOAT, MPI_MAX, 0,
+           MPI_COMM_WORLD);
+    return global_max_;
+  }
+
+
+  //--------------------------------------------------------------------------//
+  //! return <double> min reduction
+  //--------------------------------------------------------------------------//
+
+  auto&
+  min_reduction()
+  {
+    return min_reduction_;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Set min_reduction
+  //!
+  //! @param double min_reduction
+  //--------------------------------------------------------------------------//
+
+  void
+  set_min_reduction(double& min_reduction)
+  {
+    min_reduction_ = min_reduction;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Perform reduction for the minimum value type <double>
+  //!
+  //! @param 
+  //--------------------------------------------------------------------------//
+
+  auto
+  reduce_min()
+  { 
+    double global_min_;
+    MPI_Reduce(&min_reduction_, &global_min_, 1, MPI_FLOAT, MPI_MIN, 0,
+           MPI_COMM_WORLD);
+    return global_min_;
+  }
+
+
   int rank;
 
 private:
@@ -174,6 +252,10 @@ private:
   std::map<field_id_t, std::vector<uint8_t>> field_data;
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
+
+  double min_reduction_;
+  double max_reduction_;
+
 }; // class mpi_context_policy_t
 
 } // namespace execution 
