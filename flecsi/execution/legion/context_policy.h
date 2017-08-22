@@ -642,7 +642,7 @@ struct legion_context_policy_t
   //-------------------------------------------------------------------------//
 
   template <typename T>
-  auto&
+  auto
   reduce_min(legion_future__<T> & local_future)
   {
     Legion::DynamicCollective& min_reduction = min_reduction_;
