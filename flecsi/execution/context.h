@@ -25,6 +25,7 @@
 #include <unordered_map>
 
 #include "cinchlog.h"
+#include "flecsi/execution/common/execution_state.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/coloring/adjacency_types.h"
 #include "flecsi/coloring/coloring_types.h"
@@ -578,6 +579,36 @@ struct context__ : public CONTEXT_POLICY
     return fitr->second;
   }
 
+  //------------------------------------------------------------------------//
+  //! advance state of the execution flow
+  //------------------------------------------------------------------------//
+
+  void
+  advance_state()
+  {
+    execution_state_ ++;
+  }
+
+  //------------------------------------------------------------------------//
+  //!  state of the execution flow
+  //------------------------------------------------------------------------//
+
+  void
+  lower_state()
+  {
+    execution_state_ --;
+  }
+
+
+  //------------------------------------------------------------------------//
+  //! return current execution state
+  //------------------------------------------------------------------------//
+  size_t
+  execution_state()
+  {
+    return execution_state_;
+  }
+ 
 
 private:
 
@@ -688,6 +719,12 @@ private:
 
   // key is index space
   std::map<size_t, adjacency_info_t> adjacency_info_;
+
+  //-------------------------------------------------------------------------//
+  // Execution state 
+  //-------------------------------------------------------------------------//
+
+   size_t execution_state_ = SPECIALIZATION_TLT_INIT;
 
 }; // class context__
 

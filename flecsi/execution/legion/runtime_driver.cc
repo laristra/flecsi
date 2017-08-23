@@ -1028,7 +1028,6 @@ spmd_task(
   specialization_spmd_init(args.argc, args.argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
-
   context_.advance_state();
   // run default or user-defined driver 
   driver(args.argc, args.argv); 
