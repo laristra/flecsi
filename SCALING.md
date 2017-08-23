@@ -18,7 +18,9 @@ Moonlight is a CTS machine on the Turquoise network.
 ```
     % export SPACK_ROOT=/usr/projects/ngc/public/flecsale/spack.moonlight
     % source $SPACK_ROOT
+    bash: source: /usr/projects/ngc/public/flecsale/spack.moonlight: is a directory
     % module load exodusii/2016-08-09-gcc-5.3.0-4lhnh4d
+    ModuleCmd_Load.c(208):ERROR:105: Unable to locate a modulefile for 'exodusii/2016-08-09-gcc-5.3.0-4lhnh4d'
     % module load git
     % module load cmake
     % module load fiendly-testing

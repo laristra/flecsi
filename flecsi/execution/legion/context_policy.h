@@ -88,6 +88,7 @@ enum {
   EXCLUSIVE_LR            = 0x00004000,
 };
 
+
 //----------------------------------------------------------------------------//
 //! The legion_context_policy_t is the backend runtime context policy for
 //! Legion.
@@ -717,6 +718,7 @@ struct legion_context_policy_t
   {
     return size_t(internal_field::entity_data_start) + index_space;
   }
+
 
 private:
 

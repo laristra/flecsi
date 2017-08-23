@@ -90,6 +90,7 @@ namespace execution {
       > & h
     )
     {
+ if (!h.global && !h.color){
       bool write_phase{(SHARED_PERMISSIONS == wo) ||
         (SHARED_PERMISSIONS == rw)};
 
@@ -127,6 +128,7 @@ namespace execution {
           // Phase READ
           *(h.ghost_owners_pbarriers_ptrs)[owner]);
         } // for
+        }//if
       } // if
     } // handle
 

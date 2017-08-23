@@ -75,6 +75,9 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
     shared_buf = b.shared_buf;
     ghost_buf = b.ghost_buf;
     master = false;
+    state =b.state;
+    global = b.global;
+    color = b.color;
   }
 
   T* exclusive_data = nullptr;
@@ -95,6 +98,10 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
 #endif
   size_t combined_size = 0;
   bool master = true;
+
+  size_t state =0; 
+  bool global = false;
+  bool color = false;
 };
 
 } // namespace flecsi

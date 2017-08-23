@@ -171,10 +171,13 @@ runtime_driver(
     flecsi_context.add_index_map(is.first, _map);
   } // for
 
+  flecsi_context.advance_state();
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   specialization_spmd_init(argc, argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+  
+  flecsi_context.advance_state();
 
   // Execute the user driver.
   driver(argc, argv);
