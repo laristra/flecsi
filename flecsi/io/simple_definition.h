@@ -88,14 +88,14 @@ public:
   std::vector<size_t>
   entities( 
     size_t from_dim,
-		size_t to_dim,
+    size_t to_dim,
     size_t entity_id
   )
   const 
   override
   {
-    clog_assert(from_dim == 2, "invalid dimension " << dimension);
-    clog_assert(to_dim == 0, "invalid dimension " << dimension);
+    clog_assert(from_dim == 2, "invalid dimension " << from_dim);
+    clog_assert(to_dim == 0, "invalid dimension " << to_dim);
 
     std::string line;
     std::vector<size_t> ids;
