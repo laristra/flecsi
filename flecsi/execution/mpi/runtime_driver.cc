@@ -145,12 +145,6 @@ runtime_driver(
     flecsi_context.put_field_info(fi);
   }
 
-  // allocate storage for data.
-  // TODO: the register fields has fields registered by the use and
-  // also "fields" of data client like entities and connectivities.
-  //    auto infos = flecsi_context.coloring_info(fi.index_space);
-  //   flecsi_context.register_field_data(fi, infos);
-
   remap_shared_entities();
 
   // Setup maps from mesh to compacted (local) index space and vice versa

@@ -187,8 +187,6 @@ struct mpi_context_policy_t
   auto
   reduce_max(mpi_future__<T> & local_future)
   {
-//    double global_max_;
-//    MPI_Allreduce(&max_reduction_, &global_max_, 1, MPI_DOUBLE, MPI_MAX,
     T global_max_;
     auto local_max_ = local_future.get();
     MPI_Allreduce(&local_max_, &global_max_, 1,
