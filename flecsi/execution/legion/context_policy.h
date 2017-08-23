@@ -614,6 +614,37 @@ struct legion_context_policy_t
     return max_reduction_;
   }
 
+  //-------------------------------------------------------------------------//
+  //! Perform reduction of the maximum value
+  //! @param task future
+  //-------------------------------------------------------------------------//
+
+  template <typename T>
+  auto
+  reduce_max(legion_future__<T> & local_future)
+  {
+    Legion::DynamicCollective& max_reduction = max_reduction_;
+
+    auto legion_runtime = Legion::Runtime::get_runtime();
+    auto legion_context = Legion::Runtime::get_context();
+
+    local_future.defer_dynamic_collective_arrival(
+      legion_runtime, legion_context, max_reduction
+    );
+
+    max_reduction =
+      legion_runtime->advance_dynamic_collective(legion_context, max_reduction);
+
+    auto global_future = legion_runtime->get_dynamic_collective_result(
+      legion_context, max_reduction
+    );
+
+    auto global_max_ = global_future.get_result<double>();
+
+    return global_max_;
+  }
+
+
   //--------------------------------------------------------------------------//
   //! Set DynamicCollective for <double> in reduction
   //!
