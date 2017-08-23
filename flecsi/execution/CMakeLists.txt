@@ -160,6 +160,25 @@ cinch_add_unit(simple_function
   )
 
 #
+# Test global reduction
+#
+
+cinch_add_unit(reduction
+  SOURCES
+  test/reduction.cc
+  ${DRIVER_INITIALIZATION}
+  ${RUNTIME_DRIVER}
+  DEFINES
+  -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+  POLICY
+  ${UNIT_POLICY}
+  LIBRARIES
+  flecsi
+  THREADS 2
+  )
+
+
+#
 # Test basic task calling capability using the register_task
 # interface.
 #
@@ -177,6 +196,7 @@ cinch_add_unit(simple_task
   ${CINCH_RUNTIME_LIBRARIES}
   NOCI
   )
+
 
 if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
@@ -391,23 +411,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
       NOCI
     )
 
-
-    cinch_add_unit(reduction
-      SOURCES
-        test/legion/reduction.cc
-        ${DRIVER_INITIALIZATION}
-        ${RUNTIME_DRIVER}
-      LIBRARIES
-        flecsi
-        ${CINCH_RUNTIME_LIBRARIES}
-        ${COLORING_LIBRARIES}
-      DEFINES
-        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-      POLICY LEGION
-      THREADS 2
-      NOCI
-    )
 
 #    cinch_add_unit(cell_to_cell_connectivity
 #      SOURCES
