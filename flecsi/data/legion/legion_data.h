@@ -27,6 +27,8 @@
 #include "flecsi/coloring/adjacency_types.h"
 #include "flecsi/execution/legion/helper.h"
 #include "flecsi/execution/legion/legion_tasks.h"
+#include "flecsi/execution/legion/internal_index_space.h"
+
 
 ///
 /// \file legion/legion_data.h
@@ -93,17 +95,102 @@ public:
       runtime_->destroy_field_space(ctx_, is.field_space);
       runtime_->destroy_logical_region(ctx_, is.logical_region);
     }
+    runtime_->destroy_index_space(ctx_, global_index_space_.index_space);
+    runtime_->destroy_field_space(ctx_, global_index_space_.field_space);
+    runtime_->destroy_logical_region(ctx_, global_index_space_.logical_region);
+
+    runtime_->destroy_index_space(ctx_, color_index_space_.index_space);
+    runtime_->destroy_field_space(ctx_, color_index_space_.field_space);
+    runtime_->destroy_logical_region(ctx_, color_index_space_.logical_region);
   }
+
+  void
+  init_global_handles()
+{
+    using namespace Legion;
+    using namespace LegionRuntime;
+    using namespace Arrays;
+
+    using namespace execution;
+
+    context_t & context = context_t::instance();
+
+    // Create global index space
+    const size_t index_space_id = execution::internal_index_space::global_is;
+
+    index_spaces_.insert(index_space_id);
+
+    global_index_space_.index_space_id = index_space_id;
+
+    Rect<1> bounds(Point<1>(0),Point<1>(1));
+
+    Domain dom(Domain::from_rect<1>(bounds));
+
+    global_index_space_.index_space = runtime_->create_index_space(ctx_, dom);
+    attach_name(global_index_space_,
+      global_index_space_.index_space, "global index space");
+
+    // Read user + FleCSI registered field spaces
+    global_index_space_.field_space = runtime_->create_field_space(ctx_);
+
+    attach_name(global_index_space_,
+      global_index_space_.field_space, "global field space");
+
+   FieldAllocator allocator =
+      runtime_->create_field_allocator(ctx_, global_index_space_.field_space);
+
+   using field_info_t = context_t::field_info_t;
+
+    for(const field_info_t& fi : context.registered_fields()){
+      if(fi.storage_type == global){
+        allocator.allocate_field(fi.size, fi.fid);
+      }//if
+    }//for
+     
+    global_index_space_.logical_region =
+      runtime_->create_logical_region(ctx_,
+        global_index_space_.index_space, global_index_space_.field_space);
+    attach_name(global_index_space_, global_index_space_.logical_region,
+      "global logical region");  
+ 
+  }//init_global_handles
 
   void
   init_from_coloring_info_map(
     const indexed_coloring_info_map_t& indexed_coloring_info_map
   )
   {
+    using namespace Legion;
+    using namespace LegionRuntime;
+    using namespace Arrays;
+
     for(auto& idx_space : indexed_coloring_info_map){
       add_index_space(idx_space.first, idx_space.second);
     }
-  }
+
+     // Create color index space
+    {
+      const size_t index_space_id =
+				execution::internal_index_space::color_is;
+
+      index_spaces_.insert(index_space_id);
+
+      color_index_space_.index_space_id = index_space_id;
+
+      color_index_space_.index_space =
+        runtime_->create_index_space(ctx_, color_domain_);
+      attach_name(color_index_space_, color_index_space_.index_space,
+				"color index space");
+
+      // Read user + FleCSI registered field spaces
+      color_index_space_.field_space = runtime_->create_field_space(ctx_);
+
+      attach_name(color_index_space_, color_index_space_.field_space,
+				"color field space");
+     }//scope
+ 
+  }//init_from_coloring_info_map
+
 
   void
   add_index_space(
@@ -283,12 +370,15 @@ public:
       using field_info_t = context_t::field_info_t;
 
       for(const field_info_t& fi : context.registered_fields()){
-        if(fi.index_space == is.index_space_id){
-          allocator.allocate_field(fi.size, fi.fid);
-        }
-      }
+        if((fi.storage_type != global) && (fi.storage_type != color)){
+          if(fi.index_space == is.index_space_id){
+            allocator.allocate_field(fi.size, fi.fid);
+          }
+        }//if
+      }//for
 
-      is.logical_region = runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
+      is.logical_region = runtime_->create_logical_region(ctx_,
+          is.index_space, is.field_space);
       attach_name(is, is.logical_region, "expanded logical region");
 
       // Partition expanded IndexSpace color-wise & create associated PhaseBarriers
@@ -310,7 +400,35 @@ public:
         is.index_space, color_domain_, color_partitioning, true /*disjoint*/);
       attach_name(is, is.index_partition, "color partitioning");
     }
-  }
+
+   //create logical regions for color_index_space_
+   {
+     FieldAllocator allocator =
+        runtime_->create_field_allocator(ctx_, color_index_space_.field_space);
+
+     using field_info_t = context_t::field_info_t;
+
+      for(const field_info_t& fi : context.registered_fields()){
+        if(fi.storage_type == color){
+          allocator.allocate_field(fi.size, fi.fid);
+        }//if
+      }//for
+      color_index_space_.logical_region =
+        runtime_->create_logical_region(ctx_,
+          color_index_space_.index_space, color_index_space_.field_space);   
+      attach_name(color_index_space_, color_index_space_.logical_region,
+        "color logical region");   
+
+      LegionRuntime::Arrays::Blockify<1> coloring(1);
+      color_index_space_.index_partition =
+				runtime_->create_index_partition(ctx_,
+				color_index_space_.index_space, coloring);
+
+      attach_name(color_index_space_, color_index_space_.index_partition,
+				"color partitioning");
+    }//scope
+
+  }//finalize
 
   const index_space_t&
   index_space(
@@ -471,6 +589,19 @@ public:
     runtime_->destroy_logical_region(ctx_, lr);
   }
 
+  
+  index_space_t
+  global_index_space()
+  {
+    return global_index_space_;
+  }
+
+  index_space_t
+  color_index_space()
+  {
+    return color_index_space_;
+  }
+
 private:
   
   Legion::Context ctx_;
@@ -492,6 +623,10 @@ private:
   std::unordered_map<size_t, adjacency_t> adjacency_map_;
 
   std::set<size_t> adjacencies_;
+
+  index_space_t global_index_space_;
+  
+  index_space_t color_index_space_;
 
   template<
     class T

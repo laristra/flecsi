@@ -37,6 +37,7 @@
 
 #include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/common/processor.h"
+#include "flecsi/execution/common/execution_state.h"
 #include "flecsi/execution/legion/internal_field.h"
 #include "flecsi/execution/legion/runtime_driver.h"
 #include "flecsi/execution/legion/runtime_state.h"
@@ -87,6 +88,7 @@ enum {
   MAPPER_SUBRANK_LAUNCH   = 0x00003000,
   EXCLUSIVE_LR            = 0x00004000,
 };
+
 
 //----------------------------------------------------------------------------//
 //! The legion_context_policy_t is the backend runtime context policy for
@@ -718,6 +720,25 @@ struct legion_context_policy_t
     return size_t(internal_field::entity_data_start) + index_space;
   }
 
+  //------------------------------------------------------------------------//
+  //! advance state of the execution flow
+  //------------------------------------------------------------------------//
+
+  void
+  advance_state()
+  {
+    execution_state_ ++;
+  }
+
+  //------------------------------------------------------------------------//
+  //! return current execution state
+  //------------------------------------------------------------------------//
+  size_t
+  execution_state()
+  {
+    return execution_state_;
+  }
+
 private:
 
   size_t color_ = 0;
@@ -761,6 +782,12 @@ private:
   std::map<size_t, index_space_data_t> index_space_data_map_;
   Legion::DynamicCollective max_reduction_;
   Legion::DynamicCollective min_reduction_;
+
+  //-------------------------------------------------------------------------//
+  // Execution state 
+  //-------------------------------------------------------------------------//
+
+   size_t execution_state_ = SPECIALIZATION_TLT_INIT;
 
 }; // class legion_context_policy_t
 
