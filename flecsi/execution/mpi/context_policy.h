@@ -35,9 +35,11 @@
 #include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/mpi/runtime_driver.h"
+#include "flecsi/execution/mpi/future.h"
 #include "flecsi/runtime/types.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
+#include "flecsi/coloring/mpi_utils.h"
 
 namespace flecsi {
 namespace execution {
@@ -181,11 +183,16 @@ struct mpi_context_policy_t
   //! @param 
   //--------------------------------------------------------------------------//
 
+  template <typename T>
   auto
-  reduce_max()
+  reduce_max(mpi_future__<T> & local_future)
   {
-    double global_max_;
-    MPI_Allreduce(&max_reduction_, &global_max_, 1, MPI_DOUBLE, MPI_MAX,
+//    double global_max_;
+//    MPI_Allreduce(&max_reduction_, &global_max_, 1, MPI_DOUBLE, MPI_MAX,
+    T global_max_;
+    auto local_max_ = local_future.get();
+    MPI_Allreduce(&local_max_, &global_max_, 1,
+           flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
            MPI_COMM_WORLD);
     return global_max_;
   }
@@ -219,11 +226,16 @@ struct mpi_context_policy_t
   //! @param 
   //--------------------------------------------------------------------------//
 
+  template <typename T>
   auto
-  reduce_min()
+  reduce_min(mpi_future__<T> & local_future)
   { 
-    double global_min_;
-    MPI_Allreduce(&min_reduction_, &global_min_, 1, MPI_DOUBLE, MPI_MIN,
+//    double global_min_;
+//    MPI_Allreduce(&min_reduction_, &global_min_, 1, MPI_DOUBLE, MPI_MIN,
+    T global_min_;
+    auto local_min_ = local_future.get();
+    MPI_Allreduce(&local_min_, &global_min_, 1,
+           flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MIN,
            MPI_COMM_WORLD);
     return global_min_;
   }

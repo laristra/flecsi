@@ -31,6 +31,7 @@
 #include "flecsi/execution/mpi/task_wrapper.h"
 #include "flecsi/execution/mpi/task_prolog.h"
 #include "flecsi/execution/mpi/finalize_handles.h"
+#include "flecsi/execution/mpi/future.h"
 
 //#include "flecsi/utils/const_string.h"
 //#include "flecsi/utils/tuple_walker.h"
@@ -38,50 +39,6 @@
 
 namespace flecsi {
 namespace execution {
-
-///
-/// implementation of the future_t for mpi runtime
-///
-template<
-  typename R
->
-struct mpi_future__
-{
-  using result_t = R;
-
-  ///
-  /// wait() method
-  ///
-  void wait() {}
-
-  ///
-  /// get() mothod
-  ///
-  const result_t & get(size_t index = 0) const { return result_; }
-
-//private:
-
-  ///
-  /// set method
-  ///
-  void set(const result_t & result) { result_ = result; }
-
-  result_t result_;
-
-}; // struct mpi_future__
-
-///
-///
-///
-template<>
-struct mpi_future__<void>
-{
-  ///
-  ///
-  ///
-  void wait() {}
-
-}; // struct mpi_future__
 
 ///
 /// Executor interface.
