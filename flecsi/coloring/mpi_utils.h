@@ -28,7 +28,22 @@ namespace coloring {
 //! @ingroup coloring
 //----------------------------------------------------------------------------//
 
-template<typename TYPE> struct mpi_typetraits__ {};
+template<typename TYPE> struct mpi_typetraits__
+{
+   
+   inline static
+   MPI_Datatype
+   type()
+   {
+     static MPI_Datatype data_type = MPI_DATATYPE_NULL;
+
+     if (data_type == MPI_DATATYPE_NULL) {
+         MPI_Type_contiguous(sizeof(TYPE), MPI_BYTE, &data_type);
+         MPI_Type_commit(&data_type);
+     }
+     return data_type;
+   }
+};
 
 template<>
 struct mpi_typetraits__<size_t>

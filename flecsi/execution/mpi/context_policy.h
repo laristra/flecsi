@@ -170,7 +170,7 @@ struct mpi_context_policy_t
   //--------------------------------------------------------------------------//
 
   void
-  set_max_reduction(double& max_reduction)
+  set_max_reduction(double max_reduction)
   {
     max_reduction_ = max_reduction;
   }
@@ -185,7 +185,7 @@ struct mpi_context_policy_t
   reduce_max()
   {
     double global_max_;
-    MPI_Reduce(&max_reduction_, &global_max_, 1, MPI_FLOAT, MPI_MAX, 0,
+    MPI_Allreduce(&max_reduction_, &global_max_, 1, MPI_DOUBLE, MPI_MAX,
            MPI_COMM_WORLD);
     return global_max_;
   }
@@ -208,7 +208,7 @@ struct mpi_context_policy_t
   //--------------------------------------------------------------------------//
 
   void
-  set_min_reduction(double& min_reduction)
+  set_min_reduction(double min_reduction)
   {
     min_reduction_ = min_reduction;
   }
@@ -223,7 +223,7 @@ struct mpi_context_policy_t
   reduce_min()
   { 
     double global_min_;
-    MPI_Reduce(&min_reduction_, &global_min_, 1, MPI_FLOAT, MPI_MIN, 0,
+    MPI_Allreduce(&min_reduction_, &global_min_, 1, MPI_DOUBLE, MPI_MIN,
            MPI_COMM_WORLD);
     return global_min_;
   }

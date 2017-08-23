@@ -903,11 +903,11 @@ struct storage_type__<dense>
     hb.combined_size = color_info.exclusive;
 
     hb.shared_size = color_info.shared;
-    hb.shared_data = hb.exclusive_data + hb.exclusive_size;
+    hb.shared_data = hb.shared_buf = hb.exclusive_data + hb.exclusive_size;
     hb.combined_size += color_info.shared;
 
     hb.ghost_size = color_info.ghost;
-    hb.ghost_data = hb.shared_data + hb.shared_size;
+    hb.ghost_data = hb.ghost_buf = hb.shared_data + hb.shared_size;
     hb.combined_size += color_info.ghost;
 
     return h;

@@ -97,7 +97,8 @@ namespace execution {
       MPI_Comm_group(MPI_COMM_WORLD, &comm_grp);
       MPI_Group_incl(comm_grp, peers.size(), peers.data(), &rma_group);
       MPI_Group_free(&comm_grp);
-
+   
+      //clog(trace) << "rank: " << my_color << "win create\n";
       // A pull model using MPI_Get:
       // 1. create MPI window for shared portion of the local buffer.
       MPI_Win win;
@@ -117,15 +118,15 @@ namespace execution {
       MPI_Win_start(rma_group, 0, win);
 
 
-      std::vector<T> buffer(my_coloring_info.ghost);
+      //std::vector<T> buffer(my_coloring_info.ghost);
       auto index_coloring = context.coloring(h.index_space);
 
       // FIXME: What do we do when T is a user defined data type?
       int i = 0;
       for (auto ghost : index_coloring.ghost) {
-        clog_rank(warn, 1) << "ghost id: " <<  ghost.id << ", rank: " << ghost.rank
-                            << ", offset: " << ghost.offset
-                            << std::endl;
+        //clog_rank(warn, 1) << "ghost id: " <<  ghost.id << ", rank: " << ghost.rank
+        //                    << ", offset: " << ghost.offset
+        //                    << std::endl;
         MPI_Get(h.ghost_data+i, 1,
                 flecsi::coloring::mpi_typetraits__<T>::type(),
                 ghost.rank, ghost.offset, 1,
@@ -135,9 +136,10 @@ namespace execution {
 
       MPI_Win_complete(win);
       MPI_Win_wait(win);
-
-      MPI_Group_free(&rma_group);
+    
       MPI_Win_free(&win);
+      MPI_Group_free(&rma_group);
+      
     } // handle
 
     template<
@@ -211,7 +213,7 @@ namespace execution {
         // index space times the "degree", TODO: here I hardcoded it to 4.
         // get color_info for this field.
         auto& color_info = (context_.coloring_info(from_index_space)).at(color);
-        adj.num_indices = 4*(color_info.exclusive + color_info.shared + color_info.ghost);
+        adj.num_indices = 16*(color_info.exclusive + color_info.shared + color_info.ghost);
 
         // see if the field data is registered for this entity field.
         auto& registered_field_data = context_.registered_field_data();
