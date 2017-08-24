@@ -197,11 +197,15 @@ template <size_t D, size_t N>
 class mesh_entity_t : public mesh_entity_base_t<N>
 {
  public:
-  static const size_t dimension = D;
+  static constexpr size_t dimension = D;
 
   mesh_entity_t() {}
   ~mesh_entity_t() {}
 }; // class mesh_entity_t
+
+// Redecalre the dimension.  This is redundant, and no longer needed in C++17.
+template <size_t D, size_t N>
+constexpr size_t mesh_entity_t<D, N>::dimension;
 
 /*!
   Define the vector type for storing entities.

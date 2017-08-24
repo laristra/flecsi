@@ -182,7 +182,8 @@ struct find_index_space__<0, TUPLE, ENTITY> {
 template <
   size_t INDEX,
   typename TUPLE,
-  size_t DIMENSION
+  size_t DIMENSION,
+  size_t DOMAIN_
 >
 struct find_index_space_from_dimension__
 {
@@ -203,11 +204,15 @@ struct find_index_space_from_dimension__
     // grab current types
     using TUPLE_ELEMENT = typename std::tuple_element<INDEX - 1, TUPLE>::type;
     using INDEX_SPACE = typename std::tuple_element<0, TUPLE_ELEMENT>::type;
+    using ENTITY_DOMAIN = typename std::tuple_element<1, TUPLE_ELEMENT>::type;
     using ELEMENT_ENTITY = typename std::tuple_element<2, TUPLE_ELEMENT>::type;
 
     // Check match for dimension and return if matched, recurse otherwise.
-    return DIMENSION == ELEMENT_ENTITY::dimension ? INDEX_SPACE::value :
-      find_index_space_from_dimension__<INDEX - 1, TUPLE, DIMENSION>::find();
+    return ( DIMENSION == ELEMENT_ENTITY::dimension &&
+      DOMAIN_ == ENTITY_DOMAIN::value ) ? INDEX_SPACE::value :
+      find_index_space_from_dimension__<
+        INDEX - 1, TUPLE, DIMENSION, DOMAIN_
+      >::find();
   } // find
 
 }; // find_index_space_from_dimension__
@@ -216,8 +221,8 @@ struct find_index_space_from_dimension__
 //! End recursion condition.
 //----------------------------------------------------------------------------//
 
-template <typename TUPLE, size_t DIMENSION>
-struct find_index_space_from_dimension__<0, TUPLE, DIMENSION> {
+template <typename TUPLE, size_t DIMENSION, size_t DOMAIN_>
+struct find_index_space_from_dimension__<0, TUPLE, DIMENSION, DOMAIN_> {
 
   //--------------------------------------------------------------------------//
   //! Search last tuple element.

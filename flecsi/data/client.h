@@ -296,7 +296,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
       } // for
 
       auto ritr = ism.find(ent.index_space);
-      clog_assert(ritr != ism.end(), "invalid index space");
+      clog_assert(ritr != ism.end(), "invalid index space " << ei.index_space);
       
       ent.color_region = ritr->second.color_region;
       

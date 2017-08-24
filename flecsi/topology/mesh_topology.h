@@ -1313,21 +1313,56 @@ private:
       find_index_space_from_dimension__<
         std::tuple_size<typename MT::entity_types>::value,
         typename MT::entity_types,
-        UsingDimension
+        UsingDimension,
+        Domain
       >::find();
 
-    auto & context_ = flecsi::execution::context_t::instance();
+    // Lookup the index space for the vertices from the mesh
+    // specialization.
+    constexpr size_t vertex_index_space =
+      find_index_space_from_dimension__<
+        std::tuple_size<typename MT::entity_types>::value,
+        typename MT::entity_types,
+        0,
+        Domain
+      >::find();
 
+    // Lookup the index space for the entity type being created.
+    constexpr size_t entity_index_space =
+      find_index_space_from_dimension__<
+        std::tuple_size<typename MT::entity_types>::value,
+        typename MT::entity_types,
+        DimensionToBuild,
+        Domain
+      >::find();
+
+    // get the global to local index space map
+    auto & context_ = flecsi::execution::context_t::instance();
     auto& gis_to_cis = context_.reverse_index_map(cell_index_space);
+
+    // Get the reverse map of the intermediate ids. This map takes
+    // vertices defining an entity to the entity id in MIS.
+    auto & reverse_intermediate_map =
+      context_.reverse_intermediate_map(DimensionToBuild, Domain);
+    auto has_intermediate_map = !reverse_intermediate_map.empty();
+
+    // Get the index map for the entity.
+    auto & entity_index_map = context_.reverse_index_map(entity_index_space);
+
+    // Get the map of the vertex ids. This map takes
+    // local compacted vertex ids to mesh index space ids.
+    // CIS -> MIS.
+    auto & vertex_map =
+      context_.index_map(vertex_index_space);
+
+    // a counter for added entityes
+    size_t entity_counter{0};
 
     for(auto& citr : gis_to_cis){
       size_t c = citr.second;
 
-    //for (size_t c = 0; c < _num_cells; ++c) {
       // Get the cell object
-
       auto cell = static_cast<cell_type*>(cis[c]);
-
       id_t cell_id = cell->template global_id<Domain>();
 
       // Get storage reference.
@@ -1381,51 +1416,30 @@ private:
         // created by the topology.
         //
 
-        // Lookup the index space for the vertices from the mesh
-        // specialization.
-        constexpr size_t vertex_index_space =
-          find_index_space_from_dimension__<
-            std::tuple_size<typename MT::entity_types>::value,
-            typename MT::entity_types,
-            0
-          >::find();
+        size_t entity_id;
+        if ( has_intermediate_map ) {
 
-        // Lookup the index space for the entity type being created.
-        constexpr size_t entity_index_space =
-          find_index_space_from_dimension__<
-            std::tuple_size<typename MT::entity_types>::value,
-            typename MT::entity_types,
-            DimensionToBuild
-          >::find();
+          std::vector<size_t> vertices_mis;
+          vertices_mis.reserve(m);
 
-        // Get the map of the vertex ids. This map takes
-        // local compacted vertex ids to mesh index space ids.
-        // CIS -> MIS.
-        auto & vertex_map =
-          context_.index_map(vertex_index_space);
+          // Push the MIS vertex ids onto a vector to search for the
+          // associated entity.
+          for(id_t * aptr{a}; aptr<(a+m); ++aptr) {
+            vertices_mis.push_back(vertex_map[aptr->entity()]);
+          } // for
 
-        std::vector<size_t> vertices_mis;
-        vertices_mis.reserve(m);
+          // Lookup the MIS id of the entity.
+          const auto entity_id_mis = reverse_intermediate_map.at(vertices_mis);
 
-        // Push the MIS vertex ids onto a vector to search for the
-        // associated entity.
-        for(id_t * aptr{a}; aptr<(a+m); ++aptr) {
-          vertices_mis.push_back(vertex_map[aptr->entity()]);
-        } // for
+          // Lookup the CIS id of the entity.
+          entity_id = entity_index_map.at(entity_id_mis);
 
-        // Get the reverse map of the intermediate ids. This map takes
-        // vertices defining an entity to the entity id in MIS.
-        auto & reverse_intermediate_map =
-          context_.reverse_intermediate_map(DimensionToBuild, Domain);
+        }
+        else {
 
-        // Lookup the MIS id of the entity.
-        const auto entity_id_mis = reverse_intermediate_map.at(vertices_mis);
+          entity_id = entity_counter;
 
-        // Get the index map for the entity.
-        auto & entity_index_map = context_.reverse_index_map(entity_index_space);
-
-        // Lookup the CIS id of the entity.
-        const auto entity_id = entity_index_map.at(entity_id_mis);
+        } // intermediate_map
 
         id_t id = id_t::make<Domain>(DimensionToBuild, entity_id);
 
@@ -1451,17 +1465,20 @@ private:
           auto ent =
             MT::template create_entity<Domain, DimensionToBuild>(this, m, id);
 
+          ++entity_counter;
+
         } // if
       } // for
     } // for
   
     // sort the entity connectivity. Entities may have been created out of
     // order.  Sort them using the list of entity ids we kept track of
-    utils::reorder_destructive(
-      entity_ids.begin(),
-      entity_ids.end(),
-      entity_vertex_conn.begin()
-    );
+    if ( has_intermediate_map )
+      utils::reorder_destructive(
+        entity_ids.begin(),
+        entity_ids.end(),
+        entity_vertex_conn.begin()
+      );
 
     // Set the connectivity information from the created entities to
     // the vertices.
@@ -1530,7 +1547,8 @@ private:
       find_index_space_from_dimension__<
         std::tuple_size<typename MT::entity_types>::value,
         typename MT::entity_types,
-        TD
+        TD,
+        TM
       >::find();
 
     const auto& to__cis_to_gis = context_.index_map(to_index_space);

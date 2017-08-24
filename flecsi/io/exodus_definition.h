@@ -198,9 +198,15 @@ public:
   template< typename U >
   using vector = typename std::vector<U>;
 
-  //! an alias for the matrix class
+  //! \brief an alias for the matrix class
   template <typename U>
   using sparse_matrix = vector< vector<U> >;
+
+  //! \brief the data type for an index vector
+  using index_vector_t = vector< index_t >;
+
+  //! \brief the data type for connectivity
+  using connectivity_t = sparse_matrix< index_t >;
 
   //! the number of dimensions
   static constexpr size_t num_dims = D;
@@ -661,7 +667,7 @@ public:
     int exoid, 
 		ex_entity_id blk_id, 
 		ex_entity_type entity_type,
-		sparse_matrix<index_t> & entities
+		connectivity_t & entities
   ) {
     // some type aliases
     using ex_index_t = U;
@@ -862,7 +868,7 @@ public:
   //============================================================================
   template< typename U >
   static auto read_face_block( 
-    int exoid, ex_entity_id blk_id, sparse_matrix<index_t> & faces
+    int exoid, ex_entity_id blk_id, connectivity_t & faces
   ) {
 
 		return read_block<U>(
@@ -905,7 +911,7 @@ public:
   //============================================================================
   template< typename U >
   static auto read_element_block( 
-    int exoid, ex_entity_id elem_blk_id, sparse_matrix<index_t> & elements 
+    int exoid, ex_entity_id elem_blk_id, connectivity_t & elements 
   ) {
 
 		return read_block<U>(
@@ -987,9 +993,8 @@ public:
   template <typename U>
   using vector = typename base_t::template vector<U>;
 
-  //! the sparse matrix type
-  template <typename U>
-  using sparse_matrix = typename base_t::template sparse_matrix<U>;
+  //! the connectivity type
+  using connectivity_t = typename base_t::connectivity_t;
 
   //============================================================================
   // Constructors
@@ -1097,7 +1102,7 @@ public:
     auto & edge_vertices_ref = entities_[1][0];
 
     // temprary storage for matching edges
-    auto edge_vertices_sorted = std::make_unique<sparse_matrix<index_t>>();
+    auto edge_vertices_sorted = std::make_unique<connectivity_t>();
 
     // build the connecitivity array
     detail::build_connectivity(
@@ -1342,7 +1347,7 @@ private:
   //============================================================================
 
   //! \brief storage for element verts
-  std::map< index_t, std::map<index_t, sparse_matrix<index_t>> > entities_;
+  std::map< index_t, std::map<index_t, connectivity_t> > entities_;
 
   
   //! \brief storage for vertex coordinates
@@ -1385,9 +1390,8 @@ public:
   template <typename U>
   using vector = typename base_t::template vector<U>;
 
-  //! the sparse matrix type
-  template <typename U>
-  using sparse_matrix = typename base_t::template sparse_matrix<U>;
+  //! the connectivity type
+  using connectivity_t = typename base_t::connectivity_t;
 
   //============================================================================
   // Constructors
@@ -1488,7 +1492,7 @@ public:
   	auto & cell_vertices_ref = entities_[3][0];     
 
     // temprary storage for matching faces
-    auto face_vertices_sorted = std::make_unique<sparse_matrix<index_t>>();
+    auto face_vertices_sorted = std::make_unique<connectivity_t>();
 
     // get the element block ids 
     if ( int64 )
@@ -1506,7 +1510,7 @@ public:
 
       // read the block info, the actual type may change based on
       // the type of the block
-      sparse_matrix<index_t> results;
+      connectivity_t results;
       typename base_t::block_t block_type;
       if ( int64 )
         block_type = base_t::template read_element_block<long long>( 
@@ -1606,7 +1610,7 @@ public:
     auto & edge_vertices_ref = entities_[1][0];
 
     // temprary storage for matching edges
-    auto edge_vertices_sorted = std::make_unique<sparse_matrix<index_t>>();
+    auto edge_vertices_sorted = std::make_unique<connectivity_t>();
 
     // build the connecitivity array
     detail::build_connectivity(
@@ -1884,7 +1888,7 @@ private:
   //============================================================================
 
   //! \brief storage for element verts
-  std::map< index_t, std::map<index_t, sparse_matrix<index_t>> > entities_;
+  std::map< index_t, std::map<index_t, connectivity_t> > entities_;
 
   //! \brief storage for vertex coordinates
   vector<real_t> vertices_;

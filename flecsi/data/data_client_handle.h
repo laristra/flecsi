@@ -24,6 +24,8 @@ template<
 >
 struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
 {
+  using type = DATA_CLIENT_TYPE;
+  
   data_client_handle_base__()
   {
     
