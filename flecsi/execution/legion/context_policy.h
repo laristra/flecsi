@@ -37,10 +37,10 @@
 
 #include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/common/processor.h"
-#include "flecsi/execution/common/execution_state.h"
 #include "flecsi/execution/legion/internal_field.h"
 #include "flecsi/execution/legion/runtime_driver.h"
 #include "flecsi/execution/legion/runtime_state.h"
+#include "flecsi/execution/legion/future.h"
 #include "flecsi/runtime/types.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
@@ -101,15 +101,6 @@ struct legion_context_policy_t
   const size_t TOP_LEVEL_TASK_ID = 0;
 
   //--------------------------------------------------------------------------//
-  //! The task_id_t type is used to uniquely identify tasks that have
-  //! been registered with the runtime.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
-
-  using task_id_t = Legion::TaskID;
-
-  //--------------------------------------------------------------------------//
   //! The registration_function_t type defines a function type for
   //! registration callbacks.
   //--------------------------------------------------------------------------//
@@ -126,38 +117,9 @@ struct legion_context_policy_t
     utils::unique_id_t<task_id_t, FLECSI_GENERATED_ID_MAX>;
 
   //--------------------------------------------------------------------------//
-  //! Adjacency triple: index space, from index space, to index space
-  //--------------------------------------------------------------------------//
-
-  using adjacency_triple_t = std::tuple<size_t, size_t, size_t>;
-
-  //--------------------------------------------------------------------------//
   //! The task_info_t type is a convenience type for defining the task
   //! registration map below.
   //--------------------------------------------------------------------------//
-
-  //--------------------------------------------------------------------------//
-  // Gathers info about registered data fields.
-  //--------------------------------------------------------------------------//
-
-  struct field_info_t{
-    size_t data_client_hash;
-    size_t storage_type;
-    size_t size;
-    size_t namespace_hash;
-    size_t name_hash;
-    size_t versions;
-    field_id_t fid;
-    size_t index_space;
-    size_t key;
-  }; // struct field_info_t
-
-  //--------------------------------------------------------------------------//
-  // Field info map for fields in SPMD task, key1 = (data client hash, index space), key2 = fid
-  //--------------------------------------------------------------------------//
-
-  using field_info_map_t = 
-    std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
 
   using task_info_t =
     std::tuple<
@@ -566,47 +528,6 @@ struct legion_context_policy_t
   task_info_method(processor_type, processor_type_t, 1);
 
   //--------------------------------------------------------------------------//
-  // Function interface.
-  //--------------------------------------------------------------------------//
-
-  //--------------------------------------------------------------------------//
-  //! FIXME: This interface needs to be updated.
-  //--------------------------------------------------------------------------//
-
-  template<
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*FUNCTION)(ARG_TUPLE),
-    size_t KEY
-  >
-  bool
-  register_function(
-  )
-  {
-    clog_assert(function_registry_.find(KEY) == function_registry_.end(),
-      "function has already been registered");
-
-    const std::size_t addr = reinterpret_cast<std::size_t>(FUNCTION);
-    clog(info) << "Registering function: " << addr << std::endl;
-
-    function_registry_[KEY] =
-      reinterpret_cast<void *>(FUNCTION);
-    return true;
-  } // register_function
-
-  //--------------------------------------------------------------------------//
-  //! FIXME: Add description.
-  //--------------------------------------------------------------------------//
-
-  void *
-  function(
-    size_t key
-  )
-  {
-    return function_registry_[key];
-  } // function
-
-  //--------------------------------------------------------------------------//
   // Legion runtime interface.
   //--------------------------------------------------------------------------//
 
@@ -694,6 +615,37 @@ struct legion_context_policy_t
     return max_reduction_;
   }
 
+  //-------------------------------------------------------------------------//
+  //! Perform reduction of the maximum value
+  //! @param task future
+  //-------------------------------------------------------------------------//
+
+  template <typename T>
+  auto
+  reduce_max(legion_future__<T> & local_future)
+  {
+    Legion::DynamicCollective& max_reduction = max_reduction_;
+
+    auto legion_runtime = Legion::Runtime::get_runtime();
+    auto legion_context = Legion::Runtime::get_context();
+
+    local_future.defer_dynamic_collective_arrival(
+      legion_runtime, legion_context, max_reduction
+    );
+
+    max_reduction =
+      legion_runtime->advance_dynamic_collective(legion_context, max_reduction);
+
+    auto global_future = legion_runtime->get_dynamic_collective_result(
+      legion_context, max_reduction
+    );
+
+    auto global_max_ = global_future.get_result<double>();
+
+    return global_max_;
+  }
+
+
   //--------------------------------------------------------------------------//
   //! Set DynamicCollective for <double> in reduction
   //!
@@ -716,114 +668,34 @@ struct legion_context_policy_t
     return min_reduction_;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Register field info for index space and field id.
-  //!
-  //! @param index_space virtual index space
-  //! @param field allocated field id
-  //! @param field_info field info as registered
-  //--------------------------------------------------------------------------//
+  //-------------------------------------------------------------------------//
+  //! Perform reduction of the minimum value
+  //! @param task future
+  //-------------------------------------------------------------------------//
 
-  void register_field_info(field_info_t& field_info){
-    field_info_vec_.emplace_back(std::move(field_info));
-  }
-
-  //--------------------------------------------------------------------------//
-  //! Return registered fields
-  //--------------------------------------------------------------------------//
-
-  const std::vector<field_info_t>&
-  registered_fields()
-  const
+  template <typename T>
+  auto
+  reduce_min(legion_future__<T> & local_future)
   {
-    return field_info_vec_;
-  }
-  //--------------------------------------------------------------------------//
-  //! Add an adjacency index space.
-  //!
-  //! @param index_space index space to add.
-  //--------------------------------------------------------------------------//
-  
-  void
-  add_adjacency_triple(const adjacency_triple_t& triple)
-  {
-    adjacencies_.emplace(std::get<0>(triple), triple);    
-  }
+    Legion::DynamicCollective& min_reduction = min_reduction_;
 
-  //--------------------------------------------------------------------------//
-  //! Return set of all adjacency index spaces.
-  //--------------------------------------------------------------------------//
+    auto legion_runtime = Legion::Runtime::get_runtime();
+    auto legion_context = Legion::Runtime::get_context();
 
-  auto&
-  adjacencies()
-  const
-  {
-    return adjacencies_;
-  }
+    local_future.defer_dynamic_collective_arrival(
+      legion_runtime, legion_context, min_reduction
+    );
 
-  //--------------------------------------------------------------------------//
-  //! Put field info for index space and field id.
-  //!
-  //! @param field_info field info as registered
-  //--------------------------------------------------------------------------//
-  
-  void
-  put_field_info(
-    const field_info_t& field_info
-  )
-  {
-    size_t index_space = field_info.index_space;
-    size_t data_client_hash = field_info.data_client_hash;
-    field_id_t fid = field_info.fid;
+    min_reduction =
+      legion_runtime->advance_dynamic_collective(legion_context, min_reduction);
 
-    field_info_map_[{data_client_hash, index_space}].emplace(fid, field_info);
-    
-    field_map_.insert({{field_info.data_client_hash, field_info.key},
-      {index_space, fid}});
-  } // put_field_info
+    auto global_future = legion_runtime->get_dynamic_collective_result(
+      legion_context, min_reduction
+    );
 
-  //--------------------------------------------------------------------------//
-  //! Get registered field info map for read access.
-  //--------------------------------------------------------------------------//
+    auto global_min_ = global_future.get_result<double>();
 
-  const field_info_map_t&
-  field_info_map()
-  const
-  {
-    return field_info_map_;
-  } // field_info_map
-
-  //--------------------------------------------------------------------------//
-  //! Get field map for read access.
-  //--------------------------------------------------------------------------//
-  const std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
-  field_map()
-  const
-  {
-    return field_map_;
-  } // field_info_map
-  //--------------------------------------------------------------------------//
-  //! Lookup registered field info from data client and namespace hash.
-  //! @param data_client_hash data client type hash
-  //! @param namespace_hash namespace/field name hash
-  //!-------------------------------------------------------------------------//
-
-  const field_info_t&
-  get_field_info(
-    size_t data_client_hash,
-    size_t namespace_hash)
-  const
-  {
-    auto itr = field_map_.find({data_client_hash, namespace_hash});
-    clog_assert(itr != field_map_.end(), "invalid field");
-    
-    auto iitr = field_info_map_.find({data_client_hash, itr->second.first});
-    clog_assert(iitr != field_info_map_.end(), "invalid index_space");
-    
-    auto fitr = iitr->second.find(itr->second.second);
-    clog_assert(fitr != iitr->second.end(), "invalid fid");
-    
-    return fitr->second;
+    return global_min_;
   }
 
   //--------------------------------------------------------------------------//
@@ -847,24 +719,6 @@ struct legion_context_policy_t
     return size_t(internal_field::entity_data_start) + index_space;
   }
 
-  //------------------------------------------------------------------------//
-  //! advance state of the execution flow
-  //------------------------------------------------------------------------//
-
-  void
-  advance_state()
-  {
-    execution_state_ ++;
-  }
-
-  //------------------------------------------------------------------------//
-  //! return current execution state
-  //------------------------------------------------------------------------//
-  size_t
-  execution_state()
-  {
-    return execution_state_;
-  }
 
 private:
 
@@ -903,45 +757,12 @@ private:
   bool mpi_active_ = false;
 
   //--------------------------------------------------------------------------//
-  // Field info vector for registered fields in TLT
-  //--------------------------------------------------------------------------//
-
-  std::vector<field_info_t> field_info_vec_;
-
-  //--------------------------------------------------------------------------//
-  // Field info map for fields in SPMD task, key1 =
-  // (data client hash, index space), key2 = fid
-  //--------------------------------------------------------------------------//
-
-  field_info_map_t field_info_map_;
-
-  //--------------------------------------------------------------------------//
-  // Map of adjacency triples. key: adjacency index space
-  //--------------------------------------------------------------------------//
-
-  std::map<size_t, adjacency_triple_t> adjacencies_;
-
-  //--------------------------------------------------------------------------//
-  // Field map, key1 = (data client hash, name/namespace hash)
-  // value = (index space, fid)
-  //--------------------------------------------------------------------------//
-
-  std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
-    field_map_;
-
-  //--------------------------------------------------------------------------//
   // Legion data members within SPMD task.
   //--------------------------------------------------------------------------//
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   Legion::DynamicCollective max_reduction_;
   Legion::DynamicCollective min_reduction_;
-
-  //-------------------------------------------------------------------------//
-  // Execution state 
-  //-------------------------------------------------------------------------//
-
-   size_t execution_state_ = SPECIALIZATION_TLT_INIT;
 
 }; // class legion_context_policy_t
 

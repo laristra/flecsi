@@ -22,8 +22,9 @@ struct mpi_data_handle_policy_t
   // information from the context which is data that is the same
   // across multiple ranks/colors and should be used ONLY as read-only data
 
-  //field_id_t fid;
+  field_id_t fid;
   size_t index_space;
+  size_t data_client_hash;
 }; // class mpi_data_handle_policy_t
 
 } // namespace flecsi

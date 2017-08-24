@@ -15,8 +15,6 @@
 #include <string>
 #include <tuple>
 
-#include <arrays.h>
-
 #include "flecsi/execution/context.h"
 #include "flecsi/data/data_constants.h"
 #include "flecsi/data/storage.h"
@@ -24,6 +22,7 @@
 #include "flecsi/topology/mesh_topology.h"
 #include "flecsi/utils/hash.h"
 #include "flecsi/utils/tuple_walker.h"
+#include "flecsi/utils/common.h"
 #include "flecsi/execution/legion/internal_index_space.h"
 
 //clog_register_tag(registration);
@@ -169,6 +168,24 @@ struct client_registration_wrapper__<
       storage_t::instance().register_field(client_key,
         key, wrapper_t::register_callback);
 
+      using id_wrapper_t = field_registration_wrapper__<
+        CLIENT_TYPE,
+        flecsi::data::dense,
+        utils::id_t,
+        entity_hash,
+        0,
+        1,
+        INDEX_TYPE::value
+      >;
+
+      const size_t id_key = utils::hash::client_internal_field_hash<
+        utils::const_string_t("__flecsi_internal_entity_id__").hash(),
+        INDEX_TYPE::value
+      >();
+
+      storage_t::instance().register_field(client_key,
+        id_key, id_wrapper_t::register_callback);
+
     } // handle_type
 
   }; // struct entity_walker_t
@@ -222,7 +239,7 @@ struct client_registration_wrapper__<
       using index_wrapper_t = field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
-        size_t,
+        utils::id_t,
         adjacency_hash,
         0,
         1,
@@ -236,14 +253,14 @@ struct client_registration_wrapper__<
         utils::const_string_t("__flecsi_internal_adjacency_index__").hash(),
         INDEX_TYPE::value
       >();
-
+      int ispace = INDEX_TYPE::value;
       storage_t::instance().register_field(client_key,
         index_key, index_wrapper_t::register_callback);
 
       using offset_wrapper_t = field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
-        LegionRuntime::Arrays::Point<2>,
+        utils::offset_t,
         adjacency_hash,
         0,
         1,
@@ -313,7 +330,7 @@ struct client_registration_wrapper__<
         utils::const_string_t("__flecsi_internal_field_hash_base__").hash(),
         INDEX_TYPE::value
       >();
-
+      int ispace = INDEX_TYPE::value;
       storage_t::instance().register_field(client_key,
         key, wrapper_t::register_callback);
     } // handle_type

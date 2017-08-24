@@ -35,9 +35,11 @@
 #include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/mpi/runtime_driver.h"
+#include "flecsi/execution/mpi/future.h"
 #include "flecsi/runtime/types.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
+#include "flecsi/coloring/mpi_utils.h"
 
 namespace flecsi {
 namespace execution {
@@ -69,17 +71,19 @@ struct mpi_context_policy_t
   );
 
   //--------------------------------------------------------------------------//
+  //! Return the color for which the context was initialized.
+  //--------------------------------------------------------------------------//
+
+  size_t
+  color()
+  const
+  {
+    return color_;
+  } // color
+
+  //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
-
-  //--------------------------------------------------------------------------//
-  //! The task_id_t type is used to uniquely identify tasks that have
-  //! been registered with the runtime.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
-
-  using task_id_t = size_t;
 
   //--------------------------------------------------------------------------//
   //! The registration_function_t type defines a function type for
@@ -95,12 +99,6 @@ struct mpi_context_policy_t
   //--------------------------------------------------------------------------//
 
   using unique_tid_t = utils::unique_id_t<task_id_t>;
-
-  //--------------------------------------------------------------------------//
-  //! Adjacency triple: index space, from index space, to index space
-  //--------------------------------------------------------------------------//
-
-  using adjacency_triple_t = std::tuple<size_t, size_t, size_t>;
 
   //--------------------------------------------------------------------------//
   //! Register a task with the runtime.
@@ -135,42 +133,6 @@ struct mpi_context_policy_t
   // Function interface.
   //--------------------------------------------------------------------------//
 
-  //--------------------------------------------------------------------------//
-  //! FIXME: This interface needs to be updated.
-  //--------------------------------------------------------------------------//
-
-
-  template<
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*FUNCTION)(ARG_TUPLE),
-    size_t KEY
-  >
-  bool
-  register_function()
-  {
-    clog_assert(function_registry_.find(KEY) == function_registry_.end(),
-      "function has already been registered");
-
-    clog(info) << "Registering function: " << FUNCTION << std::endl;
-
-    function_registry_[KEY] =
-      reinterpret_cast<void *>(FUNCTION);
-    return true;
-  } // register_function
-
-  //--------------------------------------------------------------------------//
-  //! FIXME: This interface needs to be updated.
-  //--------------------------------------------------------------------------//
-
-  void *
-  function(
-    size_t key
-  )
-  {
-    return function_registry_[key];
-  } // function
-
   struct index_space_data_t {
     // TODO: to be defined.
   };
@@ -180,166 +142,108 @@ struct mpi_context_policy_t
     return index_space_data_map_;
   }
 
-  //--------------------------------------------------------------------------//
-  // Gathers info about registered data fields.
-  //--------------------------------------------------------------------------//
-
-  struct field_info_t{
-    size_t data_client_hash;
-    size_t storage_type;
-    size_t size;
-    size_t namespace_hash;
-    size_t name_hash;
-    size_t versions;
-    field_id_t fid;
-    size_t index_space;
-  }; // struct field_info_t
-
-  //--------------------------------------------------------------------------//
-  // Field info map for fields in SPMD task, key1 = (data client hash, index space), key2 = fid
-  //--------------------------------------------------------------------------//
-
-  using field_info_map_t =
-  std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
-
-  //--------------------------------------------------------------------------//
-  //! Register field info for index space and field id.
-  //!
-  //! @param index_space virtual index space
-  //! @param field allocated field id
-  //! @param field_info field info as registered
-  //--------------------------------------------------------------------------//
-
-  void register_field_info(field_info_t& field_info){
-    field_info_vec_.emplace_back(std::move(field_info));
-  }
-
-  void register_field_data(field_info_t& field_info,
-                           std::unordered_map<size_t, coloring::coloring_info_t>& infos) {
-    clog(info) << "index space: " << field_info.index_space << std::endl;
-    auto info = infos[rank];
-    auto combined_size = 0;
-    clog(info) << "number of exclusive: " << info.exclusive << std::endl;
-    combined_size += info.exclusive ;
-
-    clog(info) << "number of shared: " << info.shared << std::endl;
-    combined_size += info.shared ;
-
-    clog(info) << "number of ghost: " << info.ghost << std::endl;
-    combined_size += info.ghost ;
+  void register_field_data(field_id_t fid,
+                           size_t size) {
     // TODO: VERSIONS
-    field_data.insert({field_info.fid, std::vector<uint8_t>(combined_size * field_info.size)});
+    field_data.insert({fid, std::vector<uint8_t>(size)});
   }
-  //--------------------------------------------------------------------------//
-  //! Return registered fields
-  //--------------------------------------------------------------------------//
 
-  const std::vector<field_info_t>&
-  registered_fields()
-  const
+  std::map<field_id_t, std::vector<uint8_t>>&
+  registered_field_data()
   {
-    return field_info_vec_;
+    return field_data;
   }
 
-  std::vector<uint8_t> &
-  registered_field_data(field_id_t fid)
-  {
-    return field_data[fid];
-  }
 
   //--------------------------------------------------------------------------//
-  //! Add an adjacency index space.
-  //!
-  //! @param index_space index space to add.
-  //--------------------------------------------------------------------------//
-
-  void
-  add_adjacency_triple(const adjacency_triple_t& triple)
-  {
-    adjacencies_.emplace(std::get<0>(triple), triple);
-  }
-
-  //--------------------------------------------------------------------------//
-  //! Return set of all adjacency index spaces.
+  //! return <double> max reduction
   //--------------------------------------------------------------------------//
 
   auto&
-  adjacencies()
-  const
-  {
-    return adjacencies_;
+  max_reduction()
+  { 
+    return max_reduction_;
   }
 
   //--------------------------------------------------------------------------//
-  //! Put field info for index space and field id.
+  //! Set max_reduction
   //!
-  //! @param field_info field info as registered
+  //! @param double max_reduction
   //--------------------------------------------------------------------------//
 
   void
-  put_field_info(
-    const field_info_t& field_info
-  )
+  set_max_reduction(double max_reduction)
   {
-    size_t index_space = field_info.index_space;
-    size_t data_client_hash = field_info.data_client_hash;
-    field_id_t fid = field_info.fid;
-
-    field_info_map_[{data_client_hash, index_space}].emplace(fid, field_info);
-
-    field_map_.insert({{field_info.data_client_hash, field_info.key},
-      {index_space, fid}});
-  } // put_field_info
-
-  //--------------------------------------------------------------------------//
-  //! Get registered field info map for read access.
-  //--------------------------------------------------------------------------//
-
-  const field_info_map_t&
-  field_info_map()
-  const
-  {
-    return field_info_map_;
-  } // field_info_map
-
-  //--------------------------------------------------------------------------//
-  //! Get field map for read access.
-  //--------------------------------------------------------------------------//
-
-  const std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
-  field_map()
-  const
-  {
-    return field_map_;
-  } // field_info_map
-
-  //--------------------------------------------------------------------------//
-  //! Lookup registered field info from data client and namespace hash.
-  //! @param data_client_hash data client type hash
-  //! @param namespace_hash namespace/field name hash
-  //!-------------------------------------------------------------------------//
-
-  const field_info_t&
-  get_field_info(
-    size_t data_client_hash,
-    size_t namespace_hash)
-  const
-  {
-    auto itr = field_map_.find({data_client_hash, namespace_hash});
-    clog_assert(itr != field_map_.end(), "invalid field");
-
-    auto iitr = field_info_map_.find({data_client_hash, itr->second.first});
-    clog_assert(iitr != field_info_map_.end(), "invalid index_space");
-
-    auto fitr = iitr->second.find(itr->second.second);
-    clog_assert(fitr != iitr->second.end(), "invalid fid");
-
-    return fitr->second;
+    max_reduction_ = max_reduction;
   }
+
+  //--------------------------------------------------------------------------//
+  //! Perform reduction for the maximum value type <double>
+  //!
+  //! @param 
+  //--------------------------------------------------------------------------//
+
+  template <typename T>
+  auto
+  reduce_max(mpi_future__<T> & local_future)
+  {
+    T global_max_;
+    auto local_max_ = local_future.get();
+    MPI_Allreduce(&local_max_, &global_max_, 1,
+           flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
+           MPI_COMM_WORLD);
+    return global_max_;
+  }
+
+
+  //--------------------------------------------------------------------------//
+  //! return <double> min reduction
+  //--------------------------------------------------------------------------//
+
+  auto&
+  min_reduction()
+  {
+    return min_reduction_;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Set min_reduction
+  //!
+  //! @param double min_reduction
+  //--------------------------------------------------------------------------//
+
+  void
+  set_min_reduction(double min_reduction)
+  {
+    min_reduction_ = min_reduction;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Perform reduction for the minimum value type <double>
+  //!
+  //! @param 
+  //--------------------------------------------------------------------------//
+
+  template <typename T>
+  auto
+  reduce_min(mpi_future__<T> & local_future)
+  { 
+//    double global_min_;
+//    MPI_Allreduce(&min_reduction_, &global_min_, 1, MPI_DOUBLE, MPI_MIN,
+    T global_min_;
+    auto local_min_ = local_future.get();
+    MPI_Allreduce(&local_min_, &global_min_, 1,
+           flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MIN,
+           MPI_COMM_WORLD);
+    return global_min_;
+  }
+
 
   int rank;
 
 private:
+
+  int color_ = 0;
 
   // Define the map type using the task_hash_t hash function.
 //  std::unordered_map<
@@ -354,42 +258,14 @@ private:
 //    size_t,
 //    task_info_t
 //  > task_registry_;
-  //--------------------------------------------------------------------------//
-  // Map of adjacency triples. key: adjacency index space
-  //--------------------------------------------------------------------------//
-
-  std::map<size_t, adjacency_triple_t> adjacencies_;
-
-  //--------------------------------------------------------------------------//
-  // Field info map for fields in SPMD task, key1 = (data client hash, index space), key2 = fid
-  //--------------------------------------------------------------------------//
-
-  field_info_map_t field_info_map_;
-
-  //--------------------------------------------------------------------------//
-  // Field map, key1 = (data client hash, name/namespace hash)
-  // value = (index space, fid)
-  //--------------------------------------------------------------------------//
-
-  std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
-    field_map_;
-
-  //--------------------------------------------------------------------------//
-  // Function data members.
-  //--------------------------------------------------------------------------//
-
-  std::unordered_map<size_t, void *>
-    function_registry_;
-
-  //--------------------------------------------------------------------------//
-  // Field info vector for registered fields in TLT
-  //--------------------------------------------------------------------------//
-
-  std::vector<field_info_t> field_info_vec_;
 
   std::map<field_id_t, std::vector<uint8_t>> field_data;
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
+
+  double min_reduction_;
+  double max_reduction_;
+
 }; // class mpi_context_policy_t
 
 } // namespace execution 

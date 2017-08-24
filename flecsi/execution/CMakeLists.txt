@@ -95,6 +95,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     mpi/execution_policy.h
     mpi/runtime_driver.h
     mpi/task_wrapper.h
+    mpi/future.h
   )
 
   set(execution_SOURCES
@@ -161,6 +162,26 @@ cinch_add_unit(simple_function
   )
 
 #
+# Test global reduction
+#
+
+cinch_add_unit(reduction
+  SOURCES
+  test/reduction.cc
+  ${DRIVER_INITIALIZATION}
+  ${RUNTIME_DRIVER}
+  DEFINES
+  -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+  POLICY
+  ${UNIT_POLICY}
+  LIBRARIES
+  flecsi
+  THREADS 2
+  NOCI
+  )
+
+
+#
 # Test basic task calling capability using the register_task
 # interface.
 #
@@ -178,6 +199,7 @@ cinch_add_unit(simple_task
   ${CINCH_RUNTIME_LIBRARIES}
   NOCI
   )
+
 
 if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
@@ -244,6 +266,27 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       NOCI
       )
 
+#    cinch_add_unit(data_handle_point
+#      SOURCES
+#        test/data_handle_point.cc
+#        ../supplemental/coloring/add_colorings.cc
+#        ${DRIVER_INITIALIZATION}
+#        ${RUNTIME_DRIVER}
+#      INPUTS
+#        test/simple2d-8x8.msh
+#        test/simple2d-16x16.msh
+#      LIBRARIES
+#        flecsi
+#        ${CINCH_RUNTIME_LIBRARIES}
+#        ${COLORING_LIBRARIES}
+#      DEFINES
+#        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+#        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+#      POLICY ${UNIT_POLICY}
+#      THREADS 2
+#      NOCI
+#      )
+
     cinch_add_unit(ghost_access
       SOURCES
         test/ghost_access_drivers.cc
@@ -283,28 +326,29 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       NOCI
       )
 
-#    cinch_add_unit(data_client_handle
-#      SOURCES
-#        test/data_client_handle.cc
-#        ../supplemental/coloring/add_colorings.cc
-#        ${DRIVER_INITIALIZATION}
-#        ${RUNTIME_DRIVER}
-#      INPUTS
-#        test/simple2d-8x8.msh
-#        test/simple2d-16x16.msh
-#      LIBRARIES
-#        flecsi
-#        ${CINCH_RUNTIME_LIBRARIES}
-#        ${COLORING_LIBRARIES}
-#      DEFINES
-#        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-#        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-#        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-#        -DFLECSI_8_8_MESH
-#      POLICY ${UNIT_POLICY}
-#      THREADS 2
-#      NOCI
-#      )
+    cinch_add_unit(data_client_handle
+      SOURCES
+        test/data_client_handle.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+        test/data_client_handle.blessed
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        -DFLECSI_8_8_MESH
+      POLICY ${UNIT_POLICY}
+      THREADS 2
+      NOCI
+      )
 
 
 endif()
@@ -371,23 +415,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     )
 
 
-    cinch_add_unit(reduction
-      SOURCES
-        test/legion/reduction.cc
-        ${DRIVER_INITIALIZATION}
-        ${RUNTIME_DRIVER}
-      LIBRARIES
-        flecsi
-        ${CINCH_RUNTIME_LIBRARIES}
-        ${COLORING_LIBRARIES}
-      DEFINES
-        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-      POLICY LEGION
-      THREADS 2
-      NOCI
-    )
-
 #    cinch_add_unit(cell_to_cell_connectivity
 #      SOURCES
 #        test/legion/cell_to_cell_connectivity_drivers.cc
@@ -432,29 +459,29 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     )
 
 
-    cinch_add_unit(data_client_handle
-      SOURCES
-        test/data_client_handle.cc
-        ../supplemental/coloring/add_colorings.cc
-        ${DRIVER_INITIALIZATION}
-        ${RUNTIME_DRIVER}
-      INPUTS
-        test/simple2d-8x8.msh
-        test/simple2d-16x16.msh
-        test/data_client_handle.blessed
-      LIBRARIES
-        flecsi
-        ${CINCH_RUNTIME_LIBRARIES}
-        ${COLORING_LIBRARIES}
-      DEFINES
-        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-        -DFLECSI_8_8_MESH
-      POLICY LEGION
-      THREADS 2
-      NOCI
-    )
+#    cinch_add_unit(data_client_handle
+#      SOURCES
+#        test/data_client_handle.cc
+#        ../supplemental/coloring/add_colorings.cc
+#        ${DRIVER_INITIALIZATION}
+#        ${RUNTIME_DRIVER}
+#      INPUTS
+#        test/simple2d-8x8.msh
+#        test/simple2d-16x16.msh
+#        test/data_client_handle.blessed
+#      LIBRARIES
+#        flecsi
+#        ${CINCH_RUNTIME_LIBRARIES}
+#        ${COLORING_LIBRARIES}
+#      DEFINES
+#        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+#        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+#        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+#        -DFLECSI_8_8_MESH
+#      POLICY LEGION
+#      THREADS 2
+#      NOCI
+#    )
 
   endif()
 

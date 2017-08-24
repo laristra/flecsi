@@ -25,7 +25,7 @@ mpi_context_policy_t::initialize(
   char ** argv
 )
 {
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(MPI_COMM_WORLD, &color_);
 
   runtime_driver(argc, argv);
 

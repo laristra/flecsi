@@ -30,6 +30,9 @@ namespace execution {
 void specialization_tlt_init(int argc, char ** argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
+#if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
+void  specialization_spmd_init(int argc, char **argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 //----------------------------------------------------------------------------//
 //! This is the main driver function to be defined by the user. This symbol
 //! will be undefined in the compiled library, and is intended as a place

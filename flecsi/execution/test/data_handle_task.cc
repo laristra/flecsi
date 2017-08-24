@@ -62,6 +62,7 @@ void data_handle_dump(handle_t<double, rw, ro, ro> x) {
   clog(info) << "ghost size: " << x.ghost_size() << std::endl;
 }
 
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 void global_data_handle_dump(global_handle_t<double, ro> x) {
   clog(info) << "global label: " << x.label() << std::endl;
   clog(info) << "global combined size: " << x.size() << std::endl;
@@ -71,6 +72,8 @@ void color_data_handle_dump(color_handle_t<double, ro> x) {
   clog(info) << "color label: " << x.label() << std::endl;
   clog(info) << "color combined size: " << x.size() << std::endl;
 }
+
+#endif
 
 void exclusive_writer(handle_t<double, wo, ro, ro> x) {
   clog(info) << "exclusive writer write" << std::endl;
@@ -86,6 +89,7 @@ void exclusive_reader(handle_t<double, ro, ro, ro> x) {
   }
 }
 
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 void global_writer(global_handle_t<double, wo> x) {
   clog(info) << "global writer write" << std::endl;
     x = static_cast<double>(3.14);
@@ -105,20 +109,23 @@ void color_reader(color_handle_t<double, ro> x) {
   clog(info) << "color exclusive reader read: " << std::endl;
     ASSERT_EQ(x, static_cast<double>(16));
 }
-
+#endif
 
 
 flecsi_register_task(task1, loc, single);
 flecsi_register_task(data_handle_dump, loc, single);
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 flecsi_register_task(global_data_handle_dump, loc, single);
 flecsi_register_task(color_data_handle_dump, loc, single);
+#endif
 flecsi_register_task(exclusive_writer, loc, single);
 flecsi_register_task(exclusive_reader, loc, single);
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 flecsi_register_task(global_writer, loc, single);
 flecsi_register_task(global_reader, loc, single);
 flecsi_register_task(color_writer, loc, single);
 flecsi_register_task(color_reader, loc, single);
-
+#endif
 flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
 flecsi_register_global( ns, velocity, double, 1);
@@ -146,11 +153,12 @@ void specialization_tlt_init(int argc, char ** argv) {
 
   flecsi_execute_mpi_task(add_colorings, map);
 
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
   auto global_handle = flecsi_get_global(ns, velocity, double, 0);
   flecsi_execute_task(global_data_handle_dump, single, global_handle);
   flecsi_execute_task(global_writer, single, global_handle);
   flecsi_execute_task(global_reader, single, global_handle);
-
+#endif
 } // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
@@ -176,6 +184,7 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task(exclusive_writer, single, h);
   flecsi_execute_task(exclusive_reader, single, h);
 
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
   //get global handle
   auto global_handle=flecsi_get_global(ns, velocity, double, 0);
 
@@ -187,7 +196,7 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task(color_data_handle_dump, single, color_handle);
   flecsi_execute_task(color_writer, single, color_handle);
   flecsi_execute_task(color_reader, single, color_handle);
-
+#endif
 
 } // driver
 

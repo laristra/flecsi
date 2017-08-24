@@ -29,8 +29,9 @@ namespace execution {
 void
 remap_shared_entities()
 {
+  // TODO: Is this superseded by index_map/reverse_index_map?
   auto& flecsi_context = context_t::instance();
-  const int my_color = flecsi_context.rank;
+  const int my_color = flecsi_context.color();
 
   for (auto coloring_info_pair : flecsi_context.coloring_info_map()) {
 
@@ -109,11 +110,74 @@ runtime_driver(
   specialization_tlt_init(argc, argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
-  // Register user data, invokes callbacks to add field info into context
-  data::storage_t::instance().register_all();
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for entries in the client registry.
+  //
+  // NOTE: This needs to be called before the field registry below because
+  //       The client callbacks register field callbacks with the field
+  //       registry.
+  //--------------------------------------------------------------------------//
 
-  // allocate storage for data.
+  auto & client_registry =
+    flecsi::data::storage_t::instance().client_registry();
+
+  for(auto & c: client_registry) {
+    for(auto & d: c.second) {
+      d.second.second(d.second.first);
+    } // for
+  } // for
+
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for entries in the field registry.
+  //--------------------------------------------------------------------------//
+
+  auto & field_registry =
+    flecsi::data::storage_t::instance().field_registry();
+
+  for(auto & c: field_registry) {
+    for(auto & f: c.second) {
+      f.second.second(f.first, f.second.first);
+    } // for
+  } // for
+
+  auto& flecsi_context = context_t::instance();
+  for (auto fi : flecsi_context.registered_fields()) {
+    flecsi_context.put_field_info(fi);
+  }
+
   remap_shared_entities();
+
+  // Setup maps from mesh to compacted (local) index space and vice versa
+  //
+  // This depends on the ordering of the BLIS data structure setup.
+  // Currently, this is Exclusive - Shared - Ghost.
+
+  for(auto is: flecsi_context.coloring_map()) {
+    std::map<size_t, size_t> _map;
+    size_t counter(0);
+
+    for(auto index: is.second.exclusive) {
+      _map[counter++] = index.id;
+    } // for
+
+    for(auto index: is.second.shared) {
+      _map[counter++] = index.id;
+    } // for
+
+    for(auto index: is.second.ghost) {
+      _map[counter++] = index.id;
+    } // for
+
+    flecsi_context.add_index_map(is.first, _map);
+  } // for
+
+  flecsi_context.advance_state();
+  // Call the specialization color initialization function.
+#if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
+  specialization_spmd_init(argc, argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+  
+  flecsi_context.advance_state();
 
   // Execute the user driver.
   driver(argc, argv);

@@ -84,50 +84,6 @@ namespace flecsi {
 namespace topology {
 namespace verify_mesh {
 
-///
-//
-///
-template<
-  size_t N
->
-class mesh_entity
-{
-public:
-
-  mesh_entity() {}
-
-  template<
-    class ST
-  >
-  mesh_entity(mesh_topology_base_t<ST> &) {}
-
-  std::vector<size_t>
-  create_entities(
-    flecsi::utils::id_t cell_id,
-    size_t dim,
-    domain_connectivity<N> & c,
-    flecsi::utils::id_t * e
-  )
-  {
-    return std::vector<size_t>();
-  } // create_entities
-
-  index_vector_t
-  create_bound_entities(
-    size_t from_domain,
-    size_t to_domain,
-    size_t create_dim,
-    flecsi::utils::id_t cell_id,
-    domain_connectivity<N>& primal_conn,
-    domain_connectivity<N>& domain_conn,
-    flecsi::utils::id_t *c
-  )
-  {
-    return index_vector_t();
-  } // create_bound_entities
-
-}; // class mesh_entity
-
 FLECSI_MEMBER_CHECKER(num_dimensions);
 FLECSI_MEMBER_CHECKER(num_domains);
 FLECSI_MEMBER_CHECKER(entity_types);
@@ -212,6 +168,8 @@ public:
 
   using id_t = utils::id_t;
 
+  using offset_t = utils::offset_t;
+  
   // used to find the entity type of topological dimension D and domain M
   template<size_t D, size_t M = 0>
   using entity_type = typename find_entity_<MT, D, M>::type;
@@ -260,14 +218,6 @@ public:
       for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
         base_t::ms_->topology[from_domain][to_domain].
           init_(from_domain, to_domain);
-      } // for
-    } // for
-
-    // initialize all lower connectivities because the user might
-    // specify different combinations of connections
-    for (size_t i = 1; i < MT::num_dimensions+1; ++i) {
-      for (size_t j = 0; j < i; ++j) {
-        get_connectivity_(0, i, j).init();
       } // for
     } // for
 
@@ -539,7 +489,8 @@ public:
   ) const
   {
     using etype = entity_type<D, M>;
-    return static_cast<etype *>(base_t::ms_->index_spaces[M][D][global_id.entity()]);
+    return static_cast<etype *>(
+      base_t::ms_->index_spaces[M][D][global_id.entity()]);
   } // get_entity
 
   /*!
@@ -571,7 +522,8 @@ public:
   ) const
   {
     using etype = entity_type<D, M>;
-    return static_cast<etype *>(base_t::ms_->partition_index_spaces[partition][M][D][global_id.entity()]);
+    return static_cast<etype *>(
+      base_t::ms_->partition_index_spaces[partition][M][D][global_id.entity()]);
   } // get_entity
 
   /*!
@@ -587,7 +539,8 @@ public:
     partition_t partition
   )
   {
-    return base_t::ms_->partition_index_spaces[partition][M][dim][global_id.entity()];
+    return base_t::ms_->partition_index_spaces[partition]
+      [M][dim][global_id.entity()];
   } // get_entity
 
   /*!
@@ -608,14 +561,11 @@ public:
 
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
-    const index_vector_t & fv = c.get_from_index_vec();
 
     using etype = entity_type<D, TM>;
     using dtype = domain_entity<TM, etype>;
 
-    auto ents = c.get_index_space().slice<dtype>(
-      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
-    return ents;
+    return c.get_index_space().slice<dtype>(c.range(e->template id<FM>()));
   } // entities
 
   /*!
@@ -635,13 +585,11 @@ public:
   {
     connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
-    const index_vector_t & fv = c.get_from_index_vec();
 
     using etype = entity_type<D, TM>;
     using dtype = domain_entity<TM, etype>;
 
-    return c.get_index_space().slice<dtype>(
-      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
+    return c.get_index_space().slice<dtype>(c.range(e->template id<FM>()));
   } // entities
 
   /*!
@@ -709,7 +657,8 @@ public:
   {
     using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
-    return base_t::ms_->partition_index_spaces[partition][M][D].template slice<dtype>();
+    return base_t::ms_->partition_index_spaces[partition]
+      [M][D].template slice<dtype>();
   } // entities
 
   /*!
@@ -775,9 +724,7 @@ public:
   {
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
-    const index_vector_t & fv = c.get_from_index_vec();
-    return c.get_index_space().ids(
-      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
+    return c.get_index_space().ids(c.range(e->template id<FM>()));
   } // entities
 
   /*!
@@ -896,11 +843,11 @@ public:
 
     const connectivity_t& c1 = get_connectivity(domain, dim, to_dim);
     assert(!c1.empty() && "empty connectivity c1");
-    const index_vector_t& fv1 = c1.get_from_index_vec();
+    const auto& o1 = c1.offsets();
 
     const connectivity_t& c2 = get_connectivity(domain, to_dim, dim);
     assert(!c2.empty() && "empty connectivity c2");
-    const index_vector_t& fv2 = c2.get_from_index_vec();
+    const auto& o2 = c2.offsets();
 
     mesh_graph_partition<int_t> cp;
     cp.offset.reserve(pn);
@@ -912,13 +859,12 @@ public:
     partition.push_back(0);
 
     for(size_t from_id = 0; from_id < n; ++from_id){
-      auto to_ids = c1.get_index_space().ids(fv1[from_id], fv1[from_id + 1]);
+      auto to_ids = c1.get_index_space().ids(o1.range(from_id));
       cp.offset.push_back(offset);
 
       for(auto to_id : to_ids){
         auto ret_ids =
-          c2.get_index_space().ids(
-            fv2[to_id.entity()], fv2[to_id.entity() + 1]);
+          c2.get_index_space().ids(o2.range(to_id.entity()));
 
         for(auto ret_id : ret_ids){
           if(ret_id.entity() != from_id){
@@ -1036,7 +982,7 @@ public:
           for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
             const connectivity_t& c = dc.get(from_dim, to_dim);
 
-            auto& tv = c.to_id_vec();
+            auto& tv = c.to_id_storage();
             uint64_t num_to = tv.size();
             std::memcpy(buf + pos, &num_to, sizeof(num_to));
             pos += sizeof(num_to);
@@ -1051,19 +997,18 @@ public:
             std::memcpy(buf + pos, tv.data(), bytes);
             pos += bytes;
 
-            auto& fv = c.from_index_vec();
-            uint64_t num_from = fv.size();
-            std::memcpy(buf + pos, &num_from, sizeof(num_from));
-            pos += sizeof(num_from);
+            uint64_t num_offsets = c.offsets().size();
+            std::memcpy(buf + pos, &num_offsets, sizeof(num_offsets));
+            pos += sizeof(num_offsets);
 
-            bytes = num_from * sizeof(index_vector_t::value_type);
+            bytes = num_offsets * sizeof(offset_t);
 
             if(size - pos < bytes){
               size += bytes + alloc_size;
               buf = (char*)std::realloc(buf, size);
             }
 
-            std::memcpy(buf + pos, fv.data(), bytes);
+            std::memcpy(buf + pos, c.offsets().storage().buffer(), bytes);
             pos += bytes;
           }
         }
@@ -1105,7 +1050,7 @@ public:
           for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
             connectivity_t& c = dc.get(from_dim, to_dim);
 
-            auto& tv = c.to_id_vec();
+            auto& tv = c.to_id_storage();
             uint64_t num_to;
             std::memcpy(&num_to, buf + pos, sizeof(num_to));
             pos += sizeof(num_to);
@@ -1114,14 +1059,13 @@ public:
             tv.assign(ta, ta + num_to);
             pos += num_to * sizeof(id_vector_t::value_type);
 
-            auto& fv = c.from_index_vec();
-            uint64_t num_from;
-            std::memcpy(&num_from, buf + pos, sizeof(num_from));
-            pos += sizeof(num_from);
-            auto fa = (index_vector_t::value_type*)(buf + pos);
-            fv.resize(num_from);
-            fv.assign(fa, fa + num_from);
-            pos += num_from * sizeof(index_vector_t::value_type);
+            auto offsets_buf = c.offsets().storage().buffer();
+            uint64_t num_offsets;
+            std::memcpy(&num_offsets, buf + pos, sizeof(num_offsets));
+            pos += sizeof(num_offsets);
+            std::memcpy(offsets_buf, buf + pos, 
+              num_offsets * sizeof(offset_t));
+            pos += num_offsets * sizeof(offset_t);
           }
         }
       }
@@ -1164,7 +1108,7 @@ private:
       c.push(v->template global_id<M>());
     } // for
 
-    c.end_from();
+    c.add_count(verts.size());
   } // init_cell
 
   template<
@@ -1187,7 +1131,7 @@ private:
       c.push(e->template global_id<M>());
     } // for
 
-    c.end_from();
+    c.add_count(subs.size());
   } // init_entity
 
   // Get the number of entities in a given domain and topological dimension
@@ -1338,6 +1282,7 @@ private:
 
     // get the global to local index space map
     auto & context_ = flecsi::execution::context_t::instance();
+    size_t color = context_.color();
     auto& gis_to_cis = context_.reverse_index_map(cell_index_space);
 
     // Get the reverse map of the intermediate ids. This map takes
@@ -1441,7 +1386,7 @@ private:
 
         } // intermediate_map
 
-        id_t id = id_t::make<Domain>(DimensionToBuild, entity_id);
+        id_t id = id_t::make<DimensionToBuild, Domain>(entity_id, color);
 
         // Emplace the sorted vertices into the entity map
         auto itr = entity_vertices_map.emplace(

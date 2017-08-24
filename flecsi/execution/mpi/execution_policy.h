@@ -30,6 +30,8 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/mpi/task_wrapper.h"
 #include "flecsi/execution/mpi/task_prolog.h"
+#include "flecsi/execution/mpi/finalize_handles.h"
+#include "flecsi/execution/mpi/future.h"
 
 //#include "flecsi/utils/const_string.h"
 //#include "flecsi/utils/tuple_walker.h"
@@ -37,50 +39,6 @@
 
 namespace flecsi {
 namespace execution {
-
-///
-/// implementation of the future_t for mpi runtime
-///
-template<
-  typename R
->
-struct mpi_future__
-{
-  using result_t = R;
-
-  ///
-  /// wait() method
-  ///
-  void wait() {}
-
-  ///
-  /// get() mothod
-  ///
-  const result_t & get(size_t index = 0) const { return result_; }
-
-//private:
-
-  ///
-  /// set method
-  ///
-  void set(const result_t & result) { result_ = result; }
-
-  result_t result_;
-
-}; // struct mpi_future__
-
-///
-///
-///
-template<>
-struct mpi_future__<void>
-{
-  ///
-  ///
-  ///
-  void wait() {}
-
-}; // struct mpi_future__
 
 ///
 /// Executor interface.
@@ -240,7 +198,10 @@ struct mpi_execution_policy_t
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
 
-    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, std::forward_as_tuple(args ...));
+    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, task_args);//std::forward_as_tuple(task_args ...));
+
+    finalize_handles_t finalize_handles;
+    finalize_handles.walk(task_args);
 
     // TODO: Do we nee to run taks_epilog ??
     return fut;

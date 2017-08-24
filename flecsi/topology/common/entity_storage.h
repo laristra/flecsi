@@ -3,11 +3,12 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_topology_serial_entity_storage_policy_h
-#define flecsi_topology_serial_entity_storage_policy_h
+#ifndef flecsi_topology_legion_entity_storage_policy_h
+#define flecsi_topology_legion_entity_storage_policy_h
 
-#include <vector>
-#include <cassert>
+#include "flecsi/topology/common/array_buffer.h"
+
+#include "flecsi/utils/offset.h"
 
 ///
 /// \file
@@ -18,12 +19,14 @@ namespace flecsi {
 namespace topology {
 
 template<typename T>
-using topology_storage__ = std::vector<T>;
+using topology_storage__ = array_buffer__<T>;
 
 class offset_storage_{
 public:
 
-  const size_t
+  using offset_t = utils::offset_t;
+
+  const offset_t
   operator[](size_t i)
   const
   {
@@ -31,36 +34,32 @@ public:
   }
 
   void
-  set(size_t i, size_t offset)
+  add_count(uint32_t count)
   {
-    s_[i] = offset;
+    offset_t o(start_, count);
+    s_.push_back(o);
+    start_ += count;
   }
 
-  size_t
-  next(size_t i)
-  const
+  void
+  add_end(size_t end)
   {
-    return s_[i + 1];
+    assert(end > start_);
+    add_count(end - start_);
   }
 
   std::pair<size_t, size_t>
   range(size_t i)
   const
   {
-    return {s_[i], s_[i + 1]};
-  }
-
-  size_t
-  count(size_t i)
-  const
-  {
-    return s_[i + 1] - s_[i];
+    return s_[i].range();
   }
 
   void
   clear()
   {
     s_.clear();
+    start_ = 0;
   }
 
   auto&
@@ -69,16 +68,11 @@ public:
     return s_;
   }
 
-  void
-  push_back(size_t offset)
+  const auto&
+  storage()
+  const
   {
-    s_.push_back(offset);
-  }
-
-  void
-  resize(size_t n)
-  {
-    s_.resize(n);
+    return s_;
   }
 
   size_t
@@ -86,19 +80,19 @@ public:
   const
   {
     return s_.size();
-  }   
+  }
 
 private:
-  std::vector<size_t> s_;  
+  topology_storage__<offset_t> s_;
+  size_t start_ = 0;  
 };
 
 } // namespace topology
 } // namespace flecsi
 
-#endif // flecsi_topology_serial_entity_storage_policy_h
+#endif // flecsi_topology_legion_entity_storage_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/
-

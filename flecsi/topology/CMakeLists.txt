@@ -54,15 +54,16 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
   set(topology_HEADERS
     ${topology_HEADERS}
-    legion/array_buffer.h
-    legion/entity_storage.h
+    common/array_buffer.h
+    common/entity_storage.h
     legion/storage_policy.h
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(topology_HEADERS
     ${topology_HEADERS}
-    mpi/entity_storage.h
+    common/array_buffer.h
+    common/entity_storage.h
     mpi/storage_policy.h
     )
 

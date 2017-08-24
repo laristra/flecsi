@@ -28,6 +28,7 @@
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
+#include "flecsi/execution/context.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 
@@ -247,8 +248,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < base::primary_size && "index out of range");
-    return base::primary_data[index];
+    assert(index < base::combined_size && "index out of range");
+    return base::combined_data[index];
   } // operator []
 
   ///
@@ -262,8 +263,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
-    assert(index < base::primary_size && "index out of range");
-    return base::primary_data[index];
+    assert(index < base::combined_size && "index out of range");
+    return base::combined_data[index];
   } // operator []
 
   ///
@@ -403,8 +404,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < base::primary_size && "index out of range");
-    return base::primary_data[index];
+    assert(index < base::combined_size && "index out of range");
+    return base::combined_data[index];
   } // operator ()
 
   ///
@@ -869,38 +870,44 @@ struct storage_type__<dense>
     using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
 
     // get field_info for this data handle
-    // TODO: lookup rather than hardcoded 0
-    auto field_infos = context.registered_fields();
-    auto field_info = *(std::find_if(field_infos.begin(), field_infos.end(), [](auto& fi) {
-      return fi.data_client_hash == typeid(client_type).hash_code() &&
-        fi.namespace_hash == NAMESPACE &&
-        fi.name_hash == NAME;
-    }));
-    //auto field_info = context.registered_fields()[0];
+    auto& field_info =
+      context.get_field_info(
+        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
+      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
     // get color_info for this field.
-    // TODO: lookup rather than hardcoded 0
-    auto color_info = (context.coloring_info(field_info.index_space)).at(context.rank);
+    auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
 
-    // get field_data
-    auto &field_data = context.registered_field_data(field_info.fid);
+    auto& registered_field_data = context.registered_field_data();
+    auto fieldDataIter = registered_field_data.find(field_info.fid);
+    if (fieldDataIter == registered_field_data.end()) {
+      size_t size = field_info.size * (color_info.exclusive +
+                                       color_info.shared +
+                                       color_info.ghost);
+      // TODO: deal with VERSION
+      execution::context_t::instance().register_field_data(field_info.fid,
+                                                           size);
+    }
 
+    auto data = registered_field_data[field_info.fid].data();
     // populate data member of data_handle_t
     auto &hb = dynamic_cast<data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
 
+    hb.fid = field_info.fid;
     hb.index_space = field_info.index_space;
+    hb.data_client_hash = field_info.data_client_hash;
 
     hb.exclusive_size = color_info.exclusive;
     hb.combined_data = hb.exclusive_buf = hb.exclusive_data =
-      reinterpret_cast<DATA_TYPE *>(field_data.data());
+      reinterpret_cast<DATA_TYPE *>(data);
     hb.combined_size = color_info.exclusive;
 
     hb.shared_size = color_info.shared;
-    hb.shared_data = hb.exclusive_data + hb.exclusive_size;
+    hb.shared_data = hb.shared_buf = hb.exclusive_data + hb.exclusive_size;
     hb.combined_size += color_info.shared;
 
     hb.ghost_size = color_info.ghost;
-    hb.ghost_data = hb.shared_data + hb.shared_size;
+    hb.ghost_data = hb.ghost_buf = hb.shared_data + hb.shared_size;
     hb.combined_size += color_info.ghost;
 
     return h;

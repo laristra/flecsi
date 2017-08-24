@@ -28,32 +28,37 @@
   namespace flecsi {
 
   template<typename T>
-  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
+  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
+
+  using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 
   }
 
 // Legion, MPI+Legion Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include "flecsi/topology/legion/entity_storage.h"
+  #include "flecsi/topology/common/entity_storage.h"
 
   namespace flecsi {
 
   template<typename T>
-  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
+  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
+
+  using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 
   }
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/topology/mpi/entity_storage.h"
+  #include "flecsi/topology/common/entity_storage.h"
 
   namespace flecsi {
 
   template<typename T>
-  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
+  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
 
+  using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
   }
 
 #endif // FLECSI_RUNTIME_MODEL

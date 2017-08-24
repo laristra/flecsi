@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_topology_finalize_handles_h
-#define flecsi_topology_finalize_handles_h
+#ifndef flecsi_execution_mpi_finalize_handles_h
+#define flecsi_execution_mpi_finalize_handles_h
 
 //----------------------------------------------------------------------------//
 //! @file
