@@ -177,6 +177,7 @@ cinch_add_unit(reduction
   LIBRARIES
   flecsi
   THREADS 2
+  NOCI
   )
 
 
