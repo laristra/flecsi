@@ -1306,6 +1306,8 @@ private:
 
     auto & context_ = flecsi::execution::context_t::instance();
 
+    size_t color = context_.color();
+
     auto& gis_to_cis = context_.reverse_index_map(cell_index_space);
 
     for(auto& citr : gis_to_cis){
@@ -1415,7 +1417,7 @@ private:
         // Lookup the CIS id of the entity.
         const auto entity_id = entity_index_map.at(entity_id_mis);
 
-        id_t id = id_t::make<Domain>(DimensionToBuild, entity_id);
+        id_t id = id_t::make<DimensionToBuild, Domain>(entity_id, color);
 
         // Emplace the sorted vertices into the entity map
         auto itr = entity_vertices_map.emplace(

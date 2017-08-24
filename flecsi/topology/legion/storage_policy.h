@@ -24,6 +24,7 @@
 
 #include "flecsi/topology/index_space.h"
 #include "flecsi/utils/id.h"
+#include "flecsi/execution/context.h"
 
 namespace flecsi {
 namespace topology {
@@ -61,6 +62,14 @@ struct legion_topology_storage_policy_t
 
   std::array<std::array<partition_index_spaces_t, NM>, num_partitions> 
     partition_index_spaces;
+
+  size_t color;
+
+  legion_topology_storage_policy_t()
+  {
+    auto & context_ = flecsi::execution::context_t::instance();
+    color = context_.color();
+  }
 
   void
   init_entities(
@@ -172,7 +181,7 @@ struct legion_topology_storage_policy_t
     auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity_id;
     auto ent = new (placement_ptr) T(std::forward<S>(args)...);
 
-    id_t global_id = id_t::make<M>(T::dimension, entity_id);
+    id_t global_id = id_t::make<T::dimension, M>(entity_id, color);
     ent->template set_global_id<M>(global_id);
 
     auto& id_storage = is.id_storage();

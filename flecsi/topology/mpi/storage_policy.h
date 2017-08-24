@@ -21,6 +21,7 @@
 #include "flecsi/topology/mesh_types.h"
 #include "flecsi/topology/index_space.h"
 #include "flecsi/topology/common/entity_storage.h"
+#include "flecsi/execution/context.h"
 
 ///
 /// \file
@@ -38,7 +39,7 @@ namespace topology {
 template <size_t ND, size_t NM>
 struct mpi_topology_storage_policy_t
 {
-    static constexpr size_t num_partitions = 5;
+  static constexpr size_t num_partitions = 5;
   using id_t = utils::id_t;
 
   using index_spaces_t = 
@@ -56,6 +57,14 @@ struct mpi_topology_storage_policy_t
 
   std::array<std::array<partition_index_spaces_t, NM>, num_partitions>
     partition_index_spaces;
+
+  size_t color;
+
+  mpi_topology_storage_policy_t()
+  {
+    auto & context_ = flecsi::execution::context_t::instance();
+    color = context_.color();
+  }
 
   void
   init_entities(
@@ -176,7 +185,7 @@ struct mpi_topology_storage_policy_t
     auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity_id;
     auto ent = new (placement_ptr) T(std::forward<S>(args)...);
 
-    id_t global_id = id_t::make<M>(T::dimension, entity_id);
+    id_t global_id = id_t::make<T::dimension, M>(entity_id, color);
     ent->template set_global_id<M>(global_id);
 
     auto& id_storage = is.id_storage();

@@ -34,6 +34,7 @@
 #include "flecsi/topology/index_space.h"
 #include "flecsi/topology/entity_storage.h"
 #include "flecsi/topology/partition.h"
+#include "flecsi/execution/context.h"
 
 namespace flecsi {
 namespace topology {
@@ -915,8 +916,9 @@ void unserialize_dimension_(mesh_topology_base_t<ST>& mesh,
   ents.reserve(num_entities);
   ids.reserve(num_entities);
 
-  // TODO - fix
-  size_t partition_id = 0;
+  auto & context_ = flecsi::execution::context_t::instance();
+
+  size_t partition_id = context_.color();
 
   for(size_t local_id = 0; local_id < num_entities; ++local_id){
     id_t global_id = id_t::make<D, M>(local_id, partition_id);
