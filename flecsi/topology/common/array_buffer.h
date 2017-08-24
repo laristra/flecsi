@@ -210,6 +210,13 @@ public:
     return buf_;
   }
 
+  const item_t
+  buffer()
+  const
+  {
+    return buf_;
+  }
+
   item_t
   data()
   {

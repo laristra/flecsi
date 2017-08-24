@@ -1050,8 +1050,7 @@ public:
               buf = (char*)std::realloc(buf, size);
             }
 
-            // TODO - FIX FOR OFFSETS STORAGE
-            //std::memcpy(buf + pos, fv.data(), bytes);
+            std::memcpy(buf + pos, c.offsets().storage().buffer(), bytes);
             pos += bytes;
           }
         }

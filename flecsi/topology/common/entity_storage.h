@@ -68,6 +68,13 @@ public:
     return s_;
   }
 
+  const auto&
+  storage()
+  const
+  {
+    return s_;
+  }
+
   size_t
   size()
   const
