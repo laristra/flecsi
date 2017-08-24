@@ -212,6 +212,8 @@ public:
 
   using id_t = utils::id_t;
 
+  using offset_t = utils::offset_t;
+  
   // used to find the entity type of topological dimension D and domain M
   template<size_t D, size_t M = 0>
   using entity_type = typename find_entity_<MT, D, M>::type;
@@ -1039,11 +1041,11 @@ public:
             std::memcpy(buf + pos, tv.data(), bytes);
             pos += bytes;
 
-            uint64_t num_from = c.offsets().size();
-            std::memcpy(buf + pos, &num_from, sizeof(num_from));
-            pos += sizeof(num_from);
+            uint64_t num_offsets = c.offsets().size();
+            std::memcpy(buf + pos, &num_offsets, sizeof(num_offsets));
+            pos += sizeof(num_offsets);
 
-            bytes = num_from * sizeof(index_vector_t::value_type);
+            bytes = num_offsets * sizeof(offset_t);
 
             if(size - pos < bytes){
               size += bytes + alloc_size;
@@ -1101,15 +1103,13 @@ public:
             tv.assign(ta, ta + num_to);
             pos += num_to * sizeof(id_vector_t::value_type);
 
-            // TODO - FIX FOR OFFSETS STORAGE
-            // auto& fv = c.from_index_vec();
-            // uint64_t num_from;
-            // std::memcpy(&num_from, buf + pos, sizeof(num_from));
-            // pos += sizeof(num_from);
-            // auto fa = (index_vector_t::value_type*)(buf + pos);
-            // fv.resize(num_from);
-            // fv.assign(fa, fa + num_from);
-            // pos += num_from * sizeof(index_vector_t::value_type);
+            auto offsets_buf = c.offsets().storage().buffer();
+            uint64_t num_offsets;
+            std::memcpy(&num_offsets, buf + pos, sizeof(num_offsets));
+            pos += sizeof(num_offsets);
+            std::memcpy(offsets_buf, buf + pos, 
+              num_offsets * sizeof(offset_t));
+            pos += num_offsets * sizeof(offset_t);
           }
         }
       }
