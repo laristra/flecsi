@@ -67,6 +67,7 @@ script:
   - cp -r $HOME/.ccache ${HOME}/docker/ccache
   - cp -r $HOME/.sonar ${HOME}/docker/sonar
   - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
+  - if [[ ${TRAVIS_BRANCH} != stable ]]; then TAG="${TAG}_${TRAVIS_BRANCH}"; fi
   - docker build 
                 --build-arg LEGION=${LEGION} 
                 --build-arg RUNTIME=${RUNTIME} 
@@ -88,8 +89,9 @@ script:
     docker cp ${CON}:/home/flecsi/.sonar ${HOME}/
 
 after_success:
-  - if [[ ${DOCKERHUB} = true && ${DOCKER_EMAIL} && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_BRANCH} == stable ]]; then
-      docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable) && ${DOCKERHUB} = true ]] && DEPLOY=yes
+  - if [[ ${DEPLOY} = yes && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false ]]; then
+      docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}";
     fi
   - if [[ ${TRAVIS_JOB_NUMBER} = *.1 ]]; then
