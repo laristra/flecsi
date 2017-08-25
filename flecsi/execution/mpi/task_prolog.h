@@ -213,7 +213,8 @@ namespace execution {
         // index space times the "degree", TODO: here I hardcoded it to 4.
         // get color_info for this field.
         auto& color_info = (context_.coloring_info(from_index_space)).at(color);
-        adj.num_indices = 16*(color_info.exclusive + color_info.shared + color_info.ghost);
+        auto adj_info = (context_.adjacency_info()).at(adj_index_space);
+        adj.num_indices = adj_info.color_sizes[color];
 
         // see if the field data is registered for this entity field.
         auto& registered_field_data = context_.registered_field_data();
