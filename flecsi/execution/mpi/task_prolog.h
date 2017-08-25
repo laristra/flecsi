@@ -117,11 +117,8 @@ namespace execution {
       MPI_Win_post(rma_group, 0, win);
       MPI_Win_start(rma_group, 0, win);
 
-
-      //std::vector<T> buffer(my_coloring_info.ghost);
       auto index_coloring = context.coloring(h.index_space);
 
-      // FIXME: What do we do when T is a user defined data type?
       int i = 0;
       for (auto ghost : index_coloring.ghost) {
         //clog_rank(warn, 1) << "ghost id: " <<  ghost.id << ", rank: " << ghost.rank
@@ -209,14 +206,12 @@ namespace execution {
         const size_t from_index_space = adj.from_index_space;
         const size_t to_index_space = adj.to_index_space;
 
-        // 1. get number of indices, it is the total number of entities in the
-        // index space times the "degree", TODO: here I hardcoded it to 4.
-        // get color_info for this field.
+        // 1. get number of indices
         auto& color_info = (context_.coloring_info(from_index_space)).at(color);
         auto adj_info = (context_.adjacency_info()).at(adj_index_space);
         adj.num_indices = adj_info.color_sizes[color];
-
-        // see if the field data is registered for this entity field.
+        
+        // 2. allocate field data for indices.
         auto& registered_field_data = context_.registered_field_data();
         auto fieldDataIter = registered_field_data.find(adj.index_fid);
         if (fieldDataIter == registered_field_data.end()) {
@@ -226,12 +221,12 @@ namespace execution {
         }
         adj.indices_buf = reinterpret_cast<size_t *>(registered_field_data[adj.index_fid].data());
 
-        // 2. get number of offset, it should be number of cells?
+        // 3. get number of offsets
         adj.num_offsets = (color_info.exclusive + color_info.shared + color_info.ghost);
-        // 3. allocate field data for index_buf and offset_buf.
+ 
+        // 4. allocate field data for offsets.
         fieldDataIter = registered_field_data.find(adj.offset_fid);
         if (fieldDataIter == registered_field_data.end()) {
-          // TODO: what is the element type?
           size_t size = sizeof(size_t) * adj.num_offsets;
 
           execution::context_t::instance().register_field_data(adj.offset_fid,

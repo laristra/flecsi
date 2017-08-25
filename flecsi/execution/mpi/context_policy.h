@@ -228,8 +228,6 @@ struct mpi_context_policy_t
   auto
   reduce_min(mpi_future__<T> & local_future)
   { 
-//    double global_min_;
-//    MPI_Allreduce(&min_reduction_, &global_min_, 1, MPI_DOUBLE, MPI_MIN,
     T global_min_;
     auto local_min_ = local_future.get();
     MPI_Allreduce(&local_min_, &global_min_, 1,
