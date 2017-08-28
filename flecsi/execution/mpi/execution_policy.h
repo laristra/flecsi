@@ -30,6 +30,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/mpi/task_wrapper.h"
 #include "flecsi/execution/mpi/task_prolog.h"
+#include "flecsi/execution/mpi/task_epilog.h"
 #include "flecsi/execution/mpi/finalize_handles.h"
 #include "flecsi/execution/mpi/future.h"
 
@@ -199,6 +200,9 @@ struct mpi_execution_policy_t
     task_prolog.walk(task_args);
 
     auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, task_args);//std::forward_as_tuple(task_args ...));
+
+    task_epilog_t task_epilog;
+    task_epilog.walk(task_args);
 
     finalize_handles_t finalize_handles;
     finalize_handles.walk(task_args);
