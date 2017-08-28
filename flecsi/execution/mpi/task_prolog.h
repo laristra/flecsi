@@ -85,20 +85,28 @@ namespace execution {
       const int my_color = context.color();
       auto &my_coloring_info =
         context.coloring_info(h.index_space).at(my_color);
-      
-      std::vector<int> peers;
-      std::set_union(my_coloring_info.shared_users.begin(),
-                     my_coloring_info.shared_users.end(),
-                     my_coloring_info.ghost_owners.begin(),
-                     my_coloring_info.ghost_owners.end(),
-                     std::back_inserter(peers));
 
-      MPI_Group comm_grp, rma_group;
+      // The group for MPI_Win_post are the "origin" processes, i.e.
+      // the peer processes calling MPI_Get to get our shared cells. Thus
+      // granting access of local window to these processes. This is the set
+      // coloring_info_t::shared_users
+      // On the other hand, the group for MPI_Win_start are the 'target'
+      // processes, i.e. the peer processes this rank is going to get ghost
+      // cells from. This is the set coloring_info_t::ghost_owners.
+      // Since both shared_users and ghost_owners are std::set, we have copy
+      // them to std::vector be passed to MPI.
+      std::vector<int> shared_users(my_coloring_info.shared_users.begin(),
+                                    my_coloring_info.shared_users.end());
+      std::vector<int> ghost_owners(my_coloring_info.ghost_owners.begin(),
+                                    my_coloring_info.ghost_owners.end());
+
+      MPI_Group comm_grp, shared_users_grp, ghost_owners_grp;
       MPI_Comm_group(MPI_COMM_WORLD, &comm_grp);
-      MPI_Group_incl(comm_grp, peers.size(), peers.data(), &rma_group);
-      MPI_Group_free(&comm_grp);
-   
-      //clog(trace) << "rank: " << my_color << "win create\n";
+      MPI_Group_incl(comm_grp, shared_users.size(),
+                     shared_users.data(), &shared_users_grp);
+      MPI_Group_incl(comm_grp, ghost_owners.size(),
+                     ghost_owners.data(), &ghost_owners_grp);
+
       // A pull model using MPI_Get:
       // 1. create MPI window for shared portion of the local buffer.
       MPI_Win win;
@@ -107,23 +115,16 @@ namespace execution {
                      &win);
 
       // 2. iterate through each ghost cell and MPI_Get from the peer.
-      // FIXME: the group for MPI_Win_post are the "origin" processes, i.e.
-      // the peer processes calling MPI_Get to get our shared cells. Thus
-      // granting access of local window to these processes. This is the set
-      // union of the entry_info.shared of shared cells.
-      // On the other hand, the group for MPI_Win_start are the 'target'
-      // processes, i.e. the peer processes this rank is going to get ghost
-      // cells from. This is the union of entry_info.rank of ghost cells.
-      MPI_Win_post(rma_group, 0, win);
-      MPI_Win_start(rma_group, 0, win);
+      MPI_Win_post(shared_users_grp, 0, win);
+      MPI_Win_start(ghost_owners_grp, 0, win);
 
       auto index_coloring = context.coloring(h.index_space);
 
       int i = 0;
       for (auto ghost : index_coloring.ghost) {
-        //clog_rank(warn, 1) << "ghost id: " <<  ghost.id << ", rank: " << ghost.rank
-        //                    << ", offset: " << ghost.offset
-        //                    << std::endl;
+//        clog_rank(warn, 1) << "ghost id: " <<  ghost.id << ", rank: " << ghost.rank
+//                            << ", offset: " << ghost.offset
+//                            << std::endl;
         MPI_Get(h.ghost_data+i, 1,
                 flecsi::coloring::mpi_typetraits__<T>::type(),
                 ghost.rank, ghost.offset, 1,
@@ -135,8 +136,9 @@ namespace execution {
       MPI_Win_wait(win);
     
       MPI_Win_free(&win);
-      MPI_Group_free(&rma_group);
-      
+
+      MPI_Group_free(&shared_users_grp);
+      MPI_Group_free(&ghost_owners_grp);
     } // handle
 
     template<
