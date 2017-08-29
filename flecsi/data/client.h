@@ -18,6 +18,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/tuple_walker.h"
 #include "flecsi/topology/mesh_types.h"
+#include "flecsi/runtime/types.h"
 
 namespace flecsi {
 namespace topology {
@@ -83,11 +84,6 @@ struct data_client_policy_handler__<global_data_client_t>
 template<typename POLICY_TYPE>
 struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
 {
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-  using field_id_t = Legion::FieldID;
-#else
-  using field_id_t = size_t;
-#endif
 
   struct entity_info_t
   {

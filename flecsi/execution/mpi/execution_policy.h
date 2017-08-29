@@ -34,10 +34,6 @@
 #include "flecsi/execution/mpi/finalize_handles.h"
 #include "flecsi/execution/mpi/future.h"
 
-//#include "flecsi/utils/const_string.h"
-//#include "flecsi/utils/tuple_walker.h"
-//#include "flecsi/data/data_handle.h"
-
 namespace flecsi {
 namespace execution {
 
@@ -199,7 +195,7 @@ struct mpi_execution_policy_t
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
 
-    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, task_args);//std::forward_as_tuple(task_args ...));
+    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, task_args);
 
     task_epilog_t task_epilog;
     task_epilog.walk(task_args);

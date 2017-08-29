@@ -94,6 +94,7 @@ namespace execution {
     {
       auto& context_ = context_t::instance();
 
+      // h is partially initialized in client.h
       auto storage = h.set_storage(new typename T::storage_t);
 
       bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
@@ -124,7 +125,8 @@ namespace execution {
           execution::context_t::instance().register_field_data(ent.fid,
                                                                size);
         }
-        auto ents = reinterpret_cast<topology::mesh_entity_base_*>(registered_field_data[ent.fid].data());
+        auto ents =
+          reinterpret_cast<topology::mesh_entity_base_*>(registered_field_data[ent.fid].data());
 
         fieldDataIter = registered_field_data.find(ent.id_fid);
         if (fieldDataIter == registered_field_data.end()) {
@@ -133,7 +135,8 @@ namespace execution {
           execution::context_t::instance().register_field_data(ent.id_fid,
                                                                size);
         }
-        auto ids = reinterpret_cast<utils::id_t *>(registered_field_data[ent.id_fid].data());
+        auto ids =
+          reinterpret_cast<utils::id_t *>(registered_field_data[ent.id_fid].data());
 
         // new allocation every time.
         storage->init_entities(ent.domain, ent.dim,
@@ -150,26 +153,11 @@ namespace execution {
         const size_t from_index_space = adj.from_index_space;
         const size_t to_index_space = adj.to_index_space;
 
-        // 1. get number of indices
         auto& color_info = (context_.coloring_info(from_index_space)).at(color);
-        auto adj_info = (context_.adjacency_info()).at(adj_index_space);
-        adj.num_indices = adj_info.color_sizes[color];
-        
-        // 2. allocate field data for indices.
         auto& registered_field_data = context_.registered_field_data();
-        auto fieldDataIter = registered_field_data.find(adj.index_fid);
-        if (fieldDataIter == registered_field_data.end()) {
-          size_t size = sizeof(utils::id_t) * adj.num_indices;
-          execution::context_t::instance().register_field_data(adj.index_fid,
-                                                               size);
-        }
-        adj.indices_buf = reinterpret_cast<size_t *>(registered_field_data[adj.index_fid].data());
 
-        // 3. get number of offsets
         adj.num_offsets = (color_info.exclusive + color_info.shared + color_info.ghost);
- 
-        // 4. allocate field data for offsets.
-        fieldDataIter = registered_field_data.find(adj.offset_fid);
+        auto fieldDataIter = registered_field_data.find(adj.offset_fid);
         if (fieldDataIter == registered_field_data.end()) {
           size_t size = sizeof(size_t) * adj.num_offsets;
 
@@ -178,10 +166,22 @@ namespace execution {
         }
         adj.offsets_buf = reinterpret_cast<size_t *>(registered_field_data[adj.offset_fid].data());
 
+        auto adj_info = (context_.adjacency_info()).at(adj_index_space);
+        adj.num_indices = adj_info.color_sizes[color];
+        fieldDataIter = registered_field_data.find(adj.index_fid);
+        if (fieldDataIter == registered_field_data.end()) {
+          size_t size = sizeof(utils::id_t) * adj.num_indices;
+          execution::context_t::instance().register_field_data(adj.index_fid,
+                                                               size);
+        }
+        adj.indices_buf = reinterpret_cast<size_t *>(registered_field_data[adj.index_fid].data());
+
         storage->init_connectivity(adj.from_domain, adj.to_domain,
                                    adj.from_dim, adj.to_dim,
-                                   reinterpret_cast<utils::offset_t *>(adj.offsets_buf), adj.num_offsets,
-                                   reinterpret_cast<utils::id_t *>(adj.indices_buf), adj.num_indices,
+                                   reinterpret_cast<utils::offset_t *>(adj.offsets_buf),
+                                   adj.num_offsets,
+                                   reinterpret_cast<utils::id_t *>(adj.indices_buf),
+                                   adj.num_indices,
                                    _read);
       }
 
