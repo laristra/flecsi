@@ -100,33 +100,37 @@ namespace execution {
       // cells from. This is the set coloring_info_t::ghost_owners.
       // Since both shared_users and ghost_owners are std::set, we have copy
       // them to std::vector be passed to MPI.
-      std::vector<int> shared_users(my_coloring_info.shared_users.begin(),
-                                    my_coloring_info.shared_users.end());
-      std::vector<int> ghost_owners(my_coloring_info.ghost_owners.begin(),
-                                    my_coloring_info.ghost_owners.end());
+//      std::vector<int> shared_users(my_coloring_info.shared_users.begin(),
+//                                    my_coloring_info.shared_users.end());
+//      std::vector<int> ghost_owners(my_coloring_info.ghost_owners.begin(),
+//                                    my_coloring_info.ghost_owners.end());
+//
+//      MPI_Group comm_grp, shared_users_grp, ghost_owners_grp;
+//      MPI_Comm_group(MPI_COMM_WORLD, &comm_grp);
+//      MPI_Group_incl(comm_grp, shared_users.size(),
+//                     shared_users.data(), &shared_users_grp);
+//      MPI_Group_incl(comm_grp, ghost_owners.size(),
+//                     ghost_owners.data(), &ghost_owners_grp);
 
-      MPI_Group comm_grp, shared_users_grp, ghost_owners_grp;
-      MPI_Comm_group(MPI_COMM_WORLD, &comm_grp);
-      MPI_Group_incl(comm_grp, shared_users.size(),
-                     shared_users.data(), &shared_users_grp);
-      MPI_Group_incl(comm_grp, ghost_owners.size(),
-                     ghost_owners.data(), &ghost_owners_grp);
+      auto& field_metadata = context.registered_field_metadata().at(h.fid);
 
       // A pull model using MPI_Get:
       // 1. create MPI window for shared portion of the local buffer.
-      MPI_Win win;
-      MPI_Win_create(h.shared_data, my_coloring_info.shared * sizeof(T),
-                     sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD,
-                     &win);
+//      MPI_Win win;
+//      MPI_Win_create(h.shared_data, my_coloring_info.shared * sizeof(T),
+//                     sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD,
+//                     &win);
 
+      MPI_Win win = field_metadata.win;
       // 2. iterate through each ghost cell and MPI_Get from the peer.
-      MPI_Win_post(shared_users_grp, 0, win);
-      MPI_Win_start(ghost_owners_grp, 0, win);
+      MPI_Win_post(field_metadata.shared_users_grp, 0, win);
+      MPI_Win_start(field_metadata.ghost_owners_grp, 0, win);
 
-      auto index_coloring = context.coloring(h.index_space);
+      auto& index_coloring = context.coloring(h.index_space);
 
+//      auto begin = std::chrono::high_resolution_clock::now();
       int i = 0;
-      for (auto ghost : index_coloring.ghost) {
+      for (auto& ghost : index_coloring.ghost) {
 //        clog_rank(warn, 1) << "ghost id: " <<  ghost.id << ", rank: " << ghost.rank
 //                            << ", offset: " << ghost.offset
 //                            << std::endl;
@@ -136,14 +140,18 @@ namespace execution {
                 flecsi::coloring::mpi_typetraits__<T>::type(), win);
         i++;
       }
+//      auto end = std::chrono::high_resolution_clock::now();
+//      std::cout << "iterate ghost cells:  "
+//                << std::chrono::duration_cast<std::chrono::microseconds>(end-begin).count()
+//                << "us" << std::endl;
 
       MPI_Win_complete(win);
       MPI_Win_wait(win);
     
-      MPI_Win_free(&win);
+//      MPI_Win_free(&win);
 
-      MPI_Group_free(&shared_users_grp);
-      MPI_Group_free(&ghost_owners_grp);
+//      MPI_Group_free(&shared_users_grp);
+//      MPI_Group_free(&ghost_owners_grp);
     } // handle
 
     //------------------------------------------------------------------------//

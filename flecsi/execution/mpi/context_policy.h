@@ -40,6 +40,7 @@
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/coloring/mpi_utils.h"
+#include "flecsi/coloring/coloring_types.h"
 
 namespace flecsi {
 namespace execution {
@@ -141,6 +142,47 @@ struct mpi_context_policy_t
   {
     return index_space_data_map_;
   }
+
+  using coloring_info_t = flecsi::coloring::coloring_info_t;
+
+  struct field_metadata_t {
+
+    MPI_Group shared_users_grp;
+    MPI_Group ghost_owners_grp;
+
+    MPI_Win win;
+  };
+
+  template <typename T>
+  void register_field_metadata(const field_id_t fid,
+                               const coloring_info_t& coloring_info) {
+    std::vector<int> shared_users(coloring_info.shared_users.begin(),
+                                  coloring_info.shared_users.end());
+    std::vector<int> ghost_owners(coloring_info.ghost_owners.begin(),
+                                  coloring_info.ghost_owners.end());
+
+    MPI_Group comm_grp;
+    MPI_Comm_group(MPI_COMM_WORLD, &comm_grp);
+
+    field_metadata_t metadata;
+
+    MPI_Group_incl(comm_grp, shared_users.size(),
+                   shared_users.data(), &metadata.shared_users_grp);
+    MPI_Group_incl(comm_grp, ghost_owners.size(),
+                   ghost_owners.data(), &metadata.ghost_owners_grp);
+
+    auto data = field_data[fid].data();
+    auto shared_data = data + coloring_info.exclusive * sizeof(T);
+    MPI_Win_create(shared_data, coloring_info.shared * sizeof(T),
+                   sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD,
+                   &metadata.win);
+    field_metadata.insert({fid, metadata});
+  }
+
+  std::map<field_id_t, field_metadata_t>&
+  registered_field_metadata() {
+    return field_metadata;
+  };
 
   void register_field_data(field_id_t fid,
                            size_t size) {
@@ -258,6 +300,7 @@ private:
 //  > task_registry_;
 
   std::map<field_id_t, std::vector<uint8_t>> field_data;
+  std::map<field_id_t, field_metadata_t> field_metadata;
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
 

@@ -501,8 +501,10 @@ struct storage_type__<dense>
                                        color_info.shared +
                                        color_info.ghost);
       // TODO: deal with VERSION
-      execution::context_t::instance().register_field_data(field_info.fid,
-                                                           size);
+      context.register_field_data(field_info.fid,
+                                  size);
+      context.register_field_metadata<DATA_TYPE>(field_info.fid,
+                                      color_info);
     }
 
     auto data = registered_field_data[field_info.fid].data();
