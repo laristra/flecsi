@@ -178,7 +178,7 @@ struct pure_task_wrapper__
           task_name << " " << launch << std::endl << std::endl;
         }
         registration_wrapper__<RETURN, TASK>::register_task(
-          tid, Legion::Processor::LOC_PROC, task_name);
+          tid, Legion::Processor::LOC_PROC, config_options, task_name);
         break;
       case processor_type_t::toc:
         {
@@ -187,7 +187,7 @@ struct pure_task_wrapper__
           task_name << std::endl << std::endl;
         }
         registration_wrapper__<RETURN, TASK>::register_task(
-          tid, Legion::Processor::TOC_PROC, task_name);
+          tid, Legion::Processor::TOC_PROC, config_options, task_name);
         break;
       case processor_type_t::mpi:
         clog(fatal) << "MPI type passed to pure legion registration" <<
@@ -259,7 +259,7 @@ struct task_wrapper__
           name << std::endl << std::endl;
         }
         registration_wrapper__<RETURN, execute_user_task>::register_task(
-          tid, Legion::Processor::LOC_PROC, name);
+          tid, Legion::Processor::LOC_PROC, config_options, name);
         break;
       case processor_type_t::toc:
         {
@@ -268,7 +268,7 @@ struct task_wrapper__
           name << std::endl << std::endl;
         }
         registration_wrapper__<RETURN, execute_user_task>::register_task(
-          tid, Legion::Processor::TOC_PROC, name);
+          tid, Legion::Processor::TOC_PROC, config_options, name);
         break;
       case processor_type_t::mpi:
         {
@@ -277,7 +277,7 @@ struct task_wrapper__
           name << std::endl << std::endl;
         }
         registration_wrapper__<void, execute_mpi_task>::register_task(
-          tid, Legion::Processor::LOC_PROC, name);
+          tid, Legion::Processor::LOC_PROC, config_options, name);
         break;
     } // switch
   } // registration_callback

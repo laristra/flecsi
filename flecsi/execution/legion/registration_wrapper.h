@@ -46,11 +46,15 @@ struct registration_wrapper__
   static void register_task(
     const Legion::TaskID tid,
     const Legion::Processor::Kind &processor,
+    const Legion::TaskConfigOptions config_options,
     std::string & task_name) {
 
     { 
       Legion::TaskVariantRegistrar registrar(tid, task_name.c_str());
       registrar.add_constraint(Legion::ProcessorConstraint(processor));
+      registrar.set_leaf(config_options.leaf);
+      registrar.set_inner(config_options.inner);
+      registrar.set_idempotent(config_options.idempotent);
       Legion::Runtime::preregister_task_variant<RETURN, TASK>(registrar,
         task_name.c_str());
     }//scope
@@ -80,11 +84,15 @@ struct registration_wrapper__<void, TASK>
   static void register_task(
     const Legion::TaskID tid,
     const Legion::Processor::Kind &processor, 
+    const Legion::TaskConfigOptions config_options,
     std::string &task_name) {
 
     {
       Legion::TaskVariantRegistrar registrar(tid, task_name.c_str());
       registrar.add_constraint(Legion::ProcessorConstraint(processor));
+      registrar.set_leaf(config_options.leaf);
+      registrar.set_inner(config_options.inner);
+      registrar.set_idempotent(config_options.idempotent);
       Legion::Runtime::preregister_task_variant<TASK>(registrar,
         task_name.c_str());
     }//scope

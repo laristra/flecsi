@@ -42,13 +42,13 @@ void check_all_cells_task(
         handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
         handle_t<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
         int my_color, size_t cycle);
-flecsi_register_task(check_all_cells_task, loc, single);
+flecsi_register_task(check_all_cells_task, loc, single|leaf);
 
 void set_primary_cells_task(
         handle_t<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
         handle_t<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
         int my_color, size_t cycle);
-flecsi_register_task(set_primary_cells_task, loc, single);
+flecsi_register_task(set_primary_cells_task, loc, single|leaf);
 
 flecsi_register_field(empty_mesh_t, name_space, cell_ID, size_t, dense,
     VERSIONS, INDEX_ID);
