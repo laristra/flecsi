@@ -39,11 +39,13 @@ void driver(int argc, char ** argv) {
     auto local_future =
       flecsi_execute_task(local_value_task, single, (my_color + 1) * cycle);
 
-    double global_max =
+    auto global_max_future =
       flecsi::execution::context_t::instance().reduce_max(local_future); 
+    double global_max = global_max_future.get_result<double>();
 
-    double global_min =
+    auto global_min_future =
       flecsi::execution::context_t::instance().reduce_min(local_future);
+    double global_min = global_min_future.get_result<double>();
  
     ASSERT_EQ(global_max, static_cast<double>(num_colors * cycle));
     ASSERT_EQ(global_min, static_cast<double>(cycle));
