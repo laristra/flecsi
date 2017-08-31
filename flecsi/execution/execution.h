@@ -103,7 +103,7 @@ clog_register_tag(execution);
 #define flecsi_register_mpi_task(task)                                         \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  flecsi_register_task(task, mpi, index)
+  flecsi_register_task(task, mpi, index | leaf)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_execute_task
