@@ -196,29 +196,28 @@ struct mpi_execution_policy_t
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
     auto end = std::chrono::high_resolution_clock::now();
-    std::cout << "task_prolog:  "
-              << std::chrono::duration_cast<std::chrono::microseconds>(end-begin).count()
-              << "us" << std::endl;
+//    clog_rank(warn, 0) << "task_prolog:  "
+//              << std::chrono::duration_cast<std::chrono::microseconds>(end-begin).count()
+//              << "us" << std::endl;
 
     begin = std::chrono::high_resolution_clock::now();
     auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, task_args);
     end = std::chrono::high_resolution_clock::now();
-    std::cout << "task_execute: "
-              << std::chrono::duration_cast<std::chrono::microseconds>(end-begin).count()
-              << "us" << std::endl;
+//    clog_rank(warn, 0) << "task_execute: "
+//              << std::chrono::duration_cast<std::chrono::microseconds>(end-begin).count()
+//              << "us" << std::endl;
 
     begin = std::chrono::high_resolution_clock::now();
     task_epilog_t task_epilog;
     task_epilog.walk(task_args);
     end = std::chrono::high_resolution_clock::now();
-    std::cout << "task_epilog:  "
-              << std::chrono::duration_cast<std::chrono::microseconds>(end-begin).count()
-              << "us" << std::endl;
+//    clog_rank(warn, 0)<< "task_epilog:  "
+//              << std::chrono::duration_cast<std::chrono::microseconds>(end-begin).count()
+//              << "us" << std::endl;
 
     finalize_handles_t finalize_handles;
     finalize_handles.walk(task_args);
 
-    // TODO: Do we nee to run taks_epilog ??
     return fut;
   } // execute_task
 

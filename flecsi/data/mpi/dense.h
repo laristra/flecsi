@@ -493,6 +493,7 @@ struct storage_type__<dense>
 
     // get color_info for this field.
     auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
+    auto &index_coloring = context.coloring(field_info.index_space);
 
     auto& registered_field_data = context.registered_field_data();
     auto fieldDataIter = registered_field_data.find(field_info.fid);
@@ -504,7 +505,8 @@ struct storage_type__<dense>
       context.register_field_data(field_info.fid,
                                   size);
       context.register_field_metadata<DATA_TYPE>(field_info.fid,
-                                      color_info);
+                                                 color_info,
+                                                 index_coloring);
     }
 
     auto data = registered_field_data[field_info.fid].data();
