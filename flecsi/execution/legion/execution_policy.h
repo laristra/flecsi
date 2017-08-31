@@ -258,7 +258,7 @@ struct legion_execution_policy_t
       // Enqueue the MPI task.
       auto future =
         legion_runtime->execute_index_space(legion_context, launcher);
-      future.wait_all_results();
+     // future.wait_all_results();
 
       // Handoff to the MPI runtime.
       context_.handoff_to_mpi(legion_context, legion_runtime);
