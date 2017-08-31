@@ -523,7 +523,8 @@ runtime_driver(
 
   // Launch the spmd tasks
   auto future = runtime->execute_must_epoch(ctx, must_epoch_launcher);
-  future.wait_all_results();
+  bool silence_warnings = true;
+  future.wait_all_results(silence_warnings);
 
   //-----------------------------------------------------------------------//
   // Finish up Legion runtime and fall back out to MPI.

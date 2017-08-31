@@ -45,6 +45,7 @@ legion_context_policy_t::initialize(
   {
     Legion::TaskVariantRegistrar registrar(TOP_LEVEL_TASK_ID, "runtime_driver");
     registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
+    registrar.set_inner();
     Runtime::preregister_task_variant<runtime_driver>(registrar,
       "runtime_driver");
   }
@@ -131,7 +132,7 @@ legion_context_policy_t::unset_call_mpi(
 
   auto fm = runtime->execute_index_space(ctx, launcher);
 
-  fm.wait_all_results();
+  fm.wait_all_results(true);
 } // legion_context_policy_t::unset_call_mpi
 
 //----------------------------------------------------------------------------//
@@ -157,7 +158,7 @@ legion_context_policy_t::handoff_to_mpi(
 
   auto fm = runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
 
-  fm.wait_all_results();
+  fm.wait_all_results(true);
 } // legion_context_policy_t::handoff_to_mpi
 
 //----------------------------------------------------------------------------//
@@ -183,7 +184,7 @@ legion_context_policy_t::wait_on_mpi(
 
   auto fm = runtime->execute_index_space(ctx, wait_on_mpi_launcher);
 
-  fm.wait_all_results();
+  fm.wait_all_results(true);
 
   return fm;    
 } // legion_context_policy_t::wait_on_mpi

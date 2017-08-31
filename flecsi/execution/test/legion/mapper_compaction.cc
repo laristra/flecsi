@@ -26,6 +26,28 @@ namespace execution {
 
 //----------------------------------------------------------------------------//
 // Define a Legion task to register.
+void fill_task(const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime)
+{
+    PhysicalRegion input_region=regions[0];
+    RegionAccessor<AccessorType::Generic, double> acc =
+      input_region.get_field_accessor(FID_VAL).typeify<double>();
+    Legion::Domain domain = runtime->get_index_space_domain(context,
+            input_region.get_logical_region().get_index_space());
+    LegionRuntime::Arrays::Rect<1> rect = domain.get_rect<1>();
+    int count=0;
+    for (LegionRuntime::Arrays::GenericPointInRectIterator<1> pir(rect); pir; pir++){
+      count++;
+      acc.write(DomainPoint::from_point<1>(pir.p), count);
+    }
+}
+// Register the task. The task id is automatically generated.
+__flecsi_internal_register_legion_task(fill_task,
+  processor_type_t::loc, single|leaf);
+
+// Define a Legion task to register.
 int internal_task_example_1(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context context,
@@ -82,7 +104,7 @@ int internal_task_example_1(const Legion::Task * task,
 
 // Register the task. The task id is automatically generated.
 __flecsi_internal_register_legion_task(internal_task_example_1,
-  processor_type_t::loc, single);
+  processor_type_t::loc, single|leaf);
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
@@ -114,21 +136,16 @@ void driver(int argc, char ** argv) {
   LogicalRegion stencil_lr = runtime->create_logical_region(context , is, fs);
 
   //Fill out LR with numbers:
-  {
-    RegionRequirement req(stencil_lr, READ_WRITE, EXCLUSIVE, stencil_lr);
-    req.add_field(FID_VAL);
-    InlineLauncher input_launcher(req);
-    PhysicalRegion input_region=runtime->map_region(context, input_launcher);
-    input_region.wait_until_valid();
-    RegionAccessor<AccessorType::Generic, double> acc =
-      input_region.get_field_accessor(FID_VAL).typeify<double>();
-    int count=0;
-    for (GenericPointInRectIterator<1> pir(elem_rect); pir; pir++){
-      count++;
-      acc.write(DomainPoint::from_point<1>(pir.p), count);
-    }
-    runtime->unmap_region(context, input_region);
-  }//scope
+  auto key_0 = __flecsi_internal_task_key(fill_task);
+  Legion::TaskLauncher task_launcher(
+    context_t::instance().task_id(key_0),
+    Legion::TaskArgument(nullptr, 0));
+
+  task_launcher.add_region_requirement(
+      Legion::RegionRequirement(stencil_lr, READ_WRITE, EXCLUSIVE, stencil_lr)
+      .add_field(FID_VAL));
+  runtime->execute_task(context, task_launcher);
+
 
   Rect<1> color_bounds(Point<1>(0),Point<1>(1-1));
   Domain color_domain = Domain::from_rect<1>(color_bounds);

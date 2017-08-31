@@ -11,6 +11,7 @@
 #include <cinchtest.h>
 
 #include "flecsi/execution/execution.h"
+#include "flecsi/execution/future.h"
 
 
 namespace flecsi {
@@ -21,7 +22,7 @@ double local_value_task(
 {
   return static_cast<double>(my_color);
 }
-flecsi_register_task(local_value_task, loc, single);
+flecsi_register_task(local_value_task, loc, single|leaf);
 
 
 //----------------------------------------------------------------------------//
@@ -39,11 +40,17 @@ void driver(int argc, char ** argv) {
     auto local_future =
       flecsi_execute_task(local_value_task, single, (my_color + 1) * cycle);
 
-    double global_max =
-      flecsi::execution::context_t::instance().reduce_max(local_future); 
+    auto global_max_future =
+      flecsi::execution::context_t::instance().reduce_max(local_future);
+    flecsi_future__<double> *flecsi_max_future = &global_max_future;
+    const bool silence_warnings = true;
+    const size_t index = 0;
+    double global_max = flecsi_max_future->get(index, silence_warnings);
 
-    double global_min =
+    auto global_min_future =
       flecsi::execution::context_t::instance().reduce_min(local_future);
+    flecsi_future__<double> *flecsi_min_future = &global_min_future;
+    double global_min = flecsi_min_future->get(index, silence_warnings);
  
     ASSERT_EQ(global_max, static_cast<double>(num_colors * cycle));
     ASSERT_EQ(global_min, static_cast<double>(cycle));
