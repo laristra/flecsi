@@ -44,16 +44,6 @@
 namespace flecsi {
 namespace execution {
 
-template<typename Type>
-class mpi_future_t {
-public:
-  mpi_future_t(Type value) : value(value) {}
-  template<typename ReturnType>
-  ReturnType get_result() {return static_cast<ReturnType>(value);}
-private:
-  Type value;
-};
-
 //----------------------------------------------------------------------------//
 //! The mpi_context_policy_t is the backend runtime context policy for
 //! MPI.
@@ -202,7 +192,9 @@ struct mpi_context_policy_t
     MPI_Allreduce(&local_max_, &global_max_, 1,
            flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
            MPI_COMM_WORLD);
-    return mpi_future_t<T>(global_max_);
+    mpi_future__<T> future;
+    future.set(global_max_);
+    return future;
   }
 
 
@@ -243,7 +235,9 @@ struct mpi_context_policy_t
     MPI_Allreduce(&local_min_, &global_min_, 1,
            flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MIN,
            MPI_COMM_WORLD);
-    return mpi_future_t<T>(global_min_);
+    mpi_future__<T> future;
+    future.set(global_min_);
+    return future;
   }
 
 

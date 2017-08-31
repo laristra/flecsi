@@ -23,6 +23,8 @@
 #include <functional>
 #include <memory>
 
+#include "flecsi/execution/future.h"
+
 namespace flecsi {
 namespace execution {
 
@@ -38,26 +40,27 @@ namespace execution {
 template<
   typename R
 >
-struct mpi_future__
+class mpi_future__ : public flecsi_future__<R>
 {
+public:
   using result_t = R;
 
   ///
   /// wait() method
   ///
-  void wait() {}
+  void wait(bool silence_warnings = false) {}
 
   ///
   /// get() mothod
   ///
-  const result_t & get(size_t index = 0) const { return result_; }
-
-//private:
+  result_t get(size_t index = 0, bool silence_warnings = false) { return result_; }
 
   ///
   /// set method
   ///
   void set(const result_t & result) { result_ = result; }
+
+private:
 
   result_t result_;
 

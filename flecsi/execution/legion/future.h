@@ -24,6 +24,9 @@
 #include <legion.h>
 #include <memory>
 
+
+#include "flecsi/execution/future.h"
+
 namespace flecsi {
 namespace execution {
 
@@ -325,9 +328,9 @@ private:
 template<
   typename RETURN
 >
-struct legion_future__
+class legion_future__ : public flecsi_future__<RETURN>
 {
-
+public:
   //--------------------------------------------------------------------------//
   //! Construct a future from a Legion future map.
   //!

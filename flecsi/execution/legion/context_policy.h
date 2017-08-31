@@ -640,7 +640,7 @@ struct legion_context_policy_t
       legion_context, max_reduction
     );
 
-    return global_future;
+    return legion_future__<T>(global_future);
   }
 
 
@@ -691,7 +691,7 @@ struct legion_context_policy_t
       legion_context, min_reduction
     );
 
-    return global_future;
+    return legion_future__<T>(global_future);
   }
 
   //--------------------------------------------------------------------------//
