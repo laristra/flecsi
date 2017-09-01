@@ -140,6 +140,7 @@ struct test_mesh_2d_policy_t
         assert(false && "invalid domain");
     } // switch
 #endif
+    return nullptr;
   } // create_entity
 
 }; // struct test_mesh_2d_t
