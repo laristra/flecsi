@@ -93,9 +93,12 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     ${execution_HEADERS}
     mpi/context_policy.h
     mpi/execution_policy.h
-    mpi/runtime_driver.h
-    mpi/task_wrapper.h
+    mpi/finalize_handles.h
     mpi/future.h
+    mpi/runtime_driver.h
+    mpi/task_epilog.h
+    mpi/task_prolog.h
+    mpi/task_wrapper.h
   )
 
   set(execution_SOURCES
@@ -135,17 +138,6 @@ cinch_add_unit(launch
   POLICY
     SERIAL
 )
-
-#cinch_add_devel_target(devel
-#  SOURCES
-#    test/devel.cc
-#  POLICY
-#    MPI
-#)
-#
-# Test basic function calling capability using the register_function
-# interface.
-#
 
 cinch_add_unit(simple_function
   SOURCES
@@ -265,27 +257,6 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       THREADS 2
       NOCI
       )
-
-#    cinch_add_unit(data_handle_point
-#      SOURCES
-#        test/data_handle_point.cc
-#        ../supplemental/coloring/add_colorings.cc
-#        ${DRIVER_INITIALIZATION}
-#        ${RUNTIME_DRIVER}
-#      INPUTS
-#        test/simple2d-8x8.msh
-#        test/simple2d-16x16.msh
-#      LIBRARIES
-#        flecsi
-#        ${CINCH_RUNTIME_LIBRARIES}
-#        ${COLORING_LIBRARIES}
-#      DEFINES
-#        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-#        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-#      POLICY ${UNIT_POLICY}
-#      THREADS 2
-#      NOCI
-#      )
 
     cinch_add_unit(ghost_access
       SOURCES

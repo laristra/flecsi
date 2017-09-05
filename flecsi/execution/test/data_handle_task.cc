@@ -13,11 +13,8 @@
 #include <cinchtest.h>
 
 #include "flecsi/execution/execution.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/common/execution_state.h"
 #include "flecsi/io/simple_definition.h"
 #include "flecsi/coloring/dcrs_utils.h"
-#include "flecsi/data/data.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/supplemental/mesh/empty_mesh_2d.h"
 
