@@ -53,8 +53,6 @@ matrix:
       env: DISTRO=ubuntu_mpich RUNTIME=mpi WERROR=yes
     - compiler: clang
       env: DISTRO=fedora RUNTIME=mpi WERROR=yes
-    - compiler: clang
-      env: DISTRO=fedora_mpich RUNTIME=mpi WERROR=yes
 
 before_install:
  - git fetch --unshallow && git fetch --tags #for versioning
