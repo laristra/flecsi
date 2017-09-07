@@ -11,7 +11,6 @@
 
 #include "flecsi/utils/common.h"
 
-#include <cstdlib>
 #include <memory>
 
 #ifdef __GNUG__

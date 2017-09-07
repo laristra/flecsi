@@ -7,7 +7,6 @@
 #include "flecsi/utils/humble.h"
 
 // includes: C++
-#include <iostream>
 
 // includes: other
 #include <cinchtest.h>

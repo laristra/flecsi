@@ -12,18 +12,13 @@
 #include <mpi.h>
 
 #include "flecsi/execution/execution.h"
-#include "flecsi/execution/context.h"
 #include "flecsi/io/simple_definition.h"
-#include "flecsi/coloring/coloring_types.h"
-#include "flecsi/coloring/communicator.h"
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/supplemental/coloring/coloring_functions.h"
 #include "flecsi/supplemental/coloring/tikz.h"
-#include "flecsi/topology/closure_utils.h"
-#include "flecsi/utils/set_utils.h"
 
 clog_register_tag(coloring);
 clog_register_tag(coloring_output);

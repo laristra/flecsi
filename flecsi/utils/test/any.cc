@@ -14,7 +14,6 @@
 
 // system includes
 #include <cinchtest.h>
-#include <array>
 
 // user includes
 #include "flecsi/utils/any.h"
