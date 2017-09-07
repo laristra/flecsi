@@ -61,7 +61,7 @@ struct executor__
   {
     auto user_fun = (reinterpret_cast<RETURN(*)(ARG_TUPLE)>(fun));
     mpi_future__<RETURN> fut;
-    fut.set(user_fun(targs));
+    fut.set(user_fun(std::forward<A>(targs)));
     return fut;
   } // execute_task
 }; // struct executor__
@@ -88,7 +88,7 @@ struct executor__<void, ARG_TUPLE>
     auto user_fun = (reinterpret_cast<void(*)(ARG_TUPLE)>(fun));
 
     mpi_future__<void> fut;
-    user_fun(targs);
+    user_fun(std::forward<A>(targs));
 
     return fut;
   } // execute_task
@@ -201,7 +201,7 @@ struct mpi_execution_policy_t
 //              << "us" << std::endl;
 
     begin = std::chrono::high_resolution_clock::now();
-    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, task_args);
+    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, std::forward<ARG_TUPLE>(task_args));
     end = std::chrono::high_resolution_clock::now();
 //    clog_rank(warn, 0) << "task_execute: "
 //              << std::chrono::duration_cast<std::chrono::microseconds>(end-begin).count()
