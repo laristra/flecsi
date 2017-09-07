@@ -154,8 +154,10 @@ namespace execution {
 
           for(auto& fitr: iitr->second) {
             const context_t::field_info_t & fi = fitr.second;
-            rr_shared.add_field(fi.fid);
-            rr_ghost.add_field(fi.fid);
+            if(!utils::hash::is_internal(fi.key)){
+              rr_shared.add_field(fi.fid);
+              rr_ghost.add_field(fi.fid);
+            }
           } // for
 
           // TODO - circular dependency including internal_task.h

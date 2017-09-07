@@ -360,24 +360,6 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 
   // For each field, copy data from shared to ghost
   for(auto fid : task->regions[0].privilege_fields){
-
-    bool skip(false);
-    for(auto & itr: context.field_info_map()) {
-      auto & tm = itr.second;
-
-      for(auto & fitr : tm) {
-        if(fitr.second.fid == fid &&
-          utils::hash::is_internal(fitr.second.key)) {
-          skip = true;
-          break;
-        } // if
-      } // for
-
-      if(skip) { break; }
-    } // for
-
-    if(skip) { continue; }
-
     // Look up field info in context
     auto iitr = 
       context.field_info_map().find({args.data_client_hash, args.index_space});
