@@ -427,7 +427,8 @@ __flecsi_internal_legion_task(ghost_copy_task2, void) {
   for(size_t i = 0; i < n; i += 2){
     size_t index_space_num = i / 2;
 
-    legion_map owner_map = task->futures[i].get_result<legion_map>();
+    legion_map owner_map = 
+      task->futures[index_space_num].get_result<legion_map>();
 
     auto ghost_owner_pos_fid = 
       LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
