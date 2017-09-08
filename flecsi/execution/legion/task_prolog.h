@@ -141,24 +141,27 @@ namespace execution {
           Legion::RegionRequirement rr_ghost(h.ghost_lr,
             WRITE_DISCARD, EXCLUSIVE, h.color_region);
 
-          auto iitr = flecsi_context.field_info_map().find(
-            { h.data_client_hash, h.index_space });
+          // auto iitr = flecsi_context.field_info_map().find(
+          //   { h.data_client_hash, h.index_space });
 
-          clog_assert(iitr != flecsi_context.field_info_map().end(),
-            "invalid index space");
+          // clog_assert(iitr != flecsi_context.field_info_map().end(),
+          //   "invalid index space");
 
           auto ghost_owner_pos_fid = LegionRuntime::HighLevel::FieldID(
             internal_field::ghost_owner_pos);
 
           rr_ghost.add_field(ghost_owner_pos_fid);
 
-          for(auto& fitr: iitr->second) {
-            const context_t::field_info_t & fi = fitr.second;
-            if(!utils::hash::is_internal(fi.key)){
-              rr_shared.add_field(fi.fid);
-              rr_ghost.add_field(fi.fid);
-            }
-          } // for
+          // for(auto& fitr: iitr->second) {
+          //   const context_t::field_info_t & fi = fitr.second;
+          //   if(!utils::hash::is_internal(fi.key)){
+          //     rr_shared.add_field(fi.fid);
+          //     rr_ghost.add_field(fi.fid);
+          //   }
+          // } // for
+
+          rr_shared.add_field(h.fid);
+          rr_ghost.add_field(h.fid);
 
           // TODO - circular dependency including internal_task.h
           auto constexpr key = flecsi::utils::const_string_t{
