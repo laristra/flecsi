@@ -34,6 +34,7 @@ set(utils_HEADERS
   index_space.h
   iterator.h
   logging.h
+  offset.h
   reflection.h
   reorder.h
   set_intersection.h
