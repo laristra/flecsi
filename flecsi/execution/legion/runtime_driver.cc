@@ -657,7 +657,7 @@ spmd_task(
   args_deserializer.deserialize((void*)pbarriers_as_owner,
       sizeof(Legion::PhaseBarrier) * num_phase_barriers);
 
-  for (size_t i=0; i<num_phase_barriers;i++ ) 
+  //for (size_t i=0; i<num_phase_barriers;i++ )
     {
     clog_tag_guard(runtime_driver);
     clog(trace) <<my_color <<" has pbarrier_as_owner "<<
@@ -676,6 +676,8 @@ spmd_task(
     for (const field_id_t& field_id : fields_map[idx_space]){
       ispace_dmap[idx_space].pbarriers_as_owner[field_id] =
         pbarriers_as_owner[indx];
+      ispace_dmap[idx_space].ghost_is_readable[field_id] = true;
+      ispace_dmap[idx_space].write_phase_started[field_id] = false;
       indx++;
     }//end field_info
   }//end for idx_space

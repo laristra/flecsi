@@ -31,6 +31,9 @@ struct legion_data_handle_policy_t
 
   legion_data_handle_policy_t(const legion_data_handle_policy_t& p) = default;
 
+  bool* ghost_is_readable;
+  bool* write_phase_started;
+
   // +++ The following fields are set from get_handle(), reading
   // information from the context which is data that is the same
   // across multiple ranks/colors and should be used ONLY as read-only data

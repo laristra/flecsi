@@ -104,6 +104,7 @@ namespace execution {
       write_phase = (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw);
 
       if(read_phase) {
+       if(!*(h.ghost_is_readable)) {
         {
         clog_tag_guard(prolog);
         clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE" <<
@@ -207,10 +208,14 @@ namespace execution {
           *(h.ghost_owners_pbarriers_ptrs[owner]) =
             runtime->advance_phase_barrier(context,
             *(h.ghost_owners_pbarriers_ptrs[owner]));
-        } // for
+        } // for owner as user
+
+        *(h.ghost_is_readable) = true;
+
+       } // !ghost_is_readable
       } // read_phase
 
-      if(write_phase) {
+      if(write_phase && (*h.ghost_is_readable)) {
         {
         clog_tag_guard(prolog);
         clog(trace) << "rank " << runtime->find_local_MPI_rank() <<
@@ -224,6 +229,9 @@ namespace execution {
 
         // Phase READ
         launcher.add_arrival_barrier(*(h.pbarrier_as_owner_ptr));
+
+        *(h.ghost_is_readable) = false;
+        *(h.write_phase_started) = true;
       } // if
       }//end if
     } // handle
