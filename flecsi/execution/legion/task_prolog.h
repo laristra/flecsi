@@ -215,6 +215,34 @@ void launch_copies()
 {
   auto& flecsi_context = context_t::instance();
 
+  std::vector<std::set<size_t>> owner_groups;
+  std::set<size_t> initializer;
+  initializer.insert(0);
+  owner_groups.push_back(initializer);
+  for(size_t owner{1}; owner<owner_regions.size(); owner++) {
+    bool found_group = false;
+    for(size_t group{0}; group<owner_groups.size(); group++) {
+      auto first = owner_groups[group].begin();
+      if (owner_regions[owner] == owner_regions[*first]) {
+        owner_groups[group].insert(owner);
+        found_group = true;
+        continue;
+      } // if
+    } // for group
+    if (!found_group){
+      std::set<size_t> new_group;
+      new_group.insert(owner);
+      owner_groups.push_back(new_group);
+    }
+  } // for owner
+
+  for(size_t group{0}; group<owner_groups.size(); group++) {
+    for(auto owner_itr = owner_groups[group].begin(); owner_itr != owner_groups[group].end(); owner_itr++) {
+      size_t owner = *owner_itr;
+      clog(error) << "owner " << owner << std::endl;
+    } // for owner
+  } // for group
+
   // As user
   for(size_t owner{0}; owner<owner_regions.size(); owner++) {
 
