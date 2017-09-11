@@ -127,32 +127,21 @@ namespace execution {
         // As user
         for(size_t owner{0}; owner<_pbp_size; owner++) {
 
-          {
-          clog_tag_guard(prolog);
-          clog(trace) << "rank " << my_color << " WAITS " <<
-            *(h.ghost_owners_pbarriers_ptrs[owner]) << std::endl;
+          owner_regions.push_back(h.ghost_owners_lregions[owner]);
+//          Legion::RegionRequirement rr_shared(h.ghost_owners_lregions[owner],
+//            READ_ONLY, EXCLUSIVE, h.ghost_owners_lregions[owner]);
 
-          clog(trace) << "rank " << my_color << " arrives & advances " <<
-            *(h.ghost_owners_pbarriers_ptrs[owner]) << std::endl;
-          } // scope
+          ghost_regions.push_back(h.ghost_lr);
+          color_regions.push_back(h.color_region);
+//          Legion::RegionRequirement rr_ghost(h.ghost_lr,
+//            WRITE_DISCARD, EXCLUSIVE, h.color_region);
 
-          Legion::RegionRequirement rr_shared(h.ghost_owners_lregions[owner],
-            READ_ONLY, EXCLUSIVE, h.ghost_owners_lregions[owner]);
+//          auto ghost_owner_pos_fid = LegionRuntime::HighLevel::FieldID(
+//            internal_field::ghost_owner_pos);
 
-          Legion::RegionRequirement rr_ghost(h.ghost_lr,
-            WRITE_DISCARD, EXCLUSIVE, h.color_region);
+//          rr_ghost.add_field(ghost_owner_pos_fid);
 
-          // auto iitr = flecsi_context.field_info_map().find(
-          //   { h.data_client_hash, h.index_space });
-
-          // clog_assert(iitr != flecsi_context.field_info_map().end(),
-          //   "invalid index space");
-
-          auto ghost_owner_pos_fid = LegionRuntime::HighLevel::FieldID(
-            internal_field::ghost_owner_pos);
-
-          rr_ghost.add_field(ghost_owner_pos_fid);
-
+#if 0
           // for(auto& fitr: iitr->second) {
           //   const context_t::field_info_t & fi = fitr.second;
           //   if(!utils::hash::is_internal(fi.key)){
@@ -160,54 +149,48 @@ namespace execution {
           //     rr_ghost.add_field(fi.fid);
           //   }
           // } // for
-
-          rr_shared.add_field(h.fid);
-          rr_ghost.add_field(h.fid);
+#endif
+          fids.push_back(h.fid);
+//          rr_shared.add_field(h.fid);
+//          rr_ghost.add_field(h.fid);
 
           // TODO - circular dependency including internal_task.h
-          auto constexpr key = flecsi::utils::const_string_t{
-            EXPAND_AND_STRINGIFY(ghost_copy_task)}.hash();
+//          auto constexpr key = flecsi::utils::const_string_t{
+//            EXPAND_AND_STRINGIFY(ghost_copy_task)}.hash();
 
-          const auto ghost_copy_tid = flecsi_context.task_id<key>();
+//          const auto ghost_copy_tid = flecsi_context.task_id<key>();
 
-          // Anonymous struct for arguments in task launcer below.
-          struct {
-            size_t data_client_hash;
-            size_t index_space;
-            size_t owner;
-          } args;
+          // Anonymous struct for arguments in task launcher below.
+          ghost_copy_args local_args;
+          local_args.data_client_hash = h.data_client_hash;
+          local_args.index_space = h.index_space;
+          local_args.owner = owner;
+          args.push_back(local_args);
 
-          args.data_client_hash = h.data_client_hash;
-          args.index_space = h.index_space;
-          args.owner = owner;
+          //Legion::TaskLauncher ghost_launcher(ghost_copy_tid,
+          //  Legion::TaskArgument(&args, sizeof(args)));
 
-          Legion::TaskLauncher launcher(ghost_copy_tid,
-            Legion::TaskArgument(&args, sizeof(args)));
-
-          {
-          clog_tag_guard(prolog);
-          clog(trace) << "gid to lid map size = " <<
-            h.global_to_local_color_map_ptr->size() << std::endl;
-          } // scope
-
-          launcher.add_future(Legion::Future::from_value(runtime,
-            *(h.global_to_local_color_map_ptr)));
+          futures.push_back(Legion::Future::from_value(runtime,
+              *(h.global_to_local_color_map_ptr)));
+//          ghost_launcher.add_future(Legion::Future::from_value(runtime,
+//            *(h.global_to_local_color_map_ptr)));
 
           // Phase READ
-          launcher.add_region_requirement(rr_shared);
-          launcher.add_region_requirement(rr_ghost);
-          launcher.add_wait_barrier(*(h.ghost_owners_pbarriers_ptrs[owner]));
+          //ghost_launcher.add_region_requirement(rr_shared);
+          //ghost_launcher.add_region_requirement(rr_ghost);
+          barrier_ptrs.push_back(h.ghost_owners_pbarriers_ptrs[owner]);
+//          ghost_launcher.add_wait_barrier(*(h.ghost_owners_pbarriers_ptrs[owner]));
 
           // Phase WRITE
-          launcher.add_arrival_barrier(*(h.ghost_owners_pbarriers_ptrs[owner]));
+//          ghost_launcher.add_arrival_barrier(*(h.ghost_owners_pbarriers_ptrs[owner]));
 
           // Execute the ghost copy task
-          runtime->execute_task(context, launcher);
+//          runtime->execute_task(context, ghost_launcher);
 
           // Phase WRITE
-          *(h.ghost_owners_pbarriers_ptrs[owner]) =
-            runtime->advance_phase_barrier(context,
-            *(h.ghost_owners_pbarriers_ptrs[owner]));
+//          *(h.ghost_owners_pbarriers_ptrs[owner]) =
+//            runtime->advance_phase_barrier(context,
+//            *(h.ghost_owners_pbarriers_ptrs[owner]));
         } // for owner as user
 
         *(h.ghost_is_readable) = true;
@@ -216,14 +199,6 @@ namespace execution {
       } // read_phase
 
       if(write_phase && (*h.ghost_is_readable)) {
-        {
-        clog_tag_guard(prolog);
-        clog(trace) << "rank " << runtime->find_local_MPI_rank() <<
-          " WRITE PHASE PROLOGUE" << std::endl;
-        clog(trace) << "rank " << my_color << " wait & arrival barrier " <<
-          *(h.pbarrier_as_owner_ptr) << std::endl;
-        } // scope
-
         // Phase WRITE
         launcher.add_wait_barrier(*(h.pbarrier_as_owner_ptr));
 
@@ -236,6 +211,65 @@ namespace execution {
       }//end if
     } // handle
 
+void launch_copies()
+{
+  auto& flecsi_context = context_t::instance();
+
+  // As user
+  for(size_t owner{0}; owner<owner_regions.size(); owner++) {
+
+    Legion::RegionRequirement rr_shared(owner_regions[owner],
+        READ_ONLY, EXCLUSIVE, owner_regions[owner]);
+
+    Legion::RegionRequirement rr_ghost(ghost_regions[owner],
+        WRITE_DISCARD, EXCLUSIVE, color_regions[owner]);
+
+    auto ghost_owner_pos_fid = LegionRuntime::HighLevel::FieldID(
+        internal_field::ghost_owner_pos);
+
+    rr_ghost.add_field(ghost_owner_pos_fid);
+
+#if 0
+    // for(auto& fitr: iitr->second) {
+    //   const context_t::field_info_t & fi = fitr.second;
+    //   if(!utils::hash::is_internal(fi.key)){
+    //     rr_shared.add_field(fi.fid);
+    //     rr_ghost.add_field(fi.fid);
+    //   }
+    // } // for
+#endif
+    rr_shared.add_field(fids[owner]);
+    rr_ghost.add_field(fids[owner]);
+
+    // TODO - circular dependency including internal_task.h
+    auto constexpr key = flecsi::utils::const_string_t{
+      EXPAND_AND_STRINGIFY(ghost_copy_task)}.hash();
+
+    const auto ghost_copy_tid = flecsi_context.task_id<key>();
+
+    Legion::TaskLauncher ghost_launcher(ghost_copy_tid,
+        Legion::TaskArgument(&args[owner], sizeof(args[owner])));
+
+    ghost_launcher.add_future(futures[owner]);
+
+    // Phase READ
+    ghost_launcher.add_region_requirement(rr_shared);
+    ghost_launcher.add_region_requirement(rr_ghost);
+    ghost_launcher.add_wait_barrier(*(barrier_ptrs[owner]));
+
+    // Phase WRITE
+    ghost_launcher.add_arrival_barrier(*(barrier_ptrs[owner]));
+
+    // Execute the ghost copy task
+    runtime->execute_task(context, ghost_launcher);
+
+    // Phase WRITE
+    *(barrier_ptrs[owner]) =
+        runtime->advance_phase_barrier(context,
+            *(barrier_ptrs[owner]));
+  } // for owner as user
+
+}
     //------------------------------------------------------------------------//
     //! FIXME: Need to document.
     //------------------------------------------------------------------------//
@@ -254,6 +288,18 @@ namespace execution {
     Legion::Runtime* runtime;
     Legion::Context & context;
     Legion::TaskLauncher& launcher;
+    std::vector<Legion::LogicalRegion> owner_regions;
+    std::vector<Legion::LogicalRegion> ghost_regions;
+    std::vector<Legion::LogicalRegion> color_regions;
+    std::vector<Legion::FieldID> fids;
+    struct ghost_copy_args {
+      size_t data_client_hash;
+      size_t index_space;
+      size_t owner;
+    };
+    std::vector<struct ghost_copy_args> args;
+    std::vector<Legion::Future> futures;
+    std::vector<Legion::PhaseBarrier*> barrier_ptrs;
 
   }; // struct task_prolog_t
 
