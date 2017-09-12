@@ -12,7 +12,6 @@
 #include <cinchtest.h>
 
 #include "flecsi/execution/execution.h"
-#include "flecsi/data/data.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/supplemental/mesh/empty_mesh_2d.h"
 

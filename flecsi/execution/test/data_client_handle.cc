@@ -13,20 +13,11 @@
 #include <cinchtest.h>
 
 #include "flecsi/execution/execution.h"
-#include "flecsi/execution/context.h"
 #include "flecsi/io/simple_definition.h"
-#include "flecsi/coloring/coloring_types.h"
-#include "flecsi/coloring/adjacency_types.h"
-#include "flecsi/coloring/communicator.h"
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
-#include "flecsi/topology/closure_utils.h"
-#include "flecsi/utils/set_utils.h"
-#include "flecsi/data/data.h"
-#include "flecsi/data/data_client_handle.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
-#include "flecsi/topology/mesh_topology.h"
 
 using namespace std;
 using namespace flecsi;

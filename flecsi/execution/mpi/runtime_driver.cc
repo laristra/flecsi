@@ -12,10 +12,6 @@
 #include <cstdint>
 
 #include "flecsi/data/data.h"
-#include "flecsi/execution/mpi/runtime_driver.h"
-
-#include "flecsi/execution/context.h"
-#include "flecsi/coloring/coloring_types.h"
 
 clog_register_tag(runtime_driver);
 

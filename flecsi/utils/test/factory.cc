@@ -16,7 +16,6 @@
 #include "flecsi/utils/factory.h"
 
 // includes: C++
-#include <string>
 
 // includes: other
 #include <cinchtest.h>

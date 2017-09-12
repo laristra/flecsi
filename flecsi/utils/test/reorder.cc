@@ -17,10 +17,7 @@
 
 // system includes
 #include <cinchtest.h>
-#include <algorithm>
-#include <iostream>
 #include <random>
-#include <vector>
 
 // some using declarations
 using std::cout;
