@@ -658,11 +658,11 @@ spmd_task(
       sizeof(Legion::PhaseBarrier) * num_phase_barriers);
 
   //for (size_t i=0; i<num_phase_barriers;i++ )
-    {
-    clog_tag_guard(runtime_driver);
-    clog(trace) <<my_color <<" has pbarrier_as_owner "<<
-			pbarriers_as_owner[i]<<std::endl;
-    } // scope
+  //  {
+  //  clog_tag_guard(runtime_driver);
+  //  clog(trace) <<my_color <<" has pbarrier_as_owner "<<
+	//		pbarriers_as_owner[i]<<std::endl;
+  //  } // scope
 
   // #4 deserialize num_ghost_owners[
   size_t* num_owners = new size_t [num_idx_spaces];
