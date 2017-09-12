@@ -216,10 +216,7 @@ void launch_copies()
   auto& flecsi_context = context_t::instance();
 
   std::vector<std::set<size_t>> owner_groups;
-  std::set<size_t> initializer;
-  initializer.insert(0);
-  owner_groups.push_back(initializer);
-  for(size_t owner{1}; owner<owner_regions.size(); owner++) {
+  for(size_t owner{0}; owner<owner_regions.size(); owner++) {
     bool found_group = false;
     for(size_t group{0}; group<owner_groups.size(); group++) {
       auto first = owner_groups[group].begin();
@@ -239,63 +236,57 @@ void launch_copies()
   for(size_t group{0}; group<owner_groups.size(); group++) {
     for(auto owner_itr = owner_groups[group].begin(); owner_itr != owner_groups[group].end(); owner_itr++) {
       size_t owner = *owner_itr;
-      clog(error) << "owner " << owner << std::endl;
+      Legion::RegionRequirement rr_shared(owner_regions[owner],
+          READ_ONLY, EXCLUSIVE, owner_regions[owner]);
+
+      Legion::RegionRequirement rr_ghost(ghost_regions[owner],
+          WRITE_DISCARD, EXCLUSIVE, color_regions[owner]);
+
+      auto ghost_owner_pos_fid = LegionRuntime::HighLevel::FieldID(
+          internal_field::ghost_owner_pos);
+
+      rr_ghost.add_field(ghost_owner_pos_fid);
+
+  #if 0
+      // for(auto& fitr: iitr->second) {
+      //   const context_t::field_info_t & fi = fitr.second;
+      //   if(!utils::hash::is_internal(fi.key)){
+      //     rr_shared.add_field(fi.fid);
+      //     rr_ghost.add_field(fi.fid);
+      //   }
+      // } // for
+  #endif
+      rr_shared.add_field(fids[owner]);
+      rr_ghost.add_field(fids[owner]);
+
+      // TODO - circular dependency including internal_task.h
+      auto constexpr key = flecsi::utils::const_string_t{
+        EXPAND_AND_STRINGIFY(ghost_copy_task)}.hash();
+
+      const auto ghost_copy_tid = flecsi_context.task_id<key>();
+
+      Legion::TaskLauncher ghost_launcher(ghost_copy_tid,
+          Legion::TaskArgument(&args[owner], sizeof(args[owner])));
+
+      ghost_launcher.add_future(futures[owner]);
+
+      // Phase READ
+      ghost_launcher.add_region_requirement(rr_shared);
+      ghost_launcher.add_region_requirement(rr_ghost);
+      ghost_launcher.add_wait_barrier(*(barrier_ptrs[owner]));
+
+      // Phase WRITE
+      ghost_launcher.add_arrival_barrier(*(barrier_ptrs[owner]));
+
+      // Execute the ghost copy task
+      runtime->execute_task(context, ghost_launcher);
+
+      // Phase WRITE
+      *(barrier_ptrs[owner]) =
+          runtime->advance_phase_barrier(context,
+              *(barrier_ptrs[owner]));
     } // for owner
   } // for group
-
-  // As user
-  for(size_t owner{0}; owner<owner_regions.size(); owner++) {
-
-    Legion::RegionRequirement rr_shared(owner_regions[owner],
-        READ_ONLY, EXCLUSIVE, owner_regions[owner]);
-
-    Legion::RegionRequirement rr_ghost(ghost_regions[owner],
-        WRITE_DISCARD, EXCLUSIVE, color_regions[owner]);
-
-    auto ghost_owner_pos_fid = LegionRuntime::HighLevel::FieldID(
-        internal_field::ghost_owner_pos);
-
-    rr_ghost.add_field(ghost_owner_pos_fid);
-
-#if 0
-    // for(auto& fitr: iitr->second) {
-    //   const context_t::field_info_t & fi = fitr.second;
-    //   if(!utils::hash::is_internal(fi.key)){
-    //     rr_shared.add_field(fi.fid);
-    //     rr_ghost.add_field(fi.fid);
-    //   }
-    // } // for
-#endif
-    rr_shared.add_field(fids[owner]);
-    rr_ghost.add_field(fids[owner]);
-
-    // TODO - circular dependency including internal_task.h
-    auto constexpr key = flecsi::utils::const_string_t{
-      EXPAND_AND_STRINGIFY(ghost_copy_task)}.hash();
-
-    const auto ghost_copy_tid = flecsi_context.task_id<key>();
-
-    Legion::TaskLauncher ghost_launcher(ghost_copy_tid,
-        Legion::TaskArgument(&args[owner], sizeof(args[owner])));
-
-    ghost_launcher.add_future(futures[owner]);
-
-    // Phase READ
-    ghost_launcher.add_region_requirement(rr_shared);
-    ghost_launcher.add_region_requirement(rr_ghost);
-    ghost_launcher.add_wait_barrier(*(barrier_ptrs[owner]));
-
-    // Phase WRITE
-    ghost_launcher.add_arrival_barrier(*(barrier_ptrs[owner]));
-
-    // Execute the ghost copy task
-    runtime->execute_task(context, ghost_launcher);
-
-    // Phase WRITE
-    *(barrier_ptrs[owner]) =
-        runtime->advance_phase_barrier(context,
-            *(barrier_ptrs[owner]));
-  } // for owner as user
 
 }
     //------------------------------------------------------------------------//
