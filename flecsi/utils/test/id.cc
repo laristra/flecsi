@@ -16,7 +16,6 @@
 #include "flecsi/utils/id.h"
 
 // includes: C++
-#include <string>
 #include <vector>
 
 // includes: other

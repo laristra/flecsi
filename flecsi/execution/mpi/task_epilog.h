@@ -32,8 +32,8 @@ namespace execution {
 
   //--------------------------------------------------------------------------//
   //! The task_epilog_t type can be called to walk the task args after the
-  //! task launcher is created, but before the task has run. This allows
-  //! synchronization dependencies to be added to the execution flow.
+  //! task has run. This allows synchronization dependencies to be added
+  //! to the execution flow.
   //!
   //! @ingroup execution
   //--------------------------------------------------------------------------//
@@ -48,7 +48,6 @@ namespace execution {
 
     task_epilog_t() = default;
 
-
     //------------------------------------------------------------------------//
     //! FIXME: Need a description.
     //!
@@ -60,8 +59,6 @@ namespace execution {
     //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
     //!                               indices of the index partition.
     //!
-    //! @param runtime The Legion task runtime.
-    //! @param context The Legion task runtime context.
     //------------------------------------------------------------------------//
 
     template<
@@ -86,7 +83,7 @@ namespace execution {
 
       auto& context = context_t::instance();
       const int my_color = context.color();
-      auto &my_coloring_info =
+      auto& my_coloring_info =
         context.coloring_info(h.index_space).at(my_color);
 
       auto& field_metadata = context.registered_field_metadata().at(h.fid);

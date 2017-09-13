@@ -191,7 +191,7 @@ struct mpi_context_policy_t
     std::map<int, std::vector<int>> target_lens;
     std::map<int, std::vector<int>> target_disps;
 
-    for (auto& ghost_owner : ghost_owners) {
+    for (auto ghost_owner : ghost_owners) {
       origin_lens.insert({ghost_owner, {}});
       origin_disps.insert({ghost_owner, {}});
       target_lens.insert({ghost_owner, {}});
@@ -199,7 +199,7 @@ struct mpi_context_policy_t
     }
 
     int origin_index = 0;
-    for (auto& ghost : index_coloring.ghost) {
+    for (const auto& ghost : index_coloring.ghost) {
       origin_lens[ghost.rank].push_back(1);
       origin_disps[ghost.rank].push_back(origin_index++);
       target_lens[ghost.rank].push_back(1);
@@ -237,7 +237,7 @@ struct mpi_context_policy_t
     std::map<int, std::vector<int>> compact_origin_lengs;
     std::map<int, std::vector<int>> compact_origin_disps;
 
-    for (auto& ghost_owner : ghost_owners) {
+    for (auto ghost_owner : ghost_owners) {
       if (origin_disps.size() == 0)
         break;
 
@@ -276,7 +276,7 @@ struct mpi_context_policy_t
     std::map<int, std::vector<int>> compact_target_lengs;
     std::map<int, std::vector<int>> compact_target_disps;
 
-    for (auto& ghost_owner : ghost_owners) {
+    for (auto ghost_owner : ghost_owners) {
       if (target_disps.size() == 0)
         break;
 
@@ -311,25 +311,25 @@ struct mpi_context_policy_t
 //        }
 //      }
 
-    for (auto ghost : ghost_owners) {
+    for (auto ghost_owner : ghost_owners) {
       MPI_Datatype origin_type;
       MPI_Datatype target_type;
 
-      MPI_Type_indexed(compact_origin_lengs[ghost].size(),
-                       compact_origin_lengs[ghost].data(),
-                       compact_origin_disps[ghost].data(),
+      MPI_Type_indexed(compact_origin_lengs[ghost_owner].size(),
+                       compact_origin_lengs[ghost_owner].data(),
+                       compact_origin_disps[ghost_owner].data(),
                        flecsi::coloring::mpi_typetraits__<T>::type(),
                        &origin_type);
       MPI_Type_commit(&origin_type);
-      metadata.origin_types.insert({ghost, origin_type});
+      metadata.origin_types.insert({ghost_owner, origin_type});
 
-      MPI_Type_indexed(compact_target_lengs[ghost].size(),
-                       compact_target_lengs[ghost].data(),
-                       compact_target_disps[ghost].data(),
+      MPI_Type_indexed(compact_target_lengs[ghost_owner].size(),
+                       compact_target_lengs[ghost_owner].data(),
+                       compact_target_disps[ghost_owner].data(),
                        flecsi::coloring::mpi_typetraits__<T>::type(),
                        &target_type);
       MPI_Type_commit(&target_type);
-      metadata.target_types.insert({ghost, target_type});
+      metadata.target_types.insert({ghost_owner, target_type});
     }
 
     auto data = field_data[fid].data();
@@ -395,9 +395,7 @@ struct mpi_context_policy_t
     MPI_Allreduce(&local_max_, &global_max_, 1,
            flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
            MPI_COMM_WORLD);
-    mpi_future__<T> future;
-    future.set(global_max_);
-    return future;
+    return global_max_;
   }
 
 
@@ -438,9 +436,7 @@ struct mpi_context_policy_t
     MPI_Allreduce(&local_min_, &global_min_, 1,
            flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MIN,
            MPI_COMM_WORLD);
-    mpi_future__<T> future;
-    future.set(global_min_);
-    return future;
+    return global_min_;
   }
 
 

@@ -4,7 +4,6 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchdevel.h>
-#include <mpi.h>
 
 #include "flecsi/io/simple_definition.h"
 #include "flecsi/coloring/dcrs_utils.h"

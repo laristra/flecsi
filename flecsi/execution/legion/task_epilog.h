@@ -94,7 +94,7 @@ namespace execution {
       bool write_phase{(SHARED_PERMISSIONS == wo) ||
         (SHARED_PERMISSIONS == rw)};
 
-      if(write_phase) {
+      if(write_phase && (*h.write_phase_started)) {
         const int my_color = runtime->find_local_MPI_rank();
 
         {
@@ -128,8 +128,10 @@ namespace execution {
           // Phase READ
           *(h.ghost_owners_pbarriers_ptrs)[owner]);
         } // for
-        }//if
-      } // if
+        *(h.write_phase_started) = false;
+        }//if write phase
+
+      } // if global and color
     } // handle
 
     //------------------------------------------------------------------------//

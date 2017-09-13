@@ -568,6 +568,8 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   struct index_space_data_t{
+    std::map<field_id_t, bool> ghost_is_readable;
+    std::map<field_id_t, bool> write_phase_started;
     std::map<field_id_t, Legion::PhaseBarrier> pbarriers_as_owner;
     std::map<field_id_t, std::vector<Legion::PhaseBarrier>>
        ghost_owners_pbarriers;
@@ -640,7 +642,9 @@ struct legion_context_policy_t
       legion_context, max_reduction
     );
 
-    return legion_future__<T>(global_future);
+    auto global_max_ = global_future.get_result<double>();
+
+    return global_max_;
   }
 
 
@@ -691,7 +695,9 @@ struct legion_context_policy_t
       legion_context, min_reduction
     );
 
-    return legion_future__<T>(global_future);
+    auto global_min_ = global_future.get_result<double>();
+
+    return global_min_;
   }
 
   //--------------------------------------------------------------------------//

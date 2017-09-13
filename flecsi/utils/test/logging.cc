@@ -4,7 +4,6 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/logging.h"
 
 // includes: other
 #include <cinchtest.h>
