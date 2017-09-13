@@ -38,6 +38,7 @@ opts = {
    'sections' : [
       'Introduction',
       'Code Structure',
+      'Index Spaces',
       'Data Model',
       'Execution Model',
       'Topology Types',

@@ -20,11 +20,11 @@
 set(utils_HEADERS
   any.h
   array_ref.h
-  dbc.h
-  dbc_impl.h
   checksum.h
   common.h
   const_string.h
+  dbc.h
+  dbc_impl.h
   debruijn.h
   dimensioned_array.h
   factory.h
@@ -34,6 +34,7 @@ set(utils_HEADERS
   index_space.h
   iterator.h
   logging.h
+  offset.h
   reflection.h
   reorder.h
   set_intersection.h
@@ -53,8 +54,8 @@ set(utils_HEADERS
 #------------------------------------------------------------------------------#
 
 set(utils_SOURCES
-  dbc_impl.cc
   common.cc
+  dbc_impl.cc
   debruijn.cc
 )
 
