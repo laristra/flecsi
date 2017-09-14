@@ -50,6 +50,7 @@ struct legion_data_handle_policy_t
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
   std::vector<Legion::LogicalRegion> ghost_owners_lregions;
+  std::vector<Legion::LogicalRegion> ghost_owners_subregions;
 
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.

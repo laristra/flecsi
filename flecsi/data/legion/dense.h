@@ -549,6 +549,7 @@ struct storage_type__<dense>
     } // for
 
     h.ghost_owners_lregions = ism[index_space].ghost_owners_lregions;
+    h.ghost_owners_subregions = ism[index_space].ghost_owners_subregions;
     h.color_region = ism[index_space].color_region;
     h.global_to_local_color_map_ptr =
       &ism[index_space].global_to_local_color_map;
