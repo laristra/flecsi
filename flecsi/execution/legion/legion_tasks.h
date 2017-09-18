@@ -22,10 +22,12 @@
 #define GHOST_PART 1
 #define EXCLUSIVE_PART 0
 #define SHARED_PART 1
+#define SUBRECT_PART 0
 #define OWNER_COLOR_TAG 1
 
 using legion_map = Legion::STL::map<LegionRuntime::Arrays::coord_t,
   LegionRuntime::Arrays::coord_t>;
+using subrect_map = Legion::STL::map<size_t, LegionRuntime::Arrays::Rect<2>>;
 
 clog_register_tag(legion_tasks);
 
@@ -405,9 +407,72 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
           ghost_data + ghost_offset * field_info.size;
         std::memcpy(ghost_copy_ptr, owner_copy_ptr, field_info.size);
       } // if
-    } // for ghost_itr
+    } // for ghost_pt
   } // for fid
 } // ghost_copy_task
+
+//----------------------------------------------------------------------------//
+//! Owners subregions task returns subrects required from every neighbor
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+__flecsi_internal_legion_task(owners_subregions_task, subrect_map) {
+    const int my_color = runtime->find_local_MPI_rank();
+    //clog(error) << "rank " << my_color << " owners_subregions_task" << std::endl;
+
+
+    clog_assert(regions.size() == 1, "owners_subregions_task requires 1 region");
+    clog_assert(task->regions.size() == 1, "owners_subregions_task requires 1 region");
+    clog_assert(task->regions[0].privilege_fields.size() == 1,
+     "owners_subregions_task only requires ghost_owner_pos_fid");
+
+    legion_map owner_map = task->futures[0].get_result<legion_map>();
+
+    auto ghost_owner_pos_fid =
+      LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+
+    auto position_ref_acc =
+      regions[0].get_field_accessor(ghost_owner_pos_fid).typeify<
+      LegionRuntime::Arrays::Point<2>>();
+
+    Legion::Domain ghost_domain = runtime->get_index_space_domain(ctx,
+            regions[0].get_logical_region().get_index_space());
+
+    LegionRuntime::Arrays::Rect<2> ghost_rect = ghost_domain.get_rect<2>();
+    LegionRuntime::Arrays::Rect<2> ghost_sub_rect;
+    LegionRuntime::Accessor::ByteOffset byte_offset[2];
+
+    LegionRuntime::Arrays::Point<2>* position_ref_data =
+      reinterpret_cast<LegionRuntime::Arrays::Point<2>*>(position_ref_acc.template raw_rect_ptr<2>(
+        ghost_rect, ghost_sub_rect, byte_offset));
+    size_t position_max = ghost_rect.hi[1] - ghost_rect.lo[1] + 1;
+
+    subrect_map lid_to_subrect_map;
+
+    for(size_t ghost_pt = 0; ghost_pt < position_max; ghost_pt++) {
+      LegionRuntime::Arrays::Point<2> ghost_ref = position_ref_data[ghost_pt];
+
+      size_t lid = owner_map[ghost_ref.x[0]];
+
+      auto itr = lid_to_subrect_map.find(lid);
+      if (itr == lid_to_subrect_map.end()) {
+        LegionRuntime::Arrays::Rect<2> new_rect(ghost_ref, ghost_ref);
+        lid_to_subrect_map[lid] = new_rect;
+      } else {
+        if (ghost_ref.x[1] < lid_to_subrect_map[lid].lo[1]) {
+          LegionRuntime::Arrays::Rect<2> new_rect(ghost_ref, lid_to_subrect_map[lid].hi);
+          lid_to_subrect_map[lid] = new_rect;
+        } else if (ghost_ref.x[1] > lid_to_subrect_map[lid].hi[1]) {
+          LegionRuntime::Arrays::Rect<2> new_rect(lid_to_subrect_map[lid].lo, ghost_ref);
+          lid_to_subrect_map[lid] = new_rect;
+        }
+      } // if itr == end
+
+    } // for ghost_pt
+
+    return lid_to_subrect_map;
+} // owners_subregions
 
 //----------------------------------------------------------------------------//
 //! Fill connectivity task fills connectivity for from/to index space and

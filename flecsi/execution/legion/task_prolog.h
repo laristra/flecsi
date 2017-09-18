@@ -129,6 +129,7 @@ namespace execution {
             for(size_t owner{0}; owner<_pbp_size; owner++) {
 
               owner_regions.push_back(h.ghost_owners_lregions[owner]);
+              owner_subregions.push_back(h.ghost_owners_subregions[owner]);
               ghost_regions.push_back(h.ghost_lr);
               color_regions.push_back(h.color_region);
               fids.push_back(h.fid);
@@ -197,7 +198,7 @@ namespace execution {
         auto first_itr = owner_groups[group].begin();
         size_t first = *first_itr;
 
-        Legion::RegionRequirement rr_shared(owner_regions[first],
+        Legion::RegionRequirement rr_shared(owner_subregions[first],
             READ_ONLY, EXCLUSIVE, owner_regions[first]);
         Legion::RegionRequirement rr_ghost(ghost_regions[first],
             WRITE_DISCARD, EXCLUSIVE, color_regions[first]);
@@ -265,6 +266,7 @@ namespace execution {
     Legion::Context & context;
     Legion::TaskLauncher& launcher;
     std::vector<Legion::LogicalRegion> owner_regions;
+    std::vector<Legion::LogicalRegion> owner_subregions;
     std::vector<Legion::LogicalRegion> ghost_regions;
     std::vector<Legion::LogicalRegion> color_regions;
     std::vector<Legion::FieldID> fids;
