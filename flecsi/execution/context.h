@@ -19,6 +19,7 @@
 //! @file
 //! @date Initial file creation: Oct 19, 2015
 //----------------------------------------------------------------------------//
+
 #include <algorithm>
 #include <cstddef>
 #include <map>
