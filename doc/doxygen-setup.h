@@ -78,6 +78,16 @@
  * @ingroup topology
  **/
 
+//----------------------------------------------------------------------------//
+// Topology
+//----------------------------------------------------------------------------//
+
+/**
+ * The Cinch logging utility (CLOG) provides a C++ interface for capturing
+ * output during program execution.
+ * @defgroup clog Cinch Logging Interface (CLOG)
+ **/
+
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
