@@ -83,9 +83,9 @@
 //----------------------------------------------------------------------------//
 
 /**
- * The Cinch logging utility (CLOG) provides a C++ interface for capturing
+ * The Cinch logging utility (clog) provides a C++ interface for capturing
  * output during program execution.
- * @defgroup clog Cinch Logging Interface (CLOG)
+ * @defgroup clog Cinch Logging Interface (clog)
  **/
 
 /*~-------------------------------------------------------------------------~-*
