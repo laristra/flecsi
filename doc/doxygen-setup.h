@@ -67,14 +67,20 @@
  **/
 
 /**
- * Define the Graph Topology group.
- * @defgroup graph-topology Graph Toplogy Interface
+ * Define the Mesh Topology group.
+ * @defgroup mesh-topology Mesh Toplogy Interface
  * @ingroup topology
  **/
 
 /**
- * Define the Structured Graph Topology group.
- * @defgroup structured-graph-topology Structured Graph Toplogy Interface
+ * Define the Structured Mesh Topology group.
+ * @defgroup structured-mesh-topology Structured Mesh Toplogy Interface
+ * @ingroup topology
+ **/
+
+/**
+ * Define the Tree Topology group.
+ * @defgroup tree-topology Tree Toplogy Interface
  * @ingroup topology
  **/
 
