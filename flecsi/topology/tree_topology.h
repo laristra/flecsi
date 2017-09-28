@@ -45,6 +45,7 @@
 #include <set>
 #include <functional>
 #include <mutex>
+#include <stack>
 
 #include "flecsi/geometry/point.h"
 #include "flecsi/concurrency/thread_pool.h"
@@ -1261,6 +1262,8 @@ public:
     subentity_space_t ents;
     ents.set_master(entities_);
 
+    // RECURSIVE VERSION
+#if 0
     // Tree traversal from root down 
     // Recursive version 
     std::function<void(branch_t*)> traverse;
@@ -1296,6 +1299,35 @@ public:
     };
 
     traverse(root()); 
+#endif
+    // ITERATIVE VERSION
+    std::stack<branch_t*> stk;
+    stk.push(root());
+
+    while(!stk.empty()){
+      branch_t* b = stk.top();
+      stk.pop();
+      if(b->is_leaf()){
+        for(auto child: *b){
+            // Check if in radius 
+            if(geometry_t::within(center,child->coordinates(),radius)){
+              ents.push_back(child);
+            }
+        }
+      }else{
+        for(int i=0 ; i<(1<<dimension);++i){
+          auto branch = child(b,i);
+          if(geometry_t::intersects_sphere_sphere(
+                center,
+                radius,
+                branch->get_coordinates(),
+                branch->radius()))
+          {
+            stk.push(branch);
+          }
+        }
+      }
+    }
 
     return ents;
   }
