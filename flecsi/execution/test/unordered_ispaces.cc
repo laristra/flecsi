@@ -13,7 +13,6 @@
 #include <cinchtest.h>
 
 #include "flecsi/execution/execution.h"
-#include "flecsi/data/data.h"
 #include "flecsi/io/simple_definition.h"
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"

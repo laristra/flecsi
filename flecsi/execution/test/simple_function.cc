@@ -4,12 +4,9 @@
  *~--------------------------------------------------------------------------~*/
 
 #include <cinchtest.h>
-#include <iostream>
 
 #include "flecsi/data/data.h"
-#include "flecsi/execution/context.h"
 #include "flecsi/execution/execution.h"
-#include "flecsi/utils/common.h"
 
 ///
 /// \file

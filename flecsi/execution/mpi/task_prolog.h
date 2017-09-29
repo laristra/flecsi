@@ -80,63 +80,7 @@ namespace execution {
       > & h
     )
     {
-      // TODO: skip internal data handle
-      auto& context = context_t::instance();
-      const int my_color = context.color();
-      auto &my_coloring_info =
-        context.coloring_info(h.index_space).at(my_color);
-      
-      std::vector<int> peers;
-      std::set_union(my_coloring_info.shared_users.begin(),
-                     my_coloring_info.shared_users.end(),
-                     my_coloring_info.ghost_owners.begin(),
-                     my_coloring_info.ghost_owners.end(),
-                     std::back_inserter(peers));
-
-      MPI_Group comm_grp, rma_group;
-      MPI_Comm_group(MPI_COMM_WORLD, &comm_grp);
-      MPI_Group_incl(comm_grp, peers.size(), peers.data(), &rma_group);
-      MPI_Group_free(&comm_grp);
-   
-      //clog(trace) << "rank: " << my_color << "win create\n";
-      // A pull model using MPI_Get:
-      // 1. create MPI window for shared portion of the local buffer.
-      MPI_Win win;
-      MPI_Win_create(h.shared_data, my_coloring_info.shared * sizeof(T),
-                     sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD,
-                     &win);
-
-      // 2. iterate through each ghost cell and MPI_Get from the peer.
-      // FIXME: the group for MPI_Win_post are the "origin" processes, i.e.
-      // the peer processes calling MPI_Get to get our shared cells. Thus
-      // granting access of local window to these processes. This is the set
-      // union of the entry_info.shared of shared cells.
-      // On the other hand, the group for MPI_Win_start are the 'target'
-      // processes, i.e. the peer processes this rank is going to get ghost
-      // cells from. This is the union of entry_info.rank of ghost cells.
-      MPI_Win_post(rma_group, 0, win);
-      MPI_Win_start(rma_group, 0, win);
-
-      auto index_coloring = context.coloring(h.index_space);
-
-      int i = 0;
-      for (auto ghost : index_coloring.ghost) {
-        //clog_rank(warn, 1) << "ghost id: " <<  ghost.id << ", rank: " << ghost.rank
-        //                    << ", offset: " << ghost.offset
-        //                    << std::endl;
-        MPI_Get(h.ghost_data+i, 1,
-                flecsi::coloring::mpi_typetraits__<T>::type(),
-                ghost.rank, ghost.offset, 1,
-                flecsi::coloring::mpi_typetraits__<T>::type(), win);
-        i++;
-      }
-
-      MPI_Win_complete(win);
-      MPI_Win_wait(win);
-    
-      MPI_Win_free(&win);
-      MPI_Group_free(&rma_group);
-      
+      // TODO: move field data allocation here?
     } // handle
 
     template<
@@ -150,6 +94,7 @@ namespace execution {
     {
       auto& context_ = context_t::instance();
 
+      // h is partially initialized in client.h
       auto storage = h.set_storage(new typename T::storage_t);
 
       bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
@@ -180,7 +125,8 @@ namespace execution {
           execution::context_t::instance().register_field_data(ent.fid,
                                                                size);
         }
-        auto ents = reinterpret_cast<topology::mesh_entity_base_*>(registered_field_data[ent.fid].data());
+        auto ents =
+          reinterpret_cast<topology::mesh_entity_base_*>(registered_field_data[ent.fid].data());
 
         fieldDataIter = registered_field_data.find(ent.id_fid);
         if (fieldDataIter == registered_field_data.end()) {
@@ -189,7 +135,8 @@ namespace execution {
           execution::context_t::instance().register_field_data(ent.id_fid,
                                                                size);
         }
-        auto ids = reinterpret_cast<utils::id_t *>(registered_field_data[ent.id_fid].data());
+        auto ids =
+          reinterpret_cast<utils::id_t *>(registered_field_data[ent.id_fid].data());
 
         // new allocation every time.
         storage->init_entities(ent.domain, ent.dim,
@@ -206,26 +153,11 @@ namespace execution {
         const size_t from_index_space = adj.from_index_space;
         const size_t to_index_space = adj.to_index_space;
 
-        // 1. get number of indices
         auto& color_info = (context_.coloring_info(from_index_space)).at(color);
-        auto adj_info = (context_.adjacency_info()).at(adj_index_space);
-        adj.num_indices = adj_info.color_sizes[color];
-        
-        // 2. allocate field data for indices.
         auto& registered_field_data = context_.registered_field_data();
-        auto fieldDataIter = registered_field_data.find(adj.index_fid);
-        if (fieldDataIter == registered_field_data.end()) {
-          size_t size = sizeof(utils::id_t) * adj.num_indices;
-          execution::context_t::instance().register_field_data(adj.index_fid,
-                                                               size);
-        }
-        adj.indices_buf = reinterpret_cast<size_t *>(registered_field_data[adj.index_fid].data());
 
-        // 3. get number of offsets
         adj.num_offsets = (color_info.exclusive + color_info.shared + color_info.ghost);
- 
-        // 4. allocate field data for offsets.
-        fieldDataIter = registered_field_data.find(adj.offset_fid);
+        auto fieldDataIter = registered_field_data.find(adj.offset_fid);
         if (fieldDataIter == registered_field_data.end()) {
           size_t size = sizeof(size_t) * adj.num_offsets;
 
@@ -234,10 +166,22 @@ namespace execution {
         }
         adj.offsets_buf = reinterpret_cast<size_t *>(registered_field_data[adj.offset_fid].data());
 
+        auto adj_info = (context_.adjacency_info()).at(adj_index_space);
+        adj.num_indices = adj_info.color_sizes[color];
+        fieldDataIter = registered_field_data.find(adj.index_fid);
+        if (fieldDataIter == registered_field_data.end()) {
+          size_t size = sizeof(utils::id_t) * adj.num_indices;
+          execution::context_t::instance().register_field_data(adj.index_fid,
+                                                               size);
+        }
+        adj.indices_buf = reinterpret_cast<size_t *>(registered_field_data[adj.index_fid].data());
+
         storage->init_connectivity(adj.from_domain, adj.to_domain,
                                    adj.from_dim, adj.to_dim,
-                                   reinterpret_cast<utils::offset_t *>(adj.offsets_buf), adj.num_offsets,
-                                   reinterpret_cast<utils::id_t *>(adj.indices_buf), adj.num_indices,
+                                   reinterpret_cast<utils::offset_t *>(adj.offsets_buf),
+                                   adj.num_offsets,
+                                   reinterpret_cast<utils::id_t *>(adj.indices_buf),
+                                   adj.num_indices,
                                    _read);
       }
 

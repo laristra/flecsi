@@ -31,6 +31,9 @@ struct legion_data_handle_policy_t
 
   legion_data_handle_policy_t(const legion_data_handle_policy_t& p) = default;
 
+  bool* ghost_is_readable;
+  bool* write_phase_started;
+
   // +++ The following fields are set from get_handle(), reading
   // information from the context which is data that is the same
   // across multiple ranks/colors and should be used ONLY as read-only data
@@ -47,6 +50,7 @@ struct legion_data_handle_policy_t
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
   std::vector<Legion::LogicalRegion> ghost_owners_lregions;
+  std::vector<Legion::LogicalRegion> ghost_owners_subregions;
 
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.

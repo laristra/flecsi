@@ -12,21 +12,20 @@
 * All rights reserved
 *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_legion_task_epilog_h
-#define flecsi_execution_legion_task_epilog_h
+#ifndef flecsi_execution_mpi_task_epilog_h
+#define flecsi_execution_mpi_task_epilog_h
 
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: May 19, 2017
 //----------------------------------------------------------------------------//
 
-#include <legion.h>
-#include <type_traits>
 #include <vector>
 
-#include "flecsi/utils/tuple_walker.h"
-
-clog_register_tag(epilog);
+#include "mpi.h"
+#include "flecsi/data/data.h"
+#include "flecsi/execution/context.h"
+#include "flecsi/coloring/mpi_utils.h"
 
 namespace flecsi {
 namespace execution {
@@ -45,22 +44,12 @@ namespace execution {
     //------------------------------------------------------------------------//
     //! Construct a task_epilog_t instance.
     //!
-    //! @param runtime The Legion task runtime.
-    //! @param context The Legion task runtime context.
     //------------------------------------------------------------------------//
 
-    task_epilog_t(
-      Legion::Runtime * runtime,
-      Legion::Context & context
-    )
-    :
-      runtime(runtime),
-      context(context)
-    {
-    } // task_epilog_t
+    task_epilog_t() = default;
 
     //------------------------------------------------------------------------//
-    //! FIXME: Need description
+    //! FIXME: Need a description.
     //!
     //! @tparam T                     The data type referenced by the handle.
     //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
@@ -70,8 +59,6 @@ namespace execution {
     //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
     //!                               indices of the index partition.
     //!
-    //! @param runtime The Legion task runtime.
-    //! @param context The Legion task runtime context.
     //------------------------------------------------------------------------//
 
     template<
@@ -90,54 +77,34 @@ namespace execution {
       > & h
     )
     {
- if (!h.global && !h.color){
-      bool write_phase{(SHARED_PERMISSIONS == wo) ||
-        (SHARED_PERMISSIONS == rw)};
+      // Skip Read Only handles
+      if (EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
+        return;
 
-      if(write_phase && (*h.write_phase_started)) {
-        const int my_color = runtime->find_local_MPI_rank();
+      auto& context = context_t::instance();
+      const int my_color = context.color();
+      auto& my_coloring_info =
+        context.coloring_info(h.index_space).at(my_color);
 
-        {
-        clog(trace) << "rank " << my_color << " WRITE PHASE EPILOGUE" <<
-          std::endl;
+      auto& field_metadata = context.registered_field_metadata().at(h.fid);
 
-        clog(trace) << "rank " << my_color << " advances " <<
-          *(h.pbarrier_as_owner_ptr) <<  std::endl;
-        } // scope
+      MPI_Win win = field_metadata.win;
 
-        *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(context,
+      MPI_Win_post(field_metadata.shared_users_grp, 0, win);
+      MPI_Win_start(field_metadata.ghost_owners_grp, 0, win);
 
-        // Phase READ
-        *(h.pbarrier_as_owner_ptr));
+      for (auto ghost_owner : my_coloring_info.ghost_owners) {
+        MPI_Get(h.ghost_data, 1, field_metadata.origin_types[ghost_owner],
+                ghost_owner, 0, 1, field_metadata.target_types[ghost_owner],
+                win);
+      }
 
-        const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
-
-        // As user
-        for(size_t owner=0; owner<_pbp_size; owner++) {
-          {
-          clog_tag_guard(epilog);
-          clog(trace) << "rank " << my_color << " arrives & advances " <<
-            *(h.ghost_owners_pbarriers_ptrs[owner]) << std::endl;
-          } // scope
-
-          // Phase READ
-          h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);
-          *(h.ghost_owners_pbarriers_ptrs[owner]) =
-            runtime->advance_phase_barrier(context,
-
-          // Phase READ
-          *(h.ghost_owners_pbarriers_ptrs)[owner]);
-        } // for
-        *(h.write_phase_started) = false;
-        }//if write phase
-
-      } // if global and color
+      MPI_Win_complete(win);
+      MPI_Win_wait(win);
     } // handle
 
     //------------------------------------------------------------------------//
     //! FIXME: Need to document.
-    //!
-    //! @param T
     //------------------------------------------------------------------------//
 
     template<
@@ -146,22 +113,14 @@ namespace execution {
     static
     typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
     handle(
-      T &
+      T&
     )
     {
     } // handle
-
-    Legion::Runtime * runtime;
-    Legion::Context & context;
 
   }; // struct task_epilog_t
 
 } // namespace execution 
 } // namespace flecsi
 
-#endif // flecsi_execution_legion_task_epilog_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+#endif // flecsi_execution_mpi_task_epilog_h

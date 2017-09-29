@@ -3,32 +3,34 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_mpi_data_handle_policy_h
-#define flecsi_data_mpi_data_handle_policy_h
+#ifndef flecsi_data_serial_mutator_handle_policy_h
+#define flecsi_data_serial_mutator_handle_policy_h
 
 //----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Apr 04, 2017
+/// @file
+/// @date Initial file creation: Apr 04, 2017
 //----------------------------------------------------------------------------//
 
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
+//! The serial_mutator_handle_policy_t type provides backend storage for
+//! interfacing to the Legion runtime.
+//!
+//! @ingroup data
+//----------------------------------------------------------------------------//
 
-struct mpi_data_handle_policy_t
+struct serial_mutator_handle_policy_t
 {
-  // +++ The following fields are set from get_handle(), reading
-  // information from the context which is data that is the same
-  // across multiple ranks/colors and should be used ONLY as read-only data
+  serial_mutator_handle_policy_t(){}
 
-  field_id_t fid;
-  size_t index_space;
-  size_t data_client_hash;
-}; // class mpi_data_handle_policy_t
+  serial_mutator_handle_policy_t(const serial_mutator_handle_policy_t& p) = default;
+
+}; // class serial_mutator_handle_policy_t
 
 } // namespace flecsi
 
-#endif // flecsi_data_mpi_data_handle_policy_h
+#endif // flecsi_data_serial_mutator_handle_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

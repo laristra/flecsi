@@ -40,6 +40,8 @@
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/coloring/mpi_utils.h"
+#include "flecsi/coloring/coloring_types.h"
+#include "flecsi/coloring/index_coloring.h"
 
 namespace flecsi {
 namespace execution {
@@ -141,6 +143,207 @@ struct mpi_context_policy_t
   {
     return index_space_data_map_;
   }
+
+  using coloring_info_t = flecsi::coloring::coloring_info_t;
+  using index_coloring_t = flecsi::coloring::index_coloring_t;
+  struct field_metadata_t {
+
+    MPI_Group shared_users_grp;
+    MPI_Group ghost_owners_grp;
+
+    std::map<int, MPI_Datatype> origin_types;
+    std::map<int, MPI_Datatype> target_types;
+
+    MPI_Win win;
+  };
+
+  template <typename T>
+  void register_field_metadata(const field_id_t fid,
+                               const coloring_info_t& coloring_info,
+                               const index_coloring_t& index_coloring) {
+
+    // The group for MPI_Win_post are the "origin" processes, i.e.
+    // the peer processes calling MPI_Get to get our shared cells. Thus
+    // granting access of local window to these processes. This is the set
+    // coloring_info_t::shared_users
+    // On the other hand, the group for MPI_Win_start are the 'target'
+    // processes, i.e. the peer processes this rank is going to get ghost
+    // cells from. This is the set coloring_info_t::ghost_owners.
+    // Since both shared_users and ghost_owners are std::set, we have copy
+    // them to std::vector be passed to MPI.
+    std::vector<int> shared_users(coloring_info.shared_users.begin(),
+                                  coloring_info.shared_users.end());
+    std::vector<int> ghost_owners(coloring_info.ghost_owners.begin(),
+                                  coloring_info.ghost_owners.end());
+
+    MPI_Group comm_grp;
+    MPI_Comm_group(MPI_COMM_WORLD, &comm_grp);
+
+    field_metadata_t metadata;
+
+    MPI_Group_incl(comm_grp, shared_users.size(),
+                   shared_users.data(), &metadata.shared_users_grp);
+    MPI_Group_incl(comm_grp, ghost_owners.size(),
+                   ghost_owners.data(), &metadata.ghost_owners_grp);
+
+    std::map<int, std::vector<int>> origin_lens;
+    std::map<int, std::vector<int>> origin_disps;
+    std::map<int, std::vector<int>> target_lens;
+    std::map<int, std::vector<int>> target_disps;
+
+    for (auto ghost_owner : ghost_owners) {
+      origin_lens.insert({ghost_owner, {}});
+      origin_disps.insert({ghost_owner, {}});
+      target_lens.insert({ghost_owner, {}});
+      target_disps.insert({ghost_owner, {}});
+    }
+
+    int origin_index = 0;
+    for (const auto& ghost : index_coloring.ghost) {
+      origin_lens[ghost.rank].push_back(1);
+      origin_disps[ghost.rank].push_back(origin_index++);
+      target_lens[ghost.rank].push_back(1);
+      target_disps[ghost.rank].push_back(ghost.offset);
+    }
+
+//      if (my_color == 0) {
+//        for (auto ghost_owner : ghost_owners) {
+//          std::cout << "ghost owner: " << ghost_owner << std::endl;
+//          std::cout << "\torigin length: ";
+//          for (auto len : origin_lens[ghost_owner]) {
+//            std::cout << len << " ";
+//          }
+//          std::cout << std::endl;
+//          std::cout << "\torigin disp: ";
+//          for (auto len : origin_disps[ghost_owner]) {
+//            std::cout << len << " ";
+//          }
+//          std::cout << std::endl;
+//          std::cout << "\ttarget length: ";
+//          for (auto len : target_lens[ghost_owner]) {
+//            std::cout << len << " ";
+//          }
+//          std::cout << std::endl;
+//
+//          std::cout << "\ttarget disp: ";
+//          for (auto len : target_disps[ghost_owner]) {
+//            std::cout << len << " ";
+//          }
+//          std::cout << std::endl;
+//
+//        }
+//      }
+
+    std::map<int, std::vector<int>> compact_origin_lengs;
+    std::map<int, std::vector<int>> compact_origin_disps;
+
+    for (auto ghost_owner : ghost_owners) {
+      if (origin_disps.size() == 0)
+        break;
+
+      int count = 0;
+      compact_origin_lengs[ghost_owner].push_back(1);
+      compact_origin_disps[ghost_owner].push_back(
+        origin_disps[ghost_owner][0]);
+
+      for (int i = 1; i < origin_disps[ghost_owner].size(); i++) {
+        if (origin_disps[ghost_owner][i] - origin_disps[ghost_owner][i - 1] ==
+            1) {
+          compact_origin_lengs[ghost_owner].back() = compact_origin_lengs[ghost_owner].back() + 1;
+        } else {
+          compact_origin_lengs[ghost_owner].push_back(1);
+          compact_origin_disps[ghost_owner].push_back(origin_disps[ghost_owner][i]);
+        }
+      }
+    }
+
+//      if (my_color == 0) {
+//        for (auto ghost_owner : ghost_owners) {
+//          std::cout << "ghost owner: " << ghost_owner << std::endl;
+//          std::cout << "source compacted length: ";
+//          for (auto len : compact_origin_lengs[ghost_owner]) {
+//            std::cout << len << " ";
+//          }
+//          std::cout << std::endl;
+//          std::cout << "source compacted disps: ";
+//          for (auto disp : compact_origin_disps[ghost_owner]) {
+//            std::cout << disp << " ";
+//          }
+//          std::cout << std::endl;
+//        }
+//      }
+
+    std::map<int, std::vector<int>> compact_target_lengs;
+    std::map<int, std::vector<int>> compact_target_disps;
+
+    for (auto ghost_owner : ghost_owners) {
+      if (target_disps.size() == 0)
+        break;
+
+      int count = 0;
+      compact_target_lengs[ghost_owner].push_back(1);
+      compact_target_disps[ghost_owner].push_back(target_disps[ghost_owner][0]);
+
+      for (int i = 1; i < target_disps[ghost_owner].size(); i++) {
+        if (target_disps[ghost_owner][i] - target_disps[ghost_owner][i - 1] == 1) {
+          compact_target_lengs[ghost_owner].back() = compact_target_lengs[ghost_owner].back() + 1;
+        } else {
+          compact_target_lengs[ghost_owner].push_back(1);
+          compact_target_disps[ghost_owner].push_back(target_disps[ghost_owner][i]);
+        }
+      }
+    }
+
+//      if (my_color == 0) {
+//        for (auto ghost_owner : ghost_owners) {
+//          std::cout << "ghost owner: " << ghost_owner << std::endl;
+//
+//          std::cout << "compacted target length: ";
+//          for (auto len : compact_target_lengs[ghost_owner]) {
+//            std::cout << len << " ";
+//          }
+//          std::cout << std::endl;
+//          std::cout << "compacted target disps: ";
+//          for (auto disp : compact_target_disps[ghost_owner]) {
+//            std::cout << disp << " ";
+//          }
+//          std::cout << std::endl;
+//        }
+//      }
+
+    for (auto ghost_owner : ghost_owners) {
+      MPI_Datatype origin_type;
+      MPI_Datatype target_type;
+
+      MPI_Type_indexed(compact_origin_lengs[ghost_owner].size(),
+                       compact_origin_lengs[ghost_owner].data(),
+                       compact_origin_disps[ghost_owner].data(),
+                       flecsi::coloring::mpi_typetraits__<T>::type(),
+                       &origin_type);
+      MPI_Type_commit(&origin_type);
+      metadata.origin_types.insert({ghost_owner, origin_type});
+
+      MPI_Type_indexed(compact_target_lengs[ghost_owner].size(),
+                       compact_target_lengs[ghost_owner].data(),
+                       compact_target_disps[ghost_owner].data(),
+                       flecsi::coloring::mpi_typetraits__<T>::type(),
+                       &target_type);
+      MPI_Type_commit(&target_type);
+      metadata.target_types.insert({ghost_owner, target_type});
+    }
+
+    auto data = field_data[fid].data();
+    auto shared_data = data + coloring_info.exclusive * sizeof(T);
+    MPI_Win_create(shared_data, coloring_info.shared * sizeof(T),
+                   sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD,
+                   &metadata.win);
+    field_metadata.insert({fid, metadata});
+  }
+
+  std::map<field_id_t, field_metadata_t>&
+  registered_field_metadata() {
+    return field_metadata;
+  };
 
   void register_field_data(field_id_t fid,
                            size_t size) {
@@ -258,6 +461,7 @@ private:
 //  > task_registry_;
 
   std::map<field_id_t, std::vector<uint8_t>> field_data;
+  std::map<field_id_t, field_metadata_t> field_metadata;
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
 

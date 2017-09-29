@@ -5,8 +5,6 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/topology/structured_mesh_topology.h"
-
 template<size_t> struct domain_ {};
 template<size_t D, size_t NM>
 struct structured_mesh_entity_t {};

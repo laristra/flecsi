@@ -10,8 +10,6 @@
 
 #include "flecsi/execution/mpi/context_policy.h"
 
-#include "flecsi/data/storage.h"
-
 namespace flecsi {
 namespace execution {
 

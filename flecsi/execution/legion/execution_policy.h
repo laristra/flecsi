@@ -258,7 +258,7 @@ struct legion_execution_policy_t
       // Enqueue the MPI task.
       auto future =
         legion_runtime->execute_index_space(legion_context, launcher);
-      future.wait_all_results();
+     // future.wait_all_results();
 
       // Handoff to the MPI runtime.
       context_.handoff_to_mpi(legion_context, legion_runtime);
@@ -300,6 +300,7 @@ struct legion_execution_policy_t
           task_prolog_t
             task_prolog(legion_runtime, legion_context, task_launcher);
           task_prolog.walk(task_args);
+          task_prolog.launch_copies();
 
           // Enqueue the task.
           clog(trace) << "Execute flecsi/legion task " << KEY << " on rank " <<

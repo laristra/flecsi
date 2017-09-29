@@ -4,7 +4,6 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchdevel.h>
-#include <vector>
 
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/execution.h"

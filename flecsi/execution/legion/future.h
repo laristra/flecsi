@@ -49,13 +49,13 @@ struct legion_future_concept__
   //! Abstract interface to wait on a task result.
   //--------------------------------------------------------------------------//
 
-  virtual void wait() = 0;
+  virtual void wait(bool silence_warnings = false) = 0;
 
   //--------------------------------------------------------------------------//
   //! Abstract interface to get a task result.
   //--------------------------------------------------------------------------//
 
-  virtual RETURN get(size_t index = 0) = 0;
+  virtual RETURN get(size_t index = 0, bool silence_warnings = false) = 0;
 
   //--------------------------------------------------------------------------//
   //! Abstract interface for reduction step.
@@ -85,7 +85,7 @@ struct legion_future_concept__<void>
   //! Abstract interface to wait on a task result.
   //--------------------------------------------------------------------------//
 
-  virtual void wait() = 0;
+  virtual void wait(bool silence_warnings = false) = 0;
 
 }; // struct legion_future_concept__
 
@@ -123,7 +123,7 @@ struct legion_future_model__ : public legion_future_concept__<RETURN>
   //--------------------------------------------------------------------------//
 
   void
-  wait()
+  wait(bool silence_warnings = false)
   {
     legion_future_.wait();
   } // wait
@@ -138,10 +138,11 @@ struct legion_future_model__ : public legion_future_concept__<RETURN>
 
   RETURN
   get(
-    size_t index = 0
+    size_t index = 0,
+    bool silence_warnings = false
   )
   {
-    return legion_future_.template get_result<RETURN>();
+    return legion_future_.template get_result<RETURN>(silence_warnings);
   } // get
 
   void
@@ -186,9 +187,9 @@ struct legion_future_model__<void, FUTURE>
   //--------------------------------------------------------------------------//
 
   void
-  wait()
+  wait(bool silence_warnings = false)
   {
-    legion_future_.get_void_result();
+    legion_future_.get_void_result(silence_warnings);
   } // wait
 
   void
@@ -231,9 +232,9 @@ struct legion_future_model__<RETURN, Legion::FutureMap>
   //--------------------------------------------------------------------------//
 
   void
-  wait()
+  wait(bool silence_warnings = false)
   {
-    legion_future_.wait_all_results();
+    legion_future_.wait_all_results(silence_warnings);
   } // wait
 
   //--------------------------------------------------------------------------//
@@ -246,13 +247,15 @@ struct legion_future_model__<RETURN, Legion::FutureMap>
 
   RETURN
   get(
-    size_t index = 0
+    size_t index = 0,
+    bool silence_warnings = false
   )
   {
     return legion_future_.get_result<RETURN>(
       Legion::DomainPoint::from_point<1>(
         LegionRuntime::Arrays::Point<1>(index)
-      )
+      ),
+      silence_warnings
     );
   } // get
 
@@ -296,9 +299,9 @@ struct legion_future_model__<void, Legion::FutureMap>
   //--------------------------------------------------------------------------//
 
   void
-  wait()
+  wait(bool silence_warnings = false)
   {
-    legion_future_.wait_all_results();
+    legion_future_.wait_all_results(silence_warnings);
   } // wait
 
 private:
@@ -372,9 +375,9 @@ struct legion_future__
   //--------------------------------------------------------------------------//
 
   void
-  wait()
+  wait(bool silence_warnings=false)
   {
-    state_->wait();
+    state_->wait(silence_warnings);
   } // wait
 
   //--------------------------------------------------------------------------//
@@ -387,10 +390,11 @@ struct legion_future__
 
   RETURN
   get(
-    size_t index = 0
+    size_t index = 0,
+    bool silence_warnings = false
   )
   {
-    return state_->get(index);
+    return state_->get(index, silence_warnings);
   } // get
 
   void
@@ -437,9 +441,9 @@ struct legion_future__<void>
   //! Wait on a task result.
   //--------------------------------------------------------------------------//
 
-  void wait()
+  void wait(bool silence_warnings=false)
   {
-    state_->wait();
+    state_->wait(silence_warnings);
   } // wait
 
   std::shared_ptr<legion_future_concept__<void>> state_;

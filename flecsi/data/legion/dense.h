@@ -534,6 +534,10 @@ struct storage_type__<dense>
     h.ghost_lr = ism[index_space].ghost_lr;
     h.pbarrier_as_owner_ptr =
       &ism[index_space].pbarriers_as_owner[field_info.fid];
+    h.ghost_is_readable =
+      &(ism[index_space].ghost_is_readable[field_info.fid]);
+    h.write_phase_started =
+      &(ism[index_space].write_phase_started[field_info.fid]);
     h.ghost_owners_pbarriers_ptrs.resize(0);
 
     const size_t _pb_size{
@@ -545,6 +549,7 @@ struct storage_type__<dense>
     } // for
 
     h.ghost_owners_lregions = ism[index_space].ghost_owners_lregions;
+    h.ghost_owners_subregions = ism[index_space].ghost_owners_subregions;
     h.color_region = ism[index_space].color_region;
     h.global_to_local_color_map_ptr =
       &ism[index_space].global_to_local_color_map;

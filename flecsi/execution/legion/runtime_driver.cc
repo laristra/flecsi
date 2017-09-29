@@ -523,7 +523,8 @@ runtime_driver(
 
   // Launch the spmd tasks
   auto future = runtime->execute_must_epoch(ctx, must_epoch_launcher);
-  future.wait_all_results();
+  bool silence_warnings = true;
+  future.wait_all_results(silence_warnings);
 
   //-----------------------------------------------------------------------//
   // Finish up Legion runtime and fall back out to MPI.
@@ -656,12 +657,12 @@ spmd_task(
   args_deserializer.deserialize((void*)pbarriers_as_owner,
       sizeof(Legion::PhaseBarrier) * num_phase_barriers);
 
-  for (size_t i=0; i<num_phase_barriers;i++ ) 
-    {
-    clog_tag_guard(runtime_driver);
-    clog(trace) <<my_color <<" has pbarrier_as_owner "<<
-			pbarriers_as_owner[i]<<std::endl;
-    } // scope
+  //for (size_t i=0; i<num_phase_barriers;i++ )
+  //  {
+  //  clog_tag_guard(runtime_driver);
+  //  clog(trace) <<my_color <<" has pbarrier_as_owner "<<
+	//		pbarriers_as_owner[i]<<std::endl;
+  //  } // scope
 
   // #4 deserialize num_ghost_owners[
   size_t* num_owners = new size_t [num_idx_spaces];
@@ -675,6 +676,8 @@ spmd_task(
     for (const field_id_t& field_id : fields_map[idx_space]){
       ispace_dmap[idx_space].pbarriers_as_owner[field_id] =
         pbarriers_as_owner[indx];
+      ispace_dmap[idx_space].ghost_is_readable[field_id] = true;
+      ispace_dmap[idx_space].write_phase_started[field_id] = false;
       indx++;
     }//end field_info
   }//end for idx_space
@@ -715,8 +718,11 @@ spmd_task(
   // Prevent these objects destructors being called until after driver()
   std::map<size_t, std::vector<Legion::LogicalRegion>>
     ghost_owners_lregions;
+  std::map<size_t, std::vector<Legion::LogicalRegion>>
+    ghost_owners_subregions;
   std::vector<Legion::IndexPartition> primary_ghost_ips(num_idx_spaces);
   std::vector<Legion::IndexPartition> exclusive_shared_ips(num_idx_spaces);
+  std::map<size_t,std::vector<Legion::IndexPartition>> owner_subrect_ips;
 
   //fill ispace_dmap with logical regions
   size_t region_index = 0;
@@ -817,6 +823,7 @@ spmd_task(
     runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, SHARED_PART);
 
     // Add neighbors regions to context_
+    ghost_owners_subregions[idx_space].resize(num_owners[consecutive_index]);
     for(size_t owner = 0; owner < num_owners[consecutive_index]; owner++) {
       ghost_owners_lregions[idx_space].push_back(regions[region_index]
         .get_logical_region());
@@ -880,6 +887,65 @@ spmd_task(
               .add_field(ghost_owner_pos_fid));
 
     runtime->execute_task(ctx, fix_ghost_refs_launcher);
+
+    // Find subrects from each owner that I must copy in ghost_copy_task
+    Legion::TaskLauncher owners_subregions_launcher(context_.task_id<
+      __flecsi_internal_task_key(owners_subregions_task)>(),
+      Legion::TaskArgument(nullptr, 0));
+
+    owners_subregions_launcher.add_future(Legion::Future::from_value(runtime,
+            ispace_dmap[idx_space].global_to_local_color_map));
+
+    owners_subregions_launcher.add_region_requirement(
+        Legion::RegionRequirement(ispace_dmap[idx_space].ghost_lr, READ_ONLY,
+            EXCLUSIVE, ispace_dmap[idx_space].color_region)
+        .add_field(ghost_owner_pos_fid));
+
+    Legion::Future owner_to_subrect_future =
+        runtime->execute_task(ctx, owners_subregions_launcher);
+
+    bool silence_warnings = true;   // more efficient to defer this to just
+                                    // before calling driver, but this is
+                                    // only a one-time setup
+    subrect_map owner_to_subrect_map =
+        owner_to_subrect_future.get_result<subrect_map>(silence_warnings);
+
+    for(auto owner_itr=owner_to_subrect_map.begin();
+        owner_itr!=owner_to_subrect_map.end(); owner_itr++) {
+      size_t owner = owner_itr->first;
+      LegionRuntime::Arrays::Rect<2> sub_rect = owner_itr->second;
+
+      Legion::IndexSpace color_ispace =
+          ghost_owners_lregions[idx_space][owner].get_index_space();
+      LegionRuntime::Arrays::Rect<1> color_bounds_1D(0,1);
+      Legion::Domain color_domain_1D
+      = Legion::Domain::from_rect<1>(color_bounds_1D);
+
+      Legion::DomainColoring owner_subrect_coloring;
+      owner_subrect_coloring[SUBRECT_PART]
+                             = Legion::Domain::from_rect<2>(sub_rect);
+      Legion::IndexPartition owner_subrect_ip =
+        runtime->create_index_partition(ctx, color_ispace, color_domain_1D,
+        owner_subrect_coloring, true /*disjoint*/);
+
+      auto ips_itr = owner_subrect_ips.find(owner);
+      if (ips_itr == owner_subrect_ips.end())
+        owner_subrect_ips[owner].resize(num_idx_spaces);
+      owner_subrect_ips[owner][idx_space] = owner_subrect_ip;
+
+      Legion::LogicalPartition owner_subrect_lp =
+        runtime->get_logical_partition(ctx,
+            ghost_owners_lregions[idx_space][owner], owner_subrect_ip);
+
+      Legion::LogicalRegion subrect_lr =
+      runtime->get_logical_subregion_by_color(ctx, owner_subrect_lp,
+                                              SUBRECT_PART);
+
+      ghost_owners_subregions[idx_space][owner] = subrect_lr;
+
+    } //owner_itr
+    ispace_dmap[idx_space].ghost_owners_subregions
+      = ghost_owners_subregions[idx_space];
 
     consecutive_index++;
   } // for idx_space
