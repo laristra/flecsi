@@ -1854,13 +1854,6 @@ private:
 
     static constexpr size_t M0 = 0;
 
-    for (size_t i = 0; i < MT::num_dimensions; ++i) {
-      get_connectivity_<TM, FM, TD>(i).init();
-    }
-    for (size_t i = 0; i < TD; ++i) {
-      get_connectivity_(TM, TM, TD, i).init();
-    }
-
     // This buffer should be large enough to hold all entities
     // that potentially need to be created
     std::array<id_t, 4096> entity_ids;
