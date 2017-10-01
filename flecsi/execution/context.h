@@ -134,7 +134,7 @@ struct context__ : public CONTEXT_POLICY
 
 
   //--------------------------------------------------------------------------//
-  //! Myer's singleton instance.
+  //! Meyer's singleton instance.
   //!
   //! @return The single instance of this type.
   //--------------------------------------------------------------------------//
