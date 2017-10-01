@@ -18,6 +18,7 @@
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
+#include "flecsi/data/mutator_handle.h"
 
 using namespace std;
 using namespace flecsi;
@@ -294,6 +295,10 @@ void driver(int argc, char ** argv) {
 
   flecsi_execute_task(task1, single, ch);
 #endif
+
+
+  mutator_handle__<double> h(nullptr, nullptr, 0, 0, 5);
+
 } // specialization_driver
 
 //----------------------------------------------------------------------------//
