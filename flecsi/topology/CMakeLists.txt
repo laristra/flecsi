@@ -20,6 +20,7 @@
 set(topology_HEADERS
   closure_utils.h
   index_space.h
+  types.h
   mesh.h
   mesh_definition.h
   mesh_storage.h

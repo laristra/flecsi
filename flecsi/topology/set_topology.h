@@ -32,3 +32,8 @@ public set_topology_base_t<set_storage_t<SET_TYPES>>
 } // namespace flecsi
 
 #endif // flecsi_topology_set_topology_h
+
+/*~-------------------------------------------------------------------------~-*
+ * Formatting options
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~-------------------------------------------------------------------------~-*/

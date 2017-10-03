@@ -11,8 +11,7 @@
 #include <array>
 
 #include "flecsi/topology/set_topology.h"
-#include "flecsi/topology/mesh_utils.h"
-#include "flecsi/topology/mesh_types.h"
+#include "flecsi/topology/types.h"
 
 using namespace std;
 using namespace flecsi;

@@ -151,3 +151,8 @@ struct serial_set_topology_storage_policy_t
 } // namespace flecsi
 
 #endif // flecsi_topology_serial_topology_set_storage_policy_h
+
+/*~-------------------------------------------------------------------------~-*
+ * Formatting options
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~-------------------------------------------------------------------------~-*/

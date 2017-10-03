@@ -12,6 +12,7 @@
 #define flecsi_topology_set_types_h
 
 #include "flecsi/data/data_client.h"
+#include "flecsi/topology/types.h"
 
 namespace flecsi{
 namespace topology{
@@ -110,3 +111,8 @@ protected:
 } // namespace flecsi
 
 #endif // flecsi_topology_set_types_h
+
+/*~-------------------------------------------------------------------------~-*
+ * Formatting options
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~-------------------------------------------------------------------------~-*/

@@ -34,59 +34,11 @@
 #include "flecsi/topology/index_space.h"
 #include "flecsi/topology/entity_storage.h"
 #include "flecsi/topology/partition.h"
+#include "flecsi/topology/types.h"
 #include "flecsi/execution/context.h"
 
 namespace flecsi {
 namespace topology {
-
-/*----------------------------------------------------------------------------*
- * struct typeify
- *----------------------------------------------------------------------------*/
-
-template <typename T, T M>
-struct typeify {
-  static constexpr T value = M;
-};
-
-template <typename T, T M>
-constexpr T typeify<T,M>::value;
-
-template <size_t M>
-using dimension_ = typeify<size_t, M>;
-
-template <size_t M>
-using domain_ = typeify<size_t, M>;
-
-template<size_t M>
-using index_space_ = typeify<size_t, M>;
-
-/*----------------------------------------------------------------------------*
- * Simple types
- *----------------------------------------------------------------------------*/
-
-using id_vector_t = std::vector<utils::id_t>;
-using connection_vector_t = std::vector<id_vector_t>;
-
-// hash use for mapping in building topology connectivity
-struct id_vector_hash_t {
-  size_t operator()(const id_vector_t & v) const
-  {
-    size_t h = 0;
-    for (utils::id_t id : v) {
-      h |= id.local_id();
-    } // for
-
-    return h;
-  } // operator()
-
-}; // struct id_vector_hash_t
-
-// used when building the topology connectivities
-using id_vector_map_t =
-  std::unordered_map<id_vector_t, utils::id_t, id_vector_hash_t>;
-
-// the second topology vector holds the offsets into to from dimension
-using index_vector_t = std::vector<size_t>;
 
 /*----------------------------------------------------------------------------*
  * class mesh_entity_base_t
