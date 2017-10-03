@@ -29,6 +29,10 @@ set(topology_HEADERS
   tree_topology.h
   mesh_storage.h
   entity_storage.h
+  set_storage.h
+  set_topology.h
+  set_types.h
+  set_utils.h
 )
 
 #------------------------------------------------------------------------------#
@@ -46,6 +50,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     ${topology_HEADERS}
     serial/entity_storage.h
     serial/storage_policy.h
+    serial/set_storage_policy.h
     )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
@@ -57,6 +62,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     common/array_buffer.h
     common/entity_storage.h
     legion/storage_policy.h
+    legion/set_storage_policy.h
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
@@ -65,6 +71,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     common/array_buffer.h
     common/entity_storage.h
     mpi/storage_policy.h
+    mpi/set_storage_policy.h
     )
 
   set(UNIT_POLICY MPI)
@@ -171,6 +178,15 @@ cinch_add_unit(dual
 cinch_add_unit(structured
   SOURCES
     test/structured.cc
+)
+
+#------------------------------------------------------------------------------#
+# Set unit tests.
+#------------------------------------------------------------------------------#
+
+cinch_add_unit(set_topology
+  SOURCES
+    test/set_topology.cc
 )
 
 #------------------------------------------------------------------------------#

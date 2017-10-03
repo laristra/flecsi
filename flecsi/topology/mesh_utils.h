@@ -15,6 +15,8 @@
 #ifndef flecsi_topology_mesh_utils_h
 #define flecsi_topology_mesh_utils_h
 
+#include <vector>
+
 #include "flecsi/utils/common.h"
 
 //----------------------------------------------------------------------------//
