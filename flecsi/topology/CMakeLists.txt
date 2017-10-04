@@ -185,10 +185,10 @@ cinch_add_unit(structured
 # Set unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(set_topology
-  SOURCES
-    test/set_topology.cc
-)
+# cinch_add_unit(set_topology
+#   SOURCES
+#     test/set_topology.cc
+# )
 
 #------------------------------------------------------------------------------#
 # Misc. unit tests.

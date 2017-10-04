@@ -12,6 +12,7 @@
 //----------------------------------------------------------------------------//
 
 #include <set>
+#include <vector>
 
 namespace flecsi {
 namespace coloring {
@@ -136,6 +137,16 @@ operator << (
   return stream;
 } // operator <<
 
+struct set_color_info_t
+{
+  size_t num_entities;
+  size_t reserve_entities;
+};
+
+struct set_coloring_info_t
+{
+  std::vector<set_color_info_t> set_coloring_info;
+};
 
 } // namespace coloring
 } // namespace flecsi
