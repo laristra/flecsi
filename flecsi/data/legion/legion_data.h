@@ -122,7 +122,8 @@ public:
 
     global_index_space_.index_space_id = index_space_id;
 
-    Rect<1> bounds(Point<1>(0),Point<1>(1));
+    LegionRuntime::Arrays::Rect<1> bounds(
+      LegionRuntime::Arrays::Point<1>(0),LegionRuntime::Arrays::Point<1>(1));
 
     Domain dom(Domain::from_rect<1>(bounds));
 
@@ -234,7 +235,8 @@ public:
     } // scope
 
     // Create expanded index space
-    Rect<2> expanded_bounds = Rect<2>(Point<2>::ZEROES(),
+    LegionRuntime::Arrays::Rect<2> expanded_bounds =
+      LegionRuntime::Arrays::Rect<2>(LegionRuntime::Arrays::Point<2>::ZEROES(),
       make_point(num_colors_, is.total_num_entities));
     
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
@@ -294,8 +296,10 @@ public:
     c.max_conn_size = fi.total_num_entities * ti.total_num_entities;
 
     // Create expanded index space
-    Rect<2> expanded_bounds = 
-      Rect<2>(Point<2>::ZEROES(), make_point(num_colors_, c.max_conn_size));
+    LegionRuntime::Arrays::Rect<2> expanded_bounds = 
+      LegionRuntime::Arrays::Rect<2>(
+        LegionRuntime::Arrays::Point<2>::ZEROES(),
+          make_point(num_colors_, c.max_conn_size));
     
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
     c.index_space = runtime_->create_index_space(ctx_, expanded_dom);
@@ -324,7 +328,8 @@ public:
 
     DomainColoring color_partitioning;
     for(size_t color = 0; color < num_colors_; ++color){
-      Rect<2> subrect(make_point(color, 0), make_point(color,
+      LegionRuntime::Arrays::Rect<2> subrect(
+        make_point(color, 0), make_point(color,
         adjacency_info.color_sizes[color] - 1));
 
       color_partitioning[color] = Domain::from_rect<2>(subrect);
@@ -365,7 +370,8 @@ public:
 
       auto ghost_owner_pos_fid = FieldID(internal_field::ghost_owner_pos);
 
-      allocator.allocate_field(sizeof(Point<2>), ghost_owner_pos_fid);
+      allocator.allocate_field(
+        sizeof(LegionRuntime::Arrays::Point<2>), ghost_owner_pos_fid);
 
       using field_info_t = context_t::field_info_t;
 
@@ -388,7 +394,7 @@ public:
         clog_assert(citr != coloring_info_map.end(), "invalid color info");
         const coloring_info_t& color_info = citr->second;
 
-        Rect<2> subrect(
+        LegionRuntime::Arrays::Rect<2> subrect(
             make_point(color, 0),
             make_point(color,
               color_info.exclusive + color_info.shared + color_info.ghost - 1));

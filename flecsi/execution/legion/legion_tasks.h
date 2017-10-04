@@ -516,7 +516,7 @@ __flecsi_internal_legion_task(fill_connectivity_task, void)
   uint64_t* indices;
   h.get_buffer(regions[0], indices, adjacency_index_fid);
 
-  Point<2>* positions;
+  LegionRuntime::Arrays::Point<2>* positions;
   h.get_buffer(regions[1], positions, adjacency_fid);
 
   uint64_t* src_offsets;
