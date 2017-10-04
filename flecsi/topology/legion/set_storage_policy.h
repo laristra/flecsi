@@ -16,6 +16,7 @@
 #include "flecsi/topology/index_space.h"
 #include "flecsi/topology/set_utils.h"
 #include "flecsi/topology/set_types.h"
+#include "flecsi/topology/types.h"
 
 namespace flecsi{
 namespace topology{
@@ -42,24 +43,13 @@ struct legion_set_topology_storage_policy_t
 
   index_space_map_t index_space_map;
 
-  template<size_t I>
-  void map_index_spaces(){
-    if(I == num_index_spaces){
-      return;
-    }
-
-    using element_t = typename std::tuple_element<I, entity_types_t>::type;
-
-    index_space_map[element_t::value] = I;
-    map_index_spaces<I + 1>(); 
-  }
-
   legion_set_topology_storage_policy_t()
   {
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();
 
-    map_index_spaces();
+    map_set_index_spaces__<std::tuple_size<entity_types_t>::value,
+      entity_types_t, index_space_map_t>::map(index_space_map);
   }
 
   void
