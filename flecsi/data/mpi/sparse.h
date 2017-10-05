@@ -480,10 +480,6 @@ struct storage_type__<sparse>
   )
   {
     handle_t<DATA_TYPE, 0, 0, 0> h;
-    return h;
-
-    /*
-    handle_t<DATA_TYPE, 0, 0, 0> h;
 
     auto& context = execution::context_t::instance();
   
@@ -502,12 +498,14 @@ struct storage_type__<sparse>
     auto& registered_field_data = context.registered_field_data();
     auto fieldDataIter = registered_field_data.find(field_info.fid);
     if (fieldDataIter == registered_field_data.end()) {
-      size_t size = field_info.size * (color_info.exclusive +
-                                       color_info.shared +
-                                       color_info.ghost);
+      size_t num_indices = color_info.exclusive +
+                           color_info.shared +
+                           color_info.ghost;
+
       // TODO: deal with VERSION
-      context.register_field_data(field_info.fid,
-                                  size);
+      context.register_sparse_field_data(
+        field_info.fid, field_info.size, num_indices);
+
       context.register_field_metadata<DATA_TYPE>(field_info.fid,
                                                  color_info,
                                                  index_coloring);
@@ -535,7 +533,6 @@ struct storage_type__<sparse>
     hb.combined_size += color_info.ghost;
 
     return h;
-    */
   }
 
 }; // struct storage_type_t
