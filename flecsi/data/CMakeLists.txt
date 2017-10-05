@@ -99,6 +99,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     mpi/data_handle_policy.h
     mpi/data_policy.h
     mpi/dense.h
+    mpi/sparse.h
     mpi/storage_policy.h
   )
 

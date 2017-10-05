@@ -468,8 +468,6 @@ struct data_client_policy_handler__<topology::set_topology_t<POLICY_TYPE>>
     for(auto & ei: entity_walker.entity_info) {
       data_client_handle_entity_t & ent = h.handle_entities[entity_index];
       ent.index_space = ei.index_space;
-      ent.domain = ei.domain;
-      ent.dim = ei.dim;
       ent.size = ei.size;
 
       auto itr = context.field_info_map().find(
