@@ -351,12 +351,19 @@ struct mpi_context_policy_t
     field_data.insert({fid, std::vector<uint8_t>(size)});
   }
 
+  void register_sparse_field_data(field_id_t fid,
+                                  size_t data_size,
+                                  size_t num_indices) {
+    // TODO: VERSIONS
+    sparse_field_data.emplace(
+      fid, sparse_field_data_t(data_size, num_indices));
+  }
+
   std::map<field_id_t, std::vector<uint8_t>>&
   registered_field_data()
   {
     return field_data;
   }
-
 
   //--------------------------------------------------------------------------//
   //! return <double> max reduction
@@ -464,6 +471,22 @@ private:
   std::map<field_id_t, field_metadata_t> field_metadata;
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
+
+  struct sparse_field_data_t
+  {
+    sparse_field_data_t(size_t data_size, size_t num_indices)
+    : data_size(data_size), 
+    num_indices(num_indices){
+
+    }
+
+    size_t data_size;
+    size_t num_indices;
+    std::vector<uint8_t> indices;    
+    std::vector<uint8_t> entries;    
+  };
+
+  std::map<field_id_t, sparse_field_data_t> sparse_field_data;
 
   double min_reduction_;
   double max_reduction_;
