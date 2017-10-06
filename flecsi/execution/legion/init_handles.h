@@ -30,6 +30,8 @@
 #include "flecsi/utils/tuple_walker.h"
 #include "flecsi/data/data_client_handle.h"
 #include "flecsi/topology/mesh_types.h"
+#include "flecsi/topology/mesh_topology.h"
+#include "flecsi/topology/set_topology.h"
 
 namespace flecsi {
 namespace execution {
@@ -274,9 +276,10 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     typename T,
     size_t PERMISSIONS
   >
-  void
+  typename std::enable_if_t<std::is_base_of<topology::mesh_topology_base__, T>::value>
   handle(
-    data_client_handle__<T, PERMISSIONS> & h
+    data_client_handle__<T, PERMISSIONS>
+      & h
   )
   {
     auto& context_ = context_t::instance();
@@ -379,23 +382,79 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     if(!_read){
       h.initialize_storage();
     }
+  }
 
+  template<
+    typename T,
+    size_t PERMISSIONS
+  >
+  typename std::enable_if_t<std::is_base_of<topology::set_topology_base__, T>::value>
+  handle(
+    data_client_handle__<T, PERMISSIONS>
+      & h
+  )
+  {
+    auto& context_ = context_t::instance();
+
+    auto storage = h.set_storage(new typename T::storage_t);
+
+    //------------------------------------------------------------------------//
+    // Mapping entity data from Legion and initializing mesh storage.
+    //------------------------------------------------------------------------//
+
+    std::unordered_map<size_t, size_t> region_map;
+
+    bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
+
+    LegionRuntime::Arrays::Rect<2> dr;
+    LegionRuntime::Arrays::Rect<2> sr;
+    LegionRuntime::Accessor::ByteOffset bo[2];
+
+    for(size_t i{0}; i<h.num_handle_entities; ++i) {
+      data_client_handle_entity_t & ent = h.handle_entities[i];
+
+      region_map[ent.index_space] = region;
+
+      Legion::LogicalRegion lr = regions[region].get_logical_region();
+      Legion::IndexSpace is = lr.get_index_space();
+
+      auto ac = regions[region].get_field_accessor(ent.fid);
+
+      Legion::Domain d = 
+        runtime->get_index_space_domain(context, is); 
+
+      dr = d.get_rect<2>();
+
+      auto ents_raw =
+        static_cast<uint8_t*>(ac.template raw_rect_ptr<2>(dr, sr, bo));
+      auto ents = reinterpret_cast<topology::set_entity_t*>(ents_raw);
+
+      size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
+
+      auto ac2 = regions[region].get_field_accessor(ent.id_fid).
+        template typeify<utils::id_t>();
+      auto ids = ac2.template raw_rect_ptr<2>(dr, sr, bo);
+
+      storage->init_entities(ent.index_space, ents, ids, ent.size,
+        num_ents, _read);
+
+      ++region;
+    } // for
   } // handle
 
   //-----------------------------------------------------------------------//
   // If this is not a data handle, then simply skip it.
   //-----------------------------------------------------------------------//
-
   template<
     typename T
   >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
+  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value &&
+    !std::is_base_of<data_client_handle_base_t, T>::value>
   handle(
     T &
   )
-  {
-  } // handle
+  {} // handle
 
   Legion::Runtime * runtime;
   Legion::Context & context;

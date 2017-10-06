@@ -52,6 +52,7 @@ struct context__ : public CONTEXT_POLICY
 {
   using index_coloring_t = flecsi::coloring::index_coloring_t;
   using coloring_info_t = flecsi::coloring::coloring_info_t;
+  using set_coloring_info_t = flecsi::coloring::set_coloring_info_t;
   using adjacency_info_t = flecsi::coloring::adjacency_info_t;
 
   //--------------------------------------------------------------------------//
@@ -368,6 +369,15 @@ struct context__ : public CONTEXT_POLICY
     colorings_[index_space] = coloring;
     coloring_info_[index_space] = coloring_info;
   } // add_coloring
+
+  void
+  add_set_coloring(
+    size_t index_space,
+    std::unordered_map<size_t, coloring_info_t> & coloring_info
+  )
+  {
+    coloring_info_[index_space] = coloring_info;
+  }
 
   //--------------------------------------------------------------------------//
   //! Return the index coloring referenced by key.

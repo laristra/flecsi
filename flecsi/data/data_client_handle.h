@@ -17,12 +17,15 @@ namespace flecsi {
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
 
+struct data_client_handle_base_t{};
+
 template<
   typename DATA_CLIENT_TYPE,
   size_t PERMISSIONS,
   typename DATA_POLICY
 >
-struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
+struct data_client_handle_base__ :
+  public DATA_CLIENT_TYPE, public DATA_POLICY, public data_client_handle_base_t
 {
   using type = DATA_CLIENT_TYPE;
   

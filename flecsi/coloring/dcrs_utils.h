@@ -16,6 +16,7 @@
 #endif
 
 #include <mpi.h>
+#include <map>
 
 #include "flecsi/coloring/crs.h"
 #include "flecsi/topology/closure_utils.h"
@@ -148,8 +149,71 @@ make_dcrs(
   // Set the first offset (always zero).
   dcrs.offsets.push_back(0);
 
+#if 1
   // Add the graph adjacencies by getting the neighbors of each
   // cell index
+  using cellid = size_t;
+  using vertexid = size_t;
+
+  // essentially vertex to cell and cell to cell through vertices
+  // connectivity.
+  // FIXME: use vertex2cell connectivity from mesh_definition rather than
+  // building our own.
+  std::map<vertexid, std::vector<cellid>> vertex2cells;
+  std::map<cellid, std::vector<cellid>> cell2cells;
+
+  // build global cell to cell through # of shared vertices connectivity
+  for (size_t cell(0); cell < md.num_entities(FROM_DIMENSION); ++cell) {
+    std::map<cellid, size_t> cell_counts;
+
+    for (auto vertex : md.entities(FROM_DIMENSION, 0, cell)) {
+      // build vertex to cell connectivity, O(n_cells * n_polygon_sides)
+      // of insert().
+      vertex2cells[vertex].push_back(cell);
+
+      // Count the number of times this cell shares a common vertex with
+      // some other cell. O(n_cells * n_polygon_sides * vertex to cells degrees)
+      for (auto other : vertex2cells[vertex]) {
+      //for (auto other : md.entities(0, FROM_DIMENSION, vertex)) {
+        if (other != cell)
+          cell_counts[other] += 1;
+      }
+    }
+
+    for (auto count : cell_counts) {
+      if (count.second > THRU_DIMENSION) {
+        // append cell to cell through "dimension" connectivity, we need to
+        // add both directions
+        cell2cells[cell].push_back(count.first);
+        cell2cells[count.first].push_back(cell);
+      }
+    }
+  }
+
+  // turn subset of cell 2 cell connectivity to dcrs
+  for (size_t i(0); i < init_indices; ++i) {
+    auto cell = dcrs.distribution[rank] + i;
+
+//    if (rank == 0) {
+//      std::cout << "cell: " << cell << ", neighbors: ";
+//
+//      for (auto neighbor : cell2cells[cell]) {
+//        if (rank == 0) {
+//          std::cout << neighbor << " ";
+//        }
+//      }
+//      if (rank == 0)
+//        std::cout << std::endl;
+//    }
+
+    for (auto n: cell2cells[cell]) {
+      dcrs.indices.push_back(n);
+    } // for
+
+    dcrs.offsets.push_back(dcrs.offsets[i] + cell2cells[cell].size());
+  }
+
+#else
   for(size_t i(0); i<init_indices; ++i) {
 
     // Get the neighboring cells of the current cell index (i) using
@@ -166,9 +230,9 @@ make_dcrs(
       dcrs.distribution[rank] + i
     );
 
-#if 0
-      if(rank == 1) {
-        std::cout << "neighbors: ";
+#if 1
+      if(rank == 0) {
+        std::cout << "cell: " << dcrs.distribution[rank] + i << ", neighbors: ";
         for(auto i: neighbors) {
           std::cout << i << " ";
         } // for
@@ -182,7 +246,10 @@ make_dcrs(
 
     dcrs.offsets.push_back(dcrs.offsets[i] + neighbors.size());
   } // for
+#endif
 
+//  if (rank == 0)
+//    std::cout << dcrs;
   return dcrs;
 } // make_dcrs
 

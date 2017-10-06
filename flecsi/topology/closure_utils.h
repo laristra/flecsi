@@ -108,6 +108,53 @@ entity_neighbors(
   std::set<size_t> closure( std::forward<U>(indices).begin(), 
     std::forward<U>(indices).end() );
 
+#if 1
+  using entityid = size_t;
+  using vertexid = size_t;
+
+  // essentially vertex to cell and cell to cell through vertices
+  // connectivity.
+  // FIXME: use vertex2entities connectivity from mesh_definition rather than
+  // building our own.
+  std::map<vertexid, std::vector<entityid>> vertex2entities;
+  std::map<entityid, std::vector<entityid>> entity_neighbors;
+
+  // build global entity to entity through # of shared vertices connectivity
+  for (size_t cell(0); cell < md.num_entities(from_dim); ++cell) {
+    std::map<entityid, size_t> cell_counts;
+    // FIXME: change to "to_dim"?
+    // FIXME: Is the algorithm correct when from_dim != to_dim?
+    for (auto vertex : md.entities(from_dim, 0, cell)) {
+      // build vertex to cell connectivity, O(n_cells * n_polygon_sides)
+      // of insert().
+      vertex2entities[vertex].push_back(cell);
+
+      // Count the number of times this cell shares a common vertex with
+      // some other cell. O(n_cells * n_polygon_sides * vertex to cells degrees)
+      for (auto other : vertex2entities[vertex]) {
+      //for (auto other : md.entities(0, from_dim, vertex)) {
+        if (other != cell)
+          cell_counts[other] += 1;
+      }
+    }
+
+    for (auto count : cell_counts) {
+      if (count.second > thru_dim) {
+        // append cell to cell through "dimension" connectivity, we need to
+        // add both directions
+        entity_neighbors[cell].push_back(count.first);
+        entity_neighbors[count.first].push_back(cell);
+      }
+    }
+  }
+
+  for (auto i : indices) {
+    for (auto n: entity_neighbors[i]) {
+      closure.insert(n);
+    }
+  }
+
+#else
   // Iterate over the entity indices and add all neighbors
   for(auto i: indices) {
     auto ncurr =
@@ -115,6 +162,7 @@ entity_neighbors(
 
     closure = flecsi::utils::set_union(ncurr, closure);
   } // for
+#endif
 
   return closure;
 } // entity_closure
