@@ -27,7 +27,7 @@
 #include "flecsi/data/common/data_types.h"
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
-#include "flecsi/data/data_handle.h"
+#include "flecsi/data/sparse_data_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
@@ -73,13 +73,13 @@ template<
   size_t SP,
   size_t GP
 >
-struct sparse_handle_t : public data_handle__<T, EP, SP, GP>
+struct sparse_handle_t : public sparse_data_handle__<T, EP, SP, GP>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using base = data_handle__<T, EP, SP, GP>;
+  using base = sparse_data_handle__<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -495,9 +495,10 @@ struct storage_type__<sparse>
     auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
     auto &index_coloring = context.coloring(field_info.index_space);
 
-    auto& registered_field_data = context.registered_field_data();
-    auto fieldDataIter = registered_field_data.find(field_info.fid);
-    if (fieldDataIter == registered_field_data.end()) {
+    auto& registered_sparse_field_data = 
+      context.registered_sparse_field_data();
+    auto fieldDataIter = registered_sparse_field_data.find(field_info.fid);
+    if (fieldDataIter == registered_sparse_field_data.end()) {
       size_t num_indices = color_info.exclusive +
                            color_info.shared +
                            color_info.ghost;
@@ -511,14 +512,24 @@ struct storage_type__<sparse>
                                                  index_coloring);
     }
 
-    auto data = registered_field_data[field_info.fid].data();
-    // populate data member of data_handle_t
-    auto &hb = dynamic_cast<data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
-
+    auto& sparse_field_data = registered_sparse_field_data[field_info.fid];
+    
+    auto &hb = dynamic_cast<sparse_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
+    
     hb.fid = field_info.fid;
     hb.index_space = field_info.index_space;
     hb.data_client_hash = field_info.data_client_hash;
+    
+    hb.entries = reinterpret_cast<sparse_entry_value__<DATA_TYPE>*>(
+      &sparse_field_data.entries[0]);
+   
+    hb.indices = reinterpret_cast<size_t*>(&sparse_field_data.indices[0]);
 
+  /*
+    hb.combined_size = 
+      color_info.exclusive + color_info.shared + color_info.ghost;
+
+    // populate data member of data_handle_t
     hb.exclusive_size = color_info.exclusive;
     hb.combined_data = hb.exclusive_buf = hb.exclusive_data =
       reinterpret_cast<DATA_TYPE *>(data);
@@ -531,6 +542,7 @@ struct storage_type__<sparse>
     hb.ghost_size = color_info.ghost;
     hb.ghost_data = hb.ghost_buf = hb.shared_data + hb.shared_size;
     hb.combined_size += color_info.ghost;
+   */
 
     return h;
   }

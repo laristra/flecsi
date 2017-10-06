@@ -85,6 +85,25 @@ namespace execution {
 
     template<
       typename T,
+      size_t EXCLUSIVE_PERMISSIONS,
+      size_t SHARED_PERMISSIONS,
+      size_t GHOST_PERMISSIONS
+    >
+    void
+    handle(
+      sparse_data_handle__<
+        T,
+        EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS,
+        GHOST_PERMISSIONS
+      > & h
+    )
+    {
+      // TODO: move field data allocation here?
+    } // handle
+
+    template<
+      typename T,
       size_t PERMISSIONS
     >
     void
