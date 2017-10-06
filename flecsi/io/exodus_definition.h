@@ -98,6 +98,9 @@ void build_connectivity(
   // resize the new connectivity
   cell_to_edge.reserve( cell_to_edge.size() + cell_to_vertex.size() );
 
+  std::map<std::vector<size_t>, size_t> edges;
+  size_t edgeid = 0;
+
   // loop over cells, adding all of their edges to the table
   for ( const auto & these_verts : cell_to_vertex ) {
 
@@ -110,7 +113,24 @@ void build_connectivity(
     std::forward<FUNCTION>( build_edges_from_vertices )(
       these_verts, new_edges
     );
-    
+
+#if 1
+    // now look for exsiting vertex pairs in the edge-to-vertex master list
+    // or add a new edge to the list.  add the matched edge id to the
+    // cell-to-edge list
+    for ( auto && vs : new_edges ) {
+      // sort the vertices
+      auto sorted_vs = vs;
+      std::sort( sorted_vs.begin(), sorted_vs.end() );
+      if (edges.find(sorted_vs) == edges.end()) {
+        edges.insert({std::move(sorted_vs), edgeid});
+        these_edges.push_back(edgeid++);
+        edge_to_vertex.emplace_back(std::move(vs));
+      } else {
+        these_edges.push_back(edges[sorted_vs]);
+      }
+    }
+#else
     // now look for exsiting vertex pairs in the edge-to-vertex master list
     // or add a new edge to the list.  add the matched edge id to the 
     // cell-to-edge list
@@ -128,7 +148,7 @@ void build_connectivity(
       // now add the edge id to the cell->edges connectitivity
       these_edges.push_back( res.first ); 
     }
-
+#endif
   } // for
 }
 

@@ -114,6 +114,8 @@ entity_neighbors(
 
   // essentially vertex to cell and cell to cell through vertices
   // connectivity.
+  // FIXME: use vertex2entities connectivity from mesh_definition rather than
+  // building our own.
   std::map<vertexid, std::vector<entityid>> vertex2entities;
   std::map<entityid, std::vector<entityid>> entity_neighbors;
 
@@ -130,6 +132,7 @@ entity_neighbors(
       // Count the number of times this cell shares a common vertex with
       // some other cell. O(n_cells * n_polygon_sides * vertex to cells degrees)
       for (auto other : vertex2entities[vertex]) {
+      //for (auto other : md.entities(0, from_dim, vertex)) {
         if (other != cell)
           cell_counts[other] += 1;
       }
