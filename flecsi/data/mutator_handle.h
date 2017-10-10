@@ -46,33 +46,16 @@ public:
   //--------------------------------------------------------------------------//
 
   mutator_handle_base__(
-    index_t* indices,
     size_t num_indices,
     size_t num_entries,
     size_t num_slots
   )
-  : indices_(indices),
-  num_indices_(num_indices),
+  : num_indices_(num_indices),
   num_entries_(num_entries),
   num_slots_(num_slots),
-  num_insertions_(0),  
-  entries_(new entry_value_t[num_indices * num_slots]),
-  entries_owned_(true){}
-
-  mutator_handle_base__(
-    index_t* indices,
-    entry_value_t* entries,
-    size_t num_indices,
-    size_t num_entries,
-    size_t num_slots
-  )
-  : indices_(indices),
-  num_indices_(num_indices),
-  num_entries_(num_entries),
-  num_slots_(num_slots),
-  num_insertions_(0),  
-  entries_(entries),
-  entries_owned_(false){}
+  num_insertions_(0), 
+  indices_(new index_t(num_indices_)), 
+  entries_(new entry_value_t[num_indices * num_slots]){}
 
   mutator_handle_base__(const mutator_handle_base__& b) = default;
 
@@ -211,10 +194,8 @@ public:
       std::inplace_merge(iitr, nitr + n, nitr + n + m, cmp);
     } // for
 
-    if(entries_owned_){
-      delete[] entries_;
-      entries_ = nullptr;
-    }
+    delete[] entries_;
+    entries_ = nullptr;
 
     entries_size += num_insertions_;
 
@@ -271,15 +252,14 @@ private:
   using spare_map_t = std::multimap<size_t, entry_value__<T>>;
   using erase_set_t = std::set<std::pair<size_t, size_t>>;
 
-  index_t* indices_;
   size_t num_indices_;
   size_t num_entries_;
   size_t num_slots_;
+  size_t num_insertions_ = 0;
+  index_t* indices_;
   entry_value_t* entries_;
   spare_map_t spare_map_;
-  erase_set_t * erase_set_;
-  size_t num_insertions_;
-  bool entries_owned_;
+  erase_set_t * erase_set_ = nullptr;
 };
 
 } // namespace flecsi

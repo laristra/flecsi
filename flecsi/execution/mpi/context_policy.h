@@ -55,6 +55,32 @@ namespace execution {
 
 struct mpi_context_policy_t
 {
+  struct sparse_field_data_t
+  {
+    sparse_field_data_t(){}
+
+    sparse_field_data_t(
+      size_t type_size,
+      size_t num_indices
+    )
+    : type_size(type_size), 
+    num_indices(num_indices),
+    indices((num_indices + 1) * sizeof(size_t)){
+
+    }
+
+    size_t type_size;
+    size_t num_indices;
+
+    // total # of exclusive, shared, ghost entries
+    size_t exclusive_size = 0;
+    size_t shared_size = 0;
+    size_t ghost_size = 0;
+
+    std::vector<uint8_t> indices;    
+    std::vector<uint8_t> entries;    
+  };
+
   //--------------------------------------------------------------------------//
   //! FleCSI context initialization. This method initializes the FleCSI
   //! runtime using MPI.
@@ -148,6 +174,16 @@ struct mpi_context_policy_t
   using index_coloring_t = flecsi::coloring::index_coloring_t;
   struct field_metadata_t {
 
+    MPI_Group shared_users_grp;
+    MPI_Group ghost_owners_grp;
+
+    std::map<int, MPI_Datatype> origin_types;
+    std::map<int, MPI_Datatype> target_types;
+
+    MPI_Win win;
+  };
+
+  struct sparse_field_metadata_t{
     MPI_Group shared_users_grp;
     MPI_Group ghost_owners_grp;
 
@@ -351,19 +387,30 @@ struct mpi_context_policy_t
     field_data.insert({fid, std::vector<uint8_t>(size)});
   }
 
-  void register_sparse_field_data(field_id_t fid,
-                                  size_t data_size,
-                                  size_t num_indices) {
-    // TODO: VERSIONS
-    sparse_field_data.emplace(
-      fid, sparse_field_data_t(data_size, num_indices));
-  }
-
   std::map<field_id_t, std::vector<uint8_t>>&
   registered_field_data()
   {
     return field_data;
   }
+
+  void register_sparse_field_data(field_id_t fid,
+                                  size_t type_size,
+                                  size_t num_indices) {
+    // TODO: VERSIONS
+    sparse_field_data.emplace(
+      fid, sparse_field_data_t(type_size, num_indices));
+  }
+
+  std::map<field_id_t, sparse_field_data_t>&
+  registered_sparse_field_data()
+  {
+    return sparse_field_data;    
+  }
+
+  std::map<field_id_t, sparse_field_metadata_t>&
+  registered_sparse_field_metadata() {
+    return sparse_field_metadata;
+  };
 
   //--------------------------------------------------------------------------//
   //! return <double> max reduction
@@ -472,21 +519,8 @@ private:
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
 
-  struct sparse_field_data_t
-  {
-    sparse_field_data_t(size_t data_size, size_t num_indices)
-    : data_size(data_size), 
-    num_indices(num_indices){
-
-    }
-
-    size_t data_size;
-    size_t num_indices;
-    std::vector<uint8_t> indices;    
-    std::vector<uint8_t> entries;    
-  };
-
   std::map<field_id_t, sparse_field_data_t> sparse_field_data;
+  std::map<field_id_t, sparse_field_metadata_t> sparse_field_metadata;
 
   double min_reduction_;
   double max_reduction_;

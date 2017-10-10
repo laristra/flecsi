@@ -297,7 +297,7 @@ void driver(int argc, char ** argv) {
 #endif
 
 
-  mutator_handle__<double> h(nullptr, nullptr, 0, 0, 5);
+  mutator_handle__<double> h(0, 0, 5);
 
 } // specialization_driver
 

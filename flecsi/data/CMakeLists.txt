@@ -29,6 +29,7 @@ set(data_HEADERS
   data.h
   data_client_handle.h
   data_handle.h
+  sparse_data_handle.h
   field.h
   storage.h
   storage_type.h
@@ -76,6 +77,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     ${data_HEADERS}
     legion/data_client_handle_policy.h
     legion/data_handle_policy.h
+    legion/sparse_data_handle_policy.h
     legion/data_policy.h
     legion/dense.h
     legion/dpd.h
@@ -97,6 +99,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     ${data_HEADERS}
     mpi/data_client_handle_policy.h
     mpi/data_handle_policy.h
+    mpi/sparse_data_handle_policy.h
     mpi/data_policy.h
     mpi/dense.h
     mpi/sparse.h
