@@ -43,7 +43,13 @@ struct sparse_data_handle_base__ :
   //--------------------------------------------------------------------------//
 
   sparse_data_handle_base__(const sparse_data_handle_base__& b)
-  : DATA_POLICY(b){
+  : DATA_POLICY(b),
+  index_space(b.index_space),
+  data_client_hash(b.data_client_hash),
+  entries(b.entries),
+  indices(b.indices),
+  ghost_entries(b.ghost_entries){
+  
   }
 
   size_t index_space;

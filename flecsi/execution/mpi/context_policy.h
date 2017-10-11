@@ -187,6 +187,12 @@ struct mpi_context_policy_t
     MPI_Group shared_users_grp;
     MPI_Group ghost_owners_grp;
 
+    std::map<int, std::vector<int>> compact_origin_lengs;
+    std::map<int, std::vector<int>> compact_origin_disps;
+
+    std::map<int, std::vector<int>> compact_target_lengs;
+    std::map<int, std::vector<int>> compact_target_disps;
+
     std::map<int, MPI_Datatype> origin_types;
     std::map<int, MPI_Datatype> target_types;
 
@@ -197,6 +203,45 @@ struct mpi_context_policy_t
   void register_field_metadata(const field_id_t fid,
                                const coloring_info_t& coloring_info,
                                const index_coloring_t& index_coloring) {
+    std::map<int, std::vector<int>> compact_origin_lengs;
+    std::map<int, std::vector<int>> compact_origin_disps;
+
+    std::map<int, std::vector<int>> compact_target_lengs;
+    std::map<int, std::vector<int>> compact_target_disps;
+
+    field_metadata_t metadata;
+
+    register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
+      compact_origin_lengs, compact_origin_disps, compact_target_lengs,
+      compact_target_disps);
+  }
+
+  template <typename T>
+  void register_sparse_field_metadata(
+    const field_id_t fid,
+    const coloring_info_t& coloring_info,
+    const index_coloring_t& index_coloring
+  )
+  {
+    sparse_field_metadata_t md;
+
+    register_field_metadata_<T>(md, fid, coloring_info, index_coloring,
+      md.compact_origin_lengs, md.compact_origin_disps,
+      md.compact_target_lengs, md.compact_target_disps);
+  }
+
+  template <typename T, typename MD>
+  void register_field_metadata_(
+    MD& metadata,
+    const field_id_t fid,
+    const coloring_info_t& coloring_info,
+    const index_coloring_t& index_coloring,
+    std::map<int, std::vector<int>>& compact_origin_lengs,
+    std::map<int, std::vector<int>>& compact_origin_disps,
+    std::map<int, std::vector<int>>& compact_target_lengs,
+    std::map<int, std::vector<int>>& compact_target_disps
+  )
+  {
 
     // The group for MPI_Win_post are the "origin" processes, i.e.
     // the peer processes calling MPI_Get to get our shared cells. Thus
@@ -214,8 +259,6 @@ struct mpi_context_policy_t
 
     MPI_Group comm_grp;
     MPI_Comm_group(MPI_COMM_WORLD, &comm_grp);
-
-    field_metadata_t metadata;
 
     MPI_Group_incl(comm_grp, shared_users.size(),
                    shared_users.data(), &metadata.shared_users_grp);
@@ -242,36 +285,36 @@ struct mpi_context_policy_t
       target_disps[ghost.rank].push_back(ghost.offset);
     }
 
-//      if (my_color == 0) {
-//        for (auto ghost_owner : ghost_owners) {
-//          std::cout << "ghost owner: " << ghost_owner << std::endl;
-//          std::cout << "\torigin length: ";
-//          for (auto len : origin_lens[ghost_owner]) {
-//            std::cout << len << " ";
-//          }
-//          std::cout << std::endl;
-//          std::cout << "\torigin disp: ";
-//          for (auto len : origin_disps[ghost_owner]) {
-//            std::cout << len << " ";
-//          }
-//          std::cout << std::endl;
-//          std::cout << "\ttarget length: ";
-//          for (auto len : target_lens[ghost_owner]) {
-//            std::cout << len << " ";
-//          }
-//          std::cout << std::endl;
-//
-//          std::cout << "\ttarget disp: ";
-//          for (auto len : target_disps[ghost_owner]) {
-//            std::cout << len << " ";
-//          }
-//          std::cout << std::endl;
-//
-//        }
-//      }
+    // int my_color;
+    // MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
 
-    std::map<int, std::vector<int>> compact_origin_lengs;
-    std::map<int, std::vector<int>> compact_origin_disps;
+    //  if (my_color == 0) {
+    //    for (auto ghost_owner : ghost_owners) {
+    //      std::cout << "ghost owner: " << ghost_owner << std::endl;
+    //      std::cout << "\torigin length: ";
+    //      for (auto len : origin_lens[ghost_owner]) {
+    //        std::cout << len << " ";
+    //      }
+    //      std::cout << std::endl;
+    //      std::cout << "\torigin disp: ";
+    //      for (auto len : origin_disps[ghost_owner]) {
+    //        std::cout << len << " ";
+    //      }
+    //      std::cout << std::endl;
+    //      std::cout << "\ttarget length: ";
+    //      for (auto len : target_lens[ghost_owner]) {
+    //        std::cout << len << " ";
+    //      }
+    //      std::cout << std::endl;
+
+    //      std::cout << "\ttarget disp: ";
+    //      for (auto len : target_disps[ghost_owner]) {
+    //        std::cout << len << " ";
+    //      }
+    //      std::cout << std::endl;
+
+    //    }
+    //  }
 
     for (auto ghost_owner : ghost_owners) {
       if (origin_disps.size() == 0)
@@ -293,24 +336,21 @@ struct mpi_context_policy_t
       }
     }
 
-//      if (my_color == 0) {
-//        for (auto ghost_owner : ghost_owners) {
-//          std::cout << "ghost owner: " << ghost_owner << std::endl;
-//          std::cout << "source compacted length: ";
-//          for (auto len : compact_origin_lengs[ghost_owner]) {
-//            std::cout << len << " ";
-//          }
-//          std::cout << std::endl;
-//          std::cout << "source compacted disps: ";
-//          for (auto disp : compact_origin_disps[ghost_owner]) {
-//            std::cout << disp << " ";
-//          }
-//          std::cout << std::endl;
-//        }
-//      }
-
-    std::map<int, std::vector<int>> compact_target_lengs;
-    std::map<int, std::vector<int>> compact_target_disps;
+     // if (my_color == 0) {
+     //   for (auto ghost_owner : ghost_owners) {
+     //     std::cout << "ghost owner: " << ghost_owner << std::endl;
+     //     std::cout << "source compacted length: ";
+     //     for (auto len : compact_origin_lengs[ghost_owner]) {
+     //       std::cout << len << " ";
+     //     }
+     //     std::cout << std::endl;
+     //     std::cout << "source compacted disps: ";
+     //     for (auto disp : compact_origin_disps[ghost_owner]) {
+     //       std::cout << disp << " ";
+     //     }
+     //     std::cout << std::endl;
+     //   }
+     // }
 
     for (auto ghost_owner : ghost_owners) {
       if (target_disps.size() == 0)
@@ -328,24 +368,24 @@ struct mpi_context_policy_t
           compact_target_disps[ghost_owner].push_back(target_disps[ghost_owner][i]);
         }
       }
-    }
+    } 
 
-//      if (my_color == 0) {
-//        for (auto ghost_owner : ghost_owners) {
-//          std::cout << "ghost owner: " << ghost_owner << std::endl;
-//
-//          std::cout << "compacted target length: ";
-//          for (auto len : compact_target_lengs[ghost_owner]) {
-//            std::cout << len << " ";
-//          }
-//          std::cout << std::endl;
-//          std::cout << "compacted target disps: ";
-//          for (auto disp : compact_target_disps[ghost_owner]) {
-//            std::cout << disp << " ";
-//          }
-//          std::cout << std::endl;
-//        }
-//      }
+    //  if (my_color == 0) {
+    //    for (auto ghost_owner : ghost_owners) {
+    //      std::cout << "ghost owner: " << ghost_owner << std::endl;
+
+    //      std::cout << "compacted target length: ";
+    //      for (auto len : compact_target_lengs[ghost_owner]) {
+    //        std::cout << len << " ";
+    //      }
+    //      std::cout << std::endl;
+    //      std::cout << "compacted target disps: ";
+    //      for (auto disp : compact_target_disps[ghost_owner]) {
+    //        std::cout << disp << " ";
+    //      }
+    //      std::cout << std::endl;
+    //    }
+    //  }
 
     for (auto ghost_owner : ghost_owners) {
       MPI_Datatype origin_type;
