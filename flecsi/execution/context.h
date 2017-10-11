@@ -19,6 +19,7 @@
 //! @file
 //! @date Initial file creation: Oct 19, 2015
 //----------------------------------------------------------------------------//
+
 #include <algorithm>
 #include <cstddef>
 #include <map>
@@ -134,7 +135,7 @@ struct context__ : public CONTEXT_POLICY
 
 
   //--------------------------------------------------------------------------//
-  //! Myer's singleton instance.
+  //! Meyer's singleton instance.
   //!
   //! @return The single instance of this type.
   //--------------------------------------------------------------------------//

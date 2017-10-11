@@ -141,7 +141,7 @@ struct task_model__
   execute_task(
     launch_type_t launch,
     size_t parent,
-    ARGS &&... args
+    ARGS && ... args
   )
   {
     return EXECUTION_POLICY::template execute_task<KEY, RETURN, ARG_TUPLE>(
