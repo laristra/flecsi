@@ -32,6 +32,10 @@ struct entry_value__
 
   entry_value__(){}
 
+  bool operator<(const entry_value__& ev) const{
+    return entry < ev.entry;
+  }
+
   index_t entry;
   T value;
 };
@@ -264,6 +268,10 @@ public:
 
     size_t offset = 0;
 
+    auto cmp = [](const auto & k1, const auto & k2) -> bool {
+      return k1.entry < k2.entry;
+    };
+
     for(size_t i = 0; i < num_exclusive_; ++i){
       const offset_t& oi = offsets_[i];
       offset_t& coi = offsets[i];
@@ -284,7 +292,7 @@ public:
       std::copy(ptr, ptr + n2, cptr);
       cptr += n2;
 
-      std::inplace_merge(s1, s1 + n1, s2, cptr);
+      std::inplace_merge(s1, s1 + n1, s2, cptr, cmp);
 
       auto p = spare_map_.equal_range(i);
 
@@ -298,7 +306,7 @@ public:
         ++cptr;
       }
 
-      std::inplace_merge(s1, cptr, cptr, cptr + n3);
+      std::inplace_merge(s1, cptr, cptr, cptr + n3, cmp);
 
       uint32_t count = n1 + n2 + n3;
 
@@ -335,7 +343,7 @@ public:
       entry_value_t* s2 = cptr;
       std::copy(ptr, ptr + n2, cptr);
       cptr += n2;
-      std::inplace_merge(s1, s1 + n1, s2, cptr);
+      std::inplace_merge(s1, s1 + n1, s2, cptr, cmp);
 
       auto p = spare_map_.equal_range(i);
 
@@ -349,7 +357,7 @@ public:
         ++cptr;
       }
 
-      std::inplace_merge(s1, cptr, cptr, cptr + n3);
+      std::inplace_merge(s1, cptr, cptr, cptr + n3, cmp);
     }
   }
 
