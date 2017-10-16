@@ -4,7 +4,7 @@
 #include <map>
 #include <algorithm>
 #include <cstring>
-#include <np.h>
+//#include <np.h>
 
 double uniform(){
   return double(rand())/RAND_MAX;
@@ -407,6 +407,7 @@ private:
 
 #if 0
 int main(int argc, char** argv){
+<<<<<<< Updated upstream
   using entry_value_t = entry_value__<double>;
 
   size_t num_exclusive = 10;
@@ -432,6 +433,24 @@ int main(int argc, char** argv){
   m(0, 2) = 1.25;
   m(0, 1) = 3.21;
 
+=======
+  mutator<double> m(3, 1, 1, 3, 3);
+  //m(0, 10) = 56.5;
+  //m(0, 2) = 1.25;
+  //m(0, 1) = 3.21;
+
+  //m.dump();
+
+  m(0, 0) = 1;
+  //m.dump();
+  m(0, 2) = 2;
+  //m.dump();
+  m(1, 3) = 3;
+  //m.dump();
+  m(2, 1) = 4;
+  //m.dump();
+  m(2, 4) = 5;
+>>>>>>> Stashed changes
   m.dump();
 
   m.commit(&ci);
@@ -464,7 +483,7 @@ int main(int argc, char** argv){
   size_t reserve = reserve_chunk;
   size_t exclusive_entries = 0;
 
-  size_t max_entries_per_index = 5;
+  size_t max_entries_per_index = 15;
 
   size_t num_phases = 20;
   size_t insertions_per_phase = 20;
