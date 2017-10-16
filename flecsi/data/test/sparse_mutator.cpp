@@ -4,7 +4,7 @@
 #include <map>
 #include <algorithm>
 #include <cstring>
-//#include <np.h>
+#include <np.h>
 
 double uniform(){
   return double(rand())/RAND_MAX;
@@ -245,8 +245,8 @@ public:
     }
   }
 
-  bool commit_requires_resize(size_t& size){
-
+  size_t num_exclusive_insertions() const{
+    return num_exclusive_insertions_;
   }
 
   void init_resized(offset_t* old_offsets,
@@ -259,8 +259,7 @@ public:
   void commit(commit_info_t* ci){
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
 
-    entry_value_t* cbuf = 
-      new entry_value_t[num_exclusive_entries + num_exclusive_insertions_];
+    entry_value_t* cbuf = new entry_value_t[num_exclusive_entries];
 
     entry_value_t* entries = ci->entries[0];
     offset_t* offsets = ci->offsets;
@@ -284,8 +283,6 @@ public:
       cptr += n1;
       eptr += n1;
 
-      entry_value_t* ptr = entries_ + i * num_slots_;
-
       size_t n2 = oi.count();
 
       if(n2 == 0){
@@ -295,6 +292,8 @@ public:
       }
 
       assert(n1 + n2 <= max_entries_per_index_ && "max entries exceeded");
+
+      entry_value_t* ptr = entries_ + i * num_slots_;
 
       entry_value_t* s2 = cptr;
       std::copy(ptr, ptr + n2, cptr);
@@ -306,7 +305,16 @@ public:
 
       size_t n3 = distance(p.first, p.second);
 
+      if(n3 == 0){
+        coi.set_count(n1 + n2);
+        coi.set_offset(offset);
+        offset += n1 + n2;
+        continue;
+      }
+
       assert(n1 + n2 + n3 <= max_entries_per_index_ && "max entries exceeded");
+
+      entry_value_t* s3 = cptr;
 
       for(auto itr = p.first; itr != p.second; ++itr) {
         cptr->entry = itr->second.entry;
@@ -314,7 +322,7 @@ public:
         ++cptr;
       }
 
-      std::inplace_merge(s1, cptr, cptr + n3, cmp);
+      std::inplace_merge(s1, s3, cptr, cmp);
 
       uint32_t count = n1 + n2 + n3;
 
@@ -361,7 +369,14 @@ public:
 
       size_t n3 = distance(p.first, p.second);
 
+      if(n3 == 0){
+        coi.set_count(n1 + n2);
+        continue;
+      }
+
       assert(n1 + n2 + n3 <= max_entries_per_index_ && "max entries exceeded");
+
+      entry_value_t* s3 = cptr;
 
       for(auto itr = p.first; itr != p.second; ++itr) {
         cptr->entry = itr->second.entry;
@@ -369,7 +384,9 @@ public:
         ++cptr;
       }
 
-      std::inplace_merge(s1, cptr, cptr + n3, cmp);
+      std::inplace_merge(s1, s3, cptr, cmp);
+
+      coi.set_count(n1 + n2 + n3);
     }
   }
 
@@ -388,6 +405,7 @@ private:
   spare_map_t spare_map_;
 };
 
+#if 0
 int main(int argc, char** argv){
   using entry_value_t = entry_value__<double>;
 
@@ -430,4 +448,101 @@ int main(int argc, char** argv){
   }
 
   return 0;
+}
+#endif
+
+int main(int argc, char** argv){
+  using T = double;
+
+  using entry_value_t = entry_value__<T>;
+
+  size_t num_exclusive = 10;
+  size_t num_shared = 2;
+  size_t num_ghost = 2;
+  size_t num_total = num_exclusive + num_shared + num_ghost;
+  size_t reserve_chunk = 8192;
+  size_t reserve = reserve_chunk;
+  size_t exclusive_entries = 0;
+
+  size_t max_entries_per_index = 5;
+
+  size_t num_phases = 20;
+  size_t insertions_per_phase = 20;
+
+  mutator<T>::commit_info_t ci;
+  ci.offsets = new offset_t[num_total];
+  for(size_t i = num_exclusive; i < num_total; ++i){
+    offset_t& oi = ci.offsets[i];
+    oi.set_offset(exclusive_entries + reserve + i * max_entries_per_index);
+  }
+
+  entry_value_t* all_entries = 
+    new entry_value_t[exclusive_entries + reserve + (num_shared + num_ghost) *
+      max_entries_per_index];
+
+  ci.entries[0] = all_entries;
+  ci.entries[1] = all_entries + exclusive_entries + reserve;
+  ci.entries[2] = ci.entries[1] + num_shared * max_entries_per_index;
+
+  for(size_t i = 0; i < num_phases; ++i){
+    size_t num_slots = 5;
+
+    mutator<T> m(num_exclusive, num_shared, num_ghost, max_entries_per_index, num_slots);
+
+    for(size_t j = 0; j < insertions_per_phase; ++j){
+      size_t index = equilikely(0, num_total - 1);
+      size_t entry = equilikely(0, max_entries_per_index - 2);
+      m(index, entry) = uniform(0, 100);
+    }
+
+    size_t num_exclusive_insertions = m.num_exclusive_insertions();
+
+    if(num_exclusive_insertions > reserve){
+      size_t old_exclusive_entries = exclusive_entries;
+      size_t old_reserve = reserve;
+
+      size_t needed = num_exclusive_insertions - reserve;
+
+      exclusive_entries += num_exclusive_insertions;
+      reserve = std::max(reserve_chunk, needed);
+
+      entry_value_t* new_entries = 
+        new entry_value_t[exclusive_entries + reserve + 
+        (num_shared + num_ghost) * max_entries_per_index];
+      
+      std::memcpy(new_entries, all_entries, old_exclusive_entries * sizeof(T));
+
+      std::memcpy(new_entries + exclusive_entries + reserve, 
+        all_entries + old_exclusive_entries + old_reserve,
+        (num_shared + num_ghost) * max_entries_per_index * sizeof(T));
+
+      delete[] all_entries;
+      all_entries = new_entries;
+
+      for(size_t k = num_exclusive; k < num_total; ++k){
+        offset_t& ok = ci.offsets[k];
+        ok.set_offset(exclusive_entries + reserve + k * max_entries_per_index);
+      }
+
+      ci.entries[0] = all_entries;
+      ci.entries[1] = all_entries + exclusive_entries + reserve;
+      ci.entries[2] = ci.entries[1] + num_shared * max_entries_per_index;
+    }
+    else{
+      reserve -= num_exclusive_insertions;
+    }
+
+    m.commit(&ci);
+  }
+
+  cout << "---------- committed data" << endl;
+
+  for(size_t i = 0; i < num_total; ++i){
+    const offset_t& offset = ci.offsets[i];
+    std::cout << "  index: " << i << std::endl;
+    for(size_t j = 0; j < offset.count(); ++j){
+      std::cout << "    " << ci.entries[0][i + j].entry << " = " << 
+        ci.entries[0][i + j].value << std::endl;
+    }
+  }
 }
