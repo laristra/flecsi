@@ -56,4 +56,35 @@ private:
 }; // class any
 ```
 
+Working off of this model, FleCSI uses a simpler, less-explicit form of
+type erasure through the definition of a common method interface for a
+set of parameterized types. For example, if several types define a
+method *erasure_method* like
+```
+template<
+  typename ... PARAMS
+>
+struct type_t
+{
+
+  // This method can be used to capture static parameters that were
+  // passed to define the type. Runtime invocation of this method
+  // allows the recovery of this type information.
+  static
+  void
+  erasure_method()
+  {
+    // use PARAMS to do type-specific operations...
+  } // erasure_method
+
+}; // struct type_t
+```
+we can recover the type information at runtime by invoking the common
+method. References to each type's *erasure_method* function can be
+stored in a standard container because they are all of the same type.
+This pattern is used in several places in FleCSI. A specific example is
+in *flecsi/execution/legion/task_wrapper.h*. In particular,
+*task_wrapper__::registration_callback* and
+*task_wrapper__::execute_user_task* use this design pattern.
+
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
