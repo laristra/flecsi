@@ -34,9 +34,11 @@ build like:
 % git clone git@gitlab.lanl.gov:pat/kitsune.git
 % cd kitsune
 % mkdir build
-% cmake -DCMAKE_INSTALL_PREFIX=/path/to/install ..
+% cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DCMAKE_INSTALL_PREFIX=/path/to/install ../llvm
 % make install
 ```
+If you are a developer, you may want to specify *Debug* for the build
+type.
 
 *Kitsune* is the Japanese word for *fox*.
 
@@ -45,5 +47,12 @@ build like:
 Currently, FleCSI provides only the *forall* keyword extension to C++
 for defining fine-grained, data-parallel operations on logically shared
 data regions.
+```
+void update(mesh<ro> m, field<rw, rw, ro> p) {
+  forall(auto c: m.cells(owned)) {
+    p(c) += 1.0;
+  } // forall
+}
+```
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
