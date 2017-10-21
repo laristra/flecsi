@@ -33,19 +33,115 @@ runtime is removed. The files are located in the *flecsi* sub-directory.
 
 ## Tasks
 
-FleCSI tasks are *pure* functions, i.e., pure functions with controlled
-side-effects.
+FleCSI tasks are pure functions with controlled side-effects. This
+definition of pure is required to allow runtime calls from within an
+executing task. In general, data states are never altered by the
+runtime, although they may be moved or managed. Any such changes
+executed by the runtime will be transparent to the task and will not
+alter correctness.
 
 ## Functions
 
+The FleCSI function interface provides a mechanism for creating
+relocatable function references in the form of a function handle.
+Function handles are first-class objects that may be passed as data.
+They are functionally equivalent to a C++
+[std::function](http://en.cppreference.com/w/cpp/utility/functional/function).
+
 ## Kernels
 
-## FleCSIT
+FleCSI kernels are implicitly defined by data-parallel semantics. In
+particular, the FleCSI C++ language extensions add the *forall* keyword.
+Logically, each occurance of a forall loop defines a kernel that can be
+applied to a given index space. This construct has relaxed memory
+consistency and is similar to OpenCL or CUDA kernels, or to pragmatized
+OpenMP loops.
 
-FleCSI offers two primary styles of development: The *FleCSIT*
-compilation tool that allows fast prototyping of multi-physics ideas,
-and the application interface that is intended for production code
-development.
+## C++ Language Extensions
+
+FleCSI provides fine-grained, data-parallel semantics through the
+introduction of the several keywords: *forall*, *reduceall*, and *scan*.
+These are extensions to standard C++ syntax. As an example, consider the
+following task definition:
+```
+void update(mesh<ro> m, field<rw, rw, ro> p) {
+  forall(auto c: m.cells(owned)) {
+    p(c) += 1.0;
+  } // forall
+} // update
+```
+The forall loop defines a FleCSI *kernel* that can be executed in
+parallel.
+
+The descision to modify C++ is partially motivated by a desire to
+capture parallel information in a direct way that will allow portable
+optimizations. For example, on CPU architectures, the introduction of
+loop-carried dependencies is often an important optimization step. A
+pure C++ implementation of forall would inhibit this optimization
+because the iterates of the loop would have to be executed as function
+object invocations to comply with C++ syntax rules.  The use of a
+language extension allows our compiler frontend to make optimization
+decisions based on the target architecture, and gives greater
+latitude on the code transformations that can be applied.
+
+Another motivation is the added ability of our approach to integrate
+loop-level parallelism with knowledge about task execution. Task
+registration and execution in the FleCSI model explicitly specify on
+which processor type the task shall be executed. This information can be
+used in conjection with parallel syntax to identify the target
+architecture for which to optimize. Additionally, because tasks are pure
+functions, any data motion required to reconcile depenencies between
+separate address spaces can be handled during the task prologue and
+epilogue stages. The Legion runtime also uses this information to hide
+latency. This approach provides a much better option for making
+choices about execution granulatiry that may affect data dependencies.
+As an example of why this is useful, consider the contrasting example of
+a direct C++ implementation of a forall interface:
+```
+```
+In this case, we are effectively limited to expressing parallelism and
+data movement at the level of the forall loop. In particular, if data
+must be offloaded to an accelerator device to perform the loop body, the
+overhead of that operation must be compensated for by the arithmetic
+complexity of the loop logic for that single loop. Additionally, a
+policy must also be specified as part of the signature of the interface.
+This adds noise to the code that is avoidable.
+
+Using a combination of FleCSI tasks and kernels allows the user to
+separate the concerns of fine-grained data parallelism and
+distributed-memory data dependencies:
+```
+// Task
+//
+// Mesh and field data will be resident in the correct
+// address space by the time the task is invoked.
+void update(mesh<ro> m, field<rw, rw, ro> p) {
+
+  // Each of the following kernels can execute in parallel
+  // if parallel execution is supported by the target architecture.
+
+  // Kernal 1
+  forall(auto c: m.cells(owned)) {
+    p(c) += 1.0;
+  } // forall
+
+  // Kernal 2
+  forall(auto c: m.cells(owned)) {
+    p(c) *= 2.0;
+  } // forall
+
+  // Kernal 3
+  forall(auto c: m.cells(owned)) {
+    p(c) -= 1.0;
+  } // forall
+
+} // update
+```
+Tasks have low overhead, so if the user really desires loop-level
+parallelization, they can still acheive this by creating a task with a
+single forall loop. However, the distinction between tasks and kernels
+provides a good mechanism for reasoning about data dependencies in
+conjunction with parallelism.
 
 # Mesh Coloring
 
