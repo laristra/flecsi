@@ -77,7 +77,6 @@ runtime_driver(
     } // for
   } // for
 
-
   //--------------------------------------------------------------------------//
   // Invoke callbacks for entries in the field registry.
   //--------------------------------------------------------------------------//
@@ -90,8 +89,6 @@ runtime_driver(
       f.second.second(f.first, f.second.first);
     } // for
   } // for
-
-
 
   int num_colors;
   MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
@@ -1095,8 +1092,9 @@ spmd_task(
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
   context_.advance_state();
-  // run default or user-defined driver 
-  driver(args.argc, args.argv); 
+
+  // run default or user-defined driver
+  driver(args.argc, args.argv);
 
 #if !defined(ENABLE_LEGION_TLS)
   // Set the current task context to the driver

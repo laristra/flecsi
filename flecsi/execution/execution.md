@@ -143,6 +143,15 @@ single forall loop. However, the distinction between tasks and kernels
 provides a good mechanism for reasoning about data dependencies in
 conjunction with parallelism.
 
+# Execution Structure
+
+Internally, the FleCSI runtime goes through several initialization steps
+that allow both the specialization and FleCSI types that are part of the
+runtime to execute control point logic. The current structure of this
+initialization is shown in Figure \ref{execution-structure}.
+
+![FleCSI Runtime Initialization Structure. \label{execution-structure}](execution-structure.pdf)
+
 # Mesh Coloring
 
 FleCSI supports the partitioning or *coloring* of meshes through a

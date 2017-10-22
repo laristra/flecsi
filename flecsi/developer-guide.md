@@ -50,6 +50,10 @@ space utilization and fast traversal.
 
 <!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Code Structure) -->
 
+# Code Strcuture
+
+![\label{code-structure}](code-structure.pdf)
+
 # Name Spaces
 
 FleCSI uses several different namespaces:
@@ -71,7 +75,7 @@ FleCSI uses several different namespaces:
 
 --------------------------------------------------------------------------------
 
-<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Code Structure) -->
+<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Unit Tests) -->
 
 # Unit Tests
 

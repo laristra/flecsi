@@ -62,7 +62,7 @@ find_package(Boost 1.58.0 REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 #------------------------------------------------------------------------------#
-# cinch_load_extras will try and find legion and mpi.  If we want to
+# cinch_load_extras will try and find legion and mpi. If we want to
 # override the defaults, i.e. ENABLE_MPI=on and ENABLE_LEGION=on, we
 # need to do it before cinch_load_extras is called.
 #------------------------------------------------------------------------------#
