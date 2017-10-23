@@ -31,13 +31,14 @@ public:
   static constexpr uint64_t count_mask = (1ul << COUNT_BITS) - 1;
   static constexpr uint32_t count_max = 1ul << COUNT_BITS;
 
-  offset__(uint64_t start, uint32_t count){
-    o_ = start << COUNT_BITS | count;
-  }
+  offset__()
+  : o_(0ul){}
 
-  offset__(const offset__& prev, uint32_t count){
-    o_ = prev.end() << COUNT_BITS | count;
-  }
+  offset__(uint64_t start, uint32_t count)
+  : o_(start << COUNT_BITS | count){}
+
+  offset__(const offset__& prev, uint32_t count)
+  : o_(prev.end() << COUNT_BITS | count){}
 
   uint64_t start() const{
     return o_ >> COUNT_BITS;
@@ -55,7 +56,13 @@ public:
   set_count(uint32_t count)
   {
     assert(count < count_max);
-    o_ |= count;
+    o_ = o_ & ~count_mask | count;
+  }
+
+  void
+  set_offset(uint64_t offset)
+  {
+    o_ = (o_ & count_mask) | (offset << COUNT_BITS);
   }
 
   std::pair<size_t, size_t>
