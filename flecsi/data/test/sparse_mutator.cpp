@@ -4,7 +4,7 @@
 #include <map>
 #include <algorithm>
 #include <cstring>
-#include <np.h>
+//#include <np.h>
 
 double uniform(){
   return double(rand())/RAND_MAX;
@@ -105,6 +105,74 @@ using namespace std;
 using namespace flecsi;
 
 using offset_t = utils::offset__<16>;
+
+
+template<class T>
+size_t merge(size_t index,
+             entry_value__<T>* existing,
+             size_t num_existing,
+             entry_value__<T>* slots,
+             size_t num_slots,
+             const std::multimap<size_t, entry_value__<T>>& spare_map,
+             entry_value__<T>* dest){
+
+  constexpr size_t end = std::numeric_limits<size_t>::max();
+  entry_value__<T>* existing_end = existing + num_existing;
+  entry_value__<T>* slots_end = slots + num_slots;
+
+  entry_value__<T>* dest_start = dest;
+
+  auto p = spare_map.equal_range(index);
+  auto itr = p.first;
+
+  size_t spare_entry = itr != p.second ? itr->second.entry : end;
+  size_t slot_entry = slots < slots_end ? slots->entry : end;
+  size_t existing_entry = existing < existing_end ? existing->entry : end;
+
+  for(;;){
+    if(spare_entry < end &&
+       spare_entry <= slot_entry && 
+       spare_entry <= existing_entry){
+
+      dest->entry = spare_entry;
+      dest->value = itr->second.value;
+      ++dest;
+
+      while(slot_entry == spare_entry){
+        slot_entry = ++slots < slots_end ? slots->entry : end;
+      }
+
+      while(existing_entry == spare_entry){
+        existing_entry = ++existing < existing_end ? existing->entry : end;
+      } 
+
+      spare_entry = ++itr != p.second ? itr->second.entry : end;
+    }
+    else if(slot_entry < end && slot_entry <= existing_entry){
+      dest->entry = slot_entry;
+      dest->value = slots->value;
+      ++dest;
+
+      while(existing_entry == slot_entry){
+        existing_entry = ++existing < existing_end ? existing->entry : end;
+      }  
+
+      slot_entry = ++slots < slots_end ? slots->entry : end;
+    }
+    else if(existing_entry < end){
+      dest->entry = existing_entry;
+      dest->value = existing->value;
+      ++dest;
+
+      existing_entry = ++existing < existing_end ? existing->entry : end;
+    }
+    else{
+      break;
+    }
+  }
+
+  return dest - dest_start;
+}
 
 template<typename T>
 class mutator{
@@ -230,8 +298,8 @@ public:
         const offset_t& offset = offsets_[i];
         std::cout << "  index: " << i << std::endl;
         for(size_t j = 0; j < offset.count(); ++j){
-          std::cout << "    " << entries_[i + j].entry << " = " << 
-            entries_[i + j].value << std::endl;
+          std::cout << "    " << entries_[i * num_slots_ + j].entry << 
+            " = " << entries_[i * num_slots_ + j].value << std::endl;
         }
 
         auto p = spare_map_.equal_range(i);
@@ -269,67 +337,25 @@ public:
 
     size_t offset = 0;
 
-    auto cmp = [](const entry_value_t& e1, const entry_value_t& e2) -> bool {
-      return e1.entry < e2.entry;
-    };
-
     for(size_t i = 0; i < num_exclusive_; ++i){
       const offset_t& oi = offsets_[i];
       offset_t& coi = offsets[i];
 
-      size_t n1 = coi.count();
-      entry_value_t* s1 = cptr;
-      std::copy(eptr, eptr + n1, cptr);
-      cptr += n1;
-      eptr += n1;
+      entry_value_t* sptr = entries_ + i * num_slots_;
 
-      size_t n2 = oi.count();
+      size_t num_existing = coi.count();
+      size_t used_slots = oi.count();
 
-      if(n2 == 0){
-        coi.set_offset(offset);
-        offset += n1;
-        continue;
-      }
+      size_t num_merged = 
+        merge(i, eptr, num_existing, sptr, used_slots, spare_map_, cptr);
+      
+      cptr += num_merged;
+      eptr += num_existing;
 
-      assert(n1 + n2 <= max_entries_per_index_ && "max entries exceeded");
-
-      entry_value_t* ptr = entries_ + i * num_slots_;
-
-      entry_value_t* s2 = cptr;
-      std::copy(ptr, ptr + n2, cptr);
-      cptr += n2;
-
-      std::inplace_merge(s1, s2, cptr, cmp);
-
-      auto p = spare_map_.equal_range(i);
-
-      size_t n3 = distance(p.first, p.second);
-
-      if(n3 == 0){
-        coi.set_count(n1 + n2);
-        coi.set_offset(offset);
-        offset += n1 + n2;
-        continue;
-      }
-
-      assert(n1 + n2 + n3 <= max_entries_per_index_ && "max entries exceeded");
-
-      entry_value_t* s3 = cptr;
-
-      for(auto itr = p.first; itr != p.second; ++itr) {
-        cptr->entry = itr->second.entry;
-        cptr->value = itr->second.value;
-        ++cptr;
-      }
-
-      std::inplace_merge(s1, s3, cptr, cmp);
-
-      uint32_t count = n1 + n2 + n3;
-
-      coi.set_count(count);
       coi.set_offset(offset);
+      coi.set_count(num_merged);
 
-      offset += count;
+      offset += num_merged;
     }
 
     std::memcpy(entries, cbuf, sizeof(entry_value_t) * (cptr - cbuf));
@@ -338,56 +364,29 @@ public:
     size_t start = num_exclusive_;
     size_t end = start + pi_.count[1] + pi_.count[2];
 
+    cbuf = new entry_value_t[max_entries_per_index_];
+
     for(size_t i = start; i < end; ++i){
-      entry_value_t* cptr = ci->entries[1] + max_entries_per_index_ * i;
+      entry_value_t* eptr = ci->entries[1] + max_entries_per_index_ * i;
 
       const offset_t& oi = offsets_[i];
       offset_t& coi = offsets[i];
 
-      entry_value_t* ptr = entries_ + i * num_slots_;
+      entry_value_t* sptr = entries_ + i * num_slots_;
 
-      entry_value_t* s1 = cptr;
-
-      size_t n1 = coi.count();
-
-      cptr += n1;
-
-      size_t n2 = oi.count();
-
-      if(n2 == 0){
-        continue;
-      }
-
-      assert(n1 + n2 <= max_entries_per_index_ && "max entries exceeded");
+      size_t num_existing = coi.count();
       
-      entry_value_t* s2 = cptr;
-      std::copy(ptr, ptr + n2, cptr);
-      cptr += n2;
-      std::inplace_merge(s1, s2, cptr, cmp);
+      size_t used_slots = oi.count();
 
-      auto p = spare_map_.equal_range(i);
+      size_t num_merged = 
+        merge(i, eptr, num_existing, sptr, used_slots, spare_map_, cbuf);
 
-      size_t n3 = distance(p.first, p.second);
+      std::memcpy(eptr, cbuf, sizeof(entry_value_t) * num_merged);
 
-      if(n3 == 0){
-        coi.set_count(n1 + n2);
-        continue;
-      }
-
-      assert(n1 + n2 + n3 <= max_entries_per_index_ && "max entries exceeded");
-
-      entry_value_t* s3 = cptr;
-
-      for(auto itr = p.first; itr != p.second; ++itr) {
-        cptr->entry = itr->second.entry;
-        cptr->value = itr->second.value;
-        ++cptr;
-      }
-
-      std::inplace_merge(s1, s3, cptr, cmp);
-
-      coi.set_count(n1 + n2 + n3);
+      coi.set_count(num_merged);  
     }
+
+    delete[] cbuf;
   }
 
 private:
@@ -404,52 +403,6 @@ private:
   entry_value_t* shared_entries_;
   spare_map_t spare_map_;
 };
-
-#if 0
-int main(int argc, char** argv){
-  using entry_value_t = entry_value__<double>;
-
-  size_t num_exclusive = 10;
-  size_t num_shared = 2;
-  size_t num_ghost = 2;
-  size_t num_total = num_exclusive + num_shared + num_ghost;
-  size_t max_entries_per_index = 5;
-
-  size_t num_insertions = 3;
-
-  mutator<double>::commit_info_t ci;
-  ci.offsets = new offset_t[num_total];
-  entry_value_t* all_entries = 
-    new entry_value_t[num_insertions + (num_shared + num_ghost) *
-      max_entries_per_index];
-
-  ci.entries[0] = all_entries;
-  ci.entries[1] = all_entries + num_insertions;
-  ci.entries[2] = ci.entries[1] + num_shared * max_entries_per_index;
-
-  mutator<double> m(2, 1, 1, 3, 2);
-  m(0, 10) = 56.5;
-  m(0, 2) = 1.25;
-  m(0, 1) = 3.21;
-
-  m.dump();
-
-  m.commit(&ci);
-
-  cout << "---------- committed data" << endl;
-
-  for(size_t i = 0; i < num_total; ++i){
-    const offset_t& offset = ci.offsets[i];
-    std::cout << "  index: " << i << std::endl;
-    for(size_t j = 0; j < offset.count(); ++j){
-      std::cout << "    " << ci.entries[0][i + j].entry << " = " << 
-        ci.entries[0][i + j].value << std::endl;
-    }
-  }
-
-  return 0;
-}
-#endif
 
 int main(int argc, char** argv){
   using T = double;
@@ -541,8 +494,8 @@ int main(int argc, char** argv){
     const offset_t& offset = ci.offsets[i];
     std::cout << "  index: " << i << std::endl;
     for(size_t j = 0; j < offset.count(); ++j){
-      std::cout << "    " << ci.entries[0][i + j].entry << " = " << 
-        ci.entries[0][i + j].value << std::endl;
+      std::cout << "    " << ci.entries[0][offset.start() + j].entry << 
+        " = " << ci.entries[0][offset.start() + j].value << std::endl;
     }
   }
 }
