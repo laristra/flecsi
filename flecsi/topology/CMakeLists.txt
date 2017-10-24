@@ -34,6 +34,10 @@ set(topology_HEADERS
   set_topology.h
   set_types.h
   set_utils.h
+  structured_mesh_types.h
+  structured_mesh_topology.h
+  structured_index_space.h
+  structured_querytable.h
 )
 
 #------------------------------------------------------------------------------#
@@ -42,6 +46,7 @@ set(topology_HEADERS
 # UNIT_POLICY and RUNTIME_DRIVER are set for unit tests that are not
 # runtime specific and can be configured for whichever runtime is active.
 #------------------------------------------------------------------------------#
+set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
@@ -129,6 +134,51 @@ cinch_add_unit(dual
     test/dual.cc
   INPUTS
     test/dual.blessed
+)
+
+#------------------------------------------------------------------------------#
+# Structured mesh unit tests.
+#------------------------------------------------------------------------------#
+
+cinch_add_unit(structured_1d
+  SOURCES
+    test/structured_1d.cc
+    ${DRIVER_INITIALIZATION}
+    ${RUNTIME_DRIVER}
+  INPUTS
+    test/structured_1d.blessed
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+  POLICY
+    ${UNIT_POLICY}
+)
+cinch_add_unit(structured_2d
+  SOURCES
+    test/structured_2d.cc
+    ${DRIVER_INITIALIZATION}
+    ${RUNTIME_DRIVER}
+  INPUTS
+    test/structured_2d.blessed
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+  POLICY
+    ${UNIT_POLICY}
+)
+
+cinch_add_unit(structured_3d
+  SOURCES
+    test/structured_3d.cc
+    ${DRIVER_INITIALIZATION}
+    ${RUNTIME_DRIVER}
+  INPUTS
+    test/structured_3d.blessed
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+  POLICY
+    ${UNIT_POLICY}
 )
 
 #------------------------------------------------------------------------------#
