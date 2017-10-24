@@ -78,16 +78,17 @@ struct mpi_context_policy_t
     max_entries_per_index(max_entries_per_index),
     reserve_chunk(reserve_chunk),
     reserve(reserve_chunk),
-    offsets(num_total){
+    offsets(num_total),
+    num_exclusive_entries(0){
       
       for(size_t i = num_exclusive; i < num_total; ++i){
         offsets[i].set_offset(reserve + i * max_entries_per_index);
       }
 
-      size_t entry_value_size = sizeof(size_t) + sizeof(type_size);
+      constexpr size_t entry_value_size = sizeof(size_t) + sizeof(type_size);
 
-      entries.resize(entry_value_size * (reserve + (num_shared + num_ghost) *
-        max_entries_per_index));
+      entries.resize(entry_value_size * (reserve + ((num_shared + num_ghost) *
+        max_entries_per_index)));
     }
 
     size_t type_size;
@@ -101,6 +102,7 @@ struct mpi_context_policy_t
     size_t max_entries_per_index;
     size_t reserve_chunk;
     size_t reserve;
+    size_t num_exclusive_entries;
 
     std::vector<offset_t> offsets;    
     std::vector<uint8_t> entries;    

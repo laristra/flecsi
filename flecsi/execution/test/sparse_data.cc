@@ -120,11 +120,20 @@ using handle_t =
   data::mpi::sparse_handle_t<T, EP, SP, GP>;
 #endif
 
+template<typename T>
+using mutator_t = mutator_handle__<T>;
+
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
 void task1(client_handle_t<test_mesh_t, ro> mesh,
-           handle_t<double, wo, wo, ro> d) {
+           handle_t<double, wo, wo, ro> d, mutator_t<double> mh) {
+
+  mh(1, 2) = 5.0;
+  mh(1, 3) = 15.0;
+  mh(2, 1) = 35.0;
+  mh.dump();
+  
   //np(y);
 } // task1
 
@@ -181,12 +190,7 @@ void driver(int argc, char ** argv) {
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, sparse, 0);
   auto mh = flecsi_get_mutator(ch, hydro, pressure, double, sparse, 0, 5);
 
-  mh(1, 2) = 5.0;
-  mh(1, 3) = 15.0;
-  mh(2, 1) = 35.0;
-  mh.dump();
-
-  flecsi_execute_task(task1, single, ch, ph);
+  flecsi_execute_task(task1, single, ch, ph, mh);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//

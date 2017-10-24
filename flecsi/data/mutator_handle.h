@@ -53,9 +53,8 @@ public:
   num_exclusive_(num_exclusive),
   max_entries_per_index_(max_entries_per_index),
   num_slots_(num_slots),
-  num_exclusive_insertions_(0), 
-  offsets_(new offset_t[num_entries_]), 
-  entries_(new entry_value_t[num_entries_ * num_slots]){
+  num_exclusive_insertions_(0) 
+{
     
     pi_.count[0] = num_exclusive;
     pi_.count[1] = num_shared;
@@ -74,6 +73,12 @@ public:
   mutator_handle_base__(const mutator_handle_base__& b) = default;
 
   ~mutator_handle_base__(){}
+
+  void init(){
+    offsets_ = new offset_t[num_entries_]; 
+    entries_ = new entry_value_t[num_entries_ * num_slots_];
+    spare_map_ = new spare_map_t;    
+  }
   
   T &
   operator () (
@@ -81,7 +86,7 @@ public:
     index_t entry
   )
   {
-    assert(entries_ && "mutator has alread been committed");
+    assert(offsets_ && "uninitialized mutator");
     assert(index < num_entries_);
 
     offset_t& offset = offsets_[index]; 
@@ -93,7 +98,7 @@ public:
         num_exclusive_insertions_++;
       }
       
-      return spare_map_.emplace(index,
+      return spare_map_->emplace(index,
         entry_value_t(entry))->second.value;
     } // if
 
@@ -156,7 +161,7 @@ public:
             " = " << entries_[i * num_slots_ + j].value << std::endl;
         }
 
-        auto p = spare_map_.equal_range(i);
+        auto p = spare_map_->equal_range(i);
         auto itr = p.first;
         while(itr != p.second){
           std::cout << "    +" << itr->second.entry << " = " << 
@@ -185,6 +190,8 @@ public:
   }
 
   void commit(commit_info_t* ci){
+    assert(offsets_ && "uninitialized mutator");
+
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
 
     entry_value_t* cbuf = new entry_value_t[num_exclusive_entries];
@@ -207,8 +214,8 @@ public:
       size_t used_slots = oi.count();
 
       size_t num_merged = 
-        merge(i, eptr, num_existing, sptr, used_slots, spare_map_, cptr);
-      
+        merge(i, eptr, num_existing, sptr, used_slots, *spare_map_, cptr);
+
       cptr += num_merged;
       eptr += num_existing;
 
@@ -239,7 +246,7 @@ public:
       size_t used_slots = oi.count();
 
       size_t num_merged = 
-        merge(i, eptr, num_existing, sptr, used_slots, spare_map_, cbuf);
+        merge(i, eptr, num_existing, sptr, used_slots, *spare_map_, cbuf);
 
       std::memcpy(eptr, cbuf, sizeof(entry_value_t) * num_merged);
 
@@ -247,6 +254,31 @@ public:
     }
 
     delete[] cbuf;
+
+    delete entries_;
+    entries_ = nullptr;
+
+    delete offsets_;
+    offsets_ = nullptr;
+
+    delete spare_map_;
+    spare_map_ = nullptr;
+  }
+
+  size_t num_exclusive() const{
+    return pi_.count[0];
+  }
+
+  size_t num_shared() const{
+    return pi_.count[1];
+  }
+
+  size_t num_ghost() const{
+    return pi_.count[2];
+  }
+
+  size_t max_entries_per_index() const{
+    return max_entries_per_index_;
   }
 
 private:
@@ -259,10 +291,9 @@ private:
   size_t num_exclusive_insertions_;
   size_t num_slots_;
   size_t num_entries_;
-  offset_t* offsets_;
-  entry_value_t* entries_;
-  entry_value_t* shared_entries_;
-  spare_map_t spare_map_;
+  offset_t* offsets_ = nullptr;
+  entry_value_t* entries_ = nullptr;
+  spare_map_t* spare_map_ = nullptr;
   erase_set_t * erase_set_ = nullptr;
 
   size_t merge(size_t index,

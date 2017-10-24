@@ -602,6 +602,11 @@ struct storage_type__<sparse>
 
     mutator_handle__<DATA_TYPE> h(fd.num_exclusive, fd.num_shared, 
       fd.num_ghost, fd.max_entries_per_index, slots);
+    h.offsets = &fd.offsets;
+    h.entries = &fd.entries;
+    h.reserve = &fd.reserve;
+    h.reserve_chunk = fd.reserve_chunk;
+    h.num_exclusive_entries = &fd.num_exclusive_entries;
 
     return h;
   }
