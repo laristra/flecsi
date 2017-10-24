@@ -179,6 +179,7 @@ void specialization_spmd_init(int argc, char ** argv) {
 void driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, sparse, 0);
+  auto mh = flecsi_get_mutator(ch, hydro, pressure, double, sparse, 0, 5);
 
   flecsi_execute_task(task1, single, ch, ph);
 } // specialization_driver

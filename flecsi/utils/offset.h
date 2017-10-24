@@ -15,6 +15,8 @@
 #ifndef flecsi_utils_offset_h
 #define flecsi_utils_offset_h
 
+#include <cassert>
+
 //!
 //! \file
 //! \date Initial file creation: Aug 14, 2017

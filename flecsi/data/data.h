@@ -349,13 +349,20 @@
 // FIXME: These need to be updated and documented
 //
 
-#define flecsi_get_mutator(client, nspace, name, data_type, storage_type,      \
-  version, slots)                                                              \
+#define flecsi_get_mutator(client_handle, nspace, name, data_type,             \
+  storage_type, version, slots)                                                \
+/* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  flecsi::data::field_data_t::get_mutator<flecsi::data::storage_type,          \
+  /* Call the storage policy to get a handle to the data */                    \
+  flecsi::data::field_data_t::get_mutator<                                     \
+    typename flecsi::data_client_type__<decltype(client_handle)>::type,        \
+    flecsi::data::storage_type,                                                \
     data_type,                                                                 \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
-    client, EXPAND_AND_STRINGIFY(name), slots, version)
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),          \
+    version                                                                    \
+  >                                                                            \
+    (client_handle, slots) 
 
 #define flecsi_get_all_handles(client, storage_type, handles,                  \
   hashes, namespaces, versions)                                                \

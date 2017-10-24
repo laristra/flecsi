@@ -28,6 +28,7 @@
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/sparse_data_handle.h"
+#include "flecsi/data/mutator_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
@@ -499,17 +500,18 @@ struct storage_type__<sparse>
       context.registered_sparse_field_data();
     auto fieldDataIter = registered_sparse_field_data.find(field_info.fid);
     if (fieldDataIter == registered_sparse_field_data.end()) {
-      size_t num_indices = color_info.exclusive +
-                           color_info.shared +
-                           color_info.ghost;
+
+      // TODO: these parameters need to be passed in field
+      // registration, or defined elsewhere
+      const size_t max_entries_per_index = 5;
+      const size_t reserve_chunk = 8388608;
 
       // TODO: deal with VERSION
-      context.register_sparse_field_data(
-        field_info.fid, field_info.size, num_indices);
+      context.register_sparse_field_data(field_info.fid, field_info.size,
+        color_info, max_entries_per_index, reserve_chunk);
 
-      context.register_field_metadata<DATA_TYPE>(field_info.fid,
-                                                 color_info,
-                                                 index_coloring);
+      context.register_sparse_field_metadata<DATA_TYPE>(
+        field_info.fid, color_info, index_coloring);
     }
 
     auto& sparse_field_data = registered_sparse_field_data[field_info.fid];
@@ -523,7 +525,11 @@ struct storage_type__<sparse>
     hb.entries = reinterpret_cast<sparse_entry_value__<DATA_TYPE>*>(
       &sparse_field_data.entries[0]);
    
-    hb.indices = reinterpret_cast<size_t*>(&sparse_field_data.indices[0]);
+    hb.offsets = &sparse_field_data.offsets[0];
+
+    hb.num_exclusive = sparse_field_data.num_exclusive; 
+    hb.num_shared = sparse_field_data.num_shared; 
+    hb.num_ghost = sparse_field_data.num_ghost;
 
   /*
     hb.combined_size = 
@@ -544,6 +550,24 @@ struct storage_type__<sparse>
     hb.combined_size += color_info.ghost;
    */
 
+    return h;
+  }
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION
+  >
+  static
+  mutator_handle__<DATA_TYPE>
+  get_mutator(
+    const data_client_t & data_client,
+    size_t slots
+  )
+  {
+    mutator_handle__<DATA_TYPE> h(0, 0, 0);
     return h;
   }
 
