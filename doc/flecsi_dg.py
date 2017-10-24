@@ -37,6 +37,7 @@ opts = {
 
    'sections' : [
       'Introduction',
+      'Build',
       'Code Structure',
       'Index Spaces',
       'Data Model',
