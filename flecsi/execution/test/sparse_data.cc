@@ -181,6 +181,11 @@ void driver(int argc, char ** argv) {
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, sparse, 0);
   auto mh = flecsi_get_mutator(ch, hydro, pressure, double, sparse, 0, 5);
 
+  mh(1, 2) = 5.0;
+  mh(1, 3) = 15.0;
+  mh(2, 1) = 35.0;
+  mh.dump();
+
   flecsi_execute_task(task1, single, ch, ph);
 } // specialization_driver
 

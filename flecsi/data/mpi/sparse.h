@@ -492,14 +492,13 @@ struct storage_type__<sparse>
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
       utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
-    // get color_info for this field.
-    auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
-    auto &index_coloring = context.coloring(field_info.index_space);
-
     auto& registered_sparse_field_data = 
       context.registered_sparse_field_data();
     auto fieldDataIter = registered_sparse_field_data.find(field_info.fid);
     if (fieldDataIter == registered_sparse_field_data.end()) {
+      // get color_info for this field.
+      auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
+      auto &index_coloring = context.coloring(field_info.index_space);
 
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
@@ -567,7 +566,43 @@ struct storage_type__<sparse>
     size_t slots
   )
   {
-    mutator_handle__<DATA_TYPE> h(0, 0, 0);
+    auto& context = execution::context_t::instance();
+    
+    using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
+
+    // get field_info for this data handle
+    auto& field_info =
+      context.get_field_info(
+        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
+      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
+
+    auto& registered_sparse_field_data = 
+      context.registered_sparse_field_data();
+    auto fieldDataIter = registered_sparse_field_data.find(field_info.fid);
+    if (fieldDataIter == registered_sparse_field_data.end()) {
+
+      // get color_info for this field.
+      auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
+      auto &index_coloring = context.coloring(field_info.index_space);
+
+      // TODO: these parameters need to be passed in field
+      // registration, or defined elsewhere
+      const size_t max_entries_per_index = 5;
+      const size_t reserve_chunk = 8388608;
+
+      // TODO: deal with VERSION
+      context.register_sparse_field_data(field_info.fid, field_info.size,
+        color_info, max_entries_per_index, reserve_chunk);
+
+      context.register_sparse_field_metadata<DATA_TYPE>(
+        field_info.fid, color_info, index_coloring);
+    }
+
+    auto& fd = registered_sparse_field_data[field_info.fid];
+
+    mutator_handle__<DATA_TYPE> h(fd.num_exclusive, fd.num_shared, 
+      fd.num_ghost, fd.max_entries_per_index, slots);
+
     return h;
   }
 
