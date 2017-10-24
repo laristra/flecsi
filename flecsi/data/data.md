@@ -16,19 +16,23 @@ storage type provides data registration, data handles, and data
 mutators (when appropriate) that allow the user to modify data values
 and structure. The currently supported storage types are:
 
-* **dense**  
+* **dense**<br>  
   This storage type provides a one-dimensional dense array suitable for
   storing structured or unstructured data.
 
-* **sparse**  
+* **sparse**<br>  
   This storage type provides compressed storage for a logically dense
   index space.
 
-* **global**  
+* **global**<br>  
   This storage type is suitable for storing data that are
   non-enumerable, i.e., data that are not logically stored as an array.
 
-* **tuple**  
+* **color**<br>  
+  This storage type is suitable for storing non-enumerable data on a
+  *per-color* basis.
+
+* **tuple**<br>  
   This storage type provides c-struct-like support so that task
   arguments can be associated without forcing a particular data layout.
 

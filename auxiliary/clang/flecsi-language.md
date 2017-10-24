@@ -31,11 +31,11 @@ LANL. If you need access, please contact Pat McCormick
 Once you have access to the repository, you can obtain the source and
 build like:
 ```
-% git clone git@gitlab.lanl.gov:pat/kitsune.git
-% cd kitsune
-% mkdir build
-% cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DCMAKE_INSTALL_PREFIX=/path/to/install ../llvm
-% make install
+$ git clone git@gitlab.lanl.gov:pat/kitsune.git
+$ cd kitsune
+$ mkdir build
+$ cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DCMAKE_INSTALL_PREFIX=/path/to/install ../llvm
+$ make install
 ```
 If you are a developer, you may want to specify *Debug* for the build
 type.
