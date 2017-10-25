@@ -216,15 +216,17 @@ public:
       size_t num_merged = 
         merge(i, eptr, num_existing, sptr, used_slots, *spare_map_, cptr);
 
-      cptr += num_merged;
+      if(num_merged > 0){
+        cptr += num_merged;
+        coi.set_count(num_merged);
+        offset += num_merged;
+      }
+
       eptr += num_existing;
-
       coi.set_offset(offset);
-      coi.set_count(num_merged);
-
-      offset += num_merged;
     }
 
+    assert(cptr - cbuf <= num_exclusive_entries);
     std::memcpy(entries, cbuf, sizeof(entry_value_t) * (cptr - cbuf));
     delete[] cbuf;
 
@@ -248,17 +250,19 @@ public:
       size_t num_merged = 
         merge(i, eptr, num_existing, sptr, used_slots, *spare_map_, cbuf);
 
-      std::memcpy(eptr, cbuf, sizeof(entry_value_t) * num_merged);
-
-      coi.set_count(num_merged);  
+      if(num_merged > 0){
+        assert(num_merged <= max_entries_per_index_);
+        std::memcpy(eptr, cbuf, sizeof(entry_value_t) * num_merged);
+        coi.set_count(num_merged);         
+      }
     }
 
     delete[] cbuf;
 
-    delete entries_;
+    delete[] entries_;
     entries_ = nullptr;
 
-    delete offsets_;
+    delete[] offsets_;
     offsets_ = nullptr;
 
     delete spare_map_;
@@ -303,7 +307,6 @@ private:
                size_t num_slots,
                const spare_map_t& spare_map,
                entry_value_t* dest){
-
     constexpr size_t end = std::numeric_limits<size_t>::max();
     entry_value_t* existing_end = existing + num_existing;
     entry_value_t* slots_end = slots + num_slots;
