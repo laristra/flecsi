@@ -41,6 +41,8 @@ opts = {
       'Code Structure',
       'Index Spaces',
       'Data Model',
+      'Execution Structure',
+      'Execution Model Overview',
       'Execution Model',
       'Topology Types',
       'IO',
