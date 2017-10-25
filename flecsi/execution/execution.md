@@ -1,6 +1,86 @@
-<!-- CINCHDOC DOCUMENT(User Guide) SECTION(Execution Model) -->
+<!-- CINCHDOC
+  DOCUMENT(Developer Guide)
+  SECTION(Runtime Initialization Structure)
+-->
 
-# Execution Model
+# Runtime Initialization Structure
+
+Internally, the FleCSI runtime goes through several initialization steps
+that allow both the specialization and FleCSI types that are part of the
+runtime to execute control point logic. The current structure of this
+initialization is shown in Figure \ref{execution-structure}.
+
+![FleCSI Runtime Initialization Structure. \label{execution-structure}](execution-structure.pdf)
+
+<!-- CINCHDOC
+  DOCUMENT(User Guide | Developer Guide)
+  SECTION(Execution Model Overview)
+-->
+
+\newpage
+# Execution Model Overview
+
+FleCSI's execution model is hierarchical and data-centric, with work
+being done through tasks and kernels:
+
+* **task**<br>  
+  Tasks operate on logically distributed address spaces with output
+  determined only by inputs and with no observable side effects, i.e.,
+  they are pure functions.
+
+* **kernel**<br>  
+  Kernels operate on logically shared memory and may have side
+  effects within their local address space.
+
+Both of these work types may be executed in parallel, so the attributes
+that distinguish them from each other are best considered in the context
+of memory consitency: Tasks work on locally-mapped data that are
+logically distributed. Consistency of the distributed data state is
+maintained by the FleCSI runtime. Each task instance always executes
+within a single address space. Kernels work on logically shared data
+with a relaxed consistency model, i.e., the user is responsible for
+implementing memory consistency by applying synchronization techniques.
+Kernels may only be invoked from within a task.
+
+A simple, but incomplete view of this model is that tasks are internode,
+and kernels are intranode, or, more precisely, intraprocessor. A more
+complete view is much less restrictive of tasks, including only the
+constraint that a task be a pure function.
+
+Consider the following:
+
+```
+double update(mesh<ro> m, field<rw, rw, ro> p) {
+  double sum{0};
+
+  forall(auto c: m.cells(owned)) {
+    p(c) = 2.0*p(c);
+    sum += p(c);
+  } // forall
+
+  return sum;
+} // task
+```
+
+In this example, the *update* function is a task and the *forall* loop
+implicitly defines a kernel. Ignoring many of the details, we see that
+the task is *mostly* semantically sequential from a distributed-memory
+point of view, i.e., it takes a mesh *m* and a field *p*, both of which
+may be distributed, and applies updates as if the entire index space
+were available locally. The admonishment that the task is *mostly*
+semantically sequential refers to the *owned* identifier in the loop
+construct. Here, *owned* indicates that the mesh should return an
+iterator only to the exclusive and shared cell indices (see the
+discussion on [index spaces](#index-spaces)). Implicitly, this exposes
+the distributed-memory nature of the task.
+
+The *forall* kernel, on the other hand, is explicitly data parallel. The
+iterator *m.cells(owned)* defines an index space over which the loop
+body may be executed in parallel. This is a very concise syntax that is
+supported by the [FleCSI C++ language
+extensions](#c++-language-extensions) (The use of the term
+*kernel* in our nomenclature derives from the CUDA and OpenCL
+programming models, which may be familiar to the reader.)
 
 --------------------------------------------------------------------------------
 
@@ -17,11 +97,11 @@ The primary interface classes context\_t, task\_model\_t, and
 function\_t are types that are defined during configuration that encode
 the low-level runtime that was selected for the build. These types are
 then used in the macro definitions to implement the high-level FleCSI
-interface. Currently, FleCSI supports a serial runtime, and the MPI and
-Legion distributed-memory runtimes. The code to implement the backend
+interface. Currently, FleCSI supports the MPI and Legion
+distributed-memory runtimes. The code to implement the backend
 implementations for each of these is in the respectively named
-sub-directory of *execution*, e.g., the serial implementation is in
-*serial*. Documentation for the macro and core C++ interfaces is
+sub-directory of *execution*, e.g., the Legion implementation is in
+*legion*. Documentation for the macro and core C++ interfaces is
 maintained in the Doxygen documentation. 
 
 **Note:** Compile-time selection of the low-level runtime is handled
@@ -34,7 +114,7 @@ runtime is removed. The files are located in the *flecsi* sub-directory.
 ## Tasks
 
 FleCSI tasks are pure functions with controlled side-effects. This
-definition of pure is required to allow runtime calls from within an
+variation of *pure* is required to allow runtime calls from within an
 executing task. In general, data states are never altered by the
 runtime, although they may be moved or managed. Any such changes
 executed by the runtime will be transparent to the task and will not
@@ -57,7 +137,12 @@ applied to a given index space. This construct has relaxed memory
 consistency and is similar to OpenCL or CUDA kernels, or to pragmatized
 OpenMP loops.
 
-## C++ Language Extensions
+<!-- CINCHDOC
+  DOCUMENT(User Guide | Developer Guide)
+  SECTION(C++ Language Extensions)
+-->
+
+# C++ Language Extensions
 
 FleCSI provides fine-grained, data-parallel semantics through the
 introduction of the several keywords: *forall*, *reduceall*, and *scan*.
@@ -88,7 +173,7 @@ Another motivation is the added ability of our approach to integrate
 loop-level parallelism with knowledge about task execution. Task
 registration and execution in the FleCSI model explicitly specify on
 which processor type the task shall be executed. This information can be
-used in conjection with parallel syntax to identify the target
+used in conjuntion with our parallel syntax to identify the target
 architecture for which to optimize. Additionally, because tasks are pure
 functions, any data motion required to reconcile depenencies between
 separate address spaces can be handled during the task prologue and
@@ -140,17 +225,8 @@ void update(mesh<ro> m, field<rw, rw, ro> p) {
 Tasks have low overhead, so if the user really desires loop-level
 parallelization, they can still acheive this by creating a task with a
 single forall loop. However, the distinction between tasks and kernels
-provides a good mechanism for reasoning about data dependencies in
-conjunction with parallelism.
-
-# Execution Structure
-
-Internally, the FleCSI runtime goes through several initialization steps
-that allow both the specialization and FleCSI types that are part of the
-runtime to execute control point logic. The current structure of this
-initialization is shown in Figure \ref{execution-structure}.
-
-![FleCSI Runtime Initialization Structure. \label{execution-structure}](execution-structure.pdf)
+provides a good mechanism for reasoning about data dependencies between
+parallel operations.
 
 # Mesh Coloring
 
