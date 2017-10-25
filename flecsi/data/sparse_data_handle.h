@@ -8,18 +8,14 @@
 
 #include "flecsi/data/data_handle.h"
 
+#include "flecsi/data/common/data_types.h"
+
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: Oct 06, 2017
 //----------------------------------------------------------------------------//
 
 namespace flecsi {
-
-template<typename T>
-struct sparse_entry_value__{
-  size_t entry;
-  T value;
-};
 
 template<
   typename T,
@@ -47,18 +43,21 @@ struct sparse_data_handle_base__ :
   index_space(b.index_space),
   data_client_hash(b.data_client_hash),
   entries(b.entries),
-  indices(b.indices),
+  offsets(b.offsets),
   ghost_entries(b.ghost_entries){
   
   }
 
   size_t index_space;
   size_t data_client_hash;
+  size_t num_exclusive;
+  size_t num_shared;
+  size_t num_ghost;
 
-  sparse_entry_value__<T>* entries = nullptr;
-  size_t* indices;
+  data::sparse_entry_value__<T>* entries = nullptr;
+  data::sparse_data_offset_t* offsets;
 
-  sparse_entry_value__<T>* ghost_entries = nullptr;
+  data::sparse_entry_value__<T>* ghost_entries = nullptr;
 };
 
 } // namespace flecsi

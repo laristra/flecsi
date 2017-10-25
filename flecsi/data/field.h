@@ -148,6 +148,57 @@ struct field_data__
   } // get_handle
 
   //--------------------------------------------------------------------------//
+  //! Return the mutator associated with the given parameters and data client.
+  //!
+  //! @tparam DATA_CLIENT_TYPE The data client type on which the data
+  //!                          attribute should be registered.
+  //! @tparam STORAGE_TYPE     The storage type for the data attribute.
+  //! @tparam DATA_TYPE        The data type, e.g., double. This may be
+  //!                          P.O.D. or a user-defined type that is
+  //!                          trivially-copyable.
+  //! @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
+  //!                          of attribute names to avoid collisions.
+  //! @tparam NAME_HASH        The attribute name.
+  //! @tparam INDEX_SPACE      The index space identifier.
+  //! @tparam VERSION          The data version.
+  //!
+  //! @ingroup data
+  //! @ingroup slots
+  //--------------------------------------------------------------------------//
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t STORAGE_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH,
+    size_t VERSION = 0,
+    size_t PERMISSIONS
+  >
+  static
+  decltype(auto)
+  get_mutator(
+    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle,
+    size_t slots
+  )
+  {
+    static_assert(VERSION < utils::hash::field_max_versions,
+      "max field version exceeded");
+    
+    using storage_type_t =
+      typename DATA_POLICY::template storage_type__<STORAGE_TYPE>;
+
+    return storage_type_t::template get_mutator<
+      DATA_CLIENT_TYPE,
+      DATA_TYPE,
+      NAMESPACE_HASH,
+      NAME_HASH,
+      VERSION
+    >
+    (client_handle, slots);
+  } // get_handle
+
+  //--------------------------------------------------------------------------//
   //! Return all handles of the given storage type, data type, and
   //! namespace that satisfy a predicate function.
   //!

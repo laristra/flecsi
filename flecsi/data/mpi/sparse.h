@@ -28,6 +28,7 @@
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/sparse_data_handle.h"
+#include "flecsi/data/mutator_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
@@ -491,25 +492,25 @@ struct storage_type__<sparse>
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
       utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
-    // get color_info for this field.
-    auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
-    auto &index_coloring = context.coloring(field_info.index_space);
-
     auto& registered_sparse_field_data = 
       context.registered_sparse_field_data();
     auto fieldDataIter = registered_sparse_field_data.find(field_info.fid);
     if (fieldDataIter == registered_sparse_field_data.end()) {
-      size_t num_indices = color_info.exclusive +
-                           color_info.shared +
-                           color_info.ghost;
+      // get color_info for this field.
+      auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
+      auto &index_coloring = context.coloring(field_info.index_space);
+
+      // TODO: these parameters need to be passed in field
+      // registration, or defined elsewhere
+      const size_t max_entries_per_index = 5;
+      const size_t reserve_chunk = 8388608;
 
       // TODO: deal with VERSION
-      context.register_sparse_field_data(
-        field_info.fid, field_info.size, num_indices);
+      context.register_sparse_field_data(field_info.fid, field_info.size,
+        color_info, max_entries_per_index, reserve_chunk);
 
-      context.register_field_metadata<DATA_TYPE>(field_info.fid,
-                                                 color_info,
-                                                 index_coloring);
+      context.register_sparse_field_metadata<DATA_TYPE>(
+        field_info.fid, color_info, index_coloring);
     }
 
     auto& sparse_field_data = registered_sparse_field_data[field_info.fid];
@@ -523,7 +524,11 @@ struct storage_type__<sparse>
     hb.entries = reinterpret_cast<sparse_entry_value__<DATA_TYPE>*>(
       &sparse_field_data.entries[0]);
    
-    hb.indices = reinterpret_cast<size_t*>(&sparse_field_data.indices[0]);
+    hb.offsets = &sparse_field_data.offsets[0];
+
+    hb.num_exclusive = sparse_field_data.num_exclusive; 
+    hb.num_shared = sparse_field_data.num_shared; 
+    hb.num_ghost = sparse_field_data.num_ghost;
 
   /*
     hb.combined_size = 
@@ -543,6 +548,65 @@ struct storage_type__<sparse>
     hb.ghost_data = hb.ghost_buf = hb.shared_data + hb.shared_size;
     hb.combined_size += color_info.ghost;
    */
+
+    return h;
+  }
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION
+  >
+  static
+  mutator_handle__<DATA_TYPE>
+  get_mutator(
+    const data_client_t & data_client,
+    size_t slots
+  )
+  {
+    auto& context = execution::context_t::instance();
+    
+    using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
+
+    // get field_info for this data handle
+    auto& field_info =
+      context.get_field_info(
+        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
+      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
+
+    auto& registered_sparse_field_data = 
+      context.registered_sparse_field_data();
+    auto fieldDataIter = registered_sparse_field_data.find(field_info.fid);
+    if (fieldDataIter == registered_sparse_field_data.end()) {
+
+      // get color_info for this field.
+      auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
+      auto &index_coloring = context.coloring(field_info.index_space);
+
+      // TODO: these parameters need to be passed in field
+      // registration, or defined elsewhere
+      const size_t max_entries_per_index = 5;
+      const size_t reserve_chunk = 8388608;
+
+      // TODO: deal with VERSION
+      context.register_sparse_field_data(field_info.fid, field_info.size,
+        color_info, max_entries_per_index, reserve_chunk);
+
+      context.register_sparse_field_metadata<DATA_TYPE>(
+        field_info.fid, color_info, index_coloring);
+    }
+
+    auto& fd = registered_sparse_field_data[field_info.fid];
+
+    mutator_handle__<DATA_TYPE> h(fd.num_exclusive, fd.num_shared, 
+      fd.num_ghost, fd.max_entries_per_index, slots);
+    h.offsets = &fd.offsets;
+    h.entries = &fd.entries;
+    h.reserve = &fd.reserve;
+    h.reserve_chunk = fd.reserve_chunk;
+    h.num_exclusive_entries = &fd.num_exclusive_entries;
 
     return h;
   }
