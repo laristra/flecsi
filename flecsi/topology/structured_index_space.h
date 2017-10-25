@@ -49,7 +49,6 @@ public:
     if (primary) 
       assert (mubnds.size()==1);
 
-    dim_ = lbnds.size();
     offset_ = 0;
     primary_ = primary;
     num_boxes_ = mubnds.size();
@@ -60,7 +59,7 @@ public:
       size_t cnt = 1;
       ubnds_new.clear();
       lbnds_new.clear();
-      for (size_t j = 0; j < dim_; j++)
+      for (size_t j = 0; j < DM; j++)
       {
          cnt *= ubnds[j]+mubnds[i][j]-lbnds[j]+1;
          ubnds_new.push_back(ubnds[j]+mubnds[i][j]);
@@ -85,12 +84,12 @@ public:
       std::cout<<" -- Box-size   = "<<box_size_[i]<<std::endl;
 
       std::cout<<" ----Box-lower-bnds = { ";
-      for (size_t j = 0 ; j < dim_; j++)
+      for (size_t j = 0 ; j < DM; j++)
         std::cout<<box_lowbnds_[i][j]<<", ";
       std::cout<<"}"<<std::endl;
     
       std::cout<<" ----Box-upper-bnds = { ";
-      for (size_t j = 0 ; j < dim_; j++)
+      for (size_t j = 0 ; j < DM; j++)
         std::cout<<box_upbnds_[i][j]<<", ";
       std::cout<<"}"<<std::endl;
     }
@@ -182,7 +181,7 @@ public:
   template <size_t TD, class S>
   auto traverse(size_t FD, size_t ID, sm_id_vector_t &indices, qtable_t *qt)
   {
-    return traversal<TD, S>(this, dim_, FD, ID, indices, qt);
+    return traversal<TD, S>(this, DM, FD, ID, indices, qt);
   }
 
   template<size_t TD1, class S1, class E1=E, size_t DM1 = DM>
@@ -408,14 +407,14 @@ public:
     size_t value =0;
     size_t factor;
 
-    for (size_t i = 0; i <dim_; ++i)
+    for (size_t i = 0; i < DM; ++i)
     {
       factor = 1;
-      for (size_t j=0; j<dim_-i-1; ++j)
+      for (size_t j=0; j< DM-i-1; ++j)
       {
         factor *= box_upbnds_[B][j]-box_lowbnds_[B][j]+1;
       }
-      value += idv[dim_-i-1]*factor;
+      value += idv[DM-i-1]*factor;
     }
 
     return value;
@@ -427,14 +426,14 @@ public:
     size_t value =0;
     size_t factor;
 
-    for (size_t i = 0; i <dim_; ++i)
+    for (size_t i = 0; i < DM; ++i)
     {
       factor = 1;
-      for (size_t j=0; j<dim_-i-1; ++j)
+      for (size_t j=0; j < DM-i-1; ++j)
       {
         factor *= box_upbnds_[B][j]-box_lowbnds_[B][j]+1;
       }
-      value += idv[dim_-i-1]*factor;
+      value += idv[DM-i-1]*factor;
     }
 
     return value;
@@ -455,15 +454,15 @@ public:
     sm_id_vector_t id;
     size_t factor, value;
 
-    for (size_t i=0; i<dim_; ++i)
+    for (size_t i=0; i< DM; ++i)
     {
       factor = 1; 
-      for (size_t j=0; j<dim_-i-1; ++j)
+      for (size_t j=0; j< DM-i-1; ++j)
       {
        factor *= box_upbnds_[box_id][j]-box_lowbnds_[box_id][j] + 1; 
       }
       value = rem/factor;
-      id[dim_-i-1] = value;
+      id[DM-i-1] = value;
       rem -= value*factor;
     }
  
@@ -492,14 +491,14 @@ public:
   template<size_t B, size_t D>
   auto get_size_in_direction()
   {
-    assert(D>=0 && D <dim_);
+    assert(D>=0 && D < DM);
     return (box_upbnds_[B][D] - box_lowbnds_[B][D]+1);
   }
 
   template<size_t D>
   auto get_size_in_direction(size_t B)
   {
-    assert(D>=0 && D <dim_);
+    assert(D>=0 && D < DM);
     return (box_upbnds_[B][D] - box_lowbnds_[B][D]+1);
   }
 
@@ -553,7 +552,6 @@ public:
  private:
    bool primary_;                  // primary_ is set to true only for the IS of 
                                    // highest-dimensional entity 
-   sm_id_t dim_;                   // dimension of mesh this IS stores
    sm_id_t offset_;                // starting offset for the entire IS
    sm_id_t size_;                  // size of the entire IS
 

@@ -309,8 +309,8 @@ public:
     auto indices = ms_.index_spaces[FM][FD].template 
                    get_indices_from_offset(id);
 
-    using etype = entity_type<TD,FM>;
-    return ms_.index_spaces[FM][TD].template 
+    using etype = entity_type<TD,TM>;
+    return ms_.index_spaces[TM][TD].template 
            traverse<TD,etype>(FD, BD, indices, qt);
   } //entities
 

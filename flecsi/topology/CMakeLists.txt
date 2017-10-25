@@ -226,11 +226,6 @@ cinch_add_unit(structured_3d
 #    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
-cinch_add_unit(structured
-  SOURCES
-    test/structured.cc
-)
-
 #------------------------------------------------------------------------------#
 # Set unit tests.
 #------------------------------------------------------------------------------#
