@@ -35,7 +35,7 @@ struct sparse_data_handle_base__ :
   size_t max_entries_per_index;
 
   entry_value_t* entries = nullptr;
-  offset_t* offsets;
+  offset_t* offsets = nullptr;
 
   //--------------------------------------------------------------------------//
   //! Default constructor.
@@ -67,7 +67,8 @@ struct sparse_data_handle_base__ :
   offsets(b.offsets),
   num_exclusive_(b.num_exclusive_),
   num_shared_(b.num_shared_),
-  num_ghost_(b.num_ghost_){}
+  num_ghost_(b.num_ghost_),
+  num_total_(b.num_total_){}
 
   T &
   operator () (
@@ -92,6 +93,18 @@ struct sparse_data_handle_base__ :
 
     return itr->value;
   } // operator ()
+
+  void dump() const{
+    for(size_t i = 0; i < num_total_; ++i){
+      const offset_t& offset = offsets[i];
+      std::cout << "index: " << i << std::endl;
+      for(size_t j = 0; j < offset.count(); ++j){
+        size_t k = offset.start() + j;
+        std::cout << "  " << entries[k].entry << 
+          " = " << entries[k].value << std::endl;
+      }
+    }
+  }
 
 private:
   size_t num_exclusive_;

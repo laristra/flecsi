@@ -55,7 +55,6 @@ public:
   num_slots_(num_slots),
   num_exclusive_insertions_(0) 
 {
-    
     pi_.count[0] = num_exclusive;
     pi_.count[1] = num_shared;
     pi_.count[2] = num_ghost;
@@ -107,13 +106,12 @@ public:
 
     entry_value_t * itr =
       std::lower_bound(start, end, entry_value_t(entry),
-        [](const auto & k1, const auto & k2) -> bool{
-          return k1.entry < k2.entry;
+        [](const entry_value_t & e1, const entry_value_t & e2) -> bool{
+          return e1.entry < e2.entry;
         });
 
-    // if we are creating an that has already been created, just
-    // over-write the value and exit.  No need to increment the
-    // counters or move data.
+    // if we are attempting to create an entry that already exists
+    // just over-write the value and exit.  
     if ( itr != end && itr->entry == entry) {
       return itr->value;
     }
@@ -216,14 +214,14 @@ public:
       size_t num_merged = 
         merge(i, eptr, num_existing, sptr, used_slots, *spare_map_, cptr);
 
+      eptr += num_existing;
+      coi.set_offset(offset);
+
       if(num_merged > 0){
         cptr += num_merged;
         coi.set_count(num_merged);
         offset += num_merged;
       }
-
-      eptr += num_existing;
-      coi.set_offset(offset);
     }
 
     assert(cptr - cbuf <= num_exclusive_entries);
