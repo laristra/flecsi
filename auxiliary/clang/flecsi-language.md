@@ -5,7 +5,7 @@
   the FleCSI documentation.
 -->
 
-<!-- CINCHDOC DOCUMENT(User Guide) SECTION(FleCSI Language Extensions) -->
+<!-- CINCHDOC DOCUMENT(user-guide) SECTION(flecsi-language-extensions) -->
 
 # Kitsune Project
 

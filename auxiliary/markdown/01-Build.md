@@ -5,7 +5,7 @@
   guide documentation.
 -->
 
-<!-- CINCHDOC DOCUMENT(User Guide | Developer Guide) SECTION(Build) -->
+<!-- CINCHDOC DOCUMENT(user-guide | developer-guide) SECTION(build) -->
 
 # Building FleCSI
 

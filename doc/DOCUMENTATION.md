@@ -139,4 +139,112 @@ User Guide.
 This file is analogous to flecsi_dg_title.tex, but for the FleCSI User
 Guide.
 
+# Canonical File Format
+
+```cpp
+/*~--------------------------------------------------------------------------~*
+ * This text is arbitrary. It will be replaced by the branding utility.
+ *~--------------------------------------------------------------------------~*/
+
+#ifndef flecsi_canonical_h
+#define flecsi_canonical_h
+
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Oct 26, 2017
+//----------------------------------------------------------------------------//
+
+#include <system_file>
+
+#include "flecsi/local_file.h"
+
+namespace flecsi {
+
+//----------------------------------------------------------------------------//
+//! @def canonical_macro_interface
+//!
+//! This macro defines the canonical macro format.
+//!
+//! @param parameter The parameter to process.
+//!
+//! @ingroup canonical
+//----------------------------------------------------------------------------//
+
+#define canonical_macro_interface(parameter)                                   \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Use C-style comments inside of macros */                                  \
+  std::cout << "This is the canonical macro with parameter " <<                \
+    parameter << std::endl
+
+//----------------------------------------------------------------------------//
+//! The canonical__ type provides an interface for doing stuff.
+//!
+//! @tparam CANONICAL_POLICY The canonical policy type.
+//! @tparam OTHER_TYPE       The other type.
+//!
+//! @ingroup canonical
+//----------------------------------------------------------------------------//
+
+template<
+  typename CANONICAL_POLICY,
+  typename OTHER_TYPE
+>
+struct canonical__
+{
+public:
+
+  // Using directives should have comments, but not doxygen documentation.
+  using other_t = OTHER_TYPE;
+
+  //--------------------------------------------------------------------------//
+  //! The canonical_data_t type provides storage for data information.
+  //--------------------------------------------------------------------------//
+
+  struct canonical_data_t {
+    double data;
+    size_t size;
+  }; // struct canonical_data_t
+
+  //--------------------------------------------------------------------------//
+  //! Add canonical data.
+  //!
+  //! @param data The data to add.
+  //--------------------------------------------------------------------------//
+
+  void
+  add_data(
+    canonical_data_t const & data
+  )
+  {
+    data_ = data;    
+  } // add_data
+
+  //--------------------------------------------------------------------------//
+  //! \todo Add documentation.
+  //--------------------------------------------------------------------------//
+
+  void
+  dummy()
+  {
+    std::cout << "nothing..." << std::endl;
+  } // dummy
+
+private:
+
+  // private members may have comments, but should not provide
+  // doxygen documentation.
+  canonical_data_t data_;    
+
+}; // class canonical_t
+
+} // namespace flecsi
+
+#endif // flecsi_canonical_h
+
+/*~-------------------------------------------------------------------------~-*
+ * This text is arbitrary. It will be replaced by the branding utility.
+ *~-------------------------------------------------------------------------~-*/
+```
+
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->

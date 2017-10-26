@@ -1,4 +1,4 @@
-<!-- CINCHDOC DOCUMENT(User Guide) SECTION(Data Model) -->
+<!-- CINCHDOC DOCUMENT(user-guide) SECTION(data-model) -->
 
 # Data Model
 
@@ -86,7 +86,7 @@ void update_pressure(mesh<ro> m, field<rw, rw, ro> p) {
 
 --------------------------------------------------------------------------------
 
-<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Data Model) -->
+<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(data-model) -->
 
 # Data Model
 

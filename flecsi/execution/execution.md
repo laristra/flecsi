@@ -1,6 +1,6 @@
 <!-- CINCHDOC
-  DOCUMENT(Developer Guide)
-  SECTION(Runtime Initialization Structure)
+  DOCUMENT(developer-guide)
+  SECTION(runtime-initialization-structure)
 -->
 
 # Runtime Initialization Structure
@@ -13,8 +13,8 @@ initialization is shown in Figure \ref{execution-structure}.
 ![FleCSI Runtime Initialization Structure. \label{execution-structure}](execution-structure.pdf)
 
 <!-- CINCHDOC
-  DOCUMENT(User Guide | Developer Guide)
-  SECTION(Execution Model Overview)
+  DOCUMENT(user-guide | developer-guide)
+  SECTION(execution-model-overview)
 -->
 
 \newpage
@@ -49,7 +49,7 @@ constraint that a task be a pure function.
 
 Consider the following:
 
-```
+```cpp
 double update(mesh<ro> m, field<rw, rw, ro> p) {
   double sum{0};
 
@@ -84,7 +84,7 @@ programming models, which may be familiar to the reader.)
 
 --------------------------------------------------------------------------------
 
-<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Execution Model) -->
+<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(execution-model) -->
 
 # Execution Model
 
@@ -138,8 +138,8 @@ consistency and is similar to OpenCL or CUDA kernels, or to pragmatized
 OpenMP loops.
 
 <!-- CINCHDOC
-  DOCUMENT(User Guide | Developer Guide)
-  SECTION(C++ Language Extensions)
+  DOCUMENT(user-guide | developer-guide)
+  SECTION(c++-language-extensions)
 -->
 
 # C++ Language Extensions
