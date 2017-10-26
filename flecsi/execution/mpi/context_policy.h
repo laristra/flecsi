@@ -85,7 +85,7 @@ struct mpi_context_policy_t
         offsets[i].set_offset(reserve + i * max_entries_per_index);
       }
 
-      constexpr size_t entry_value_size = sizeof(size_t) + sizeof(type_size);
+      size_t entry_value_size = sizeof(size_t) + type_size;
 
       entries.resize(entry_value_size * (reserve + ((num_shared + num_ghost) *
         max_entries_per_index)));

@@ -126,20 +126,24 @@ using mutator_t = mutator_handle__<T>;
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
-void task1(client_handle_t<test_mesh_t, ro> mesh,
-           handle_t<double, wo, wo, ro> d, mutator_t<double> mh) {
-
+void task1(client_handle_t<test_mesh_t, ro> mesh, mutator_t<double> mh) {
   mh(1, 2) = 5.0;
   mh(1, 3) = 15.0;
   mh(2, 1) = 35.0;
-  mh.dump();
-  
-  //np(y);
+  //mh.dump();
 } // task1
+
+void task2(client_handle_t<test_mesh_t, ro> mesh,
+           handle_t<double, ro, ro, ro> h) {
+
+  h.dump();
+
+} // task2
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
 
 flecsi_register_task(task1, loc, single);
+flecsi_register_task(task2, loc, single);
 
 flecsi_register_field(test_mesh_t, hydro, pressure, double, sparse, 1, 0);
 
@@ -187,10 +191,13 @@ void specialization_spmd_init(int argc, char ** argv) {
 
 void driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
-  auto ph = flecsi_get_handle(ch, hydro, pressure, double, sparse, 0);
   auto mh = flecsi_get_mutator(ch, hydro, pressure, double, sparse, 0, 5);
 
-  flecsi_execute_task(task1, single, ch, ph, mh);
+  flecsi_execute_task(task1, single, ch, mh);
+
+  auto ph = flecsi_get_handle(ch, hydro, pressure, double, sparse, 0);
+
+  flecsi_execute_task(task2, single, ch, ph);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//

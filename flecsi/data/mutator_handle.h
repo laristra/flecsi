@@ -55,7 +55,6 @@ public:
   num_slots_(num_slots),
   num_exclusive_insertions_(0) 
 {
-    
     pi_.count[0] = num_exclusive;
     pi_.count[1] = num_shared;
     pi_.count[2] = num_ghost;
@@ -107,13 +106,12 @@ public:
 
     entry_value_t * itr =
       std::lower_bound(start, end, entry_value_t(entry),
-        [](const auto & k1, const auto & k2) -> bool{
-          return k1.entry < k2.entry;
+        [](const entry_value_t & e1, const entry_value_t & e2) -> bool{
+          return e1.entry < e2.entry;
         });
 
-    // if we are creating an that has already been created, just
-    // over-write the value and exit.  No need to increment the
-    // counters or move data.
+    // if we are attempting to create an entry that already exists
+    // just over-write the value and exit.  
     if ( itr != end && itr->entry == entry) {
       return itr->value;
     }
@@ -216,15 +214,17 @@ public:
       size_t num_merged = 
         merge(i, eptr, num_existing, sptr, used_slots, *spare_map_, cptr);
 
-      cptr += num_merged;
       eptr += num_existing;
-
       coi.set_offset(offset);
-      coi.set_count(num_merged);
 
-      offset += num_merged;
+      if(num_merged > 0){
+        cptr += num_merged;
+        coi.set_count(num_merged);
+        offset += num_merged;
+      }
     }
 
+    assert(cptr - cbuf <= num_exclusive_entries);
     std::memcpy(entries, cbuf, sizeof(entry_value_t) * (cptr - cbuf));
     delete[] cbuf;
 
@@ -248,17 +248,19 @@ public:
       size_t num_merged = 
         merge(i, eptr, num_existing, sptr, used_slots, *spare_map_, cbuf);
 
-      std::memcpy(eptr, cbuf, sizeof(entry_value_t) * num_merged);
-
-      coi.set_count(num_merged);  
+      if(num_merged > 0){
+        assert(num_merged <= max_entries_per_index_);
+        std::memcpy(eptr, cbuf, sizeof(entry_value_t) * num_merged);
+        coi.set_count(num_merged);         
+      }
     }
 
     delete[] cbuf;
 
-    delete entries_;
+    delete[] entries_;
     entries_ = nullptr;
 
-    delete offsets_;
+    delete[] offsets_;
     offsets_ = nullptr;
 
     delete spare_map_;
@@ -303,7 +305,6 @@ private:
                size_t num_slots,
                const spare_map_t& spare_map,
                entry_value_t* dest){
-
     constexpr size_t end = std::numeric_limits<size_t>::max();
     entry_value_t* existing_end = existing + num_existing;
     entry_value_t* slots_end = slots + num_slots;

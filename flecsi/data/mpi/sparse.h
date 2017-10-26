@@ -108,331 +108,12 @@ struct sparse_handle_t : public sparse_data_handle__<T, EP, SP, GP>
       label_(h.label_)
   {}
 
-  //--------------------------------------------------------------------------//
-  // Member data interface.
-  //--------------------------------------------------------------------------//
-
-	///
-  /// \brief Return a std::string containing the label of the data variable
-  ///       reference by this accessor.
-	///
-  const std::string &
-  label() const
-  {
-    return label_;
-  } // label
-
-	///
-  /// \brief Return the index space size of the data variable
-  ///        referenced by this accessor.
-	///
-  size_t
-  size() const
-  {
-    return base::combined_size;
-  } // size
-
-  ///
-  // \brief Return the index space size of the data variable
-  //        referenced by this handle.
-  ///
-  size_t
-  exclusive_size() const
-  {
-    return base::exclusive_size;
-  } // size
-
-  ///
-  // \brief Return the index space size of the data variable
-  //        referenced by this handle.
-  ///
-  size_t
-  shared_size() const
-  {
-    return base::shared_size;
-  } // size
-
-  ///
-  // \brief Return the index space size of the data variable
-  //        referenced by this handle.
-  ///
-  size_t
-  ghost_size() const
-  {
-    return base::ghost_size;
-  } // size
-
-  //--------------------------------------------------------------------------//
-  // Operators.
-  //--------------------------------------------------------------------------//
-
-	///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
-  ///
-  /// \tparam E A complex index type.
-  ///
-  /// This version of the operator is provided to support use with
-  /// \e flecsi mesh entity types \ref mesh_entity_base_t.
-	///
-  template<typename E>
-  const T &
-  operator [] (
-    E * e
-  ) const
-  {
-    return this->operator[](e->template id<0>());
-  } // operator []
-
-	///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
-  ///
-  /// \tparam E A complex index type.
-  ///
-  /// This version of the operator is provided to support use with
-  /// \e flecsi mesh entity types \ref mesh_entity_base_t.
-	///
-  template<typename E>
-  T &
-  operator [] (
-    E * e
+  sparse_handle_t(
+    size_t num_exclusive,
+    size_t num_shared,
+    size_t num_ghost
   )
-  {
-    return this->operator[](e->template id<0>());
-  } // operator []
-
-	///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
-  ///
-  /// \tparam E A complex index type.
-  ///
-  /// This version of the operator is provided to support use with
-  /// \e flecsi mesh entity types \ref mesh_entity_base_t.
-	///
-  template<typename E>
-  const T &
-  operator () (
-    E * e
-  ) const
-  {
-    return this->operator[](e->template id<0>());
-  } // operator []
-
-	///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
-  ///
-  /// \tparam E A complex index type.
-  ///
-  /// This version of the operator is provided to support use with
-  /// \e flecsi mesh entity types \ref mesh_entity_base_t.
-	///
-  template<typename E>
-  T &
-  operator () (
-    E * e
-  )
-  {
-    return this->operator[](e->template id<0>());
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  const T &
-  operator [] (
-    size_t index
-  ) const
-  {
-    assert(index < base::combined_size && "index out of range");
-    return base::combined_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  T &
-  operator [] (
-    size_t index
-  )
-  {
-    assert(index < base::combined_size && "index out of range");
-    return base::combined_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  const T &
-  exclusive (
-    size_t index
-  ) const
-  {
-    assert(index < base::exclusive_size && "index out of range");
-    return base::exclusive_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  T &
-  exclusive (
-    size_t index
-  )
-  {
-    assert(index < base::exclusive_size && "index out of range");
-    return base::exclusive_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  const T &
-  shared (
-    size_t index
-  ) const
-  {
-    assert(index < base::shared_size && "index out of range");
-    return base::shared_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  T &
-  shared (
-    size_t index
-  )
-  {
-    assert(index < base::shared_size && "index out of range");
-    return base::shared_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  const T &
-  ghost (
-    size_t index
-  ) const
-  {
-    assert(index < base::ghost_size && "index out of range");
-    return base::ghost_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  T &
-  ghost (
-    size_t index
-  )
-  {
-    assert(index < base::ghost_size && "index out of range");
-    return base::ghost_data[index];
-  } // operator []
-
-//  ///
-//  // \brief Provide logical array-based access to the data for this
-//  //        data variable.  This is the const operator version.
-//  //
-//  // \tparam E A complex index type.
-//  //
-//  // This version of the operator is provided to support use with
-//  // \e flecsi mesh entity types \ref mesh_entity_base_t.
-//  ///
-//  template<typename E>
-//  const T &
-//  operator () (
-//    E * e
-//  ) const
-//  {
-//    return this->operator()(e->template id<0>());
-//  } // operator ()
-//
-//  ///
-//  // \brief Provide logical array-based access to the data for this
-//  //        data variable.  This is the const operator version.
-//  //
-//  // \tparam E A complex index type.
-//  //
-//  // This version of the operator is provided to support use with
-//  // \e flecsi mesh entity types \ref mesh_entity_base_t.
-//  ///
-//  template<typename E>
-//  T &
-//  operator () (
-//    E * e
-//  )
-//  {
-//    return this->operator()(e->template id<0>());
-//  } // operator ()
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  const T &
-  operator () (
-    size_t index
-  ) const
-  {
-    assert(index < base::combined_size && "index out of range");
-    return base::combined_data[index];
-  } // operator ()
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  T &
-  operator () (
-    size_t index
-  )
-  {
-    assert(index < base::combined_size && "index out of range");
-    return base::combined_data[index];
-  } // operator ()
-
-	///
-  /// \brief Test to see if this accessor is empty
-  ///
-  /// \return true if registered.
-  ///
-  operator bool() const
-  {
-    return base::primary_data != nullptr;
-  } // operator bool
+  : base(num_exclusive, num_shared, num_ghost){}
 
   template<typename, size_t, size_t, size_t>
   friend class sparse_handle_t;
@@ -480,7 +161,6 @@ struct storage_type__<sparse>
     const data_client_t & data_client
   )
   {
-    handle_t<DATA_TYPE, 0, 0, 0> h;
 
     auto& context = execution::context_t::instance();
   
@@ -503,7 +183,7 @@ struct storage_type__<sparse>
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
       const size_t max_entries_per_index = 5;
-      const size_t reserve_chunk = 8388608;
+      const size_t reserve_chunk = 8192;
 
       // TODO: deal with VERSION
       context.register_sparse_field_data(field_info.fid, field_info.size,
@@ -513,41 +193,24 @@ struct storage_type__<sparse>
         field_info.fid, color_info, index_coloring);
     }
 
-    auto& sparse_field_data = registered_sparse_field_data[field_info.fid];
-    
+    auto& fd = registered_sparse_field_data[field_info.fid];
+
+    handle_t<DATA_TYPE, 0, 0, 0> 
+      h(fd.num_exclusive, fd.num_shared, fd.num_ghost);
+
     auto &hb = dynamic_cast<sparse_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
     
     hb.fid = field_info.fid;
     hb.index_space = field_info.index_space;
     hb.data_client_hash = field_info.data_client_hash;
     
-    hb.entries = reinterpret_cast<sparse_entry_value__<DATA_TYPE>*>(
-      &sparse_field_data.entries[0]);
+    hb.entries = 
+      reinterpret_cast<sparse_entry_value__<DATA_TYPE>*>(&fd.entries[0]);
    
-    hb.offsets = &sparse_field_data.offsets[0];
-
-    hb.num_exclusive = sparse_field_data.num_exclusive; 
-    hb.num_shared = sparse_field_data.num_shared; 
-    hb.num_ghost = sparse_field_data.num_ghost;
-
-  /*
-    hb.combined_size = 
-      color_info.exclusive + color_info.shared + color_info.ghost;
-
-    // populate data member of data_handle_t
-    hb.exclusive_size = color_info.exclusive;
-    hb.combined_data = hb.exclusive_buf = hb.exclusive_data =
-      reinterpret_cast<DATA_TYPE *>(data);
-    hb.combined_size = color_info.exclusive;
-
-    hb.shared_size = color_info.shared;
-    hb.shared_data = hb.shared_buf = hb.exclusive_data + hb.exclusive_size;
-    hb.combined_size += color_info.shared;
-
-    hb.ghost_size = color_info.ghost;
-    hb.ghost_data = hb.ghost_buf = hb.shared_data + hb.shared_size;
-    hb.combined_size += color_info.ghost;
-   */
+    hb.offsets = &fd.offsets[0];
+    hb.max_entries_per_index = fd.max_entries_per_index;
+    hb.reserve = fd.reserve;
+    hb.num_exclusive_entries = fd.num_exclusive_entries;
 
     return h;
   }
@@ -588,7 +251,7 @@ struct storage_type__<sparse>
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
       const size_t max_entries_per_index = 5;
-      const size_t reserve_chunk = 8388608;
+      const size_t reserve_chunk = 8192;
 
       // TODO: deal with VERSION
       context.register_sparse_field_data(field_info.fid, field_info.size,

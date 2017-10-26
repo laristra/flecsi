@@ -25,7 +25,8 @@ struct mpi_sparse_data_handle_policy_t
   size_t index_space;
   size_t data_client_hash;
 
-  
+  size_t reserve;
+  size_t num_exclusive_entries;
 }; // class mpi_sparse_data_handle_policy_t
 
 } // namespace flecsi

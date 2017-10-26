@@ -127,7 +127,8 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
       }
     }
 
-    entry_value_t* entries = reinterpret_cast<entry_value_t*>(&h.entries[0]);
+    entry_value_t* entries = 
+      reinterpret_cast<entry_value_t*>(&(*h.entries)[0]);
 
     commit_info_t ci;
     ci.offsets = &(*h.offsets)[0];
