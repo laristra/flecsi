@@ -94,7 +94,7 @@ public:
 
     if(n >= num_slots_) {
       if(index < num_exclusive_){
-        *num_exclusive_insertions++;
+        (*num_exclusive_insertions)++;
       }
       
       return spare_map_->emplace(index,
@@ -124,7 +124,7 @@ public:
     itr->entry = entry;
 
     if(index < num_exclusive_){
-      *num_exclusive_insertions++;
+      (*num_exclusive_insertions)++;
     }
 
     offset.set_count(n + 1);
