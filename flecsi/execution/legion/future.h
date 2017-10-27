@@ -151,8 +151,9 @@ struct legion_future_model__ : public legion_future_concept__<RETURN>
     Legion::Context ctx,
     Legion::DynamicCollective& dc_reduction)
   {
-    runtime->defer_dynamic_collective_arrival(ctx, dc_reduction, legion_future_);
-  }
+    runtime->defer_dynamic_collective_arrival(ctx, dc_reduction,
+      legion_future_);
+  } // defer_dynamic_collective_arrival
 
 private:
 
@@ -404,7 +405,7 @@ struct legion_future__
     Legion::DynamicCollective& dc_reduction)
   {
     state_->defer_dynamic_collective_arrival(runtime, ctx, dc_reduction);
-  }
+  } // defer_dynamic_collective_arrival
 
 private:
 
