@@ -270,6 +270,7 @@ struct storage_type__<sparse>
     h.reserve = &fd.reserve;
     h.reserve_chunk = fd.reserve_chunk;
     h.num_exclusive_entries = &fd.num_exclusive_entries;
+    h.num_exclusive_insertions = new size_t(0);
 
     return h;
   }

@@ -90,15 +90,13 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     using entry_value_t = typename mutator_handle__<T>::entry_value_t;
     using commit_info_t = typename mutator_handle__<T>::commit_info_t;
 
-    size_t num_exclusive_insertions = h.num_exclusive_insertions();
-
-    if(num_exclusive_insertions > *h.reserve){
+    if(*h.num_exclusive_insertions > *h.reserve){
       size_t old_exclusive_entries = *h.num_exclusive_entries;
       size_t old_reserve = *h.reserve;
 
-      size_t needed = num_exclusive_insertions - *h.reserve;
+      size_t needed = *h.num_exclusive_insertions - *h.reserve;
 
-      *h.num_exclusive_entries += num_exclusive_insertions;
+      *h.num_exclusive_entries += *h.num_exclusive_insertions;
       *h.reserve = std::max(h.reserve_chunk, needed);
 
       constexpr size_t entry_value_size = sizeof(size_t) + sizeof(T);
@@ -126,6 +124,8 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
           h.max_entries_per_index());
       }
     }
+
+    delete h.num_exclusive_insertions;
 
     entry_value_t* entries = 
       reinterpret_cast<entry_value_t*>(&(*h.entries)[0]);
