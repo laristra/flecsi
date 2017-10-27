@@ -103,6 +103,19 @@ namespace execution {
     } // handle
 
     template<
+      typename T
+    >
+    void
+    handle(
+      mutator_handle__<
+        T
+      > & h
+    )
+    {
+      h.init();
+    } // handle
+
+    template<
       typename T,
       size_t PERMISSIONS
     >

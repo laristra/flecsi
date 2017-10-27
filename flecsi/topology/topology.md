@@ -1,4 +1,4 @@
-<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Topology Types) -->
+<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(topology-types) -->
 
 # FIXME: Working notes for structured mesh interface
 

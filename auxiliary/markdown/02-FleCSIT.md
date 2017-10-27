@@ -5,7 +5,7 @@
   guide documentation.
 -->
 
-<!-- CINCHDOC DOCUMENT(User Guide) SECTION(FleCSIT) -->
+<!-- CINCHDOC DOCUMENT(user-guide) SECTION(flecsit) -->
 
 # FleCSIT Tool
 

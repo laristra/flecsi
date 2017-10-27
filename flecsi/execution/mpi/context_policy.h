@@ -42,6 +42,7 @@
 #include "flecsi/coloring/mpi_utils.h"
 #include "flecsi/coloring/coloring_types.h"
 #include "flecsi/coloring/index_coloring.h"
+#include "flecsi/data/common/data_types.h"
 
 namespace flecsi {
 namespace execution {
@@ -57,27 +58,53 @@ struct mpi_context_policy_t
 {
   struct sparse_field_data_t
   {
+    using offset_t = data::sparse_data_offset_t;
+
     sparse_field_data_t(){}
 
     sparse_field_data_t(
       size_t type_size,
-      size_t num_indices
+      size_t num_exclusive,
+      size_t num_shared,
+      size_t num_ghost,
+      size_t max_entries_per_index,
+      size_t reserve_chunk
     )
     : type_size(type_size), 
-    num_indices(num_indices),
-    indices((num_indices + 1) * sizeof(size_t)){
+    num_exclusive(num_exclusive),
+    num_shared(num_shared),
+    num_ghost(num_ghost),
+    num_total(num_exclusive + num_shared + num_ghost),
+    max_entries_per_index(max_entries_per_index),
+    reserve_chunk(reserve_chunk),
+    reserve(reserve_chunk),
+    offsets(num_total),
+    num_exclusive_entries(0){
+      
+      for(size_t i = num_exclusive; i < num_total; ++i){
+        offsets[i].set_offset(reserve + i * max_entries_per_index);
+      }
 
+      size_t entry_value_size = sizeof(size_t) + type_size;
+
+      entries.resize(entry_value_size * (reserve + ((num_shared + num_ghost) *
+        max_entries_per_index)));
     }
 
     size_t type_size;
-    size_t num_indices;
 
     // total # of exclusive, shared, ghost entries
-    size_t exclusive_size = 0;
-    size_t shared_size = 0;
-    size_t ghost_size = 0;
+    size_t num_exclusive = 0;
+    size_t num_shared = 0;
+    size_t num_ghost = 0;
+    size_t num_total = 0;
 
-    std::vector<uint8_t> indices;    
+    size_t max_entries_per_index;
+    size_t reserve_chunk;
+    size_t reserve;
+    size_t num_exclusive_entries;
+
+    std::vector<offset_t> offsets;    
     std::vector<uint8_t> entries;    
   };
 
@@ -214,6 +241,8 @@ struct mpi_context_policy_t
     register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
       compact_origin_lengs, compact_origin_disps, compact_target_lengs,
       compact_target_disps);
+
+    field_metadata.insert({fid, metadata});
   }
 
   template <typename T>
@@ -228,6 +257,8 @@ struct mpi_context_policy_t
     register_field_metadata_<T>(md, fid, coloring_info, index_coloring,
       md.compact_origin_lengs, md.compact_origin_disps,
       md.compact_target_lengs, md.compact_target_disps);
+
+    sparse_field_metadata.insert({fid, md});
   }
 
   template <typename T, typename MD>
@@ -413,7 +444,6 @@ struct mpi_context_policy_t
     MPI_Win_create(shared_data, coloring_info.shared * sizeof(T),
                    sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD,
                    &metadata.win);
-    field_metadata.insert({fid, metadata});
   }
 
   std::map<field_id_t, field_metadata_t>&
@@ -433,12 +463,19 @@ struct mpi_context_policy_t
     return field_data;
   }
 
-  void register_sparse_field_data(field_id_t fid,
-                                  size_t type_size,
-                                  size_t num_indices) {
+  void register_sparse_field_data(
+    field_id_t fid,
+    size_t type_size,
+    const coloring_info_t& coloring_info,
+    size_t max_entries_per_index,
+    size_t reserve_chunk
+  )
+  {
     // TODO: VERSIONS
     sparse_field_data.emplace(
-      fid, sparse_field_data_t(type_size, num_indices));
+      fid, sparse_field_data_t(type_size, coloring_info.exclusive,
+      coloring_info.shared, coloring_info.ghost, 
+      max_entries_per_index, reserve_chunk));
   }
 
   std::map<field_id_t, sparse_field_data_t>&

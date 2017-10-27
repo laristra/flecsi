@@ -138,16 +138,24 @@ operator << (
   return stream;
 } // operator <<
 
+//----------------------------------------------------------------------------//
+//! \todo Add description.
+//----------------------------------------------------------------------------//
+
 struct set_color_info_t
 {
   size_t num_entities;
   size_t reserve_entities;
-};
+}; // struct set_color_info_t
+
+//----------------------------------------------------------------------------//
+//! \todo Add description.
+//----------------------------------------------------------------------------//
 
 struct set_coloring_info_t
 {
   std::vector<set_color_info_t> set_coloring_info;
-};
+}; // set_coloring_info_t
 
 } // namespace coloring
 } // namespace flecsi

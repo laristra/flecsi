@@ -1,28 +1,35 @@
-<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Index Spaces) -->
+<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(index-spaces) -->
 
 # Index Spaces
 
 The FleCSI data and execution models are premised on the notion of index
-spaces. Simply put, an index space is an enumerated set. An index space
+spaces.  Simply put, an index space is an enumerated set. An index space
 can be defined in several ways. For example, an index space with which
 many people are familiar is a range. Consider the loop
+
 ```
     for(int i=0; i<5; ++i) { std::cout << "i=" << i << std::endl; }
 ```
+
 Implicitly, the values that are taken on by *i* form an index space, i.e.,
 the set of enumerated indices
+
 ```
-    { 0, 1, 2, 3, 4 }.
+    { 0, 1, 2, 3, 4 }
 ```
+
 A more relevant example is the set of indices for the canonical triangle
 mesh in Figure \ref{canonical-mesh}. Both the cells and the vertices
 represent index spaces. The cells index space has 29 objects, indexed
 from 1 to 29
+
 ```
     { 1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14,
       15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 },
 ```
+
 while the vertex index space has 23 objects, indexed from 1 to 23
+
 ```
     { 1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14,
       15, 16, 17, 18, 19, 20, 21, 22, 23 }.
@@ -33,7 +40,12 @@ while the vertex index space has 23 objects, indexed from 1 to 23
 A basic understanding of index spaces and these  examples is critical to
 understanding the FleCSI data model.
 
-**Note: Index spaces may also be referred to as *index sets* **.
+**Formally, a space is a set of indices with some added structure. An
+enumerated set satisfies this definition. However, the enumerated sets
+in FleCSI are better classified as topological spaces.  In general,
+FleCSI index spaces--discussed here and below--represent discrete
+topologies. Colloquilly, index spaces may also be referred to as index
+sets.**
 
 ## Subsets
 
