@@ -1,4 +1,4 @@
-<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Style Guide) -->
+<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(style-guide) -->
 
 # Style Guide
 
@@ -324,7 +324,7 @@ ritualized torture and eventual sacrifice...
 
 --------------------------------------------------------------------------------
 
-<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Appendix A) -->
+<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(appendix-a) -->
 
 \pagebreak
 

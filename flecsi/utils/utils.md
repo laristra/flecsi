@@ -1,4 +1,4 @@
-<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Utilities) -->
+<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(utilities) -->
 
 # Utilities
 
