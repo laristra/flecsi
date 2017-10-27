@@ -27,6 +27,8 @@ public:
 
   using index_t = uint64_t;
 
+  size_t* num_exclusive_insertions;
+
   struct partition_info_t{
     size_t count[3];
     size_t start[3];
@@ -52,9 +54,7 @@ public:
   : num_entries_(num_exclusive + num_shared + num_ghost),
   num_exclusive_(num_exclusive),
   max_entries_per_index_(max_entries_per_index),
-  num_slots_(num_slots),
-  num_exclusive_insertions_(0) 
-{
+  num_slots_(num_slots){
     pi_.count[0] = num_exclusive;
     pi_.count[1] = num_shared;
     pi_.count[2] = num_ghost;
@@ -94,7 +94,7 @@ public:
 
     if(n >= num_slots_) {
       if(index < num_exclusive_){
-        num_exclusive_insertions_++;
+        *num_exclusive_insertions++;
       }
       
       return spare_map_->emplace(index,
@@ -124,7 +124,7 @@ public:
     itr->entry = entry;
 
     if(index < num_exclusive_){
-      num_exclusive_insertions_++;
+      *num_exclusive_insertions++;
     }
 
     offset.set_count(n + 1);
@@ -168,10 +168,6 @@ public:
         }
       }      
     }
-  }
-
-  size_t num_exclusive_insertions() const{
-    return num_exclusive_insertions_;
   }
 
   void
@@ -290,7 +286,6 @@ private:
   partition_info_t pi_;
   size_t num_exclusive_;
   size_t max_entries_per_index_;
-  size_t num_exclusive_insertions_;
   size_t num_slots_;
   size_t num_entries_;
   offset_t* offsets_ = nullptr;
