@@ -104,17 +104,23 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
       size_t count = *h.num_exclusive_entries + *h.reserve + 
         (h.num_shared() + h.num_ghost()) * h.max_entries_per_index();
 
-      std::vector<uint8_t> new_entries(count * entry_value_size);
+      h.entries->resize(count * entry_value_size);
 
-      std::memcpy(&new_entries[0], &h.entries[0], 
-                  old_exclusive_entries * entry_value_size);
+      entry_value_t* tmp = 
+        new entry_value_t[(h.num_shared() + h.num_ghost()) * 
+        h.max_entries_per_index()];
 
-      std::memcpy(&new_entries[0] + *h.num_exclusive_entries + *h.reserve, 
-        &h.entries[0] + old_exclusive_entries + old_reserve,
+      size_t bytes = 
         (h.num_shared() + h.num_ghost()) * h.max_entries_per_index() *
-        entry_value_size);
+        entry_value_size;
 
-      *h.entries = std::move(new_entries);
+      std::memcpy(tmp, &(*h.entries)[0] + 
+        (old_exclusive_entries + old_reserve) * entry_value_size, bytes);
+
+      std::memcpy(&(*h.entries)[0] + (*h.num_exclusive_entries + *h.reserve) *
+        entry_value_size, tmp, bytes);
+
+      delete[] tmp;
 
       size_t num_total = h.num_exclusive() + h.num_shared() + h.num_ghost();
 
