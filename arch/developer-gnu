@@ -24,7 +24,7 @@ fi
 
 cmake_mode=cmake
 extra_define=""
-runtime=serial
+runtime=mpi
 
 while [[ $# -gt 0 ]]
 do
@@ -36,8 +36,8 @@ do
 			echo "  -h, --help     Show this message and exit."
 			echo "  -c, --ccmake   Enable curses mode."
 			echo ""
-			echo "Runtimes: serial, legion, mpi."
-			echo "(default runtime is serial)."
+			echo "Runtimes: legion, mpi."
+			echo "(default runtime is mpi)."
 			exit
 		;;
 		--ccmake|-c)

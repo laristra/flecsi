@@ -142,7 +142,7 @@ public:
    using field_info_t = context_t::field_info_t;
 
     for(const field_info_t& fi : context.registered_fields()){
-      if(fi.storage_type == global){
+      if(fi.storage_class == global){
         allocator.allocate_field(fi.size, fi.fid);
       }//if
     }//for
@@ -370,7 +370,7 @@ public:
       using field_info_t = context_t::field_info_t;
 
       for(const field_info_t& fi : context.registered_fields()){
-        if((fi.storage_type != global) && (fi.storage_type != color)){
+        if((fi.storage_class != global) && (fi.storage_class != color)){
           if(fi.index_space == is.index_space_id){
             allocator.allocate_field(fi.size, fi.fid);
           }
@@ -409,7 +409,7 @@ public:
      using field_info_t = context_t::field_info_t;
 
       for(const field_info_t& fi : context.registered_fields()){
-        if(fi.storage_type == color){
+        if(fi.storage_class == color){
           allocator.allocate_field(fi.size, fi.fid);
         }//if
       }//for

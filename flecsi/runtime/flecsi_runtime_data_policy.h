@@ -20,21 +20,8 @@
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
 //----------------------------------------------------------------------------//
 
-// Serial Policy
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
-
-  #include "flecsi/data/serial/data_policy.h"
-
-  namespace flecsi {
-  namespace data {
-
-  using FLECSI_RUNTIME_DATA_POLICY = serial_data_policy_t;
-
-  } // namespace data
-  } // namespace flecsi
-
-//Legion Policy
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+// Legion Policy
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
   #include "flecsi/data/legion/data_policy.h"
 

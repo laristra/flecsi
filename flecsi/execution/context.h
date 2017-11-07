@@ -74,7 +74,7 @@ struct context__ : public CONTEXT_POLICY
 
   struct field_info_t{
     size_t data_client_hash;
-    size_t storage_type;
+    size_t storage_class;
     size_t size;
     size_t namespace_hash;
     size_t name_hash;

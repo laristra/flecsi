@@ -510,10 +510,19 @@ struct data_client_policy_handler__<topology::set_topology_t<POLICY_TYPE>>
 
 }; // struct data_client_policy_handler__
 
+//----------------------------------------------------------------------------//
+//! The data_client_interface__ type defines a high-level data client
+//! interface that is implemented by the given data policy.
+//!
+//! @tparam DATA_POLICY The backend runtime policy.
+//!
+//! @ingroup data
+//----------------------------------------------------------------------------//
+
 template<
   typename DATA_POLICY
 >
-struct client_data__
+struct data_client_interface__
 {
   //--------------------------------------------------------------------------//
   //! Register a data client with the FleCSI runtime.
@@ -522,8 +531,6 @@ struct client_data__
   //! @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
   //!                          of attribute names to avoid collisions.
   //! @tparam NAME_HASH        The attribute name.
-  //!
-  //! @ingroup data
   //--------------------------------------------------------------------------//
 
   template<
@@ -549,7 +556,7 @@ struct client_data__
 
     const size_t client_key = 
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
-    // TODO: move to hash.h
+    //! \todo move to hash.h
     const size_t key = NAMESPACE_HASH ^ NAME_HASH;
 
     return storage_t::instance().register_client(client_key, key,
@@ -574,7 +581,7 @@ struct client_data__
       get_client_handle<DATA_CLIENT_TYPE, NAMESPACE_HASH, NAME_HASH>();
   } // get_client_handle
 
-}; // struct client_data__
+}; // struct data_client_interface__
 
 } // namespace data
 } // namespace flecsi
@@ -588,7 +595,8 @@ struct client_data__
 namespace flecsi {
 namespace data {
 
-using client_data_t = client_data__<FLECSI_RUNTIME_DATA_POLICY>;
+using data_client_interface_t =
+  data_client_interface__<FLECSI_RUNTIME_DATA_POLICY>;
 
 } // namespace data
 } // namespace flecsi

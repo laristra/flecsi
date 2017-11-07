@@ -67,10 +67,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 # need to do it before cinch_load_extras is called.
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-  set(ENABLE_MPI OFF CACHE BOOL "Enable MPI" FORCE)
-  set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
   set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
@@ -130,7 +127,7 @@ option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" OFF)
 # Add options for runtime selection
 #------------------------------------------------------------------------------#
 
-set(FLECSI_RUNTIME_MODELS serial legion mpi)
+set(FLECSI_RUNTIME_MODELS legion mpi)
 
 if(NOT FLECSI_RUNTIME_MODEL)
   list(GET FLECSI_RUNTIME_MODELS 0 FLECSI_RUNTIME_MODEL)
@@ -212,16 +209,9 @@ endif()
 set(FLECSI_RUNTIME_LIBRARIES)
 
 #
-# Serial interface
-#
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-
-  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/serial)
-
-#
 # Legion interface
 #
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   if(NOT MPI_${MPI_LANGUAGE}_FOUND)
     message (FATAL_ERROR "MPI is required for the legion runtime model")
@@ -241,26 +231,22 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   include_directories(${Legion_INCLUDE_DIRS})
 
-# FIXME: This can be removed as soon as Legion is patched to include
-#        build support for this option.
-#
-#  option(ENABLE_LEGION_TLS "Enable TLS storage of runtime state" ON)
-#  if(ENABLE_LEGION_TLS)
-add_definitions(-DENABLE_LEGION_TLS)
-#  endif()
+  add_definitions(-DENABLE_LEGION_TLS)
 
-#
-#Compacted storage interface
-#
-option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper to compact your shared/exclusive and ghost data" ON)
-if (ENABLE_MAPPER_COMPACTION)
-  add_definitions(-DMAPPER_COMPACTION)
-else()
-  option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" ON)
-  if(COMPACTED_STORAGE_SORT)
-    add_definitions(-DCOMPACTED_STORAGE_SORT)
+  #
+  # Compacted storage interface
+  #
+  option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper compaction" ON)
+
+  if(ENABLE_MAPPER_COMPACTION)
+    add_definitions(-DMAPPER_COMPACTION)
+  else()
+    option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" ON)
+
+    if(COMPACTED_STORAGE_SORT)
+      add_definitions(-DCOMPACTED_STORAGE_SORT)
+    endif()
   endif()
-endif()
 
 #
 # MPI interface

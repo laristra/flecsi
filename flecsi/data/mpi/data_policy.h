@@ -30,14 +30,14 @@ namespace data {
 struct mpi_data_policy_t
 {
   //--------------------------------------------------------------------------//
-  //! The storage_type__ type determines the underlying storage mechanism
+  //! The storage_class__ type determines the underlying storage mechanism
   //! for the backend runtime.
   //--------------------------------------------------------------------------//
 
   template<
-    size_t STORAGE_TYPE
+    size_t STORAGE_CLASS
   >
-  using storage_type__ = mpi::storage_type__<STORAGE_TYPE>;
+  using storage_class__ = mpi::storage_class__<STORAGE_CLASS>;
 
 }; // class mpi_data_policy_t
 

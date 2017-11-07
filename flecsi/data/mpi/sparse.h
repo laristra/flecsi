@@ -16,11 +16,11 @@
 #define flecsi_mpi_sparse_h
 
 //----------------------------------------------------------------------------//
-// POLICY_NAMESPACE must be defined before including storage_type.h!!!
-// Using this approach allows us to have only one storage_type_t
+// POLICY_NAMESPACE must be defined before including storage_class.h!!!
+// Using this approach allows us to have only one storage_class_t
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE mpi
-#include "flecsi/data/storage_type.h"
+#include "flecsi/data/storage_class.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
@@ -134,7 +134,7 @@ private:
 /// FIXME: Dense storage type.
 ///
 template<>
-struct storage_type__<sparse>
+struct storage_class__<sparse>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -275,7 +275,7 @@ struct storage_type__<sparse>
     return h;
   }
 
-}; // struct storage_type_t
+}; // struct storage_class_t
 
 } // namespace mpi
 } // namespace data

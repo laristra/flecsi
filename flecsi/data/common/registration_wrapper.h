@@ -36,7 +36,7 @@ namespace data {
 
 template<
   typename DATA_CLIENT_TYPE,
-  size_t STORAGE_TYPE,
+  size_t STORAGE_CLASS,
   typename DATA_TYPE,
   size_t NAMESPACE_HASH,
   size_t NAME_HASH,
@@ -61,14 +61,14 @@ struct field_registration_wrapper__
     fi.data_client_hash = 
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
 
-    fi.storage_type = STORAGE_TYPE;
+    fi.storage_class = STORAGE_CLASS;
     fi.size = sizeof(DATA_TYPE);
     fi.namespace_hash = NAMESPACE_HASH;
     fi.name_hash = NAME_HASH;
     fi.versions = VERSIONS;
-    if (STORAGE_TYPE == global)
+    if (STORAGE_CLASS == global)
       fi.index_space = execution::internal_index_space::global_is;
-    else if (STORAGE_TYPE == color)
+    else if (STORAGE_CLASS == color)
       fi.index_space = execution::internal_index_space::color_is;
     else
       fi.index_space = INDEX_SPACE;
