@@ -98,7 +98,7 @@ set(FLECSI_DBC_REQUIRE ON CACHE BOOL
 # Load the cinch extras
 #------------------------------------------------------------------------------#
 
-cinch_load_extras()
+cinch_load_extras(MPI LEGION)
 
 #------------------------------------------------------------------------------#
 # Add option for setting id bits
@@ -358,6 +358,14 @@ configure_file(${PROJECT_SOURCE_DIR}/config/flecsi.h.in
   ${CMAKE_BINARY_DIR}/flecsi.h @ONLY)
 include_directories(${CMAKE_BINARY_DIR})
 install(FILES ${CMAKE_BINARY_DIR}/flecsi.h DESTINATION include)
+
+#------------------------------------------------------------------------------#
+# CMake config file
+#------------------------------------------------------------------------------#
+
+configure_file(${PROJECT_SOURCE_DIR}/config/FleCSIConfig.cmake.in
+  ${CMAKE_BINARY_DIR}/FleCSIConfig.cmake @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/FleCSIConfig.cmake DESTINATION share)
 
 #------------------------------------------------------------------------------#
 # Add library targets
