@@ -22,7 +22,8 @@ cinch_minimum_required(1.0)
 # Set the project name
 #------------------------------------------------------------------------------#
 
-project(flecsi)
+#project(flecsi)
+project(FleCSI)
 
 #------------------------------------------------------------------------------#
 # Set header suffix regular expression
@@ -45,6 +46,14 @@ else()
 endif()
 
 #------------------------------------------------------------------------------#
+# This variable is used to collect library and include dependencies for
+# the FleCSIConfig file below.
+#------------------------------------------------------------------------------#
+
+set(FLECSI_INCLUDE_DEPENDENCIES)
+set(FLECSI_LIBRARY_DEPENDENCIES)
+
+#------------------------------------------------------------------------------#
 # Enable Boost.Preprocessor
 #------------------------------------------------------------------------------#
 
@@ -60,6 +69,10 @@ set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 
 find_package(Boost 1.58.0 REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
+
+# FIXME: This should be optional
+#set(FLECSI_INCLUDE_DEPENDENCIES ${Boost_INCLUDE_DIRS})
+#set(FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
 
 #------------------------------------------------------------------------------#
 # cinch_load_extras will try and find legion and mpi. If we want to
@@ -181,6 +194,9 @@ if(ENABLE_OPENSSL)
   if(OPENSSL_FOUND)
     include_directories(${OPENSSL_INCLUDE_DIR})
     add_definitions(-DENABLE_OPENSSL)
+
+    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${OPENSSL_INCLUDE_DIR})
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${OPENSSL_LIBRARIES})
   endif()
 endif()
 
@@ -197,9 +213,11 @@ if(ENABLE_EXODUS AND NOT EXODUSII_FOUND)
 endif()
 
 if(ENABLE_EXODUS)
-  include_directories( ${EXODUSII_INCLUDE_DIRS} )
-  add_definitions( -DHAVE_EXODUS )
-  message( STATUS "IO with exodus enabled" )
+  include_directories(${EXODUSII_INCLUDE_DIRS})
+  add_definitions(-DHAVE_EXODUS)
+
+  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${EXODUSII_INCLUDE_DIRS})
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${EXODUSII_LIBRARIES})
 endif()
 
 #------------------------------------------------------------------------------#
@@ -230,6 +248,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   endif()
 
   include_directories(${Legion_INCLUDE_DIRS})
+  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${Legion_INCLUDE_DIRS})
 
   add_definitions(-DENABLE_LEGION_TLS)
 
@@ -274,6 +293,56 @@ else()
 
 endif()
 
+list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${FLECSI_RUNTIME_LIBRARIES})
+
+#------------------------------------------------------------------------------#
+# Enable partitioning with METIS
+#------------------------------------------------------------------------------#
+
+find_package(METIS 5.1)
+
+if(ENABLE_MPI)
+  # Counter-intuitive variable: set to TRUE to disable test
+  set(PARMETIS_TEST_RUNS TRUE)
+  find_package(ParMETIS 4.0)
+endif()
+
+option(ENABLE_COLORING
+  "Enable partitioning (uses metis/parmetis or scotch)." OFF)
+
+if(ENABLE_COLORING)
+
+  set(COLORING_LIBRARIES)
+
+  if(METIS_FOUND)
+    list(APPEND COLORING_LIBRARIES ${METIS_LIBRARIES})
+    include_directories(${METIS_INCLUDE_DIRS})
+    set(ENABLE_METIS TRUE)
+    add_definitions(-DENABLE_METIS)
+
+    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${METIS_INCLUDE_DIRS})
+  endif()
+
+  if(PARMETIS_FOUND)
+    list(APPEND COLORING_LIBRARIES ${PARMETIS_LIBRARIES})
+    include_directories(${PARMETIS_INCLUDE_DIRS})
+    set(ENABLE_PARMETIS TRUE)
+    add_definitions(-DENABLE_PARMETIS)
+
+    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${PARMETIS_INCLUDE_DIRS})
+  endif()
+
+  if(NOT COLORING_LIBRARIES)
+    MESSAGE(FATAL_ERROR
+      "You need parmetis to enable partitioning" )
+  endif()
+
+  add_definitions(-DENABLE_COLORING)
+
+endif()
+
+list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${COLORING_LIBRARIES})
+
 #------------------------------------------------------------------------------#
 # Process id bits
 #------------------------------------------------------------------------------#
@@ -309,48 +378,6 @@ message(STATUS "${CINCH_Yellow}Set id_t bits to allow:\n"
   "   ${FLECSI_ID_GBITS} global bits (PBITS*EBITS)${CINCH_ColorReset}")
 
 #------------------------------------------------------------------------------#
-# Enable partitioning with METIS
-#------------------------------------------------------------------------------#
-
-find_package(METIS 5.1)
-
-if(ENABLE_MPI)
-  # Counter-intuitive variable: set to TRUE to disable test
-  set(PARMETIS_TEST_RUNS TRUE)
-  find_package(ParMETIS 4.0)
-endif()
-
-option(ENABLE_COLORING
-  "Enable partitioning (uses metis/parmetis or scotch)." OFF)
-
-if(ENABLE_COLORING)
-
-  set(COLORING_LIBRARIES)
-
-  if(METIS_FOUND)
-    list(APPEND COLORING_LIBRARIES ${METIS_LIBRARIES})
-    include_directories(${METIS_INCLUDE_DIRS})
-    set(ENABLE_METIS TRUE)
-    add_definitions(-DENABLE_METIS)
-  endif()
-
-  if(PARMETIS_FOUND)
-    list(APPEND COLORING_LIBRARIES ${PARMETIS_LIBRARIES})
-    include_directories(${PARMETIS_INCLUDE_DIRS})
-    set(ENABLE_PARMETIS TRUE)
-    add_definitions(-DENABLE_PARMETIS)
-  endif()
-
-  if(NOT COLORING_LIBRARIES)
-    MESSAGE(FATAL_ERROR
-      "You need parmetis to enable partitioning" )
-  endif()
-
-  add_definitions(-DENABLE_COLORING)
-
-endif()
-
-#------------------------------------------------------------------------------#
 # configure header
 #------------------------------------------------------------------------------#
 
@@ -360,18 +387,10 @@ include_directories(${CMAKE_BINARY_DIR})
 install(FILES ${CMAKE_BINARY_DIR}/flecsi.h DESTINATION include)
 
 #------------------------------------------------------------------------------#
-# CMake config file
-#------------------------------------------------------------------------------#
-
-configure_file(${PROJECT_SOURCE_DIR}/config/FleCSIConfig.cmake.in
-  ${CMAKE_BINARY_DIR}/FleCSIConfig.cmake @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/FleCSIConfig.cmake DESTINATION share)
-
-#------------------------------------------------------------------------------#
 # Add library targets
 #------------------------------------------------------------------------------#
 
-cinch_add_library_target(flecsi flecsi)
+cinch_add_library_target(FleCSI flecsi)
 
 #------------------------------------------------------------------------------#
 # Link the necessary libraries
@@ -379,7 +398,7 @@ cinch_add_library_target(flecsi flecsi)
 
 if(FLECSI_RUNTIME_LIBRARIES OR COLORING_LIBRARIES)
   cinch_target_link_libraries(
-    flecsi ${FLECSI_RUNTIME_LIBRARIES} ${COLORING_LIBRARIES}
+    FleCSI ${FLECSI_RUNTIME_LIBRARIES} ${COLORING_LIBRARIES}
   )
 endif()
 
@@ -398,6 +417,27 @@ cinch_add_application_directory("tools")
 #------------------------------------------------------------------------------#
 
 add_custom_target(distclean rm -rf ${CMAKE_BINARY_DIR}/*)
+
+#------------------------------------------------------------------------------#
+# Prepare variables for FleCSIConfig file.
+#------------------------------------------------------------------------------#
+
+export(TARGETS FleCSI FILE ${CMAKE_BINARY_DIR}/FleCSITargets.cmake)
+export(PACKAGE FleCSI)
+
+set(FLECSI_LIBRARY_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR})
+set(FLECSI_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/include)
+set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share)
+
+#------------------------------------------------------------------------------#
+# CMake config file: This should be the last thing to happen.
+#------------------------------------------------------------------------------#
+
+configure_file(${PROJECT_SOURCE_DIR}/config/FleCSIConfig.cmake.in
+  ${CMAKE_BINARY_DIR}/FleCSIConfig.cmake @ONLY)
+
+install(FILES ${CMAKE_BINARY_DIR}/FleCSIConfig.cmake DESTINATION share)
+install(EXPORT FleCSITargets DESTINATION share COMPONENT dev)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

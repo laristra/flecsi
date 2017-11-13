@@ -40,7 +40,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion" AND ENABLE_COLORING)
   # Add link dependencies
   #----------------------------------------------------------------------------#
 
-  target_link_libraries(lax_wendroff flecsi ${FLECSI_RUNTIME_LIBRARIES})
+  target_link_libraries(lax_wendroff FleCSI ${FLECSI_RUNTIME_LIBRARIES})
 
   configure_file(simple2d-32x32.msh
     ${CMAKE_CURRENT_BINARY_DIR}/../../examples/lax_wendroff/simple2d-32x32.msh COPYONLY) 

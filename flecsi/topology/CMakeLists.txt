@@ -99,7 +99,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
    INPUTS
      test/traversal.blessed
    LIBRARIES
-     flecsi
+     FleCSI
   )
   
   cinch_add_unit(bindings
@@ -108,7 +108,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
    INPUTS
      test/bindings.blessed
    LIBRARIES
-     flecsi
+     FleCSI
   )
 
 endif()
@@ -131,28 +131,28 @@ cinch_add_unit(dual
 #  INPUTS
 #    test/tree.blessed
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #)
 
 #cinch_add_unit(tree1d
 #  SOURCES
 #    test/tree1d.cc
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #)
 
 #cinch_add_unit(tree3d
 #  SOURCES
 #    test/tree3d.cc
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #)
 
 #cinch_add_unit(gravity
 #  SOURCES
 #    test/gravity.cc test/pseudo_random.h
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #)
 
 # FIXME: Broken by refactor
@@ -161,7 +161,7 @@ cinch_add_unit(dual
 #    test/gravity-state.cc
 #    test/pseudo_random.h
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #    ${CINCH_RUNTIME_LIBRARIES}
 #)
 

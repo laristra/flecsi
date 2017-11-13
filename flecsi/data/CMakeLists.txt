@@ -124,7 +124,7 @@ set(data_SOURCES
 #    test/data_client.cc
 #    ${RUNTIME_DRIVER}
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
@@ -134,7 +134,7 @@ set(data_SOURCES
 #     ../execution/driver_initialization.cc
 #     ${RUNTIME_DRIVER}
 #   LIBRARIES
-#     flecsi
+#     FleCSI
 #     ${CINCH_RUNTIME_LIBRARIES}
 # )
 
@@ -142,7 +142,7 @@ set(data_SOURCES
 #  cinch_add_unit(storage_class
 #    SOURCES test/storage_class.cc
 #    LIBRARIES
-#      flecsi
+#      FleCSI
 #      ${CINCH_RUNTIME_LIBRARIES}
 #  )
 #
@@ -156,7 +156,7 @@ set(data_SOURCES
 #      DEFINES
 #        DATA_HANDLE_TEST
 #      LIBRARIES
-#        flecsi
+#        FleCSI
 #        ${CINCH_RUNTIME_LIBRARIES}
 #      POLICY SERIAL
 #      THREADS 2
@@ -175,7 +175,7 @@ set(data_SOURCES
 #        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/storage_class.h
 #        TEST_INIT=flecsi/execution/test/task_init.h
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #    ${CINCH_RUNTIME_LIBRARIES}
 #  POLICY MPILEGION
 #)
@@ -213,7 +213,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
     DEFINES
       -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
     LIBRARIES
-      flecsi
+      FleCSI
       ${CINCH_RUNTIME_LIBRARIES}
     POLICY ${UNIT_POLICY}
     THREADS 2
