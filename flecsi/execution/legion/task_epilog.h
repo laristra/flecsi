@@ -82,15 +82,17 @@ namespace execution {
     >
     void
     handle(
-      data_handle__<
+      dense_accessor<
         T,
         EXCLUSIVE_PERMISSIONS,
         SHARED_PERMISSIONS,
         GHOST_PERMISSIONS
-      > & h
+      > & a
     )
     {
- if (!h.global && !h.color){
+    auto& h = a.handle;
+
+    if (!h.global && !h.color){
       bool write_phase{(SHARED_PERMISSIONS == wo) ||
         (SHARED_PERMISSIONS == rw)};
 

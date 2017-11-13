@@ -86,14 +86,16 @@ namespace execution {
     >
     void
     handle(
-      data_handle__<
-        T,
-        EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS,
-        GHOST_PERMISSIONS
-      > & h
+      dense_accessor<
+       T,
+       EXCLUSIVE_PERMISSIONS,
+       SHARED_PERMISSIONS,
+       GHOST_PERMISSIONS
+      > & a
     )
     {
+      auto& h = a.handle;
+
       if (!h.global && !h.color){
         auto& flecsi_context = context_t::instance();
 
