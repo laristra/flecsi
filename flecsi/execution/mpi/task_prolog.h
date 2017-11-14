@@ -24,6 +24,7 @@
 
 #include "mpi.h"
 #include "flecsi/data/data.h"
+#include "flecsi/data/dense_accessor.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/coloring/mpi_utils.h"
 
@@ -72,12 +73,12 @@ namespace execution {
     >
     void
     handle(
-      data_handle__<
-        T,
-        EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS,
-        GHOST_PERMISSIONS
-      > & h
+     dense_accessor<
+       T,
+       EXCLUSIVE_PERMISSIONS,
+       SHARED_PERMISSIONS,
+       GHOST_PERMISSIONS
+     > & a
     )
     {
       // TODO: move field data allocation here?

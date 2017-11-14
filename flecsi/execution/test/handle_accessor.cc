@@ -28,15 +28,15 @@ clog_register_tag(coloring);
 
 void writer(dense_accessor<double, wo, ro, ro> x) {
   std::cout << "exclusive writer write" << std::endl;
-  for (int i = 0; i < x.size(); i++) {
-    x(i) = static_cast<double>(i);
+  for (int i = 0; i < x.exclusive_size(); i++) {
+    x.exclusive(i) = static_cast<double>(i);
   }
 }
 
 void reader(dense_accessor<double, ro, ro, ro> x) {
   std::cout << "exclusive reader read: " << std::endl;
-  for (int i = 0; i < x.size(); i++) {
-    ASSERT_EQ(x(i), static_cast<double>(i));
+  for (int i = 0; i < x.exclusive_size(); i++) {
+    ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
   }
 }
 
