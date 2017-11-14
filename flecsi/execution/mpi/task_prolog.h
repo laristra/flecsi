@@ -15,6 +15,10 @@
 #ifndef flecsi_execution_mpi_task_prolog_h
 #define flecsi_execution_mpi_task_prolog_h
 
+#include "flecsi/data/dense_accessor.h"
+#include "flecsi/data/sparse_accessor.h"
+#include "flecsi/data/mutator.h"
+
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: May 19, 2017
@@ -92,12 +96,12 @@ namespace execution {
     >
     void
     handle(
-      sparse_data_handle__<
+      sparse_accessor<
         T,
         EXCLUSIVE_PERMISSIONS,
         SHARED_PERMISSIONS,
         GHOST_PERMISSIONS
-      > & h
+      > & a
     )
     {
       // TODO: move field data allocation here?
@@ -108,12 +112,12 @@ namespace execution {
     >
     void
     handle(
-      mutator_handle__<
+      mutator<
         T
-      > & h
+      > & m
     )
     {
-      h.init();
+      m.h_.init();
     } // handle
 
     template<

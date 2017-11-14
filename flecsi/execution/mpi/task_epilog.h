@@ -15,6 +15,10 @@
 #ifndef flecsi_execution_mpi_task_epilog_h
 #define flecsi_execution_mpi_task_epilog_h
 
+#include "flecsi/data/dense_accessor.h"
+#include "flecsi/data/sparse_accessor.h"
+#include "flecsi/data/mutator.h"
+
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: May 19, 2017
@@ -114,14 +118,16 @@ namespace execution {
     >
     void
     handle(
-      sparse_data_handle__<
+      sparse_accessor<
         T,
         EXCLUSIVE_PERMISSIONS,
         SHARED_PERMISSIONS,
         GHOST_PERMISSIONS
-      > & h
+      > & a
     )
     {
+      auto& h = a.handle;
+
       // Skip Read Only handles
       if (EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
         return;

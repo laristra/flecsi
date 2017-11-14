@@ -78,110 +78,6 @@ public:
     entries_ = new entry_value_t[num_entries_ * num_slots_];
     spare_map_ = new spare_map_t;    
   }
-  
-  T &
-  operator () (
-    index_t index,
-    index_t entry
-  )
-  {
-    assert(offsets_ && "uninitialized mutator");
-    assert(index < num_entries_);
-
-    offset_t& offset = offsets_[index]; 
-
-    index_t n = offset.count();
-
-    if(n >= num_slots_) {
-      if(index < num_exclusive_){
-        (*num_exclusive_insertions)++;
-      }
-      
-      return spare_map_->emplace(index,
-        entry_value_t(entry))->second.value;
-    } // if
-
-    entry_value_t * start = entries_ + index * num_slots_;
-    entry_value_t * end = start + n;
-
-    entry_value_t * itr =
-      std::lower_bound(start, end, entry_value_t(entry),
-        [](const entry_value_t & e1, const entry_value_t & e2) -> bool{
-          return e1.entry < e2.entry;
-        });
-
-    // if we are attempting to create an entry that already exists
-    // just over-write the value and exit.  
-    if ( itr != end && itr->entry == entry) {
-      return itr->value;
-    }
-
-    while(end != itr) {
-      *(end) = *(end - 1);
-      --end;
-    } // while
-
-    itr->entry = entry;
-
-    if(index < num_exclusive_){
-      (*num_exclusive_insertions)++;
-    }
-
-    offset.set_count(n + 1);
-
-    return itr->value;
-  } // operator ()
-
-  void dump(){
-    for(size_t p = 0; p < 3; ++p){
-      switch(p){
-        case 0:
-          std::cout << "exclusive: " << std::endl;
-          break;
-        case 1:
-          std::cout << "shared: " << std::endl;
-          break;
-        case 2:
-          std::cout << "ghost: " << std::endl;
-          break;
-        default:
-          break;
-      }
-
-      size_t start = pi_.start[p];
-      size_t end = pi_.end[p];
-
-      for(size_t i = start; i < end; ++i){
-        const offset_t& offset = offsets_[i];
-        std::cout << "  index: " << i << std::endl;
-        for(size_t j = 0; j < offset.count(); ++j){
-          std::cout << "    " << entries_[i * num_slots_ + j].entry << 
-            " = " << entries_[i * num_slots_ + j].value << std::endl;
-        }
-
-        auto p = spare_map_->equal_range(i);
-        auto itr = p.first;
-        while(itr != p.second){
-          std::cout << "    +" << itr->second.entry << " = " << 
-            itr->second.value << std::endl;
-          ++itr;
-        }
-      }      
-    }
-  }
-
-  void
-  erase(
-    size_t index,
-    size_t entry
-  )
-  {
-    if(!erase_set_){
-      erase_set_ = new erase_set_t;
-    }
-
-    erase_set_->emplace(std::make_pair(index, entry));
-  }
 
   void commit(commit_info_t* ci){
     assert(offsets_ && "uninitialized mutator");
@@ -279,7 +175,6 @@ public:
     return max_entries_per_index_;
   }
 
-private:
   using spare_map_t = std::multimap<size_t, entry_value_t>;
   using erase_set_t = std::set<std::pair<size_t, size_t>>;
 
