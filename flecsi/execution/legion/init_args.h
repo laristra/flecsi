@@ -233,8 +233,7 @@ namespace execution {
     handle(
       T &
     )
-    {
-    } // handle
+    {} // handle
 
     Legion::Runtime * runtime;
     Legion::Context & context;

@@ -264,6 +264,64 @@ struct dense_accessor : public dense_accessor_base_t {
   handle_t handle;  
 };
 
+template<
+  typename T,
+  size_t PERMISSIONS
+>
+struct global_accessor : public dense_accessor<T, PERMISSIONS, 0, 0>{
+  using base_t = dense_accessor<T, PERMISSIONS, 0, 0>;
+
+  global_accessor(const data_handle__<T, 0, 0, 0>& h)
+  : base_t(h){}
+
+  operator T&(){
+    return data();
+  }
+
+  operator const T&() const{
+    return data();
+  }
+
+  T& data() const{
+    return *base_t::handle.combined_data;
+  }
+
+  global_accessor&
+  operator=(const T& x){
+    data() = x;
+    return *this;
+  }
+};
+
+template<
+  typename T,
+  size_t PERMISSIONS
+>
+struct color_accessor : public dense_accessor<T, PERMISSIONS, 0, 0>{
+  using base_t = dense_accessor<T, PERMISSIONS, 0, 0>;
+
+  color_accessor(const data_handle__<T, 0, 0, 0>& h)
+  : base_t(h){}
+
+  operator T&(){
+    return data();
+  }
+
+  operator const T&() const{
+    return data();
+  }
+
+  T& data() const{
+    return *base_t::handle.combined_data;
+  }
+
+  color_accessor&
+  operator=(const T& x){
+    data() = x;
+    return *this;
+  }
+};
+
 } // namespace flecsi
 
 #endif // flecsi_dense_accessor_h

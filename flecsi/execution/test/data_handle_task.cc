@@ -24,19 +24,7 @@ using namespace supplemental;
 
 clog_register_tag(coloring);
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-
 using global_t = double;
-
-template<typename T, size_t P>
-using global_handle_t =
-  data::legion::global_handle_t<T, P>;
-
-template<typename T, size_t P>
-using color_handle_t =
-  data::legion::color_handle_t<T, P>;
-
-#endif
 
 void task1(dense_accessor<double, ro, ro, ro> x, double y) {
   //np(y);
@@ -50,13 +38,11 @@ void data_handle_dump(dense_accessor<double, rw, ro, ro> x) {
 }
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-void global_data_handle_dump(global_handle_t<double, ro> x) {
-  clog(info) << "global label: " << x.label() << std::endl;
+void global_data_handle_dump(global_accessor<double, ro> x) {
   clog(info) << "global combined size: " << x.size() << std::endl;
 }
 
-void color_data_handle_dump(color_handle_t<double, ro> x) {
-  clog(info) << "color label: " << x.label() << std::endl;
+void color_data_handle_dump(color_accessor<double, ro> x) {
   clog(info) << "color combined size: " << x.size() << std::endl;
 }
 
@@ -77,22 +63,22 @@ void exclusive_reader(dense_accessor<double, ro, ro, ro> x) {
 }
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-void global_writer(global_handle_t<double, wo> x) {
+void global_writer(global_accessor<double, wo> x) {
   clog(info) << "global writer write" << std::endl;
     x = static_cast<double>(3.14);
 }
 
-void global_reader(global_handle_t<double, ro> x) {
+void global_reader(global_accessor<double, ro> x) {
   clog(info) << "global reader read: " << std::endl;
     ASSERT_EQ(x, static_cast<double>(3.14));
 }
 
-void color_writer(color_handle_t<double, wo> x) {
+void color_writer(color_accessor<double, wo> x) {
   clog(info) << "color exclusive writer write" << std::endl;
     x = static_cast<double>(16);
 }
 
-void color_reader(color_handle_t<double, ro> x) {
+void color_reader(color_accessor<double, ro> x) {
   clog(info) << "color exclusive reader read: " << std::endl;
     ASSERT_EQ(x, static_cast<double>(16));
 }
