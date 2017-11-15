@@ -195,8 +195,15 @@ runtime_driver(
             WRITE_DISCARD, EXCLUSIVE, flecsi_ispace.logical_region))
                 .add_field(ghost_owner_pos_fid);
   } // for idx_space
+
+  Legion::MustEpochLauncher must_epoch_launcher1;
+   must_epoch_launcher1.add_index_task(pos_compaction_launcher);
+  auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher1);
+
+  fm.wait_all_results(true);
+
   
-  runtime->execute_index_space(ctx, pos_compaction_launcher);
+//  runtime->execute_index_space(ctx, pos_compaction_launcher);
 
   //--------------------------------------------------------------------------//
   //  Create Phase barriers per each Field
