@@ -54,7 +54,7 @@ protected:
 #endif
 
 //----------------------------------------------------------------------------//
-//! The task_model__ type provides a high-level task interface that is
+//! The task_interface__ type provides a high-level task interface that is
 //! implemented by the given execution policy.
 //!
 //! @tparam EXECUTION_POLICY The backend execution policy.
@@ -65,7 +65,7 @@ protected:
 template<
   typename EXECUTION_POLICY
 >
-struct task_model__
+struct task_interface__
 {
   //--------------------------------------------------------------------------//
   //! The runtime_state_t type stores runtime-specific state information
@@ -141,14 +141,14 @@ struct task_model__
   execute_task(
     launch_type_t launch,
     size_t parent,
-    ARGS &&... args
+    ARGS && ... args
   )
   {
     return EXECUTION_POLICY::template execute_task<KEY, RETURN, ARG_TUPLE>(
       launch, parent, std::forward<ARGS>(args) ...);
   } // execute_task
 
-}; // struct task__
+}; // struct task_interface__
 
 } // namespace execution
 } // namespace flecsi
@@ -193,12 +193,13 @@ class task_t : public base_task_t
 #endif
 
 //----------------------------------------------------------------------------//
-//! The task_model_t type is the high-level interface to the FleCSI task model.
+//! The task_interface_t type is the high-level interface to the FleCSI
+//! task model.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-using task_model_t = task_model__<FLECSI_RUNTIME_EXECUTION_POLICY>;
+using task_interface_t = task_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
 
 //----------------------------------------------------------------------------//
 //! Use the execution policy to define the future type.

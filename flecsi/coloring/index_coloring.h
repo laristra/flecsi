@@ -12,18 +12,18 @@
 
 #include "flecsi/coloring/communicator.h"
 
-///
-/// \file
-/// \date Initial file creation: Aug 17, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Aug 17, 2016
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace coloring {
 
-///
-/// \class index_coloring_t index_coloring.h
-/// \brief index_coloring_t provides...
-///
+//----------------------------------------------------------------------------//
+//! \todo Add description.
+//----------------------------------------------------------------------------//
+
 struct index_coloring_t
 {
   using entity_info_t = flecsi::coloring::entity_info_t;

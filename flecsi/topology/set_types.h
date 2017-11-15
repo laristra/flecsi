@@ -13,11 +13,13 @@
 
 #include "flecsi/data/data_client.h"
 #include "flecsi/topology/types.h"
+#include "flecsi/utils/id.h"
 
 namespace flecsi{
 namespace topology{
 
 class set_entity_t{
+public:
   using id_t = flecsi::utils::id_t;
 
   id_t global_id() const
@@ -38,8 +40,11 @@ private:
   id_t id_;
 };
 
+class set_topology_base__{};
+
 template<class STORAGE_TYPE>
-class set_topology_base_t : public data::data_client_t
+class set_topology_base_t : public data::data_client_t,
+  public set_topology_base__
 {
 public:
 

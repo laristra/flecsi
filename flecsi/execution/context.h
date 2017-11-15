@@ -19,6 +19,7 @@
 //! @file
 //! @date Initial file creation: Oct 19, 2015
 //----------------------------------------------------------------------------//
+
 #include <algorithm>
 #include <cstddef>
 #include <map>
@@ -51,6 +52,7 @@ struct context__ : public CONTEXT_POLICY
 {
   using index_coloring_t = flecsi::coloring::index_coloring_t;
   using coloring_info_t = flecsi::coloring::coloring_info_t;
+  using set_coloring_info_t = flecsi::coloring::set_coloring_info_t;
   using adjacency_info_t = flecsi::coloring::adjacency_info_t;
 
   //--------------------------------------------------------------------------//
@@ -72,7 +74,7 @@ struct context__ : public CONTEXT_POLICY
 
   struct field_info_t{
     size_t data_client_hash;
-    size_t storage_type;
+    size_t storage_class;
     size_t size;
     size_t namespace_hash;
     size_t name_hash;
@@ -133,7 +135,7 @@ struct context__ : public CONTEXT_POLICY
 
 
   //--------------------------------------------------------------------------//
-  //! Myer's singleton instance.
+  //! Meyer's singleton instance.
   //!
   //! @return The single instance of this type.
   //--------------------------------------------------------------------------//
@@ -367,6 +369,15 @@ struct context__ : public CONTEXT_POLICY
     colorings_[index_space] = coloring;
     coloring_info_[index_space] = coloring_info;
   } // add_coloring
+
+  void
+  add_set_coloring(
+    size_t index_space,
+    std::unordered_map<size_t, coloring_info_t> & coloring_info
+  )
+  {
+    coloring_info_[index_space] = coloring_info;
+  }
 
   //--------------------------------------------------------------------------//
   //! Return the index coloring referenced by key.

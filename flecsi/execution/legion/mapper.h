@@ -128,6 +128,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
   //-------------------------------------------------------------------------//
   virtual ~mpi_mapper_t(){};
 
+#if 0
   //-------------------------------------------------------------------------//
   //! Specialization of the slice_task funtion for FLeCSI
   //! The slice_task call is used by the runtime
@@ -163,7 +164,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
         context_.task_id<__flecsi_internal_task_key(wait_on_mpi_task)>();
     size_t handoff_to_mpi_task_id = 
         context_.task_id<__flecsi_internal_task_key(handoff_to_mpi_task)>();
-
+#if 0
     // tag-based decisions here
     if(task.task_id == wait_on_mpi_task_id ||
        task.task_id == handoff_to_mpi_task_id ||
@@ -180,13 +181,17 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       using legion_machine=Legion::Machine;
       using legion_proc=Legion::Processor;
 
+#if 1
       // get list of all processors and make sure the count matches
       legion_machine::ProcessorQuery pq =
           legion_machine::ProcessorQuery(machine).only_kind(
               legion_proc::LOC_PROC);
       std::vector<legion_proc> all_procs(pq.begin(), pq.end());
 
-      assert((r.lo[0] == 0) && (r.hi[0] == (int)(all_procs.size() - 1)));
+std::cout<<"r.lo[0] = "<< r.lo[0]<<" , r.hi[0] = "<< r.hi[0]<<
+"r.lo[1] = "<< r.lo[1]<<" , r.hi[1] = "<< r.hi[1]<<
+", all_procs.size() = "<<all_procs.size()<<std::endl; 
+//      assert((r.lo[0] == 0) && (r.hi[0] == (int)(all_procs.size() - 1)));
 
       for(LegionRuntime::Arrays::GenericPointInRectIterator<1> pir(r);
           pir; ++pir, ++idx) {
@@ -194,9 +199,26 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
             LegionRuntime::Arrays::Rect<1>(pir.p, pir.p));
         output.slices[idx].proc = all_procs[idx];
       } // end for
+#endif
+
+#if 0
+     for(LegionRuntime::Arrays::GenericPointInRectIterator<1> pir(r);
+            pir; ++pir, ++idx) {
+       output.slices[idx].domain =
+          Legion::Domain::from_rect<1>(
+             LegionRuntime::Arrays::Rect<1>(pir.p, pir.p));
+       if(task.target_proc.kind() == Legion::Processor::TOC_PROC) {
+          assert(rank_gpus.count(pir.p) > 0);
+          output.slices[idx].proc = rank_gpus[pir.p][0];
+       } else {
+          assert(rank_cpus.count(pir.p) > 0);
+          output.slices[idx].proc = rank_cpus[pir.p][0];
+        }//if
+      }//for
+#endif
       return;
     } // end if MAPPER_FORCE_RANK_MATCH
-
+#endif
 
   	if((task.tag & MAPPER_SUBRANK_LAUNCH) != 0) {
     	// expect a 1-D index domain
@@ -215,7 +237,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
                                         input, output, cpu_slices_cache);
     }//end else
   } //end slice_task
-
+#endif
 
   //-------------------------------------------------------------------------//
   //! Specialization of the map_task funtion for FLeCSI
@@ -348,6 +370,8 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
            std::map<Realm::Memory::Kind, Realm::Memory> > proc_mem_map;
   Realm::Memory local_sysmem;
   Realm::Machine machine;
+ // std::map<Point<1>, std::vector<Processor>, Point<1>::STLComparator >
+ //     rank_cpus, rank_gpus;
 };
 
 //--------------------------------------------------------------------------//

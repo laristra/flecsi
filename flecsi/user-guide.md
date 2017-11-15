@@ -1,4 +1,4 @@
-<!-- CINCHDOC DOCUMENT(User Guide) SECTION(Introduction) -->
+<!-- CINCHDOC DOCUMENT(user-guide) SECTION(introduction) -->
 
 # Introduction
 

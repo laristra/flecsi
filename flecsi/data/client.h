@@ -30,6 +30,9 @@ namespace topology {
 template<typename>
 class mesh_topology_t;
 
+template<typename>
+class set_topology_t;
+
 //----------------------------------------------------------------------------//
 // Forward declaration
 //----------------------------------------------------------------------------//
@@ -389,11 +392,137 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
 
 }; // struct data_client_policy_handler__
 
+//----------------------------------------------------------------------------//
+//! FIXME: Description of class
+//----------------------------------------------------------------------------//
+
+template<typename POLICY_TYPE>
+struct data_client_policy_handler__<topology::set_topology_t<POLICY_TYPE>>
+{
+
+  struct entity_info_t
+  {
+    size_t index_space;
+    size_t size;
+  }; // struct entity_info_t
+
+  struct entity_walker_t :
+    public flecsi::utils::tuple_walker__<entity_walker_t>
+  {
+
+    template<
+      typename TUPLE_ENTRY_TYPE
+    >
+    void
+    handle_type()
+    {
+      using INDEX_TYPE =
+        typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
+      using ENTITY_TYPE =
+        typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
+
+      entity_info_t ei;
+
+      ei.index_space = INDEX_TYPE::value;
+      ei.size = sizeof(ENTITY_TYPE);
+
+      //entity_info.emplace_back(std::move(ei));
+      entity_info.push_back(ei);
+      entity_index_space_map.emplace(typeid(ENTITY_TYPE).hash_code(),
+        INDEX_TYPE::value);
+    } // handle_type
+
+    std::vector<entity_info_t> entity_info;
+    std::map<size_t, size_t> entity_index_space_map;
+
+  }; // struct entity_walker_t
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH
+  >
+  static
+  data_client_handle__<DATA_CLIENT_TYPE, 0>
+  get_client_handle()
+  {
+    using entity_types = typename POLICY_TYPE::entity_types;
+
+    data_client_handle__<DATA_CLIENT_TYPE, 0> h;
+
+    auto& context = execution::context_t::instance();
+
+    auto& ism = context.index_space_data_map();
+
+    h.client_hash = 
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+    h.name_hash = NAME_HASH;
+    h.namespace_hash = NAMESPACE_HASH;
+
+    entity_walker_t entity_walker;
+    entity_walker.template walk_types<entity_types>();
+
+    h.num_handle_entities = entity_walker.entity_info.size();
+
+    size_t entity_index(0);
+    for(auto & ei: entity_walker.entity_info) {
+      data_client_handle_entity_t & ent = h.handle_entities[entity_index];
+      ent.index_space = ei.index_space;
+      ent.size = ei.size;
+
+      auto itr = context.field_info_map().find(
+        { h.client_hash, ent.index_space });
+
+      clog_assert(itr != context.field_info_map().end(),
+        "invalid entity index space");
+
+      auto & tm = itr->second;
+
+      for(auto & fitr : tm){
+        if(fitr.second.key == 
+          utils::hash::client_internal_field_hash(
+          utils::const_string_t("__flecsi_internal_entity_data__").
+          hash(), ent.index_space)) {
+            ent.fid = fitr.second.fid;
+        } // if
+        else if(fitr.second.key == 
+          utils::hash::client_internal_field_hash(
+          utils::const_string_t("__flecsi_internal_entity_id__").
+          hash(), ent.index_space)) {
+            ent.id_fid = fitr.second.fid;
+        }
+      } // for
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+      auto ritr = ism.find(ent.index_space);
+      clog_assert(ritr != ism.end(), "invalid index space " << ei.index_space);
+      
+      ent.color_region = ritr->second.color_region;
+      ent.exclusive_region = ritr->second.exclusive_lr;
+      ent.shared_region = ritr->second.shared_lr;
+      ent.ghost_region = ritr->second.ghost_lr;
+#endif
+
+      ++entity_index;
+    } // for
+
+    return h;
+  } // get_client_handle
+
+}; // struct data_client_policy_handler__
+
+//----------------------------------------------------------------------------//
+//! The data_client_interface__ type defines a high-level data client
+//! interface that is implemented by the given data policy.
+//!
+//! @tparam DATA_POLICY The backend runtime policy.
+//!
+//! @ingroup data
+//----------------------------------------------------------------------------//
 
 template<
   typename DATA_POLICY
 >
-struct client_data__
+struct data_client_interface__
 {
   //--------------------------------------------------------------------------//
   //! Register a data client with the FleCSI runtime.
@@ -402,8 +531,6 @@ struct client_data__
   //! @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
   //!                          of attribute names to avoid collisions.
   //! @tparam NAME_HASH        The attribute name.
-  //!
-  //! @ingroup data
   //--------------------------------------------------------------------------//
 
   template<
@@ -429,7 +556,7 @@ struct client_data__
 
     const size_t client_key = 
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
-    // TODO: move to hash.h
+    //! \todo move to hash.h
     const size_t key = NAMESPACE_HASH ^ NAME_HASH;
 
     return storage_t::instance().register_client(client_key, key,
@@ -454,7 +581,7 @@ struct client_data__
       get_client_handle<DATA_CLIENT_TYPE, NAMESPACE_HASH, NAME_HASH>();
   } // get_client_handle
 
-}; // struct client_data__
+}; // struct data_client_interface__
 
 } // namespace data
 } // namespace flecsi
@@ -468,7 +595,8 @@ struct client_data__
 namespace flecsi {
 namespace data {
 
-using client_data_t = client_data__<FLECSI_RUNTIME_DATA_POLICY>;
+using data_client_interface_t =
+  data_client_interface__<FLECSI_RUNTIME_DATA_POLICY>;
 
 } // namespace data
 } // namespace flecsi

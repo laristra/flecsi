@@ -651,8 +651,11 @@ private:
     on type parameterization, e.g: entity types, domains, etc.
  */
 
+class mesh_topology_base__{};
+
 template<class STORAGE_TYPE>
-class mesh_topology_base_t : public data::data_client_t
+class mesh_topology_base_t : public data::data_client_t,
+  public mesh_topology_base__
 {
 public:
 

@@ -110,8 +110,6 @@ if(ENABLE_FLECSIT)
 
     set(CLANG_HEADER_PATH ${LLVM_LIB_DIR}/clang/${CLANG_VERSION}/include)
 
-    #add_subdirectory(blender)
-
     #--------------------------------------------------------------------------#
     # FleCSIT dependencies
     #--------------------------------------------------------------------------#

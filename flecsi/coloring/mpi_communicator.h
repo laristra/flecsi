@@ -6,16 +6,11 @@
 #ifndef flecsi_coloring_mpi_communicator_h
 #define flecsi_coloring_mpi_communicator_h
 
-///
-/// \file
-/// \date Initial file creation: Dec 06, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Dec 06, 2016
+//----------------------------------------------------------------------------//
 
-#include "flecsi/coloring/communicator.h"
-#include "flecsi/coloring/mpi_utils.h"
-
-//#include <boost/archive/binary_iarchive.hpp>
-//#include <boost/archive/binary_oarchive.hpp>
 #include <cinchlog.h>
 
 #if !defined(ENABLE_MPI)
@@ -24,6 +19,8 @@
 
 #include <mpi.h>
 
+#include "flecsi/coloring/communicator.h"
+#include "flecsi/coloring/mpi_utils.h"
 #include "flecsi/utils/set_utils.h"
 
 clog_register_tag(mpi_communicator);
@@ -31,11 +28,10 @@ clog_register_tag(mpi_communicator);
 namespace flecsi {
 namespace coloring {
 
-///
-/// \class mpi_communicator_t mpi_communicator.h
-/// \brief mpi_communicator_t provides an implementation of the
-///        communicator_t interface using MPI.
-///
+//----------------------------------------------------------------------------//
+//! \todo Add description.
+//----------------------------------------------------------------------------//
+
 class mpi_communicator_t
   : public communicator_t
 {

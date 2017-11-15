@@ -82,7 +82,7 @@ clog_register_tag(execution);
                                                                                \
   /* Call the execution policy to register the task delegate */                \
   bool task ## _task_registered =                                              \
-    flecsi::execution::task_model_t::register_task<                            \
+    flecsi::execution::task_interface_t::register_task<                        \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       __flecsi_internal_return_type(task),                                     \
       __flecsi_internal_arguments_type(task),                                  \
@@ -122,7 +122,7 @@ clog_register_tag(execution);
                                                                                \
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
-  flecsi::execution::task_model_t::execute_task<                               \
+  flecsi::execution::task_interface_t::execute_task<                           \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),          \
     __flecsi_internal_return_type(task),                                       \
     __flecsi_internal_arguments_type(task)                                     \
@@ -186,7 +186,7 @@ clog_register_tag(execution);
                                                                                \
   /* Call the execution policy to register the function delegate */            \
   bool func ## _func_registered =                                              \
-    flecsi::execution::function_t::register_function<                          \
+    flecsi::execution::function_interface_t::register_function<                \
       func ## _frt_t, func ## _fat_t, func ## _tuple_delegate,                 \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(func)}.hash()>()
 
@@ -205,7 +205,8 @@ clog_register_tag(execution);
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the execution policy to execute the function */                      \
-  flecsi::execution::function_t::execute_function(handle, ## __VA_ARGS__)
+  flecsi::execution::function_interface_t::execute_function(handle,            \
+    ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_function_handle

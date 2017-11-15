@@ -245,12 +245,12 @@ struct find_index_space_from_dimension__<0, TUPLE, DIMENSION, DOMAIN_> {
  *----------------------------------------------------------------------------*/
 
 /*!
-  \struct compute_connectivity_ mesh_utils.h
-  \brief compute_connectivity_ provides static recursion to process
+  \struct compute_connectivity__ mesh_utils.h
+  \brief compute_connectivity__ provides static recursion to process
   connectivity computation of mesh entity types.
  */
 template <size_t DM, size_t I, class TS>
-struct compute_connectivity_ {
+struct compute_connectivity__ {
   /*!
     Compute mesh connectivity for the given domain and tuple element.
 
@@ -272,18 +272,18 @@ struct compute_connectivity_ {
       mesh.template compute_connectivity<DM, T1::dimension, T2::dimension>();
     }
 
-    return compute_connectivity_<DM, I - 1, TS>::compute(mesh);
+    return compute_connectivity__<DM, I - 1, TS>::compute(mesh);
   } // compute
 
-}; // struct compute_connectivity_
+}; // struct compute_connectivity__
 
 /*!
-  \struct compute_connectivity_ mesh_utils.h
-  \brief compute_connectivity_ provides a specialization for
+  \struct compute_connectivity__ mesh_utils.h
+  \brief compute_connectivity__ provides a specialization for
   the root recursion.
  */
 template <size_t DM, class TS>
-struct compute_connectivity_<DM, 0, TS> {
+struct compute_connectivity__<DM, 0, TS> {
   /*!
     Terminate recursion.
 
@@ -296,19 +296,19 @@ struct compute_connectivity_<DM, 0, TS> {
     return 0;
   } // compute
 
-}; // struct compute_connectivity_
+}; // struct compute_connectivity__
 
 /*----------------------------------------------------------------------------*
  * Binding utilities.
  *----------------------------------------------------------------------------*/
 
 /*!
-  \struct compute_bindings_ mesh_utils.h
-  \brief compute_bindings_ provides static recursion to process
+  \struct compute_bindings__ mesh_utils.h
+  \brief compute_bindings__ provides static recursion to process
   binding computation of mesh entity types.
  */
 template <size_t DM, size_t I, class TS>
-struct compute_bindings_ {
+struct compute_bindings__ {
   /*!
     Compute mesh connectivity for the given domain and tuple element.
 
@@ -336,18 +336,18 @@ struct compute_bindings_ {
           T2::dimension>();
     } // if
 
-    return compute_bindings_<DM, I - 1, TS>::compute(mesh);
+    return compute_bindings__<DM, I - 1, TS>::compute(mesh);
   } // compute
 
-}; // struct compute_bindings_
+}; // struct compute_bindings__
 
 /*!
-  \struct compute_bindings_ mesh_utils.h
-  \brief compute_bindings_ provides a specialization for
+  \struct compute_bindings__ mesh_utils.h
+  \brief compute_bindings__ provides a specialization for
   the root recursion.
  */
 template <size_t DM, class TS>
-struct compute_bindings_<DM, 0, TS> {
+struct compute_bindings__<DM, 0, TS> {
   /*!
     Terminate recursion.
 
@@ -360,7 +360,7 @@ struct compute_bindings_<DM, 0, TS> {
     return 0;
   } // compute
 
-}; // struct compute_bindings_
+}; // struct compute_bindings__
 
 template<typename T>
 class mesh_graph_partition{
