@@ -307,7 +307,7 @@ struct legion_context_policy_t
     clog_tag_guard(context);
     clog(info) << "handoff_to_legion" << std::endl;
     }
-
+    MPI_Barrier(MPI_COMM_WORLD);
     handshake_.mpi_handoff_to_legion();
   } // handoff_to_legion
 
@@ -324,6 +324,7 @@ struct legion_context_policy_t
     }
 
     handshake_.mpi_wait_on_legion();
+    MPI_Barrier(MPI_COMM_WORLD);
   } // wait_on_legion
 
   //--------------------------------------------------------------------------//

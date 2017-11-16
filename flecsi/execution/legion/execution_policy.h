@@ -256,9 +256,15 @@ struct legion_execution_policy_t
       );
 
       // Enqueue the MPI task.
-      auto future =
-        legion_runtime->execute_index_space(legion_context, launcher);
+    //  auto future =
+    //    legion_runtime->execute_index_space(legion_context, launcher);
      // future.wait_all_results();
+
+      Legion::MustEpochLauncher must_epoch_launcher;
+      must_epoch_launcher.add_index_task(launcher);
+      auto future = legion_runtime->execute_must_epoch(legion_context,
+        must_epoch_launcher);
+      future.wait_all_results(true);
 
       // Handoff to the MPI runtime.
       context_.handoff_to_mpi(legion_context, legion_runtime);
