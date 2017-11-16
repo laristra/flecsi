@@ -80,6 +80,16 @@ public:
   }
 
   void commit(commit_info_t* ci){
+    if(erase_set_){
+      commit_<true>(ci);
+    }
+    else{
+      commit_<false>(ci);
+    }
+  }
+
+  template<bool ERASE>
+  void commit_(commit_info_t* ci){
     assert(offsets_ && "uninitialized mutator");
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
@@ -103,8 +113,8 @@ public:
       size_t num_existing = coi.count();
       size_t used_slots = oi.count();
 
-      size_t num_merged = 
-        merge(i, eptr, num_existing, sptr, used_slots, *spare_map_, cptr);
+      size_t num_merged = merge<ERASE>(i, eptr, num_existing, sptr,
+        used_slots, *spare_map_, cptr);
 
       eptr += num_existing;
       coi.set_offset(offset);
@@ -137,8 +147,8 @@ public:
       
       size_t used_slots = oi.count();
 
-      size_t num_merged = 
-        merge(i, eptr, num_existing, sptr, used_slots, *spare_map_, cbuf);
+      size_t num_merged = merge<ERASE>(i, eptr, num_existing, sptr,
+        used_slots, *spare_map_, cbuf);
 
       if(num_merged > 0){
         assert(num_merged <= max_entries_per_index_);
@@ -157,6 +167,11 @@ public:
 
     delete spare_map_;
     spare_map_ = nullptr;
+
+    if(erase_set_){
+      delete erase_set_;
+      erase_set_ = nullptr;
+    }
   }
 
   size_t num_exclusive() const{
@@ -188,6 +203,7 @@ public:
   spare_map_t* spare_map_ = nullptr;
   erase_set_t * erase_set_ = nullptr;
 
+  template<bool ERASE>
   size_t merge(size_t index,
                entry_value_t* existing,
                size_t num_existing,
@@ -221,9 +237,11 @@ public:
           slot_entry = ++slots < slots_end ? slots->entry : end;
         }
 
-        while(existing_entry == spare_entry){
+        while(existing_entry == slot_entry ||
+          (ERASE && erase_set_->find(std::make_pair(index, existing_entry)) != 
+          erase_set_->end())){
           existing_entry = ++existing < existing_end ? existing->entry : end;
-        } 
+        }   
 
         spare_entry = ++itr != p.second ? itr->second.entry : end;
       }
@@ -232,7 +250,9 @@ public:
         dest->value = slots->value;
         ++dest;
 
-        while(existing_entry == slot_entry){
+        while(existing_entry == slot_entry ||
+          (ERASE && erase_set_->find(std::make_pair(index, existing_entry)) != 
+          erase_set_->end())){
           existing_entry = ++existing < existing_end ? existing->entry : end;
         }  
 
