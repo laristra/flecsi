@@ -210,10 +210,6 @@ public:
   //--------------------------------------------------------------------------//
   //! Initialize the mesh storage after it has been set
   //! This is needed to initialize raw connectivity buffers,
-  //!
-  //! @tparam n! n!
-  //!
-  //! @param n! n!
   //--------------------------------------------------------------------------//
   void
   initialize_storage() {

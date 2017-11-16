@@ -1,19 +1,13 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_thread_pool_h
 #define flecsi_thread_pool_h
+
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: May 12, 2016
+//----------------------------------------------------------------------------//
 
 #include <iostream>
 #include <vector>
@@ -28,28 +22,44 @@
 
 #include "flecsi/concurrency/virtual_semaphore.h"
 
-/*!
- * \file thread_pool.h
- * \authors nickm
- * \date Initial file creation: May 12, 2016
- */
-
 namespace flecsi
 {
 
-  class thread_pool{
+  //------------------------------------------------------------------------//
+  //! This class provides a thread pool mechanism by which callable objects 
+  //! and associated arguments can be executed by a pool of worker threads. 
+  //! 
+  //! @ingroup concurrency
+  //------------------------------------------------------------------------//
+  class thread_pool
+  {
   public:
+
+    //! signature of internally queued function
     using function_t = std::function<void(void)>;
 
-    thread_pool(){
+    //---------------------------------------------------------------------//
+    //! Constructor
+    //---------------------------------------------------------------------//
+    thread_pool()
+    {
       done_ = false;
     }
 
-    ~thread_pool(){
+    //---------------------------------------------------------------------//
+    //! Destructor
+    //---------------------------------------------------------------------//
+    ~thread_pool()
+    {
       join();
     }
 
-    void run_(){
+    //---------------------------------------------------------------------//
+    //! Internal run method. Do not call directly.
+    //---------------------------------------------------------------------//
+    void
+    run_()
+    {
       for(;;){
         sem_.acquire();
 
@@ -67,15 +77,36 @@ namespace flecsi
       }
     }
 
-    template <typename FT, typename... ARGS>
-    void queue(FT f, ARGS... args){
+    //---------------------------------------------------------------------//
+    //! Queue a callable object and associated arguments to the thread pool.
+    //---------------------------------------------------------------------//
+    template<
+      typename FT,
+      typename... ARGS
+    >
+    void
+    queue(
+      FT f,
+      ARGS... args
+    )
+    {
       mutex_.lock();
       queue_.emplace(std::bind(f, std::forward<ARGS>(args)...));
       mutex_.unlock();
       sem_.release();
     }
 
-    void start(size_t num_threads){
+    //---------------------------------------------------------------------//
+    //! The constructor does not start the thread pool until this method is 
+    //! called.
+    //!
+    //! @param num_threads Number of workers threads
+    //---------------------------------------------------------------------//
+    void
+    start(
+      size_t num_threads
+    )
+    {
       assert(threads_.empty() && "thread pool already started");
 
       for(size_t i = 0; i < num_threads; ++i){
@@ -84,7 +115,12 @@ namespace flecsi
       }
     }
 
-    void join(){
+    //---------------------------------------------------------------------//
+    //! Interrupt the thread pool and wait for all threads to finish.
+    //---------------------------------------------------------------------//
+    void
+    join()
+    {
       if(done_){
         return;
       }
@@ -97,8 +133,13 @@ namespace flecsi
         delete t;
       }
     }
-
-    size_t num_threads() const{
+    
+    //---------------------------------------------------------------------//
+    //! Return the number of worker threads
+    //---------------------------------------------------------------------//
+    size_t
+    num_threads() const
+    {
       return threads_.size();
     }
 
@@ -115,6 +156,4 @@ namespace flecsi
 #endif // flecsi_thread_pool_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/
