@@ -20,24 +20,37 @@ namespace topology {
  * class index_space
  *----------------------------------------------------------------------------*/
 
-template<size_t, class E>
+template<
+  size_t,
+  class E
+>
 class domain_entity;
 
 //! helper classes for resolving types
-template<typename T>
-struct index_space_ref_type__{
+template<
+  typename T
+>
+struct index_space_ref_type__
+{
   using type = T&;
 };
 
 //! helper classes for resolving types
-template<typename S>
-struct index_space_ref_type__<S*>{
+template<
+  typename S
+>
+struct index_space_ref_type__<S*>
+{
   using type = S*;
 };
 
 //! helper classes for resolving types
-template<size_t M, class E>
-struct index_space_ref_type__<domain_entity<M, E>>{
+template<
+  size_t M,
+  class E
+>
+struct index_space_ref_type__<domain_entity<M, E>>
+{
   using type = domain_entity<M, E>;
 };
 
@@ -115,7 +128,8 @@ public:
   //! 
   //! @ingroup topology
   //--------------------------------------------------------------------------//
-  class id_range_{
+  class id_range_
+  {
   public:
     //-----------------------------------------------------------------//
     //! Copy constructor
