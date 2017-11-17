@@ -16,7 +16,9 @@
 namespace flecsi{
 namespace topology{
 
-template<typename SET_TYPES>
+template<
+  typename SET_TYPES
+>
 class set_storage_t : 
   public FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY<SET_TYPES>
 {};

@@ -18,7 +18,8 @@
 namespace flecsi{
 namespace topology{
 
-class set_entity_t{
+class set_entity_t
+{
 public:
   using id_t = flecsi::utils::id_t;
 
@@ -42,7 +43,9 @@ private:
 
 class set_topology_base__{};
 
-template<class STORAGE_TYPE>
+template<
+  class STORAGE_TYPE
+>
 class set_topology_base_t : public data::data_client_t,
   public set_topology_base__
 {
@@ -102,8 +105,12 @@ public:
     calling the constructor directly. This way, the ability to have
     extra initialization behavior is reserved.
   */
-  template <class T, class... S>
-  T * make(S &&... args)
+  template<
+    class T,
+    class... S
+  >
+  T *
+  make(S &&... args)
   {
     return ss_->template make<T>(std::forward<S>(args)...);
   } // make
