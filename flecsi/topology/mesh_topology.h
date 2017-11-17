@@ -49,16 +49,16 @@
 */
 
 #include <algorithm>
-#include <iostream>
 #include <array>
-#include <vector>
 #include <cassert>
-#include <unordered_map>
+#include <cstring>
+#include <iostream>
 #include <functional>
 #include <map>
-#include <cstring>
-#include <type_traits>
 #include <memory>
+#include <type_traits>
+#include <unordered_map>
+#include <vector>
 
 #include "flecsi/execution/context.h"
 #include "flecsi/topology/mesh_storage.h"

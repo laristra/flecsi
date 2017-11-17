@@ -9,9 +9,9 @@
 //! @date Initial file creation: May 12, 2016
 //----------------------------------------------------------------------------//
 
-#include <mutex>
 #include <atomic>
 #include <condition_variable>
+#include <mutex>
 
 namespace flecsi
 {

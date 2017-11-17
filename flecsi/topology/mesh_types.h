@@ -27,6 +27,7 @@
 #include <iostream>
 #include <vector>
 
+#include "flecsi/execution/context.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/topology/mesh_utils.h"
 #include "flecsi/utils/array_ref.h"
@@ -35,7 +36,6 @@
 #include "flecsi/topology/entity_storage.h"
 #include "flecsi/topology/partition.h"
 #include "flecsi/topology/types.h"
-#include "flecsi/execution/context.h"
 
 namespace flecsi {
 namespace topology {

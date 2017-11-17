@@ -92,9 +92,9 @@ struct find_entity__<0, T, D, M>
   //-----------------------------------------------------------------//
   //! Search last tuple element.
   //!
-  //! \tparam T The tuple type.
-  //! \tparam D The dimension to match.
-  //! \tparam M The domain to match.
+  //! @tparam T The tuple type.
+  //! @tparam D The dimension to match.
+  //! @tparam M The domain to match.
   //-----------------------------------------------------------------//
   static
   constexpr
@@ -190,9 +190,9 @@ struct find_index_space__<0, TUPLE, ENTITY>
   //-----------------------------------------------------------------//
   //! Search last tuple element.
   //!
-  //!  \tparam T The tuple type.
-  //!  \tparam D The dimension to match.
-  //!  \tparam M The domain to match.
+  //!  @tparam T The tuple type.
+  //!  @tparam D The dimension to match.
+  //!  @tparam M The domain to match.
   //-----------------------------------------------------------------//
   static constexpr size_t find()
   {
@@ -289,9 +289,9 @@ struct compute_connectivity__
   //-----------------------------------------------------------------//
   //! Compute mesh connectivity for the given domain and tuple element.
   //!
-  //!  \tparam DM The domain to match.
-  //!  \tparam I The current tuple index.
-  //!  \tparam TS The tuple typel
+  //!  @tparam DM The domain to match.
+  //!  @tparam I The current tuple index.
+  //!  @tparam TS The tuple typel
   //-----------------------------------------------------------------//
   template<
     class M
@@ -332,8 +332,8 @@ struct compute_connectivity__<DM, 0, TS>
   //-----------------------------------------------------------------//
   //! Terminate recursion.
   //!
-  //!  \tparam DM The domain to match.
-  //!  \tparam TS The tuple typel
+  //!  @tparam DM The domain to match.
+  //!  @tparam TS The tuple typel
   //-----------------------------------------------------------------//
   template<
     class M>
@@ -363,10 +363,10 @@ struct compute_bindings__
   //-----------------------------------------------------------------//
   //! Compute mesh connectivity for the given domain and tuple element.
   //!
-  //!  \tparam M The mesh type.
-  //!  \tparam DM The domain to match.
-  //!  \tparam I The current tuple index.
-  //!  \tparam TS The tuple typel
+  //!  @tparam M The mesh type.
+  //!  @tparam DM The domain to match.
+  //!  @tparam I The current tuple index.
+  //!  @tparam TS The tuple typel
   //-----------------------------------------------------------------//
   template<
     class M
@@ -410,8 +410,8 @@ struct compute_bindings__<DM, 0, TS>
   //-----------------------------------------------------------------//
   //! Terminate recursion.
   //!
-  //! \tparam DM The domain to match.
-  //! \tparam TS The tuple typel
+  //! @tparam DM The domain to match.
+  //! @tparam TS The tuple typel
   //-----------------------------------------------------------------//
   template<
     class M

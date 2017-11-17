@@ -31,24 +31,23 @@
   (see the basic_tree specialization).
 */
 
+#include <algorithm>
+#include <array>
+#include <bitset>
+#include <cassert>
+#include <cmath>
+#include <functional>
+#include <iostream>
 #include <map>
+#include <mutex>
+#include <set>
 #include <unordered_map>
 #include <vector>
-#include <array>
-#include <map>
-#include <cmath>
-#include <bitset>
-#include <algorithm>
-#include <cassert>
-#include <iostream>
-#include <set>
-#include <functional>
-#include <mutex>
 
-#include "flecsi/geometry/point.h"
 #include "flecsi/concurrency/thread_pool.h"
-#include "flecsi/data/storage.h"
 #include "flecsi/data/data_client.h"
+#include "flecsi/data/storage.h"
+#include "flecsi/geometry/point.h"
 #include "flecsi/topology/index_space.h"
 
 /*

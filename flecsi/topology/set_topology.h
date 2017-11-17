@@ -11,9 +11,9 @@
 #ifndef flecsi_topology_set_topology_h
 #define flecsi_topology_set_topology_h
 
+#include "flecsi/topology/set_storage.h"
 #include "flecsi/topology/set_types.h"
 #include "flecsi/topology/set_utils.h"
-#include "flecsi/topology/set_storage.h"
 
 namespace flecsi{
 namespace topology{

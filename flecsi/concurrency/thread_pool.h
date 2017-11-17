@@ -9,16 +9,14 @@
 //! @date Initial file creation: May 12, 2016
 //----------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <deque>
 #include <algorithm>
-#include <functional>
-#include <thread>
-#include <mutex>
 #include <atomic>
 #include <condition_variable>
+#include <functional>
+#include <mutex>
 #include <queue>
+#include <thread>
+#include <vector>
 
 #include "flecsi/concurrency/virtual_semaphore.h"
 
