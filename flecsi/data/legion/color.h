@@ -204,7 +204,7 @@ struct storage_class__<color> {
     auto& context = execution::context_t::instance();
 
     auto& field_info =
-      context.get_field_info(
+      context.get_field_info_from_name(
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
       utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
