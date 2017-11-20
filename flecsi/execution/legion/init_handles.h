@@ -24,7 +24,7 @@
 #include <type_traits>
 
 #include "legion.h"
-#include "arrays.h"
+#include "legion/arrays.h"
 
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/utils/tuple_walker.h"

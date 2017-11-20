@@ -12,8 +12,8 @@
 //----------------------------------------------------------------------------//
 
 #include <array>
-#include <arrays.h>
 #include <legion.h>
+#include <legion/arrays.h>
 #include <legion_stl.h>
 #include <legion_utilities.h>
 

@@ -16,7 +16,7 @@
 #define flecsi_execution_legion_helper_h
 
 #include "legion.h"
-#include "arrays.h"
+#include "legion/arrays.h"
 
 ///
 /// \file legion/helper.h
