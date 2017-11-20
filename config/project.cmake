@@ -422,13 +422,15 @@ add_custom_target(distclean rm -rf ${CMAKE_BINARY_DIR}/*)
 # Prepare variables for FleCSIConfig file.
 #------------------------------------------------------------------------------#
 
-export(TARGETS FleCSI
-  FILE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSITargets.cmake)
+export(
+  TARGETS FleCSI
+  FILE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSITargets.cmake
+)
 export(PACKAGE FleCSI)
 
 set(FLECSI_LIBRARY_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR})
 set(FLECSI_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/include)
-set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share)
+set(FLECSI_CMAKE_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/cmake/FleCSI)
 
 #------------------------------------------------------------------------------#
 # CMake config file: This should be the last thing to happen.
@@ -437,9 +439,16 @@ set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share)
 configure_file(${PROJECT_SOURCE_DIR}/config/FleCSIConfig.cmake.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSIConfig.cmake @ONLY)
 
-install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSIConfig.cmake
-  DESTINATION share)
-install(EXPORT FleCSITargets DESTINATION share COMPONENT dev)
+install(
+  FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSIConfig.cmake
+  DESTINATION ${FLECSI_CMAKE_DIR}
+)
+
+install(
+  EXPORT FleCSITargets
+  DESTINATION ${FLECSI_CMAKE_DIR}
+  COMPONENT dev
+)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options
