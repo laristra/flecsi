@@ -437,7 +437,8 @@ set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share)
 configure_file(${PROJECT_SOURCE_DIR}/config/FleCSIConfig.cmake.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSIConfig.cmake @ONLY)
 
-install(FILES ${CMAKE_BINARY_DIR}/FleCSIConfig.cmake DESTINATION share)
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSIConfig.cmake
+  DESTINATION share)
 install(EXPORT FleCSITargets DESTINATION share COMPONENT dev)
 
 #~---------------------------------------------------------------------------~-#
