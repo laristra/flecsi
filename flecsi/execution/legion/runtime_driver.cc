@@ -203,8 +203,6 @@ runtime_driver(
   fm.wait_all_results(true);
 
   
-//  runtime->execute_index_space(ctx, pos_compaction_launcher);
-
   //--------------------------------------------------------------------------//
   //  Create Phase barriers per each Field
   //-------------------------------------------------------------------------//
@@ -1055,8 +1053,8 @@ spmd_task(
   args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
    
   using adjacency_triple_t = context_t::adjacency_triple_t;
-  adjacency_triple_t* adjacencies = 
-    (adjacency_triple_t*)malloc(sizeof(adjacency_triple_t) * num_adjacencies);
+  adjacency_triple_t* adjacencies =
+     new adjacency_triple_t [num_adjacencies]; 
      
   args_deserializer.deserialize((void*)adjacencies,
     sizeof(adjacency_triple_t) * num_adjacencies);
@@ -1116,6 +1114,7 @@ spmd_task(
   delete [] field_info_buf;
   delete [] num_owners;
   delete [] pbarriers_as_owner;
+  delete [] adjacencies;
 //  delete [] idx_spaces;
 
 } // spmd_task

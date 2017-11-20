@@ -16,6 +16,7 @@
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
 #include "flecsi/supplemental/mesh/test_mesh_2d.h"
+#include "flecsi/data/dense_accessor.h"
 
 #define INDEX_ID 0
 #define VERSIONS 1
@@ -33,42 +34,39 @@
 using namespace flecsi;
 using namespace supplemental;
 
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t = flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
-
 void initialize_data(
-        handle_t<size_t, flecsi::rw, flecsi::rw, flecsi::ro> global_IDs,
-        handle_t<double, flecsi::rw, flecsi::rw, flecsi::ro> phi);
+        dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> global_IDs,
+        dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> phi);
 flecsi_register_task(initialize_data, loc, single);
 
 void write_to_disk(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
-        handle_t<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
+        dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
         const int my_color);
 flecsi_register_task(write_to_disk, loc, single);
 
 void calculate_exclusive_x_update(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
-        handle_t<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
-        handle_t<double, flecsi::rw, flecsi::ro, flecsi::ro> phi_update);
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
+        dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
+        dense_accessor<double, flecsi::rw, flecsi::ro, flecsi::ro> phi_update);
 flecsi_register_task(calculate_exclusive_x_update, loc, single);
 
 void advect_owned_cells_in_x(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
-        handle_t<double, flecsi::rw, flecsi::rw, flecsi::ro> phi,
-        handle_t<double, flecsi::ro, flecsi::rw, flecsi::ro> phi_update);
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
+        dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> phi,
+        dense_accessor<double, flecsi::ro, flecsi::rw, flecsi::ro> phi_update);
 flecsi_register_task(advect_owned_cells_in_x, loc, single);
 
 void calculate_exclusive_y_update(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
-        handle_t<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
-        handle_t<double, flecsi::rw, flecsi::ro, flecsi::ro> phi_update);
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
+        dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
+        dense_accessor<double, flecsi::rw, flecsi::ro, flecsi::ro> phi_update);
 flecsi_register_task(calculate_exclusive_y_update, loc, single);
 
 void advect_owned_cells_in_y(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
-        handle_t<double, flecsi::rw, flecsi::rw, flecsi::ro> phi,
-        handle_t<double, flecsi::ro, flecsi::rw, flecsi::ro> phi_update);
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
+        dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> phi,
+        dense_accessor<double, flecsi::ro, flecsi::rw, flecsi::ro> phi_update);
 flecsi_register_task(advect_owned_cells_in_y, loc, single);
 
 flecsi_register_field(test_mesh_2d_t, lax, cell_ID, size_t, dense,
@@ -358,7 +356,7 @@ void add_colorings(int dummy) {
 //----------------------------------------------------------------------------//
 
 static void create_gid_to_index_maps (
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
         std::map<size_t, size_t>* map_gid_to_exclusive_index,
         std::map<size_t, size_t>* map_gid_to_shared_index,
         std::map<size_t, size_t>* map_gid_to_ghost_index);
@@ -373,9 +371,9 @@ static double initial_value(const size_t pt);
 
 
 void calculate_exclusive_x_update(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
-        handle_t<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
-        handle_t<double, flecsi::rw, flecsi::ro, flecsi::ro> phi_update)
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
+        dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
+        dense_accessor<double, flecsi::rw, flecsi::ro, flecsi::ro> phi_update)
 {
     const double adv = X_ADVECTION;
 
@@ -421,9 +419,9 @@ void calculate_exclusive_x_update(
 }
 
 void advect_owned_cells_in_x(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
-        handle_t<double, flecsi::rw, flecsi::rw, flecsi::ro> phi,
-        handle_t<double, flecsi::ro, flecsi::rw, flecsi::ro> phi_update)
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
+        dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> phi,
+        dense_accessor<double, flecsi::ro, flecsi::rw, flecsi::ro> phi_update)
 {
   const double adv = X_ADVECTION;
 
@@ -482,9 +480,9 @@ void advect_owned_cells_in_x(
 }
 
 void calculate_exclusive_y_update(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
-        handle_t<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
-        handle_t<double, flecsi::rw, flecsi::ro, flecsi::ro> phi_update)
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
+        dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
+        dense_accessor<double, flecsi::rw, flecsi::ro, flecsi::ro> phi_update)
 {
   const double adv = Y_ADVECTION;
 
@@ -529,9 +527,9 @@ void calculate_exclusive_y_update(
 }
 
 void advect_owned_cells_in_y(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
-        handle_t<double, flecsi::rw, flecsi::rw, flecsi::ro> phi,
-        handle_t<double, flecsi::ro, flecsi::rw, flecsi::ro> phi_update)
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
+        dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> phi,
+        dense_accessor<double, flecsi::ro, flecsi::rw, flecsi::ro> phi_update)
 {
   const double adv = Y_ADVECTION;
 
@@ -590,8 +588,8 @@ void advect_owned_cells_in_y(
 }
 
 void write_to_disk(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
-        handle_t<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
+        dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
         const int my_color)
 {
     char buf[40];
@@ -619,8 +617,8 @@ void write_to_disk(
 }
 
 void initialize_data(
-        handle_t<size_t, flecsi::rw, flecsi::rw, flecsi::ro> global_IDs,
-        handle_t<double, flecsi::rw, flecsi::rw, flecsi::ro> phi)
+        dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> global_IDs,
+        dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> phi)
 {
   flecsi::execution::context_t & context_
     = flecsi::execution::context_t::instance();
@@ -647,7 +645,7 @@ void initialize_data(
 }
 
 static void create_gid_to_index_maps (
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
         std::map<size_t, size_t>* map_gid_to_exclusive_index,
         std::map<size_t, size_t>* map_gid_to_shared_index,
         std::map<size_t, size_t>* map_gid_to_ghost_index)

@@ -150,6 +150,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       {
     DefaultMapper::map_task(ctx, task, input,output);
 
+<<<<<<< HEAD
 
     if ( (task.tag & MAPPER_COMPACTED_STORAGE) != 0) {
 
@@ -157,6 +158,13 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
      DefaultMapper::default_policy_select_target_memory(ctx,
                                                          task.target_proc,
                                                          task.regions[0]);
+=======
+    if ( (task.tag & MAPPER_COMPACTED_STORAGE) != 0) {
+
+    Legion::Memory target_mem =
+     DefaultMapper::default_policy_select_target_memory(ctx, task.target_proc);
+
+>>>>>>> origin/master
       //check if we get region requirements for "exclusive, shared and ghost"
       //logical regions for each data handle  
  

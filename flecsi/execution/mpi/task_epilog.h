@@ -15,6 +15,10 @@
 #ifndef flecsi_execution_mpi_task_epilog_h
 #define flecsi_execution_mpi_task_epilog_h
 
+#include "flecsi/data/dense_accessor.h"
+#include "flecsi/data/sparse_accessor.h"
+#include "flecsi/data/mutator.h"
+
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: May 19, 2017
@@ -24,6 +28,7 @@
 
 #include "mpi.h"
 #include "flecsi/data/data.h"
+#include "flecsi/data/dense_accessor.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/coloring/mpi_utils.h"
 
@@ -69,14 +74,16 @@ namespace execution {
     >
     void
     handle(
-      data_handle__<
-        T,
-        EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS,
-        GHOST_PERMISSIONS
-      > & h
+     dense_accessor<
+       T,
+       EXCLUSIVE_PERMISSIONS,
+       SHARED_PERMISSIONS,
+       GHOST_PERMISSIONS
+     > & a
     )
     {
+      auto& h = a.handle;
+
       // Skip Read Only handles
       if (EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
         return;
@@ -111,14 +118,16 @@ namespace execution {
     >
     void
     handle(
-      sparse_data_handle__<
+      sparse_accessor<
         T,
         EXCLUSIVE_PERMISSIONS,
         SHARED_PERMISSIONS,
         GHOST_PERMISSIONS
-      > & h
+      > & a
     )
     {
+      auto& h = a.handle;
+
       // Skip Read Only handles
       if (EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
         return;
@@ -158,7 +167,8 @@ namespace execution {
       typename T
     >
     static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
+    typename
+    std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
     handle(
       T&
     )

@@ -82,15 +82,17 @@ namespace execution {
     >
     void
     handle(
-      data_handle__<
+      dense_accessor<
         T,
         EXCLUSIVE_PERMISSIONS,
         SHARED_PERMISSIONS,
         GHOST_PERMISSIONS
-      > & h
+      > & a
     )
     {
- if (!h.global && !h.color){
+    auto& h = a.handle;
+
+    if (!h.global && !h.color){
       bool write_phase{(SHARED_PERMISSIONS == wo) ||
         (SHARED_PERMISSIONS == rw)};
 
@@ -144,7 +146,8 @@ namespace execution {
       typename T
     >
     static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
+    typename
+    std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
     handle(
       T &
     )
