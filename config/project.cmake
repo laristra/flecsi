@@ -422,7 +422,8 @@ add_custom_target(distclean rm -rf ${CMAKE_BINARY_DIR}/*)
 # Prepare variables for FleCSIConfig file.
 #------------------------------------------------------------------------------#
 
-export(TARGETS FleCSI FILE ${CMAKE_BINARY_DIR}/FleCSITargets.cmake)
+export(TARGETS FleCSI
+  FILE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSITargets.cmake)
 export(PACKAGE FleCSI)
 
 set(FLECSI_LIBRARY_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR})
@@ -434,7 +435,7 @@ set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share)
 #------------------------------------------------------------------------------#
 
 configure_file(${PROJECT_SOURCE_DIR}/config/FleCSIConfig.cmake.in
-  ${CMAKE_BINARY_DIR}/FleCSIConfig.cmake @ONLY)
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSIConfig.cmake @ONLY)
 
 install(FILES ${CMAKE_BINARY_DIR}/FleCSIConfig.cmake DESTINATION share)
 install(EXPORT FleCSITargets DESTINATION share COMPONENT dev)
