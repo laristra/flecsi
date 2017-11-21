@@ -151,7 +151,8 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
     DefaultMapper::map_task(ctx, task, input,output);
 
 
-    if ( (task.tag & MAPPER_COMPACTED_STORAGE) != 0) {
+    if ( ((task.tag & MAPPER_COMPACTED_STORAGE) != 0) &&
+          (task.regions.size()>0)){
 
     Legion::Memory target_mem =
      DefaultMapper::default_policy_select_target_memory(ctx,
