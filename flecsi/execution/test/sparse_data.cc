@@ -19,6 +19,8 @@
 #include "flecsi/coloring/mpi_communicator.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/data/mutator_handle.h"
+#include "flecsi/data/sparse_accessor.h"
+#include "flecsi/data/mutator.h"
 
 using namespace std;
 using namespace flecsi;
@@ -110,23 +112,10 @@ public:
 
 struct test_mesh_t : public mesh_topology_t<test_mesh_types_t> {};
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-data::legion::sparse_handle_t<T, EP, SP, GP>;
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  data::mpi::sparse_handle_t<T, EP, SP, GP>;
-#endif
-
-template<typename T>
-using mutator_t = mutator_handle__<T>;
-
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
-void task1(client_handle_t<test_mesh_t, ro> mesh, mutator_t<double> mh) {
+void task1(client_handle_t<test_mesh_t, ro> mesh, mutator<double> mh) {
   mh(1, 2) = 5.0;
   mh(1, 3) = 15.0;
   mh(2, 1) = 35.0;
@@ -134,7 +123,7 @@ void task1(client_handle_t<test_mesh_t, ro> mesh, mutator_t<double> mh) {
 } // task1
 
 void task2(client_handle_t<test_mesh_t, ro> mesh,
-           handle_t<double, ro, ro, ro> h) {
+           sparse_accessor<double, ro, ro, ro> h) {
 
   h.dump();
 

@@ -49,16 +49,16 @@
 */
 
 #include <algorithm>
-#include <iostream>
 #include <array>
-#include <vector>
 #include <cassert>
-#include <unordered_map>
+#include <cstring>
+#include <iostream>
 #include <functional>
 #include <map>
-#include <cstring>
-#include <type_traits>
 #include <memory>
+#include <type_traits>
+#include <unordered_map>
+#include <vector>
 
 #include "flecsi/execution/context.h"
 #include "flecsi/topology/mesh_storage.h"
@@ -210,10 +210,6 @@ public:
   //--------------------------------------------------------------------------//
   //! Initialize the mesh storage after it has been set
   //! This is needed to initialize raw connectivity buffers,
-  //!
-  //! @tparam n! n!
-  //!
-  //! @param n! n!
   //--------------------------------------------------------------------------//
   void
   initialize_storage() {

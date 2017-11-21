@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_mesh_storage_h
@@ -16,7 +14,10 @@
 namespace flecsi {
 namespace topology {
 
-template <size_t ND, size_t NM>
+template<
+  size_t ND,
+  size_t NM
+>
 class mesh_storage_t : public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<ND, NM>
 {};
 
@@ -26,6 +27,4 @@ class mesh_storage_t : public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<ND, NM>
 #endif // flecsi_mesh_storage_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

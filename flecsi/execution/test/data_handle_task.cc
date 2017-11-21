@@ -17,42 +17,20 @@
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/supplemental/mesh/empty_mesh_2d.h"
+#include "flecsi/data/dense_accessor.h"
 
 using namespace flecsi;
 using namespace supplemental;
 
 clog_register_tag(coloring);
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  data::legion::dense_handle_t<T, EP, SP, GP>;
-
 using global_t = double;
 
-template<typename T, size_t P>
-using global_handle_t =
-  data::legion::global_handle_t<T, P>;
-
-template<typename T, size_t P>
-using color_handle_t =
-  data::legion::color_handle_t<T, P>;
-
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
-
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  data::mpi::dense_handle_t<T, EP, SP, GP>;
-
-#endif
-
-void task1(handle_t<double, ro, ro, ro> x, double y) {
+void task1(dense_accessor<double, ro, ro, ro> x, double y) {
   //np(y);
 } // task1
 
-void data_handle_dump(handle_t<double, rw, ro, ro> x) {
-  clog(info) << "label: " << x.label() << std::endl;
+void data_handle_dump(dense_accessor<double, rw, ro, ro> x) {
   clog(info) << "combined size: " << x.size() << std::endl;
   clog(info) << "exclusive size: " << x.exclusive_size() << std::endl;
   clog(info) << "shared size: " << x.shared_size() << std::endl;
@@ -60,26 +38,24 @@ void data_handle_dump(handle_t<double, rw, ro, ro> x) {
 }
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-void global_data_handle_dump(global_handle_t<double, ro> x) {
-  clog(info) << "global label: " << x.label() << std::endl;
+void global_data_handle_dump(global_accessor<double, ro> x) {
   clog(info) << "global combined size: " << x.size() << std::endl;
 }
 
-void color_data_handle_dump(color_handle_t<double, ro> x) {
-  clog(info) << "color label: " << x.label() << std::endl;
+void color_data_handle_dump(color_accessor<double, ro> x) {
   clog(info) << "color combined size: " << x.size() << std::endl;
 }
 
 #endif
 
-void exclusive_writer(handle_t<double, wo, ro, ro> x) {
+void exclusive_writer(dense_accessor<double, wo, ro, ro> x) {
   clog(info) << "exclusive writer write" << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
     x(i) = static_cast<double>(i);
   }
 }
 
-void exclusive_reader(handle_t<double, ro, ro, ro> x) {
+void exclusive_reader(dense_accessor<double, ro, ro, ro> x) {
   clog(info) << "exclusive reader read: " << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
     ASSERT_EQ(x(i), static_cast<double>(i));
@@ -87,22 +63,22 @@ void exclusive_reader(handle_t<double, ro, ro, ro> x) {
 }
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-void global_writer(global_handle_t<double, wo> x) {
+void global_writer(global_accessor<double, wo> x) {
   clog(info) << "global writer write" << std::endl;
     x = static_cast<double>(3.14);
 }
 
-void global_reader(global_handle_t<double, ro> x) {
+void global_reader(global_accessor<double, ro> x) {
   clog(info) << "global reader read: " << std::endl;
     ASSERT_EQ(x, static_cast<double>(3.14));
 }
 
-void color_writer(color_handle_t<double, wo> x) {
+void color_writer(color_accessor<double, wo> x) {
   clog(info) << "color exclusive writer write" << std::endl;
     x = static_cast<double>(16);
 }
 
-void color_reader(color_handle_t<double, ro> x) {
+void color_reader(color_accessor<double, ro> x) {
   clog(info) << "color exclusive reader read: " << std::endl;
     ASSERT_EQ(x, static_cast<double>(16));
 }

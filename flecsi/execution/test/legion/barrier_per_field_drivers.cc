@@ -27,16 +27,13 @@ using namespace supplemental;
 
 clog_register_tag(barrier_per_field);
 
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t = flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
-
 void read_task(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
         const int my_color, const size_t cycle);
 flecsi_register_task(read_task, loc, single);
 
 void write_task(
-        handle_t<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
+        dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
         const int my_color, const size_t cycle, const bool delay);
 flecsi_register_task(write_task, loc, single);
 
@@ -114,7 +111,7 @@ void driver(int argc, char ** argv) {
 } // namespace flecsi
 
 void write_task(
-        handle_t<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
+        dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
         const int my_color,
         const size_t cycle,
         const bool delay) {
@@ -146,7 +143,7 @@ void write_task(
 } // write_task
 
 void read_task(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
         const int my_color, const size_t cycle) {
 
   flecsi::execution::context_t & context_

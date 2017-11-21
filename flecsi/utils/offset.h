@@ -58,7 +58,7 @@ public:
   set_count(uint32_t count)
   {
     assert(count < count_max);
-    o_ = o_ & ~count_mask | count;
+    o_ = (o_ & ~count_mask) | count;
   }
 
   void

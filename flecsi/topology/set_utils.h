@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 //----------------------------------------------------------------------------//
@@ -14,9 +12,17 @@
 namespace flecsi{
 namespace topology{
 
-template <size_t INDEX, class TUPLE, class ENTITY>
-struct find_set_index_space__ {
-  static constexpr size_t find()
+template<
+  size_t INDEX,
+  class TUPLE,
+  class ENTITY
+>
+struct find_set_index_space__
+{
+  static
+  constexpr
+  size_t
+  find()
   {
     using TUPLE_ELEMENT = typename std::tuple_element<INDEX - 1, TUPLE>::type;
     using INDEX_SPACE = typename std::tuple_element<0, TUPLE_ELEMENT>::type;
@@ -28,10 +34,17 @@ struct find_set_index_space__ {
 
 };
 
-template <class TUPLE, class ENTITY>
-struct find_set_index_space__<0, TUPLE, ENTITY> {
+template<
+  class TUPLE,
+  class ENTITY
+>
+struct find_set_index_space__<0, TUPLE, ENTITY>
+{
 
-  static constexpr size_t find()
+  static
+  constexpr
+  size_t
+  find()
   {
     assert(false && "failed to find index space");
     return 1; 
@@ -39,9 +52,19 @@ struct find_set_index_space__<0, TUPLE, ENTITY> {
 
 };
 
-template <size_t INDEX, class TUPLE, class MAP_TYPE>
-struct map_set_index_spaces__ {
-  static constexpr size_t map(MAP_TYPE& m)
+template<
+  size_t INDEX,
+  class TUPLE,
+  class MAP_TYPE
+>
+struct map_set_index_spaces__
+{
+  static
+  constexpr
+  size_t
+  map(
+    MAP_TYPE& m
+  )
   {
     using TUPLE_ELEMENT = typename std::tuple_element<INDEX - 1, TUPLE>::type;
     using INDEX_SPACE = typename std::tuple_element<0, TUPLE_ELEMENT>::type;
@@ -52,9 +75,18 @@ struct map_set_index_spaces__ {
   }
 };
 
-template <class TUPLE, class MAP_TYPE>
-struct map_set_index_spaces__<0, TUPLE, MAP_TYPE> {
-  static constexpr size_t map(MAP_TYPE& m)
+template<
+  class TUPLE,
+  class MAP_TYPE
+>
+struct map_set_index_spaces__<0, TUPLE, MAP_TYPE>
+{
+  static
+  constexpr
+  size_t
+  map(
+    MAP_TYPE& m
+  )
   {
     return 0; 
   }
@@ -64,3 +96,6 @@ struct map_set_index_spaces__<0, TUPLE, MAP_TYPE> {
 } // namespace flecsi
 
 #endif // flecsi_topology_set_utils_h
+
+/*~-------------------------------------------------------------------------~-*
+*~-------------------------------------------------------------------------~-*/
