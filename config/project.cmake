@@ -382,7 +382,7 @@ include_directories(${CMAKE_BINARY_DIR})
 
 install(
   FILES ${CMAKE_BINARY_DIR}/flecsi-config.h
-  DESTINATION include/flecsi/config
+  DESTINATION include
 )
 
 #------------------------------------------------------------------------------#
