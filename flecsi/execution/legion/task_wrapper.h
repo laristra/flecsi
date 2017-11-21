@@ -309,11 +309,6 @@ struct task_wrapper__
     ARG_TUPLE & task_args =
       *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
-#if !defined(ENABLE_LEGION_TLS)
-    // Push the Legion state
-    context_t::instance().push_state(KEY, context, runtime, task, regions);
-#endif
-
     init_handles_t init_handles(runtime, context, regions);
     init_handles.walk(task_args);
 
@@ -321,11 +316,6 @@ struct task_wrapper__
     //return (*DELEGATE)(task_args);
     execution_wrapper__<RETURN, ARG_TUPLE, DELEGATE> wrapper;
     wrapper.execute(std::forward<ARG_TUPLE>(task_args));
-
-#if !defined(ENABLE_LEGION_TLS)
-    // Pop the Legion state
-    context_t::instance().pop_state(KEY);
-#endif
 
     finalize_handles_t finalize_handles;
     finalize_handles.walk(task_args);

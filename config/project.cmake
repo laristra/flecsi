@@ -250,8 +250,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   include_directories(${Legion_INCLUDE_DIRS})
   list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${Legion_INCLUDE_DIRS})
 
-  add_definitions(-DENABLE_LEGION_TLS)
-
   #
   # Compacted storage interface
   #
