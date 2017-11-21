@@ -81,10 +81,20 @@ public:
 
   void commit(commit_info_t* ci){
     if(erase_set_){
-      commit_<true>(ci);
+      if(size_map_){
+        raggedCommit_<true>(ci);
+      }
+      else{
+        commit_<true>(ci);
+      }
     }
     else{
-      commit_<false>(ci);
+      if(size_map_){
+        raggedCommit_<false>(ci);
+      }
+      else{
+        commit_<false>(ci);
+      }
     }
   }
 
@@ -94,10 +104,10 @@ public:
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
 
-    entry_value_t* cbuf = new entry_value_t[num_exclusive_entries];
-
     entry_value_t* entries = ci->entries[0];
     offset_t* offsets = ci->offsets;
+
+    entry_value_t* cbuf = new entry_value_t[num_exclusive_entries];
 
     entry_value_t* cptr = cbuf;
     entry_value_t* eptr = entries;
@@ -114,7 +124,7 @@ public:
       size_t used_slots = oi.count();
 
       size_t num_merged = merge<ERASE>(i, eptr, num_existing, sptr,
-        used_slots, *spare_map_, cptr);
+        used_slots, cptr);
 
       eptr += num_existing;
       coi.set_offset(offset);
@@ -148,7 +158,7 @@ public:
       size_t used_slots = oi.count();
 
       size_t num_merged = merge<ERASE>(i, eptr, num_existing, sptr,
-        used_slots, *spare_map_, cbuf);
+        used_slots, cbuf);
 
       if(num_merged > 0){
         assert(num_merged <= max_entries_per_index_);
@@ -174,6 +184,80 @@ public:
     }
   }
 
+  template<bool ERASE>
+  void raggedCommit_(commit_info_t* ci){
+    assert(offsets_ && "uninitialized mutator");
+
+    size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
+
+    entry_value_t* entries = ci->entries[0];
+    offset_t* offsets = ci->offsets;
+
+    for(auto& itr : *size_map_){
+      num_exclusive_entries += 
+        int64_t(itr.second) - int64_t(offsets[itr.first].count());
+    }
+
+    entry_value_t* cbuf = new entry_value_t[num_exclusive_entries];
+
+    entry_value_t* cptr = cbuf;
+    entry_value_t* eptr = entries;
+
+    size_t offset = 0;
+
+    for(size_t index = 0; index < num_exclusive_; ++index){
+      const offset_t& oi = offsets_[index];
+      offset_t& coi = offsets[index];
+
+      entry_value_t* sptr = entries_ + index * num_slots_;
+
+      size_t num_existing = coi.count();
+      size_t used_slots = oi.count();
+
+      for(size_t j = 0; j < num_existing; ++j){
+        cbuf[j] = eptr[j];
+      }
+
+      for(size_t j = 0; j < used_slots; ++j){
+        size_t k = sptr[j].entry;
+        cbuf[k].entry = k;
+        cbuf[k].value = sptr[j].value;
+      }
+
+      auto p = spare_map_->equal_range(index);
+      auto itr = p.first;
+      auto itrEnd = p.second;
+      while(itr != itrEnd){
+        size_t k = itr->second.entry;
+        cbuf[k].entry = k;
+        cbuf[k].value = itr->second.value;
+        ++itr;
+      }
+
+      coi.set_offset(offset);
+
+      auto sitr = size_map_->find(index);
+      
+      if(sitr != size_map_->end()){
+        size_t resize = sitr->second;
+        coi.set_count(resize);
+        offset += resize;
+        cbuf += resize;
+      }
+      else{
+        offset += num_existing;
+        cbuf += num_existing;
+      }
+
+      eptr += num_existing;
+    }
+
+    if(size_map_){
+      delete size_map_;
+      size_map_ = nullptr;
+    }
+  }
+
   size_t num_exclusive() const{
     return pi_.count[0];
   }
@@ -192,6 +276,7 @@ public:
 
   using spare_map_t = std::multimap<size_t, entry_value_t>;
   using erase_set_t = std::set<std::pair<size_t, size_t>>;
+  using size_map_t = std::unordered_map<size_t, size_t>;
 
   partition_info_t pi_;
   size_t num_exclusive_;
@@ -202,6 +287,7 @@ public:
   entry_value_t* entries_ = nullptr;
   spare_map_t* spare_map_ = nullptr;
   erase_set_t * erase_set_ = nullptr;
+  size_map_t* size_map_ = nullptr;
 
   template<bool ERASE>
   size_t merge(size_t index,
@@ -209,15 +295,15 @@ public:
                size_t num_existing,
                entry_value_t* slots,
                size_t num_slots,
-               const spare_map_t& spare_map,
                entry_value_t* dest){
+    
     constexpr size_t end = std::numeric_limits<size_t>::max();
     entry_value_t* existing_end = existing + num_existing;
     entry_value_t* slots_end = slots + num_slots;
 
     entry_value_t* dest_start = dest;
 
-    auto p = spare_map.equal_range(index);
+    auto p = spare_map_->equal_range(index);
     auto itr = p.first;
 
     size_t spare_entry = itr != p.second ? itr->second.entry : end;

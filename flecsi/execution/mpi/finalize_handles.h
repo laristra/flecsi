@@ -9,6 +9,7 @@
 #include "flecsi/data/dense_accessor.h"
 #include "flecsi/data/sparse_accessor.h"
 #include "flecsi/data/mutator.h"
+#include "flecsi/data/ragged_mutator.h"
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -51,6 +52,25 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   void
   handle(
     sparse_accessor<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    > & a
+  )
+  {
+
+  } // handle
+
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    ragged_accessor<
       T,
       EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS,

@@ -17,7 +17,10 @@
 
 #include "flecsi/data/dense_accessor.h"
 #include "flecsi/data/sparse_accessor.h"
+#include "flecsi/data/ragged_accessor.h"
+#include "flecsi/data/sparse_accessor.h"
 #include "flecsi/data/mutator.h"
+#include "flecsi/data/ragged_mutator.h"
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -113,6 +116,19 @@ namespace execution {
     void
     handle(
       mutator<
+        T
+      > & m
+    )
+    {
+      m.h_.init();
+    } // handle
+
+    template<
+      typename T
+    >
+    void
+    handle(
+      ragged_mutator<
         T
       > & m
     )
