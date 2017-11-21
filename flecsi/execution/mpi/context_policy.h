@@ -25,7 +25,7 @@
 #include <functional>
 
 #include <cinchlog.h>
-#include <flecsi.h>
+#include <flecsi-config.h>
 
 #if !defined(ENABLE_MPI)
   #error ENABLE_MPI not defined! This file depends on MPI!
