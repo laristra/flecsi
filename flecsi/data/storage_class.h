@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_storage_type_h
-#define flecsi_data_storage_type_h
+#ifndef flecsi_data_storage_class_h
+#define flecsi_data_storage_class_h
 
 ///
 /// \file
@@ -31,20 +31,20 @@ namespace data {
 namespace POLICY_NAMESPACE {
 
   ///
-  /// \struct storage_type__
+  /// \struct storage_class__
   ///
   /// \tparam T Specialization parameter.
   /// \tparam ST Data store type.
   /// \tparam MD Metadata type.
   ///
-  template<size_t STORAGE_TYPE>
-  struct storage_type__ {};
+  template<size_t STORAGE_CLASS>
+  struct storage_class__ {};
 
 } // namespace POLICY_NAMESPACE
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_data_storage_type_h
+#endif // flecsi_data_storage_class_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

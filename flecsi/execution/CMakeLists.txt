@@ -39,22 +39,7 @@ set(DRIVER_INITIALIZATION driver_initialization.cc)
 # runtime specific and can be configured for whichever runtime is active.
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-
-  set(execution_HEADERS
-    ${execution_HEADERS}
-    serial/context_policy.h
-    serial/execution_policy.h
-    serial/runtime_driver.h
-  )
-  set(execution_SOURCES
-    ${execution_SOURCES}
-    serial/execution_policy.cc
-    )
-  set(UNIT_POLICY SERIAL)
-  set(RUNTIME_DRIVER serial/runtime_driver.cc)
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(execution_HEADERS
     ${execution_HEADERS}
@@ -141,15 +126,15 @@ cinch_add_unit(launch
 
 cinch_add_unit(simple_function
   SOURCES
-  test/simple_function.cc
-  ${DRIVER_INITIALIZATION}
-  ${RUNTIME_DRIVER}
+    test/simple_function.cc
+    ${DRIVER_INITIALIZATION}
+    ${RUNTIME_DRIVER}
   DEFINES
-  -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+    -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
   POLICY
-  ${UNIT_POLICY}
+    ${UNIT_POLICY}
   LIBRARIES
-  flecsi
+    flecsi
   NOCI
   )
 
@@ -159,15 +144,15 @@ cinch_add_unit(simple_function
 
 cinch_add_unit(reduction
   SOURCES
-  test/reduction.cc
-  ${DRIVER_INITIALIZATION}
-  ${RUNTIME_DRIVER}
+    test/reduction.cc
+    ${DRIVER_INITIALIZATION}
+    ${RUNTIME_DRIVER}
   DEFINES
-  -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+    -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
   POLICY
-  ${UNIT_POLICY}
+    ${UNIT_POLICY}
   LIBRARIES
-  flecsi
+    flecsi
   THREADS 2
   NOCI
   )
@@ -179,16 +164,16 @@ cinch_add_unit(reduction
 #
 cinch_add_unit(simple_task
   SOURCES
-  test/simple_task.cc
-  ${DRIVER_INITIALIZATION}
-  ${RUNTIME_DRIVER}
+    test/simple_task.cc
+    ${DRIVER_INITIALIZATION}
+    ${RUNTIME_DRIVER}
   DEFINES
-  -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+    -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
   POLICY
-  ${UNIT_POLICY}
+    ${UNIT_POLICY}
   LIBRARIES
-  flecsi
-  ${CINCH_RUNTIME_LIBRARIES}
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
   NOCI
   )
 
@@ -240,6 +225,27 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
     cinch_add_unit(data_handle_task
       SOURCES
         test/data_handle_task.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+      POLICY ${UNIT_POLICY}
+      THREADS 2
+      NOCI
+      )
+
+    cinch_add_unit(handle_accessor
+      SOURCES
+        test/handle_accessor.cc
         ../supplemental/coloring/add_colorings.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}

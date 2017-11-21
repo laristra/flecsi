@@ -7,7 +7,7 @@ spaces.  Simply put, an index space is an enumerated set. An index space
 can be defined in several ways. For example, an index space with which
 many people are familiar is a range. Consider the loop
 
-```
+```cpp
     for(int i=0; i<5; ++i) { std::cout << "i=" << i << std::endl; }
 ```
 
@@ -51,11 +51,14 @@ sets.**
 
 Given an index space, we can form subsets that only contain some of the
 objects of the original set, e.g.,
+
 ```
     { 4, 9, 10, 11, 16, 17, 18, 19, 24, 28 }
 ```
+
 is a proper subset of the cells index space in Figure
 \ref{canonical-mesh}
+
 ```
     { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
       17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 }
@@ -65,6 +68,7 @@ Subsets are a useful way to define distributed-memory colorsings.
 Consider the disjoint partitioning of our canonical mesh in Figure
 \ref{colored-mesh}. We can represent this coloring by defining the
 index spaces
+
 ```
     1. { 4, 9, 10, 11, 16, 17, 18, 19, 24, 28 }
     2. { 1, 2, 5, 6, 12, 13, 20, 25, 29 }

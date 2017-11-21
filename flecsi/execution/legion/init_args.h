@@ -27,6 +27,7 @@
 #include "flecsi/execution/common/execution_state.h"
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client_handle.h"
+#include "flecsi/data/dense_accessor.h"
 
 namespace flecsi {
 namespace execution {
@@ -97,17 +98,19 @@ namespace execution {
     >
     void
     handle(
-      data_handle__<
+      dense_accessor<
         T,
         EXCLUSIVE_PERMISSIONS,
         SHARED_PERMISSIONS,
         GHOST_PERMISSIONS
-      > & h
+      > & a
     )
     {
+      auto& h = a.handle;
+
       if (!h.global && !h.color){
-        clog_assert(h.state>SPECIALIZATION_TLT_INIT, "accessing  data         \
-          handle from specialization_tlt_init is not supported");
+        clog_assert(h.state>SPECIALIZATION_TLT_INIT, "accessing  data "
+          "handle from specialization_tlt_init is not supported");
 
         Legion::MappingTagID tag = EXCLUSIVE_LR;
 
@@ -225,12 +228,12 @@ namespace execution {
       typename T
     >
     static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
+    typename
+    std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
     handle(
       T &
     )
-    {
-    } // handle
+    {} // handle
 
     Legion::Runtime * runtime;
     Legion::Context & context;

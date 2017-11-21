@@ -43,18 +43,7 @@ set(topology_HEADERS
 # runtime specific and can be configured for whichever runtime is active.
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-
-  set(UNIT_POLICY SERIAL)
-  set(RUNTIME_DRIVER ../execution/serial/runtime_driver.cc)
-  set(topology_HEADERS
-    ${topology_HEADERS}
-    serial/entity_storage.h
-    serial/storage_policy.h
-    serial/set_storage_policy.h
-    )
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(UNIT_POLICY LEGION)
   set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)

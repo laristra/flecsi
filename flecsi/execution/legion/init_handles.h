@@ -29,6 +29,7 @@
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/utils/tuple_walker.h"
 #include "flecsi/data/data_client_handle.h"
+#include "flecsi/data/dense_accessor.h"
 #include "flecsi/topology/mesh_types.h"
 #include "flecsi/topology/mesh_topology.h"
 #include "flecsi/topology/set_topology.h"
@@ -75,14 +76,16 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
   >
   void
   handle(
-    data_handle__<
+    dense_accessor<
       T,
       EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS,
       GHOST_PERMISSIONS
-    > & h
+    > & a
   )
   {
+  auto& h = a.handle;
+
   constexpr size_t num_regions = 3;
 
   h.context = context;
@@ -449,7 +452,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     typename T
   >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value &&
+  typename
+  std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value &&
     !std::is_base_of<data_client_handle_base_t, T>::value>
   handle(
     T &

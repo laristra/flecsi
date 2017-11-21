@@ -9,6 +9,7 @@
 #include "flecsi/execution/execution.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/supplemental/mesh/test_mesh_2d.h"
+#include "flecsi/data/dense_accessor.h"
 
 clog_register_tag(devel_handle);
 
@@ -32,22 +33,12 @@ template<
 >
 using mesh = data_client_handle__<mesh_t, PS>;
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 template<
   size_t EP,
   size_t SP,
   size_t GP
 >
-using field = data::legion::dense_handle_t<double, EP, SP, GP>;
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
-template<
-  size_t EP,
-  size_t SP,
-  size_t GP
->
-using field = data::mpi::dense_handle_t<double, EP, SP, GP>;
-#endif
-
+using field = dense_accessor<double, EP, SP, GP>;
 
 //----------------------------------------------------------------------------//
 // Variable registration

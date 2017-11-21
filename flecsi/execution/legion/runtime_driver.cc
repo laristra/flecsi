@@ -104,7 +104,7 @@ runtime_driver(
   size_t number_of_global_fields = 0;
   for(const field_info_t& field_info : context_.registered_fields()){
     context_.put_field_info(field_info);
-    if (field_info.storage_type == global)
+    if (field_info.storage_class == global)
       number_of_global_fields++;
   }
 
@@ -195,9 +195,14 @@ runtime_driver(
             WRITE_DISCARD, EXCLUSIVE, flecsi_ispace.logical_region))
                 .add_field(ghost_owner_pos_fid);
   } // for idx_space
-  
-  runtime->execute_index_space(ctx, pos_compaction_launcher);
 
+  Legion::MustEpochLauncher must_epoch_launcher1;
+   must_epoch_launcher1.add_index_task(pos_compaction_launcher);
+  auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher1);
+
+  fm.wait_all_results(true);
+
+  
   //--------------------------------------------------------------------------//
   //  Create Phase barriers per each Field
   //-------------------------------------------------------------------------//
@@ -213,17 +218,17 @@ runtime_driver(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
-      if((field_info.storage_type != global) &&
-        (field_info.storage_type != color)){
+      if((field_info.storage_class != global) &&
+        (field_info.storage_class != color)){
         if(field_info.index_space == idx_space){
           fields_map[idx_space].push_back(field_info.fid);
           num_phase_barriers++;
         } // if
       }//if
-      else if(field_info.storage_type == global){
+      else if(field_info.storage_class == global){
         number_of_global_fields++;
       }
-      else if(field_info.storage_type == color){
+      else if(field_info.storage_class == color){
         number_of_color_fields++;
       }
     } // for
@@ -485,7 +490,7 @@ runtime_driver(
 
     global_reg_req.add_flags(NO_ACCESS_FLAG);
     for(const field_info_t& field_info : context_.registered_fields()){
-      if(field_info.storage_type == data::global ){
+      if(field_info.storage_class == data::global ){
          global_reg_req.add_field(field_info.fid);
        }//if
      }//for
@@ -506,7 +511,7 @@ runtime_driver(
 
    // color_reg_req.add_flags(NO_ACCESS_FLAG);
     for(const field_info_t& field_info : context_.registered_fields()){
-       if(field_info.storage_type == data::color ){
+       if(field_info.storage_class == data::color ){
          color_reg_req.add_field(field_info.fid);
        }//if
      }//for
@@ -639,8 +644,8 @@ spmd_task(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
-      if((field_info.storage_type != global) &&
-        (field_info.storage_type != color)){
+      if((field_info.storage_class != global) &&
+        (field_info.storage_class != color)){
         if(field_info.index_space == idx_space){
           fields_map[idx_space].push_back(field_info.fid);
         }
@@ -1048,8 +1053,8 @@ spmd_task(
   args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
    
   using adjacency_triple_t = context_t::adjacency_triple_t;
-  adjacency_triple_t* adjacencies = 
-    (adjacency_triple_t*)malloc(sizeof(adjacency_triple_t) * num_adjacencies);
+  adjacency_triple_t* adjacencies =
+     new adjacency_triple_t [num_adjacencies]; 
      
   args_deserializer.deserialize((void*)adjacencies,
     sizeof(adjacency_triple_t) * num_adjacencies);
@@ -1109,6 +1114,7 @@ spmd_task(
   delete [] field_info_buf;
   delete [] num_owners;
   delete [] pbarriers_as_owner;
+  delete [] adjacencies;
 //  delete [] idx_spaces;
 
 } // spmd_task

@@ -124,14 +124,13 @@ legion_context_policy_t::unset_call_mpi(
   Legion::IndexLauncher launcher(
     tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(0, 0),
+    Legion::TaskArgument(NULL, 0),
     arg_map
   );
 
-  launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
-  auto fm = runtime->execute_index_space(ctx, launcher);
-
+  Legion::MustEpochLauncher must_epoch_launcher;
+   must_epoch_launcher.add_index_task(launcher);
+  auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
   fm.wait_all_results(true);
 } // legion_context_policy_t::unset_call_mpi
 
@@ -152,11 +151,13 @@ legion_context_policy_t::handoff_to_mpi(
   Legion::IndexLauncher handoff_to_mpi_launcher(
     tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(0, 0),
+    Legion::TaskArgument(NULL, 0),
     arg_map
   );
 
-  auto fm = runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
+  Legion::MustEpochLauncher must_epoch_launcher;
+   must_epoch_launcher.add_index_task(handoff_to_mpi_launcher);
+  auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
 
   fm.wait_all_results(true);
 } // legion_context_policy_t::handoff_to_mpi
@@ -178,11 +179,13 @@ legion_context_policy_t::wait_on_mpi(
   Legion::IndexLauncher wait_on_mpi_launcher(
     tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(0, 0),
+    Legion::TaskArgument(NULL, 0),
     arg_map
   );
 
-  auto fm = runtime->execute_index_space(ctx, wait_on_mpi_launcher);
+  Legion::MustEpochLauncher must_epoch_launcher;
+   must_epoch_launcher.add_index_task(wait_on_mpi_launcher);
+  auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
 
   fm.wait_all_results(true);
 
@@ -201,8 +204,12 @@ legion_context_policy_t::connect_with_mpi(
 {
   int size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  context_t::instance().set_all_processes(
-    LegionRuntime::Arrays::Rect<1>(0, size-1));
+
+  LegionRuntime::Arrays::Rect<1> launch_bounds(
+    LegionRuntime::Arrays::Point<1>(0),
+    LegionRuntime::Arrays::Point<1>(size - 1));
+
+  context_t::instance().set_all_processes(launch_bounds);
 
   // FIXME: Does this do anything?
   // Both the application and Legion mappers have access to
@@ -210,6 +217,12 @@ legion_context_policy_t::connect_with_mpi(
   // The reverse mapping goes the other way
   const std::map<int, Legion::AddressSpace> & forward_mapping =
     runtime->find_forward_MPI_mapping();
+
+  for (std::map<int,Legion::AddressSpace>::const_iterator it =
+        forward_mapping.begin(); it != forward_mapping.end(); it++)
+    printf("MPI Rank %d maps to Legion Address Space %d\n",
+            it->first, it->second);
+
 } // legion_context_policy_t::connect_with_mpi
 
 } // namespace execution 

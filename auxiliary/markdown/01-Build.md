@@ -122,9 +122,9 @@ runtimes, a serial runtime, and one supported node-level runtime:
   Legion or MPI
 
 * **Serial [supported thorugh MPI runtime]**<br>  
-  The serial build is no longer supported. Users wishing to emulate this
-  build mode should select the MPI runtime and run executables with a
-  single-rank.
+  **The serial build is no longer supported.** Users wishing to emulate
+  this build mode should select the MPI runtime and run executables with
+  a single-rank.
 
 * **Node-Level**<br>  
   OpenMP

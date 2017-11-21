@@ -16,11 +16,11 @@
 #define flecsi_legion_tuple_h
 
 //----------------------------------------------------------------------------//
-// POLICY_NAMESPACE must be defined before including storage_type.h!!!
-// Using this approach allows us to have only one storage_type__
+// POLICY_NAMESPACE must be defined before including storage_class.h!!!
+// Using this approach allows us to have only one storage_class__
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
-#include "flecsi/data/storage_type.h"
+#include "flecsi/data/storage_class.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
@@ -40,7 +40,7 @@ namespace legion {
   // FIXME: Tuple storage type.
   ///
   template<>
-  struct storage_type__<tuple> {
+  struct storage_class__<tuple> {
 
     struct tuple_handle_t {
     }; // struct tuple_handle_t
@@ -62,7 +62,7 @@ namespace legion {
       return {};
     } // get_handle
 
-  }; // struct storage_type__
+  }; // struct storage_class__
 
 } // namespace legion
 } // namespace data

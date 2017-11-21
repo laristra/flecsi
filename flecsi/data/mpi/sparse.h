@@ -16,11 +16,11 @@
 #define flecsi_mpi_sparse_h
 
 //----------------------------------------------------------------------------//
-// POLICY_NAMESPACE must be defined before including storage_type.h!!!
-// Using this approach allows us to have only one storage_type_t
+// POLICY_NAMESPACE must be defined before including storage_class.h!!!
+// Using this approach allows us to have only one storage_class_t
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE mpi
-#include "flecsi/data/storage_type.h"
+#include "flecsi/data/storage_class.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
@@ -86,28 +86,6 @@ struct sparse_handle_t : public sparse_data_handle__<T, EP, SP, GP>
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  // FIXME: calling to base class constructor?
-  ///
-  /// Default constructor.
-  ///
-  sparse_handle_t() {}
-
-	///
-  /// Copy constructor.
-	///
-//	sparse_handle_t(
-//    const sparse_handle_t & a
-//  )
-//  :
-//    label_(a.label_)
-//  {}
-
-  template<size_t EP2, size_t SP2, size_t GP2>
-  sparse_handle_t(const sparse_handle_t<T, EP2, SP2, GP2> & h)
-    : base(reinterpret_cast<const base&>(h)),
-      label_(h.label_)
-  {}
-
   sparse_handle_t(
     size_t num_exclusive,
     size_t num_shared,
@@ -117,9 +95,6 @@ struct sparse_handle_t : public sparse_data_handle__<T, EP, SP, GP>
 
   template<typename, size_t, size_t, size_t>
   friend class sparse_handle_t;
-
-private:
-  std::string label_ = "";
 }; // struct sparse_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -134,7 +109,7 @@ private:
 /// FIXME: Dense storage type.
 ///
 template<>
-struct storage_type__<sparse>
+struct storage_class__<sparse>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -168,7 +143,7 @@ struct storage_type__<sparse>
 
     // get field_info for this data handle
     auto& field_info =
-      context.get_field_info(
+      context.get_field_info_from_name(
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
       utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
@@ -235,7 +210,7 @@ struct storage_type__<sparse>
 
     // get field_info for this data handle
     auto& field_info =
-      context.get_field_info(
+      context.get_field_info_from_name(
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
       utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
@@ -275,7 +250,7 @@ struct storage_type__<sparse>
     return h;
   }
 
-}; // struct storage_type_t
+}; // struct storage_class_t
 
 } // namespace mpi
 } // namespace data

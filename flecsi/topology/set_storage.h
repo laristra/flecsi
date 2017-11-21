@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 //----------------------------------------------------------------------------//
@@ -16,7 +14,9 @@
 namespace flecsi{
 namespace topology{
 
-template<typename SET_TYPES>
+template<
+  typename SET_TYPES
+>
 class set_storage_t : 
   public FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY<SET_TYPES>
 {};
@@ -27,6 +27,4 @@ class set_storage_t :
 #endif // flecsi_topology_set_storage_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/
