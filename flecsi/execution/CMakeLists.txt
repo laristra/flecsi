@@ -253,7 +253,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
       LIBRARIES
-        flecsi
+        FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
