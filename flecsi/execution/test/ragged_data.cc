@@ -119,17 +119,20 @@ using client_handle_t = data_client_handle__<DC, PS>;
 
 void task1(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
   rm.resize(1, 5);
-  rm.resize(2, 10);
 
-  rm(1, 2) = 5.0;
-  rm(1, 3) = 15.0;
-  rm(2, 1) = 35.0;
-  //mh.dump();
+  rm(1, 0) = 100.0;
+  rm(1, 1) = 200.0;
+  rm(1, 4) = 500.0;
+  
 } // task1
 
 void task2(client_handle_t<test_mesh_t, ro> mesh,
            ragged_accessor<double, ro, ro, ro> rh) {
-  np(rh(1, 2));
+  
+  std::cout << rh(1, 0) << std::endl;
+  std::cout << rh(1, 1) << std::endl;
+  std::cout << rh(1, 4) << std::endl;
+
 } // task2
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 

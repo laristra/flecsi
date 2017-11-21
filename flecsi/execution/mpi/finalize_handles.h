@@ -172,6 +172,20 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 
   } // handle
 
+  template<
+    typename T
+  >
+  void
+  handle(
+    ragged_mutator<
+      T
+    > & m
+  )
+  {
+    // TODO: fix
+    handle(reinterpret_cast<mutator<T>&>(m));
+  }
+
   //-----------------------------------------------------------------------//
   // If this is not a data handle, then simply skip it.
   //-----------------------------------------------------------------------//
