@@ -22,7 +22,13 @@
 
 #include <vector>
 
-#include "legion.h"
+#include <flecsi-config.h>
+
+#if !defined(ENABLE_LEGION)
+  #error ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
 
 #include "flecsi/execution/common/execution_state.h"
 #include "flecsi/data/common/privilege.h"

@@ -7,7 +7,7 @@
 # Set the path to the FleCSI headers.
 #------------------------------------------------------------------------------#
 
-set(FleCSI_INCLUDE_DIRS @FLECSI_INCLUDE_DIR@)
+set(FleCSI_INCLUDE_DIRS @FLECSI_INCLUDE_DIRS@)
 
 #------------------------------------------------------------------------------#
 # FleCSI library dependencies (contains definitions for IMPORTED targets)

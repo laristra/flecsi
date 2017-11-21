@@ -318,7 +318,6 @@ if(ENABLE_COLORING)
     list(APPEND COLORING_LIBRARIES ${METIS_LIBRARIES})
     include_directories(${METIS_INCLUDE_DIRS})
     set(ENABLE_METIS TRUE)
-    add_definitions(-DENABLE_METIS)
 
     list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${METIS_INCLUDE_DIRS})
   endif()
@@ -327,7 +326,6 @@ if(ENABLE_COLORING)
     list(APPEND COLORING_LIBRARIES ${PARMETIS_LIBRARIES})
     include_directories(${PARMETIS_INCLUDE_DIRS})
     set(ENABLE_PARMETIS TRUE)
-    add_definitions(-DENABLE_PARMETIS)
 
     list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${PARMETIS_INCLUDE_DIRS})
   endif()
@@ -336,8 +334,6 @@ if(ENABLE_COLORING)
     MESSAGE(FATAL_ERROR
       "You need parmetis to enable partitioning" )
   endif()
-
-  add_definitions(-DENABLE_COLORING)
 
 endif()
 
@@ -381,10 +377,15 @@ message(STATUS "${CINCH_Yellow}Set id_t bits to allow:\n"
 # configure header
 #------------------------------------------------------------------------------#
 
-configure_file(${PROJECT_SOURCE_DIR}/config/flecsi.h.in
-  ${CMAKE_BINARY_DIR}/flecsi.h @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/config/flecsi-config.h.in
+  ${CMAKE_BINARY_DIR}/flecsi-config.h @ONLY)
+
 include_directories(${CMAKE_BINARY_DIR})
-install(FILES ${CMAKE_BINARY_DIR}/flecsi.h DESTINATION include)
+
+install(
+  FILES ${CMAKE_BINARY_DIR}/flecsi-config.h
+  DESTINATION include/flecsi/config
+)
 
 #------------------------------------------------------------------------------#
 # Add library targets
@@ -419,7 +420,7 @@ cinch_add_application_directory("tools")
 add_custom_target(distclean rm -rf ${CMAKE_BINARY_DIR}/*)
 
 #------------------------------------------------------------------------------#
-# Prepare variables for FleCSIConfig file.
+# Export targets and package.
 #------------------------------------------------------------------------------#
 
 export(
@@ -428,8 +429,21 @@ export(
 )
 export(PACKAGE FleCSI)
 
+#------------------------------------------------------------------------------#
+# Prepare variables for FleCSIConfig file.
+#------------------------------------------------------------------------------#
+
+set(FLECSI_EXTERNAL_INCLUDE_DIRS)
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+  if(NOT ${dir} MATCHES ${CMAKE_CURRENT_SOURCE_DIR})
+    list(APPEND FLECSI_EXTERNAL_INCLUDE_DIRS ${dir})
+  endif()
+endforeach()
+
 set(FLECSI_LIBRARY_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR})
-set(FLECSI_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/include)
+set(FLECSI_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include
+  ${FLECSI_EXTERNAL_INCLUDE_DIRS})
 set(FLECSI_CMAKE_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/cmake/FleCSI)
 
 #------------------------------------------------------------------------------#

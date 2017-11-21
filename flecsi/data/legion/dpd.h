@@ -17,6 +17,12 @@
 
 #include <unordered_map>
 
+#include <flecsi-config.h>
+
+#if !defined(ENABLE_LEGION)
+  #error ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
 #include <legion.h>
 
 #include "flecsi/execution/legion/helper.h"

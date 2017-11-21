@@ -11,6 +11,12 @@
 //! @date Initial file creation: Mar 31, 2017
 //----------------------------------------------------------------------------//
 
+#include <flecsi-config.h>
+
+#if !defined(ENABLE_LEGION)
+  #error ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
 #include <legion.h>
 
 #include "flecsi/execution/common/processor.h"

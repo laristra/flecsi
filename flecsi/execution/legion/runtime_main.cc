@@ -17,7 +17,7 @@
 //! @date Initial file creation: Jul 26, 2016
 //----------------------------------------------------------------------------//
 
-#ifdef ENABLE_MPI
+#if defined(ENABLE_MPI)
   #include <mpi.h>
 #endif
 

@@ -16,10 +16,17 @@
 #define flecsi_legion_legion_data_h
 
 #include <cassert>
-#include <legion.h>
 #include <map>
 #include <unordered_map>
 #include <vector>
+
+#include <flecsi-config.h>
+
+#if !defined(ENABLE_LEGION)
+  #error ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
 
 #include "flecsi/execution/context.h"
 #include "flecsi/coloring/index_coloring.h"

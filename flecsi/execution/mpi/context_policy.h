@@ -23,7 +23,9 @@
 #include <unordered_map>
 #include <map>
 #include <functional>
+
 #include <cinchlog.h>
+#include <flecsi.h>
 
 #if !defined(ENABLE_MPI)
   #error ENABLE_MPI not defined! This file depends on MPI!

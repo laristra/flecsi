@@ -11,6 +11,8 @@
 //! @date Initial file creation: Nov 23, 2016
 //----------------------------------------------------------------------------//
 
+#include <flecsi-config.h>
+
 #if !defined(ENABLE_MPI)
   #error ENABLE_MPI not defined! This file depends on MPI!
 #endif

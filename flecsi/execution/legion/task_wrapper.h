@@ -11,9 +11,16 @@
 //! @date Initial file creation: Apr 12, 2017
 //----------------------------------------------------------------------------//
 
-#include <cinchlog.h>
-#include <legion.h>
 #include <string>
+
+#include <cinchlog.h>
+#include <flecsi-config.h>
+
+#if !defined(ENABLE_LEGION)
+  #error ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
 
 #include "flecsi/data/data_handle.h"
 #include "flecsi/execution/context.h"

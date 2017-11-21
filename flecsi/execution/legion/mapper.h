@@ -15,6 +15,12 @@
 #ifndef flecsi_execution_mpilegion_mapper_h
 #define flecsi_execution_mpilegion_mapper_h
 
+#include <flecsi-config.h>
+
+#if !defined(ENABLE_LEGION)
+  #error ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
 #include <legion.h>
 #include <legion_mapping.h>
 #include <default_mapper.h>
