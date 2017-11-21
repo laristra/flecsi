@@ -47,28 +47,6 @@ namespace legion {
 // Sparse accessor.
 //----------------------------------------------------------------------------//
 
-#if 0
-using index_pair_ = std::pair<size_t, size_t>;
-
-template<typename T>
-struct material_value_{
-  material_value_(size_t material)
-  : material(material){}
-
-  material_value_(size_t material, T value)
-  : material(material),
-  value(value){}
-
-  material_value_(){}
-
-  size_t material;
-  T value;
-};
-
-static constexpr size_t INDICES_KEY = 0;
-static constexpr size_t MATERIALS_KEY = 1;
-#endif
-
 template<typename T>
 struct sparse_mutator_t {
 

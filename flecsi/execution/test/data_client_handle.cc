@@ -19,6 +19,7 @@
 #include "flecsi/coloring/mpi_communicator.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/data/mutator_handle.h"
+#include "flecsi/data/dense_accessor.h"
 
 using namespace std;
 using namespace flecsi;
@@ -110,16 +111,6 @@ public:
 
 struct test_mesh_t : public mesh_topology_t<test_mesh_types_t> {};
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-data::legion::dense_handle_t<T, EP, SP, GP>;
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  data::mpi::dense_handle_t<T, EP, SP, GP>;
-#endif
-
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
@@ -128,7 +119,7 @@ void task1(client_handle_t<test_mesh_t, ro> mesh) {
 } // task1
 
 void fill_task(client_handle_t<test_mesh_t, wo> mesh,
-  handle_t<double, rw, rw, ro> pressure) {
+  dense_accessor<double, rw, rw, ro> pressure) {
   clog(info) << "IN FILL TASK" << std::endl;
 
   auto & context = execution::context_t::instance();
@@ -185,7 +176,7 @@ void fill_task(client_handle_t<test_mesh_t, wo> mesh,
 } // fill_task
 
 void print_task(client_handle_t<test_mesh_t, ro> mesh,
-  handle_t<double, ro, ro, ro> pressure) {
+  dense_accessor<double, ro, ro, ro> pressure) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 

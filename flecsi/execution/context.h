@@ -542,8 +542,8 @@ struct context__ : public CONTEXT_POLICY
 
     field_info_map_[{data_client_hash, index_space}].emplace(fid, field_info);
 
-    field_map_.insert({{field_info.data_client_hash, field_info.key},
-                       {index_space, fid}});
+    field_name_map_.insert({{field_info.data_client_hash, field_info.key},
+      {index_space, fid}});
   } // put_field_info
 
   //--------------------------------------------------------------------------//
@@ -558,28 +558,19 @@ struct context__ : public CONTEXT_POLICY
   } // field_info_map
 
   //--------------------------------------------------------------------------//
-  //! Get field map for read access.
-  //--------------------------------------------------------------------------//
-  const std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
-  field_map()
-  const
-  {
-    return field_map_;
-  } // field_info_map
-  //--------------------------------------------------------------------------//
   //! Lookup registered field info from data client and namespace hash.
   //! @param data_client_hash data client type hash
   //! @param namespace_hash namespace/field name hash
   //!-------------------------------------------------------------------------//
 
   const field_info_t&
-  get_field_info(
+  get_field_info_from_name(
     size_t data_client_hash,
     size_t namespace_hash)
   const
   {
-    auto itr = field_map_.find({data_client_hash, namespace_hash});
-    clog_assert(itr != field_map_.end(), "invalid field");
+    auto itr = field_name_map_.find({data_client_hash, namespace_hash});
+    clog_assert(itr != field_name_map_.end(), "invalid field");
 
     auto iitr = field_info_map_.find({data_client_hash, itr->second.first});
     clog_assert(iitr != field_info_map_.end(), "invalid index_space");
@@ -588,6 +579,36 @@ struct context__ : public CONTEXT_POLICY
     clog_assert(fitr != iitr->second.end(), "invalid fid");
 
     return fitr->second;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Lookup registered field info from data client and namespace hash.
+  //! @param data_client_hash data client type hash
+  //! @param key key hash
+  //!-------------------------------------------------------------------------//
+
+  const field_info_t*
+  get_field_info_from_key(
+    size_t data_client_hash,
+    size_t key_hash)
+  const
+  {
+    auto itr = field_name_map_.find({data_client_hash, key_hash});
+    if(itr == field_name_map_.end()){
+      return nullptr;
+    }
+
+    auto iitr = field_info_map_.find({data_client_hash, itr->second.first});
+    if(iitr == field_info_map_.end()){
+      return nullptr;
+    }
+
+    auto fitr = iitr->second.find(itr->second.second);
+    if(fitr == iitr->second.end()){
+      return nullptr;
+    }
+
+    return &fitr->second;
   }
 
   //------------------------------------------------------------------------//
@@ -660,12 +681,12 @@ private:
   std::map<size_t, adjacency_triple_t> adjacencies_;
 
   //--------------------------------------------------------------------------//
-  // Field map, key1 = (data client hash, name/namespace hash)
+  // Field name map, key1 = (data client hash, name/namespace hash)
   // value = (index space, fid)
   //--------------------------------------------------------------------------//
 
   std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
-    field_map_;
+    field_name_map_;
 
   // key: virtual index space id
   // value: coloring indices (exclusive, shared, ghost)

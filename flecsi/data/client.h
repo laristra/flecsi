@@ -251,6 +251,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
     using entity_types = typename POLICY_TYPE::entity_types;
     using connectivities = typename POLICY_TYPE::connectivities;
     using bindings = typename POLICY_TYPE::bindings;
+    using field_info_t = execution::context_t::field_info_t;
 
     data_client_handle__<DATA_CLIENT_TYPE, 0> h;
 
@@ -276,28 +277,26 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
       ent.dim = ei.dim;
       ent.size = ei.size;
 
-      auto itr = context.field_info_map().find(
-        { h.client_hash, ent.index_space });
+      const field_info_t* fi = 
+        context.get_field_info_from_key(h.client_hash,
+        utils::hash::client_internal_field_hash(
+        utils::const_string_t("__flecsi_internal_entity_data__").
+        hash(), ent.index_space));
+      
+      if(fi){
+        ent.fid = fi->fid;
+      }
 
-      clog_assert(itr != context.field_info_map().end(),
-        "invalid entity index space");
-
-      auto & tm = itr->second;
-
-      for(auto & fitr : tm){
-        if(fitr.second.key == 
-          utils::hash::client_internal_field_hash(
-          utils::const_string_t("__flecsi_internal_entity_data__").
-          hash(), ent.index_space)) {
-            ent.fid = fitr.second.fid;
-        } // if
-        else if(fitr.second.key == 
-          utils::hash::client_internal_field_hash(
-          utils::const_string_t("__flecsi_internal_entity_id__").
-          hash(), ent.index_space)) {
-            ent.id_fid = fitr.second.fid;
-        }
-      } // for
+      fi = 
+        context.get_field_info_from_key(h.client_hash,
+        utils::hash::client_internal_field_hash(
+        utils::const_string_t("__flecsi_internal_entity_id__").
+        hash(), ent.index_space));
+      
+      if(fi){
+        ent.id_fid = fi->fid;
+      }
+      
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(ent.index_space);
       clog_assert(ritr != ism.end(), "invalid index space " << ei.index_space);
@@ -338,42 +337,26 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
       adj.from_dim = hi.from_dim;
       adj.to_dim = hi.to_dim;
 
-      auto itr = context.field_info_map().find(
-        {h.client_hash, hi.from_index_space});
-      clog_assert(itr != context.field_info_map().end(),
-        "invalid from index space");
-
-      auto& fm = itr->second;
-
-      // This field resides in the main entities (BLIS) index space, but
-      // is unique to an adjacency, so it is registered using the
-      // adjacency hash.      
-      for(auto& fitr : fm){
-        if(fitr.second.key == 
-           utils::hash::client_internal_field_hash(
-           utils::const_string_t("__flecsi_internal_adjacency_offset__").
-           hash(), hi.index_space)){
-          adj.offset_fid = fitr.second.fid;
-          break;
-        }
+      const field_info_t* fi = 
+        context.get_field_info_from_key(h.client_hash,
+        utils::hash::client_internal_field_hash(
+        utils::const_string_t("__flecsi_internal_adjacency_offset__").
+        hash(), hi.index_space));
+      
+      if(fi){
+        adj.offset_fid = fi->fid;
       }
 
-      itr = context.field_info_map().find(
-        {h.client_hash, hi.index_space});
-      clog_assert(itr != context.field_info_map().end(),
-        "invalid index space");
-
-      auto& im = itr->second;
-
-      for(auto& fitr : im){
-        if(fitr.second.key == 
-          utils::hash::client_internal_field_hash(
-          utils::const_string_t("__flecsi_internal_adjacency_index__").
-          hash(), hi.index_space)){
-            adj.index_fid = fitr.second.fid;
-            break;
-        }
+      fi = 
+        context.get_field_info_from_key(h.client_hash,
+        utils::hash::client_internal_field_hash(
+        utils::const_string_t("__flecsi_internal_adjacency_index__").
+        hash(), hi.index_space));
+      
+      if(fi){
+        adj.index_fid = fi->fid;
       }
+
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(hi.from_index_space);
       clog_assert(ritr != ism.end(), "invalid from index space");
@@ -447,6 +430,7 @@ struct data_client_policy_handler__<topology::set_topology_t<POLICY_TYPE>>
   get_client_handle()
   {
     using entity_types = typename POLICY_TYPE::entity_types;
+    using field_info_t = execution::context_t::field_info_t;
 
     data_client_handle__<DATA_CLIENT_TYPE, 0> h;
 
@@ -470,28 +454,26 @@ struct data_client_policy_handler__<topology::set_topology_t<POLICY_TYPE>>
       ent.index_space = ei.index_space;
       ent.size = ei.size;
 
-      auto itr = context.field_info_map().find(
-        { h.client_hash, ent.index_space });
+      const field_info_t* fi = 
+        context.get_field_info_from_key(h.client_hash,
+        utils::hash::client_internal_field_hash(
+        utils::const_string_t("__flecsi_internal_entity_data__").
+        hash(), ent.index_space));
+      
+      if(fi){
+        ent.fid = fi->fid;
+      }
 
-      clog_assert(itr != context.field_info_map().end(),
-        "invalid entity index space");
+      fi = 
+        context.get_field_info_from_key(h.client_hash,
+        utils::hash::client_internal_field_hash(
+        utils::const_string_t("__flecsi_internal_entity_id__").
+        hash(), ent.index_space));
+      
+      if(fi){
+        ent.id_fid = fi->fid;
+      }
 
-      auto & tm = itr->second;
-
-      for(auto & fitr : tm){
-        if(fitr.second.key == 
-          utils::hash::client_internal_field_hash(
-          utils::const_string_t("__flecsi_internal_entity_data__").
-          hash(), ent.index_space)) {
-            ent.fid = fitr.second.fid;
-        } // if
-        else if(fitr.second.key == 
-          utils::hash::client_internal_field_hash(
-          utils::const_string_t("__flecsi_internal_entity_id__").
-          hash(), ent.index_space)) {
-            ent.id_fid = fitr.second.fid;
-        }
-      } // for
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(ent.index_space);
       clog_assert(ritr != ism.end(), "invalid index space " << ei.index_space);

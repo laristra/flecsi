@@ -70,43 +70,6 @@ struct sparse_data_handle_base__ :
   num_ghost_(b.num_ghost_),
   num_total_(b.num_total_){}
 
-  T &
-  operator () (
-    size_t index,
-    size_t entry
-  )
-  {
-    assert(index < num_total_ && "sparse handle: index out of bounds");
-
-    const offset_t& oi = offsets[index];
-
-    entry_value_t * start = entries + oi.start();
-    entry_value_t * end = start + oi.count();
-
-    entry_value_t * itr =
-      std::lower_bound(start, end, entry_value_t(entry),
-        [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
-          return k1.entry < k2.entry;
-        });
-
-    assert(itr != end && "sparse handle: unmapped entry");
-
-    return itr->value;
-  } // operator ()
-
-  void dump() const{
-    for(size_t i = 0; i < num_total_; ++i){
-      const offset_t& offset = offsets[i];
-      std::cout << "index: " << i << std::endl;
-      for(size_t j = 0; j < offset.count(); ++j){
-        size_t k = offset.start() + j;
-        std::cout << "  " << entries[k].entry << 
-          " = " << entries[k].value << std::endl;
-      }
-    }
-  }
-
-private:
   size_t num_exclusive_;
   size_t num_shared_;
   size_t num_ghost_;

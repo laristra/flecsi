@@ -86,14 +86,16 @@ namespace execution {
     >
     void
     handle(
-      data_handle__<
-        T,
-        EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS,
-        GHOST_PERMISSIONS
-      > & h
+      dense_accessor<
+       T,
+       EXCLUSIVE_PERMISSIONS,
+       SHARED_PERMISSIONS,
+       GHOST_PERMISSIONS
+      > & a
     )
     {
+      auto& h = a.handle;
+
       if (!h.global && !h.color){
         auto& flecsi_context = context_t::instance();
 
@@ -254,7 +256,8 @@ namespace execution {
       typename T
     >
     static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
+    typename
+    std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
     handle(
       T&
     )

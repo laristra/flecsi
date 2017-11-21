@@ -6,6 +6,10 @@
 #ifndef flecsi_execution_mpi_finalize_handles_h
 #define flecsi_execution_mpi_finalize_handles_h
 
+#include "flecsi/data/dense_accessor.h"
+#include "flecsi/data/sparse_accessor.h"
+#include "flecsi/data/mutator.h"
+
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: Jul 19, 2017
@@ -46,12 +50,12 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   >
   void
   handle(
-    sparse_data_handle__<
+    sparse_accessor<
       T,
       EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS,
       GHOST_PERMISSIONS
-    > & h
+    > & a
   )
   {
 
@@ -81,11 +85,13 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   >
   void
   handle(
-    mutator_handle__<
+    mutator<
       T
-    > & h
+    > & m
   )
   {
+    auto& h = m.h_;
+
     using offset_t = typename mutator_handle__<T>::offset_t;
     using entry_value_t = typename mutator_handle__<T>::entry_value_t;
     using commit_info_t = typename mutator_handle__<T>::commit_info_t;
