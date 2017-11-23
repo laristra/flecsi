@@ -79,7 +79,7 @@ RUN cd .. && if [ ${SONARQUBE} ]; then \
     -Dsonar.exclusions=build/CMakeFiles/**,cinch/**,build/doc/doxygen/**,build/include/**,flecsi/*/test/* \
     -Dsonar.cfamily.build-wrapper-output=build/bw-output \
     -Dsonar.cfamily.gcov.reportsPath=. \
-    -Dsonar.host.url=https://sonarqube.com \
+    -Dsonar.host.url=https://sonarcloud.io \
     -Dsonar.organization=${TRAVIS_REPO_SLUG%%/*} \
     $([ ${TRAVIS_PULL_REQUEST} != false ] && echo \
        -Dsonar.analysis.mode=preview \
