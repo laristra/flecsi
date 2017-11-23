@@ -722,8 +722,8 @@ spmd_task(
     ghost_owners_lregions;
   std::map<size_t, std::vector<Legion::LogicalRegion>>
     ghost_owners_subregions;
-  std::vector<Legion::IndexPartition> primary_ghost_ips(num_idx_spaces);
-  std::vector<Legion::IndexPartition> exclusive_shared_ips(num_idx_spaces);
+  std::map<size_t,Legion::IndexPartition> primary_ghost_ips;
+  std::map<size_t,Legion::IndexPartition> exclusive_shared_ips;
   std::map<size_t,std::vector<Legion::IndexPartition>> owner_subrect_ips;
 
   //fill ispace_dmap with logical regions
@@ -1108,9 +1108,9 @@ spmd_task(
 
   // Cleanup memory
   for(auto ipart: primary_ghost_ips)
-      runtime->destroy_index_partition(ctx, ipart);
+      runtime->destroy_index_partition(ctx, ipart.second);
   for(auto ipart: exclusive_shared_ips)
-      runtime->destroy_index_partition(ctx, ipart);
+      runtime->destroy_index_partition(ctx, ipart.second);
   delete [] field_info_buf;
   delete [] num_owners;
   delete [] pbarriers_as_owner;
