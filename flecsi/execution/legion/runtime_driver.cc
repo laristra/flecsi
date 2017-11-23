@@ -724,7 +724,7 @@ spmd_task(
     ghost_owners_subregions;
   std::map<size_t,Legion::IndexPartition> primary_ghost_ips;
   std::map<size_t,Legion::IndexPartition> exclusive_shared_ips;
-  std::map<size_t,std::vector<Legion::IndexPartition>> owner_subrect_ips;
+  std::map<size_t,std::map<size_t,Legion::IndexPartition>> owner_subrect_ips;
 
   //fill ispace_dmap with logical regions
   size_t region_index = 0;
@@ -930,9 +930,9 @@ spmd_task(
         runtime->create_index_partition(ctx, color_ispace, color_domain_1D,
         owner_subrect_coloring, true /*disjoint*/);
 
-      auto ips_itr = owner_subrect_ips.find(owner);
-      if (ips_itr == owner_subrect_ips.end())
-        owner_subrect_ips[owner].resize(num_idx_spaces);
+      //auto ips_itr = owner_subrect_ips.find(owner);
+      //if (ips_itr == owner_subrect_ips.end())
+       // owner_subrect_ips[owner].resize(num_idx_spaces);
       owner_subrect_ips[owner][idx_space] = owner_subrect_ip;
 
       Legion::LogicalPartition owner_subrect_lp =
