@@ -73,15 +73,10 @@ struct ragged_accessor : public ragged_accessor_base_t {
     size_t ragged_index
   )
   {
-    assert(index < handle.num_total_ && 
-      "sparse accessor: index out of bounds");
+    const offset_t& offset = handle.offsets[index];
+    assert(ragged_index < offset.count() && "ragged accessor: index out of range");
 
-    const offset_t& oi = handle.offsets[index];
-
-    entry_value_t * start = handle.entries + oi.start();
-    assert(ragged_index < oi.count());
-
-    return (start + ragged_index)->value;
+    return (handle.entries + offset.start() + ragged_index)->value;
   } // operator ()
 
   handle_t handle;  

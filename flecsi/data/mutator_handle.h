@@ -81,16 +81,11 @@ public:
 
   void commit(commit_info_t* ci){
     if(erase_set_){
-      if(size_map_){
-        raggedCommit_<true>(ci);
-      }
-      else{
-        commit_<true>(ci);
-      }
+      commit_<true>(ci);
     }
     else{
       if(size_map_){
-        raggedCommit_<false>(ci);
+        raggedCommit_(ci);
       }
       else{
         commit_<false>(ci);
@@ -184,7 +179,6 @@ public:
     }
   }
 
-  template<bool ERASE>
   void raggedCommit_(commit_info_t* ci){
     assert(offsets_ && "uninitialized mutator");
 
@@ -215,22 +209,22 @@ public:
       size_t used_slots = oi.count();
 
       for(size_t j = 0; j < num_existing; ++j){
-        cbuf[j] = eptr[j];
+        cptr[j] = eptr[j];
       }
 
       for(size_t j = 0; j < used_slots; ++j){
         size_t k = sptr[j].entry;
-        cbuf[k].entry = k;
-        cbuf[k].value = sptr[j].value;
+        cptr[k].entry = k;
+        cptr[k].value = sptr[j].value;
       }
 
       auto p = spare_map_->equal_range(index);
       auto itr = p.first;
-      auto itrEnd = p.second;
-      while(itr != itrEnd){
+      auto itr_end = p.second;
+      while(itr != itr_end){
         size_t k = itr->second.entry;
-        cbuf[k].entry = k;
-        cbuf[k].value = itr->second.value;
+        cptr[k].entry = k;
+        cptr[k].value = itr->second.value;
         ++itr;
       }
 
@@ -242,20 +236,84 @@ public:
         size_t resize = sitr->second;
         coi.set_count(resize);
         offset += resize;
-        cbuf += resize;
+        cptr += resize;
       }
       else{
         offset += num_existing;
-        cbuf += num_existing;
+        cptr += num_existing;
       }
 
       eptr += num_existing;
     }
 
-    if(size_map_){
-      delete size_map_;
-      size_map_ = nullptr;
+    std::memcpy(entries, cbuf, sizeof(entry_value_t) * (cptr - cbuf));
+    delete[] cbuf;
+
+    size_t start = num_exclusive_;
+    size_t end = start + pi_.count[1] + pi_.count[2];
+
+    cbuf = new entry_value_t[max_entries_per_index_];
+
+    for(size_t index = start; index < end; ++index){
+      entry_value_t* eptr = ci->entries[1] + max_entries_per_index_ * index;
+
+      const offset_t& oi = offsets_[index];
+      offset_t& coi = offsets[index];
+
+      entry_value_t* sptr = entries_ + index * num_slots_;
+
+      size_t num_existing = coi.count();
+      
+      size_t used_slots = oi.count();
+
+      for(size_t j = 0; j < num_existing; ++j){
+        cbuf[j] = eptr[j];
+      }
+
+      for(size_t j = 0; j < used_slots; ++j){
+        size_t k = sptr[j].entry;
+        cbuf[k].entry = k;
+        cbuf[k].value = sptr[j].value;
+      }
+
+      auto p = spare_map_->equal_range(index);
+      auto itr = p.first;
+      auto itr_end = p.second;
+      while(itr != itr_end){
+        size_t k = itr->second.entry;
+        cbuf[k].entry = k;
+        cbuf[k].value = itr->second.value;
+        ++itr;
+      }
+
+      size_t size;
+
+      auto sitr = size_map_->find(index);
+
+      if(sitr != size_map_->end()){
+        size = sitr->second;
+        coi.set_count(size);
+      }
+      else{
+        size = num_existing;
+      }
+
+      std::memcpy(eptr, cbuf, sizeof(entry_value_t) * size);
     }
+
+    delete[] cbuf;
+
+    delete[] entries_;
+    entries_ = nullptr;
+
+    delete[] offsets_;
+    offsets_ = nullptr;
+
+    delete spare_map_;
+    spare_map_ = nullptr;
+
+    delete size_map_;
+    size_map_ = nullptr;
   }
 
   size_t num_exclusive() const{

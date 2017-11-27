@@ -115,20 +115,9 @@ struct ragged_mutator : public ragged_mutator_base_t {
   } // operator ()
 
   void resize(size_t index, size_t length){
+    assert(length <= h_.max_entries_per_index_ &&
+           "resize length exceeds max entries per index");
     h_.size_map_->emplace(index, length);
-  }
-
-  void
-  erase(
-    size_t index,
-    size_t ragged_index
-  )
-  {
-    if(!h_.erase_set_){
-      h_.erase_set_ = new erase_set_t;
-    }
-
-    h_.erase_set_->emplace(std::make_pair(index, ragged_index));
   }
 
   handle_t h_;  
