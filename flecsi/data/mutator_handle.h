@@ -96,6 +96,7 @@ public:
   template<bool ERASE>
   void commit_(commit_info_t* ci){
     assert(offsets_ && "uninitialized mutator");
+    ci_ = *ci;
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
 
@@ -332,6 +333,14 @@ public:
     return max_entries_per_index_;
   }
 
+  commit_info_t& commit_info(){
+    return ci_;
+  }
+
+  const commit_info_t& commit_info() const{
+    return ci_;
+  }
+
   using spare_map_t = std::multimap<size_t, entry_value_t>;
   using erase_set_t = std::set<std::pair<size_t, size_t>>;
   using size_map_t = std::unordered_map<size_t, size_t>;
@@ -346,6 +355,7 @@ public:
   spare_map_t* spare_map_ = nullptr;
   erase_set_t * erase_set_ = nullptr;
   size_map_t* size_map_ = nullptr;
+  commit_info_t ci_;
 
   template<bool ERASE>
   size_t merge(size_t index,
