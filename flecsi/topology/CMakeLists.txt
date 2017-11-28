@@ -19,21 +19,24 @@
 
 set(topology_HEADERS
   closure_utils.h
+  common/array_buffer.h
+  common/entity_storage.h
+  entity_storage.h
   index_space.h
-  types.h
-  mesh.h
   mesh_definition.h
+  mesh.h
   mesh_storage.h
   mesh_topology.h
   mesh_types.h
   mesh_utils.h
-  tree_topology.h
-  mesh_storage.h
-  entity_storage.h
+  partition.h
   set_storage.h
   set_topology.h
   set_types.h
   set_utils.h
+  structured_mesh_topology.h
+  tree_topology.h
+  types.h
 )
 
 #------------------------------------------------------------------------------#
@@ -49,19 +52,15 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
   set(topology_HEADERS
     ${topology_HEADERS}
-    common/array_buffer.h
-    common/entity_storage.h
-    legion/storage_policy.h
     legion/set_storage_policy.h
+    legion/storage_policy.h
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(topology_HEADERS
     ${topology_HEADERS}
-    common/array_buffer.h
-    common/entity_storage.h
-    mpi/storage_policy.h
     mpi/set_storage_policy.h
+    mpi/storage_policy.h
     )
 
   set(UNIT_POLICY MPI)
