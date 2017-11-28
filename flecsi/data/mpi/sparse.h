@@ -158,7 +158,7 @@ struct storage_class__<sparse>
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
       const size_t max_entries_per_index = 5;
-      const size_t reserve_chunk = 8192;
+      const size_t reserve_chunk = 2;
 
       // TODO: deal with VERSION
       context.register_sparse_field_data(field_info.fid, field_info.size,
@@ -226,7 +226,7 @@ struct storage_class__<sparse>
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
       const size_t max_entries_per_index = 5;
-      const size_t reserve_chunk = 8192;
+      const size_t reserve_chunk = 2;
 
       // TODO: deal with VERSION
       context.register_sparse_field_data(field_info.fid, field_info.size,

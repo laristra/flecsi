@@ -83,15 +83,14 @@ public:
     if(erase_set_){
       commit_<true>(ci);
     }
-    else{
-      if(size_map_){
+    else {
+      if (size_map_) {
         raggedCommit_(ci);
-      }
-      else{
+      } else {
         commit_<false>(ci);
       }
     }
-  }
+  } // operator ()
 
   template<bool ERASE>
   void commit_(commit_info_t* ci){

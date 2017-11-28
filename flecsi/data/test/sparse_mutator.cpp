@@ -417,7 +417,7 @@ int main(int argc, char** argv){
   size_t reserve = reserve_chunk;
   size_t exclusive_entries = 0;
 
-  size_t max_entries_per_index = 15;
+  size_t max_entries_per_index = 16;
 
   size_t num_phases = 20;
   size_t insertions_per_phase = 20;

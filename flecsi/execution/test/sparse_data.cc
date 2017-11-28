@@ -115,17 +115,46 @@ struct test_mesh_t : public mesh_topology_t<test_mesh_types_t> {};
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
+
 void task1(client_handle_t<test_mesh_t, ro> mesh, mutator<double> mh) {
-  mh(1, 2) = 5.0;
-  mh(1, 3) = 15.0;
-  mh(2, 1) = 35.0;
-  //mh.dump();
+  auto& context = execution::context_t::instance();
+  auto rank = context.color();
+
+  mh(1, 2) = 1.0 + rank*10;
+  mh(1, 3) = 2.0 + rank*10;
+  mh(1, 4) = 4.0 + rank*10;
+  mh(1, 0) = 0.0 + rank*10;
+  mh(2, 1) = 1.0 + rank*10;
+
+  mh(30, 2) = -2.0 - rank*10;
+  mh(30, 3) = -3.0 - rank*10;
+  mh(31, 1) = -1.0 - rank*10;
 } // task1
 
 void task2(client_handle_t<test_mesh_t, ro> mesh,
            sparse_accessor<double, ro, ro, ro> h) {
+  auto& context = execution::context_t::instance();
+  auto rank = context.color();
+  if (rank == 0)
+    h.dump();
 
-  h.dump();
+} // task2
+
+void task3(client_handle_t<test_mesh_t, ro> mesh,
+           sparse_accessor<double, rw, rw, rw> h) {
+
+  auto& context = execution::context_t::instance();
+  auto rank = context.color();
+
+  h(1, 2) *= -1;
+  h(1, 3) *= -1;
+  h(1, 4) *= -1;
+  h(1, 0) *= -1;
+  h(2, 1) *= -1;
+
+  h(30, 2) *= -1;
+  h(30, 3) *= -1;
+  h(31, 1) *= -1;
 
 } // task2
 
