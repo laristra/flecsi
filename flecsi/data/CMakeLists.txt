@@ -33,6 +33,11 @@ set(data_HEADERS
   field.h
   storage.h
   storage_class.h
+  mutator.h
+  mutator_handle.h
+  sparse_accessor.h
+  ragged_accessor.h
+  ragged_mutator.h
 )
 
 #------------------------------------------------------------------------------#
