@@ -175,6 +175,7 @@ private:
   std::unordered_set<size_t> registered_client_fields_;
   std::unordered_map<size_t, field_entry_t> field_registry_;
   std::unordered_map<size_t, client_entry_t> client_registry_;
+
 }; // class storage__
 
 } // namespace data

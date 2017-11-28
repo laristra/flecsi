@@ -66,6 +66,9 @@ struct field_registration_wrapper__
     fi.namespace_hash = NAMESPACE_HASH;
     fi.name_hash = NAME_HASH;
     fi.versions = VERSIONS;
+
+    // This seems like it could be improved to get rid of the
+    // conditional logic
     if (STORAGE_CLASS == global)
       fi.index_space = execution::internal_index_space::global_is;
     else if (STORAGE_CLASS == color)
