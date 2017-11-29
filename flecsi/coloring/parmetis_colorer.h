@@ -15,8 +15,8 @@
 
 #include <flecsi-config.h>
 
-#if !defined(ENABLE_PARMETIS)
-  #error ENABLE_PARMETIS not defined! This file depends on ParMETIS!
+#if !defined(FLECSI_ENABLE_PARMETIS)
+  #error FLECSI_ENABLE_PARMETIS not defined! This file depends on ParMETIS!
 #endif
 
 #include <parmetis.h>

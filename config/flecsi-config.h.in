@@ -18,8 +18,8 @@
 // External runtimes
 //----------------------------------------------------------------------------//
 
-#cmakedefine ENABLE_MPI
-#cmakedefine ENABLE_LEGION
+#cmakedefine FLECSI_ENABLE_MPI
+#cmakedefine FLECSI_ENABLE_LEGION
 
 //----------------------------------------------------------------------------//
 // Enable Legion thread-local storage interface
@@ -48,15 +48,15 @@
 // Boost.Preprocessor
 //----------------------------------------------------------------------------//
 
-#cmakedefine ENABLE_BOOST_PREPROCESSOR
+#cmakedefine FLECSI_ENABLE_BOOST_PREPROCESSOR
 
 //----------------------------------------------------------------------------//
 // Enable coloring
 //----------------------------------------------------------------------------//
 
-#cmakedefine ENABLE_COLORING
-#cmakedefine ENABLE_METIS
-#cmakedefine ENABLE_PARMETIS
+#cmakedefine FLECSI_ENABLE_COLORING
+#cmakedefine FLECSI_ENABLE_METIS
+#cmakedefine FLECSI_ENABLE_PARMETIS
 
 //----------------------------------------------------------------------------//
 // Static container

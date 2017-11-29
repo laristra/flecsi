@@ -17,14 +17,18 @@
 //! @date Initial file creation: Jul 26, 2016
 //----------------------------------------------------------------------------//
 
-#if defined(ENABLE_MPI)
-  #include <mpi.h>
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_MPI)
+  #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
+
+#include <mpi.h>
 
 #include <flecsi/execution/context.h>
 
 // Boost command-line options
-#if defined(ENABLE_BOOST_PROGRAM_OPTIONS)
+#if defined(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
   #include <boost/program_options.hpp>
   using namespace boost::program_options;
 #endif
@@ -37,7 +41,7 @@ int main(int argc, char ** argv) {
 
   int rank(0);
 
-#if defined(ENABLE_MPI)
+#if defined(FLECSI_ENABLE_MPI)
   // Get the MPI version
   int version, subversion;
   MPI_Get_version(&version, &subversion);
@@ -66,7 +70,7 @@ int main(int argc, char ** argv) {
   // get the rank
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-#endif // ENABLE_MPI
+#endif // FLECSI_ENABLE_MPI
   
   //--------------------------------------------------------------------------//
   // INIT CLOG
@@ -79,7 +83,7 @@ int main(int argc, char ** argv) {
   //--------------------------------------------------------------------------//
   // Use BOOST Program Options
 
-#if defined(ENABLE_BOOST_PROGRAM_OPTIONS)
+#if defined(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
   options_description desc("Cinch test options");  
 
   // Add command-line options
@@ -107,7 +111,7 @@ int main(int argc, char ** argv) {
   } // if
 
   
-#endif // ENABLE_BOOST_PROGRAM_OPTIONS
+#endif // FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS
 
   // End BOOST Program Options
   //--------------------------------------------------------------------------//
@@ -122,7 +126,7 @@ int main(int argc, char ** argv) {
       } // for
     } // if
     // die nicely
-#if defined(ENABLE_MPI)
+#if defined(FLECSI_ENABLE_MPI)
     MPI_Finalize();
 #endif
     return 0;
@@ -139,13 +143,13 @@ int main(int argc, char ** argv) {
   // Execute the flecsi runtime.
   auto retval = flecsi::execution::context_t::instance().initialize(argc, argv);
 
-#if defined(ENABLE_MPI)
+#if defined(FLECSI_ENABLE_MPI)
   // FIXME: This is some kind of GASNet bug (or maybe Legion).
   // Shutdown the MPI runtime
 #ifndef GASNET_CONDUIT_MPI
   MPI_Finalize();
 #endif
-#endif // ENABLE_MPI
+#endif // FLECSI_ENABLE_MPI
 
   return retval;
 } // main

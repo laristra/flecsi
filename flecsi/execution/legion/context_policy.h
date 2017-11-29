@@ -28,15 +28,15 @@
 #include <cinchlog.h>
 #include <flecsi-config.h>
 
-#if !defined(ENABLE_LEGION)
-  #error ENABLE_LEGION not defined! This file depends on Legion!
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
 #include <legion.h>
 #include <legion_stl.h>
 
-#if !defined(ENABLE_MPI)
-  #error ENABLE_MPI not defined! This file depends on MPI!
+#if !defined(FLECSI_ENABLE_MPI)
+  #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
 #include <mpi.h>

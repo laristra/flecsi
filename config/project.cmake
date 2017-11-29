@@ -375,6 +375,13 @@ message(STATUS "${CINCH_Yellow}Set id_t bits to allow:\n"
 # configure header
 #------------------------------------------------------------------------------#
 
+set(FLECSI_ENABLE_MPI ENABLE_MPI)
+set(FLECSI_ENABLE_LEGION ENABLE_LEGION)
+set(FLECSI_ENABLE_COLORING ENABLE_COLORING)
+set(FLECSI_ENABLE_METIS ENABLE_METIS)
+set(FLECSI_ENABLE_PARMETIS ENABLE_PARMETIS)
+set(FLECSI_ENABLE_BOOST_PREPROCESSOR ENABLE_BOOST_PREPROCESSOR)
+
 configure_file(${PROJECT_SOURCE_DIR}/config/flecsi-config.h.in
   ${CMAKE_BINARY_DIR}/flecsi-config.h @ONLY)
 
@@ -432,7 +439,9 @@ export(PACKAGE FleCSI)
 #------------------------------------------------------------------------------#
 
 set(FLECSI_EXTERNAL_INCLUDE_DIRS)
+
 get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+
 foreach(dir ${dirs})
   if(NOT ${dir} MATCHES ${CMAKE_CURRENT_SOURCE_DIR})
     list(APPEND FLECSI_EXTERNAL_INCLUDE_DIRS ${dir})
