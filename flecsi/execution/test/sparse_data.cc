@@ -120,15 +120,18 @@ void task1(client_handle_t<test_mesh_t, ro> mesh, mutator<double> mh) {
   auto& context = execution::context_t::instance();
   auto rank = context.color();
 
-  mh(1, 2) = 1.0 + rank*10;
-  mh(1, 3) = 2.0 + rank*10;
-  mh(1, 4) = 4.0 + rank*10;
-  mh(1, 0) = 0.0 + rank*10;
-  mh(2, 1) = 1.0 + rank*10;
-
-  mh(30, 2) = -2.0 - rank*10;
-  mh(30, 3) = -3.0 - rank*10;
-  mh(31, 1) = -1.0 - rank*10;
+//  mh(1, 2) = 1.0 + rank*10;
+//  mh(1, 3) = 2.0 + rank*10;
+//  mh(1, 4) = 4.0 + rank*10;
+//  mh(1, 0) = 0.0 + rank*10;
+//  mh(2, 1) = 1.0 + rank*10;
+//
+//  mh(30, 2) = -2.0 - rank*10;
+//  mh(30, 3) = -3.0 - rank*10;
+//  mh(31, 1) = -1.0 - rank*10;
+  for (int i = 24; i < 28; i++) {
+    mh(i, 0) = i + rank*10;
+  }
 } // task1
 
 void task2(client_handle_t<test_mesh_t, ro> mesh,
@@ -215,7 +218,7 @@ void driver(int argc, char ** argv) {
 
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, sparse, 0);
 
-  flecsi_execute_task(task2, single, ch, ph);
+  //flecsi_execute_task(task2, single, ch, ph);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//

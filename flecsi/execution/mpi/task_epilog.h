@@ -181,7 +181,18 @@ namespace execution {
       ci.entries[2] = ci.entries[1] + h.num_shared() * h.max_entries_per_index();
 
       h.commit(&ci);
-
+//      entries =
+//        reinterpret_cast<entry_value_t*>(&(*h.entries)[0]);
+//      ci.offsets = &(*h.offsets)[0];
+//      ci.entries[0] = entries;
+//      ci.entries[1] = entries + *h.num_exclusive_entries + *h.reserve;
+//      ci.entries[2] = ci.entries[1] + h.num_shared() * h.max_entries_per_index();
+//
+//      auto shared_data = ci.entries[1];
+//      for (int i = 0; i < h.num_shared() * h.max_entries_per_index(); i++) {
+//        std::cout << shared_data[i].value << " ";
+//      }
+//      std::cout << std::endl;
     } // handle
 
 
