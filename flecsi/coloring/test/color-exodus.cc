@@ -14,6 +14,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchdevel.h>
+#include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_MPI)
   #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
