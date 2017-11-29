@@ -123,11 +123,11 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
       size_t needed = *h.num_exclusive_insertions - *h.reserve;
 
       *h.num_exclusive_entries += *h.num_exclusive_insertions;
-      *h.reserve = std::max(h.reserve_chunk, needed);
+      *h.reserve += std::max(h.reserve_chunk, needed);
 
       constexpr size_t entry_value_size = sizeof(size_t) + sizeof(T);
 
-      size_t count = *h.num_exclusive_entries + *h.reserve + 
+      size_t count = *h.reserve + 
         (h.num_shared() + h.num_ghost()) * h.max_entries_per_index();
 
       h.entries->resize(count * entry_value_size);
@@ -140,20 +140,20 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
         (h.num_shared() + h.num_ghost()) * h.max_entries_per_index() *
         entry_value_size;
 
-      std::memcpy(tmp, &(*h.entries)[0] + 
-        (old_exclusive_entries + old_reserve) * entry_value_size, bytes);
+      std::memcpy(tmp, &(*h.entries)[0] + old_reserve * 
+        entry_value_size, bytes);
 
-      std::memcpy(&(*h.entries)[0] + (*h.num_exclusive_entries + *h.reserve) *
+      std::memcpy(&(*h.entries)[0] + *h.reserve *
         entry_value_size, tmp, bytes);
 
       delete[] tmp;
 
-      size_t num_total = h.num_exclusive() + h.num_shared() + h.num_ghost();
+      size_t n = h.num_shared() + h.num_ghost();
+      size_t ne = h.num_exclusive();
 
-      for(size_t i = h.num_exclusive(); i < num_total; ++i){
-        offset_t& oi = (*h.offsets)[i];
-        oi.set_offset(*h.num_exclusive_entries + *h.reserve + i * 
-          h.max_entries_per_index());
+      for(size_t i = 0; i < n; ++i){
+        offset_t& oi = (*h.offsets)[i + ne];
+        oi.set_offset(*h.reserve + i * h.max_entries_per_index());
       }
     }
 
@@ -165,7 +165,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     commit_info_t ci;
     ci.offsets = &(*h.offsets)[0];
     ci.entries[0] = entries;
-    ci.entries[1] = entries + *h.num_exclusive_entries + *h.reserve;
+    ci.entries[1] = entries + *h.reserve;
     ci.entries[2] = ci.entries[1] + h.num_shared() * h.max_entries_per_index();
 
     h.commit(&ci);
