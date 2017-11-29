@@ -145,7 +145,7 @@ public:
       const offset_t& oi = offsets_[i];
       offset_t& coi = offsets[i];
 
-      entry_value_t* eptr = ci->entries[0] + coi.start();
+      entry_value_t* eptr = entries + coi.start();
 
       entry_value_t* sptr = entries_ + i * num_slots_;
 
