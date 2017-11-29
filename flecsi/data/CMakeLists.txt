@@ -131,7 +131,7 @@ add_executable(sparse_mutator test/sparse_mutator.cpp)
 #    test/data_client.cc
 #    ${RUNTIME_DRIVER}
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
@@ -141,7 +141,7 @@ add_executable(sparse_mutator test/sparse_mutator.cpp)
 #     ../execution/driver_initialization.cc
 #     ${RUNTIME_DRIVER}
 #   LIBRARIES
-#     flecsi
+#     FleCSI
 #     ${CINCH_RUNTIME_LIBRARIES}
 # )
 
@@ -149,7 +149,7 @@ add_executable(sparse_mutator test/sparse_mutator.cpp)
 #  cinch_add_unit(storage_class
 #    SOURCES test/storage_class.cc
 #    LIBRARIES
-#      flecsi
+#      FleCSI
 #      ${CINCH_RUNTIME_LIBRARIES}
 #  )
 #
@@ -163,7 +163,7 @@ add_executable(sparse_mutator test/sparse_mutator.cpp)
 #      DEFINES
 #        DATA_HANDLE_TEST
 #      LIBRARIES
-#        flecsi
+#        FleCSI
 #        ${CINCH_RUNTIME_LIBRARIES}
 #      POLICY SERIAL
 #      THREADS 2
@@ -182,7 +182,7 @@ add_executable(sparse_mutator test/sparse_mutator.cpp)
 #        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/storage_class.h
 #        TEST_INIT=flecsi/execution/test/task_init.h
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #    ${CINCH_RUNTIME_LIBRARIES}
 #  POLICY MPILEGION
 #)
@@ -220,7 +220,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
     DEFINES
       -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
     LIBRARIES
-      flecsi
+      FleCSI
       ${CINCH_RUNTIME_LIBRARIES}
     POLICY ${UNIT_POLICY}
     THREADS 2

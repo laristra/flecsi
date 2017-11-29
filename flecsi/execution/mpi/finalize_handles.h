@@ -151,6 +151,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     h.delete_storage();
   } // handle
 
+
   template<
     typename T
   >

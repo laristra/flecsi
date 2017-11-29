@@ -119,23 +119,19 @@ using client_handle_t = data_client_handle__<DC, PS>;
 void task1(client_handle_t<test_mesh_t, ro> mesh, mutator<double> mh) {
   auto& context = execution::context_t::instance();
   auto rank = context.color();
-
-  mh(1, 2) = 1.0 + rank*10;
-  mh(1, 3) = 2.0 + rank*10;
-  mh(1, 4) = 4.0 + rank*10;
-  mh(1, 0) = 0.0 + rank*10;
-  mh(2, 1) = 1.0 + rank*10;
-
-  mh(30, 2) = -2.0 - rank*10;
-  mh(30, 3) = -3.0 - rank*10;
-  mh(31, 1) = -1.0 - rank*10;
+  for(size_t i = 0; i < 32; ++i){
+    for(size_t j = 0; j < 5; ++j){
+      mh(i, j) = i * 100 + j + rank * 10000;
+    }
+  }
+  //mh.dump();
 } // task1
 
 void task2(client_handle_t<test_mesh_t, ro> mesh,
            sparse_accessor<double, ro, ro, ro> h) {
   auto& context = execution::context_t::instance();
   auto rank = context.color();
-  if (rank == 0)
+  if (rank == 1)
     h.dump();
 
 } // task2
@@ -155,6 +151,10 @@ void task3(client_handle_t<test_mesh_t, ro> mesh,
   h(30, 2) *= -1;
   h(30, 3) *= -1;
   h(31, 1) *= -1;
+
+  if(context.color() == 1){
+    h.dump();
+  }
 
 } // task2
 

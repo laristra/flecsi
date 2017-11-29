@@ -23,10 +23,12 @@
 #include <unordered_map>
 #include <map>
 #include <functional>
-#include <cinchlog.h>
 
-#if !defined(ENABLE_MPI)
-  #error ENABLE_MPI not defined! This file depends on MPI!
+#include <cinchlog.h>
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_MPI)
+  #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
 #include <mpi.h>
@@ -80,9 +82,12 @@ struct mpi_context_policy_t
     reserve(reserve_chunk),
     offsets(num_total),
     num_exclusive_entries(0){
+
+      size_t n = num_total - num_exclusive;
       
-      for(size_t i = num_exclusive; i < num_total; ++i){
-        offsets[i].set_offset(reserve + i * max_entries_per_index);
+      for(size_t i = 0; i < n; ++i){
+        offsets[num_exclusive + i].set_offset(
+          reserve + i * max_entries_per_index);
       }
 
       size_t entry_value_size = sizeof(size_t) + type_size;

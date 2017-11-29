@@ -21,10 +21,10 @@
 
 #include <type_traits>
 
-#include "flecsi.h"
+#include <flecsi-config.h>
 
-#if !defined(ENABLE_BOOST_PREPROCESSOR)
-  #error ENABLE_BOOST_PREPROCESSOR not defined! \
+#if !defined(FLECSI_ENABLE_BOOST_PREPROCESSOR)
+  #error FLECSI_ENABLE_BOOST_PREPROCESSOR not defined! \
     This file depends on Boost.Preprocessor!
 #endif
 

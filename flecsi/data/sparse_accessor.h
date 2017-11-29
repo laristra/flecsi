@@ -98,6 +98,7 @@ struct sparse_accessor : public sparse_accessor_base_t {
     for(size_t i = 0; i < handle.num_total_; ++i){
       const offset_t& offset = handle.offsets[i];
       std::cout << "index: " << i << std::endl;
+      //std::cout << "offset: " << offset.start() << std::endl;
       for(size_t j = 0; j < offset.count(); ++j){
         size_t k = offset.start() + j;
         std::cout << "  " << handle.entries[k].entry << 

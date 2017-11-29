@@ -1,19 +1,10 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_h
-#define flecsi_h
+#ifndef flecsi_config_h
+#define flecsi_config_h
 
 //----------------------------------------------------------------------------//
 // Runtime models
@@ -22,6 +13,21 @@
 #define FLECSI_RUNTIME_MODEL_legion 1
 #define FLECSI_RUNTIME_MODEL_mpi 2
 #cmakedefine FLECSI_RUNTIME_MODEL FLECSI_RUNTIME_MODEL_@FLECSI_RUNTIME_MODEL@
+
+//----------------------------------------------------------------------------//
+// External runtimes
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_MPI
+#cmakedefine FLECSI_ENABLE_LEGION
+
+//----------------------------------------------------------------------------//
+// Enable Legion thread-local storage interface
+//----------------------------------------------------------------------------//
+
+#if defined(ENABLE_LEGION)
+  #define ENABLE_LEGION_TLS
+#endif
 
 //----------------------------------------------------------------------------//
 // Process id bits
@@ -42,14 +48,15 @@
 // Boost.Preprocessor
 //----------------------------------------------------------------------------//
 
-#cmakedefine ENABLE_BOOST_PREPROCESSOR
+#cmakedefine FLECSI_ENABLE_BOOST_PREPROCESSOR
 
 //----------------------------------------------------------------------------//
-// Enable IO
+// Enable coloring
 //----------------------------------------------------------------------------//
 
-#cmakedefine METIS_FOUND
-#cmakedefine PARMETIS_FOUND
+#cmakedefine FLECSI_ENABLE_COLORING
+#cmakedefine FLECSI_ENABLE_METIS
+#cmakedefine FLECSI_ENABLE_PARMETIS
 
 //----------------------------------------------------------------------------//
 // Static container
@@ -57,7 +64,7 @@
 
 #define MAX_COUNTER_SIZE @MAX_CONTAINER_SIZE@
 
-#endif // flecsi_h
+#endif // flecsi_config_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

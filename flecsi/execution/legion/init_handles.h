@@ -23,16 +23,22 @@
 #include <vector>
 #include <type_traits>
 
-#include "legion.h"
-#include "arrays.h"
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
+#include <arrays.h>
 
 #include "flecsi/data/common/privilege.h"
-#include "flecsi/utils/tuple_walker.h"
 #include "flecsi/data/data_client_handle.h"
 #include "flecsi/data/dense_accessor.h"
 #include "flecsi/topology/mesh_types.h"
 #include "flecsi/topology/mesh_topology.h"
 #include "flecsi/topology/set_topology.h"
+#include "flecsi/utils/tuple_walker.h"
 
 namespace flecsi {
 namespace execution {
