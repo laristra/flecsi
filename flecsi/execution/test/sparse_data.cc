@@ -115,7 +115,7 @@ struct test_mesh_t : public mesh_topology_t<test_mesh_types_t> {};
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
-void task1(client_handle_t<test_mesh_t, ro> mesh, mutator<double> mh) {
+void task1(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
   for(size_t i = 0; i < 32; ++i){
     for(size_t j = 0; j < 5; ++j){
       mh(i, j) = i * 100 + j;

@@ -8,7 +8,7 @@
 
 #include "flecsi/data/dense_accessor.h"
 #include "flecsi/data/sparse_accessor.h"
-#include "flecsi/data/mutator.h"
+#include "flecsi/data/sparse_mutator.h"
 #include "flecsi/data/ragged_mutator.h"
 
 //----------------------------------------------------------------------------//
@@ -105,7 +105,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   >
   void
   handle(
-    mutator<
+    sparse_mutator<
       T
     > & m
   )
@@ -181,7 +181,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   )
   {
     // TODO: fix
-    handle(reinterpret_cast<mutator<T>&>(m));
+    handle(reinterpret_cast<sparse_mutator<T>&>(m));
   }
 
   //-----------------------------------------------------------------------//

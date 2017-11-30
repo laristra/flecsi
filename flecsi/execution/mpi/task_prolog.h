@@ -19,7 +19,7 @@
 #include "flecsi/data/sparse_accessor.h"
 #include "flecsi/data/ragged_accessor.h"
 #include "flecsi/data/sparse_accessor.h"
-#include "flecsi/data/mutator.h"
+#include "flecsi/data/sparse_mutator.h"
 #include "flecsi/data/ragged_mutator.h"
 
 //----------------------------------------------------------------------------//
@@ -115,7 +115,7 @@ namespace execution {
     >
     void
     handle(
-      mutator<
+      sparse_mutator<
         T
       > & m
     )
