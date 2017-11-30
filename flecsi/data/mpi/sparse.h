@@ -252,6 +252,67 @@ struct storage_class__<sparse>
 
 }; // struct storage_class_t
 
+template<>
+struct storage_class__<ragged>
+{
+  //--------------------------------------------------------------------------//
+  // Type definitions.
+  //--------------------------------------------------------------------------//
+
+  template<
+    typename T,
+    size_t EP,
+    size_t SP,
+    size_t GP
+  >
+  using handle_t = sparse_handle_t<T, EP, SP, GP>;
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION
+  >
+  static
+  auto
+  get_handle(
+    const data_client_t & data_client
+  )
+  {
+    return storage_class__<sparse>::get_handle<
+      DATA_CLIENT_TYPE,
+      DATA_TYPE,
+      NAMESPACE,
+      NAME,
+      VERSION
+    >(data_client);
+  }
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION
+  >
+  static
+  auto
+  get_mutator(
+    const data_client_t & data_client,
+    size_t slots
+  )
+  {
+    return storage_class__<sparse>::get_mutator<
+      DATA_CLIENT_TYPE,
+      DATA_TYPE,
+      NAMESPACE,
+      NAME,
+      VERSION
+  >(data_client, slots);
+  }
+}; // struct storage_class_t
+
 } // namespace mpi
 } // namespace data
 } // namespace flecsi
