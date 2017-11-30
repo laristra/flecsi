@@ -6,6 +6,8 @@
 #ifndef flecsi_dense_accessor_h
 #define flecsi_dense_accessor_h
 
+#include "flecsi/data/accessor.h"
+#include "flecsi/data/data_constants.h"
 #include "flecsi/data/data_handle.h"
 
 //----------------------------------------------------------------------------//
@@ -22,10 +24,10 @@ namespace flecsi {
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-struct dense_accessor_base_t {};
+struct dense_accessor_base_t : public accessor_base_t {};
 
 //----------------------------------------------------------------------------//
-//! The dense_accessor type captures information about permissions
+//! The dense_accessor__ type captures information about permissions
 //! and specifies a data policy.
 //!
 //! @tparam T                     The data type referenced by the handle.
@@ -46,7 +48,7 @@ template<
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS
 >
-struct dense_accessor : public dense_accessor_base_t {
+struct dense_accessor__ : public dense_accessor_base_t {
   using handle_t = 
     data_handle__<
       T,
@@ -59,7 +61,7 @@ struct dense_accessor : public dense_accessor_base_t {
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  dense_accessor(const data_handle__<T, 0, 0, 0>& h)
+  dense_accessor__(const data_handle__<T, 0, 0, 0>& h)
   : handle(reinterpret_cast<const handle_t&>(h)){
 
   }
@@ -90,7 +92,7 @@ struct dense_accessor : public dense_accessor_base_t {
   // \param index The index of the data variable to return.
   ///
   const T& operator()(size_t index) const{
-    return const_cast<dense_accessor&>(*this)(index);
+    return const_cast<dense_accessor__&>(*this)(index);
   }
 
   ///
@@ -268,10 +270,10 @@ template<
   typename T,
   size_t PERMISSIONS
 >
-struct global_accessor : public dense_accessor<T, PERMISSIONS, 0, 0>{
-  using base_t = dense_accessor<T, PERMISSIONS, 0, 0>;
+struct global_accessor__ : public dense_accessor__<T, PERMISSIONS, 0, 0>{
+  using base_t = dense_accessor__<T, PERMISSIONS, 0, 0>;
 
-  global_accessor(const data_handle__<T, 0, 0, 0>& h)
+  global_accessor__(const data_handle__<T, 0, 0, 0>& h)
   : base_t(h){}
 
   operator T&(){
@@ -286,7 +288,7 @@ struct global_accessor : public dense_accessor<T, PERMISSIONS, 0, 0>{
     return *base_t::handle.combined_data;
   }
 
-  global_accessor&
+  global_accessor__&
   operator=(const T& x){
     data() = x;
     return *this;
@@ -337,10 +339,10 @@ template<
   typename T,
   size_t PERMISSIONS
 >
-struct color_accessor : public dense_accessor<T, PERMISSIONS, 0, 0>{
-  using base_t = dense_accessor<T, PERMISSIONS, 0, 0>;
+struct color_accessor__ : public dense_accessor__<T, PERMISSIONS, 0, 0>{
+  using base_t = dense_accessor__<T, PERMISSIONS, 0, 0>;
 
-  color_accessor(const data_handle__<T, 0, 0, 0>& h)
+  color_accessor__(const data_handle__<T, 0, 0, 0>& h)
   : base_t(h){}
 
   operator T&(){
@@ -355,7 +357,7 @@ struct color_accessor : public dense_accessor<T, PERMISSIONS, 0, 0>{
     return *base_t::handle.combined_data;
   }
 
-  color_accessor&
+  color_accessor__&
   operator=(const T& x){
     data() = x;
     return *this;
@@ -401,6 +403,88 @@ struct color_accessor : public dense_accessor<T, PERMISSIONS, 0, 0>{
     return this->operator()(e->template id<0>());
   } // operator ()
 };
+
+template<
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
+>
+struct accessor_type__<
+  data::storage_label_type_t::dense,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS
+>
+{
+  using type = 
+    dense_accessor__<T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS>;
+};
+
+template<
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
+>
+struct accessor_type__<
+  data::storage_label_type_t::color,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS
+>
+{
+  using type = 
+    color_accessor__<T, EXCLUSIVE_PERMISSIONS>;
+};
+
+template<
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
+>
+struct accessor_type__<
+  data::storage_label_type_t::global,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS
+>
+{
+  using type = 
+    global_accessor__<T, EXCLUSIVE_PERMISSIONS>;
+};
+
+template<
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
+>
+using dense_accessor = 
+  typename accessor_type__<
+  data::storage_label_type_t::dense, T, EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS, GHOST_PERMISSIONS>::type;
+
+template<
+  typename T,
+  size_t PERMISSIONS
+>
+using color_accessor = 
+  typename accessor_type__<
+  data::storage_label_type_t::color, T, PERMISSIONS, 0, 0>::type;
+
+template<
+  typename T,
+  size_t PERMISSIONS
+>
+using global_accessor = 
+  typename accessor_type__<
+  data::storage_label_type_t::global, T, PERMISSIONS, 0, 0>::type;
 
 } // namespace flecsi
 

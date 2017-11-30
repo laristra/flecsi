@@ -93,7 +93,7 @@ namespace execution {
     >
     void
     handle(
-      dense_accessor<
+      dense_accessor__<
        T,
        EXCLUSIVE_PERMISSIONS,
        SHARED_PERMISSIONS,
