@@ -29,10 +29,11 @@ namespace data {
 
 enum storage_label_type_t : size_t {
   base,
+  dense,
   global,
   color,
-  dense,
   sparse,
+  ragged,
   scoped,
   tuple
 }; // enum storage_label_type_t
