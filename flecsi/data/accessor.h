@@ -15,6 +15,7 @@ namespace flecsi {
 
 struct accessor_base_t {};
 
+
 template<
   data::storage_label_type_t,
   typename T,
@@ -22,25 +23,23 @@ template<
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS
 >
-struct accessor_type__{};
+struct accessor__ : public accessor_base_t{};
 
 template<
-  data::storage_label_type_t STORAGE_TYPE,
   typename T,
   size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS = 0,
-  size_t GHOST_PERMISSIONS = 0
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
 >
-struct accessor__ :
-public accessor_type__<
-  STORAGE_TYPE,
+struct accessor__<
+  data::storage_label_type_t::base,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
   GHOST_PERMISSIONS
->::type
+>
 {
-  static constexpr data::storage_label_type_t storage_type = STORAGE_TYPE;
+  
 };
 
 } // namespace flecsi
