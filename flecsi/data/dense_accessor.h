@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_dense_accessor_h
@@ -75,7 +73,9 @@ public accessor__<
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  accessor__(const data_handle__<T, 0, 0, 0>& h)
+  accessor__(
+    const data_handle__<T, 0, 0, 0>& h
+  )
   : handle(reinterpret_cast<const handle_t&>(h)){
 
   }
@@ -86,7 +86,11 @@ public accessor__<
   //
   // \param index The index of the data variable to return.
   ///
-  T& operator()(size_t index){
+  T&
+  operator()(
+    size_t index
+  )
+  {
     assert(index < handle.combined_size && "index out of range");
     #ifndef MAPPER_COMPACTION
     #ifndef COMPACTED_STORAGE_SORT
@@ -105,7 +109,10 @@ public accessor__<
   //
   // \param index The index of the data variable to return.
   ///
-  const T& operator()(size_t index) const{
+  const T&
+  operator()(
+    size_t index
+  ) const{
     return const_cast<accessor__&>(*this)(index);
   }
 
@@ -113,7 +120,8 @@ public accessor__<
   // \brief Return the index space size of the data variable
   //        referenced by this handle.
   ///
-  size_t size() const{
+  size_t
+  size() const{
     return handle.combined_size;
   }
 
@@ -496,6 +504,4 @@ using global_accessor = global_accessor__<T, PERMISSIONS>;
 #endif // flecsi_dense_accessor_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

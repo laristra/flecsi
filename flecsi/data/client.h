@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_client_h
@@ -13,12 +11,12 @@
 
 #include "flecsi/data/common/data_types.h"
 #include "flecsi/data/common/registration_wrapper.h"
-#include "flecsi/data/storage.h"
 #include "flecsi/data/data_client_handle.h"
+#include "flecsi/data/storage.h"
 #include "flecsi/execution/context.h"
-#include "flecsi/utils/tuple_walker.h"
-#include "flecsi/topology/mesh_types.h"
 #include "flecsi/runtime/types.h"
+#include "flecsi/topology/mesh_types.h"
+#include "flecsi/utils/tuple_walker.h"
 
 namespace flecsi {
 namespace topology {
@@ -586,6 +584,4 @@ using data_client_interface_t =
 #endif // flecsi_data_client_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

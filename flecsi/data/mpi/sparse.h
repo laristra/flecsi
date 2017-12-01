@@ -1,15 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_mpi_sparse_h
@@ -24,22 +13,22 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
+#include <algorithm>
+#include <memory>
+
 #include "flecsi/data/common/data_types.h"
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
-#include "flecsi/data/sparse_data_handle.h"
 #include "flecsi/data/mutator_handle.h"
+#include "flecsi/data/sparse_data_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 
-#include <algorithm>
-#include <memory>
-
-///
-/// \file
-/// \date Initial file creation: Oct 05, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Oct 05, 2017
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace data {
@@ -320,6 +309,4 @@ struct storage_class__<ragged>
 #endif // flecsi_mpi_sparse_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

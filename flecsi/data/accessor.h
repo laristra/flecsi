@@ -13,7 +13,7 @@
 
 namespace flecsi {
 
-struct accessor_base_t {};
+struct accessor_base_t{};
 
 template<
   data::storage_label_type_t,

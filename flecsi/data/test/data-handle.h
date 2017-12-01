@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_handle_test_h
@@ -26,11 +24,12 @@
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
            << ": " << #X << " = " << (X) << std::endl
 
-///
-// \file data-handle.h
-// \authors nickm
-// \date Initial file creation: Jan 25, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file 
+//! @date Initial file creation: Jan 25, 2017
+//----------------------------------------------------------------------------//
+
+
 
 using namespace std;
 using namespace flecsi;
@@ -248,6 +247,4 @@ specialization_tlt_init(
 #endif // flecsi_data_handle_test_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

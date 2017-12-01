@@ -1,13 +1,11 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_ragged_mutator_h
 #define flecsi_ragged_mutator_h
 
-#include "flecsi/data/sparse_mutator.h"
 #include "flecsi/data/mutator_handle.h"
+#include "flecsi/data/sparse_mutator.h"
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -62,7 +60,9 @@ public mutator__<
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  mutator__(const mutator_handle__<T>& h)
+  mutator__(
+    const mutator_handle__<T>& h
+  )
   : base_t(h){
     assert(!base_t::h_.size_map_ && "expected null size map");
     base_t::h_.size_map_ = new size_map_t;
@@ -121,7 +121,12 @@ public mutator__<
     return itr->value;
   } // operator ()
 
-  void resize(size_t index, size_t length){
+  void
+  resize(
+    size_t index,
+    size_t length
+  )
+  {
     assert(length <= base_t::h_.max_entries_per_index_ &&
            "resize length exceeds max entries per index");
     base_t::h_.size_map_->emplace(index, length);
@@ -143,6 +148,4 @@ using ragged_mutator = ragged_mutator__<T>;
 #endif // flecsi_ragged_mutator_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

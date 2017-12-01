@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_sparse_mutator_h
@@ -55,8 +53,11 @@ public mutator__<
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  mutator__(const mutator_handle__<T>& h)
-  : h_(h){
+  mutator__(
+    const mutator_handle__<T>& h
+  )
+  : h_(h)
+  {
 
   }
 
@@ -182,6 +183,4 @@ using sparse_mutator = sparse_mutator__<T>;
 #endif // flecsi_sparse_mutator_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/
