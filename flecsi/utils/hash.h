@@ -15,10 +15,10 @@
 #ifndef flecsi_utils_hash_h
 #define flecsi_utils_hash_h
 
-//!
-//! \file
-//! \date Initial file creation: Oct 15, 2015
-//!
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Oct 15, 2015
+//----------------------------------------------------------------------------//
 
 #include <cstddef>
 #include <utility>
