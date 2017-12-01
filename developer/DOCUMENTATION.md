@@ -139,24 +139,199 @@ User Guide.
 This file is analogous to flecsi_dg_title.tex, but for the FleCSI User
 Guide.
 
-# Canonical File Format
+# Canonical File Formats
 
 ```cpp
-/*~--------------------------------------------------------------------------~*
- * This text is arbitrary. It will be replaced by the branding utility.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+  
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#ifndef flecsi_canonical_h
-#define flecsi_canonical_h
+/*!
+  @file
+ */
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Oct 26, 2017
-//----------------------------------------------------------------------------//
+#include <algorithm>
+#include <cstddef>
+#include <map>
+#include <unordered_map>
+
+#include <cinchlog.h>
+
+#include <flecsi/coloring/adjacency_types.h>
+#include <flecsi/coloring/coloring_types.h>
+#include <flecsi/coloring/index_coloring.h>
+#include <flecsi/execution/common/execution_state.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/const_string.h>
+
+clog_register_tag(context);
+
+namespace flecsi {
+namespace execution {
+
+/*!
+  The context__ type provides a high-level runtime context interface that
+  is implemented by the given context policy.
+
+  @tparam CONTEXT_POLICY The backend context policy.
+     
+  @ingroup execution
+ */
+
+template<
+  class CONTEXT_POLICY
+>
+struct context__ : public CONTEXT_POLICY
+{
+  using index_coloring_t = flecsi::coloring::index_coloring_t;
+  using coloring_info_t = flecsi::coloring::coloring_info_t;
+  using set_coloring_info_t = flecsi::coloring::set_coloring_info_t;
+  using adjacency_info_t = flecsi::coloring::adjacency_info_t;
+
+  /*!
+    Adjacency triple: index space, from index space, to index space
+   */
+
+  using adjacency_triple_t = std::tuple<size_t, size_t, size_t>;
+
+  /*!
+    Gathers info about registered data fields.
+   */
+
+  struct field_info_t {
+    size_t data_client_hash;
+    size_t storage_class;
+    size_t size;
+    size_t namespace_hash;
+    size_t name_hash;
+    size_t versions;
+    field_id_t fid;
+    size_t index_space;
+    size_t key;
+  }; // struct field_info_t
+
+  //--------------------------------------------------------------------------//
+  // Field info map for fields in SPMD task, key1 =
+  //   (data client hash, index space), key2 = fid
+  //--------------------------------------------------------------------------//
+
+  using field_info_map_t =
+    std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
+
+  //--------------------------------------------------------------------------//
+  // Function interface.
+  //--------------------------------------------------------------------------//
+
+  /*!
+    FIXME: This interface needs to be updated.
+   */
+
+  template<
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE),
+    size_t KEY
+  >
+  bool
+  register_function(
+  )
+  {
+    clog_assert(function_registry_.find(KEY) == function_registry_.end(),
+                "function has already been registered");
+
+    const std::size_t addr = reinterpret_cast<std::size_t>(FUNCTION);
+    clog(info) << "Registering function: " << addr << std::endl;
+
+    function_registry_[KEY] =
+      reinterpret_cast<void *>(FUNCTION);
+    return true;
+  } // register_function
+
+private:
+
+  //--------------------------------------------------------------------------//
+  // Function data members.
+  //--------------------------------------------------------------------------//
+
+  std::unordered_map<size_t, void *>
+    function_registry_;
+
+  struct vector_hash_t
+  {
+    size_t
+    operator () (
+      std::vector<size_t> const & v
+    )
+    const
+    {
+      size_t h{0};
+      for(auto i: v) {
+        h |= i;
+      } // for
+
+      return h;
+    } // operator ()
+  }; // struct vector_hash_t
+
+}; // class context__
+
+} // namespace execution
+} // namespace flecsi
+
+// This include file defines the FLECSI_RUNTIME_CONTEXT_POLICY used below.
+
+#include "flecsi/runtime/flecsi_runtime_context_policy.h"
+
+namespace flecsi {
+namespace execution {
+
+/*!
+  The context_t type is the high-level interface to the FleCSI runtime
+  context.
+ 
+  @ingroup execution
+ */
+
+using context_t = context__<FLECSI_RUNTIME_CONTEXT_POLICY>;
+
+} // namespace execution
+} // namespace flecsi
+```
+
+```cpp
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+  
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
+
+/*!
+  @file
+ */
 
 #include <system_file>
 
-#include "flecsi/local_file.h"
+#include <flecsi/local_file.h>
 
 namespace flecsi {
 
@@ -177,74 +352,7 @@ namespace flecsi {
   std::cout << "This is the canonical macro with parameter " <<                \
     parameter << std::endl
 
-//----------------------------------------------------------------------------//
-//! The canonical__ type provides an interface for doing stuff.
-//!
-//! @tparam CANONICAL_POLICY The canonical policy type.
-//! @tparam OTHER_TYPE       The other type.
-//!
-//! @ingroup canonical
-//----------------------------------------------------------------------------//
-
-template<
-  typename CANONICAL_POLICY,
-  typename OTHER_TYPE
->
-struct canonical__
-{
-public:
-
-  // Using directives should have comments, but not doxygen documentation.
-  using other_t = OTHER_TYPE;
-
-  //--------------------------------------------------------------------------//
-  //! The canonical_data_t type provides storage for data information.
-  //--------------------------------------------------------------------------//
-
-  struct canonical_data_t {
-    double data;
-    size_t size;
-  }; // struct canonical_data_t
-
-  //--------------------------------------------------------------------------//
-  //! Add canonical data.
-  //!
-  //! @param data The data to add.
-  //--------------------------------------------------------------------------//
-
-  void
-  add_data(
-    canonical_data_t const & data
-  )
-  {
-    data_ = data;    
-  } // add_data
-
-  //--------------------------------------------------------------------------//
-  //! \todo Add documentation.
-  //--------------------------------------------------------------------------//
-
-  void
-  dummy()
-  {
-    std::cout << "nothing..." << std::endl;
-  } // dummy
-
-private:
-
-  // private members may have comments, but should not provide
-  // doxygen documentation.
-  canonical_data_t data_;    
-
-}; // class canonical_t
-
 } // namespace flecsi
-
-#endif // flecsi_canonical_h
-
-/*~-------------------------------------------------------------------------~-*
- * This text is arbitrary. It will be replaced by the branding utility.
- *~-------------------------------------------------------------------------~-*/
 ```
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->

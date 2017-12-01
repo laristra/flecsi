@@ -132,6 +132,7 @@ runtime_driver(
   //--------------------------------------------------------------------------//
   //  Create Legion index spaces and logical regions
   //-------------------------------------------------------------------------//
+
   auto coloring_info = context_.coloring_info_map();
 
   data.init_from_coloring_info_map(coloring_info);
