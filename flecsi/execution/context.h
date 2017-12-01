@@ -376,6 +376,30 @@ struct context__ : public CONTEXT_POLICY
     std::unordered_map<size_t, coloring_info_t> & coloring_info
   )
   {
+    index_coloring_t coloring;
+    size_t id = 0;
+
+    for(auto& itr : coloring_info){
+      size_t color = itr.first;
+      const coloring_info_t& ci = itr.second;
+      size_t count = ci.exclusive;
+
+      for(size_t offset = 0; offset < count; ++offset){
+        coloring.primary.insert(id);
+
+        coloring::entity_info_t ei;
+        ei.id = id;
+        ei.rank = color;
+        ei.offset = offset;
+        coloring.exclusive.insert(std::move(ei));
+
+        ++id;
+      }
+
+      coloring.entities_per_rank.emplace(color, count);
+    }
+
+    colorings_[index_space] = std::move(coloring);
     coloring_info_[index_space] = coloring_info;
   }
 

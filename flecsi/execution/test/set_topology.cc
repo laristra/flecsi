@@ -35,8 +35,7 @@ class entity2 : public set_entity_t{
 class set_types{
 public:
   using entity_types = std::tuple<
-    std::tuple<index_space_<0>, entity1>,
-    std::tuple<index_space_<1>, entity2>
+    std::tuple<index_space_<0>, entity1>
     >;
 };
 
@@ -49,13 +48,8 @@ void task1(client_handle_t<set_t, rw> mesh) {
 
 }
 
-flecsi_register_task(task1, loc, single);
-
-namespace flecsi {
-namespace execution {
-
-void specialization_tlt_init(int argc, char ** argv) {
-  context_t & context_ = context_t::instance();
+void add_set_colorings(int dummy) {
+  execution::context_t & context_ = execution::context_t::instance();
   
   size_t n = 100;
   size_t colors = context_.colors();
@@ -75,8 +69,21 @@ void specialization_tlt_init(int argc, char ** argv) {
   context_.add_set_coloring(0, coloring_info);
 }
 
-void specialization_spmd_init(int argc, char ** argv) {
+flecsi_register_mpi_task(add_set_colorings);
 
+flecsi_register_task(task1, loc, single);
+
+flecsi_register_field(set_t, hydro, pressure, double, dense, 1, 0);
+
+namespace flecsi {
+namespace execution {
+
+void specialization_tlt_init(int argc, char ** argv) {
+  flecsi_execute_mpi_task(add_set_colorings, 0);
+}
+
+void specialization_spmd_init(int argc, char ** argv) {
+  auto ch = flecsi_get_client_handle(set_t, sets, set1);
 }
 
 void driver(int argc, char ** argv) {
