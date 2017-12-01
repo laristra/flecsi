@@ -48,14 +48,14 @@ template<
   size_t GHOST_PERMISSIONS
 >
 struct accessor__<
-  data::storage_label_type_t::sparse,
+  data::sparse,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
   GHOST_PERMISSIONS
 > :
 public accessor__<
-  data::storage_label_type_t::base,
+  data::base,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
@@ -131,7 +131,7 @@ template<
   size_t GHOST_PERMISSIONS
 >
 using sparse_accessor__ = 
-  accessor__<data::storage_label_type_t::sparse, T, EXCLUSIVE_PERMISSIONS,
+  accessor__<data::sparse, T, EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
 
 template<

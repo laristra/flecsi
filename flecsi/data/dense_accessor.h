@@ -49,14 +49,14 @@ template<
   size_t GHOST_PERMISSIONS
 >
 struct accessor__<
-  data::storage_label_type_t::dense,
+  data::dense,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
   GHOST_PERMISSIONS
 > :
 public accessor__<
-  data::storage_label_type_t::base,
+  data::base,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
@@ -285,21 +285,21 @@ template<
   size_t PERMISSIONS
 >
 struct accessor__<
-  data::storage_label_type_t::global,
+  data::global,
   T,
   PERMISSIONS,
   0,
   0
 > :
 public accessor__<
-  data::storage_label_type_t::dense,
+  data::dense,
   T,
   PERMISSIONS,
   0,
   0
 >
 {
-  using base_t = accessor__<data::storage_label_type_t::dense, T, PERMISSIONS, 0, 0>;
+  using base_t = accessor__<data::dense, T, PERMISSIONS, 0, 0>;
 
   accessor__(const data_handle__<T, 0, 0, 0>& h)
   : base_t(h){}
@@ -368,21 +368,21 @@ template<
   size_t PERMISSIONS
 >
 struct accessor__<
-  data::storage_label_type_t::color,
+  data::color,
   T,
   PERMISSIONS,
   0,
   0
 > :
 public accessor__<
-  data::storage_label_type_t::dense,
+  data::dense,
   T,
   PERMISSIONS,
   0,
   0
 >
 {
-  using base_t = accessor__<data::storage_label_type_t::dense, T, PERMISSIONS, 0, 0>;
+  using base_t = accessor__<data::dense, T, PERMISSIONS, 0, 0>;
 
   accessor__(const data_handle__<T, 0, 0, 0>& h)
   : base_t(h){}
@@ -453,7 +453,7 @@ template<
   size_t GHOST_PERMISSIONS
 >
 using dense_accessor__ = 
-  accessor__<data::storage_label_type_t::dense, T, EXCLUSIVE_PERMISSIONS,
+  accessor__<data::dense, T, EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
 
 template<
@@ -470,7 +470,7 @@ template<
   size_t PERMISSIONS
 >
 using color_accessor__ = 
-  accessor__<data::storage_label_type_t::color, T, PERMISSIONS, 0, 0>;
+  accessor__<data::color, T, PERMISSIONS, 0, 0>;
 
 template<
   typename T,
@@ -483,7 +483,7 @@ template<
   size_t PERMISSIONS
 >
 using global_accessor__ =
-  accessor__<data::storage_label_type_t::global, T, PERMISSIONS, 0, 0>;
+  accessor__<data::global, T, PERMISSIONS, 0, 0>;
 
 template<
   typename T,

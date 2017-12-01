@@ -47,14 +47,14 @@ template<
   size_t GHOST_PERMISSIONS
 >
 struct accessor__<
-  data::storage_label_type_t::ragged,
+  data::ragged,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
   GHOST_PERMISSIONS
 > :
 public accessor__<
-  data::storage_label_type_t::sparse,
+  data::sparse,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
@@ -63,7 +63,7 @@ public accessor__<
   
   using base_t = 
     accessor__<
-      data::storage_label_type_t::sparse,
+      data::sparse,
       T,
       EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS,
@@ -99,7 +99,7 @@ template<
   size_t GHOST_PERMISSIONS
 >
 using ragged_accessor__ = 
-  accessor__<data::storage_label_type_t::ragged, T, EXCLUSIVE_PERMISSIONS,
+  accessor__<data::ragged, T, EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
 
 template<

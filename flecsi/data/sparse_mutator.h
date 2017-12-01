@@ -39,11 +39,11 @@ template<
   typename T
 >
 struct mutator__<
-  data::storage_label_type_t::sparse,
+  data::sparse,
   T
 > :
 public mutator__<
-  data::storage_label_type_t::base,
+  data::base,
   T
 >, public sparse_mutator_base_t {
   using handle_t = mutator_handle__<T>;
@@ -170,7 +170,7 @@ public mutator__<
 template<
   typename T
 >
-using sparse_mutator__ = mutator__<data::storage_label_type_t::sparse, T>;
+using sparse_mutator__ = mutator__<data::sparse, T>;
 
 template<
   typename T

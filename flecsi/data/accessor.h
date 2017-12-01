@@ -31,7 +31,7 @@ template<
   size_t GHOST_PERMISSIONS
 >
 struct accessor__<
-  data::storage_label_type_t::base,
+  data::base,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
