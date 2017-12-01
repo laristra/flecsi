@@ -1,17 +1,15 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_common_data_hash_h
 #define flecsi_data_common_data_hash_h
 
-#include <utility>
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Apr 10, 2017
+//----------------------------------------------------------------------------//
 
-///
-/// \file
-/// \date Initial file creation: Apr 10, 2017
-///
+#include <utility>
 
 namespace flecsi {
 namespace data {
@@ -86,13 +84,10 @@ struct data_hash_t
 
 }; // struct data_hash_t
 
-
 } // namespace data
 } // namespace flecsi
 
 #endif // flecsi_data_common_data_hash_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

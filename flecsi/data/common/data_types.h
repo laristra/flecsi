@@ -1,20 +1,17 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_data_types_h
 #define flecsi_data_data_types_h
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Sep 28, 2016
+//----------------------------------------------------------------------------//
+
 #include <bitset>
 
 #include "flecsi/utils/offset.h"
-
-///
-// \file data_types.h
-// \authors bergen
-// \date Initial file creation: Sep 28, 2016
-///
 
 namespace flecsi {
 namespace data {
@@ -76,6 +73,4 @@ class global_data_client_t : public data::data_client_t
 #endif // flecsi_data_data_types_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

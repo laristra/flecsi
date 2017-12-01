@@ -28,7 +28,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   >
   void
   handle(
-    dense_accessor<
+    dense_accessor__<
      T,
      EXCLUSIVE_PERMISSIONS,
      SHARED_PERMISSIONS,

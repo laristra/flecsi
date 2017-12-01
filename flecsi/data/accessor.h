@@ -1,8 +1,8 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_mutator_h
-#define flecsi_mutator_h
+#ifndef flecsi_accessor_h
+#define flecsi_accessor_h
 
 #include "flecsi/data/data_constants.h"
 
@@ -13,20 +13,29 @@
 
 namespace flecsi {
 
-struct mutator_base_t {};
+struct accessor_base_t{};
 
 template<
   data::storage_label_type_t,
-  typename T
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
 >
-struct mutator__ : public mutator_base_t{};
+struct accessor__ : public accessor_base_t{};
 
 template<
-  typename T
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
 >
-struct mutator__<
+struct accessor__<
   data::base,
-  T
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS
 >
 {
   
@@ -34,7 +43,7 @@ struct mutator__<
 
 } // namespace flecsi
 
-#endif // flecsi_mutator_h
+#endif // flecsi_accessor_h
 
 /*~-------------------------------------------------------------------------~-*
 *~-------------------------------------------------------------------------~-*/

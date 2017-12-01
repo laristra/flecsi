@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_mpi_data_policy_h
@@ -12,11 +10,10 @@
 //----------------------------------------------------------------------------//
 
 #include "flecsi/data/common/registration_wrapper.h"
-#include "flecsi/data/storage.h"
-
-//#include "flecsi/data/mpi/global.h"
 #include "flecsi/data/mpi/dense.h"
 #include "flecsi/data/mpi/sparse.h"
+#include "flecsi/data/storage.h"
+//#include "flecsi/data/mpi/global.h"
 //#include "flecsi/data/mpi/scoped.h"
 //#include "flecsi/data/mpi/tuple.h"
 
@@ -47,6 +44,4 @@ struct mpi_data_policy_t
 #endif // flecsi_data_mpi_data_policy_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

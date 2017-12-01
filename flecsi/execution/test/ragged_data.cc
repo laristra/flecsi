@@ -140,7 +140,7 @@ flecsi_register_data_client(test_mesh_t, meshes, mesh1);
 flecsi_register_task(task1, loc, single);
 flecsi_register_task(task2, loc, single);
 
-flecsi_register_field(test_mesh_t, hydro, pressure, double, sparse, 1, 0);
+flecsi_register_field(test_mesh_t, hydro, pressure, double, ragged, 1, 0);
 
 namespace flecsi {
 namespace execution {
@@ -186,11 +186,11 @@ void specialization_spmd_init(int argc, char ** argv) {
 
 void driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
-  auto mh = flecsi_get_mutator(ch, hydro, pressure, double, sparse, 0, 5);
+  auto mh = flecsi_get_mutator(ch, hydro, pressure, double, ragged, 0, 5);
 
   flecsi_execute_task(task1, single, ch, mh);
 
-  auto ph = flecsi_get_handle(ch, hydro, pressure, double, sparse, 0);
+  auto ph = flecsi_get_handle(ch, hydro, pressure, double, ragged, 0);
 
   flecsi_execute_task(task2, single, ch, ph);
 } // specialization_driver

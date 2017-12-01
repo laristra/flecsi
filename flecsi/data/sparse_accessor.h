@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_sparse_accessor_h
@@ -26,7 +24,7 @@ namespace flecsi {
 struct sparse_accessor_base_t {};
 
 //----------------------------------------------------------------------------//
-//! The sparse_accessor type captures information about permissions
+//! The sparse accessor__ type captures information about permissions
 //! and specifies a data policy.
 //!
 //! @tparam T                     The data type referenced by the handle.
@@ -47,7 +45,21 @@ template<
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS
 >
-struct sparse_accessor : public sparse_accessor_base_t {
+struct accessor__<
+  data::sparse,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS
+> :
+public accessor__<
+  data::base,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS
+>, public sparse_accessor_base_t
+{
   using handle_t = 
     sparse_data_handle__<
       T,
@@ -63,7 +75,7 @@ struct sparse_accessor : public sparse_accessor_base_t {
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  sparse_accessor(const sparse_data_handle__<T, 0, 0, 0>& h)
+  accessor__(const sparse_data_handle__<T, 0, 0, 0>& h)
   : handle(reinterpret_cast<const handle_t&>(h)){
 
   }
@@ -98,6 +110,7 @@ struct sparse_accessor : public sparse_accessor_base_t {
     for(size_t i = 0; i < handle.num_total_; ++i){
       const offset_t& offset = handle.offsets[i];
       std::cout << "index: " << i << std::endl;
+      //std::cout << "offset: " << offset.start() << std::endl;
       for(size_t j = 0; j < offset.count(); ++j){
         size_t k = offset.start() + j;
         std::cout << "  " << handle.entries[k].entry << 
@@ -109,11 +122,28 @@ struct sparse_accessor : public sparse_accessor_base_t {
   handle_t handle;  
 };
 
+template<
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
+>
+using sparse_accessor__ = 
+  accessor__<data::sparse, T, EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+
+template<
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
+>
+using sparse_accessor = 
+  sparse_accessor__<T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+
 } // namespace flecsi
 
 #endif // flecsi_sparse_accessor_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

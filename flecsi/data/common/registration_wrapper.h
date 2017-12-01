@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_registration_wrapper_h
@@ -15,15 +13,15 @@
 #include <string>
 #include <tuple>
 
-#include "flecsi/execution/context.h"
 #include "flecsi/data/data_constants.h"
 #include "flecsi/data/storage.h"
+#include "flecsi/execution/context.h"
+#include "flecsi/execution/legion/internal_index_space.h"
 #include "flecsi/runtime/types.h"
 #include "flecsi/topology/mesh_topology.h"
+#include "flecsi/utils/common.h"
 #include "flecsi/utils/hash.h"
 #include "flecsi/utils/tuple_walker.h"
-#include "flecsi/utils/common.h"
-#include "flecsi/execution/legion/internal_index_space.h"
 
 //clog_register_tag(registration);
 
@@ -383,6 +381,4 @@ struct client_registration_wrapper__<
 #endif // flecsi_data_registration_wrapper_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

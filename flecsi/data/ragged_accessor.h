@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_ragged_accessor_h
@@ -25,7 +23,7 @@ namespace flecsi {
 struct ragged_accessor_base_t {};
 
 //----------------------------------------------------------------------------//
-//! The ragged_accessor type captures information about permissions
+//! The ragged accessor__ type captures information about permissions
 //! and specifies a data policy.
 //!
 //! @tparam T                     The data type referenced by the handle.
@@ -46,26 +44,38 @@ template<
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS
 >
-struct ragged_accessor : public ragged_accessor_base_t {
-  using handle_t = 
-    sparse_data_handle__<
+struct accessor__<
+  data::ragged,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS
+> :
+public accessor__<
+  data::sparse,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS
+>, public ragged_accessor_base_t {
+  
+  using base_t = 
+    accessor__<
+      data::sparse,
       T,
       EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS,
       GHOST_PERMISSIONS
     >;
 
-  using offset_t = typename handle_t::offset_t;
-  using entry_value_t = typename handle_t::entry_value_t;
+  using offset_t = typename base_t::offset_t;
 
   //--------------------------------------------------------------------------//
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  ragged_accessor(const sparse_data_handle__<T, 0, 0, 0>& h)
-  : handle(reinterpret_cast<const handle_t&>(h)){
-
-  }
+  accessor__(const sparse_data_handle__<T, 0, 0, 0>& h)
+  : base_t(h){}
 
   T &
   operator () (
@@ -73,20 +83,35 @@ struct ragged_accessor : public ragged_accessor_base_t {
     size_t ragged_index
   )
   {
-    const offset_t& offset = handle.offsets[index];
+    const offset_t& offset = base_t::handle.offsets[index];
     assert(ragged_index < offset.count() && "ragged accessor: index out of range");
 
-    return (handle.entries + offset.start() + ragged_index)->value;
+    return (base_t::handle.entries + offset.start() + ragged_index)->value;
   } // operator ()
-
-  handle_t handle;  
 };
+
+template<
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
+>
+using ragged_accessor__ = 
+  accessor__<data::ragged, T, EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+
+template<
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
+>
+using ragged_accessor = 
+  ragged_accessor__<T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
 
 } // namespace flecsi
 
 #endif // flecsi_ragged_accessor_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

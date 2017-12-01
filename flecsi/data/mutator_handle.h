@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_mutator_handle_h
@@ -73,13 +71,19 @@ public:
 
   ~mutator_handle_base__(){}
 
-  void init(){
+  void
+  init()
+  {
     offsets_ = new offset_t[num_entries_]; 
     entries_ = new entry_value_t[num_entries_ * num_slots_];
     spare_map_ = new spare_map_t;    
   }
 
-  void commit(commit_info_t* ci){
+  void
+  commit(
+    commit_info_t* ci
+  )
+  {
     if(erase_set_){
       commit_<true>(ci);
     }
@@ -93,8 +97,14 @@ public:
     }
   }
 
-  template<bool ERASE>
-  void commit_(commit_info_t* ci){
+  template<
+    bool ERASE
+  >
+  void
+  commit_(
+    commit_info_t* ci
+  )
+  {
     assert(offsets_ && "uninitialized mutator");
     ci_ = *ci;
 
@@ -142,10 +152,10 @@ public:
     cbuf = new entry_value_t[max_entries_per_index_];
 
     for(size_t i = start; i < end; ++i){
-      entry_value_t* eptr = ci->entries[1] + max_entries_per_index_ * i;
-
       const offset_t& oi = offsets_[i];
       offset_t& coi = offsets[i];
+
+      entry_value_t* eptr = entries + coi.start();
 
       entry_value_t* sptr = entries_ + i * num_slots_;
 
@@ -180,7 +190,11 @@ public:
     }
   }
 
-  void raggedCommit_(commit_info_t* ci){
+  void
+  raggedCommit_(
+    commit_info_t* ci
+  )
+  {
     assert(offsets_ && "uninitialized mutator");
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
@@ -317,27 +331,39 @@ public:
     size_map_ = nullptr;
   }
 
-  size_t num_exclusive() const{
+  size_t
+  num_exclusive() const
+  {
     return pi_.count[0];
   }
 
-  size_t num_shared() const{
+  size_t
+  num_shared() const
+  {
     return pi_.count[1];
   }
 
-  size_t num_ghost() const{
+  size_t
+  num_ghost() const
+  {
     return pi_.count[2];
   }
 
-  size_t max_entries_per_index() const{
+  size_t
+  max_entries_per_index() const
+  {
     return max_entries_per_index_;
   }
 
-  commit_info_t& commit_info(){
+  commit_info_t&
+  commit_info()
+  {
     return ci_;
   }
 
-  const commit_info_t& commit_info() const{
+  const commit_info_t&
+  commit_info() const
+  {
     return ci_;
   }
 
@@ -357,13 +383,18 @@ public:
   size_map_t* size_map_ = nullptr;
   commit_info_t ci_;
 
-  template<bool ERASE>
-  size_t merge(size_t index,
-               entry_value_t* existing,
-               size_t num_existing,
-               entry_value_t* slots,
-               size_t num_slots,
-               entry_value_t* dest){
+  template<
+    bool ERASE
+  >
+  size_t
+  merge(
+    size_t index,
+    entry_value_t* existing,
+    size_t num_existing,
+    entry_value_t* slots,
+    size_t num_slots,
+    entry_value_t* dest
+    ){
     
     constexpr size_t end = std::numeric_limits<size_t>::max();
     entry_value_t* existing_end = existing + num_existing;
@@ -447,6 +478,4 @@ using mutator_handle__ = mutator_handle_base__<
 #endif // flecsi_mutator_handle_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

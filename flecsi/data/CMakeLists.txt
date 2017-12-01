@@ -22,22 +22,24 @@ set(data_HEADERS
   common/data_types.h
   common/privilege.h
   common/registration_wrapper.h
+  accessor.h
   client.h
+  data.h
   data_client.h
   data_client_handle.h
-  data_constants.h
-  data.h
   data_client_handle.h
+  data_constants.h
   data_handle.h
-  sparse_data_handle.h
+  dense_accessor.h
   field.h
-  storage.h
-  storage_class.h
   mutator.h
   mutator_handle.h
-  sparse_accessor.h
   ragged_accessor.h
   ragged_mutator.h
+  sparse_accessor.h
+  sparse_data_handle.h
+  storage.h
+  storage_class.h
 )
 
 #------------------------------------------------------------------------------#
@@ -67,7 +69,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/sparse_data_handle_policy.h
     legion/data_policy.h
     legion/dense.h
-    legion/dpd.h
     legion/global.h
     legion/color.h
     legion/legion_data.h
@@ -195,7 +196,6 @@ set(data_SOURCES
 #        ../execution/mpilegion/copy_ghosts.cc
 #        ../execution/test/mpilegion/init_partitions_task.cc
 #        data_client.cc
-#        legion/dpd.cc
 #      DEFINES DATA_HANDLE_TEST
 #        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle.h
 #        TEST_INIT=flecsi/execution/test/task_init.h

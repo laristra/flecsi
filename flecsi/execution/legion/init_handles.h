@@ -82,7 +82,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
   >
   void
   handle(
-    dense_accessor<
+    dense_accessor__<
       T,
       EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS,

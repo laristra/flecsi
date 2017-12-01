@@ -1,19 +1,13 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_legion_color_h
 #define flecsi_legion_color_h
+
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: July, 2017
+//----------------------------------------------------------------------------//
 
 #include <ostream>
 
@@ -26,20 +20,14 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
-#include "flecsi/utils/const_string.h"
+#include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
 #include "flecsi/data/storage.h"
+#include "flecsi/execution/context.h"
+#include "flecsi/utils/const_string.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/data/common/privilege.h"
-
-///
-// \file legion/color.h
-// \authors Demeshko
-// \date Initial file creation: July, 2017
-///
 
 namespace flecsi {
 namespace data {
@@ -230,6 +218,4 @@ struct storage_class__<color> {
 #endif // flecsi_legion_color_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

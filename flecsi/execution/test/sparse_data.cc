@@ -115,17 +115,23 @@ struct test_mesh_t : public mesh_topology_t<test_mesh_types_t> {};
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
-void task1(client_handle_t<test_mesh_t, ro> mesh, mutator<double> mh) {
-  mh(1, 2) = 5.0;
-  mh(1, 3) = 15.0;
-  mh(2, 1) = 35.0;
+void task1(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
+  for(size_t i = 0; i < 32; ++i){
+    for(size_t j = 0; j < 5; ++j){
+      mh(i, j) = i * 100 + j;
+    }
+  }
   //mh.dump();
 } // task1
 
 void task2(client_handle_t<test_mesh_t, ro> mesh,
            sparse_accessor<double, ro, ro, ro> h) {
 
-  h.dump();
+  auto& context = execution::context_t::instance();
+
+  if(context.color() == 0){
+    h.dump();
+  }
 
 } // task2
 
