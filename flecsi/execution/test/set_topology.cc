@@ -49,7 +49,7 @@ void task1(client_handle_t<set_t, rw> mesh) {
 
 }
 
-flecsi_register_task(task1, loc, single);
+flecsi_register_task_simple(task1, loc, single);
 
 namespace flecsi {
 namespace execution {

@@ -45,10 +45,10 @@ void taskvoid(void) {
   clog(info) << "This is a void(void) task" << std::endl;
 }
 
-flecsi_register_task(task, processor_type_t::loc, single | index);
-flecsi_register_task(single_task, processor_type_t::loc, single);
-flecsi_register_task(index_task, processor_type_t::loc, index);
-flecsi_register_task(taskvoid, processor_type_t::loc, single | index);
+flecsi_register_task(task, flecsi::execution, loc, single | index);
+flecsi_register_task(single_task, flecsi::execution, loc, single);
+flecsi_register_task(index_task, flecsi::execution, loc, index);
+flecsi_register_task(taskvoid, flecsi::execution, loc, single | index);
 
 //----------------------------------------------------------------------------//
 // Driver.
@@ -59,25 +59,25 @@ void driver(int argc, char ** argv) {
 
   const double alpha{10.0};
 
-  auto f = flecsi_execute_task(task, single, alpha, 5);
+  auto f = flecsi_execute_task(task, flecsi::execution, single, alpha, 5);
 
   f.wait();
 
-  auto f2 = flecsi_execute_task(task, index, alpha, 3);
+  auto f2 = flecsi_execute_task(task, flecsi::execution, index, alpha, 3);
 
   f2.wait();
 
   clog(info) << "Task return: " << f.get() << std::endl;
 
-  auto f3 = flecsi_execute_task(taskvoid, index);
+  auto f3 = flecsi_execute_task(taskvoid, flecsi::execution, index);
 
   f3.wait();
 
-  auto f4 = flecsi_execute_task(single_task, single);
+  auto f4 = flecsi_execute_task(single_task, flecsi::execution, single);
 
   f4.wait();
 
-  auto f5 = flecsi_execute_task(index_task, index);
+  auto f5 = flecsi_execute_task(index_task, flecsi::execution, index);
 
   f5.wait();
 

@@ -137,8 +137,8 @@ void task2(client_handle_t<test_mesh_t, ro> mesh,
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
 
-flecsi_register_task(task1, loc, single);
-flecsi_register_task(task2, loc, single);
+flecsi_register_task_simple(task1, loc, single);
+flecsi_register_task_simple(task2, loc, single);
 
 flecsi_register_field(test_mesh_t, hydro, pressure, double, sparse, 1, 0);
 
@@ -154,7 +154,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   coloring_map_t map;
   map.vertices = 1;
   map.cells = 0;
-  flecsi_execute_mpi_task(add_colorings, map);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
   auto& context = execution::context_t::instance();
 
@@ -188,11 +188,11 @@ void driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   auto mh = flecsi_get_mutator(ch, hydro, pressure, double, sparse, 0, 5);
 
-  flecsi_execute_task(task1, single, ch, mh);
+  flecsi_execute_task_simple(task1, single, ch, mh);
 
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, sparse, 0);
 
-  flecsi_execute_task(task2, single, ch, ph);
+  flecsi_execute_task_simple(task2, single, ch, ph);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//

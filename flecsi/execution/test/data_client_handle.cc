@@ -203,13 +203,13 @@ void hello() {
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
 
-flecsi_register_task(task1, loc, single);
+flecsi_register_task_simple(task1, loc, single);
 
 flecsi_register_field(test_mesh_t, hydro, pressure, double, dense, 1, 0);
 
-flecsi_register_task(fill_task, loc, single);
-flecsi_register_task(print_task, loc, single);
-flecsi_register_task(hello, loc, single);
+flecsi_register_task_simple(fill_task, loc, single);
+flecsi_register_task_simple(print_task, loc, single);
+flecsi_register_task_simple(hello, loc, single);
 
 namespace flecsi {
 namespace execution {
@@ -223,7 +223,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   coloring_map_t map;
   map.vertices = 1;
   map.cells = 0;
-  flecsi_execute_mpi_task(add_colorings, map);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
   auto& context = execution::context_t::instance();
 
@@ -256,7 +256,7 @@ void specialization_spmd_init(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, dense, 0);
 
-  auto f1 = flecsi_execute_task(fill_task, single, ch, ph);
+  auto f1 = flecsi_execute_task_simple(fill_task, single, ch, ph);
   f1.wait();
   } // scope
 
@@ -264,7 +264,7 @@ void specialization_spmd_init(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, dense, 0);
 
-  auto f2 = flecsi_execute_task(print_task, single, ch, ph);
+  auto f2 = flecsi_execute_task_simple(print_task, single, ch, ph);
   f2.wait();
   } // scope
 
@@ -284,7 +284,7 @@ void driver(int argc, char ** argv) {
 
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
 
-  flecsi_execute_task(task1, single, ch);
+  flecsi_execute_task_simple(task1, single, ch);
 #endif
 
 } // specialization_driver

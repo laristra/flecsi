@@ -31,13 +31,13 @@ void check_all_cells_task(
         dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
         dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
         int my_color, size_t cycle);
-flecsi_register_task(check_all_cells_task, loc, single|leaf);
+flecsi_register_task_simple(check_all_cells_task, loc, single|leaf);
 
 void set_primary_cells_task(
         dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
         dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
         int my_color, size_t cycle);
-flecsi_register_task(set_primary_cells_task, loc, single|leaf);
+flecsi_register_task_simple(set_primary_cells_task, loc, single|leaf);
 
 flecsi_register_field(empty_mesh_t, name_space, cell_ID, size_t, dense,
     VERSIONS, INDEX_ID);
@@ -58,7 +58,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   map.vertices = 1;
   map.cells = 0;
 
-  flecsi_execute_mpi_task(add_colorings, map);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
 } // specialization_tlt_init
 
@@ -85,11 +85,11 @@ void driver(int argc, char ** argv) {
       INDEX_ID);
 
   for(size_t cycle=0; cycle<3; cycle++) {
-    flecsi_execute_task(set_primary_cells_task, single, handle, test_handle,
-            my_color,cycle);
+    flecsi_execute_task_simple(set_primary_cells_task, single, handle,
+      test_handle, my_color,cycle);
 
-    flecsi_execute_task(check_all_cells_task, single, handle, test_handle,
-            my_color, cycle);
+    flecsi_execute_task_simple(check_all_cells_task, single, handle,
+      test_handle, my_color, cycle);
   }
 
 } // driver

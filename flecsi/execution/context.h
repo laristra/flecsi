@@ -13,9 +13,7 @@
                                                                               */
 #pragma once
 
-/*!
-  @file
- */
+/*! @file */
 
 #include <algorithm>
 #include <cstddef>

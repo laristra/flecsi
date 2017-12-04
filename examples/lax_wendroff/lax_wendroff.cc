@@ -37,37 +37,37 @@ using namespace supplemental;
 void initialize_data(
         dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> global_IDs,
         dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> phi);
-flecsi_register_task(initialize_data, loc, single);
+flecsi_register_task_simple(initialize_data, loc, single);
 
 void write_to_disk(
         dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
         dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
         const int my_color);
-flecsi_register_task(write_to_disk, loc, single);
+flecsi_register_task_simple(write_to_disk, loc, single);
 
 void calculate_exclusive_x_update(
         dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
         dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
         dense_accessor<double, flecsi::rw, flecsi::ro, flecsi::ro> phi_update);
-flecsi_register_task(calculate_exclusive_x_update, loc, single);
+flecsi_register_task_simple(calculate_exclusive_x_update, loc, single);
 
 void advect_owned_cells_in_x(
         dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
         dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> phi,
         dense_accessor<double, flecsi::ro, flecsi::rw, flecsi::ro> phi_update);
-flecsi_register_task(advect_owned_cells_in_x, loc, single);
+flecsi_register_task_simple(advect_owned_cells_in_x, loc, single);
 
 void calculate_exclusive_y_update(
         dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
         dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> phi,
         dense_accessor<double, flecsi::rw, flecsi::ro, flecsi::ro> phi_update);
-flecsi_register_task(calculate_exclusive_y_update, loc, single);
+flecsi_register_task_simple(calculate_exclusive_y_update, loc, single);
 
 void advect_owned_cells_in_y(
         dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> global_IDs,
         dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> phi,
         dense_accessor<double, flecsi::ro, flecsi::rw, flecsi::ro> phi_update);
-flecsi_register_task(advect_owned_cells_in_y, loc, single);
+flecsi_register_task_simple(advect_owned_cells_in_y, loc, single);
 
 flecsi_register_field(test_mesh_2d_t, lax, cell_ID, size_t, dense,
         INDEX_ID, VERSIONS);
@@ -80,7 +80,7 @@ namespace flecsi {
 namespace execution {
 
 void add_colorings(int dummy);
-flecsi_register_mpi_task(add_colorings);
+flecsi_register_mpi_task(add_colorings, flecsi::execution);
 
 //----------------------------------------------------------------------------//
 // Specialization driver.
@@ -88,7 +88,7 @@ flecsi_register_mpi_task(add_colorings);
 
 void specialization_tlt_init(int argc, char ** argv) {
 
-  flecsi_execute_mpi_task(add_colorings, 0);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, 0);
 
 } // specialization_tlt_init
 
@@ -112,7 +112,8 @@ void driver(int argc, char ** argv) {
   auto global_IDs_handle =
           flecsi_get_handle(ch, lax, cell_ID, size_t, dense, INDEX_ID);
 
-  flecsi_execute_task(initialize_data, single, global_IDs_handle, phi_handle);
+  flecsi_execute_task_simple(initialize_data, single,
+    global_IDs_handle, phi_handle);
 
   double time = 0.0;
   while(time < 0.165) {
@@ -121,24 +122,24 @@ void driver(int argc, char ** argv) {
       if(my_color == 0)
           std::cout << "t=" << time << std::endl;
 
-      flecsi_execute_task(calculate_exclusive_x_update, single,
+      flecsi_execute_task_simple(calculate_exclusive_x_update, single,
           global_IDs_handle, phi_handle, phi_update_handle);
 
-      flecsi_execute_task(advect_owned_cells_in_x, single, global_IDs_handle,
-          phi_handle, phi_update_handle);
+      flecsi_execute_task_simple(advect_owned_cells_in_x, single,
+        global_IDs_handle, phi_handle, phi_update_handle);
 
-      flecsi_execute_task(calculate_exclusive_y_update, single,
+      flecsi_execute_task_simple(calculate_exclusive_y_update, single,
           global_IDs_handle, phi_handle, phi_update_handle);
 
-      flecsi_execute_task(advect_owned_cells_in_y, single, global_IDs_handle,
-          phi_handle, phi_update_handle);
+      flecsi_execute_task_simple(advect_owned_cells_in_y, single,
+        global_IDs_handle, phi_handle, phi_update_handle);
   }
 
   if(my_color == 0)
       std::cout << "time " << time << std::endl;
 
-  flecsi_execute_task(write_to_disk, single, global_IDs_handle, phi_handle,
-          my_color);
+  flecsi_execute_task_simple(write_to_disk, single, global_IDs_handle,
+    phi_handle, my_color);
 
   if(my_color == 0)
       std::cout << "lax wendroff ... all tasks issued" << std::endl;
