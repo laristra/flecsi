@@ -48,28 +48,7 @@ void task1(client_handle_t<set_t, rw> mesh) {
 
 }
 
-void add_set_colorings(int dummy) {
-  execution::context_t & context_ = execution::context_t::instance();
-  
-  size_t n = 100;
-  size_t colors = context_.colors();
-  size_t nc = n/colors;
-
-  std::unordered_map<size_t, coloring_info_t> coloring_info;
-  
-  for(size_t i = 0; i < colors; ++i){
-    coloring_info_t ci;
-    ci.exclusive = nc;
-    ci.shared = 0;
-    ci.ghost = 0;
-
-    coloring_info[i] = std::move(ci);
-  }
-
-  context_.add_set_coloring(0, coloring_info);
-}
-
-flecsi_register_mpi_task(add_set_colorings);
+flecsi_register_data_client(set_t, sets, set1); 
 
 flecsi_register_task(task1, loc, single);
 
@@ -79,15 +58,15 @@ namespace flecsi {
 namespace execution {
 
 void specialization_tlt_init(int argc, char ** argv) {
-  flecsi_execute_mpi_task(add_set_colorings, 0);
+
 }
 
 void specialization_spmd_init(int argc, char ** argv) {
-  auto ch = flecsi_get_client_handle(set_t, sets, set1);
+
 }
 
 void driver(int argc, char ** argv) {
-
+  //auto ch = flecsi_get_client_handle(set_t, sets, set1);
 }
 
 } // namespace execution
