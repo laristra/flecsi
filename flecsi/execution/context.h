@@ -386,19 +386,6 @@ struct context__ : public CONTEXT_POLICY
   } // add_coloring
 
   /*!
-    @todo DOCUMENTATION!
-   */
-
-  void
-  add_set_coloring(
-    size_t index_space,
-    std::unordered_map<size_t, coloring_info_t> & coloring_info
-  )
-  {
-    coloring_info_[index_space] = coloring_info;
-  }
-
-  /*!
     Return the index coloring referenced by key.
    
     @param index_space The key associated with the coloring to be returned.
