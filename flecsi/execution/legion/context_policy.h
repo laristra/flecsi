@@ -485,16 +485,32 @@ struct legion_context_policy_t
     Legion::LogicalRegion ghost_lr;
   };
 
+  //--------------------------------------------------------------------------//
+  //! Collects Legion data associated with a local FleCSI index space.
+  //--------------------------------------------------------------------------//
+
+  struct local_index_space_data_t{
+    Legion::LogicalRegion region;
+  };
+
   //------------------------------------------------------------------------//
-  //! Get index space data.
-  //!
-  //! @param index_space FleCSI index space, e.g. cells key
+  //! Get the index space data map.
   //------------------------------------------------------------------------//
 
   auto&
   index_space_data_map()
   {
     return index_space_data_map_;
+  }
+
+  //------------------------------------------------------------------------//
+  //! Get the local index space data map.
+  //------------------------------------------------------------------------//
+
+  auto&
+  local_index_space_data_map()
+  {
+    return local_index_space_data_map_;
   }
 
   //--------------------------------------------------------------------------//
@@ -665,6 +681,7 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
+  std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
   Legion::DynamicCollective max_reduction_;
   Legion::DynamicCollective min_reduction_;
 

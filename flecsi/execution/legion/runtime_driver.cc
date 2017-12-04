@@ -1082,6 +1082,21 @@ spmd_task(
 
   context_.advance_state();
 
+  auto& local_index_space_map = context_.local_index_space_map();
+  for(auto& itr : local_index_space_map){
+    size_t index_space = itr.first;
+
+    legion_data_t::local_index_space_t lis = 
+      legion_data_t::create_local_index_space(
+      ctx, runtime, index_space, itr.second);
+    
+    auto& lism = context_.local_index_space_data_map();
+
+    context_t::local_index_space_data_t lis_data;
+    lis_data.region = lis.logical_region;
+    lism.emplace(index_space, std::move(lis_data));
+  }
+
   // run default or user-defined driver
   driver(args.argc, args.argv);
 

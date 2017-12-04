@@ -75,6 +75,14 @@ struct context__ : public CONTEXT_POLICY
     size_t key;
   }; // struct field_info_t
 
+  /*!
+    Gathers info about local index spaces.
+   */
+  struct local_index_space_t{
+    size_t capacity;
+    size_t index_space;
+  };
+
   //--------------------------------------------------------------------------//
   // Field info map for fields in SPMD task, key1 =
   //   (data client hash, index space), key2 = fid
@@ -215,8 +223,29 @@ struct context__ : public CONTEXT_POLICY
   } // index_map
 
   /*!
-    \todo DOCUMENT!
+   *! Add a local index space of specified. The index space is local
+   *! to a color. This method is called from specialization_spmd_init().
    */
+  void
+  add_local_index_space(size_t index_space, size_t capacity)
+  {
+    clog_assert(coloring_info_.find(index_space) == coloring_info_.end(),
+      "non-local index space exists");
+    local_index_space_t is;
+    is.capacity = capacity;
+    local_index_space_map_.emplace(index_space, std::move(is));
+  }
+
+  /*!
+  /*! Return the map of local index space info.
+   */
+  
+  const auto&
+  local_index_space_map()
+  const
+  {
+    return local_index_space_map_;
+  }
 
   const auto &
   cis_to_gis_map(
@@ -714,6 +743,12 @@ private:
 
   std::map<size_t, std::map<size_t, size_t>> index_map_;
   std::map<size_t, std::map<size_t, size_t>> reverse_index_map_;
+
+  //--------------------------------------------------------------------------//
+  // key: index space
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, local_index_space_t> local_index_space_map_;
 
 #if 0
   std::map<size_t, std::map<size_t, size_t>> cis_to_mis_map_;
