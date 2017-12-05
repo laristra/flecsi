@@ -33,7 +33,7 @@ struct legion_set_topology_storage_policy_t
 
   using index_spaces_t =
     std::array<index_space<set_entity_t*, true, true, true, void,
-    topology_storage__>, num_index_spaces>;
+    identity_storage__, topology_storage__>, num_index_spaces>;
 
   index_spaces_t index_spaces;
 
