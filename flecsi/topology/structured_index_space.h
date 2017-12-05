@@ -1,19 +1,10 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
+ * Copyright (c) 2017 Los Alamos National Security, LLC
+ * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_structured_index_space_h
-#define flecsi_structured_index_space_h
+#ifndef flecsi_topology_structured_index_space_h
+#define flecsi_topology_structured_index_space_h
 
 #include <vector>
 #include <cassert>
@@ -22,11 +13,19 @@
 
 #include "flecsi/topology/structured_querytable.h"
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: 
+//----------------------------------------------------------------------------//
+
 namespace flecsi {
 namespace topology {
 
-//E is entity type
-//DM is mesh dimension
+//----------------------------------------------------------------------------//
+//! The structured_index_space type...
+//!
+//! @ingroup 
+//----------------------------------------------------------------------------//
 template<class E, size_t DM=0>
 class structured_index_space{
 public:
@@ -40,6 +39,18 @@ public:
  /******************************************************************************
  *               Constructors/Destructors/Initializations                      *    
  * ****************************************************************************/ 
+ //--------------------------------------------------------------------------//
+ //! Interface to initialize the index-space for given lower and upper bounds
+ //! of the cartesian block.  
+ //!
+ //! @param primary Boolean representing if the index-space is primary. 
+ //!                Currently, the primary index-space is not allowed 
+ //!                multiple sub-blocks
+ //! @param lbnds   The lower-bound 
+ //! @param ubnds   The upper-bound
+ //! @param mubnds  The 
+ //--------------------------------------------------------------------------//
+
   void init(bool primary, const sm_id_vector_t &lbnds, const sm_id_vector_t &ubnds, 
             sm_id_array_t &mubnds)
   {
@@ -106,6 +117,17 @@ public:
  /******************************************************************************
  *                              Basic Iterators                                *    
  * ****************************************************************************/ 
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
+
  template<typename S=E>
  auto iterate()
  { 
@@ -178,6 +200,17 @@ public:
  /******************************************************************************
  *                         Query-Specific Iterators                            *    
  * ****************************************************************************/ 
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
+
   template <size_t TD, class S>
   auto traverse(size_t FD, size_t ID, sm_id_vector_t &indices, qtable_t *qt)
   {
@@ -273,10 +306,7 @@ public:
           while ((!valid) && (valid_idx_ != end_idx_))
           {
             valid_idx_ += 1;
-            //if (valid_idx_ != end_idx_) 
-               valid = isvalid(valid_idx_);
-            //else
-              // break;
+            valid = isvalid(valid_idx_);
           }
          
           if (valid_idx_ != end_idx_)
@@ -301,17 +331,12 @@ public:
 
       S2& operator*()
       {
-        //S2* ent;
-        //id_t entid = compute_id(this->valid_idx_);
-        //ent->set_id(entid,0);
-        //return *ent;
         return *valid_ent_;
       };
 
       bool isvalid(id_t vindex)
       {
         bool valid = true; 
-    //    auto qt = query::qtable(MD2_);
         
         // Get box id 
         sm_id_t bid = qt2_->entry[FD2_][ID2_][TD2_].adjacencies[vindex].box_id;
@@ -335,7 +360,6 @@ public:
       auto compute_id(sm_id_t vindex)
       { 
         sm_id_vector_t adj;
-        //auto qt = query::qtable(MD2_);
         sm_id_t bid = qt2_->entry[FD2_][ID2_][TD2_].adjacencies[vindex].box_id;
         auto offset = qt2_->entry[FD2_][ID2_][TD2_].adjacencies[vindex].offset;
         for (sm_id_t i = 0; i < MD2_; i++)
@@ -379,6 +403,16 @@ public:
  *          Offset --> Indices & Indices --> Offset Routines                   *    
  * ****************************************************************************/ 
 
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
    // Return the global offset id w.r.t the box id B  
   template<size_t B>
   sm_id_t get_global_offset_from_indices(sm_id_vector_t &idv)
@@ -390,6 +424,16 @@ public:
     return lval;
   }
   
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   sm_id_t get_global_offset_from_indices(sm_id_t B, sm_id_vector_t &idv)
   {
     sm_id_t lval = get_local_offset_from_indices(B, idv);
@@ -399,6 +443,16 @@ public:
     return lval;
   }
 
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   // Return the local offset id w.r.t the box id B
   template<size_t B>
   sm_id_t get_local_offset_from_indices(sm_id_vector_t &idv) 
@@ -420,6 +474,16 @@ public:
     return value;
   }
   
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   sm_id_t get_local_offset_from_indices(size_t B, sm_id_vector_t &idv) 
   {
     //add range check for idv to make sure it lies within the bounds
@@ -439,7 +503,16 @@ public:
     return value;
   }
 
-
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   auto get_indices_from_offset(sm_id_t offset)
   {
     //Find the box from which the indices have to be computed
@@ -469,6 +542,16 @@ public:
    return id;
   }
 
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   auto find_box_id(sm_id_t offset)
   {
     //assert(num_boxes>0);
@@ -487,6 +570,16 @@ public:
     return bid;
   }
 
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   // Return size along direction D of box B in IS.
   template<size_t B, size_t D>
   auto get_size_in_direction()
@@ -502,6 +595,16 @@ public:
     return (box_upbnds_[B][D] - box_lowbnds_[B][D]+1);
   }
 
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   // Check if input index is between bounds along direction
   // D of box B. 
   template<size_t B, size_t D>
@@ -510,12 +613,32 @@ public:
     return (index >= box_lowbnds_[B][D] && index <= box_upbnds_[B][D]);
   }
 
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   template<size_t D>
   bool check_index_limits(size_t B, size_t index)
   {
     return (index >= box_lowbnds_[B][D] && index <= box_upbnds_[B][D]);
   }
 
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   // Return upper bound along direction D of box B
   template<size_t B, size_t D>
   auto max()
@@ -524,6 +647,16 @@ public:
     return val;
   }
   
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   auto max(size_t B, size_t D)
   {
     auto val = box_upbnds_[B][D];
@@ -531,6 +664,16 @@ public:
   }
 
 
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   // Return lower bound along direction D of box B
   template<size_t B, size_t D>
   auto min()
@@ -539,11 +682,31 @@ public:
     return val;
   }
 
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   auto min(size_t B, size_t D)
   {
     auto val = box_lowbnds_[B][D];
     return val;
   }
+ //--------------------------------------------------------------------------//
+ //! Abstract interface to get the entities of dimension \em to that define
+ //! the entity of dimension \em from with the given identifier \em id.
+ //!
+ //! @param from_dimension The dimension of the entity for which the
+ //!                       definition is being requested.
+ //! @param to_dimension   The dimension of the entities of the definition.
+ //! @param id             The id of the entity for which the definition is
+ //!                       being requested.
+ //--------------------------------------------------------------------------//
   size_t size() const 
   {
     return size_;
@@ -565,7 +728,7 @@ public:
 } // namespace topology
 } // namespace flecsi
 
-#endif // flecsi_structured_index_space_h
+#endif // flecsi_topology_structured_index_space_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

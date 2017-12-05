@@ -1,18 +1,10 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
+ * Copyright (c) 2017 Los Alamos National Security, LLC
+ * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_structured_mesh_topology_h
-#define flecsi_structured_mesh_topology_h
+#ifndef flecsi_topology_structured_mesh_topology_h
+#define flecsi_topology_structured_mesh_topology_h
 
 #include <array>
 #include <vector>
@@ -27,6 +19,11 @@
 #include "flecsi/topology/structured_mesh_types.h"
 #include "flecsi/topology/structured_querytable.h"
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation:
+//----------------------------------------------------------------------------//
+
 namespace flecsi {
 namespace topology {
 namespace verify_mesh {
@@ -37,6 +34,13 @@ namespace verify_mesh {
   FLECSI_MEMBER_CHECKER(upper_bounds);
   FLECSI_MEMBER_CHECKER(entity_types);
 } // namespace verify_mesh
+
+
+//----------------------------------------------------------------------------//
+//! The structured_mesh_topology type...
+//!
+//! @ingroup
+//----------------------------------------------------------------------------//
 
 template<
   class MT
@@ -141,11 +145,15 @@ public:
     delete qt;
   }
  
-
-  /*!
-   Return the number of entities contained in specified topological dimension
-   and domain.
-   */
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   size_t
   num_entities(
     size_t dim,
@@ -168,6 +176,15 @@ public:
  /******************************************************************************
  *                Representation Methods for Cartesian Block                   *
  * ****************************************************************************/ 
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   /* Method Description: Returns lower bounds of basic/cartesian block 
   *  IN: 
   *  OUT: 
@@ -177,6 +194,15 @@ public:
     return meshbnds_low_;
   }
 
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   /* Method Description: Returns upper bounds of basic/cartesian block 
   *  IN: 
   *  OUT: 
@@ -186,6 +212,15 @@ public:
     return meshbnds_up_;
   }
 
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   /* Method Description: Given an entity id, returns the cartesian box
   *                      the entity belongs. For intermediate, the value
   *                      could be non-zero. 
@@ -211,6 +246,15 @@ public:
     return ms_.index_spaces[M][D].find_box_id(e->id(0)); 
   }
 
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   /* Method Description: Returns upper bounds of basic/cartesian topology 
   *  IN: 
   *  OUT: 
@@ -234,6 +278,15 @@ public:
     return ms_.index_spaces[M][D].get_indices_from_offset(e->id(0));
   }
   
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   /* Method Description: Returns upper bounds of basic/cartesian topology 
   *  IN: 
   *  OUT: 
@@ -247,6 +300,15 @@ public:
     return ms_.index_spaces[M][D].template get_global_offset_from_indices(box_id, idv);
   }
 
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   template<
     size_t D,
     size_t M = 0
@@ -260,6 +322,15 @@ public:
  /******************************************************************************
  *                      Query Methods for Cartesian Block                      *
  * ****************************************************************************/ 
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   /* Method Description: Provides traversal over the entire index space for a 
   *                      given dimension e.g., cells of the mesh.
   *  IN: 
@@ -277,6 +348,15 @@ public:
   }
  // entities
  
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   template<
     size_t D,
     size_t M = 0
@@ -289,6 +369,15 @@ public:
   } // entities
 
 
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   /* Method Description: Provides FEM-type adjacency queries. Given an entity
   *                      ,find all entities incident on it from dimension TD.
   *                      Supports queries between non-equal dimensions. The 
@@ -314,6 +403,15 @@ public:
            traverse<TD,etype>(FD, BD, indices, qt);
   } //entities
 
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   /* Method Description: Provides FD-type adjacency queries. Given an entity
   *                      ,find the entity using the stencil provided..
   *  IN: 
@@ -341,6 +439,15 @@ public:
     return value; 
   }
 
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   template<
   std::intmax_t xoff, 
   std::intmax_t yoff, 
@@ -367,6 +474,15 @@ public:
     return value; 
   }
 
+ //--------------------------------------------------------------------------//
+ //! Return the number of entities contained in specified topological 
+ //! dimension and domain.
+ //!
+ //! @param dim    The dimension of the entity for which the total number is 
+ //!               requested
+ //! @param domain The domain of the entity for which the total number is 
+ //!               requested.
+ //--------------------------------------------------------------------------//
   template<
   std::intmax_t xoff, 
   std::intmax_t yoff, 
@@ -486,7 +602,7 @@ private:
 } // namespace topology
 } // namespace flecsi
 
-#endif // flecsi_structured_mesh_topology_h
+#endif // flecsi_topology_structured_mesh_topology_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

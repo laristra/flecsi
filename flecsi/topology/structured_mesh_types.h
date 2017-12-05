@@ -1,19 +1,10 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
+ * Copyright (c) 2017 Los Alamos National Security, LLC
+ * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_structured_mesh_types_h
-#define flecsi_structured_mesh_types_h
+#ifndef flecsi_topology_structured_mesh_types_h
+#define flecsi_topology_structured_mesh_types_h
 
 #include <array>
 #include <unordered_map>
@@ -22,19 +13,25 @@
 #include <vector>
 #include <cmath>
 
-#include "flecsi/topology/types.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/topology/mesh_utils.h"
 #include "flecsi/topology/structured_index_space.h"
+#include "flecsi/topology/types.h"
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation:
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace topology {  
 
+//----------------------------------------------------------------------------//
+//! The structured_mesh_entity_ type...
+//!
+//! @ingroup
+//----------------------------------------------------------------------------//
 
-/******************************************************************************
- *                       Structured Mesh Entity Type                          *
- ******************************************************************************/
 class structured_mesh_topology_base_t;
 
 class structured_mesh_entity_base_{
@@ -106,9 +103,11 @@ struct structured_mesh_storage_t {
 }; // struct mesh_storage_t
 
 
-/******************************************************************************
- *                     Structured Mesh Topology Base                          *
- ******************************************************************************/
+//----------------------------------------------------------------------------//
+//! The structured_mesh_topology_base_t type...
+//!
+//! @ingroup
+//----------------------------------------------------------------------------//
 class structured_mesh_topology_base_t : public data::data_client_t
 {
 public:
@@ -142,7 +141,7 @@ public:
 } // namespace topology
 } // namespace flecsi
 
-#endif // flecsi_structured_mesh_types_h
+#endif // flecsi_topology_structured_mesh_types_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

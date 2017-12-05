@@ -1,14 +1,30 @@
-#ifndef structured_querytable_h
-#define structured_querytable_h
+/*~--------------------------------------------------------------------------~*
+ * Copyright (c) 2017 Los Alamos National Security, LLC
+ * All rights reserved.
+ *~--------------------------------------------------------------------------~*/
+
+#ifndef flecsi_topology_structured_querytable_h
+#define flecsi_topology_structured_querytable_h
 
 #include <array>
 #include <vector>
 #include<iostream>
 #include <type_traits>
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation:
+//----------------------------------------------------------------------------//
+
 namespace flecsi {
 namespace topology{
 namespace query{
+
+//----------------------------------------------------------------------------//
+//! The structured_index_space type...
+//!
+//! @ingroup
+//----------------------------------------------------------------------------//
 
 template<size_t MD>
 struct QueryUnit
@@ -20,6 +36,12 @@ struct QueryUnit
   std::array<std::intmax_t, MD> offset;
 };
 
+//----------------------------------------------------------------------------//
+//! The structured_index_space type...
+//!
+//! @ingroup
+//----------------------------------------------------------------------------//
+
 template<size_t MD>
 struct QuerySequence
 {
@@ -27,12 +49,23 @@ struct QuerySequence
   size_t size(){return adjacencies.size();};
 };
 
+//----------------------------------------------------------------------------//
+//! The structured_index_space type...
+//!
+//! @ingroup
+//----------------------------------------------------------------------------//
+
 template<size_t MD, size_t MAXFD, size_t MAXIN, size_t MAXTD>
 struct QueryTable
 {
   QuerySequence<MD> entry[MAXFD][MAXIN][MAXTD];
 }; 
 
+//----------------------------------------------------------------------------//
+//! The structured_index_space type...
+//!
+//! @ingroup
+//----------------------------------------------------------------------------//
 void qtable(QueryTable<1,2,1,2> *qt)
 {
   //QueryTable<1,2,1,2> *qt = new QueryTable<1,2,1,2>();
@@ -55,6 +88,11 @@ void qtable(QueryTable<1,2,1,2> *qt)
   //return qt;
 };
 
+//----------------------------------------------------------------------------//
+//! The structured_index_space type...
+//!
+//! @ingroup
+//----------------------------------------------------------------------------//
 void qtable(QueryTable<2,3,2,3> *qt)
 {
   //QueryTable<2,3,2,3> *qt = new QueryTable<2,3,2,3>();
@@ -107,6 +145,11 @@ void qtable(QueryTable<2,3,2,3> *qt)
   //return qt;
 };
 
+//----------------------------------------------------------------------------//
+//! The structured_index_space type...
+//!
+//! @ingroup
+//----------------------------------------------------------------------------//
 void qtable(QueryTable<3,4,3,4> *qt)
 {
   //QueryTable<3,4,3,4> *qt = new QueryTable<3,4,3,4>();
@@ -268,10 +311,14 @@ void qtable(QueryTable<3,4,3,4> *qt)
   qt->entry[3][0][2].adjacencies.push_back({2,0,{},{},{0,0,0}});
   qt->entry[3][0][2].adjacencies.push_back({2,0,{},{},{0,0,1}});
 
- // return qt;
 };
 
 } //query
 } //topology
 } //flecsi
-#endif
+#endif // flecsi_topology_structured_querytable_h
+
+/*~-------------------------------------------------------------------------~-*
+ * Formatting options
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~-------------------------------------------------------------------------~-*/
