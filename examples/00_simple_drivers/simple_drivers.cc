@@ -4,9 +4,11 @@
  *~--------------------------------------------------------------------------~*/
 
 #include <iostream>
-#include <flecsi.h>
-#if ENABLE_MPI
-#include <mpi.h>
+
+#include <flecsi-config.h>
+
+#if defined(ENABLE_MPI)
+  #include <mpi.h>
 #endif
 
 #include "flecsi/execution/context.h"
@@ -44,7 +46,7 @@ driver(
 int main(int argc, char ** argv) {
 
   int provided;
-#if ENABLE_MPI
+#if defined(ENABLE_MPI)
   MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
   // If you fail this assertion, then your version of MPI
   // does not support calls from multiple threads and you
@@ -60,7 +62,6 @@ int main(int argc, char ** argv) {
 
   return retval;
 } // main
-
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

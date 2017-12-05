@@ -1,18 +1,17 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_data_types_h
 #define flecsi_data_data_types_h
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Sep 28, 2016
+//----------------------------------------------------------------------------//
+
 #include <bitset>
 
-///
-// \file data_types.h
-// \authors bergen
-// \date Initial file creation: Sep 28, 2016
-///
+#include "flecsi/utils/offset.h"
 
 namespace flecsi {
 namespace data {
@@ -20,6 +19,30 @@ namespace data {
 struct global_data_client_t
 {
   using type_identifier_t = global_data_client_t;
+};
+
+using sparse_data_offset_t = utils::offset__<16>;
+
+template<typename T>
+struct sparse_entry_value__
+{
+  using index_t = uint64_t;
+
+  sparse_entry_value__(index_t entry)
+  : entry(entry){}
+
+  sparse_entry_value__(index_t entry, T value)
+  : entry(entry),
+  value(value){}
+
+  sparse_entry_value__(){}
+
+  bool operator<(const sparse_entry_value__& ev) const{
+    return entry < ev.entry;
+  }
+
+  index_t entry;
+  T value;
 };
 
 // Generic bitfield type
@@ -50,6 +73,4 @@ class global_data_client_t : public data::data_client_t
 #endif // flecsi_data_data_types_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

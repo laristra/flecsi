@@ -21,7 +21,8 @@ double local_value_task(
 {
   return static_cast<double>(my_color);
 }
-flecsi_register_task(local_value_task, loc, single);
+
+flecsi_register_task(local_value_task, flecsi::execution, loc, single);
 
 
 //----------------------------------------------------------------------------//
@@ -37,7 +38,8 @@ void driver(int argc, char ** argv) {
 
   for(int cycle=1; cycle < 10; cycle++) {
     auto local_future =
-      flecsi_execute_task(local_value_task, single, (my_color + 1) * cycle);
+      flecsi_execute_task(local_value_task, flecsi::execution, single,
+        (my_color + 1) * cycle);
 
     double global_max =
       flecsi::execution::context_t::instance().reduce_max(local_future); 

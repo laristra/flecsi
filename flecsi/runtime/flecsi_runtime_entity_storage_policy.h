@@ -7,11 +7,11 @@
 #define flecsi_runtime_entity_storage_policy_h
 
 //----------------------------------------------------------------------------//
-// @file
-// @date Initial file creation: Jun 19, 2017
+//! @file
+//! @date Initial file creation: Jun 19, 2017
 //----------------------------------------------------------------------------//
 
-#include <flecsi.h>
+#include <flecsi-config.h>
 
 //----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
@@ -20,22 +20,8 @@
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
 //----------------------------------------------------------------------------//
 
-// Serial Policy
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
-
-  #include "flecsi/topology/serial/entity_storage.h"
-
-  namespace flecsi {
-
-  template<typename T>
-  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
-
-  using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
-
-  }
-
 // Legion, MPI+Legion Policy
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
   #include "flecsi/topology/common/entity_storage.h"
 
@@ -46,7 +32,7 @@
 
   using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 
-  }
+  } // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
@@ -59,7 +45,8 @@
   using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
 
   using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
-  }
+
+  } // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
 

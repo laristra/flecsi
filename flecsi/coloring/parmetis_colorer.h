@@ -11,21 +11,17 @@
 //! @date Initial file creation: Nov 24, 2016
 //----------------------------------------------------------------------------//
 
-#include "flecsi/coloring/colorer.h"
-
 #include <set>
 
-#if !defined(ENABLE_MPI)
-  #error ENABLE_MPI not defined! This file depends on MPI!
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_PARMETIS)
+  #error FLECSI_ENABLE_PARMETIS not defined! This file depends on ParMETIS!
 #endif
 
-#if !defined(ENABLE_PARMETIS)
-  #error ENABLE_PARMETIS not defined! This file depends on ParMETIS!
-#endif
-
-#include <mpi.h>
 #include <parmetis.h>
 
+#include "flecsi/coloring/colorer.h"
 #include "flecsi/coloring/mpi_utils.h"
 
 namespace flecsi {

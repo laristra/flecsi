@@ -1,28 +1,20 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_mpi_dense_h
 #define flecsi_mpi_dense_h
 
 //----------------------------------------------------------------------------//
-// POLICY_NAMESPACE must be defined before including storage_type.h!!!
-// Using this approach allows us to have only one storage_type_t
+// POLICY_NAMESPACE must be defined before including storage_class.h!!!
+// Using this approach allows us to have only one storage_class_t
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE mpi
-#include "flecsi/data/storage_type.h"
+#include "flecsi/data/storage_class.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
+
+#include <algorithm>
+#include <memory>
 
 #include "flecsi/data/common/data_types.h"
 #include "flecsi/data/common/privilege.h"
@@ -32,13 +24,10 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 
-#include <algorithm>
-#include <memory>
-
-///
-/// \file
-/// \date Initial file creation: Apr 7, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Apr 7, 2016
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace data {
@@ -91,353 +80,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   ///
   dense_handle_t() {}
 
-	///
-  /// Copy constructor.
-	///
-//	dense_handle_t(
-//    const dense_handle_t & a
-//  )
-//  :
-//    label_(a.label_)
-//  {}
-
-  template<size_t EP2, size_t SP2, size_t GP2>
-  dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2> & h)
-    : base(reinterpret_cast<const base&>(h)),
-      label_(h.label_)
-  {}
-
-  //--------------------------------------------------------------------------//
-  // Member data interface.
-  //--------------------------------------------------------------------------//
-
-	///
-  /// \brief Return a std::string containing the label of the data variable
-  ///       reference by this accessor.
-	///
-  const std::string &
-  label() const
-  {
-    return label_;
-  } // label
-
-	///
-  /// \brief Return the index space size of the data variable
-  ///        referenced by this accessor.
-	///
-  size_t
-  size() const
-  {
-    return base::combined_size;
-  } // size
-
-  ///
-  // \brief Return the index space size of the data variable
-  //        referenced by this handle.
-  ///
-  size_t
-  exclusive_size() const
-  {
-    return base::exclusive_size;
-  } // size
-
-  ///
-  // \brief Return the index space size of the data variable
-  //        referenced by this handle.
-  ///
-  size_t
-  shared_size() const
-  {
-    return base::shared_size;
-  } // size
-
-  ///
-  // \brief Return the index space size of the data variable
-  //        referenced by this handle.
-  ///
-  size_t
-  ghost_size() const
-  {
-    return base::ghost_size;
-  } // size
-
-  //--------------------------------------------------------------------------//
-  // Operators.
-  //--------------------------------------------------------------------------//
-
-	///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
-  ///
-  /// \tparam E A complex index type.
-  ///
-  /// This version of the operator is provided to support use with
-  /// \e flecsi mesh entity types \ref mesh_entity_base_t.
-	///
-  template<typename E>
-  const T &
-  operator [] (
-    E * e
-  ) const
-  {
-    return this->operator[](e->template id<0>());
-  } // operator []
-
-	///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
-  ///
-  /// \tparam E A complex index type.
-  ///
-  /// This version of the operator is provided to support use with
-  /// \e flecsi mesh entity types \ref mesh_entity_base_t.
-	///
-  template<typename E>
-  T &
-  operator [] (
-    E * e
-  )
-  {
-    return this->operator[](e->template id<0>());
-  } // operator []
-
-	///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
-  ///
-  /// \tparam E A complex index type.
-  ///
-  /// This version of the operator is provided to support use with
-  /// \e flecsi mesh entity types \ref mesh_entity_base_t.
-	///
-  template<typename E>
-  const T &
-  operator () (
-    E * e
-  ) const
-  {
-    return this->operator[](e->template id<0>());
-  } // operator []
-
-	///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
-  ///
-  /// \tparam E A complex index type.
-  ///
-  /// This version of the operator is provided to support use with
-  /// \e flecsi mesh entity types \ref mesh_entity_base_t.
-	///
-  template<typename E>
-  T &
-  operator () (
-    E * e
-  )
-  {
-    return this->operator[](e->template id<0>());
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  const T &
-  operator [] (
-    size_t index
-  ) const
-  {
-    assert(index < base::combined_size && "index out of range");
-    return base::combined_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  T &
-  operator [] (
-    size_t index
-  )
-  {
-    assert(index < base::combined_size && "index out of range");
-    return base::combined_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  const T &
-  exclusive (
-    size_t index
-  ) const
-  {
-    assert(index < base::exclusive_size && "index out of range");
-    return base::exclusive_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  T &
-  exclusive (
-    size_t index
-  )
-  {
-    assert(index < base::exclusive_size && "index out of range");
-    return base::exclusive_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  const T &
-  shared (
-    size_t index
-  ) const
-  {
-    assert(index < base::shared_size && "index out of range");
-    return base::shared_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  T &
-  shared (
-    size_t index
-  )
-  {
-    assert(index < base::shared_size && "index out of range");
-    return base::shared_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  const T &
-  ghost (
-    size_t index
-  ) const
-  {
-    assert(index < base::ghost_size && "index out of range");
-    return base::ghost_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  T &
-  ghost (
-    size_t index
-  )
-  {
-    assert(index < base::ghost_size && "index out of range");
-    return base::ghost_data[index];
-  } // operator []
-
-//  ///
-//  // \brief Provide logical array-based access to the data for this
-//  //        data variable.  This is the const operator version.
-//  //
-//  // \tparam E A complex index type.
-//  //
-//  // This version of the operator is provided to support use with
-//  // \e flecsi mesh entity types \ref mesh_entity_base_t.
-//  ///
-//  template<typename E>
-//  const T &
-//  operator () (
-//    E * e
-//  ) const
-//  {
-//    return this->operator()(e->template id<0>());
-//  } // operator ()
-//
-//  ///
-//  // \brief Provide logical array-based access to the data for this
-//  //        data variable.  This is the const operator version.
-//  //
-//  // \tparam E A complex index type.
-//  //
-//  // This version of the operator is provided to support use with
-//  // \e flecsi mesh entity types \ref mesh_entity_base_t.
-//  ///
-//  template<typename E>
-//  T &
-//  operator () (
-//    E * e
-//  )
-//  {
-//    return this->operator()(e->template id<0>());
-//  } // operator ()
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  const T &
-  operator () (
-    size_t index
-  ) const
-  {
-    assert(index < base::combined_size && "index out of range");
-    return base::combined_data[index];
-  } // operator ()
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  T &
-  operator () (
-    size_t index
-  )
-  {
-    assert(index < base::combined_size && "index out of range");
-    return base::combined_data[index];
-  } // operator ()
-
-	///
-  /// \brief Test to see if this accessor is empty
-  ///
-  /// \return true if registered.
-  ///
-  operator bool() const
-  {
-    return base::primary_data != nullptr;
-  } // operator bool
-
   template<typename, size_t, size_t, size_t>
   friend class dense_handle_t;
-
-private:
-  std::string label_ = "";
 }; // struct dense_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -452,7 +96,7 @@ private:
 /// FIXME: Dense storage type.
 ///
 template<>
-struct storage_type__<dense>
+struct storage_class__<dense>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -487,7 +131,7 @@ struct storage_type__<dense>
 
     // get field_info for this data handle
     auto& field_info =
-      context.get_field_info(
+      context.get_field_info_from_name(
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
       utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
@@ -533,7 +177,7 @@ struct storage_type__<dense>
     return h;
   }
 
-}; // struct storage_type_t
+}; // struct storage_class_t
 
 } // namespace mpi
 } // namespace data
@@ -542,6 +186,4 @@ struct storage_type__<dense>
 #endif // flecsi_mpi_dense_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

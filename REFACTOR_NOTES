@@ -1,9 +1,0 @@
-TODOs:
-
-	- Fix flecsit tool to use translation units
-	- Generalize make_dcrs function (Marc)
-	- Fix task registration interface (Ben)
-		* Change processor to enum type
-	- Add integrated testing interface to cinch
-	- Add mechanism to generate/add internal field ids
-	- Add virtual index space registration interface

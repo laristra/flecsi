@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_registration_wrapper_h
@@ -15,15 +13,16 @@
 #include <string>
 #include <tuple>
 
-#include "flecsi/execution/context.h"
 #include "flecsi/data/data_constants.h"
 #include "flecsi/data/storage.h"
+#include "flecsi/execution/context.h"
+#include "flecsi/execution/legion/internal_index_space.h"
 #include "flecsi/runtime/types.h"
 #include "flecsi/topology/mesh_topology.h"
+#include "flecsi/topology/set_topology.h"
+#include "flecsi/utils/common.h"
 #include "flecsi/utils/hash.h"
 #include "flecsi/utils/tuple_walker.h"
-#include "flecsi/utils/common.h"
-#include "flecsi/execution/legion/internal_index_space.h"
 
 //clog_register_tag(registration);
 
@@ -36,7 +35,7 @@ namespace data {
 
 template<
   typename DATA_CLIENT_TYPE,
-  size_t STORAGE_TYPE,
+  size_t STORAGE_CLASS,
   typename DATA_TYPE,
   size_t NAMESPACE_HASH,
   size_t NAME_HASH,
@@ -61,14 +60,17 @@ struct field_registration_wrapper__
     fi.data_client_hash = 
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
 
-    fi.storage_type = STORAGE_TYPE;
+    fi.storage_class = STORAGE_CLASS;
     fi.size = sizeof(DATA_TYPE);
     fi.namespace_hash = NAMESPACE_HASH;
     fi.name_hash = NAME_HASH;
     fi.versions = VERSIONS;
-    if (STORAGE_TYPE == global)
+
+    // This seems like it could be improved to get rid of the
+    // conditional logic
+    if (STORAGE_CLASS == global)
       fi.index_space = execution::internal_index_space::global_is;
-    else if (STORAGE_TYPE == color)
+    else if (STORAGE_CLASS == color)
       fi.index_space = execution::internal_index_space::color_is;
     else
       fi.index_space = INDEX_SPACE;
@@ -374,12 +376,110 @@ struct client_registration_wrapper__<
 
 }; // class client_registration_wrapper__
 
+//----------------------------------------------------------------------------//
+//!
+//----------------------------------------------------------------------------//
+
+template<
+  typename POLICY_TYPE,
+  size_t NAMESPACE_HASH,
+  size_t NAME_HASH
+>
+struct client_registration_wrapper__<
+  flecsi::topology::set_topology_t<POLICY_TYPE>,
+  NAMESPACE_HASH,
+  NAME_HASH
+>
+{
+  using CLIENT_TYPE =
+    typename flecsi::topology::set_topology_t<POLICY_TYPE>;
+
+
+  //--------------------------------------------------------------------------//
+  //!
+  //--------------------------------------------------------------------------//
+
+  struct entity_walker_t :
+    public flecsi::utils::tuple_walker__<entity_walker_t>
+  {
+
+    template<typename T, T V>
+    T value(topology::typeify<T, V>){
+      return V;
+    }
+
+    template<
+      typename TUPLE_ENTRY_TYPE
+    >
+    void
+    handle_type()
+    {
+      using INDEX_TYPE =
+        typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
+      using ENTITY_TYPE =
+        typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
+
+      constexpr size_t entity_hash = utils::hash::client_entity_hash<
+        NAMESPACE_HASH,
+        NAME_HASH,
+        INDEX_TYPE::value,
+        0,
+        0
+      >();
+
+      using wrapper_t = field_registration_wrapper__<
+        CLIENT_TYPE,
+        flecsi::data::dense,
+        ENTITY_TYPE,
+        entity_hash,
+        0,
+        1,
+        INDEX_TYPE::value
+      >;
+
+      const size_t client_key = 
+        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+
+      const size_t key = utils::hash::client_internal_field_hash<
+        utils::const_string_t("__flecsi_internal_entity_data__").hash(),
+        INDEX_TYPE::value
+      >();
+
+      storage_t::instance().register_field(client_key,
+        key, wrapper_t::register_callback);
+
+    } // handle_type
+
+  }; // struct binding_walker_t
+
+  //--------------------------------------------------------------------------//
+  //!
+  //--------------------------------------------------------------------------//
+
+  static
+  void
+  register_callback(
+    field_id_t fid
+  )
+  {
+    using entity_types_t = typename POLICY_TYPE::entity_types;
+
+    auto& storage = storage_t::instance();
+
+    const size_t client_key = 
+      typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+    auto const & field_registry = storage.field_registry();
+
+    entity_walker_t entity_walker;
+    entity_walker.template walk_types<entity_types_t>();
+  } // register_callback
+
+}; // class client_registration_wrapper__
+
 } // namespace data
 } // namespace flecsi
 
 #endif // flecsi_data_registration_wrapper_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

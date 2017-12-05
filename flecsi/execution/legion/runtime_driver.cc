@@ -77,7 +77,6 @@ runtime_driver(
     } // for
   } // for
 
-
   //--------------------------------------------------------------------------//
   // Invoke callbacks for entries in the field registry.
   //--------------------------------------------------------------------------//
@@ -90,8 +89,6 @@ runtime_driver(
       f.second.second(f.first, f.second.first);
     } // for
   } // for
-
-
 
   int num_colors;
   MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
@@ -107,7 +104,7 @@ runtime_driver(
   size_t number_of_global_fields = 0;
   for(const field_info_t& field_info : context_.registered_fields()){
     context_.put_field_info(field_info);
-    if (field_info.storage_type == global)
+    if (field_info.storage_class == global)
       number_of_global_fields++;
   }
 
@@ -127,25 +124,15 @@ runtime_driver(
   clog(info) << "Executing specialization top-level-task init" << std::endl;
   }
 
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_.push_state(utils::const_string_t{"specialization_tlt_init"}.hash(),
-    ctx, runtime, task, regions);
-#endif
-
   // Invoke the specialization top-level task initialization function.
   specialization_tlt_init(args.argc, args.argv);
-
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_.pop_state( utils::const_string_t{"specialization_tlt_init"}.hash());
-#endif
 
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
   //--------------------------------------------------------------------------//
   //  Create Legion index spaces and logical regions
   //-------------------------------------------------------------------------//
+
   auto coloring_info = context_.coloring_info_map();
 
   data.init_from_coloring_info_map(coloring_info);
@@ -198,9 +185,14 @@ runtime_driver(
             WRITE_DISCARD, EXCLUSIVE, flecsi_ispace.logical_region))
                 .add_field(ghost_owner_pos_fid);
   } // for idx_space
-  
-  runtime->execute_index_space(ctx, pos_compaction_launcher);
 
+  Legion::MustEpochLauncher must_epoch_launcher1;
+   must_epoch_launcher1.add_index_task(pos_compaction_launcher);
+  auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher1);
+
+  fm.wait_all_results(true);
+
+  
   //--------------------------------------------------------------------------//
   //  Create Phase barriers per each Field
   //-------------------------------------------------------------------------//
@@ -216,17 +208,17 @@ runtime_driver(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
-      if((field_info.storage_type != global) &&
-        (field_info.storage_type != color)){
+      if((field_info.storage_class != global) &&
+        (field_info.storage_class != color)){
         if(field_info.index_space == idx_space){
           fields_map[idx_space].push_back(field_info.fid);
           num_phase_barriers++;
         } // if
       }//if
-      else if(field_info.storage_type == global){
+      else if(field_info.storage_class == global){
         number_of_global_fields++;
       }
-      else if(field_info.storage_type == color){
+      else if(field_info.storage_class == color){
         number_of_color_fields++;
       }
     } // for
@@ -488,7 +480,7 @@ runtime_driver(
 
     global_reg_req.add_flags(NO_ACCESS_FLAG);
     for(const field_info_t& field_info : context_.registered_fields()){
-      if(field_info.storage_type == data::global ){
+      if(field_info.storage_class == data::global ){
          global_reg_req.add_field(field_info.fid);
        }//if
      }//for
@@ -509,7 +501,7 @@ runtime_driver(
 
    // color_reg_req.add_flags(NO_ACCESS_FLAG);
     for(const field_info_t& field_info : context_.registered_fields()){
-       if(field_info.storage_type == data::color ){
+       if(field_info.storage_class == data::color ){
          color_reg_req.add_field(field_info.fid);
        }//if
      }//for
@@ -642,8 +634,8 @@ spmd_task(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
-      if((field_info.storage_type != global) &&
-        (field_info.storage_type != color)){
+      if((field_info.storage_class != global) &&
+        (field_info.storage_class != color)){
         if(field_info.index_space == idx_space){
           fields_map[idx_space].push_back(field_info.fid);
         }
@@ -1029,12 +1021,6 @@ spmd_task(
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
 
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_t::instance().push_state(utils::const_string_t{"driver"}.hash(),
-    ctx, runtime, task, regions);
-#endif
-
   // #6 deserialize reduction
   Legion::DynamicCollective max_reduction;
   args_deserializer.deserialize((void*)&max_reduction,
@@ -1051,8 +1037,8 @@ spmd_task(
   args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
    
   using adjacency_triple_t = context_t::adjacency_triple_t;
-  adjacency_triple_t* adjacencies = 
-    (adjacency_triple_t*)malloc(sizeof(adjacency_triple_t) * num_adjacencies);
+  adjacency_triple_t* adjacencies =
+     new adjacency_triple_t [num_adjacencies]; 
      
   args_deserializer.deserialize((void*)adjacencies,
     sizeof(adjacency_triple_t) * num_adjacencies);
@@ -1095,22 +1081,38 @@ spmd_task(
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
   context_.advance_state();
-  // run default or user-defined driver 
-  driver(args.argc, args.argv); 
 
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_t::instance().pop_state(utils::const_string_t{"driver"}.hash());
-#endif
+  auto& local_index_space_map = context_.local_index_space_map();
+  for(auto& itr : local_index_space_map){
+    size_t index_space = itr.first;
+
+    legion_data_t::local_index_space_t lis = 
+      legion_data_t::create_local_index_space(
+      ctx, runtime, index_space, itr.second);
+    
+    auto& lism = context_.local_index_space_data_map();
+
+    context_t::local_index_space_data_t lis_data;
+    lis_data.region = lis.logical_region;
+    lism.emplace(index_space, std::move(lis_data));
+  }
+
+  // run default or user-defined driver
+  driver(args.argc, args.argv);
 
   // Cleanup memory
-  for(auto ipart: primary_ghost_ips)
-      runtime->destroy_index_partition(ctx, ipart);
-  for(auto ipart: exclusive_shared_ips)
-      runtime->destroy_index_partition(ctx, ipart);
+  for(auto ipart: primary_ghost_ips) {
+    runtime->destroy_index_partition(ctx, ipart);
+  } // for
+
+  for(auto ipart: exclusive_shared_ips) {
+    runtime->destroy_index_partition(ctx, ipart);
+  } // for
+
   delete [] field_info_buf;
   delete [] num_owners;
   delete [] pbarriers_as_owner;
+  delete [] adjacencies;
 //  delete [] idx_spaces;
 
 } // spmd_task

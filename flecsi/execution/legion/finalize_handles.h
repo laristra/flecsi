@@ -28,12 +28,12 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   >
   void
   handle(
-    data_handle__<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    > & h
+    dense_accessor__<
+     T,
+     EXCLUSIVE_PERMISSIONS,
+     SHARED_PERMISSIONS,
+     GHOST_PERMISSIONS
+    > & a
   )
   {
   } // handle
@@ -65,7 +65,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     typename T
   >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
+  typename std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
   handle(
     T &
   )

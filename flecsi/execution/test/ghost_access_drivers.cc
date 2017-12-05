@@ -14,6 +14,7 @@
 #include "flecsi/execution/execution.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/supplemental/mesh/empty_mesh_2d.h"
+#include "flecsi/data/dense_accessor.h"
 
 #define INDEX_ID 0
 #define VERSIONS 1
@@ -23,31 +24,20 @@ using namespace supplemental;
 
 clog_register_tag(ghost_access);
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-flecsi::data::mpi::dense_handle_t<T, EP, SP, GP>;
-#endif
-
-
 using namespace flecsi;
 using namespace topology;
 
 void check_all_cells_task(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
-        handle_t<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
+        dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
         int my_color, size_t cycle);
-flecsi_register_task(check_all_cells_task, loc, single|leaf);
+flecsi_register_task_simple(check_all_cells_task, loc, single|leaf);
 
 void set_primary_cells_task(
-        handle_t<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
-        handle_t<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
+        dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
+        dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
         int my_color, size_t cycle);
-flecsi_register_task(set_primary_cells_task, loc, single|leaf);
+flecsi_register_task_simple(set_primary_cells_task, loc, single|leaf);
 
 flecsi_register_field(empty_mesh_t, name_space, cell_ID, size_t, dense,
     VERSIONS, INDEX_ID);
@@ -68,7 +58,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   map.vertices = 1;
   map.cells = 0;
 
-  flecsi_execute_mpi_task(add_colorings, map);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
 } // specialization_tlt_init
 
@@ -95,11 +85,11 @@ void driver(int argc, char ** argv) {
       INDEX_ID);
 
   for(size_t cycle=0; cycle<3; cycle++) {
-    flecsi_execute_task(set_primary_cells_task, single, handle, test_handle,
-            my_color,cycle);
+    flecsi_execute_task_simple(set_primary_cells_task, single, handle,
+      test_handle, my_color,cycle);
 
-    flecsi_execute_task(check_all_cells_task, single, handle, test_handle,
-            my_color, cycle);
+    flecsi_execute_task_simple(check_all_cells_task, single, handle,
+      test_handle, my_color, cycle);
   }
 
 } // driver
@@ -108,8 +98,8 @@ void driver(int argc, char ** argv) {
 } // namespace flecsi
 
 void set_primary_cells_task(
-        handle_t<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
-        handle_t<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
+        dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
+        dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
         int my_color, size_t cycle) {
 
   clog(trace) << "Rank " << my_color << " WRITING " << std::endl;
@@ -151,8 +141,8 @@ void set_primary_cells_task(
 } // set_primary_cells_task
 
 void check_all_cells_task(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
-        handle_t<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
+        dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
         int my_color, size_t cycle) {
   clog(trace) << "Rank " << my_color << " READING " << std::endl;
 

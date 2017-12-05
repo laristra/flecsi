@@ -1,16 +1,10 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
+
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Sep 16, 2016
+//----------------------------------------------------------------------------//
 
 #pragma once
 
@@ -26,43 +20,66 @@ namespace topology {
  * class index_space
  *----------------------------------------------------------------------------*/
 
-/*!
- \class index_space
- \brief index_space provides a compile-time
-  configurable and iterable container of objects, e.g. mesh/tree topology
-  entities and their id's. Index space defines the concept of STORAGE -
-  whether the actual entities referenced are stored within this index space
-  OR contained in a 'master' index space. OWNERSHIP - whether its set of id's
-  are owned by this index space or aliased to another index space and then
-  must be copied before this index space can then modify them. SORTED - refers
-  to if the id's are sorted and can then have set operations directly applied
-  to them, else the index space must first be sorted. To make operations on
-  index spaces faster, the index space is parameterized on a number of these
-  parameters and can be efficiently recast depending on how it is to be used:
-  STORAGE - if true then this is a 'master' index space with its own storage.
-  OWNED - if true then id ownership is definitely true, else must check owned_
-  at runtime. SORTED - if true then id's are definitely stored and shall remain
-  in sorted order.
-*/
-
-template<size_t, class E>
+template<
+  size_t,
+  class E
+>
 class domain_entity;
 
-template<typename T>
-struct index_space_ref_type__{
+//! helper classes for resolving types
+template<
+  typename T
+>
+struct index_space_ref_type__
+{
   using type = T&;
 };
 
-template<typename S>
-struct index_space_ref_type__<S*>{
+//! helper classes for resolving types
+template<
+  typename S
+>
+struct index_space_ref_type__<S*>
+{
   using type = S*;
 };
 
-template<size_t M, class E>
-struct index_space_ref_type__<domain_entity<M, E>>{
+//! helper classes for resolving types
+template<
+  size_t M,
+  class E
+>
+struct index_space_ref_type__<domain_entity<M, E>>
+{
   using type = domain_entity<M, E>;
 };
 
+//----------------------------------------------------------------------------//
+//! index_space provides a compile-time
+//! configurable and iterable container of objects, e.g. mesh/tree topology
+//! entities and their id's. Index space defines the concept of STORAGE -
+//! whether the actual entities referenced are stored within this index space
+//! OR contained in a 'master' index space. OWNERSHIP - whether its set of id's
+//! are owned by this index space or aliased to another index space and then
+//! must be copied before this index space can then modify them. SORTED - refers
+//! to if the id's are sorted and can then have set operations directly applied
+//! to them, else the index space must first be sorted. To make operations on
+//! index spaces faster, the index space is parameterized on a number of these
+//! parameters and can be efficiently recast depending on how it is to be used.
+//! 
+//! @tparam STORAGE if true then this is a 'master' index space with its own
+//!   storage.
+//!
+//! @tparam OWNED if true then id ownership is definitely true, else must check 
+//!   owned_ at runtime
+//!
+//! @tparam SORTED if true then id's are definitely sorted and shall 
+//!   be maintained in sorted order.
+//!
+//! @tparam F iterator predicate/filter function
+//!
+//! @ingroup topology
+//----------------------------------------------------------------------------//
 template<
   class T,
   bool STORAGE = false,
@@ -74,45 +91,67 @@ template<
 class index_space
 {
 public:
+  //! ID type
   using id_t = typename std::remove_pointer<T>::type::id_t;
 
+  //! ID storage type
   using id_storage_t = STORAGE_TYPE<id_t>;
 
+  //! Storage type
   using storage_t = STORAGE_TYPE<T>;
 
+  //! item, e.g. entity type
   using item_t = typename std::remove_pointer<T>::type;
 
+  //! Reference type
   using ref_t = typename index_space_ref_type__<T>::type;
 
+  //! reference casting type
   using cast_t = std::decay_t<ref_t>;
   
+  //! filter predicate function signature
   using filter_function = std::function<bool(T&)>;
 
+  //! apply function signature
   using apply_function = std::function<void(T&)>;
 
+  //! map function signature
   template<typename S>
   using map_function = std::function<S(T&)>;
 
+  //! Reduce function signature
   template<typename S>
   using reduce_function = std::function<void(T&, S&)>;
 
-  /*!
-    Iterable id range.
-   */
-  class id_range_{
+  //--------------------------------------------------------------------------//
+  //! Iterable id range.
+  //! 
+  //! @ingroup topology
+  //--------------------------------------------------------------------------//
+  class id_range_
+  {
   public:
+    //-----------------------------------------------------------------//
+    //! Copy constructor
+    //-----------------------------------------------------------------//
     id_range_(
       const id_range_& r
     )
     : items_(r.items_), begin_(r.begin_), end_(r.end_)
     {}
 
+    //-----------------------------------------------------------------//
+    //! Initialize range from items
+    //-----------------------------------------------------------------//
     id_range_(
       const id_storage_t& items
     )
     : items_(&items), begin_(0), end_(items_->size())
     {}
 
+    //-----------------------------------------------------------------//
+    //! Initialize range from items with beginning and end
+    //-----------------------------------------------------------------//
     id_range_(
       const id_storage_t& items,
       size_t begin,
@@ -121,6 +160,9 @@ public:
     : items_(&items), begin_(begin), end_(end)
     {}
 
+    //-----------------------------------------------------------------//
+    //! Assignment operator
+    //-----------------------------------------------------------------//
     id_range_&
     operator=(
       const id_range_& r
@@ -131,12 +173,18 @@ public:
       end_ = r.end_;
     }
 
+    //-----------------------------------------------------------------//
+    //! Get begin iterator
+    //-----------------------------------------------------------------//
     typename id_storage_t::const_iterator
     begin() const
     {
       return items_->begin() + begin_;
     }
 
+    //-----------------------------------------------------------------//
+    //! Get end iterator
+    //-----------------------------------------------------------------//
     typename id_storage_t::const_iterator
     end() const
     {
@@ -149,9 +197,9 @@ public:
     size_t end_;
   };
 
-  /*!
-    Iterator base, const be parameterized with 'T' or 'const T'.
-   */
+  //------------------------------------------------------------------//
+  //! Iterator base, const be parameterized with 'T' or 'const T'
+  //------------------------------------------------------------------//
   template<
     class S
   >
@@ -160,12 +208,18 @@ public:
    public:
     using MS = typename std::remove_const<S>::type;
 
+    //-----------------------------------------------------------------//
+    //! Copy constructor
+    //-----------------------------------------------------------------//
     iterator_base_(
       const iterator_base_& itr
     )
     : items_(itr.items_), index_(itr.index_), end_(itr.end_), s_(itr.s_)
     {}
 
+    //-----------------------------------------------------------------//
+    //! Initialize iterator from items and range
+    //-----------------------------------------------------------------//
     iterator_base_(
       storage_t* s,
       const id_storage_t& items,
@@ -175,6 +229,9 @@ public:
     : items_(&items), index_(index), end_(end), s_(s)
     {}
 
+    //-----------------------------------------------------------------//
+    //! Initialize iterator from items and range
+    //-----------------------------------------------------------------//
     iterator_base_(
       const storage_t* s,
       const id_storage_t& items,
@@ -185,6 +242,9 @@ public:
     s_(const_cast<storage_t*>(s))
     {}
 
+    //-----------------------------------------------------------------//
+    //! Assignment operator
+    //-----------------------------------------------------------------//
     iterator_base_&
     operator=(
       const iterator_base_ & itr
@@ -197,6 +257,9 @@ public:
       return *this;
     }
 
+    //-----------------------------------------------------------------//
+    //! Equality operator
+    //-----------------------------------------------------------------//
     bool
     operator==(
       const iterator_base_& itr
@@ -205,6 +268,9 @@ public:
       return index_ == itr.index_;
     }
 
+    //-----------------------------------------------------------------//
+    //! Inequality operator
+    //-----------------------------------------------------------------//
     bool
     operator!=(
       const iterator_base_& itr
@@ -213,6 +279,9 @@ public:
       return index_ != itr.index_;
     }
 
+    //-----------------------------------------------------------------//
+    //! Helper method. Get item at index
+    //-----------------------------------------------------------------//
     auto
     get_(
       size_t index
@@ -230,9 +299,14 @@ public:
     storage_t* s_;
   };
 
-  /*!
-    Predicated iterator.
-   */
+  //------------------------------------------------------------------------//
+  //! Predicated iterator.
+  //! 
+  //! @tparam S reference return type
+  //! @tparam P predicate functor 
+  //! 
+  //! @ingroup topology
+  //------------------------------------------------------------------------//
   template<
     class S,
     class P
@@ -242,12 +316,18 @@ public:
   public:
     using B = iterator_base_<S>;
 
+    //-----------------------------------------------------------------//
+    //! Copy constructors
+    //-----------------------------------------------------------------//
     iterator_(
       const iterator_& itr
     )
     : B(itr)
     {}
 
+    //-----------------------------------------------------------------//
+    //! Initialize iterator from item storage and index range
+    //-----------------------------------------------------------------//
     iterator_(
       storage_t* s,
       const id_storage_t& items,
@@ -257,6 +337,9 @@ public:
     : B(s, items, index, end)
     {}
 
+    //-----------------------------------------------------------------//
+    //! Initialize iterator from item storage and index range
+    //-----------------------------------------------------------------//
     iterator_(
       const storage_t* s,
       const id_storage_t& items,
@@ -266,6 +349,9 @@ public:
     : B(s, items, index, end)
     {}
 
+    //-----------------------------------------------------------------//
+    //! Increment operator
+    //-----------------------------------------------------------------//
     iterator_&
     operator++()
     {
@@ -273,6 +359,9 @@ public:
       return *this;
     }
 
+    //-----------------------------------------------------------------//
+    //! Dereference operator
+    //-----------------------------------------------------------------//
     S&
     operator*()
     {
@@ -289,6 +378,9 @@ public:
       assert(false && "end of range");
     }
 
+    //-----------------------------------------------------------------//
+    //! Arrow operator
+    //-----------------------------------------------------------------//
     S*
     operator->()
     {
@@ -306,9 +398,13 @@ public:
     }
   };
 
-  /*!
-    Non-predicated iterator.
-   */
+  //------------------------------------------------------------------------//
+  //! Non-predicated iterator.
+  //!
+  //! @tparam S reference return type
+  //!
+  //! @ingroup topology
+  //------------------------------------------------------------------------//
   template<
     class S
   >
@@ -318,12 +414,18 @@ public:
 
     using ref_t = index_space_ref_type__<S>;
 
+    //-----------------------------------------------------------------//
+    //! Copy constructor
+    //-----------------------------------------------------------------//
     iterator_(
       const iterator_& itr
     )
     : B(itr)
     {}
 
+    //-----------------------------------------------------------------//
+    //! Initialize iterator from items and range
+    //-----------------------------------------------------------------//
     iterator_(
       storage_t* s,
       const id_storage_t& items,
@@ -333,6 +435,9 @@ public:
     : B(s, items, index, end)
     {}
 
+    //-----------------------------------------------------------------//
+    //! Initialize iterator from items and range
+    //-----------------------------------------------------------------//
     iterator_(
       const storage_t* s,
       const id_storage_t& items,
@@ -342,6 +447,9 @@ public:
     : B(s, items, index, end)
     {}
 
+    //-----------------------------------------------------------------//
+    //! Increment operator
+    //-----------------------------------------------------------------//
     iterator_&
     operator++()
     {
@@ -349,12 +457,18 @@ public:
       return *this;
     }
 
+    //-----------------------------------------------------------------//
+    //! Dereference operator
+    //-----------------------------------------------------------------//
     S
     operator*()
     {
       return B::get_(B::index_);
     }
 
+    //-----------------------------------------------------------------//
+    //! Arrow operator
+    //-----------------------------------------------------------------//
     S*
     operator->()
     {
@@ -362,6 +476,10 @@ public:
     }
   };
 
+  //-----------------------------------------------------------------//
+  //! Constructor. If storage is true then allocate storage type,
+  //! else this index space will index into a separate storage.
+  //-----------------------------------------------------------------//
   index_space(
     bool storage = STORAGE
   )
@@ -371,9 +489,10 @@ public:
     assert((STORAGE || !storage) && "invalid instantiation");
   }
 
-  /*!
-    Slice an existing index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Slice constructor. A slice is a view on existing index space and 
+  //! narrower range.
+  //-----------------------------------------------------------------//
   template<
     class S,
     bool STORAGE2,
@@ -397,9 +516,9 @@ public:
     static_assert(!OWNED, "expected !OWNED");
   }
 
-  /*!
-    Alias an existing index space unless OWNED.
-   */
+  //-----------------------------------------------------------------//
+  //! Constructor to alias an existing index space unless OWNED.
+  //-----------------------------------------------------------------//
   index_space(
     const index_space& is
   )
@@ -411,6 +530,9 @@ public:
     static_assert(!STORAGE, "expected !STORAGE");
   }
 
+  //-----------------------------------------------------------------//
+  //! Move constructor.
+  //-----------------------------------------------------------------//
   index_space(
     index_space&& is
   )
@@ -437,6 +559,9 @@ public:
     is.end_ = 0;
   }
 
+  //-----------------------------------------------------------------//
+  //! Destructor.
+  //-----------------------------------------------------------------//
   ~index_space()
   {
     if(OWNED || owned_)
@@ -450,12 +575,18 @@ public:
     }
   }
 
+  //-----------------------------------------------------------------//
+  //! Return the storage object.
+  //-----------------------------------------------------------------//
   storage_t*
   storage()
   {
     return s_;
   }
 
+  //-----------------------------------------------------------------//
+  //! Return the storage object.
+  //-----------------------------------------------------------------//
   const storage_t*
   storage()
   const
@@ -463,6 +594,9 @@ public:
     return s_;
   }
 
+  //-----------------------------------------------------------------//
+  //! Set the storage object.
+  //-----------------------------------------------------------------//
   void
   set_storage(
     storage_t* s
@@ -471,9 +605,9 @@ public:
     s_ = s;
   }
 
-  /*!
-    Alias an existing index space unless OWNED.
-   */
+  //-----------------------------------------------------------------//
+  //! Assignment operator. Alias an existing index space unless OWNED.
+  //-----------------------------------------------------------------//
   index_space&
   operator=(
     const index_space& is
@@ -500,6 +634,9 @@ public:
     return *this;
   }
 
+  //-----------------------------------------------------------------//
+  //! Move assignment operator.
+  //-----------------------------------------------------------------//
   index_space&
   operator=(
     index_space&& is
@@ -532,6 +669,10 @@ public:
     return *this;
   }
 
+  //-----------------------------------------------------------------//
+  //! Cast an index space by re-specifying template parameters such
+  //! as OWNED or SORTED.
+  //-----------------------------------------------------------------//
   template<
     class S,
     bool STORAGE2 = STORAGE,
@@ -551,6 +692,10 @@ public:
     return *res;
   }
 
+  //-----------------------------------------------------------------//
+  //! Cast an index space by re-specifying template parameters such 
+  //! as OWNED or SORTED.
+  //-----------------------------------------------------------------//
   template<
     class S,
     bool STORAGE2 = STORAGE,
@@ -570,42 +715,63 @@ public:
     return *res;
   }
 
+  //-----------------------------------------------------------------//
+  //! Return begin iterator
+  //-----------------------------------------------------------------//
   auto
   begin()
   {
     return iterator_<T, F>(s_, *v_, begin_, end_);
   }
 
+  //-----------------------------------------------------------------//
+  //! Return begin iterator
+  //-----------------------------------------------------------------//
   auto
   begin() const
   {
     return iterator_<const T, F>(s_, *v_, begin_, end_);
   }
 
+  //-----------------------------------------------------------------//
+  //! Return end iterator
+  //-----------------------------------------------------------------//
   auto
   end()
   {
     return iterator_<T, F>(s_, *v_, end_, end_);
   }
 
+  //-----------------------------------------------------------------//
+  //! Return end iterator
+  //-----------------------------------------------------------------//
   auto
   end() const
   {
     return iterator_<const T, F>(s_, *v_, end_, end_);
   }
 
+  //-----------------------------------------------------------------//
+  //! Return begin offset
+  //-----------------------------------------------------------------//
   size_t
   begin_offset() const
   {
     return begin_;
   }
 
+  //-----------------------------------------------------------------//
+  //! Return end offset
+  //-----------------------------------------------------------------//
   size_t
   end_offset() const
   {
     return end_;
   }
 
+  //-----------------------------------------------------------------//
+  //! Get offset
+  //-----------------------------------------------------------------//
   ref_t
   get_offset(
     size_t offset
@@ -614,6 +780,9 @@ public:
     return (*s_)[(*v_)[offset].index_space_index()];
   }
 
+  //-----------------------------------------------------------------//
+  //! Get offset
+  //-----------------------------------------------------------------//
   const ref_t
   get_offset(
     size_t offset
@@ -622,12 +791,18 @@ public:
     return (*s_)[(*v_)[offset].index_space_index()];
   }
 
+  //-----------------------------------------------------------------//
+  //! Get all IDs in range
+  //-----------------------------------------------------------------//
   id_range_
   ids() const
   {
     return id_range_(*v_, begin_, end_);
   }
 
+  //-----------------------------------------------------------------//
+  //! Get all IDs in range
+  //-----------------------------------------------------------------//
   id_range_
   ids(
     size_t begin,
@@ -637,6 +812,9 @@ public:
     return id_range_(*v_, begin, end);
   }
 
+  //-----------------------------------------------------------------//
+  //! Get all IDs in range
+  //-----------------------------------------------------------------//
   id_range_
   ids(
     const std::pair<size_t, size_t>& p
@@ -645,6 +823,12 @@ public:
     return id_range_(*v_, p.first, p.second);
   }
 
+  //-----------------------------------------------------------------//
+  //! Slice and cast an index space
+  //!
+  //! @param begin begin offset
+  //! @param end end offset
+  //-----------------------------------------------------------------//
   template<
     class S = T
   >
@@ -658,18 +842,30 @@ public:
       *this, begin, end);
   }
 
+  //-----------------------------------------------------------------//
+  //! Slice and cast an index space
+  //!
+  //! @tparam S class to cast to
+  //!
+  //! @param r offset range
+  //-----------------------------------------------------------------//
   template<
     class S = T
   >
   auto
   slice(
-    const std::pair<size_t, size_t>& p
+    const std::pair<size_t, size_t>& range
   ) const
   {
     return index_space<S, false, false, SORTED, F, STORAGE_TYPE>(
-      *this, p.first, p.second);
+      *this, range.first, range.second);
   }
 
+  //-----------------------------------------------------------------//
+  //! Slice and cast an index space
+  //!
+  //! @tparam S class to cast to
+  //-----------------------------------------------------------------//
   template<
     class S = T
   >
@@ -679,6 +875,9 @@ public:
       *this, begin_, end_);
   }
 
+  //-----------------------------------------------------------------//
+  //! Helper method. Get item at offset.
+  //-----------------------------------------------------------------//
   ref_t
   get_(
     size_t offset
@@ -689,6 +888,9 @@ public:
     );
   }
 
+  //-----------------------------------------------------------------//
+  //! Helper method. Get item at offset.
+  //-----------------------------------------------------------------//
   const ref_t
   get_(
     size_t offset
@@ -699,6 +901,9 @@ public:
     );
   }
 
+  //-----------------------------------------------------------------//
+  //! Helper method. Get item at offset from end.
+  //-----------------------------------------------------------------//
   ref_t
   get_end_(
     size_t offset
@@ -709,6 +914,9 @@ public:
     );
   }
 
+  //-----------------------------------------------------------------//
+  //! Helper method. Get item at offset from end.
+  //-----------------------------------------------------------------//
   const ref_t
   get_end_(
     size_t offset
@@ -719,14 +927,20 @@ public:
     );
   }
 
+  //-----------------------------------------------------------------//
+  //! Get item at offset.
+  //-----------------------------------------------------------------//
   ref_t
   operator[](
-    size_t i
+    size_t offset
   )
   {
-    return get_(i);
+    return get_(offset);
   }
 
+  //-----------------------------------------------------------------//
+  //! Get item at offset.
+  //-----------------------------------------------------------------//
   const ref_t
   operator[](
     size_t i
@@ -735,6 +949,10 @@ public:
     return get_(i);
   }
 
+  //-----------------------------------------------------------------//
+  //! Index into the index space and return reference to the entity id
+  //! at index
+  //-----------------------------------------------------------------//
   const id_t&
   operator()(
     size_t i
@@ -743,6 +961,10 @@ public:
     return (*v_)[begin_ + i];
   }
 
+  //-----------------------------------------------------------------//
+  //! Index into the index space and return reference to the entity id
+  //! at index
+  //-----------------------------------------------------------------//
   id_t&
   operator()(
     size_t i
@@ -751,42 +973,63 @@ public:
     return (*v_)[begin_ + i];
   }
 
+  //-----------------------------------------------------------------//
+  //! Get the entity at the front of the index space
+  //-----------------------------------------------------------------//
   ref_t
   front()
   {
     return get_(0);
   }
 
+  //-----------------------------------------------------------------//
+  //! Get the entity at the front of the index space
+  //-----------------------------------------------------------------//
   const ref_t
   front() const
   {
     return get_(0);
   }
 
+  //-----------------------------------------------------------------//
+  //! Get the entity at the back of the index space
+  //-----------------------------------------------------------------//
   ref_t
   back()
   {
     return get_end_(0);
   }
 
+  //-----------------------------------------------------------------//
+  //! Get the entity at the back of the index space
+  //-----------------------------------------------------------------//
   const ref_t
   back() const
   {
     return get_end_(0);
   }
 
+  //-----------------------------------------------------------------//
+  //! Get the size of the index space
+  //-----------------------------------------------------------------//
   size_t
   size() const
   {
     return end_ - begin_;
   }
 
+  //-----------------------------------------------------------------//
+  //! Return if the index space is empty, i.e. has no indices
+  //-----------------------------------------------------------------//
   bool
   empty() const
   {
     return begin_ == end_;
   }
 
+  //-----------------------------------------------------------------//
+  //! Clear all indices and entities
+  //-----------------------------------------------------------------//
   void
   clear()
   {
@@ -805,6 +1048,10 @@ public:
     }
   }
 
+  //-----------------------------------------------------------------//
+  //! Set the master entity storage. The master owns the actual
+  //! entities that the index space references.
+  //-----------------------------------------------------------------//
   template<
     bool STORAGE2,
     bool OWNED2,
@@ -821,9 +1068,10 @@ public:
       STORAGE_TYPE2>&>(master));
   }
 
-  /*!
-    Set storage to point to a master index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Set the master entity storage. The master owns the actual
+  //! entities that the index space references.
+  //-----------------------------------------------------------------//
   template<
     bool STORAGE2,
     bool OWNED2,
@@ -839,18 +1087,32 @@ public:
     s_ = reinterpret_cast<storage_t*>(master.s_);
   }
 
+  //-----------------------------------------------------------------//
+  //! Construct and return a vector containing the entities
+  //! associated with this index space
+  //-----------------------------------------------------------------//
   std::vector<const T>
   to_vec() const
   {
     return to_vec_<const T>();
   }
 
+  //-----------------------------------------------------------------//
+  //! Construct and return a vector containing the entities associated
+  //! with this index space
+  //-----------------------------------------------------------------//
   std::vector<T>
   to_vec()
   {
     return to_vec_<T>();
   }
 
+  //-----------------------------------------------------------------//
+  //! Helper method. Construct and return a vector containing the 
+  //! entities associated with this index space.
+  //!
+  //! @tparam S entity type
+  //-----------------------------------------------------------------//
   template<
     class S
   >
@@ -866,18 +1128,27 @@ public:
     return ret;
   }
 
+  //-----------------------------------------------------------------//
+  //! Return the index storage object.
+  //-----------------------------------------------------------------//
   const id_storage_t&
   id_storage() const
   {
     return *v_;
   }
 
+  //-----------------------------------------------------------------//
+  //! Return the index storage object.
+  //-----------------------------------------------------------------//
   id_storage_t&
   id_storage()
   {
     return *v_;
   }
 
+  //-----------------------------------------------------------------//
+  //! Set the index storage object.
+  //-----------------------------------------------------------------//
   void
   set_id_storage(id_storage_t* v){
     if(owned_){
@@ -888,6 +1159,9 @@ public:
     owned_ = false;
   }
 
+  //-----------------------------------------------------------------//
+  //! Return the index space IDs as an array.
+  //-----------------------------------------------------------------//
   const id_t*
   id_array() const
   {
@@ -899,7 +1173,13 @@ public:
   {
     return v_->data();
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Walk the index space and apply the predicate f, returning a new 
+  //! index space of those entities for which the predicate returned true.
+  //!
+  //! @tparam Predicate predicate callable object type
+  //-----------------------------------------------------------------//
   template<
     typename Predicate
   >
@@ -919,7 +1199,11 @@ public:
 
     return is;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Apply a function f to each indexed entity in the index space,
+  //! mutating its state.
+  //-----------------------------------------------------------------//
   void
   apply(
     apply_function f
@@ -929,7 +1213,11 @@ public:
       f(ent);
     }
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Non mutating method to apply a function f over each entity an
+  //! index face, returning a new index space in the process
+  //-----------------------------------------------------------------//
   template<
     class S
   >
@@ -948,7 +1236,13 @@ public:
     }
     return is;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Apply a reduction function to each entity in the index space
+  //! and return the reduced result.
+  //!
+  //! @param start start value, e.g. 0 for sum, 1 for product
+  //-----------------------------------------------------------------//
   template<
     typename S
   >
@@ -967,6 +1261,7 @@ public:
     return r;
   }
 
+  //-----------------------------------------------------------------//
   //! \brief Bin entities using a predicate function.
   //!
   //! The predicate function returns some sortable key that is
@@ -980,6 +1275,7 @@ public:
   //!   to a specific bin.
   //!
   //! \remark This version returns a map
+  //-----------------------------------------------------------------//
   template<
     typename Predicate
   >
@@ -991,6 +1287,7 @@ public:
     return bin_as_map( std::forward<Predicate>(f) );
   }
 
+  //-----------------------------------------------------------------//
   //! \brief Bin entities using a predicate function.
   //!
   //! The predicate function returns some sortable key that is
@@ -1005,6 +1302,7 @@ public:
   //!
   //! \remark This version returns a map, and is less costly to bin,
   //!   but more costly to access.
+  //-----------------------------------------------------------------//
   template<
     typename Predicate
   >
@@ -1034,6 +1332,7 @@ public:
     return bins;
   }
 
+  //-----------------------------------------------------------------//
   //! \brief Bin entities using a predicate function.
   //!
   //! The predicate function returns some sortable key that is
@@ -1047,6 +1346,7 @@ public:
   //!   to a specific bin.
   //!
   //! \remark This version returns a vector.
+  //-----------------------------------------------------------------//
   template<
     typename Predicate
   >
@@ -1075,7 +1375,11 @@ public:
     return bins_vec;
   }
 
-
+  //-----------------------------------------------------------------//
+  //! Helper method, for write operations. 
+  //! If the containers are not owned then make a copy of them
+  //! internally and set ownership.
+  //-----------------------------------------------------------------//
   void
   prepare_()
   {
@@ -1092,7 +1396,10 @@ public:
       sorted_ = true;
     }
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! In-place set intersection operation.
+  //-----------------------------------------------------------------//
   index_space&
   operator&=(
     const index_space& r
@@ -1130,7 +1437,10 @@ public:
 
     return *this;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Return r-value of set intersection of passed index spaces
+  //-----------------------------------------------------------------//
   index_space
   operator&(
     const index_space& r
@@ -1140,7 +1450,10 @@ public:
     ret &= r;
     return ret;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! In-place set union operation.
+  //-----------------------------------------------------------------//
   index_space&
   operator|=(
     const index_space& r
@@ -1179,7 +1492,10 @@ public:
 
     return *this;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Return r-value of set union of passed index spaces.
+  //-----------------------------------------------------------------//
   index_space
   operator|(
     const index_space& r
@@ -1189,7 +1505,10 @@ public:
     ret |= r;
     return ret;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! In-place set complement operator.
+  //-----------------------------------------------------------------//
   index_space&
   operator-=(
     const index_space& r
@@ -1224,7 +1543,10 @@ public:
 
     return *this;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Return r-value of set difference of passed index spaces.
+  //-----------------------------------------------------------------//
   index_space
   operator-(
     const index_space& r
@@ -1234,7 +1556,11 @@ public:
     ret -= r;
     return ret;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Add an entity to the index space. If the index space does not 
+  //! have storage then only the index is pushed
+  //-----------------------------------------------------------------//
   void
   push_back(
     const T& item
@@ -1263,7 +1589,11 @@ public:
 
     ++end_;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Add an entity to the index space. If the index space does not 
+  //! have storage then only the index is pushed
+  //-----------------------------------------------------------------//
   void
   push_back(
     id_t index
@@ -1286,13 +1616,21 @@ public:
 
     ++end_;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Called if an index was added to storage internally.
+  //-----------------------------------------------------------------//
   void
   pushed()
   {
     ++end_;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Append another index space’s entities to the index space.
+  //! If the index space does not have storage then only the indices
+  //! are appended.
+  //-----------------------------------------------------------------//
   void
   append(
     const index_space& is
@@ -1328,7 +1666,10 @@ public:
 
     end_ += n;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Shortcut for push_back()
+  //-----------------------------------------------------------------//
   index_space&
   operator<<(
     T item
@@ -1337,7 +1678,10 @@ public:
     push_back(item);
     return *this;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Append helper method. Do not call directly.
+  //-----------------------------------------------------------------//
   void
   append_(
     const std::vector<T>& ents,
@@ -1369,7 +1713,10 @@ public:
 
     end_ += n;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Helper method to get ID.
+  //-----------------------------------------------------------------//
   id_t
   id_(
     const item_t& item
@@ -1377,7 +1724,10 @@ public:
   {
     return item.index_space_id();
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Helper method to get ID.
+  //-----------------------------------------------------------------//
   id_t
   id_(
     const item_t* item
@@ -1385,13 +1735,19 @@ public:
   {
     return item->index_space_id();
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Set to begin index of contained IDs.
+  //-----------------------------------------------------------------//
   void
   set_begin(size_t begin)
   {
     begin_ = begin;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Set the end index of contained IDs.
+  //-----------------------------------------------------------------//
   void
   set_end(size_t end)
   {
@@ -1411,9 +1767,9 @@ private:
   bool sorted_;
   storage_t* s_;
 
-  /*!
-    Private methods for efficiently populating an index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Private methods for efficiently populating an index space.
+  //-----------------------------------------------------------------//
   size_t
   begin_push_()
   {
@@ -1421,9 +1777,9 @@ private:
     return v_->size();
   }
 
-  /*!
-    Private methods for efficiently populating an index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Private methods for efficiently populating an index space.
+  //-----------------------------------------------------------------//
   void
   reserve_(
     size_t n
@@ -1433,9 +1789,9 @@ private:
     return v_->reserve(n);
   }
 
-  /*!
-    Private methods for efficiently populating an index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Private methods for efficiently populating an index space.
+  //-----------------------------------------------------------------//
   void
   begin_push_(
     size_t n
@@ -1448,9 +1804,9 @@ private:
     end_ += n;
   }
 
-  /*!
-    Private methods for efficiently populating an index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Private methods for efficiently populating an index space.
+  //-----------------------------------------------------------------//
   void
   batch_push_(
     id_t index
@@ -1460,9 +1816,9 @@ private:
     v_->push_back(index);
   }
 
-  /*!
-    Private methods for efficiently populating an index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Private methods for efficiently populating an index space.
+  //-----------------------------------------------------------------//
   void
   push_(
     id_t index
@@ -1473,10 +1829,9 @@ private:
     ++end_;
   }
 
-
-  /*!
-    Private methods for efficiently populating an index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Private methods for efficiently populating an index space.
+  //-----------------------------------------------------------------//
   void
   end_push_(
     size_t n
@@ -1487,9 +1842,9 @@ private:
     end_ += v_->size() - n;
   }
 
-  /*!
-    Private methods for efficiently populating an index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Private methods for efficiently populating an index space.
+  //-----------------------------------------------------------------//
   void
   resize_(
     size_t n
@@ -1501,9 +1856,9 @@ private:
     end_ = v_->size();
   }
 
-  /*!
-    Private methods for efficiently populating an index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Private methods for efficiently populating an index space.
+  //-----------------------------------------------------------------//
   void
   fill_(
     id_t index
@@ -1513,27 +1868,27 @@ private:
     std::fill(v_->begin(), v_->end(), index);
   }
 
-  /*!
-    Private methods for efficiently populating an index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Private methods for efficiently populating an index space.
+  //-----------------------------------------------------------------//
   id_storage_t&
   id_storage_()
   {
     return *v_;
   }
 
-  /*!
-    Private methods for efficiently populating an index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Private methods for efficiently populating an index space.
+  //-----------------------------------------------------------------//
   typename id_storage_t::iterator
   index_begin_()
   {
     return v_->begin();
   }
 
-  /*!
-    Private methods for efficiently populating an index space.
-   */
+  //-----------------------------------------------------------------//
+  //! Private methods for efficiently populating an index space.
+  //-----------------------------------------------------------------//
   typename id_storage_t::iterator
   index_end_()
   {
@@ -1541,20 +1896,34 @@ private:
   }
 };
 
+//----------------------------------------------------------------------------//
+//! this class provides a simple ID which is simply a size_t and the index is 
+//! the ID as opposed to more complex IDs which might need to store different
+//! pieces of data such as partition, topological dimension, etc.
+//----------------------------------------------------------------------------//
 class simple_id
 {
-public:
+public: 
+  //-----------------------------------------------------------------//
+  //! Constructor
+  //-----------------------------------------------------------------//
   simple_id(
     size_t id
   )
   : id_(id)
   {}
-
+  
+  //-----------------------------------------------------------------//
+  //! Conversion the size_t
+  //-----------------------------------------------------------------//
   operator size_t() const
   {
     return id_;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Comparison operator
+  //-----------------------------------------------------------------//
   bool
   operator<(
     const simple_id& eid
@@ -1562,7 +1931,10 @@ public:
   {
     return id_ < eid.id_;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Define the index space ID
+  //-----------------------------------------------------------------//
   size_t
   index_space_index() const
   {
@@ -1573,6 +1945,9 @@ private:
   size_t id_;
 };
 
+//----------------------------------------------------------------------------//
+//! a convenience class which associates a simple ID with type T
+//----------------------------------------------------------------------------//
 template<
   typename T
 >
@@ -1580,7 +1955,10 @@ class simple_entry
 {
 public:
   using id_t = simple_id;
-
+  
+  //-----------------------------------------------------------------//
+  //! Constructor to associate an id with an entry
+  //-----------------------------------------------------------------//
   simple_entry(
     id_t id,
     const T& entry
@@ -1588,17 +1966,26 @@ public:
   : id_(id),
   entry_(entry)
   {}
-
+  
+  //-----------------------------------------------------------------//
+  //! Conversion operator
+  //-----------------------------------------------------------------//
   operator T() const
   {
     return entry_;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Get the entry ID
+  //-----------------------------------------------------------------//
   auto entry_id() const
   {
     return entry_;
   }
-
+  
+  //-----------------------------------------------------------------//
+  //! Get the index space ID
+  //-----------------------------------------------------------------//
   id_t
   index_space_id() const
   {
@@ -1612,3 +1999,6 @@ private:
 
 } // namespace topology
 } // namespace flecsi
+
+/*~-------------------------------------------------------------------------~-*
+ *~-------------------------------------------------------------------------~-*/

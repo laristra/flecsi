@@ -1,43 +1,31 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_legion_global_h
 #define flecsi_legion_global_h
 
 //----------------------------------------------------------------------------//
-// POLICY_NAMESPACE must be defined before including storage_type.h!!!
-// Using this approach allows us to have only one storage_type__
+//! @file legion/dense.h
+//! @date Initial file creation: July, 2017
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
+// POLICY_NAMESPACE must be defined before including storage_class.h!!!
+// Using this approach allows us to have only one storage_class__
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
-#include "flecsi/data/storage_type.h"
+#include "flecsi/data/storage_class.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
-#include "flecsi/utils/const_string.h"
+#include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
 #include "flecsi/data/storage.h"
+#include "flecsi/execution/context.h"
+#include "flecsi/utils/const_string.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/data/common/privilege.h"
-
-///
-// \file legion/global.h
-// \authors Demeshko
-// \date Initial file creation: July, 2017
-///
 
 namespace flecsi {
 namespace data {
@@ -138,163 +126,7 @@ struct global_handle_t :
   { 
     return size_;
   } // size
-
-  T & data() const
-  {
-    return *base_t::combined_data;
-  }//data
  
-  //--------------------------------------------------------------------------//
-  // Operators.
-  //--------------------------------------------------------------------------//
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \tparam E A complex index type.
-  //
-  // This version of the operator is provided to support use with
-  // \e flecsi mesh entity types \ref mesh_entity_base_t.
-  ///
-  template<typename E>
-  const T &
-  operator () (
-    E * e
-  ) const
-  {
-    return this->operator()(e->template id<0>());
-  } // operator ()
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \tparam E A complex index type.
-  //
-  // This version of the operator is provided to support use with
-  // \e flecsi mesh entity types \ref mesh_entity_base_t.
-  ///
-  template<typename E>
-  T &
-  operator () (
-    E * e
-  )
-  {
-    return this->operator()(e->template id<0>());
-  } // operator ()
-
-  //
-  // \brief Provide logical access to the data for this data variable. 
-  // \This is the non const operator version.
-  ///
-  T&
-  operator = (
-  const  T other
-  )
-  {
-   assert(base_t::combined_data !=nullptr &&"color object was allocated");
-   base_t::combined_data[0]=other;
-   return base_t::combined_data[0];
-  }//operator =
-
-  ///
-  // \brief Provide logical access to the data for this data variable. 
-  // \This is the const operator version.
-  ///
-  const T&
-  operator = (
-    const T other
-  ) const
-  {
-   assert( base_t::combined_data !=nullptr &&"color object was allocated");
-    base_t::combined_data[0]=other;
-    return base_t::combined_data[0];
-  }//operator =
-
-
-  ///
-  // \brief Provide output operator for the handle data
-  ///
-  friend
-  std::ostream&
-  operator  <<  (
-    std::ostream& os,
-    const global_handle_t & h
-  )
-  {
-    os << h.data();
-    return os;
-  }
-
-  ///
-  // \brief Provode operator< for the handle data
-  ///
-  friend
-  bool
-  operator < (
-    const global_handle_t & h,
-    const T & r
-  )
-  {
-        return h.data() < r;
-  }
-
-  ///
-  // \brief Provode operator> for the handle data
-  /// 
-  friend
-  bool
-  operator> (
-    const global_handle_t& lhs,
-    const T& rhs
-  )
-  {
-    return rhs < lhs;
-  }
-
-  ///
-  // \brief Provode operator<= for the handle data
-  ///
-  friend
-  bool
-  operator <= (
-    const global_handle_t& lhs,
-    const T& rhs
-  )
-  {
-    return !(lhs > rhs);
-  }
-
-  ///
-  // \brief Provode operator>= for the handle data
-  ///
-  friend
-  bool
-  operator >= (
-    const global_handle_t& lhs,
-    const T& rhs
-  )
-  {
-    return !(lhs < rhs);
-  }
-
-  ///
-  // \brief Provode operator== for the handle data
-  ///
-  friend
-  bool
-  operator ==
-  (
-    const global_handle_t& h,
-    const T& r
-  )
-  {
-    return h.data() == r;
-  }
-
-  T& operator() (size_t index) =delete;
-
   ///
   // \brief Test to see if this handle is empty
   //
@@ -325,7 +157,7 @@ struct global_handle_t :
 // FIXME: Global storage type.
 ///
 template<>
-struct storage_type__<global> {
+struct storage_class__<global> {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -359,7 +191,7 @@ struct storage_type__<global> {
     auto& context = execution::context_t::instance();
 
     auto& field_info =
-      context.get_field_info(
+      context.get_field_info_from_name(
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
       utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
@@ -375,8 +207,7 @@ struct storage_type__<global> {
     return h;
   }
 
-
-}; // struct storage_type__
+}; // struct storage_class__
 
 } // namespace legion
 } // namespace data
@@ -385,6 +216,4 @@ struct storage_type__<global> {
 #endif // flecsi_legion_global_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

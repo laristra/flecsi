@@ -1,13 +1,24 @@
+/*~-------------------------------------------------------------------------~~*
+ *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+ * /@@/////  /@@          @@////@@ @@////// /@@
+ * /@@       /@@  @@@@@  @@    // /@@       /@@
+ * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+ * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+ * /@@       /@@/@@//// //@@    @@       /@@/@@
+ * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+ * //       ///  //////   //////  ////////  //
+ *
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
+ *~-------------------------------------------------------------------------~~*/
+
 #include <cinchtest.h>
 #include <iostream>
-#include <sstream>
 #include <map>
+#include <sstream>
 
-#include "flecsi/data/legion/dpd.h"
 #include "flecsi/execution/task_ids.h"
-
-#include "legion.h"
-#include "legion_config.h"
+#include "flecsi/data/legion/dpd.h"
 
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
@@ -452,3 +463,8 @@ TEST(legion, test1) {
 
   Runtime::start(argc, argv);
 }
+
+/*~------------------------------------------------------------------------~--*
+ * Formatting options
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~------------------------------------------------------------------------~--*/

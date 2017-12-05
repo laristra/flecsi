@@ -11,7 +11,7 @@
 //! @date Initial file creation: Aug 01, 2016
 //----------------------------------------------------------------------------//
 
-#include <flecsi.h>
+#include <flecsi-config.h>
 
 //----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
@@ -20,21 +20,8 @@
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
 //----------------------------------------------------------------------------//
 
-// Serial Policy
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
-
-  #include "flecsi/execution/serial/context_policy.h"
-
-  namespace flecsi {
-  namespace execution {
-
-  using FLECSI_RUNTIME_CONTEXT_POLICY = serial_context_policy_t;
-
-  }
-  }
-
 // Legion Policy
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
   #include "flecsi/execution/legion/context_policy.h"
 

@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 //----------------------------------------------------------------------------//
@@ -23,8 +21,12 @@ namespace topology {
  * struct typeify
  *----------------------------------------------------------------------------*/
 
-template <typename T, T M>
-struct typeify {
+template<
+  typename T,
+  T M
+>
+struct typeify
+{
   static constexpr T value = M;
 };
 
@@ -48,8 +50,12 @@ using id_vector_t = std::vector<utils::id_t>;
 using connection_vector_t = std::vector<id_vector_t>;
 
 // hash use for mapping in building topology connectivity
-struct id_vector_hash_t {
-  size_t operator()(const id_vector_t & v) const
+struct id_vector_hash_t
+{
+  size_t
+  operator()(
+    const id_vector_t & v
+  ) const
   {
     size_t h = 0;
     for (utils::id_t id : v) {
@@ -74,6 +80,4 @@ using index_vector_t = std::vector<size_t>;
 #endif // flecsi_topology_types_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/

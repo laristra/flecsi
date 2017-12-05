@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_topology_entity_storage_h
@@ -27,6 +25,4 @@ using offset_storage_t = FLECSI_RUNTIME_OFFSET_STORAGE_TYPE;
 #endif // flecsi_topology_entity_storage_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/

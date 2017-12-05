@@ -25,6 +25,12 @@
 #include <type_traits>
 
 #include <cinchlog.h>
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
 #include <legion.h>
 
 #include "flecsi/execution/common/processor.h"
@@ -232,13 +238,8 @@ struct legion_execution_policy_t
     auto processor_type = context_.processor_type<KEY>();
 
     // Get the runtime and context from the current task.
-#if defined(ENABLE_LEGION_TLS)
     auto legion_runtime = Legion::Runtime::get_runtime();
     auto legion_context = Legion::Runtime::get_context();
-#else
-    auto legion_runtime = context_.runtime(parent);
-    auto legion_context = context_.context(parent);
-#endif
 
     // Handle MPI and Legion invocations separately.
     if(processor_type == processor_type_t::mpi) {
@@ -256,9 +257,15 @@ struct legion_execution_policy_t
       );
 
       // Enqueue the MPI task.
-      auto future =
-        legion_runtime->execute_index_space(legion_context, launcher);
+    //  auto future =
+    //    legion_runtime->execute_index_space(legion_context, launcher);
      // future.wait_all_results();
+
+      Legion::MustEpochLauncher must_epoch_launcher;
+      must_epoch_launcher.add_index_task(launcher);
+      auto future = legion_runtime->execute_must_epoch(legion_context,
+        must_epoch_launcher);
+      future.wait_all_results(true);
 
       // Handoff to the MPI runtime.
       context_.handoff_to_mpi(legion_context, legion_runtime);

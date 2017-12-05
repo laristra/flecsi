@@ -22,11 +22,18 @@
 
 #include <vector>
 
-#include "legion.h"
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
 
 #include "flecsi/execution/common/execution_state.h"
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client_handle.h"
+#include "flecsi/data/dense_accessor.h"
 
 namespace flecsi {
 namespace execution {
@@ -97,17 +104,19 @@ namespace execution {
     >
     void
     handle(
-      data_handle__<
+      dense_accessor__<
         T,
         EXCLUSIVE_PERMISSIONS,
         SHARED_PERMISSIONS,
         GHOST_PERMISSIONS
-      > & h
+      > & a
     )
     {
+      auto& h = a.handle;
+
       if (!h.global && !h.color){
-        clog_assert(h.state>SPECIALIZATION_TLT_INIT, "accessing  data         \
-          handle from specialization_tlt_init is not supported");
+        clog_assert(h.state>SPECIALIZATION_TLT_INIT, "accessing  data "
+          "handle from specialization_tlt_init is not supported");
 
         Legion::MappingTagID tag = EXCLUSIVE_LR;
 
@@ -156,9 +165,11 @@ namespace execution {
       typename T,
       size_t PERMISSIONS
     >
-    void
+    typename std::enable_if_t<
+      std::is_base_of<topology::mesh_topology_base__, T>::value
+    >
     handle(
-      data_client_handle__<T, PERMISSIONS> & h
+      data_client_handle__<T, PERMISSIONS>& h
     )
     {
       auto& context_ = context_t::instance();
@@ -217,6 +228,29 @@ namespace execution {
       }
     } // handle
 
+    template<
+      typename T,
+      size_t PERMISSIONS
+    >
+    typename std::enable_if_t<
+      std::is_base_of<topology::set_topology_base__, T>::value
+    >
+    handle(
+      data_client_handle__<T, PERMISSIONS>& h
+    )
+    {
+      auto& context_ = context_t::instance();
+
+      for(size_t i{0}; i<h.num_handle_entities; ++i) {
+        data_client_handle_entity_t & ent = h.handle_entities[i];
+
+        Legion::RegionRequirement rr(ent.color_region,
+          privilege_mode(PERMISSIONS), EXCLUSIVE, ent.color_region);
+        rr.add_field(ent.fid);
+        region_reqs.push_back(rr);
+      } // for
+    }
+
     //-----------------------------------------------------------------------//
     // If this is not a data handle, then simply skip it.
     //-----------------------------------------------------------------------//
@@ -225,12 +259,13 @@ namespace execution {
       typename T
     >
     static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
+    typename
+    std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value &&
+      !std::is_base_of<data_client_handle_base_t, T>::value>
     handle(
       T &
     )
-    {
-    } // handle
+    {} // handle
 
     Legion::Runtime * runtime;
     Legion::Context & context;

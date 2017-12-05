@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_storage_h
@@ -13,7 +11,6 @@
 
 #include "flecsi/runtime/types.h"
 #include "flecsi/utils/common.h"
-
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -123,7 +120,9 @@ struct storage__ : public STORAGE_POLICY {
   } // register_client
 
   bool
-  register_client_fields(size_t client_key)
+  register_client_fields(
+    size_t client_key
+  )
   {
     return registered_client_fields_.insert(client_key).second;
   }
@@ -175,6 +174,7 @@ private:
   std::unordered_set<size_t> registered_client_fields_;
   std::unordered_map<size_t, field_entry_t> field_registry_;
   std::unordered_map<size_t, client_entry_t> client_registry_;
+
 }; // class storage__
 
 } // namespace data
@@ -193,6 +193,4 @@ using storage_t = storage__<FLECSI_RUNTIME_STORAGE_POLICY>;
 #endif // flecsi_data_storage_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

@@ -20,9 +20,16 @@
 //! @date Initial file creation: May 19, 2017
 //----------------------------------------------------------------------------//
 
-#include <legion.h>
 #include <type_traits>
 #include <vector>
+
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
 
 #include "flecsi/utils/tuple_walker.h"
 
@@ -82,15 +89,17 @@ namespace execution {
     >
     void
     handle(
-      data_handle__<
+      dense_accessor__<
         T,
         EXCLUSIVE_PERMISSIONS,
         SHARED_PERMISSIONS,
         GHOST_PERMISSIONS
-      > & h
+      > & a
     )
     {
- if (!h.global && !h.color){
+    auto& h = a.handle;
+
+    if (!h.global && !h.color){
       bool write_phase{(SHARED_PERMISSIONS == wo) ||
         (SHARED_PERMISSIONS == rw)};
 
@@ -144,7 +153,8 @@ namespace execution {
       typename T
     >
     static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
+    typename
+    std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
     handle(
       T &
     )

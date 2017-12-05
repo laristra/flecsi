@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 //----------------------------------------------------------------------------//
@@ -11,9 +9,9 @@
 #ifndef flecsi_topology_set_topology_h
 #define flecsi_topology_set_topology_h
 
+#include "flecsi/topology/set_storage.h"
 #include "flecsi/topology/set_types.h"
 #include "flecsi/topology/set_utils.h"
-#include "flecsi/topology/set_storage.h"
 
 namespace flecsi{
 namespace topology{
@@ -31,8 +29,7 @@ public:
 
   using storage_t = set_storage_t<SET_TYPES>;
 
-  using base_t = 
-    mesh_topology_base_t<storage_t>;
+  using base_t = set_topology_base_t<storage_t>;
 
   using id_t = utils::id_t;
 
@@ -50,6 +47,4 @@ public:
 #endif // flecsi_topology_set_topology_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/

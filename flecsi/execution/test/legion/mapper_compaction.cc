@@ -3,9 +3,10 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
+#include <cinchtest.h>
+
 #include "flecsi/execution/legion/mapper.h"
 #include "flecsi/execution/legion/internal_task.h"
-#include "cinchtest.h"
 
 ///
 /// \file
@@ -109,15 +110,8 @@ __flecsi_internal_register_legion_task(internal_task_example_1,
 
 void driver(int argc, char ** argv) {
 
-#if defined(ENABLE_LEGION_TLS)
   auto runtime = Legion::Runtime::get_runtime();
   auto context = Legion::Runtime::get_context();  
-#else
-  context_t & context_ = context_t::instance();
-  size_t task_key = utils::const_string_t{"driver"}.hash();
-  auto runtime = context_.runtime(task_key);
-  auto context = context_.context(task_key);
-#endif
  
   int num_elmts = 20;
   int num_ghost=4;

@@ -1,39 +1,27 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_legion_sparse_h
 #define flecsi_legion_sparse_h
 
-#include <map>
 #include <algorithm>
+#include <map>
 
 //----------------------------------------------------------------------------//
-// POLICY_NAMESPACE must be defined before including storage_type.h!!!
-// Using this approach allows us to have only one storage_type__
+// POLICY_NAMESPACE must be defined before including storage_class.h!!!
+// Using this approach allows us to have only one storage_class__
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
-#include "flecsi/data/storage_type.h"
+#include "flecsi/data/storage_class.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
 #include "flecsi/utils/const_string.h"
 
-///
-// \file legion/sparse.h
-// \authors bergen
-// \date Initial file creation: Apr 17, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file 
+//! @date Initial file creation: Apr 17, 2016
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace data {
@@ -46,28 +34,6 @@ namespace legion {
 //----------------------------------------------------------------------------//
 // Sparse accessor.
 //----------------------------------------------------------------------------//
-
-#if 0
-using index_pair_ = std::pair<size_t, size_t>;
-
-template<typename T>
-struct material_value_{
-  material_value_(size_t material)
-  : material(material){}
-
-  material_value_(size_t material, T value)
-  : material(material),
-  value(value){}
-
-  material_value_(){}
-
-  size_t material;
-  T value;
-};
-
-static constexpr size_t INDICES_KEY = 0;
-static constexpr size_t MATERIALS_KEY = 1;
-#endif
 
 template<typename T>
 struct sparse_mutator_t {
@@ -146,7 +112,7 @@ struct sparse_handle_t {
 // FIXME: Sparse storage type.
 ///
 template<>
-struct storage_type__<sparse> {
+struct storage_class__<sparse> {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -195,7 +161,7 @@ struct storage_type__<sparse> {
     return {};
   } // get_handle
 
-}; // struct storage_type__
+}; // struct storage_class__
 
 } // namespace legion
 } // namespace data
@@ -204,6 +170,4 @@ struct storage_type__<sparse> {
 #endif // flecsi_legion_sparse_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

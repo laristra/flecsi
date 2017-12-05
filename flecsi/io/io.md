@@ -1,10 +1,10 @@
-<!-- CINCHDOC DOCUMENT(User Guide) SECTION(IO) -->
+<!-- CINCHDOC DOCUMENT(user-guide) SECTION(io) -->
 
 # I/O
 
 --------------------------------------------------------------------------------
 
-<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(IO) -->
+<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(io) -->
 
 # I/O
 

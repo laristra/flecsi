@@ -11,7 +11,7 @@
 //! @date Initial file creation: Aug 01, 2016
 //----------------------------------------------------------------------------//
 
-#include <flecsi.h>
+#include <flecsi-config.h>
 
 //----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
@@ -20,21 +20,8 @@
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
 //----------------------------------------------------------------------------//
 
-// Serial Policy
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
-
-  #include "flecsi/data/serial/storage_policy.h"
-
-  namespace flecsi {
-  namespace data {
-
-  using FLECSI_RUNTIME_STORAGE_POLICY = serial_storage_policy_t;
-
-  } // namespace data
-  } // namespace flecsi
-
-//Legion Policy
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+// Legion Policy
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
   #include "flecsi/data/legion/storage_policy.h"
 

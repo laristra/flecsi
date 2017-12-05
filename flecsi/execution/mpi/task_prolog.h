@@ -15,6 +15,13 @@
 #ifndef flecsi_execution_mpi_task_prolog_h
 #define flecsi_execution_mpi_task_prolog_h
 
+#include "flecsi/data/dense_accessor.h"
+#include "flecsi/data/sparse_accessor.h"
+#include "flecsi/data/ragged_accessor.h"
+#include "flecsi/data/sparse_accessor.h"
+#include "flecsi/data/sparse_mutator.h"
+#include "flecsi/data/ragged_mutator.h"
+
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: May 19, 2017
@@ -24,6 +31,7 @@
 
 #include "mpi.h"
 #include "flecsi/data/data.h"
+#include "flecsi/data/dense_accessor.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/coloring/mpi_utils.h"
 
@@ -72,12 +80,12 @@ namespace execution {
     >
     void
     handle(
-      data_handle__<
-        T,
-        EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS,
-        GHOST_PERMISSIONS
-      > & h
+     dense_accessor__<
+       T,
+       EXCLUSIVE_PERMISSIONS,
+       SHARED_PERMISSIONS,
+       GHOST_PERMISSIONS
+     > & a
     )
     {
       // TODO: move field data allocation here?
@@ -91,15 +99,41 @@ namespace execution {
     >
     void
     handle(
-      sparse_data_handle__<
+      sparse_accessor<
         T,
         EXCLUSIVE_PERMISSIONS,
         SHARED_PERMISSIONS,
         GHOST_PERMISSIONS
-      > & h
+      > & a
     )
     {
       // TODO: move field data allocation here?
+    } // handle
+
+    template<
+      typename T
+    >
+    void
+    handle(
+      sparse_mutator<
+        T
+      > & m
+    )
+    {
+      m.h_.init();
+    } // handle
+
+    template<
+      typename T
+    >
+    void
+    handle(
+      ragged_mutator<
+        T
+      > & m
+    )
+    {
+      m.h_.init();
     } // handle
 
     template<

@@ -19,6 +19,7 @@
 #include "flecsi/coloring/mpi_communicator.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/data/mutator_handle.h"
+#include "flecsi/data/dense_accessor.h"
 
 using namespace std;
 using namespace flecsi;
@@ -110,16 +111,6 @@ public:
 
 struct test_mesh_t : public mesh_topology_t<test_mesh_types_t> {};
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-data::legion::dense_handle_t<T, EP, SP, GP>;
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  data::mpi::dense_handle_t<T, EP, SP, GP>;
-#endif
-
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
@@ -128,7 +119,7 @@ void task1(client_handle_t<test_mesh_t, ro> mesh) {
 } // task1
 
 void fill_task(client_handle_t<test_mesh_t, wo> mesh,
-  handle_t<double, rw, rw, ro> pressure) {
+  dense_accessor<double, rw, rw, ro> pressure) {
   clog(info) << "IN FILL TASK" << std::endl;
 
   auto & context = execution::context_t::instance();
@@ -185,7 +176,7 @@ void fill_task(client_handle_t<test_mesh_t, wo> mesh,
 } // fill_task
 
 void print_task(client_handle_t<test_mesh_t, ro> mesh,
-  handle_t<double, ro, ro, ro> pressure) {
+  dense_accessor<double, ro, ro, ro> pressure) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -212,13 +203,13 @@ void hello() {
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
 
-flecsi_register_task(task1, loc, single);
+flecsi_register_task_simple(task1, loc, single);
 
 flecsi_register_field(test_mesh_t, hydro, pressure, double, dense, 1, 0);
 
-flecsi_register_task(fill_task, loc, single);
-flecsi_register_task(print_task, loc, single);
-flecsi_register_task(hello, loc, single);
+flecsi_register_task_simple(fill_task, loc, single);
+flecsi_register_task_simple(print_task, loc, single);
+flecsi_register_task_simple(hello, loc, single);
 
 namespace flecsi {
 namespace execution {
@@ -232,7 +223,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   coloring_map_t map;
   map.vertices = 1;
   map.cells = 0;
-  flecsi_execute_mpi_task(add_colorings, map);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
   auto& context = execution::context_t::instance();
 
@@ -265,7 +256,7 @@ void specialization_spmd_init(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, dense, 0);
 
-  auto f1 = flecsi_execute_task(fill_task, single, ch, ph);
+  auto f1 = flecsi_execute_task_simple(fill_task, single, ch, ph);
   f1.wait();
   } // scope
 
@@ -273,7 +264,7 @@ void specialization_spmd_init(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, dense, 0);
 
-  auto f2 = flecsi_execute_task(print_task, single, ch, ph);
+  auto f2 = flecsi_execute_task_simple(print_task, single, ch, ph);
   f2.wait();
   } // scope
 
@@ -293,11 +284,8 @@ void driver(int argc, char ** argv) {
 
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
 
-  flecsi_execute_task(task1, single, ch);
+  flecsi_execute_task_simple(task1, single, ch);
 #endif
-
-
-  mutator_handle__<double> h(0, 0, 5);
 
 } // specialization_driver
 

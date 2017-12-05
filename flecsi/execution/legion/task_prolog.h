@@ -20,8 +20,15 @@
 //! @date Initial file creation: May 19, 2017
 //----------------------------------------------------------------------------//
 
-#include <legion.h>
 #include <vector>
+
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
 
 #include "flecsi/data/data.h"
 #include "flecsi/execution/context.h"
@@ -86,14 +93,16 @@ namespace execution {
     >
     void
     handle(
-      data_handle__<
-        T,
-        EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS,
-        GHOST_PERMISSIONS
-      > & h
+      dense_accessor__<
+       T,
+       EXCLUSIVE_PERMISSIONS,
+       SHARED_PERMISSIONS,
+       GHOST_PERMISSIONS
+      > & a
     )
     {
+      auto& h = a.handle;
+
       if (!h.global && !h.color){
         auto& flecsi_context = context_t::instance();
 
@@ -254,7 +263,8 @@ namespace execution {
       typename T
     >
     static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
+    typename
+    std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
     handle(
       T&
     )

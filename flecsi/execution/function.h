@@ -17,8 +17,8 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-//! The function__ type provides a high-level function interface that is
-//! implemented by the given execution policy.
+//! The function_interface__ type provides a high-level function interface
+//! that is implemented by the given execution policy.
 //!
 //! @tparam EXECUTION_POLICY The backend execution policy.
 //!
@@ -28,7 +28,7 @@ namespace execution {
 template<
   typename EXECUTION_POLICY
 >
-struct function__
+struct function_interface__
 {
 
   //--------------------------------------------------------------------------//
@@ -86,7 +86,7 @@ struct function__
       std::forward<ARGS>(args) ...);
   } // execute_function
 
-}; // struct function__
+}; // struct function_interface__
 
 } // namespace execution
 } // namespace flecsi
@@ -106,7 +106,8 @@ namespace execution {
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-using function_t = function__<FLECSI_RUNTIME_EXECUTION_POLICY>;
+using function_interface_t =
+  function_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
 
 } // namespace execution
 } // namespace flecsi

@@ -3,15 +3,16 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-///
-/// \file
-/// \date Initial file creation: May 4, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: May 4, 2017
+//----------------------------------------------------------------------------//
+
+#include <chrono>
+#include <thread>
 
 #include <cinchlog.h>
 #include <cinchtest.h>
-#include <chrono>
-#include <thread>
 
 #include "flecsi/execution/execution.h"
 #include "flecsi/data/data.h"
@@ -26,18 +27,15 @@ using namespace supplemental;
 
 clog_register_tag(barrier_per_field);
 
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t = flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
-
 void read_task(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
         const int my_color, const size_t cycle);
-flecsi_register_task(read_task, loc, single);
+flecsi_register_task_simple(read_task, loc, single);
 
 void write_task(
-        handle_t<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
+        dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
         const int my_color, const size_t cycle, const bool delay);
-flecsi_register_task(write_task, loc, single);
+flecsi_register_task_simple(write_task, loc, single);
 
 flecsi_register_field(empty_mesh_2d_t, name_space, field1, size_t, dense,
     VERSIONS, INDEX_ID);
@@ -58,7 +56,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   map.vertices = 1;
   map.cells = 0;
 
-  flecsi_execute_mpi_task(add_colorings, map);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
 } // specialization_tlt_init
 
@@ -80,32 +78,34 @@ void driver(int argc, char ** argv) {
 
   for(size_t cycle=0; cycle<3; cycle++) {
     bool delay = false;
-    flecsi_execute_task(write_task, single, handle1, my_color, cycle, delay);
+    flecsi_execute_task_simple(write_task, single, handle1, my_color,
+      cycle, delay);
 
     delay = true;
-    flecsi_execute_task(write_task, single, handle2, my_color, cycle, delay);
+    flecsi_execute_task_simple(write_task, single, handle2, my_color,
+      cycle, delay);
 
-    flecsi_execute_task(read_task, single, handle2, my_color, cycle);
+    flecsi_execute_task_simple(read_task, single, handle2, my_color, cycle);
 
-    flecsi_execute_task(read_task, single, handle1, my_color, cycle);
+    flecsi_execute_task_simple(read_task, single, handle1, my_color, cycle);
 
-    flecsi_execute_task(read_task, single, handle2, my_color, cycle);
+    flecsi_execute_task_simple(read_task, single, handle2, my_color, cycle);
   }
 
   // Permutation test
   bool delay = false;
-  flecsi_execute_task(write_task, single, handle1, my_color, 0, delay);
-  flecsi_execute_task(write_task, single, handle2, my_color, 0, delay);
-  flecsi_execute_task(read_task, single, handle1, my_color, 0);
-  flecsi_execute_task(read_task, single, handle2, my_color, 0);
+  flecsi_execute_task_simple(write_task, single, handle1, my_color, 0, delay);
+  flecsi_execute_task_simple(write_task, single, handle2, my_color, 0, delay);
+  flecsi_execute_task_simple(read_task, single, handle1, my_color, 0);
+  flecsi_execute_task_simple(read_task, single, handle2, my_color, 0);
 
-  flecsi_execute_task(write_task, single, handle2, my_color, 1, delay);
-  flecsi_execute_task(read_task, single, handle1, my_color, 0);
-  flecsi_execute_task(read_task, single, handle2, my_color, 1);
+  flecsi_execute_task_simple(write_task, single, handle2, my_color, 1, delay);
+  flecsi_execute_task_simple(read_task, single, handle1, my_color, 0);
+  flecsi_execute_task_simple(read_task, single, handle2, my_color, 1);
 
-  flecsi_execute_task(write_task, single, handle1, my_color, 2, delay);
-  flecsi_execute_task(read_task, single, handle1, my_color, 2);
-  flecsi_execute_task(read_task, single, handle2, my_color, 1);
+  flecsi_execute_task_simple(write_task, single, handle1, my_color, 2, delay);
+  flecsi_execute_task_simple(read_task, single, handle1, my_color, 2);
+  flecsi_execute_task_simple(read_task, single, handle2, my_color, 1);
 
 } // driver
 
@@ -113,7 +113,7 @@ void driver(int argc, char ** argv) {
 } // namespace flecsi
 
 void write_task(
-        handle_t<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
+        dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
         const int my_color,
         const size_t cycle,
         const bool delay) {
@@ -145,7 +145,7 @@ void write_task(
 } // write_task
 
 void read_task(
-        handle_t<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
         const int my_color, const size_t cycle) {
 
   flecsi::execution::context_t & context_

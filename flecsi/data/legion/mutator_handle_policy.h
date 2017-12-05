@@ -1,13 +1,16 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_legion_mutator_handle_policy_h
 #define flecsi_data_legion_mutator_handle_policy_h
 
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
 #include <legion.h>
-#include <legion_stl.h>
 
 #include "flecsi/runtime/types.h"
 
@@ -38,6 +41,4 @@ struct legion_mutator_handle_policy_t
 #endif // flecsi_data_legion_mutator_handle_policy_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

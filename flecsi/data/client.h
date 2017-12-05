@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_client_h
@@ -13,12 +11,12 @@
 
 #include "flecsi/data/common/data_types.h"
 #include "flecsi/data/common/registration_wrapper.h"
-#include "flecsi/data/storage.h"
 #include "flecsi/data/data_client_handle.h"
+#include "flecsi/data/storage.h"
 #include "flecsi/execution/context.h"
-#include "flecsi/utils/tuple_walker.h"
-#include "flecsi/topology/mesh_types.h"
 #include "flecsi/runtime/types.h"
+#include "flecsi/topology/mesh_types.h"
+#include "flecsi/utils/tuple_walker.h"
 
 namespace flecsi {
 namespace topology {
@@ -251,6 +249,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
     using entity_types = typename POLICY_TYPE::entity_types;
     using connectivities = typename POLICY_TYPE::connectivities;
     using bindings = typename POLICY_TYPE::bindings;
+    using field_info_t = execution::context_t::field_info_t;
 
     data_client_handle__<DATA_CLIENT_TYPE, 0> h;
 
@@ -276,28 +275,26 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
       ent.dim = ei.dim;
       ent.size = ei.size;
 
-      auto itr = context.field_info_map().find(
-        { h.client_hash, ent.index_space });
+      const field_info_t* fi = 
+        context.get_field_info_from_key(h.client_hash,
+        utils::hash::client_internal_field_hash(
+        utils::const_string_t("__flecsi_internal_entity_data__").
+        hash(), ent.index_space));
+      
+      if(fi){
+        ent.fid = fi->fid;
+      }
 
-      clog_assert(itr != context.field_info_map().end(),
-        "invalid entity index space");
-
-      auto & tm = itr->second;
-
-      for(auto & fitr : tm){
-        if(fitr.second.key == 
-          utils::hash::client_internal_field_hash(
-          utils::const_string_t("__flecsi_internal_entity_data__").
-          hash(), ent.index_space)) {
-            ent.fid = fitr.second.fid;
-        } // if
-        else if(fitr.second.key == 
-          utils::hash::client_internal_field_hash(
-          utils::const_string_t("__flecsi_internal_entity_id__").
-          hash(), ent.index_space)) {
-            ent.id_fid = fitr.second.fid;
-        }
-      } // for
+      fi = 
+        context.get_field_info_from_key(h.client_hash,
+        utils::hash::client_internal_field_hash(
+        utils::const_string_t("__flecsi_internal_entity_id__").
+        hash(), ent.index_space));
+      
+      if(fi){
+        ent.id_fid = fi->fid;
+      }
+      
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(ent.index_space);
       clog_assert(ritr != ism.end(), "invalid index space " << ei.index_space);
@@ -338,42 +335,26 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
       adj.from_dim = hi.from_dim;
       adj.to_dim = hi.to_dim;
 
-      auto itr = context.field_info_map().find(
-        {h.client_hash, hi.from_index_space});
-      clog_assert(itr != context.field_info_map().end(),
-        "invalid from index space");
-
-      auto& fm = itr->second;
-
-      // This field resides in the main entities (BLIS) index space, but
-      // is unique to an adjacency, so it is registered using the
-      // adjacency hash.      
-      for(auto& fitr : fm){
-        if(fitr.second.key == 
-           utils::hash::client_internal_field_hash(
-           utils::const_string_t("__flecsi_internal_adjacency_offset__").
-           hash(), hi.index_space)){
-          adj.offset_fid = fitr.second.fid;
-          break;
-        }
+      const field_info_t* fi = 
+        context.get_field_info_from_key(h.client_hash,
+        utils::hash::client_internal_field_hash(
+        utils::const_string_t("__flecsi_internal_adjacency_offset__").
+        hash(), hi.index_space));
+      
+      if(fi){
+        adj.offset_fid = fi->fid;
       }
 
-      itr = context.field_info_map().find(
-        {h.client_hash, hi.index_space});
-      clog_assert(itr != context.field_info_map().end(),
-        "invalid index space");
-
-      auto& im = itr->second;
-
-      for(auto& fitr : im){
-        if(fitr.second.key == 
-          utils::hash::client_internal_field_hash(
-          utils::const_string_t("__flecsi_internal_adjacency_index__").
-          hash(), hi.index_space)){
-            adj.index_fid = fitr.second.fid;
-            break;
-        }
+      fi = 
+        context.get_field_info_from_key(h.client_hash,
+        utils::hash::client_internal_field_hash(
+        utils::const_string_t("__flecsi_internal_adjacency_index__").
+        hash(), hi.index_space));
+      
+      if(fi){
+        adj.index_fid = fi->fid;
       }
+
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(hi.from_index_space);
       clog_assert(ritr != ism.end(), "invalid from index space");
@@ -447,12 +428,13 @@ struct data_client_policy_handler__<topology::set_topology_t<POLICY_TYPE>>
   get_client_handle()
   {
     using entity_types = typename POLICY_TYPE::entity_types;
+    using field_info_t = execution::context_t::field_info_t;
 
     data_client_handle__<DATA_CLIENT_TYPE, 0> h;
 
     auto& context = execution::context_t::instance();
 
-    auto& ism = context.index_space_data_map();
+    auto& ism = context.local_index_space_data_map();
 
     h.client_hash = 
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
@@ -470,36 +452,21 @@ struct data_client_policy_handler__<topology::set_topology_t<POLICY_TYPE>>
       ent.index_space = ei.index_space;
       ent.size = ei.size;
 
-      auto itr = context.field_info_map().find(
-        { h.client_hash, ent.index_space });
+      const field_info_t* fi = 
+        context.get_field_info_from_key(h.client_hash,
+        utils::hash::client_internal_field_hash(
+        utils::const_string_t("__flecsi_internal_entity_data__").
+        hash(), ent.index_space));
+      
+      if(fi){
+        ent.fid = fi->fid;
+      }
 
-      clog_assert(itr != context.field_info_map().end(),
-        "invalid entity index space");
-
-      auto & tm = itr->second;
-
-      for(auto & fitr : tm){
-        if(fitr.second.key == 
-          utils::hash::client_internal_field_hash(
-          utils::const_string_t("__flecsi_internal_entity_data__").
-          hash(), ent.index_space)) {
-            ent.fid = fitr.second.fid;
-        } // if
-        else if(fitr.second.key == 
-          utils::hash::client_internal_field_hash(
-          utils::const_string_t("__flecsi_internal_entity_id__").
-          hash(), ent.index_space)) {
-            ent.id_fid = fitr.second.fid;
-        }
-      } // for
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(ent.index_space);
       clog_assert(ritr != ism.end(), "invalid index space " << ei.index_space);
       
-      ent.color_region = ritr->second.color_region;
-      ent.exclusive_region = ritr->second.exclusive_lr;
-      ent.shared_region = ritr->second.shared_lr;
-      ent.ghost_region = ritr->second.ghost_lr;
+      ent.color_region = ritr->second.region;
 #endif
 
       ++entity_index;
@@ -510,10 +477,19 @@ struct data_client_policy_handler__<topology::set_topology_t<POLICY_TYPE>>
 
 }; // struct data_client_policy_handler__
 
+//----------------------------------------------------------------------------//
+//! The data_client_interface__ type defines a high-level data client
+//! interface that is implemented by the given data policy.
+//!
+//! @tparam DATA_POLICY The backend runtime policy.
+//!
+//! @ingroup data
+//----------------------------------------------------------------------------//
+
 template<
   typename DATA_POLICY
 >
-struct client_data__
+struct data_client_interface__
 {
   //--------------------------------------------------------------------------//
   //! Register a data client with the FleCSI runtime.
@@ -522,8 +498,6 @@ struct client_data__
   //! @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
   //!                          of attribute names to avoid collisions.
   //! @tparam NAME_HASH        The attribute name.
-  //!
-  //! @ingroup data
   //--------------------------------------------------------------------------//
 
   template<
@@ -549,7 +523,7 @@ struct client_data__
 
     const size_t client_key = 
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
-    // TODO: move to hash.h
+    //! \todo move to hash.h
     const size_t key = NAMESPACE_HASH ^ NAME_HASH;
 
     return storage_t::instance().register_client(client_key, key,
@@ -574,7 +548,7 @@ struct client_data__
       get_client_handle<DATA_CLIENT_TYPE, NAMESPACE_HASH, NAME_HASH>();
   } // get_client_handle
 
-}; // struct client_data__
+}; // struct data_client_interface__
 
 } // namespace data
 } // namespace flecsi
@@ -588,7 +562,8 @@ struct client_data__
 namespace flecsi {
 namespace data {
 
-using client_data_t = client_data__<FLECSI_RUNTIME_DATA_POLICY>;
+using data_client_interface_t =
+  data_client_interface__<FLECSI_RUNTIME_DATA_POLICY>;
 
 } // namespace data
 } // namespace flecsi
@@ -596,6 +571,4 @@ using client_data_t = client_data__<FLECSI_RUNTIME_DATA_POLICY>;
 #endif // flecsi_data_client_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

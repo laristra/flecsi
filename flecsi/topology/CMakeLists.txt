@@ -19,17 +19,17 @@
 
 set(topology_HEADERS
   closure_utils.h
+  common/array_buffer.h
+  common/entity_storage.h
+  entity_storage.h
   index_space.h
-  types.h
-  mesh.h
   mesh_definition.h
+  mesh.h
   mesh_storage.h
   mesh_topology.h
   mesh_types.h
   mesh_utils.h
-  tree_topology.h
-  mesh_storage.h
-  entity_storage.h
+  partition.h
   set_storage.h
   set_topology.h
   set_types.h
@@ -38,6 +38,8 @@ set(topology_HEADERS
   structured_mesh_topology.h
   structured_index_space.h
   structured_querytable.h
+  tree_topology.h
+  types.h
 )
 
 #------------------------------------------------------------------------------#
@@ -48,36 +50,21 @@ set(topology_HEADERS
 #------------------------------------------------------------------------------#
 set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-
-  set(UNIT_POLICY SERIAL)
-  set(RUNTIME_DRIVER ../execution/serial/runtime_driver.cc)
-  set(topology_HEADERS
-    ${topology_HEADERS}
-    serial/entity_storage.h
-    serial/storage_policy.h
-    serial/set_storage_policy.h
-    )
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(UNIT_POLICY LEGION)
   set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
   set(topology_HEADERS
     ${topology_HEADERS}
-    common/array_buffer.h
-    common/entity_storage.h
-    legion/storage_policy.h
     legion/set_storage_policy.h
+    legion/storage_policy.h
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(topology_HEADERS
     ${topology_HEADERS}
-    common/array_buffer.h
-    common/entity_storage.h
-    mpi/storage_policy.h
     mpi/set_storage_policy.h
+    mpi/storage_policy.h
     )
 
   set(UNIT_POLICY MPI)
@@ -115,7 +102,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
    INPUTS
      test/traversal.blessed
    LIBRARIES
-     flecsi
+     FleCSI
   )
   
   cinch_add_unit(bindings
@@ -124,7 +111,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
    INPUTS
      test/bindings.blessed
    LIBRARIES
-     flecsi
+     FleCSI
   )
 
 endif()
@@ -192,28 +179,28 @@ cinch_add_unit(structured_3d
 #  INPUTS
 #    test/tree.blessed
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #)
 
 #cinch_add_unit(tree1d
 #  SOURCES
 #    test/tree1d.cc
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #)
 
 #cinch_add_unit(tree3d
 #  SOURCES
 #    test/tree3d.cc
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #)
 
 #cinch_add_unit(gravity
 #  SOURCES
 #    test/gravity.cc test/pseudo_random.h
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #)
 
 # FIXME: Broken by refactor
@@ -222,7 +209,7 @@ cinch_add_unit(structured_3d
 #    test/gravity-state.cc
 #    test/pseudo_random.h
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #    ${CINCH_RUNTIME_LIBRARIES}
 #)
 

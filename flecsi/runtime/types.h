@@ -11,7 +11,7 @@
 //! @date Initial file creation: Aug 01, 2016
 //----------------------------------------------------------------------------//
 
-#include <flecsi.h>
+#include <flecsi-config.h>
 
 //----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
@@ -20,18 +20,8 @@
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
 //----------------------------------------------------------------------------//
 
-// Serial Policy
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
-
-  namespace flecsi {
-
-  using field_id_t = size_t;
-  using task_id_t = size_t;
-
-  }
-
 // Legion Policy
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
   #include <legion.h>
 
@@ -40,7 +30,7 @@
   using field_id_t = Legion::FieldID;
   using task_id_t = Legion::TaskID;
 
-  }
+  } // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
@@ -50,7 +40,7 @@
   using field_id_t = size_t;
   using task_id_t = size_t;
 
-  }
+  } // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
 

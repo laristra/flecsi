@@ -54,7 +54,7 @@ protected:
 #endif
 
 //----------------------------------------------------------------------------//
-//! The task_model__ type provides a high-level task interface that is
+//! The task_interface__ type provides a high-level task interface that is
 //! implemented by the given execution policy.
 //!
 //! @tparam EXECUTION_POLICY The backend execution policy.
@@ -65,7 +65,7 @@ protected:
 template<
   typename EXECUTION_POLICY
 >
-struct task_model__
+struct task_interface__
 {
   //--------------------------------------------------------------------------//
   //! The runtime_state_t type stores runtime-specific state information
@@ -84,21 +84,21 @@ struct task_model__
     return EXECUTION_POLICY::runtime_state(task);
   } // runtime_state
 
-  //--------------------------------------------------------------------------//
-  //! Register a task with the FleCSI runtime.
-  //!
-  //! @tparam KEY       A hash key identifying the task.
-  //! @tparam RETURN    The return type of the user task.
-  //! @tparam ARG_TUPLE A std::tuple of the user task argument types.
-  //! @tparam DELEGATE  The delegate function that invokes the user task.
-  //!
-  //! @param processor The processor type.
-  //! @param launch    The launch flags.
-  //! @param name      The string identifier of the task.
-  //!
-  //! @return The return type for task registration is determined by
-  //!         the specific backend runtime being used.
-  //--------------------------------------------------------------------------//
+  /*!
+    Register a task with the FleCSI runtime.
+
+    @tparam KEY       A hash key identifying the task.
+    @tparam RETURN    The return type of the user task.
+    @tparam ARG_TUPLE A std::tuple of the user task argument types.
+    @tparam DELEGATE  The delegate function that invokes the user task.
+
+    @param processor The processor type.
+    @param launch    The launch flags.
+    @param name      The string identifier of the task.
+
+    @return The return type for task registration is determined by
+            the specific backend runtime being used.
+   */
 
   template<
     size_t KEY,
@@ -148,7 +148,7 @@ struct task_model__
       launch, parent, std::forward<ARGS>(args) ...);
   } // execute_task
 
-}; // struct task__
+}; // struct task_interface__
 
 } // namespace execution
 } // namespace flecsi
@@ -193,12 +193,13 @@ class task_t : public base_task_t
 #endif
 
 //----------------------------------------------------------------------------//
-//! The task_model_t type is the high-level interface to the FleCSI task model.
+//! The task_interface_t type is the high-level interface to the FleCSI
+//! task model.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-using task_model_t = task_model__<FLECSI_RUNTIME_EXECUTION_POLICY>;
+using task_interface_t = task_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
 
 //----------------------------------------------------------------------------//
 //! Use the execution policy to define the future type.

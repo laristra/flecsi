@@ -12,19 +12,22 @@
 //----------------------------------------------------------------------------//
 
 #include <array>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
 #include <arrays.h>
 #include <legion.h>
 #include <legion_stl.h>
 #include <legion_utilities.h>
 
+#include "flecsi/execution/context.h"
 #include "flecsi/topology/mesh_storage.h"
-
 #include "flecsi/topology/mesh_types.h"
 #include "flecsi/topology/common/entity_storage.h"
-
 #include "flecsi/topology/index_space.h"
 #include "flecsi/utils/id.h"
-#include "flecsi/execution/context.h"
 
 namespace flecsi {
 namespace topology {

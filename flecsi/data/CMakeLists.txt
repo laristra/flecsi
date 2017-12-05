@@ -22,17 +22,24 @@ set(data_HEADERS
   common/data_types.h
   common/privilege.h
   common/registration_wrapper.h
+  accessor.h
   client.h
+  data.h
   data_client.h
   data_client_handle.h
-  data_constants.h
-  data.h
   data_client_handle.h
+  data_constants.h
   data_handle.h
-  sparse_data_handle.h
+  dense_accessor.h
   field.h
+  mutator.h
+  mutator_handle.h
+  ragged_accessor.h
+  ragged_mutator.h
+  sparse_accessor.h
+  sparse_data_handle.h
   storage.h
-  storage_type.h
+  storage_class.h
 )
 
 #------------------------------------------------------------------------------#
@@ -53,25 +60,7 @@ set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)
 # runtime specific and can be configured for whichever runtime is active.
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-
-  set(data_HEADERS
-    ${data_HEADERS}
-    serial/data_client_handle_policy.h
-    serial/data_handle_policy.h
-    serial/dense.h
-    serial/global.h
-    serial/meta_data.h
-    serial/scoped.h
-    serial/sparse.h
-    serial/storage_policy.h
-    serial/tuple.h
-  )
-
-  set(UNIT_POLICY SERIAL)
-  set(RUNTIME_DRIVER ../execution/serial/runtime_driver.cc)
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
     ${data_HEADERS}
@@ -80,7 +69,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/sparse_data_handle_policy.h
     legion/data_policy.h
     legion/dense.h
-    legion/dpd.h
     legion/global.h
     legion/color.h
     legion/legion_data.h
@@ -142,7 +130,7 @@ set(data_SOURCES
 #    test/data_client.cc
 #    ${RUNTIME_DRIVER}
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
@@ -152,15 +140,15 @@ set(data_SOURCES
 #     ../execution/driver_initialization.cc
 #     ${RUNTIME_DRIVER}
 #   LIBRARIES
-#     flecsi
+#     FleCSI
 #     ${CINCH_RUNTIME_LIBRARIES}
 # )
 
 #if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-#  cinch_add_unit(storage_type
-#    SOURCES test/storage_type.cc
+#  cinch_add_unit(storage_class
+#    SOURCES test/storage_class.cc
 #    LIBRARIES
-#      flecsi
+#      FleCSI
 #      ${CINCH_RUNTIME_LIBRARIES}
 #  )
 #
@@ -174,7 +162,7 @@ set(data_SOURCES
 #      DEFINES
 #        DATA_HANDLE_TEST
 #      LIBRARIES
-#        flecsi
+#        FleCSI
 #        ${CINCH_RUNTIME_LIBRARIES}
 #      POLICY SERIAL
 #      THREADS 2
@@ -185,15 +173,15 @@ set(data_SOURCES
 
 
 #if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-#cinch_add_unit(storage_type
-#  SOURCES test/storage_type.h
+#cinch_add_unit(storage_class
+#  SOURCES test/storage_class.h
 #          ../execution/mpilegion/runtime_driver.cc
 #          ${RUNTIME_DRIVER}
-#  DEFINES STORAGE_TYPE_TEST
-#        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/storage_type.h
+#  DEFINES STORAGE_CLASS_TEST
+#        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/storage_class.h
 #        TEST_INIT=flecsi/execution/test/task_init.h
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #    ${CINCH_RUNTIME_LIBRARIES}
 #  POLICY MPILEGION
 #)
@@ -208,7 +196,6 @@ set(data_SOURCES
 #        ../execution/mpilegion/copy_ghosts.cc
 #        ../execution/test/mpilegion/init_partitions_task.cc
 #        data_client.cc
-#        legion/dpd.cc
 #      DEFINES DATA_HANDLE_TEST
 #        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle.h
 #        TEST_INIT=flecsi/execution/test/task_init.h
@@ -231,7 +218,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
     DEFINES
       -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
     LIBRARIES
-      flecsi
+      FleCSI
       ${CINCH_RUNTIME_LIBRARIES}
     POLICY ${UNIT_POLICY}
     THREADS 2

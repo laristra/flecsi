@@ -1,11 +1,10 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_sparse_data_handle_h
 #define flecsi_sparse_data_handle_h
 
+#include "flecsi/data/common/data_types.h"
 #include "flecsi/data/data_handle.h"
 
 //----------------------------------------------------------------------------//
@@ -14,12 +13,6 @@
 //----------------------------------------------------------------------------//
 
 namespace flecsi {
-
-template<typename T>
-struct sparse_entry_value__{
-  size_t entry;
-  T value;
-};
 
 template<
   typename T,
@@ -31,6 +24,16 @@ template<
 struct sparse_data_handle_base__ : 
   public DATA_POLICY, public data_handle_base_t {
 
+  using offset_t = data::sparse_data_offset_t;
+  using entry_value_t = data::sparse_entry_value__<T>;
+
+  size_t index_space;
+  size_t data_client_hash;
+  size_t max_entries_per_index;
+
+  entry_value_t* entries = nullptr;
+  offset_t* offsets = nullptr;
+
   //--------------------------------------------------------------------------//
   //! Default constructor.
   //--------------------------------------------------------------------------//
@@ -38,27 +41,38 @@ struct sparse_data_handle_base__ :
   sparse_data_handle_base__()
   {}
 
+  sparse_data_handle_base__(
+    size_t num_exclusive,
+    size_t num_shared,
+    size_t num_ghost
+  )
+  : num_exclusive_(num_exclusive),
+  num_shared_(num_shared),
+  num_ghost_(num_ghost),
+  num_total_(num_exclusive_ + num_shared_ + num_ghost_){}
+
   //--------------------------------------------------------------------------//
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  sparse_data_handle_base__(const sparse_data_handle_base__& b)
+  sparse_data_handle_base__(
+    const sparse_data_handle_base__& b
+  )
   : DATA_POLICY(b),
   index_space(b.index_space),
   data_client_hash(b.data_client_hash),
+  max_entries_per_index(b.max_entries_per_index),
   entries(b.entries),
-  indices(b.indices),
-  ghost_entries(b.ghost_entries){
-  
-  }
+  offsets(b.offsets),
+  num_exclusive_(b.num_exclusive_),
+  num_shared_(b.num_shared_),
+  num_ghost_(b.num_ghost_),
+  num_total_(b.num_total_){}
 
-  size_t index_space;
-  size_t data_client_hash;
-
-  sparse_entry_value__<T>* entries = nullptr;
-  size_t* indices;
-
-  sparse_entry_value__<T>* ghost_entries = nullptr;
+  size_t num_exclusive_;
+  size_t num_shared_;
+  size_t num_ghost_;
+  size_t num_total_;
 };
 
 } // namespace flecsi
@@ -101,6 +115,4 @@ using sparse_data_handle__ = sparse_data_handle_base__<
 #endif // flecsi_sparse_data_handle_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

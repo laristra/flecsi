@@ -11,6 +11,12 @@
 //! @date Initial file creation: Apr 14, 2017
 //----------------------------------------------------------------------------//
 
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
 #include <legion.h>
 
 namespace flecsi {

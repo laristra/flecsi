@@ -42,7 +42,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   coloring_map_t map;
   map.vertices = 1;
   map.cells = 0;
-  flecsi_execute_mpi_task(add_colorings, map);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
 } // specialization_tlt_init
 

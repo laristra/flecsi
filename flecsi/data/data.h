@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_data_h
@@ -12,8 +10,8 @@
 //----------------------------------------------------------------------------//
 
 #include "flecsi/data/client.h"
-#include "flecsi/data/field.h"
 #include "flecsi/data/common/data_types.h"
+#include "flecsi/data/field.h"
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_data_client
@@ -35,7 +33,7 @@
                                                                                \
   /* Call the storage policy to register the data */                           \
   bool client_type ## _ ## nspace ## _ ## name ## _data_client_registered =    \
-    flecsi::data::client_data_t::register_data_client<                         \
+    flecsi::data::data_client_interface_t::register_data_client<               \
       client_type,                                                             \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()         \
@@ -51,26 +49,26 @@
 //! primary function is to describe the field data to the runtime.
 //! Memory allocation will likely be deferred.
 //!
-//! @param client_type  The \ref data_client_t type.
-//! @param nspace       The namespace to use to register the variable.
-//! @param name         The name of the data variable to register.
-//! @param data_type    The data type to store, e.g., double or my_type_t.
-//! @param storage_type The storage type for the data \ref storage_type_t.
-//! @param versions     The number of versions of the data to register. This
-//!                     parameter can be used to manage multiple data versions,
-//!                     e.g., for new and old state.
+//! @param client_type   The \ref data_client_t type.
+//! @param nspace        The namespace to use to register the variable.
+//! @param name          The name of the data variable to register.
+//! @param data_type     The data type to store, e.g., double or my_type_t.
+//! @param storage_class The storage type for the data \ref storage_class_t.
+//! @param versions      The number of versions of the data to register. This
+//!                      parameter can be used to manage multiple data versions,
+//!                      e.g., for new and old state.
 //!
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
 #define flecsi_register_field(client_type, nspace, name, data_type,            \
-  storage_type, versions, ...)                                                 \
+  storage_class, versions, ...)                                                \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the storage policy to register the data */                           \
   bool client_type ## _ ## nspace ## _ ## name ## _data_registered =           \
-    flecsi::data::field_data_t::register_field<                                \
-      client_type, flecsi::data::storage_type, data_type,                      \
+    flecsi::data::field_interface_t::register_field<                           \
+      client_type, flecsi::data::storage_class, data_type,                     \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
       versions,                                                                \
@@ -86,23 +84,24 @@
 //! primary function is to describe the field data to the runtime.
 //! Memory allocation will likely be deferred.
 //!
-//! @param nspace       The namespace to use to register the variable.
-//! @param name         The name of the data variable to register.
-//! @param data_type    The data type to store, e.g., double or my_type_t.
-//! @param storage_type The storage type for the data \ref storage_type_t.
-//! @param versions     The number of versions of the data to register. This
-//!                     parameter can be used to manage multiple data versions,
-//!                     e.g., for new and old state.
+//! @param nspace        The namespace to use to register the variable.
+//! @param name          The name of the data variable to register.
+//! @param data_type     The data type to store, e.g., double or my_type_t.
+//! @param storage_class The storage type for the data \ref storage_class_t.
+//! @param versions      The number of versions of the data to register. This
+//!                      parameter can be used to manage multiple data versions,
+//!                      e.g., for new and old state.
 //!
 //! @ingroup data
 //----------------------------------------------------------------------------//
+
 #define flecsi_register_global(nspace, name, data_type,                        \
    versions, ...)                                                              \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the storage policy to register the data */                           \
   bool client_type ## _ ## nspace ## _ ## name ## _data_registered =           \
-    flecsi::data::field_data_t::register_field<                                \
+    flecsi::data::field_interface_t::register_field<                           \
       flecsi::data::global_data_client_t,                                      \
       flecsi::data::global, data_type,                                         \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
@@ -117,27 +116,27 @@
 //!
 //! Access data with a data_client_t instance.
 //!
-//! @param client       The data_client_t instance with which to access
-//!                     the data.
-//! @param nspace       The namespace to use to access the variable.
-//! @param name         The name of the data variable to access.
-//! @param data_type    The data type to access, e.g., double or my_type_t.
-//! @param storage_type The storage type for the data \ref storage_type_t.
-//! @param version      The version number of the data to access. This
-//!                     parameter can be used to manage multiple data versions,
-//!                     e.g., for new and old state.
+//! @param client        The data_client_t instance with which to access
+//!                      the data.
+//! @param nspace        The namespace to use to access the variable.
+//! @param name          The name of the data variable to access.
+//! @param data_type     The data type to access, e.g., double or my_type_t.
+//! @param storage_class The storage type for the data \ref storage_class_t.
+//! @param version       The version number of the data to access. This
+//!                      parameter can be used to manage multiple data versions,
+//!                      e.g., for new and old state.
 //!
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
 #define flecsi_get_handle(client_handle, nspace, name, data_type,              \
-  storage_type, version)                                                       \
+  storage_class, version)                                                      \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
-  flecsi::data::field_data_t::get_handle<                                      \
+  flecsi::data::field_interface_t::get_handle<                                 \
     typename flecsi::data_client_type__<decltype(client_handle)>::type,        \
-    flecsi::data::storage_type,                                                \
+    flecsi::data::storage_class,                                               \
     data_type,                                                                 \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),          \
@@ -150,13 +149,13 @@
 //!
 //! Access global data 
 //!
-//! @param nspace       The namespace to use to access the variable.
-//! @param name         The name of the data variable to access.
-//! @param data_type    The data type to access, e.g., double or my_type_t.
-//! @param storage_type The storage type for the data \ref storage_type_t.
-//! @param version      The version number of the data to access. This
-//!                     parameter can be used to manage multiple data versions,
-//!                     e.g., for new and old state.
+//! @param nspace        The namespace to use to access the variable.
+//! @param name          The name of the data variable to access.
+//! @param data_type     The data type to access, e.g., double or my_type_t.
+//! @param storage_class The storage type for the data \ref storage_class_t.
+//! @param version       The version number of the data to access. This
+//!                      parameter can be used to manage multiple data versions,
+//!                      e.g., for new and old state.
 //!
 //! @ingroup data
 //----------------------------------------------------------------------------//
@@ -166,7 +165,7 @@
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_handle(flecsi_get_client_handle(                                  \
-    flecsi::data::global_data_client_t, nspace, name),                                       \
+    flecsi::data::global_data_client_t, nspace, name),                         \
     nspace, name, data_type, global, version)
 
 //----------------------------------------------------------------------------//
@@ -185,7 +184,7 @@
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the storage policy to get a handle to the data client */             \
-  flecsi::data::client_data_t::get_client_handle<                              \
+  flecsi::data::data_client_interface_t::get_client_handle<                    \
     client_type,                                                               \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()           \
@@ -197,29 +196,29 @@
 //!
 //! Get a list of all accessors in the namespace of a certain type.
 //!
-//! @param client       The data_client_t instance with which to access
-//!                     the data.
-//! @param nspace       The namespace to use to access the variables.
-//! @param data_type    The data type to access, e.g., double or my_type_t.
-//! @param storage_type The storage type for the data \ref storage_type_t.
-//! @param version      The version number of the data to access. This
-//!                     parameter can be used to manage multiple data versions,
-//!                     e.g., for new and old state.
-//! @param predicate    The predicate function to test an accessor against to
-//!                     figure out whether it get added to the returned list.
+//! @param client        The data_client_t instance with which to access
+//!                      the data.
+//! @param nspace        The namespace to use to access the variables.
+//! @param data_type     The data type to access, e.g., double or my_type_t.
+//! @param storage_class The storage type for the data \ref storage_class_t.
+//! @param version       The version number of the data to access. This
+//!                      parameter can be used to manage multiple data versions,
+//!                      e.g., for new and old state.
+//! @param predicate     The predicate function to test an accessor against to
+//!                      figure out whether it get added to the returned list.
 //!
 //! @remark  This version is confined to search only within a namespace.
 //!
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-#define flecsi_get_handles(client, nspace, data_type, storage_type,            \
+#define flecsi_get_handles(client, nspace, data_type, storage_class,           \
   version, ...)                                                                \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the storage policy to get the handles to the data */                 \
-  flecsi::data::field_data_t::get_handles<                                     \
-    flecsi::data::storage_type, data_type,                                     \
+  flecsi::data::field_interface_t::get_handles<                                \
+    flecsi::data::storage_class, data_type,                                    \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
       client, version, ## __VA_ARGS__)
 
@@ -228,26 +227,26 @@
 //!
 //! Get a list of all accessors in the namespace of a certain type.
 //!
-//! @param client       The data_client_t instance with which to access
-//!                     the data from.
-//! @param data_type    The data type to access, e.g., double or my_type_t.
-//! @param storage_type The storage type for the data \ref storage_type_t.
-//! @param version      The version number of the data to access. This
-//!                     parameter can be used to manage multiple data versions,
-//!                     e.g., for new and old state.
-//! @param predicate    The predicate function to test an accessor against to
-//!                     figure out whether it get added to the returned list.
+//! @param client        The data_client_t instance with which to access
+//!                      the data from.
+//! @param data_type     The data type to access, e.g., double or my_type_t.
+//! @param storage_class The storage type for the data \ref storage_class_t.
+//! @param version       The version number of the data to access. This
+//!                      parameter can be used to manage multiple data versions,
+//!                      e.g., for new and old state.
+//! @param predicate     The predicate function to test an accessor against to
+//!                      figure out whether it get added to the returned list.
 //!
 //! @remark This version searches all namespaces.
 //!
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-#define flecsi_get_handles_all(client, data_type, storage_type, version, ...)  \
+#define flecsi_get_handles_all(client, data_type, storage_class, version, ...) \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the storage policy to get the handles to the data */                 \
-  flecsi::data::field_data_t::get_handles<flecsi::data::storage_type,          \
+  flecsi::data::field_interface_t::get_handles<flecsi::data::storage_class,    \
     data_type>(client, version, ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
@@ -349,30 +348,35 @@
 // FIXME: These need to be updated and documented
 //
 
-#define flecsi_get_mutator(client, nspace, name, data_type, storage_type,      \
-  version, slots)                                                              \
+#define flecsi_get_mutator(client_handle, nspace, name, data_type,             \
+  storage_class, version, slots)                                               \
+/* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  flecsi::data::field_data_t::get_mutator<flecsi::data::storage_type,          \
+  /* Call the storage policy to get a handle to the data */                    \
+  flecsi::data::field_interface_t::get_mutator<                                \
+    typename flecsi::data_client_type__<decltype(client_handle)>::type,        \
+    flecsi::data::storage_class,                                               \
     data_type,                                                                 \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
-    client, EXPAND_AND_STRINGIFY(name), slots, version)
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),          \
+    version                                                                    \
+  >                                                                            \
+    (client_handle, slots) 
 
-#define flecsi_get_all_handles(client, storage_type, handles,                  \
+#define flecsi_get_all_handles(client, storage_class, handles,                 \
   hashes, namespaces, versions)                                                \
                                                                                \
-  flecsi::data::field_data_t::get_all_handles<                                 \
-    flecsi::data::storage_type>(client, handles, hashes, namespaces, versions)
+  flecsi::data::field_interface_t::get_all_handles<                            \
+    flecsi::data::storage_class>(client, handles, hashes, namespaces, versions)
 
-#define flecsi_put_all_handles(client, storage_type, num_handles, handles,     \
+#define flecsi_put_all_handles(client, storage_class, num_handles, handles,    \
   hashes, namespaces, versions)                                                \
                                                                                \
-  flecsi::data::field_data_t::put_all_handles<                                 \
-    flecsi::data::storage_type>(client, num_handles, handles, hashes,          \
+  flecsi::data::field_interface_t::put_all_handles<                            \
+    flecsi::data::storage_class>(client, num_handles, handles, hashes,         \
     namespaces, versions)
 
 #endif // flecsi_data_data_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

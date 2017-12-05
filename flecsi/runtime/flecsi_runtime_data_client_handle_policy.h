@@ -7,11 +7,11 @@
 #define flecsi_runtime_data_client_handle_policy_h
 
 //----------------------------------------------------------------------------//
-// @file
-// @date Initial file creation: Jun 21, 2017
+//! @file
+//! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
 
-#include <flecsi.h>
+#include <flecsi-config.h>
 
 //----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
@@ -20,20 +20,8 @@
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
 //----------------------------------------------------------------------------//
 
-// Serial Policy
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
-
-  #include "flecsi/data/serial/data_client_handle_policy.h"
-
-  namespace flecsi {
-
-  using FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY =
-    serial_data_client_handle_policy_t;
-
-  }
-
-// Legion, MPI+Legion Policy
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+// Legion Policy
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
   #include "flecsi/data/legion/data_client_handle_policy.h"
 
@@ -42,7 +30,7 @@
   using FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY =
     legion_data_client_handle_policy_t;
 
-  }
+  } // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
@@ -53,7 +41,7 @@
 
   using FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY =
     mpi_data_client_handle_policy_t;
-  }
+  } // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
 

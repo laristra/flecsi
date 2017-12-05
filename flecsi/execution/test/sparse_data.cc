@@ -19,6 +19,8 @@
 #include "flecsi/coloring/mpi_communicator.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/data/mutator_handle.h"
+#include "flecsi/data/sparse_accessor.h"
+#include "flecsi/data/mutator.h"
 
 using namespace std;
 using namespace flecsi;
@@ -110,27 +112,33 @@ public:
 
 struct test_mesh_t : public mesh_topology_t<test_mesh_types_t> {};
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-data::legion::sparse_handle_t<T, EP, SP, GP>;
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  data::mpi::sparse_handle_t<T, EP, SP, GP>;
-#endif
-
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
-void task1(client_handle_t<test_mesh_t, ro> mesh,
-           handle_t<double, wo, wo, ro> d) {
-  //np(y);
+void task1(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
+  for(size_t i = 0; i < 32; ++i){
+    for(size_t j = 0; j < 5; ++j){
+      mh(i, j) = i * 100 + j;
+    }
+  }
+  //mh.dump();
 } // task1
+
+void task2(client_handle_t<test_mesh_t, ro> mesh,
+           sparse_accessor<double, ro, ro, ro> h) {
+
+  auto& context = execution::context_t::instance();
+
+  if(context.color() == 0){
+    h.dump();
+  }
+
+} // task2
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
 
-flecsi_register_task(task1, loc, single);
+flecsi_register_task_simple(task1, loc, single);
+flecsi_register_task_simple(task2, loc, single);
 
 flecsi_register_field(test_mesh_t, hydro, pressure, double, sparse, 1, 0);
 
@@ -146,7 +154,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   coloring_map_t map;
   map.vertices = 1;
   map.cells = 0;
-  flecsi_execute_mpi_task(add_colorings, map);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
   auto& context = execution::context_t::instance();
 
@@ -178,9 +186,13 @@ void specialization_spmd_init(int argc, char ** argv) {
 
 void driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
+  auto mh = flecsi_get_mutator(ch, hydro, pressure, double, sparse, 0, 5);
+
+  flecsi_execute_task_simple(task1, single, ch, mh);
+
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, sparse, 0);
 
-  flecsi_execute_task(task1, single, ch, ph);
+  flecsi_execute_task_simple(task2, single, ch, ph);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//
