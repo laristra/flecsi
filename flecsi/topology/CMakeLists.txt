@@ -135,7 +135,7 @@ cinch_add_unit(structured_1d
   INPUTS
     test/structured_1d.blessed
   LIBRARIES
-    flecsi
+    FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
   POLICY
     ${UNIT_POLICY}
@@ -148,7 +148,7 @@ cinch_add_unit(structured_2d
   INPUTS
     test/structured_2d.blessed
   LIBRARIES
-    flecsi
+    FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
   POLICY
     ${UNIT_POLICY}
@@ -162,7 +162,7 @@ cinch_add_unit(structured_3d
   INPUTS
     test/structured_3d.blessed
   LIBRARIES
-    flecsi
+    FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
   POLICY
     ${UNIT_POLICY}
