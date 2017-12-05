@@ -86,7 +86,8 @@ template<
   bool OWNED = true,
   bool SORTED = false,
   class F = void,
-  template<typename, typename ...> class STORAGE_TYPE = std::vector
+  template<typename, typename ...> class ID_STORAGE_TYPE = std::vector,
+  template<typename, typename ...> class STORAGE_TYPE = ID_STORAGE_TYPE
 >
 class index_space
 {
@@ -95,7 +96,7 @@ public:
   using id_t = typename std::remove_pointer<T>::type::id_t;
 
   //! ID storage type
-  using id_storage_t = STORAGE_TYPE<id_t>;
+  using id_storage_t = ID_STORAGE_TYPE<id_t>;
 
   //! Storage type
   using storage_t = STORAGE_TYPE<T>;
@@ -499,10 +500,12 @@ public:
     bool OWNED2,
     bool SORTED2,
     class F2,
+    template<typename, typename ...> class ID_STORAGE_TYPE2,
     template<typename, typename ...> class STORAGE_TYPE2
   >
   index_space(
-    const index_space<S, STORAGE2, OWNED2, SORTED2, F2, STORAGE_TYPE2>& is,
+    const index_space<S, STORAGE2, OWNED2, SORTED2, F2, ID_STORAGE_TYPE2,
+      STORAGE_TYPE2>& is,
     size_t begin,
     size_t end
   )
@@ -679,6 +682,7 @@ public:
     bool OWNED2 = OWNED,
     bool SORTED2 = SORTED,
     class F2 = F,
+    template<typename, typename ...> class ID_STORAGE_TYPE2 = ID_STORAGE_TYPE,
     template<typename, typename ...> class STORAGE_TYPE2 = STORAGE_TYPE
   >
   auto&
@@ -687,7 +691,8 @@ public:
     static_assert(std::is_convertible<S,T>::value,
                   "invalid index space cast");
 
-    auto res = reinterpret_cast<index_space<S,STORAGE2,OWNED2,SORTED2,F2,STORAGE_TYPE2>*>(this);
+    auto res = reinterpret_cast<index_space<S,STORAGE2,OWNED2,SORTED2,F2,
+      ID_STORAGE_TYPE2, STORAGE_TYPE2>*>(this);
     assert( res != nullptr && "invalid cast"  );
     return *res;
   }
@@ -702,6 +707,7 @@ public:
     bool OWNED2 = OWNED,
     bool SORTED2 = SORTED,
     class F2 = F,
+    template<typename, typename ...> class ID_STORAGE_TYPE2 = ID_STORAGE_TYPE,
     template<typename, typename ...> class STORAGE_TYPE2 = STORAGE_TYPE
   >
   auto&
@@ -710,7 +716,8 @@ public:
     static_assert(std::is_convertible<S,T>::value,
                   "invalid index space cast");
 
-    auto res = reinterpret_cast<index_space<S,STORAGE2,OWNED2,SORTED2,F2,STORAGE_TYPE2>*>(this);
+    auto res = reinterpret_cast<index_space<S,STORAGE2,OWNED2,SORTED2,F2,
+      ID_STORAGE_TYPE2,STORAGE_TYPE2>*>(this);
     assert( res != nullptr && "invalid cast"  );
     return *res;
   }
@@ -838,7 +845,7 @@ public:
     size_t end
   ) const
   {
-    return index_space<S, false, false, SORTED, F, STORAGE_TYPE>(
+    return index_space<S, false, false, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE>(
       *this, begin, end);
   }
 
@@ -857,7 +864,7 @@ public:
     const std::pair<size_t, size_t>& range
   ) const
   {
-    return index_space<S, false, false, SORTED, F, STORAGE_TYPE>(
+    return index_space<S, false, false, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE>(
       *this, range.first, range.second);
   }
 
@@ -871,7 +878,7 @@ public:
   >
   auto slice() const
   {
-    return index_space<S, false, false, SORTED, F, STORAGE_TYPE>(
+    return index_space<S, false, false, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE>(
       *this, begin_, end_);
   }
 
@@ -1755,7 +1762,8 @@ public:
   }
 
 private:
-  template<class, bool, bool, bool, class, template<class, class...> class> 
+  template<class, bool, bool, bool, class,
+    template<class, class...> class, template<class, class...> class> 
   friend class index_space;
 
   friend class connectivity_t;
