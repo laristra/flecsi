@@ -44,7 +44,7 @@ using set_t = set_topology_t<set_types>;
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
-void task1(client_handle_t<set_t, rw> mesh) {
+void task1(client_handle_t<set_t, rw> sh) {
 
 }
 
@@ -67,7 +67,9 @@ void specialization_spmd_init(int argc, char ** argv) {
 }
 
 void driver(int argc, char ** argv) {
-  //auto ch = flecsi_get_client_handle(set_t, sets, set1);
+  auto sh = flecsi_get_client_handle(set_t, sets, set1);
+
+  //flecsi_execute_task_simple(task1, single, sh);
 }
 
 } // namespace execution

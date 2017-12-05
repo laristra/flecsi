@@ -434,7 +434,7 @@ struct data_client_policy_handler__<topology::set_topology_t<POLICY_TYPE>>
 
     auto& context = execution::context_t::instance();
 
-    auto& ism = context.index_space_data_map();
+    auto& ism = context.local_index_space_data_map();
 
     h.client_hash = 
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
@@ -462,24 +462,11 @@ struct data_client_policy_handler__<topology::set_topology_t<POLICY_TYPE>>
         ent.fid = fi->fid;
       }
 
-      fi = 
-        context.get_field_info_from_key(h.client_hash,
-        utils::hash::client_internal_field_hash(
-        utils::const_string_t("__flecsi_internal_entity_id__").
-        hash(), ent.index_space));
-      
-      if(fi){
-        ent.id_fid = fi->fid;
-      }
-
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(ent.index_space);
       clog_assert(ritr != ism.end(), "invalid index space " << ei.index_space);
       
-      ent.color_region = ritr->second.color_region;
-      ent.exclusive_region = ritr->second.exclusive_lr;
-      ent.shared_region = ritr->second.shared_lr;
-      ent.ghost_region = ritr->second.ghost_lr;
+      ent.color_region = ritr->second.region;
 #endif
 
       ++entity_index;
