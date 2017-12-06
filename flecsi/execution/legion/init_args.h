@@ -104,7 +104,7 @@ namespace execution {
     >
     void
     handle(
-      dense_accessor<
+      dense_accessor__<
         T,
         EXCLUSIVE_PERMISSIONS,
         SHARED_PERMISSIONS,
@@ -165,9 +165,11 @@ namespace execution {
       typename T,
       size_t PERMISSIONS
     >
-    void
+    typename std::enable_if_t<
+      std::is_base_of<topology::mesh_topology_base__, T>::value
+    >
     handle(
-      data_client_handle__<T, PERMISSIONS> & h
+      data_client_handle__<T, PERMISSIONS>& h
     )
     {
       auto& context_ = context_t::instance();
@@ -226,6 +228,29 @@ namespace execution {
       }
     } // handle
 
+    template<
+      typename T,
+      size_t PERMISSIONS
+    >
+    typename std::enable_if_t<
+      std::is_base_of<topology::set_topology_base__, T>::value
+    >
+    handle(
+      data_client_handle__<T, PERMISSIONS>& h
+    )
+    {
+      auto& context_ = context_t::instance();
+
+      for(size_t i{0}; i<h.num_handle_entities; ++i) {
+        data_client_handle_entity_t & ent = h.handle_entities[i];
+
+        Legion::RegionRequirement rr(ent.color_region,
+          privilege_mode(PERMISSIONS), EXCLUSIVE, ent.color_region);
+        rr.add_field(ent.fid);
+        region_reqs.push_back(rr);
+      } // for
+    }
+
     //-----------------------------------------------------------------------//
     // If this is not a data handle, then simply skip it.
     //-----------------------------------------------------------------------//
@@ -235,7 +260,8 @@ namespace execution {
     >
     static
     typename
-    std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
+    std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value &&
+      !std::is_base_of<data_client_handle_base_t, T>::value>
     handle(
       T &
     )

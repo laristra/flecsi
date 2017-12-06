@@ -33,7 +33,7 @@ struct legion_set_topology_storage_policy_t
 
   using index_spaces_t =
     std::array<index_space<set_entity_t*, true, true, true, void,
-    topology_storage__>, num_index_spaces>;
+    identity_storage__, topology_storage__>, num_index_spaces>;
 
   index_spaces_t index_spaces;
 
@@ -56,7 +56,6 @@ struct legion_set_topology_storage_policy_t
   init_entities(
     size_t index_space,
     set_entity_t* entities,
-    utils::id_t* ids,
     size_t size,
     size_t num_entities,
     bool read
@@ -67,9 +66,6 @@ struct legion_set_topology_storage_policy_t
     auto& is = index_spaces[itr->second];
     auto s = is.storage();
     s->set_buffer(entities, num_entities, read);
-
-    auto& id_storage = is.id_storage();
-    id_storage.set_buffer(ids, num_entities, true);
 
     if(!read){
       return;

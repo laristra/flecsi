@@ -1,15 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_mpi_dense_h
@@ -24,6 +13,9 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
+#include <algorithm>
+#include <memory>
+
 #include "flecsi/data/common/data_types.h"
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
@@ -32,13 +24,10 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 
-#include <algorithm>
-#include <memory>
-
-///
-/// \file
-/// \date Initial file creation: Apr 7, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Apr 7, 2016
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace data {
@@ -197,6 +186,4 @@ struct storage_class__<dense>
 #endif // flecsi_mpi_dense_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

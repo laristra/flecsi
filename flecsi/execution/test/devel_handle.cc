@@ -106,7 +106,7 @@ void initialize_mesh(mesh<wo> m) {
 
 } // initialize_mesh
 
-flecsi_register_task(initialize_mesh, loc, single);
+flecsi_register_task(initialize_mesh, flecsi::execution, loc, single);
 
 //----------------------------------------------------------------------------//
 // Initialize pressure
@@ -123,7 +123,7 @@ void initialize_pressure(mesh<ro> m, field<rw, rw, ro> p) {
 
 } // initialize_pressure
 
-flecsi_register_task(initialize_pressure, loc, single);
+flecsi_register_task(initialize_pressure, flecsi::execution, loc, single);
 
 //----------------------------------------------------------------------------//
 // Update pressure
@@ -138,7 +138,7 @@ void update_pressure(mesh<ro> m, field<rw, rw, ro> p) {
 
 } // initialize_pressure
 
-flecsi_register_task(update_pressure, loc, single);
+flecsi_register_task(update_pressure, flecsi::execution, loc, single);
 
 //----------------------------------------------------------------------------//
 // Print task
@@ -184,7 +184,7 @@ void print_mesh(mesh<ro> m, field<ro, ro, ro> p) {
   } // for
 } // print_mesh
 
-flecsi_register_task(print_mesh, loc, single);
+flecsi_register_task(print_mesh, flecsi::execution, loc, single);
 
 //----------------------------------------------------------------------------//
 // Top-Level Specialization Initialization
@@ -199,7 +199,7 @@ void specialization_tlt_init(int argc, char ** argv) {
 
   coloring_map_t map { index_spaces::vertices, index_spaces::cells };
 
-  flecsi_execute_mpi_task(add_colorings, map);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
   auto & context { execution::context_t::instance() };
 
@@ -239,7 +239,7 @@ void specialization_spmd_init(int argc, char ** argv) {
   } // scope
 
   auto mh = flecsi_get_client_handle(mesh_t, clients, m);
-  flecsi_execute_task(initialize_mesh, single, mh);
+  flecsi_execute_task(initialize_mesh, flecsi::execution, single, mh);
 
 } // specialization_spmd_ini
 
@@ -252,9 +252,9 @@ void driver(int argc, char ** argv) {
   auto mh = flecsi_get_client_handle(mesh_t, clients, m);
   auto ph = flecsi_get_handle(mh, data, pressure, double, dense, 0);
 
-  flecsi_execute_task(initialize_pressure, single, mh, ph);
-  flecsi_execute_task(update_pressure, single, mh, ph);
-  flecsi_execute_task(print_mesh, single, mh, ph);
+  flecsi_execute_task(initialize_pressure, flecsi::execution, single, mh, ph);
+  flecsi_execute_task(update_pressure, flecsi::execution, single, mh, ph);
+  flecsi_execute_task(print_mesh, flecsi::execution, single, mh, ph);
 
 } // driver
 

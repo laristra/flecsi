@@ -1,11 +1,11 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_dense_accessor_h
 #define flecsi_dense_accessor_h
 
+#include "flecsi/data/accessor.h"
+#include "flecsi/data/data_constants.h"
 #include "flecsi/data/data_handle.h"
 
 //----------------------------------------------------------------------------//
@@ -22,10 +22,10 @@ namespace flecsi {
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-struct dense_accessor_base_t {};
+struct dense_accessor_base_t{};
 
 //----------------------------------------------------------------------------//
-//! The dense_accessor type captures information about permissions
+//! The dense accessor__ type captures information about permissions
 //! and specifies a data policy.
 //!
 //! @tparam T                     The data type referenced by the handle.
@@ -46,7 +46,21 @@ template<
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS
 >
-struct dense_accessor : public dense_accessor_base_t {
+struct accessor__<
+  data::dense,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS
+> :
+public accessor__<
+  data::base,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS
+>, public dense_accessor_base_t
+{
   using handle_t = 
     data_handle__<
       T,
@@ -59,7 +73,9 @@ struct dense_accessor : public dense_accessor_base_t {
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  dense_accessor(const data_handle__<T, 0, 0, 0>& h)
+  accessor__(
+    const data_handle__<T, 0, 0, 0>& h
+  )
   : handle(reinterpret_cast<const handle_t&>(h)){
 
   }
@@ -70,7 +86,11 @@ struct dense_accessor : public dense_accessor_base_t {
   //
   // \param index The index of the data variable to return.
   ///
-  T& operator()(size_t index){
+  T&
+  operator()(
+    size_t index
+  )
+  {
     assert(index < handle.combined_size && "index out of range");
     #ifndef MAPPER_COMPACTION
     #ifndef COMPACTED_STORAGE_SORT
@@ -89,15 +109,19 @@ struct dense_accessor : public dense_accessor_base_t {
   //
   // \param index The index of the data variable to return.
   ///
-  const T& operator()(size_t index) const{
-    return const_cast<dense_accessor&>(*this)(index);
+  const T&
+  operator()(
+    size_t index
+  ) const{
+    return const_cast<accessor__&>(*this)(index);
   }
 
   ///
   // \brief Return the index space size of the data variable
   //        referenced by this handle.
   ///
-  size_t size() const{
+  size_t
+  size() const{
     return handle.combined_size;
   }
 
@@ -268,10 +292,24 @@ template<
   typename T,
   size_t PERMISSIONS
 >
-struct global_accessor : public dense_accessor<T, PERMISSIONS, 0, 0>{
-  using base_t = dense_accessor<T, PERMISSIONS, 0, 0>;
+struct accessor__<
+  data::global,
+  T,
+  PERMISSIONS,
+  0,
+  0
+> :
+public accessor__<
+  data::dense,
+  T,
+  PERMISSIONS,
+  0,
+  0
+>
+{
+  using base_t = accessor__<data::dense, T, PERMISSIONS, 0, 0>;
 
-  global_accessor(const data_handle__<T, 0, 0, 0>& h)
+  accessor__(const data_handle__<T, 0, 0, 0>& h)
   : base_t(h){}
 
   operator T&(){
@@ -286,7 +324,7 @@ struct global_accessor : public dense_accessor<T, PERMISSIONS, 0, 0>{
     return *base_t::handle.combined_data;
   }
 
-  global_accessor&
+  accessor__&
   operator=(const T& x){
     data() = x;
     return *this;
@@ -337,10 +375,24 @@ template<
   typename T,
   size_t PERMISSIONS
 >
-struct color_accessor : public dense_accessor<T, PERMISSIONS, 0, 0>{
-  using base_t = dense_accessor<T, PERMISSIONS, 0, 0>;
+struct accessor__<
+  data::color,
+  T,
+  PERMISSIONS,
+  0,
+  0
+> :
+public accessor__<
+  data::dense,
+  T,
+  PERMISSIONS,
+  0,
+  0
+>
+{
+  using base_t = accessor__<data::dense, T, PERMISSIONS, 0, 0>;
 
-  color_accessor(const data_handle__<T, 0, 0, 0>& h)
+  accessor__(const data_handle__<T, 0, 0, 0>& h)
   : base_t(h){}
 
   operator T&(){
@@ -355,7 +407,7 @@ struct color_accessor : public dense_accessor<T, PERMISSIONS, 0, 0>{
     return *base_t::handle.combined_data;
   }
 
-  color_accessor&
+  accessor__&
   operator=(const T& x){
     data() = x;
     return *this;
@@ -402,11 +454,54 @@ struct color_accessor : public dense_accessor<T, PERMISSIONS, 0, 0>{
   } // operator ()
 };
 
+template<
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
+>
+using dense_accessor__ = 
+  accessor__<data::dense, T, EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+
+template<
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
+>
+using dense_accessor = 
+  dense_accessor__<T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+
+template<
+  typename T,
+  size_t PERMISSIONS
+>
+using color_accessor__ = 
+  accessor__<data::color, T, PERMISSIONS, 0, 0>;
+
+template<
+  typename T,
+  size_t PERMISSIONS
+>
+using color_accessor = color_accessor__<T, PERMISSIONS>;
+
+template<
+  typename T,
+  size_t PERMISSIONS
+>
+using global_accessor__ =
+  accessor__<data::global, T, PERMISSIONS, 0, 0>;
+
+template<
+  typename T,
+  size_t PERMISSIONS
+>
+using global_accessor = global_accessor__<T, PERMISSIONS>;
+
 } // namespace flecsi
 
 #endif // flecsi_dense_accessor_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

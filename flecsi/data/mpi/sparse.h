@@ -1,15 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_mpi_sparse_h
@@ -24,22 +13,22 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
+#include <algorithm>
+#include <memory>
+
 #include "flecsi/data/common/data_types.h"
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
-#include "flecsi/data/sparse_data_handle.h"
 #include "flecsi/data/mutator_handle.h"
+#include "flecsi/data/sparse_data_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 
-#include <algorithm>
-#include <memory>
-
-///
-/// \file
-/// \date Initial file creation: Oct 05, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Oct 05, 2017
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace data {
@@ -252,6 +241,67 @@ struct storage_class__<sparse>
 
 }; // struct storage_class_t
 
+template<>
+struct storage_class__<ragged>
+{
+  //--------------------------------------------------------------------------//
+  // Type definitions.
+  //--------------------------------------------------------------------------//
+
+  template<
+    typename T,
+    size_t EP,
+    size_t SP,
+    size_t GP
+  >
+  using handle_t = sparse_handle_t<T, EP, SP, GP>;
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION
+  >
+  static
+  auto
+  get_handle(
+    const data_client_t & data_client
+  )
+  {
+    return storage_class__<sparse>::get_handle<
+      DATA_CLIENT_TYPE,
+      DATA_TYPE,
+      NAMESPACE,
+      NAME,
+      VERSION
+    >(data_client);
+  }
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION
+  >
+  static
+  auto
+  get_mutator(
+    const data_client_t & data_client,
+    size_t slots
+  )
+  {
+    return storage_class__<sparse>::get_mutator<
+      DATA_CLIENT_TYPE,
+      DATA_TYPE,
+      NAMESPACE,
+      NAME,
+      VERSION
+  >(data_client, slots);
+  }
+}; // struct storage_class_t
+
 } // namespace mpi
 } // namespace data
 } // namespace flecsi
@@ -259,6 +309,4 @@ struct storage_class__<sparse>
 #endif // flecsi_mpi_sparse_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

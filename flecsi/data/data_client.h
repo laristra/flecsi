@@ -1,10 +1,8 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef FLECSI_DATA_data_client_h
-#define FLECSI_DATA_data_client_h
+#ifndef flecsi_data_data_client_h
+#define flecsi_data_data_client_h
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -84,9 +82,7 @@ private:
 } // namespace data
 } // namespace flecsi
 
-#endif // FLECSI_DATA_data_client_h
+#endif // flecsi_data_data_client_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

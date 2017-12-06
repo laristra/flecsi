@@ -8,7 +8,7 @@
 
 #include "flecsi/data/dense_accessor.h"
 #include "flecsi/data/sparse_accessor.h"
-#include "flecsi/data/mutator.h"
+#include "flecsi/data/sparse_mutator.h"
 #include "flecsi/data/ragged_mutator.h"
 
 //----------------------------------------------------------------------------//
@@ -41,76 +41,6 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     > & h
   )
   {
-  } // handle
-
-//  template<
-//    typename T,
-//    size_t EXCLUSIVE_PERMISSIONS,
-//    size_t SHARED_PERMISSIONS,
-//    size_t GHOST_PERMISSIONS
-//  >
-//  void
-//  handle(
-//    sparse_accessor<
-//      T,
-//      EXCLUSIVE_PERMISSIONS,
-//      SHARED_PERMISSIONS,
-//      GHOST_PERMISSIONS
-//    > & a
-//  )
-//  {
-//
-//  } // handle
-  template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-//    sparse_accessor<
-//    T,
-//    EXCLUSIVE_PERMISSIONS,
-//    SHARED_PERMISSIONS,
-//    GHOST_PERMISSIONS
-//    > & a
-    mutator<
-    T
-    > & m
-  )
-  {
-    auto& h = m.h_;
-
-    // Skip Read Only handles
-    if (EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
-      return;
-
-    auto& context = context_t::instance();
-    const int my_color = context.color();
-    auto& my_coloring_info =
-      context.coloring_info(h.index_space).at(my_color);
-
-    auto& sparse_field_metadata =
-      context.registered_sparse_field_metadata().at(h.fid);
-
-    MPI_Win win = sparse_field_metadata.win;
-
-    MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
-    MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
-
-    for (auto ghost_owner : my_coloring_info.ghost_owners) {
-      MPI_Get(h.entries + (h.reserve + h.num_shared_) *  (sizeof(size_t) +
-                sizeof(T)), 1,
-              sparse_field_metadata.origin_types[ghost_owner],
-              ghost_owner, 0, 1,
-              sparse_field_metadata.target_types[ghost_owner],
-              win);
-    }
-
-    MPI_Win_complete(win);
-    MPI_Win_wait(win);
-
   } // handle
 
   template<
@@ -163,7 +93,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   )
   {
     // TODO: fix
-    handle(reinterpret_cast<mutator<T>&>(m));
+    handle(reinterpret_cast<sparse_mutator<T>&>(m));
   }
 
   //-----------------------------------------------------------------------//

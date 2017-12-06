@@ -1,6 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_data_data_client_handle_h
@@ -111,6 +109,4 @@ using data_client_handle__ = data_client_handle_base__<
 #endif // flecsi_data_data_client_handle_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

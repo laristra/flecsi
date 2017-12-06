@@ -29,8 +29,7 @@ public:
 
   using storage_t = set_storage_t<SET_TYPES>;
 
-  using base_t = 
-    mesh_topology_base_t<storage_t>;
+  using base_t = set_topology_base_t<storage_t>;
 
   using id_t = utils::id_t;
 

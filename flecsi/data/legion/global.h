@@ -1,19 +1,13 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_legion_global_h
 #define flecsi_legion_global_h
+
+//----------------------------------------------------------------------------//
+//! @file legion/dense.h
+//! @date Initial file creation: July, 2017
+//----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
@@ -24,20 +18,14 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
-#include "flecsi/utils/const_string.h"
+#include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
 #include "flecsi/data/storage.h"
+#include "flecsi/execution/context.h"
+#include "flecsi/utils/const_string.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/data/common/privilege.h"
-
-///
-// \file legion/global.h
-// \authors Demeshko
-// \date Initial file creation: July, 2017
-///
 
 namespace flecsi {
 namespace data {
@@ -219,7 +207,6 @@ struct storage_class__<global> {
     return h;
   }
 
-
 }; // struct storage_class__
 
 } // namespace legion
@@ -229,6 +216,4 @@ struct storage_class__<global> {
 #endif // flecsi_legion_global_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

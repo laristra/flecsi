@@ -35,13 +35,13 @@ void check_entities_task(
         dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
         int my_color, size_t cycle, size_t index_id);
 
-flecsi_register_task(check_entities_task, loc, single);
+flecsi_register_task_simple(check_entities_task, loc, single);
 
 void set_primary_entities_task(
         dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
         dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
         int my_color, size_t cycle, size_t index_id);
-flecsi_register_task(set_primary_entities_task, loc, single);
+flecsi_register_task_simple(set_primary_entities_task, loc, single);
 
 flecsi_register_field(empty_mesh_t, name_space, cell_ID, size_t, dense,
     VERSIONS, CELL_ID);
@@ -56,7 +56,7 @@ namespace flecsi {
 namespace execution {
 
 void add_colorings(int dummy);
-flecsi_register_mpi_task(add_colorings);
+flecsi_register_mpi_task(add_colorings, flecsi::execution);
 
 //----------------------------------------------------------------------------//
 // Specialization driver.
@@ -64,7 +64,7 @@ flecsi_register_mpi_task(add_colorings);
 
 void specialization_tlt_init(int argc, char ** argv) {
 
-  flecsi_execute_mpi_task(add_colorings, 0);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, 0);
 
 } // specialization_tlt_init
 
@@ -95,15 +95,15 @@ void driver(int argc, char ** argv) {
       VERT_ID);
 
   for(size_t cycle=0; cycle<3; cycle++) {
-    flecsi_execute_task(set_primary_entities_task, single, handle, test_handle,
-            my_color, cycle, CELL_ID);
-    flecsi_execute_task(check_entities_task, single, handle, test_handle,
-            my_color, cycle, CELL_ID);
+    flecsi_execute_task_simple(set_primary_entities_task, single, handle,
+      test_handle, my_color, cycle, CELL_ID);
+    flecsi_execute_task_simple(check_entities_task, single, handle,
+      test_handle, my_color, cycle, CELL_ID);
 
-    flecsi_execute_task(set_primary_entities_task, single, vert_handle, vtest_handle,
-            my_color, cycle, VERT_ID);
-    flecsi_execute_task(check_entities_task, single, vert_handle, vtest_handle,
-            my_color, cycle, VERT_ID);
+    flecsi_execute_task_simple(set_primary_entities_task, single,
+      vert_handle, vtest_handle, my_color, cycle, VERT_ID);
+    flecsi_execute_task_simple(check_entities_task, single, vert_handle,
+      vtest_handle, my_color, cycle, VERT_ID);
   }
 } // driver
 

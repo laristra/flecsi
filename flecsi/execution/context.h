@@ -1,53 +1,51 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+  
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#ifndef flecsi_execution_context_h
-#define flecsi_execution_context_h
-
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Oct 19, 2015
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <algorithm>
 #include <cstddef>
 #include <map>
 #include <unordered_map>
 
-#include "cinchlog.h"
-#include "flecsi/execution/common/execution_state.h"
-#include "flecsi/utils/const_string.h"
-#include "flecsi/coloring/adjacency_types.h"
-#include "flecsi/coloring/coloring_types.h"
-#include "flecsi/coloring/index_coloring.h"
-#include "flecsi/runtime/types.h"
+#include <cinchlog.h>
+
+#include <flecsi/execution/common/execution_state.h>
+#include <flecsi/coloring/adjacency_types.h>
+#include <flecsi/coloring/coloring_types.h>
+#include <flecsi/coloring/index_coloring.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/const_string.h>
 
 clog_register_tag(context);
 
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-//! The context__ type provides a high-level runtime context interface that
-//! is implemented by the given context policy.
-//!
-//! @tparam CONTEXT_POLICY The backend context policy.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
+/*!
+  The context__ type provides a high-level runtime context interface that
+  is implemented by the given context policy.
 
-template<class CONTEXT_POLICY>
+  @tparam CONTEXT_POLICY The backend context policy.
+     
+  @ingroup execution
+ */
+
+template<
+  class CONTEXT_POLICY
+>
 struct context__ : public CONTEXT_POLICY
 {
   using index_coloring_t = flecsi::coloring::index_coloring_t;
@@ -55,24 +53,17 @@ struct context__ : public CONTEXT_POLICY
   using set_coloring_info_t = flecsi::coloring::set_coloring_info_t;
   using adjacency_info_t = flecsi::coloring::adjacency_info_t;
 
-  //--------------------------------------------------------------------------//
-  //! The unique_tid_t type create a unique id generator for registering
-  //! tasks.
-  //--------------------------------------------------------------------------//
-
-  //using unique_tid_t = utils::unique_id_t<task_id_t, FLECSI_GENERATED_ID_MAX>;
-
-  //--------------------------------------------------------------------------//
-  //! Adjacency triple: index space, from index space, to index space
-  //--------------------------------------------------------------------------//
+  /*!
+    Adjacency triple: index space, from index space, to index space
+   */
 
   using adjacency_triple_t = std::tuple<size_t, size_t, size_t>;
 
-  //--------------------------------------------------------------------------//
-  // Gathers info about registered data fields.
-  //--------------------------------------------------------------------------//
+  /*!
+    Gathers info about registered data fields.
+   */
 
-  struct field_info_t{
+  struct field_info_t {
     size_t data_client_hash;
     size_t storage_class;
     size_t size;
@@ -84,9 +75,17 @@ struct context__ : public CONTEXT_POLICY
     size_t key;
   }; // struct field_info_t
 
+  /*!
+    Gathers info about local index spaces.
+   */
+  struct local_index_space_t{
+    size_t capacity;
+    size_t index_space;
+  };
+
   //--------------------------------------------------------------------------//
   // Field info map for fields in SPMD task, key1 =
-  // (data client hash, index space), key2 = fid
+  //   (data client hash, index space), key2 = fid
   //--------------------------------------------------------------------------//
 
   using field_info_map_t =
@@ -96,9 +95,9 @@ struct context__ : public CONTEXT_POLICY
   // Function interface.
   //--------------------------------------------------------------------------//
 
-  //--------------------------------------------------------------------------//
-  //! FIXME: This interface needs to be updated.
-  //--------------------------------------------------------------------------//
+  /*!
+    FIXME: This interface needs to be updated.
+   */
 
   template<
     typename RETURN,
@@ -121,9 +120,9 @@ struct context__ : public CONTEXT_POLICY
     return true;
   } // register_function
 
-  //--------------------------------------------------------------------------//
-  //! FIXME: Add description.
-  //--------------------------------------------------------------------------//
+  /*!
+    FIXME: Add description.
+   */
 
   void *
   function(
@@ -134,11 +133,11 @@ struct context__ : public CONTEXT_POLICY
   } // function
 
 
-  //--------------------------------------------------------------------------//
-  //! Meyer's singleton instance.
-  //!
-  //! @return The single instance of this type.
-  //--------------------------------------------------------------------------//
+  /*!
+    Meyer's singleton instance.
+   
+    @return The single instance of this type.
+   */
 
   static
   context__ &
@@ -148,9 +147,9 @@ struct context__ : public CONTEXT_POLICY
     return context;
   } // instance
 
-  //--------------------------------------------------------------------------//
-  //! Return the color for which the context was initialized.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the color for which the context was initialized.
+   */
 
   size_t
   color()
@@ -159,9 +158,9 @@ struct context__ : public CONTEXT_POLICY
     return CONTEXT_POLICY::color();
   } // color
 
-  //--------------------------------------------------------------------------//
-  //! Return the number of colors.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the number of colors.
+   */
 
   size_t
   colors()
@@ -170,13 +169,13 @@ struct context__ : public CONTEXT_POLICY
     return CONTEXT_POLICY::colors();
   } // color
 
-  //--------------------------------------------------------------------------//
-  //! Add an index map. This map can be used to go between mesh and locally
-  //! compacted index spaces.
-  //!
-  //! @param index_space The map key.
-  //! @param index_map   The map to add.
-  //--------------------------------------------------------------------------//
+  /*!
+    Add an index map. This map can be used to go between mesh and locally
+    compacted index spaces.
+   
+    @param index_space The map key.
+    @param index_map   The map to add.
+   */
 
   void
   add_index_map(
@@ -191,11 +190,11 @@ struct context__ : public CONTEXT_POLICY
     } // for
   } // add_index_map
 
-  //--------------------------------------------------------------------------//
-  //! Return the index map associated with the given index space.
-  //!
-  //! @param index_space The map key.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the index map associated with the given index space.
+   
+    @param index_space The map key.
+   */
 
   auto &
   index_map(
@@ -208,6 +207,10 @@ struct context__ : public CONTEXT_POLICY
     return index_map_[index_space];
   } // index_map
 
+  /*!
+    \todo DOCUMENT!
+   */
+
   const auto &
   index_map(
     size_t index_space
@@ -219,6 +222,31 @@ struct context__ : public CONTEXT_POLICY
     return index_map_.at(index_space);
   } // index_map
 
+  /*!
+   *! Add a local index space of specified. The index space is local
+   *! to a color. This method is called from specialization_spmd_init().
+   */
+  void
+  add_local_index_space(size_t index_space, size_t capacity)
+  {
+    clog_assert(coloring_info_.find(index_space) == coloring_info_.end(),
+      "non-local index space exists");
+    local_index_space_t is;
+    is.capacity = capacity;
+    local_index_space_map_.emplace(index_space, std::move(is));
+  }
+
+  /*!
+  /*! Return the map of local index space info.
+   */
+  
+  const auto&
+  local_index_space_map()
+  const
+  {
+    return local_index_space_map_;
+  }
+
   const auto &
   cis_to_gis_map(
     size_t index_space
@@ -226,6 +254,10 @@ struct context__ : public CONTEXT_POLICY
   {
     return cis_to_gis_map_.at(index_space);
   }
+
+  /*!
+    \todo DOCUMENT!
+   */
 
   auto &
   cis_to_gis_map(
@@ -235,6 +267,10 @@ struct context__ : public CONTEXT_POLICY
     return cis_to_gis_map_[index_space];
   }
 
+  /*!
+    \todo DOCUMENT!
+   */
+
   const auto &
   gis_to_cis_map(
     size_t index_space
@@ -242,6 +278,10 @@ struct context__ : public CONTEXT_POLICY
   {
     return gis_to_cis_map_.at(index_space);
   }
+
+  /*!
+    \todo DOCUMENT!
+   */
 
   auto &
   gis_to_cis_map(
@@ -251,11 +291,11 @@ struct context__ : public CONTEXT_POLICY
     return gis_to_cis_map_[index_space];
   }
 
-  //--------------------------------------------------------------------------//
-  //! Return the index map associated with the given index space.
-  //!
-  //! @param index_space The map key.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the index map associated with the given index space.
+   
+    @param index_space The map key.
+   */
 
   auto &
   reverse_index_map(
@@ -268,6 +308,10 @@ struct context__ : public CONTEXT_POLICY
     return reverse_index_map_[index_space];
   } // reverse_index_map
 
+  /*!
+    \todo DOCUMENT!
+   */
+
   const auto &
   reverse_index_map(
     size_t index_space
@@ -279,14 +323,14 @@ struct context__ : public CONTEXT_POLICY
     return reverse_index_map_.at(index_space);
   } // reverse_index_map
 
-  //--------------------------------------------------------------------------//
-  //! Add an intermediate map. This map can be used to go between mesh and
-  //! locally compacted index spaces for intermediate entities.
-  //!
-  //! @param dimension        The entity dimension.
-  //! @param domain           The entity domain.
-  //! @param intermediate_map The map to add.
-  //--------------------------------------------------------------------------//
+  /*!
+    Add an intermediate map. This map can be used to go between mesh and
+    locally compacted index spaces for intermediate entities.
+   
+    @param dimension        The entity dimension.
+    @param domain           The entity domain.
+    @param intermediate_map The map to add.
+   */
 
   void
   add_intermediate_map(
@@ -303,13 +347,13 @@ struct context__ : public CONTEXT_POLICY
     } // for
   } // add_intermediate_map
 
-  //--------------------------------------------------------------------------//
-  //! Return the intermediate map associated with the given dimension and
-  //! domain.
-  //!
-  //! @param dimension The entity dimension.
-  //! @param domain    The entity domain.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the intermediate map associated with the given dimension and
+    domain.
+   
+    @param dimension The entity dimension.
+    @param domain    The entity domain.
+   */
 
   auto const &
   intermediate_map(
@@ -326,12 +370,12 @@ struct context__ : public CONTEXT_POLICY
     return intermediate_map_.at(key);
   } // intermediate_map
 
-  //--------------------------------------------------------------------------//
-  //! Return the index map associated with the given index space.
-  //!
-  //! @param dimension The entity dimension.
-  //! @param domain    The entity domain.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the index map associated with the given index space.
+   
+    @param dimension The entity dimension.
+    @param domain    The entity domain.
+   */
 
   auto const &
   reverse_intermediate_map(
@@ -348,13 +392,13 @@ struct context__ : public CONTEXT_POLICY
     return reverse_intermediate_map_.at(key);
   } // reverse_intermediate_map
 
-  //--------------------------------------------------------------------------//
-  //! Add an index coloring.
-  //!
-  //! @param index_space The map key.
-  //! @param coloring The index coloring to add.
-  //! @param coloring The index coloring information to add.
-  //--------------------------------------------------------------------------//
+  /*!
+    Add an index coloring.
+   
+    @param index_space The map key.
+    @param coloring The index coloring to add.
+    @param coloring The index coloring information to add.
+   */
 
   void
   add_coloring(
@@ -370,20 +414,11 @@ struct context__ : public CONTEXT_POLICY
     coloring_info_[index_space] = coloring_info;
   } // add_coloring
 
-  void
-  add_set_coloring(
-    size_t index_space,
-    std::unordered_map<size_t, coloring_info_t> & coloring_info
-  )
-  {
-    coloring_info_[index_space] = coloring_info;
-  }
-
-  //--------------------------------------------------------------------------//
-  //! Return the index coloring referenced by key.
-  //!
-  //! @param index_space The key associated with the coloring to be returned.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the index coloring referenced by key.
+   
+    @param index_space The key associated with the coloring to be returned.
+   */
 
   index_coloring_t &
   coloring(
@@ -397,12 +432,12 @@ struct context__ : public CONTEXT_POLICY
     return colorings_[index_space];
   } // coloring
 
-  //--------------------------------------------------------------------------//
-  //! Return the index coloring information referenced by key.
-  //!
-  //! @param index_space The key associated with the coloring information
-  //!                    to be returned.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the index coloring information referenced by key.
+   
+    @param index_space The key associated with the coloring information
+                       to be returned.
+   */
 
   const std::unordered_map<size_t, coloring_info_t> &
   coloring_info(
@@ -416,12 +451,12 @@ struct context__ : public CONTEXT_POLICY
     return coloring_info_[index_space];
   } // coloring_info
 
-  //--------------------------------------------------------------------------//
-  //! Return the coloring map (convenient for iterating through all
-  //! of the colorings.
-  //!
-  //! @return The map of index colorings.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the coloring map (convenient for iterating through all
+    of the colorings.
+   
+    @return The map of index colorings.
+   */
 
   const std::map<size_t, index_coloring_t> &
   coloring_map()
@@ -430,12 +465,12 @@ struct context__ : public CONTEXT_POLICY
     return colorings_;
   } // colorings
 
-  //--------------------------------------------------------------------------//
-  //! Return the coloring info map (convenient for iterating through all
-  //! of the colorings.
-  //!
-  //! @return The map of index coloring information.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the coloring info map (convenient for iterating through all
+    of the colorings.
+   
+    @return The map of index coloring information.
+   */
 
   const std::map<
     size_t,
@@ -447,12 +482,12 @@ struct context__ : public CONTEXT_POLICY
     return coloring_info_;
   } // colorings
 
-  //--------------------------------------------------------------------------//
-  //! Add an adjacency/connectivity from one index space to another.
-  //!
-  //! @param from_index_space The index space id of the from side
-  //! @param to_index_space The index space id of the to side
-  //--------------------------------------------------------------------------//
+  /*!
+    Add an adjacency/connectivity from one index space to another.
+   
+    @param from_index_space The index space id of the from side
+    @param to_index_space The index space id of the to side
+   */
 
   void
   add_adjacency(
@@ -467,11 +502,11 @@ struct context__ : public CONTEXT_POLICY
       std::move(adjacency_info));
   } // add_adjacency
 
-  //--------------------------------------------------------------------------//
-  //! Return the set of registered adjacencies.
-  //!
-  //! @return The set of registered adjacencies
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the set of registered adjacencies.
+   
+    @return The set of registered adjacencies
+   */
 
   const std::map<size_t, adjacency_info_t> &
   adjacency_info()
@@ -480,21 +515,21 @@ struct context__ : public CONTEXT_POLICY
     return adjacency_info_;
   } // adjacencies
 
-  //--------------------------------------------------------------------------//
-  //! Register field info for index space and field id.
-  //!
-  //! @param index_space virtual index space
-  //! @param field allocated field id
-  //! @param field_info field info as registered
-  //--------------------------------------------------------------------------//
+  /*!
+    Register field info for index space and field id.
+   
+    @param index_space virtual index space
+    @param field allocated field id
+    @param field_info field info as registered
+   */
 
   void register_field_info(field_info_t& field_info){
     field_info_vec_.emplace_back(std::move(field_info));
   }
 
-  //--------------------------------------------------------------------------//
-  //! Return registered fields
-  //--------------------------------------------------------------------------//
+  /*!
+    Return registered fields
+   */
 
   const std::vector<field_info_t>&
   registered_fields()
@@ -502,11 +537,12 @@ struct context__ : public CONTEXT_POLICY
   {
     return field_info_vec_;
   }
-  //--------------------------------------------------------------------------//
-  //! Add an adjacency index space.
-  //!
-  //! @param index_space index space to add.
-  //--------------------------------------------------------------------------//
+
+  /*!
+    Add an adjacency index space.
+   
+    @param index_space index space to add.
+   */
 
   void
   add_adjacency_triple(const adjacency_triple_t& triple)
@@ -514,9 +550,9 @@ struct context__ : public CONTEXT_POLICY
     adjacencies_.emplace(std::get<0>(triple), triple);
   }
 
-  //--------------------------------------------------------------------------//
-  //! Return set of all adjacency index spaces.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return set of all adjacency index spaces.
+   */
 
   auto&
   adjacencies()
@@ -525,11 +561,11 @@ struct context__ : public CONTEXT_POLICY
     return adjacencies_;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Put field info for index space and field id.
-  //!
-  //! @param field_info field info as registered
-  //--------------------------------------------------------------------------//
+  /*!
+    Put field info for index space and field id.
+   
+    @param field_info field info as registered
+   */
 
   void
   put_field_info(
@@ -546,9 +582,9 @@ struct context__ : public CONTEXT_POLICY
       {index_space, fid}});
   } // put_field_info
 
-  //--------------------------------------------------------------------------//
-  //! Get registered field info map for read access.
-  //--------------------------------------------------------------------------//
+  /*!
+    Get registered field info map for read access.
+   */
 
   const field_info_map_t&
   field_info_map()
@@ -557,11 +593,12 @@ struct context__ : public CONTEXT_POLICY
     return field_info_map_;
   } // field_info_map
 
-  //--------------------------------------------------------------------------//
-  //! Lookup registered field info from data client and namespace hash.
-  //! @param data_client_hash data client type hash
-  //! @param namespace_hash namespace/field name hash
-  //!-------------------------------------------------------------------------//
+  /*!
+    Lookup registered field info from data client and namespace hash.
+
+    @param data_client_hash data client type hash
+    @param namespace_hash namespace/field name hash
+   */
 
   const field_info_t&
   get_field_info_from_name(
@@ -581,11 +618,12 @@ struct context__ : public CONTEXT_POLICY
     return fitr->second;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Lookup registered field info from data client and namespace hash.
-  //! @param data_client_hash data client type hash
-  //! @param key key hash
-  //!-------------------------------------------------------------------------//
+  /*!
+    Lookup registered field info from data client and namespace hash.
+
+    @param data_client_hash data client type hash
+    @param key key hash
+   */
 
   const field_info_t*
   get_field_info_from_key(
@@ -609,38 +647,37 @@ struct context__ : public CONTEXT_POLICY
     }
 
     return &fitr->second;
-  }
+  } // get_field_info_from_key
 
-  //------------------------------------------------------------------------//
-  //! advance state of the execution flow
-  //------------------------------------------------------------------------//
+  /*!
+    Advance the state of the execution flow.
+   */
 
   void
   advance_state()
   {
     execution_state_ ++;
-  }
+  } // advance_state
 
-  //------------------------------------------------------------------------//
-  //!  state of the execution flow
-  //------------------------------------------------------------------------//
+  /*!
+     Reduce the state of the execution flow.
+   */
 
   void
   lower_state()
   {
     execution_state_ --;
-  }
+  } // lower_state
 
+  /*!
+    Return the current execution state
+   */
 
-  //------------------------------------------------------------------------//
-  //! return current execution state
-  //------------------------------------------------------------------------//
   size_t
   execution_state()
   {
     return execution_state_;
-  }
- 
+  } // execution_state
 
 private:
 
@@ -650,7 +687,10 @@ private:
   // Destructor
   ~context__() {}
 
+  //--------------------------------------------------------------------------//
   // We don't need any of these
+  //--------------------------------------------------------------------------//
+
   context__(const context__ &) = delete;
   context__ & operator = (const context__ &) = delete;
   context__(context__ &&) = delete;
@@ -662,6 +702,7 @@ private:
 
   std::unordered_map<size_t, void *>
     function_registry_;
+
   //--------------------------------------------------------------------------//
   // Field info vector for registered fields in TLT
   //--------------------------------------------------------------------------//
@@ -669,7 +710,8 @@ private:
   std::vector<field_info_t> field_info_vec_;
 
   //--------------------------------------------------------------------------//
-  // Field info map for fields in SPMD task, key1 = (data client hash, index space), key2 = fid
+  // Field info map for fields in SPMD task, key1 =
+  //   (data client hash, index space), key2 = fid
   //--------------------------------------------------------------------------//
 
   field_info_map_t field_info_map_;
@@ -688,13 +730,25 @@ private:
   std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
     field_name_map_;
 
+  //--------------------------------------------------------------------------//
   // key: virtual index space id
   // value: coloring indices (exclusive, shared, ghost)
+  //--------------------------------------------------------------------------//
+
   std::map<size_t, index_coloring_t> colorings_;
 
+  //--------------------------------------------------------------------------//
   // key: mesh index space entity id
+  //--------------------------------------------------------------------------//
+
   std::map<size_t, std::map<size_t, size_t>> index_map_;
   std::map<size_t, std::map<size_t, size_t>> reverse_index_map_;
+
+  //--------------------------------------------------------------------------//
+  // key: index space
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, local_index_space_t> local_index_space_map_;
 
 #if 0
   std::map<size_t, std::map<size_t, size_t>> cis_to_mis_map_;
@@ -744,17 +798,23 @@ private:
   std::map<size_t, std::unordered_map<std::vector<size_t>, size_t,
     vector_hash_t, vector_equal_t>> reverse_intermediate_map_;
 
+  //--------------------------------------------------------------------------//
   // key: virtual index space.
   // value: map of color to coloring info
+  //--------------------------------------------------------------------------//
+
   std::map<size_t,
     std::unordered_map<size_t, coloring_info_t>> coloring_info_;
 
-  // key is index space
+  //--------------------------------------------------------------------------//
+  // key: index space
+  //--------------------------------------------------------------------------//
+
   std::map<size_t, adjacency_info_t> adjacency_info_;
 
-  //-------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
   // Execution state 
-  //-------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
 
    size_t execution_state_ = SPECIALIZATION_TLT_INIT;
 
@@ -763,30 +823,21 @@ private:
 } // namespace execution
 } // namespace flecsi
 
-//----------------------------------------------------------------------------//
 // This include file defines the FLECSI_RUNTIME_CONTEXT_POLICY used below.
-//----------------------------------------------------------------------------//
 
 #include "flecsi/runtime/flecsi_runtime_context_policy.h"
 
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-//! The context_t type is the high-level interface to the FleCSI runtime
-//! context.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
+/*!
+  The context_t type is the high-level interface to the FleCSI runtime
+  context.
+ 
+  @ingroup execution
+ */
 
 using context_t = context__<FLECSI_RUNTIME_CONTEXT_POLICY>;
 
 } // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_context_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

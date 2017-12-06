@@ -1,19 +1,13 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_legion_legion_data_h
 #define flecsi_legion_legion_data_h
+
+//----------------------------------------------------------------------------//
+//! @file 
+//! @date Initial file creation: Jun 7, 2017
+//----------------------------------------------------------------------------//
 
 #include <cassert>
 #include <map>
@@ -28,26 +22,21 @@
 
 #include <legion.h>
 
-#include "flecsi/execution/context.h"
-#include "flecsi/coloring/index_coloring.h"
-#include "flecsi/coloring/coloring_types.h"
 #include "flecsi/coloring/adjacency_types.h"
+#include "flecsi/coloring/coloring_types.h"
+#include "flecsi/coloring/index_coloring.h"
+#include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/helper.h"
-#include "flecsi/execution/legion/legion_tasks.h"
 #include "flecsi/execution/legion/internal_index_space.h"
-
-
-///
-/// \file legion/legion_data.h
-/// \date Initial file creation: Jun 7, 2017
-///
+#include "flecsi/execution/legion/legion_tasks.h"
 
 clog_register_tag(legion_data);
 
 namespace flecsi {
 namespace data {
 
-class legion_data_t{
+class legion_data_t
+{
 public:
 
   using coloring_info_t = coloring::coloring_info_t;
@@ -58,7 +47,8 @@ public:
 
   using indexed_coloring_info_map_t = std::map<size_t, coloring_info_map_t>;
 
-  struct index_space_t{
+  struct index_space_t
+  {
     size_t index_space_id;
     Legion::IndexSpace index_space;
     Legion::FieldSpace field_space;
@@ -67,7 +57,17 @@ public:
     size_t total_num_entities;
   };
 
-  struct adjacency_t{
+  struct local_index_space_t
+  {
+    size_t index_space_id;
+    Legion::IndexSpace index_space;
+    Legion::FieldSpace field_space;
+    Legion::LogicalRegion logical_region;
+    size_t capacity;
+  };
+
+  struct adjacency_t
+  {
     size_t index_space_id;
     size_t from_index_space_id;
     size_t to_index_space_id;
@@ -113,7 +113,7 @@ public:
 
   void
   init_global_handles()
-{
+  {
     using namespace Legion;
     using namespace LegionRuntime;
     using namespace Arrays;
@@ -255,6 +255,40 @@ public:
     attach_name(is, is.field_space, "expanded field space");
 
     index_space_map_[index_space_id] = std::move(is);
+  }
+
+  static
+  local_index_space_t
+  create_local_index_space(
+    Legion::Context ctx,
+    Legion::Runtime* runtime,
+    size_t index_space_id,
+    const execution::context_t::local_index_space_t& local_index_space
+  )
+  {
+    using namespace std;
+    
+    using namespace Legion;
+    using namespace LegionRuntime;
+    using namespace Arrays;
+
+    using namespace execution;
+
+    context_t & context = context_t::instance();
+
+    local_index_space_t is;
+    is.index_space_id = index_space_id;
+    is.capacity = local_index_space.capacity;
+
+    Rect<1> rect(Point<1>(0), Point<1>(is.capacity - 1));
+    is.index_space_id = index_space_id;
+    is.index_space = runtime->create_index_space(
+      ctx, Legion::Domain::from_rect<1>(rect));
+    is.field_space = runtime->create_field_space(ctx);
+    is.logical_region = 
+      runtime->create_logical_region(ctx, is.index_space, is.field_space);
+
+    return is;
   }
 
   void
@@ -675,6 +709,4 @@ private:
 #endif // flecsi_legion_legion_data_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

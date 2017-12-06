@@ -196,10 +196,21 @@ struct mpi_context_policy_t
   struct index_space_data_t {
     // TODO: to be defined.
   };
+
+  struct local_index_space_data_t{
+    // TODO: to be defined.
+  };
+
   auto&
   index_space_data_map()
   {
     return index_space_data_map_;
+  }
+
+  auto&
+  local_index_space_data_map()
+  {
+    return local_index_space_data_map_;
   }
 
   using coloring_info_t = flecsi::coloring::coloring_info_t;
@@ -641,6 +652,7 @@ private:
   std::map<field_id_t, field_metadata_t> field_metadata;
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
+  std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
 
   std::map<field_id_t, sparse_field_data_t> sparse_field_data;
   std::map<field_id_t, sparse_field_metadata_t> sparse_field_metadata;

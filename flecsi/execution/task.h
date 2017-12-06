@@ -84,21 +84,21 @@ struct task_interface__
     return EXECUTION_POLICY::runtime_state(task);
   } // runtime_state
 
-  //--------------------------------------------------------------------------//
-  //! Register a task with the FleCSI runtime.
-  //!
-  //! @tparam KEY       A hash key identifying the task.
-  //! @tparam RETURN    The return type of the user task.
-  //! @tparam ARG_TUPLE A std::tuple of the user task argument types.
-  //! @tparam DELEGATE  The delegate function that invokes the user task.
-  //!
-  //! @param processor The processor type.
-  //! @param launch    The launch flags.
-  //! @param name      The string identifier of the task.
-  //!
-  //! @return The return type for task registration is determined by
-  //!         the specific backend runtime being used.
-  //--------------------------------------------------------------------------//
+  /*!
+    Register a task with the FleCSI runtime.
+
+    @tparam KEY       A hash key identifying the task.
+    @tparam RETURN    The return type of the user task.
+    @tparam ARG_TUPLE A std::tuple of the user task argument types.
+    @tparam DELEGATE  The delegate function that invokes the user task.
+
+    @param processor The processor type.
+    @param launch    The launch flags.
+    @param name      The string identifier of the task.
+
+    @return The return type for task registration is determined by
+            the specific backend runtime being used.
+   */
 
   template<
     size_t KEY,
