@@ -117,7 +117,7 @@ namespace execution {
     >
     void
     handle(
-      mutator<
+      sparse_mutator<
       T
       > & m
     )
