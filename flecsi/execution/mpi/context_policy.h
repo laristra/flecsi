@@ -305,9 +305,9 @@ struct mpi_context_policy_t
     // Each shared and ghost cells element is an array of max_entries_per_index
     // of entry_value_t
     MPI_Datatype shared_ghost_type;
-    MPI_Type_contiguous(sizeof(data::sparse_entry_value__<T>),
+    MPI_Type_contiguous(sizeof(data::sparse_entry_value__<T>) * 5,
                         MPI_BYTE, &shared_ghost_type);
-
+    MPI_Type_commit(&shared_ghost_type);
     for (auto ghost_owner : coloring_info.ghost_owners) {
       MPI_Datatype origin_type;
       MPI_Datatype target_type;
@@ -339,10 +339,11 @@ struct mpi_context_policy_t
     auto shared_data = data + sparse_field_data[fid].reserve *
                                 sparse_field_data[fid].max_entries_per_index *
                                 entry_value_size;
+    MPI_Win_create_dynamic(MPI_INFO_NULL, MPI_COMM_WORLD, &metadata.win);
 
-    MPI_Win_create(shared_data, coloring_info.shared * entry_value_size,
-                   entry_value_size, MPI_INFO_NULL, MPI_COMM_WORLD,
-                   &metadata.win);
+//    MPI_Win_create(shared_data, coloring_info.shared * entry_value_size,
+//                   entry_value_size, MPI_INFO_NULL, MPI_COMM_WORLD,
+//                   &metadata.win);
     sparse_field_metadata.insert({fid, metadata});
   }
 
