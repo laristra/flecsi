@@ -62,10 +62,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 //
 //  } // handle
   template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
+    typename T
   >
   void
   handle(
@@ -81,35 +78,38 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   )
   {
     auto& h = m.h_;
+//    auto ci = h.ci_;
+//    std::cout << "finalize mutator\n";
+//    auto shared_data = ci.entries[1];
+//    for (int i = 0; i < h.num_shared() * h.max_entries_per_index(); i++) {
+//        std::cout << shared_data[i].value << " ";
+//      }
+//    std::cout << std::endl;
 
-    // Skip Read Only handles
-    if (EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
-      return;
-
-    auto& context = context_t::instance();
-    const int my_color = context.color();
-    auto& my_coloring_info =
-      context.coloring_info(h.index_space).at(my_color);
-
-    auto& sparse_field_metadata =
-      context.registered_sparse_field_metadata().at(h.fid);
-
-    MPI_Win win = sparse_field_metadata.win;
-
-    MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
-    MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
-
-    for (auto ghost_owner : my_coloring_info.ghost_owners) {
-      MPI_Get(h.entries + (h.reserve + h.num_shared_) *  (sizeof(size_t) +
-                sizeof(T)), 1,
-              sparse_field_metadata.origin_types[ghost_owner],
-              ghost_owner, 0, 1,
-              sparse_field_metadata.target_types[ghost_owner],
-              win);
-    }
-
-    MPI_Win_complete(win);
-    MPI_Win_wait(win);
+//    auto& context = context_t::instance();
+//    const int my_color = context.color();
+//    auto& my_coloring_info =
+//      context.coloring_info(h.index_space).at(my_color);
+//
+//    auto& sparse_field_metadata =
+//      context.registered_sparse_field_metadata().at(h.fid);
+//
+//    MPI_Win win = sparse_field_metadata.win;
+//
+//    MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
+//    MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
+//
+//    for (auto ghost_owner : my_coloring_info.ghost_owners) {
+//      MPI_Get(h.entries + (h.reserve + h.num_shared_) *  (sizeof(size_t) +
+//                sizeof(T)), 1,
+//              sparse_field_metadata.origin_types[ghost_owner],
+//              ghost_owner, 0, 1,
+//              sparse_field_metadata.target_types[ghost_owner],
+//              win);
+//    }
+//
+//    MPI_Win_complete(win);
+//    MPI_Win_wait(win);
 
   } // handle
 
@@ -150,6 +150,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   {
     h.delete_storage();
   } // handle
+
 
   template<
     typename T

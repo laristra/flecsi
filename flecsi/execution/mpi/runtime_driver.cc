@@ -29,16 +29,18 @@ remap_shared_entities()
   auto& flecsi_context = context_t::instance();
   const int my_color = flecsi_context.color();
 
-  for (auto coloring_info_pair : flecsi_context.coloring_info_map()) {
+  for (auto& coloring_info_pair : flecsi_context.coloring_info_map()) {
     auto index_space = coloring_info_pair.first;
-    auto coloring_info = coloring_info_pair.second;
+    auto& coloring_info = coloring_info_pair.second;
 
-    auto &my_coloring_info = flecsi_context.coloring_info(index_space).at(
+    auto& my_coloring_info = flecsi_context.coloring_info(index_space).at(
       my_color);
-    auto index_coloring = flecsi_context.coloring(index_space);
+    auto& index_coloring = flecsi_context.coloring(index_space);
+
+    std::set<flecsi::coloring::entity_info_t> new_shared;
 
     size_t index = 0;
-    for (auto shared : index_coloring.shared) {
+    for (auto& shared : index_coloring.shared) {
 //      clog_rank(warn, 0) << "myrank: " << my_color
 //                         << " shared id: " << shared.id
 //                         << ", rank: " << shared.rank
@@ -47,10 +49,13 @@ remap_shared_entities()
       for (auto peer : shared.shared) {
         MPI_Send(&index, 1, MPI_UNSIGNED_LONG_LONG, peer, 77, MPI_COMM_WORLD);
       }
+      new_shared.insert(
+        flecsi::coloring::entity_info_t(shared.id, shared.rank, index, shared.shared));
       index++;
     }
+    context_t::instance().coloring(index_space).shared.swap(new_shared);
 
-    std::vector<size_t> ghost_index(index_coloring.ghost.size());
+    //std::vector<size_t> ghost_index(index_coloring.ghost.size());
 
     MPI_Status status;
     std::set<flecsi::coloring::entity_info_t> new_ghost;

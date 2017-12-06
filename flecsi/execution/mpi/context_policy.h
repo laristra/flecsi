@@ -23,10 +23,12 @@
 #include <unordered_map>
 #include <map>
 #include <functional>
-#include <cinchlog.h>
 
-#if !defined(ENABLE_MPI)
-  #error ENABLE_MPI not defined! This file depends on MPI!
+#include <cinchlog.h>
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_MPI)
+  #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
 #include <mpi.h>
@@ -80,9 +82,12 @@ struct mpi_context_policy_t
     reserve(reserve_chunk),
     offsets(num_total),
     num_exclusive_entries(0){
+
+      size_t n = num_total - num_exclusive;
       
-      for(size_t i = num_exclusive; i < num_total; ++i){
-        offsets[i].set_offset(reserve + i * max_entries_per_index);
+      for(size_t i = 0; i < n; ++i){
+        offsets[num_exclusive + i].set_offset(
+          reserve + i * max_entries_per_index);
       }
 
       size_t entry_value_size = sizeof(size_t) + type_size;
@@ -289,9 +294,9 @@ struct mpi_context_policy_t
     // Each shared and ghost cells element is an array of max_entries_per_index
     // of entry_value_t
     MPI_Datatype shared_ghost_type;
-    MPI_Type_contiguous(sizeof(data::sparse_entry_value__<T>),
+    MPI_Type_contiguous(sizeof(data::sparse_entry_value__<T>) * 5,
                         MPI_BYTE, &shared_ghost_type);
-
+    MPI_Type_commit(&shared_ghost_type);
     for (auto ghost_owner : coloring_info.ghost_owners) {
       MPI_Datatype origin_type;
       MPI_Datatype target_type;
@@ -323,10 +328,11 @@ struct mpi_context_policy_t
     auto shared_data = data + sparse_field_data[fid].reserve *
                                 sparse_field_data[fid].max_entries_per_index *
                                 entry_value_size;
+    MPI_Win_create_dynamic(MPI_INFO_NULL, MPI_COMM_WORLD, &metadata.win);
 
-    MPI_Win_create(shared_data, coloring_info.shared * entry_value_size,
-                   entry_value_size, MPI_INFO_NULL, MPI_COMM_WORLD,
-                   &metadata.win);
+//    MPI_Win_create(shared_data, coloring_info.shared * entry_value_size,
+//                   entry_value_size, MPI_INFO_NULL, MPI_COMM_WORLD,
+//                   &metadata.win);
     sparse_field_metadata.insert({fid, metadata});
   }
 

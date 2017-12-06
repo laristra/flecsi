@@ -14,14 +14,16 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchdevel.h>
+#include <flecsi-config.h>
 
-#if !defined(ENABLE_MPI)
-  #error ENABLE_MPI not defined! This file depends on MPI!
+#if !defined(FLECSI_ENABLE_MPI)
+  #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
+
+#include <mpi.h>
 
 #include <array>
 #include <fstream>
-#include <mpi.h>
 
 #include "flecsi/io/exodus_definition.h"
 #include "flecsi/coloring/dcrs_utils.h"

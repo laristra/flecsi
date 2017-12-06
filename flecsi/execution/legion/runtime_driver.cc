@@ -124,19 +124,8 @@ runtime_driver(
   clog(info) << "Executing specialization top-level-task init" << std::endl;
   }
 
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_.push_state(utils::const_string_t{"specialization_tlt_init"}.hash(),
-    ctx, runtime, task, regions);
-#endif
-
   // Invoke the specialization top-level task initialization function.
   specialization_tlt_init(args.argc, args.argv);
-
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_.pop_state( utils::const_string_t{"specialization_tlt_init"}.hash());
-#endif
 
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
@@ -1031,12 +1020,6 @@ spmd_task(
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
 
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_t::instance().push_state(utils::const_string_t{"driver"}.hash(),
-    ctx, runtime, task, regions);
-#endif
-
   // #6 deserialize reduction
   Legion::DynamicCollective max_reduction;
   args_deserializer.deserialize((void*)&max_reduction,
@@ -1101,16 +1084,15 @@ spmd_task(
   // run default or user-defined driver
   driver(args.argc, args.argv);
 
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_t::instance().pop_state(utils::const_string_t{"driver"}.hash());
-#endif
-
   // Cleanup memory
-  for(auto ipart: primary_ghost_ips)
-      runtime->destroy_index_partition(ctx, ipart);
-  for(auto ipart: exclusive_shared_ips)
-      runtime->destroy_index_partition(ctx, ipart);
+  for(auto ipart: primary_ghost_ips) {
+    runtime->destroy_index_partition(ctx, ipart);
+  } // for
+
+  for(auto ipart: exclusive_shared_ips) {
+    runtime->destroy_index_partition(ctx, ipart);
+  } // for
+
   delete [] field_info_buf;
   delete [] num_owners;
   delete [] pbarriers_as_owner;

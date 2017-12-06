@@ -30,6 +30,10 @@ struct mpi_mutator_handle_policy_t
 
   mpi_mutator_handle_policy_t(const mpi_mutator_handle_policy_t& p) = default;
 
+  field_id_t fid;
+  size_t index_space;
+  size_t data_client_hash;
+
   std::vector<offset_t>* offsets;    
   std::vector<uint8_t>* entries;
   size_t* reserve;

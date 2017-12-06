@@ -11,9 +11,16 @@
 //! @date Initial file creation: Apr 12, 2017
 //----------------------------------------------------------------------------//
 
-#include <cinchlog.h>
-#include <legion.h>
 #include <string>
+
+#include <cinchlog.h>
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
 
 #include "flecsi/data/data_handle.h"
 #include "flecsi/execution/context.h"
@@ -302,11 +309,6 @@ struct task_wrapper__
     ARG_TUPLE & task_args =
       *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
-#if !defined(ENABLE_LEGION_TLS)
-    // Push the Legion state
-    context_t::instance().push_state(KEY, context, runtime, task, regions);
-#endif
-
     init_handles_t init_handles(runtime, context, regions);
     init_handles.walk(task_args);
 
@@ -314,11 +316,6 @@ struct task_wrapper__
     //return (*DELEGATE)(task_args);
     execution_wrapper__<RETURN, ARG_TUPLE, DELEGATE> wrapper;
     wrapper.execute(std::forward<ARG_TUPLE>(task_args));
-
-#if !defined(ENABLE_LEGION_TLS)
-    // Pop the Legion state
-    context_t::instance().pop_state(KEY);
-#endif
 
     finalize_handles_t finalize_handles;
     finalize_handles.walk(task_args);

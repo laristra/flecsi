@@ -3,15 +3,16 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-///
-/// \file
-/// \date Initial file creation: May 4, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: May 4, 2017
+//----------------------------------------------------------------------------//
+
+#include <chrono>
+#include <thread>
 
 #include <cinchlog.h>
 #include <cinchtest.h>
-#include <chrono>
-#include <thread>
 
 #include "flecsi/execution/execution.h"
 #include "flecsi/data/data.h"

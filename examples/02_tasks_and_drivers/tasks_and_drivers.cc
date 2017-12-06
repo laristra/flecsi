@@ -3,7 +3,8 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-#include <flecsi.h>
+#include <flecsi-config.h>
+
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion 
   #include <mpi.h>
   #include <legion.h>
