@@ -197,6 +197,18 @@ struct tree_geometry<T, 1>
   {
     return true;
   }
+
+  static
+  bool 
+  within_mac(
+    const point_t& p1, 
+    const point_t& p2,
+    const element_t radius,
+    const element_t MAC)
+  {
+    return 2*asin(radius/distance(p1,p2)) < MAC;
+  }
+
 };
 
 
@@ -257,6 +269,17 @@ struct tree_geometry<T, 2>
            center[0] <= origin[0] + size * scale[0] + radius &&
            center[1] >= origin[1] - radius &&
            center[1] <= origin[1] + size * scale[1] + radius;
+  }
+
+  static
+  bool 
+  within_mac(
+    const point_t& p1, 
+    const point_t& p2,
+    const element_t radius,
+    const element_t MAC)
+  {
+    return 2*asin(radius/distance(p1,p2)) < MAC;
   }
 
 
@@ -370,8 +393,23 @@ struct tree_geometry<T, 3>
     const point_t& center,
     element_t radius)
   {
-    return distance(origin, center) < radius;
+    return (center[0]-origin[0])*(center[0]-origin[0])+
+      (center[1]-origin[1])*(center[1]-origin[1])+
+      (center[2]-origin[2])*(center[2]-origin[2])
+        < radius*radius;
   }
+
+  static
+  bool 
+  within_mac(
+    const point_t& p1, 
+    const point_t& p2,
+    const element_t radius,
+    const element_t MAC)
+  {
+    return 2*asin(radius/distance(p1,p2)) < MAC;
+  }
+
 
   /*!
     Return true if point origin lies within the box specified by min/max point.
@@ -417,7 +455,10 @@ struct tree_geometry<T, 3>
     const point_t& c2, 
     const element_t r2)
   {
-    return distance(c1,c2) <= r1+r2; 
+    return (c2[0]-c1[0])*(c2[0]-c1[0])+
+      (c2[1]-c1[1])*(c2[1]-c1[1])+
+      (c2[2]-c1[2])*(c2[2]-c1[2])
+        < (r1+r2)*(r1+r2);
   }
 
 
@@ -1179,10 +1220,12 @@ public:
       element_t mass = element_t(0); 
       element_t radius = element_t(0);
       point_t coordinates = point_t{};
+      uint64_t nchildren = 0; 
       if(b->is_leaf())
       {
         for(auto child: *b)
         {
+          nchildren++;
           element_t childmass = child->getMass(); 
           // \todo children locality 
           for(size_t d = 0; d < dimension; ++d)
@@ -1213,10 +1256,8 @@ public:
         {
           auto branch = child(b,i); 
           traverse(branch);
+          nchildren += branch->sub_entities();
           mass += branch->mass();
-          //std::cout<<"c:"<<i<<" adding="<<branch->mass()<<" l="<<
-          //  branch->is_leaf()<<std::endl;
-          // Then sum result 
           for(size_t d = 0; d < dimension; ++d)
           {
             coordinates[d] += branch->get_coordinates()[d]*branch->mass(); 
@@ -1242,11 +1283,161 @@ public:
         }
       }
       // Save in both cases
+      b->set_sub_entities(nchildren);
       b->set_coordinates(coordinates);
       b->set_mass(mass);
       b->set_radius(radius);  
     };
     traverse(root());
+  }
+  
+  template<
+    typename EF,
+    typename... ARGS
+  >
+  void 
+  apply_sub_cells(
+      branch_t * b,
+      element_t radius,
+      element_t MAC,
+      EF&& ef,
+      ARGS&&... args)
+  {
+    std::stack<branch_t*> stk;
+    stk.push(b);
+    
+    #pragma omp parallel
+    #pragma omp single
+    while(!stk.empty()){
+      branch_t* c = stk.top();
+      stk.pop();
+      if(c->is_leaf() && c->sub_entities() > 0){
+        #pragma omp task firstprivate(c)
+        {
+          //std::cout<<omp_get_thread_num()<<" = Task Leaf"<<c->get_coordinates()<<std::endl<<std::flush;
+          std::vector<branch_t*> inter_list; 
+          //std::cout<<omp_get_thread_num()<<" = sub_cells_inter"<<std::endl<<std::flush;
+          sub_cells_inter(c,MAC,inter_list);
+          //std::cout<<omp_get_thread_num()<<" = sub_cells_inter done"<<std::endl<<std::flush;
+          force_calc(c,inter_list,radius,ef,std::forward<ARGS>(args)...);
+        }
+      }else{
+        if(c->sub_entities() < ncritical_){
+          #pragma omp task firstprivate(c)
+          {
+            //std::cout<<omp_get_thread_num()<<" = Task Branch"<<c->get_coordinates()<<"Mass="<<c->getMass() <<std::endl<<std::flush;
+            std::vector<branch_t*> inter_list; 
+            sub_cells_inter(c,MAC,inter_list);
+            force_calc(c,inter_list,radius,ef,std::forward<ARGS>(args)...);
+          } 
+        }else{
+          for(int i=0; i<(1<<dimension);++i){
+            branch_t * next = child(c,i);
+            if(c->sub_entities() > 0){
+              stk.push(next);
+            }
+          }
+        }
+      } 
+    }
+    #pragma omp taskwait
+  }
+
+  void
+  sub_cells_inter(
+    branch_t* b,
+    element_t MAC,
+    std::vector<branch_t*>& inter_list)
+  {
+    std::stack<branch_t*> stk; 
+    stk.push(root());
+    //std::cout<<"sub_cells_inter: coord="<<b->get_coordinates()<<std::endl<<std::flush;
+    while(!stk.empty()){
+      branch_t* c = stk.top();
+      stk.pop();
+      if(c->is_leaf()){
+        inter_list.push_back(c);
+      }else{
+        for(int i=0 ; i<(1<<dimension);++i){
+          auto branch = child(c,i);
+          if(c->sub_entities() > 0 && geometry_t::intersects_sphere_sphere(
+            b->get_coordinates(),
+            b->radius(),
+            branch->get_coordinates(),
+            branch->radius()))
+          /*if(geometry_t::within_mac(
+            b->get_coordinates(),
+            branch->get_coordinates(),
+            branch->radius(),
+            MAC))
+          {
+            inter_list.push_back(branch);
+          }else*/{
+            stk.push(branch);
+          }
+        }
+      }
+    }
+  }
+
+  template<
+    typename EF,
+    typename... ARGS
+  >
+  void
+  force_calc(
+      branch_t* b, 
+      std::vector<branch_t*>& inter_list,
+      element_t radius,
+      EF&& ef,
+      ARGS&&... args)
+  {
+    std::stack<branch_t*> stk;
+    stk.push(b);
+    while(!stk.empty())
+    {
+      branch_t* c = stk.top();
+      stk.pop();
+      if(c->is_leaf()){
+        for(auto child: *c){
+          if(child->is_local()){
+            apply_sub_entity(child,inter_list,radius,ef,std::forward<ARGS>(args)...);
+          }
+        }
+      }else{
+        for(int i=0; i<(1<<dimension); ++i){
+          branch_t * next = child(c,i);
+          if(next->getMass() > 0.){
+            stk.push(next);
+          }
+        }
+      }
+    }
+  }
+
+  template<
+    typename EF,
+    typename... ARGS
+  >
+  void 
+  apply_sub_entity(
+      entity_t* ent, 
+      std::vector<branch_t*>& inter_list,
+      element_t radius,
+      EF&& ef,
+      ARGS&&... args)
+  {
+    for(auto b: inter_list){
+      for(auto nb: *b){
+        if(geometry_t::within(
+              ent->coordinates(),
+              nb->coordinates(),
+              radius))
+        {
+          ef(ent,nb,std::forward<ARGS>(args)...);
+        }
+      }
+    }
   }
 
   /*!
@@ -1272,14 +1463,11 @@ public:
       {
         for(auto child: *b)
         {
-          //if(child->getMass() > element_t(0))
-          //{
             // Check if in radius 
             if(geometry_t::within(center,child->coordinates(),radius))
             {
               ents.push_back(child);
             }
-          //}
         }
       }else{
         for(int i=0 ; i<(1<<dimension);++i)
@@ -1291,7 +1479,6 @@ public:
                 branch->get_coordinates(),
                 branch->radius()))
           {
-            //std::cout<<"Down"<<std::endl;
             traverse(branch);
           }
         }
@@ -1299,7 +1486,7 @@ public:
     };
 
     traverse(root()); 
-#endif
+#else
     // ITERATIVE VERSION
     std::stack<branch_t*> stk;
     stk.push(root());
@@ -1328,7 +1515,7 @@ public:
         }
       }
     }
-
+#endif
     return ents;
   }
 
@@ -2625,6 +2812,7 @@ private:
   std::array<point<element_t, dimension>, 2> range_;
   point<element_t, dimension> scale_;
   element_t max_scale_;
+  uint64_t ncritical_ = 1;
 };
   
 /*!
@@ -2841,6 +3029,19 @@ public:
     return coordinates_;
   }
 
+  uint64_t 
+  sub_entities() const
+  {
+    return sub_entities_;
+  }
+
+  void 
+  set_sub_entities(
+      uint64_t sub_entities)
+  {
+    sub_entities_ = sub_entities;
+  }
+
 
 protected:
   template<class P>
@@ -2940,6 +3141,8 @@ protected:
   point_t coordinates_; 
   element_t radius_; 
   element_t mass_;
+
+  uint64_t sub_entities_; // Subentities in the leafs the subtree
 };
 
 } // namespace topology
