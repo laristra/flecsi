@@ -208,18 +208,21 @@ runtime_driver(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
-      if((field_info.storage_class != global) &&
-        (field_info.storage_class != color)){
-        if(field_info.index_space == idx_space){
-          fields_map[idx_space].push_back(field_info.fid);
-          num_phase_barriers++;
-        } // if
-      }//if
-      else if(field_info.storage_class == global){
-        number_of_global_fields++;
-      }
-      else if(field_info.storage_class == color){
-        number_of_color_fields++;
+      switch(field_info.storage_class){
+        case global:
+          number_of_global_fields++;
+          break;
+        case color:
+          number_of_color_fields++;
+          break;
+        case local:
+          break;
+        default:
+          if(field_info.index_space == idx_space){
+            fields_map[idx_space].push_back(field_info.fid);
+            num_phase_barriers++;
+          } // if
+          break;          
       }
     } // for
 

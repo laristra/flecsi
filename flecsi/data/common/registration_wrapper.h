@@ -429,7 +429,7 @@ struct client_registration_wrapper__<
 
       using wrapper_t = field_registration_wrapper__<
         CLIENT_TYPE,
-        flecsi::data::dense,
+        flecsi::data::local,
         ENTITY_TYPE,
         entity_hash,
         0,

@@ -411,11 +411,17 @@ public:
       using field_info_t = context_t::field_info_t;
 
       for(const field_info_t& fi : context.registered_fields()){
-        if((fi.storage_class != global) && (fi.storage_class != color)){
-          if(fi.index_space == is.index_space_id){
-            allocator.allocate_field(fi.size, fi.fid);
-          }
-        }//if
+        switch(fi.storage_class){
+          case global:
+          case color:
+          case local:
+            break;
+          default:
+            if(fi.index_space == is.index_space_id){
+              allocator.allocate_field(fi.size, fi.fid);
+            }
+            break;            
+        }
       }//for
 
       is.logical_region = runtime_->create_logical_region(ctx_,
