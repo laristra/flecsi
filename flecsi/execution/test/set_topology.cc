@@ -25,7 +25,7 @@ using namespace topology;
 using namespace coloring;
 
 class entity1 : public set_entity_t{
-
+  double x;
 };
 
 class entity2 : public set_entity_t{
@@ -51,8 +51,6 @@ void task1(client_handle_t<set_t, rw> sh) {
 flecsi_register_data_client(set_t, sets, set1); 
 
 flecsi_register_task_simple(task1, loc, single);
-
-flecsi_register_field(set_t, hydro, pressure, double, dense, 1, 0);
 
 namespace flecsi {
 namespace execution {
