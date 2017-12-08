@@ -35,10 +35,13 @@ public:
 
   using type_identifier_t = set_topology_t;
 
-  void
-  initialize_storage() {
+  set_topology_t(){}
 
-  }
+  set_topology_t(const set_topology_t& s)
+  : base_t(s){}
+
+  void
+  initialize_storage(){}
 };
 
 } // namespace topology

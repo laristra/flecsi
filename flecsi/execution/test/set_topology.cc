@@ -67,7 +67,7 @@ void specialization_spmd_init(int argc, char ** argv) {
 void driver(int argc, char ** argv) {
   auto sh = flecsi_get_client_handle(set_t, sets, set1);
 
-  //flecsi_execute_task_simple(task1, single, sh);
+  flecsi_execute_task_simple(task1, single, sh);
 }
 
 } // namespace execution

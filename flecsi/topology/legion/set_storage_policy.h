@@ -43,8 +43,11 @@ struct legion_set_topology_storage_policy_t
 
   index_space_map_t index_space_map;
 
+  ~legion_set_topology_storage_policy_t(){}
+
   legion_set_topology_storage_policy_t()
   {
+
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();
 
@@ -65,6 +68,7 @@ struct legion_set_topology_storage_policy_t
     clog_assert(itr != index_space_map.end(), "invalid index space");
     auto& is = index_spaces[itr->second];
     auto s = is.storage();
+
     s->set_buffer(entities, num_entities, read);
 
     if(!read){
