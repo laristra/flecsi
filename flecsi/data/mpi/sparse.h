@@ -147,7 +147,7 @@ struct storage_class__<sparse>
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
       const size_t max_entries_per_index = 5;
-      const size_t reserve_chunk = 8192;
+      const size_t reserve_chunk = 2;
 
       // TODO: deal with VERSION
       context.register_sparse_field_data(field_info.fid, field_info.size,
@@ -215,7 +215,7 @@ struct storage_class__<sparse>
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
       const size_t max_entries_per_index = 5;
-      const size_t reserve_chunk = 8192;
+      const size_t reserve_chunk = 2;
 
       // TODO: deal with VERSION
       context.register_sparse_field_data(field_info.fid, field_info.size,
@@ -229,6 +229,11 @@ struct storage_class__<sparse>
 
     mutator_handle__<DATA_TYPE> h(fd.num_exclusive, fd.num_shared, 
       fd.num_ghost, fd.max_entries_per_index, slots);
+
+    h.fid = field_info.fid;
+    h.index_space = field_info.index_space;
+    h.data_client_hash = field_info.data_client_hash;
+
     h.offsets = &fd.offsets;
     h.entries = &fd.entries;
     h.reserve = &fd.reserve;

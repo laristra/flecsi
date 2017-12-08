@@ -24,7 +24,8 @@ enum storage_label_type_t : size_t {
   sparse,
   ragged,
   scoped,
-  tuple
+  tuple,
+  local
 }; // enum storage_label_type_t
 
 } // namespace data

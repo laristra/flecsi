@@ -116,9 +116,14 @@ template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
 void task1(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
-  for(size_t i = 0; i < 32; ++i){
+
+  auto& context = execution::context_t::instance();
+  auto rank = context.color();
+  auto coloring_info = context.coloring_info(mh.h_.index_space).at(rank);
+
+  for(size_t i = 0; i < coloring_info.exclusive + coloring_info.shared; ++i){
     for(size_t j = 0; j < 5; ++j){
-      mh(i, j) = i * 100 + j;
+      mh(i, j) = i * 100 + j + rank * 10000;
     }
   }
   //mh.dump();
@@ -126,11 +131,24 @@ void task1(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
 
 void task2(client_handle_t<test_mesh_t, ro> mesh,
            sparse_accessor<double, ro, ro, ro> h) {
+  auto& context = execution::context_t::instance();
+  auto rank = context.color();
+  if (rank == 0)
+    h.dump();
+
+} // task2
+
+void task3(client_handle_t<test_mesh_t, ro> mesh,
+           sparse_accessor<double, rw, rw, rw> h) {
 
   auto& context = execution::context_t::instance();
+  auto rank = context.color();
+  auto coloring_info = context.coloring_info(h.handle.index_space).at(rank);
 
-  if(context.color() == 0){
-    h.dump();
+  for(size_t i = coloring_info.exclusive; i < coloring_info.exclusive + coloring_info.shared; ++i){
+    for(size_t j = 0; j < 5; ++j){
+      h(i, j) = -h(i, j);
+    }
   }
 
 } // task2
@@ -139,6 +157,8 @@ flecsi_register_data_client(test_mesh_t, meshes, mesh1);
 
 flecsi_register_task_simple(task1, loc, single);
 flecsi_register_task_simple(task2, loc, single);
+flecsi_register_task_simple(task3, loc, single);
+
 
 flecsi_register_field(test_mesh_t, hydro, pressure, double, sparse, 1, 0);
 
@@ -192,7 +212,13 @@ void driver(int argc, char ** argv) {
 
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, sparse, 0);
 
+
   flecsi_execute_task_simple(task2, single, ch, ph);
+
+  flecsi_execute_task_simple(task3, single, ch, ph);
+
+  flecsi_execute_task_simple(task2, single, ch, ph);
+
 } // specialization_driver
 
 //----------------------------------------------------------------------------//

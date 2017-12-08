@@ -285,6 +285,19 @@ public:
     is.index_space = runtime->create_index_space(
       ctx, Legion::Domain::from_rect<1>(rect));
     is.field_space = runtime->create_field_space(ctx);
+
+    using field_info_t = context_t::field_info_t;
+
+    FieldAllocator allocator = 
+      runtime->create_field_allocator(ctx, is.field_space);
+
+    for(const field_info_t& fi : context.registered_fields()){
+      if(fi.index_space == is.index_space_id){
+        clog_assert(fi.storage_class == local, "expected local storage"); 
+        allocator.allocate_field(fi.size, fi.fid);
+      }
+    } //for
+
     is.logical_region = 
       runtime->create_logical_region(ctx, is.index_space, is.field_space);
 
@@ -411,11 +424,17 @@ public:
       using field_info_t = context_t::field_info_t;
 
       for(const field_info_t& fi : context.registered_fields()){
-        if((fi.storage_class != global) && (fi.storage_class != color)){
-          if(fi.index_space == is.index_space_id){
-            allocator.allocate_field(fi.size, fi.fid);
-          }
-        }//if
+        switch(fi.storage_class){
+          case global:
+          case color:
+          case local:
+            break;
+          default:
+            if(fi.index_space == is.index_space_id){
+              allocator.allocate_field(fi.size, fi.fid);
+            }
+            break;            
+        }
       }//for
 
       is.logical_region = runtime_->create_logical_region(ctx_,

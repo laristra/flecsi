@@ -4,7 +4,10 @@
 #ifndef flecsi_sparse_accessor_h
 #define flecsi_sparse_accessor_h
 
+#include <unordered_set>
+
 #include "flecsi/data/sparse_data_handle.h"
+#include "flecsi/topology/index_space.h"
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -71,9 +74,12 @@ public accessor__<
   using offset_t = typename handle_t::offset_t;
   using entry_value_t = typename handle_t::entry_value_t;
 
-  //--------------------------------------------------------------------------//
+  using index_space_t = 
+    topology::index_space<topology::simple_entry<size_t>, true>;
+
+  //-------------------------------------------------------------------------//
   //! Copy constructor.
-  //--------------------------------------------------------------------------//
+  //-------------------------------------------------------------------------//
 
   accessor__(const sparse_data_handle__<T, 0, 0, 0>& h)
   : handle(reinterpret_cast<const handle_t&>(h)){
@@ -105,6 +111,114 @@ public accessor__<
 
     return itr->value;
   } // operator ()
+
+
+  //-------------------------------------------------------------------------//
+  //! Return all entries used over all indices.
+  //-------------------------------------------------------------------------//
+  index_space_t
+  entries()
+  const
+  {
+    size_t id = 0;
+    index_space_t is;
+    std::unordered_set<size_t> found;
+
+    for(size_t index = 0; index < handle.num_total_; ++index){
+      const offset_t& oi = handle.offsets[index];
+
+      entry_value_t * itr = handle.entries + oi.start();
+      entry_value_t * end = itr + oi.count();
+
+      while(itr != end){
+        size_t entry = itr->entry;
+        if(found.find(entry) == found.end()){
+          is.push_back({id++, entry});
+          found.insert(entry);
+        }
+        ++itr;
+      }
+    }
+
+    return is;    
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return all entries used over the specified index.
+  //-------------------------------------------------------------------------//
+  index_space_t
+  entries(
+    size_t index
+  )
+  const
+  {
+    clog_assert(index < handle.num_total_, "sparse accessor: index out of bounds");
+
+    const offset_t& oi = handle.offsets[index];
+
+    entry_value_t * itr = handle.entries + oi.start();
+    entry_value_t * end = itr + oi.count();
+
+    index_space_t is;
+
+    size_t id = 0;
+    while(itr != end){
+      is.push_back({id++, itr->entry});
+      ++itr;
+    }
+
+    return is;    
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return all indices allocated.
+  //-------------------------------------------------------------------------//
+  index_space_t
+  indices()
+  const
+  {
+    index_space_t is;
+    size_t id = 0;
+
+    for(size_t index = 0; index < handle.num_total_; ++index){
+      const offset_t& oi = handle.offsets[index];
+
+      if(oi.count() != 0){
+        is.push_back({id++, index});
+      }
+    }
+
+    return is;
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return all indices allocated for a given entry.
+  //-------------------------------------------------------------------------//
+  index_space_t
+  indices(
+    size_t entry
+  )
+  const
+  {
+    index_space_t is;
+    size_t id = 0;
+
+    for(size_t index = 0; index < handle.num_total_; ++index){
+      const offset_t& oi = handle.offsets[index];
+
+      entry_value_t * start = handle.entries + oi.start();
+      entry_value_t * end = start + oi.count();
+
+      if(std::binary_search(start, end, entry_value_t(entry),
+          [](const auto & k1, const auto & k2) -> bool {
+            return k1.entry < k2.entry;
+          })){
+        is.push_back({id++, index});
+      }
+    }
+
+    return is;
+  }
 
   void dump() const{
     for(size_t i = 0; i < handle.num_total_; ++i){
