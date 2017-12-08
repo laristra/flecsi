@@ -1,24 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_legion_execution_policy_h
-#define flecsi_execution_legion_execution_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Nov 15, 2015
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <functional>
 #include <memory>
@@ -33,17 +28,17 @@
 
 #include <legion.h>
 
-#include "flecsi/execution/common/processor.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/context_policy.h"
-#include "flecsi/execution/legion/future.h"
-#include "flecsi/execution/legion/runtime_state.h"
-#include "flecsi/execution/legion/task_wrapper.h"
-#include "flecsi/execution/legion/init_args.h"
-#include "flecsi/execution/legion/task_prolog.h"
-#include "flecsi/execution/legion/task_epilog.h"
-#include "flecsi/utils/const_string.h"
-#include "flecsi/data/data_handle.h"
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/legion/context_policy.h>
+#include <flecsi/execution/legion/future.h>
+#include <flecsi/execution/legion/runtime_state.h>
+#include <flecsi/execution/legion/task_wrapper.h>
+#include <flecsi/execution/legion/init_args.h>
+#include <flecsi/execution/legion/task_prolog.h>
+#include <flecsi/execution/legion/task_epilog.h>
+#include <flecsi/utils/const_string.h>
+#include <flecsi/data/data_handle.h>
 
 namespace flecsi {
 namespace execution {
@@ -52,50 +47,36 @@ namespace execution {
 // Execution policy.
 //----------------------------------------------------------------------------//
 
-//----------------------------------------------------------------------------//
-//! The legion_execution_policy_t is the backend runtime execution policy
-//! for Legion.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+  The legion_execution_policy_t is the backend runtime execution policy
+  for Legion.
+
+  @ingroup legion-execution
+ */
 
 struct legion_execution_policy_t
 {
-  //--------------------------------------------------------------------------//
-  //! The future__ type may be used for explicit synchronization of tasks.
-  //!
-  //! @tparam RETURN The return type of the task.
-  //--------------------------------------------------------------------------//
+  /*!
+    The future__ type may be used for explicit synchronization of tasks.
+
+    @tparam RETURN The return type of the task.
+   */
 
   template<typename RETURN>
   using future__ = legion_future__<RETURN>;
 
-#if 0
-  //--------------------------------------------------------------------------//
-  //! The task_wrapper__ type FIXME
-  //!
-  //! @tparam RETURN The return type of the task. FIXME
-  //--------------------------------------------------------------------------//
-
-  template<
-    typename FUNCTOR_TYPE
-  >
-  using functor_task_wrapper__ =
-    typename flecsi::execution::functor_task_wrapper__<FUNCTOR_TYPE>;
-#endif
-
-  //--------------------------------------------------------------------------//
-  //! The runtime_state_t type identifies a public type for the high-level
-  //! runtime interface to pass state required by the backend.
-  //--------------------------------------------------------------------------//
+  /*!
+    The runtime_state_t type identifies a public type for the high-level
+    runtime interface to pass state required by the backend.
+   */
 
   using runtime_state_t = legion_runtime_state_t;
 
-  //--------------------------------------------------------------------------//
-  //! Return the runtime state of the calling FleCSI task.
-  //!
-  //! @param task The calling task.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the runtime state of the calling FleCSI task.
+
+    @param task The calling task.
+   */
 
   static
   runtime_state_t &
@@ -107,19 +88,19 @@ struct legion_execution_policy_t
   // Task interface.
   //--------------------------------------------------------------------------//
 
-  //--------------------------------------------------------------------------//
-  //! This method allows the user to register a pure Legion task with
-  //! the runtime. A task id will automatically be generated, and can be
-  //! accessed via legion_context_policy_t::task_id using a valid
-  //! task hash.
-  //!
-  //! @tparam KEY    A hash key identifying the task.
-  //! @tparam RETURN The return type of the pure Legion task.
-  //! @tparam TASK   The function pointer template type of the task.
-  //!
-  //! @param name The string name for the task. This can be set to any
-  //!             valid std::string value.
-  //--------------------------------------------------------------------------//
+  /*!
+    This method allows the user to register a pure Legion task with
+    the runtime. A task id will automatically be generated, and can be
+    accessed via legion_context_policy_t::task_id using a valid
+    task hash.
+
+    @tparam KEY    A hash key identifying the task.
+    @tparam RETURN The return type of the pure Legion task.
+    @tparam TASK   The function pointer template type of the task.
+
+    @param name The string name for the task. This can be set to any
+                valid std::string value.
+   */
 
   template<
     size_t KEY,
@@ -150,39 +131,10 @@ struct legion_execution_policy_t
     return true;
   } // register_legion_task
 
-#if 0
-  //--------------------------------------------------------------------------//
-  //! Legion backend task registration. For documentation on this
-  //! method, please see task__::register_functor_task.
-  //--------------------------------------------------------------------------//
-
-  template<
-    typename FUNCTOR_TYPE
-  >
-  static
-  bool
-  register_functor_task(
-    processor_type_t processor,
-    launch_t launch,
-    std::string name
-  )
-  {
-    using wrapper_t = functor_task_wrapper__<FUNCTOR_TYPE>;
-
-    if(!context_t::instance().register_task(
-      typeid(FUNCTOR_TYPE).hash_code(), processor, launch, name,
-      wrapper_t::registration_callback)) {
-      clog(fatal) << "callback registration failed for " << name << std::endl;
-    } // if
-
-    return true;
-  } // register_functor_task
-#endif
-
-  //--------------------------------------------------------------------------//
-  //! Legion backend task registration. For documentation on this
-  //! method, please see task__::register_task.
-  //--------------------------------------------------------------------------//
+  /*!
+    Legion backend task registration. For documentation on this
+    method, please see task__::register_task.
+   */
 
   template<
     size_t KEY,
@@ -208,10 +160,10 @@ struct legion_execution_policy_t
     return true;
   } // register_task
 
-  //--------------------------------------------------------------------------//
-  //! Legion backend task execution. For documentation on this
-  //! method, please see task__::execute_task.
-  //--------------------------------------------------------------------------//
+  /*!
+    Legion backend task execution. For documentation on this
+    method, please see task__::execute_task.
+   */
 
   template<
     size_t KEY,
@@ -223,7 +175,6 @@ struct legion_execution_policy_t
   decltype(auto)
   execute_task(
     launch_type_t launch,
-    size_t parent,
     ARGS && ... args
   )
   {
@@ -256,6 +207,7 @@ struct legion_execution_policy_t
         arg_map
       );
 
+      //! \todo Do we need this comment?
       // Enqueue the MPI task.
     //  auto future =
     //    legion_runtime->execute_index_space(legion_context, launcher);
@@ -328,7 +280,7 @@ struct legion_execution_policy_t
           clog_tag_guard(execution);
           clog(info) << "Executing index task: " << KEY << std::endl;
 
-          // FIXME:
+          //! \todo FIXME:
           // FIXME: This looks incomplete!
           // FIXME:
           //FIXME: get launch domain from partitioning of the data used in
@@ -365,12 +317,12 @@ struct legion_execution_policy_t
   // Function interface.
   //--------------------------------------------------------------------------//
 
-  //--------------------------------------------------------------------------//
-  //! Legion backend function registration. For documentation on this
-  //! method, please see function__::register_function.
-  //--------------------------------------------------------------------------//
+  /*!
+    Legion backend function registration. For documentation on this
+    method, please see function__::register_function.
+   */
 
-template<
+  template<
     typename RETURN,
     typename ARG_TUPLE,
     RETURN (*FUNCTION)(ARG_TUPLE),
@@ -384,10 +336,10 @@ template<
       RETURN, ARG_TUPLE, FUNCTION, KEY>();
   } // register_function
   
-  //--------------------------------------------------------------------------//
-  //! Legion backend function execution. For documentation on this
-  //! method, please see function__::execute_function.
-  //--------------------------------------------------------------------------//
+  /*!
+    Legion backend function execution. For documentation on this
+    method, please see function__::execute_function.
+   */
 
   template<
     typename FUNCTION_HANDLE,
@@ -408,10 +360,3 @@ template<
 
 } // namespace execution 
 } // namespace flecsi
-
-#endif // flecsi_execution_legion_execution_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

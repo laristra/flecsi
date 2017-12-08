@@ -1,29 +1,33 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_common_processor_h
-#define flecsi_execution_common_processor_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 02, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <bitset>
 #include <iostream>
 
-#include "flecsi/utils/debruijn.h"
+#include <flecsi/utils/debruijn.h>
 
 namespace flecsi {
 
-//----------------------------------------------------------------------------//
-//! Enumeration of task processor types. Not all of these may be supported
-//! by all runtimes. Unsupported processor information will be ignored.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
+/*!
+  Enumeration of task processor types. Not all of these may be supported
+  by all runtimes. Unsupported processor information will be ignored.
+
+  @ingroup execution
+ */
 
 enum processor_type_t : size_t {
   loc,
@@ -31,9 +35,9 @@ enum processor_type_t : size_t {
   mpi
 }; // enum processor_type_t
 
-//----------------------------------------------------------------------------//
-//! Convenience method to print processor_type_t instances.
-//----------------------------------------------------------------------------//
+/*!
+  Convenience method to print processor_type_t instances.
+ */
 
 inline
 std::ostream &
@@ -58,10 +62,3 @@ operator << (
 } // operator <<
 
 } // namespace flecsi
-
-#endif // flecsi_execution_common_processor_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

@@ -223,8 +223,8 @@ struct context__ : public CONTEXT_POLICY
   } // index_map
 
   /*!
-   *! Add a local index space of specified. The index space is local
-   *! to a color. This method is called from specialization_spmd_init().
+    Add a local index space of specified. The index space is local
+    to a color. This method is called from specialization_spmd_init().
    */
   void
   add_local_index_space(size_t index_space, size_t capacity)
@@ -237,7 +237,7 @@ struct context__ : public CONTEXT_POLICY
   }
 
   /*!
-  /*! Return the map of local index space info.
+    Return the map of local index space info.
    */
   
   const auto&

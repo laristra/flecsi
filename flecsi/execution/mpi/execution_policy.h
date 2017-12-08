@@ -183,7 +183,6 @@ struct mpi_execution_policy_t
   decltype(auto)
   execute_task(
     launch_type_t launch,
-    size_t parent,
     ARGS && ... args
   )
   {

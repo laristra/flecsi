@@ -1,32 +1,38 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_data_data_h
-#define flecsi_data_data_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 01, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
-#include "flecsi/data/client.h"
-#include "flecsi/data/common/data_types.h"
-#include "flecsi/data/field.h"
+#include <flecsi/data/client.h>
+#include <flecsi/data/common/data_types.h>
+#include <flecsi/data/field.h>
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_register_data_client
-//!
-//! This macro registers a data client with the FleCSI runtime. This call
-//! does not necessarily cause memory to be allocated. It's primary function
-//! is to describe the data to the runtime. Memory allocation will likely be
-//! deferred. 
-//!
-//! @param client_type  The \ref data_client_t type.
-//! @param nspace       The namespace to use to register the variable.
-//! @param name         The name of the data variable to register.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+/*!
+  @def flecsi_register_data_client
+
+  This macro registers a data client with the FleCSI runtime. This call
+  does not necessarily cause memory to be allocated. It's primary function
+  is to describe the data to the runtime. Memory allocation will likely be
+  deferred. 
+
+  @param client_type  The \ref data_client_t type.
+  @param nspace       The namespace to use to register the variable.
+  @param name         The name of the data variable to register.
+
+  @ingroup data
+ */
 
 #define flecsi_register_data_client(client_type, nspace, name)                 \
 /* MACRO IMPLEMENTATION */                                                     \
@@ -40,26 +46,27 @@
       >                                                                        \
       ({ EXPAND_AND_STRINGIFY(name) })
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_register_field
-//!
-//! This macro registers field data with a data_client_t type. Data
-//! registration creates a data attribute for the given client type.
-//! This call does not necessarily cause memory to be allocated. It's
-//! primary function is to describe the field data to the runtime.
-//! Memory allocation will likely be deferred.
-//!
-//! @param client_type   The \ref data_client_t type.
-//! @param nspace        The namespace to use to register the variable.
-//! @param name          The name of the data variable to register.
-//! @param data_type     The data type to store, e.g., double or my_type_t.
-//! @param storage_class The storage type for the data \ref storage_class_t.
-//! @param versions      The number of versions of the data to register. This
-//!                      parameter can be used to manage multiple data versions,
-//!                      e.g., for new and old state.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_register_field
+
+  This macro registers field data with a data_client_t type. Data
+  registration creates a data attribute for the given client type.
+  This call does not necessarily cause memory to be allocated. It's
+  primary function is to describe the field data to the runtime.
+  Memory allocation will likely be deferred.
+
+  @param client_type   The \ref data_client_t type.
+  @param nspace        The namespace to use to register the variable.
+  @param name          The name of the data variable to register.
+  @param data_type     The data type to store, e.g., double or my_type_t.
+  @param storage_class The storage type for the data \ref storage_class_t.
+  @param versions      The number of versions of the data to register. This
+                       parameter can be used to manage multiple data versions,
+                       e.g., for new and old state.
+
+  @ingroup data
+ */
 
 #define flecsi_register_field(client_type, nspace, name, data_type,            \
   storage_class, versions, ...)                                                \
@@ -76,24 +83,25 @@
       >                                                                        \
       ({ EXPAND_AND_STRINGIFY(name) })
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_register_global
-//!
-//! This macro registers global field data. 
-//! This call does not necessarily cause memory to be allocated. It's
-//! primary function is to describe the field data to the runtime.
-//! Memory allocation will likely be deferred.
-//!
-//! @param nspace        The namespace to use to register the variable.
-//! @param name          The name of the data variable to register.
-//! @param data_type     The data type to store, e.g., double or my_type_t.
-//! @param storage_class The storage type for the data \ref storage_class_t.
-//! @param versions      The number of versions of the data to register. This
-//!                      parameter can be used to manage multiple data versions,
-//!                      e.g., for new and old state.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_register_global
+
+  This macro registers global field data. 
+  This call does not necessarily cause memory to be allocated. It's
+  primary function is to describe the field data to the runtime.
+  Memory allocation will likely be deferred.
+
+  @param nspace        The namespace to use to register the variable.
+  @param name          The name of the data variable to register.
+  @param data_type     The data type to store, e.g., double or my_type_t.
+  @param storage_class The storage type for the data \ref storage_class_t.
+  @param versions      The number of versions of the data to register. This
+                       parameter can be used to manage multiple data versions,
+                       e.g., for new and old state.
+
+  @ingroup data
+ */
 
 #define flecsi_register_global(nspace, name, data_type,                        \
    versions, ...)                                                              \
@@ -111,23 +119,24 @@
       >                                                                        \
       ({ EXPAND_AND_STRINGIFY(name) })
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_get_handle
-//!
-//! Access data with a data_client_t instance.
-//!
-//! @param client        The data_client_t instance with which to access
-//!                      the data.
-//! @param nspace        The namespace to use to access the variable.
-//! @param name          The name of the data variable to access.
-//! @param data_type     The data type to access, e.g., double or my_type_t.
-//! @param storage_class The storage type for the data \ref storage_class_t.
-//! @param version       The version number of the data to access. This
-//!                      parameter can be used to manage multiple data versions,
-//!                      e.g., for new and old state.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_get_handle
+
+  Access data with a data_client_t instance.
+
+  @param client        The data_client_t instance with which to access
+                       the data.
+  @param nspace        The namespace to use to access the variable.
+  @param name          The name of the data variable to access.
+  @param data_type     The data type to access, e.g., double or my_type_t.
+  @param storage_class The storage type for the data \ref storage_class_t.
+  @param version       The version number of the data to access. This
+                       parameter can be used to manage multiple data versions,
+                       e.g., for new and old state.
+
+  @ingroup data
+ */
 
 #define flecsi_get_handle(client_handle, nspace, name, data_type,              \
   storage_class, version)                                                      \
@@ -144,21 +153,22 @@
   >                                                                            \
   (client_handle)
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_get_global
-//!
-//! Access global data 
-//!
-//! @param nspace        The namespace to use to access the variable.
-//! @param name          The name of the data variable to access.
-//! @param data_type     The data type to access, e.g., double or my_type_t.
-//! @param storage_class The storage type for the data \ref storage_class_t.
-//! @param version       The version number of the data to access. This
-//!                      parameter can be used to manage multiple data versions,
-//!                      e.g., for new and old state.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_get_global
+
+  Access global data 
+
+  @param nspace        The namespace to use to access the variable.
+  @param name          The name of the data variable to access.
+  @param data_type     The data type to access, e.g., double or my_type_t.
+  @param storage_class The storage type for the data \ref storage_class_t.
+  @param version       The version number of the data to access. This
+                       parameter can be used to manage multiple data versions,
+                       e.g., for new and old state.
+
+  @ingroup data
+ */
 
 #define flecsi_get_global(nspace, name, data_type, version)                    \
 /* MACRO IMPLEMENTATION */                                                     \
@@ -168,17 +178,18 @@
     flecsi::data::global_data_client_t, nspace, name),                         \
     nspace, name, data_type, global, version)
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_get_client_handle
-//!
-//! Access a data client.
-//!
-//! @param client       The data_client_t type.
-//! @param nspace       The namespace to use to access the variable.
-//! @param name         The name of the data variable to access.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_get_client_handle
+
+  Access a data client.
+
+  @param client       The data_client_t type.
+  @param nspace       The namespace to use to access the variable.
+  @param name         The name of the data variable to access.
+
+  @ingroup data
+ */
 
 #define flecsi_get_client_handle(client_type, nspace, name)                    \
 /* MACRO IMPLEMENTATION */                                                     \
@@ -191,26 +202,27 @@
   >                                                                            \
   ()
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_get_handles
-//!
-//! Get a list of all accessors in the namespace of a certain type.
-//!
-//! @param client        The data_client_t instance with which to access
-//!                      the data.
-//! @param nspace        The namespace to use to access the variables.
-//! @param data_type     The data type to access, e.g., double or my_type_t.
-//! @param storage_class The storage type for the data \ref storage_class_t.
-//! @param version       The version number of the data to access. This
-//!                      parameter can be used to manage multiple data versions,
-//!                      e.g., for new and old state.
-//! @param predicate     The predicate function to test an accessor against to
-//!                      figure out whether it get added to the returned list.
-//!
-//! @remark  This version is confined to search only within a namespace.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_get_handles
+
+  Get a list of all accessors in the namespace of a certain type.
+
+  @param client        The data_client_t instance with which to access
+                       the data.
+  @param nspace        The namespace to use to access the variables.
+  @param data_type     The data type to access, e.g., double or my_type_t.
+  @param storage_class The storage type for the data \ref storage_class_t.
+  @param version       The version number of the data to access. This
+                       parameter can be used to manage multiple data versions,
+                       e.g., for new and old state.
+  @param predicate     The predicate function to test an accessor against to
+                       figure out whether it get added to the returned list.
+
+  @remark  This version is confined to search only within a namespace.
+
+  @ingroup data
+ */
 
 #define flecsi_get_handles(client, nspace, data_type, storage_class,           \
   version, ...)                                                                \
@@ -222,25 +234,26 @@
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
       client, version, ## __VA_ARGS__)
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_get_handles_all
-//!
-//! Get a list of all accessors in the namespace of a certain type.
-//!
-//! @param client        The data_client_t instance with which to access
-//!                      the data from.
-//! @param data_type     The data type to access, e.g., double or my_type_t.
-//! @param storage_class The storage type for the data \ref storage_class_t.
-//! @param version       The version number of the data to access. This
-//!                      parameter can be used to manage multiple data versions,
-//!                      e.g., for new and old state.
-//! @param predicate     The predicate function to test an accessor against to
-//!                      figure out whether it get added to the returned list.
-//!
-//! @remark This version searches all namespaces.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_get_handles_all
+
+  Get a list of all accessors in the namespace of a certain type.
+
+  @param client        The data_client_t instance with which to access
+                       the data from.
+  @param data_type     The data type to access, e.g., double or my_type_t.
+  @param storage_class The storage type for the data \ref storage_class_t.
+  @param version       The version number of the data to access. This
+                       parameter can be used to manage multiple data versions,
+                       e.g., for new and old state.
+  @param predicate     The predicate function to test an accessor against to
+                       figure out whether it get added to the returned list.
+
+  @remark This version searches all namespaces.
+
+  @ingroup data
+ */
 
 #define flecsi_get_handles_all(client, data_type, storage_class, version, ...) \
 /* MACRO IMPLEMENTATION */                                                     \
@@ -249,24 +262,25 @@
   flecsi::data::field_interface_t::get_handles<flecsi::data::storage_class,    \
     data_type>(client, version, ## __VA_ARGS__)
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_is_at
-//!
-//! Select state variables in the given virtual index space. This macro
-//! defines a predicate function to select the virtual index space.
-//!
-//! @param index_space State data must be registered in this index space
-//!                    to meet the predicate criterium. Valid index spaces
-//!                    depend on the particular specialization in use.
-//!
-//! @return True if the state is registered in the specified
-//!         virtual index space, false, otherwise.
-//!
-//! @remark The index_space can't match anything in the underlying
-//!         storage container.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_is_at
+
+  Select state variables in the given virtual index space. This macro
+  defines a predicate function to select the virtual index space.
+
+  @param index_space State data must be registered in this index space
+                     to meet the predicate criterium. Valid index spaces
+                     depend on the particular specialization in use.
+
+  @return True if the state is registered in the specified
+          virtual index space, false, otherwise.
+
+  @remark The index_space can't match anything in the underlying
+          storage container.
+
+  @ingroup data
+ */
 
 #define flecsi_is_at(index_space)                                              \
 /* MACRO IMPLEMENTATION */                                                     \
@@ -276,33 +290,28 @@
     return a.index_space() == index_space;                                     \
   }
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_has_attribute_at
-//!
-//! Select specific variables in an index space with an attribute.
-//!
-//! Predicate function to select state variables that have been tagged with
-//! some attribute AND are defined in a specific virtual index space.
-//!
-//! @param attribute The attribute to search.
-//!
-//! @param index_space State data must be registered in this index space
-//!                    to meet the predicate criterium. Valid index spaces
-//!                    depend on the particular specialization in use.
-//!
-//! @return True if the state is persistent and is registered in
-//!
-//! @remark The index_space can't match anything in the
-//!         underlying storage container.
-//!
-//! @return True if the state is persistent and is registered in
-//!         the specified virtual index space, false, otherwise.
-//!
-//! @remark The index_space can't match anything in the underlying
-//!         storage container.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_has_attribute_at
+
+  Select specific variables in an index space with an attribute.
+
+  Predicate function to select state variables that have been tagged with
+  some attribute AND are defined in a specific virtual index space.
+
+  @param attribute The attribute to search.
+  @param index_space State data must be registered in this index space
+                     to meet the predicate criterium. Valid index spaces
+                     depend on the particular specialization in use.
+
+  @return True if the state is persistent and is registered in
+          the specified virtual index space, false, otherwise.
+
+  @remark The index_space can't match anything in the underlying
+          storage container.
+
+  @ingroup data
+ */
 
 #define flecsi_has_attribute_at(attribute, index_space)                        \
 /* MACRO IMPLEMENTATION */                                                     \
@@ -313,24 +322,25 @@
            a.index_space() == index_space;                                     \
   }
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_has_attribute
-//!
-//! Test variables for a particular attribute.
-//!
-//! Predicate function to select state variables that have been tagged with
-//! some attribute AND are defined in a specific virtual index space.
-//!
-//! @param attribute The attribute to search.
-//!
-//! @return True if the state is persistent and is registered in
-//!         the specified virtual index space, false, otherwise.
-//!
-//! @remark The index_space can't match anything in the underlying
-//!         storage container.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_has_attribute
+
+  Test variables for a particular attribute.
+
+  Predicate function to select state variables that have been tagged with
+  some attribute AND are defined in a specific virtual index space.
+
+  @param attribute The attribute to search.
+
+  @return True if the state is persistent and is registered in
+          the specified virtual index space, false, otherwise.
+
+  @remark The index_space can't match anything in the underlying
+          storage container.
+
+  @ingroup data
+ */
 
 #define flecsi_has_attribute(attribute)                                        \
 /* MACRO IMPLEMENTATION */                                                     \
@@ -339,9 +349,6 @@
   [](const auto & a) {                                                         \
     return a.attributes().test(attribute);                                     \
   }
-
-
-
 
 
 //
@@ -375,8 +382,3 @@
   flecsi::data::field_interface_t::put_all_handles<                            \
     flecsi::data::storage_class>(client, num_handles, handles, hashes,         \
     namespaces, versions)
-
-#endif // flecsi_data_data_h
-
-/*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/

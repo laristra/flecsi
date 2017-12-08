@@ -1,28 +1,31 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_common_function_handle_h
-#define flecsi_execution_common_function_handle_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
+
+/*! @file */
 
 #include <functional>
 
-#include "flecsi/utils/tuple_function.h"
-
-//----------------------------------------------------------------------------//
-//! @file function_handle.h
-//! @date Initial file creation: Aug 04, 2016
-//----------------------------------------------------------------------------//
+#include <flecsi/utils/tuple_function.h>
 
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-//!
-//! \tparam RETURN Return value type.
-//! \tparam ARG_TUPLE Argument type (std::tuple).
-//----------------------------------------------------------------------------//
+/*!
+  \tparam RETURN    Return value type.
+  \tparam ARG_TUPLE Argument type (std::tuple).
+ */
 
 template<
   typename RETURN,
@@ -33,17 +36,18 @@ struct function_handle__
   using return_t = RETURN;
   using arg_tuple_t = ARG_TUPLE;
 
-  ///
-  /// Constructor.
-  ///
-  /// \param key A hash key identifier for the function.
-  /// 
+  /*!
+    Constructor.
+
+    @param key A hash key identifier for the function.
+   */
+
   constexpr function_handle__(const size_t key)
     : key_(key) {}
 
-  ///
-  /// Execute the function.
-  ///
+  /*!
+    Execute the function.
+   */
   RETURN
   operator () (
     void * function,
@@ -54,9 +58,9 @@ struct function_handle__
     return user_function(std::forward<ARG_TUPLE>(args));
   } // operator ()
 
-  ///
-  /// Return the identifier key.
-  ///
+  /*!
+    Return the identifier key.
+   */
   size_t
   key()
   const
@@ -72,10 +76,3 @@ private:
 
 } // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_common_function_handle_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
