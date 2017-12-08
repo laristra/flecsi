@@ -131,6 +131,7 @@ namespace execution {
       using offset_t = typename mutator_handle__<T>::offset_t;
       using entry_value_t = typename mutator_handle__<T>::entry_value_t;
       using commit_info_t = typename mutator_handle__<T>::commit_info_t;
+
       // Skip Read Only handles
       if (EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
         return;
@@ -139,21 +140,15 @@ namespace execution {
       const int my_color = context.color();
       auto &my_coloring_info =
         context.coloring_info(h.index_space).at(my_color);
-
-      entry_value_t *entries = h.entries;
-//        reinterpret_cast<entry_value_t *>(&(h.entries)[0]);
-
-      commit_info_t ci;
-      ci.offsets = &(h.offsets)[0];
-      ci.entries[0] = entries;
-      ci.entries[1] = entries + h.reserve;
-      ci.entries[2] =
-        ci.entries[1] + h.num_shared_ * h.max_entries_per_index;
-
       auto index_coloring = context.coloring(h.index_space);
 
       auto &sparse_field_metadata =
         context.registered_sparse_field_metadata().at(h.fid);
+
+      entry_value_t *entries = h.entries;
+      auto offsets = &(h.offsets)[0];
+      auto shared_data = entries + h.reserve;
+      auto ghost_data = shared_data + h.num_shared_ * h.max_entries_per_index;
 
       // Get entry_values
       MPI_Datatype shared_ghost_type;
@@ -161,9 +156,6 @@ namespace execution {
         sizeof(entry_value_t),
         MPI_BYTE, &shared_ghost_type);
       MPI_Type_commit(&shared_ghost_type);
-
-      auto shared_data = ci.entries[1];
-      auto ghost_data = ci.entries[2];
 
       MPI_Win win;
       MPI_Win_create(shared_data,
@@ -206,54 +198,45 @@ namespace execution {
       }
 
       // Send/Recv counts in entry_values.
-      std::vector<MPI_Request> requests(send_count);
-      std::vector<MPI_Status> statuses(send_count);
-      std::vector<MPI_Request> recv_requests(h.num_ghost_);
-      std::vector<MPI_Status> recv_status(h.num_ghost_);
+      std::vector<MPI_Request> requests(send_count + h.num_ghost_);
+      std::vector<MPI_Status> statuses(send_count + h.num_ghost_);
 
       std::vector<uint32_t> send_count_buf;
-      for (auto shared : index_coloring.shared) {
+      for (auto& shared : index_coloring.shared) {
         for (auto peer : shared.shared) {
-          send_count_buf.push_back(ci.offsets[h.num_exclusive_ + shared.offset].count());
+          send_count_buf.push_back(offsets[h.num_exclusive_ + shared.offset].count());
         }
       }
 
       i = 0;
-      for (auto shared : index_coloring.shared) {
+      for (auto& shared : index_coloring.shared) {
         for (auto peer : shared.shared) {
           MPI_Isend(&send_count_buf[i],
                     1,
                     flecsi::coloring::mpi_typetraits__<uint32_t>::type(),
-                    peer, 99, MPI_COMM_WORLD, &requests[i]);
+                    peer, shared.id, MPI_COMM_WORLD, &requests[i]);
           i++;
         }
       }
 
       std::vector<uint32_t> recv_count_buf(h.num_ghost_);
       i = 0;
-      for (auto ghost : index_coloring.ghost) {
+      for (auto& ghost : index_coloring.ghost) {
         MPI_Status status;
         MPI_Irecv(&recv_count_buf[i],
                   1,
                   flecsi::coloring::mpi_typetraits__<uint32_t>::type(),
-                  ghost.rank, 99, MPI_COMM_WORLD, &recv_requests[i]);
+                  ghost.rank, ghost.id, MPI_COMM_WORLD, &requests[i+send_count]);
         i++;
       }
 
-      MPI_Waitall(send_count,
+      MPI_Waitall(send_count + h.num_ghost_,
                   requests.data(),
                   statuses.data());
-      MPI_Waitall(h.num_ghost_,
-                  recv_requests.data(),
-                  recv_status.data());
 
       for (int i = 0; i < h.num_ghost_; i++) {
-        if (my_color == 0) {
-          std::cout << recv_count_buf[i] << " ";
-        }
-
         clog_rank(warn, 0) << recv_count_buf[i] << std::endl;
-        ci.offsets[h.num_exclusive_ + h.num_shared_ + i].set_count(recv_count_buf[i]);
+        offsets[h.num_exclusive_ + h.num_shared_ + i].set_count(recv_count_buf[i]);
       }
     } // handle
 

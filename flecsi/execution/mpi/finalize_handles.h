@@ -70,6 +70,9 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 
     entry_value_t *entries =
         reinterpret_cast<entry_value_t *>(&(*h.entries)[0]);
+    auto offsets = &(*h.offsets)[0];
+    auto shared_data = entries + *h.reserve;//ci.entries[1];
+    auto ghost_data = shared_data + h.num_shared() * h.max_entries_per_index();///ci.entries[2];
 
     // Get entry_values
     MPI_Datatype shared_ghost_type;
@@ -77,10 +80,6 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
       sizeof(entry_value_t),
       MPI_BYTE, &shared_ghost_type);
     MPI_Type_commit(&shared_ghost_type);
-
-    auto offsets = &(*h.offsets)[0];
-    auto shared_data = entries + *h.reserve;//ci.entries[1];
-    auto ghost_data = shared_data + h.num_shared() * h.max_entries_per_index();///ci.entries[2];
 
     MPI_Win win;
     MPI_Win_create(shared_data,
@@ -129,14 +128,14 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     std::vector<MPI_Status> recv_status(h.num_ghost());
 
     std::vector<uint32_t> send_count_buf;
-    for (auto shared : index_coloring.shared) {
+    for (auto& shared : index_coloring.shared) {
       for (auto peer : shared.shared) {
         send_count_buf.push_back(offsets[h.num_exclusive() + shared.offset].count());
       }
     }
 
     i = 0;
-    for (auto shared : index_coloring.shared) {
+    for (auto& shared : index_coloring.shared) {
       for (auto peer : shared.shared) {
         MPI_Isend(&send_count_buf[i],
                   1,
@@ -148,7 +147,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 
     std::vector<uint32_t> recv_count_buf(h.num_ghost());
     i = 0;
-    for (auto ghost : index_coloring.ghost) {
+    for (auto& ghost : index_coloring.ghost) {
       MPI_Status status;
       MPI_Irecv(&recv_count_buf[i],
                 1,
@@ -165,10 +164,6 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
                 recv_status.data());
 
     for (int i = 0; i < h.num_ghost(); i++) {
-      if (my_color == 0) {
-        std::cout << recv_count_buf[i] << " ";
-      }
-
       clog_rank(warn, 0) << recv_count_buf[i] << std::endl;
       offsets[h.num_exclusive() + h.num_shared() + i].set_count(recv_count_buf[i]);
     }
