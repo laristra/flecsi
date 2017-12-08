@@ -194,6 +194,11 @@ void specialization_tlt_init(int argc, char ** argv) {
   }
 
   context.add_adjacency(ai);
+
+  execution::context_t::sparse_index_space_info_t isi;
+  isi.max_entries_per_index = 5;
+  isi.reserve_chunk = 8192;
+  context.set_sparse_index_space_info(0, isi);
 } // specialization_tlt_init
 
 void specialization_spmd_init(int argc, char ** argv) {
