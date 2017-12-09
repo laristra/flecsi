@@ -46,6 +46,8 @@
 #include <functional>
 #include <mutex>
 #include <stack>
+#include <math.h>
+#include <float.h>
 
 #include "flecsi/geometry/point.h"
 #include "flecsi/concurrency/thread_pool.h"
@@ -108,6 +110,17 @@ struct tree_geometry<T, 1>
     const point_t& max)
   {
     return origin[0] <= max[0] && origin[0] >= min[0];
+  }
+
+  static 
+  bool
+  intersects_box_box(
+    const point_t& min_b1,
+    const point_t& max_b1,
+    const point_t& min_b2,
+    const point_t& max_b2)
+  {
+    return min_b1[0] < max_b1[0] && max_b1[0] > min_b2[0];
   }
 
   // initial attempt to get this working, needs to be optimized
@@ -283,6 +296,19 @@ struct tree_geometry<T, 2>
   }
 
 
+  static 
+  bool
+  intersects_box_box(
+    const point_t& min_b1,
+    const point_t& max_b1,
+    const point_t& min_b2,
+    const point_t& max_b2)
+  {
+    return min_b1[0] < max_b1[0] && max_b1[0] > min_b2[0] &&
+            min_b1[1] < max_b1[1] && max_b1[1] > min_b2[1];
+  }
+
+
   // Intersection of two spheres
   static 
   bool 
@@ -424,6 +450,20 @@ struct tree_geometry<T, 3>
     return origin[0] <= max[0] && origin[0] > min[0] &&
            origin[1] <= max[1] && origin[1] > min[1] &&
            origin[2] <= max[2] && origin[2] > min[2];
+  }
+
+
+  static 
+  bool
+  intersects_box_box(
+    const point_t& min_b1,
+    const point_t& max_b1,
+    const point_t& min_b2,
+    const point_t& max_b2)
+  {
+    return min_b1[0] < max_b1[0] && max_b1[0] > min_b2[0] &&
+            min_b1[1] < max_b1[1] && max_b1[1] > min_b2[1] && 
+            min_b1[2] < max_b1[2] && max_b1[2] > min_b2[2];
   }
 
   /*!
@@ -755,16 +795,17 @@ public:
 
     if(d == 0)
     {
-      ostr << "<root>";
+      ostr << "1";
       return;
     }
-
+    ostr << "1";
+    //ostr<<std::bitset<64>(id);
     id <<= 1 + (bits - 1) % dimension;
 
     for(size_t i = 1; i <= d; ++i)
     {
       int_t val = (id & mask) >> (bits - dimension);
-      ostr << i << ":" << std::bitset<D>(val) << " ";
+      ostr << std::bitset<D>(val);
       id <<= dimension;
     }
   }
@@ -1218,7 +1259,13 @@ public:
     std::function<void(branch_t*)> traverse;
     traverse = [&epsilon,&traverse,this](branch_t* b){
       element_t mass = element_t(0); 
-      element_t radius = element_t(0);
+      point_t bmax; 
+      point_t bmin;
+      for(size_t d = 0; d < dimension; ++d)
+      {
+        bmax[d] = DBL_MIN;
+        bmin[d] = DBL_MAX; 
+      }
       point_t coordinates = point_t{};
       uint64_t nchildren = 0; 
       if(b->is_leaf())
@@ -1227,9 +1274,11 @@ public:
         {
           nchildren++;
           element_t childmass = child->getMass(); 
-          // \todo children locality 
+          
           for(size_t d = 0; d < dimension; ++d)
           {
+            bmax[d] = std::max(bmax[d],child->coordinates()[d]+epsilon);
+            bmin[d] = std::min(bmin[d],child->coordinates()[d]-epsilon);
             coordinates[d] += child->coordinates()[d]*childmass; 
           }
           mass += childmass;
@@ -1240,16 +1289,6 @@ public:
           {
             coordinates[d] /= mass; 
           }
-          // Compute radius 
-          for(auto child: *b)
-          {
-            // \todo children locality 
-            element_t dist = distance(child->coordinates(),coordinates); 
-            if(radius < dist){
-              radius = dist;
-            } 
-          }
-          radius += epsilon;
         }
       }else{
         for(int i=0 ; i<(1<<dimension);++i)
@@ -1258,27 +1297,23 @@ public:
           traverse(branch);
           nchildren += branch->sub_entities();
           mass += branch->mass();
+          if(branch->mass() > 0){
+            for(size_t d = 0; d < dimension; ++d){
+              bmax[d] = std::max(bmax[d],branch->bmax()[d]);
+              bmin[d] = std::min(bmin[d],branch->bmin()[d]);
+            }
+          }
           for(size_t d = 0; d < dimension; ++d)
           {
             coordinates[d] += branch->get_coordinates()[d]*branch->mass(); 
           }
         }
+
         if(mass > element_t(0))
         {
           for(size_t d = 0; d < dimension; ++d)
           {
             coordinates[d] /= mass; 
-          }
-          // Then radius 
-          for(int i=0 ; i<(1<<dimension);++i)
-          {
-            auto branch = child(b,i); 
-            element_t dist = distance(branch->get_coordinates(),coordinates);
-            dist += branch->radius(); 
-            if(radius < dist)
-            {
-              radius = dist; 
-            }
           }
         }
       }
@@ -1286,9 +1321,69 @@ public:
       b->set_sub_entities(nchildren);
       b->set_coordinates(coordinates);
       b->set_mass(mass);
-      b->set_radius(radius);  
+      b->set_bmin(bmin);
+      b->set_bmax(bmax);  
     };
     traverse(root());
+  }
+
+  void
+  get_all_branches(
+    branch_t * start,
+    std::vector<branch_t*>& search_list)
+  {
+    std::stack<branch_t*> stk;
+    stk.push(start);
+    search_list.push_back(start);
+    
+    while(!stk.empty()){
+      branch_t* c = stk.top();
+      stk.pop();
+      if(c->is_leaf()){
+        //search_list.push_back(c);
+      }else{
+        //if(c->sub_entities() < criterion && c->sub_entities() > 0){
+        //  search_list.push_back(c); 
+        //}else{
+        for(int i=0; i<(1<<dimension);++i){
+          branch_t * next = child(c,i);
+          if(next->sub_entities() > 0){
+            search_list.push_back(next);
+            stk.push(next);
+          }
+        }
+        //}
+      } 
+    }
+  }
+
+  void 
+  find_sub_cells(
+      branch_t * b,
+      int criterion,
+      std::vector<branch_t*>& search_list)
+  {
+    std::stack<branch_t*> stk;
+    stk.push(b);
+    
+    while(!stk.empty()){
+      branch_t* c = stk.top();
+      stk.pop();
+      if(c->is_leaf() && c->sub_entities() > 0){
+        search_list.push_back(c);
+      }else{
+        if(c->sub_entities() < criterion && c->sub_entities() > 0){
+          search_list.push_back(c); 
+        }else{
+          for(int i=0; i<(1<<dimension);++i){
+            branch_t * next = child(c,i);
+            if(next->sub_entities() > 0){
+              stk.push(next);
+            }
+          }
+        }
+      } 
+    }
   }
   
   template<
@@ -1300,6 +1395,7 @@ public:
       branch_t * b,
       element_t radius,
       element_t MAC,
+      int64_t ncritical,
       EF&& ef,
       ARGS&&... args)
   {
@@ -1314,18 +1410,14 @@ public:
       if(c->is_leaf() && c->sub_entities() > 0){
         #pragma omp task firstprivate(c)
         {
-          //std::cout<<omp_get_thread_num()<<" = Task Leaf"<<c->get_coordinates()<<std::endl<<std::flush;
           std::vector<branch_t*> inter_list; 
-          //std::cout<<omp_get_thread_num()<<" = sub_cells_inter"<<std::endl<<std::flush;
           sub_cells_inter(c,MAC,inter_list);
-          //std::cout<<omp_get_thread_num()<<" = sub_cells_inter done"<<std::endl<<std::flush;
           force_calc(c,inter_list,radius,ef,std::forward<ARGS>(args)...);
         }
       }else{
-        if(c->sub_entities() < ncritical_){
+        if(c->sub_entities() < ncritical && c->sub_entities() > 0){
           #pragma omp task firstprivate(c)
           {
-            //std::cout<<omp_get_thread_num()<<" = Task Branch"<<c->get_coordinates()<<"Mass="<<c->getMass() <<std::endl<<std::flush;
             std::vector<branch_t*> inter_list; 
             sub_cells_inter(c,MAC,inter_list);
             force_calc(c,inter_list,radius,ef,std::forward<ARGS>(args)...);
@@ -1333,7 +1425,7 @@ public:
         }else{
           for(int i=0; i<(1<<dimension);++i){
             branch_t * next = child(c,i);
-            if(c->sub_entities() > 0){
+            if(next->sub_entities() > 0){
               stk.push(next);
             }
           }
@@ -1360,11 +1452,11 @@ public:
       }else{
         for(int i=0 ; i<(1<<dimension);++i){
           auto branch = child(c,i);
-          if(c->sub_entities() > 0 && geometry_t::intersects_sphere_sphere(
-            b->get_coordinates(),
-            b->radius(),
-            branch->get_coordinates(),
-            branch->radius()))
+          if(branch->sub_entities() > 0 && geometry_t::intersects_box_box(
+            b->bmin(),
+            b->bmax(),
+            branch->bmin(),
+            branch->bmax()))
           /*if(geometry_t::within_mac(
             b->get_coordinates(),
             branch->get_coordinates(),
@@ -1427,6 +1519,7 @@ public:
       EF&& ef,
       ARGS&&... args)
   {
+    std::vector<entity_t*> neighbors;
     for(auto b: inter_list){
       for(auto nb: *b){
         if(geometry_t::within(
@@ -1434,10 +1527,11 @@ public:
               nb->coordinates(),
               radius))
         {
-          ef(ent,nb,std::forward<ARGS>(args)...);
+          neighbors.push_back(nb);
         }
       }
     }
+    ef(ent,neighbors,std::forward<ARGS>(args)...);
   }
 
   /*!
@@ -1504,11 +1598,12 @@ public:
       }else{
         for(int i=0 ; i<(1<<dimension);++i){
           auto branch = child(b,i);
-          if(geometry_t::intersects_sphere_sphere(
+          if(geometry_t::intersects_sphere_box(
+                branch->bmin(),
+                branch->bmax(),
                 center,
-                radius,
-                branch->get_coordinates(),
-                branch->radius()))
+                radius
+                ))
           {
             stk.push(branch);
           }
@@ -1617,11 +1712,11 @@ public:
         for(int i=0 ; i<(1<<dimension);++i)
         {
           auto branch = child(b,i);
-          if(geometry_t::intersects_sphere_box(
+          if(branch->sub_entities() > 0 && geometry_t::intersects_box_box(
                 min,
                 max,
-                branch->get_coordinates(),
-                branch->radius()))
+                branch->bmin(),
+                branch->bmax()))
           {
             traverse(branch);
           }
@@ -2812,7 +2907,6 @@ private:
   std::array<point<element_t, dimension>, 2> range_;
   point<element_t, dimension> scale_;
   element_t max_scale_;
-  uint64_t ncritical_ = 1;
 };
   
 /*!
@@ -2941,8 +3035,8 @@ public:
   : action_(action::none),
   parent_(nullptr),
   children_(nullptr),
-  coordinates_(point_t{}),
-  radius_(element_t(0))
+  coordinates_(point_t{})
+  //radius_(element_t(0))
   {}
 
   branch_id_t
@@ -2999,11 +3093,11 @@ public:
     mass_ = mass;
   }
  
-  void 
-  set_radius(element_t radius)
-  {
-    radius_ = radius;
-  }
+  //void 
+  //set_radius(element_t radius)
+  //{
+  //  radius_ = radius;
+  //}
 
   void 
   set_coordinates(point_t coordinates)
@@ -3016,12 +3110,38 @@ public:
   {
     return mass_;
   }
- 
-  element_t 
-  radius() const 
+
+  point_t 
+  bmin() const 
   {
-    return radius_;
+    return bmin_;
   }
+
+  point_t
+  bmax() const 
+  {
+    return bmax_;
+  }
+
+  void 
+  set_bmin(
+    point_t bmin)
+  {
+    bmin_ = bmin;
+  }
+ 
+  void 
+  set_bmax(
+    point_t bmax)
+  {
+    bmax_ = bmax;
+  }
+
+  //element_t 
+  //radius() const 
+  //{
+  //  return radius_;
+  //}
 
   point_t 
   get_coordinates() const
@@ -3139,8 +3259,11 @@ protected:
   branch_id_t id_;
 
   point_t coordinates_; 
-  element_t radius_; 
+  //element_t radius_; 
   element_t mass_;
+
+  point_t bmin_; 
+  point_t bmax_; 
 
   uint64_t sub_entities_; // Subentities in the leafs the subtree
 };
