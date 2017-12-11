@@ -26,17 +26,14 @@ namespace data {
 //! runtime.
 //----------------------------------------------------------------------------//
 
-struct legion_data_policy_t
-{
+struct legion_data_policy_t {
 
   //--------------------------------------------------------------------------//
   //! The storage_class__ type determines the underlying storage mechanism
   //! for the backend runtime.
   //--------------------------------------------------------------------------//
 
-  template<
-    size_t STORAGE_CLASS
-  >
+  template<size_t STORAGE_CLASS>
   using storage_class__ = legion::storage_class__<STORAGE_CLASS>;
 
 }; // class legion_data_policy_t
@@ -47,4 +44,4 @@ struct legion_data_policy_t
 #endif // flecsi_data_legion_data_policy_h
 
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

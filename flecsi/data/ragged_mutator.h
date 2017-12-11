@@ -1,11 +1,22 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_ragged_mutator_h
-#define flecsi_ragged_mutator_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/data/mutator_handle.h"
-#include "flecsi/data/sparse_mutator.h"
+/*! @file */
+
+#include <flecsi/data/mutator_handle.h>
+#include <flecsi/data/sparse_mutator.h>
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -144,8 +155,3 @@ template<
 using ragged_mutator = ragged_mutator__<T>;
 
 } // namespace flecsi
-
-#endif // flecsi_ragged_mutator_h
-
-/*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/

@@ -7,7 +7,7 @@
 #include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_LEGION)
-  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
 #include <legion.h>
@@ -28,15 +28,14 @@ namespace flecsi {
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-struct legion_sparse_data_handle_policy_t
-{
-  legion_sparse_data_handle_policy_t(){}
+struct legion_sparse_data_handle_policy_t {
+  legion_sparse_data_handle_policy_t() {}
 
   legion_sparse_data_handle_policy_t(
-    const legion_sparse_data_handle_policy_t& p) = default;
+      const legion_sparse_data_handle_policy_t & p) = default;
 
-  bool* ghost_is_readable;
-  bool* write_phase_started;
+  bool * ghost_is_readable;
+  bool * write_phase_started;
 
   // +++ The following fields are set from get_handle(), reading
   // information from the context which is data that is the same
@@ -58,16 +57,17 @@ struct legion_sparse_data_handle_policy_t
 
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.
-  Legion::PhaseBarrier* pbarrier_as_owner_ptr;
-  std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_ptrs;
-  const Legion::STL::map<LegionRuntime::Arrays::coord_t,
-    LegionRuntime::Arrays::coord_t>* global_to_local_color_map_ptr;
+  Legion::PhaseBarrier * pbarrier_as_owner_ptr;
+  std::vector<Legion::PhaseBarrier *> ghost_owners_pbarriers_ptrs;
+  const Legion::STL::map<
+      LegionRuntime::Arrays::coord_t,
+      LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
 
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions
 
   Legion::Context context;
-  Legion::Runtime* runtime;
+  Legion::Runtime * runtime;
   Legion::PhysicalRegion exclusive_pr;
   Legion::PhysicalRegion shared_pr;
   Legion::PhysicalRegion ghost_pr;
@@ -81,4 +81,4 @@ struct legion_sparse_data_handle_policy_t
 #endif // flecsi_data_legion_sparse_data_handle_policy_h
 
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

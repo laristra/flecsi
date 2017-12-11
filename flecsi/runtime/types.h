@@ -1,15 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_runtime_types_h
-#define flecsi_runtime_types_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 01, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <flecsi-config.h>
 
@@ -23,30 +27,23 @@
 // Legion Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include <legion.h>
+#include <legion.h>
 
-  namespace flecsi {
+namespace flecsi {
 
-  using field_id_t = Legion::FieldID;
-  using task_id_t = Legion::TaskID;
+using field_id_t = Legion::FieldID;
+using task_id_t = Legion::TaskID;
 
-  } // namespace flecsi
+} // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  namespace flecsi {
+namespace flecsi {
 
-  using field_id_t = size_t;
-  using task_id_t = size_t;
+using field_id_t = size_t;
+using task_id_t = size_t;
 
-  } // namespace flecsi
+} // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
-
-#endif // flecsi_runtime_types_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

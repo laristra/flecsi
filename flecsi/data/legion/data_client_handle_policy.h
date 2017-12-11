@@ -17,8 +17,7 @@ namespace flecsi {
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
 
-struct data_client_handle_entity_t
-{
+struct data_client_handle_entity_t {
   size_t index_space;
   size_t dim;
   size_t domain;
@@ -38,8 +37,7 @@ struct data_client_handle_entity_t
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
 
-struct data_client_handle_adjacency_t
-{
+struct data_client_handle_adjacency_t {
   size_t adj_index_space;
   size_t from_index_space;
   size_t to_index_space;
@@ -60,8 +58,7 @@ struct data_client_handle_adjacency_t
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
 
-struct legion_data_client_handle_policy_t
-{
+struct legion_data_client_handle_policy_t {
 
   // FIXME: This needs to be exposed at a higher level
   static constexpr size_t MAX_ADJACENCIES = 20;
@@ -78,4 +75,4 @@ struct legion_data_client_handle_policy_t
 #endif // flecsi_data_legion_data_client_handle_policy_h
 
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

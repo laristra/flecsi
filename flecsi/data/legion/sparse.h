@@ -19,7 +19,7 @@
 #include "flecsi/utils/const_string.h"
 
 //----------------------------------------------------------------------------//
-//! @file 
+//! @file
 //! @date Initial file creation: Apr 17, 2016
 //----------------------------------------------------------------------------//
 
@@ -51,49 +51,33 @@ struct sparse_mutator_t {
   //
   ///
   sparse_mutator_t(
-    size_t num_slots,
-    const std::string & label,
-    size_t version
-  )
-  {}
+      size_t num_slots,
+      const std::string & label,
+      size_t version) {}
 
   ///
   //
   ///
-  ~sparse_mutator_t()
-  {
-  } // ~sparse_mutator_t
+  ~sparse_mutator_t() {} // ~sparse_mutator_t
 
   ///
   //
   ///
-  T &
-  operator () (
-    size_t index,
-    size_t material
-  )
-  {
-  } // operator ()
+  T & operator()(size_t index, size_t material) {} // operator ()
 
   ///
   //
   ///
-  T *
-  data()
-  {
+  T * data() {
     return nullptr;
   } // data
 
   ///
   //
   ///
-  void
-  commit()
-  {
-  } // commit
+  void commit() {} // commit
 
 private:
-
 }; // struct sparse_mutator_t
 
 //----------------------------------------------------------------------------//
@@ -101,8 +85,7 @@ private:
 //----------------------------------------------------------------------------//
 
 template<typename T>
-struct sparse_handle_t {
-}; // struct sparse_handle_t
+struct sparse_handle_t {}; // struct sparse_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -127,37 +110,23 @@ struct storage_class__<sparse> {
   ///
   //
   ///
-  template<
-    typename T,
-    size_t NS
-  >
-  static
-  mutator_t<T>
-  get_mutator(
-    const data_client_t & data_client,
-    const utils::const_string_t & key,
-    size_t slots,
-    size_t version
-  )
-  {
+  template<typename T, size_t NS>
+  static mutator_t<T> get_mutator(
+      const data_client_t & data_client,
+      const utils::const_string_t & key,
+      size_t slots,
+      size_t version) {
     return {};
   } // get_accessor
 
   ///
   //
   ///
-  template<
-    typename T,
-    size_t NS
-  >
-  static
-  handle_t<T>
-  get_handle(
-    const data_client_t & data_client,
-    const utils::const_string_t & key,
-    size_t version
-  )
-  {
+  template<typename T, size_t NS>
+  static handle_t<T> get_handle(
+      const data_client_t & data_client,
+      const utils::const_string_t & key,
+      size_t version) {
     return {};
   } // get_handle
 
@@ -170,4 +139,4 @@ struct storage_class__<sparse> {
 #endif // flecsi_legion_sparse_h
 
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

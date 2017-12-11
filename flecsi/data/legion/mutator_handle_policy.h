@@ -7,7 +7,7 @@
 #include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_LEGION)
-  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
 #include <legion.h>
@@ -28,11 +28,11 @@ namespace flecsi {
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-struct legion_mutator_handle_policy_t
-{
-  legion_mutator_handle_policy_t(){}
+struct legion_mutator_handle_policy_t {
+  legion_mutator_handle_policy_t() {}
 
-  legion_mutator_handle_policy_t(const legion_mutator_handle_policy_t& p) = default;
+  legion_mutator_handle_policy_t(const legion_mutator_handle_policy_t & p) =
+      default;
 
 }; // class legion_mutator_handle_policy_t
 
@@ -41,4 +41,4 @@ struct legion_mutator_handle_policy_t
 #endif // flecsi_data_legion_mutator_handle_policy_h
 
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

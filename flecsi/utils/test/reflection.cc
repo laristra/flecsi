@@ -7,12 +7,8 @@
 
 #include "flecsi/utils/reflection.h"
 
-struct test_type_t
-{
-  declare_reflected (
-    (double) r1,
-    (int) r2
-  )
+struct test_type_t {
+  declare_reflected((double)r1, (int)r2)
 }; // struct test_type_t
 
 using namespace flecsi::utils;

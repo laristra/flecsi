@@ -1,18 +1,24 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_sparse_accessor_h
-#define flecsi_sparse_accessor_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
+
+/*! @file */
 
 #include <unordered_set>
 
-#include "flecsi/data/sparse_data_handle.h"
-#include "flecsi/topology/index_space.h"
-
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Nov 14, 2017
-//----------------------------------------------------------------------------//
+#include <flecsi/data/sparse_data_handle.h>
+#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 
@@ -256,8 +262,3 @@ using sparse_accessor =
   sparse_accessor__<T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
 
 } // namespace flecsi
-
-#endif // flecsi_sparse_accessor_h
-
-/*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/

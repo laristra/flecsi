@@ -1,16 +1,27 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_data_storage_h
-#define flecsi_data_storage_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
+
+/*! @file */
 
 #include <cinchlog.h>
 #include <functional>
 #include <unordered_map>
 #include <unordered_set>
 
-#include "flecsi/runtime/types.h"
-#include "flecsi/utils/common.h"
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -189,8 +200,3 @@ using storage_t = storage__<FLECSI_RUNTIME_STORAGE_POLICY>;
 
 } // namespace data
 } // namespace flecsi
-
-#endif // flecsi_data_storage_h
-
-/*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/

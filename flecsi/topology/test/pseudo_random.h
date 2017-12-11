@@ -13,21 +13,19 @@
 //!        reproduceable results accross all platforms.
 class pseudo_random {
 public:
-
   //! \brief The main constructor.
   //! \param [in] seed  The seed to use on constructon.
-  pseudo_random(unsigned seed = 0)
-  : rng_(seed){}
+  pseudo_random(unsigned seed = 0) : rng_(seed) {}
 
   //! \brief Generate a new random number with a uniform distribution between
   //!        [0, 1).
-  double uniform(){
-    return double(rng_())/rng_.max();
+  double uniform() {
+    return double(rng_()) / rng_.max();
   }
 
   //! \brief Generate a new random number with a uniform distribution between
   //!        [a, b).
-  double uniform(double a, double b){
+  double uniform(double a, double b) {
     return a + (b - a) * uniform();
   }
 

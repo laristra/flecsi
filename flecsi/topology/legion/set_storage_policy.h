@@ -1,22 +1,26 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Oct 03, 2017
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#ifndef flecsi_topology_legion_topology_set_storage_policy_h
-#define flecsi_topology_legion_topology_set_storage_policy_h
+/*! @file */
 
-#include "flecsi/execution/context.h"
-#include "flecsi/topology/common/entity_storage.h"
-#include "flecsi/topology/index_space.h"
-#include "flecsi/topology/set_utils.h"
-#include "flecsi/topology/set_types.h"
-#include "flecsi/topology/types.h"
+#include <flecsi/execution/context.h>
+#include <flecsi/topology/common/entity_storage.h>
+#include <flecsi/topology/index_space.h>
+#include <flecsi/topology/set_utils.h>
+#include <flecsi/topology/set_types.h>
+#include <flecsi/topology/types.h>
 
 namespace flecsi{
 namespace topology{
@@ -135,10 +139,3 @@ struct legion_set_topology_storage_policy_t
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_topology_legion_topology_set_storage_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

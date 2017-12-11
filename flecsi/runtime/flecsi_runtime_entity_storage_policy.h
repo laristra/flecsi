@@ -1,15 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_runtime_entity_storage_policy_h
-#define flecsi_runtime_entity_storage_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jun 19, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <flecsi-config.h>
 
@@ -23,36 +27,29 @@
 // Legion, MPI+Legion Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include "flecsi/topology/common/entity_storage.h"
+#include "flecsi/topology/common/entity_storage.h"
 
-  namespace flecsi {
+namespace flecsi {
 
-  template<typename T>
-  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
+template<typename T>
+using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
 
-  using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
+using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 
-  } // namespace flecsi
+} // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/topology/common/entity_storage.h"
+#include "flecsi/topology/common/entity_storage.h"
 
-  namespace flecsi {
+namespace flecsi {
 
-  template<typename T>
-  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
+template<typename T>
+using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
 
-  using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
+using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 
-  } // namespace flecsi
+} // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
-
-#endif // flecsi_runtime_entity_storage_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

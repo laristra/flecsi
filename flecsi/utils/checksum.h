@@ -14,7 +14,7 @@
 #include "flecsi/utils/logging.h"
 
 #if !defined(ENABLE_OPENSSL)
-  #error ENABLE_OPENSSL not defined! This file depends on OpenSSL!
+#error ENABLE_OPENSSL not defined! This file depends on OpenSSL!
 #endif
 
 #include <openssl/evp.h>
@@ -24,7 +24,7 @@ namespace utils {
 
 struct checksum_t {
   unsigned char value[EVP_MAX_MD_SIZE];
-  char strvalue[EVP_MAX_MD_SIZE*2+1];
+  char strvalue[EVP_MAX_MD_SIZE * 2 + 1];
   unsigned int length;
 }; // struct checksum_t
 
@@ -36,18 +36,14 @@ struct checksum_t {
 /// \param[out] sum The checksum data structure to fill.
 /// \param[in] digest The digest context.
 ///
-template<
-  typename T
->
+template<typename T>
 void
 checksum(
-  T * buffer,
-  std::size_t elements,
-  checksum_t & sum,
-  const char * digest = "md5"
-)
-{
-  std::size_t bytes = elements*sizeof(T);
+    T * buffer,
+    std::size_t elements,
+    checksum_t & sum,
+    const char * digest = "md5") {
+  std::size_t bytes = elements * sizeof(T);
 
   EVP_MD_CTX * ctx = EVP_MD_CTX_create();
 
@@ -76,7 +72,7 @@ checksum(
   char tmp[256];
   strcpy(sum.strvalue, "");
 
-  for(std::size_t i(0); i<sum.length; i++) {
+  for (std::size_t i(0); i < sum.length; i++) {
     sprintf(tmp, "%02x", sum.value[i]);
     strcat(sum.strvalue, tmp);
   } // for

@@ -27,16 +27,11 @@ namespace utils {
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-template<
-  std::size_t INDEX,
-  typename TUPLE_TYPE,
-  typename CRTP_TYPE
->
-struct tuple_walker_helper__
-{
+template<std::size_t INDEX, typename TUPLE_TYPE, typename CRTP_TYPE>
+struct tuple_walker_helper__ {
 
   static constexpr std::size_t CURRENT =
-    std::tuple_size<TUPLE_TYPE>::value - INDEX;
+      std::tuple_size<TUPLE_TYPE>::value - INDEX;
 
   using HELPER_TYPE = tuple_walker_helper__<INDEX - 1, TUPLE_TYPE, CRTP_TYPE>;
 
@@ -47,13 +42,7 @@ struct tuple_walker_helper__
   //! @param t The tuple instance.
   //--------------------------------------------------------------------------//
 
-  static
-  std::size_t
-  walk(
-    CRTP_TYPE & p,
-    TUPLE_TYPE & t
-  )
-  {
+  static std::size_t walk(CRTP_TYPE & p, TUPLE_TYPE & t) {
     p.handle(std::get<CURRENT>(t));
     return HELPER_TYPE::walk(p, t);
   } // walk
@@ -64,14 +53,8 @@ struct tuple_walker_helper__
   //! @param p An instance of the CRTP type.
   //--------------------------------------------------------------------------//
 
-  static
-  std::size_t
-  walk_types(
-    CRTP_TYPE & p
-  )
-  {
-    using ELEMENT_TYPE =
-      typename std::tuple_element<CURRENT, TUPLE_TYPE>::type;
+  static std::size_t walk_types(CRTP_TYPE & p) {
+    using ELEMENT_TYPE = typename std::tuple_element<CURRENT, TUPLE_TYPE>::type;
     p.template handle_type<ELEMENT_TYPE>();
     return HELPER_TYPE::walk_types(p);
   } // walk_types
@@ -84,24 +67,14 @@ struct tuple_walker_helper__
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-template<
-  typename TUPLE_TYPE,
-  typename CRTP_TYPE
->
-struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE>
-{
+template<typename TUPLE_TYPE, typename CRTP_TYPE>
+struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE> {
 
   //--------------------------------------------------------------------------//
   //! Termination of tuple walk.
   //--------------------------------------------------------------------------//
 
-  static
-  std::size_t
-  walk(
-    const CRTP_TYPE &,
-    const TUPLE_TYPE &
-  )
-  {
+  static std::size_t walk(const CRTP_TYPE &, const TUPLE_TYPE &) {
     return 0;
   } // walk
 
@@ -109,12 +82,7 @@ struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE>
   //! Termination of tuple walk by type.
   //--------------------------------------------------------------------------//
 
-  static
-  std::size_t
-  walk_types(
-    const CRTP_TYPE &
-  )
-  {
+  static std::size_t walk_types(const CRTP_TYPE &) {
     return 0;
   } // walk_types
 
@@ -129,11 +97,8 @@ struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE>
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-template<
-  typename CRTP_TYPE
->
-struct tuple_walker__
-{
+template<typename CRTP_TYPE>
+struct tuple_walker__ {
 
   //--------------------------------------------------------------------------//
   //! Walk the given tuple, applying the handler to each element.
@@ -145,21 +110,12 @@ struct tuple_walker__
   //! @ingroup utils
   //--------------------------------------------------------------------------//
 
-  template<
-    typename TUPLE_TYPE
-  >
-  void walk(
-    TUPLE_TYPE & t
-  )
-  {
-    using HELPER_TYPE =
-      tuple_walker_helper__<
-        std::tuple_size<TUPLE_TYPE>::value,
-        TUPLE_TYPE,
-        CRTP_TYPE
-      >;
+  template<typename TUPLE_TYPE>
+  void walk(TUPLE_TYPE & t) {
+    using HELPER_TYPE = tuple_walker_helper__<
+        std::tuple_size<TUPLE_TYPE>::value, TUPLE_TYPE, CRTP_TYPE>;
 
-    HELPER_TYPE::walk(*static_cast<CRTP_TYPE*>(this), t);
+    HELPER_TYPE::walk(*static_cast<CRTP_TYPE *>(this), t);
   } // walk
 
   //--------------------------------------------------------------------------//
@@ -170,19 +126,12 @@ struct tuple_walker__
   //! @ingroup utils
   //--------------------------------------------------------------------------//
 
-  template<
-    typename TUPLE_TYPE
-  >
-  void walk_types()
-  {
-    using HELPER_TYPE =
-      tuple_walker_helper__<
-        std::tuple_size<TUPLE_TYPE>::value,
-        TUPLE_TYPE,
-        CRTP_TYPE
-      >;
+  template<typename TUPLE_TYPE>
+  void walk_types() {
+    using HELPER_TYPE = tuple_walker_helper__<
+        std::tuple_size<TUPLE_TYPE>::value, TUPLE_TYPE, CRTP_TYPE>;
 
-    HELPER_TYPE::walk_types(*static_cast<CRTP_TYPE*>(this));
+    HELPER_TYPE::walk_types(*static_cast<CRTP_TYPE *>(this));
   } // walk_type
 
 }; // struct tuple_walker__

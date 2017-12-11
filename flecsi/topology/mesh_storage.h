@@ -1,10 +1,21 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_mesh_storage_h
-#define flecsi_mesh_storage_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/runtime/flecsi_runtime_topology_policy.h"
+/*! @file */
+
+#include <flecsi/runtime/flecsi_runtime_topology_policy.h>
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -14,17 +25,8 @@
 namespace flecsi {
 namespace topology {
 
-template<
-  size_t ND,
-  size_t NM
->
-class mesh_storage_t : public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<ND, NM>
-{};
+template<size_t ND, size_t NM>
+class mesh_storage_t : public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<ND, NM> {};
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_mesh_storage_h
-
-/*~-------------------------------------------------------------------------~-*
- *~-------------------------------------------------------------------------~-*/

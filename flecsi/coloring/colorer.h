@@ -1,17 +1,21 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_coloring_colorer_h
-#define flecsi_coloring_colorer_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Nov 24, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
-#include "flecsi/coloring/crs.h"
+#include <flecsi/coloring/crs.h>
 
 namespace flecsi {
 namespace coloring {
@@ -23,8 +27,7 @@ namespace coloring {
 //! @ingroup coloring
 //----------------------------------------------------------------------------//
 
-struct colorer_t
-{
+struct colorer_t {
   //--------------------------------------------------------------------------//
   //! This method takes a distributed, compressed-row-storage representation
   //! of a graph and returns the indepdentent coloring on a per
@@ -37,20 +40,9 @@ struct colorer_t
   //!         instance.
   //--------------------------------------------------------------------------//
 
-  virtual
-  std::set<size_t>
-  color(
-    const dcrs_t & dcrs
-  ) = 0;
+  virtual std::set<size_t> color(const dcrs_t & dcrs) = 0;
 
 }; // class colorer_t
 
 } // namespace coloring
 } // namespace flecsi
-
-#endif // flecsi_coloring_colorer_h
- 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

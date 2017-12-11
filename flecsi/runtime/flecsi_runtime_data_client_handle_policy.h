@@ -1,15 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_runtime_data_client_handle_policy_h
-#define flecsi_runtime_data_client_handle_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jun 21, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <flecsi-config.h>
 
@@ -23,31 +27,25 @@
 // Legion Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include "flecsi/data/legion/data_client_handle_policy.h"
+#include "flecsi/data/legion/data_client_handle_policy.h"
 
-  namespace flecsi {
+namespace flecsi {
 
-  using FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY =
+using FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY =
     legion_data_client_handle_policy_t;
 
-  } // namespace flecsi
+} // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/data/mpi/data_client_handle_policy.h"
+#include "flecsi/data/mpi/data_client_handle_policy.h"
 
-  namespace flecsi {
+namespace flecsi {
 
-  using FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY =
+using FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY =
     mpi_data_client_handle_policy_t;
-  } // namespace flecsi
+
+} // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
-
-#endif // flecsi_runtime_data_client_handle_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

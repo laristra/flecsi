@@ -1,19 +1,23 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_coloring_communicator_h
-#define flecsi_coloring_communicator_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
+
+/*! @file */
 
 #include <set>
 
-#include "flecsi/coloring/coloring_types.h"
-
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Dec 06, 2016
-//----------------------------------------------------------------------------//
+#include <flecsi/coloring/coloring_types.h>
 
 namespace flecsi {
 namespace coloring {
@@ -25,10 +29,8 @@ namespace coloring {
 //! @ingroup coloring
 //----------------------------------------------------------------------------//
 
-class communicator_t
-{
+class communicator_t {
 public:
-
   //--------------------------------------------------------------------------//
   //! Default constructor
   //--------------------------------------------------------------------------//
@@ -43,7 +45,7 @@ public:
 
   /// Assignment operator (disabled)
 
-  communicator_t & operator = (const communicator_t &) = delete;
+  communicator_t & operator=(const communicator_t &) = delete;
 
   /// Destructor
 
@@ -77,12 +79,10 @@ public:
   //! Return information about entities that belong to other colors.
   //--------------------------------------------------------------------------//
 
-  virtual
-  std::pair<std::vector<std::set<size_t>>, std::set<entity_info_t>>
+  virtual std::pair<std::vector<std::set<size_t>>, std::set<entity_info_t>>
   get_primary_info(
-    const std::set<size_t> & primary,
-    const std::set<size_t> & request_indices
-  ) = 0;
+      const std::set<size_t> & primary,
+      const std::set<size_t> & request_indices) = 0;
 
   //--------------------------------------------------------------------------//
   //! Get the 1-to-1 intersection between all colorings of the given set.
@@ -92,11 +92,8 @@ public:
   //!         intersecting color.
   //--------------------------------------------------------------------------//
 
-  virtual
-  std::unordered_map<size_t, std::set<size_t>>
-  get_intersection_info(
-    const std::set<size_t> & request_indices
-  ) = 0;
+  virtual std::unordered_map<size_t, std::set<size_t>>
+  get_intersection_info(const std::set<size_t> & request_indices) = 0;
 
   //--------------------------------------------------------------------------//
   //! Return a map of the reduced index information across all colors.
@@ -104,11 +101,8 @@ public:
   //! @param local_indices The indices of the calling color.
   //--------------------------------------------------------------------------//
 
-  virtual
-  std::unordered_map<size_t, std::set<size_t>>
-  get_entity_reduction(
-    const std::set<size_t> & local_indices
-  ) = 0;
+  virtual std::unordered_map<size_t, std::set<size_t>>
+  get_entity_reduction(const std::set<size_t> & local_indices) = 0;
 
   //--------------------------------------------------------------------------//
   // Same admonishment as for get_primary_info...
@@ -121,37 +115,21 @@ public:
   //!
   //--------------------------------------------------------------------------//
 
-  virtual
-  std::vector<std::set<size_t>>
-  get_entity_info(
-    const std::set<entity_info_t> & entity_info,
-    const std::vector<std::set<size_t>> & request_indices
-  ) = 0;
+  virtual std::vector<std::set<size_t>> get_entity_info(
+      const std::set<entity_info_t> & entity_info,
+      const std::vector<std::set<size_t>> & request_indices) = 0;
 
   //--------------------------------------------------------------------------//
   //! Return size across all colors.
   //--------------------------------------------------------------------------//
 
-  virtual
-  std::vector<size_t>
-  gather_sizes(
-    const size_t & size
-  ) = 0;
+  virtual std::vector<size_t> gather_sizes(const size_t & size) = 0;
 
-  virtual
-  std::unordered_map<size_t, coloring_info_t>
+  virtual std::unordered_map<size_t, coloring_info_t>
   gather_coloring_info(coloring_info_t & color_info) = 0;
 
 private:
-
 }; // class communicator_t
 
 } // namespace coloring
 } // namespace flecsi
-
-#endif // flecsi_coloring_communicator_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

@@ -1,12 +1,23 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_dense_accessor_h
-#define flecsi_dense_accessor_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/data/accessor.h"
-#include "flecsi/data/data_constants.h"
-#include "flecsi/data/data_handle.h"
+/*! @file */
+
+#include <flecsi/data/accessor.h>
+#include <flecsi/data/data_constants.h>
+#include <flecsi/data/data_handle.h>
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -500,8 +511,3 @@ template<
 using global_accessor = global_accessor__<T, PERMISSIONS>;
 
 } // namespace flecsi
-
-#endif // flecsi_dense_accessor_h
-
-/*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/

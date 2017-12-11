@@ -1,17 +1,23 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_data_field_h
-#define flecsi_data_field_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jun 21, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
-#include "flecsi/data/common/registration_wrapper.h"
-#include "flecsi/data/storage.h"
-#include "flecsi/utils/hash.h"
+#include <flecsi/data/common/registration_wrapper.h>
+#include <flecsi/data/storage.h>
+#include <flecsi/utils/hash.h>
 
 namespace flecsi {
 namespace data {
@@ -304,8 +310,3 @@ using field_interface_t = field_interface__<FLECSI_RUNTIME_DATA_POLICY>;
 
 } // namespace data
 } // namespace flecsi
-
-#endif // flecsi_data_field_h
-
-/*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/

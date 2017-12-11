@@ -1,16 +1,22 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_sparse_data_handle_h
-#define flecsi_sparse_data_handle_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/data/common/data_types.h"
-#include "flecsi/data/data_handle.h"
+/*! @file */
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Oct 06, 2017
-//----------------------------------------------------------------------------//
+#include <flecsi/data/common/data_types.h>
+#include <flecsi/data/data_handle.h>
 
 namespace flecsi {
 
@@ -111,8 +117,3 @@ using sparse_data_handle__ = sparse_data_handle_base__<
 >;
 
 } // namespace flecsi
-
-#endif // flecsi_sparse_data_handle_h
-
-/*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/

@@ -1,15 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_runtime_set_topology_policy_h
-#define flecsi_runtime_set_topology_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jun 19, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <flecsi-config.h>
 
@@ -23,34 +27,27 @@
 // Legion, MPI+Legion Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include "flecsi/topology/legion/set_storage_policy.h"
+#include "flecsi/topology/legion/set_storage_policy.h"
 
-  namespace flecsi {
+namespace flecsi {
 
-  template<typename SET_TYPES>
-  using FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY = 
+template<typename SET_TYPES>
+using FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY =
     topology::legion_set_topology_storage_policy_t<SET_TYPES>;
 
-  } // namespace flecsi
+} // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/topology/mpi/set_storage_policy.h"
+#include "flecsi/topology/mpi/set_storage_policy.h"
 
-  namespace flecsi {
+namespace flecsi {
 
-  template<typename SET_TYPES>
-  using FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY = 
+template<typename SET_TYPES>
+using FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY =
     topology::mpi_set_topology_storage_policy_t<SET_TYPES>;
 
-  } // namespace flecsi
+} // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
-
-#endif // flecsi_runtime_set_topology_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

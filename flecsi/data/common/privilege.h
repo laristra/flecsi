@@ -13,17 +13,16 @@
 
 namespace flecsi {
 
-  enum privilege_t : size_t
-  {
-    reserved = 0,
-    ro = 1,
-    wo = 2,
-    rw = 3,
-  }; // enum privilege_t
+enum privilege_t : size_t {
+  reserved = 0,
+  ro = 1,
+  wo = 2,
+  rw = 3,
+}; // enum privilege_t
 
 } // namespace flecsi
 
 #endif // flecsi_data_privilege_h
 
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

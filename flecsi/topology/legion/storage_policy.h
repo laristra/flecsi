@@ -1,15 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_topology_legion_topology_storage_policy_h
-#define flecsi_topology_legion_topology_storage_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Apr 04, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <array>
 
@@ -22,12 +26,12 @@
 #include <legion_stl.h>
 #include <legion_utilities.h>
 
-#include "flecsi/execution/context.h"
-#include "flecsi/topology/mesh_storage.h"
-#include "flecsi/topology/mesh_types.h"
-#include "flecsi/topology/common/entity_storage.h"
-#include "flecsi/topology/index_space.h"
-#include "flecsi/utils/id.h"
+#include <flecsi/execution/context.h>
+#include <flecsi/topology/mesh_storage.h>
+#include <flecsi/topology/mesh_types.h>
+#include <flecsi/topology/common/entity_storage.h>
+#include <flecsi/topology/index_space.h>
+#include <flecsi/utils/id.h>
 
 namespace flecsi {
 namespace topology {
@@ -231,10 +235,3 @@ struct legion_topology_storage_policy_t
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_topology_legion_topology_storage_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
