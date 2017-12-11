@@ -24,22 +24,12 @@ namespace topology {
 
 class set_entity_t {
 public:
-  using id_t = flecsi::utils::id_t;
+  using id_t = size_t;
 
-  id_t global_id() const {
-    return id_;
+  size_t index_space_id() const
+  {
+    return 0;
   }
-
-  size_t id() const {
-    return id_.entity();
-  }
-
-  void set_global_id(id_t id) {
-    id_ = id;
-  }
-
-private:
-  id_t id_;
 };
 
 class set_topology_base__ {};

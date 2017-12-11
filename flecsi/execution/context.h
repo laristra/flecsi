@@ -79,8 +79,17 @@ struct context__ : public CONTEXT_POLICY
     Gathers info about local index spaces.
    */
   struct local_index_space_t{
-    size_t capacity;
     size_t index_space;
+    size_t capacity;
+  };
+
+  /*!
+    Gathers info about sparse index spaces.
+   */
+  struct sparse_index_space_info_t{
+    size_t index_space;
+    size_t reserve_chunk;
+    size_t max_entries_per_index;
   };
 
   //--------------------------------------------------------------------------//
@@ -245,6 +254,26 @@ struct context__ : public CONTEXT_POLICY
   const
   {
     return local_index_space_map_;
+  }
+
+  void
+  set_sparse_index_space_info(
+    size_t index_space,
+    const sparse_index_space_info_t& info
+  )
+  {
+    sparse_index_space_info_map_.emplace(index_space, info);
+  }
+
+  /*!
+  /*! Return the map of sparse index space info.
+   */
+  
+  const auto&
+  sparse_index_space_info_map()
+  const
+  {
+    return sparse_index_space_info_map_;
   }
 
   const auto &
@@ -749,6 +778,12 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, local_index_space_t> local_index_space_map_;
+
+  //--------------------------------------------------------------------------//
+  // key: index space
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, sparse_index_space_info_t> sparse_index_space_info_map_;
 
 #if 0
   std::map<size_t, std::map<size_t, size_t>> cis_to_mis_map_;

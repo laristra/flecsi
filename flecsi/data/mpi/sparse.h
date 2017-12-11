@@ -144,10 +144,16 @@ struct storage_class__<sparse>
       auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
       auto &index_coloring = context.coloring(field_info.index_space);
 
+      auto& im = context.sparse_index_space_info_map();
+      auto iitr = im.find(field_info.index_space);
+      clog_assert(iitr != im.end(),
+        "sparse index space info not registered for index space: " <<
+        field_info.index_space);
+
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
-      const size_t max_entries_per_index = 5;
-      const size_t reserve_chunk = 2;
+      const size_t max_entries_per_index = iitr->second.max_entries_per_index;
+      const size_t reserve_chunk = iitr->second.reserve_chunk;
 
       // TODO: deal with VERSION
       context.register_sparse_field_data(field_info.fid, field_info.size,
@@ -212,10 +218,16 @@ struct storage_class__<sparse>
       auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
       auto &index_coloring = context.coloring(field_info.index_space);
 
+      auto& im = context.sparse_index_space_info_map();
+      auto iitr = im.find(field_info.index_space);
+      clog_assert(iitr != im.end(),
+        "sparse index space info not registered for index space: " <<
+        field_info.index_space);
+
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
-      const size_t max_entries_per_index = 5;
-      const size_t reserve_chunk = 2;
+      const size_t max_entries_per_index = iitr->second.max_entries_per_index;
+      const size_t reserve_chunk = iitr->second.reserve_chunk;
 
       // TODO: deal with VERSION
       context.register_sparse_field_data(field_info.fid, field_info.size,

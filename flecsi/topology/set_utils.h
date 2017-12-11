@@ -46,7 +46,7 @@ struct map_set_index_spaces__ {
     using TUPLE_ELEMENT = typename std::tuple_element<INDEX - 1, TUPLE>::type;
     using INDEX_SPACE = typename std::tuple_element<0, TUPLE_ELEMENT>::type;
 
-    m[INDEX_SPACE::value] = INDEX;
+    m[INDEX_SPACE::value] = INDEX - 1;
 
     return map_set_index_spaces__<INDEX - 1, TUPLE, MAP_TYPE>::map(m);
   }

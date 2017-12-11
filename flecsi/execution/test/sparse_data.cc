@@ -122,7 +122,7 @@ void task1(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
   auto coloring_info = context.coloring_info(mh.h_.index_space).at(rank);
 
   for(size_t i = 0; i < coloring_info.exclusive + coloring_info.shared; ++i){
-    for(size_t j = 0; j < 5; ++j){
+    for(size_t j = 0; j < 5; j+=2){
       mh(i, j) = i * 100 + j + rank * 10000;
     }
   }
@@ -145,20 +145,33 @@ void task3(client_handle_t<test_mesh_t, ro> mesh,
   auto rank = context.color();
   auto coloring_info = context.coloring_info(h.handle.index_space).at(rank);
 
-  for(size_t i = coloring_info.exclusive; i < coloring_info.exclusive + coloring_info.shared; ++i){
-    for(size_t j = 0; j < 5; ++j){
-      h(i, j) = -h(i, j);
+  for (auto index : h.indices()) {
+    for (auto entry : h.entries(index)) {
+      h(index, entry) = -h(index, entry);
     }
   }
 
-} // task2
+} // task3
 
+void task4(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
+
+  auto& context = execution::context_t::instance();
+  auto rank = context.color();
+  auto coloring_info = context.coloring_info(mh.h_.index_space).at(rank);
+
+  for(size_t i = 0; i < coloring_info.exclusive; ++i){
+    for(size_t j = 5; j < 7; ++j){
+      mh(i, j) = i * 100 + j + rank * 10000;
+    }
+  }
+  //mh.dump();
+} // task4
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
 
 flecsi_register_task_simple(task1, loc, single);
 flecsi_register_task_simple(task2, loc, single);
 flecsi_register_task_simple(task3, loc, single);
-
+flecsi_register_task_simple(task4, loc, single);
 
 flecsi_register_field(test_mesh_t, hydro, pressure, double, sparse, 1, 0);
 
@@ -194,6 +207,11 @@ void specialization_tlt_init(int argc, char ** argv) {
   }
 
   context.add_adjacency(ai);
+
+  execution::context_t::sparse_index_space_info_t isi;
+  isi.max_entries_per_index = 5;
+  isi.reserve_chunk = 8192;
+  context.set_sparse_index_space_info(0, isi);
 } // specialization_tlt_init
 
 void specialization_spmd_init(int argc, char ** argv) {

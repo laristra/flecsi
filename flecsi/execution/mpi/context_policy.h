@@ -198,7 +198,8 @@ struct mpi_context_policy_t
   };
 
   struct local_index_space_data_t{
-    // TODO: to be defined.
+    size_t size;
+    size_t capacity;
   };
 
   auto&
