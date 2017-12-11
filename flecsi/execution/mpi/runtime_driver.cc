@@ -174,6 +174,19 @@ runtime_driver(
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   specialization_spmd_init(argc, argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+
+  auto& local_index_space_map = flecsi_context.local_index_space_map();
+  for(auto& itr : local_index_space_map){
+    size_t index_space = itr.first;
+
+    context_t::local_index_space_data_t lis;
+    lis.size = 0;
+    lis.capacity = itr.second.capacity; 
+    
+    auto& lism = flecsi_context.local_index_space_data_map();
+
+    lism.emplace(index_space, std::move(lis));
+  }
   
   flecsi_context.advance_state();
 

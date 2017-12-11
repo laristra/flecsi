@@ -169,7 +169,7 @@ namespace execution {
       typename T,
       size_t PERMISSIONS
     >
-    void
+    typename std::enable_if_t<std::is_base_of<topology::mesh_topology_base__, T>::value>
     handle(
       data_client_handle__<T, PERMISSIONS> & h
     )
@@ -274,6 +274,52 @@ namespace execution {
     //------------------------------------------------------------------------//
     //! FIXME: Need to document.
     //------------------------------------------------------------------------//
+
+    template<
+      typename T,
+      size_t PERMISSIONS
+    >
+    typename std::enable_if_t<std::is_base_of<topology::set_topology_base__, T>::value>
+    handle(
+      data_client_handle__<T, PERMISSIONS> & h
+    )
+    {
+      auto& context_ = context_t::instance();
+
+      // h is partially initialized in client.h
+      auto storage = h.set_storage(new typename T::storage_t);
+
+      bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
+
+      int color = context_.color();
+
+      auto& im = context_.local_index_space_data_map();
+
+      for(size_t i{0}; i<h.num_handle_entities; ++i) {
+        data_client_handle_entity_t & ent = h.handle_entities[i];
+
+        auto itr = im.find(ent.index_space);
+        clog_assert(itr != im.end(),
+          "invalid local index space: " << ent.index_space);
+        const context_t::local_index_space_data_t& isd = itr->second;
+
+        // see if the field data is registered for this entity field.
+        auto& registered_field_data = context_.registered_field_data();
+        auto fieldDataIter = registered_field_data.find(ent.fid);
+        if (fieldDataIter == registered_field_data.end()) {
+
+          size_t size = ent.size * isd.capacity;
+
+          context_.register_field_data(ent.fid, size);
+        }
+
+        auto ents =
+          reinterpret_cast<topology::set_entity_t*>(
+          registered_field_data[ent.fid].data());
+
+        storage->init_entities(ent.index_space, ents, ent.size, isd.size, _read);
+      }
+    }
 
     template<
       typename T

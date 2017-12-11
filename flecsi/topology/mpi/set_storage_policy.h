@@ -24,6 +24,7 @@ namespace topology{
 template<typename SET_TYPES>
 struct mpi_set_topology_storage_policy_t
 {
+  
   using id_t = utils::id_t;
 
   using entity_types_t = typename SET_TYPES::entity_types;
@@ -33,7 +34,7 @@ struct mpi_set_topology_storage_policy_t
 
   using index_spaces_t =
     std::array<index_space<set_entity_t*, true, true, true, void,
-    topology_storage__>, num_index_spaces>;
+    identity_storage__, topology_storage__>, num_index_spaces>;
 
   index_spaces_t index_spaces;
 
@@ -43,8 +44,11 @@ struct mpi_set_topology_storage_policy_t
 
   index_space_map_t index_space_map;
 
+  ~mpi_set_topology_storage_policy_t(){}
+
   mpi_set_topology_storage_policy_t()
   {
+
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();
 
@@ -56,7 +60,6 @@ struct mpi_set_topology_storage_policy_t
   init_entities(
     size_t index_space,
     set_entity_t* entities,
-    utils::id_t* ids,
     size_t size,
     size_t num_entities,
     bool read
@@ -66,10 +69,8 @@ struct mpi_set_topology_storage_policy_t
     clog_assert(itr != index_space_map.end(), "invalid index space");
     auto& is = index_spaces[itr->second];
     auto s = is.storage();
-    s->set_buffer(entities, num_entities, read);
 
-    auto& id_storage = is.id_storage();
-    id_storage.set_buffer(ids, num_entities, true);
+    s->set_buffer(entities, num_entities, read);
 
     if(!read){
       return;
@@ -92,45 +93,8 @@ struct mpi_set_topology_storage_policy_t
 
     auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity;
     auto ent = new (placement_ptr) T(std::forward<S>(args)...);
-
-    id_t global_id = id_t::make<T::dimension>(entity, color);
-    ent->template set_global_id(global_id);
-
-    auto& id_storage = is.id_storage();
-
-    id_storage[entity] = global_id;
-
-    is.pushed();
-
-    return ent;
-  }
-
-  template<
-    class T,
-    class... S
-  >
-  T *
-  make(
-    const id_t& id,
-    S && ... args
-  )
-  {
-    constexpr size_t index_space = 
-      find_set_index_space__<num_index_spaces, entity_types_t, T>::find(); 
-       
-    auto & is = index_spaces[index_space].template cast<T*>();
-
-    size_t entity = id.entity();
-
-    auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity;
-    auto ent = new (placement_ptr) T(std::forward<S>(args)...);
-
-    ent->template set_global_id(id);
-
-    auto& id_storage = is.id_storage();
-
-    id_storage[entity] = id;
-
+    auto storage = is.storage();
+    storage->pushed();
     is.pushed();
 
     return ent;
