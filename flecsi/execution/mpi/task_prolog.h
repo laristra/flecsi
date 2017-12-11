@@ -307,9 +307,7 @@ namespace execution {
         auto& registered_field_data = context_.registered_field_data();
         auto fieldDataIter = registered_field_data.find(ent.fid);
         if (fieldDataIter == registered_field_data.end()) {
-
           size_t size = ent.size * isd.capacity;
-
           context_.register_field_data(ent.fid, size);
         }
 

@@ -313,6 +313,18 @@ namespace execution {
 
     } // handle
 
+    template<
+      typename T
+    >
+    void
+    handle(
+      ragged_mutator<
+        T
+      > & m
+    )
+    {
+      handle(reinterpret_cast<sparse_mutator<T>&>(m));
+    }
 
     template<
       typename T,
@@ -330,37 +342,8 @@ namespace execution {
       > & a
     )
     {
-      auto& h = a.handle;
-
-      // Skip Read Only handles
-      if (EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
-        return;
-
-      auto& context = context_t::instance();
-      const int my_color = context.color();
-      auto& my_coloring_info =
-        context.coloring_info(h.index_space).at(my_color);
-
-      auto& sparse_field_metadata = 
-        context.registered_sparse_field_metadata().at(h.fid);
-
-#if 0
-      MPI_Win win = sparse_field_metadata.win;
-
-      MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
-      MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
-
-      for (auto ghost_owner : my_coloring_info.ghost_owners) {
-        MPI_Get(h.ghost_entries, 1,
-                sparse_field_metadata.origin_types[ghost_owner],
-                ghost_owner, 0, 1,
-                sparse_field_metadata.target_types[ghost_owner],
-                win);
-      }
-
-      MPI_Win_complete(win);
-      MPI_Win_wait(win);
-#endif
+      handle(reinterpret_cast<sparse_accessor<
+        T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
     } // handle
 
     //------------------------------------------------------------------------//
