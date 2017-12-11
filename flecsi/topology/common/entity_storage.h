@@ -184,6 +184,11 @@ public:
     assert(false && "invalid operation");
   }
 
+  template<
+    typename ... Args
+  >
+  void insert(Args && ... args){}
+
   void
   reserve(size_t n)
   {

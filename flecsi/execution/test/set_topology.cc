@@ -45,7 +45,7 @@ template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
 void task1(client_handle_t<set_t, rw> sh) {
-
+  auto e = sh.make<entity1>();
 }
 
 flecsi_register_data_client(set_t, sets, set1); 
