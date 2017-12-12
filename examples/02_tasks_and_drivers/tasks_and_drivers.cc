@@ -3,7 +3,8 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-#include <flecsi.h>
+#include <flecsi-config.h>
+
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion 
   #include <mpi.h>
   #include <legion.h>
@@ -36,7 +37,7 @@ mpi_task(double a)
 }//mpi_task
 
 //register the task
-flecsi_register_mpi_task(mpi_task);
+flecsi_register_mpi_task(mpi_task, flecsi::execution);
 
 //----------------------------------------------------------------------------//
 // Define internal Legion task to register.
@@ -77,14 +78,14 @@ void task1() {
 } // task1
 
 //register FLeCSI task
-flecsi_register_task(task1, loc, single);
+flecsi_register_task(task1, flecsi::execution, loc, single);
 
 void task2(){
   std::cout<<"inside index task"<<std::endl;
 }
 
 ////register FLeCSI task
-flecsi_register_task(task2, loc, index);
+flecsi_register_task(task2, flecsi::execution, loc, index);
 
 
 
@@ -103,11 +104,11 @@ specialization_tlt_init(
 
   std::cout<<"inside Specialization Driver"<<std::endl;
 
-  flecsi_execute_mpi_task( mpi_task, 0);
+  flecsi_execute_mpi_task(mpi_task, flecsi::execution, 0);
 
-  flecsi_execute_task(task1, single);
+  flecsi_execute_task(task1, flecsi::execution, single);
 
-  flecsi_execute_task(task2, index);
+  flecsi_execute_task(task2, flecsi::execution, index);
 
   auto key_1 = __flecsi_internal_task_key(internal_task_example_1);
   auto key_2 = __flecsi_internal_task_key(internal_task_example_2);
@@ -140,9 +141,9 @@ driver(
 {
   std::cout<<"inside Driver"<<std::endl;
 
-  flecsi_execute_task(task1, single);
+  flecsi_execute_task(task1, flecsi::execution, single);
   
-  flecsi_execute_task(task2, index);
+  flecsi_execute_task(task2, flecsi::execution, index);
 }//driver
 
 }//namespace execution

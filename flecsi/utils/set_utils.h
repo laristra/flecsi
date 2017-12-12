@@ -29,17 +29,13 @@ namespace utils {
 //! \return A set containing the intersection of s1 with s2.
 //!
 template<class T>
-inline
-std::set<T>
-set_intersection(
-  const std::set<T> &s1,
-  const std::set<T> &s2
-)
-{
+inline std::set<T>
+set_intersection(const std::set<T> & s1, const std::set<T> & s2) {
   std::set<T> intersection;
 
-  std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(),
-    std::inserter(intersection, intersection.begin()));
+  std::set_intersection(
+      s1.begin(), s1.end(), s2.begin(), s2.end(),
+      std::inserter(intersection, intersection.begin()));
 
   return intersection;
 } // set_intersection
@@ -55,17 +51,13 @@ set_intersection(
 //! \return A set containing the union of s1 with s2.
 //!
 template<class T>
-inline
-std::set<T>
-set_union(
-  const std::set<T> &s1,
-  const std::set<T> &s2
-)
-{
+inline std::set<T>
+set_union(const std::set<T> & s1, const std::set<T> & s2) {
   std::set<T> sunion;
 
-  std::set_union(s1.begin(), s1.end(), s2.begin(), s2.end(),
-    std::inserter(sunion, sunion.begin()));
+  std::set_union(
+      s1.begin(), s1.end(), s2.begin(), s2.end(),
+      std::inserter(sunion, sunion.begin()));
 
   return sunion;
 } // set_union
@@ -81,17 +73,13 @@ set_union(
 //! \return A set containing the difference of s1 with s2.
 //!
 template<class T>
-inline
-std::set<T>
-set_difference(
-  const std::set<T> &s1,
-  const std::set<T> &s2
-)
-{
+inline std::set<T>
+set_difference(const std::set<T> & s1, const std::set<T> & s2) {
   std::set<T> difference;
 
-  std::set_difference(s1.begin(), s1.end(), s2.begin(), s2.end(),
-    std::inserter(difference, difference.begin()));
+  std::set_difference(
+      s1.begin(), s1.end(), s2.begin(), s2.end(),
+      std::inserter(difference, difference.begin()));
 
   return difference;
 } // set_difference

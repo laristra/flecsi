@@ -1,17 +1,23 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_topology_mesh_utils_h
-#define flecsi_topology_mesh_utils_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
+
+/*! @file */
 
 #include <vector>
 
-#include "flecsi/utils/common.h"
-
-//----------------------------------------------------------------------------//
-//! @file mesh_utils.h
-//! @date Initial file creation: Dec 23, 2015
-//----------------------------------------------------------------------------//
+#include <flecsi/utils/common.h>
 
 namespace flecsi {
 namespace topology {
@@ -24,14 +30,8 @@ namespace topology {
 //!
 //----------------------------------------------------------------------------//
 
-template<
-  size_t I,
-  class T,
-  size_t D,
-  size_t M
->
-struct find_entity__
-{
+template<size_t I, class T, size_t D, size_t M>
+struct find_entity__ {
 
   //--------------------------------------------------------------------------//
   //!
@@ -48,11 +48,7 @@ struct find_entity__
   //! @tparam M The domain to match.
   //--------------------------------------------------------------------------//
 
-  static
-  constexpr
-  size_t
-  find()
-  {
+  static constexpr size_t find() {
     // grab current types
     using E = typename std::tuple_element<I - 1, T>::type;
     using D1 = typename std::tuple_element<1, E>::type;
@@ -61,8 +57,8 @@ struct find_entity__
     // Check match for domain and dimension and return
     // index if matched or recurse if not matched.
     return D1::value == M && T1::dimension == D
-        ? I
-        : find_entity__<I - 1, T, D, M>::find();
+               ? I
+               : find_entity__<I - 1, T, D, M>::find();
   }
 
 }; // find_entity__
@@ -71,13 +67,8 @@ struct find_entity__
 //! \struct find_entity__ mesh_utils.h
 //! \brief find_entity__ provides a specialization for the root recursion.
 //-----------------------------------------------------------------//
-template<
-  class T,
-  size_t D,
-  size_t M
->
-struct find_entity__<0, T, D, M>
-{
+template<class T, size_t D, size_t M>
+struct find_entity__<0, T, D, M> {
   //-----------------------------------------------------------------//
   //! Search last tuple element.
   //!
@@ -85,14 +76,10 @@ struct find_entity__<0, T, D, M>
   //! @tparam D The dimension to match.
   //! @tparam M The domain to match.
   //-----------------------------------------------------------------//
-  static
-  constexpr
-  size_t
-  find()
-  {
+  static constexpr size_t find() {
     return 1;
   } // find
-}; // struct find_entity__
+};  // struct find_entity__
 
 //-----------------------------------------------------------------//
 //! \struct find_entity_ mesh_utils.h
@@ -101,18 +88,13 @@ struct find_entity__<0, T, D, M>
 //! Top-level interface for recursive type search matching dimension and
 //! domain.
 //-----------------------------------------------------------------//
-template<
-  class MT,
-  size_t D,
-  size_t M
->
-struct find_entity_
-{
+template<class MT, size_t D, size_t M>
+struct find_entity_ {
   using entity_types = typename MT::entity_types;
 
   using pair_ = typename std::tuple_element<
-      find_entity__<std::tuple_size<entity_types>::value, entity_types, D,
-          M>::find() -
+      find_entity__<std::tuple_size<entity_types>::value, entity_types, D, M>::
+              find() -
           1,
       entity_types>::type;
 
@@ -123,14 +105,8 @@ struct find_entity_
   using type = typename std::tuple_element<2, pair_>::type;
 };
 
-
-template<
-  size_t INDEX,
-  class TUPLE,
-  class ENTITY
->
-struct find_index_space__
-{
+template<size_t INDEX, class TUPLE, class ENTITY>
+struct find_index_space__ {
 
   //--------------------------------------------------------------------------//
   //!
@@ -138,7 +114,7 @@ struct find_index_space__
   //--------------------------------------------------------------------------//
 
   //--------------------------------------------------------------------------//
-  //! Find the index corresponding to an entity type in the connectivities 
+  //! Find the index corresponding to an entity type in the connectivities
   //! tuple - either from or to
   //!
   //! @tparam I The current index in tuple.
@@ -146,11 +122,7 @@ struct find_index_space__
   //! @tparam E The entity type to find.
   //--------------------------------------------------------------------------//
 
-  static
-  constexpr
-  size_t
-  find()
-  {
+  static constexpr size_t find() {
     // grab current types
     using TUPLE_ELEMENT = typename std::tuple_element<INDEX - 1, TUPLE>::type;
     using INDEX_SPACE = typename std::tuple_element<0, TUPLE_ELEMENT>::type;
@@ -158,8 +130,9 @@ struct find_index_space__
 
     // Check match for domain and dimension and return
     // index if matched or recurse if not matched.
-    return std::is_same<ELEMENT_ENTITY, ENTITY>::value ? INDEX_SPACE::value : 
-      find_index_space__<INDEX - 1, TUPLE, ENTITY>::find();
+    return std::is_same<ELEMENT_ENTITY, ENTITY>::value
+               ? INDEX_SPACE::value
+               : find_index_space__<INDEX - 1, TUPLE, ENTITY>::find();
   }
 
 }; // find_index_space__
@@ -169,12 +142,8 @@ struct find_index_space__
 //! \brief find_entity__ provides a specialization for the root recursion.
 //-----------------------------------------------------------------//
 
-template<
-  class TUPLE,
-  class ENTITY
->
-struct find_index_space__<0, TUPLE, ENTITY>
-{
+template<class TUPLE, class ENTITY>
+struct find_index_space__<0, TUPLE, ENTITY> {
 
   //-----------------------------------------------------------------//
   //! Search last tuple element.
@@ -183,28 +152,20 @@ struct find_index_space__<0, TUPLE, ENTITY>
   //!  @tparam D The dimension to match.
   //!  @tparam M The domain to match.
   //-----------------------------------------------------------------//
-  static constexpr size_t find()
-  {
+  static constexpr size_t find() {
     assert(false && "failed to find index space");
-    return 1; 
+    return 1;
   } // find_from
 
 }; // struct find_index_space__
 
-
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//
 
-template<
-  size_t INDEX,
-  typename TUPLE,
-  size_t DIMENSION,
-  size_t DOMAIN_
->
-struct find_index_space_from_dimension__
-{
+template<size_t INDEX, typename TUPLE, size_t DIMENSION, size_t DOMAIN_>
+struct find_index_space_from_dimension__ {
   //--------------------------------------------------------------------------//
-  //! Find the index corresponding to an entity type in the connectivities 
+  //! Find the index corresponding to an entity type in the connectivities
   //! tuple - either from or to
   //!
   //! @tparam I The current index in tuple.
@@ -212,11 +173,7 @@ struct find_index_space_from_dimension__
   //! @tparam E The entity type to find.
   //--------------------------------------------------------------------------//
 
-  static
-  constexpr
-  size_t
-  find()
-  {
+  static constexpr size_t find() {
     // grab current types
     using TUPLE_ELEMENT = typename std::tuple_element<INDEX - 1, TUPLE>::type;
     using INDEX_SPACE = typename std::tuple_element<0, TUPLE_ELEMENT>::type;
@@ -224,11 +181,11 @@ struct find_index_space_from_dimension__
     using ELEMENT_ENTITY = typename std::tuple_element<2, TUPLE_ELEMENT>::type;
 
     // Check match for dimension and return if matched, recurse otherwise.
-    return ( DIMENSION == ELEMENT_ENTITY::dimension &&
-      DOMAIN_ == ENTITY_DOMAIN::value ) ? INDEX_SPACE::value :
-      find_index_space_from_dimension__<
-        INDEX - 1, TUPLE, DIMENSION, DOMAIN_
-      >::find();
+    return (DIMENSION == ELEMENT_ENTITY::dimension &&
+            DOMAIN_ == ENTITY_DOMAIN::value)
+               ? INDEX_SPACE::value
+               : find_index_space_from_dimension__<
+                     INDEX - 1, TUPLE, DIMENSION, DOMAIN_>::find();
   } // find
 
 }; // find_index_space_from_dimension__
@@ -237,23 +194,14 @@ struct find_index_space_from_dimension__
 //! End recursion condition.
 //----------------------------------------------------------------------------//
 
-template<
-  typename TUPLE,
-  size_t DIMENSION,
-  size_t DOMAIN_
->
-struct find_index_space_from_dimension__<0, TUPLE, DIMENSION, DOMAIN_>
-{
+template<typename TUPLE, size_t DIMENSION, size_t DOMAIN_>
+struct find_index_space_from_dimension__<0, TUPLE, DIMENSION, DOMAIN_> {
 
   //--------------------------------------------------------------------------//
   //! Search last tuple element.
   //--------------------------------------------------------------------------//
 
-  static
-  constexpr
-  size_t
-  find()
-  {
+  static constexpr size_t find() {
     return 1;
   } // find
 
@@ -268,13 +216,8 @@ struct find_index_space_from_dimension__<0, TUPLE, DIMENSION, DOMAIN_>
 //! \brief compute_connectivity__ provides static recursion to process
 //! connectivity computation of mesh entity types.
 //-----------------------------------------------------------------//
-template<
-  size_t DM,
-  size_t I,
- class TS
->
-struct compute_connectivity__
-{
+template<size_t DM, size_t I, class TS>
+struct compute_connectivity__ {
   //-----------------------------------------------------------------//
   //! Compute mesh connectivity for the given domain and tuple element.
   //!
@@ -282,15 +225,8 @@ struct compute_connectivity__
   //!  @tparam I The current tuple index.
   //!  @tparam TS The tuple typel
   //-----------------------------------------------------------------//
-  template<
-    class M
-  >
-  static
-  int
-  compute(
-    M & mesh
-  )
-  {
+  template<class M>
+  static int compute(M & mesh) {
     static constexpr size_t size = std::tuple_size<TS>::value;
 
     using T = typename std::tuple_element<size - I, TS>::type;
@@ -298,7 +234,7 @@ struct compute_connectivity__
     using T1 = typename std::tuple_element<2, T>::type;
     using T2 = typename std::tuple_element<3, T>::type;
 
-    if (D1::value == DM){
+    if (D1::value == DM) {
       mesh.template compute_connectivity<DM, T1::dimension, T2::dimension>();
     }
 
@@ -312,22 +248,16 @@ struct compute_connectivity__
 //!  \brief compute_connectivity__ provides a specialization for
 //!  the root recursion.
 //-----------------------------------------------------------------//
-template<
-  size_t DM,
-  class TS
->
-struct compute_connectivity__<DM, 0, TS>
-{
+template<size_t DM, class TS>
+struct compute_connectivity__<DM, 0, TS> {
   //-----------------------------------------------------------------//
   //! Terminate recursion.
   //!
   //!  @tparam DM The domain to match.
   //!  @tparam TS The tuple typel
   //-----------------------------------------------------------------//
-  template<
-    class M>
-  static int compute(M &)
-  {
+  template<class M>
+  static int compute(M &) {
     return 0;
   } // compute
 
@@ -342,13 +272,8 @@ struct compute_connectivity__<DM, 0, TS>
 //! \brief compute_bindings__ provides static recursion to process
 //! binding computation of mesh entity types.
 //-----------------------------------------------------------------//
-template<
-  size_t DM,
-  size_t I,
-  class TS
->
-struct compute_bindings__
-{
+template<size_t DM, size_t I, class TS>
+struct compute_bindings__ {
   //-----------------------------------------------------------------//
   //! Compute mesh connectivity for the given domain and tuple element.
   //!
@@ -357,13 +282,8 @@ struct compute_bindings__
   //!  @tparam I The current tuple index.
   //!  @tparam TS The tuple typel
   //-----------------------------------------------------------------//
-  template<
-    class M
-  >
-  static
-  int
-  compute(M & mesh)
-  {
+  template<class M>
+  static int compute(M & mesh) {
     static constexpr size_t size = std::tuple_size<TS>::value;
 
     // Get the indexed tuple
@@ -375,9 +295,9 @@ struct compute_bindings__
     using T1 = typename std::tuple_element<3, T>::type;
     using T2 = typename std::tuple_element<4, T>::type;
 
-    if (M1::value == DM){
-      mesh.template compute_bindings<M1::value, M2::value, T1::dimension,
-          T2::dimension>();
+    if (M1::value == DM) {
+      mesh.template compute_bindings<
+          M1::value, M2::value, T1::dimension, T2::dimension>();
     } // if
 
     return compute_bindings__<DM, I - 1, TS>::compute(mesh);
@@ -390,33 +310,23 @@ struct compute_bindings__
 //! \brief compute_bindings__ provides a specialization for
 //! the root recursion.
 //-----------------------------------------------------------------//
-template<
-  size_t DM,
-  class TS
->
-struct compute_bindings__<DM, 0, TS>
-{
+template<size_t DM, class TS>
+struct compute_bindings__<DM, 0, TS> {
   //-----------------------------------------------------------------//
   //! Terminate recursion.
   //!
   //! @tparam DM The domain to match.
   //! @tparam TS The tuple typel
   //-----------------------------------------------------------------//
-  template<
-    class M
-  >
-  static int compute(M &)
-  {
+  template<class M>
+  static int compute(M &) {
     return 0;
   } // compute
 
 }; // struct compute_bindings__
 
-template<
-  typename T
->
-class mesh_graph_partition
-{
+template<typename T>
+class mesh_graph_partition {
 public:
   using int_t = T;
 
@@ -427,8 +337,3 @@ public:
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_topology_mesh_utils_h
-
-/*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/

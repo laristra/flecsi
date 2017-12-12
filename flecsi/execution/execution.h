@@ -1,76 +1,92 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_execution_h
-#define flecsi_execution_execution_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 01, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <functional>
 
-#include "flecsi/execution/common/function_handle.h"
-#include "flecsi/execution/common/processor.h"
-#include "flecsi/execution/common/launch.h"
-#include "flecsi/execution/function.h"
-#include "flecsi/execution/kernel.h"
-#include "flecsi/execution/task.h"
-#include "flecsi/utils/common.h"
+#include <flecsi/execution/common/function_handle.h>
+#include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/function.h>
+#include <flecsi/execution/kernel.h>
+#include <flecsi/execution/task.h>
+#include <flecsi/utils/common.h>
 
 clog_register_tag(execution);
 
 //----------------------------------------------------------------------------//
-// Task Interface
+// Helper Macros
 //----------------------------------------------------------------------------//
 
-//----------------------------------------------------------------------------//
-//! @def __flecsi_internal_return_type
-//!
-//! This macro returns the inferred return type for a user task.
-//!
-//! @param task The task to register. This is normally just a function.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
+/*!
+  @def __flecsi_internal_return_type
+
+  This macro returns the inferred return type for a user task.
+
+  @param task The task to register. This is normally just a function.
+
+  @ingroup execution
+ */
 
 #define __flecsi_internal_return_type(task)                                    \
   typename flecsi::utils::function_traits__<decltype(task)>::return_type
 
-//----------------------------------------------------------------------------//
-//! @def __flecsi_internal_arguments_type
-//!
-//! This macro returns the inferred argument type for a user task.
-//!
-//! @param task The task to register. This is normally just a function.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
+
+/*!
+  @def __flecsi_internal_arguments_type
+
+  This macro returns the inferred argument type for a user task.
+
+  @param task The task to register. This is normally just a function.
+
+  @ingroup execution
+ */
 
 #define __flecsi_internal_arguments_type(task)                                 \
   typename flecsi::utils::function_traits__<decltype(task)>::arguments_type
 
+
 //----------------------------------------------------------------------------//
-//! @def flecsi_register_task
-//!
-//! This macro registers a user task with the FleCSI runtime.
-//!
-//! @param task      The task to register. This is normally just a function.
-//! @param processor The \ref processor_type_t type.
-//! @param launch    The \ref launch_t type. This may be an \em or list of
-//!                  supported launch types and configuration options.
-//!
-//! @ingroup execution
+// Task Registration Interface
 //----------------------------------------------------------------------------//
 
-#define flecsi_register_task(task, processor, launch)                          \
+/*!
+  @def flecsi_register_task_simple
+
+  This macro registers a user task with the FleCSI runtime. This is the
+  basic form without support for tasks that are defined within a namespace.
+  Best practice is to use the flecsi_register_task interface that requires
+  that the task be defined in a namespace to scope the task and avoid naming
+  collisions.
+
+  @param task      The task to register. This is normally just a function.
+  @param processor The \ref processor_type_t type.
+  @param launch    The \ref launch_t type. This may be an \em or list of
+                   supported launch types and configuration options.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_task_simple(task, processor, launch)                   \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Define a delegate function to the user's function that takes a tuple */   \
-  /* of the arguments (as opposed to the raw argument pack) */                 \
+  /* of the arguments (as opposed to the raw argument pack). This is */        \
+  /* necessary because we cannot infer the argument type without using */      \
+  /* a tuple. */                                                               \
   inline                                                                       \
   __flecsi_internal_return_type(task)                                          \
   task ## _tuple_delegate(                                                     \
@@ -83,41 +99,116 @@ clog_register_tag(execution);
   /* Call the execution policy to register the task delegate */                \
   bool task ## _task_registered =                                              \
     flecsi::execution::task_interface_t::register_task<                        \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+      flecsi::utils::const_string_t{                                           \
+        EXPAND_AND_STRINGIFY(task)                                             \
+      }.hash(),                                                                \
       __flecsi_internal_return_type(task),                                     \
       __flecsi_internal_arguments_type(task),                                  \
       task ## _tuple_delegate                                                  \
     >                                                                          \
     (flecsi::processor, flecsi::launch, { EXPAND_AND_STRINGIFY(task) })
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_register_mpi_task
-//!
-//! This macro registers an MPI task with the FleCSI runtime.
-//!
-//! @param task The MPI task to register. This is normally just a function.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
 
-#define flecsi_register_mpi_task(task)                                         \
+/*!
+  @def flecsi_register_task
+
+  This macro registers a user task with the FleCSI runtime. This interface
+  requires that the task be scoped in a namespace. This is best practice to
+  avoid the possiblity of naming collisions.
+
+  @param task      The task to register. This is normally just a function.
+  @param nspace    The enclosing namespace of the task.
+  @param processor The \ref processor_type_t type.
+  @param launch    The \ref launch_t type. This may be an \em or list of
+                   supported launch types and configuration options.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_task(task, nspace, processor, launch)                  \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  flecsi_register_task(task, mpi, index | flecsi::leaf)
+  /* Define a delegate function to the user's function that takes a tuple */   \
+  /* of the arguments (as opposed to the raw argument pack). This is */        \
+  /* necessary because we cannot infer the argument type without using */      \
+  /* a tuple. */                                                               \
+  inline                                                                       \
+  __flecsi_internal_return_type(task)                                          \
+  task ## _tuple_delegate(                                                     \
+    __flecsi_internal_arguments_type(task) args                                \
+  )                                                                            \
+  {                                                                            \
+    return flecsi::utils::tuple_function(task, args);                          \
+  } /* delegate task */                                                        \
+                                                                               \
+  /* Call the execution policy to register the task delegate */                \
+  bool task ## _task_registered =                                              \
+    flecsi::execution::task_interface_t::register_task<                        \
+      flecsi::utils::const_string_t{                                           \
+        EXPAND_AND_STRINGIFY(nspace::task)                                     \
+      }.hash(),                                                                \
+      __flecsi_internal_return_type(task),                                     \
+      __flecsi_internal_arguments_type(task),                                  \
+      task ## _tuple_delegate                                                  \
+    >                                                                          \
+    (flecsi::processor, flecsi::launch, { EXPAND_AND_STRINGIFY(nspace::task) })
+
+
+/*!
+  @def flecsi_register_mpi_task_simple
+
+  This macro registers an MPI task with the FleCSI runtime. This is the
+  basic form without support for tasks that are defined within a namespace.
+  Best practice is to use the flecsi_register_mpi_task interface that requires
+  that the task be defined in a namespace to scope the task and avoid naming
+  collisions.
+
+  @param task   The MPI task to register. This is normally just a function.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_mpi_task_simple(task)                                  \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  flecsi_register_task_simple(task, mpi, index | flecsi::leaf)
+
+
+/*!
+  @def flecsi_register_mpi_task
+
+  This macro registers an MPI task with the FleCSI runtime.
+
+  @param task   The MPI task to register. This is normally just a function.
+  @param nspace The enclosing namespace of the task.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_mpi_task(task, nspace)                                 \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  flecsi_register_task(task, nspace, mpi, index | flecsi::leaf)
+
 
 //----------------------------------------------------------------------------//
-//! @def flecsi_execute_task
-//!
-//! This macro executes a user task.
-//!
-//! @param task   The user task to execute.
-//! @param launch The launch mode for the task.
-//! @param ...    The arguments to pass to the user task during execution.
-//!
-//! @ingroup execution
+// Task Execution Interface
 //----------------------------------------------------------------------------//
 
-#define flecsi_execute_task(task, launch, ...)                                 \
+/*!
+  @def flecsi_execute_task_simple
+
+  This macro executes a simple user task, i.e., one that is not scoped in
+  a namespace.
+
+  @param task   The user task to execute.
+  @param launch The launch mode for the task.
+  @param ...    The arguments to pass to the user task during execution.
+
+  @ingroup execution
+ */
+
+#define flecsi_execute_task_simple(task, launch, ...)                          \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Execute the user task */                                                  \
@@ -128,41 +219,80 @@ clog_register_tag(execution);
     __flecsi_internal_arguments_type(task)                                     \
   >                                                                            \
   (                                                                            \
-    flecsi::execution::mask_to_type(flecsi::launch),                           \
-    flecsi::utils::const_string_t{__func__}.hash(), ## __VA_ARGS__             \
+    flecsi::execution::mask_to_type(flecsi::launch), ## __VA_ARGS__            \
   )
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_execute_mpi_task
-//!
-//! This macro executes an MPI task.
-//!
-//! @param task The MPI task to execute.
-//! @param ...  The arguments to pass to the MPI task during execution.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
 
-#define flecsi_execute_mpi_task(task, ...)                                     \
+/*!
+  @def flecsi_execute_task
+
+  This macro executes a user task.
+
+  @param task   The user task to execute.
+  @param nspace The enclosing namespace of the task.
+  @param launch The launch mode for the task.
+  @param ...    The arguments to pass to the user task during execution.
+
+  @ingroup execution
+ */
+
+#define flecsi_execute_task(task, nspace, launch, ...)                         \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  flecsi_execute_task(task, index, ## __VA_ARGS__)
+  /* Execute the user task */                                                  \
+  flecsi_execute_task_simple(nspace::task, launch, ## __VA_ARGS__)
+
+
+/*!
+  @def flecsi_execute_mpi_task_simple
+
+  This macro executes a simple MPI task, i.e., one that is not scoped
+  in a namespace.
+
+  @param task The MPI task to execute.
+  @param ...  The arguments to pass to the MPI task during execution.
+
+  @ingroup execution
+ */
+
+#define flecsi_execute_mpi_task_simple(task, ...)                              \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  flecsi_execute_task_simple(task, index, ## __VA_ARGS__)
+
+
+/*!
+  @def flecsi_execute_mpi_task
+
+  This macro executes an MPI task.
+
+  @param task The MPI task to execute.
+  @param nspace The enclosing namespace of the task.
+  @param ...  The arguments to pass to the MPI task during execution.
+
+  @ingroup execution
+ */
+
+#define flecsi_execute_mpi_task(task, nspace, ...)                             \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  flecsi_execute_task(task, nspace, index, ## __VA_ARGS__)
+
 
 //----------------------------------------------------------------------------//
 // Function Interface
 //----------------------------------------------------------------------------//
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_register_function
-//!
-//! This macro registers a user function with the FleCSI runtime, which may
-//! then be passed as state data and executed in any task address space.
-//!
-//! @param func The function to register. This should be the plain-text
-//!             name of the function (not a string).
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
+/*!
+  @def flecsi_register_function
+
+  This macro registers a user function with the FleCSI runtime, which may
+  then be passed as state data and executed in any task address space.
+
+  @param func The function to register. This should be the plain-text
+
+  @ingroup execution
+ */
 
 #define flecsi_register_function(func)                                         \
 /* MACRO IMPLEMENTATION */                                                     \
@@ -190,16 +320,17 @@ clog_register_tag(execution);
       func ## _frt_t, func ## _fat_t, func ## _tuple_delegate,                 \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(func)}.hash()>()
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_execute_function
-//!
-//! Execute a user function.
-//!
-//! @param handle The function handle.
-//! @param ...    The function arguments.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_execute_function
+
+  Execute a user function.
+
+  @param handle The function handle.
+  @param ...    The function arguments.
+
+  @ingroup execution
+ */
 
 #define flecsi_execute_function(handle, ...)                                   \
 /* MACRO IMPLEMENTATION */                                                     \
@@ -208,15 +339,16 @@ clog_register_tag(execution);
   flecsi::execution::function_interface_t::execute_function(handle,            \
     ## __VA_ARGS__)
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_function_handle
-//!
-//! Create a function handle.
-//!
-//! @param func The function name.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_function_handle
+
+  Create a function handle.
+
+  @param func The function name.
+
+  @ingroup execution
+ */
 
 #define flecsi_function_handle(func)                                           \
 /* MACRO IMPLEMENTATION */                                                     \
@@ -225,17 +357,18 @@ clog_register_tag(execution);
   function_handle_ ## func ## _t(                                              \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(func)}.hash())
 
-//----------------------------------------------------------------------------//
-//! @def flecsi_define_function_type
-//!
-//! Define a function handle type.
-//!
-//! @param func The type name to define.
-//! @param return_type The return type of the function.
-//! @param ... The input parameters to the function.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_define_function_type
+
+  Define a function handle type.
+
+  @param func The type name to define.
+  @param return_type The return type of the function.
+  @param ... The input parameters to the function.
+
+  @ingroup execution
+ */
 
 #define flecsi_define_function_type(func, return_type, ...)                    \
 /* MACRO IMPLEMENTATION */                                                     \
@@ -243,61 +376,3 @@ clog_register_tag(execution);
   /* Define a function handle type */                                          \
   using func = flecsi::execution::function_handle__<return_type,               \
     std::tuple<__VA_ARGS__>>
-
-//----------------------------------------------------------------------------//
-// Kernel Interface
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
-//! @def flecsi_for_each
-//!
-//! Kernel abstraction interface for data-parallel execution.
-//!
-//! @param index The name of the counter to use, e.g., \em cnt.
-//! @param index_space A valid \ref index_space_t instance.
-//! @param kernel The kernel logic to execution.
-//!
-//! Code Example:
-//! @code{.cpp}
-//! // Print the id of each mesh cell.
-//!
-//! flecsi_for_each(c, mesh.cells(), {
-//!   std::cout << c.id() << std::endl;
-//! }); // flecsi_for_each
-//! @endcode
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
-
-#define flecsi_for_each(index, index_space, kernel)                            \
-/* MACRO IMPLEMENTATION */                                                     \
-                                                                               \
-  /* Call the execution policy for_each function */                            \
-  flecsi::execution::for_each__(index_space, [&](auto * index) kernel)
-
-//----------------------------------------------------------------------------//
-//! @def flecsi_reduce_each
-//!
-//! Kernel abstraction interface for data-parallel reductions.
-//!
-//! @param index The name of the counter to use, e.g., \em cnt.
-//! @param index_space A valid \ref index_space_t instance.
-//! @param variable The variable in which to store the result.
-//! @param kernel The kernel logic to execution.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
-
-#define flecsi_reduce_each(index, index_space, variable, kernel)               \
-/* MACRO IMPLEMENTATION */                                                     \
-                                                                               \
-  /* Call the execution policy reduce_each function */                         \
-  flecsi::execution::reduce_each__(index_space, variable,                      \
-    [&](auto * index, auto & variable) kernel)
-
-#endif // flecsi_execution_execution_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

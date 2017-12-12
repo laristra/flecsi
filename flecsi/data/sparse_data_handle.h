@@ -1,19 +1,22 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_sparse_data_handle_h
-#define flecsi_sparse_data_handle_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/data/data_handle.h"
+/*! @file */
 
-#include "flecsi/data/common/data_types.h"
-
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Oct 06, 2017
-//----------------------------------------------------------------------------//
+#include <flecsi/data/common/data_types.h>
+#include <flecsi/data/data_handle.h>
 
 namespace flecsi {
 
@@ -58,7 +61,9 @@ struct sparse_data_handle_base__ :
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  sparse_data_handle_base__(const sparse_data_handle_base__& b)
+  sparse_data_handle_base__(
+    const sparse_data_handle_base__& b
+  )
   : DATA_POLICY(b),
   index_space(b.index_space),
   data_client_hash(b.data_client_hash),
@@ -112,10 +117,3 @@ using sparse_data_handle__ = sparse_data_handle_base__<
 >;
 
 } // namespace flecsi
-
-#endif // flecsi_sparse_data_handle_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

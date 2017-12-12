@@ -26,11 +26,17 @@
 #include <stack>
 
 #include <cinchlog.h>
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
 #include <legion.h>
 #include <legion_stl.h>
 
-#if !defined(ENABLE_MPI)
-  #error ENABLE_MPI not defined! This file depends on MPI!
+#if !defined(FLECSI_ENABLE_MPI)
+  #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
 #include <mpi.h>
@@ -48,30 +54,6 @@
 
 namespace flecsi {
 namespace execution {
-
-//----------------------------------------------------------------------------//
-//! Context state uses thread-local storage (TLS). The state is set for
-//! each Legion task invocation using the task name hash of the plain-text
-//! task name as a key. This should give sufficient isolation from naming
-//! collisions. State should only be pushed or popped from the FleCSI
-//! task wrapper, or from top-level driver calls.
-//!
-//! FleCSI developers should be extremely careful with how this state
-//! is used. In particular, you should not rely on any particular
-//! initialization of this state, i.e., it may be uninitialized on any
-//! given thread. The current implementation does not make any assumptions
-//! about what tasks may have been invoked from a particular thread before
-//! pushing context information onto this state. It is safe for this state
-//! to be uninitialized when it is encountered by a task executing in
-//! the FleCSI runtime. This property \em must be maintained.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
-
-#if !defined(ENABLE_LEGION_TLS)
-  extern thread_local std::unordered_map<size_t,
-    std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;
-#endif
 
 //----------------------------------------------------------------------------//
 //! mapper tag's IDs
@@ -172,56 +154,6 @@ struct legion_context_policy_t
   {
     return colors_;
   } // color
-
-  //--------------------------------------------------------------------------//
-  //! Push Legion runtime state onto a task specific stack. In this case,
-  //! \em task is the plain-text name of the user's task.
-  //!
-  //! @param key     The task hash key.
-  //! @param context The Legion task context reference.
-  //! @param runtime The Legion task runtime pointer.
-  //! @param task    The Legion task pointer.
-  //! @param regions The Legion physical regions.
-  //--------------------------------------------------------------------------//
-
-#if !defined(ENABLE_LEGION_TLS)
-  void push_state(
-    size_t key,
-    Legion::Context & context,
-    Legion::Runtime * runtime,
-    const Legion::Task * task,
-    const std::vector<Legion::PhysicalRegion> & regions
-  )
-  {
-    {
-    clog_tag_guard(context);
-    clog(info) << "Pushing state for " << key << std::endl;
-    }
-
-    state_[key].push(std::shared_ptr<legion_runtime_state_t>
-      (new legion_runtime_state_t(context, runtime, task, regions)));
-  } // push_state
-#endif
-
-  //--------------------------------------------------------------------------//
-  //! Pop Legion runtime state off of the stack.
-  //!
-  //! @param key The task hash key.
-  //--------------------------------------------------------------------------//
-
-#if !defined(ENABLE_LEGION_TLS)
-  void pop_state(
-    size_t key
-  )
-  {
-    {
-    clog_tag_guard(context);
-    clog(info) << "Popping state for " << key << std::endl;
-    }
-
-    state_[key].pop();
-  } // pop_state
-#endif
 
   //--------------------------------------------------------------------------//
   // MPI interoperability.
@@ -533,38 +465,6 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   //--------------------------------------------------------------------------//
-  //! Return the Legion task runtime context for the given task key.
-  //!
-  //! @param key The task hash key.
-  //--------------------------------------------------------------------------//
-
-#if !defined(ENABLE_LEGION_TLS)
-  Legion::Context &
-  context(
-    size_t key
-  )
-  {
-    return state_[key].top()->context;
-  } // context
-#endif
-
-  //--------------------------------------------------------------------------//
-  //! Return the Legion task runtime pointer for the given task key.
-  //!
-  //! @param key The task hash key.
-  //--------------------------------------------------------------------------//
-
-#if !defined(ENABLE_LEGION_TLS)
-  Legion::Runtime *
-  runtime(
-    size_t key
-  )
-  {
-    return state_[key].top()->runtime;
-  } // runtime
-#endif
-
-  //--------------------------------------------------------------------------//
   //! Collects Legion data associated with a FleCSI index space.
   //--------------------------------------------------------------------------//
 
@@ -585,16 +485,32 @@ struct legion_context_policy_t
     Legion::LogicalRegion ghost_lr;
   };
 
+  //--------------------------------------------------------------------------//
+  //! Collects Legion data associated with a local FleCSI index space.
+  //--------------------------------------------------------------------------//
+
+  struct local_index_space_data_t{
+    Legion::LogicalRegion region;
+  };
+
   //------------------------------------------------------------------------//
-  //! Get index space data.
-  //!
-  //! @param index_space FleCSI index space, e.g. cells key
+  //! Get the index space data map.
   //------------------------------------------------------------------------//
 
   auto&
   index_space_data_map()
   {
     return index_space_data_map_;
+  }
+
+  //------------------------------------------------------------------------//
+  //! Get the local index space data map.
+  //------------------------------------------------------------------------//
+
+  auto&
+  local_index_space_data_map()
+  {
+    return local_index_space_data_map_;
   }
 
   //--------------------------------------------------------------------------//
@@ -765,6 +681,7 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
+  std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
   Legion::DynamicCollective max_reduction_;
   Legion::DynamicCollective min_reduction_;
 

@@ -19,12 +19,8 @@ namespace utils {
 //!
 //! This function will be deprecated in c++17.
 //!
-template<
-  typename CT,
-  typename T
->
-struct as_const
-{
+template<typename CT, typename T>
+struct as_const {
   using type = T;
 }; // struct as_const
 

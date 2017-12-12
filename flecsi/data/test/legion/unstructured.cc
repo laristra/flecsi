@@ -1,11 +1,30 @@
+/*~-------------------------------------------------------------------------~~*
+ *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+ * /@@/////  /@@          @@////@@ @@////// /@@
+ * /@@       /@@  @@@@@  @@    // /@@       /@@
+ * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+ * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+ * /@@       /@@/@@//// //@@    @@       /@@/@@
+ * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+ * //       ///  //////   //////  ////////  //
+ *
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
+ *~-------------------------------------------------------------------------~~*/
+
 #include <cinchtest.h>
 #include <iostream>
 #include <sstream>
 
-#include "flecsi/topology/mesh_topology.h"
+#include <flecsi-config.h>
 
-#include "legion.h"
-#include "legion_config.h"
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
+
+#include "flecsi/topology/mesh_topology.h"
 
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
@@ -280,3 +299,8 @@ TEST(legion, test1) {
 
   Runtime::start(argc, argv);
 }
+
+/*~------------------------------------------------------------------------~--*
+ * Formatting options
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~------------------------------------------------------------------------~--*/

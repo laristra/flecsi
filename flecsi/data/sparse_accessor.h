@@ -1,17 +1,24 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_sparse_accessor_h
-#define flecsi_sparse_accessor_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/data/sparse_data_handle.h"
+/*! @file */
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Nov 14, 2017
-//----------------------------------------------------------------------------//
+#include <unordered_set>
+
+#include <flecsi/data/sparse_data_handle.h>
+#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 
@@ -26,7 +33,7 @@ namespace flecsi {
 struct sparse_accessor_base_t {};
 
 //----------------------------------------------------------------------------//
-//! The sparse_accessor type captures information about permissions
+//! The sparse accessor__ type captures information about permissions
 //! and specifies a data policy.
 //!
 //! @tparam T                     The data type referenced by the handle.
@@ -47,7 +54,21 @@ template<
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS
 >
-struct sparse_accessor : public sparse_accessor_base_t {
+struct accessor__<
+  data::sparse,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS
+> :
+public accessor__<
+  data::base,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS
+>, public sparse_accessor_base_t
+{
   using handle_t = 
     sparse_data_handle__<
       T,
@@ -59,11 +80,14 @@ struct sparse_accessor : public sparse_accessor_base_t {
   using offset_t = typename handle_t::offset_t;
   using entry_value_t = typename handle_t::entry_value_t;
 
-  //--------------------------------------------------------------------------//
-  //! Copy constructor.
-  //--------------------------------------------------------------------------//
+  using index_space_t = 
+    topology::index_space<topology::simple_entry<size_t>, true>;
 
-  sparse_accessor(const sparse_data_handle__<T, 0, 0, 0>& h)
+  //-------------------------------------------------------------------------//
+  //! Copy constructor.
+  //-------------------------------------------------------------------------//
+
+  accessor__(const sparse_data_handle__<T, 0, 0, 0>& h)
   : handle(reinterpret_cast<const handle_t&>(h)){
 
   }
@@ -94,10 +118,119 @@ struct sparse_accessor : public sparse_accessor_base_t {
     return itr->value;
   } // operator ()
 
+
+  //-------------------------------------------------------------------------//
+  //! Return all entries used over all indices.
+  //-------------------------------------------------------------------------//
+  index_space_t
+  entries()
+  const
+  {
+    size_t id = 0;
+    index_space_t is;
+    std::unordered_set<size_t> found;
+
+    for(size_t index = 0; index < handle.num_total_; ++index){
+      const offset_t& oi = handle.offsets[index];
+
+      entry_value_t * itr = handle.entries + oi.start();
+      entry_value_t * end = itr + oi.count();
+
+      while(itr != end){
+        size_t entry = itr->entry;
+        if(found.find(entry) == found.end()){
+          is.push_back({id++, entry});
+          found.insert(entry);
+        }
+        ++itr;
+      }
+    }
+
+    return is;    
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return all entries used over the specified index.
+  //-------------------------------------------------------------------------//
+  index_space_t
+  entries(
+    size_t index
+  )
+  const
+  {
+    clog_assert(index < handle.num_total_, "sparse accessor: index out of bounds");
+
+    const offset_t& oi = handle.offsets[index];
+
+    entry_value_t * itr = handle.entries + oi.start();
+    entry_value_t * end = itr + oi.count();
+
+    index_space_t is;
+
+    size_t id = 0;
+    while(itr != end){
+      is.push_back({id++, itr->entry});
+      ++itr;
+    }
+
+    return is;    
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return all indices allocated.
+  //-------------------------------------------------------------------------//
+  index_space_t
+  indices()
+  const
+  {
+    index_space_t is;
+    size_t id = 0;
+
+    for(size_t index = 0; index < handle.num_total_; ++index){
+      const offset_t& oi = handle.offsets[index];
+
+      if(oi.count() != 0){
+        is.push_back({id++, index});
+      }
+    }
+
+    return is;
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return all indices allocated for a given entry.
+  //-------------------------------------------------------------------------//
+  index_space_t
+  indices(
+    size_t entry
+  )
+  const
+  {
+    index_space_t is;
+    size_t id = 0;
+
+    for(size_t index = 0; index < handle.num_total_; ++index){
+      const offset_t& oi = handle.offsets[index];
+
+      entry_value_t * start = handle.entries + oi.start();
+      entry_value_t * end = start + oi.count();
+
+      if(std::binary_search(start, end, entry_value_t(entry),
+          [](const auto & k1, const auto & k2) -> bool {
+            return k1.entry < k2.entry;
+          })){
+        is.push_back({id++, index});
+      }
+    }
+
+    return is;
+  }
+
   void dump() const{
     for(size_t i = 0; i < handle.num_total_; ++i){
       const offset_t& offset = handle.offsets[i];
       std::cout << "index: " << i << std::endl;
+      //std::cout << "offset: " << offset.start() << std::endl;
       for(size_t j = 0; j < offset.count(); ++j){
         size_t k = offset.start() + j;
         std::cout << "  " << handle.entries[k].entry << 
@@ -109,11 +242,23 @@ struct sparse_accessor : public sparse_accessor_base_t {
   handle_t handle;  
 };
 
+template<
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
+>
+using sparse_accessor__ = 
+  accessor__<data::sparse, T, EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+
+template<
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS
+>
+using sparse_accessor = 
+  sparse_accessor__<T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+
 } // namespace flecsi
-
-#endif // flecsi_sparse_accessor_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

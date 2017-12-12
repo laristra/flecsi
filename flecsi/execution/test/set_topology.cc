@@ -25,7 +25,8 @@ using namespace topology;
 using namespace coloring;
 
 class entity1 : public set_entity_t{
-
+public:
+  double x;
 };
 
 class entity2 : public set_entity_t{
@@ -35,8 +36,7 @@ class entity2 : public set_entity_t{
 class set_types{
 public:
   using entity_types = std::tuple<
-    std::tuple<index_space_<0>, entity1>,
-    std::tuple<index_space_<1>, entity2>
+    std::tuple<index_space_<0>, entity1>
     >;
 };
 
@@ -45,42 +45,42 @@ using set_t = set_topology_t<set_types>;
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
-void task1(client_handle_t<set_t, rw> mesh) {
+void task1(client_handle_t<set_t, wo> sh) {
+  auto e1 = sh.make<entity1>();
+  e1->x = 1.0;
 
+  auto e2 = sh.make<entity1>();
+  e2->x = 2.0;
 }
 
-flecsi_register_task(task1, loc, single);
+void task2(client_handle_t<set_t, ro> sh) {
+  for(auto ei : sh.entities<0>()){
+    cout << ei->x << endl;
+  }
+}
+
+flecsi_register_data_client(set_t, sets, set1); 
+
+flecsi_register_task_simple(task1, loc, single);
+flecsi_register_task_simple(task2, loc, single);
 
 namespace flecsi {
 namespace execution {
 
 void specialization_tlt_init(int argc, char ** argv) {
-  context_t & context_ = context_t::instance();
-  
-  size_t n = 100;
-  size_t colors = context_.colors();
-  size_t nc = n/colors;
 
-  std::unordered_map<size_t, coloring_info_t> coloring_info;
-  
-  for(size_t i = 0; i < colors; ++i){
-    coloring_info_t ci;
-    ci.exclusive = nc;
-    ci.shared = 0;
-    ci.ghost = 0;
-
-    coloring_info[i] = std::move(ci);
-  }
-
-  context_.add_set_coloring(0, coloring_info);
 }
 
 void specialization_spmd_init(int argc, char ** argv) {
-
+  auto& context = execution::context_t::instance();
+  context.add_local_index_space(0, 512);
 }
 
 void driver(int argc, char ** argv) {
+  auto sh = flecsi_get_client_handle(set_t, sets, set1);
 
+  flecsi_execute_task_simple(task1, single, sh);
+  flecsi_execute_task_simple(task2, single, sh);
 }
 
 } // namespace execution

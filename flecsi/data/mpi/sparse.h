@@ -1,15 +1,4 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_mpi_sparse_h
@@ -24,22 +13,22 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
+#include <algorithm>
+#include <memory>
+
 #include "flecsi/data/common/data_types.h"
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
-#include "flecsi/data/sparse_data_handle.h"
 #include "flecsi/data/mutator_handle.h"
+#include "flecsi/data/sparse_data_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 
-#include <algorithm>
-#include <memory>
-
-///
-/// \file
-/// \date Initial file creation: Oct 05, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Oct 05, 2017
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace data {
@@ -155,10 +144,16 @@ struct storage_class__<sparse>
       auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
       auto &index_coloring = context.coloring(field_info.index_space);
 
+      auto& im = context.sparse_index_space_info_map();
+      auto iitr = im.find(field_info.index_space);
+      clog_assert(iitr != im.end(),
+        "sparse index space info not registered for index space: " <<
+        field_info.index_space);
+
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
-      const size_t max_entries_per_index = 5;
-      const size_t reserve_chunk = 8192;
+      const size_t max_entries_per_index = iitr->second.max_entries_per_index;
+      const size_t reserve_chunk = iitr->second.reserve_chunk;
 
       // TODO: deal with VERSION
       context.register_sparse_field_data(field_info.fid, field_info.size,
@@ -223,10 +218,16 @@ struct storage_class__<sparse>
       auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
       auto &index_coloring = context.coloring(field_info.index_space);
 
+      auto& im = context.sparse_index_space_info_map();
+      auto iitr = im.find(field_info.index_space);
+      clog_assert(iitr != im.end(),
+        "sparse index space info not registered for index space: " <<
+        field_info.index_space);
+
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
-      const size_t max_entries_per_index = 5;
-      const size_t reserve_chunk = 8192;
+      const size_t max_entries_per_index = iitr->second.max_entries_per_index;
+      const size_t reserve_chunk = iitr->second.reserve_chunk;
 
       // TODO: deal with VERSION
       context.register_sparse_field_data(field_info.fid, field_info.size,
@@ -240,6 +241,11 @@ struct storage_class__<sparse>
 
     mutator_handle__<DATA_TYPE> h(fd.num_exclusive, fd.num_shared, 
       fd.num_ghost, fd.max_entries_per_index, slots);
+
+    h.fid = field_info.fid;
+    h.index_space = field_info.index_space;
+    h.data_client_hash = field_info.data_client_hash;
+
     h.offsets = &fd.offsets;
     h.entries = &fd.entries;
     h.reserve = &fd.reserve;
@@ -252,6 +258,67 @@ struct storage_class__<sparse>
 
 }; // struct storage_class_t
 
+template<>
+struct storage_class__<ragged>
+{
+  //--------------------------------------------------------------------------//
+  // Type definitions.
+  //--------------------------------------------------------------------------//
+
+  template<
+    typename T,
+    size_t EP,
+    size_t SP,
+    size_t GP
+  >
+  using handle_t = sparse_handle_t<T, EP, SP, GP>;
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION
+  >
+  static
+  auto
+  get_handle(
+    const data_client_t & data_client
+  )
+  {
+    return storage_class__<sparse>::get_handle<
+      DATA_CLIENT_TYPE,
+      DATA_TYPE,
+      NAMESPACE,
+      NAME,
+      VERSION
+    >(data_client);
+  }
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION
+  >
+  static
+  auto
+  get_mutator(
+    const data_client_t & data_client,
+    size_t slots
+  )
+  {
+    return storage_class__<sparse>::get_mutator<
+      DATA_CLIENT_TYPE,
+      DATA_TYPE,
+      NAMESPACE,
+      NAME,
+      VERSION
+  >(data_client, slots);
+  }
+}; // struct storage_class_t
+
 } // namespace mpi
 } // namespace data
 } // namespace flecsi
@@ -259,6 +326,4 @@ struct storage_class__<sparse>
 #endif // flecsi_mpi_sparse_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

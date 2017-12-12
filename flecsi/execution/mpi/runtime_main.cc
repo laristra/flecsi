@@ -17,14 +17,18 @@
 //! @date Initial file creation: Jul 26, 2016
 //----------------------------------------------------------------------------//
 
-#ifdef ENABLE_MPI
-  #include <mpi.h>
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_MPI)
+  #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
+
+#include <mpi.h>
 
 #include <flecsi/execution/context.h>
 
 // Boost command-line options
-#if defined(ENABLE_BOOST_PROGRAM_OPTIONS)
+#if defined(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
   #include <boost/program_options.hpp>
   using namespace boost::program_options;
 #endif
@@ -53,7 +57,7 @@ int main(int argc, char ** argv) {
   //--------------------------------------------------------------------------//
   // Use BOOST Program Options
 
-#if defined(ENABLE_BOOST_PROGRAM_OPTIONS)
+#if defined(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
   options_description desc("Cinch test options");  
 
   // Add command-line options
@@ -81,7 +85,7 @@ int main(int argc, char ** argv) {
   } // if
 
   
-#endif // ENABLE_BOOST_PROGRAM_OPTIONS
+#endif // FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS
 
   // End BOOST Program Options
   //--------------------------------------------------------------------------//

@@ -20,9 +20,16 @@
 //! @date Initial file creation: May 19, 2017
 //----------------------------------------------------------------------------//
 
-#include <legion.h>
 #include <type_traits>
 #include <vector>
+
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
 
 #include "flecsi/utils/tuple_walker.h"
 
@@ -82,7 +89,7 @@ namespace execution {
     >
     void
     handle(
-      dense_accessor<
+      dense_accessor__<
         T,
         EXCLUSIVE_PERMISSIONS,
         SHARED_PERMISSIONS,

@@ -1,21 +1,8 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef FLECSI_DATA_LEGION_storage_policy_h
 #define FLECSI_DATA_LEGION_storage_policy_h
-
-
 
 //----------------------------------------------------------------------------//
 // @file
@@ -25,9 +12,7 @@
 namespace flecsi {
 namespace data {
 
-struct legion_storage_policy_t {
-
-}; // struct legion_storage_policy_t
+struct legion_storage_policy_t {}; // struct legion_storage_policy_t
 
 } // namespace data
 } // namespace flecsi
@@ -35,6 +20,4 @@ struct legion_storage_policy_t {
 #endif // FLECSI_DATA_LEGION_storage_policy_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/

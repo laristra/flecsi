@@ -1,18 +1,24 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_topology_mesh_definition_h
-#define flecsi_topology_mesh_definition_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Nov 17, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <set>
 #include <vector>
 
-#include "flecsi/geometry/point.h"
+#include <flecsi/geometry/point.h>
 
 namespace flecsi {
 namespace topology {
@@ -23,13 +29,9 @@ namespace topology {
 //! @ingroup mesh-topology
 //----------------------------------------------------------------------------//
 
-template<
-  size_t DIMENSION
->
-class mesh_definition__
-{
+template<size_t DIMENSION>
+class mesh_definition__ {
 public:
-
   using point_t = point__<double, DIMENSION>;
 
   /// Default constructor
@@ -39,19 +41,15 @@ public:
   mesh_definition__(const mesh_definition__ &) = delete;
 
   /// Assignment operator (disabled)
-  mesh_definition__ & operator = (const mesh_definition__ &) = delete;
+  mesh_definition__ & operator=(const mesh_definition__ &) = delete;
 
   /// Destructor
   virtual ~mesh_definition__() {}
-  
+
   ///
   /// Return the dimension of the mesh.
   ///
-  static 
-  constexpr
-  size_t
-  dimension()
-  {
+  static constexpr size_t dimension() {
     return DIMENSION;
   } // dimension
 
@@ -74,14 +72,8 @@ public:
   //!                       being requested.
   //--------------------------------------------------------------------------//
 
-  virtual
-  std::vector<size_t>
-  entities(
-    size_t from_dimension,
-    size_t to_dimension,
-    size_t id
-  )
-  const = 0;
+  virtual std::vector<size_t>
+  entities(size_t from_dimension, size_t to_dimension, size_t id) const = 0;
 
   //--------------------------------------------------------------------------//
   //! Abstract interface to get the entities of dimension \em to that define
@@ -94,15 +86,8 @@ public:
   //!                       being requested.
   //--------------------------------------------------------------------------//
 
-  virtual
-  std::set<size_t> 
-  entities_set(
-    size_t from_dimension,
-    size_t to_dimension,
-    size_t id
-  )
-  const
-  {
+  virtual std::set<size_t>
+  entities_set(size_t from_dimension, size_t to_dimension, size_t id) const {
     auto vvec = entities(from_dimension, to_dimension, id);
     return std::set<size_t>(vvec.begin(), vvec.end());
   } // entities_set
@@ -111,8 +96,3 @@ public:
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_topology_mesh_definition_h
-
-/*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/

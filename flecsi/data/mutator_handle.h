@@ -1,17 +1,21 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_mutator_handle_h
-#define flecsi_mutator_handle_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/data/common/data_types.h"
+/*! @file */
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Sep 28, 2017
-//----------------------------------------------------------------------------//
+#include <flecsi/data/common/data_types.h>
 
 namespace flecsi {
 
@@ -73,31 +77,48 @@ public:
 
   ~mutator_handle_base__(){}
 
-  void init(){
+  void
+  init()
+  {
     offsets_ = new offset_t[num_entries_]; 
     entries_ = new entry_value_t[num_entries_ * num_slots_];
     spare_map_ = new spare_map_t;    
   }
 
-  void commit(commit_info_t* ci){
+  void
+  commit(
+    commit_info_t* ci
+  )
+  {
     if(erase_set_){
       commit_<true>(ci);
     }
-    else{
-      commit_<false>(ci);
+    else {
+      if (size_map_) {
+        raggedCommit_(ci);
+      } else {
+        commit_<false>(ci);
+      }
     }
-  }
+  } // operator ()
 
-  template<bool ERASE>
-  void commit_(commit_info_t* ci){
+  template<
+    bool ERASE
+  >
+  void
+  commit_(
+    commit_info_t* ci
+  )
+  {
     assert(offsets_ && "uninitialized mutator");
+    ci_ = *ci;
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
 
-    entry_value_t* cbuf = new entry_value_t[num_exclusive_entries];
-
     entry_value_t* entries = ci->entries[0];
     offset_t* offsets = ci->offsets;
+
+    entry_value_t* cbuf = new entry_value_t[num_exclusive_entries];
 
     entry_value_t* cptr = cbuf;
     entry_value_t* eptr = entries;
@@ -114,7 +135,7 @@ public:
       size_t used_slots = oi.count();
 
       size_t num_merged = merge<ERASE>(i, eptr, num_existing, sptr,
-        used_slots, *spare_map_, cptr);
+        used_slots, cptr);
 
       eptr += num_existing;
       coi.set_offset(offset);
@@ -136,10 +157,10 @@ public:
     cbuf = new entry_value_t[max_entries_per_index_];
 
     for(size_t i = start; i < end; ++i){
-      entry_value_t* eptr = ci->entries[1] + max_entries_per_index_ * i;
-
       const offset_t& oi = offsets_[i];
       offset_t& coi = offsets[i];
+
+      entry_value_t* eptr = entries + coi.start();
 
       entry_value_t* sptr = entries_ + i * num_slots_;
 
@@ -148,7 +169,7 @@ public:
       size_t used_slots = oi.count();
 
       size_t num_merged = merge<ERASE>(i, eptr, num_existing, sptr,
-        used_slots, *spare_map_, cbuf);
+        used_slots, cbuf);
 
       if(num_merged > 0){
         assert(num_merged <= max_entries_per_index_);
@@ -174,24 +195,186 @@ public:
     }
   }
 
-  size_t num_exclusive() const{
+  void
+  raggedCommit_(
+    commit_info_t* ci
+  )
+  {
+    assert(offsets_ && "uninitialized mutator");
+
+    size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
+
+    entry_value_t* entries = ci->entries[0];
+    offset_t* offsets = ci->offsets;
+
+    for(auto& itr : *size_map_){
+      num_exclusive_entries += 
+        int64_t(itr.second) - int64_t(offsets[itr.first].count());
+    }
+
+    entry_value_t* cbuf = new entry_value_t[num_exclusive_entries];
+
+    entry_value_t* cptr = cbuf;
+    entry_value_t* eptr = entries;
+
+    size_t offset = 0;
+
+    for(size_t index = 0; index < num_exclusive_; ++index){
+      const offset_t& oi = offsets_[index];
+      offset_t& coi = offsets[index];
+
+      entry_value_t* sptr = entries_ + index * num_slots_;
+
+      size_t num_existing = coi.count();
+      size_t used_slots = oi.count();
+
+      for(size_t j = 0; j < num_existing; ++j){
+        cptr[j] = eptr[j];
+      }
+
+      for(size_t j = 0; j < used_slots; ++j){
+        size_t k = sptr[j].entry;
+        cptr[k].entry = k;
+        cptr[k].value = sptr[j].value;
+      }
+
+      auto p = spare_map_->equal_range(index);
+      auto itr = p.first;
+      auto itr_end = p.second;
+      while(itr != itr_end){
+        size_t k = itr->second.entry;
+        cptr[k].entry = k;
+        cptr[k].value = itr->second.value;
+        ++itr;
+      }
+
+      coi.set_offset(offset);
+
+      auto sitr = size_map_->find(index);
+      
+      if(sitr != size_map_->end()){
+        size_t resize = sitr->second;
+        coi.set_count(resize);
+        offset += resize;
+        cptr += resize;
+      }
+      else{
+        offset += num_existing;
+        cptr += num_existing;
+      }
+
+      eptr += num_existing;
+    }
+
+    std::memcpy(entries, cbuf, sizeof(entry_value_t) * (cptr - cbuf));
+    delete[] cbuf;
+
+    size_t start = num_exclusive_;
+    size_t end = start + pi_.count[1] + pi_.count[2];
+
+    cbuf = new entry_value_t[max_entries_per_index_];
+
+    for(size_t index = start; index < end; ++index){
+      entry_value_t* eptr = ci->entries[1] + max_entries_per_index_ * index;
+
+      const offset_t& oi = offsets_[index];
+      offset_t& coi = offsets[index];
+
+      entry_value_t* sptr = entries_ + index * num_slots_;
+
+      size_t num_existing = coi.count();
+      
+      size_t used_slots = oi.count();
+
+      for(size_t j = 0; j < num_existing; ++j){
+        cbuf[j] = eptr[j];
+      }
+
+      for(size_t j = 0; j < used_slots; ++j){
+        size_t k = sptr[j].entry;
+        cbuf[k].entry = k;
+        cbuf[k].value = sptr[j].value;
+      }
+
+      auto p = spare_map_->equal_range(index);
+      auto itr = p.first;
+      auto itr_end = p.second;
+      while(itr != itr_end){
+        size_t k = itr->second.entry;
+        cbuf[k].entry = k;
+        cbuf[k].value = itr->second.value;
+        ++itr;
+      }
+
+      size_t size;
+
+      auto sitr = size_map_->find(index);
+
+      if(sitr != size_map_->end()){
+        size = sitr->second;
+        coi.set_count(size);
+      }
+      else{
+        size = num_existing;
+      }
+
+      std::memcpy(eptr, cbuf, sizeof(entry_value_t) * size);
+    }
+
+    delete[] cbuf;
+
+    delete[] entries_;
+    entries_ = nullptr;
+
+    delete[] offsets_;
+    offsets_ = nullptr;
+
+    delete spare_map_;
+    spare_map_ = nullptr;
+
+    delete size_map_;
+    size_map_ = nullptr;
+  }
+
+  size_t
+  num_exclusive() const
+  {
     return pi_.count[0];
   }
 
-  size_t num_shared() const{
+  size_t
+  num_shared() const
+  {
     return pi_.count[1];
   }
 
-  size_t num_ghost() const{
+  size_t
+  num_ghost() const
+  {
     return pi_.count[2];
   }
 
-  size_t max_entries_per_index() const{
+  size_t
+  max_entries_per_index() const
+  {
     return max_entries_per_index_;
+  }
+
+  commit_info_t&
+  commit_info()
+  {
+    return ci_;
+  }
+
+  const commit_info_t&
+  commit_info() const
+  {
+    return ci_;
   }
 
   using spare_map_t = std::multimap<size_t, entry_value_t>;
   using erase_set_t = std::set<std::pair<size_t, size_t>>;
+  using size_map_t = std::unordered_map<size_t, size_t>;
 
   partition_info_t pi_;
   size_t num_exclusive_;
@@ -202,22 +385,29 @@ public:
   entry_value_t* entries_ = nullptr;
   spare_map_t* spare_map_ = nullptr;
   erase_set_t * erase_set_ = nullptr;
+  size_map_t* size_map_ = nullptr;
+  commit_info_t ci_;
 
-  template<bool ERASE>
-  size_t merge(size_t index,
-               entry_value_t* existing,
-               size_t num_existing,
-               entry_value_t* slots,
-               size_t num_slots,
-               const spare_map_t& spare_map,
-               entry_value_t* dest){
+  template<
+    bool ERASE
+  >
+  size_t
+  merge(
+    size_t index,
+    entry_value_t* existing,
+    size_t num_existing,
+    entry_value_t* slots,
+    size_t num_slots,
+    entry_value_t* dest
+    ){
+    
     constexpr size_t end = std::numeric_limits<size_t>::max();
     entry_value_t* existing_end = existing + num_existing;
     entry_value_t* slots_end = slots + num_slots;
 
     entry_value_t* dest_start = dest;
 
-    auto p = spare_map.equal_range(index);
+    auto p = spare_map_->equal_range(index);
     auto itr = p.first;
 
     size_t spare_entry = itr != p.second ? itr->second.entry : end;
@@ -289,10 +479,3 @@ using mutator_handle__ = mutator_handle_base__<
 >;
 
 } // namespace flecsi
-
-#endif // flecsi_mutator_handle_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

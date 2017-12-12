@@ -40,8 +40,8 @@ void reader(dense_accessor<double, ro, ro, ro> x) {
   }
 }
 
-flecsi_register_task(writer, loc, single);
-flecsi_register_task(reader, loc, single);
+flecsi_register_task_simple(writer, loc, single);
+flecsi_register_task_simple(reader, loc, single);
 
 flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
@@ -64,7 +64,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   map.vertices = 1;
   map.cells = 0;
 
-  flecsi_execute_mpi_task(add_colorings, map);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 } // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
@@ -85,8 +85,8 @@ void driver(int argc, char ** argv) {
 
   auto h = flecsi_get_handle(ch, ns, pressure, double, dense, 0);
 
-  flecsi_execute_task(writer, single, h);
-  flecsi_execute_task(reader, single, h);
+  flecsi_execute_task_simple(writer, single, h);
+  flecsi_execute_task_simple(reader, single, h);
 } // driver
 
 //----------------------------------------------------------------------------//

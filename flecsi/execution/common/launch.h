@@ -1,31 +1,36 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_common_launch_h
-#define flecsi_execution_common_launch_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-///
-/// \file
-/// \date Initial file creation: Aug 23, 2016
-///
+/*! @file */
 
 #include <bitset>
 
-#include "flecsi/utils/debruijn.h"
+#include <flecsi/utils/debruijn.h>
 
 namespace flecsi {
 
-///
-/// Bitmasks for launch types.
-///
-/// \note This enumeration is not scoped so that users can do things
-///       like:
-///       \code
-///       launch_t l(single | leaf);
-///       \endcode
-///
+/*!
+  Bitmasks for launch types.
+
+  \note This enumeration is not scoped so that users can do things
+        like:
+        \code
+        launch_t l(single | leaf);
+        \endcode
+ */
+
 enum launch_mask_t : size_t {
   single     = 1 << 0,
   index      = 1 << 1,
@@ -43,18 +48,20 @@ namespace execution {
 // launch_t below.
 constexpr size_t launch_bits = 5;
 
-///
-/// Use a std::bitset to store launch information.
-///
-/// \note This will most likely use 4 bytes of data for efficiency.
-///
+/*!
+  Use a std::bitset to store launch information.
+
+  @note This will most likely use 4 bytes of data for efficiency.
+ */
+
 using launch_t = std::bitset<launch_bits>;
 
-///
-/// Enumeration of various task launch types. Not all of these may be
-/// supported by all runtimes. Unsupported launch information will be
-/// ignored.
-///
+/*!
+  Enumeration of various task launch types. Not all of these may be
+  supported by all runtimes. Unsupported launch information will be
+  ignored.
+ */
+
 enum class launch_type_t : size_t {
   single,
   index,
@@ -63,9 +70,10 @@ enum class launch_type_t : size_t {
   idempotent
 }; // enum launch_type_t
 
-///
-/// Convert a processor mask to a processor type.
-///
+/*!
+  Convert a processor mask to a processor type.
+ */
+
 inline
 launch_type_t
 mask_to_type(
@@ -75,9 +83,10 @@ mask_to_type(
   return static_cast<launch_type_t>(utils::debruijn32_t::index(m));
 } // mask_to_type
 
-///
-/// Macro to create repetitive interfaces.
-///
+/*!
+  Macro to create repetitive interfaces.
+ */
+
 #define test_boolean_interface(name)                                           \
   inline bool launch_ ## name(const launch_t & l) {                            \
     return l.test(static_cast<size_t>(launch_type_t::name));                   \
@@ -91,9 +100,10 @@ test_boolean_interface(idempotent)
 
 #undef test_boolean_interface
 
-///
-/// Static launch_t creation function.
-///
+/*!
+  Static launch_t creation function.
+ */
+
 template<
   bool SINGLE = false,
   bool INDEX = false,
@@ -115,10 +125,3 @@ make_launch()
 
 } // namespace execution 
 } // namespace flecsi
-
-#endif // flecsi_execution_common_launch_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

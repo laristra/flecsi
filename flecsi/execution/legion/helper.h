@@ -15,8 +15,14 @@
 #ifndef flecsi_execution_legion_helper_h
 #define flecsi_execution_legion_helper_h
 
-#include "legion.h"
-#include "legion/arrays.h"
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
+#include <legion/arrays.h>
 
 ///
 /// \file legion/helper.h

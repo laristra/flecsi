@@ -1,19 +1,23 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_topology_legion_entity_storage_policy_h
-#define flecsi_topology_legion_entity_storage_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/topology/common/array_buffer.h"
+/*! @file */
 
-#include "flecsi/utils/offset.h"
-
-///
-/// \file
-/// \date Initial file creation: Apr 04, 2017
-///
+#include <flecsi/topology/common/array_buffer.h>
+#include <flecsi/utils/offset.h>
+#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 namespace topology {
@@ -87,12 +91,131 @@ private:
   size_t start_ = 0;  
 };
 
+template<typename T>
+class identity_storage__{
+public:
+  class iterator{
+  public:
+    iterator(simple_id i)
+    : i_(i){}
+
+    bool
+    operator==(const iterator& itr)
+    {
+      return i_ == itr.i_;
+    }
+
+    bool
+    operator!=(const iterator& itr)
+    {
+      return i_ != itr.i_;
+    }
+
+    simple_id
+    operator*(){
+      return i_;
+    }
+
+    iterator&
+    operator++()
+    {
+      ++i_;
+      return *this;
+    }
+
+  private:
+    size_t i_;
+  };
+
+  simple_id
+  operator[](size_t i)
+  const
+  {
+    return i;
+  }
+
+  simple_id
+  back()
+  const
+  {
+    return size_ - 1;
+  }
+
+  void
+  push_back(
+    simple_id i
+  )
+  {
+    assert(false && "invalid operation");
+  }
+
+  void
+  pushed()
+  {
+    assert(false && "invalid operation");
+  }
+  
+  void
+  clear(){
+    size_ = 0;
+  }
+
+  bool
+  empty()
+  const{
+    return size_ == 0;
+  }
+
+  void
+  resize(size_t n)
+  {
+    size_ = n;
+  }
+
+  size_t
+  capacity()
+  const
+  {
+    return size_;
+  }
+
+  template<
+    typename ... Args
+  >
+  void
+  assign(Args && ... args)
+  {
+    assert(false && "invalid operation");
+  }
+
+  template<
+    typename ... Args
+  >
+  void insert(Args && ... args){}
+
+  void
+  reserve(size_t n)
+  {
+    assert(false && "invalid operation");
+  }
+
+  iterator
+  begin()
+  const
+  {
+    return iterator(0);
+  }
+
+  iterator
+  end()
+  const
+  {
+    return iterator(size_ - 1);
+  }
+
+private:
+  size_t size_;
+};
+
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_topology_legion_entity_storage_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

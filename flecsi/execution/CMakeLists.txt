@@ -134,7 +134,7 @@ cinch_add_unit(simple_function
   POLICY
     ${UNIT_POLICY}
   LIBRARIES
-    flecsi
+    FleCSI
   NOCI
   )
 
@@ -152,7 +152,7 @@ cinch_add_unit(reduction
   POLICY
     ${UNIT_POLICY}
   LIBRARIES
-    flecsi
+    FleCSI
   THREADS 2
   NOCI
   )
@@ -172,7 +172,7 @@ cinch_add_unit(simple_task
   POLICY
     ${UNIT_POLICY}
   LIBRARIES
-    flecsi
+    FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
   NOCI
   )
@@ -190,7 +190,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
       LIBRARIES
-        flecsi
+        FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -211,7 +211,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
       LIBRARIES
-        flecsi
+        FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -232,7 +232,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
       LIBRARIES
-        flecsi
+        FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -253,7 +253,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
       LIBRARIES
-        flecsi
+        FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -274,7 +274,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
       LIBRARIES
-        flecsi
+        FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -293,7 +293,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
       LIBRARIES
-        flecsi
+        FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -314,7 +314,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         test/simple2d-16x16.msh
         test/data_client_handle.blessed
       LIBRARIES
-        flecsi
+        FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -328,6 +328,26 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+    cinch_add_unit(set_topology
+      SOURCES
+        test/set_topology.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      LIBRARIES
+          FleCSI
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+      POLICY ${UNIT_POLICY}
+      THREADS 2
+      NOCI
+      )
+endif()
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
     cinch_add_unit(sparse_data
       SOURCES
@@ -339,7 +359,30 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
       LIBRARIES
-        flecsi
+        FleCSI
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        -DFLECSI_8_8_MESH
+      POLICY ${UNIT_POLICY}
+      THREADS 2
+      NOCI
+      )
+
+    cinch_add_unit(ragged_data
+      SOURCES
+        test/ragged_data.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+      LIBRARIES
+        FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -352,24 +395,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
       NOCI
       )
 endif()
-
-    # cinch_add_unit(set_topology
-    #   SOURCES
-    #     test/set_topology.cc
-    #     ${DRIVER_INITIALIZATION}
-    #     ${RUNTIME_DRIVER}
-    #   LIBRARIES
-    #     flecsi
-    #     ${CINCH_RUNTIME_LIBRARIES}
-    #     ${COLORING_LIBRARIES}
-    #   DEFINES
-    #     -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-    #     -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-    #     -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-    #   POLICY ${UNIT_POLICY}
-    #   THREADS 2
-    #   NOCI
-    #   )
 
 endif()
 
@@ -389,7 +414,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     POLICY
       ${UNIT_POLICY}
     LIBRARIES
-      flecsi
+      FleCSI
       ${CINCH_RUNTIME_LIBRARIES}
     THREADS 2
     NOCI
@@ -405,7 +430,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     POLICY
       ${UNIT_POLICY}
     LIBRARIES
-      flecsi
+      FleCSI
       ${CINCH_RUNTIME_LIBRARIES}
     THREADS 1
     NOCI
@@ -423,7 +448,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
       LIBRARIES
-        flecsi
+        FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -445,7 +470,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 #        test/simple2d-8x8.msh
 #        test/simple2d-16x16.msh
 #      LIBRARIES
-#        flecsi
+#         FleCSI
 #        ${CINCH_RUNTIME_LIBRARIES}
 #        ${COLORING_LIBRARIES}
 #      DEFINES
@@ -467,7 +492,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
       LIBRARIES
-        flecsi
+        FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -490,7 +515,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 #        test/simple2d-16x16.msh
 #        test/data_client_handle.blessed
 #      LIBRARIES
-#        flecsi
+#        FleCSI
 #        ${CINCH_RUNTIME_LIBRARIES}
 #        ${COLORING_LIBRARIES}
 #      DEFINES

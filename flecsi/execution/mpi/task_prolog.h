@@ -15,10 +15,6 @@
 #ifndef flecsi_execution_mpi_task_prolog_h
 #define flecsi_execution_mpi_task_prolog_h
 
-#include "flecsi/data/dense_accessor.h"
-#include "flecsi/data/sparse_accessor.h"
-#include "flecsi/data/mutator.h"
-
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: May 19, 2017
@@ -29,6 +25,11 @@
 #include "mpi.h"
 #include "flecsi/data/data.h"
 #include "flecsi/data/dense_accessor.h"
+#include "flecsi/data/ragged_accessor.h"
+#include "flecsi/data/ragged_mutator.h"
+#include "flecsi/data/sparse_accessor.h"
+#include "flecsi/data/sparse_accessor.h"
+#include "flecsi/data/sparse_mutator.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/coloring/mpi_utils.h"
 
@@ -77,7 +78,7 @@ namespace execution {
     >
     void
     handle(
-     dense_accessor<
+     dense_accessor__<
        T,
        EXCLUSIVE_PERMISSIONS,
        SHARED_PERMISSIONS,
@@ -104,7 +105,36 @@ namespace execution {
       > & a
     )
     {
-      // TODO: move field data allocation here?
+//      // TODO: move field data allocation here?
+//      auto& context = context_t::instance();
+//      const int my_color = context.color();
+//      auto& my_coloring_info =
+//        context.coloring_info(h.index_space).at(my_color);
+//
+//      auto& sparse_field_metadata =
+//        context.registered_sparse_field_metadata().at(h.fid);
+//
+//     for (auto i = my_coloring_info.exclusive;
+//          i < my_coloring_info.exclusive + my_coloring_info.shared; ++i) {
+//       h()
+//     }
+#if 0
+      MPI_Win win = sparse_field_metadata.win;
+
+      MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
+      MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
+
+      for (auto ghost_owner : my_coloring_info.ghost_owners) {
+        MPI_Get(h.ghost_entries, 1,
+                sparse_field_metadata.origin_types[ghost_owner],
+                ghost_owner, 0, 1,
+                sparse_field_metadata.target_types[ghost_owner],
+                win);
+      }
+
+      MPI_Win_complete(win);
+      MPI_Win_wait(win);
+#endif
     } // handle
 
     template<
@@ -112,7 +142,20 @@ namespace execution {
     >
     void
     handle(
-      mutator<
+      sparse_mutator<
+        T
+      > & m
+    )
+    {
+      m.h_.init();
+    } // handle
+
+    template<
+      typename T
+    >
+    void
+    handle(
+      ragged_mutator<
         T
       > & m
     )
@@ -124,7 +167,7 @@ namespace execution {
       typename T,
       size_t PERMISSIONS
     >
-    void
+    typename std::enable_if_t<std::is_base_of<topology::mesh_topology_base__, T>::value>
     handle(
       data_client_handle__<T, PERMISSIONS> & h
     )
@@ -229,6 +272,50 @@ namespace execution {
     //------------------------------------------------------------------------//
     //! FIXME: Need to document.
     //------------------------------------------------------------------------//
+
+    template<
+      typename T,
+      size_t PERMISSIONS
+    >
+    typename std::enable_if_t<std::is_base_of<topology::set_topology_base__, T>::value>
+    handle(
+      data_client_handle__<T, PERMISSIONS> & h
+    )
+    {
+      auto& context_ = context_t::instance();
+
+      // h is partially initialized in client.h
+      auto storage = h.set_storage(new typename T::storage_t);
+
+      bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
+
+      int color = context_.color();
+
+      auto& im = context_.local_index_space_data_map();
+
+      for(size_t i{0}; i<h.num_handle_entities; ++i) {
+        data_client_handle_entity_t & ent = h.handle_entities[i];
+
+        auto itr = im.find(ent.index_space);
+        clog_assert(itr != im.end(),
+          "invalid local index space: " << ent.index_space);
+        const context_t::local_index_space_data_t& isd = itr->second;
+
+        // see if the field data is registered for this entity field.
+        auto& registered_field_data = context_.registered_field_data();
+        auto fieldDataIter = registered_field_data.find(ent.fid);
+        if (fieldDataIter == registered_field_data.end()) {
+          size_t size = ent.size * isd.capacity;
+          context_.register_field_data(ent.fid, size);
+        }
+
+        auto ents =
+          reinterpret_cast<topology::set_entity_t*>(
+          registered_field_data[ent.fid].data());
+
+        storage->init_entities(ent.index_space, ents, ent.size, isd.size, _read);
+      }
+    }
 
     template<
       typename T

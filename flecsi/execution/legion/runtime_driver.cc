@@ -124,25 +124,15 @@ runtime_driver(
   clog(info) << "Executing specialization top-level-task init" << std::endl;
   }
 
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_.push_state(utils::const_string_t{"specialization_tlt_init"}.hash(),
-    ctx, runtime, task, regions);
-#endif
-
   // Invoke the specialization top-level task initialization function.
   specialization_tlt_init(args.argc, args.argv);
-
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_.pop_state( utils::const_string_t{"specialization_tlt_init"}.hash());
-#endif
 
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
   //--------------------------------------------------------------------------//
   //  Create Legion index spaces and logical regions
   //-------------------------------------------------------------------------//
+
   auto coloring_info = context_.coloring_info_map();
 
   data.init_from_coloring_info_map(coloring_info);
@@ -218,18 +208,21 @@ runtime_driver(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
-      if((field_info.storage_class != global) &&
-        (field_info.storage_class != color)){
-        if(field_info.index_space == idx_space){
-          fields_map[idx_space].push_back(field_info.fid);
-          num_phase_barriers++;
-        } // if
-      }//if
-      else if(field_info.storage_class == global){
-        number_of_global_fields++;
-      }
-      else if(field_info.storage_class == color){
-        number_of_color_fields++;
+      switch(field_info.storage_class){
+        case global:
+          number_of_global_fields++;
+          break;
+        case color:
+          number_of_color_fields++;
+          break;
+        case local:
+          break;
+        default:
+          if(field_info.index_space == idx_space){
+            fields_map[idx_space].push_back(field_info.fid);
+            num_phase_barriers++;
+          } // if
+          break;          
       }
     } // for
 
@@ -1031,12 +1024,6 @@ spmd_task(
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
 
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_t::instance().push_state(utils::const_string_t{"driver"}.hash(),
-    ctx, runtime, task, regions);
-#endif
-
   // #6 deserialize reduction
   Legion::DynamicCollective max_reduction;
   args_deserializer.deserialize((void*)&max_reduction,
@@ -1098,13 +1085,23 @@ spmd_task(
 
   context_.advance_state();
 
+  auto& local_index_space_map = context_.local_index_space_map();
+  for(auto& itr : local_index_space_map){
+    size_t index_space = itr.first;
+
+    legion_data_t::local_index_space_t lis = 
+      legion_data_t::create_local_index_space(
+      ctx, runtime, index_space, itr.second);
+    
+    auto& lism = context_.local_index_space_data_map();
+
+    context_t::local_index_space_data_t lis_data;
+    lis_data.region = lis.logical_region;
+    lism.emplace(index_space, std::move(lis_data));
+  }
+
   // run default or user-defined driver
   driver(args.argc, args.argv);
-
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_t::instance().pop_state(utils::const_string_t{"driver"}.hash());
-#endif
 
   // Cleanup memory
   for(auto ipart: primary_ghost_ips)

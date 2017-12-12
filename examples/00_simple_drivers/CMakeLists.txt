@@ -36,7 +36,7 @@ add_executable(simple_drivers ${simple_drivers_src})
 # Add link dependencies.
 #------------------------------------------------------------------------------#
 
-target_link_libraries(simple_drivers flecsi ${FLECSI_RUNTIME_LIBRARIES})
+target_link_libraries(simple_drivers FleCSI ${FLECSI_RUNTIME_LIBRARIES})
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options for vim.

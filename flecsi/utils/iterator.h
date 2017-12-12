@@ -30,16 +30,14 @@ namespace utils {
 //! \brief iterator provides...
 //!
 template<typename C, typename T>
-class iterator
-{
+class iterator {
 public:
-
   using container_t = C;
   using type_t = T;
 
   //! Constructor from container and index
   iterator(container_t & values, const std::size_t index)
-    : values_(values), index_(index) {}
+      : values_(values), index_(index) {}
 
   //! Destructor
   ~iterator() {}
@@ -55,13 +53,13 @@ public:
   } // operator =
 
   //! Pre-increment operator
-  iterator & operator ++ () {
+  iterator & operator++() {
     ++index_;
     return *this;
   } // operator ++
 
   //! Dereference operator
-  type_t & operator * () {
+  type_t & operator*() {
     return values_[index_];
   } // operator *
 
@@ -77,17 +75,16 @@ public:
   */
 
   //! Equivalence operator
-  bool operator == (const iterator & it) const {
+  bool operator==(const iterator & it) const {
     return index_ == it.index_;
   } // operator ==
 
   //! Non-equivalence operator
-  bool operator != (const iterator & it) const {
+  bool operator!=(const iterator & it) const {
     return index_ != it.index_;
   } // operator !=
 
 private:
-
   container_t & values_;
   std::size_t index_;
 
