@@ -6,6 +6,7 @@
 #ifndef flecsi_execution_mpi_finalize_handles_h
 #define flecsi_execution_mpi_finalize_handles_h
 
+#include "flecsi/data/data_client_handle.h"
 #include "flecsi/data/dense_accessor.h"
 #include "flecsi/data/sparse_accessor.h"
 #include "flecsi/data/sparse_mutator.h"
@@ -171,6 +172,22 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 
   template<
     typename T,
+    size_t PERMISSIONS
+  >
+  typename std::enable_if_t<std::is_base_of<topology::set_topology_base__, T>
+    ::value>
+  handle(
+    data_client_handle__<T, PERMISSIONS> & h
+  )
+  {
+    auto& context_ = context_t::instance();
+
+    auto storage = h.storage();
+    storage->finalize_storage();
+  } // handle
+
+  template<
+    typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS
@@ -199,7 +216,8 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     typename T,
     size_t PERMISSIONS
   >
-  void
+  typename std::enable_if_t<std::is_base_of<topology::mesh_topology_base__, T>
+    ::value>
   handle(
     data_client_handle__<T, PERMISSIONS> & h
   )
@@ -230,7 +248,8 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     typename T
   >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
+  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value &&
+  !std::is_base_of<data_client_handle_base_t, T>::value>
   handle(
     T &
   )
