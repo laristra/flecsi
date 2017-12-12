@@ -25,6 +25,7 @@ using namespace topology;
 using namespace coloring;
 
 class entity1 : public set_entity_t{
+public:
   double x;
 };
 
@@ -45,7 +46,15 @@ template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
 void task1(client_handle_t<set_t, rw> sh) {
-  auto e = sh.make<entity1>();
+  auto e1 = sh.make<entity1>();
+  e1->x = 1.0;
+
+  auto e2 = sh.make<entity1>();
+  e2->x = 2.0;
+
+  for(auto ei : sh.entities<0>()){
+    cout << ei->x << endl;
+  }
 }
 
 flecsi_register_data_client(set_t, sets, set1); 

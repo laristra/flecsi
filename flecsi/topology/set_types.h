@@ -24,7 +24,7 @@ namespace topology {
 
 class set_entity_t {
 public:
-  using id_t = size_t;
+  using id_t = simple_id;
 
   size_t index_space_id() const
   {

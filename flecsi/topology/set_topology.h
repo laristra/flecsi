@@ -51,10 +51,10 @@ public:
   initialize_storage(){}
 
   template<size_t INDEX_SPACE>
-  auto entities() const {
+  auto entities(){
     using etype = entity_type<INDEX_SPACE>;
-    return base_t::ms_->
-      index_spaces[INDEX_SPACE].template slice<entity_type>();
+    return base_t::ss_->
+      index_spaces[INDEX_SPACE].template slice<etype*>();
   } // entities
 
 };
