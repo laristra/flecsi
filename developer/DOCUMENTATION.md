@@ -141,6 +141,10 @@ Guide.
 
 # Canonical File Formats
 
+This file is a good example of a header-only implementation file. Note
+the Doxygen comment style, and multi-line template arguments in
+particular.
+
 ```cpp
 /*
     @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
@@ -246,7 +250,7 @@ struct task_interface__ {
 // This include file defines the FLECSI_RUNTIME_EXECUTION_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include "flecsi/runtime/flecsi_runtime_execution_policy.h"
+#include <flecsi/runtime/flecsi_runtime_execution_policy.h>
 
 namespace flecsi {
 namespace execution {
@@ -294,6 +298,9 @@ static_assert(
 } // namespace execution
 } // namespace flecsi
 ```
+
+This file is a good example of macro formatting. Note the *MACRO
+DEFINITION* comment line, and the overall formatting.
 
 ```cpp
 /*
