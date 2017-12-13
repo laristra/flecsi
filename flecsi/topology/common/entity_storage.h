@@ -17,6 +17,7 @@
 
 #include <flecsi/topology/common/array_buffer.h>
 #include <flecsi/utils/offset.h>
+#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 namespace topology {
@@ -95,7 +96,7 @@ class identity_storage__{
 public:
   class iterator{
   public:
-    iterator(size_t i)
+    iterator(simple_id i)
     : i_(i){}
 
     bool
@@ -110,7 +111,7 @@ public:
       return i_ != itr.i_;
     }
 
-    size_t
+    simple_id
     operator*(){
       return i_;
     }
@@ -126,14 +127,14 @@ public:
     size_t i_;
   };
 
-  size_t
+  simple_id
   operator[](size_t i)
   const
   {
     return i;
   }
 
-  size_t
+  simple_id
   back()
   const
   {
@@ -142,7 +143,7 @@ public:
 
   void
   push_back(
-    size_t i
+    simple_id i
   )
   {
     assert(false && "invalid operation");

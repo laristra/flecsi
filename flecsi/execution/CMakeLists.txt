@@ -327,7 +327,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       NOCI
       )
 
-#if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     cinch_add_unit(set_topology
       SOURCES
         test/set_topology.cc
@@ -345,7 +345,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       THREADS 2
       NOCI
       )
-#endif()
+endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
