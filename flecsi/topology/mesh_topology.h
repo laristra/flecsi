@@ -194,7 +194,7 @@ public:
     if (ms != nullptr) {
       initialize_storage();
     } // if
-  }   // mesh_topology_t()
+  } // mesh_topology_t()
 
   //! Copy constructor: alias another mesh
   mesh_topology_t(const mesh_topology_t & m) : base_t(m.ms_) {}
@@ -214,7 +214,7 @@ public:
         base_t::ms_->topology[from_domain][to_domain].init_(
             from_domain, to_domain);
       } // for
-    }   // for
+    } // for
 
     for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
       for (size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim) {
@@ -228,10 +228,10 @@ public:
                 .get_index_space()
                 .set_master(master);
           } // for
-        }   // for
-      }     // for
-    }       // for
-  }         // intialize_storage
+        } // for
+      } // for
+    } // for
+  } // intialize_storage
 
   //--------------------------------------------------------------------------//
   //! A mesh is constructed by creating cells and vertices and associating
@@ -1229,8 +1229,8 @@ private:
           ++entity_counter;
 
         } // if
-      }   // for
-    }     // for
+      } // for
+    } // for
 
     // sort the entity connectivity. Entities may have been created out of
     // order.  Sort them using the list of entity ids we kept track of
@@ -1433,8 +1433,8 @@ private:
             } // if
 
           } // if
-        }   // for
-      }     // for
+        } // for
+      } // for
 
       max_size = std::max(ents.size(), max_size);
     } // for
@@ -1519,7 +1519,7 @@ private:
         intersect<M, M, FD, TD, 0>();
       }
     } // if
-  }   // compute_connectivity
+  } // compute_connectivity
 
   //--------------------------------------------------------------------------//
   //! if the to-dimension is larger than the from-dimension, build the bindings
@@ -1730,7 +1730,7 @@ private:
 
         pos += m;
       } // for
-    }   // for
+    } // for
 
     // Reference to storage from cells to the entity (to be created here).
     connectivity_t & cell_out =
