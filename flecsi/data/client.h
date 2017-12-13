@@ -42,7 +42,7 @@ class set_topology__;
 //----------------------------------------------------------------------------//
 
 template<size_t, size_t>
-class mesh_entity_t;
+class mesh_entity__;
 
 } // namespace topology
 

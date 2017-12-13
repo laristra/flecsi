@@ -11,7 +11,7 @@ using namespace topology;
 
 #define FILTER(E) [&](auto E) -> bool
 
-class Vertex : public mesh_entity_t<0, 2> {
+class Vertex : public mesh_entity__<0, 2> {
 public:
   Vertex() {}
 
@@ -21,12 +21,12 @@ public:
   }
 };
 
-class Edge : public mesh_entity_t<1, 2> {
+class Edge : public mesh_entity__<1, 2> {
 public:
   Edge() {}
 };
 
-class Cell : public mesh_entity_t<2, 2> {
+class Cell : public mesh_entity__<2, 2> {
 public:
   using id_t = flecsi::utils::id_t;
 
@@ -108,12 +108,12 @@ public:
   }
 };
 
-class Corner : public mesh_entity_t<0, 2> {
+class Corner : public mesh_entity__<0, 2> {
 public:
   Corner() {}
 };
 
-class Wedge : public mesh_entity_t<1, 2> {
+class Wedge : public mesh_entity__<1, 2> {
 public:
   Wedge() {}
 };

@@ -21,7 +21,7 @@
 namespace flecsi {
 namespace supplemental {
 
-  class vertex : public topology::mesh_entity_t<0, 1>{
+  class vertex : public topology::mesh_entity__<0, 1>{
   public:
     template<size_t M>
     uint64_t precedence() const { return 0; }
@@ -29,7 +29,7 @@ namespace supplemental {
 
   };
 
-  class cell : public topology::mesh_entity_t<2, 1>{
+  class cell : public topology::mesh_entity__<2, 1>{
   public:
 
     using id_t = flecsi::utils::id_t;

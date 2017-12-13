@@ -9,7 +9,7 @@ using namespace std;
 using namespace flecsi;
 using namespace topology;
 
-class Vertex : public mesh_entity_t<0, 1> {
+class Vertex : public mesh_entity__<0, 1> {
 public:
   template<size_t M>
   uint64_t precedence() const {
@@ -21,19 +21,19 @@ public:
   Vertex(mesh_topology_base_t<ST> &) {}
 };
 
-class Edge : public mesh_entity_t<1, 1> {
+class Edge : public mesh_entity__<1, 1> {
 public:
   template<typename ST>
   Edge(mesh_topology_base_t<ST> &) {}
 };
 
-class Face : public mesh_entity_t<1, 1> {
+class Face : public mesh_entity__<1, 1> {
 public:
   template<typename ST>
   Face(mesh_topology_base_t<ST> &) {}
 };
 
-class Cell : public mesh_entity_t<2, 1> {
+class Cell : public mesh_entity__<2, 1> {
 public:
   using id_t = flecsi::utils::id_t;
 

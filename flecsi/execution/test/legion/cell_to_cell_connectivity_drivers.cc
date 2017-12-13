@@ -36,7 +36,7 @@ using namespace coloring;
 
 clog_register_tag(coloring);
 
-class vertex : public mesh_entity_t<0, 1>{
+class vertex : public mesh_entity__<0, 1>{
 public:
   template<size_t M>
   uint64_t precedence() const { return 0; }
@@ -44,15 +44,15 @@ public:
 
 };
 
-class edge : public mesh_entity_t<1, 1>{
+class edge : public mesh_entity__<1, 1>{
 public:
 };
 
-class face : public mesh_entity_t<1, 1>{
+class face : public mesh_entity__<1, 1>{
 public:
 };
 
-class cell : public mesh_entity_t<2, 1>{
+class cell : public mesh_entity__<2, 1>{
 public:
 
   using id_t = flecsi::utils::id_t;
