@@ -23,10 +23,10 @@
 
 #include <legion.h>
 
-#include "flecsi/execution/common/processor.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/execution.h"
-#include "flecsi/utils/common.h"
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/execution.h>
+#include <flecsi/utils/common.h>
 
 //----------------------------------------------------------------------------//
 //! @def __flecsi_internal_task_key

@@ -65,10 +65,10 @@ public:
 
     pi_.start[0] = 0;
     pi_.end[0] = num_exclusive;
-    
+
     pi_.start[1] = num_exclusive;
     pi_.end[1] = num_exclusive + num_shared;
-    
+
     pi_.start[2] = pi_.end[1];
     pi_.end[2] = pi_.end[1] + num_ghost;
   }
@@ -80,9 +80,9 @@ public:
   void
   init()
   {
-    offsets_ = new offset_t[num_entries_]; 
+    offsets_ = new offset_t[num_entries_];
     entries_ = new entry_value_t[num_entries_ * num_slots_];
-    spare_map_ = new spare_map_t;    
+    spare_map_ = new spare_map_t;
   }
 
   void
@@ -165,7 +165,7 @@ public:
       entry_value_t* sptr = entries_ + i * num_slots_;
 
       size_t num_existing = coi.count();
-      
+
       size_t used_slots = oi.count();
 
       size_t num_merged = merge<ERASE>(i, eptr, num_existing, sptr,
@@ -174,7 +174,7 @@ public:
       if(num_merged > 0){
         assert(num_merged <= max_entries_per_index_);
         std::memcpy(eptr, cbuf, sizeof(entry_value_t) * num_merged);
-        coi.set_count(num_merged);         
+        coi.set_count(num_merged);
       }
     }
 
@@ -208,7 +208,7 @@ public:
     offset_t* offsets = ci->offsets;
 
     for(auto& itr : *size_map_){
-      num_exclusive_entries += 
+      num_exclusive_entries +=
         int64_t(itr.second) - int64_t(offsets[itr.first].count());
     }
 
@@ -251,7 +251,7 @@ public:
       coi.set_offset(offset);
 
       auto sitr = size_map_->find(index);
-      
+
       if(sitr != size_map_->end()){
         size_t resize = sitr->second;
         coi.set_count(resize);
@@ -283,7 +283,7 @@ public:
       entry_value_t* sptr = entries_ + index * num_slots_;
 
       size_t num_existing = coi.count();
-      
+
       size_t used_slots = oi.count();
 
       for(size_t j = 0; j < num_existing; ++j){
@@ -400,7 +400,7 @@ public:
     size_t num_slots,
     entry_value_t* dest
     ){
-    
+
     constexpr size_t end = std::numeric_limits<size_t>::max();
     entry_value_t* existing_end = existing + num_existing;
     entry_value_t* slots_end = slots + num_slots;
@@ -416,7 +416,7 @@ public:
 
     for(;;){
       if(spare_entry < end &&
-         spare_entry <= slot_entry && 
+         spare_entry <= slot_entry &&
          spare_entry <= existing_entry){
 
         dest->entry = spare_entry;
@@ -428,10 +428,10 @@ public:
         }
 
         while(existing_entry == slot_entry ||
-          (ERASE && erase_set_->find(std::make_pair(index, existing_entry)) != 
+          (ERASE && erase_set_->find(std::make_pair(index, existing_entry)) !=
           erase_set_->end())){
           existing_entry = ++existing < existing_end ? existing->entry : end;
-        }   
+        }
 
         spare_entry = ++itr != p.second ? itr->second.entry : end;
       }
@@ -441,10 +441,10 @@ public:
         ++dest;
 
         while(existing_entry == slot_entry ||
-          (ERASE && erase_set_->find(std::make_pair(index, existing_entry)) != 
+          (ERASE && erase_set_->find(std::make_pair(index, existing_entry)) !=
           erase_set_->end())){
           existing_entry = ++existing < existing_end ? existing->entry : end;
-        }  
+        }
 
         slot_entry = ++slots < slots_end ? slots->entry : end;
       }
@@ -466,13 +466,13 @@ public:
 
 } // namespace flecsi
 
-#include "flecsi/runtime/flecsi_runtime_data_handle_policy.h"
+#include <flecsi/runtime/flecsi_runtime_data_handle_policy.h>
 
 namespace flecsi {
 
 template<
   typename T
->  
+>
 using mutator_handle__ = mutator_handle_base__<
   T,
   FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY

@@ -27,13 +27,13 @@
 #include <arrays.h>
 #include <legion.h>
 
-#include "flecsi/data/common/privilege.h"
-#include "flecsi/data/data_client_handle.h"
-#include "flecsi/data/dense_accessor.h"
-#include "flecsi/topology/mesh_topology.h"
-#include "flecsi/topology/mesh_types.h"
-#include "flecsi/topology/set_topology.h"
-#include "flecsi/utils/tuple_walker.h"
+#include <flecsi/data/common/privilege.h>
+#include <flecsi/data/data_client_handle.h>
+#include <flecsi/data/dense_accessor.h>
+#include <flecsi/topology/mesh_topology.h>
+#include <flecsi/topology/mesh_types.h>
+#include <flecsi/topology/set_topology.h>
+#include <flecsi/utils/tuple_walker.h>
 
 namespace flecsi {
 namespace execution {

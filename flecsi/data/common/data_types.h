@@ -10,7 +10,7 @@
 
 #include <bitset>
 
-#include "flecsi/utils/offset.h"
+#include <flecsi/utils/offset.h>
 
 namespace flecsi {
 namespace data {

@@ -87,11 +87,11 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
   T* exclusive_data = nullptr;
   T* exclusive_buf = nullptr;
   size_t exclusive_size = 0;
-  
+
   T* shared_data = nullptr;
   T* shared_buf = nullptr;
   size_t shared_size = 0;
-  
+
   T* ghost_data = nullptr;
   T* ghost_buf = nullptr;
   size_t ghost_size = 0;
@@ -103,17 +103,17 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
   size_t combined_size = 0;
   bool master = true;
 
-  size_t state =0; 
+  size_t state =0;
   bool global = false;
   bool color = false;
 };
 
 } // namespace flecsi
 
-#include "flecsi/runtime/flecsi_runtime_data_handle_policy.h"
+#include <flecsi/runtime/flecsi_runtime_data_handle_policy.h>
 
 namespace flecsi {
-  
+
 //----------------------------------------------------------------------------//
 //! The data_handle__ type is the high-level data handle type.
 //!

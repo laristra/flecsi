@@ -11,11 +11,11 @@
 // Using this approach allows us to have only one storage_class__
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
-#include "flecsi/data/storage_class.h"
+#include <flecsi/data/storage_class.h>
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
-#include "flecsi/utils/const_string.h"
+#include <flecsi/utils/const_string.h>
 
 //----------------------------------------------------------------------------//
 //! @file

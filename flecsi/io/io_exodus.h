@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "flecsi/io/io_base.h"
+#include <flecsi/io/io_base.h>
 
 /*!
  * \file io_exodus.h

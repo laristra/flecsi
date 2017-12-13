@@ -21,13 +21,13 @@
 
 #include <legion.h>
 
-#include "flecsi/coloring/adjacency_types.h"
-#include "flecsi/coloring/coloring_types.h"
-#include "flecsi/coloring/index_coloring.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/helper.h"
-#include "flecsi/execution/legion/internal_index_space.h"
-#include "flecsi/execution/legion/legion_tasks.h"
+#include <flecsi/coloring/adjacency_types.h>
+#include <flecsi/coloring/coloring_types.h>
+#include <flecsi/coloring/index_coloring.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/legion/helper.h>
+#include <flecsi/execution/legion/internal_index_space.h>
+#include <flecsi/execution/legion/legion_tasks.h>
 
 clog_register_tag(legion_data);
 

@@ -10,8 +10,8 @@
 #include <vector>
 #include <algorithm>
 
-#include "flecsi/data/data.h"
-#include "flecsi/execution/mpilegion/runtime_driver.h"
+#include <flecsi/data/data.h>
+#include <flecsi/execution/mpilegion/runtime_driver.h>
 
 /*
 #define np(X)                                                            \

@@ -25,9 +25,9 @@
 
 #include <map>
 
-#include "flecsi/coloring/crs.h"
-#include "flecsi/topology/closure_utils.h"
-#include "flecsi/topology/mesh_definition.h"
+#include <flecsi/coloring/crs.h>
+#include <flecsi/topology/closure_utils.h>
+#include <flecsi/topology/mesh_definition.h>
 
 namespace flecsi {
 namespace coloring {

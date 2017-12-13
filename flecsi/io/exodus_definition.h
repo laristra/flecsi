@@ -9,8 +9,8 @@
 /// \date Initial file creation: Nov 21, 2016
 
 // user includes
-#include "flecsi/topology/mesh_definition.h"
-#include "flecsi/utils/logging.h"
+#include <flecsi/topology/mesh_definition.h>
+#include <flecsi/utils/logging.h>
 
 // thirdparty includes
 #include <exodusII.h>

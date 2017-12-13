@@ -32,10 +32,10 @@ struct data_client_handle_base__ :
   public DATA_CLIENT_TYPE, public DATA_POLICY, public data_client_handle_base_t
 {
   using type = DATA_CLIENT_TYPE;
-  
+
   data_client_handle_base__()
   {
-    
+
   }
 
   template<
@@ -87,7 +87,7 @@ struct data_client_type__<
 
 } // namespace flecsi
 
-#include "flecsi/runtime/flecsi_runtime_data_client_handle_policy.h"
+#include <flecsi/runtime/flecsi_runtime_data_client_handle_policy.h>
 
 namespace flecsi {
 

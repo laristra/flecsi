@@ -10,7 +10,7 @@
 /// \date Initial file creation: Jan 03, 2017
 ///
 
-#include "flecsi/utils/logging.h"
+#include <flecsi/utils/logging.h>
 
 #if !defined(ENABLE_OPENSSL)
 #error ENABLE_OPENSSL not defined! This file depends on OpenSSL!

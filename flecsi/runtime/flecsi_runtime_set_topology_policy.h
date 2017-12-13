@@ -27,7 +27,7 @@
 // Legion, MPI+Legion Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-#include "flecsi/topology/legion/set_storage_policy.h"
+#include <flecsi/topology/legion/set_storage_policy.h>
 
 namespace flecsi {
 
@@ -40,7 +40,7 @@ using FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY =
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-#include "flecsi/topology/mpi/set_storage_policy.h"
+#include <flecsi/topology/mpi/set_storage_policy.h>
 
 namespace flecsi {
 

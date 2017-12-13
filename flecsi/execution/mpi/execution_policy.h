@@ -25,13 +25,13 @@
 #include <future>
 #include <cinchlog.h>
 
-#include "flecsi/execution/common/processor.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/mpi/task_wrapper.h"
-#include "flecsi/execution/mpi/task_prolog.h"
-#include "flecsi/execution/mpi/task_epilog.h"
-#include "flecsi/execution/mpi/finalize_handles.h"
-#include "flecsi/execution/mpi/future.h"
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/mpi/task_wrapper.h>
+#include <flecsi/execution/mpi/task_prolog.h>
+#include <flecsi/execution/mpi/task_epilog.h>
+#include <flecsi/execution/mpi/finalize_handles.h>
+#include <flecsi/execution/mpi/future.h>
 
 namespace flecsi {
 namespace execution {

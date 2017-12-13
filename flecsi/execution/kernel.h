@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "flecsi/topology/index_space.h"
+#include <flecsi/topology/index_space.h>
 
 //----------------------------------------------------------------------------//
 //! @file

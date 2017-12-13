@@ -29,7 +29,7 @@
 
 #include <boost/preprocessor.hpp>
 
-#include "flecsi/utils/utility.h"
+#include <flecsi/utils/utility.h>
 
 /*----------------------------------------------------------------------------*
  * Macro definitions.

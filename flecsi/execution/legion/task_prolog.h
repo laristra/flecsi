@@ -25,9 +25,9 @@
 
 #include <legion.h>
 
-#include "flecsi/data/data.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/internal_field.h"
+#include <flecsi/data/data.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/legion/internal_field.h>
 
 clog_register_tag(prolog);
 

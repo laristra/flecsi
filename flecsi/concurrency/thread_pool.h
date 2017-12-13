@@ -17,7 +17,7 @@
 #include <thread>
 #include <vector>
 
-#include "flecsi/concurrency/virtual_semaphore.h"
+#include <flecsi/concurrency/virtual_semaphore.h>
 
 namespace flecsi {
 

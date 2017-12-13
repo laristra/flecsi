@@ -27,7 +27,7 @@
 // Legion Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-#include "flecsi/execution/legion/execution_policy.h"
+#include <flecsi/execution/legion/execution_policy.h>
 
 namespace flecsi {
 namespace execution {
@@ -40,7 +40,7 @@ using FLECSI_RUNTIME_EXECUTION_POLICY = legion_execution_policy_t;
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-#include "flecsi/execution/mpi/execution_policy.h"
+#include <flecsi/execution/mpi/execution_policy.h>
 
 namespace flecsi {
 namespace execution {

@@ -22,15 +22,15 @@
 #include <vector>
 
 #include "mpi.h"
-#include "flecsi/data/data.h"
-#include "flecsi/data/dense_accessor.h"
-#include "flecsi/data/ragged_accessor.h"
-#include "flecsi/data/ragged_mutator.h"
-#include "flecsi/data/sparse_accessor.h"
-#include "flecsi/data/sparse_accessor.h"
-#include "flecsi/data/sparse_mutator.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/coloring/mpi_utils.h"
+#include <flecsi/data/data.h>
+#include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/ragged_accessor.h>
+#include <flecsi/data/ragged_mutator.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/sparse_mutator.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/coloring/mpi_utils.h>
 
 namespace flecsi {
 namespace execution {
