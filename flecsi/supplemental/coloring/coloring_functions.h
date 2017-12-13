@@ -1,22 +1,27 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: May 23, 2017
-//----------------------------------------------------------------------------//
-
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
+
+/*! @file */
 
 #include <cinchlog.h>
 
-#include "flecsi/coloring/colorer.h"
-#include "flecsi/coloring/communicator.h"
-#include "flecsi/coloring/dcrs_utils.h"
-#include "flecsi/execution/execution.h"
-#include "flecsi/topology/mesh_definition.h"
+#include <flecsi/coloring/colorer.h>
+#include <flecsi/coloring/communicator.h>
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/execution/execution.h>
+#include <flecsi/topology/mesh_definition.h>
 
 clog_register_tag(coloring_functions);
 
@@ -187,8 +192,3 @@ void color_entity(
 
 } // namespace execution
 } // namespace flecsi
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

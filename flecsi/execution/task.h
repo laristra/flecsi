@@ -18,8 +18,8 @@
 #include <iostream>
 #include <string>
 
-#include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/common/processor.h>
 #include <flecsi/utils/static_verify.h>
 
 namespace flecsi {
@@ -34,11 +34,8 @@ namespace execution {
   @ingroup execution
  */
 
-template<
-  typename EXECUTION_POLICY
->
-struct task_interface__
-{
+template<typename EXECUTION_POLICY>
+struct task_interface__ {
   /*!
     The runtime_state_t type stores runtime-specific state information
     that is required to execute a user task. This is only needed for
@@ -47,12 +44,7 @@ struct task_interface__
 
   using runtime_state_t = typename EXECUTION_POLICY::runtime_state_t;
 
-  static
-  runtime_state_t &
-  runtime_state(
-    void * task
-  )
-  {
+  static runtime_state_t & runtime_state(void * task) {
     return EXECUTION_POLICY::runtime_state(task);
   } // runtime_state
 
@@ -73,21 +65,14 @@ struct task_interface__
    */
 
   template<
-    size_t KEY,
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*DELEGATE)(ARG_TUPLE)
-  >
-  static
-  decltype(auto)
-  register_task(
-    processor_type_t processor,
-    launch_t launch,
-    std::string name
-  )
-  {
+      size_t KEY,
+      typename RETURN,
+      typename ARG_TUPLE,
+      RETURN (*DELEGATE)(ARG_TUPLE)>
+  static decltype(auto)
+  register_task(processor_type_t processor, launch_t launch, std::string name) {
     return EXECUTION_POLICY::template register_task<
-      KEY, RETURN, ARG_TUPLE, DELEGATE>(processor, launch, name);
+        KEY, RETURN, ARG_TUPLE, DELEGATE>(processor, launch, name);
   } // register_task
 
   /*!
@@ -101,21 +86,10 @@ struct task_interface__
     @param args   The arguments to pass to the user task during execution.
    */
 
-  template<
-    size_t KEY,
-    typename RETURN,
-    typename ARG_TUPLE,
-    typename ... ARGS
-  >
-  static
-  decltype(auto)
-  execute_task(
-    launch_type_t launch,
-    ARGS && ... args
-  )
-  {
+  template<size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
+  static decltype(auto) execute_task(launch_type_t launch, ARGS &&... args) {
     return EXECUTION_POLICY::template execute_task<KEY, RETURN, ARG_TUPLE>(
-      launch, std::forward<ARGS>(args) ...);
+        launch, std::forward<ARGS>(args)...);
   } // execute_task
 
 }; // struct task_interface__
@@ -162,11 +136,13 @@ namespace verify_future {
 FLECSI_MEMBER_CHECKER(wait);
 FLECSI_MEMBER_CHECKER(get);
 
-static_assert(verify_future::has_member_wait<future__<double>>::value,
-  "future type missing wait method");
+static_assert(
+    verify_future::has_member_wait<future__<double>>::value,
+    "future type missing wait method");
 
-static_assert(verify_future::has_member_get<future__<double>>::value,
-  "future type missing get method");
+static_assert(
+    verify_future::has_member_get<future__<double>>::value,
+    "future type missing get method");
 
 } // namespace verify_future
 

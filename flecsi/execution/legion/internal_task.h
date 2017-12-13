@@ -1,20 +1,24 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_legion_internal_task_h
-#define flecsi_execution_legion_internal_task_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Mar 31, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_LEGION)
-  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
 #include <legion.h>
@@ -40,7 +44,7 @@
 //----------------------------------------------------------------------------//
 
 #define __flecsi_internal_task_key(task)                                       \
-/* MACRO IMPLEMENTATION */                                                     \
+  /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Use const_string_t interface to create the key */                         \
   flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()
@@ -59,20 +63,12 @@
 //----------------------------------------------------------------------------//
 
 #define __flecsi_internal_register_legion_task(task, processor, launch)        \
-/* MACRO IMPLEMENTATION */                                                     \
+  /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the execution policy to register the task */                         \
-  bool task ## _task_registered =                                              \
-    flecsi::execution::legion_execution_policy_t::register_legion_task<        \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
-      typename flecsi::utils::function_traits__<decltype(task)>::return_type,  \
-      task                                                                     \
-    >                                                                          \
-    (processor, launch, { EXPAND_AND_STRINGIFY(task) })
-
-#endif // flecsi_execution_legion_internal_task_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+  bool task##_task_registered =                                                \
+      flecsi::execution::legion_execution_policy_t::register_legion_task<      \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
+          typename flecsi::utils::function_traits__<decltype(                  \
+              task)>::return_type,                                             \
+          task>(processor, launch, {EXPAND_AND_STRINGIFY(task)})

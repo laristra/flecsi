@@ -1,24 +1,28 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: May 23, 2017
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 
 #include <cinchlog.h>
 #include <mpi.h>
 
-#include "flecsi/execution/execution.h"
-#include "flecsi/io/simple_definition.h"
-#include "flecsi/coloring/dcrs_utils.h"
-#include "flecsi/coloring/parmetis_colorer.h"
-#include "flecsi/coloring/mpi_communicator.h"
-#include "flecsi/supplemental/coloring/add_colorings.h"
-#include "flecsi/supplemental/coloring/coloring_functions.h"
-#include "flecsi/supplemental/coloring/tikz.h"
+#include <flecsi/execution/execution.h>
+#include <flecsi/io/simple_definition.h>
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/coloring/parmetis_colorer.h>
+#include <flecsi/coloring/mpi_communicator.h>
+#include <flecsi/supplemental/coloring/add_colorings.h>
+#include <flecsi/supplemental/coloring/coloring_functions.h>
+#include <flecsi/supplemental/coloring/tikz.h>
 
 clog_register_tag(coloring);
 clog_register_tag(coloring_output);
@@ -446,8 +450,3 @@ flecsi_register_mpi_task(add_colorings, flecsi::execution);
 
 } // namespace execution
 } // namespace flecsi
-
-/*~------------------------------------------------------------------------~--*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/

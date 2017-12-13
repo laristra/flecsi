@@ -1,18 +1,22 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_test_mesh_h
-#define flecsi_execution_test_mesh_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: May 10, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
-#include "flecsi/topology/mesh.h"
-#include "flecsi/topology/mesh_topology.h"
+#include <flecsi/topology/mesh.h>
+#include <flecsi/topology/mesh_topology.h>
 
 //----------------------------------------------------------------------------//
 // Enumeration to name index spaces
@@ -198,10 +202,3 @@ struct test_mesh_2d_t :
 
 } // namespace supplemental
 } // namespace flecsi
-
-#endif // flecsi_execution_test_mesh_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

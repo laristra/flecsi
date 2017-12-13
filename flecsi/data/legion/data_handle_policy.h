@@ -16,6 +16,7 @@
 #endif
 
 #include <legion.h>
+#include <legion_stl.h>
 
 #include "flecsi/runtime/types.h"
 

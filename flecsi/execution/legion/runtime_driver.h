@@ -1,20 +1,24 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_legion_runtime_driver_h
-#define flecsi_execution_legion_runtime_driver_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jul 26, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_LEGION)
-  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
 #include <legion.h>
@@ -64,10 +68,11 @@ void driver(int argc, char ** argv);
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-void runtime_driver(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx,
-  Legion::Runtime * runtime);
+void runtime_driver(
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context ctx,
+    Legion::Runtime * runtime);
 
 // The runtime_driver task is registered directly during context
 // initialization.
@@ -78,18 +83,11 @@ void runtime_driver(const Legion::Task * task,
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-void spmd_task(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx,
-  Legion::Runtime * runtime);
+void spmd_task(
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context ctx,
+    Legion::Runtime * runtime);
 
-
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_legion_runtime_driver_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
