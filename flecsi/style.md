@@ -58,7 +58,7 @@ top-level FleCSI source directory, e.g.:
 > Correct way:
 
 ```cpp
-    #include "flecsi/topology/mesh_topology.h"
+    #include <flecsi/topology/mesh_topology.h>
 ```
 
 * FleCSI header guard names should use the partial relative path. They

@@ -5,11 +5,11 @@
 
 #include <iostream>
 
-#include "flecsi/utils/common.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/execution.h"
-#include "flecsi/data/data.h"
-#include "flecsi/data/data_client.h"
+#include <flecsi/utils/common.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/execution.h>
+#include <flecsi/data/data.h>
+#include <flecsi/data/data_client.h>
 
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \

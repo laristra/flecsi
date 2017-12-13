@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/static_verify.h"
+#include <flecsi/utils/static_verify.h>
 
 // includes: C++
 #include <iostream>

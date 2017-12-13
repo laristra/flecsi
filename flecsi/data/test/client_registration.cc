@@ -5,8 +5,8 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/data/data.h"
-#include "flecsi/supplemental/mesh/test_mesh_2d.h"
+#include <flecsi/data/data.h>
+#include <flecsi/supplemental/mesh/test_mesh_2d.h>
 
 namespace flecsi {
 namespace execution {

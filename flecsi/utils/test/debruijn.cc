@@ -13,7 +13,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/debruijn.h"
+#include <flecsi/utils/debruijn.h>
 
 // includes: C++
 #include <random>

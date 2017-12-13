@@ -83,7 +83,7 @@ struct sparse_data_handle_base__ :
 
 } // namespace flecsi
 
-#include "flecsi/runtime/flecsi_runtime_data_handle_policy.h"
+#include <flecsi/runtime/flecsi_runtime_data_handle_policy.h>
 
 namespace flecsi {
   

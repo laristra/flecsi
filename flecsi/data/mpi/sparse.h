@@ -8,21 +8,21 @@
 // Using this approach allows us to have only one storage_class_t
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE mpi
-#include "flecsi/data/storage_class.h"
+#include <flecsi/data/storage_class.h>
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
 #include <algorithm>
 #include <memory>
 
-#include "flecsi/data/common/data_types.h"
-#include "flecsi/data/common/privilege.h"
-#include "flecsi/data/data_client.h"
-#include "flecsi/data/mutator_handle.h"
-#include "flecsi/data/sparse_data_handle.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/utils/const_string.h"
-#include "flecsi/utils/index_space.h"
+#include <flecsi/data/common/data_types.h>
+#include <flecsi/data/common/privilege.h>
+#include <flecsi/data/data_client.h>
+#include <flecsi/data/mutator_handle.h>
+#include <flecsi/data/sparse_data_handle.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/utils/const_string.h>
+#include <flecsi/utils/index_space.h>
 
 //----------------------------------------------------------------------------//
 //! @file

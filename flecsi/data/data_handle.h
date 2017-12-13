@@ -110,7 +110,7 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
 
 } // namespace flecsi
 
-#include "flecsi/runtime/flecsi_runtime_data_handle_policy.h"
+#include <flecsi/runtime/flecsi_runtime_data_handle_policy.h>
 
 namespace flecsi {
   

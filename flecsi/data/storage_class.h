@@ -19,7 +19,7 @@
   #error "You must define a data policy namespace before including this file."
 #endif
 
-#include "flecsi/data/data_constants.h"
+#include <flecsi/data/data_constants.h>
 
 namespace flecsi {
 namespace data {

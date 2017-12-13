@@ -8,13 +8,13 @@
 //! @date Initial file creation: Jul 26, 2016
 //----------------------------------------------------------------------------//
 
-#include "flecsi/execution/legion/context_policy.h"
+#include <flecsi/execution/legion/context_policy.h>
 
 #include <iostream>
 
-#include "flecsi/execution/legion/legion_tasks.h"
-#include "flecsi/execution/legion/mapper.h"
-#include "flecsi/data/storage.h"
+#include <flecsi/execution/legion/legion_tasks.h>
+#include <flecsi/execution/legion/mapper.h>
+#include <flecsi/data/storage.h>
 
 namespace flecsi {
 namespace execution {

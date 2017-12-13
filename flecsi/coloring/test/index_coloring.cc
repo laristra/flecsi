@@ -3,7 +3,7 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-#include "flecsi/coloring/index_coloring.h"
+#include <flecsi/coloring/index_coloring.h>
 
 #include <cinchtest.h>
 

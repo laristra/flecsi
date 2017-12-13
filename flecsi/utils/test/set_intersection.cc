@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/set_intersection.h"
+#include <flecsi/utils/set_intersection.h>
 
 // includes: other
 #include <cinchtest.h>

@@ -27,9 +27,9 @@
 // Legion, MPI+Legion Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-#include "flecsi/data/legion/data_handle_policy.h"
-#include "flecsi/data/legion/mutator_handle_policy.h"
-#include "flecsi/data/legion/sparse_data_handle_policy.h"
+#include <flecsi/data/legion/data_handle_policy.h>
+#include <flecsi/data/legion/mutator_handle_policy.h>
+#include <flecsi/data/legion/sparse_data_handle_policy.h>
 
 namespace flecsi {
 
@@ -45,9 +45,9 @@ using FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY = legion_mutator_handle_policy_t;
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-#include "flecsi/data/mpi/data_handle_policy.h"
-#include "flecsi/data/mpi/mutator_handle_policy.h"
-#include "flecsi/data/mpi/sparse_data_handle_policy.h"
+#include <flecsi/data/mpi/data_handle_policy.h>
+#include <flecsi/data/mpi/mutator_handle_policy.h>
+#include <flecsi/data/mpi/sparse_data_handle_policy.h>
 
 namespace flecsi {
 

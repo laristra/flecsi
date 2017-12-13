@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/tuple_wrapper.h"
+#include <flecsi/utils/tuple_wrapper.h>
 
 // includes: other
 #include "boost/core/demangle.hpp"

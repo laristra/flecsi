@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/utility.h"
+#include <flecsi/utils/utility.h>
 
 // includes: C++
 #include <iostream>

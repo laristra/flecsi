@@ -12,17 +12,17 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/execution/execution.h"
-#include "flecsi/io/simple_definition.h"
-#include "flecsi/coloring/dcrs_utils.h"
-#include "flecsi/coloring/parmetis_colorer.h"
-#include "flecsi/coloring/mpi_communicator.h"
-#include "flecsi/supplemental/coloring/add_colorings.h"
-#include "flecsi/data/mutator_handle.h"
-#include "flecsi/data/sparse_accessor.h"
-#include "flecsi/data/ragged_accessor.h"
-#include "flecsi/data/mutator.h"
-#include "flecsi/data/ragged_mutator.h"
+#include <flecsi/execution/execution.h>
+#include <flecsi/io/simple_definition.h>
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/coloring/parmetis_colorer.h>
+#include <flecsi/coloring/mpi_communicator.h>
+#include <flecsi/supplemental/coloring/add_colorings.h>
+#include <flecsi/data/mutator_handle.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/ragged_accessor.h>
+#include <flecsi/data/mutator.h>
+#include <flecsi/data/ragged_mutator.h>
 
 using namespace std;
 using namespace flecsi;

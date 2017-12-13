@@ -26,7 +26,7 @@
 
 #include <legion.h>
 
-#include "flecsi/utils/tuple_walker.h"
+#include <flecsi/utils/tuple_walker.h>
 
 clog_register_tag(epilog);
 

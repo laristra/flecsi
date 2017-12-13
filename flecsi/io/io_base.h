@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "flecsi/utils/factory.h"
+#include <flecsi/utils/factory.h>
 
 ///
 /// \file

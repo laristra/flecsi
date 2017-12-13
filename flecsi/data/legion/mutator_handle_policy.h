@@ -11,7 +11,7 @@
 
 #include <legion.h>
 
-#include "flecsi/runtime/types.h"
+#include <flecsi/runtime/types.h>
 
 //----------------------------------------------------------------------------//
 /// @file

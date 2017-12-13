@@ -6,7 +6,7 @@
 //! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
 
-#include "flecsi/runtime/types.h"
+#include <flecsi/runtime/types.h>
 
 namespace flecsi {
 

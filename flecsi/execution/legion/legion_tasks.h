@@ -25,8 +25,8 @@
 #include <legion_stl.h>
 #include <legion_utilities.h>
 
-#include "flecsi/execution/legion/helper.h"
-#include "flecsi/execution/legion/internal_task.h"
+#include <flecsi/execution/legion/helper.h>
+#include <flecsi/execution/legion/internal_task.h>
 
 #define PRIMARY_PART 0
 #define GHOST_PART 1

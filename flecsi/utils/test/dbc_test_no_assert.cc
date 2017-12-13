@@ -17,7 +17,7 @@
 #undef FLECSI_DBC_NOTIFY
 #endif
 
-#include "flecsi/utils/dbc.h"
+#include <flecsi/utils/dbc.h>
 
 using namespace flecsi::dbc;
 

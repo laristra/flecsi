@@ -25,8 +25,8 @@
 #include <sstream>
 #include <typeinfo>
 
-#include "flecsi/utils/id.h"
-#include "flecsi/utils/offset.h"
+#include <flecsi/utils/id.h>
+#include <flecsi/utils/offset.h>
 
 #ifndef FLECSI_ID_PBITS
 #define FLECSI_ID_PBITS 20

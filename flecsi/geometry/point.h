@@ -22,8 +22,8 @@
 #include <array>
 #include <cmath>
 
-#include "flecsi/utils/dimensioned_array.h"
-#include "flecsi/utils/common.h"
+#include <flecsi/utils/dimensioned_array.h>
+#include <flecsi/utils/common.h>
 
 namespace flecsi {
 

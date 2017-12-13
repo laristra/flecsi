@@ -19,7 +19,7 @@
 //! \date Initial file creation: Oct 09, 2015
 //!
 
-#include "flecsi/utils/iterator.h"
+#include <flecsi/utils/iterator.h>
 
 namespace flecsi {
 namespace utils {

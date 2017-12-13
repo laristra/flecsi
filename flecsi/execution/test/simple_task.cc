@@ -9,9 +9,9 @@
 #include <iostream>
 #include <cinchtest.h>
 
-#include "flecsi/utils/common.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/execution.h"
+#include <flecsi/utils/common.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/execution.h>
 
 /*!
  * \file default_driver.h

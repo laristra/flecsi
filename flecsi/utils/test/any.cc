@@ -16,8 +16,8 @@
 #include <cinchtest.h>
 
 // user includes
-#include "flecsi/coloring/index_coloring.h"
-#include "flecsi/utils/any.h"
+#include <flecsi/coloring/index_coloring.h>
+#include <flecsi/utils/any.h>
 
 // boost includes
 #include "boost/core/demangle.hpp"

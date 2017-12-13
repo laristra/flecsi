@@ -11,10 +11,10 @@
 #include <cinchlog.h>
 #include <cinchtest.h>
 
-#include "flecsi/execution/execution.h"
-#include "flecsi/supplemental/coloring/add_colorings.h"
-#include "flecsi/supplemental/mesh/empty_mesh_2d.h"
-#include "flecsi/data/dense_accessor.h"
+#include <flecsi/execution/execution.h>
+#include <flecsi/supplemental/coloring/add_colorings.h>
+#include <flecsi/supplemental/mesh/empty_mesh_2d.h>
+#include <flecsi/data/dense_accessor.h>
 
 #define INDEX_ID 0
 #define VERSIONS 1

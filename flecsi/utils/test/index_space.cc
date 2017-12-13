@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/index_space.h"
+#include <flecsi/utils/index_space.h>
 
 // includes: C++
 #include <iostream>

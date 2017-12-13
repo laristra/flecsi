@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "flecsi/geometry/point.h"
-#include "flecsi/utils/logging.h"
+#include <flecsi/geometry/point.h>
+#include <flecsi/utils/logging.h>
 
 ///
 // \file test_definition.h

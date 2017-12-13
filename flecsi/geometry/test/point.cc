@@ -14,7 +14,7 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/geometry/point.h"
+#include <flecsi/geometry/point.h>
 
 using namespace flecsi;
 

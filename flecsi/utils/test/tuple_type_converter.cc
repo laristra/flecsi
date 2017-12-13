@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/tuple_type_converter.h"
+#include <flecsi/utils/tuple_type_converter.h>
 
 // includes: C++
 #include <iostream>

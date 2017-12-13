@@ -24,8 +24,8 @@
 
 #include <legion.h>
 
-#include "flecsi/execution/default_driver.h"
-#include "flecsi/topology/mesh_topology.h"
+#include <flecsi/execution/default_driver.h>
+#include <flecsi/topology/mesh_topology.h>
 
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \

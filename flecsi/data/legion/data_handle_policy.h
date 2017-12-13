@@ -17,7 +17,7 @@
 #include <legion.h>
 #include <legion_stl.h>
 
-#include "flecsi/runtime/types.h"
+#include <flecsi/runtime/types.h>
 
 namespace flecsi {
 

@@ -22,10 +22,10 @@
 
 #include <mpi.h>
 
-#include "flecsi/coloring/dcrs_utils.h"
-#include "flecsi/coloring/mpi_communicator.h"
-#include "flecsi/coloring/parmetis_colorer.h"
-#include "flecsi/io/simple_definition.h"
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/coloring/mpi_communicator.h>
+#include <flecsi/coloring/parmetis_colorer.h>
+#include <flecsi/io/simple_definition.h>
 
 clog_register_tag(coloring);
 

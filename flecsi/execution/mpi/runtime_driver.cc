@@ -11,7 +11,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "flecsi/data/data.h"
+#include <flecsi/data/data.h>
 
 clog_register_tag(runtime_driver);
 

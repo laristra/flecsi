@@ -25,8 +25,8 @@
 #include <legion.h>
 #include <legion_mapping.h>
 
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/legion_tasks.h"
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/legion/legion_tasks.h>
 
 clog_register_tag(legion_mapper);
 

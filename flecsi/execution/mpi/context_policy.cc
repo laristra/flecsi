@@ -8,7 +8,7 @@
 //! @date Initial file creation: Jul 26, 2016
 //----------------------------------------------------------------------------//
 
-#include "flecsi/execution/mpi/context_policy.h"
+#include <flecsi/execution/mpi/context_policy.h>
 
 namespace flecsi {
 namespace execution {

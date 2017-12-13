@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/iterator.h"
+#include <flecsi/utils/iterator.h>
 
 // includes: C++
 #include <array>

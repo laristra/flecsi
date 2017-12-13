@@ -16,8 +16,8 @@
 #include <iostream>
 #include <sstream>
 
-#include "flecsi/data/legion/dpd.h"
-#include "flecsi/execution/task_ids.h"
+#include <flecsi/data/legion/dpd.h>
+#include <flecsi/execution/task_ids.h>
 
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \

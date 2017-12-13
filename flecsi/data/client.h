@@ -15,14 +15,14 @@
 
 /*! @file */
 
-#include "flecsi/data/common/data_types.h"
-#include "flecsi/data/common/registration_wrapper.h"
-#include "flecsi/data/data_client_handle.h"
-#include "flecsi/data/storage.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/runtime/types.h"
-#include "flecsi/topology/mesh_types.h"
-#include "flecsi/utils/tuple_walker.h"
+#include <flecsi/data/common/data_types.h>
+#include <flecsi/data/common/registration_wrapper.h>
+#include <flecsi/data/data_client_handle.h>
+#include <flecsi/data/storage.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/topology/mesh_types.h>
+#include <flecsi/utils/tuple_walker.h>
 
 namespace flecsi {
 namespace topology {
@@ -563,7 +563,7 @@ struct data_client_interface__
 // This include file defines the FLECSI_RUNTIME_DATA_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include "flecsi/runtime/flecsi_runtime_data_policy.h"
+#include <flecsi/runtime/flecsi_runtime_data_policy.h>
 
 namespace flecsi {
 namespace data {

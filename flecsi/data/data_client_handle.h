@@ -87,7 +87,7 @@ struct data_client_type__<
 
 } // namespace flecsi
 
-#include "flecsi/runtime/flecsi_runtime_data_client_handle_policy.h"
+#include <flecsi/runtime/flecsi_runtime_data_client_handle_policy.h>
 
 namespace flecsi {
 

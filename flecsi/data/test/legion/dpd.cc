@@ -17,7 +17,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "flecsi/data/legion/dpd.h"
+#include <flecsi/data/legion/dpd.h>
 
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \

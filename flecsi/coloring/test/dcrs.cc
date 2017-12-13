@@ -6,8 +6,8 @@
 #include <cinchtest.h>
 #include <mpi.h>
 
-#include "flecsi/coloring/dcrs_utils.h"
-#include "flecsi/io/simple_definition.h"
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/io/simple_definition.h>
 
 const size_t output_rank(0);
 

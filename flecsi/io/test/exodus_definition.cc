@@ -7,8 +7,8 @@
 #include <cinchtest.h>
 
 // user includes
-#include "flecsi/io/exodus_definition.h"
-#include "flecsi/topology/closure_utils.h"
+#include <flecsi/io/exodus_definition.h>
+#include <flecsi/topology/closure_utils.h>
 
 // some type aliases confined to this test
 template< int D >

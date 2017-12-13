@@ -10,7 +10,7 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/execution/execution.h"
+#include <flecsi/execution/execution.h>
 
 
 namespace flecsi {

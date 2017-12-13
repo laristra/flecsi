@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "flecsi/data/common/data_types.h"
+#include <flecsi/data/common/data_types.h>
 
 //----------------------------------------------------------------------------//
 /// @file

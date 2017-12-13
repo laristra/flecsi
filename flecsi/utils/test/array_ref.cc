@@ -4,7 +4,7 @@
  *~--------------------------------------------------------------------------~*/
 
 // includes: flecsi
-#include "flecsi/utils/array_ref.h"
+#include <flecsi/utils/array_ref.h>
 
 // includes: C++
 #include <iostream>

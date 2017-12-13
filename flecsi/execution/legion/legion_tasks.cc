@@ -8,13 +8,13 @@
 //! \date Initial file creation: Apr 11, 2017
 //----------------------------------------------------------------------------//
 
-#include "flecsi/execution/legion/legion_tasks.h"
+#include <flecsi/execution/legion/legion_tasks.h>
 
 #include <cinchlog.h>
 #include <limits>
 
-#include "flecsi/execution/context.h"
-#include "flecsi/utils/common.h"
+#include <flecsi/execution/context.h>
+#include <flecsi/utils/common.h>
 
 namespace flecsi {
 namespace execution {

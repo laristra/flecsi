@@ -7,7 +7,7 @@
 //! \date Initial file creation: Aug 01, 2016
 //!
 
-#include "flecsi/utils/common.h"
+#include <flecsi/utils/common.h>
 
 #include <memory>
 

@@ -36,16 +36,16 @@
 
 #include <mpi.h>
 
-#include "flecsi/execution/common/launch.h"
-#include "flecsi/execution/common/processor.h"
-#include "flecsi/execution/legion/future.h"
-#include "flecsi/execution/legion/internal_field.h"
-#include "flecsi/execution/legion/runtime_driver.h"
-#include "flecsi/execution/legion/runtime_state.h"
-#include "flecsi/runtime/types.h"
-#include "flecsi/utils/common.h"
-#include "flecsi/utils/const_string.h"
-#include "flecsi/utils/tuple_wrapper.h"
+#include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/legion/future.h>
+#include <flecsi/execution/legion/internal_field.h>
+#include <flecsi/execution/legion/runtime_driver.h>
+#include <flecsi/execution/legion/runtime_state.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/const_string.h>
+#include <flecsi/utils/tuple_wrapper.h>
 
 namespace flecsi {
 namespace execution {

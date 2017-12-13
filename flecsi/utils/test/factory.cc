@@ -13,7 +13,7 @@
  *~--------------------------------------------------------------------------~*/
 
 // includes: flecsi
-#include "flecsi/utils/factory.h"
+#include <flecsi/utils/factory.h>
 
 // includes: C++
 
