@@ -27,7 +27,7 @@ template<
   size_t GHOST_PERMISSIONS,
   typename DATA_POLICY
 >
-struct sparse_data_handle_base__ : 
+struct sparse_data_handle_base__ :
   public DATA_POLICY, public data_handle_base_t {
 
   using offset_t = data::sparse_data_offset_t;
@@ -86,7 +86,7 @@ struct sparse_data_handle_base__ :
 #include <flecsi/runtime/flecsi_runtime_data_handle_policy.h>
 
 namespace flecsi {
-  
+
 //----------------------------------------------------------------------------//
 //! The data_handle__ type is the high-level data handle type.
 //!

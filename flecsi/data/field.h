@@ -91,7 +91,7 @@ struct field_interface__
       INDEX_SPACE
     >;
 
-    const size_t client_key = 
+    const size_t client_key =
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
 
     for(size_t version(0); version<VERSIONS; ++version) {
@@ -142,7 +142,7 @@ struct field_interface__
   {
     static_assert(VERSION < utils::hash::field_max_versions,
       "max field version exceeded");
-    
+
     using storage_class_t =
       typename DATA_POLICY::template storage_class__<STORAGE_CLASS>;
 
@@ -193,7 +193,7 @@ struct field_interface__
   {
     static_assert(VERSION < utils::hash::field_max_versions,
       "max field version exceeded");
-    
+
     using storage_class_t =
       typename DATA_POLICY::template storage_class__<STORAGE_CLASS>;
 
