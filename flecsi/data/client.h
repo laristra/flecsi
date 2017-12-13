@@ -32,10 +32,10 @@ namespace topology {
 //----------------------------------------------------------------------------//
 
 template<typename>
-class mesh_topology_t;
+class mesh_topology__;
 
 template<typename>
-class set_topology_t;
+class set_topology__;
 
 //----------------------------------------------------------------------------//
 // Forward declaration
@@ -89,7 +89,7 @@ struct data_client_policy_handler__<global_data_client_t>
 //----------------------------------------------------------------------------//
 
 template<typename POLICY_TYPE>
-struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
+struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>>
 {
 
   struct entity_info_t
@@ -384,7 +384,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>
 //----------------------------------------------------------------------------//
 
 template<typename POLICY_TYPE>
-struct data_client_policy_handler__<topology::set_topology_t<POLICY_TYPE>>
+struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>>
 {
 
   struct entity_info_t

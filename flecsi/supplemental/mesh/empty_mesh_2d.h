@@ -74,7 +74,7 @@ namespace supplemental {
     }
   };
 
-  using empty_mesh_t = topology::mesh_topology_t<empty_mesh_types_t>;
-  using empty_mesh_2d_t = topology::mesh_topology_t<empty_mesh_types_t>;
+  using empty_mesh_t = topology::mesh_topology__<empty_mesh_types_t>;
+  using empty_mesh_2d_t = topology::mesh_topology__<empty_mesh_types_t>;
 } // namespace supplemental
 } // namespace flecsi

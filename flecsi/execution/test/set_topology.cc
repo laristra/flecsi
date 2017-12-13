@@ -40,7 +40,7 @@ public:
     >;
 };
 
-using set_t = set_topology_t<set_types>;
+using set_t = set_topology__<set_types>;
 
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;

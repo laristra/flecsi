@@ -154,7 +154,7 @@ struct test_mesh_2d_policy_t
 //----------------------------------------------------------------------------//
 
 struct test_mesh_2d_t :
-  public flecsi::topology::mesh_topology_t<test_mesh_2d_policy_t>
+  public flecsi::topology::mesh_topology__<test_mesh_2d_policy_t>
 {
 
   auto

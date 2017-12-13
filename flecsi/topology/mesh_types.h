@@ -103,7 +103,7 @@ public:
   } // get_dim_
 
   template<class MT>
-  friend class mesh_topology_t;
+  friend class mesh_topology__;
 
 protected:
   template<size_t M>

@@ -87,10 +87,10 @@ struct client_registration_wrapper__ {}; // class client_registration_wrapper__
 
 template<typename POLICY_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
 struct client_registration_wrapper__<
-    flecsi::topology::mesh_topology_t<POLICY_TYPE>,
+    flecsi::topology::mesh_topology__<POLICY_TYPE>,
     NAMESPACE_HASH,
     NAME_HASH> {
-  using CLIENT_TYPE = typename flecsi::topology::mesh_topology_t<POLICY_TYPE>;
+  using CLIENT_TYPE = typename flecsi::topology::mesh_topology__<POLICY_TYPE>;
 
   //--------------------------------------------------------------------------//
   //!
@@ -284,10 +284,10 @@ struct client_registration_wrapper__<
 
 template<typename POLICY_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
 struct client_registration_wrapper__<
-    flecsi::topology::set_topology_t<POLICY_TYPE>,
+    flecsi::topology::set_topology__<POLICY_TYPE>,
     NAMESPACE_HASH,
     NAME_HASH> {
-  using CLIENT_TYPE = typename flecsi::topology::set_topology_t<POLICY_TYPE>;
+  using CLIENT_TYPE = typename flecsi::topology::set_topology__<POLICY_TYPE>;
 
   //--------------------------------------------------------------------------//
   //!

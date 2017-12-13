@@ -92,7 +92,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-//! mesh_topology_t is parameterized on a class (MT) which gives
+//! mesh_topology__ is parameterized on a class (MT) which gives
 //! information about its entity types, connectivities and more. the mesh
 //! topology is responsibly for computing connectivity info between entities
 //! of different topological dimension, e.g: vertex -> cell,
@@ -104,7 +104,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
 //! @ingroup mesh-topology
 //----------------------------------------------------------------------------//
 template<class MT>
-class mesh_topology_t
+class mesh_topology__
     : public mesh_topology_base_t<
           mesh_storage_t<MT::num_dimensions, MT::num_domains>> {
   // static verification of mesh policy
@@ -176,32 +176,32 @@ public:
   // tree topologies. It is also useful for detecting illegal usage, such as
   // when a user adds data members.
   //--------------------------------------------------------------------------//
-  using type_identifier_t = mesh_topology_t;
+  using type_identifier_t = mesh_topology__;
 
   // Don't allow the mesh to be copied or copy constructed
 
   //! don't allow mesh to be assigned
-  mesh_topology_t & operator=(const mesh_topology_t &) = delete;
+  mesh_topology__ & operator=(const mesh_topology__ &) = delete;
 
   //! Allow move operations
-  mesh_topology_t(mesh_topology_t && o) = default;
+  mesh_topology__(mesh_topology__ && o) = default;
 
   //! override default move assignement
-  mesh_topology_t & operator=(mesh_topology_t && o) = default;
+  mesh_topology__ & operator=(mesh_topology__ && o) = default;
 
   //! Constructor, takes as input a mesh storage or storage can later be set
-  mesh_topology_t(storage_t * ms = nullptr) : base_t(ms) {
+  mesh_topology__(storage_t * ms = nullptr) : base_t(ms) {
     if (ms != nullptr) {
       initialize_storage();
     } // if
-  } // mesh_topology_t()
+  } // mesh_topology__()
 
   //! Copy constructor: alias another mesh
-  mesh_topology_t(const mesh_topology_t & m) : base_t(m.ms_) {}
+  mesh_topology__(const mesh_topology__ & m) : base_t(m.ms_) {}
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
-  virtual ~mesh_topology_t() {}
+  virtual ~mesh_topology__() {}
 
   //--------------------------------------------------------------------------//
   //! Initialize the mesh storage after it has been set
@@ -1812,7 +1812,7 @@ private:
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
-}; // class mesh_topology_t
+}; // class mesh_topology__
 
 } // namespace topology
 } // namespace flecsi

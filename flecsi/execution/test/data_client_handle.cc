@@ -109,7 +109,7 @@ public:
   }
 };
 
-struct test_mesh_t : public mesh_topology_t<test_mesh_types_t> {};
+struct test_mesh_t : public mesh_topology__<test_mesh_types_t> {};
 
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;

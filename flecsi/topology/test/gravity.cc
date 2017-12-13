@@ -134,17 +134,17 @@ public:
   using branch_t = branch;
 };
 
-using tree_topology_t = topology::tree_topology<tree_policy>;
-using body = tree_topology_t::body;
-using point_t = tree_topology_t::point_t;
-using branch_t = tree_topology_t::branch_t;
-using branch_id_t = tree_topology_t::branch_id_t;
+using tree_topology__ = topology::tree_topology<tree_policy>;
+using body = tree_topology__::body;
+using point_t = tree_topology__::point_t;
+using branch_t = tree_topology__::branch_t;
+using branch_id_t = tree_topology__::branch_id_t;
 
 static const size_t N = 5000;
 static const size_t TS = 5;
 
 TEST(tree_topology, gravity) {
-  tree_topology_t t;
+  tree_topology__ t;
 
   thread_pool pool;
   pool.start(8);
