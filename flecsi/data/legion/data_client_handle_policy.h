@@ -1,10 +1,7 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_legion_data_client_handle_policy_h
-#define flecsi_data_legion_data_client_handle_policy_h
-
-//----------------------------------------------------------------------------//
+#pragma once
 //! @file
 //! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
@@ -71,8 +68,6 @@ struct legion_data_client_handle_policy_t {
 }; // struct data_client_handle_policy_t
 
 } // namespace flecsi
-
-#endif // flecsi_data_legion_data_client_handle_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  *~-------------------------------------------------------------------------~-*/

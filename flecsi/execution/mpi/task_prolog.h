@@ -12,8 +12,7 @@
 * All rights reserved
 *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_mpi_task_prolog_h
-#define flecsi_execution_mpi_task_prolog_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -330,7 +329,5 @@ namespace execution {
 
   }; // struct task_prolog_t
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_mpi_task_prolog_h

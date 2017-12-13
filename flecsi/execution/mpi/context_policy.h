@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_mpi_context_policy_h
-#define flecsi_execution_mpi_context_policy_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -72,7 +71,7 @@ struct mpi_context_policy_t
       size_t max_entries_per_index,
       size_t reserve_chunk
     )
-    : type_size(type_size), 
+    : type_size(type_size),
     num_exclusive(num_exclusive),
     num_shared(num_shared),
     num_ghost(num_ghost),
@@ -84,7 +83,7 @@ struct mpi_context_policy_t
     num_exclusive_entries(0){
 
       size_t n = num_total - num_exclusive;
-      
+
       for(size_t i = 0; i < n; ++i){
         offsets[num_exclusive + i].set_offset(
           reserve + i * max_entries_per_index);
@@ -109,8 +108,8 @@ struct mpi_context_policy_t
     size_t reserve;
     size_t num_exclusive_entries;
 
-    std::vector<offset_t> offsets;    
-    std::vector<uint8_t> entries;    
+    std::vector<offset_t> offsets;
+    std::vector<uint8_t> entries;
   };
 
   //--------------------------------------------------------------------------//
@@ -540,7 +539,7 @@ struct mpi_context_policy_t
   std::map<field_id_t, sparse_field_data_t>&
   registered_sparse_field_data()
   {
-    return sparse_field_data;    
+    return sparse_field_data;
   }
 
   std::map<field_id_t, sparse_field_metadata_t>&
@@ -554,7 +553,7 @@ struct mpi_context_policy_t
 
   auto&
   max_reduction()
-  { 
+  {
     return max_reduction_;
   }
 
@@ -573,7 +572,7 @@ struct mpi_context_policy_t
   //--------------------------------------------------------------------------//
   //! Perform reduction for the maximum value type <double>
   //!
-  //! @param 
+  //! @param
   //--------------------------------------------------------------------------//
 
   template <typename T>
@@ -614,13 +613,13 @@ struct mpi_context_policy_t
   //--------------------------------------------------------------------------//
   //! Perform reduction for the minimum value type <double>
   //!
-  //! @param 
+  //! @param
   //--------------------------------------------------------------------------//
 
   template <typename T>
   auto
   reduce_min(mpi_future__<T> & local_future)
-  { 
+  {
     T global_min_;
     auto local_min_ = local_future.get();
     MPI_Allreduce(&local_min_, &global_min_, 1,
@@ -664,10 +663,8 @@ private:
 
 }; // class mpi_context_policy_t
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_mpi_context_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

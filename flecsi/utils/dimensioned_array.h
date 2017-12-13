@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_dimensioned_array_h
-#define flecsi_utils_dimensioned_array_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -315,8 +314,6 @@ operator<<(
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_dimensioned_array_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -1,8 +1,7 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_legion_scoped_h
-#define flecsi_legion_scoped_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
@@ -49,8 +48,6 @@ struct storage_class__<scoped> {
 } // namespace legion
 } // namespace data
 } // namespace flecsi
-
-#endif // flecsi_legion_scoped_h
 
 /*~-------------------------------------------------------------------------~-*
  *~-------------------------------------------------------------------------~-*/

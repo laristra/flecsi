@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_kernel_h
-#define flecsi_execution_kernel_h
+#pragma once
 
 #include "flecsi/topology/index_space.h"
 
@@ -103,8 +102,6 @@ reduce_each__(
 
 } // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_kernel_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

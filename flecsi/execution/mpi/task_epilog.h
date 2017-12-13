@@ -12,8 +12,7 @@
 * All rights reserved
 *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_mpi_task_epilog_h
-#define flecsi_execution_mpi_task_epilog_h
+#pragma once
 
 #include "flecsi/data/dense_accessor.h"
 #include "flecsi/data/sparse_accessor.h"
@@ -364,7 +363,5 @@ namespace execution {
 
   }; // struct task_epilog_t
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_mpi_task_epilog_h

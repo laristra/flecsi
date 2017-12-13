@@ -1,8 +1,7 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_legion_sparse_h
-#define flecsi_legion_sparse_h
+#pragma once
 
 #include <algorithm>
 #include <map>
@@ -135,8 +134,6 @@ struct storage_class__<sparse> {
 } // namespace legion
 } // namespace data
 } // namespace flecsi
-
-#endif // flecsi_legion_sparse_h
 
 /*~-------------------------------------------------------------------------~-*
  *~-------------------------------------------------------------------------~-*/

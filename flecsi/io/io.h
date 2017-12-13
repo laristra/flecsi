@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_io_io_h
-#define flecsi_io_io_h
+#pragma once
 
 #include "flecsi/io/io_base.h"
 
@@ -114,8 +113,6 @@ int32_t write_mesh(const std::string & name, mesh_t & m, bool binary)
 
 } // namespace io
 } // namespace flecsi
-
-#endif // flecsi_io_io_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_mpi_execution_policy_h
-#define flecsi_execution_mpi_execution_policy_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -250,10 +249,8 @@ struct mpi_execution_policy_t
 
 }; // struct mpi_execution_policy_t
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_mpi_execution_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

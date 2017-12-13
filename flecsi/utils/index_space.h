@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_index_space_h
-#define flecsi_utils_index_space_h
+#pragma once
 
 //!
 //! \file
@@ -82,8 +81,6 @@ private:
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_index_space_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

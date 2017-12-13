@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_io_simple_definition_h
-#define flecsi_io_simple_definition_h
+#pragma once
 
 #include "flecsi/topology/mesh_definition.h"
 
@@ -86,12 +85,12 @@ public:
   /// \param [in] dimension  the entity dimension to query.
   /// \param [in] entity_id  the id of the entity in question.
   std::vector<size_t>
-  entities( 
+  entities(
     size_t from_dim,
     size_t to_dim,
     size_t entity_id
   )
-  const 
+  const
   override
   {
     clog_assert(from_dim == 2, "invalid dimension " << from_dim);
@@ -168,8 +167,6 @@ private:
 
 } // namespace io
 } // namespace flecsi
-
-#endif // flecsi_io_simple_definition_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

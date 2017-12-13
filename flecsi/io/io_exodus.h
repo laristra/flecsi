@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_io_exodus_h
-#define flecsi_io_exodus_h
+#pragma once
 
 #include "flecsi/io/io_base.h"
 
@@ -78,8 +77,6 @@ io_base_t<mesh_t> * create_io_exodus()
 
 } // namespace io
 } // namespace flecsi
-
-#endif // flecsi_io_exodus_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

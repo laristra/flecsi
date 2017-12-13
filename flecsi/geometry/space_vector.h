@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_space_vector_h
-#define flecsi_space_vector_h
+#pragma once
 
 #include <array>
 #include <cmath>
@@ -161,8 +160,6 @@ space_vector<T, 3> normal(
 } // normal
 
 } // namespace flecsi
-
-#endif // flecsi_space_vector_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_io_io_base_h
-#define flecsi_io_io_base_h
+#pragma once
 
 #include "flecsi/utils/factory.h"
 
@@ -91,8 +90,6 @@ using io_factory_t = flecsi::utils::Factory_<io_base_t<mesh_t>, std::string>;
 
 } // namespace io
 } // namespace flecsi
-
-#endif // flecsi_io_io_base_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

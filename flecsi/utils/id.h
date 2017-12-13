@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_id_h
-#define flecsi_utils_id_h
+#pragma once
 
 //!
 //! \file
@@ -211,8 +210,6 @@ inline std::ostream &
 operator<<(std::ostream & ostr, const flecsi::utils::local_id_t x) {
   return ostr << uint64_t(x >> 64) << ":" << uint64_t(x);
 }
-
-#endif // flecsi_utils_id_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

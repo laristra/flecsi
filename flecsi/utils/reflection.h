@@ -11,8 +11,7 @@
 // code was written, and to fit the needs of FleCSI.
 //
 
-#ifndef flecsi_utils_reflection_h
-#define flecsi_utils_reflection_h
+#pragma once
 
 ///
 /// \file
@@ -130,8 +129,6 @@ struct reflection {
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_reflection_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

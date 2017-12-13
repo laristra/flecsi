@@ -1,8 +1,7 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_legion_mutator_handle_policy_h
-#define flecsi_data_legion_mutator_handle_policy_h
+#pragma once
 
 #include <flecsi-config.h>
 
@@ -37,8 +36,6 @@ struct legion_mutator_handle_policy_t {
 }; // class legion_mutator_handle_policy_t
 
 } // namespace flecsi
-
-#endif // flecsi_data_legion_mutator_handle_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  *~-------------------------------------------------------------------------~-*/

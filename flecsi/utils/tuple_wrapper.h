@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_tuple_wrapper_h
-#define flecsi_utils_tuple_wrapper_h
+#pragma once
 
 //!
 //! \file
@@ -41,8 +40,6 @@ private:
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_tuple_wrapper_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_common_h
-#define flecsi_utils_common_h
+#pragma once
 
 //!
 //! \file
@@ -210,8 +209,6 @@ struct function_traits__<const volatile T &&> : public function_traits__<T> {};
 
 #define _UTIL_STRINGIFY(s) #s
 #define EXPAND_AND_STRINGIFY(s) _UTIL_STRINGIFY(s)
-
-#endif // flecsi_utils_common_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

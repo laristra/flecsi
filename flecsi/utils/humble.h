@@ -3,8 +3,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_humble_h
-#define flecsi_utils_humble_h
+#pragma once
 
 //!
 //! \file
@@ -33,8 +32,6 @@ here_func(
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_humble_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

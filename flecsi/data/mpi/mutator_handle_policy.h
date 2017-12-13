@@ -1,8 +1,7 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_mpi_mutator_handle_policy_h
-#define flecsi_data_mpi_mutator_handle_policy_h
+#pragma once
 
 #include "flecsi/data/common/data_types.h"
 
@@ -32,7 +31,7 @@ struct mpi_mutator_handle_policy_t
   size_t index_space;
   size_t data_client_hash;
 
-  std::vector<offset_t>* offsets;    
+  std::vector<offset_t>* offsets;
   std::vector<uint8_t>* entries;
   size_t* reserve;
   size_t reserve_chunk;
@@ -40,8 +39,6 @@ struct mpi_mutator_handle_policy_t
 }; // class mpi_mutator_handle_policy_t
 
 } // namespace flecsi
-
-#endif // flecsi_data_mpi_mutator_handle_policy_h
 
 /*~-------------------------------------------------------------------------~-*
 *~-------------------------------------------------------------------------~-*/

@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_mpi_finalize_handles_h
-#define flecsi_execution_mpi_finalize_handles_h
+#pragma once
 
 #include "flecsi/data/data_client_handle.h"
 #include "flecsi/data/dense_accessor.h"
@@ -260,8 +259,6 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 
 } // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_topology_finalize_handles_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_point_h
-#define flecsi_point_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -190,8 +189,6 @@ centroid(
 } // centroid
 
 } // namespace flecsi
-
-#endif // flecsi_point_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

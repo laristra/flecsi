@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_logging_h
-#define flecsi_utils_logging_h
+#pragma once
 
 /*!
  * \file
@@ -30,8 +29,6 @@ namespace utils {
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_logging_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

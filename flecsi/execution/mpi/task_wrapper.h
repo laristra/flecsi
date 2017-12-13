@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_serial_task_wrapper_h
-#define flecsi_execution_serial_task_wrapper_h
+#pragma once
 
 clog_register_tag(wrapper);
 
@@ -20,4 +19,3 @@ struct functor_task_wrapper__
 
 }
 }
-#endif //flecsi_execution_serial_task_wrapper_h

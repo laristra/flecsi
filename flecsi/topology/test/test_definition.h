@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_topology_test_definition_h
-#define flecsi_topology_test_definition_h
+#pragma once
 
 #include "flecsi/geometry/point.h"
 #include "flecsi/utils/logging.h"
@@ -84,8 +83,6 @@ private:
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_topology_test_definition_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

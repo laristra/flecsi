@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_checksum_h
-#define flecsi_utils_checksum_h
+#pragma once
 
 ///
 /// \file
@@ -81,8 +80,6 @@ checksum(
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_checksum_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

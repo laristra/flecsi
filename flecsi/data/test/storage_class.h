@@ -3,6 +3,8 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
+#pragma once
+
 #include <cinchtest.h>
 
 #include <vector>

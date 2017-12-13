@@ -1,8 +1,7 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_mpi_dense_h
-#define flecsi_mpi_dense_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
@@ -126,7 +125,7 @@ struct storage_class__<dense>
     handle_t<DATA_TYPE, 0, 0, 0> h;
 
     auto& context = execution::context_t::instance();
-  
+
     using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
 
     // get field_info for this data handle
@@ -182,8 +181,6 @@ struct storage_class__<dense>
 } // namespace mpi
 } // namespace data
 } // namespace flecsi
-
-#endif // flecsi_mpi_dense_h
 
 /*~-------------------------------------------------------------------------~-*
 *~-------------------------------------------------------------------------~-*/

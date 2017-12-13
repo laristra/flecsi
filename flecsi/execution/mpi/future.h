@@ -12,10 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_mpi_future_h
-#define flecsi_execution_mpi_future_h
-
-//----------------------------------------------------------------------------//
+#pragma once
 //! \file
 //! \date Initial file creation: Nov 15, 2015
 //----------------------------------------------------------------------------//
@@ -76,10 +73,8 @@ struct mpi_future__<void>
 
 }; // struct mpi_future__
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_mpi_future_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

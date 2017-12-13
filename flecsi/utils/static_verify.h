@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_static_verify_h
-#define flecsi_utils_static_verify_h
+#pragma once
 
 //!
 //! \file
@@ -65,8 +64,6 @@ struct is_tuple<std::tuple<T...>> {
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_static_verify_h
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options

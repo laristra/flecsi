@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_tuple_type_converter_h
-#define flecsi_utils_tuple_type_converter_h
+#pragma once
 
 //!
 //! \file
@@ -58,8 +57,6 @@ struct base_convert_tuple_type<B, TO, std::tuple<Args...>> {
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_tuple_type_converter_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

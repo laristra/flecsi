@@ -3,10 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_mpi_runtime_driver_h
-#define flecsi_execution_mpi_runtime_driver_h
-
-//----------------------------------------------------------------------------//
+#pragma once
 //! @file
 //! @date Initial file creation: Jul 26, 2016
 //----------------------------------------------------------------------------//
@@ -49,7 +46,7 @@ void driver(int argc, char ** argv);
 
 //----------------------------------------------------------------------------//
 //! The FleCSI runtime driver task. This is just a function that is called
-//! during initialization. It will call the specialization driver and the 
+//! during initialization. It will call the specialization driver and the
 //! driver functions as appropriate.
 //!
 //! @ingroup mpi-execution
@@ -57,10 +54,8 @@ void driver(int argc, char ** argv);
 
 void runtime_driver(int argc, char ** argv);
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_mpi_runtime_driver_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
