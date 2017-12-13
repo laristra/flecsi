@@ -36,6 +36,7 @@ namespace execution {
 
 template<typename EXECUTION_POLICY>
 struct task_interface__ {
+
   /*!
     The runtime_state_t type stores runtime-specific state information
     that is required to execute a user task. This is only needed for
