@@ -125,7 +125,7 @@ struct reflection {
   static typename T::template reflection_variable__<N, T> variable(T & t) {
     return typename T::template reflection_variable__<N, T>(t);
   } // get_variable
-};  // reflection
+}; // reflection
 
 } // namespace utils
 } // namespace flecsi

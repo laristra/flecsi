@@ -26,8 +26,7 @@ class set_entity_t {
 public:
   using id_t = simple_id;
 
-  size_t index_space_id() const
-  {
+  size_t index_space_id() const {
     return 0;
   }
 };

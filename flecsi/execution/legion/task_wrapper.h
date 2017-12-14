@@ -180,7 +180,7 @@ struct pure_task_wrapper__ {
                     << std::endl;
         break;
     } // switch
-  }   // registration_callback
+  } // registration_callback
 
 }; // struct pure_task_wrapper__
 
@@ -257,7 +257,7 @@ struct task_wrapper__ {
             tid, Legion::Processor::LOC_PROC, config_options, name);
         break;
     } // switch
-  }   // registration_callback
+  } // registration_callback
 
   //--------------------------------------------------------------------------//
   //! Execution wrapper method for user tasks.

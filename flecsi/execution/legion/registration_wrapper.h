@@ -67,7 +67,7 @@ struct registration_wrapper__ {
     } // scope
 
   } // register_task
-};  // struct registration_wrapper__
+}; // struct registration_wrapper__
 
 //----------------------------------------------------------------------------//
 //! Partial specialization of registration_wrapper__ for void return type.
@@ -101,7 +101,7 @@ struct registration_wrapper__<void, TASK> {
     } // scope
 
   } // register_task
-};  // struct registration_wrapper__
+}; // struct registration_wrapper__
 
 } // namespace execution
 } // namespace flecsi

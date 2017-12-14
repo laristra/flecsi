@@ -835,14 +835,17 @@ public:
       class F2,
       template<typename, typename...> class INDEX_STORAGE_TYPE2,
       template<typename, typename...> class STORAGE_TYPE2>
-  void set_master(
-      const index_space<T, STORAGE2, OWNED2, SORTED2, F2, INDEX_STORAGE_TYPE2,
-        STORAGE_TYPE2> &
-          master) {
-    set_master(const_cast<
-               index_space<T, STORAGE2, OWNED2, SORTED2, F2,
-               INDEX_STORAGE_TYPE2, STORAGE_TYPE2> &>(
-        master));
+  void set_master(const index_space<
+                  T,
+                  STORAGE2,
+                  OWNED2,
+                  SORTED2,
+                  F2,
+                  INDEX_STORAGE_TYPE2,
+                  STORAGE_TYPE2> & master) {
+    set_master(const_cast<index_space<
+                   T, STORAGE2, OWNED2, SORTED2, F2, INDEX_STORAGE_TYPE2,
+                   STORAGE_TYPE2> &>(master));
   }
 
   //-----------------------------------------------------------------//
@@ -856,9 +859,14 @@ public:
       class F2,
       template<typename, typename...> class INDEX_STORAGE_TYPE2,
       template<typename, typename...> class STORAGE_TYPE2>
-  void set_master(
-      index_space<T, STORAGE2, OWNED2, SORTED2, F2, INDEX_STORAGE_TYPE2,
-        STORAGE_TYPE2> & master) {
+  void set_master(index_space<
+                  T,
+                  STORAGE2,
+                  OWNED2,
+                  SORTED2,
+                  F2,
+                  INDEX_STORAGE_TYPE2,
+                  STORAGE_TYPE2> & master) {
     s_ = reinterpret_cast<storage_t *>(master.s_);
   }
 

@@ -159,7 +159,7 @@ public:
       for (size_t i{0}; i < DIMENSION; i++) {                                  \
         data_[i] op rhs[i];                                                    \
       } /* for */                                                              \
-    }   /* if */                                                               \
+    } /* if */                                                                 \
                                                                                \
     return *this;                                                              \
   }

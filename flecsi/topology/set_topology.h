@@ -37,26 +37,20 @@ public:
   using type_identifier_t = set_topology__;
 
   // used to find the entity type for a given index space
-  template<
-    size_t INDEX_SPACE
-  >
+  template<size_t INDEX_SPACE>
   using entity_type = typename find_set_entity_<SET_TYPES, INDEX_SPACE>::type;
 
-  set_topology__(){}
+  set_topology__() {}
 
-  set_topology__(const set_topology__& s)
-  : base_t(s){}
+  set_topology__(const set_topology__ & s) : base_t(s) {}
 
-  void
-  initialize_storage(){}
+  void initialize_storage() {}
 
   template<size_t INDEX_SPACE>
-  auto entities(){
+  auto entities() {
     using etype = entity_type<INDEX_SPACE>;
-    return base_t::ss_->
-      index_spaces[INDEX_SPACE].template slice<etype*>();
+    return base_t::ss_->index_spaces[INDEX_SPACE].template slice<etype *>();
   } // entities
-
 };
 
 } // namespace topology

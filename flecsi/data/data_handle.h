@@ -43,27 +43,24 @@ struct data_handle_base_t {};
 //----------------------------------------------------------------------------//
 
 template<
-  typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS,
-  typename DATA_POLICY
->
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS,
+    typename DATA_POLICY>
 struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
 
   //--------------------------------------------------------------------------//
   //! Default constructor.
   //--------------------------------------------------------------------------//
 
-  data_handle_base__()
-  {}
+  data_handle_base__() {}
 
   //--------------------------------------------------------------------------//
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  data_handle_base__(const data_handle_base__& b)
-  : DATA_POLICY(b){
+  data_handle_base__(const data_handle_base__ & b) : DATA_POLICY(b) {
     exclusive_data = b.exclusive_data;
     shared_data = b.shared_data;
     ghost_data = b.ghost_data;
@@ -79,31 +76,31 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
     shared_buf = b.shared_buf;
     ghost_buf = b.ghost_buf;
     master = false;
-    state =b.state;
+    state = b.state;
     global = b.global;
     color = b.color;
   }
 
-  T* exclusive_data = nullptr;
-  T* exclusive_buf = nullptr;
+  T * exclusive_data = nullptr;
+  T * exclusive_buf = nullptr;
   size_t exclusive_size = 0;
 
-  T* shared_data = nullptr;
-  T* shared_buf = nullptr;
+  T * shared_data = nullptr;
+  T * shared_buf = nullptr;
   size_t shared_size = 0;
 
-  T* ghost_data = nullptr;
-  T* ghost_buf = nullptr;
+  T * ghost_data = nullptr;
+  T * ghost_buf = nullptr;
   size_t ghost_size = 0;
 
-  T* combined_data = nullptr;
+  T * combined_data = nullptr;
 #ifdef COMPACTED_STORAGE_SORT
-  T* combined_data_sort = nullptr;
+  T * combined_data_sort = nullptr;
 #endif
   size_t combined_size = 0;
   bool master = true;
 
-  size_t state =0;
+  size_t state = 0;
   bool global = false;
   bool color = false;
 };
@@ -130,17 +127,15 @@ namespace flecsi {
 //----------------------------------------------------------------------------//
 
 template<
-  typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS
->
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
 using data_handle__ = data_handle_base__<
-  T,
-  EXCLUSIVE_PERMISSIONS,
-  SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS,
-  FLECSI_RUNTIME_DATA_HANDLE_POLICY
->;
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS,
+    FLECSI_RUNTIME_DATA_HANDLE_POLICY>;
 
 } // namespace flecsi

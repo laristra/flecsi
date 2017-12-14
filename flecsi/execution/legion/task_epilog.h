@@ -124,7 +124,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
       } // if write phase
 
     } // if global and color
-  }   // handle
+  } // handle
 
   //------------------------------------------------------------------------//
   //! FIXME: Need to document.

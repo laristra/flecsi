@@ -276,8 +276,8 @@ struct legion_execution_policy_t {
           throw std::runtime_error("invalid launch type");
 
       } // switch
-    }   // if
-  }     // execute_task
+    } // if
+  } // execute_task
 
   //--------------------------------------------------------------------------//
   // Function interface.
