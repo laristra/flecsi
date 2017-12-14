@@ -37,7 +37,7 @@ namespace flecsi {
 namespace topology {
 
 template<size_t, size_t>
-class mesh_entity_t;
+class mesh_entity__;
 
 ///
 /// \class legion_data_handle_policy_t data_handle_policy.h

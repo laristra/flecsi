@@ -117,12 +117,12 @@ private:
 }; // class mesh_entity_base_t
 
 /*----------------------------------------------------------------------------*
- * class mesh_entity_t
+ * class mesh_entity__
  *----------------------------------------------------------------------------*/
 
 //-----------------------------------------------------------------//
-//! \class mesh_entity_t mesh_types.h
-//! \brief mesh_entity_t parameterizes a mesh entity base with its dimension and
+//! \class mesh_entity__ mesh_types.h
+//! \brief mesh_entity__ parameterizes a mesh entity base with its dimension and
 //! number of domains
 //!
 //! \tparam D The dimension of the entity.
@@ -130,17 +130,17 @@ private:
 //-----------------------------------------------------------------//
 
 template<size_t D, size_t N>
-class mesh_entity_t : public mesh_entity_base_t<N> {
+class mesh_entity__ : public mesh_entity_base_t<N> {
 public:
   static constexpr size_t dimension = D;
 
-  mesh_entity_t() {}
-  ~mesh_entity_t() {}
-}; // class mesh_entity_t
+  mesh_entity__() {}
+  ~mesh_entity__() {}
+}; // class mesh_entity__
 
 // Redecalre the dimension.  This is redundant, and no longer needed in C++17.
 template<size_t D, size_t N>
-constexpr size_t mesh_entity_t<D, N>::dimension;
+constexpr size_t mesh_entity__<D, N>::dimension;
 
 //-----------------------------------------------------------------//
 //! Define the vector type for storing entities.
@@ -582,13 +582,13 @@ public:
   }
 
   template<size_t FD, size_t ND>
-  id_t * get_entities(mesh_entity_t<FD, ND> * from_ent, size_t to_dim) {
+  id_t * get_entities(mesh_entity__<FD, ND> * from_ent, size_t to_dim) {
     return get<FD>(to_dim).get_entities(from_ent->id(from_domain_));
   }
 
   template<size_t FD, size_t ND>
   id_t * get_entities(
-      mesh_entity_t<FD, ND> * from_ent,
+      mesh_entity__<FD, ND> * from_ent,
       size_t to_dim,
       size_t & count) {
     return get<FD>(to_dim).get_entities(from_ent->id(from_domain_), count);
@@ -604,7 +604,7 @@ public:
   }
 
   template<size_t FD, size_t ND>
-  auto get_entity_vec(mesh_entity_t<FD, ND> * from_ent, size_t to_dim) const {
+  auto get_entity_vec(mesh_entity__<FD, ND> * from_ent, size_t to_dim) const {
     auto & conn = get<FD>(to_dim);
     return conn.get_entity_vec(from_ent->id(from_domain_));
   }

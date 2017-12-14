@@ -42,7 +42,7 @@ class set_topology__;
 //----------------------------------------------------------------------------//
 
 template<size_t, size_t>
-class mesh_entity_t;
+class mesh_entity__;
 
 } // namespace topology
 
@@ -130,8 +130,9 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
   }; // struct entity_walker_t
 
   template<typename MESH_TYPE>
-  struct connectivity_walker_t
-      : public flecsi::utils::tuple_walker__<connectivity_walker_t<MESH_TYPE>> {
+  struct connectivity_walker__ :
+    public flecsi::utils::tuple_walker__<connectivity_walker__<MESH_TYPE>>
+  {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
     template<typename TUPLE_ENTRY_TYPE>
@@ -169,11 +170,12 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
 
     std::vector<adjacency_info_t> adjacency_info;
 
-  }; // struct connectivity_walker_t
+  }; // struct connectivity_walker__
 
   template<typename MESH_TYPE>
-  struct binding_walker_t
-      : public flecsi::utils::tuple_walker__<binding_walker_t<MESH_TYPE>> {
+  struct binding_walker__ :
+    public flecsi::utils::tuple_walker__<binding_walker__<MESH_TYPE>>
+  {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
     template<typename TUPLE_ENTRY_TYPE>
@@ -212,7 +214,7 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
     } // handle_type
 
     std::vector<adjacency_info_t> adjacency_info;
-  }; // struct binding_walker_t
+  }; // struct binding_walker__
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
   static data_client_handle__<DATA_CLIENT_TYPE, 0> get_client_handle() {
@@ -278,10 +280,10 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
       ++entity_index;
     } // for
 
-    connectivity_walker_t<POLICY_TYPE> connectivity_walker;
+    connectivity_walker__<POLICY_TYPE> connectivity_walker;
     connectivity_walker.template walk_types<connectivities>();
 
-    binding_walker_t<POLICY_TYPE> binding_walker;
+    binding_walker__<POLICY_TYPE> binding_walker;
     binding_walker.adjacency_info =
         std::move(connectivity_walker.adjacency_info);
     binding_walker.template walk_types<bindings>();

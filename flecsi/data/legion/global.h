@@ -34,7 +34,7 @@ namespace legion {
 //----------------------------------------------------------------------------//
 
 ///-------------------------------------------------------------------------//
-//! The global_handle_t provide an access to global variables that have
+//! The global_handle__ provide an access to global variables that have
 //! been registered in data model
 //!
 //! \tparam T The type of the data variable. If this type is not
@@ -48,7 +48,7 @@ namespace legion {
 ///--------------------------------------------------------------------------//
 
 template<typename T, size_t PERMISSIONS>
-struct global_handle_t : public data_handle__<T, PERMISSIONS, 0, 0> {
+struct global_handle__ : public data_handle__<T, PERMISSIONS, 0, 0> {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
@@ -59,7 +59,7 @@ struct global_handle_t : public data_handle__<T, PERMISSIONS, 0, 0> {
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  global_handle_t() {
+  global_handle__() {
     base_t::global = true;
   }
 
@@ -67,13 +67,13 @@ struct global_handle_t : public data_handle__<T, PERMISSIONS, 0, 0> {
   // Destructor.
   //--------------------------------------------------------------------------//
 
-  ~global_handle_t() {}
+  ~global_handle__() {}
 
   ///
   // Copy constructor.
   ///
   template<size_t P2>
-  global_handle_t(const global_handle_t<T, P2> & a)
+  global_handle__(const global_handle__<T, P2> & a)
       : base_t(reinterpret_cast<const base_t &>(a)), label_(a.label()),
         size_(a.size()) {
     static_assert(P2 == 0, "passing mapped handle to task args");
@@ -114,7 +114,7 @@ private:
   size_t size_ = 1;
   //    T* data_ = nullptr;
   //     T* buffer = nullptr;
-}; // struct global_handle_t
+}; // struct global_handle__
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -135,7 +135,7 @@ struct storage_class__<global> {
   //--------------------------------------------------------------------------//
 
   template<typename T, size_t PERMISSIONS>
-  using handle_t = global_handle_t<T, PERMISSIONS>;
+  using handle_t = global_handle__<T, PERMISSIONS>;
 
   //--------------------------------------------------------------------------//
   // Data handles.

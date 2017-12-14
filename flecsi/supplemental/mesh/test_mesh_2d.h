@@ -39,7 +39,7 @@ namespace supplemental {
 
 using point_t = std::array<double, 2>;
 
-struct vertex_t : public flecsi::topology::mesh_entity_t<0, 1>
+struct vertex_t : public flecsi::topology::mesh_entity__<0, 1>
 {
   vertex_t(point_t & p) : p_(p) {} 
 
@@ -51,15 +51,15 @@ private:
 
 }; // struct vertex_t
 
-struct edge_t : public flecsi::topology::mesh_entity_t<1, 1>
+struct edge_t : public flecsi::topology::mesh_entity__<1, 1>
 {
 }; // struct edge_t
 
-struct face_t : public flecsi::topology::mesh_entity_t<1, 1>
+struct face_t : public flecsi::topology::mesh_entity__<1, 1>
 {
 }; // struct face_t
 
-struct cell_t : public flecsi::topology::mesh_entity_t<2, 1>
+struct cell_t : public flecsi::topology::mesh_entity__<2, 1>
 {
   using id_t = flecsi::utils::id_t;
 

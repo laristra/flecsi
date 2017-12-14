@@ -34,7 +34,7 @@ namespace legion {
 //----------------------------------------------------------------------------//
 
 ///-------------------------------------------------------------------------//
-//! The color_handle_t provide an access to color variables that have
+//! The color_handle__ provide an access to color variables that have
 //! been registered in data model
 //!
 //! \tparam T The type of the data variable. If this type is not
@@ -50,7 +50,7 @@ namespace legion {
 ///--------------------------------------------------------------------------//
 
 template<typename T, size_t PERMISSIONS>
-struct color_handle_t : public data_handle__<T, PERMISSIONS, 0, 0> {
+struct color_handle__ : public data_handle__<T, PERMISSIONS, 0, 0> {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
@@ -61,7 +61,7 @@ struct color_handle_t : public data_handle__<T, PERMISSIONS, 0, 0> {
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  color_handle_t() {
+  color_handle__() {
     base_t::color = true;
   }
 
@@ -69,13 +69,13 @@ struct color_handle_t : public data_handle__<T, PERMISSIONS, 0, 0> {
   // Destructor.
   //--------------------------------------------------------------------------//
 
-  ~color_handle_t() {}
+  ~color_handle__() {}
 
   ///
   // Copy constructor.
   ///
   template<size_t P2>
-  color_handle_t(const color_handle_t<T, P2> & a)
+  color_handle__(const color_handle__<T, P2> & a)
       : base_t(reinterpret_cast<const base_t &>(a)), label_(a.label()),
         size_(a.size()) {
     static_assert(P2 == 0, "passing mapped handle to task args");
@@ -113,7 +113,7 @@ struct color_handle_t : public data_handle__<T, PERMISSIONS, 0, 0> {
 private:
   std::string label_ = "";
   size_t size_ = 1;
-}; // struct color_handle_t
+}; // struct color_handle__
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -134,7 +134,7 @@ struct storage_class__<color> {
   //--------------------------------------------------------------------------//
 
   template<typename T, size_t P>
-  using handle_t = color_handle_t<T, P>;
+  using handle_t = color_handle__<T, P>;
 
   //--------------------------------------------------------------------------//
   // Data handles.

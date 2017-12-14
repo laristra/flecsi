@@ -145,8 +145,8 @@ struct client_registration_wrapper__<
 
   }; // struct entity_walker_t
 
-  struct connectivity_walker_t
-      : public flecsi::utils::tuple_walker__<connectivity_walker_t> {
+  struct connectivity_walker__
+      : public flecsi::utils::tuple_walker__<connectivity_walker__> {
 
     template<typename T, T V>
     T value(topology::typeify<T, V>) {
@@ -208,10 +208,10 @@ struct client_registration_wrapper__<
           client_key, offset_key, offset_wrapper_t::register_callback);
     } // handle_type
 
-  }; // struct connectivity_walker_t
+  }; // struct connectivity_walker__
 
-  struct binding_walker_t
-      : public flecsi::utils::tuple_walker__<binding_walker_t> {
+  struct binding_walker__
+      : public flecsi::utils::tuple_walker__<binding_walker__> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {
@@ -244,7 +244,7 @@ struct client_registration_wrapper__<
           client_key, key, wrapper_t::register_callback);
     } // handle_type
 
-  }; // struct binding_walker_t
+  }; // struct binding_walker__
 
   //--------------------------------------------------------------------------//
   //!
@@ -267,10 +267,10 @@ struct client_registration_wrapper__<
       entity_walker_t entity_walker;
       entity_walker.template walk_types<entity_types_t>();
 
-      connectivity_walker_t connectivity_walker;
+      connectivity_walker__ connectivity_walker;
       connectivity_walker.template walk_types<connectivities>();
 
-      binding_walker_t binding_walker;
+      binding_walker__ binding_walker;
       binding_walker.template walk_types<bindings>();
     } // if
 
@@ -326,7 +326,7 @@ struct client_registration_wrapper__<
 
     } // handle_type
 
-  }; // struct binding_walker_t
+  }; // struct binding_walker__
 
   //--------------------------------------------------------------------------//
   //!
