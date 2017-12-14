@@ -375,8 +375,8 @@ message(STATUS "${CINCH_Yellow}Set id_t bits to allow:\n"
 # configure header
 #------------------------------------------------------------------------------#
 
-set(FLECSI_ENABLE_MPI ENABLE_MPI)
-set(FLECSI_ENABLE_LEGION ENABLE_LEGION)
+set(FLECSI_ENABLE_MPI ${ENABLE_MPI})
+set(FLECSI_ENABLE_LEGION ${ENABLE_LEGION})
 set(FLECSI_ENABLE_COLORING ENABLE_COLORING)
 set(FLECSI_ENABLE_METIS ENABLE_METIS)
 set(FLECSI_ENABLE_PARMETIS ENABLE_PARMETIS)

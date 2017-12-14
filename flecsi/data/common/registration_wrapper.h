@@ -15,7 +15,7 @@
 #include <flecsi/data/data_constants.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/execution/legion/internal_index_space.h>
+#include <flecsi/execution/internal_index_space.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/topology/mesh_topology.h>
 #include <flecsi/topology/set_topology.h>
