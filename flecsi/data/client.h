@@ -130,9 +130,8 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
   }; // struct entity_walker_t
 
   template<typename MESH_TYPE>
-  struct connectivity_walker__ :
-    public flecsi::utils::tuple_walker__<connectivity_walker__<MESH_TYPE>>
-  {
+  struct connectivity_walker__
+      : public flecsi::utils::tuple_walker__<connectivity_walker__<MESH_TYPE>> {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
     template<typename TUPLE_ENTRY_TYPE>
@@ -173,9 +172,8 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
   }; // struct connectivity_walker__
 
   template<typename MESH_TYPE>
-  struct binding_walker__ :
-    public flecsi::utils::tuple_walker__<binding_walker__<MESH_TYPE>>
-  {
+  struct binding_walker__
+      : public flecsi::utils::tuple_walker__<binding_walker__<MESH_TYPE>> {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
     template<typename TUPLE_ENTRY_TYPE>
