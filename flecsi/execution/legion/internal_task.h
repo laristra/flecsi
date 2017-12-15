@@ -28,20 +28,20 @@
 #include <flecsi/execution/execution.h>
 #include <flecsi/utils/common.h>
 
-//----------------------------------------------------------------------------//
-//! @def __flecsi_internal_task_key
-//!
-//! Convenience macro to create a task key from Legion task information.
-//!
-//! @param task      The Legion task to register.
-//! @param processor The processor type \ref processor_t.
-//! @param single    A boolean indicating whether this task can be run as a
-//!                  single task.
-//! @param index     A boolean indicating whether this task can be run as an
-//!                  index space launch.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+  @def __flecsi_internal_task_key
+
+  Convenience macro to create a task key from Legion task information.
+
+  @param task      The Legion task to register.
+  @param processor The processor type \ref processor_t.
+  @param single    A boolean indicating whether this task can be run as a
+                   single task.
+  @param index     A boolean indicating whether this task can be run as an
+                   index space launch.
+
+ @ingroup legion-execution
+ */
 
 #define __flecsi_internal_task_key(task)                                       \
   /* MACRO IMPLEMENTATION */                                                   \
@@ -49,18 +49,18 @@
   /* Use const_string_t interface to create the key */                         \
   flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()
 
-//----------------------------------------------------------------------------//
-//! @def __flecsi_internal_register_legion_task
-//!
-//! This macro registers an internal Legion task.
-//!
-//! @param task      The Legion task to register.
-//! @param processor A processor_mask_t specifying the supported processor
-//!                  types.
-//! @param launch    A launch_t specifying the launch options.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+  @def __flecsi_internal_register_legion_task
+
+  This macro registers an internal Legion task.
+
+  @param task      The Legion task to register.
+  @param processor A processor_mask_t specifying the supported processor
+                  types.
+  @param launch    A launch_t specifying the launch options.
+
+  @ingroup legion-execution
+*/
 
 #define __flecsi_internal_register_legion_task(task, processor, launch)        \
   /* MACRO IMPLEMENTATION */                                                   \

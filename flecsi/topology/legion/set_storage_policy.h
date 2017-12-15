@@ -26,7 +26,7 @@ namespace flecsi {
 namespace topology {
 
 template<typename SET_TYPES>
-struct legion_set_topology_storage_policy_t {
+struct legion_set_topology_storage_policy__ {
   using id_t = utils::id_t;
 
   using entity_types_t = typename SET_TYPES::entity_types;
@@ -34,7 +34,7 @@ struct legion_set_topology_storage_policy_t {
   static const size_t num_index_spaces = std::tuple_size<entity_types_t>::value;
 
   using index_spaces_t = std::array<
-      index_space<
+      index_space__<
           set_entity_t *,
           true,
           true,
@@ -52,9 +52,9 @@ struct legion_set_topology_storage_policy_t {
 
   index_space_map_t index_space_map;
 
-  ~legion_set_topology_storage_policy_t() {}
+  ~legion_set_topology_storage_policy__() {}
 
-  legion_set_topology_storage_policy_t() {
+  legion_set_topology_storage_policy__() {
 
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();

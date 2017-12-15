@@ -36,7 +36,7 @@ namespace supplemental {
 
     std::vector<size_t>
     create_entities(id_t cell_id, size_t dim,
-                    topology::domain_connectivity<2> & c, id_t * e){
+                    topology::domain_connectivity__<2> & c, id_t * e){
       return {2, 2, 2, 2};
     }
 
@@ -57,8 +57,8 @@ namespace supplemental {
     using bindings = std::tuple<>;
 
     template<size_t M, size_t D, typename ST>
-    static topology::mesh_entity_base_t<num_domains>*
-    create_entity(topology::mesh_topology_base_t<ST>* mesh,
+    static topology::mesh_entity_base__<num_domains>*
+    create_entity(topology::mesh_topology_base__<ST>* mesh,
                   size_t num_vertices){
       switch(M){
         case 0:{

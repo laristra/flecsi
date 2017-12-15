@@ -326,7 +326,7 @@ struct compute_bindings__<DM, 0, TS> {
 }; // struct compute_bindings__
 
 template<typename T>
-class mesh_graph_partition {
+class mesh_graph_partition__ {
 public:
   using int_t = T;
 

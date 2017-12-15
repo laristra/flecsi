@@ -23,14 +23,14 @@ namespace flecsi {
 namespace topology {
 
 template<typename SET_TYPES>
-class set_topology__ : public set_topology_base_t<set_storage_t<SET_TYPES>> {
+class set_topology__ : public set_topology_base__<set_storage__<SET_TYPES>> {
 public:
   static const size_t num_index_spaces =
       std::tuple_size<typename SET_TYPES::entity_types_t>::value;
 
-  using storage_t = set_storage_t<SET_TYPES>;
+  using storage_t = set_storage__<SET_TYPES>;
 
-  using base_t = set_topology_base_t<storage_t>;
+  using base_t = set_topology_base__<storage_t>;
 
   using id_t = utils::id_t;
 

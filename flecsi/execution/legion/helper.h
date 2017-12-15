@@ -27,9 +27,9 @@
 namespace flecsi {
 namespace execution {
 
-///
-/// FIXME documentation
-///
+/*!
+  FIXME documentation
+ */
 class legion_helper {
 public:
   legion_helper(Legion::Runtime * runtime, Legion::Context context)
@@ -112,9 +112,9 @@ public:
     return runtime_->get_index_space_domain(context_, is);
   }
 
-  ///
-  /// FIXME documentation
-  ///
+  /*!
+    FIXME documentation
+   */
   template<class T>
   void get_buffer(Legion::PhysicalRegion pr, T *& buf, size_t field = 0) const {
     auto ac = pr.get_field_accessor(field).typeify<T>();
@@ -125,10 +125,10 @@ public:
     buf = ac.template raw_rect_ptr<1>(r, sr, bo);
   }
 
-  ///
-  /// FIXME documentation
-  //
-  char * get_raw_buffer(Legion::PhysicalRegion pr, size_t field = 0) const {
+   /*!
+    FIXME documentation
+   */
+   char * get_raw_buffer(Legion::PhysicalRegion pr, size_t field = 0) const {
     auto ac = pr.get_field_accessor(field).typeify<char>();
     Legion::Domain domain = get_domain(pr);
     LegionRuntime::Arrays::Rect<1> r = domain.get_rect<1>();
@@ -137,9 +137,9 @@ public:
     return ac.template raw_rect_ptr<1>(r, sr, bo);
   }
 
-  ///
-  /// FIXME documentation
-  //
+  /*!
+    FIXME documentation
+   */
   void unmap_region(Legion::PhysicalRegion pr) const {
     runtime_->unmap_region(context_, pr);
   }

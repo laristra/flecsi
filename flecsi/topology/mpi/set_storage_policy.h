@@ -26,7 +26,7 @@ namespace flecsi {
 namespace topology {
 
 template<typename SET_TYPES>
-struct mpi_set_topology_storage_policy_t {
+struct mpi_set_topology_storage_policy__ {
 
   using id_t = utils::id_t;
 
@@ -35,7 +35,7 @@ struct mpi_set_topology_storage_policy_t {
   static const size_t num_index_spaces = std::tuple_size<entity_types_t>::value;
 
   using index_spaces_t = std::array<
-      index_space<
+      index_space__<
           set_entity_t *,
           true,
           true,
@@ -53,9 +53,9 @@ struct mpi_set_topology_storage_policy_t {
 
   index_space_map_t index_space_map;
 
-  ~mpi_set_topology_storage_policy_t() {}
+  ~mpi_set_topology_storage_policy__() {}
 
-  mpi_set_topology_storage_policy_t() {
+  mpi_set_topology_storage_policy__() {
 
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();

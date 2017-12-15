@@ -44,37 +44,37 @@ clog_register_tag(legion_tasks);
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-//! This is the color-specific initialization function to be defined by the
-//! FleCSI specialization layer. This symbol will be undefined in the compiled
-//! library, and is intended as a place holder for the specializations's
-//! initialization function that will resolve the missing symbol.
-//!
-//! The color-specific initialization function is the second of the two
-//! control points that are exposed to the specialization. This function is
-//! responsible for populating specialization-specific data structures.
-//!
-//! @param argc The number of arguments in argv (passed from the command line).
-//! @param argv The list of arguments (passed from the command line).
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ This is the color-specific initialization function to be defined by the
+ FleCSI specialization layer. This symbol will be undefined in the compiled
+ library, and is intended as a place holder for the specializations's
+ initialization function that will resolve the missing symbol.
+
+ The color-specific initialization function is the second of the two
+ control points that are exposed to the specialization. This function is
+ responsible for populating specialization-specific data structures.
+
+ @param argc The number of arguments in argv (passed from the command line).
+ @param argv The list of arguments (passed from the command line).
+
+ @ingroup legion-execution
+*/
 
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
 void specialization_spmd_init(int argc, char ** argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
-//----------------------------------------------------------------------------//
-//! @def __flecsi_internal_legion_task
-//!
-//! This macro simplifies pure Legion task definitions by filling in the
-//! boiler-plate function arguments.
-//!
-//! @param task_name   The plain-text task name.
-//! @param return_type The return type of the task.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ @def __flecsi_internal_legion_task
+
+ This macro simplifies pure Legion task definitions by filling in the
+ boiler-plate function arguments.
+
+ @param task_name   The plain-text task name.
+ @param return_type The return type of the task.
+
+ @ingroup legion-execution
+*/
 
 #define __flecsi_internal_legion_task(task_name, return_type)                  \
   /* MACRO IMPLEMENTATION */                                                   \
@@ -85,12 +85,12 @@ void specialization_spmd_init(int argc, char ** argv);
       const std::vector<Legion::PhysicalRegion> & regions,                     \
       Legion::Context ctx, Legion::Runtime * runtime)
 
-//----------------------------------------------------------------------------//
-//! Onwer pos correction task corrects the owner position reference/pointer in
-//! the ghost partition by reading from old location in primary position.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Onwer pos correction task corrects the owner position reference/pointer in
+ the ghost partition by reading from old location in primary position.
+
+ @ingroup legion-execution
+ */
 
 __flecsi_internal_legion_task(owner_pos_correction_task, void) {
 
@@ -187,42 +187,42 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
 
 } // owner_pos_correction_task
 
-//----------------------------------------------------------------------------//
-//! Interprocess communication to pass control to MPI runtime.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Interprocess communication to pass control to MPI runtime.
+
+ @ingroup legion-execution
+ */
 
 __flecsi_internal_legion_task(handoff_to_mpi_task, void) {
   context_t::instance().handoff_to_mpi();
 } // handoff_to_mpi_task
 
-//----------------------------------------------------------------------------//
-//! Interprocess communication to wait for control to pass back to the Legion
-//! runtime.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Interprocess communication to wait for control to pass back to the Legion
+ runtime.
+
+ @ingroup legion-execution
+ */
 
 __flecsi_internal_legion_task(wait_on_mpi_task, void) {
   context_t::instance().wait_on_mpi();
 } // wait_on_mpi_task
 
-//----------------------------------------------------------------------------//
-//! Interprocess communication to unset mpi execute state.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Interprocess communication to unset mpi execute state.
+
+ @ingroup legion-execution
+*/
 
 __flecsi_internal_legion_task(unset_call_mpi_task, void) {
   context_t::instance().set_mpi_state(false);
 } // unset_call_mpi_task
 
-//----------------------------------------------------------------------------//
-//! Compaction task writes new location in old location.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Compaction task writes new location in old location.
+
+ @ingroup legion-execution
+ */
 
 __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
   const int my_color = task->index_point.point_data[0];
@@ -309,11 +309,11 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
 
 } // owner_pos_compaction_task
 
-//----------------------------------------------------------------------------//
-//! Ghost copy task writes data from shared into ghost
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Ghost copy task writes data from shared into ghost
+
+ @ingroup legion-execution
+ */
 
 __flecsi_internal_legion_task(ghost_copy_task, void) {
   const int my_color = runtime->find_local_MPI_rank();
@@ -416,11 +416,11 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   } // for fid
 } // ghost_copy_task
 
-//----------------------------------------------------------------------------//
-//! Owners subregions task returns subrects required from every neighbor
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Owners subregions task returns subrects required from every neighbor
+
+ @ingroup legion-execution
+ */
 
 __flecsi_internal_legion_task(owners_subregions_task, subrect_map) {
   const int my_color = runtime->find_local_MPI_rank();
@@ -484,12 +484,12 @@ __flecsi_internal_legion_task(owners_subregions_task, subrect_map) {
   return lid_to_subrect_map;
 } // owners_subregions
 
-//----------------------------------------------------------------------------//
-//! Fill connectivity task fills connectivity for from/to index space and
-//! and index launched.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Fill connectivity task fills connectivity for from/to index space and
+ and index launched.
+
+ @ingroup legion-execution
+ */
 
 __flecsi_internal_legion_task(fill_connectivity_task, void) {
   using namespace std;
@@ -547,6 +547,9 @@ __flecsi_internal_legion_task(fill_connectivity_task, void) {
 
 #undef __flecsi_internal_legion_task
 
+/*!
+  FIXME DEOCUMENTATION
+ */
 struct MaxReductionOp {
   static const Legion::ReductionOpID redop_id = (size_t(1) << 20) - 4095;
 
@@ -561,6 +564,9 @@ struct MaxReductionOp {
   static void fold(RHS & rhs1, RHS rhs2);
 };
 
+/*!
+  FIXME DEOCUMENTATION
+ */
 struct MinReductionOp {
   static const Legion::ReductionOpID redop_id = (size_t(1) << 20) - 4096;
 

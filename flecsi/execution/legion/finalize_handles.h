@@ -18,11 +18,16 @@
 namespace flecsi {
 namespace execution {
 
+/*!
+  FIXME
+  @ingroup execution
+ */
 struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
 
-  //--------------------------------------------------------------------------//
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
+  /*!
+    FIXME
+     @ingroup execution
+   */
 
   template<
       typename T,
@@ -35,21 +40,21 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
               SHARED_PERMISSIONS,
               GHOST_PERMISSIONS> & a) {} // handle
 
-  //--------------------------------------------------------------------------//
-  //! The finalize_handles_t type can be called to walk task args after task
-  //! execution. This allows us to free memory allocated during the task.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
+  /*!
+     The finalize_handles_t type can be called to walk task args after task
+     execution. This allows us to free memory allocated during the task.
+  
+     @ingroup execution
+   */
 
   template<typename T, size_t PERMISSIONS>
   void handle(data_client_handle__<T, PERMISSIONS> & h) {
     h.delete_storage();
   } // handle
 
-  //-----------------------------------------------------------------------//
-  // If this is not a data handle, then simply skip it.
-  //-----------------------------------------------------------------------//
+  /*!
+    If this is not a data handle, then simply skip it.
+   */
 
   template<typename T>
   static typename std::enable_if_t<

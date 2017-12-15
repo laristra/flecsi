@@ -38,22 +38,22 @@
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-//! The init_handles_t type can be called to walk task args after task
-//! launch. This allows us to map physical regions to internal handle
-//! buffers/accessors.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
+/*!
+  The init_handles_t type can be called to walk task args after task
+  launch. This allows us to map physical regions to internal handle
+  buffers/accessors.
+
+  @ingroup execution
+ */
 
 struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
-  //--------------------------------------------------------------------------//
-  //! Construct an init_handles_t instance.
-  //!
-  //! @param runtime The Legion task runtime.
-  //! @param context The Legion task runtime context.
-  //--------------------------------------------------------------------------//
+  /*!
+    Construct an init_handles_t instance.
+  
+    @param runtime The Legion task runtime.
+    @param context The Legion task runtime context.
+   */
 
   init_handles_t(
       Legion::Runtime * runtime,
@@ -257,7 +257,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
-      std::is_base_of<topology::mesh_topology_base__, T>::value>
+      std::is_base_of<topology::mesh_topology_base_t, T>::value>
   handle(data_client_handle__<T, PERMISSIONS> & h) {
     auto & context_ = context_t::instance();
 
@@ -365,7 +365,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
-      std::is_base_of<topology::set_topology_base__, T>::value>
+      std::is_base_of<topology::set_topology_base_t, T>::value>
   handle(data_client_handle__<T, PERMISSIONS> & h) {
     auto & context_ = context_t::instance();
 

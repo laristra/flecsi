@@ -26,7 +26,7 @@ namespace flecsi {
 namespace topology {
 
 template<size_t ND, size_t NM>
-class mesh_storage_t : public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<ND, NM> {};
+class mesh_storage__ : public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<ND, NM> {};
 
 } // namespace topology
 } // namespace flecsi

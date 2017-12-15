@@ -62,7 +62,7 @@ template<
   size_t SP,
   size_t GP
 >
-struct sparse_handle_t : public sparse_data_handle__<T, EP, SP, GP>
+struct sparse_handle__ : public sparse_data_handle__<T, EP, SP, GP>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -74,7 +74,7 @@ struct sparse_handle_t : public sparse_data_handle__<T, EP, SP, GP>
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  sparse_handle_t(
+  sparse_handle__(
     size_t num_exclusive,
     size_t num_shared,
     size_t num_ghost
@@ -82,8 +82,8 @@ struct sparse_handle_t : public sparse_data_handle__<T, EP, SP, GP>
   : base(num_exclusive, num_shared, num_ghost){}
 
   template<typename, size_t, size_t, size_t>
-  friend class sparse_handle_t;
-}; // struct sparse_handle_t
+  friend class sparse_handle__;
+}; // struct sparse_handle__
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -109,7 +109,7 @@ struct storage_class__<sparse>
     size_t SP,
     size_t GP
   >
-  using handle_t = sparse_handle_t<T, EP, SP, GP>;
+  using handle__ = sparse_handle__<T, EP, SP, GP>;
 
   template<
     typename DATA_CLIENT_TYPE,
@@ -119,7 +119,7 @@ struct storage_class__<sparse>
     size_t VERSION
   >
   static
-  handle_t<DATA_TYPE, 0, 0, 0>
+  handle__<DATA_TYPE, 0, 0, 0>
   get_handle(
     const data_client_t & data_client
   )
@@ -164,7 +164,7 @@ struct storage_class__<sparse>
 
     auto& fd = registered_sparse_field_data[field_info.fid];
 
-    handle_t<DATA_TYPE, 0, 0, 0>
+    handle__<DATA_TYPE, 0, 0, 0>
       h(fd.num_exclusive, fd.num_shared, fd.num_ghost);
 
     auto &hb = dynamic_cast<sparse_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
@@ -270,7 +270,7 @@ struct storage_class__<ragged>
     size_t SP,
     size_t GP
   >
-  using handle_t = sparse_handle_t<T, EP, SP, GP>;
+  using handle__ = sparse_handle__<T, EP, SP, GP>;
 
   template<
     typename DATA_CLIENT_TYPE,

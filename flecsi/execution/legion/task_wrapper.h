@@ -43,32 +43,32 @@ clog_register_tag(wrapper);
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-//! Wrapper to handle returns from user task execution.
-//!
-//! @tparam RETURN    The return type of the user task.
-//! @tparam ARG_TUPLE A std::tuple of the user task arguments.
-//! @tparam DELEGATE  The delegate function that invokes the user task.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Wrapper to handle returns from user task execution.
+
+ @tparam RETURN    The return type of the user task.
+ @tparam ARG_TUPLE A std::tuple of the user task arguments.
+ @tparam DELEGATE  The delegate function that invokes the user task.
+
+ @ingroup legion-execution
+ */
 
 template<typename RETURN, typename ARG_TUPLE, RETURN (*DELEGATE)(ARG_TUPLE)>
 struct execution_wrapper__ {
 
-  //--------------------------------------------------------------------------//
-  //! Execute the delegate function, storing the return value.
-  //--------------------------------------------------------------------------//
+  /*!
+   Execute the delegate function, storing the return value.
+   */
 
   void execute(ARG_TUPLE && args) {
     value_ = (*DELEGATE)(std::forward<ARG_TUPLE>(args));
   } // execute
-
-  //--------------------------------------------------------------------------//
-  //! Recover the return value. This is similar to a future, but with
-  //! immediate execution. This function is suitable for returning from
-  //! the task wrapper types below to handle void vs. non-void return types.
-  //--------------------------------------------------------------------------//
+  
+  /*!
+   Recover the return value. This is similar to a future, but with
+   immediate execution. This function is suitable for returning from
+   the task wrapper types below to handle void vs. non-void return types.
+   */
 
   RETURN
   get() {
@@ -80,43 +80,43 @@ private:
 
 }; // struct execution_wrapper__
 
-//----------------------------------------------------------------------------//
-//! Wrapper to handle void returns from user task execution.
-//!
-//! @tparam ARG_TUPLE A std::tuple of the user task arguments.
-//! @tparam DELEGATE  The delegate function that invokes the user task.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Wrapper to handle void returns from user task execution.
+
+ @tparam ARG_TUPLE A std::tuple of the user task arguments.
+ @tparam DELEGATE  The delegate function that invokes the user task.
+
+ @ingroup legion-execution
+ */
 
 template<typename ARG_TUPLE, void (*DELEGATE)(ARG_TUPLE)>
 struct execution_wrapper__<void, ARG_TUPLE, DELEGATE> {
 
-  //--------------------------------------------------------------------------//
-  //! Execute the delegate function. No value is stored for void.
-  //--------------------------------------------------------------------------//
+  /*!
+   Execute the delegate function. No value is stored for void.
+   */
 
   void execute(ARG_TUPLE && args) {
     (*DELEGATE)(std::forward<ARG_TUPLE>(args));
   } // execute
 
-  //--------------------------------------------------------------------------//
-  //! This function is suitable for returning from the task wrapper
-  //! types below to handle void return types.
-  //--------------------------------------------------------------------------//
+  /*!
+   This function is suitable for returning from the task wrapper
+   types below to handle void return types.
+   */
 
   void get() {}
 
 }; // struct execution_wrapper__
 
-//----------------------------------------------------------------------------//
-//! Pure Legion task wrapper.
-//!
-//! @tparam RETURN The return type of the task.
-//! @tparam TASK   The legion task.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Pure Legion task wrapper.
+
+ @tparam RETURN The return type of the task.
+ @tparam TASK   The legion task.
+
+ @ingroup legion-execution
+ */
 
 template<
     typename RETURN,
@@ -126,20 +126,21 @@ template<
         Legion::Context,
         Legion::Runtime *)>
 struct pure_task_wrapper__ {
-  //--------------------------------------------------------------------------//
-  //! The task_id_t type is a unique identifier for Legion tasks.
-  //--------------------------------------------------------------------------//
+  
+  /*!
+    The task_id_t type is a unique identifier for Legion tasks.
+   */
 
   using task_id_t = Legion::TaskID;
 
-  //--------------------------------------------------------------------------//
-  //! Registration callback function for pure Legion tasks.
-  //!
-  //! @param tid The task id to assign to the task.
-  //! @param processor A valid Legion processor type.
-  //! @param launch A \ref launch_t with the launch parameters.
-  //! @param A std::string containing the task name.
-  //--------------------------------------------------------------------------//
+  /*!
+   Registration callback function for pure Legion tasks.
+  
+   @param tid The task id to assign to the task.
+   @param processor A valid Legion processor type.
+   @param launch A \ref launch_t with the launch parameters.
+   @param A std::string containing the task name.
+   */
 
   static void registration_callback(
       task_id_t tid,
@@ -184,17 +185,17 @@ struct pure_task_wrapper__ {
 
 }; // struct pure_task_wrapper__
 
-//----------------------------------------------------------------------------//
-//! The task_wrapper__ type provides registation callback and execution
-//! functions for user and MPI tasks.
-//!
-//! @tparam RETURN    The return type of the user task.
-//! @tparam ARG_TUPLE A std::tuple of the user task arguments.
-//! @tparam DELEGATE  The delegate function that invokes the user task.
-//! @tparam KEY       A hash key identifying the task.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ The task_wrapper__ type provides registation callback and execution
+ functions for user and MPI tasks.
+
+ @tparam RETURN    The return type of the user task.
+ @tparam ARG_TUPLE A std::tuple of the user task arguments.
+ @tparam DELEGATE  The delegate function that invokes the user task.
+ @tparam KEY       A hash key identifying the task.
+
+ @ingroup legion-execution
+ */
 
 template<
     size_t KEY,
@@ -202,19 +203,20 @@ template<
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
 struct task_wrapper__ {
-  //--------------------------------------------------------------------------//
-  //! The task_id_t type is a unique identifier for Legion tasks.
-  //--------------------------------------------------------------------------//
+
+  /*!
+    The task_id_t type is a unique identifier for Legion tasks.
+   */
 
   using task_id_t = Legion::TaskID;
-
-  //--------------------------------------------------------------------------//
-  //! Registration callback function for user tasks.
-  //!
-  //! @param tid    The task id to assign to the task.
-  //! @param launch A \ref launch_t with the launch parameters.
-  //! @param name   A std::string containing the task name.
-  //--------------------------------------------------------------------------//
+  
+  /*!
+   Registration callback function for user tasks.
+  
+   @param tid    The task id to assign to the task.
+   @param launch A \ref launch_t with the launch parameters.
+   @param name   A std::string containing the task name.
+   */
 
   static void registration_callback(
       task_id_t tid,
@@ -259,9 +261,9 @@ struct task_wrapper__ {
     } // switch
   } // registration_callback
 
-  //--------------------------------------------------------------------------//
-  //! Execution wrapper method for user tasks.
-  //--------------------------------------------------------------------------//
+  /*!
+    Execution wrapper method for user tasks.
+   */
 
   static RETURN execute_user_task(
       const Legion::Task * task,
@@ -290,9 +292,9 @@ struct task_wrapper__ {
     return wrapper.get();
   } // execute_user_task
 
-  //--------------------------------------------------------------------------//
-  //! Execution wrapper method for MPI tasks.
-  //--------------------------------------------------------------------------//
+  /*!
+    Execution wrapper method for MPI tasks.
+   */
 
   static void execute_mpi_task(
       const Legion::Task * task,

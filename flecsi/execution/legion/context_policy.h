@@ -50,11 +50,12 @@
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-//! mapper tag's IDs
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+  mapper tag's IDs
+
+  @ingroup legion-execution
+ */
+
 // we need to have them here to avoid circular dependency
 // FIXME : should we generate theese IDs somewhere?
 enum {
@@ -65,35 +66,35 @@ enum {
   EXCLUSIVE_LR = 0x00004000,
 };
 
-//----------------------------------------------------------------------------//
-//! The legion_context_policy_t is the backend runtime context policy for
-//! Legion.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+  The legion_context_policy_t is the backend runtime context policy for
+  Legion.
+
+  @ingroup legion-execution
+ */
 
 struct legion_context_policy_t {
   const size_t TOP_LEVEL_TASK_ID = 0;
 
-  //--------------------------------------------------------------------------//
-  //! The registration_function_t type defines a function type for
-  //! registration callbacks.
-  //--------------------------------------------------------------------------//
+  /*!
+     The registration_function_t type defines a function type for
+     registration callbacks.
+   */
 
   using registration_function_t =
       std::function<void(task_id_t, processor_type_t, launch_t, std::string &)>;
 
-  //--------------------------------------------------------------------------//
-  //! The unique_tid_t type create a unique id generator for registering
-  //! tasks.
-  //--------------------------------------------------------------------------//
+  /*!
+   The unique_tid_t type create a unique id generator for registering
+   tasks.
+   */
 
   using unique_tid_t = utils::unique_id_t<task_id_t, FLECSI_GENERATED_ID_MAX>;
 
-  //--------------------------------------------------------------------------//
-  //! The task_info_t type is a convenience type for defining the task
-  //! registration map below.
-  //--------------------------------------------------------------------------//
+  /*!
+    The task_info_t type is a convenience type for defining the task
+    registration map below.
+   */
 
   using task_info_t = std::tuple<
       task_id_t,
@@ -106,45 +107,45 @@ struct legion_context_policy_t {
   // Runtime state.
   //--------------------------------------------------------------------------//
 
-  //--------------------------------------------------------------------------//
-  //! FleCSI context initialization. This method initializes the FleCSI
-  //! runtime using Legion.
-  //!
-  //! @param argc The command-line argument count passed from main.
-  //! @param argv The command-line argument values passed from main.
-  //!
-  //! @return An integer value with a non-zero error code upon failure,
-  //!         zero otherwise.
-  //--------------------------------------------------------------------------//
+  /*!
+    FleCSI context initialization. This method initializes the FleCSI
+    runtime using Legion.
+  
+    @param argc The command-line argument count passed from main.
+    @param argv The command-line argument values passed from main.
+  
+    @return An integer value with a non-zero error code upon failure,
+           zero otherwise.
+   */
 
   int initialize(int argc, char ** argv);
 
-  //--------------------------------------------------------------------------//
-  //! Return the color for which the context was initialized.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the color for which the context was initialized.
+   */
 
   size_t color() const {
     return color_;
   } // color
 
-  //--------------------------------------------------------------------------//
-  //! Return the number of colors.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the number of colors.
+   */
 
   size_t colors() const {
     return colors_;
   } // color
 
   //--------------------------------------------------------------------------//
-  // MPI interoperability.
+  //  MPI interoperability.
   //--------------------------------------------------------------------------//
 
-  //--------------------------------------------------------------------------//
-  //! Set the MPI runtime state. When the state is changed to active,
-  //! the handshake interface will begin executing the current MPI task.
-  //!
-  //! @return A boolean indicating the current MPI runtime state.
-  //--------------------------------------------------------------------------//
+  /*!
+    Set the MPI runtime state. When the state is changed to active,
+    the handshake interface will begin executing the current MPI task.
+  
+    @return A boolean indicating the current MPI runtime state.
+   */
 
   bool set_mpi_state(bool active) {
     {
@@ -156,10 +157,10 @@ struct legion_context_policy_t {
     return mpi_active_;
   } // toggle_mpi_state
 
-  //--------------------------------------------------------------------------//
-  //! Set the MPI user task. When control is given to the MPI runtime
-  //! it will execute whichever function is currently set.
-  //--------------------------------------------------------------------------//
+  /*!
+    Set the MPI user task. When control is given to the MPI runtime
+    it will execute whichever function is currently set.
+   */
 
   void set_mpi_task(std::function<void()> & mpi_task) {
     {
@@ -170,33 +171,33 @@ struct legion_context_policy_t {
     mpi_task_ = mpi_task;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Invoke the current MPI task.
-  //--------------------------------------------------------------------------//
+  /*!
+    Invoke the current MPI task.
+   */
 
   void invoke_mpi_task() {
     return mpi_task_();
   } // invoke_mpi_task
 
-  //--------------------------------------------------------------------------//
-  //! Set the distributed-memory domain.
-  //--------------------------------------------------------------------------//
+  /*!
+    Set the distributed-memory domain.
+   */
 
   void set_all_processes(const LegionRuntime::Arrays::Rect<1> & all_processes) {
     all_processes_ = all_processes;
   } // all_processes
 
-  //--------------------------------------------------------------------------//
-  //! Return the distributed-memory domain.
-  //--------------------------------------------------------------------------//
+  /*!
+     Return the distributed-memory domain.
+   */
 
   const LegionRuntime::Arrays::Rect<1> & all_processes() const {
     return all_processes_;
   } // all_processes
 
-  //--------------------------------------------------------------------------//
-  //! Handoff to legion runtime from MPI.
-  //--------------------------------------------------------------------------//
+  /*!
+     Handoff to legion runtime from MPI.
+   */
 
   void handoff_to_legion() {
     {
@@ -207,9 +208,9 @@ struct legion_context_policy_t {
     handshake_.mpi_handoff_to_legion();
   } // handoff_to_legion
 
-  //--------------------------------------------------------------------------//
-  //! Wait for Legion runtime to complete.
-  //--------------------------------------------------------------------------//
+  /*!
+    Wait for Legion runtime to complete.
+   */
 
   void wait_on_legion() {
     {
@@ -221,9 +222,9 @@ struct legion_context_policy_t {
     MPI_Barrier(MPI_COMM_WORLD);
   } // wait_on_legion
 
-  //--------------------------------------------------------------------------//
-  //! Handoff to MPI from Legion.
-  //--------------------------------------------------------------------------//
+  /*!
+    Handoff to MPI from Legion.
+   */
 
   void handoff_to_mpi() {
     {
@@ -234,9 +235,9 @@ struct legion_context_policy_t {
     handshake_.legion_handoff_to_mpi();
   } // handoff_to_mpi
 
-  //--------------------------------------------------------------------------//
-  //! Wait for MPI runtime to complete task execution.
-  //--------------------------------------------------------------------------//
+  /*!
+    Wait for MPI runtime to complete task execution.
+   */
 
   void wait_on_mpi() {
     {
@@ -247,43 +248,43 @@ struct legion_context_policy_t {
     handshake_.legion_wait_on_mpi();
   } // wait_on_legion
 
-  //--------------------------------------------------------------------------//
-  //! Unset the MPI active state to pass execution back to
-  //! the Legion runtime.
-  //!
-  //! @param ctx The Legion runtime context.
-  //! @param runtime The Legion task runtime pointer.
-  //--------------------------------------------------------------------------//
+  /*!  
+    Unset the MPI active state to pass execution back to
+    the Legion runtime.
+  
+    @param ctx The Legion runtime context.
+    @param runtime The Legion task runtime pointer.
+   */
 
   void unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
-  //--------------------------------------------------------------------------//
-  //! Switch execution to the MPI runtime.
-  //!
-  //! @param ctx The Legion runtime context.
-  //! @param runtime The Legion task runtime pointer.
-  //--------------------------------------------------------------------------//
+  /*!
+    Switch execution to the MPI runtime.
+  
+    @param ctx The Legion runtime context.
+    @param runtime The Legion task runtime pointer.
+   */
 
   void handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
-  //--------------------------------------------------------------------------//
-  //! Wait on the MPI runtime to finish the current task execution.
-  //!
-  //! @param ctx The Legion runtime context.
-  //! @param runtime The Legion task runtime pointer.
-  //!
-  //! @return A future map with the result of the task execution.
-  //--------------------------------------------------------------------------//
+  /*!
+    Wait on the MPI runtime to finish the current task execution.
+  
+    @param ctx The Legion runtime context.
+    @param runtime The Legion task runtime pointer.
+  
+    @return A future map with the result of the task execution.
+   */
 
   Legion::FutureMap
   wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
-  //--------------------------------------------------------------------------//
-  //! Connect with the MPI runtime.
-  //!
-  //! @param ctx The Legion runtime context.
-  //! @param runtime The Legion task runtime pointer.
-  //--------------------------------------------------------------------------//
+  /*!
+    Connect with the MPI runtime.
+  
+    @param ctx The Legion runtime context.
+    @param runtime The Legion task runtime pointer.
+   */
 
   void connect_with_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
@@ -291,13 +292,13 @@ struct legion_context_policy_t {
   // Task interface.
   //--------------------------------------------------------------------------//
 
-  //--------------------------------------------------------------------------//
-  //! Register a task with the runtime.
-  //!
-  //! @param key       The task hash key.
-  //! @param name      The task name string.
-  //! @param callback The registration call back function.
-  //--------------------------------------------------------------------------//
+  /*!
+    Register a task with the runtime.
+  
+    @param key       The task hash key.
+    @param name      The task name string.
+    @param callback The registration call back function.
+   */
 
   bool register_task(
       size_t key,
@@ -318,11 +319,11 @@ struct legion_context_policy_t {
     return true;
   } // register_task
 
-  //--------------------------------------------------------------------------//
-  //! Return the task registration tuple.
-  //!
-  //! @param key The task hash key.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the task registration tuple.
+   
+    @param key The task hash key.
+   */
 
   template<size_t KEY>
   task_info_t & task_info() {
@@ -335,11 +336,11 @@ struct legion_context_policy_t {
     return task_entry->second;
   } // task_info
 
-  //--------------------------------------------------------------------------//
-  //! Return the task registration tuple.
-  //!
-  //! @param key The task hash key.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the task registration tuple.
+  
+    @param key The task hash key.
+   */
 
   task_info_t & task_info(size_t key) {
     auto task_entry = task_registry_.find(key);
@@ -351,11 +352,11 @@ struct legion_context_policy_t {
     return task_entry->second;
   } // task_info
 
-    //--------------------------------------------------------------------------//
-    //! FIXME
-    //!
-    //! @param key The task hash key.
-    //--------------------------------------------------------------------------//
+    /*!
+      FIXME
+    
+      @param key The task hash key.
+     */
 
 #define task_info_template_method(name, return_type, index)                    \
   template<size_t KEY>                                                         \
@@ -366,12 +367,12 @@ struct legion_context_policy_t {
     }                                                                          \
     return std::get<index>(task_info<KEY>());                                  \
   }
-
-    //--------------------------------------------------------------------------//
-    //! FIXME
-    //!
-    //! @param key The task hash key.
-    //--------------------------------------------------------------------------//
+  
+    /*!
+      FIXME
+    
+      @param key The task hash key.
+     */
 
 #define task_info_method(name, return_type, index)                             \
   return_type name(size_t key) {                                               \
@@ -382,11 +383,11 @@ struct legion_context_policy_t {
     return std::get<index>(task_info(key));                                    \
   }
 
-  //--------------------------------------------------------------------------//
-  //! FIXME
-  //!
-  //! @param key The task hash key.
-  //--------------------------------------------------------------------------//
+  /*!
+    FIXME
+  
+    @param key The task hash key.
+   */
 
   task_info_template_method(task_id, task_id_t, 0);
   task_info_method(task_id, task_id_t, 0);
@@ -397,9 +398,9 @@ struct legion_context_policy_t {
   // Legion runtime interface.
   //--------------------------------------------------------------------------//
 
-  //--------------------------------------------------------------------------//
-  //! Collects Legion data associated with a FleCSI index space.
-  //--------------------------------------------------------------------------//
+  /*!
+    Collects Legion data associated with a FleCSI index space.
+   */
 
   struct index_space_data_t {
     std::map<field_id_t, bool> ghost_is_readable;
@@ -419,52 +420,52 @@ struct legion_context_policy_t {
     Legion::LogicalRegion ghost_lr;
   };
 
-  //--------------------------------------------------------------------------//
-  //! Collects Legion data associated with a local FleCSI index space.
-  //--------------------------------------------------------------------------//
+  /*!
+    Collects Legion data associated with a local FleCSI index space.
+   */
 
   struct local_index_space_data_t {
     Legion::LogicalRegion region;
   };
 
-  //------------------------------------------------------------------------//
-  //! Get the index space data map.
-  //------------------------------------------------------------------------//
+  /*!
+    Get the index space data map.
+   */
 
   auto & index_space_data_map() {
     return index_space_data_map_;
   }
 
-  //------------------------------------------------------------------------//
-  //! Get the local index space data map.
-  //------------------------------------------------------------------------//
+  /*!
+    Get the local index space data map.
+   */
 
   auto & local_index_space_data_map() {
     return local_index_space_data_map_;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Set DynamicCollective for <double> max reduction
-  //!
-  //! @param max_reduction Legion DynamicCollective for <double> max reduction
-  //--------------------------------------------------------------------------//
+  /*!
+    Set DynamicCollective for <double> max reduction
+  
+    @param max_reduction Legion DynamicCollective for <double> max reduction
+   */
 
   void set_max_reduction(Legion::DynamicCollective & max_reduction) {
     max_reduction_ = max_reduction;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Get DynamicCollective for <double> max reduction
-  //--------------------------------------------------------------------------//
+  /*!
+    Get DynamicCollective for <double> max reduction
+   */
 
   auto & max_reduction() {
     return max_reduction_;
   }
 
-  //-------------------------------------------------------------------------//
-  //! Perform reduction of the maximum value
-  //! @param task future
-  //-------------------------------------------------------------------------//
+  /*!
+    Perform reduction of the maximum value
+    @param task future
+   */
 
   template<typename T>
   auto reduce_max(legion_future__<T> & local_future) {
@@ -487,28 +488,28 @@ struct legion_context_policy_t {
     return global_max_;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Set DynamicCollective for <double> in reduction
-  //!
-  //! @param min_reduction Legion DynamicCollective for <double> max reduction
-  //--------------------------------------------------------------------------//
+  /*!
+    Set DynamicCollective for <double> in reduction
+  
+    @param min_reduction Legion DynamicCollective for <double> max reduction
+   */
 
   void set_min_reduction(Legion::DynamicCollective & min_reduction) {
     min_reduction_ = min_reduction;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Get DynamicCollective for <double> max reduction
-  //--------------------------------------------------------------------------//
+  /*!
+    Get DynamicCollective for <double> max reduction
+   */
 
   auto & min_reduction() {
     return min_reduction_;
   }
 
-  //-------------------------------------------------------------------------//
-  //! Perform reduction of the minimum value
-  //! @param task future
-  //-------------------------------------------------------------------------//
+  /*!
+    Perform reduction of the minimum value
+    @param task future
+   */
 
   template<typename T>
   auto reduce_min(legion_future__<T> & local_future) {
@@ -531,11 +532,11 @@ struct legion_context_policy_t {
     return global_min_;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Compute internal field id for from/to index space pair for connectivity.
-  //! @param from_index_space from index space
-  //! @param to_index_space to index space
-  //!-------------------------------------------------------------------------//
+  /*!
+    Compute internal field id for from/to index space pair for connectivity.
+    @param from_index_space from index space
+    @param to_index_space to index space
+   */
 
   size_t adjacency_fid(size_t from_index_space, size_t to_index_space) const {
     return size_t(internal_field::adjacency_pos_start) + from_index_space * 10 +

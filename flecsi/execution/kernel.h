@@ -1,16 +1,23 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
 
-#include <flecsi/topology/index_space.h>
+/*!
+  @file
+ */
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Oct 06, 2016
-//----------------------------------------------------------------------------//
+#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 namespace execution {
@@ -46,7 +53,7 @@ template<
 inline void
 for_each__(
     flecsi::topology::
-        index_space<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> &
+        index_space__<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> &
             index_space,
     FUNCTION && function) {
   const size_t end = index_space.end_offset();
@@ -89,7 +96,7 @@ template<
 inline void
 reduce_each__(
     flecsi::topology::
-        index_space<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> &
+        index_space__<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> &
             index_space,
     REDUCTION & reduction,
     FUNCTION && function) {
@@ -102,8 +109,3 @@ reduce_each__(
 
 } // namespace execution
 } // namespace flecsi
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

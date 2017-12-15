@@ -58,7 +58,7 @@ public:
   using id_t = flecsi::utils::id_t;
 
   std::vector<size_t>
-  create_entities(id_t cell_id, size_t dim, domain_connectivity<2> & c, id_t * e){
+  create_entities(id_t cell_id, size_t dim, domain_connectivity__<2> & c, id_t * e){
     id_t* v = c.get_entities(cell_id, 0);
 
     e[0] = v[0];
@@ -95,8 +95,8 @@ public:
   using bindings = std::tuple<>;
 
   template<size_t M, size_t D, typename ST>
-  static mesh_entity_base_t<num_domains>*
-  create_entity(mesh_topology_base_t<ST>* mesh, size_t num_vertices){
+  static mesh_entity_base__<num_domains>*
+  create_entity(mesh_topology_base__<ST>* mesh, size_t num_vertices){
     switch(M){
       case 0:{
         switch(D){

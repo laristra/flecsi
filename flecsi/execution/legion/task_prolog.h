@@ -34,22 +34,22 @@ clog_register_tag(prolog);
 namespace flecsi {
 namespace execution {
 
-//--------------------------------------------------------------------------//
-//! The task_prolog_t type can be called to walk the task args after the
-//! task launcher is created, but before the task has run. This allows
-//! synchronization dependencies to be added to the execution flow.
-//!
-//! @ingroup execution
-//--------------------------------------------------------------------------//
+/*!
+ The task_prolog_t type can be called to walk the task args after the
+ task launcher is created, but before the task has run. This allows
+ synchronization dependencies to be added to the execution flow.
+
+ @ingroup execution
+ */
 
 struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
-  //------------------------------------------------------------------------//
-  //! Construct a task_prolog_t instance.
-  //!
-  //! @param runtime The Legion task runtime.
-  //! @param context The Legion task runtime context.
-  //------------------------------------------------------------------------//
+  /*!
+   Construct a task_prolog_t instance.
+  
+   @param runtime The Legion task runtime.
+   @param context The Legion task runtime context.
+   */
 
   task_prolog_t(
       Legion::Runtime * runtime,
@@ -58,21 +58,21 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       : runtime(runtime), context(context), launcher(launcher) {
   } // task_prolog_t
 
-  //------------------------------------------------------------------------//
-  //! Walk the data handles for a flecsi task, store info for ghost copies
-  //! in member variables, and add phase barriers to launcher as needed.
-  //!
-  //! @tparam T                     The data type referenced by the handle.
-  //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
-  //!                               indices of the index partition.
-  //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
-  //!                               indices of the index partition.
-  //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
-  //!                               indices of the index partition.
-  //!
-  //! @param runtime The Legion task runtime.
-  //! @param context The Legion task runtime context.
-  //------------------------------------------------------------------------//
+  /*!
+   Walk the data handles for a flecsi task, store info for ghost copies
+   in member variables, and add phase barriers to launcher as needed.
+  
+   @tparam T                     The data type referenced by the handle.
+   @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
+                                 indices of the index partition.
+   @tparam SHARED_PERMISSIONS    The permissions required on the shared
+                                 indices of the index partition.
+   @tparam GHOST_PERMISSIONS     The permissions required on the ghost
+                                 indices of the index partition.
+  
+   @param runtime The Legion task runtime.
+   @param context The Legion task runtime context.
+   */
 
   template<
       typename T,
@@ -153,14 +153,14 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     } // end if
   } // handle
 
-  //------------------------------------------------------------------------//
-  //! Walk the data handles for a flecsi task, store info for ghost copies
-  //! in member variables, and add phase barriers to launcher as needed.
-  //!
-  //! Use member variables initialized by the walk to launch 1 copy per owner
-  //! region
-  //!
-  //------------------------------------------------------------------------//
+  /*!
+   Walk the data handles for a flecsi task, store info for ghost copies
+   in member variables, and add phase barriers to launcher as needed.
+  
+   Use member variables initialized by the walk to launch 1 copy per owner
+   region
+  
+   */
 
   void launch_copies() {
     auto & flecsi_context = context_t::instance();
@@ -238,9 +238,9 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
   } // launch copies
 
-  //------------------------------------------------------------------------//
-  //! Don't do anything with flecsi task argument that are not data handles.
-  //------------------------------------------------------------------------//
+  /*!  
+    Don't do anything with flecsi task argument that are not data handles.
+   */
 
   template<typename T>
   static typename std::enable_if_t<
