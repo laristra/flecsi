@@ -76,7 +76,7 @@ struct accessor__<
   using entry_value_t = typename handle_t::entry_value_t;
 
   using index_space_t =
-      topology::index_space<topology::simple_entry<size_t>, true>;
+      topology::index_space__<topology::simple_entry<size_t>, true>;
 
   //-------------------------------------------------------------------------//
   //! Copy constructor.

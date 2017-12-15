@@ -53,7 +53,7 @@ template<
 inline void
 for_each__(
     flecsi::topology::
-        index_space<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> &
+        index_space__<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> &
             index_space,
     FUNCTION && function) {
   const size_t end = index_space.end_offset();
@@ -96,7 +96,7 @@ template<
 inline void
 reduce_each__(
     flecsi::topology::
-        index_space<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> &
+        index_space__<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> &
             index_space,
     REDUCTION & reduction,
     FUNCTION && function) {

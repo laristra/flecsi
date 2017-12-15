@@ -35,7 +35,7 @@ struct mpi_set_topology_storage_policy_t {
   static const size_t num_index_spaces = std::tuple_size<entity_types_t>::value;
 
   using index_spaces_t = std::array<
-      index_space<
+      index_space__<
           set_entity_t *,
           true,
           true,

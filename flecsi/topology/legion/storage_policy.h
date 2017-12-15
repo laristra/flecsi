@@ -51,7 +51,7 @@ struct legion_topology_storage_policy_t {
   using id_t = utils::id_t;
 
   using index_spaces_t = std::array<
-      index_space<
+      index_space__<
           mesh_entity_base_ *,
           true,
           true,
@@ -61,7 +61,7 @@ struct legion_topology_storage_policy_t {
       ND + 1>;
 
   using partition_index_spaces_t = std::array<
-      index_space<
+      index_space__<
           mesh_entity_base_ *,
           false,
           false,
