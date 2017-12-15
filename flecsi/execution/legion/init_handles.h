@@ -257,7 +257,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
-      std::is_base_of<topology::mesh_topology_base__, T>::value>
+      std::is_base_of<topology::mesh_topology_base_t, T>::value>
   handle(data_client_handle__<T, PERMISSIONS> & h) {
     auto & context_ = context_t::instance();
 

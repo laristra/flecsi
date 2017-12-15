@@ -39,7 +39,7 @@ namespace topology {
 ///
 
 template<size_t ND, size_t NM>
-struct mpi_topology_storage_policy_t {
+struct mpi_topology_storage_policy__ {
   static constexpr size_t num_partitions = 5;
   using id_t = utils::id_t;
 
@@ -73,7 +73,7 @@ struct mpi_topology_storage_policy_t {
 
   size_t color;
 
-  mpi_topology_storage_policy_t() {
+  mpi_topology_storage_policy__() {
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();
   }
@@ -209,7 +209,7 @@ struct mpi_topology_storage_policy_t {
 
     return ent;
   } // make
-};  // class mpi_topology_storage_policy_t
+};  // class mpi_topology_storage_policy__
 
 } // namespace topology
 } // namespace flecsi

@@ -120,7 +120,7 @@ struct test_mesh_2d_policy_t
   >
   static flecsi::topology::mesh_entity_base__<num_domains> *
   create_entity(
-    flecsi::topology::mesh_topology_base_t<ST>* mesh,
+    flecsi::topology::mesh_topology_base__<ST>* mesh,
     size_t num_vertices,
     id_t const & id
   )

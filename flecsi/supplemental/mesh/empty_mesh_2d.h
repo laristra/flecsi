@@ -58,7 +58,7 @@ namespace supplemental {
 
     template<size_t M, size_t D, typename ST>
     static topology::mesh_entity_base__<num_domains>*
-    create_entity(topology::mesh_topology_base_t<ST>* mesh,
+    create_entity(topology::mesh_topology_base__<ST>* mesh,
                   size_t num_vertices){
       switch(M){
         case 0:{

@@ -105,8 +105,8 @@ FLECSI_MEMBER_CHECKER(create_entity);
 //----------------------------------------------------------------------------//
 template<class MT>
 class mesh_topology__
-    : public mesh_topology_base_t<
-          mesh_storage_t<MT::num_dimensions, MT::num_domains>> {
+    : public mesh_topology_base__<
+          mesh_storage__<MT::num_dimensions, MT::num_domains>> {
   // static verification of mesh policy
 
   static_assert(
@@ -155,10 +155,10 @@ class mesh_topology__
 
 public:
   // mesh storage type definition
-  using storage_t = mesh_storage_t<MT::num_dimensions, MT::num_domains>;
+  using storage_t = mesh_storage__<MT::num_dimensions, MT::num_domains>;
 
   // mesh topology base definition
-  using base_t = mesh_topology_base_t<storage_t>;
+  using base_t = mesh_topology_base__<storage_t>;
 
   // entity ID type
   using id_t = utils::id_t;

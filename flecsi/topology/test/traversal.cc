@@ -18,19 +18,19 @@ public:
   Vertex() = default;
 
   template<typename ST>
-  Vertex(mesh_topology_base_t<ST> &) {}
+  Vertex(mesh_topology_base__<ST> &) {}
 };
 
 class Edge : public mesh_entity__<1, 1> {
 public:
   template<typename ST>
-  Edge(mesh_topology_base_t<ST> &) {}
+  Edge(mesh_topology_base__<ST> &) {}
 };
 
 class Face : public mesh_entity__<1, 1> {
 public:
   template<typename ST>
-  Face(mesh_topology_base_t<ST> &) {}
+  Face(mesh_topology_base__<ST> &) {}
 };
 
 class Cell : public mesh_entity__<2, 1> {
@@ -89,7 +89,7 @@ public:
 
   template<size_t M, size_t D, typename ST>
   static mesh_entity_base__<num_domains> *
-  create_entity(mesh_topology_base_t<ST> * mesh, size_t num_vertices) {
+  create_entity(mesh_topology_base__<ST> * mesh, size_t num_vertices) {
     switch (M) {
       case 0: {
         switch (D) {

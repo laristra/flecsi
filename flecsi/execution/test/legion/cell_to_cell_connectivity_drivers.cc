@@ -96,7 +96,7 @@ public:
 
   template<size_t M, size_t D, typename ST>
   static mesh_entity_base__<num_domains>*
-  create_entity(mesh_topology_base_t<ST>* mesh, size_t num_vertices){
+  create_entity(mesh_topology_base__<ST>* mesh, size_t num_vertices){
     switch(M){
       case 0:{
         switch(D){
