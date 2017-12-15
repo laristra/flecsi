@@ -19,11 +19,8 @@
 
 namespace flecsi {
 
-template<
-  typename T,
-  typename MUTATOR_POLICY
->
-class mutator_handle_base__ : public MUTATOR_POLICY{
+template<typename T, typename MUTATOR_POLICY>
+class mutator_handle_base__ : public MUTATOR_POLICY {
 public:
   using entry_value_t = data::sparse_entry_value__<T>;
 
@@ -31,17 +28,17 @@ public:
 
   using index_t = uint64_t;
 
-  size_t* num_exclusive_insertions;
+  size_t * num_exclusive_insertions;
 
-  struct partition_info_t{
+  struct partition_info_t {
     size_t count[3];
     size_t start[3];
     size_t end[3];
   };
 
-  struct commit_info_t{
-    offset_t* offsets;
-    entry_value_t* entries[3];
+  struct commit_info_t {
+    offset_t * offsets;
+    entry_value_t * entries[3];
   };
 
   //--------------------------------------------------------------------------//
@@ -49,16 +46,14 @@ public:
   //--------------------------------------------------------------------------//
 
   mutator_handle_base__(
-    size_t num_exclusive,
-    size_t num_shared,
-    size_t num_ghost,
-    size_t max_entries_per_index,
-    size_t num_slots
-  )
-  : num_entries_(num_exclusive + num_shared + num_ghost),
-  num_exclusive_(num_exclusive),
-  max_entries_per_index_(max_entries_per_index),
-  num_slots_(num_slots){
+      size_t num_exclusive,
+      size_t num_shared,
+      size_t num_ghost,
+      size_t max_entries_per_index,
+      size_t num_slots)
+      : num_entries_(num_exclusive + num_shared + num_ghost),
+        num_exclusive_(num_exclusive),
+        max_entries_per_index_(max_entries_per_index), num_slots_(num_slots) {
     pi_.count[0] = num_exclusive;
     pi_.count[1] = num_shared;
     pi_.count[2] = num_ghost;
@@ -73,27 +68,20 @@ public:
     pi_.end[2] = pi_.end[1] + num_ghost;
   }
 
-  mutator_handle_base__(const mutator_handle_base__& b) = default;
+  mutator_handle_base__(const mutator_handle_base__ & b) = default;
 
-  ~mutator_handle_base__(){}
+  ~mutator_handle_base__() {}
 
-  void
-  init()
-  {
+  void init() {
     offsets_ = new offset_t[num_entries_];
     entries_ = new entry_value_t[num_entries_ * num_slots_];
     spare_map_ = new spare_map_t;
   }
 
-  void
-  commit(
-    commit_info_t* ci
-  )
-  {
-    if(erase_set_){
+  void commit(commit_info_t * ci) {
+    if (erase_set_) {
       commit_<true>(ci);
-    }
-    else {
+    } else {
       if (size_map_) {
         raggedCommit_(ci);
       } else {
@@ -102,45 +90,39 @@ public:
     }
   } // operator ()
 
-  template<
-    bool ERASE
-  >
-  void
-  commit_(
-    commit_info_t* ci
-  )
-  {
+  template<bool ERASE>
+  void commit_(commit_info_t * ci) {
     assert(offsets_ && "uninitialized mutator");
     ci_ = *ci;
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
 
-    entry_value_t* entries = ci->entries[0];
-    offset_t* offsets = ci->offsets;
+    entry_value_t * entries = ci->entries[0];
+    offset_t * offsets = ci->offsets;
 
-    entry_value_t* cbuf = new entry_value_t[num_exclusive_entries];
+    entry_value_t * cbuf = new entry_value_t[num_exclusive_entries];
 
-    entry_value_t* cptr = cbuf;
-    entry_value_t* eptr = entries;
+    entry_value_t * cptr = cbuf;
+    entry_value_t * eptr = entries;
 
     size_t offset = 0;
 
-    for(size_t i = 0; i < num_exclusive_; ++i){
-      const offset_t& oi = offsets_[i];
-      offset_t& coi = offsets[i];
+    for (size_t i = 0; i < num_exclusive_; ++i) {
+      const offset_t & oi = offsets_[i];
+      offset_t & coi = offsets[i];
 
-      entry_value_t* sptr = entries_ + i * num_slots_;
+      entry_value_t * sptr = entries_ + i * num_slots_;
 
       size_t num_existing = coi.count();
       size_t used_slots = oi.count();
 
-      size_t num_merged = merge<ERASE>(i, eptr, num_existing, sptr,
-        used_slots, cptr);
+      size_t num_merged =
+          merge<ERASE>(i, eptr, num_existing, sptr, used_slots, cptr);
 
       eptr += num_existing;
       coi.set_offset(offset);
 
-      if(num_merged > 0){
+      if (num_merged > 0) {
         cptr += num_merged;
         coi.set_count(num_merged);
         offset += num_merged;
@@ -156,22 +138,22 @@ public:
 
     cbuf = new entry_value_t[max_entries_per_index_];
 
-    for(size_t i = start; i < end; ++i){
-      const offset_t& oi = offsets_[i];
-      offset_t& coi = offsets[i];
+    for (size_t i = start; i < end; ++i) {
+      const offset_t & oi = offsets_[i];
+      offset_t & coi = offsets[i];
 
-      entry_value_t* eptr = entries + coi.start();
+      entry_value_t * eptr = entries + coi.start();
 
-      entry_value_t* sptr = entries_ + i * num_slots_;
+      entry_value_t * sptr = entries_ + i * num_slots_;
 
       size_t num_existing = coi.count();
 
       size_t used_slots = oi.count();
 
-      size_t num_merged = merge<ERASE>(i, eptr, num_existing, sptr,
-        used_slots, cbuf);
+      size_t num_merged =
+          merge<ERASE>(i, eptr, num_existing, sptr, used_slots, cbuf);
 
-      if(num_merged > 0){
+      if (num_merged > 0) {
         assert(num_merged <= max_entries_per_index_);
         std::memcpy(eptr, cbuf, sizeof(entry_value_t) * num_merged);
         coi.set_count(num_merged);
@@ -189,50 +171,46 @@ public:
     delete spare_map_;
     spare_map_ = nullptr;
 
-    if(erase_set_){
+    if (erase_set_) {
       delete erase_set_;
       erase_set_ = nullptr;
     }
   }
 
-  void
-  raggedCommit_(
-    commit_info_t* ci
-  )
-  {
+  void raggedCommit_(commit_info_t * ci) {
     assert(offsets_ && "uninitialized mutator");
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
 
-    entry_value_t* entries = ci->entries[0];
-    offset_t* offsets = ci->offsets;
+    entry_value_t * entries = ci->entries[0];
+    offset_t * offsets = ci->offsets;
 
-    for(auto& itr : *size_map_){
+    for (auto & itr : *size_map_) {
       num_exclusive_entries +=
-        int64_t(itr.second) - int64_t(offsets[itr.first].count());
+          int64_t(itr.second) - int64_t(offsets[itr.first].count());
     }
 
-    entry_value_t* cbuf = new entry_value_t[num_exclusive_entries];
+    entry_value_t * cbuf = new entry_value_t[num_exclusive_entries];
 
-    entry_value_t* cptr = cbuf;
-    entry_value_t* eptr = entries;
+    entry_value_t * cptr = cbuf;
+    entry_value_t * eptr = entries;
 
     size_t offset = 0;
 
-    for(size_t index = 0; index < num_exclusive_; ++index){
-      const offset_t& oi = offsets_[index];
-      offset_t& coi = offsets[index];
+    for (size_t index = 0; index < num_exclusive_; ++index) {
+      const offset_t & oi = offsets_[index];
+      offset_t & coi = offsets[index];
 
-      entry_value_t* sptr = entries_ + index * num_slots_;
+      entry_value_t * sptr = entries_ + index * num_slots_;
 
       size_t num_existing = coi.count();
       size_t used_slots = oi.count();
 
-      for(size_t j = 0; j < num_existing; ++j){
+      for (size_t j = 0; j < num_existing; ++j) {
         cptr[j] = eptr[j];
       }
 
-      for(size_t j = 0; j < used_slots; ++j){
+      for (size_t j = 0; j < used_slots; ++j) {
         size_t k = sptr[j].entry;
         cptr[k].entry = k;
         cptr[k].value = sptr[j].value;
@@ -241,7 +219,7 @@ public:
       auto p = spare_map_->equal_range(index);
       auto itr = p.first;
       auto itr_end = p.second;
-      while(itr != itr_end){
+      while (itr != itr_end) {
         size_t k = itr->second.entry;
         cptr[k].entry = k;
         cptr[k].value = itr->second.value;
@@ -252,13 +230,12 @@ public:
 
       auto sitr = size_map_->find(index);
 
-      if(sitr != size_map_->end()){
+      if (sitr != size_map_->end()) {
         size_t resize = sitr->second;
         coi.set_count(resize);
         offset += resize;
         cptr += resize;
-      }
-      else{
+      } else {
         offset += num_existing;
         cptr += num_existing;
       }
@@ -274,23 +251,23 @@ public:
 
     cbuf = new entry_value_t[max_entries_per_index_];
 
-    for(size_t index = start; index < end; ++index){
-      entry_value_t* eptr = ci->entries[1] + max_entries_per_index_ * index;
+    for (size_t index = start; index < end; ++index) {
+      entry_value_t * eptr = ci->entries[1] + max_entries_per_index_ * index;
 
-      const offset_t& oi = offsets_[index];
-      offset_t& coi = offsets[index];
+      const offset_t & oi = offsets_[index];
+      offset_t & coi = offsets[index];
 
-      entry_value_t* sptr = entries_ + index * num_slots_;
+      entry_value_t * sptr = entries_ + index * num_slots_;
 
       size_t num_existing = coi.count();
 
       size_t used_slots = oi.count();
 
-      for(size_t j = 0; j < num_existing; ++j){
+      for (size_t j = 0; j < num_existing; ++j) {
         cbuf[j] = eptr[j];
       }
 
-      for(size_t j = 0; j < used_slots; ++j){
+      for (size_t j = 0; j < used_slots; ++j) {
         size_t k = sptr[j].entry;
         cbuf[k].entry = k;
         cbuf[k].value = sptr[j].value;
@@ -299,7 +276,7 @@ public:
       auto p = spare_map_->equal_range(index);
       auto itr = p.first;
       auto itr_end = p.second;
-      while(itr != itr_end){
+      while (itr != itr_end) {
         size_t k = itr->second.entry;
         cbuf[k].entry = k;
         cbuf[k].value = itr->second.value;
@@ -310,11 +287,10 @@ public:
 
       auto sitr = size_map_->find(index);
 
-      if(sitr != size_map_->end()){
+      if (sitr != size_map_->end()) {
         size = sitr->second;
         coi.set_count(size);
-      }
-      else{
+      } else {
         size = num_existing;
       }
 
@@ -336,39 +312,27 @@ public:
     size_map_ = nullptr;
   }
 
-  size_t
-  num_exclusive() const
-  {
+  size_t num_exclusive() const {
     return pi_.count[0];
   }
 
-  size_t
-  num_shared() const
-  {
+  size_t num_shared() const {
     return pi_.count[1];
   }
 
-  size_t
-  num_ghost() const
-  {
+  size_t num_ghost() const {
     return pi_.count[2];
   }
 
-  size_t
-  max_entries_per_index() const
-  {
+  size_t max_entries_per_index() const {
     return max_entries_per_index_;
   }
 
-  commit_info_t&
-  commit_info()
-  {
+  commit_info_t & commit_info() {
     return ci_;
   }
 
-  const commit_info_t&
-  commit_info() const
-  {
+  const commit_info_t & commit_info() const {
     return ci_;
   }
 
@@ -381,31 +345,27 @@ public:
   size_t max_entries_per_index_;
   size_t num_slots_;
   size_t num_entries_;
-  offset_t* offsets_ = nullptr;
-  entry_value_t* entries_ = nullptr;
-  spare_map_t* spare_map_ = nullptr;
+  offset_t * offsets_ = nullptr;
+  entry_value_t * entries_ = nullptr;
+  spare_map_t * spare_map_ = nullptr;
   erase_set_t * erase_set_ = nullptr;
-  size_map_t* size_map_ = nullptr;
+  size_map_t * size_map_ = nullptr;
   commit_info_t ci_;
 
-  template<
-    bool ERASE
-  >
-  size_t
-  merge(
-    size_t index,
-    entry_value_t* existing,
-    size_t num_existing,
-    entry_value_t* slots,
-    size_t num_slots,
-    entry_value_t* dest
-    ){
+  template<bool ERASE>
+  size_t merge(
+      size_t index,
+      entry_value_t * existing,
+      size_t num_existing,
+      entry_value_t * slots,
+      size_t num_slots,
+      entry_value_t * dest) {
 
     constexpr size_t end = std::numeric_limits<size_t>::max();
-    entry_value_t* existing_end = existing + num_existing;
-    entry_value_t* slots_end = slots + num_slots;
+    entry_value_t * existing_end = existing + num_existing;
+    entry_value_t * slots_end = slots + num_slots;
 
-    entry_value_t* dest_start = dest;
+    entry_value_t * dest_start = dest;
 
     auto p = spare_map_->equal_range(index);
     auto itr = p.first;
@@ -414,48 +374,44 @@ public:
     size_t slot_entry = slots < slots_end ? slots->entry : end;
     size_t existing_entry = existing < existing_end ? existing->entry : end;
 
-    for(;;){
-      if(spare_entry < end &&
-         spare_entry <= slot_entry &&
-         spare_entry <= existing_entry){
+    for (;;) {
+      if (spare_entry < end && spare_entry <= slot_entry &&
+          spare_entry <= existing_entry) {
 
         dest->entry = spare_entry;
         dest->value = itr->second.value;
         ++dest;
 
-        while(slot_entry == spare_entry){
+        while (slot_entry == spare_entry) {
           slot_entry = ++slots < slots_end ? slots->entry : end;
         }
 
-        while(existing_entry == slot_entry ||
-          (ERASE && erase_set_->find(std::make_pair(index, existing_entry)) !=
-          erase_set_->end())){
+        while (existing_entry == slot_entry ||
+               (ERASE && erase_set_->find(std::make_pair(
+                             index, existing_entry)) != erase_set_->end())) {
           existing_entry = ++existing < existing_end ? existing->entry : end;
         }
 
         spare_entry = ++itr != p.second ? itr->second.entry : end;
-      }
-      else if(slot_entry < end && slot_entry <= existing_entry){
+      } else if (slot_entry < end && slot_entry <= existing_entry) {
         dest->entry = slot_entry;
         dest->value = slots->value;
         ++dest;
 
-        while(existing_entry == slot_entry ||
-          (ERASE && erase_set_->find(std::make_pair(index, existing_entry)) !=
-          erase_set_->end())){
+        while (existing_entry == slot_entry ||
+               (ERASE && erase_set_->find(std::make_pair(
+                             index, existing_entry)) != erase_set_->end())) {
           existing_entry = ++existing < existing_end ? existing->entry : end;
         }
 
         slot_entry = ++slots < slots_end ? slots->entry : end;
-      }
-      else if(existing_entry < end){
+      } else if (existing_entry < end) {
         dest->entry = existing_entry;
         dest->value = existing->value;
         ++dest;
 
         existing_entry = ++existing < existing_end ? existing->entry : end;
-      }
-      else{
+      } else {
         break;
       }
     }
@@ -470,12 +426,8 @@ public:
 
 namespace flecsi {
 
-template<
-  typename T
->
-using mutator_handle__ = mutator_handle_base__<
-  T,
-  FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY
->;
+template<typename T>
+using mutator_handle__ =
+    mutator_handle_base__<T, FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY>;
 
 } // namespace flecsi

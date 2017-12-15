@@ -105,7 +105,7 @@ public:
       for (auto s : request_indices) {
         input_indices[coff + off++] = s;
       } // for
-    }   // for
+    } // for
 
     const auto mpi_size_t_type =
         flecsi::coloring::mpi_typetraits__<size_t>::type();
@@ -204,8 +204,8 @@ public:
           // with other ranks
           local[offset[i]].insert(r);
         } // if
-      }   // for
-    }     // for
+      } // for
+    } // for
 
     // Send the indices information back to all ranks.
     int result = MPI_Alltoall(
@@ -238,8 +238,8 @@ public:
           remote.insert(entity_info_t(
               request_indices_vector[i], ranks[i], offsets[i], {}));
         } // if
-      }   // for
-    }     // for
+      } // for
+    } // for
 
     return std::make_pair(local, remote);
   } // get_primary_info
@@ -308,7 +308,7 @@ public:
         if (info[i] != std::numeric_limits<size_t>::max()) {
           intersection_set.insert(info[i]);
         } // if
-      }   // for
+      } // for
 
       {
         clog_tag_guard(mpi_communicator);
@@ -330,7 +330,7 @@ public:
       if (intersection.size()) {
         intersection_map[r] = intersection;
       } // if
-    }   // for
+    } // for
 
     return intersection_map;
   } // get_intersection_info
@@ -369,7 +369,7 @@ public:
         if (info[i] != std::numeric_limits<size_t>::max()) {
           reduction_set.insert(info[i]);
         } // if
-      }   // for
+      } // for
 
       entity_reduction_map[c] = reduction_set;
     } // for
@@ -419,7 +419,7 @@ public:
             &rbuffers[r][0], recv_cnts[r], mpi_typetraits__<size_t>::type(), r,
             0, MPI_COMM_WORLD, &requests[requests.size() - 1]);
       } // if
-    }   // for
+    } // for
 
     // Start send operations (blocking is ok here).
     std::vector<std::vector<size_t>> sbuffers(colors);
@@ -433,7 +433,7 @@ public:
             &sbuffers[r][0], send_cnts[r], mpi_typetraits__<size_t>::type(), r,
             0, MPI_COMM_WORLD);
       } // if
-    }   // for
+    } // for
 
     // Create a map version of the entity info for lookups below.
     std::unordered_map<size_t, entity_info_t> entity_info_map;
@@ -453,7 +453,7 @@ public:
       for (auto i : rbuffers[r]) {
         sbuffers[r][offset++] = entity_info_map[i].offset;
       } // for
-    }   // for
+    } // for
 
     // we are reusing requests in the following code, need to clear the content
     // first.
@@ -471,7 +471,7 @@ public:
             &rbuffers[r][0], send_cnts[r], mpi_typetraits__<size_t>::type(), r,
             0, MPI_COMM_WORLD, &requests[requests.size() - 1]);
       } // if
-    }   // for
+    } // for
 
     // Start send operations (blocking is probably ok here).
     for (size_t r(0); r < colors; ++r) {
@@ -481,7 +481,7 @@ public:
             &sbuffers[r][0], recv_cnts[r], mpi_typetraits__<size_t>::type(), r,
             0, MPI_COMM_WORLD);
       } // if
-    }   // for
+    } // for
 
     // Wait on the receive operations
     status.resize(requests.size());
@@ -492,7 +492,7 @@ public:
       for (size_t i(0); i < send_cnts[r]; ++i) {
         remote[r].insert(rbuffers[r][i]);
       } // for
-    }   // for
+    } // for
 
     return remote;
   } // get_entity_info
@@ -562,8 +562,8 @@ public:
           const size_t value = info[i];
           function(c, value);
         } // if
-      }   // for
-    }     // for
+      } // for
+    } // for
 
   } // alltoall_coloring_info
 

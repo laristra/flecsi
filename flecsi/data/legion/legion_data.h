@@ -139,7 +139,7 @@ public:
       if (fi.storage_class == global) {
         allocator.allocate_field(fi.size, fi.fid);
       } // if
-    }   // for
+    } // for
 
     global_index_space_.logical_region = runtime_->create_logical_region(
         ctx_, global_index_space_.index_space, global_index_space_.field_space);
@@ -450,7 +450,7 @@ public:
         if (fi.storage_class == color) {
           allocator.allocate_field(fi.size, fi.fid);
         } // if
-      }   // for
+      } // for
       color_index_space_.logical_region = runtime_->create_logical_region(
           ctx_, color_index_space_.index_space, color_index_space_.field_space);
       attach_name(

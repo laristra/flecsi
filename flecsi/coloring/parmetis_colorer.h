@@ -142,7 +142,7 @@ struct parmetis_colorer_t : public colorer_t {
           // If the index belongs to us, just add it...
           primary.insert(vtxdist[rank] + i);
         } // if
-      }   // for
+      } // for
 
       sbuffers.push_back(indices);
       send_cnts[r] = indices.size();
@@ -191,7 +191,7 @@ struct parmetis_colorer_t : public colorer_t {
             &rbuffers[r][0], recv_cnts[r], mpi_typetraits__<idx_t>::type(), r,
             0, MPI_COMM_WORLD, &requests[requests.size() - 1]);
       } // if
-    }   // for
+    } // for
 
     // Start send operations (blocking is probably ok here).
     for (size_t r(0); r < size; ++r) {
@@ -201,7 +201,7 @@ struct parmetis_colorer_t : public colorer_t {
             &sbuffers[r][0], send_cnts[r], mpi_typetraits__<idx_t>::type(), r,
             0, MPI_COMM_WORLD);
       } // if
-    }   // for
+    } // for
 
     // Wait on the receive operations
     std::vector<MPI_Status> status(requests.size());
@@ -213,8 +213,8 @@ struct parmetis_colorer_t : public colorer_t {
         for (auto i : rbuffers[r]) {
           primary.insert(i);
         } // for
-      }   // if
-    }     // for
+      } // if
+    } // for
 
 #if 0
       if(rank == 0) {

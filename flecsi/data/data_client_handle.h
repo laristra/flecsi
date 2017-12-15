@@ -21,49 +21,30 @@ namespace flecsi {
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
 
-struct data_client_handle_base_t{};
+struct data_client_handle_base_t {};
 
-template<
-  typename DATA_CLIENT_TYPE,
-  size_t PERMISSIONS,
-  typename DATA_POLICY
->
-struct data_client_handle_base__ :
-  public DATA_CLIENT_TYPE, public DATA_POLICY, public data_client_handle_base_t
-{
+template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS, typename DATA_POLICY>
+struct data_client_handle_base__ : public DATA_CLIENT_TYPE,
+                                   public DATA_POLICY,
+                                   public data_client_handle_base_t {
   using type = DATA_CLIENT_TYPE;
 
-  data_client_handle_base__()
-  {
+  data_client_handle_base__() {}
 
+  template<size_t UNMAPPED_PERMISSIONS>
+  data_client_handle_base__(const data_client_handle_base__<
+                            DATA_CLIENT_TYPE,
+                            UNMAPPED_PERMISSIONS,
+                            DATA_POLICY> & h)
+      : DATA_POLICY(h), DATA_CLIENT_TYPE(h), client_hash(h.client_hash),
+        name_hash(h.name_hash), namespace_hash(h.namespace_hash) {
+    static_assert(
+        UNMAPPED_PERMISSIONS == 0, "passing mapped client handle to task args");
   }
 
-  template<
-    size_t UNMAPPED_PERMISSIONS
-  >
-  data_client_handle_base__(
-    const data_client_handle_base__<DATA_CLIENT_TYPE, UNMAPPED_PERMISSIONS,
-      DATA_POLICY>& h)
-  : DATA_POLICY(h),
-    DATA_CLIENT_TYPE(h),
-    client_hash(h.client_hash),
-    name_hash(h.name_hash),
-    namespace_hash(h.namespace_hash)
-  {
-    static_assert(UNMAPPED_PERMISSIONS == 0,
-                  "passing mapped client handle to task args");
-  }
-
-  data_client_handle_base__(
-    const data_client_handle_base__& h)
-  : DATA_POLICY(h),
-    DATA_CLIENT_TYPE(h),
-    client_hash(h.client_hash),
-    name_hash(h.name_hash),
-    namespace_hash(h.namespace_hash)
-  {
-
-  }
+  data_client_handle_base__(const data_client_handle_base__ & h)
+      : DATA_POLICY(h), DATA_CLIENT_TYPE(h), client_hash(h.client_hash),
+        name_hash(h.name_hash), namespace_hash(h.namespace_hash) {}
 
   size_t client_hash;
   size_t name_hash;
@@ -71,17 +52,12 @@ struct data_client_handle_base__ :
 }; // struct data_client_handle__
 
 template<typename T>
-struct data_client_type__{};
+struct data_client_type__ {};
 
 template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS, typename DATA_POLICY>
 struct data_client_type__<
-  flecsi::data_client_handle_base__<
-    DATA_CLIENT_TYPE,
-    PERMISSIONS,
-    DATA_POLICY
-  >
->
-{
+    flecsi::
+        data_client_handle_base__<DATA_CLIENT_TYPE, PERMISSIONS, DATA_POLICY>> {
   using type = DATA_CLIENT_TYPE;
 };
 
@@ -100,14 +76,10 @@ namespace flecsi {
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-template<
-  typename DATA_CLIENT_TYPE,
-  size_t PERMISSIONS
->
+template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS>
 using data_client_handle__ = data_client_handle_base__<
-  DATA_CLIENT_TYPE,
-  PERMISSIONS,
-  FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY
->;
+    DATA_CLIENT_TYPE,
+    PERMISSIONS,
+    FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY>;
 
 } // namespace flecsi

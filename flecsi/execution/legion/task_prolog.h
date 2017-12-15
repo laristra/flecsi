@@ -138,7 +138,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           *(h.ghost_is_readable) = true;
 
         } // !ghost_is_readable
-      }   // read_phase
+      } // read_phase
 
       if (write_phase && (*h.ghost_is_readable)) {
         // Phase WRITE
@@ -150,8 +150,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
         *(h.ghost_is_readable) = false;
         *(h.write_phase_started) = true;
       } // if
-    }   // end if
-  }     // handle
+    } // end if
+  } // handle
 
   /*!
    Walk the data handles for a flecsi task, store info for ghost copies

@@ -33,7 +33,7 @@ namespace flecsi {
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-struct dense_accessor_base_t{};
+struct dense_accessor_base_t {};
 
 //----------------------------------------------------------------------------//
 //! The dense accessor__ type captures information about permissions
@@ -52,44 +52,35 @@ struct dense_accessor_base_t{};
 //----------------------------------------------------------------------------//
 
 template<
-  typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS
->
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
 struct accessor__<
-  data::dense,
-  T,
-  EXCLUSIVE_PERMISSIONS,
-  SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS
-> :
-public accessor__<
-  data::base,
-  T,
-  EXCLUSIVE_PERMISSIONS,
-  SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS
->, public dense_accessor_base_t
-{
-  using handle_t = 
-    data_handle__<
+    data::dense,
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS>
+    : public accessor__<
+          data::base,
+          T,
+          EXCLUSIVE_PERMISSIONS,
+          SHARED_PERMISSIONS,
+          GHOST_PERMISSIONS>,
+      public dense_accessor_base_t {
+  using handle_t = data_handle__<
       T,
       EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    >;
+      GHOST_PERMISSIONS>;
 
   //--------------------------------------------------------------------------//
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  accessor__(
-    const data_handle__<T, 0, 0, 0>& h
-  )
-  : handle(reinterpret_cast<const handle_t&>(h)){
-
-  }
+  accessor__(const data_handle__<T, 0, 0, 0> & h)
+      : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   ///
   // \brief Provide logical array-based access to the data for this
@@ -97,21 +88,17 @@ public accessor__<
   //
   // \param index The index of the data variable to return.
   ///
-  T&
-  operator()(
-    size_t index
-  )
-  {
+  T & operator()(size_t index) {
     assert(index < handle.combined_size && "index out of range");
-    #ifndef MAPPER_COMPACTION
-    #ifndef COMPACTED_STORAGE_SORT
-        return handle.combined_data[index];
-    #else
-        return handle.combined_data_sort[index];
-    #endif
-    #else
-        return *(handle.combined_data+index);
-    #endif
+#ifndef MAPPER_COMPACTION
+#ifndef COMPACTED_STORAGE_SORT
+    return handle.combined_data[index];
+#else
+    return handle.combined_data_sort[index];
+#endif
+#else
+    return *(handle.combined_data + index);
+#endif
   }
 
   ///
@@ -120,19 +107,15 @@ public accessor__<
   //
   // \param index The index of the data variable to return.
   ///
-  const T&
-  operator()(
-    size_t index
-  ) const{
-    return const_cast<accessor__&>(*this)(index);
+  const T & operator()(size_t index) const {
+    return const_cast<accessor__ &>(*this)(index);
   }
 
   ///
   // \brief Return the index space size of the data variable
   //        referenced by this handle.
   ///
-  size_t
-  size() const{
+  size_t size() const {
     return handle.combined_size;
   }
 
@@ -140,9 +123,7 @@ public accessor__<
   // \brief Return the index space size of the data variable
   //        referenced by this handle.
   ///
-  size_t
-  exclusive_size() const
-  {
+  size_t exclusive_size() const {
     return handle.exclusive_size;
   } // size
 
@@ -150,9 +131,7 @@ public accessor__<
   // \brief Return the index space size of the data variable
   //        referenced by this handle.
   ///
-  size_t
-  shared_size() const
-  {
+  size_t shared_size() const {
     return handle.shared_size;
   } // size
 
@@ -160,9 +139,7 @@ public accessor__<
   // \brief Return the index space size of the data variable
   //        referenced by this handle.
   ///
-  size_t
-  ghost_size() const
-  {
+  size_t ghost_size() const {
     return handle.ghost_size;
   } // size
 
@@ -176,11 +153,7 @@ public accessor__<
   //
   // \param index The index of the data variable to return.
   ///
-  const T &
-  exclusive (
-    size_t index
-  ) const
-  {
+  const T & exclusive(size_t index) const {
     assert(index < handle.exclusive_size && "index out of range");
     return handle.exclusive_data[index];
   } // operator []
@@ -191,11 +164,7 @@ public accessor__<
   //
   // \param index The index of the data variable to return.
   ///
-  T &
-  exclusive (
-    size_t index
-  )
-  {
+  T & exclusive(size_t index) {
     assert(index < handle.exclusive_size && "index out of range");
     return handle.exclusive_data[index];
   } // operator []
@@ -206,11 +175,7 @@ public accessor__<
   //
   // \param index The index of the data variable to return.
   ///
-  const T &
-  shared (
-    size_t index
-  ) const
-  {
+  const T & shared(size_t index) const {
     assert(index < handle.shared_size && "index out of range");
     return handle.shared_data[index];
   } // operator []
@@ -221,11 +186,7 @@ public accessor__<
   //
   // \param index The index of the data variable to return.
   ///
-  T &
-  shared (
-    size_t index
-  )
-  {
+  T & shared(size_t index) {
     assert(index < handle.shared_size && "index out of range");
     return handle.shared_data[index];
   } // operator []
@@ -236,11 +197,7 @@ public accessor__<
   //
   // \param index The index of the data variable to return.
   ///
-  const T &
-  ghost (
-    size_t index
-  ) const
-  {
+  const T & ghost(size_t index) const {
     assert(index < handle.ghost_size && "index out of range");
     return handle.ghost_data[index];
   } // operator []
@@ -251,11 +208,7 @@ public accessor__<
   //
   // \param index The index of the data variable to return.
   ///
-  T &
-  ghost (
-    size_t index
-  )
-  {
+  T & ghost(size_t index) {
     assert(index < handle.ghost_size && "index out of range");
     return handle.ghost_data[index];
   } // operator []
@@ -270,11 +223,7 @@ public accessor__<
   // \e flecsi mesh entity types \ref mesh_entity_base_t.
   ///
   template<typename E>
-  const T &
-  operator () (
-    E * e
-  ) const
-  {
+  const T & operator()(E * e) const {
     return this->operator()(e->template id<0>());
   } // operator ()
 
@@ -288,55 +237,33 @@ public accessor__<
   // \e flecsi mesh entity types \ref mesh_entity_base_t.
   ///
   template<typename E>
-  T &
-  operator () (
-    E * e
-  )
-  {
+  T & operator()(E * e) {
     return this->operator()(e->template id<0>());
   } // operator ()
 
-  handle_t handle;  
+  handle_t handle;
 };
 
-template<
-  typename T,
-  size_t PERMISSIONS
->
-struct accessor__<
-  data::global,
-  T,
-  PERMISSIONS,
-  0,
-  0
-> :
-public accessor__<
-  data::dense,
-  T,
-  PERMISSIONS,
-  0,
-  0
->
-{
+template<typename T, size_t PERMISSIONS>
+struct accessor__<data::global, T, PERMISSIONS, 0, 0>
+    : public accessor__<data::dense, T, PERMISSIONS, 0, 0> {
   using base_t = accessor__<data::dense, T, PERMISSIONS, 0, 0>;
 
-  accessor__(const data_handle__<T, 0, 0, 0>& h)
-  : base_t(h){}
+  accessor__(const data_handle__<T, 0, 0, 0> & h) : base_t(h) {}
 
-  operator T&(){
+  operator T &() {
     return data();
   }
 
-  operator const T&() const{
+  operator const T &() const {
     return data();
   }
 
-  T& data() const{
+  T & data() const {
     return *base_t::handle.combined_data;
   }
 
-  accessor__&
-  operator=(const T& x){
+  accessor__ & operator=(const T & x) {
     data() = x;
     return *this;
   }
@@ -355,11 +282,7 @@ public accessor__<
   // \e flecsi mesh entity types \ref mesh_entity_base_t.
   ///
   template<typename E>
-  const T &
-  operator () (
-    E * e
-  ) const
-  {
+  const T & operator()(E * e) const {
     return this->operator()(e->template id<0>());
   } // operator ()
 
@@ -373,53 +296,31 @@ public accessor__<
   // \e flecsi mesh entity types \ref mesh_entity_base_t.
   ///
   template<typename E>
-  T &
-  operator () (
-    E * e
-  )
-  {
+  T & operator()(E * e) {
     return this->operator()(e->template id<0>());
   } // operator ()
 };
 
-template<
-  typename T,
-  size_t PERMISSIONS
->
-struct accessor__<
-  data::color,
-  T,
-  PERMISSIONS,
-  0,
-  0
-> :
-public accessor__<
-  data::dense,
-  T,
-  PERMISSIONS,
-  0,
-  0
->
-{
+template<typename T, size_t PERMISSIONS>
+struct accessor__<data::color, T, PERMISSIONS, 0, 0>
+    : public accessor__<data::dense, T, PERMISSIONS, 0, 0> {
   using base_t = accessor__<data::dense, T, PERMISSIONS, 0, 0>;
 
-  accessor__(const data_handle__<T, 0, 0, 0>& h)
-  : base_t(h){}
+  accessor__(const data_handle__<T, 0, 0, 0> & h) : base_t(h) {}
 
-  operator T&(){
+  operator T &() {
     return data();
   }
 
-  operator const T&() const{
+  operator const T &() const {
     return data();
   }
 
-  T& data() const{
+  T & data() const {
     return *base_t::handle.combined_data;
   }
 
-  accessor__&
-  operator=(const T& x){
+  accessor__ & operator=(const T & x) {
     data() = x;
     return *this;
   }
@@ -438,11 +339,7 @@ public accessor__<
   // \e flecsi mesh entity types \ref mesh_entity_base_t.
   ///
   template<typename E>
-  const T &
-  operator () (
-    E * e
-  ) const
-  {
+  const T & operator()(E * e) const {
     return this->operator()(e->template id<0>());
   } // operator ()
 
@@ -456,58 +353,44 @@ public accessor__<
   // \e flecsi mesh entity types \ref mesh_entity_base_t.
   ///
   template<typename E>
-  T &
-  operator () (
-    E * e
-  )
-  {
+  T & operator()(E * e) {
     return this->operator()(e->template id<0>());
   } // operator ()
 };
 
 template<
-  typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS
->
-using dense_accessor__ = 
-  accessor__<data::dense, T, EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+using dense_accessor__ = accessor__<
+    data::dense,
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS>;
 
 template<
-  typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS
->
-using dense_accessor = 
-  dense_accessor__<T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+using dense_accessor = dense_accessor__<
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS>;
 
-template<
-  typename T,
-  size_t PERMISSIONS
->
-using color_accessor__ = 
-  accessor__<data::color, T, PERMISSIONS, 0, 0>;
+template<typename T, size_t PERMISSIONS>
+using color_accessor__ = accessor__<data::color, T, PERMISSIONS, 0, 0>;
 
-template<
-  typename T,
-  size_t PERMISSIONS
->
+template<typename T, size_t PERMISSIONS>
 using color_accessor = color_accessor__<T, PERMISSIONS>;
 
-template<
-  typename T,
-  size_t PERMISSIONS
->
-using global_accessor__ =
-  accessor__<data::global, T, PERMISSIONS, 0, 0>;
+template<typename T, size_t PERMISSIONS>
+using global_accessor__ = accessor__<data::global, T, PERMISSIONS, 0, 0>;
 
-template<
-  typename T,
-  size_t PERMISSIONS
->
+template<typename T, size_t PERMISSIONS>
 using global_accessor = global_accessor__<T, PERMISSIONS>;
 
 } // namespace flecsi

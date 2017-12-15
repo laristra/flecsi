@@ -99,7 +99,7 @@ public:
         if (m.kind() == Realm::Memory::SYSTEM_MEM)
           local_sysmem = m;
       } // end for
-    }   // end for
+    } // end for
 
     {
       clog_tag_guard(legion_mapper);
@@ -201,7 +201,7 @@ public:
           output.chosen_instances[indx].push_back(result);
 
         } // end if
-      }   // end for
+      } // end for
 
     } // end if
 

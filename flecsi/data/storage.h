@@ -41,9 +41,7 @@ namespace data {
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-template<
-  typename STORAGE_POLICY
->
+template<typename STORAGE_POLICY>
 struct storage__ : public STORAGE_POLICY {
 
   //--------------------------------------------------------------------------//
@@ -67,41 +65,32 @@ struct storage__ : public STORAGE_POLICY {
   //! @param callback   The registration call back function.
   //--------------------------------------------------------------------------//
 
-  bool
-  register_field(
-    size_t client_key,
-    size_t key,
-    const field_registration_function_t & callback
-  )
-  {
-    if(field_registry_.find(client_key) != field_registry_.end()) {
-      if(field_registry_[client_key].find(key) !=
-         field_registry_[client_key].end()) {
+  bool register_field(
+      size_t client_key,
+      size_t key,
+      const field_registration_function_t & callback) {
+    if (field_registry_.find(client_key) != field_registry_.end()) {
+      if (field_registry_[client_key].find(key) !=
+          field_registry_[client_key].end()) {
         clog(warn) << "field key already exists" << std::endl;
       } // if
     } // if
 
     field_registry_[client_key][key] =
-      std::make_pair(unique_fid_t::instance().next(), callback);
+        std::make_pair(unique_fid_t::instance().next(), callback);
 
     return true;
   } // register_field
 
-  auto const &
-  field_registry()
-  const
-  {
+  auto const & field_registry() const {
     return field_registry_;
   } // field_registry
 
-  auto const &
-  client_registry()
-  const
-  {
+  auto const & client_registry() const {
     return client_registry_;
   } // client_registry
 
-////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
 
   //--------------------------------------------------------------------------//
   //! Register a client with the runtime.
@@ -111,65 +100,47 @@ struct storage__ : public STORAGE_POLICY {
   //! @param callback   The registration call back function.
   //--------------------------------------------------------------------------//
 
-  bool
-  register_client(
-    size_t client_key,
-    size_t key,
-    const registration_function_t & callback
-  )
-  {
-    if(client_registry_.find(client_key) != client_registry_.end()) {
-      clog_assert(client_registry_[client_key].find(key) ==
-                  client_registry_[client_key].end(),
-                  "client key already exists");
+  bool register_client(
+      size_t client_key,
+      size_t key,
+      const registration_function_t & callback) {
+    if (client_registry_.find(client_key) != client_registry_.end()) {
+      clog_assert(
+          client_registry_[client_key].find(key) ==
+              client_registry_[client_key].end(),
+          "client key already exists");
     } // if
 
     client_registry_[client_key][key] =
-      std::make_pair(unique_fid_t::instance().next(), callback);
+        std::make_pair(unique_fid_t::instance().next(), callback);
 
     return true;
   } // register_client
 
-  bool
-  register_client_fields(
-    size_t client_key
-  )
-  {
+  bool register_client_fields(size_t client_key) {
     return registered_client_fields_.insert(client_key).second;
   }
 
-	//--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
   //! Myer's singleton instance.
   //!
   //! @return The single instance of this type.
-	//--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
 
-  static storage__ &
-  instance()
-  {
+  static storage__ & instance() {
     static storage__ d;
     return d;
   } // instance
 
-	//--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
   // FIXME: What are these for?
-	//--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
 
-  void
-  move(
-    uintptr_t from,
-    uintptr_t to
-  )
-  {}
+  void move(uintptr_t from, uintptr_t to) {}
 
-  void
-  reset(
-    uintptr_t runtime_namespace
-  )
-  {}
+  void reset(uintptr_t runtime_namespace) {}
 
 private:
-
   // Default constructor
   storage__() : STORAGE_POLICY() {}
 
@@ -178,9 +149,9 @@ private:
 
   // We don't need any of these
   storage__(const storage__ &) = delete;
-  storage__ & operator = (const storage__ &) = delete;
+  storage__ & operator=(const storage__ &) = delete;
   storage__(storage__ &&) = delete;
-  storage__ & operator = (storage__ &&) = delete;
+  storage__ & operator=(storage__ &&) = delete;
 
   std::unordered_set<size_t> registered_client_fields_;
   std::unordered_map<size_t, field_entry_t> field_registry_;

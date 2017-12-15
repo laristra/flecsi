@@ -171,7 +171,7 @@ struct context__ : public CONTEXT_POLICY {
     for (auto i : index_map) {
       reverse_index_map_[index_space][i.second] = i.first;
     } // for
-  }   // add_index_map
+  } // add_index_map
 
   /*!
     Return the index map associated with the given index space.
@@ -307,7 +307,7 @@ struct context__ : public CONTEXT_POLICY {
     for (auto i : intermediate_map) {
       reverse_intermediate_map_[key][i.second] = i.first;
     } // for
-  }   // add_intermediate_map
+  } // add_intermediate_map
 
   /*!
     Return the intermediate map associated with the given dimension and
@@ -677,7 +677,7 @@ private:
 
       return h;
     } // operator ()
-  };  // struct vector_hash_t
+  }; // struct vector_hash_t
 
   struct vector_equal_t {
     bool operator()(std::vector<size_t> a, std::vector<size_t> b) const {
@@ -685,7 +685,7 @@ private:
       std::sort(b.begin(), b.end());
       return (a == b);
     } // operator ()
-  };  // struct vector_hash_t
+  }; // struct vector_hash_t
 
   std::map<
       size_t,

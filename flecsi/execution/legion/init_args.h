@@ -138,7 +138,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
         rr.add_field(h.fid);
         region_reqs.push_back(rr);
       } // if
-    }   // if
+    } // if
     else if (h.color) {
       clog_assert(
           h.state > SPECIALIZATION_TLT_INIT, "accessing color data    \

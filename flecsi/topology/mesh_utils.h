@@ -79,7 +79,7 @@ struct find_entity__<0, T, D, M> {
   static constexpr size_t find() {
     return 1;
   } // find
-};  // struct find_entity__
+}; // struct find_entity__
 
 //-----------------------------------------------------------------//
 //! \struct find_entity_ mesh_utils.h

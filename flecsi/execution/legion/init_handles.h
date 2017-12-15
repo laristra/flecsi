@@ -127,8 +127,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
           h.exclusive_size = sizes[r];
           h.exclusive_pr = prs[r];
         } // if
-      }   // if
-    }     // for
+      } // if
+    } // for
 
     // region += num_regions;
 
@@ -400,7 +400,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
       ++region;
     } // for
-  }   // handle
+  } // handle
 
   //-----------------------------------------------------------------------//
   // If this is not a data handle, then simply skip it.

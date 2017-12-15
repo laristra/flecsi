@@ -183,7 +183,7 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
       } // scope
 
     } // for itr
-  }   // if we have owners
+  } // if we have owners
 
 } // owner_pos_correction_task
 
@@ -305,7 +305,7 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
       } // ghost_itr
       region_idx++;
     } // for idx_space
-  }   // clog_tag_guard
+  } // clog_tag_guard
 
 } // owner_pos_compaction_task
 
@@ -412,8 +412,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
         uint8_t * ghost_copy_ptr = ghost_data + ghost_offset * field_info.size;
         std::memcpy(ghost_copy_ptr, owner_copy_ptr, field_info.size);
       } // if
-    }   // for ghost_pt
-  }     // for fid
+    } // for ghost_pt
+  } // for fid
 } // ghost_copy_task
 
 /*!

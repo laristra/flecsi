@@ -65,7 +65,7 @@ entity_neighbors(const mesh_definition__<D> & md, size_t entity_id) {
     if (intersect.size() > thru_dim) {
       neighbors.insert(e);
     } // if
-  }   // for
+  } // for
 
   return neighbors;
 } // entity_neighbors
