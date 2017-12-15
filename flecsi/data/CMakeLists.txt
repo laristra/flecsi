@@ -37,6 +37,7 @@ set(data_HEADERS
   ragged_accessor.h
   ragged_mutator.h
   sparse_accessor.h
+  sparse_mutator.h
   sparse_data_handle.h
   storage.h
   storage_class.h

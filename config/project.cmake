@@ -201,26 +201,6 @@ if(ENABLE_OPENSSL)
 endif()
 
 #------------------------------------------------------------------------------#
-# Exodus II
-#------------------------------------------------------------------------------#
-
-find_package(EXODUSII QUIET)
-
-option(ENABLE_EXODUS "Enable I/O with exodus." ${EXODUSII_FOUND})
-
-if(ENABLE_EXODUS AND NOT EXODUSII_FOUND)
-  message(FATAL_ERROR "Exodus requested, but not found")
-endif()
-
-if(ENABLE_EXODUS)
-  include_directories(${EXODUSII_INCLUDE_DIRS})
-  add_definitions(-DHAVE_EXODUS)
-
-  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${EXODUSII_INCLUDE_DIRS})
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${EXODUSII_LIBRARIES})
-endif()
-
-#------------------------------------------------------------------------------#
 # Runtime models
 #------------------------------------------------------------------------------#
 
