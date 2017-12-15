@@ -1,12 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Apr 7, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
@@ -19,7 +26,7 @@
 
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client.h>
-#include <flecsi/data/data_handle.h>
+#include <flecsi/data/dense_data_handle.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/const_string.h>
@@ -30,54 +37,54 @@ namespace flecsi {
 namespace data {
 namespace legion {
 
-//----------------------------------------------------------------------------//
-//! The dense_handle_t type provides logically array-based access to data
-//! variables that have been registered in the data model.
-//!
-//! @tparam T                     The type of the data variable. If this type
-//!                               is not consistent with the type used to
-//!                               register the data, bad things can happen.
-//!                               However, it can be useful to reinterpret
-//!                               the type, e.g., when writing raw bytes.
-//!                               This class is part of the low-level
-//!                               \e flecsi interface, so it is assumed that
-//!                               you know what you are doing...
-//! @tparam EXCLUSIVE_PERMISSIONS The permissions to the exclusive indices.
-//! @tparam SHARED_PERMISSIONS    The permissions to the shared indices.
-//! @tparam GHOST_PERMISSIONS     The permissions to the ghost indices.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+/*!
+ The dense_handle_t type provides logically array-based access to data
+ variables that have been registered in the data model.
+
+ @tparam T                     The type of the data variable. If this type
+                               is not consistent with the type used to
+                               register the data, bad things can happen.
+                               However, it can be useful to reinterpret
+                               the type, e.g., when writing raw bytes.
+                               This class is part of the low-level
+                               \e flecsi interface, so it is assumed that
+                               you know what you are doing...
+ @tparam EXCLUSIVE_PERMISSIONS The permissions to the exclusive indices.
+ @tparam SHARED_PERMISSIONS    The permissions to the shared indices.
+ @tparam GHOST_PERMISSIONS     The permissions to the ghost indices.
+
+ @ingroup data
+*/
 
 template<
     typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-struct dense_handle_t : public data_handle__<
+struct dense_handle_t : public dense_data_handle__<
                             T,
                             EXCLUSIVE_PERMISSIONS,
                             SHARED_PERMISSIONS,
                             GHOST_PERMISSIONS> {
-  //--------------------------------------------------------------------------//
-  // Type definitions.
-  //--------------------------------------------------------------------------//
+  /*!
+   Type definitions.
+   */
 
-  using base_t = data_handle__<
+  using base_t = dense_data_handle__<
       T,
       EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS,
       GHOST_PERMISSIONS>;
 
-  //--------------------------------------------------------------------------//
-  // Constructors.
-  //--------------------------------------------------------------------------//
+  /*!
+   Constructors.
+   */
 
   dense_handle_t() {}
 
-  //--------------------------------------------------------------------------//
-  // Destructor.
-  //--------------------------------------------------------------------------//
+  /*!
+    Destructor.
+   */
 
   ~dense_handle_t() {
     Legion::Runtime * runtime = base_t::runtime;
@@ -129,14 +136,16 @@ struct dense_handle_t : public data_handle__<
 // Dense storage type.
 //----------------------------------------------------------------------------//
 
-///
-// FIXME: Dense storage type.
-///
+/*!
+ FIXME: Dense storage type.
+ */
+
 template<>
 struct storage_class__<dense> {
-  //--------------------------------------------------------------------------//
-  // Type definitions.
-  //--------------------------------------------------------------------------//
+
+  /*!
+    Type definitions.
+   */
 
   template<
       typename T,
@@ -153,9 +162,10 @@ struct storage_class__<dense> {
   // Data handles.
   //--------------------------------------------------------------------------//
 
-  ///
-  //
-  ///
+  /*!
+    FIXME documentation
+   */
+
   template<typename T, size_t NAMESPACE, typename Predicate>
   static decltype(auto) get_handles(
       const data_client_t & data_client,
@@ -178,9 +188,9 @@ struct storage_class__<dense> {
   static decltype(auto)
   get_handles(const data_client_t & data_client, size_t version, bool sorted) {}
 
-  ///
-  //
-  ///
+  /*!
+    FIXME documentation
+   */
   template<
       typename DATA_CLIENT_TYPE,
       typename DATA_TYPE,
@@ -242,6 +252,3 @@ struct storage_class__<dense> {
 } // namespace legion
 } // namespace data
 } // namespace flecsi
-
-/*~-------------------------------------------------------------------------~-*
- *~-------------------------------------------------------------------------~-*/

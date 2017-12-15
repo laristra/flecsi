@@ -1,12 +1,20 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
 
-//----------------------------------------------------------------------------//
-/// @file
-/// @date Initial file creation: Apr 04, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
+
 
 #include <flecsi-config.h>
 
@@ -21,17 +29,18 @@
 
 namespace flecsi {
 
-//----------------------------------------------------------------------------//
-//! The legion_data_handle_policy_t type provides backend storage for
-//! interfacing to the Legion runtime.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+/*!
+ The legion_dense_data_handle_policy_t type provides backend storage for
+ interfacing to the Legion runtime.
 
-struct legion_data_handle_policy_t {
-  legion_data_handle_policy_t() {}
+ @ingroup data
+ */
 
-  legion_data_handle_policy_t(const legion_data_handle_policy_t & p) = default;
+struct legion_dense_data_handle_policy_t {
+  legion_dense_data_handle_policy_t() {}
+
+  legion_dense_data_handle_policy_t(
+	const legion_dense_data_handle_policy_t & p) = default;
 
   bool * ghost_is_readable;
   bool * write_phase_started;
@@ -73,9 +82,7 @@ struct legion_data_handle_policy_t {
   size_t exclusive_priv;
   size_t shared_priv;
   size_t ghost_priv;
-}; // class legion_data_handle_policy_t
+}; // class legion_dense_data_handle_policy_t
 
 } // namespace flecsi
 
-/*~-------------------------------------------------------------------------~-*
- *~-------------------------------------------------------------------------~-*/
