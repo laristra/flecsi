@@ -33,40 +33,40 @@ clog_register_tag(epilog);
 namespace flecsi {
 namespace execution {
 
-//--------------------------------------------------------------------------//
-//! The task_epilog_t type can be called to walk the task args after the
-//! task has run. This allows synchronization dependencies to be added
-//! to the execution flow.
-//!
-//! @ingroup execution
-//--------------------------------------------------------------------------//
+/*!
+ The task_epilog_t type can be called to walk the task args after the
+ task has run. This allows synchronization dependencies to be added
+ to the execution flow.
+
+ @ingroup execution
+ */
 
 struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
 
-  //------------------------------------------------------------------------//
-  //! Construct a task_epilog_t instance.
-  //!
-  //! @param runtime The Legion task runtime.
-  //! @param context The Legion task runtime context.
-  //------------------------------------------------------------------------//
+  /*!
+   Construct a task_epilog_t instance.
+  
+   @param runtime The Legion task runtime.
+   @param context The Legion task runtime context.
+   */
 
   task_epilog_t(Legion::Runtime * runtime, Legion::Context & context)
       : runtime(runtime), context(context) {} // task_epilog_t
 
-  //------------------------------------------------------------------------//
-  //! FIXME: Need description
-  //!
-  //! @tparam T                     The data type referenced by the handle.
-  //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
-  //!                               indices of the index partition.
-  //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
-  //!                               indices of the index partition.
-  //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
-  //!                               indices of the index partition.
-  //!
-  //! @param runtime The Legion task runtime.
-  //! @param context The Legion task runtime context.
-  //------------------------------------------------------------------------//
+  /*!
+   FIXME: Need description
+  
+   @tparam T                     The data type referenced by the handle.
+   @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
+                                 indices of the index partition.
+   @tparam SHARED_PERMISSIONS    The permissions required on the shared
+                                 indices of the index partition.
+   @tparam GHOST_PERMISSIONS     The permissions required on the ghost
+                                 indices of the index partition.
+  
+   @param runtime The Legion task runtime.
+   @param context The Legion task runtime context.
+   */
 
   template<
       typename T,
@@ -126,11 +126,11 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
     } // if global and color
   }   // handle
 
-  //------------------------------------------------------------------------//
-  //! FIXME: Need to document.
-  //!
-  //! @param T
-  //------------------------------------------------------------------------//
+  /*!
+   FIXME: Need to document.
+  
+   @param T
+   */
 
   template<typename T>
   static typename std::enable_if_t<

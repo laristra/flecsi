@@ -30,48 +30,38 @@
 
 clog_register_tag(legion_mapper);
 
-//----------------------------------------------------------------------------//
-//! Mapper ID
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Mapper ID
+
+ @ingroup legion-execution
+ */
+
 enum {
   MPI_MAPPER_ID = 1,
 };
 
-#if 0
-//----------------------------------------------------------------------------//
-//! mapper tag's IDs
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
-enum {
-  // Use the first 8 bits for storing the rhsf index
-  MAPPER_FORCE_RANK_MATCH = 0x00001000,
-  MAPPER_COMPACTED_STORAGE = 0x00002000,
-  MAPPER_SUBRANK_LAUNCH   = 0x00080000,
-};
-#endif
-
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-//! The mpi_mapper_t - is a custom mapper that handles mpi-legion
-//! interoperability in FLeCSI
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*
+ The mpi_mapper_t - is a custom mapper that handles mpi-legion
+ interoperability in FLeCSI
+
+ @ingroup legion-execution
+*/
+
 class mpi_mapper_t : public Legion::Mapping::DefaultMapper {
 public:
-  //--------------------------------------------------------------------------//
-  //! Contructor. Derives from the Legion's Default Mapper
-  //!
-  //! @param machine Machine type for Legion's Realm
-  //! @param _runtime Legion runtime
-  //! @param local processor type: currently supports only
-  //!         LOC_PROC and TOC_PROC
-  //--------------------------------------------------------------------------//
+
+  /*!
+   Contructor. Derives from the Legion's Default Mapper
+  
+   @param machine Machine type for Legion's Realm
+   @param _runtime Legion runtime
+   @param local processor type: currently supports only
+           LOC_PROC and TOC_PROC
+   */
+
   mpi_mapper_t(
       Legion::Machine machine,
       Legion::Runtime * _runtime,
@@ -120,23 +110,24 @@ public:
     }
   } // end mpi_mapper_t
 
-  //-------------------------------------------------------------------------//
-  //! Destructor
-  //-------------------------------------------------------------------------//
+  /*!
+    Destructor
+   */
   virtual ~mpi_mapper_t(){};
 
-  //-------------------------------------------------------------------------//
-  //! Specialization of the map_task funtion for FLeCSI
-  //! By default, map_task will execute Legions map_task from DefaultMapper.
-  //! In the case the launcher has been tagged with the
-  //! "MAPPER_COMPACTED_STORAGE" tag, mapper will create single physical
-  //! instance for exclusive, shared and ghost partitions for each data handle
-  //!
-  //!  @param ctx Mapper Context
-  //!  @param task Legion's task
-  //!  @param input Input information about task mapping
-  //!  @param output Output information about task mapping
-  //-------------------------------------------------------------------------//
+  /*!
+   Specialization of the map_task funtion for FLeCSI
+   By default, map_task will execute Legions map_task from DefaultMapper.
+   In the case the launcher has been tagged with the
+   "MAPPER_COMPACTED_STORAGE" tag, mapper will create single physical
+   instance for exclusive, shared and ghost partitions for each data handle
+  
+    @param ctx Mapper Context
+    @param task Legion's task
+    @param input Input information about task mapping
+    @param output Output information about task mapping
+   */
+
   virtual void map_task(
       const Legion::Mapping::MapperContext ctx,
       const Legion::Task & task,
@@ -223,12 +214,13 @@ private:
   Realm::Machine machine;
 };
 
-//--------------------------------------------------------------------------//
-//! mapper_registration is used to replace DefaultMapper with mpi_mapper_t in
-//! FLeCSI
-//!
-//! @ingroup legion-execution
-//-------------------------------------------------------------------------//
+/*!
+ mapper_registration is used to replace DefaultMapper with mpi_mapper_t in
+ FLeCSI
+
+ @ingroup legion-execution
+ */
+
 inline void
 mapper_registration(
     Legion::Machine machine,

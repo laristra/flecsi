@@ -36,32 +36,32 @@
 namespace flecsi {
 namespace execution {
 
-//--------------------------------------------------------------------------//
-//! The init_args_t type can be called to walk task args before the
-//! task launcher is created. This allows us to gather region requirements
-//! and to set state on the associated data handles \em before Legion gets
-//! the task arguments tuple.
-//!
-//! @ingroup execution
-//--------------------------------------------------------------------------//
+/*!
+  The init_args_t type can be called to walk task args before the
+  task launcher is created. This allows us to gather region requirements
+  and to set state on the associated data handles \em before Legion gets
+  the task arguments tuple.
+
+  @ingroup execution
+*/
 
 struct init_args_t : public utils::tuple_walker__<init_args_t> {
 
-  //------------------------------------------------------------------------//
-  //! Construct an init_args_t instance.
-  //!
-  //! @param runtime The Legion task runtime.
-  //! @param context The Legion task runtime context.
-  //------------------------------------------------------------------------//
+  /*!
+    Construct an init_args_t instance.
+  
+    @param runtime The Legion task runtime.
+    @param context The Legion task runtime context.
+   */
 
   init_args_t(Legion::Runtime * runtime, Legion::Context & context)
       : runtime(runtime), context(context) {} // init_args
 
-  //------------------------------------------------------------------------//
-  //! Convert the template privileges to proper Legion privileges.
-  //!
-  //! @param mode privilege
-  //------------------------------------------------------------------------//
+  /*!
+    Convert the template privileges to proper Legion privileges.
+   
+    @param mode privilege
+   */
 
   static Legion::PrivilegeMode privilege_mode(size_t mode) {
     switch (mode) {
@@ -80,6 +80,10 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     // to avoid compiler warnings
     return NO_ACCESS;
   } // privilege_mode
+
+  /*!
+    FIXME
+   */
 
   template<
       typename T,
@@ -148,6 +152,10 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
 
   } // handle
 
+  /*!
+    FIXME
+   */
+
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
       std::is_base_of<topology::mesh_topology_base__, T>::value>
@@ -208,6 +216,10 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
       region_reqs.push_back(adj_rr);
     }
   } // handle
+
+  /*!
+    FIXME
+   */
 
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<

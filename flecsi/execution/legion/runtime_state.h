@@ -18,13 +18,13 @@
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-//! The legion_runtime_state_t type provides storage for Legion runtime
-//! information that can be reinitialized as needed to store const
-//! data types and references as required by the Legion runtime.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ The legion_runtime_state_t type provides storage for Legion runtime
+ information that can be reinitialized as needed to store const
+ data types and references as required by the Legion runtime.
+
+ @ingroup legion-execution
+ */
 
 struct legion_runtime_state_t {
 

@@ -1,17 +1,22 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jul 26, 2016
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+/*! @file */
 
-#include <flecsi/execution/legion/context_policy.h>
 
 #include <iostream>
 
+#include <flecsi/execution/legion/context_policy.h>
 #include <flecsi/execution/legion/legion_tasks.h>
 #include <flecsi/execution/legion/mapper.h>
 #include <flecsi/data/storage.h>
@@ -227,8 +232,3 @@ legion_context_policy_t::connect_with_mpi(
 
 } // namespace execution 
 } // namespace flecsi
-
-/*~------------------------------------------------------------------------~--*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/
