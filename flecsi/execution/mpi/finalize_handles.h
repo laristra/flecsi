@@ -173,7 +173,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     typename T,
     size_t PERMISSIONS
   >
-  typename std::enable_if_t<std::is_base_of<topology::set_topology_base__, T>
+  typename std::enable_if_t<std::is_base_of<topology::set_topology_base_t, T>
     ::value>
   handle(
     data_client_handle__<T, PERMISSIONS> & h

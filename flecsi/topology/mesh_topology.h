@@ -1052,7 +1052,7 @@ private:
     // keep track of the local ids, since they may be added out of order
     std::vector<size_t> entity_ids;
 
-    domain_connectivity<MT::num_dimensions> & dc =
+    domain_connectivity__<MT::num_dimensions> & dc =
         base_t::ms_->topology[Domain][Domain];
 
     // Get connectivity for cells to vertices.
@@ -1664,9 +1664,9 @@ private:
       auto cell = static_cast<entity_type<MT::num_dimensions, M0> *>(c);
       id_t cell_id = cell->template global_id<FM>();
 
-      domain_connectivity<MT::num_dimensions> & primal_conn =
+      domain_connectivity__<MT::num_dimensions> & primal_conn =
           base_t::ms_->topology[FM][FM];
-      domain_connectivity<MT::num_dimensions> & domain_conn =
+      domain_connectivity__<MT::num_dimensions> & domain_conn =
           base_t::ms_->topology[FM][TM];
 
       // p.first:   The number of entities per cell.

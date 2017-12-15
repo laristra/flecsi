@@ -63,8 +63,8 @@ struct mpi_topology_storage_policy_t {
           topology_storage__>,
       ND + 1>;
 
-  // array of array of domain_connectivity
-  std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
+  // array of array of domain_connectivity__
+  std::array<std::array<domain_connectivity__<ND>, NM>, NM> topology;
 
   std::array<index_spaces_t, NM> index_spaces;
 
@@ -98,9 +98,9 @@ struct mpi_topology_storage_policy_t {
     id_storage.set_buffer(ids, num_entities, true);
 
     for (auto & domain_connectivities : topology) {
-      auto & domain_connectivity = domain_connectivities[domain];
+      auto & domain_connectivity__ = domain_connectivities[domain];
       for (size_t d = 0; d <= ND; ++d) {
-        domain_connectivity.get(d, dim).set_entity_storage(s);
+        domain_connectivity__.get(d, dim).set_entity_storage(s);
       } // for
     }   // for
 

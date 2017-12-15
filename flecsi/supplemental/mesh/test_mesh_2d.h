@@ -67,7 +67,7 @@ struct cell_t : public flecsi::topology::mesh_entity__<2, 1>
   create_entities(
     id_t cell_id,
     size_t dim,
-    flecsi::topology::domain_connectivity<2> & c,
+    flecsi::topology::domain_connectivity__<2> & c,
     id_t * e
   )
   {
@@ -118,7 +118,7 @@ struct test_mesh_2d_policy_t
     size_t D,
     typename ST
   >
-  static flecsi::topology::mesh_entity_base_t<num_domains> *
+  static flecsi::topology::mesh_entity_base__<num_domains> *
   create_entity(
     flecsi::topology::mesh_topology_base_t<ST>* mesh,
     size_t num_vertices,

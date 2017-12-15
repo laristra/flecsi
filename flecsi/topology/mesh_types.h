@@ -35,15 +35,15 @@ namespace flecsi {
 namespace topology {
 
 /*----------------------------------------------------------------------------*
- * class mesh_entity_base_t
+ * class mesh_entity_base__
  *----------------------------------------------------------------------------*/
 
 template<class>
 class mesh_topology_base_t;
 
 //-----------------------------------------------------------------//
-//! \class mesh_entity_base_t mesh_types.h
-//! \brief mesh_entity_base_t defines a base class that stores the raw info that
+//! \class mesh_entity_base__ mesh_types.h
+//! \brief mesh_entity_base__ defines a base class that stores the raw info that
 //! the mesh topology needs, i.e: id and rank data
 //!
 //! \tparam N The number of mesh domains.
@@ -55,9 +55,9 @@ public:
 };
 
 template<size_t N>
-class mesh_entity_base_t : public mesh_entity_base_ {
+class mesh_entity_base__ : public mesh_entity_base_ {
 public:
-  ~mesh_entity_base_t() {}
+  ~mesh_entity_base__() {}
 
   //-----------------------------------------------------------------//
   //! Return the id of this entity.
@@ -114,7 +114,7 @@ protected:
 private:
   std::array<id_t, N> ids_;
 
-}; // class mesh_entity_base_t
+}; // class mesh_entity_base__
 
 /*----------------------------------------------------------------------------*
  * class mesh_entity__
@@ -130,7 +130,7 @@ private:
 //-----------------------------------------------------------------//
 
 template<size_t D, size_t N>
-class mesh_entity__ : public mesh_entity_base_t<N> {
+class mesh_entity__ : public mesh_entity_base__<N> {
 public:
   static constexpr size_t dimension = D;
 
@@ -148,7 +148,7 @@ constexpr size_t mesh_entity__<D, N>::dimension;
 //! \tparam N The number of domains.
 //-----------------------------------------------------------------//
 template<size_t N>
-using entity_vector_t = std::vector<mesh_entity_base_t<N> *>;
+using entity_vector_t = std::vector<mesh_entity_base__<N> *>;
 
 /*----------------------------------------------------------------------------*
  * class domain_entity_t
@@ -532,7 +532,7 @@ public:
 //! dimensions.
 //-----------------------------------------------------------------//
 template<size_t D>
-class domain_connectivity {
+class domain_connectivity__ {
 public:
   using id_t = flecsi::utils::id_t;
 

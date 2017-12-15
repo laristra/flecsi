@@ -33,7 +33,7 @@ namespace flecsi {
 
 template<typename SET_TYPES>
 using FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY =
-    topology::legion_set_topology_storage_policy_t<SET_TYPES>;
+    topology::legion_set_topology_storage_policy__<SET_TYPES>;
 
 } // namespace flecsi
 

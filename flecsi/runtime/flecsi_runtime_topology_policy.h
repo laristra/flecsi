@@ -33,7 +33,7 @@ namespace flecsi {
 
 template<size_t ND, size_t NM>
 using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
-    topology::legion_topology_storage_policy_t<ND, NM>;
+    topology::legion_topology_storage_policy_t__<ND, NM>;
 
 } // namespace flecsi
 
