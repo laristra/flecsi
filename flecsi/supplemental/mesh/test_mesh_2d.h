@@ -173,7 +173,7 @@ struct test_mesh_2d_t :
   >
   auto
   vertices( 
-    flecsi::topology::domain_entity<M, E> & e
+    flecsi::topology::domain_entity__<M, E> & e
   )
   {
     return entities<0, 0>(e);
@@ -185,7 +185,7 @@ struct test_mesh_2d_t :
   >
   auto
   vertices( 
-    flecsi::topology::domain_entity<M, E> & e
+    flecsi::topology::domain_entity__<M, E> & e
   )
   const
   {

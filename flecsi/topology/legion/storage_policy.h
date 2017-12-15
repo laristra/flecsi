@@ -176,7 +176,7 @@ struct legion_topology_storage_policy_t {
 
   template<class T, size_t M, class... S>
   T * make(S &&... args) {
-    using dtype = domain_entity<M, T>;
+    using dtype = domain_entity__<M, T>;
 
     auto & is = index_spaces[M][T::dimension].template cast<dtype>();
     size_t entity = is.size();
@@ -198,7 +198,7 @@ struct legion_topology_storage_policy_t {
 
   template<class T, size_t M, class... S>
   T * make(const id_t & id, S &&... args) {
-    using dtype = domain_entity<M, T>;
+    using dtype = domain_entity__<M, T>;
 
     auto & is = index_spaces[M][T::dimension].template cast<dtype>();
 

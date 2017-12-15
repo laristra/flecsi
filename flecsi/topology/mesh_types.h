@@ -155,9 +155,9 @@ using entity_vector_t = std::vector<mesh_entity_base_t<N> *>;
  *----------------------------------------------------------------------------*/
 
 //-----------------------------------------------------------------//
-//! \class domain_entity mesh_types.h
+//! \class domain_entity__ mesh_types.h
 //!
-//! \brief domain_entity is a simple wrapper to mesh entity that associates with
+//! \brief domain_entity__ is a simple wrapper to mesh entity that associates with
 //! it a domain id
 //!
 //! \tparam M Domain
@@ -165,15 +165,15 @@ using entity_vector_t = std::vector<mesh_entity_base_t<N> *>;
 //-----------------------------------------------------------------//
 
 template<size_t M, class E>
-class domain_entity {
+class domain_entity__ {
 public:
   using id_t = typename E::id_t;
   using item_t = E *;
 
   // implicit type conversions are evil.  This one tries to convert
   // all pointers to domain_entities
-  explicit domain_entity(E * entity) : entity_(entity) {}
-  domain_entity & operator=(const domain_entity & e) {
+  explicit domain_entity__(E * entity) : entity_(entity) {}
+  domain_entity__ & operator=(const domain_entity__ & e) {
     entity_ = e.entity_;
     return *this;
   }
@@ -218,15 +218,15 @@ public:
     return entity_->template id<M>();
   }
 
-  bool operator==(domain_entity e) const {
+  bool operator==(domain_entity__ e) const {
     return entity_ == e.entity_;
   }
 
-  bool operator!=(domain_entity e) const {
+  bool operator!=(domain_entity__ e) const {
     return entity_ != e.entity_;
   }
 
-  bool operator<(domain_entity e) const {
+  bool operator<(domain_entity__ e) const {
     return entity_ < e.entity_;
   }
 

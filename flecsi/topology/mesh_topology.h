@@ -545,7 +545,7 @@ public:
     assert(!c.empty() && "empty connectivity");
 
     using etype = entity_type<D, TM>;
-    using dtype = domain_entity<TM, etype>;
+    using dtype = domain_entity__<TM, etype>;
 
     return c.get_index_space().slice<dtype>(c.range(e->template id<FM>()));
   } // entities
@@ -567,7 +567,7 @@ public:
     assert(!c.empty() && "empty connectivity");
 
     using etype = entity_type<D, TM>;
-    using dtype = domain_entity<TM, etype>;
+    using dtype = domain_entity__<TM, etype>;
 
     return c.get_index_space().slice<dtype>(c.range(e->template id<FM>()));
   } // entities
@@ -584,7 +584,7 @@ public:
   //! @param e from entity with compile-time domain
   //--------------------------------------------------------------------------//
   template<size_t D, size_t FM = 0, size_t TM = FM, class E>
-  decltype(auto) entities(domain_entity<FM, E> & e) const {
+  decltype(auto) entities(domain_entity__<FM, E> & e) const {
     return entities<D, FM, TM>(e.entity());
   } // entities
 
@@ -600,7 +600,7 @@ public:
   //! @param e from entity with compile-time domain
   //--------------------------------------------------------------------------//
   template<size_t D, size_t FM = 0, size_t TM = FM, class E>
-  decltype(auto) entities(domain_entity<FM, E> & e) {
+  decltype(auto) entities(domain_entity__<FM, E> & e) {
     return entities<D, FM, TM>(e.entity());
   } // entities
 
@@ -614,7 +614,7 @@ public:
   template<size_t D, size_t M = 0>
   auto entities() const {
     using etype = entity_type<D, M>;
-    using dtype = domain_entity<M, etype>;
+    using dtype = domain_entity__<M, etype>;
     return base_t::ms_->index_spaces[M][D].template slice<dtype>();
   } // entities
 
@@ -631,7 +631,7 @@ public:
   template<size_t D, size_t M = 0>
   auto entities(partition_t partition) const {
     using etype = entity_type<D, M>;
-    using dtype = domain_entity<M, etype>;
+    using dtype = domain_entity__<M, etype>;
     return base_t::ms_->partition_index_spaces[partition][M][D]
         .template slice<dtype>();
   } // entities
@@ -674,7 +674,7 @@ public:
   //! @param e from entity with compile-time domain
   //--------------------------------------------------------------------------//
   template<size_t D, size_t FM = 0, size_t TM = FM, class E>
-  decltype(auto) entity_ids(domain_entity<FM, E> & e) {
+  decltype(auto) entity_ids(domain_entity__<FM, E> & e) {
     return entity_ids<D, FM, TM>(e.entity());
   } // entities
 
@@ -726,7 +726,7 @@ public:
   //! @param e from entity with compile-time domain
   //--------------------------------------------------------------------------//
   template<size_t D, size_t FM = 0, size_t TM = FM, class E>
-  void reverse_entities(domain_entity<FM, E> & e) {
+  void reverse_entities(domain_entity__<FM, E> & e) {
     return reverse_entities<D, FM, TM>(e.entity());
   } // entities
 
@@ -762,7 +762,7 @@ public:
   //! @param order order specification
   //--------------------------------------------------------------------------//
   template<size_t D, size_t FM = 0, size_t TM = FM, class E, class U>
-  void reverse_entities(domain_entity<FM, E> & e, U && order) {
+  void reverse_entities(domain_entity__<FM, E> & e, U && order) {
     return reorder_entities<D, FM, TM>(e.entity(), std::forward<U>(order));
   } // entities
 
@@ -1078,10 +1078,10 @@ private:
     using entity_type = entity_type<DimensionToBuild, Domain>;
 
     auto & is = base_t::ms_->index_spaces[Domain][DimensionToBuild]
-                    .template cast<domain_entity<Domain, entity_type>>();
+                    .template cast<domain_entity__<Domain, entity_type>>();
 
     auto & cis = base_t::ms_->index_spaces[Domain][UsingDimension]
-                     .template cast<domain_entity<Domain, cell_type>>();
+                     .template cast<domain_entity__<Domain, cell_type>>();
 
     // Lookup the index space for the entity type being created.
     constexpr size_t cell_index_space = find_index_space_from_dimension__<
@@ -1686,7 +1686,7 @@ private:
       size_t pos = 0;
 
       auto & is = base_t::ms_->index_spaces[TM][TD]
-                      .template cast<domain_entity<TM, to_entity_type>>();
+                      .template cast<domain_entity__<TM, to_entity_type>>();
 
       for (size_t i = 0; i < n; ++i) {
         size_t m = sv[i];
