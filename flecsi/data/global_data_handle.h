@@ -72,6 +72,9 @@ struct global_data_handle_base__ : public DATA_POLICY,
 #ifdef COMPACTED_STORAGE_SORT
   T * combined_data_sort = nullptr;
 #endif
+  T * color_buf = nullptr;
+  size_t color_size = 1;
+
   size_t combined_size = 0;
   bool master = true;
 

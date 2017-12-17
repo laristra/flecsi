@@ -28,7 +28,7 @@
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
 #include <flecsi/data/legion/dense_data_handle_policy.h>
-#include <flecsi/data/legion/dense_global_handle_policy.h>
+#include <flecsi/data/legion/global_data_handle_policy.h>
 #include <flecsi/data/legion/mutator_handle_policy.h>
 #include <flecsi/data/legion/sparse_data_handle_policy.h>
 

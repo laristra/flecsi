@@ -32,6 +32,7 @@ set(data_HEADERS
   dense_data_handle.h
   global_data_handle.h
   dense_accessor.h
+  global_accessor.h
   field.h
   mutator.h
   mutator_handle.h

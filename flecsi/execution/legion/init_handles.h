@@ -30,6 +30,7 @@
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/global_accessor.h>
 #include <flecsi/topology/mesh_topology.h>
 #include <flecsi/topology/mesh_types.h>
 #include <flecsi/topology/set_topology.h>
@@ -105,34 +106,18 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
         Legion::Domain domain = runtime->get_index_space_domain(context, is);
 
-        if (!h.global && !h.color) {
-          LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
-          LegionRuntime::Arrays::Rect<2> sr;
-          LegionRuntime::Accessor::ByteOffset bo[2];
-          data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
-          // data[r] += bo[1];
-          sizes[r] = sr.hi[1] - sr.lo[1] + 1;
-          h.combined_size += sizes[r];
-        } else {
-          LegionRuntime::Arrays::Rect<1> dr = domain.get_rect<1>();
-          LegionRuntime::Arrays::Rect<1> sr;
-          LegionRuntime::Accessor::ByteOffset bo[2];
-          data[r] = ac.template raw_rect_ptr<1>(dr, sr, bo);
-          // data[r] += bo[1];
-          sizes[r] = sr.hi[1] - sr.lo[1] + 1;
-          h.combined_size += sizes[r];
-          h.combined_data = data[r];
-          h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
-          h.exclusive_buf = data[r];
-          h.exclusive_size = sizes[r];
-          h.exclusive_pr = prs[r];
-        } // if
+        LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
+        LegionRuntime::Arrays::Rect<2> sr;
+        LegionRuntime::Accessor::ByteOffset bo[2];
+        data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
+        // data[r] += bo[1];
+        sizes[r] = sr.hi[1] - sr.lo[1] + 1;
+        h.combined_size += sizes[r];
       } // if
     } // for
 
     // region += num_regions;
 
-    if (!h.global && !h.color) {
 #ifndef MAPPER_COMPACTION
       // Create the concatenated buffer E+S+G
       h.combined_data = new T[h.combined_size];
@@ -249,11 +234,122 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
         pos += sizes[r];
       } // for
 #endif
-    } // if
 
     region += num_regions;
 
   } // handle
+
+  template<
+      typename T,
+      size_t PERMISSIONS>
+  void handle(global_accessor__<
+              T,
+              PERMISSIONS> &a) {
+    auto & h = a.handle;
+
+    constexpr size_t num_regions = 1;
+
+    h.context = context;
+    h.runtime = runtime;
+
+    Legion::PhysicalRegion prs[num_regions];
+    T * data[num_regions];
+    size_t sizes[num_regions];
+    h.combined_size = 0;
+
+    size_t permissions[] = {PERMISSIONS};
+
+    // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
+    for (size_t r = 0; r < num_regions; ++r) {
+      if (permissions[r] == size_t(reserved)) {
+        data[r] = nullptr;
+        sizes[r] = 0;
+        prs[r] = Legion::PhysicalRegion();
+
+        clog(error) << "reserved permissions mode used on region " << r
+                    << std::endl;
+      } else {
+        prs[r] = regions[region + r];
+        Legion::LogicalRegion lr = prs[r].get_logical_region();
+        Legion::IndexSpace is = lr.get_index_space();
+
+        auto ac = prs[r].get_field_accessor(h.fid).template typeify<T>();
+
+        Legion::Domain domain = runtime->get_index_space_domain(context, is);
+
+        LegionRuntime::Arrays::Rect<1> dr = domain.get_rect<1>();
+        LegionRuntime::Arrays::Rect<1> sr;
+        LegionRuntime::Accessor::ByteOffset bo[2];
+        data[r] = ac.template raw_rect_ptr<1>(dr, sr, bo);
+        // data[r] += bo[1];
+        sizes[r] = sr.hi[1] - sr.lo[1] + 1;
+        h.combined_size += sizes[r];
+        h.combined_data = data[r];
+        h.color_priv = PERMISSIONS;
+        h.color_buf = data[r];
+        //h.color_size = sizes[r];
+        h.color_pr = prs[r];
+      } // if
+    } // for
+   region += num_regions;
+ }//global_handle
+
+  template<
+      typename T,
+      size_t PERMISSIONS>
+  void handle(color_accessor__<
+              T,
+              PERMISSIONS> &a) {
+    auto & h = a.handle;
+
+    constexpr size_t num_regions = 1;
+
+    h.context = context;
+    h.runtime = runtime;
+
+    Legion::PhysicalRegion prs[num_regions];
+    T * data[num_regions];
+    size_t sizes[num_regions];
+    h.combined_size = 0;
+
+    size_t permissions[] = {PERMISSIONS};
+
+    // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
+    for (size_t r = 0; r < num_regions; ++r) {
+      if (permissions[r] == size_t(reserved)) {
+        data[r] = nullptr;
+        sizes[r] = 0;
+        prs[r] = Legion::PhysicalRegion();
+
+        clog(error) << "reserved permissions mode used on region " << r
+                    << std::endl;
+      } else {
+        prs[r] = regions[region + r];
+        Legion::LogicalRegion lr = prs[r].get_logical_region();
+        Legion::IndexSpace is = lr.get_index_space();
+
+        auto ac = prs[r].get_field_accessor(h.fid).template typeify<T>();
+
+        Legion::Domain domain = runtime->get_index_space_domain(context, is);
+
+        LegionRuntime::Arrays::Rect<1> dr = domain.get_rect<1>();
+        LegionRuntime::Arrays::Rect<1> sr;
+        LegionRuntime::Accessor::ByteOffset bo[2];
+        data[r] = ac.template raw_rect_ptr<1>(dr, sr, bo);
+        // data[r] += bo[1];
+        sizes[r] = sr.hi[1] - sr.lo[1] + 1;
+        h.combined_size += sizes[r];
+        h.combined_data = data[r];
+        h.color_priv = PERMISSIONS;
+        h.color_buf = data[r];
+        //h.color_size = sizes[r];
+        h.color_pr = prs[r];
+      } // if
+    } // for
+   region += num_regions;
+ }//color_handle
+
+
 
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
