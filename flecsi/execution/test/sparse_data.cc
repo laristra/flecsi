@@ -8,8 +8,6 @@
 /// \date Initial file creation: Apr 11, 2017
 ///
 
-#define DH50
-
 #include <cinchtest.h>
 
 #include <flecsi/execution/execution.h>
@@ -246,7 +244,10 @@ void driver(int argc, char ** argv) {
   auto f3 = flecsi_execute_task_simple(task2, single, ch, ph);
   f3.wait();
 
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("sparse_data.blessed"));
+  auto& context = execution::context_t::instance();
+  if(context.color() == 0){
+    ASSERT_TRUE(CINCH_EQUAL_BLESSED("sparse_data.blessed"));
+  }
 
 } // specialization_driver
 
@@ -265,5 +266,3 @@ TEST(sparse_data, testname) {
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~------------------------------------------------------------------------~--*/
-
-#undef DH50
