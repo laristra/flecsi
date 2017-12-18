@@ -35,15 +35,15 @@ namespace flecsi {
 namespace topology {
 
 /*----------------------------------------------------------------------------*
- * class mesh_entity_base_t
+ * class mesh_entity_base__
  *----------------------------------------------------------------------------*/
 
 template<class>
-class mesh_topology_base_t;
+class mesh_topology_base__;
 
 //-----------------------------------------------------------------//
-//! \class mesh_entity_base_t mesh_types.h
-//! \brief mesh_entity_base_t defines a base class that stores the raw info that
+//! \class mesh_entity_base__ mesh_types.h
+//! \brief mesh_entity_base__ defines a base class that stores the raw info that
 //! the mesh topology needs, i.e: id and rank data
 //!
 //! \tparam N The number of mesh domains.
@@ -55,9 +55,9 @@ public:
 };
 
 template<size_t N>
-class mesh_entity_base_t : public mesh_entity_base_ {
+class mesh_entity_base__ : public mesh_entity_base_ {
 public:
-  ~mesh_entity_base_t() {}
+  ~mesh_entity_base__() {}
 
   //-----------------------------------------------------------------//
   //! Return the id of this entity.
@@ -114,7 +114,7 @@ protected:
 private:
   std::array<id_t, N> ids_;
 
-}; // class mesh_entity_base_t
+}; // class mesh_entity_base__
 
 /*----------------------------------------------------------------------------*
  * class mesh_entity__
@@ -130,7 +130,7 @@ private:
 //-----------------------------------------------------------------//
 
 template<size_t D, size_t N>
-class mesh_entity__ : public mesh_entity_base_t<N> {
+class mesh_entity__ : public mesh_entity_base__<N> {
 public:
   static constexpr size_t dimension = D;
 
@@ -148,16 +148,16 @@ constexpr size_t mesh_entity__<D, N>::dimension;
 //! \tparam N The number of domains.
 //-----------------------------------------------------------------//
 template<size_t N>
-using entity_vector_t = std::vector<mesh_entity_base_t<N> *>;
+using entity_vector_t = std::vector<mesh_entity_base__<N> *>;
 
 /*----------------------------------------------------------------------------*
  * class domain_entity_t
  *----------------------------------------------------------------------------*/
 
 //-----------------------------------------------------------------//
-//! \class domain_entity mesh_types.h
+//! \class domain_entity__ mesh_types.h
 //!
-//! \brief domain_entity is a simple wrapper to mesh entity that associates with
+//! \brief domain_entity__ is a simple wrapper to mesh entity that associates with
 //! it a domain id
 //!
 //! \tparam M Domain
@@ -165,15 +165,15 @@ using entity_vector_t = std::vector<mesh_entity_base_t<N> *>;
 //-----------------------------------------------------------------//
 
 template<size_t M, class E>
-class domain_entity {
+class domain_entity__ {
 public:
   using id_t = typename E::id_t;
   using item_t = E *;
 
   // implicit type conversions are evil.  This one tries to convert
   // all pointers to domain_entities
-  explicit domain_entity(E * entity) : entity_(entity) {}
-  domain_entity & operator=(const domain_entity & e) {
+  explicit domain_entity__(E * entity) : entity_(entity) {}
+  domain_entity__ & operator=(const domain_entity__ & e) {
     entity_ = e.entity_;
     return *this;
   }
@@ -218,15 +218,15 @@ public:
     return entity_->template id<M>();
   }
 
-  bool operator==(domain_entity e) const {
+  bool operator==(domain_entity__ e) const {
     return entity_ == e.entity_;
   }
 
-  bool operator!=(domain_entity e) const {
+  bool operator!=(domain_entity__ e) const {
     return entity_ != e.entity_;
   }
 
-  bool operator<(domain_entity e) const {
+  bool operator<(domain_entity__ e) const {
     return entity_ < e.entity_;
   }
 
@@ -532,7 +532,7 @@ public:
 //! dimensions.
 //-----------------------------------------------------------------//
 template<size_t D>
-class domain_connectivity {
+class domain_connectivity__ {
 public:
   using id_t = flecsi::utils::id_t;
 
@@ -639,36 +639,36 @@ private:
 };
 
 /*----------------------------------------------------------------------------*
- * class mesh_topology_base_t
+ * class mesh_topology_base__
  *----------------------------------------------------------------------------*/
 
 //-----------------------------------------------------------------//
-//! \class mesh_topology_base_t mesh_topology.h
+//! \class mesh_topology_base__ mesh_topology.h
 //! \brief contains methods and data about the mesh topology that do not depend
 //! on type parameterization, e.g: entity types, domains, etc.
 //-----------------------------------------------------------------//
 
-class mesh_topology_base__ {};
+class mesh_topology_base_t {};
 
 template<class STORAGE_TYPE>
-class mesh_topology_base_t : public data::data_client_t,
-                             public mesh_topology_base__ {
+class mesh_topology_base__ : public data::data_client_t,
+                             public mesh_topology_base_t {
 public:
   using id_t = utils::id_t;
 
   // Default constructor
-  mesh_topology_base_t(STORAGE_TYPE * ms = nullptr) : ms_(ms) {}
+  mesh_topology_base__(STORAGE_TYPE * ms = nullptr) : ms_(ms) {}
 
   // Don't allow the mesh to be copied or copy constructed
-  mesh_topology_base_t(const mesh_topology_base_t & m) : ms_(m.ms_) {}
+  mesh_topology_base__(const mesh_topology_base__ & m) : ms_(m.ms_) {}
 
-  mesh_topology_base_t & operator=(const mesh_topology_base_t &) = delete;
+  mesh_topology_base__ & operator=(const mesh_topology_base__ &) = delete;
 
   /// Allow move operations
-  mesh_topology_base_t(mesh_topology_base_t &&) = default;
+  mesh_topology_base__(mesh_topology_base__ &&) = default;
 
   //! override default move assignement
-  mesh_topology_base_t & operator=(mesh_topology_base_t && o) {
+  mesh_topology_base__ & operator=(mesh_topology_base__ && o) {
     // call base_t move operator
     data::data_client_t::operator=(std::move(o));
     // return a reference to the object
@@ -751,7 +751,7 @@ public:
 protected:
   STORAGE_TYPE * ms_ = nullptr;
 
-}; // mesh_topology_base_t
+}; // mesh_topology_base__
 
 template<class MT, size_t D, size_t M>
 using entity_type_ = typename find_entity_<MT, D, M>::type;
@@ -759,7 +759,7 @@ using entity_type_ = typename find_entity_<MT, D, M>::type;
 template<class ST, class MT, size_t NM, size_t M, size_t D>
 void
 unserialize_dimension_(
-    mesh_topology_base_t<ST> & mesh,
+    mesh_topology_base__<ST> & mesh,
     char * buf,
     uint64_t & pos) {
   uint64_t num_entities;
@@ -793,7 +793,7 @@ template<class ST, class MT, size_t NM, size_t ND, size_t M, size_t D>
 struct unserialize_dimensions_ {
 
   static void
-  unserialize(mesh_topology_base_t<ST> & mesh, char * buf, uint64_t & pos) {
+  unserialize(mesh_topology_base__<ST> & mesh, char * buf, uint64_t & pos) {
     unserialize_dimension_<ST, MT, NM, M, D>(mesh, buf, pos);
     unserialize_dimensions_<ST, MT, NM, ND, M, D + 1>::unserialize(
         mesh, buf, pos);
@@ -804,7 +804,7 @@ template<class ST, class MT, size_t NM, size_t ND, size_t M>
 struct unserialize_dimensions_<ST, MT, NM, ND, M, ND> {
 
   static void
-  unserialize(mesh_topology_base_t<ST> & mesh, char * buf, uint64_t & pos) {
+  unserialize(mesh_topology_base__<ST> & mesh, char * buf, uint64_t & pos) {
     unserialize_dimension_<ST, MT, NM, M, ND>(mesh, buf, pos);
   }
 };
@@ -813,7 +813,7 @@ template<class ST, class MT, size_t NM, size_t ND, size_t M>
 struct unserialize_domains_ {
 
   static void
-  unserialize(mesh_topology_base_t<ST> & mesh, char * buf, uint64_t & pos) {
+  unserialize(mesh_topology_base__<ST> & mesh, char * buf, uint64_t & pos) {
     unserialize_dimensions_<ST, MT, NM, ND, M, 0>::unserialize(mesh, buf, pos);
     unserialize_domains_<ST, MT, NM, ND, M + 1>::unserialize(mesh, buf, pos);
   }
@@ -823,7 +823,7 @@ template<class ST, class MT, size_t NM, size_t ND>
 struct unserialize_domains_<ST, MT, NM, ND, NM> {
 
   static void
-  unserialize(mesh_topology_base_t<ST> & mesh, char * buf, uint64_t & pos) {}
+  unserialize(mesh_topology_base__<ST> & mesh, char * buf, uint64_t & pos) {}
 };
 
 } // namespace topology

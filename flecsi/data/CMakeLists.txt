@@ -39,6 +39,7 @@ set(data_HEADERS
   ragged_accessor.h
   ragged_mutator.h
   sparse_accessor.h
+  sparse_mutator.h
   sparse_data_handle.h
   storage.h
   storage_class.h
@@ -90,10 +91,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     ${data_HEADERS}
     mpi/data_client_handle_policy.h
     mpi/data_handle_policy.h
-    mpi/sparse_data_handle_policy.h
     mpi/data_policy.h
     mpi/dense.h
+    mpi/mutator_handle_policy.h
     mpi/sparse.h
+    mpi/sparse_data_handle_policy.h
     mpi/storage_policy.h
   )
 

@@ -21,7 +21,7 @@ namespace flecsi {
 namespace topology {
 
 template<size_t, typename>
-class domain_entity;
+class domain_entity__;
 
 template<typename item_t>
 struct array_buffer_type__ {
@@ -29,7 +29,7 @@ struct array_buffer_type__ {
 };
 
 template<size_t M, typename E>
-struct array_buffer_type__<domain_entity<M, E>> {
+struct array_buffer_type__<domain_entity__<M, E>> {
   using type = E *;
 };
 
@@ -49,7 +49,7 @@ struct array_buf_ref_type__<S *> {
 };
 
 template<size_t M, class E>
-struct array_buf_ref_type__<domain_entity<M, E>> {
+struct array_buf_ref_type__<domain_entity__<M, E>> {
   using type = E *;
 };
 

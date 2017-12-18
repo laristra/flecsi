@@ -28,7 +28,7 @@ namespace topology {
  *----------------------------------------------------------------------------*/
 
 template<size_t, class E>
-class domain_entity;
+class domain_entity__;
 
 //! helper classes for resolving types
 template<typename T>
@@ -44,8 +44,8 @@ struct index_space_ref_type__<S *> {
 
 //! helper classes for resolving types
 template<size_t M, class E>
-struct index_space_ref_type__<domain_entity<M, E>> {
-  using type = domain_entity<M, E>;
+struct index_space_ref_type__<domain_entity__<M, E>> {
+  using type = domain_entity__<M, E>;
 };
 
 //----------------------------------------------------------------------------//
@@ -1549,14 +1549,14 @@ private:
 //! a convenience class which associates a simple ID with type T
 //----------------------------------------------------------------------------//
 template<typename T>
-class simple_entry {
+class simple_entry__ {
 public:
   using id_t = simple_id;
 
   //-----------------------------------------------------------------//
   //! Constructor to associate an id with an entry
   //-----------------------------------------------------------------//
-  simple_entry(id_t id, const T & entry) : id_(id), entry_(entry) {}
+  simple_entry__(id_t id, const T & entry) : id_(id), entry_(entry) {}
 
   //-----------------------------------------------------------------//
   //! Conversion operator

@@ -45,7 +45,7 @@ class mesh_entity__;
 ///
 
 template<size_t ND, size_t NM>
-struct legion_topology_storage_policy_t {
+struct legion_topology_storage_policy_t__ {
   static constexpr size_t num_partitions = 5;
 
   using id_t = utils::id_t;
@@ -70,8 +70,8 @@ struct legion_topology_storage_policy_t {
           topology_storage__>,
       ND + 1>;
 
-  // array of array of domain_connectivity
-  std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
+  // array of array of domain_connectivity__
+  std::array<std::array<domain_connectivity__<ND>, NM>, NM> topology;
 
   std::array<index_spaces_t, NM> index_spaces;
 
@@ -80,7 +80,7 @@ struct legion_topology_storage_policy_t {
 
   size_t color;
 
-  legion_topology_storage_policy_t() {
+  legion_topology_storage_policy_t__() {
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();
   }
@@ -105,9 +105,9 @@ struct legion_topology_storage_policy_t {
     id_storage.set_buffer(ids, num_entities, true);
 
     for (auto & domain_connectivities : topology) {
-      auto & domain_connectivity = domain_connectivities[domain];
+      auto & domain_connectivity__ = domain_connectivities[domain];
       for (size_t d = 0; d <= ND; ++d) {
-        domain_connectivity.get(d, dim).set_entity_storage(s);
+        domain_connectivity__.get(d, dim).set_entity_storage(s);
       } // for
     } // for
 
@@ -176,7 +176,7 @@ struct legion_topology_storage_policy_t {
 
   template<class T, size_t M, class... S>
   T * make(S &&... args) {
-    using dtype = domain_entity<M, T>;
+    using dtype = domain_entity__<M, T>;
 
     auto & is = index_spaces[M][T::dimension].template cast<dtype>();
     size_t entity = is.size();
@@ -198,7 +198,7 @@ struct legion_topology_storage_policy_t {
 
   template<class T, size_t M, class... S>
   T * make(const id_t & id, S &&... args) {
-    using dtype = domain_entity<M, T>;
+    using dtype = domain_entity__<M, T>;
 
     auto & is = index_spaces[M][T::dimension].template cast<dtype>();
 
@@ -218,7 +218,7 @@ struct legion_topology_storage_policy_t {
     return ent;
   } // make
 
-}; // class legion_topology_storage_policy_t
+}; // class legion_topology_storage_policy_t__
 
 } // namespace topology
 } // namespace flecsi

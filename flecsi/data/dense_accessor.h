@@ -236,7 +236,7 @@ struct accessor__<
    \tparam E A complex index type.
   
    This version of the operator is provided to support use with
-   \e flecsi mesh entity types \ref mesh_entity_base_t.
+   \e flecsi mesh entity types \ref mesh_entity_base__.
    */
   template<typename E>
   T & operator()(E * e) {

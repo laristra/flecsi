@@ -77,7 +77,7 @@ public:
 
   using entity_t = body;
 
-  class branch : public topology::tree_branch<branch_int_t, dimension> {
+  class branch : public topology::tree_branch__<branch_int_t, dimension> {
   public:
     branch() {}
 
