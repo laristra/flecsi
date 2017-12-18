@@ -26,6 +26,7 @@ set(execution_HEADERS
   default_driver.h
   execution.h
   function.h
+  internal_index_space.h
   kernel.h
   task.h
 )
@@ -51,7 +52,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/init_handles.h
     legion/internal_field.h
     legion/internal_task.h
-    legion/internal_index_space.h 
     legion/legion_tasks.h
     legion/mapper.h
     legion/finalize_handles.h

@@ -21,7 +21,6 @@ set(io_HEADERS
   io.h
   io_base.h
   simple_definition.h
-  exodus_definition.h
 )
 
 #------------------------------------------------------------------------------#
@@ -74,20 +73,6 @@ cinch_add_unit(simple_definition
   SOURCES test/simple_definition.cc
   INPUTS test/simple2d-8x8.msh test/simple2d-4x4.msh
 )
-
-if ( ENABLE_EXODUS )
-  cinch_add_unit(exodus_definition
-    SOURCES test/exodus_definition.cc
-    INPUTS 
-      test/exodus2d-mixed.exo
-      test/exodus2d-nsided.exo
-      test/exodus3d-hex.exo
-      test/exodus3d-tet.exo
-      test/exodus3d-nfaced.exo
-    LIBRARIES ${EXODUSII_LIBRARIES}
-  )
-endif()
-
 
 set(io_HEADERS
   ${io_HEADERS}

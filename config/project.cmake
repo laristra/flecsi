@@ -201,26 +201,6 @@ if(ENABLE_OPENSSL)
 endif()
 
 #------------------------------------------------------------------------------#
-# Exodus II
-#------------------------------------------------------------------------------#
-
-find_package(EXODUSII QUIET)
-
-option(ENABLE_EXODUS "Enable I/O with exodus." ${EXODUSII_FOUND})
-
-if(ENABLE_EXODUS AND NOT EXODUSII_FOUND)
-  message(FATAL_ERROR "Exodus requested, but not found")
-endif()
-
-if(ENABLE_EXODUS)
-  include_directories(${EXODUSII_INCLUDE_DIRS})
-  add_definitions(-DHAVE_EXODUS)
-
-  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${EXODUSII_INCLUDE_DIRS})
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${EXODUSII_LIBRARIES})
-endif()
-
-#------------------------------------------------------------------------------#
 # Runtime models
 #------------------------------------------------------------------------------#
 
@@ -375,8 +355,8 @@ message(STATUS "${CINCH_Yellow}Set id_t bits to allow:\n"
 # configure header
 #------------------------------------------------------------------------------#
 
-set(FLECSI_ENABLE_MPI ENABLE_MPI)
-set(FLECSI_ENABLE_LEGION ENABLE_LEGION)
+set(FLECSI_ENABLE_MPI ${ENABLE_MPI})
+set(FLECSI_ENABLE_LEGION ${ENABLE_LEGION})
 set(FLECSI_ENABLE_COLORING ENABLE_COLORING)
 set(FLECSI_ENABLE_METIS ENABLE_METIS)
 set(FLECSI_ENABLE_PARMETIS ENABLE_PARMETIS)
@@ -425,16 +405,6 @@ cinch_add_application_directory("tools")
 add_custom_target(distclean rm -rf ${CMAKE_BINARY_DIR}/*)
 
 #------------------------------------------------------------------------------#
-# Export targets and package.
-#------------------------------------------------------------------------------#
-
-export(
-  TARGETS FleCSI
-  FILE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSITargets.cmake
-)
-export(PACKAGE FleCSI)
-
-#------------------------------------------------------------------------------#
 # Prepare variables for FleCSIConfig file.
 #------------------------------------------------------------------------------#
 
@@ -453,6 +423,34 @@ set(FLECSI_LIBRARY_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR})
 set(FLECSI_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include
   ${FLECSI_EXTERNAL_INCLUDE_DIRS})
 set(FLECSI_CMAKE_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/cmake/FleCSI)
+set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/flecsi)
+set(FLECSI_RUNTIME_MAIN ${FLECSI_SHARE_DIR}/runtime/runtime_main.cc)
+set(FLECSI_RUNTIME_DRIVER ${FLECSI_SHARE_DIR}/runtime/runtime_driver.cc)
+
+#------------------------------------------------------------------------------#
+# Extract all project options so they can be exported to the ProjectConfig.cmake
+# file.
+#------------------------------------------------------------------------------#
+
+get_cmake_property(_variableNames VARIABLES)
+string (REGEX MATCHALL "(^|;)FLECSI_[A-Za-z0-9_]*" _matchedVars "${_variableNames}")
+foreach (_variableName ${_matchedVars})
+  set( FLECSI_CONFIG_CODE
+    "${FLECSI_CONFIG_CODE}
+set(${_variableName} \"${${_variableName}}\")"
+  )
+endforeach()
+
+
+#------------------------------------------------------------------------------#
+# Export targets and package.
+#------------------------------------------------------------------------------#
+
+export(
+  TARGETS FleCSI
+  FILE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSITargets.cmake
+)
+export(PACKAGE FleCSI)
 
 #------------------------------------------------------------------------------#
 # CMake config file: This should be the last thing to happen.
