@@ -16,7 +16,7 @@
 /*! @file */
 
 #include <flecsi/data/common/data_types.h>
-#include <flecsi/data/data_handle.h>
+#include <flecsi/data/dense_data_handle.h>
 
 namespace flecsi {
 
@@ -27,7 +27,7 @@ template<
     size_t GHOST_PERMISSIONS,
     typename DATA_POLICY>
 struct sparse_data_handle_base__ : public DATA_POLICY,
-                                   public data_handle_base_t {
+                                   public dense_data_handle_base_t {
 
   using offset_t = data::sparse_data_offset_t;
   using entry_value_t = data::sparse_entry_value__<T>;

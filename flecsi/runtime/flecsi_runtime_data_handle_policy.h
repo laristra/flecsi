@@ -50,17 +50,16 @@ using FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY = legion_mutator_handle_policy_t;
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-#include <flecsi/data/mpi/dense_data_handle_policy.h>
-#include <flecsi/data/mpi/global_data_handle_policy.h>
+#include <flecsi/data/mpi/data_handle_policy.h>
 #include <flecsi/data/mpi/mutator_handle_policy.h>
 #include <flecsi/data/mpi/sparse_data_handle_policy.h>
 
 namespace flecsi {
 
-using FLECSI_RUNTIME_DENSE_DATA_HANDLE_POLICY = mpi_dense_data_handle_policy_t;
+using FLECSI_RUNTIME_DENSE_DATA_HANDLE_POLICY = mpi_data_handle_policy_t;
 
 using FLECSI_RUNTIME_GLOBAL_DATA_HANDLE_POLICY =
-	mpi_global_data_handle_policy_t;
+	mpi_data_handle_policy_t;
 
 using FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY =
     mpi_sparse_data_handle_policy_t;
