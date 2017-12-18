@@ -133,8 +133,14 @@ void task2(client_handle_t<test_mesh_t, ro> mesh,
            sparse_accessor<double, ro, ro, ro> h) {
   auto& context = execution::context_t::instance();
   auto rank = context.color();
-  if (rank == 0)
-    h.dump();
+  if (rank == 0){
+    for (auto index : h.indices()) {
+      for (auto entry : h.entries(index)) {
+        CINCH_CAPTURE() << index << ":" << entry << ": " << h(index, entry) << 
+          std::endl;
+      }
+    }
+  }
 
 } // task2
 
@@ -226,16 +232,21 @@ void driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   auto mh = flecsi_get_mutator(ch, hydro, pressure, double, sparse, 0, 5);
 
-  flecsi_execute_task_simple(task1, single, ch, mh);
+  auto f0 = flecsi_execute_task_simple(task1, single, ch, mh);
+  f0.wait();
 
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, sparse, 0);
 
+  auto f1 = flecsi_execute_task_simple(task2, single, ch, ph);
+  f1.wait();
 
-  flecsi_execute_task_simple(task2, single, ch, ph);
+  auto f2 = flecsi_execute_task_simple(task3, single, ch, ph);
+  f2.wait();
 
-  flecsi_execute_task_simple(task3, single, ch, ph);
+  auto f3 = flecsi_execute_task_simple(task2, single, ch, ph);
+  f3.wait();
 
-  flecsi_execute_task_simple(task2, single, ch, ph);
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("sparse_data.blessed"));
 
 } // specialization_driver
 
