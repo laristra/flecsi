@@ -358,6 +358,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
       INPUTS
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
+        test/sparse_data.blessed
       LIBRARIES
         FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
