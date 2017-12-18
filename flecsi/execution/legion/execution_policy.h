@@ -28,7 +28,6 @@
 
 #include <legion.h>
 
-#include <flecsi/data/data_handle.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/context_policy.h>

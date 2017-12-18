@@ -29,8 +29,10 @@ set(data_HEADERS
   data_client_handle.h
   data_client_handle.h
   data_constants.h
-  data_handle.h
+  dense_data_handle.h
+  global_data_handle.h
   dense_accessor.h
+  global_accessor.h
   field.h
   mutator.h
   mutator_handle.h
@@ -66,7 +68,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(data_HEADERS
     ${data_HEADERS}
     legion/data_client_handle_policy.h
-    legion/data_handle_policy.h
+    legion/dense_data_handle_policy.h
+    legion/global_data_handle_policy.h
     legion/sparse_data_handle_policy.h
     legion/data_policy.h
     legion/dense.h

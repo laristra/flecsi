@@ -1,9 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
+
+/*! @file */
 
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
@@ -33,7 +43,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   >
   void
   handle(
-    data_handle__<
+    dense_data_handle__<
       T,
       EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS,
@@ -247,7 +257,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     typename T
   >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value &&
+  typename std::enable_if_t<!std::is_base_of<dense_data_handle_base_t, T>::value &&
   !std::is_base_of<data_client_handle_base_t, T>::value>
   handle(
     T &
@@ -259,8 +269,3 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 
 } // namespace execution
 } // namespace flecsi
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

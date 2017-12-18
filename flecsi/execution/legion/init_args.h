@@ -28,6 +28,7 @@
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/global_accessor.h>
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/topology/mesh_types.h>
 #include <flecsi/topology/set_types.h>
@@ -97,7 +98,6 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
               GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    if (!h.global && !h.color) {
       clog_assert(
           h.state > SPECIALIZATION_TLT_INIT,
           "accessing  data "
@@ -122,34 +122,50 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
           h.color_region);
       gh_rr.add_field(h.fid);
       region_reqs.push_back(gh_rr);
-    } else if (h.global) {
+ }//handle
+
+template<
+      typename T,
+      size_t PERMISSIONS>
+  void handle(global_accessor__<
+              T,
+              PERMISSIONS> & a)
+  {
+    auto & h = a.handle;
+
       if (h.state < SPECIALIZATION_SPMD_INIT) {
         Legion::RegionRequirement rr(
-            h.color_region, privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE,
+            h.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
             h.color_region);
         rr.add_field(h.fid);
         region_reqs.push_back(rr);
       } else {
         clog_assert(
-            EXCLUSIVE_PERMISSIONS == size_t(ro), "you are not allowed  \
+            PERMISSIONS == size_t(ro), "you are not allowed  \
             to modify global data in specialization_spmd_init or driver");
         Legion::RegionRequirement rr(
             h.color_region, READ_ONLY, EXCLUSIVE, h.color_region);
         rr.add_field(h.fid);
         region_reqs.push_back(rr);
       } // if
-    } // if
-    else if (h.color) {
-      clog_assert(
-          h.state > SPECIALIZATION_TLT_INIT, "accessing color data    \
-          handle from specialization_tlt_init is not supported");
-      Legion::RegionRequirement rr(
-          h.color_region, privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE,
-          h.color_region);
-      rr.add_field(h.fid);
-      region_reqs.push_back(rr);
-    } // else if
+  }
 
+  template<
+      typename T,
+      size_t PERMISSIONS>
+  void handle(color_accessor__<
+              T,
+              PERMISSIONS> & a)
+  {
+    auto & h = a.handle;
+    clog_assert(
+        h.state > SPECIALIZATION_TLT_INIT, "accessing color data    \
+         handle from specialization_tlt_init is not supported");
+    Legion::RegionRequirement rr(
+         h.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
+         h.color_region);
+    rr.add_field(h.fid);
+    region_reqs.push_back(rr);
   } // handle
 
   /*!

@@ -1,12 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
 
-//----------------------------------------------------------------------------//
-//! @file legion/dense.h
-//! @date Initial file creation: July, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
@@ -19,7 +26,7 @@
 
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client.h>
-#include <flecsi/data/data_handle.h>
+#include <flecsi/data/global_data_handle.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/const_string.h>
@@ -33,45 +40,47 @@ namespace legion {
 // Global handle.
 //----------------------------------------------------------------------------//
 
-///-------------------------------------------------------------------------//
-//! The global_handle__ provide an access to global variables that have
-//! been registered in data model
-//!
-//! \tparam T The type of the data variable. If this type is not
-//!           consistent with the type used to register the data, bad things
-//!           can happen. However, it can be useful to reinterpret the type,
-//!           e.g., when writing raw bytes. This class is part of the
-//!           low-level \e flecsi interface, so it is assumed that you
-//!           know what you are doing...
-//!
-//! @tparam PERMISSIONS The permissions to the handle.
-///--------------------------------------------------------------------------//
+/*!
+ The global_handle__ provide an access to global variables that have
+ been registered in data model
+
+ \tparam T The type of the data variable. If this type is not
+           consistent with the type used to register the data, bad things
+           can happen. However, it can be useful to reinterpret the type,
+           e.g., when writing raw bytes. This class is part of the
+           low-level \e flecsi interface, so it is assumed that you
+           know what you are doing...
+
+ @tparam PERMISSIONS The permissions to the handle.
+ */
 
 template<typename T, size_t PERMISSIONS>
-struct global_handle__ : public data_handle__<T, PERMISSIONS, 0, 0> {
-  //--------------------------------------------------------------------------//
-  // Type definitions.
-  //--------------------------------------------------------------------------//
+struct global_handle__ : public global_data_handle__<T, PERMISSIONS> {
+   
+  /*!
+    Type definitions.
+   */
 
-  using base_t = data_handle__<T, PERMISSIONS, 0, 0>;
+  using base_t = global_data_handle__<T, PERMISSIONS>;
 
-  //--------------------------------------------------------------------------//
-  // Constructors.
-  //--------------------------------------------------------------------------//
+  /*!
+    Constructor.
+   */
 
   global_handle__() {
     base_t::global = true;
   }
 
-  //--------------------------------------------------------------------------//
-  // Destructor.
-  //--------------------------------------------------------------------------//
+  /*!
+   Destructor.
+   */
 
   ~global_handle__() {}
 
-  ///
-  // Copy constructor.
-  ///
+  /*
+    Copy constructor.
+   */
+  
   template<size_t P2>
   global_handle__(const global_handle__<T, P2> & a)
       : base_t(reinterpret_cast<const base_t &>(a)), label_(a.label()),
@@ -83,27 +92,30 @@ struct global_handle__ : public data_handle__<T, PERMISSIONS, 0, 0> {
   // Member data interface.
   //--------------------------------------------------------------------------//
 
-  ///
-  // \brief Return a std::string containing the label of the data variable
-  //        reference by this handle.
-  ///
+  /*!
+   \brief Return a std::string containing the label of the data variable
+          reference by this handle.
+   */
+
   const std::string & label() const {
     return label_;
   } // label
 
-  ///
-  // \brief Return the index space size of the data variable
-  //        referenced by this handle.
-  ///
+  /*!
+   \brief Return the index space size of the data variable
+          referenced by this handle.
+   */
+
   size_t size() const {
     return size_;
   } // size
 
-  ///
-  // \brief Test to see if this handle is empty
-  //
-  // \return true if registered.
-  ///
+  /*!
+   \brief Test to see if this handle is empty
+  
+   \return true if registered.
+   */
+
   operator bool() const {
     return base_t::combined_data != nullptr;
     // return data_ != nullptr;
@@ -124,22 +136,22 @@ private:
 // Global storage type.
 //----------------------------------------------------------------------------//
 
-///
-// FIXME: Global storage type.
-///
+/*!
+ FIXME: Global storage type.
+ */
 template<>
 struct storage_class__<global> {
 
-  //--------------------------------------------------------------------------//
-  // Type definitions.
-  //--------------------------------------------------------------------------//
+  /*!
+   Type definitions.
+   */
 
   template<typename T, size_t PERMISSIONS>
   using handle_t = global_handle__<T, PERMISSIONS>;
 
-  //--------------------------------------------------------------------------//
-  // Data handles.
-  //--------------------------------------------------------------------------//
+  /*!
+   Data handles.
+   */
 
   template<
       typename DATA_CLIENT_TYPE,
@@ -175,6 +187,3 @@ struct storage_class__<global> {
 } // namespace legion
 } // namespace data
 } // namespace flecsi
-
-/*~-------------------------------------------------------------------------~-*
- *~-------------------------------------------------------------------------~-*/
