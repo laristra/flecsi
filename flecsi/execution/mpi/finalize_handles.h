@@ -15,25 +15,22 @@
 
 /*! @file */
 
+
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/data/sparse_accessor.h>
 #include <flecsi/data/sparse_mutator.h>
 #include <flecsi/data/ragged_mutator.h>
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jul 19, 2017
-//----------------------------------------------------------------------------//
-
 namespace flecsi {
 namespace execution {
 
 struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 {
-  //--------------------------------------------------------------------------//
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
+  /*!
+   FIXME documentation
+   @ingroup execution
+   */
 
   template<
     typename T,
@@ -178,6 +175,10 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
       offsets[h.num_exclusive() + h.num_shared() + i].set_count(recv_count_buf[i]);
     }
   } // handle
+ 
+  /*!
+   FIXME documentation
+   */
 
   template<
     typename T,
@@ -195,6 +196,9 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     storage->finalize_storage();
   } // handle
 
+  /*!
+   FIXME documentation
+   */
   template<
     typename T,
     size_t EXCLUSIVE_PERMISSIONS,
@@ -214,12 +218,12 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 
   } // handle
 
-  //--------------------------------------------------------------------------//
-  //! The finalize_handles_t type can be called to walk task args after task
-  //! execution. This allows us to free memory allocated during the task.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
+  /*!
+   The finalize_handles_t type can be called to walk task args after task
+   execution. This allows us to free memory allocated during the task.
+  
+   @ingroup execution
+   */
 
   template<
     typename T,

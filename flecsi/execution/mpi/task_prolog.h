@@ -1,23 +1,20 @@
-/*~--------------------------------------------------------------------------~*
-*  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
-* /@@/////  /@@          @@////@@ @@////// /@@
-* /@@       /@@  @@@@@  @@    // /@@       /@@
-* /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
-* /@@////   /@@/@@@@@@@/@@       ////////@@/@@
-* /@@       /@@/@@//// //@@    @@       /@@/@@
-* /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-* //       ///  //////   //////  ////////  //
-*
-* Copyright (c) 2016 Los Alamos National Laboratory, LLC
-* All rights reserved
-*~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: May 19, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
+
 
 #include <vector>
 
@@ -35,39 +32,36 @@
 namespace flecsi {
 namespace execution {
 
-  //--------------------------------------------------------------------------//
-  //! The task_prolog_t type can be called to walk the task args after the
-  //! task launcher is created, but before the task has run. This allows
-  //! synchronization dependencies to be added to the execution flow.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
+  /*!
+   The task_prolog_t type can be called to walk the task args after the
+   task launcher is created, but before the task has run. This allows
+   synchronization dependencies to be added to the execution flow.
+  
+   @ingroup execution
+   */
 
   struct task_prolog_t : public utils::tuple_walker__<task_prolog_t>
   {
 
-    //------------------------------------------------------------------------//
-    //! Construct a task_prolog_t instance.
-    //!
-    //------------------------------------------------------------------------//
+    /*!
+     Construct a task_prolog_t instance.
+     */
 
     task_prolog_t() = default;
 
-
-    //------------------------------------------------------------------------//
-    //! FIXME: Need a description.
-    //!
-    //! @tparam T                     The data type referenced by the handle.
-    //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
-    //!                               indices of the index partition.
-    //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
-    //!                               indices of the index partition.
-    //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
-    //!                               indices of the index partition.
-    //!
-    //! @param runtime The Legion task runtime.
-    //! @param context The Legion task runtime context.
-    //------------------------------------------------------------------------//
+    /*!
+     FIXME: Need a description.
+    
+     @tparam T                     The data type referenced by the handle.
+     @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
+                                   indices of the index partition.
+     @tparam SHARED_PERMISSIONS    The permissions required on the shared
+                                   indices of the index partition.
+     @tparam GHOST_PERMISSIONS     The permissions required on the ghost
+                                   indices of the index partition.
+    
+     @param runtime The Legion task runtime.
+     */
 
     template<
       typename T,
@@ -268,10 +262,10 @@ namespace execution {
         h.initialize_storage();
       }
     } // handle
-    //------------------------------------------------------------------------//
-    //! FIXME: Need to document.
-    //------------------------------------------------------------------------//
-
+   
+    /*!
+      FIXME: Need to document.
+     */
     template<
       typename T,
       size_t PERMISSIONS
