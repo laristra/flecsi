@@ -219,7 +219,21 @@ struct tree_geometry<T, 1>
     const element_t radius,
     const element_t MAC)
   {
-    return 2*asin(radius/distance(p1,p2)) < MAC;
+    return radius/distance(p1,p2) < MAC;
+  }
+
+  bool
+  box_MAC(
+    const point_t& position_source,
+    const point_t& position_sink,
+    const point_t& box_source_min,
+    const point_t& box_source_max,
+    double macangle)
+  {
+    double dmax = flecsi::distance(box_source_min,box_source_max);
+    double disttoc = flecsi::distance(
+        position_sink,position_source);
+    return dmax/disttoc < macangle;
   }
 
 };
@@ -394,6 +408,22 @@ struct tree_geometry<T, 2>
   {
     return true;
   }
+
+  static
+  bool
+  box_MAC(
+    const point_t& position_source,
+    const point_t& position_sink,
+    const point_t& box_source_min,
+    const point_t& box_source_max,
+    double macangle)
+  {
+    double dmax = flecsi::distance(box_source_min,box_source_max);
+    double disttoc = flecsi::distance(
+        position_sink,position_source);
+    return dmax/disttoc < macangle;
+  }
+
 };
 
 
@@ -577,6 +607,22 @@ struct tree_geometry<T, 3>
   {
     return true;
   }
+
+  static
+  bool
+  box_MAC(
+    const point_t& position_source,
+    const point_t& position_sink,
+    const point_t& box_source_min,
+    const point_t& box_source_max,
+    double macangle)
+  {
+    double dmax = flecsi::distance(box_source_min,box_source_max);
+    double disttoc = flecsi::distance(
+        position_sink,position_source);
+    return dmax/disttoc < macangle;
+  }
+
 };
 
 /*!
@@ -916,6 +962,12 @@ public:
   {
     id_ = id.id_;
     return *this;
+  }
+
+  size_t 
+  value_()
+  {
+    return id_;
   }
 
   size_t
@@ -1259,11 +1311,11 @@ public:
     std::function<void(branch_t*)> traverse;
     traverse = [&epsilon,&traverse,this](branch_t* b){
       element_t mass = element_t(0); 
-      point_t bmax; 
-      point_t bmin;
+      point_t bmax{}; 
+      point_t bmin{};
       for(size_t d = 0; d < dimension; ++d)
       {
-        bmax[d] = DBL_MIN;
+        bmax[d] = -DBL_MAX;
         bmin[d] = DBL_MAX; 
       }
       point_t coordinates = point_t{};
@@ -1327,6 +1379,93 @@ public:
     traverse(root());
   }
 
+
+  /*!
+   * Update the branch boundaries
+   * Go through all the branches in a DFS order
+   */
+  void
+  update_branches_local(
+      const element_t epsilon = element_t(0))
+  {
+    // Recursive version 
+    std::function<void(branch_t*)> traverse;
+    traverse = [&epsilon,&traverse,this](branch_t* b){
+      element_t mass = element_t(0); 
+      point_t bmax{}; 
+      point_t bmin{};
+      for(size_t d = 0; d < dimension; ++d)
+      {
+        bmax[d] = -DBL_MAX;
+        bmin[d] = DBL_MAX; 
+      }
+      point_t coordinates{};
+      uint64_t nchildren = 0; 
+      if(b->is_leaf())
+      {
+        for(auto child: *b)
+        {
+          if(child->is_local()){
+            nchildren++;
+            element_t childmass = child->getMass(); 
+          
+            for(size_t d = 0; d < dimension; ++d)
+            {
+              bmax[d] = std::max(bmax[d],child->coordinates()[d]+epsilon);
+              bmin[d] = std::min(bmin[d],child->coordinates()[d]-epsilon);
+              coordinates[d] += child->coordinates()[d]*childmass; 
+            }
+            mass += childmass;
+          }
+        }
+        if(mass > element_t(0))
+        {
+          for(size_t d = 0; d < dimension; ++d)
+          {
+            coordinates[d] /= mass; 
+          }
+        }
+      }else{
+        for(int i=0 ; i<(1<<dimension);++i)
+        {
+          auto branch = child(b,i); 
+          traverse(branch);
+          nchildren += branch->sub_entities();
+          mass += branch->mass();
+
+          if(branch->sub_entities() > 0){
+            for(size_t d = 0; d < dimension; ++d){
+              bmax[d] = std::max(bmax[d],branch->bmax()[d]);
+              bmin[d] = std::min(bmin[d],branch->bmin()[d]);
+            }
+          }
+          for(size_t d = 0; d < dimension; ++d)
+          {
+            coordinates[d] += branch->get_coordinates()[d]*branch->mass(); 
+          }
+        }
+
+        if(mass > element_t(0))
+        {
+          for(size_t d = 0; d < dimension; ++d)
+          {
+            coordinates[d] /= mass; 
+          }
+        }
+      }
+      // Save in both cases
+      b->set_sub_entities(nchildren);
+      b->set_coordinates(coordinates);
+      b->set_mass(mass);
+      b->set_bmin(bmin);
+      b->set_bmax(bmax);  
+      if(b->sub_entities() > 0)
+      std::cout<<"Adding branch: mass="<<b->getMass() << " coord=" <<b->get_coordinates() <<
+        " sub_entities ="<<b->sub_entities() << " min="<<b->bmin() << " max=" << b->bmax() <<std::endl;
+    };
+    traverse(root());
+  }
+
   void
   get_all_branches(
     branch_t * start,
@@ -1372,7 +1511,36 @@ public:
       if(c->is_leaf() && c->sub_entities() > 0){
         search_list.push_back(c);
       }else{
-        if(c->sub_entities() < criterion && c->sub_entities() > 0){
+        if(c->sub_entities() <= criterion && c->sub_entities() > 0){
+          search_list.push_back(c); 
+        }else{
+          for(int i=0; i<(1<<dimension);++i){
+            branch_t * next = child(c,i);
+            if(next->sub_entities() > 0){
+              stk.push(next);
+            }
+          }
+        }
+      } 
+    }
+  }
+
+  void 
+  find_sub_cells_mass(
+      branch_t * b,
+      double mass_criterion,
+      std::vector<branch_t*>& search_list)
+  {
+    std::stack<branch_t*> stk;
+    stk.push(b);
+    
+    while(!stk.empty()){
+      branch_t* c = stk.top();
+      stk.pop();
+      if(c->is_leaf() && c->sub_entities() > 0){
+        search_list.push_back(c);
+      }else{
+        if(c->mass() <= mass_criterion && c->sub_entities() > 0){
           search_list.push_back(c); 
         }else{
           for(int i=0; i<(1<<dimension);++i){
