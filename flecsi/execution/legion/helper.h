@@ -28,7 +28,10 @@ namespace flecsi {
 namespace execution {
 
 /*!
-  FIXME documentation
+  The Legion helper class define a number of convenience methods for handling
+  common Legion operations such as creating index spaces, field spaces, and
+  allocators, getting buffers from accessors, etc. in the cases common to
+  FleCSI.
  */
 class legion_helper {
 public:
@@ -113,7 +116,7 @@ public:
   }
 
   /*!
-    FIXME documentation
+    Get a typed buffer from a physical region and field ID.
    */
   template<class T>
   void get_buffer(Legion::PhysicalRegion pr, T *& buf, size_t field = 0) const {
@@ -126,7 +129,7 @@ public:
   }
 
    /*!
-    FIXME documentation
+    Get a raw (byte) buffer from a physical region and field ID.
    */
    char * get_raw_buffer(Legion::PhysicalRegion pr, size_t field = 0) const {
     auto ac = pr.get_field_accessor(field).typeify<char>();
@@ -138,7 +141,7 @@ public:
   }
 
   /*!
-    FIXME documentation
+    Unmap a physical region.
    */
   void unmap_region(Legion::PhysicalRegion pr) const {
     runtime_->unmap_region(context_, pr);

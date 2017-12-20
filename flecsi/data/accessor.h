@@ -19,6 +19,8 @@
 
 namespace flecsi {
 
+// this empty base class which is the base of all accessors is used by the
+// handle tuple walkers for type checking
 struct accessor_base_t {};
 
 template<
