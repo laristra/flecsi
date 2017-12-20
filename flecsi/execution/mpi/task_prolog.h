@@ -264,7 +264,12 @@ namespace execution {
     } // handle
    
     /*!
-      FIXME: Need to document.
+      This method registers entity data fields as needed and initializes set
+      topology index spaces and buffers from the raw MPI buffers. If we are
+      writing to this buffer, then it sets up the size information of the index
+      space as empty so we can call make<>() to push entities onto this buffer.
+      If we are reading, this sets up the size as the size recorded in the
+      metadata.
      */
     template<
       typename T,

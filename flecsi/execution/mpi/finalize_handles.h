@@ -28,10 +28,8 @@ namespace execution {
 struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 {
   /*!
-   FIXME documentation
-   @ingroup execution
+  Nothing needs to be done to finalize a dense data handle.
    */
-
   template<
     typename T,
     size_t EXCLUSIVE_PERMISSIONS,
@@ -177,9 +175,9 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   } // handle
  
   /*!
-   FIXME documentation
+    Finalize set topology storage. This inspects index based sizes and
+    writes out appropriate metadata.  
    */
-
   template<
     typename T,
     size_t PERMISSIONS
@@ -197,7 +195,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   } // handle
 
   /*!
-   FIXME documentation
+   No special handling is currently needed here. No-op.
    */
   template<
     typename T,

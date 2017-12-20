@@ -18,10 +18,18 @@
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
-//! FIXME: Description of class
+//! this empty base class which is the base of all accessors is used by the
+//! handle tuple walkers for type checking
 //----------------------------------------------------------------------------//
 
 struct data_client_handle_base_t {};
+
+//----------------------------------------------------------------------------//
+//! This class provides template parameters for data client type
+//! and permissions - either read or write - and the common fields
+//! such as necessary hashes used by various data client types such as
+//! set and mesh topology.
+//----------------------------------------------------------------------------//
 
 template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS, typename DATA_POLICY>
 struct data_client_handle_base__ : public DATA_CLIENT_TYPE,
@@ -31,6 +39,10 @@ struct data_client_handle_base__ : public DATA_CLIENT_TYPE,
 
   data_client_handle_base__() {}
 
+  //----------------------------------------------------------------------------//
+  //! This method is used to ensure that the data client handle is never
+  //! constructed in calling a task with the unmapped (0) permissions.
+  //----------------------------------------------------------------------------//
   template<size_t UNMAPPED_PERMISSIONS>
   data_client_handle_base__(const data_client_handle_base__<
                             DATA_CLIENT_TYPE,

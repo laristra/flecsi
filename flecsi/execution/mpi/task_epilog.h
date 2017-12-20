@@ -347,7 +347,8 @@ namespace execution {
     } // handle
 
     /*!
-      FIXME: Need to document.
+      This method is called on any task arguments that are not handles, e.g.
+      scalars or those that did not need any special handling.
      */
     template<
       typename T
