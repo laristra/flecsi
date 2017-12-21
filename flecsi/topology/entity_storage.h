@@ -20,6 +20,9 @@
 namespace flecsi {
 namespace topology {
 
+// the following type definitions define topological storage types
+// as a dependent on the runtime model
+
 template<typename T>
 using entity_storage_t = FLECSI_RUNTIME_ENTITY_STORAGE_TYPE<T>;
 

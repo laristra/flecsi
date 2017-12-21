@@ -54,7 +54,7 @@ public:
   using id_t = flecsi::utils::id_t;
 };
 
-template<size_t N>
+template<size_t NUM_DOMAINS>
 class mesh_entity_base__ : public mesh_entity_base_ {
 public:
   ~mesh_entity_base__() {}
@@ -112,7 +112,7 @@ protected:
   } // set_info
 
 private:
-  std::array<id_t, N> ids_;
+  std::array<id_t, NUM_DOMAINS> ids_;
 
 }; // class mesh_entity_base__
 
@@ -129,8 +129,8 @@ private:
 //! \tparam N The number of domains.
 //-----------------------------------------------------------------//
 
-template<size_t D, size_t N>
-class mesh_entity__ : public mesh_entity_base__<N> {
+template<size_t D, size_t NUM_DOMAINS>
+class mesh_entity__ : public mesh_entity_base__<NUM_DOMAINS> {
 public:
   static constexpr size_t dimension = D;
 
@@ -139,16 +139,16 @@ public:
 }; // class mesh_entity__
 
 // Redecalre the dimension.  This is redundant, and no longer needed in C++17.
-template<size_t D, size_t N>
-constexpr size_t mesh_entity__<D, N>::dimension;
+template<size_t D, size_t NUM_DOMAINS>
+constexpr size_t mesh_entity__<D, NUM_DOMAINS>::dimension;
 
 //-----------------------------------------------------------------//
 //! Define the vector type for storing entities.
 //!
-//! \tparam N The number of domains.
+//! \tparam NUM_DOMAINS The number of domains.
 //-----------------------------------------------------------------//
-template<size_t N>
-using entity_vector_t = std::vector<mesh_entity_base__<N> *>;
+template<size_t NUM_DOMAINS>
+using entity_vector_t = std::vector<mesh_entity_base__<NUM_DOMAINS> *>;
 
 /*----------------------------------------------------------------------------*
  * class domain_entity_t
