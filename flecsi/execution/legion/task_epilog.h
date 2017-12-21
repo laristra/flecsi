@@ -127,9 +127,9 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
   } // handle
 
   /*!
-   FIXME: Need to document.
-  
-   @param T
+   This method is a no-op and is called when the task argument does not match
+   one of the handle types above. For example, these could be simple scalars
+   passed to the task.
    */
 
   template<typename T>

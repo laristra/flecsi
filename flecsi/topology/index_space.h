@@ -665,7 +665,8 @@ public:
   }
 
   //-----------------------------------------------------------------//
-  //! Slice and cast an index space
+  //! Slice and cast an index space. A slice aliases the current index
+  //! space, definining a new iteration range of offsets to indices.
   //!
   //! @param begin begin offset
   //! @param end end offset
@@ -678,7 +679,8 @@ public:
   }
 
   //-----------------------------------------------------------------//
-  //! Slice and cast an index space
+  //! Slice and cast an index space. A slice aliases the current index
+  //! space, definining a new iteration range of offsets to indices.
   //!
   //! @tparam S class to cast to
   //!
@@ -692,7 +694,9 @@ public:
   }
 
   //-----------------------------------------------------------------//
-  //! Slice and cast an index space
+  //! Cast an index space to use a new entity type. The entity type
+  //! must be binary compatible with the cast type, i.e. an entity
+  //! wrapper or derived pointer type.
   //!
   //! @tparam S class to cast to
   //-----------------------------------------------------------------//
@@ -1119,7 +1123,9 @@ public:
   }
 
   //-----------------------------------------------------------------//
-  //! In-place set intersection operation.
+  //! In-place set intersection operation. This method will sort
+  //! the ID storage if not already sorted and will create a copy
+  //! of its aliased indices if OWNED is false.
   //-----------------------------------------------------------------//
   index_space__ & operator&=(const index_space__ & r) {
     prepare_();
@@ -1163,7 +1169,9 @@ public:
   }
 
   //-----------------------------------------------------------------//
-  //! In-place set union operation.
+  //! In-place set union operation. This method will sort
+  //! the ID storage if not already sorted and will create a copy
+  //! of its aliased indices if OWNED is false.
   //-----------------------------------------------------------------//
   index_space__ & operator|=(const index_space__ & r) {
     prepare_();
@@ -1208,7 +1216,9 @@ public:
   }
 
   //-----------------------------------------------------------------//
-  //! In-place set complement operator.
+  //! In-place set complement operator. This method will sort
+  //! the ID storage if not already sorted and will create a copy
+  //! of its aliased indices if OWNED is false.
   //-----------------------------------------------------------------//
   index_space__ & operator-=(const index_space__ & r) {
     prepare_();
@@ -1250,7 +1260,8 @@ public:
 
   //-----------------------------------------------------------------//
   //! Add an entity to the index space. If the index space does not
-  //! have storage then only the index is pushed
+  //! have storage then only the index is pushed. It will create a copy
+  //! of its aliased indices if OWNED is false.
   //-----------------------------------------------------------------//
   void push_back(const T & item) {
     if (!OWNED && !owned_) {
@@ -1275,7 +1286,8 @@ public:
 
   //-----------------------------------------------------------------//
   //! Add an entity to the index space. If the index space does not
-  //! have storage then only the index is pushed
+  //! have storage then only the index is pushed. It will create a copy
+  //! of its aliased indices if OWNED is false.
   //-----------------------------------------------------------------//
   void push_back(id_t index) {
     if (!OWNED && !owned_) {
@@ -1303,7 +1315,8 @@ public:
   //-----------------------------------------------------------------//
   //! Append another index space’s entities to the index space.
   //! If the index space does not have storage then only the indices
-  //! are appended.
+  //! are appended. It will create a copy of its aliased indices if
+  //! OWNED is false.
   //-----------------------------------------------------------------//
   void append(const index_space__ & is) {
     if (!OWNED && !owned_) {

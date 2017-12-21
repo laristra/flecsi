@@ -213,7 +213,8 @@ struct mpi_context_policy_t
   using index_coloring_t = flecsi::coloring::index_coloring_t;
 
   /*!
-   FIXME documentation
+   Field metadata is used maintain MPI information and data types for
+   MPI windows/one-sided communication to perform ghost copies.
    */
   struct field_metadata_t {
 
@@ -227,7 +228,8 @@ struct mpi_context_policy_t
   };
 
   /*!
-   FIXME documentation
+   Field metadata is used maintain MPI information and data types for
+   MPI windows/one-sided communication to perform ghost copies.
    */
   struct sparse_field_metadata_t{
     MPI_Group shared_users_grp;
@@ -246,7 +248,9 @@ struct mpi_context_policy_t
   };
 
   /*!
-   FIXME documentation
+   Create MPI datatypes use for ghost copy by inspecting shared regions,
+   and ghost owners, to compute origin and target lengths and displacements
+   for MPI windows.
    */
   template <typename T>
   void register_field_metadata(const field_id_t fid,
@@ -296,7 +300,9 @@ struct mpi_context_policy_t
   }
 
   /*!
-   FIXME documentation
+   Create MPI datatypes use for ghost copy by inspecting shared regions,
+   and ghost owners, to compute origin and target lengths and displacements
+   for MPI windows.
    */
   template <typename T>
   void register_sparse_field_metadata(
@@ -357,7 +363,8 @@ struct mpi_context_policy_t
   }
 
   /*!
-   FIXME documentation
+   Compute MPI datatypes, compacted length and displacement for ghost copy
+   with MPI window.
    */
   template <typename T, typename MD>
   void register_field_metadata_(
@@ -522,7 +529,8 @@ struct mpi_context_policy_t
   };
 
   /*!
-   FIXME documentation
+   Register new field data, i.e. allocate a new buffer for the specified field
+   ID.
    */
   void register_field_data(field_id_t fid,
                            size_t size) {
@@ -537,7 +545,10 @@ struct mpi_context_policy_t
   }
 
   /*!
-   FIXME documentation
+   Register new sparse field data, i.e. allocate a new buffer for the
+   specified field ID. Sparse data consists of a buffer of offsets
+   (start + length) and entry id / value pairs and associated metadata about
+   this field. 
    */
   void register_sparse_field_data(
     field_id_t fid,

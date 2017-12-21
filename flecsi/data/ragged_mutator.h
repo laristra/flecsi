@@ -37,7 +37,9 @@ struct ragged_mutator_base_t {};
 
 //----------------------------------------------------------------------------//
 //! The ragged mutator__ type captures information about permissions
-//! and specifies a data policy.
+//! and specifies a data policy. It allows resizing of each ragged array
+//! per index, uses the existing sparse data representation, but provides
+//! more efficient indexing and insertion.
 //!
 //! @tparam T                     The data type referenced by the handle.
 //!

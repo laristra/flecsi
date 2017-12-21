@@ -193,12 +193,13 @@ template<typename T, size_t PERMISSIONS>
 using color_accessor__ = accessor__<data::color, T, PERMISSIONS, 0, 0>;
 
 template<typename T, size_t PERMISSIONS>
-using color_accessor = color_accessor__<T, PERMISSIONS>;
-
-template<typename T, size_t PERMISSIONS>
 using global_accessor__ = accessor__<data::global, T, PERMISSIONS, 0, 0>;
 
+// TODO: these definitions need to be part of the specialization
 template<typename T, size_t PERMISSIONS>
 using global_accessor = global_accessor__<T, PERMISSIONS>;
+
+template<typename T, size_t PERMISSIONS>
+using color_accessor = color_accessor__<T, PERMISSIONS>;
 
 } // namespace flecsi
