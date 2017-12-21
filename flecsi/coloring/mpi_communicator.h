@@ -32,9 +32,9 @@ clog_register_tag(mpi_communicator);
 namespace flecsi {
 namespace coloring {
 
-//----------------------------------------------------------------------------//
-//! \todo Add description.
-//----------------------------------------------------------------------------//
+/*!
+ FIXME add documentation
+ */
 
 class mpi_communicator_t : public communicator_t {
 public:
@@ -50,10 +50,10 @@ public:
   /// Destructor
   ~mpi_communicator_t() {}
 
-  //-------------------------------------------------------------------------//
-  //! Return the size of the communicatora
-  //! @ingroup coloring
-  //-------------------------------------------------------------------------//
+  /*!
+   Return the size of the communicatora
+   @ingroup coloring
+   */
 
   size_t size() const override {
     int num;
@@ -61,10 +61,10 @@ public:
     return num;
   }
 
-  //-------------------------------------------------------------------------//
-  //! Return the rank of the communicator
-  //! @ingroup coloring
-  //-------------------------------------------------------------------------//
+  /*!
+   Return the rank of the communicator
+   @ingroup coloring
+   */
 
   size_t rank() const override {
     int rk;
@@ -72,18 +72,18 @@ public:
     return rk;
   }
 
-  //-------------------------------------------------------------------------//
-  //! Reduces info_indices from all MPI ranks
-  //!
-  //! @param request_indices  std::set of shared, ghost etc
-  //! @param max_request_indices Maximum # of indices per rank
-  //! @param colors Number of MPI ranks
-  //!
-  //! @return std::vector vith the infirmation for the info_indices from all
-  //!         MPI ranks
-  //!
-  //! @ingroup coloring
-  //-------------------------------------------------------------------------//
+  /*!
+   Reduces info_indices from all MPI ranks
+  
+   @param request_indices  std::set of shared, ghost etc
+   @param max_request_indices Maximum # of indices per rank
+   @param colors Number of MPI ranks
+  
+   @return std::vector vith the infirmation for the info_indices from all
+           MPI ranks
+  
+   @ingroup coloring
+   */
 
   std::vector<size_t> get_info_indices(
       const std::set<size_t> & request_indices,
@@ -118,17 +118,17 @@ public:
     return info_indices;
   } // get_info_indices
 
-  //-------------------------------------------------------------------------//
-  //! Rerturn a set containing the entity_info_t information for each
-  //! member of the input set request_indices (from other ranks) and
-  //! the information for the local indices in primary.
-  //!
-  //! @param FIXME
-  //!
-  //! @return FIXME
-  //!
-  //! @ingroup coloring
-  //-------------------------------------------------------------------------//
+  /*!
+   Rerturn a set containing the entity_info_t information for each
+   member of the input set request_indices (from other ranks) and
+   the information for the local indices in primary.
+  
+   @param FIXME
+  
+   @return FIXME
+  
+   @ingroup coloring
+  */
 
   std::pair<std::vector<std::set<size_t>>, std::set<entity_info_t>>
   get_primary_info(
@@ -244,15 +244,15 @@ public:
     return std::make_pair(local, remote);
   } // get_primary_info
 
-  //-------------------------------------------------------------------------//
-  //! Rerturn FIXME
-  //!
-  //! @param request_indices FIXME...
-  //!                        information.
-  //! @return A std::unordered_map<size_t, std::set<size_t>> FIXME ...
-  //!
-  //! @ingroup coloring
-  //-------------------------------------------------------------------------//
+  /*!
+   Rerturn FIXME
+  
+   @param request_indices FIXME...
+                          information.
+   @return A std::unordered_map<size_t, std::set<size_t>> FIXME ...
+  
+   @ingroup coloring
+  */
 
   std::unordered_map<size_t, std::set<size_t>>
   get_intersection_info(const std::set<size_t> & request_indices) override {
@@ -335,16 +335,16 @@ public:
     return intersection_map;
   } // get_intersection_info
 
-  //-------------------------------------------------------------------------//
-  //! Rerturn a map containing the reduced index information for each color.
-  //!
-  //! @param local_indices The indices of the calling color.
-  //!
-  //! @return A std::unordered_map<size_t, std::set<size_t>> containing the
-  //!         indices of each rank for the given index space.
-  //!
-  //! @ingroup coloring
-  //-------------------------------------------------------------------------//
+  /*!
+   Rerturn a map containing the reduced index information for each color.
+  
+   @param local_indices The indices of the calling color.
+  
+   @return A std::unordered_map<size_t, std::set<size_t>> containing the
+           indices of each rank for the given index space.
+  
+   @ingroup coloring
+   */
 
   std::unordered_map<size_t, std::set<size_t>>
   get_entity_reduction(const std::set<size_t> & local_indices) override {
@@ -377,18 +377,18 @@ public:
     return entity_reduction_map;
   } // get_entity_reduction
 
-  //-------------------------------------------------------------------------//
-  //! Return a set containing the entity_info_t information for each
-  //! member of the input set request_indices (from other ranks).
-  //!
-  //! @param entity_info FIXME...
-  //! @param request_indices A set of entity ids for which to return
-  //!                        information.
-  //! @return A std::vector<std::set<size_t>> containing the offset
-  //!         information for the requested indices.
-  //!
-  //! @ingroup coloring
-  //-------------------------------------------------------------------------//
+  /*!
+   Return a set containing the entity_info_t information for each
+   member of the input set request_indices (from other ranks).
+  
+   @param entity_info FIXME...
+   @param request_indices A set of entity ids for which to return
+                          information.
+   @return A std::vector<std::set<size_t>> containing the offset
+           information for the requested indices.
+  
+   @ingroup coloring
+   */
 
   std::vector<std::set<size_t>> get_entity_info(
       const std::set<entity_info_t> & entity_info,
@@ -497,16 +497,16 @@ public:
     return remote;
   } // get_entity_info
 
-  //-------------------------------------------------------------------------//
-  //! Rerturn a map containing the coloring index and the number of indices
-  //! for the given index set.
-  //!
-  //! @param size Size on current MPI rank
-  //!
-  //! @return indices_map
-  //!
-  //! @ingroup coloring
-  //-------------------------------------------------------------------------//
+/*!
+   Rerturn a map containing the coloring index and the number of indices
+   for the given index set.
+  
+   @param size Size on current MPI rank
+  
+   @return indices_map
+  
+   @ingroup coloring
+ */
 
   std::vector<size_t> gather_sizes(const size_t & size) override {
     int colors;
@@ -525,15 +525,15 @@ public:
     return buffer;
   } // gather_sizes
 
-  //-------------------------------------------------------------------------//
-  //! exchange coloring info between all MPI ranks
-  //!
-  //! @param request_indices Shared_users or Ghost_owners
-  //! @param function  Lambda function, that specify where do we want to
-  //!                   insert values
-  //!
-  //! @ingroup coloring
-  //-------------------------------------------------------------------------//
+  /*!
+   exchange coloring info between all MPI ranks
+  
+   @param request_indices Shared_users or Ghost_owners
+   @param function  Lambda function, that specify where do we want to
+                     insert values
+  
+   @ingroup coloring
+   */
 
   template<typename Lambda>
   void alltoall_coloring_info(
@@ -567,13 +567,13 @@ public:
 
   } // alltoall_coloring_info
 
-  //-------------------------------------------------------------------------//
-  //! gets coloring info between all MPI ranks
-  //!
-  //! @param coloring_info Coloring info for one particular rank
-  //!
-  //! @ingroup coloring
-  //-------------------------------------------------------------------------//
+  /*!
+   gets coloring info between all MPI ranks
+  
+   @param coloring_info Coloring info for one particular rank
+  
+   @ingroup coloring
+   */
 
   std::unordered_map<size_t, coloring_info_t>
   gather_coloring_info(coloring_info_t & color_info) override {
@@ -612,15 +612,15 @@ public:
     return coloring_info;
   } // gather_coloring_info
 
-  //-------------------------------------------------------------------------//
-  //! Find maximum size for the "requested_indicies" - MPI reduction
-  //!
-  //! @param request_indices request_indices for local MPI rank
-  //!
-  //! @return max_request_indices Maximum size for the "requested_indicies"
-  //!
-  //! @ingroup coloring
-  //-------------------------------------------------------------------------//
+  /*!
+   Find maximum size for the "requested_indicies" - MPI reduction
+  
+   @param request_indices request_indices for local MPI rank
+  
+   @return max_request_indices Maximum size for the "requested_indicies"
+  
+   @ingroup coloring
+   */
 
   size_t get_max_request_size(size_t request_indices) {
     size_t max_request_indices = 0;
