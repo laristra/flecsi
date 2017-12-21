@@ -78,9 +78,9 @@ public:
     calling the constructor directly. This way, the ability to have
     extra initialization behavior is reserved.
   */
-  template<class T, class... S>
-  T * make(S &&... args) {
-    return ss_->template make<T>(std::forward<S>(args)...);
+  template<class T, class... ARG_TYPES>
+  T * make(ARG_TYPES &&... args) {
+    return ss_->template make<T>(std::forward<ARG_TYPES>(args)...);
   } // make
 
 protected:

@@ -27,8 +27,9 @@ namespace topology {
 
 // Define the runtime model specific mesh storage policy
 
-template<size_t ND, size_t NM>
-class mesh_storage__ : public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<ND, NM> {};
+template<size_t NUM_DIMS, size_t NUM_DOMS>
+class mesh_storage__ : 
+   public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<NUM_DIMS, NUM_DOMS> {};
 
 } // namespace topology
 } // namespace flecsi

@@ -64,35 +64,35 @@ public:
   //!
   //! \return The id of the entity.
   //-----------------------------------------------------------------//
-  template<size_t M>
+  template<size_t DOM>
   id_t global_id() const {
-    return ids_[M];
+    return ids_[DOM];
   } // id
 
   id_t global_id(size_t domain) const {
     return ids_[domain];
   } // id
 
-  template<size_t M>
+  template<size_t DOM>
   size_t id() const {
-    return ids_[M].entity();
+    return ids_[DOM].entity();
   } // id
 
   size_t id(size_t domain) const {
     return ids_[domain].entity();
   } // id
 
-  template<size_t M>
+  template<size_t DOM>
   uint16_t info() const {
-    return ids_[M] >> 48;
+    return ids_[DOM] >> 48;
   } // info
 
   //-----------------------------------------------------------------//
   //! Set the id of this entity.
   //-----------------------------------------------------------------//
-  template<size_t M>
+  template<size_t DOM>
   void set_global_id(const id_t & id) {
-    ids_[M] = id;
+    ids_[DOM] = id;
   } // id
 
   /*!
@@ -102,13 +102,13 @@ public:
     return dim > meshDim ? meshDim : dim;
   } // get_dim_
 
-  template<class MT>
+  template<class MESH_TYPE>
   friend class mesh_topology__;
 
 protected:
-  template<size_t M>
+  template<size_t DOM>
   void set_info(uint16_t info) {
-    ids_[M] = (uint64_t(info) << 48) | ids_[M];
+    ids_[DOM] = (uint64_t(info) << 48) | ids_[DOM];
   } // set_info
 
 private:
@@ -125,22 +125,22 @@ private:
 //! \brief mesh_entity__ parameterizes a mesh entity base with its dimension and
 //! number of domains
 //!
-//! \tparam D The dimension of the entity.
-//! \tparam N The number of domains.
+//! \tparam DIM The dimension of the entity.
+//! \tparam NUM_DOMAINS The number of domains.
 //-----------------------------------------------------------------//
 
-template<size_t D, size_t NUM_DOMAINS>
+template<size_t DIM, size_t NUM_DOMAINS>
 class mesh_entity__ : public mesh_entity_base__<NUM_DOMAINS> {
 public:
-  static constexpr size_t dimension = D;
+  static constexpr size_t dimension = DIM;
 
   mesh_entity__() {}
   ~mesh_entity__() {}
 }; // class mesh_entity__
 
 // Redecalre the dimension.  This is redundant, and no longer needed in C++17.
-template<size_t D, size_t NUM_DOMAINS>
-constexpr size_t mesh_entity__<D, NUM_DOMAINS>::dimension;
+template<size_t DIM, size_t NUM_DOMAINS>
+constexpr size_t mesh_entity__<DIM, NUM_DOMAINS>::dimension;
 
 //-----------------------------------------------------------------//
 //! Define the vector type for storing entities.
@@ -157,65 +157,65 @@ using entity_vector_t = std::vector<mesh_entity_base__<NUM_DOMAINS> *>;
 //-----------------------------------------------------------------//
 //! \class domain_entity__ mesh_types.h
 //!
-//! \brief domain_entity__ is a simple wrapper to mesh entity that associates with
-//! it a domain id
+//! \brief domain_entity__ is a simple wrapper to mesh entity that 
+//! associates with its a domain id
 //!
-//! \tparam M Domain
+//! \tparam DOM Domain
 //! \tparam E Entity type
 //-----------------------------------------------------------------//
 
-template<size_t M, class E>
+template<size_t DOM, class ENTITY_TYPE>
 class domain_entity__ {
 public:
-  using id_t = typename E::id_t;
-  using item_t = E *;
+  using id_t = typename ENTITY_TYPE::id_t;
+  using item_t = ENTITY_TYPE *;
 
   // implicit type conversions are evil.  This one tries to convert
   // all pointers to domain_entities
-  explicit domain_entity__(E * entity) : entity_(entity) {}
+  explicit domain_entity__(ENTITY_TYPE * entity) : entity_(entity) {}
   domain_entity__ & operator=(const domain_entity__ & e) {
     entity_ = e.entity_;
     return *this;
   }
 
-  E * entity() {
+  ENTITY_TYPE * entity() {
     return entity_;
   }
 
-  const E * entity() const {
+  const ENTITY_TYPE * entity() const {
     return entity_;
   }
 
-  operator E *() {
+  operator ENTITY_TYPE *() {
     return entity_;
   }
 
-  E * operator->() {
+  ENTITY_TYPE * operator->() {
     return entity_;
   }
 
-  const E * operator->() const {
+  const ENTITY_TYPE * operator->() const {
     return entity_;
   }
 
-  E * operator*() {
+  ENTITY_TYPE * operator*() {
     return entity_;
   }
 
-  const E * operator*() const {
+  const ENTITY_TYPE * operator*() const {
     return entity_;
   }
 
   operator size_t() const {
-    return entity_->template id<M>();
+    return entity_->template id<DOM>();
   }
 
   id_t global_id() const {
-    return entity_->template global_id<M>();
+    return entity_->template global_id<DOM>();
   }
 
   size_t id() const {
-    return entity_->template id<M>();
+    return entity_->template id<DOM>();
   }
 
   bool operator==(domain_entity__ e) const {
@@ -231,11 +231,11 @@ public:
   }
 
   id_t index_space_id() const {
-    return entity_->template global_id<M>();
+    return entity_->template global_id<DOM>();
   }
 
 private:
-  E * entity_;
+  ENTITY_TYPE * entity_;
 };
 
 /*----------------------------------------------------------------------------*
@@ -267,8 +267,8 @@ public:
     return index_space_.storage();
   }
 
-  template<class ST>
-  void set_entity_storage(ST s) {
+  template<class STORAGE_TYPE>
+  void set_entity_storage(STORAGE_TYPE s) {
     index_space_.set_storage(s);
   }
 
@@ -455,8 +455,8 @@ public:
   //-----------------------------------------------------------------//
   //! Set/init the connectivity use by compute topology methods like transpose.
   //-----------------------------------------------------------------//
-  template<size_t M, size_t N>
-  void set(entity_vector_t<N> & ev, connection_vector_t & conns) {
+  template<size_t DOM, size_t NUM_DOMAINS>
+  void set(entity_vector_t<NUM_DOMAINS> & ev, connection_vector_t & conns) {
     clear();
 
     size_t n = conns.size();
@@ -476,7 +476,7 @@ public:
       uint64_t m = conn.size();
 
       for (size_t j = 0; j < m; ++j) {
-        index_space_.batch_push_(ev[conn[j]]->template global_id<M>());
+        index_space_.batch_push_(ev[conn[j]]->template global_id<DOM>());
       }
     }
   }
@@ -531,7 +531,7 @@ public:
 //! Holds the connectivities from domain M1 -> M2 for all topological
 //! dimensions.
 //-----------------------------------------------------------------//
-template<size_t D>
+template<size_t DIM>
 class domain_connectivity__ {
 public:
   using id_t = flecsi::utils::id_t;
@@ -541,57 +541,59 @@ public:
     to_domain_ = to_domain;
   }
 
-  template<size_t FD, size_t TD>
+  template<size_t FROM_DIM, size_t TO_DIM>
   connectivity_t & get() {
-    static_assert(FD <= D, "invalid from dimension");
-    static_assert(TD <= D, "invalid to dimension");
-    return conns_[FD][TD];
+    static_assert(FROM_DIM <= DIM, "invalid from dimension");
+    static_assert(TO_DIM <= DIM, "invalid to dimension");
+    return conns_[FROM_DIM][TO_DIM];
   }
 
-  template<size_t FD, size_t TD>
+  template<size_t FROM_DIM, size_t TO_DIM>
   const connectivity_t & get() const {
-    static_assert(FD <= D, "invalid from dimension");
-    static_assert(TD <= D, "invalid to dimension");
-    return conns_[FD][TD];
+    static_assert(FROM_DIM <= DIM, "invalid from dimension");
+    static_assert(TO_DIM <= DIM, "invalid to dimension");
+    return conns_[FROM_DIM][TO_DIM];
   }
 
-  template<size_t FD>
+  template<size_t FROM_DIM>
   connectivity_t & get(size_t to_dim) {
-    static_assert(FD <= D, "invalid from dimension");
-    assert(to_dim <= D && "invalid to dimension");
-    return conns_[FD][to_dim];
+    static_assert(FROM_DIM <= DIM, "invalid from dimension");
+    assert(to_dim <= DIM && "invalid to dimension");
+    return conns_[FROM_DIM][to_dim];
   }
 
-  template<size_t FD>
+  template<size_t FROM_DIM>
   const connectivity_t & get(size_t to_dim) const {
-    static_assert(FD <= D, "invalid from dimension");
-    assert(to_dim <= D && "invalid to dimension");
-    return conns_[FD][to_dim];
+    static_assert(FROM_DIM <= DIM, "invalid from dimension");
+    assert(to_dim <= DIM && "invalid to dimension");
+    return conns_[FROM_DIM][to_dim];
   }
 
   connectivity_t & get(size_t from_dim, size_t to_dim) {
-    assert(from_dim <= D && "invalid from dimension");
-    assert(to_dim <= D && "invalid to dimension");
+    assert(from_dim <= DIM && "invalid from dimension");
+    assert(to_dim <= DIM && "invalid to dimension");
     return conns_[from_dim][to_dim];
   }
 
   const connectivity_t & get(size_t from_dim, size_t to_dim) const {
-    assert(from_dim <= D && "invalid from dimension");
-    assert(to_dim <= D && "invalid to dimension");
+    assert(from_dim <= DIM && "invalid from dimension");
+    assert(to_dim <= DIM && "invalid to dimension");
     return conns_[from_dim][to_dim];
   }
 
-  template<size_t FD, size_t ND>
-  id_t * get_entities(mesh_entity__<FD, ND> * from_ent, size_t to_dim) {
-    return get<FD>(to_dim).get_entities(from_ent->id(from_domain_));
+  template<size_t FROM_DIM, size_t NUM_DOMAINS>
+  id_t * get_entities(mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent,
+                      size_t to_dim) {
+    return get<FROM_DIM>(to_dim).get_entities(from_ent->id(from_domain_));
   }
 
-  template<size_t FD, size_t ND>
+  template<size_t FROM_DIM, size_t NUM_DOMAINS>
   id_t * get_entities(
-      mesh_entity__<FD, ND> * from_ent,
+      mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent,
       size_t to_dim,
       size_t & count) {
-    return get<FD>(to_dim).get_entities(from_ent->id(from_domain_), count);
+    return get<FROM_DIM>(to_dim).get_entities(from_ent->id(from_domain_),
+      count);
   }
 
   id_t * get_entities(id_t from_id, size_t to_dim) {
@@ -603,9 +605,10 @@ public:
         .get_entities(from_id.entity(), count);
   }
 
-  template<size_t FD, size_t ND>
-  auto get_entity_vec(mesh_entity__<FD, ND> * from_ent, size_t to_dim) const {
-    auto & conn = get<FD>(to_dim);
+  template<size_t FROM_DIM, size_t NUM_DOMAINS>
+  auto get_entity_vec(mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent,
+    size_t to_dim) const {
+    auto & conn = get<FROM_DIM>(to_dim);
     return conn.get_entity_vec(from_ent->id(from_domain_));
   }
 
@@ -631,7 +634,7 @@ public:
   }
 
 private:
-  using conn_array_t = std::array<std::array<connectivity_t, D + 1>, D + 1>;
+  using conn_array_t = std::array<std::array<connectivity_t, DIM + 1>, DIM + 1>;
 
   conn_array_t conns_;
   size_t from_domain_;
@@ -737,9 +740,9 @@ public:
   //! calling the constructor directly. This way, the ability to have
   //! extra initialization behavior is reserved.
   //-----------------------------------------------------------------//
-  template<class T, size_t M = 0, class... S>
+  template<class T, size_t DOM = 0, class... S>
   T * make(S &&... args) {
-    return ms_->template make<T, M>(std::forward<S>(args)...);
+    return ms_->template make<T, DOM>(std::forward<S>(args)...);
   } // make
 
   virtual void append_to_index_space_(
@@ -753,13 +756,13 @@ protected:
 
 }; // mesh_topology_base__
 
-template<class MT, size_t D, size_t M>
-using entity_type_ = typename find_entity_<MT, D, M>::type;
+template<class MESH_TYPE, size_t DIM, size_t DOM>
+using entity_type_ = typename find_entity_<MESH_TYPE, DIM, DOM>::type;
 
-template<class ST, class MT, size_t NM, size_t M, size_t D>
+template<class STORAGE_TYPE, class MESH_TYPE, size_t NM, size_t DOM, size_t DIM>
 void
 unserialize_dimension_(
-    mesh_topology_base__<ST> & mesh,
+    mesh_topology_base__<STORAGE_TYPE> & mesh,
     char * buf,
     uint64_t & pos) {
   uint64_t num_entities;
@@ -778,52 +781,67 @@ unserialize_dimension_(
   size_t partition_id = context_.color();
 
   for (size_t local_id = 0; local_id < num_entities; ++local_id) {
-    id_t global_id = id_t::make<D, M>(local_id, partition_id);
+    id_t global_id = id_t::make<DIM, DOM>(local_id, partition_id);
 
-    auto ent = new entity_type_<MT, D, M>();
-    ent->template set_global_id<M>(global_id);
+    auto ent = new entity_type_<MESH_TYPE, DIM, DOM>();
+    ent->template set_global_id<DOM>(global_id);
     ents.push_back(ent);
     ids.push_back(global_id);
   }
 
-  mesh.append_to_index_space_(M, D, ents, ids);
+  mesh.append_to_index_space_(DOM, DIM, ents, ids);
 }
 
-template<class ST, class MT, size_t NM, size_t ND, size_t M, size_t D>
+template<class STORAGE_TYPE, class MESH_TYPE, size_t NUM_DOMAINS,
+  size_t NUM_DIMS, size_t DOM, size_t DIM>
 struct unserialize_dimensions_ {
 
   static void
-  unserialize(mesh_topology_base__<ST> & mesh, char * buf, uint64_t & pos) {
-    unserialize_dimension_<ST, MT, NM, M, D>(mesh, buf, pos);
-    unserialize_dimensions_<ST, MT, NM, ND, M, D + 1>::unserialize(
-        mesh, buf, pos);
+  unserialize(mesh_topology_base__<STORAGE_TYPE> & mesh, char * buf,
+    uint64_t & pos) {
+    unserialize_dimension_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, DOM, DIM>(
+      mesh, buf, pos);
+    unserialize_dimensions_<
+      STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS, DOM, DIM + 1>::
+        unserialize(mesh, buf, pos);
   }
 };
 
-template<class ST, class MT, size_t NM, size_t ND, size_t M>
-struct unserialize_dimensions_<ST, MT, NM, ND, M, ND> {
+template<class STORAGE_TYPE, class MESH_TYPE, size_t NUM_DOMAINS,
+  size_t NUM_DIMS, size_t DOM>
+struct unserialize_dimensions_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS,
+  NUM_DIMS, DOM, NUM_DIMS> {
 
   static void
-  unserialize(mesh_topology_base__<ST> & mesh, char * buf, uint64_t & pos) {
-    unserialize_dimension_<ST, MT, NM, M, ND>(mesh, buf, pos);
+  unserialize(mesh_topology_base__<STORAGE_TYPE> & mesh, char * buf,
+    uint64_t & pos) {
+    unserialize_dimension_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, DOM,
+      NUM_DIMS>(mesh, buf, pos);
   }
 };
 
-template<class ST, class MT, size_t NM, size_t ND, size_t M>
+template<class STORAGE_TYPE, class MESH_TYPE, size_t NUM_DOMAINS,
+  size_t NUM_DIMS, size_t DOM>
 struct unserialize_domains_ {
 
   static void
-  unserialize(mesh_topology_base__<ST> & mesh, char * buf, uint64_t & pos) {
-    unserialize_dimensions_<ST, MT, NM, ND, M, 0>::unserialize(mesh, buf, pos);
-    unserialize_domains_<ST, MT, NM, ND, M + 1>::unserialize(mesh, buf, pos);
+  unserialize(mesh_topology_base__<STORAGE_TYPE> & mesh, char * buf,
+    uint64_t & pos) {
+    unserialize_dimensions_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS,
+      DOM, 0>::unserialize(mesh, buf, pos);
+    unserialize_domains_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS,
+      DOM + 1>::unserialize(mesh, buf, pos);
   }
 };
 
-template<class ST, class MT, size_t NM, size_t ND>
-struct unserialize_domains_<ST, MT, NM, ND, NM> {
+template<class STORAGE_TYPE, class MESH_TYPE, size_t NUM_DOMAINS,
+  size_t NUM_DIMS>
+struct unserialize_domains_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS,
+  NUM_DOMAINS> {
 
   static void
-  unserialize(mesh_topology_base__<ST> & mesh, char * buf, uint64_t & pos) {}
+  unserialize(mesh_topology_base__<STORAGE_TYPE> & mesh, char * buf,
+    uint64_t & pos) {}
 };
 
 } // namespace topology

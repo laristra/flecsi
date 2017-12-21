@@ -25,12 +25,12 @@
 namespace flecsi {
 namespace topology {
 
-template<typename SET_TYPES>
+template<typename SET_TYPE>
 struct mpi_set_topology_storage_policy__ {
 
   using id_t = utils::id_t;
 
-  using entity_types_t = typename SET_TYPES::entity_types;
+  using entity_types_t = typename SET_TYPE::entity_types;
 
   static const size_t num_index_spaces = std::tuple_size<entity_types_t>::value;
 
@@ -100,8 +100,8 @@ struct mpi_set_topology_storage_policy__ {
     }
   }
 
-  template<class T, class... S>
-  T * make(S &&... args) {
+  template<class T, class... ARG_TYPES>
+  T * make(ARG_TYPES &&... args) {
     constexpr size_t index_space =
         find_set_index_space__<num_index_spaces, entity_types_t, T>::find();
 
@@ -109,7 +109,7 @@ struct mpi_set_topology_storage_policy__ {
     size_t entity = is.size();
 
     auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
-    auto ent = new (placement_ptr) T(std::forward<S>(args)...);
+    auto ent = new (placement_ptr) T(std::forward<ARG_TYPES>(args)...);
     auto storage = is.storage();
     storage->pushed();
     is.pushed();
