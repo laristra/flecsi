@@ -68,7 +68,7 @@ struct legion_data_client_handle_policy_t {
   // FIXME: This needs to be exposed at a higher level
   
   // maximum number of adjacencies to read, this limits the size of the
-  // serialize struct past to Legion
+  // serialize struct passed to Legion
   static constexpr size_t MAX_ADJACENCIES = 20;
   
   // maximum number of handle entities

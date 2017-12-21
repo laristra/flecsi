@@ -105,7 +105,7 @@ struct dense_handle_t : public dense_data_handle__<T, EP, SP, GP>
 //----------------------------------------------------------------------------//
 
 ///
-/// FIXME: Dense storage type.
+/// Dense storage type. Provides an interface from obtaining data handles
 ///
 template<>
 struct storage_class__<dense>
@@ -122,6 +122,21 @@ struct storage_class__<dense>
   >
   using handle_t = dense_handle_t<T, EP, SP, GP>;
 
+  /*!
+    Obtain a dense data handle to a field that resides on the specified data
+    client.
+
+    @param client_handle the data client that owns the field.
+
+    @tparam DATA_CLIENT_TYPE The data client type.
+    @tparam DATA_TYPE        Handle datatype, e.g. double, int, trivially
+                             copyable structs, etc.
+    @tparam NAMES            The namespace key. Namespaces allow separation
+                             of attribute names to avoid collisions.
+    @tparam NAME             The field name.
+    @tparam VERSION          The field version.
+    @tparam PERMISSIONS      The data client permissions.
+   */
   template<
     typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,

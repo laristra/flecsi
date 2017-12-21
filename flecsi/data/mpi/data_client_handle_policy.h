@@ -13,8 +13,9 @@
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
-//! FIXME: Description of class
-
+//! Provides a collection of fields which are populated when traversing the
+//! data client entity information which is then passed to the data client
+//! handle.
 //----------------------------------------------------------------------------//
 
 struct data_client_handle_entity_t
@@ -35,7 +36,9 @@ struct data_client_handle_entity_t
 }; // struct data_client_handle_entity_t
 
 //----------------------------------------------------------------------------//
-//! FIXME: Description of class
+//! Provides a collection of fields which are populated when, in the case of
+//! mesh topology, traversing the data client adjacency specifications,
+//! which is then passed the data client handle.
 //----------------------------------------------------------------------------//
 struct data_client_handle_adjacency_t
 {
@@ -57,7 +60,12 @@ struct data_client_handle_adjacency_t
 struct mpi_data_client_handle_policy_t
 {
   // FIXME: This needs to be exposed at a higher level
+
+  // maximum number of adjacencies to read, this limits the size of the
+  // serialize struct passed to Legion
   static constexpr size_t MAX_ADJACENCIES = 20;
+
+  // maximum number of handle entities
   static constexpr size_t MAX_ENTITIES = 5;
 
   size_t num_handle_entities;
