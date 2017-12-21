@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/tuple_function.h"
+#include <flecsi/utils/tuple_function.h>
 
 // includes: other
 #include <cinchtest.h>

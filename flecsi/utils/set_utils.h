@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_set_utils_h
-#define flecsi_utils_set_utils_h
+#pragma once
 
 //!
 //! \file
@@ -86,8 +85,6 @@ set_difference(const std::set<T> & s1, const std::set<T> & s2) {
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_set_utils_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

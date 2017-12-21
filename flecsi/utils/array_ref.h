@@ -3,8 +3,7 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-#ifndef flecsi_utils_array_ref_h
-#define flecsi_utils_array_ref_h
+#pragma once
 
 //!
 //! \file
@@ -313,8 +312,6 @@ make_array_ref(const std::array<T, N> & a) {
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_array_ref_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

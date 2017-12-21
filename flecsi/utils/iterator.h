@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_iterator_h
-#define flecsi_utils_iterator_h
+#pragma once
 
 //!
 //! \file
@@ -92,8 +91,6 @@ private:
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_iterator_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/humble.h"
+#include <flecsi/utils/humble.h>
 
 // includes: C++
 

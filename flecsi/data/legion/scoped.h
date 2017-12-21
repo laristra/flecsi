@@ -1,19 +1,18 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_legion_scoped_h
-#define flecsi_legion_scoped_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
 // Using this approach allows us to have only one storage_class__
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
-#include "flecsi/data/storage_class.h"
+#include <flecsi/data/storage_class.h>
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
-#include "flecsi/utils/const_string.h"
+#include <flecsi/utils/const_string.h>
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -49,8 +48,6 @@ struct storage_class__<scoped> {
 } // namespace legion
 } // namespace data
 } // namespace flecsi
-
-#endif // flecsi_legion_scoped_h
 
 /*~-------------------------------------------------------------------------~-*
  *~-------------------------------------------------------------------------~-*/

@@ -13,7 +13,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/const_string.h"
+#include <flecsi/utils/const_string.h>
 
 // includes: C++
 #include <iostream>

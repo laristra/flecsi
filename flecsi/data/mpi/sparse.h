@@ -1,29 +1,28 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_mpi_sparse_h
-#define flecsi_mpi_sparse_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
 // Using this approach allows us to have only one storage_class_t
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE mpi
-#include "flecsi/data/storage_class.h"
+#include <flecsi/data/storage_class.h>
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
 #include <algorithm>
 #include <memory>
 
-#include "flecsi/data/common/data_types.h"
-#include "flecsi/data/common/privilege.h"
-#include "flecsi/data/data_client.h"
-#include "flecsi/data/mutator_handle.h"
-#include "flecsi/data/sparse_data_handle.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/utils/const_string.h"
-#include "flecsi/utils/index_space.h"
+#include <flecsi/data/common/data_types.h>
+#include <flecsi/data/common/privilege.h>
+#include <flecsi/data/data_client.h>
+#include <flecsi/data/mutator_handle.h>
+#include <flecsi/data/sparse_data_handle.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/utils/const_string.h>
+#include <flecsi/utils/index_space.h>
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -63,7 +62,7 @@ template<
   size_t SP,
   size_t GP
 >
-struct sparse_handle_t : public sparse_data_handle__<T, EP, SP, GP>
+struct sparse_handle__ : public sparse_data_handle__<T, EP, SP, GP>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -75,7 +74,7 @@ struct sparse_handle_t : public sparse_data_handle__<T, EP, SP, GP>
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  sparse_handle_t(
+  sparse_handle__(
     size_t num_exclusive,
     size_t num_shared,
     size_t num_ghost
@@ -83,8 +82,8 @@ struct sparse_handle_t : public sparse_data_handle__<T, EP, SP, GP>
   : base(num_exclusive, num_shared, num_ghost){}
 
   template<typename, size_t, size_t, size_t>
-  friend class sparse_handle_t;
-}; // struct sparse_handle_t
+  friend class sparse_handle__;
+}; // struct sparse_handle__
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -94,9 +93,15 @@ struct sparse_handle_t : public sparse_data_handle__<T, EP, SP, GP>
 // Dense storage type.
 //----------------------------------------------------------------------------//
 
-///
-/// FIXME: Dense storage type.
-///
+/*!
+  Sparse storage type. Sparse data is partitioned into exclusive, shared,
+  ghost entries. It allows entries to be allocated sparsely per index.
+  Within an index, entries are stored in sorted order. A sparse accessor
+  can read and modify existing entries, but cannot allocate new entries.
+  The mutator is used for this purpose. A sparse data handle is passed to a
+  task which is then transformed to an accesor, likewise for a mutator.
+  A mutator commits its data in its temporary buffers in the task epilog.
+ */
 template<>
 struct storage_class__<sparse>
 {
@@ -110,7 +115,7 @@ struct storage_class__<sparse>
     size_t SP,
     size_t GP
   >
-  using handle_t = sparse_handle_t<T, EP, SP, GP>;
+  using handle__ = sparse_handle__<T, EP, SP, GP>;
 
   template<
     typename DATA_CLIENT_TYPE,
@@ -120,14 +125,14 @@ struct storage_class__<sparse>
     size_t VERSION
   >
   static
-  handle_t<DATA_TYPE, 0, 0, 0>
+  handle__<DATA_TYPE, 0, 0, 0>
   get_handle(
     const data_client_t & data_client
   )
   {
 
     auto& context = execution::context_t::instance();
-  
+
     using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
 
     // get field_info for this data handle
@@ -136,7 +141,7 @@ struct storage_class__<sparse>
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
       utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
-    auto& registered_sparse_field_data = 
+    auto& registered_sparse_field_data =
       context.registered_sparse_field_data();
     auto fieldDataIter = registered_sparse_field_data.find(field_info.fid);
     if (fieldDataIter == registered_sparse_field_data.end()) {
@@ -165,18 +170,18 @@ struct storage_class__<sparse>
 
     auto& fd = registered_sparse_field_data[field_info.fid];
 
-    handle_t<DATA_TYPE, 0, 0, 0> 
+    handle__<DATA_TYPE, 0, 0, 0>
       h(fd.num_exclusive, fd.num_shared, fd.num_ghost);
 
     auto &hb = dynamic_cast<sparse_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
-    
+
     hb.fid = field_info.fid;
     hb.index_space = field_info.index_space;
     hb.data_client_hash = field_info.data_client_hash;
-    
-    hb.entries = 
+
+    hb.entries =
       reinterpret_cast<sparse_entry_value__<DATA_TYPE>*>(&fd.entries[0]);
-   
+
     hb.offsets = &fd.offsets[0];
     hb.max_entries_per_index = fd.max_entries_per_index;
     hb.reserve = fd.reserve;
@@ -200,7 +205,7 @@ struct storage_class__<sparse>
   )
   {
     auto& context = execution::context_t::instance();
-    
+
     using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
 
     // get field_info for this data handle
@@ -209,7 +214,7 @@ struct storage_class__<sparse>
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
       utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
-    auto& registered_sparse_field_data = 
+    auto& registered_sparse_field_data =
       context.registered_sparse_field_data();
     auto fieldDataIter = registered_sparse_field_data.find(field_info.fid);
     if (fieldDataIter == registered_sparse_field_data.end()) {
@@ -239,7 +244,7 @@ struct storage_class__<sparse>
 
     auto& fd = registered_sparse_field_data[field_info.fid];
 
-    mutator_handle__<DATA_TYPE> h(fd.num_exclusive, fd.num_shared, 
+    mutator_handle__<DATA_TYPE> h(fd.num_exclusive, fd.num_shared,
       fd.num_ghost, fd.max_entries_per_index, slots);
 
     h.fid = field_info.fid;
@@ -271,7 +276,7 @@ struct storage_class__<ragged>
     size_t SP,
     size_t GP
   >
-  using handle_t = sparse_handle_t<T, EP, SP, GP>;
+  using handle__ = sparse_handle__<T, EP, SP, GP>;
 
   template<
     typename DATA_CLIENT_TYPE,
@@ -322,8 +327,6 @@ struct storage_class__<ragged>
 } // namespace mpi
 } // namespace data
 } // namespace flecsi
-
-#endif // flecsi_mpi_sparse_h
 
 /*~-------------------------------------------------------------------------~-*
 *~-------------------------------------------------------------------------~-*/

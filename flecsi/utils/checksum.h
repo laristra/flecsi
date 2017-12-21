@@ -3,15 +3,14 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_checksum_h
-#define flecsi_utils_checksum_h
+#pragma once
 
 ///
 /// \file
 /// \date Initial file creation: Jan 03, 2017
 ///
 
-#include "flecsi/utils/logging.h"
+#include <flecsi/utils/logging.h>
 
 #if !defined(ENABLE_OPENSSL)
 #error ENABLE_OPENSSL not defined! This file depends on OpenSSL!
@@ -81,8 +80,6 @@ checksum(
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_checksum_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

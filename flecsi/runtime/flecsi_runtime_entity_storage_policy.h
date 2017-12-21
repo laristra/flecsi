@@ -27,7 +27,7 @@
 // Legion, MPI+Legion Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-#include "flecsi/topology/common/entity_storage.h"
+#include <flecsi/topology/common/entity_storage.h>
 
 namespace flecsi {
 
@@ -41,7 +41,7 @@ using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-#include "flecsi/topology/common/entity_storage.h"
+#include <flecsi/topology/common/entity_storage.h>
 
 namespace flecsi {
 

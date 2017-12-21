@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/hash.h"
+#include <flecsi/utils/hash.h>
 
 // includes: other
 #include <cinchtest.h>

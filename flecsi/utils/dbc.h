@@ -4,8 +4,7 @@
 // Header for Assert
 // (c) Copyright 2011 LANSLLC all rights reserved.
 
-#ifndef FLECSI_UTILS_DBC_H
-#define FLECSI_UTILS_DBC_H
+#pragma once
 
 #define IM_OK_TO_INCLUDE_DBC_IMPL
 #include "dbc_impl.h"
@@ -236,7 +235,5 @@ less_than_func(
 
 } // namespace dbc
 } // namespace flecsi
-
-#endif
 
 // End of file

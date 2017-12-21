@@ -29,24 +29,15 @@ namespace flecsi {
   @ingroup execution
  */
 
-enum processor_type_t : size_t {
-  loc,
-  toc,
-  mpi
-}; // enum processor_type_t
+enum processor_type_t : size_t { loc, toc, mpi }; // enum processor_type_t
 
 /*!
   Convenience method to print processor_type_t instances.
  */
 
-inline
-std::ostream &
-operator << (
-  std::ostream & stream,
-  const processor_type_t & variant
-)
-{
-  switch(variant) {
+inline std::ostream &
+operator<<(std::ostream & stream, const processor_type_t & variant) {
+  switch (variant) {
     case processor_type_t::loc:
       stream << "loc";
       break;

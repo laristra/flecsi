@@ -27,12 +27,8 @@ namespace execution {
   \tparam ARG_TUPLE Argument type (std::tuple).
  */
 
-template<
-  typename RETURN,
-  typename ARG_TUPLE
->
-struct function_handle__
-{
+template<typename RETURN, typename ARG_TUPLE>
+struct function_handle__ {
   using return_t = RETURN;
   using arg_tuple_t = ARG_TUPLE;
 
@@ -42,34 +38,25 @@ struct function_handle__
     @param key A hash key identifier for the function.
    */
 
-  constexpr function_handle__(const size_t key)
-    : key_(key) {}
+  constexpr function_handle__(const size_t key) : key_(key) {}
 
   /*!
     Execute the function.
    */
   RETURN
-  operator () (
-    void * function,
-    ARG_TUPLE && args
-  )
-  {
-    auto user_function = (reinterpret_cast<RETURN(*)(ARG_TUPLE)>(function));
+  operator()(void * function, ARG_TUPLE && args) {
+    auto user_function = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(function));
     return user_function(std::forward<ARG_TUPLE>(args));
   } // operator ()
 
   /*!
     Return the identifier key.
    */
-  size_t
-  key()
-  const
-  {
+  size_t key() const {
     return key_;
   } // key
 
 private:
-
   size_t key_;
 
 }; // class function_handle__

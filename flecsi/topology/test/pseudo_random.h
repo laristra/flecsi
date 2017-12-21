@@ -7,6 +7,8 @@
 /// \brief Provides a portable random number generator.
 ////////////////////////////////////////////////////////////////////////////////
 
+#pragma once
+
 #include <random>
 
 //! \brief A simple, portable random number generator that should yield the

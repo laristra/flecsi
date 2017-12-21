@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_hash_h
-#define flecsi_utils_hash_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -371,8 +370,6 @@ string_hash(U && str, const std::size_t n) {
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_hash_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

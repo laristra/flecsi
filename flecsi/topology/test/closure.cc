@@ -5,8 +5,8 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/topology/closure_utils.h"
-#include "flecsi/topology/test/test_definition.h"
+#include <flecsi/topology/closure_utils.h>
+#include <flecsi/topology/test/test_definition.h>
 
 clog_register_tag(neighbors);
 clog_register_tag(referencers);

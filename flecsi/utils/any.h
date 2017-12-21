@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_any_h
-#define flecsi_utils_any_h
+#pragma once
 
 //!
 //! \file
@@ -136,8 +135,6 @@ any_cast(const any_t & rhs) {
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_any_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

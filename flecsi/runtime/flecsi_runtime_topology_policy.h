@@ -27,26 +27,26 @@
 // Legion, MPI+Legion Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-#include "flecsi/topology/legion/storage_policy.h"
+#include <flecsi/topology/legion/storage_policy.h>
 
 namespace flecsi {
 
 template<size_t ND, size_t NM>
 using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
-    topology::legion_topology_storage_policy_t<ND, NM>;
+    topology::legion_topology_storage_policy_t__<ND, NM>;
 
 } // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-#include "flecsi/topology/mpi/storage_policy.h"
+#include <flecsi/topology/mpi/storage_policy.h>
 
 namespace flecsi {
 
 template<size_t ND, size_t NM>
 using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
-    topology::mpi_topology_storage_policy_t<ND, NM>;
+    topology::mpi_topology_storage_policy__<ND, NM>;
 
 } // namespace flecsi
 

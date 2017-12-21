@@ -1,4 +1,4 @@
-#~----------------------------------------------------------------------------~#
+#------------------------------------------------------------------------------#
 #  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
 # /@@/////  /@@          @@////@@ @@////// /@@
 # /@@       /@@  @@@@@  @@    // /@@       /@@
@@ -10,7 +10,7 @@
 # 
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
-#~----------------------------------------------------------------------------~#
+#------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
 # Add header files. Note that these will be "exported" to the parent
@@ -29,14 +29,17 @@ set(data_HEADERS
   data_client_handle.h
   data_client_handle.h
   data_constants.h
-  data_handle.h
+  dense_data_handle.h
+  global_data_handle.h
   dense_accessor.h
+  global_accessor.h
   field.h
   mutator.h
   mutator_handle.h
   ragged_accessor.h
   ragged_mutator.h
   sparse_accessor.h
+  sparse_mutator.h
   sparse_data_handle.h
   storage.h
   storage_class.h
@@ -65,7 +68,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(data_HEADERS
     ${data_HEADERS}
     legion/data_client_handle_policy.h
-    legion/data_handle_policy.h
+    legion/dense_data_handle_policy.h
+    legion/global_data_handle_policy.h
     legion/sparse_data_handle_policy.h
     legion/data_policy.h
     legion/dense.h
@@ -87,10 +91,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     ${data_HEADERS}
     mpi/data_client_handle_policy.h
     mpi/data_handle_policy.h
-    mpi/sparse_data_handle_policy.h
     mpi/data_policy.h
     mpi/dense.h
+    mpi/mutator_handle_policy.h
     mpi/sparse.h
+    mpi/sparse_data_handle_policy.h
     mpi/storage_policy.h
   )
 
@@ -120,8 +125,6 @@ set(data_SOURCES
     ${data_SOURCES}
     PARENT_SCOPE
 )
-
-add_executable(sparse_mutator test/sparse_mutator.cpp)
 
 #------------------------------------------------------------------------------#
 # Unit tests.
@@ -228,9 +231,3 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
     )
 
 endif()
-
-
-#----------------------------------------------------------------------------~-#
-# Formatting options for vim.
-# vim: set tabstop=2 shiftwidth=2 expandtab :
-#----------------------------------------------------------------------------~-#

@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_set_intersection_h
-#define flecsi_utils_set_intersection_h
+#pragma once
 
 //!
 //! \file
@@ -67,8 +66,6 @@ bool intersects(
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_set_intersection_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

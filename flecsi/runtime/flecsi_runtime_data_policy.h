@@ -27,7 +27,7 @@
 // Legion Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-#include "flecsi/data/legion/data_policy.h"
+#include <flecsi/data/legion/data_policy.h>
 
 namespace flecsi {
 namespace data {
@@ -40,7 +40,7 @@ using FLECSI_RUNTIME_DATA_POLICY = legion_data_policy_t;
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-#include "flecsi/data/mpi/data_policy.h"
+#include <flecsi/data/mpi/data_policy.h>
 
 namespace flecsi {
 namespace data {

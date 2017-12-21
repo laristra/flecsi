@@ -2,7 +2,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "flecsi/topology/tree_topology.h"
+#include <flecsi/topology/tree_topology.h>
 
 using namespace std;
 using namespace flecsi;
@@ -38,7 +38,7 @@ public:
 
   using entity_t = entity;
 
-  class branch : public tree_branch<branch_int_t, dimension> {
+  class branch : public tree_branch__<branch_int_t, dimension> {
   public:
     branch() {}
 
@@ -108,15 +108,15 @@ uniform(double a, double b) {
   return a + (b - a) * uniform();
 }
 
-using tree_topology_t = tree_topology<tree_policy>;
-using entity_t = tree_topology_t::entity;
-using point_t = tree_topology_t::point_t;
-using branch_t = tree_topology_t::branch_t;
-using branch_id_t = tree_topology_t::branch_id_t;
-using element_t = tree_topology_t::element_t;
+using tree_topology__ = tree_topology<tree_policy>;
+using entity_t = tree_topology__::entity;
+using point_t = tree_topology__::point_t;
+using branch_t = tree_topology__::branch_t;
+using branch_id_t = tree_topology__::branch_id_t;
+using element_t = tree_topology__::element_t;
 
 TEST(tree_topology, neighbors) {
-  tree_topology_t t;
+  tree_topology__ t;
 
   vector<entity_t *> ents;
 

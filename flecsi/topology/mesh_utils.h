@@ -79,7 +79,7 @@ struct find_entity__<0, T, D, M> {
   static constexpr size_t find() {
     return 1;
   } // find
-};  // struct find_entity__
+}; // struct find_entity__
 
 //-----------------------------------------------------------------//
 //! \struct find_entity_ mesh_utils.h
@@ -326,7 +326,7 @@ struct compute_bindings__<DM, 0, TS> {
 }; // struct compute_bindings__
 
 template<typename T>
-class mesh_graph_partition {
+class mesh_graph_partition__ {
 public:
   using int_t = T;
 

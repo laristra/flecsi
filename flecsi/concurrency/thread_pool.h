@@ -1,8 +1,7 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_thread_pool_h
-#define flecsi_thread_pool_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -18,7 +17,7 @@
 #include <thread>
 #include <vector>
 
-#include "flecsi/concurrency/virtual_semaphore.h"
+#include <flecsi/concurrency/virtual_semaphore.h>
 
 namespace flecsi {
 
@@ -127,8 +126,6 @@ private:
 };
 
 } // namespace flecsi
-
-#endif // flecsi_thread_pool_h
 
 /*~-------------------------------------------------------------------------~-*
  *~-------------------------------------------------------------------------~-*/

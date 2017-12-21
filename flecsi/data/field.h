@@ -31,11 +31,8 @@ namespace data {
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-template<
-  typename DATA_POLICY
->
-struct field_interface__
-{
+template<typename DATA_POLICY>
+struct field_interface__ {
 
   //--------------------------------------------------------------------------//
   //! Register a field with the FleCSI runtime. This method should be thought
@@ -64,42 +61,31 @@ struct field_interface__
   //--------------------------------------------------------------------------//
 
   template<
-    typename DATA_CLIENT_TYPE,
-    size_t STORAGE_CLASS,
-    typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH,
-    size_t VERSIONS,
-    size_t INDEX_SPACE = 0
-  >
-  static
-  bool
-  register_field(
-    std::string const & name
-  )
-  {
-    static_assert(VERSIONS <= utils::hash::field_max_versions,
-      "max field versions exceeded");
+      typename DATA_CLIENT_TYPE,
+      size_t STORAGE_CLASS,
+      typename DATA_TYPE,
+      size_t NAMESPACE_HASH,
+      size_t NAME_HASH,
+      size_t VERSIONS,
+      size_t INDEX_SPACE = 0>
+  static bool register_field(std::string const & name) {
+    static_assert(
+        VERSIONS <= utils::hash::field_max_versions,
+        "max field versions exceeded");
 
     using wrapper_t = field_registration_wrapper__<
-      DATA_CLIENT_TYPE,
-      STORAGE_CLASS,
-      DATA_TYPE,
-      NAMESPACE_HASH,
-      NAME_HASH,
-      VERSIONS,
-      INDEX_SPACE
-    >;
+        DATA_CLIENT_TYPE, STORAGE_CLASS, DATA_TYPE, NAMESPACE_HASH, NAME_HASH,
+        VERSIONS, INDEX_SPACE>;
 
-    const size_t client_key = 
-      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+    const size_t client_key =
+        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
 
-    for(size_t version(0); version<VERSIONS; ++version) {
+    for (size_t version(0); version < VERSIONS; ++version) {
       const size_t key =
-        utils::hash::field_hash<NAMESPACE_HASH, NAME_HASH>(version);
+          utils::hash::field_hash<NAMESPACE_HASH, NAME_HASH>(version);
 
-      if(!storage_t::instance().register_field(client_key, key,
-        wrapper_t::register_callback)) {
+      if (!storage_t::instance().register_field(
+              client_key, key, wrapper_t::register_callback)) {
         return false;
       } // if
     } // for
@@ -126,34 +112,26 @@ struct field_interface__
   //--------------------------------------------------------------------------//
 
   template<
-    typename DATA_CLIENT_TYPE,
-    size_t STORAGE_CLASS,
-    typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH,
-    size_t VERSION = 0,
-    size_t PERMISSIONS
-  >
-  static
-  decltype(auto)
-  get_handle(
-    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle
-  )
-  {
-    static_assert(VERSION < utils::hash::field_max_versions,
-      "max field version exceeded");
-    
+      typename DATA_CLIENT_TYPE,
+      size_t STORAGE_CLASS,
+      typename DATA_TYPE,
+      size_t NAMESPACE_HASH,
+      size_t NAME_HASH,
+      size_t VERSION = 0,
+      size_t PERMISSIONS>
+  static decltype(auto)
+  get_handle(const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS> &
+                 client_handle) {
+    static_assert(
+        VERSION < utils::hash::field_max_versions,
+        "max field version exceeded");
+
     using storage_class_t =
-      typename DATA_POLICY::template storage_class__<STORAGE_CLASS>;
+        typename DATA_POLICY::template storage_class__<STORAGE_CLASS>;
 
     return storage_class_t::template get_handle<
-      DATA_CLIENT_TYPE,
-      DATA_TYPE,
-      NAMESPACE_HASH,
-      NAME_HASH,
-      VERSION
-    >
-    (client_handle);
+        DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE_HASH, NAME_HASH, VERSION>(
+        client_handle);
   } // get_handle
 
   //--------------------------------------------------------------------------//
@@ -176,35 +154,26 @@ struct field_interface__
   //--------------------------------------------------------------------------//
 
   template<
-    typename DATA_CLIENT_TYPE,
-    size_t STORAGE_CLASS,
-    typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH,
-    size_t VERSION = 0,
-    size_t PERMISSIONS
-  >
-  static
-  decltype(auto)
-  get_mutator(
-    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle,
-    size_t slots
-  )
-  {
-    static_assert(VERSION < utils::hash::field_max_versions,
-      "max field version exceeded");
-    
+      typename DATA_CLIENT_TYPE,
+      size_t STORAGE_CLASS,
+      typename DATA_TYPE,
+      size_t NAMESPACE_HASH,
+      size_t NAME_HASH,
+      size_t VERSION = 0,
+      size_t PERMISSIONS>
+  static decltype(auto) get_mutator(
+      const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle,
+      size_t slots) {
+    static_assert(
+        VERSION < utils::hash::field_max_versions,
+        "max field version exceeded");
+
     using storage_class_t =
-      typename DATA_POLICY::template storage_class__<STORAGE_CLASS>;
+        typename DATA_POLICY::template storage_class__<STORAGE_CLASS>;
 
     return storage_class_t::template get_mutator<
-      DATA_CLIENT_TYPE,
-      DATA_TYPE,
-      NAMESPACE_HASH,
-      NAME_HASH,
-      VERSION
-    >
-    (client_handle, slots);
+        DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE_HASH, NAME_HASH, VERSION>(
+        client_handle, slots);
   } // get_handle
 
   //--------------------------------------------------------------------------//
@@ -229,27 +198,18 @@ struct field_interface__
   //--------------------------------------------------------------------------//
 
   template<
-    size_t STORAGE_CLASS,
-    typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    typename PREDICATE
-  >
-  static
-  decltype(auto)
-  get_handles(
-    const data_client_t & client,
-    size_t version,
-    PREDICATE && predicate,
-    bool sorted = true
-  )
-  {
+      size_t STORAGE_CLASS,
+      typename DATA_TYPE,
+      size_t NAMESPACE_HASH,
+      typename PREDICATE>
+  static decltype(auto) get_handles(
+      const data_client_t & client,
+      size_t version,
+      PREDICATE && predicate,
+      bool sorted = true) {
     return DATA_POLICY::template get_handles<
-      STORAGE_CLASS,
-      DATA_TYPE,
-      NAMESPACE_HASH,
-      PREDICATE
-    >
-    (client, version, std::forward<PREDICATE>(predicate), sorted);
+        STORAGE_CLASS, DATA_TYPE, NAMESPACE_HASH, PREDICATE>(
+        client, version, std::forward<PREDICATE>(predicate), sorted);
   } // get_handles
 
   //--------------------------------------------------------------------------//
@@ -270,26 +230,15 @@ struct field_interface__
   //! @ingroup data
   //--------------------------------------------------------------------------//
 
-  template<
-    size_t STORAGE_CLASS,
-    typename DATA_TYPE,
-    typename PREDICATE
-  >
-  static
-  decltype(auto)
-  get_handles(
-    const data_client_t & client,
-    size_t version,
-    PREDICATE && predicate,
-    bool sorted = true
-  )
-  {
+  template<size_t STORAGE_CLASS, typename DATA_TYPE, typename PREDICATE>
+  static decltype(auto) get_handles(
+      const data_client_t & client,
+      size_t version,
+      PREDICATE && predicate,
+      bool sorted = true) {
     return DATA_POLICY::template get_handles<
-      STORAGE_CLASS,
-      DATA_TYPE,
-      PREDICATE
-    >
-    (client, version, std::forward<PREDICATE>(predicate), sorted);
+        STORAGE_CLASS, DATA_TYPE, PREDICATE>(
+        client, version, std::forward<PREDICATE>(predicate), sorted);
   } // get_handles
 
 }; // struct field_interface__
@@ -301,7 +250,7 @@ struct field_interface__
 // This include file defines the FLECSI_RUNTIME_DATA_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include "flecsi/runtime/flecsi_runtime_data_policy.h"
+#include <flecsi/runtime/flecsi_runtime_data_policy.h>
 
 namespace flecsi {
 namespace data {

@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_offset_h
-#define flecsi_utils_offset_h
+#pragma once
 
 #include <cassert>
 
@@ -72,5 +71,3 @@ private:
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_offset_h

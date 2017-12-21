@@ -1,74 +1,67 @@
-/*~--------------------------------------------------------------------------~*
-*  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
-* /@@/////  /@@          @@////@@ @@////// /@@
-* /@@       /@@  @@@@@  @@    // /@@       /@@
-* /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
-* /@@////   /@@/@@@@@@@/@@       ////////@@/@@
-* /@@       /@@/@@//// //@@    @@       /@@/@@
-* /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-* //       ///  //////   //////  ////////  //
-*
-* Copyright (c) 2016 Los Alamos National Laboratory, LLC
-* All rights reserved
-*~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_mpi_task_prolog_h
-#define flecsi_execution_mpi_task_prolog_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: May 19, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
+
 
 #include <vector>
 
 #include "mpi.h"
-#include "flecsi/data/data.h"
-#include "flecsi/data/dense_accessor.h"
-#include "flecsi/data/ragged_accessor.h"
-#include "flecsi/data/ragged_mutator.h"
-#include "flecsi/data/sparse_accessor.h"
-#include "flecsi/data/sparse_accessor.h"
-#include "flecsi/data/sparse_mutator.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/coloring/mpi_utils.h"
+#include <flecsi/data/data.h>
+#include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/ragged_accessor.h>
+#include <flecsi/data/ragged_mutator.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/sparse_mutator.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/coloring/mpi_utils.h>
 
 namespace flecsi {
 namespace execution {
 
-  //--------------------------------------------------------------------------//
-  //! The task_prolog_t type can be called to walk the task args after the
-  //! task launcher is created, but before the task has run. This allows
-  //! synchronization dependencies to be added to the execution flow.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
+  /*!
+   The task_prolog_t type can be called to walk the task args after the
+   task launcher is created, but before the task has run. This allows
+   synchronization dependencies to be added to the execution flow.
+  
+   @ingroup execution
+   */
 
   struct task_prolog_t : public utils::tuple_walker__<task_prolog_t>
   {
 
-    //------------------------------------------------------------------------//
-    //! Construct a task_prolog_t instance.
-    //!
-    //------------------------------------------------------------------------//
+    /*!
+     Construct a task_prolog_t instance.
+     */
 
     task_prolog_t() = default;
 
-
-    //------------------------------------------------------------------------//
-    //! FIXME: Need a description.
-    //!
-    //! @tparam T                     The data type referenced by the handle.
-    //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
-    //!                               indices of the index partition.
-    //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
-    //!                               indices of the index partition.
-    //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
-    //!                               indices of the index partition.
-    //!
-    //! @param runtime The Legion task runtime.
-    //! @param context The Legion task runtime context.
-    //------------------------------------------------------------------------//
+    /*!
+     FIXME: Need a description.
+    
+     @tparam T                     The data type referenced by the handle.
+     @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
+                                   indices of the index partition.
+     @tparam SHARED_PERMISSIONS    The permissions required on the shared
+                                   indices of the index partition.
+     @tparam GHOST_PERMISSIONS     The permissions required on the ghost
+                                   indices of the index partition.
+    
+     @param runtime The Legion task runtime.
+     */
 
     template<
       typename T,
@@ -167,7 +160,7 @@ namespace execution {
       typename T,
       size_t PERMISSIONS
     >
-    typename std::enable_if_t<std::is_base_of<topology::mesh_topology_base__, T>::value>
+    typename std::enable_if_t<std::is_base_of<topology::mesh_topology_base_t, T>::value>
     handle(
       data_client_handle__<T, PERMISSIONS> & h
     )
@@ -269,15 +262,20 @@ namespace execution {
         h.initialize_storage();
       }
     } // handle
-    //------------------------------------------------------------------------//
-    //! FIXME: Need to document.
-    //------------------------------------------------------------------------//
-
+   
+    /*!
+      This method registers entity data fields as needed and initializes set
+      topology index spaces and buffers from the raw MPI buffers. If we are
+      writing to this buffer, then it sets up the size information of the index
+      space as empty so we can call make<>() to push entities onto this buffer.
+      If we are reading, this sets up the size as the size recorded in the
+      metadata.
+     */
     template<
       typename T,
       size_t PERMISSIONS
     >
-    typename std::enable_if_t<std::is_base_of<topology::set_topology_base__, T>::value>
+    typename std::enable_if_t<std::is_base_of<topology::set_topology_base_t, T>::value>
     handle(
       data_client_handle__<T, PERMISSIONS> & h
     )
@@ -321,7 +319,8 @@ namespace execution {
       typename T
     >
     static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
+    typename std::enable_if_t<
+		!std::is_base_of<dense_data_handle_base_t, T>::value>
     handle(
       T&
     )
@@ -330,7 +329,5 @@ namespace execution {
 
   }; // struct task_prolog_t
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_mpi_task_prolog_h

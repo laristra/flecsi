@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/tuple_walker.h"
+#include <flecsi/utils/tuple_walker.h>
 
 // includes: C++
 #include <iostream>

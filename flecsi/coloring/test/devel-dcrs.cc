@@ -5,8 +5,8 @@
 
 #include <cinchdevel.h>
 
-#include "flecsi/coloring/dcrs_utils.h"
-#include "flecsi/io/simple_definition.h"
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/io/simple_definition.h>
 
 clog_register_tag(dcrs);
 

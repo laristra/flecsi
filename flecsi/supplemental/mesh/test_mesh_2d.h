@@ -1,18 +1,22 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_test_mesh_h
-#define flecsi_execution_test_mesh_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: May 10, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
-#include "flecsi/topology/mesh.h"
-#include "flecsi/topology/mesh_topology.h"
+#include <flecsi/topology/mesh.h>
+#include <flecsi/topology/mesh_topology.h>
 
 //----------------------------------------------------------------------------//
 // Enumeration to name index spaces
@@ -35,7 +39,7 @@ namespace supplemental {
 
 using point_t = std::array<double, 2>;
 
-struct vertex_t : public flecsi::topology::mesh_entity_t<0, 1>
+struct vertex_t : public flecsi::topology::mesh_entity__<0, 1>
 {
   vertex_t(point_t & p) : p_(p) {} 
 
@@ -47,15 +51,15 @@ private:
 
 }; // struct vertex_t
 
-struct edge_t : public flecsi::topology::mesh_entity_t<1, 1>
+struct edge_t : public flecsi::topology::mesh_entity__<1, 1>
 {
 }; // struct edge_t
 
-struct face_t : public flecsi::topology::mesh_entity_t<1, 1>
+struct face_t : public flecsi::topology::mesh_entity__<1, 1>
 {
 }; // struct face_t
 
-struct cell_t : public flecsi::topology::mesh_entity_t<2, 1>
+struct cell_t : public flecsi::topology::mesh_entity__<2, 1>
 {
   using id_t = flecsi::utils::id_t;
 
@@ -63,7 +67,7 @@ struct cell_t : public flecsi::topology::mesh_entity_t<2, 1>
   create_entities(
     id_t cell_id,
     size_t dim,
-    flecsi::topology::domain_connectivity<2> & c,
+    flecsi::topology::domain_connectivity__<2> & c,
     id_t * e
   )
   {
@@ -114,9 +118,9 @@ struct test_mesh_2d_policy_t
     size_t D,
     typename ST
   >
-  static flecsi::topology::mesh_entity_base_t<num_domains> *
+  static flecsi::topology::mesh_entity_base__<num_domains> *
   create_entity(
-    flecsi::topology::mesh_topology_base_t<ST>* mesh,
+    flecsi::topology::mesh_topology_base__<ST>* mesh,
     size_t num_vertices,
     id_t const & id
   )
@@ -150,7 +154,7 @@ struct test_mesh_2d_policy_t
 //----------------------------------------------------------------------------//
 
 struct test_mesh_2d_t :
-  public flecsi::topology::mesh_topology_t<test_mesh_2d_policy_t>
+  public flecsi::topology::mesh_topology__<test_mesh_2d_policy_t>
 {
 
   auto
@@ -169,7 +173,7 @@ struct test_mesh_2d_t :
   >
   auto
   vertices( 
-    flecsi::topology::domain_entity<M, E> & e
+    flecsi::topology::domain_entity__<M, E> & e
   )
   {
     return entities<0, 0>(e);
@@ -181,7 +185,7 @@ struct test_mesh_2d_t :
   >
   auto
   vertices( 
-    flecsi::topology::domain_entity<M, E> & e
+    flecsi::topology::domain_entity__<M, E> & e
   )
   const
   {
@@ -198,10 +202,3 @@ struct test_mesh_2d_t :
 
 } // namespace supplemental
 } // namespace flecsi
-
-#endif // flecsi_execution_test_mesh_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

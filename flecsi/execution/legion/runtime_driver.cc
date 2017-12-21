@@ -1,28 +1,33 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jul 26, 2016
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+/*! @file */
 
-#include "flecsi/execution/legion/runtime_driver.h"
+#include <flecsi/execution/legion/runtime_driver.h>
 
 #include <legion.h>
 #include <legion_utilities.h>
 #include <limits>
 
-#include "flecsi/data/legion/legion_data.h"
-#include "flecsi/data/storage.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/legion_tasks.h"
-#include "flecsi/execution/legion/mapper.h"
-#include "flecsi/execution/legion/internal_field.h"
-#include "flecsi/runtime/types.h"
-#include "flecsi/utils/common.h"
-#include "flecsi/data/data_constants.h" 
+#include <flecsi/data/legion/legion_data.h>
+#include <flecsi/data/storage.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/legion/legion_tasks.h>
+#include <flecsi/execution/legion/mapper.h>
+#include <flecsi/execution/legion/internal_field.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/data/data_constants.h> 
 
 clog_register_tag(runtime_driver);
 
@@ -1118,8 +1123,3 @@ spmd_task(
 
 } // namespace execution 
 } // namespace flecsi
-
-/*~------------------------------------------------------------------------~--*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/

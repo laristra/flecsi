@@ -1,8 +1,7 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_data_types_h
-#define flecsi_data_data_types_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -11,7 +10,7 @@
 
 #include <bitset>
 
-#include "flecsi/utils/offset.h"
+#include <flecsi/utils/offset.h>
 
 namespace flecsi {
 namespace data {
@@ -54,7 +53,7 @@ class global_data_client_t : public data::data_client_t
     }
 
     using type_identifier_t = global_data_client_t;
- 
+
   private:
     global_data_client_t() {}
     global_data_client_t(const global_data_client_t&);
@@ -64,8 +63,6 @@ class global_data_client_t : public data::data_client_t
 
 } // namespace data
 } // namespace flecsi
-
-#endif // flecsi_data_data_types_h
 
 /*~-------------------------------------------------------------------------~-*
  *~-------------------------------------------------------------------------~-*/

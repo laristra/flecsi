@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_common_h
-#define flecsi_utils_common_h
+#pragma once
 
 //!
 //! \file
@@ -26,8 +25,8 @@
 #include <sstream>
 #include <typeinfo>
 
-#include "flecsi/utils/id.h"
-#include "flecsi/utils/offset.h"
+#include <flecsi/utils/id.h>
+#include <flecsi/utils/offset.h>
 
 #ifndef FLECSI_ID_PBITS
 #define FLECSI_ID_PBITS 20
@@ -210,8 +209,6 @@ struct function_traits__<const volatile T &&> : public function_traits__<T> {};
 
 #define _UTIL_STRINGIFY(s) #s
 #define EXPAND_AND_STRINGIFY(s) _UTIL_STRINGIFY(s)
-
-#endif // flecsi_utils_common_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

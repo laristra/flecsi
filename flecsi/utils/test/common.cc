@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/common.h"
+#include <flecsi/utils/common.h>
 
 // includes: other
 #include "boost/core/demangle.hpp"

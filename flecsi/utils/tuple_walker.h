@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_tuple_walker_h
-#define flecsi_utils_tuple_walker_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -138,8 +137,6 @@ struct tuple_walker__ {
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_tuple_walker_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

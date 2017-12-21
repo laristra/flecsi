@@ -5,7 +5,7 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/utils/checksum.h"
+#include <flecsi/utils/checksum.h>
 
 const std::size_t N = 100;
 

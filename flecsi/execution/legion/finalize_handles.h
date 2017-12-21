@@ -1,85 +1,67 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_topology_finalize_handles_h
-#define flecsi_topology_finalize_handles_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jul 19, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
 namespace flecsi {
 namespace execution {
 
-struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
-{
-  //--------------------------------------------------------------------------//
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
+/*!
+  FIXME
+  @ingroup execution
+ */
+struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
+
+  /*!
+    FIXME
+     @ingroup execution
+   */
 
   template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    dense_accessor__<
-     T,
-     EXCLUSIVE_PERMISSIONS,
-     SHARED_PERMISSIONS,
-     GHOST_PERMISSIONS
-    > & a
-  )
-  {
-  } // handle
+      typename T,
+      size_t EXCLUSIVE_PERMISSIONS,
+      size_t SHARED_PERMISSIONS,
+      size_t GHOST_PERMISSIONS>
+  void handle(dense_accessor__<
+              T,
+              EXCLUSIVE_PERMISSIONS,
+              SHARED_PERMISSIONS,
+              GHOST_PERMISSIONS> & a) {} // handle
 
-  //--------------------------------------------------------------------------//
-  //! The finalize_handles_t type can be called to walk task args after task
-  //! execution. This allows us to free memory allocated during the task.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
+  /*!
+     The finalize_handles_t type can be called to walk task args after task
+     execution. This allows us to free memory allocated during the task.
+  
+     @ingroup execution
+   */
 
-  template<
-    typename T,
-    size_t PERMISSIONS
-  >
-  void
-  handle(
-    data_client_handle__<T, PERMISSIONS> & h
-  )
-  {
+  template<typename T, size_t PERMISSIONS>
+  void handle(data_client_handle__<T, PERMISSIONS> & h) {
     h.delete_storage();
   } // handle
 
-  //-----------------------------------------------------------------------//
-  // If this is not a data handle, then simply skip it.
-  //-----------------------------------------------------------------------//
+  /*!
+    If this is not a data handle, then simply skip it.
+   */
 
-  template<
-    typename T
-  >
-  static
-  typename std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
-  handle(
-    T &
-  )
-  {
-  } // handle
+  template<typename T>
+  static typename std::enable_if_t<
+      !std::is_base_of<dense_accessor_base_t, T>::value>
+  handle(T &) {} // handle
 
 }; // struct finalize_handles_t
 
 } // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_topology_finalize_handles_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

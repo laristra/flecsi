@@ -92,7 +92,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-//! mesh_topology_t is parameterized on a class (MT) which gives
+//! mesh_topology__ is parameterized on a class (MT) which gives
 //! information about its entity types, connectivities and more. the mesh
 //! topology is responsibly for computing connectivity info between entities
 //! of different topological dimension, e.g: vertex -> cell,
@@ -104,9 +104,9 @@ FLECSI_MEMBER_CHECKER(create_entity);
 //! @ingroup mesh-topology
 //----------------------------------------------------------------------------//
 template<class MT>
-class mesh_topology_t
-    : public mesh_topology_base_t<
-          mesh_storage_t<MT::num_dimensions, MT::num_domains>> {
+class mesh_topology__
+    : public mesh_topology_base__<
+          mesh_storage__<MT::num_dimensions, MT::num_domains>> {
   // static verification of mesh policy
 
   static_assert(
@@ -155,10 +155,10 @@ class mesh_topology_t
 
 public:
   // mesh storage type definition
-  using storage_t = mesh_storage_t<MT::num_dimensions, MT::num_domains>;
+  using storage_t = mesh_storage__<MT::num_dimensions, MT::num_domains>;
 
   // mesh topology base definition
-  using base_t = mesh_topology_base_t<storage_t>;
+  using base_t = mesh_topology_base__<storage_t>;
 
   // entity ID type
   using id_t = utils::id_t;
@@ -176,32 +176,32 @@ public:
   // tree topologies. It is also useful for detecting illegal usage, such as
   // when a user adds data members.
   //--------------------------------------------------------------------------//
-  using type_identifier_t = mesh_topology_t;
+  using type_identifier_t = mesh_topology__;
 
   // Don't allow the mesh to be copied or copy constructed
 
   //! don't allow mesh to be assigned
-  mesh_topology_t & operator=(const mesh_topology_t &) = delete;
+  mesh_topology__ & operator=(const mesh_topology__ &) = delete;
 
   //! Allow move operations
-  mesh_topology_t(mesh_topology_t && o) = default;
+  mesh_topology__(mesh_topology__ && o) = default;
 
   //! override default move assignement
-  mesh_topology_t & operator=(mesh_topology_t && o) = default;
+  mesh_topology__ & operator=(mesh_topology__ && o) = default;
 
   //! Constructor, takes as input a mesh storage or storage can later be set
-  mesh_topology_t(storage_t * ms = nullptr) : base_t(ms) {
+  mesh_topology__(storage_t * ms = nullptr) : base_t(ms) {
     if (ms != nullptr) {
       initialize_storage();
     } // if
-  }   // mesh_topology_t()
+  } // mesh_topology__()
 
   //! Copy constructor: alias another mesh
-  mesh_topology_t(const mesh_topology_t & m) : base_t(m.ms_) {}
+  mesh_topology__(const mesh_topology__ & m) : base_t(m.ms_) {}
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
-  virtual ~mesh_topology_t() {}
+  virtual ~mesh_topology__() {}
 
   //--------------------------------------------------------------------------//
   //! Initialize the mesh storage after it has been set
@@ -214,7 +214,7 @@ public:
         base_t::ms_->topology[from_domain][to_domain].init_(
             from_domain, to_domain);
       } // for
-    }   // for
+    } // for
 
     for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
       for (size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim) {
@@ -228,10 +228,10 @@ public:
                 .get_index_space()
                 .set_master(master);
           } // for
-        }   // for
-      }     // for
-    }       // for
-  }         // intialize_storage
+        } // for
+      } // for
+    } // for
+  } // intialize_storage
 
   //--------------------------------------------------------------------------//
   //! A mesh is constructed by creating cells and vertices and associating
@@ -545,7 +545,7 @@ public:
     assert(!c.empty() && "empty connectivity");
 
     using etype = entity_type<D, TM>;
-    using dtype = domain_entity<TM, etype>;
+    using dtype = domain_entity__<TM, etype>;
 
     return c.get_index_space().slice<dtype>(c.range(e->template id<FM>()));
   } // entities
@@ -567,7 +567,7 @@ public:
     assert(!c.empty() && "empty connectivity");
 
     using etype = entity_type<D, TM>;
-    using dtype = domain_entity<TM, etype>;
+    using dtype = domain_entity__<TM, etype>;
 
     return c.get_index_space().slice<dtype>(c.range(e->template id<FM>()));
   } // entities
@@ -584,7 +584,7 @@ public:
   //! @param e from entity with compile-time domain
   //--------------------------------------------------------------------------//
   template<size_t D, size_t FM = 0, size_t TM = FM, class E>
-  decltype(auto) entities(domain_entity<FM, E> & e) const {
+  decltype(auto) entities(domain_entity__<FM, E> & e) const {
     return entities<D, FM, TM>(e.entity());
   } // entities
 
@@ -600,7 +600,7 @@ public:
   //! @param e from entity with compile-time domain
   //--------------------------------------------------------------------------//
   template<size_t D, size_t FM = 0, size_t TM = FM, class E>
-  decltype(auto) entities(domain_entity<FM, E> & e) {
+  decltype(auto) entities(domain_entity__<FM, E> & e) {
     return entities<D, FM, TM>(e.entity());
   } // entities
 
@@ -614,7 +614,7 @@ public:
   template<size_t D, size_t M = 0>
   auto entities() const {
     using etype = entity_type<D, M>;
-    using dtype = domain_entity<M, etype>;
+    using dtype = domain_entity__<M, etype>;
     return base_t::ms_->index_spaces[M][D].template slice<dtype>();
   } // entities
 
@@ -631,7 +631,7 @@ public:
   template<size_t D, size_t M = 0>
   auto entities(partition_t partition) const {
     using etype = entity_type<D, M>;
-    using dtype = domain_entity<M, etype>;
+    using dtype = domain_entity__<M, etype>;
     return base_t::ms_->partition_index_spaces[partition][M][D]
         .template slice<dtype>();
   } // entities
@@ -674,7 +674,7 @@ public:
   //! @param e from entity with compile-time domain
   //--------------------------------------------------------------------------//
   template<size_t D, size_t FM = 0, size_t TM = FM, class E>
-  decltype(auto) entity_ids(domain_entity<FM, E> & e) {
+  decltype(auto) entity_ids(domain_entity__<FM, E> & e) {
     return entity_ids<D, FM, TM>(e.entity());
   } // entities
 
@@ -726,7 +726,7 @@ public:
   //! @param e from entity with compile-time domain
   //--------------------------------------------------------------------------//
   template<size_t D, size_t FM = 0, size_t TM = FM, class E>
-  void reverse_entities(domain_entity<FM, E> & e) {
+  void reverse_entities(domain_entity__<FM, E> & e) {
     return reverse_entities<D, FM, TM>(e.entity());
   } // entities
 
@@ -762,7 +762,7 @@ public:
   //! @param order order specification
   //--------------------------------------------------------------------------//
   template<size_t D, size_t FM = 0, size_t TM = FM, class E, class U>
-  void reverse_entities(domain_entity<FM, E> & e, U && order) {
+  void reverse_entities(domain_entity__<FM, E> & e, U && order) {
     return reorder_entities<D, FM, TM>(e.entity(), std::forward<U>(order));
   } // entities
 
@@ -1052,7 +1052,7 @@ private:
     // keep track of the local ids, since they may be added out of order
     std::vector<size_t> entity_ids;
 
-    domain_connectivity<MT::num_dimensions> & dc =
+    domain_connectivity__<MT::num_dimensions> & dc =
         base_t::ms_->topology[Domain][Domain];
 
     // Get connectivity for cells to vertices.
@@ -1078,10 +1078,10 @@ private:
     using entity_type = entity_type<DimensionToBuild, Domain>;
 
     auto & is = base_t::ms_->index_spaces[Domain][DimensionToBuild]
-                    .template cast<domain_entity<Domain, entity_type>>();
+                    .template cast<domain_entity__<Domain, entity_type>>();
 
     auto & cis = base_t::ms_->index_spaces[Domain][UsingDimension]
-                     .template cast<domain_entity<Domain, cell_type>>();
+                     .template cast<domain_entity__<Domain, cell_type>>();
 
     // Lookup the index space for the entity type being created.
     constexpr size_t cell_index_space = find_index_space_from_dimension__<
@@ -1229,8 +1229,8 @@ private:
           ++entity_counter;
 
         } // if
-      }   // for
-    }     // for
+      } // for
+    } // for
 
     // sort the entity connectivity. Entities may have been created out of
     // order.  Sort them using the list of entity ids we kept track of
@@ -1433,8 +1433,8 @@ private:
             } // if
 
           } // if
-        }   // for
-      }     // for
+        } // for
+      } // for
 
       max_size = std::max(ents.size(), max_size);
     } // for
@@ -1519,7 +1519,7 @@ private:
         intersect<M, M, FD, TD, 0>();
       }
     } // if
-  }   // compute_connectivity
+  } // compute_connectivity
 
   //--------------------------------------------------------------------------//
   //! if the to-dimension is larger than the from-dimension, build the bindings
@@ -1664,9 +1664,9 @@ private:
       auto cell = static_cast<entity_type<MT::num_dimensions, M0> *>(c);
       id_t cell_id = cell->template global_id<FM>();
 
-      domain_connectivity<MT::num_dimensions> & primal_conn =
+      domain_connectivity__<MT::num_dimensions> & primal_conn =
           base_t::ms_->topology[FM][FM];
-      domain_connectivity<MT::num_dimensions> & domain_conn =
+      domain_connectivity__<MT::num_dimensions> & domain_conn =
           base_t::ms_->topology[FM][TM];
 
       // p.first:   The number of entities per cell.
@@ -1686,7 +1686,7 @@ private:
       size_t pos = 0;
 
       auto & is = base_t::ms_->index_spaces[TM][TD]
-                      .template cast<domain_entity<TM, to_entity_type>>();
+                      .template cast<domain_entity__<TM, to_entity_type>>();
 
       for (size_t i = 0; i < n; ++i) {
         size_t m = sv[i];
@@ -1730,7 +1730,7 @@ private:
 
         pos += m;
       } // for
-    }   // for
+    } // for
 
     // Reference to storage from cells to the entity (to be created here).
     connectivity_t & cell_out =
@@ -1812,7 +1812,7 @@ private:
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
-}; // class mesh_topology_t
+}; // class mesh_topology__
 
 } // namespace topology
 } // namespace flecsi

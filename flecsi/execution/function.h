@@ -29,11 +29,8 @@ namespace execution {
   @ingroup execution
  */
 
-template<
-  typename EXECUTION_POLICY
->
-struct function_interface__
-{
+template<typename EXECUTION_POLICY>
+struct function_interface__ {
 
   /*!
     Register a user function with the FleCSI runtime.
@@ -49,17 +46,13 @@ struct function_interface__
    */
 
   template<
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*FUNCTION)(ARG_TUPLE),
-    size_t KEY
-  >
-  static
-  decltype(auto)
-  register_function()
-  {
+      typename RETURN,
+      typename ARG_TUPLE,
+      RETURN (*FUNCTION)(ARG_TUPLE),
+      size_t KEY>
+  static decltype(auto) register_function() {
     return EXECUTION_POLICY::template register_function<
-      RETURN, ARG_TUPLE, FUNCTION, KEY>();
+        RETURN, ARG_TUPLE, FUNCTION, KEY>();
   } // register_function
 
   /*!
@@ -75,19 +68,11 @@ struct function_interface__
     @param user_function The user function.
    */
 
-  template<
-    typename FUNCTION_HANDLE,
-    typename ... ARGS
-  >
-  static
-  decltype(auto)
-  execute_function(
-    FUNCTION_HANDLE & handle,
-    ARGS && ... args
-  )
-  {
-    return EXECUTION_POLICY::template execute_function(handle,
-      std::forward<ARGS>(args) ...);
+  template<typename FUNCTION_HANDLE, typename... ARGS>
+  static decltype(auto)
+  execute_function(FUNCTION_HANDLE & handle, ARGS &&... args) {
+    return EXECUTION_POLICY::template execute_function(
+        handle, std::forward<ARGS>(args)...);
   } // execute_function
 
 }; // struct function_interface__
@@ -99,7 +84,7 @@ struct function_interface__
 // This include file defines the FLECSI_RUNTIME_EXECUTION_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include "flecsi/runtime/flecsi_runtime_execution_policy.h"
+#include <flecsi/runtime/flecsi_runtime_execution_policy.h>
 
 namespace flecsi {
 namespace execution {
@@ -111,7 +96,7 @@ namespace execution {
  */
 
 using function_interface_t =
-  function_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
+    function_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
 
 } // namespace execution
 } // namespace flecsi

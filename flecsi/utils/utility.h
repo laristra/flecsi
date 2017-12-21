@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_utility_h
-#define flecsi_utils_utility_h
+#pragma once
 
 //!
 //! \file
@@ -26,8 +25,6 @@ struct as_const {
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_utility_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

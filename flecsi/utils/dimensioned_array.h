@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_dimensioned_array_h
-#define flecsi_utils_dimensioned_array_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -24,7 +23,7 @@
 #include <cmath>
 #include <ostream>
 
-#include "flecsi/utils/common.h"
+#include <flecsi/utils/common.h>
 
 namespace flecsi {
 namespace utils {
@@ -160,7 +159,7 @@ public:
       for (size_t i{0}; i < DIMENSION; i++) {                                  \
         data_[i] op rhs[i];                                                    \
       } /* for */                                                              \
-    }   /* if */                                                               \
+    } /* if */                                                                 \
                                                                                \
     return *this;                                                              \
   }
@@ -315,8 +314,6 @@ operator<<(
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_dimensioned_array_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

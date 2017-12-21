@@ -12,10 +12,9 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_io_io_base_h
-#define flecsi_io_io_base_h
+#pragma once
 
-#include "flecsi/utils/factory.h"
+#include <flecsi/utils/factory.h>
 
 ///
 /// \file
@@ -32,10 +31,9 @@ namespace io {
 
 /// \tparam mesh_t Mesh to template io_base_t on.
 ///
-template <typename mesh_t>
-class io_base_t
-{
- public:
+template<typename mesh_t>
+class io_base_t {
+public:
   /// Default constructor
   io_base_t() {}
 
@@ -74,8 +72,9 @@ class io_base_t
   ///
   /// \remark this version allows specifying binary or ascii
   ///
-  virtual int32_t write(const std::string & name, mesh_t & m, bool)
-  { return write(name, m); }
+  virtual int32_t write(const std::string & name, mesh_t & m, bool) {
+    return write(name, m);
+  }
 
 }; // struct io_base_t
 
@@ -86,13 +85,11 @@ class io_base_t
 ///
 /// \tparam mesh_t Mesh to template io factory on.
 ///
-template <typename mesh_t>
+template<typename mesh_t>
 using io_factory_t = flecsi::utils::Factory_<io_base_t<mesh_t>, std::string>;
 
 } // namespace io
 } // namespace flecsi
-
-#endif // flecsi_io_io_base_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -5,8 +5,8 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/execution/legion/mapper.h"
-#include "flecsi/execution/legion/internal_task.h"
+#include <flecsi/execution/legion/mapper.h>
+#include <flecsi/execution/legion/internal_task.h>
 
 ///
 /// \file

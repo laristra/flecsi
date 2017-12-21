@@ -1,4 +1,4 @@
-#~----------------------------------------------------------------------------~#
+#------------------------------------------------------------------------------#
 #  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
 # /@@/////  /@@          @@////@@ @@////// /@@
 # /@@       /@@  @@@@@  @@    // /@@       /@@
@@ -10,7 +10,7 @@
 # 
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
-#~----------------------------------------------------------------------------~#
+#------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
 # Add header files. Note that these will be "exported" to the parent
@@ -26,6 +26,7 @@ set(execution_HEADERS
   default_driver.h
   execution.h
   function.h
+  internal_index_space.h
   kernel.h
   task.h
 )
@@ -51,7 +52,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/init_handles.h
     legion/internal_field.h
     legion/internal_task.h
-    legion/internal_index_space.h 
     legion/legion_tasks.h
     legion/mapper.h
     legion/finalize_handles.h
@@ -358,6 +358,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
       INPUTS
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
+        test/sparse_data.blessed
       LIBRARIES
         FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
@@ -529,11 +530,4 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 #    )
 
   endif()
-
 endif()
-
-
-#----------------------------------------------------------------------------~-#
-# Formatting options for vim.
-# vim: set tabstop=2 shiftwidth=2 expandtab :
-#----------------------------------------------------------------------------~-#

@@ -13,7 +13,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/id.h"
+#include <flecsi/utils/id.h>
 
 // includes: C++
 #include <vector>

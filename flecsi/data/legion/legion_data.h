@@ -1,8 +1,7 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_legion_legion_data_h
-#define flecsi_legion_legion_data_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -22,18 +21,29 @@
 
 #include <legion.h>
 
-#include "flecsi/coloring/adjacency_types.h"
-#include "flecsi/coloring/coloring_types.h"
-#include "flecsi/coloring/index_coloring.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/helper.h"
-#include "flecsi/execution/legion/internal_index_space.h"
-#include "flecsi/execution/legion/legion_tasks.h"
+#include <flecsi/coloring/adjacency_types.h>
+#include <flecsi/coloring/coloring_types.h>
+#include <flecsi/coloring/index_coloring.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/legion/helper.h>
+#include <flecsi/execution/internal_index_space.h>
+#include <flecsi/execution/legion/legion_tasks.h>
 
 clog_register_tag(legion_data);
 
 namespace flecsi {
 namespace data {
+
+/*!
+  This class provides a centralized mechanism for creating Legion
+  index spaces, field spaces, partitions, and logical regions using
+  FleCSI data representation schemes: distributed 2d BLIS, global, and
+  color, and mesh topology adjacency data. This class is instantiated
+  to create such structures, but it is destroyed afterwards, then this
+  data is retained in the execution context.
+
+   @ingroup data
+ */
 
 class legion_data_t {
 public:
@@ -45,6 +55,10 @@ public:
 
   using indexed_coloring_info_map_t = std::map<size_t, coloring_info_map_t>;
 
+  /*!
+    Collects all of the information needed to represent a FleCSI BLIS
+    index space.
+   */
   struct index_space_t {
     size_t index_space_id;
     Legion::IndexSpace index_space;
@@ -54,6 +68,9 @@ public:
     size_t total_num_entities;
   };
 
+  /*!
+    Collects all of the information needed to represent a local index space.
+   */
   struct local_index_space_t {
     size_t index_space_id;
     Legion::IndexSpace index_space;
@@ -62,6 +79,10 @@ public:
     size_t capacity;
   };
 
+  /*!
+    Collects all of the information needed to represent a mesh topology
+    adjacency index space.
+   */
   struct adjacency_t {
     size_t index_space_id;
     size_t from_index_space_id;
@@ -141,7 +162,7 @@ public:
       if (fi.storage_class == global) {
         allocator.allocate_field(fi.size, fi.fid);
       } // if
-    }   // for
+    } // for
 
     global_index_space_.logical_region = runtime_->create_logical_region(
         ctx_, global_index_space_.index_space, global_index_space_.field_space);
@@ -185,6 +206,9 @@ public:
 
   } // init_from_coloring_info_map
 
+  /*!
+    Create a new BLIS index space.
+   */
   void add_index_space(
       size_t index_space_id,
       const coloring_info_map_t & coloring_info_map) {
@@ -289,6 +313,9 @@ public:
     return is;
   }
 
+  /*!
+    Create a mesh topology adjacency index space.
+   */
   void add_adjacency(const adjacency_info_t & adjacency_info) {
     using namespace std;
 
@@ -377,6 +404,11 @@ public:
     adjacency_map_.emplace(adjacency_info.index_space, std::move(c));
   }
 
+  /*!
+    After gathering all of the necessary information specified in the methods
+    above this method is finally called to assemble and allocate fields spaces
+    and logical regions for BLIS index spaces.
+   */
   void finalize(const indexed_coloring_info_map_t & indexed_coloring_info_map) {
     using namespace std;
 
@@ -458,7 +490,7 @@ public:
         if (fi.storage_class == color) {
           allocator.allocate_field(fi.size, fi.fid);
         } // if
-      }   // for
+      } // for
       color_index_space_.logical_region = runtime_->create_logical_region(
           ctx_, color_index_space_.index_space, color_index_space_.field_space);
       attach_name(
@@ -504,108 +536,6 @@ public:
     return adjacency_map_;
   }
 
-  void fill_adjacency(
-      size_t index_space_id,
-      size_t color,
-      size_t size,
-      uint64_t * offsets,
-      uint64_t * indices) {
-    using namespace std;
-
-    using namespace Legion;
-    using namespace LegionRuntime;
-    using namespace Arrays;
-
-    using namespace execution;
-
-    context_t & context = context_t::instance();
-
-    auto itr = adjacency_map_.find(index_space_id);
-    clog_assert(itr != adjacency_map_.end(), "invalid adjacency");
-    adjacency_t & c = itr->second;
-    index_space_t & iis = index_space_map_[c.from_index_space_id];
-
-    IndexSpace is = h.create_index_space(0, size - 1);
-    FieldSpace fs = h.create_field_space();
-    FieldAllocator a = h.create_field_allocator(fs);
-
-    auto adjacency_offset_fid = FieldID(internal_field::adjacency_offset);
-
-    auto adjacency_index_fid = FieldID(internal_field::adjacency_index);
-
-    a.allocate_field(sizeof(uint64_t), adjacency_offset_fid);
-    a.allocate_field(sizeof(uint64_t), adjacency_index_fid);
-
-    LogicalRegion lr = h.create_logical_region(is, fs);
-
-    RegionRequirement rr(lr, WRITE_DISCARD, EXCLUSIVE, lr);
-    rr.add_field(adjacency_offset_fid);
-    rr.add_field(adjacency_index_fid);
-    InlineLauncher il(rr);
-
-    PhysicalRegion pr = runtime_->map_region(ctx_, il);
-    pr.wait_until_valid();
-
-    uint64_t * dst_offsets;
-    h.get_buffer(pr, dst_offsets, adjacency_offset_fid);
-
-    uint64_t * dst_indices;
-    h.get_buffer(pr, dst_indices, adjacency_index_fid);
-
-    std::memcpy(dst_offsets, offsets, sizeof(uint64_t) * size);
-    std::memcpy(dst_indices, indices, sizeof(uint64_t) * size);
-
-    runtime_->unmap_region(ctx_, pr);
-
-    auto fill_adjacency_tid =
-        context.task_id<__flecsi_internal_task_key(fill_adjacency_task)>();
-
-    FieldID adjacency_fid =
-        context.adjacency_fid(c.from_index_space_id, c.to_index_space_id);
-
-    auto p = std::make_tuple(c.from_index_space_id, c.to_index_space_id, size);
-
-    TaskLauncher l(fill_adjacency_tid, TaskArgument(&p, sizeof(p)));
-
-    LogicalPartition color_conn_lp = runtime_->get_logical_partition(
-        ctx_, c.logical_region, c.index_partition);
-
-    LogicalRegion color_conn_lr =
-        runtime_->get_logical_subregion_by_color(ctx_, color_conn_lp, color);
-
-    RegionRequirement rr1(
-        color_conn_lr, WRITE_DISCARD, SIMULTANEOUS, c.logical_region);
-    rr1.add_field(adjacency_index_fid);
-    l.add_region_requirement(rr1);
-
-    LogicalPartition color_lp = runtime_->get_logical_partition(
-        ctx_, iis.logical_region, iis.index_partition);
-
-    LogicalRegion color_lr =
-        runtime_->get_logical_subregion_by_color(ctx_, color_lp, color);
-
-    RegionRequirement rr2(
-        color_lr, WRITE_DISCARD, SIMULTANEOUS, iis.logical_region);
-    rr2.add_field(adjacency_fid);
-    l.add_region_requirement(rr2);
-
-    RegionRequirement rr3(lr, READ_ONLY, SIMULTANEOUS, lr);
-    rr3.add_field(adjacency_offset_fid);
-    rr3.add_field(adjacency_index_fid);
-    l.add_region_requirement(rr3);
-
-    MustEpochLauncher must_epoch_launcher;
-    DomainPoint point(color);
-    must_epoch_launcher.add_single_task(point, l);
-
-    auto future = runtime_->execute_must_epoch(ctx_, must_epoch_launcher);
-    future.wait_all_results();
-
-    runtime_->destroy_index_space(ctx_, is);
-    runtime_->destroy_field_space(ctx_, fs);
-    runtime_->destroy_logical_region(ctx_, lr);
-  }
-
   index_space_t global_index_space() {
     return global_index_space_;
   }
@@ -629,8 +559,10 @@ private:
 
   std::set<size_t> index_spaces_;
 
+  // key: index space
   std::unordered_map<size_t, index_space_t> index_space_map_;
 
+  // key: index space
   std::unordered_map<size_t, adjacency_t> adjacency_map_;
 
   std::set<size_t> adjacencies_;
@@ -659,8 +591,6 @@ private:
 } // namespace data
 
 } // namespace flecsi
-
-#endif // flecsi_legion_legion_data_h
 
 /*~-------------------------------------------------------------------------~-*
  *~-------------------------------------------------------------------------~-*/

@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_reorder_h
-#define flecsi_utils_reorder_h
+#pragma once
 
 //!
 //! \file
@@ -91,8 +90,6 @@ reorder_destructive(
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_reorder_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

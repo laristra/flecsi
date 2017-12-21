@@ -5,8 +5,8 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/data/data.h"
-#include "flecsi/execution/execution.h"
+#include <flecsi/data/data.h>
+#include <flecsi/execution/execution.h>
 
 ///
 /// \file

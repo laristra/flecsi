@@ -25,9 +25,9 @@
 
 #include <map>
 
-#include "flecsi/coloring/crs.h"
-#include "flecsi/topology/closure_utils.h"
-#include "flecsi/topology/mesh_definition.h"
+#include <flecsi/coloring/crs.h>
+#include <flecsi/topology/closure_utils.h>
+#include <flecsi/topology/mesh_definition.h>
 
 namespace flecsi {
 namespace coloring {
@@ -81,7 +81,7 @@ naive_coloring(topology::mesh_definition__<MESH_DIMENSION> & md) {
       indices.insert(offset + i);
       clog_one(info) << "inserting: " << offset + i << std::endl;
     } // for
-  }   // guard
+  } // guard
 
   return indices;
 } // naive_coloring

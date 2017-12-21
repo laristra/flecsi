@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_tuple_function_h
-#define flecsi_utils_tuple_function_h
+#pragma once
 
 //!
 //! \file
@@ -61,8 +60,6 @@ std::function<void()> tuple_function_mpi(T & f, std::tuple<As ...> & t) {
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_tuple_function_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

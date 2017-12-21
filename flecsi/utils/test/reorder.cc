@@ -13,7 +13,7 @@
  *~--------------------------------------------------------------------------~*/
 
 // user includes
-#include "flecsi/utils/reorder.h"
+#include <flecsi/utils/reorder.h>
 
 // system includes
 #include <cinchtest.h>

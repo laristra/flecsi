@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_const_string_h
-#define flecsi_utils_const_string_h
+#pragma once
 
 //!
 //! \file
@@ -117,8 +116,6 @@ struct const_string_hasher_t {
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_const_string
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

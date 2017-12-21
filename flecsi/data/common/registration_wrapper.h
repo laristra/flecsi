@@ -1,8 +1,7 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_registration_wrapper_h
-#define flecsi_data_registration_wrapper_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -13,16 +12,16 @@
 #include <string>
 #include <tuple>
 
-#include "flecsi/data/data_constants.h"
-#include "flecsi/data/storage.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/internal_index_space.h"
-#include "flecsi/runtime/types.h"
-#include "flecsi/topology/mesh_topology.h"
-#include "flecsi/topology/set_topology.h"
-#include "flecsi/utils/common.h"
-#include "flecsi/utils/hash.h"
-#include "flecsi/utils/tuple_walker.h"
+#include <flecsi/data/data_constants.h>
+#include <flecsi/data/storage.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/internal_index_space.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/topology/mesh_topology.h>
+#include <flecsi/topology/set_topology.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/hash.h>
+#include <flecsi/utils/tuple_walker.h>
 
 // clog_register_tag(registration);
 
@@ -88,10 +87,10 @@ struct client_registration_wrapper__ {}; // class client_registration_wrapper__
 
 template<typename POLICY_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
 struct client_registration_wrapper__<
-    flecsi::topology::mesh_topology_t<POLICY_TYPE>,
+    flecsi::topology::mesh_topology__<POLICY_TYPE>,
     NAMESPACE_HASH,
     NAME_HASH> {
-  using CLIENT_TYPE = typename flecsi::topology::mesh_topology_t<POLICY_TYPE>;
+  using CLIENT_TYPE = typename flecsi::topology::mesh_topology__<POLICY_TYPE>;
 
   //--------------------------------------------------------------------------//
   //!
@@ -146,8 +145,8 @@ struct client_registration_wrapper__<
 
   }; // struct entity_walker_t
 
-  struct connectivity_walker_t
-      : public flecsi::utils::tuple_walker__<connectivity_walker_t> {
+  struct connectivity_walker__
+      : public flecsi::utils::tuple_walker__<connectivity_walker__> {
 
     template<typename T, T V>
     T value(topology::typeify<T, V>) {
@@ -209,10 +208,10 @@ struct client_registration_wrapper__<
           client_key, offset_key, offset_wrapper_t::register_callback);
     } // handle_type
 
-  }; // struct connectivity_walker_t
+  }; // struct connectivity_walker__
 
-  struct binding_walker_t
-      : public flecsi::utils::tuple_walker__<binding_walker_t> {
+  struct binding_walker__
+      : public flecsi::utils::tuple_walker__<binding_walker__> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {
@@ -245,7 +244,7 @@ struct client_registration_wrapper__<
           client_key, key, wrapper_t::register_callback);
     } // handle_type
 
-  }; // struct binding_walker_t
+  }; // struct binding_walker__
 
   //--------------------------------------------------------------------------//
   //!
@@ -268,10 +267,10 @@ struct client_registration_wrapper__<
       entity_walker_t entity_walker;
       entity_walker.template walk_types<entity_types_t>();
 
-      connectivity_walker_t connectivity_walker;
+      connectivity_walker__ connectivity_walker;
       connectivity_walker.template walk_types<connectivities>();
 
-      binding_walker_t binding_walker;
+      binding_walker__ binding_walker;
       binding_walker.template walk_types<bindings>();
     } // if
 
@@ -285,10 +284,10 @@ struct client_registration_wrapper__<
 
 template<typename POLICY_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
 struct client_registration_wrapper__<
-    flecsi::topology::set_topology_t<POLICY_TYPE>,
+    flecsi::topology::set_topology__<POLICY_TYPE>,
     NAMESPACE_HASH,
     NAME_HASH> {
-  using CLIENT_TYPE = typename flecsi::topology::set_topology_t<POLICY_TYPE>;
+  using CLIENT_TYPE = typename flecsi::topology::set_topology__<POLICY_TYPE>;
 
   //--------------------------------------------------------------------------//
   //!
@@ -327,7 +326,7 @@ struct client_registration_wrapper__<
 
     } // handle_type
 
-  }; // struct binding_walker_t
+  }; // struct binding_walker__
 
   //--------------------------------------------------------------------------//
   //!
@@ -350,8 +349,6 @@ struct client_registration_wrapper__<
 
 } // namespace data
 } // namespace flecsi
-
-#endif // flecsi_data_registration_wrapper_h
 
 /*~-------------------------------------------------------------------------~-*
  *~-------------------------------------------------------------------------~-*/

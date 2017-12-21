@@ -4,8 +4,7 @@
 // Header for Assert
 // (c) Copyright 2011 LANSLLC all rights reserved.
 
-#ifndef FLECSI_UTILS_DBC_IMPL_H
-#define FLECSI_UTILS_DBC_IMPL_H
+#pragma once
 
 #ifndef IM_OK_TO_INCLUDE_DBC_IMPL
 #warning                                                                       \
@@ -63,6 +62,5 @@ assertf_l(
 
 } // namespace dbc
 } // namespace flecsi
-#endif // include guard
 
 // End of file

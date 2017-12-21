@@ -1,24 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_mpi_future_h
-#define flecsi_execution_mpi_future_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! \file
-//! \date Initial file creation: Nov 15, 2015
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <functional>
 #include <memory>
@@ -30,11 +25,11 @@ namespace execution {
 // Future concept.
 //----------------------------------------------------------------------------//
 
-//----------------------------------------------------------------------------//
-//! Abstract interface type for MPI futures.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
+/*!
+ Abstract interface type for MPI futures.
+
+ @ingroup legion-execution
+ */
 template<
   typename R
 >
@@ -42,46 +37,39 @@ struct mpi_future__
 {
   using result_t = R;
 
-  ///
-  /// wait() method
-  ///
+  /*!
+    wait() method
+   */
   void wait() {}
 
-  ///
-  /// get() mothod
-  ///
+  /*!
+    get() mothod
+   */
   const result_t & get(size_t index = 0) const { return result_; }
 
 //private:
 
-  ///
-  /// set method
-  ///
+  /*!
+    set method
+   */
   void set(const result_t & result) { result_ = result; }
 
   result_t result_;
 
 }; // struct mpi_future__
 
-///
-///
-///
+/*!
+ FIXME documentation
+ */
 template<>
 struct mpi_future__<void>
 {
-  ///
-  ///
-  ///
+  /*!
+   FIXME documentation
+   */
   void wait() {}
 
 }; // struct mpi_future__
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_mpi_future_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

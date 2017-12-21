@@ -32,7 +32,14 @@ struct sparse_mutator_base_t {};
 
 //----------------------------------------------------------------------------//
 //! The mutator type captures information about permissions
-//! and specifies a data policy.
+//! and specifies a data policy. The sparse mutator uses a temporary slots
+//! buffer and overflow "spare" map for insertions which are then commited
+//! to the persistent sparse data buffer by the sparse handle's commit method.
+//! A mutator is instantiated with a fixed number of slots which for optimal
+//! performance should roughly approximate the expected number of entry
+//! insertions per index. operator() is used to insert entries at a given index
+//! into these buffers, and keeps entries in sorted order per index. Entries
+//! may also be deleted with erase().
 //!
 //! @tparam T                     The data type referenced by the handle.
 //!

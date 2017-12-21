@@ -8,7 +8,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "flecsi/data/data.h"
+#include <flecsi/data/data.h>
 
 /*
 #define np(X)                                                            \

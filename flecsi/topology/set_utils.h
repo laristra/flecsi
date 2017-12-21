@@ -48,8 +48,9 @@ struct find_set_entity__ {
     using INDEX_SPACE = typename std::tuple_element<0, E>::type;
 
     // Check match for index space or recurse if not matched.
-    return INDEX_SPACE::value == FIND_INDEX_SPACE ? I
-      : find_set_entity__<I - 1, TUPLE_TYPE, FIND_INDEX_SPACE>::find();
+    return INDEX_SPACE::value == FIND_INDEX_SPACE
+               ? I
+               : find_set_entity__<I - 1, TUPLE_TYPE, FIND_INDEX_SPACE>::find();
   }
 
 }; // find_set_entity__
@@ -70,7 +71,7 @@ struct find_set_entity__<0, TUPLE_TYPE, FIND_INDEX_SPACE> {
   static constexpr size_t find() {
     assert(false && "failed to find set entity");
   } // find
-};  // struct find_set_entity__
+}; // struct find_set_entity__
 
 //-----------------------------------------------------------------//
 //! \struct find_set_entity_ set_utils.h
@@ -84,8 +85,12 @@ struct find_set_entity_ {
   using entity_types = typename SET_TYPES::entity_types;
 
   using element = typename std::tuple_element<
-    find_set_entity__<std::tuple_size<entity_types>::value,
-    entity_types, FIND_INDEX_SPACE>::find() - 1, entity_types>::type;
+      find_set_entity__<
+          std::tuple_size<entity_types>::value,
+          entity_types,
+          FIND_INDEX_SPACE>::find() -
+          1,
+      entity_types>::type;
 
   //-----------------------------------------------------------------//
   //! Define the type returned by searching the tuple for matching

@@ -12,15 +12,14 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_index_space_h
-#define flecsi_utils_index_space_h
+#pragma once
 
 //!
 //! \file
 //! \date Initial file creation: Oct 09, 2015
 //!
 
-#include "flecsi/utils/iterator.h"
+#include <flecsi/utils/iterator.h>
 
 namespace flecsi {
 namespace utils {
@@ -82,8 +81,6 @@ private:
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_index_space_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

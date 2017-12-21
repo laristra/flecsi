@@ -4,8 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 /// \file
 
-#ifndef flecsi_utils_type_traits_h
-#define flecsi_utils_type_traits_h
+#pragma once
 
 namespace flecsi {
 namespace utils {
@@ -119,5 +118,3 @@ constexpr bool is_iterative_container_v = is_iterative_container<T>::value;
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_type_traits_h

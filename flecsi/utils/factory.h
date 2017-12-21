@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_factory_h
-#define flecsi_utils_factory_h
+#pragma once
 
 #include <iostream>
 #include <map>
@@ -116,8 +115,6 @@ private:
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_factory_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

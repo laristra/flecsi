@@ -11,8 +11,7 @@
 // code was written, and to fit the needs of FleCSI.
 //
 
-#ifndef flecsi_utils_reflection_h
-#define flecsi_utils_reflection_h
+#pragma once
 
 ///
 /// \file
@@ -30,7 +29,7 @@
 
 #include <boost/preprocessor.hpp>
 
-#include "flecsi/utils/utility.h"
+#include <flecsi/utils/utility.h>
 
 /*----------------------------------------------------------------------------*
  * Macro definitions.
@@ -126,12 +125,10 @@ struct reflection {
   static typename T::template reflection_variable__<N, T> variable(T & t) {
     return typename T::template reflection_variable__<N, T>(t);
   } // get_variable
-};  // reflection
+}; // reflection
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_reflection_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
