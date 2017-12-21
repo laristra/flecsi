@@ -189,7 +189,17 @@ struct storage_class__<dense> {
   get_handles(const data_client_t & data_client, size_t version, bool sorted) {}
 
   /*!
-    FIXME documentation
+    Obtain a dense data handle to a field that resides on the specified data
+    client.
+
+    @param client_handle the data client that owns the field.
+
+    @tparam DATA_CLIENT_TYPE The data client type.
+    @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
+                             of attribute names to avoid collisions.
+    @tparam NAME             The field name.
+    @tparam VERSION          The field version.
+    @tparam PERMISSIONS      The data client permissions.
    */
   template<
       typename DATA_CLIENT_TYPE,
