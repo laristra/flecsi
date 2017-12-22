@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <flecsi/utils/logging.h>
 
 #if !defined(ENABLE_OPENSSL)
@@ -33,14 +32,16 @@ struct checksum_t {
   unsigned int length;
 }; // struct checksum_t
 
-///
-/// Compute the checksum of an array.
-///
-/// \param buffer The data buffer on which to compute the checksum.
-/// \param elements The size of the buffer.
-/// \param[out] sum The checksum data structure to fill.
-/// \param[in] digest The digest context.
-///
+/*!
+  Compute the checksum of an array.
+
+  @param buffer The data buffer on which to compute the checksum.
+  @param elements The size of the buffer.
+  @param[out] sum The checksum data structure to fill.
+  @param[in] digest The digest context.
+
+  @ingroup utils
+ */
 template<typename T>
 void
 checksum(
