@@ -2,6 +2,9 @@
 
 #include <vector>
 
+#include <flecsi/data/data_client_handle.h>
+#include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/common/privilege.h>
 #include <specialization/mesh/types.h>
 
 namespace flecsi {
@@ -26,6 +29,11 @@ using mesh_t = specialization_mesh_t;
 template<
   size_t PS>
 using mesh = data_client_handle__<mesh_t, PS>;
+
+template<
+  size_t SHARED_PRIVILEGES
+>
+using field = dense_accessor<double, rw, SHARED_PRIVILEGES, ro>;
 
 } // namespace tutorial
 } // namespace flecsi
