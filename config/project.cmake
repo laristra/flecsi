@@ -380,7 +380,7 @@ install(
 #------------------------------------------------------------------------------#
 
 cinch_add_library_target(FleCSI flecsi)
-cinch_add_library_target(FleCSI-Tut tutorial/specialization)
+cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
 
 #------------------------------------------------------------------------------#
 # Link the necessary libraries

@@ -51,9 +51,77 @@ These are the FleCSI end-users, who have expertise in designing and
 implementing numerical methods to solve complicated, multiphysics
 simulation problems.
 
-## Requirements
+The source code implementing a FleCSI project will reflect this user
+structure: The project will link to the core FleCSI library; The project
+will use one or more specializations (These will usually also be
+libraries that are linked to by the application.); and, The application
+developers will use the core and specialization interfaces to write
+their applications.
+
+# Tutorial
+
+This tutorial is primarily designed as an introduction for application
+developers, i.e., we do not go into the details of designing or
+implmenting the specialization layer, and the discussion of core FleCSI
+features is limited to the high-level execution and data interfaces.
+
+Because a specialization layer is necessary to use FleCSI, we have
+provided a simple mesh interface as part of the tutorial. Users who are
+interested in the basic structure of a mesh_topology specialization are
+encouraged to examine the source code in the *specialization*
+subdirectory of this tutorial (The complete source code is in the
+*flecsi-tutorial/specialization* subdirectory of the main project.)
+
+# Requirements
 
 This tutorial assumes that you have successfully downloaded and built
 FleCSI, and that you have installed it somewhere on your system.
+Instructions for building FleCSI are available from the related pages
+[here](pages.html).
+
+# Building the Examples
+
+The example codes in the tutorial are meant to be built using the
+*flecsit* tool. To use *flecsit*, you must first configure your path to
+find the script, and to include any dynamic library dependencies. We
+have provided initialization scripts for bash, csh, and environment
+modules to ease this step.
+
+To use the bash or csh script, simply source the script (located in the
+bin directory of your FleCSI install path):
+
+```
+$ source CMAKE_INSTALL_PREFIX/bin/flecsi.{sh,csh}
+```
+
+To use the environment module, you will need to install the module file
+in an appropriate path (This may have been done by your administrator.)
+You can then load the module as usual:
+
+```
+$ module load flecsi
+```
+
+Once your environment has been correctly configured, you can build any
+of the tutorial examples like:
+
+```
+$ flecsit compile example.cc
+```
+
+where *example.cc* is the name of the example source file. This will
+produce an executable that can be run like:
+
+```
+$ ./example.Linux
+```
+
+Note that the executable suffix will depend on your operating system.
+Some exmaples are designed to run in parallel (indicated in the example
+documentation). These should be run with a suitable MPI interpreter:
+
+```
+$ mpirun -np 2 example.Linux
+```
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
