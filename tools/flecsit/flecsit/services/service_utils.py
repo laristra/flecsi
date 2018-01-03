@@ -82,10 +82,6 @@ def add_command_line_compiler_options(parser):
              ' command line arguements.'
     )
 
-    parser.add_argument('driver', nargs='*', action='append',
-        help='The files to anaylze.'
-    )
-
 # add_compiler_options
 
 #------------------------------------------------------------------------------#
