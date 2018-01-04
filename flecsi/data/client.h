@@ -231,6 +231,11 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
     h.name_hash = NAME_HASH;
     h.namespace_hash = NAMESPACE_HASH;
+      
+    clog_assert(storage_t::instance().client_exists( h.client_hash ), 
+        "\nThe data_client you are trying to access with key " << 
+        h.client_hash << " does not exist!" <<
+        "\nMake sure it has been properly registered!" );
 
     entity_walker_t entity_walker;
     entity_walker.template walk_types<entity_types>();
