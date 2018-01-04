@@ -17,7 +17,6 @@
 #include <flecsi/topology/types.h>
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/data/data_client_handle.h>
-#include <flecsi/data/data_handle.h>
 
 using namespace std;
 using namespace flecsi;

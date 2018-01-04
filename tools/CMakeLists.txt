@@ -35,7 +35,7 @@ list(REMOVE_DUPLICATES _includes)
 set(FLECSIT_INCLUDES)
 foreach(inc ${_includes})
   set(FLECSIT_INCLUDES
-    "${FLECSIT_INCLUDES} ${inc}")
+    "${FLECSIT_INCLUDES} -I${inc}")
 endforeach()
 
 string(STRIP "${FLECSIT_INCLUDES}" FLECSIT_INCLUDES)
@@ -44,17 +44,31 @@ string(STRIP "${FLECSIT_INCLUDES}" FLECSIT_INCLUDES)
 # Create list of link directories for LD_LIBRARY_PATH hint
 set(FLECSIT_LIBRARIES)
 set(FLECSIT_LDFLAGS)
-foreach(lib ${FLECSI_RUNTIME_LIBRARIES})
+set(FLECSI_LD_DEPENDS_LIST)
+foreach(lib ${FLECSI_LIBRARY_DEPENDENCIES})
   # Runtime link libraries
   set(FLECSIT_LIBRARIES
     "${FLECSIT_LIBRARIES} ${lib}")
 
   # LD_LIBRARY_PATH hint
   get_filename_component(_path ${lib} DIRECTORY)
-  list(APPEND FLECSIT_LDFLAGS ${_path})
+  set(FLECSIT_LDFLAGS "${FLECSIT_LDFLAGS} -L${_path}")
+  list(APPEND FLECSI_LD_DEPENDS_LIST ${_path})
 endforeach()
 
-string(STRIP "${FLECSI_RUNTIME_LIBRARIES}" FLECSI_RUNTIME_LIBRARIES)
+string(STRIP "${FLECSIT_LIBRARIES}" FLECSIT_LIBRARIES)
+
+list(REMOVE_DUPLICATES FLECSI_LD_DEPENDS_LIST)
+
+# Process the list of path dependencies for environment module LD_LIBARRY_PATH
+set(FLECSI_LD_DEPENDS)
+foreach(lib ${FLECSI_LD_DEPENDS_LIST})
+  if(NOT FLECSI_LD_DEPENDS)
+    set(FLECSI_LD_DEPENDS "${lib}")
+  else()
+    set(FLECSI_LD_DEPENDS "${FLECSI_LD_DEPENDS}:${lib}")
+  endif()
+endforeach()
 
 # Append local build and remove duplicates
 list(APPEND FLECSIT_LDFLAGS ${CMAKE_BINARY_DIR}/lib)

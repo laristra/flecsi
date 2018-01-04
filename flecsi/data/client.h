@@ -49,14 +49,20 @@ class mesh_entity__;
 namespace data {
 
 //----------------------------------------------------------------------------//
-//! FIXME: Description of class
+//! The data client policy handler is responsible for extracting compile-time
+//! information from various data client types such as index spaces and entity
+//! types defined on mesh topology or set topology and provides methods such as
+//! those for obtaining a client handle and populating required fields on the 
+//! data client handle. This class is specialized on a specific data client
+//! type such as mesh, set, or tree topology.
 //----------------------------------------------------------------------------//
 
 template<typename DATA_CLIENT>
 struct data_client_policy_handler__ {};
 
 //----------------------------------------------------------------------------//
-//! FIXME: Description of class
+//! The data client policy handler for global data client. Populate the
+//! required fields on the client handle.
 //----------------------------------------------------------------------------//
 
 template<>
@@ -77,7 +83,11 @@ struct data_client_policy_handler__<global_data_client_t> {
 }; // struct data_client_policy_handler__
 
 //----------------------------------------------------------------------------//
-//! FIXME: Description of class
+//! The data client policy handler for mesh topology. This class provides
+//! tuple walkers for extracting information from the entity types, bindings,
+//! and connectivity tuples and obtaining information about field IDs in order
+//! to populate fields on the data client handle so that it can be properly
+//! processed when passed to a task.
 //----------------------------------------------------------------------------//
 
 template<typename POLICY_TYPE>
@@ -351,7 +361,11 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
 }; // struct data_client_policy_handler__
 
 //----------------------------------------------------------------------------//
-//! FIXME: Description of class
+//! The data client policy handler for set topology. This class provides
+//! tuple walkers for extracting information from the entity types
+//! and obtaining information about field IDs in order
+//! to populate fields on the data client handle so that it can be properly
+//! processed when passed to a task.
 //----------------------------------------------------------------------------//
 
 template<typename POLICY_TYPE>

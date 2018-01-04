@@ -33,7 +33,8 @@ namespace data {
 
 //----------------------------------------------------------------------------//
 //! The storage__ type provides a high-level data model context interface that
-//! is implemented by the given storage policy.
+//! is implemented by the given storage policy. It provides an interface for
+//! client and field registration.
 //!
 //! @tparam USER_META_DATA A user-defined meta data type.
 //! @tparam STORAGE_POLICY The backend storage policy.

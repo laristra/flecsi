@@ -322,9 +322,29 @@
   /* Define a lambda predicate function to test the attribute */               \
   [](const auto & a) { return a.attributes().test(attribute); }
 
-//
-// FIXME: These need to be updated and documented
-//
+/*!
+  @def flecsi_get_mutator
+
+  Get a mutator handle for sparse data. A mutator allows for the sparse
+  allocation of new entries associated with an index as well as for
+  erasing existing entries.
+
+  @param client_handle the data client handle
+  @param nspace data namespace
+  @param name data names
+  @param data_type data type e.g. float, long -- 
+    any data type so long as it is trivially copyable
+  @param storage_class storage class, e.g. dense, sparse
+  @param version version number
+  @param slots number of slots to use for data commit -- 
+    for optimal performance this should roughly be set to the expected
+    number of entries that will be inserted per index although, it is fine
+    if the number of inserted entries exceeds this value.
+
+  @return a mutator handle
+
+  @ingroup data
+ */
 
 #define flecsi_get_mutator(                                                    \
     client_handle, nspace, name, data_type, storage_class, version, slots)     \
@@ -337,7 +357,10 @@
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
       version>(client_handle, slots)
-
+      
+/*!
+ FIXME documentation
+*/
 #define flecsi_get_all_handles(                                                \
     client, storage_class, handles, hashes, namespaces, versions)              \
                                                                                \
@@ -345,6 +368,9 @@
       flecsi::data::storage_class>(                                            \
       client, handles, hashes, namespaces, versions)
 
+/*!
+  FIXME documentation
+*/
 #define flecsi_put_all_handles(                                                \
     client, storage_class, num_handles, handles, hashes, namespaces, versions) \
                                                                                \

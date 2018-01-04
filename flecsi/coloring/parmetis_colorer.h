@@ -31,27 +31,35 @@
 namespace flecsi {
 namespace coloring {
 
-//----------------------------------------------------------------------------//
-//! The colorer_t type provides a ParMETIS implementation of the
-//! colorer_t interface.
-//----------------------------------------------------------------------------//
+/*!
+  The colorer_t type provides a ParMETIS implementation of the
+  colorer_t interface.
+ */
 
 struct parmetis_colorer_t : public colorer_t {
-  //! Default constructor
+  /*!
+   Default constructor
+   */
   parmetis_colorer_t() {}
 
-  //! Copy constructor (disabled)
+  /*!
+   Copy constructor (disabled)
+   */
   parmetis_colorer_t(const parmetis_colorer_t &) = delete;
 
-  //! Assignment operator (disabled)
+  /*!
+   Assignment operator (disabled)
+   */
   parmetis_colorer_t & operator=(const parmetis_colorer_t &) = delete;
 
-  //! Destructor
+  /*!
+    Destructor
+   */
   ~parmetis_colorer_t() {}
 
-  //--------------------------------------------------------------------------//
-  //! Implementation of color method. See \ref colorer_t::color.
-  //--------------------------------------------------------------------------//
+  /*!
+   Implementation of color method. See \ref colorer_t::color.
+   */
 
   std::set<size_t> color(const dcrs_t & dcrs) override {
     int size;

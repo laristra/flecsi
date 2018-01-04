@@ -1,7 +1,20 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
+
+/*! @file */
+
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
@@ -18,7 +31,7 @@
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client.h>
-#include <flecsi/data/data_handle.h>
+#include <flecsi/data/dense_data_handle.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/index_space.h>
@@ -61,13 +74,13 @@ template<
   size_t SP,
   size_t GP
 >
-struct dense_handle_t : public data_handle__<T, EP, SP, GP>
+struct dense_handle_t : public dense_data_handle__<T, EP, SP, GP>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using base = data_handle__<T, EP, SP, GP>;
+  using base = dense_data_handle__<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -92,7 +105,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 //----------------------------------------------------------------------------//
 
 ///
-/// FIXME: Dense storage type.
+/// Dense storage type. Provides an interface from obtaining data handles
 ///
 template<>
 struct storage_class__<dense>
@@ -109,6 +122,21 @@ struct storage_class__<dense>
   >
   using handle_t = dense_handle_t<T, EP, SP, GP>;
 
+  /*!
+    Obtain a dense data handle to a field that resides on the specified data
+    client.
+
+    @param client_handle the data client that owns the field.
+
+    @tparam DATA_CLIENT_TYPE The data client type.
+    @tparam DATA_TYPE        Handle datatype, e.g. double, int, trivially
+                             copyable structs, etc.
+    @tparam NAMES            The namespace key. Namespaces allow separation
+                             of attribute names to avoid collisions.
+    @tparam NAME             The field name.
+    @tparam VERSION          The field version.
+    @tparam PERMISSIONS      The data client permissions.
+   */
   template<
     typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
@@ -154,7 +182,7 @@ struct storage_class__<dense>
 
     auto data = registered_field_data[field_info.fid].data();
     // populate data member of data_handle_t
-    auto &hb = dynamic_cast<data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
+    auto &hb = dynamic_cast<dense_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
 
     hb.fid = field_info.fid;
     hb.index_space = field_info.index_space;
@@ -182,5 +210,3 @@ struct storage_class__<dense>
 } // namespace data
 } // namespace flecsi
 
-/*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/

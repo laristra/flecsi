@@ -58,7 +58,7 @@
 namespace flecsi {
 namespace topology {
 
-template<typename T, size_t D>
+template<typename T, size_t DIM>
 struct tree_geometry__ {};
 
 //-----------------------------------------------------------------//
@@ -314,14 +314,14 @@ struct tree_geometry__<T, 3> {
 
 /*!
   This class implements a hashed/Morton-style branch id that can be
-  parameterized on arbitrary dimension D and integer type T.
+  parameterized on arbitrary dimension DIM and integer type T.
  */
-template<typename T, size_t D>
+template<typename T, size_t DIM>
 class branch_id__ {
 public:
   using int_t = T;
 
-  static const size_t dimension = D;
+  static const size_t dimension = DIM;
 
   static constexpr size_t bits = sizeof(int_t) * 8;
 
@@ -475,7 +475,7 @@ public:
 
     for (size_t i = 1; i <= d; ++i) {
       int_t val = (id & mask) >> (bits - dimension);
-      ostr << i << ":" << std::bitset<D>(val) << " ";
+      ostr << i << ":" << std::bitset<DIM>(val) << " ";
       id <<= dimension;
     }
   }
@@ -560,16 +560,16 @@ private:
   size_t id_;
 };
 
-template<typename T, size_t D>
+template<typename T, size_t DIM>
 std::ostream &
-operator<<(std::ostream & ostr, const branch_id__<T, D> & id) {
+operator<<(std::ostream & ostr, const branch_id__<T, DIM> & id) {
   id.output_(ostr);
   return ostr;
 }
 
-template<typename T, size_t D>
+template<typename T, size_t DIM>
 struct branch_id_hasher__ {
-  size_t operator()(const branch_id__<T, D> & k) const {
+  size_t operator()(const branch_id__<T, DIM> & k) const {
     return std::hash<T>()(k.value_());
   }
 };
@@ -1763,12 +1763,12 @@ private:
 //-----------------------------------------------------------------//
 //! Tree entity base class.
 //-----------------------------------------------------------------//
-template<typename T, size_t D>
+template<typename T, size_t DIM>
 class tree_entity {
 public:
   using id_t = entity_id_t;
 
-  using branch_id_t = branch_id__<T, D>;
+  using branch_id_t = branch_id__<T, DIM>;
 
   tree_entity() : branch_id_(branch_id_t::null()) {}
 
@@ -1810,14 +1810,14 @@ private:
 //-----------------------------------------------------------------//
 //! Tree branch base class.
 //-----------------------------------------------------------------//
-template<typename T, size_t D>
+template<typename T, size_t DIM>
 class tree_branch__ {
 public:
   using branch_int_t = T;
 
-  static const size_t dimension = D;
+  static const size_t dimension = DIM;
 
-  using branch_id_t = branch_id__<T, D>;
+  using branch_id_t = branch_id__<T, DIM>;
 
   using id_t = branch_id_t;
 

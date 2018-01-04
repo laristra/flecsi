@@ -24,6 +24,10 @@ set(coloring_HEADERS
   communicator.h
   crs.h
   index_coloring.h
+  dcrs_utils.h 
+  mpi_communicator.h
+  mpi_utils.h
+  parmetis_colorer.h
 )
 
 #------------------------------------------------------------------------------#

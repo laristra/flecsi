@@ -61,22 +61,22 @@ class FleCSIT_Analysis(Service):
         # Process command-line arguments
         #----------------------------------------------------------------------#
 
-        includes = generate_compiler_options(config['includes'],
-            args.include, 'FLECSIT_INCLUDES', '-I')
-        ldflags = generate_compiler_options(config['ldflags'],
-            args.ldflag, 'FLECSIT_LDFLAGS', '-L')
-        libraries = generate_compiler_options(config['libraries'],
-            args.library, 'FLECSIT_LIBRARIES', '-l')
+#        includes = generate_compiler_options(config['includes'],
+#            args.include, 'FLECSIT_INCLUDES', '-I')
+#        ldflags = generate_compiler_options(config['ldflags'],
+#            args.ldflag, 'FLECSIT_LDFLAGS', '-L')
+#        libraries = generate_compiler_options(config['libraries'],
+#            args.library, 'FLECSIT_LIBRARIES', '-l')
 
         # Copy cmake config to initialize build dict
         build = config
 
         # Set command-line arguments
-        build['includes'] = includes
-        build['libraries'] = ldflags + libraries
+#        build['includes'] = includes
+#        build['libraries'] = ldflags + libraries
 
         # Add driver to build defines
-        build['defines'] += ' -DFLECSI_DRIVER=' + args.driver
+        build['driver'] = args.driver
 
         # Get the base inptut deck name
         build['deck'] = splitext(basename(args.driver))[0]

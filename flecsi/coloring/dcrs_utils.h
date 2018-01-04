@@ -34,14 +34,14 @@ namespace coloring {
 
 clog_register_tag(dcrs_utils);
 
-//----------------------------------------------------------------------------//
-//! Create a naive coloring suitable for calling a distributed-memory
-//! coloring tool, e.g., ParMETIS.
-//!
-//! @tparam DIMENSION      The entity dimension for which to create a naive
-//!                        coloring.
-//! @tparam MESH_DIMENSION The dimension of the mesh definition.
-//----------------------------------------------------------------------------//
+/*!
+ Create a naive coloring suitable for calling a distributed-memory
+ coloring tool, e.g., ParMETIS.
+
+ @tparam DIMENSION      The entity dimension for which to create a naive
+                        coloring.
+ @tparam MESH_DIMENSION The dimension of the mesh definition.
+ */
 
 template<size_t DIMENSION, size_t MESH_DIMENSION>
 inline std::set<size_t>
@@ -86,23 +86,22 @@ naive_coloring(topology::mesh_definition__<MESH_DIMENSION> & md) {
   return indices;
 } // naive_coloring
 
-//----------------------------------------------------------------------------//
-//! Create distributed CRS representation of the graph defined by entities
-//! of FROM_DIMENSION to TO_DIMENSION through THRU_DIMENSION. The return
-//! object will be populated with a naive partitioning suitable for use
-//! with coloring tools, e.g., ParMETIS.
-//!
-//! @tparam FROM_DIMENSION The topological dimension of the entity for which
-//!                        the partitioning is requested.
-//! @tparam TO_DIMENSION   The topological dimension to search for neighbors.
-//! @tparam THRU_DIMENSION The topological dimension through which the neighbor
-//!                        connection exists.
-//!
-//! @param md The mesh definition.
-//!
-//! @ingroup coloring
-//----------------------------------------------------------------------------//
+/*!
+ Create distributed CRS representation of the graph defined by entities
+ of FROM_DIMENSION to TO_DIMENSION through THRU_DIMENSION. The return
+ object will be populated with a naive partitioning suitable for use
+ with coloring tools, e.g., ParMETIS.
 
+ @tparam FROM_DIMENSION The topological dimension of the entity for which
+                        the partitioning is requested.
+ @tparam TO_DIMENSION   The topological dimension to search for neighbors.
+ @tparam THRU_DIMENSION The topological dimension through which the neighbor
+                        connection exists.
+
+ @param md The mesh definition.
+
+ @ingroup coloring
+ */
 template<
     std::size_t DIMENSION,
     std::size_t FROM_DIMENSION = DIMENSION,

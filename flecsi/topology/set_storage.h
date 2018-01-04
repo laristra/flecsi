@@ -20,9 +20,9 @@
 namespace flecsi {
 namespace topology {
 
-template<typename SET_TYPES>
+template<typename SET_TYPE>
 class set_storage__
-    : public FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY<SET_TYPES> {};
+    : public FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY<SET_TYPE> {};
 
 } // namespace topology
 } // namespace flecsi

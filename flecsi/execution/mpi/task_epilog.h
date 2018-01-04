@@ -1,18 +1,20 @@
-/*~--------------------------------------------------------------------------~*
-*  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
-* /@@/////  /@@          @@////@@ @@////// /@@
-* /@@       /@@  @@@@@  @@    // /@@       /@@
-* /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
-* /@@////   /@@/@@@@@@@/@@       ////////@@/@@
-* /@@       /@@/@@//// //@@    @@       /@@/@@
-* /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-* //       ///  //////   //////  ////////  //
-*
-* Copyright (c) 2016 Los Alamos National Laboratory, LLC
-* All rights reserved
-*~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
+
+/*! @file */
+
 
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/data/sparse_accessor.h>
@@ -20,10 +22,10 @@
 #include <flecsi/data/sparse_mutator.h>
 #include <flecsi/data/ragged_mutator.h>
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: May 19, 2017
-//----------------------------------------------------------------------------//
+/*!
+ @file
+ @date Initial file creation: May 19, 2017
+ */
 
 #include <vector>
 
@@ -36,35 +38,34 @@
 namespace flecsi {
 namespace execution {
 
-  //--------------------------------------------------------------------------//
-  //! The task_epilog_t type can be called to walk the task args after the
-  //! task has run. This allows synchronization dependencies to be added
-  //! to the execution flow.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
+  /*!
+   The task_epilog_t type can be called to walk the task args after the
+   task has run. This allows synchronization dependencies to be added
+   to the execution flow.
+  
+   @ingroup execution
+   */
 
   struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
 
-    //------------------------------------------------------------------------//
-    //! Construct a task_epilog_t instance.
-    //!
-    //------------------------------------------------------------------------//
+    /*!
+     Construct a task_epilog_t instance.
+     */
 
     task_epilog_t() = default;
 
-    //------------------------------------------------------------------------//
-    //! FIXME: Need a description.
-    //!
-    //! @tparam T                     The data type referenced by the handle.
-    //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
-    //!                               indices of the index partition.
-    //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
-    //!                               indices of the index partition.
-    //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
-    //!                               indices of the index partition.
-    //!
-    //------------------------------------------------------------------------//
+    /*!
+     FIXME: Need a description.
+    
+     @tparam T                     The data type referenced by the handle.
+     @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
+                                   indices of the index partition.
+     @tparam SHARED_PERMISSIONS    The permissions required on the shared
+                                   indices of the index partition.
+     @tparam GHOST_PERMISSIONS     The permissions required on the ghost
+                                   indices of the index partition.
+    
+     */
 
     template<
       typename T,
@@ -345,10 +346,10 @@ namespace execution {
         T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
     } // handle
 
-    //------------------------------------------------------------------------//
-    //! FIXME: Need to document.
-    //------------------------------------------------------------------------//
-
+    /*!
+      This method is called on any task arguments that are not handles, e.g.
+      scalars or those that did not need any special handling.
+     */
     template<
       typename T
     >

@@ -1,14 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
 
-///
-/// \file
-/// \date Initial file creation: Jan 03, 2017
-///
+/*! @file */
 
 #include <flecsi/utils/logging.h>
 
@@ -27,14 +32,16 @@ struct checksum_t {
   unsigned int length;
 }; // struct checksum_t
 
-///
-/// Compute the checksum of an array.
-///
-/// \param buffer The data buffer on which to compute the checksum.
-/// \param elements The size of the buffer.
-/// \param[out] sum The checksum data structure to fill.
-/// \param[in] digest The digest context.
-///
+/*!
+  Compute the checksum of an array.
+
+  @param buffer The data buffer on which to compute the checksum.
+  @param elements The size of the buffer.
+  @param[out] sum The checksum data structure to fill.
+  @param[in] digest The digest context.
+
+  @ingroup utils
+ */
 template<typename T>
 void
 checksum(

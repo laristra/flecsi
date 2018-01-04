@@ -17,11 +17,19 @@
 
 namespace flecsi {
 
-//----------------------------------------------------------------------------//
-//! FIXME: Description of class
-//----------------------------------------------------------------------------//
+/*!
+  This empty base class is the base of all accessors and is used by the
+  handle tuple walkers for type checking.
+ */
 
 struct data_client_handle_base_t {};
+
+/*!
+  This class provides template parameters for data client type
+  and permissions - either read or write - and the common fields
+  such as necessary hashes used by various data client types such as
+  set and mesh topology.
+ */
 
 template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS, typename DATA_POLICY>
 struct data_client_handle_base__ : public DATA_CLIENT_TYPE,
@@ -30,6 +38,11 @@ struct data_client_handle_base__ : public DATA_CLIENT_TYPE,
   using type = DATA_CLIENT_TYPE;
 
   data_client_handle_base__() {}
+
+  /*!
+    This method is used to ensure that the data client handle is never
+    constructed in calling a task with the unmapped (0) permissions.
+   */
 
   template<size_t UNMAPPED_PERMISSIONS>
   data_client_handle_base__(const data_client_handle_base__<
@@ -67,14 +80,14 @@ struct data_client_type__<
 
 namespace flecsi {
 
-//----------------------------------------------------------------------------//
-//! The data_handle__ type is the high-level data handle type.
-//!
-//! @tparam DATA_CLIENT_TYPE The client type.
-//! @tparam DATA_POLICY      The data policy for this handle type.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+/*!
+  The data_handle__ type is the high-level data handle type.
+
+  @tparam DATA_CLIENT_TYPE The client type.
+  @tparam DATA_POLICY      The data policy for this handle type.
+
+  @ingroup data
+ */
 
 template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS>
 using data_client_handle__ = data_client_handle_base__<

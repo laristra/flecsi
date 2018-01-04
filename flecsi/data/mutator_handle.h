@@ -19,6 +19,14 @@
 
 namespace flecsi {
 
+//----------------------------------------------------------------------------//
+//! This class is used to implement the mutator for sparse data. It contains
+//! methods which implement commit functionality to pack the mutator's
+//! temporary slots and spare (overflow) map into the final commit buffer.
+//! This class implements functionality for both normal sparse data and the
+//! ragged sparse data type.
+//----------------------------------------------------------------------------//
+
 template<typename T, typename MUTATOR_POLICY>
 class mutator_handle_base__ : public MUTATOR_POLICY {
 public:
@@ -351,6 +359,12 @@ public:
   erase_set_t * erase_set_ = nullptr;
   size_map_t * size_map_ = nullptr;
   commit_info_t ci_;
+
+  //--------------------------------------------------------------------------//
+  //! This is a helper method to commit() to merge both the slots buffer
+  //! overflow/spare map, an existing buffer, into the destination buffer,
+  //! giving precedence first to the spare map, then slots, then existing.
+  //--------------------------------------------------------------------------//
 
   template<bool ERASE>
   size_t merge(

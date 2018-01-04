@@ -93,9 +93,15 @@ struct sparse_handle__ : public sparse_data_handle__<T, EP, SP, GP>
 // Dense storage type.
 //----------------------------------------------------------------------------//
 
-///
-/// FIXME: Dense storage type.
-///
+/*!
+  Sparse storage type. Sparse data is partitioned into exclusive, shared,
+  ghost entries. It allows entries to be allocated sparsely per index.
+  Within an index, entries are stored in sorted order. A sparse accessor
+  can read and modify existing entries, but cannot allocate new entries.
+  The mutator is used for this purpose. A sparse data handle is passed to a
+  task which is then transformed to an accesor, likewise for a mutator.
+  A mutator commits its data in its temporary buffers in the task epilog.
+ */
 template<>
 struct storage_class__<sparse>
 {

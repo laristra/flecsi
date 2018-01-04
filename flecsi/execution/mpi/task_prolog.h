@@ -1,23 +1,20 @@
-/*~--------------------------------------------------------------------------~*
-*  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
-* /@@/////  /@@          @@////@@ @@////// /@@
-* /@@       /@@  @@@@@  @@    // /@@       /@@
-* /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
-* /@@////   /@@/@@@@@@@/@@       ////////@@/@@
-* /@@       /@@/@@//// //@@    @@       /@@/@@
-* /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-* //       ///  //////   //////  ////////  //
-*
-* Copyright (c) 2016 Los Alamos National Laboratory, LLC
-* All rights reserved
-*~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: May 19, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
+
 
 #include <vector>
 
@@ -35,39 +32,36 @@
 namespace flecsi {
 namespace execution {
 
-  //--------------------------------------------------------------------------//
-  //! The task_prolog_t type can be called to walk the task args after the
-  //! task launcher is created, but before the task has run. This allows
-  //! synchronization dependencies to be added to the execution flow.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
+  /*!
+   The task_prolog_t type can be called to walk the task args after the
+   task launcher is created, but before the task has run. This allows
+   synchronization dependencies to be added to the execution flow.
+  
+   @ingroup execution
+   */
 
   struct task_prolog_t : public utils::tuple_walker__<task_prolog_t>
   {
 
-    //------------------------------------------------------------------------//
-    //! Construct a task_prolog_t instance.
-    //!
-    //------------------------------------------------------------------------//
+    /*!
+     Construct a task_prolog_t instance.
+     */
 
     task_prolog_t() = default;
 
-
-    //------------------------------------------------------------------------//
-    //! FIXME: Need a description.
-    //!
-    //! @tparam T                     The data type referenced by the handle.
-    //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
-    //!                               indices of the index partition.
-    //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
-    //!                               indices of the index partition.
-    //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
-    //!                               indices of the index partition.
-    //!
-    //! @param runtime The Legion task runtime.
-    //! @param context The Legion task runtime context.
-    //------------------------------------------------------------------------//
+    /*!
+     FIXME: Need a description.
+    
+     @tparam T                     The data type referenced by the handle.
+     @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
+                                   indices of the index partition.
+     @tparam SHARED_PERMISSIONS    The permissions required on the shared
+                                   indices of the index partition.
+     @tparam GHOST_PERMISSIONS     The permissions required on the ghost
+                                   indices of the index partition.
+    
+     @param runtime The Legion task runtime.
+     */
 
     template<
       typename T,
@@ -268,10 +262,15 @@ namespace execution {
         h.initialize_storage();
       }
     } // handle
-    //------------------------------------------------------------------------//
-    //! FIXME: Need to document.
-    //------------------------------------------------------------------------//
-
+   
+    /*!
+      This method registers entity data fields as needed and initializes set
+      topology index spaces and buffers from the raw MPI buffers. If we are
+      writing to this buffer, then it sets up the size information of the index
+      space as empty so we can call make<>() to push entities onto this buffer.
+      If we are reading, this sets up the size as the size recorded in the
+      metadata.
+     */
     template<
       typename T,
       size_t PERMISSIONS
@@ -320,7 +319,8 @@ namespace execution {
       typename T
     >
     static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
+    typename std::enable_if_t<
+		!std::is_base_of<dense_data_handle_base_t, T>::value>
     handle(
       T&
     )

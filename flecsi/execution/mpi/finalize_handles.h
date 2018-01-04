@@ -1,9 +1,20 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
+
+/*! @file */
+
 
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
@@ -11,20 +22,14 @@
 #include <flecsi/data/sparse_mutator.h>
 #include <flecsi/data/ragged_mutator.h>
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jul 19, 2017
-//----------------------------------------------------------------------------//
-
 namespace flecsi {
 namespace execution {
 
 struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 {
-  //--------------------------------------------------------------------------//
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
-
+  /*!
+  Nothing needs to be done to finalize a dense data handle.
+   */
   template<
     typename T,
     size_t EXCLUSIVE_PERMISSIONS,
@@ -33,7 +38,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   >
   void
   handle(
-    data_handle__<
+    dense_data_handle__<
       T,
       EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS,
@@ -168,7 +173,11 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
       offsets[h.num_exclusive() + h.num_shared() + i].set_count(recv_count_buf[i]);
     }
   } // handle
-
+ 
+  /*!
+    Finalize set topology storage. This inspects index based sizes and
+    writes out appropriate metadata.  
+   */
   template<
     typename T,
     size_t PERMISSIONS
@@ -185,6 +194,9 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     storage->finalize_storage();
   } // handle
 
+  /*!
+   No special handling is currently needed here. No-op.
+   */
   template<
     typename T,
     size_t EXCLUSIVE_PERMISSIONS,
@@ -204,12 +216,12 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 
   } // handle
 
-  //--------------------------------------------------------------------------//
-  //! The finalize_handles_t type can be called to walk task args after task
-  //! execution. This allows us to free memory allocated during the task.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
+  /*!
+   The finalize_handles_t type can be called to walk task args after task
+   execution. This allows us to free memory allocated during the task.
+  
+   @ingroup execution
+   */
 
   template<
     typename T,
@@ -247,7 +259,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     typename T
   >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value &&
+  typename std::enable_if_t<!std::is_base_of<dense_data_handle_base_t, T>::value &&
   !std::is_base_of<data_client_handle_base_t, T>::value>
   handle(
     T &
@@ -259,8 +271,3 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 
 } // namespace execution
 } // namespace flecsi
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
