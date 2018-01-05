@@ -17,12 +17,14 @@
 #include <flecsi/topology/types.h>
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/data/data_client_handle.h>
+#include <flecsi/supplemental/mesh/test_mesh_2d.h>
 
 using namespace std;
 using namespace flecsi;
 using namespace topology;
 using namespace coloring;
 using namespace execution;
+using namespace supplemental;
 
 class entity1 : public set_entity_t{
 public:
@@ -34,6 +36,16 @@ public:
   using entity_types = std::tuple<
     std::tuple<index_space_<0>, entity1>
     >;
+
+  using dependent_t = test_mesh_2d_t;
+
+  size_t color(const entity1& e1, dependent_t& dt){
+
+  }
+
+  size_t bin(const entity1& e1, dependent_t& dt){
+    
+  }
 };
 
 using set_t = set_topology__<set_types>;
