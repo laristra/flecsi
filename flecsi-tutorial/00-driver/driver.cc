@@ -11,17 +11,14 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
-#pragma once
-
-/*! @file */
+#include <iostream>
 
 namespace flecsi {
+namespace execution {
 
-enum privilege_t : size_t {
-  reserved = 0,
-  ro = 1,
-  wo = 2,
-  rw = 3,
-}; // enum privilege_t
+void driver(int argc, char ** argv) {
+  std::cout << "Hello World" << std::endl;
+} // driver
 
+} // namespace execution
 } // namespace flecsi

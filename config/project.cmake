@@ -22,7 +22,6 @@ cinch_minimum_required(1.0)
 # Set the project name
 #------------------------------------------------------------------------------#
 
-#project(flecsi)
 project(FleCSI)
 
 #------------------------------------------------------------------------------#
@@ -206,6 +205,17 @@ endif()
 
 set(FLECSI_RUNTIME_LIBRARIES)
 
+set(DL_LIBS)
+foreach(dl_lib ${CMAKE_DL_LIBS})
+  find_library(DL_LIB ${dl_lib})
+
+  if(DL_LIB STREQUAL "NOTFOUND")
+    message(FATAL_ERROR "Dynamic library not found")
+  endif()
+
+  list(APPEND DL_LIBS ${DL_LIB})
+endforeach()
+
 #
 # Legion interface
 #
@@ -221,11 +231,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
  
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/legion)
 
-  if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
-  else()
-    set(FLECSI_RUNTIME_LIBRARIES ${Legion_LIBRARIES} ${MPI_LIBRARIES})
-  endif()
+  set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${Legion_LIBRARIES}
+    ${MPI_LIBRARIES})
 
   include_directories(${Legion_INCLUDE_DIRS})
   list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${Legion_INCLUDE_DIRS})
@@ -256,11 +263,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpi)
 
-  if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${MPI_LIBRARIES})
-  else()
-    set(FLECSI_RUNTIME_LIBRARIES ${MPI_LIBRARIES})
-  endif()
+  set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
 
 #
 # Default
@@ -377,6 +380,7 @@ install(
 #------------------------------------------------------------------------------#
 
 cinch_add_library_target(FleCSI flecsi)
+cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
 
 #------------------------------------------------------------------------------#
 # Link the necessary libraries
