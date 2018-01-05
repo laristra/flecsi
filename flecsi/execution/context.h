@@ -89,6 +89,24 @@ struct context__ : public CONTEXT_POLICY {
     size_t max_entries_per_index;
   };
 
+  /*!
+    Gathers info about set topology index spaces.
+   */
+  struct set_topology_index_space_t{
+    size_t main_capacity;
+    size_t active_migration_capacity;
+  };
+
+  /*!
+    Structure needed to initialize a set topology.
+   */
+  struct set_topology_info_t{
+    using index_space_map_t =
+      std::unordered_map<size_t, set_topology_index_space_t>;
+
+    index_space_map_t index_space_map;
+  };
+
   //--------------------------------------------------------------------------//
   // Field info map for fields in SPMD task, key1 =
   //   (data client hash, index space), key2 = fid
@@ -218,6 +236,16 @@ struct context__ : public CONTEXT_POLICY {
 
   const auto & local_index_space_map() const {
     return local_index_space_map_;
+  }
+
+  /*!
+    Register set topology index space sizes and other needed metadata.
+   */
+
+  void
+  add_set_topology(const set_topology_info_t & info)
+  {
+
   }
 
   void set_sparse_index_space_info(
