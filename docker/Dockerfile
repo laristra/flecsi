@@ -45,7 +45,7 @@ RUN cmake \
           -DCLOG_STRIP_LEVEL=3 \
           -DCLOG_DEBUG=OFF \
           -DENABLE_PARMETIS=ON \
-          -DENABLE_COLORING=ON \
+          -DENABLE_COLORING=$LEGION \
           -DENABLE_DOXYGEN=ON \
           -DENABLE_DOCUMENTATION=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
