@@ -60,6 +60,9 @@ using FLECSI_RUNTIME_DENSE_DATA_HANDLE_POLICY = mpi_data_handle_policy_t;
 
 using FLECSI_RUNTIME_GLOBAL_DATA_HANDLE_POLICY = mpi_data_handle_policy_t;
 
+using FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY =
+    mpi_sparse_data_handle_policy_t;
+
 using FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY = mpi_mutator_handle_policy_t;
 
 } // namespace flecsi
