@@ -40,11 +40,11 @@ public:
   using independent_t = test_mesh_2d_t;
 
   size_t color(const entity1& e1, independent_t& dt){
-
+    return 0;
   }
 
   size_t bin(const entity1& e1, independent_t& dt){
-    
+    return 0;
   }
 };
 
