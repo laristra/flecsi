@@ -29,6 +29,8 @@ using namespace flecsi;
 using namespace supplemental;
 
 clog_register_tag(ghost_access);
+  
+flecsi_register_data_client(empty_mesh_t, meshes, mesh1);
 
 void check_entities_task(
         dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,

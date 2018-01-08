@@ -128,8 +128,11 @@ struct storage__ : public STORAGE_POLICY {
   //! @param client_key The data client indentifier hash.
   //--------------------------------------------------------------------------//
 
-  bool client_exists(size_t client_key) {
-    return (client_registry_.find(client_key) != client_registry_.end());
+  void assert_client_exists(size_t client_key) {
+    clog_assert( client_registry_.find(client_key) != client_registry_.end(),
+        "\nThe data_client you are trying to access with key " << 
+        client_key << " does not exist!" <<
+        "\nMake sure it has been properly registered!" );
   } // register_client
 
   //--------------------------------------------------------------------------//
