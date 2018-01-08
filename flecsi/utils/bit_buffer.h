@@ -45,9 +45,9 @@ namespace utils {
 
     static_assert(BITS_PER_INDEX <= word_bits, "invalid bit buffer params");
 
-    class proxy__{
+    class range_proxy__{
     public:
-      proxy__(
+      range_proxy__(
         bit_buffer__& b,
         size_t index,
         size_t bit_start,
@@ -58,7 +58,7 @@ namespace utils {
       bit_start_(bit_start),
       bit_end_(bit_end){}
 
-      proxy__&
+      range_proxy__&
       operator=(
         const T& value
       )
@@ -79,6 +79,37 @@ namespace utils {
       size_t bit_end_;
     };
 
+    class proxy__{
+    public:
+      proxy__(
+        bit_buffer__& b,
+        size_t index,
+        size_t bit
+      )
+      : b_(b),
+      index_(index),
+      bit_(bit){}
+
+      proxy__&
+      operator=(
+        const T& value
+      )
+      {
+        b_.set_(index_, bit_, value);
+        return *this;
+      }
+
+      operator T()
+      {
+        return b_.get_(index_, bit_);
+      }
+
+    private:
+      bit_buffer__& b_;
+      size_t index_;
+      size_t bit_;
+    };
+
     bit_buffer__(
       uint8_t* buffer
     )
@@ -89,7 +120,7 @@ namespace utils {
       size_t index,
     )
     {
-      return proxy__(*this, index, 0, 0);
+      return proxy__(*this, index, 0);
     }
 
     proxy__
@@ -98,10 +129,10 @@ namespace utils {
       size_t bit
     )
     {
-      return proxy__(*this, index, bit, bit);
+      return proxy__(*this, index, bit);
     }
 
-    proxy__
+    range_proxy__
     operator()(
       size_t index,
       size_t bit_start,
@@ -111,7 +142,7 @@ namespace utils {
       assert(bit_start <= bit_end && bit_start < BITS_PER_INDEX &&
              "invalid index");
 
-      return proxy__(*this, index, bit_start, bit_end);
+      return range_proxy__(*this, index, bit_start, bit_end);
     }
 
     void
@@ -147,6 +178,22 @@ namespace utils {
       }
     }
 
+    void
+    set_(
+      size_t index,
+      size_t bit,
+      T value
+    )
+    {
+      size_t s = index * BITS_PER_INDEX + bit;
+      size_t i = s / word_bits;
+      size_t r = s % word_bits;
+
+      T* v = reinterpret_cast<T*>(buffer_ + i);
+      *v &= ~(((1 << (bit + 1)) - 1) << r);
+      *v |= (value << r);       
+    }
+
     T
     get_(
       size_t index,
@@ -174,6 +221,20 @@ namespace utils {
         return ((*v1 >> r1) & ((1 << word_bits - r1) - 1)) | 
           ((*v2 & ((1 << r2) - 1)) << (word_bits - r1));
       }
+    }
+
+    T
+    get_(
+      size_t index,
+      size_t bit
+      )
+    {
+      size_t s = index * BITS_PER_INDEX + bit;
+      size_t i = s / word_bits;
+      size_t r = s % word_bits;
+
+      T* v = reinterpret_cast<T*>(buffer_ + i);
+      return (*v >> r) & ((1 << (bit + 1)) - 1);
     }
 
     void
