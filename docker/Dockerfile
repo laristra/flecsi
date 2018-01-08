@@ -20,6 +20,7 @@ ARG TRAVIS_PULL_REQUEST
 ARG TRAVIS_JOB_ID
 ARG TRAVIS_TAG
 ARG TRAVIS_REPO_SLUG
+ARG TRAVIS_PULL_REQUEST_SLUG
 ARG TRAVIS_COMMIT
 ARG TRAVIS_OS_NAME
 ARG IGNORE_NOCI
@@ -66,7 +67,7 @@ RUN cd .. && if [ ${COVERAGE} ]; then \
     $HOME/.local/bin/codecov -F "${CC}"; \
   fi; \
 fi && cd -
-RUN cd .. && if [ ${SONARQUBE} ]; then \
+RUN cd .. && if [ ${SONARQUBE} ] && [ ${TRAVIS_PULL_REQUEST_SLUG:-${TRAVIS_REPO_SLUG}} = ${TRAVIS_REPO_SLUG} ] ; then \
   sonar-scanner \
     -Dsonar.projectKey=${TRAVIS_REPO_SLUG##*/} \
     -Dsonar.projectName=${TRAVIS_REPO_SLUG#*/} \
