@@ -37,13 +37,13 @@ public:
     std::tuple<index_space_<0>, entity1>
     >;
 
-  using dependent_t = test_mesh_2d_t;
+  using independent_t = test_mesh_2d_t;
 
-  size_t color(const entity1& e1, dependent_t& dt){
+  size_t color(const entity1& e1, independent_t& dt){
     return 0;
   }
 
-  size_t bin(const entity1& e1, dependent_t& dt){
+  size_t bin(const entity1& e1, independent_t& dt){
     return 0;
   }
 };
