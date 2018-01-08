@@ -15,6 +15,7 @@ set(mesh_HEADERS
 set(mesh_SOURCES
   coloring.cc
   control.cc
+  mesh.cc
   tasks.cc
   PARENT_SCOPE
 )

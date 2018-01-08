@@ -18,7 +18,7 @@ def execute(verbose, build):
               build['main'] + ' ' + \
               build['prefix'] + '/share/flecsi/runtime/runtime_driver.cc ' + \
               build['driver'] + ' ' + \
-              '-o ' + build['deck'] + '.' + build['system'] + ' ' + \
+              '-o ' + build['deck'] + ' ' + \
               '-L' + build['prefix'] + '/' + build['libprefix'] + ' ' + \
               build['flecsi'] + ' ' + \
               build['libraries']
