@@ -17,7 +17,13 @@ namespace tutorial {
 struct specialization_mesh_t :
   public flecsi::topology::mesh_topology__<specialization_mesh_policy_t>
 {
+  auto cells() {
+    return entities<2,0>();
+  } // cells
 
+  auto cells(partition_t p) {
+    return entities<2,0>(p);
+  } // cells
 }; // specialization_mesh_t
 
 using mesh_t = specialization_mesh_t;

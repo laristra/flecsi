@@ -1,8 +1,8 @@
+#pragma once
+
 #include <flecsi-config.h>
 
-#include <flecsi/execution/execution.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/supplemental/coloring/add_colorings.h>
 #include <specialization/mesh/mesh.h>
 #include <specialization/mesh/types.h>
 
@@ -13,7 +13,7 @@ namespace tutorial {
 // Mesh Initialization
 //----------------------------------------------------------------------------//
 
-void initialize_mesh(mesh<wo> m) {
+inline void initialize_mesh(mesh<wo> m) {
   auto & context { execution::context_t::instance() };
 
   auto & vertex_map { context.index_map(index_spaces::vertices) };
@@ -60,49 +60,5 @@ void initialize_mesh(mesh<wo> m) {
   m.init<0>();
 } // initizlize_mesh
 
-flecsi_register_task(initialize_mesh, flecsi::tutorial, loc, single);
-
-//----------------------------------------------------------------------------//
-// Top-Level Specialization Initialization
-//----------------------------------------------------------------------------//
-
-void specialization_tlt_init(int argc, char ** argv) {
-
-  execution::coloring_map_t map { index_spaces::vertices, index_spaces::cells };
-
-  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
-
-  auto & context { execution::context_t::instance() };
-
-  auto & vinfo { context.coloring_info(index_spaces::vertices) };
-  auto & cinfo { context.coloring_info(index_spaces::cells) };
-
-  coloring::adjacency_info_t ai;
-  ai.index_space = index_spaces::cells_to_vertices;
-  ai.from_index_space = index_spaces::cells;
-  ai.to_index_space = index_spaces::vertices;
-  ai.color_sizes.resize(cinfo.size());
-
-  for(auto & itr : cinfo){
-    size_t color{itr.first};
-    const coloring::coloring_info_t & ci = itr.second;
-    ai.color_sizes[color] = (ci.exclusive + ci.shared + ci.ghost) * 4;
-  } // for
-
-  context.add_adjacency(ai);
-
-} // specialization_tlt_init
-
-//----------------------------------------------------------------------------//
-// SPMD Specialization Initialization
-//----------------------------------------------------------------------------//
-
-void specialization_spmd_init(int argc, char ** argv) {
-
-  auto mh = flecsi_get_client_handle(mesh_t, clients, m);
-  flecsi_execute_task(initialize_mesh, flecsi::tutorial, single, mh);
-
-} // specialization_spmd_ini
-
-} // namespace execution
+} // namespace tutorial
 } // namespace flecsi

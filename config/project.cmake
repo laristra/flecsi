@@ -383,6 +383,15 @@ cinch_add_library_target(FleCSI flecsi)
 cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
 
 #------------------------------------------------------------------------------#
+# Install Tutorial inputs
+#------------------------------------------------------------------------------#
+message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
+
+install(
+  FILES ${PROJECT_SOURCE_DIR}/flecsi-tutorial/specialization/inputs/simple2d-16x16.msh
+  DESTINATION share/FleCSI-Tut/inputs)
+
+#------------------------------------------------------------------------------#
 # Link the necessary libraries
 #------------------------------------------------------------------------------#
 
@@ -444,7 +453,6 @@ foreach (_variableName ${_matchedVars})
 set(${_variableName} \"${${_variableName}}\")"
   )
 endforeach()
-
 
 #------------------------------------------------------------------------------#
 # Export targets and package.

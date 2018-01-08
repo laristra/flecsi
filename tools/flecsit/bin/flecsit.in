@@ -45,6 +45,9 @@ def main():
         # Link libraries
         libraries = '@FLECSIT_LIBRARIES@',
 
+        # FleCSI library
+        flecsi = '@FLECSIT_FLECSI_LIBRARY@',
+
         # CMake source directory
         source = '@CMAKE_SOURCE_DIR@',
 
