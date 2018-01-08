@@ -26,7 +26,7 @@ template<typename SET_TYPE>
 class set_topology__ : public set_topology_base__<set_storage__<SET_TYPE>> {
 public:
   static const size_t num_index_spaces =
-      std::tuple_size<typename SET_TYPE::entity_types_t>::value;
+      std::tuple_size<typename SET_TYPE::entity_types>::value;
 
   using storage_t = set_storage__<SET_TYPE>;
 
