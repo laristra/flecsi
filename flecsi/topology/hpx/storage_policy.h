@@ -86,22 +86,46 @@ struct hpx_topology_storage_policy__ {
     return D;
   }
 
-  template<class T, size_t M = 0, class... S>
-  T * make(S &&... args) {
-    T * ent;
-    size_t dim = entity_dimension(ent);
-    ent = new T(std::forward<S>(args)...);
+  template<class T, size_t DOM, class... ARG_TYPES>
+  T * make(ARG_TYPES &&... args) {
+    using dtype = domain_entity__<DOM, T>;
 
-    using dtype = domain_entity<M, T>;
+    auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
+    size_t entity = is.size();
 
-    auto & is = index_spaces[M][dim].template cast<dtype>();
+    auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
+    auto ent = new (placement_ptr) T(std::forward<ARG_TYPES>(args)...);
 
-    id_t global_id = id_t::make<M>(dim, is.size());
+    id_t global_id = id_t::make<T::dimension, DOM>(entity, color);
+    ent->template set_global_id<DOM>(global_id);
 
-    auto typed_ent = static_cast<mesh_entity_base_t<NM> *>(ent);
+    auto & id_storage = is.id_storage();
 
-    typed_ent->template set_global_id<M>(global_id);
-    is.push_back(ent);
+    id_storage[entity] = global_id;
+
+    is.pushed();
+
+    return ent;
+  } // make
+
+  template<class T, size_t DOM, class... ARG_TYPES>
+  T * make(const id_t & id, ARG_TYPES &&... args) {
+    using dtype = domain_entity__<DOM, T>;
+
+    auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
+
+    size_t entity = id.entity();
+
+    auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
+    auto ent = new (placement_ptr) T(std::forward<ARG_TYPES>(args)...);
+
+    ent->template set_global_id<DOM>(id);
+
+    auto & id_storage = is.id_storage();
+
+    id_storage[entity] = id;
+
+    is.pushed();
 
     return ent;
   } // make
