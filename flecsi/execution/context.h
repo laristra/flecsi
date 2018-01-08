@@ -227,7 +227,7 @@ struct context__ : public CONTEXT_POLICY {
   }
 
   /*!
-  /*! Return the map of sparse index space info.
+    Return the map of sparse index space info.
    */
 
   const auto & sparse_index_space_info_map() const {
