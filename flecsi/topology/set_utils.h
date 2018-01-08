@@ -70,6 +70,7 @@ struct find_set_entity__<0, TUPLE_TYPE, FIND_INDEX_SPACE> {
   //-----------------------------------------------------------------//
   static constexpr size_t find() {
     assert(false && "failed to find set entity");
+    return 0;
   } // find
 }; // struct find_set_entity__
 
