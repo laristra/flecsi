@@ -99,6 +99,9 @@ flecsi_register_task_simple(global_reader, loc, single);
 flecsi_register_task_simple(color_writer, loc, single);
 flecsi_register_task_simple(color_reader, loc, single);
 #endif
+
+flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
+
 flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
 flecsi_register_global( ns, velocity, double, 1);

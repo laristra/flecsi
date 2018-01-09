@@ -40,6 +40,8 @@ void reader(dense_accessor<double, ro, ro, ro> x) {
   }
 }
 
+flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
+
 flecsi_register_task_simple(writer, loc, single);
 flecsi_register_task_simple(reader, loc, single);
 

@@ -1,117 +1,28 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
-
-///
-/// \file
-/// \authors jgraham
-/// \date Initial file creation: Feb 2, 2017
-///
-
 #include <cinchlog.h>
-#include <cinchtest.h>
+
+#include <mpi.h>
+#include <cstdlib>
 
 #include <flecsi/execution/execution.h>
 #include <flecsi/io/simple_definition.h>
 #include <flecsi/coloring/dcrs_utils.h>
 #include <flecsi/coloring/parmetis_colorer.h>
 #include <flecsi/coloring/mpi_communicator.h>
-#include <flecsi/supplemental/mesh/empty_mesh_2d.h>
-#include <flecsi/data/dense_accessor.h>
+#include <flecsi/supplemental/coloring/coloring_functions.h>
+#include <flecsi/supplemental/coloring/tikz.h>
+#include <specialization/mesh/coloring.h>
 
-#define CELL_ID 0
-#define VERT_ID 2   // Ensure it's OK if user does non-sequential
-#define VERSIONS 1
-#define VERT_VERSIONS 3
-
-using namespace flecsi;
-using namespace supplemental;
-
-clog_register_tag(ghost_access);
-  
-flecsi_register_data_client(empty_mesh_t, meshes, mesh1);
-
-void check_entities_task(
-        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
-        dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
-        int my_color, size_t cycle, size_t index_id);
-
-flecsi_register_task_simple(check_entities_task, loc, single);
-
-void set_primary_entities_task(
-        dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
-        dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
-        int my_color, size_t cycle, size_t index_id);
-flecsi_register_task_simple(set_primary_entities_task, loc, single);
-
-flecsi_register_field(empty_mesh_t, name_space, cell_ID, size_t, dense,
-    VERSIONS, CELL_ID);
-flecsi_register_field(empty_mesh_t, name_space, test, double, dense,
-    VERSIONS, CELL_ID);
-flecsi_register_field(empty_mesh_t, name_space, vert_ID, size_t, dense,
-    VERT_VERSIONS, VERT_ID);
-flecsi_register_field(empty_mesh_t, name_space, vert_test, double, dense,
-    VERT_VERSIONS, VERT_ID);
+clog_register_tag(coloring);
+clog_register_tag(coloring_output);
 
 namespace flecsi {
-namespace execution {
+namespace tutorial {
 
-void add_colorings(int dummy);
-flecsi_register_mpi_task(add_colorings, flecsi::execution);
+void add_colorings(coloring_map_t map) {
 
-//----------------------------------------------------------------------------//
-// Specialization driver.
-//----------------------------------------------------------------------------//
+  using namespace execution;
 
-void specialization_tlt_init(int argc, char ** argv) {
-
-  flecsi_execute_mpi_task(add_colorings, flecsi::execution, 0);
-
-} // specialization_tlt_init
-
-//----------------------------------------------------------------------------//
-// User driver.
-//----------------------------------------------------------------------------//
-
-void driver(int argc, char ** argv) {
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-  auto runtime = Legion::Runtime::get_runtime();
-  const int my_color = runtime->find_local_MPI_rank();
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
-  int my_color;
-  MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
-#endif
-
-  clog(trace) << "Rank " << my_color << " in driver" << std::endl;
-
-  auto ch = flecsi_get_client_handle(empty_mesh_t, meshes, mesh1);
-
-  auto handle = flecsi_get_handle(ch, name_space, cell_ID, size_t, dense,
-      CELL_ID);
-  auto test_handle = flecsi_get_handle(ch, name_space, test, double, dense,
-      CELL_ID);
-  auto vert_handle = flecsi_get_handle(ch, name_space, vert_ID, size_t, dense,
-      VERT_ID);
-  auto vtest_handle = flecsi_get_handle(ch, name_space, vert_test, double, dense,
-      VERT_ID);
-
-  for(size_t cycle=0; cycle<3; cycle++) {
-    flecsi_execute_task_simple(set_primary_entities_task, single, handle,
-      test_handle, my_color, cycle, CELL_ID);
-    flecsi_execute_task_simple(check_entities_task, single, handle,
-      test_handle, my_color, cycle, CELL_ID);
-
-    flecsi_execute_task_simple(set_primary_entities_task, single,
-      vert_handle, vtest_handle, my_color, cycle, VERT_ID);
-    flecsi_execute_task_simple(check_entities_task, single, vert_handle,
-      vtest_handle, my_color, cycle, VERT_ID);
-  }
-} // driver
-
-void add_colorings(int dummy) {
-
-  clog_set_output_rank(1);
+  clog_set_output_rank(0);
 
   // Get the context instance.
   context_t & context_ = context_t::instance();
@@ -125,16 +36,10 @@ void add_colorings(int dummy) {
   clog(info) << "add_colorings, rank: " << rank << std::endl;
   }
 
-  // Read the mesh definition from file.
-  //const size_t M(8), N(8);
-  //flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-#ifdef FLECSI_8_8_MESH
-  const size_t M(8), N(8);
-  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-#else
   const size_t M(16), N(16);
-  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
-#endif
+  char * input_mesh = getenv("FLECSI_TUTORIAL_INPUT_MESH");
+  //flecsi::io::simple_definition_t sd("../inputs/simple2d-16x16.msh");
+  flecsi::io::simple_definition_t sd(input_mesh);
 
   // Create the dCRS representation for the distributed colorer.
   auto dcrs = flecsi::coloring::make_dcrs(sd);
@@ -145,7 +50,7 @@ void add_colorings(int dummy) {
   // Cells index coloring.
   flecsi::coloring::index_coloring_t cells;
   flecsi::coloring::coloring_info_t cell_color_info;
-
+ 
   // Create the primary coloring.
   cells.primary = colorer->color(dcrs);
 
@@ -262,7 +167,7 @@ void add_colorings(int dummy) {
       cells.shared.insert(
         flecsi::coloring::entity_info_t(primary_indices_map[offset],
         rank, offset, i));
-
+      
       // Collect all colors with whom we require communication
       // to send shared information.
       cell_color_info.shared_users = flecsi::utils::set_union(
@@ -276,7 +181,7 @@ void add_colorings(int dummy) {
     ++offset;
   } // for
   } // scope
-
+  
   // Populate ghost cell information.
   {
   size_t offset(0);
@@ -312,6 +217,7 @@ void add_colorings(int dummy) {
   //--------------------------------------------------------------------------//
   //--------------------------------------------------------------------------//
 
+#if 0
   // Form the vertex closure
   auto vertex_closure = flecsi::topology::entity_closure<2,0>(sd, closure);
 
@@ -434,6 +340,13 @@ void add_colorings(int dummy) {
   vertex_color_info.exclusive = vertices.exclusive.size();
   vertex_color_info.shared = vertices.shared.size();
   vertex_color_info.ghost = vertices.ghost.size();
+#endif
+
+  flecsi::coloring::index_coloring_t vertices;
+  coloring::coloring_info_t vertex_color_info;
+
+  color_entity<2, 0>(sd, communicator.get(), closure, remote_info_map,
+    shared_cells_map, closure_intersection_map, vertices, vertex_color_info);
 
   {
   clog_tag_guard(coloring);
@@ -456,11 +369,11 @@ void add_colorings(int dummy) {
   clog(info) << "vertex coloring info color " << ci.first
     << ci.second << std::endl;
   } // for
-  }
+  } // scope
 
   // Add colorings to the context.
-  context_.add_coloring(CELL_ID, cells, cell_coloring_info);
-  context_.add_coloring(VERT_ID, vertices, vertex_coloring_info);
+  context_.add_coloring(map.cells, cells, cell_coloring_info);
+  context_.add_coloring(map.vertices, vertices, vertex_coloring_info);
 
 #if 0
   context_.add_index_space(0, cells, cell_coloring_info);
@@ -505,113 +418,18 @@ void add_colorings(int dummy) {
   auto primary_cells = communicator->get_entity_reduction(cells.primary);
   auto primary_vertices = communicator->get_entity_reduction(vertices.primary);
 
+  if(rank == 0) {
+    supplemental::tikz_writer_t::write_primary(M, N, primary_cells,
+      primary_vertices);
+  } // if
+
+  supplemental::tikz_writer_t::write_color(rank, M, N, exclusive_cells_map,
+    shared_cells_map, ghost_cells_map, exclusive_vertices_map,
+    shared_vertices_map, ghost_vertices_map);
+
 } // add_colorings
 
-} // namespace execution
+flecsi_register_mpi_task(add_colorings, flecsi::tutorial);
+
+} // namespace tutorial
 } // namespace flecsi
-
-//----------------------------------------------------------------------------//
-
-void set_primary_entities_task(
-        dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
-        dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
-        int my_color, size_t cycle, size_t index_id) {
-
-  clog(trace) << "Rank " << my_color << " WRITING " << std::endl;
-
-  flecsi::execution::context_t & context_
-    = flecsi::execution::context_t::instance();
-  const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map
-    = context_.coloring_map();
-  auto index_coloring = coloring_map.find(index_id);
-
-  size_t index = 0;
-  for (auto exclusive_itr = index_coloring->second.exclusive.begin();
-    exclusive_itr != index_coloring->second.exclusive.end(); ++exclusive_itr) {
-    flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
-    clog(trace) << "Rank " << my_color << " exclusive " <<  exclusive.id <<
-        std::endl;
-    cell_ID.exclusive(index) = exclusive.id + cycle;
-    test.exclusive(index) = double(exclusive.id + cycle);
-    index++;
-  } // exclusive_itr
-
-  index=0;
-  for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
-      index_coloring->second.shared.end(); ++shared_itr) {
-    flecsi::coloring::entity_info_t shared = *shared_itr;
-    clog(trace) << "Rank " << my_color << " shared " <<  shared.id << std::endl;
-    cell_ID.shared(index) = shared.id + cycle;
-    test.shared(index) = double(shared.id + cycle);
-    index++;
-  } // shared_itr
-
-  for (auto ghost_itr = index_coloring->second.ghost.begin(); ghost_itr !=
-      index_coloring->second.ghost.end(); ++ghost_itr) {
-    flecsi::coloring::entity_info_t ghost = *ghost_itr;
-    clog(trace) << "Rank " << my_color << " ghost " <<  ghost.id << std::endl;
-  } // ghost_itr
-
-} // set_primary_entities_task
-
-void check_entities_task(
-        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
-        dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
-        int my_color, size_t cycle, size_t index_id) {
-  clog(trace) << "Rank " << my_color << " READING " << std::endl;
-
-  for (size_t i=0; i < cell_ID.exclusive_size(); i++)
-      clog(trace) << "Rank " << my_color << " exclusive " << i << " = " <<
-      cell_ID.exclusive(i) << std::endl;
-
-  flecsi::execution::context_t & context_
-    = flecsi::execution::context_t::instance();
-  const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map
-    = context_.coloring_map();
-  auto index_coloring = coloring_map.find(index_id);
-
-  size_t index = 0;
-  for (auto exclusive_itr = index_coloring->second.exclusive.begin();
-      exclusive_itr != index_coloring->second.exclusive.end(); ++exclusive_itr) {
-    flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
-    ASSERT_EQ(cell_ID.exclusive(index), exclusive.id + cycle);
-    ASSERT_EQ(test.exclusive(index), double(exclusive.id + cycle));
-    index++;
-  } // exclusive_itr
-
-  index = 0;
-  for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
-      index_coloring->second.shared.end(); ++shared_itr) {
-    flecsi::coloring::entity_info_t shared = *shared_itr;
-    ASSERT_EQ(cell_ID.shared(index), shared.id + cycle);
-    ASSERT_EQ(test.shared(index), double(shared.id + cycle));
-    index++;
-  } // shared_itr
-
-  for (size_t i=0; i < cell_ID.shared_size(); i++)
-      clog(trace) << "Rank " << my_color << " shared " << i << " = " <<
-      cell_ID.shared(i) << std::endl;
-
-  for (size_t i=0; i < cell_ID.ghost_size(); i++)
-      clog(trace) << "Rank " << my_color << " ghost " << i << " = " <<
-      cell_ID.ghost(i) << std::endl;
-
-  index = 0;
-  for (auto ghost_itr = index_coloring->second.ghost.begin(); ghost_itr !=
-      index_coloring->second.ghost.end(); ++ghost_itr) {
-    flecsi::coloring::entity_info_t ghost = *ghost_itr;
-    ASSERT_EQ(cell_ID.ghost(index), ghost.id + cycle);
-    ASSERT_EQ(test.ghost(index), double(ghost.id + cycle));
-    index++;
-  } // ghost_itr
-
-} // check_entities_task
-
-TEST(unordered_ispaces, testname) {
-
-} // TEST
-
-/*~------------------------------------------------------------------------~--*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/

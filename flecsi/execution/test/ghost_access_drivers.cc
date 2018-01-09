@@ -27,6 +27,8 @@ clog_register_tag(ghost_access);
 using namespace flecsi;
 using namespace topology;
 
+flecsi_register_data_client(empty_mesh_t, meshes, mesh1);
+
 void check_all_cells_task(
         dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
         dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
