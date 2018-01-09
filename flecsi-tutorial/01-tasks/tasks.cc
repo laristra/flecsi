@@ -11,12 +11,17 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
+/*! @file */
 
 #include <iostream>
 
 #include<flecsi/execution/execution.h>
 
 namespace hydro {
+
+/*!
+
+ */
 
 void simple() {
   std::cout << "Hello World from " << __FUNCTION__ << std::endl;

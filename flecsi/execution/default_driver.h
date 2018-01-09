@@ -20,15 +20,11 @@
 namespace flecsi {
 namespace execution {
 
-/*!
-  This function is provided to prevent link errors in some instances. It
-  should be defined by the user's code.
+/*! @cond IGNORE */
 
-  @ingroup execution
- */
+void driver(int argc, char ** argv) {}
 
-void
-driver(int argc, char ** argv) {} // driver
+/*! @endcond */
 
 } // namespace execution
 } // namespace flecsi
