@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 
 #include <flecsi/data/data_client_handle.h>
@@ -17,6 +18,11 @@ namespace tutorial {
 struct specialization_mesh_t :
   public flecsi::topology::mesh_topology__<specialization_mesh_policy_t>
 {
+
+  void print(const char * string) {
+    std::cout << string << std::endl;
+  } // print
+
   auto cells() {
     return entities<2,0>();
   } // cells
