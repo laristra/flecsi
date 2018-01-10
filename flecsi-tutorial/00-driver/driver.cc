@@ -11,14 +11,13 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
-/*! @file */
-
 #include <iostream>
 
 namespace flecsi {
 namespace execution {
 
-/*!
+/*----------------------------------------------------------------------------*
+
   As a runtime abstraction layer, FleCSI replaces the normal main
   function with a driver function. Like main, the driver is the most
   fundamental unit of execution, providing the top-level control logic
@@ -43,10 +42,11 @@ namespace execution {
 
   $ ./driver arg1 arg2
 
-  @note The driver must be defined in the flecsi::execution namespace.
+  NOTES:
 
-  @ingroup tutorial
- */
+    - The driver must be defined in the flecsi::execution namespace.
+
+ *----------------------------------------------------------------------------*/
 
 void driver(int argc, char ** argv) {
 
