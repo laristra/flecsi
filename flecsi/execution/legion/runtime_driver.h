@@ -48,19 +48,11 @@ namespace execution {
 void specialization_tlt_init(int argc, char ** argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
-/*!
- This is the main driver function to be defined by the user. This symbol
- will be undefined in the compiled library, and is intended as a place
- holder for the user's driver function that will resolve the missing
- symbol.
-
- @param argc The number of arguments in argv (passed from the command line).
- @param argv The list of arguments (passed from the command line).
-
- @ingroup legion-execution
- */
+/*! @cond IGNORE */
 
 void driver(int argc, char ** argv);
+
+/*! @endcond */
 
 /*!
  The FleCSI runtime driver task. This is the top-level Legion task.

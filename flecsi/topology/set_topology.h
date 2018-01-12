@@ -22,13 +22,13 @@
 namespace flecsi {
 namespace topology {
 
-template<typename SET_TYPES>
-class set_topology__ : public set_topology_base__<set_storage__<SET_TYPES>> {
+template<typename SET_TYPE>
+class set_topology__ : public set_topology_base__<set_storage__<SET_TYPE>> {
 public:
   static const size_t num_index_spaces =
-      std::tuple_size<typename SET_TYPES::entity_types_t>::value;
+      std::tuple_size<typename SET_TYPE::entity_types>::value;
 
-  using storage_t = set_storage__<SET_TYPES>;
+  using storage_t = set_storage__<SET_TYPE>;
 
   using base_t = set_topology_base__<storage_t>;
 
@@ -38,7 +38,7 @@ public:
 
   // used to find the entity type for a given index space
   template<size_t INDEX_SPACE>
-  using entity_type = typename find_set_entity_<SET_TYPES, INDEX_SPACE>::type;
+  using entity_type = typename find_set_entity_<SET_TYPE, INDEX_SPACE>::type;
 
   set_topology__() {}
 

@@ -21,9 +21,9 @@
 namespace flecsi {
 namespace coloring {
 
-//----------------------------------------------------------------------------//
-//! Type for collecting aggregate index space information.
-//----------------------------------------------------------------------------//
+/*!
+ Type for collecting aggregate index space information.
+ */
 
 struct coloring_info_t {
 
@@ -65,9 +65,9 @@ operator<<(std::ostream & stream, const coloring_info_t & ci) {
   return stream;
 } // operator <<
 
-//----------------------------------------------------------------------------//
-//! Type for passing coloring information about a single entity.
-//----------------------------------------------------------------------------//
+/*!
+  Type for passing coloring information about a single entity.
+ */
 
 struct entity_info_t {
   size_t id;
@@ -75,15 +75,15 @@ struct entity_info_t {
   size_t offset;
   std::set<size_t> shared;
 
-  //--------------------------------------------------------------------------//
-  //! Constructor.
-  //!
-  //! \param id_ The entity id. This is generally specified by the
-  //!            mesh definition.
-  //! \param rank_ The rank that owns this entity.
-  //! \param offset_ The local id or offset of the entity.
-  //! \param shared_ The list of ranks that share this entity.
-  //--------------------------------------------------------------------------//
+  /*!
+   Constructor.
+  
+   \param id_ The entity id. This is generally specified by the
+              mesh definition.
+   \param rank_ The rank that owns this entity.
+   \param offset_ The local id or offset of the entity.
+   \param shared_ The list of ranks that share this entity.
+   */
 
   entity_info_t(
       size_t id_ = 0,
@@ -92,19 +92,18 @@ struct entity_info_t {
       std::set<size_t> shared_ = {})
       : id(id_), rank(rank_), offset(offset_), shared(shared_) {}
 
-  //--------------------------------------------------------------------------//
-  //! Comparision operator for container insertion. This sorts by the
-  //! entity id, e.g., as set by the id_ parameter to the constructor.
-  //--------------------------------------------------------------------------//
+  /*!
+   Comparision operator for container insertion. This sorts by the
+   entity id, e.g., as set by the id_ parameter to the constructor.
+   */
 
   bool operator<(const entity_info_t & c) const {
     return id < c.id;
   } // operator <
 
-  //--------------------------------------------------------------------------//
-  //! Comparision operator for equivalence.
-  //--------------------------------------------------------------------------//
-
+  /*!
+    Comparision operator for equivalence.
+   */
   bool operator==(const entity_info_t & c) const {
     return id == c.id && rank == c.rank && offset == c.offset &&
            shared == c.shared;
@@ -122,19 +121,18 @@ operator<<(std::ostream & stream, const entity_info_t & e) {
   return stream;
 } // operator <<
 
-//----------------------------------------------------------------------------//
-//! \todo Add description.
-//----------------------------------------------------------------------------//
+/*!
+ FIXMEAdd description.
+*/
 
 struct set_color_info_t {
   size_t num_entities;
   size_t reserve_entities;
 }; // struct set_color_info_t
 
-//----------------------------------------------------------------------------//
-//! \todo Add description.
-//----------------------------------------------------------------------------//
-
+/*!
+ FIXMEAdd description.
+*/
 struct set_coloring_info_t {
   std::vector<set_color_info_t> set_coloring_info;
 }; // set_coloring_info_t

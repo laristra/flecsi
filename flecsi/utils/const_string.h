@@ -1,23 +1,20 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
 
-//!
-//! \file
-//! \date Initial file creation: Oct 15, 2015
-//!
+/*! @file */
+
 
 #include "hash.h"
 
@@ -28,19 +25,21 @@
 namespace flecsi {
 namespace utils {
 
-//!
-//! \class const_string const_string.h
-//! \brief const_string provides compile-time string constants and hashing...
-//!
+/*!
+  \class const_string const_string.h
+  \brief const_string provides compile-time string constants and hashing...
+  
+  @ingroup utils
+ */
 class const_string_t {
 public:
   using hash_type_t = std::size_t;
 
-  //!
-  //! Construct a constexpr string.
-  //!
-  //! \param str A string literal.
-  //!
+  /*!
+    Construct a constexpr string.
+   
+    @param str A string literal.
+   */
   template<hash_type_t N>
   constexpr const_string_t(const char (&str)[N])
       : str_(str), size_(N - 1) {} // const_string_t

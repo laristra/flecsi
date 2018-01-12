@@ -25,11 +25,11 @@
 namespace flecsi {
 namespace topology {
 
-template<typename SET_TYPES>
+template<typename SET_TYPE>
 struct legion_set_topology_storage_policy__ {
   using id_t = utils::id_t;
 
-  using entity_types_t = typename SET_TYPES::entity_types;
+  using entity_types_t = typename SET_TYPE::entity_types;
 
   static const size_t num_index_spaces = std::tuple_size<entity_types_t>::value;
 

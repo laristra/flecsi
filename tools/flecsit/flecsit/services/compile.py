@@ -34,8 +34,18 @@ class FleCSIT_Analysis(Service):
         # Add general compiler options -I, -L, and -l
         add_command_line_compiler_options(self.parser)
 
+        # Add verbose flag
         self.parser.add_argument('-v', '--verbose', action='store_true',
             help='Turn on verbose output.'
+        )
+
+        # Add verbose flag
+        self.parser.add_argument('-m', '--main', action='store',
+            help='Allow override of the default runtime main file. The ' +
+                 'runtime main can also by specified by setting the ' +
+                 'FLECSIT_RUNTIME_MAIN environment variable. If ' +
+                 'FLECSIT_RUNTIME_MAIN is set, it will override ' +
+                 'the command line argument.'
         )
 
         # Required driver argument
@@ -61,25 +71,36 @@ class FleCSIT_Analysis(Service):
         # Process command-line arguments
         #----------------------------------------------------------------------#
 
-        includes = generate_compiler_options(config['includes'],
-            args.include, 'FLECSIT_INCLUDES', '-I')
-        ldflags = generate_compiler_options(config['ldflags'],
-            args.ldflag, 'FLECSIT_LDFLAGS', '-L')
-        libraries = generate_compiler_options(config['libraries'],
-            args.library, 'FLECSIT_LIBRARIES', '-l')
-
         # Copy cmake config to initialize build dict
         build = config
 
-        # Set command-line arguments
-        build['includes'] = includes
-        build['libraries'] = ldflags + libraries
-
         # Add driver to build defines
-        build['defines'] += ' -DFLECSI_DRIVER=' + args.driver
+        build['driver'] = args.driver
 
         # Get the base inptut deck name
         build['deck'] = splitext(basename(args.driver))[0]
+
+        includes = generate_compiler_options(config['includes'],
+            args.include, 'FLECSIT_INCLUDES', '-I')
+        defines = generate_compiler_options(config['defines'],
+            args.include, 'FLECSIT_DEFINES', '-D')
+        libraries = generate_compiler_options(config['libraries'],
+            args.library, 'FLECSIT_LIBRARIES', '')
+
+        build['includes'] = includes
+        build['defines'] = defines
+        build['libraries'] = libraries
+
+        # Runtime main
+        main = os.getenv('FLECSIT_RUNTIME_MAIN')
+
+        if main is None:
+            main = args.main
+
+        if main is None:
+            main = build['prefix'] + '/share/FleCSI/runtime/runtime_main.cc '
+
+        build['main'] = main
 
         # Execute build
         execute(args.verbose, build)

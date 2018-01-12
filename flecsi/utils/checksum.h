@@ -1,14 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
 
-///
-/// \file
-/// \date Initial file creation: Jan 03, 2017
-///
+/*! @file */
 
 #include <flecsi/utils/logging.h>
 
@@ -27,14 +32,16 @@ struct checksum_t {
   unsigned int length;
 }; // struct checksum_t
 
-///
-/// Compute the checksum of an array.
-///
-/// \param buffer The data buffer on which to compute the checksum.
-/// \param elements The size of the buffer.
-/// \param[out] sum The checksum data structure to fill.
-/// \param[in] digest The digest context.
-///
+/*!
+  Compute the checksum of an array.
+
+  @param buffer The data buffer on which to compute the checksum.
+  @param elements The size of the buffer.
+  @param[out] sum The checksum data structure to fill.
+  @param[in] digest The digest context.
+
+  @ingroup utils
+ */
 template<typename T>
 void
 checksum(
@@ -46,26 +53,40 @@ checksum(
 
   EVP_MD_CTX * ctx = EVP_MD_CTX_create();
 
-  // Add all digests to table
+  /*!
+    Add all digests to table
+   */
   OpenSSL_add_all_digests();
 
-  // Initialize context
+  /*!
+    Initialize context
+   */
   EVP_MD_CTX_init(ctx);
 
-  // Get digest
+  /*!
+    Get digest
+   */
   const EVP_MD * md = EVP_get_digestbyname(digest);
   clog_assert(md, "invalid digest");
 
-  // Initialize digest
+  /*!
+    Initialize digest
+   */
   EVP_DigestInit_ex(ctx, md, NULL);
 
-  // Update digest with buffer
+  /*!
+    Update digest with buffer
+   */
   EVP_DigestUpdate(ctx, reinterpret_cast<void *>(buffer), bytes);
 
-  // Finalize
+  /*!
+    Finalize
+   */
   EVP_DigestFinal_ex(ctx, sum.value, &sum.length);
 
-  // Free resources
+  /*!
+    Free resources
+   */
   EVP_MD_CTX_destroy(ctx);
 
   char tmp[256];
@@ -80,8 +101,3 @@ checksum(
 
 } // namespace utils
 } // namespace flecsi
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

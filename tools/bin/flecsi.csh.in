@@ -2,6 +2,6 @@
 # FleCSI Csh/Tcsh configuration file.
 ################################################################################
 
-setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH:@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
+setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH:@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@:@FLECSI_LD_DEPENDS@
 setenv PATH $PATH:@CMAKE_INSTALL_PREFIX@/bin
 @FLECSI_PYTHON_PATH_CSH@

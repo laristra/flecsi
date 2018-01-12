@@ -1,14 +1,20 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
 
-//!
-//! \file
-//! \brief A reference array to avoid a million overloads.
-//!
+/*! @file */
+
 
 #include <array>
 #include <assert.h>
@@ -21,41 +27,46 @@
 namespace flecsi {
 namespace utils {
 
-/// An \c array_ref<T> represents an immutable array of \c size()
-/// elements of type T.  The storage for the array is *not* owned by
-/// the \c array_ref object, and clients must arrange for the backing
-/// store to remain live while the \c array_ref object is in use.
-///
-/// Implicit conversion operations are provided from types with
-/// contiguous iterators like \c std::vector, \c std::string, \c
-/// std::array, and primitive arrays.  \c array_ref objects are
-/// invalidated by any operation that invalidates their underlying
-/// pointers.
-///
-/// One common use for \c array_ref is when passing arguments to a
-/// routine where you want to be able to accept a variety of array
-/// types.  The usual approach here is to have the client explicitly
-/// pass in a pointer and a length, as in:
-/// \snippet array_ref_run_test.cc MyOldRoutine
-///
-/// \par
-/// Unfortunately, this leads to ugly and error-prone code at the
-/// call site:
-/// \snippet array_ref_run_test.cc MyOldRoutine calls
-///
-/// \par
-/// Instead, you can use an \c array_ref as the argument to the
-/// routine:
-/// \snippet array_ref_run_test.cc MyNewRoutine
-///
-/// \par
-/// This makes the call sites cleaner, for the most part:
-/// \snippet array_ref_run_test.cc MyNewRoutine calls
-///
-/// \todo The existing \c array_ref classes make the view const. It
-/// may be useful to extend that to allow modifications of the
-/// referenced array elements, and use \c array_ref<const T> for
-/// immutable views.
+/*!
+ \class array_ref<T> represents an immutable array of \c size()
+ elements of type T.  The storage for the array is *not* owned by
+ the \c array_ref object, and clients must arrange for the backing
+ store to remain live while the \c array_ref object is in use.
+
+ Implicit conversion operations are provided from types with
+ contiguous iterators like \c std::vector, \c std::string, \c
+ std::array, and primitive arrays.  \c array_ref objects are
+ invalidated by any operation that invalidates their underlying
+ pointers.
+
+ One common use for \c array_ref is when passing arguments to a
+ routine where you want to be able to accept a variety of array
+ types.  The usual approach here is to have the client explicitly
+ pass in a pointer and a length, as in:
+ \snippet array_ref_run_test.cc MyOldRoutine
+
+ \par
+ Unfortunately, this leads to ugly and error-prone code at the
+ call site:
+ \snippet array_ref_run_test.cc MyOldRoutine calls
+
+ \par
+ Instead, you can use an \c array_ref as the argument to the
+ routine:
+ \snippet array_ref_run_test.cc MyNewRoutine
+
+ \par
+ This makes the call sites cleaner, for the most part:
+ \snippet array_ref_run_test.cc MyNewRoutine calls
+
+ \todo The existing \c array_ref classes make the view const. It
+ may be useful to extend that to allow modifications of the
+ referenced array elements, and use \c array_ref<const T> for
+ immutable views.
+
+ @ingroup legion-execution
+ */
+
 template<typename T>
 class array_ref {
 
@@ -312,8 +323,3 @@ make_array_ref(const std::array<T, N> & a) {
 
 } // namespace utils
 } // namespace flecsi
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

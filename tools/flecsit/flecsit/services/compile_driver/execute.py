@@ -15,11 +15,12 @@ def execute(verbose, build):
               build['flags'] + ' ' + \
               build['defines'] + ' ' + \
               build['includes'] + ' ' + \
-              build['prefix'] + '/share/flecsi/runtime/runtime_main.cc ' + \
-              build['prefix'] + '/share/flecsi/runtime/runtime_driver.cc ' + \
-              '-o ' + build['deck'] + '.' + build['system'] + ' ' + \
-              '-L' + build['prefix'] + '/' + build['libprefix'] + \
-              ' -lflecsi ' + \
+              build['main'] + ' ' + \
+              build['prefix'] + '/share/FleCSI/runtime/runtime_driver.cc ' + \
+              build['driver'] + ' ' + \
+              '-o ' + build['deck'] + ' ' + \
+              '-L' + build['prefix'] + '/' + build['libprefix'] + ' ' + \
+              build['flecsi'] + ' ' + \
               build['libraries']
 
     if verbose:

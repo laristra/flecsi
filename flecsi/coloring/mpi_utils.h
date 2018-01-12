@@ -26,13 +26,13 @@
 namespace flecsi {
 namespace coloring {
 
-//----------------------------------------------------------------------------//
-//! Wrapper to convert from C++ types to MPI types.
-//!
-//! @tparam TYPE The C++ P.O.D. type, e.g., double.
-//!
-//! @ingroup coloring
-//----------------------------------------------------------------------------//
+/*!
+ Wrapper to convert from C++ types to MPI types.
+
+ @tparam TYPE The C++ P.O.D. type, e.g., double.
+
+ @ingroup coloring
+ */
 
 template<typename TYPE>
 struct mpi_typetraits__ {

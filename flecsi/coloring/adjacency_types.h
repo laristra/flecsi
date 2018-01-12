@@ -18,10 +18,10 @@
 namespace flecsi {
 namespace coloring {
 
-//----------------------------------------------------------------------------//
-//! Type for passing adjacency information from the specialization to the
-//! FleCSI runtime.
-//----------------------------------------------------------------------------//
+/*!
+ Type for passing adjacency information from the specialization to the
+ FleCSI runtime.
+ */
 
 struct adjacency_info_t {
 

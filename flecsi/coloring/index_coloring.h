@@ -24,10 +24,9 @@
 namespace flecsi {
 namespace coloring {
 
-//----------------------------------------------------------------------------//
-//! \todo Add description.
-//----------------------------------------------------------------------------//
-
+/*!
+  FIXME Add description.
+ */
 struct index_coloring_t {
   using entity_info_t = flecsi::coloring::entity_info_t;
 
@@ -50,13 +49,13 @@ struct index_coloring_t {
   // Rank id to number of entities
   std::unordered_map<size_t, size_t> entities_per_rank;
 
-  ///
-  /// Equality operator.
-  ///
-  /// \param ip The index_coloring_t to compare with \e this.
-  ///
-  /// \return True if \e ip is equivalent to \e this, false otherwise.
-  ///
+  /*!
+   Equality operator.
+  
+   \param ip The index_coloring_t to compare with \e this.
+  
+   \return True if \e ip is equivalent to \e this, false otherwise.
+   */
   bool operator==(const index_coloring_t & ip) const {
     return (
         this->primary == ip.primary && this->exclusive == ip.exclusive &&

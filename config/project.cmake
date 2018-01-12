@@ -22,7 +22,6 @@ cinch_minimum_required(1.0)
 # Set the project name
 #------------------------------------------------------------------------------#
 
-#project(flecsi)
 project(FleCSI)
 
 #------------------------------------------------------------------------------#
@@ -137,6 +136,12 @@ set(FLECSI_COUNTER_TYPE "int32_t" CACHE STRING
 option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" OFF)
 
 #------------------------------------------------------------------------------#
+# Globally shared variables
+#------------------------------------------------------------------------------#
+
+set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/FleCSI)
+
+#------------------------------------------------------------------------------#
 # Add options for runtime selection
 #------------------------------------------------------------------------------#
 
@@ -206,6 +211,17 @@ endif()
 
 set(FLECSI_RUNTIME_LIBRARIES)
 
+set(DL_LIBS)
+foreach(dl_lib ${CMAKE_DL_LIBS})
+  find_library(DL_LIB ${dl_lib})
+
+  if(DL_LIB STREQUAL "NOTFOUND")
+    message(FATAL_ERROR "Dynamic library not found")
+  endif()
+
+  list(APPEND DL_LIBS ${DL_LIB})
+endforeach()
+
 #
 # Legion interface
 #
@@ -221,11 +237,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
  
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/legion)
 
-  if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
-  else()
-    set(FLECSI_RUNTIME_LIBRARIES ${Legion_LIBRARIES} ${MPI_LIBRARIES})
-  endif()
+  set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${Legion_LIBRARIES}
+    ${MPI_LIBRARIES})
 
   include_directories(${Legion_INCLUDE_DIRS})
   list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${Legion_INCLUDE_DIRS})
@@ -256,11 +269,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpi)
 
-  if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${MPI_LIBRARIES})
-  else()
-    set(FLECSI_RUNTIME_LIBRARIES ${MPI_LIBRARIES})
-  endif()
+  set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
 
 #
 # Default
@@ -377,6 +386,16 @@ install(
 #------------------------------------------------------------------------------#
 
 cinch_add_library_target(FleCSI flecsi)
+cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
+
+#------------------------------------------------------------------------------#
+# Install Tutorial inputs
+#------------------------------------------------------------------------------#
+message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
+
+install(
+  FILES ${PROJECT_SOURCE_DIR}/flecsi-tutorial/specialization/inputs/simple2d-16x16.msh
+  DESTINATION share/FleCSI-Tut/inputs)
 
 #------------------------------------------------------------------------------#
 # Link the necessary libraries
@@ -423,7 +442,6 @@ set(FLECSI_LIBRARY_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR})
 set(FLECSI_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include
   ${FLECSI_EXTERNAL_INCLUDE_DIRS})
 set(FLECSI_CMAKE_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/cmake/FleCSI)
-set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/flecsi)
 set(FLECSI_RUNTIME_MAIN ${FLECSI_SHARE_DIR}/runtime/runtime_main.cc)
 set(FLECSI_RUNTIME_DRIVER ${FLECSI_SHARE_DIR}/runtime/runtime_driver.cc)
 
@@ -440,7 +458,6 @@ foreach (_variableName ${_matchedVars})
 set(${_variableName} \"${${_variableName}}\")"
   )
 endforeach()
-
 
 #------------------------------------------------------------------------------#
 # Export targets and package.
