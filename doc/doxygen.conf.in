@@ -744,7 +744,7 @@ WARN_FORMAT            = "$file:$line: $text"
 # messages should be written. If left blank the output is written to standard
 # error (stderr).
 
-WARN_LOGFILE           =
+WARN_LOGFILE           = @CMAKE_BINARY_DIR@/doxygen.out
 
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
@@ -756,11 +756,11 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT = 																							   \
-	@CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen-mainpage.md 								\
-	@CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen-setup.h 										\
-	@CMAKE_CURRENT_SOURCE_DIR@/flecsi 														\
-	@CMAKE_CURRENT_SOURCE_DIR@/auxiliary													\
+INPUT = @CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen-mainpage.md \
+	@CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen-setup.h \
+	@CMAKE_CURRENT_SOURCE_DIR@/flecsi \
+	@CMAKE_CURRENT_SOURCE_DIR@/auxiliary \
+	@CMAKE_CURRENT_SOURCE_DIR@/flecsi-tutorial \
 	@CMAKE_CURRENT_SOURCE_DIR@/cinch/logging
 
 # This tag can be used to specify the character encoding of the source files

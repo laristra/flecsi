@@ -44,7 +44,7 @@ def tab_spaces(args):
 def add_command_line_compiler_options(parser):
     
     """
-    Add options for compilation, e.g., -I, -L, and -l.
+    Add options for compilation, e.g., -I and -l.
     """
 
     # add command-line options
@@ -59,31 +59,27 @@ def add_command_line_compiler_options(parser):
              ' command line arguements.'
     )
 
-    parser.add_argument('-L', '--ldflag', action='append',
-        help='Specify a linker path. This argument may be given' +
+    parser.add_argument('-D', '--define', action='append',
+        help='Specify a preprocessor define. This argument may be given' +
              ' multiple times. Arguments may be of the form' +
-             ' -L/path/to/link, -L /path/to/link, or' +
-             ' --ldflag /path/to/include. Linker paths may' +
-             ' also be specified by setting the FLECSIT_LDFLAGS' +
-             ' environment variable. If FLECSIT_LDFLAGS is set,' +
-             ' it will override any ldflag passed as' +
+             ' -DDEFINE, -I DEFINE, or' +
+             ' --define DEFINE. Defines may' +
+             ' also be specified by setting the FLECSIT_DEFINES' +
+             ' environment variable. If FLECSIT_DEFINES is set,' +
+             ' it will override any defines passed as' +
              ' command line arguements.'
     )
 
     parser.add_argument('-l', '--library', action='append',
         help='Specify a link library. This argument may be given' +
-             ' multiple times. Arguments may be of the form' +
-             ' -lname, -l name, --library name, or' +
-             ' -l/full/path/libname.{a,so}, -l /full/path/libname.{a,so},' +
-             ' , or --library /full/path/libname.{a,so}. Libraries may' +
+             ' multiple times. Arguments must be of the form' +
+             ' -l/full/path/to/libname.{a,so}, ' +
+             ' -l /full/path/to/libname.{a,so}, ' +
+             ' or --library /full/path/libname.{a,so}. Libraries may' +
              ' also be specified by setting the FLECSIT_LIBRARIES' +
              ' environment variable. If FLECSIT_LIBRARIES is set,' +
              ' it will override any libraries passed as' +
              ' command line arguements.'
-    )
-
-    parser.add_argument('driver', nargs='*', action='append',
-        help='The files to anaylze.'
     )
 
 # add_compiler_options

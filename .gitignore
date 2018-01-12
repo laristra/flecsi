@@ -9,3 +9,7 @@ cmake_install.cmake
 build
 builds
 *_build
+*.Linux
+*.tex
+*.log
+*.aux

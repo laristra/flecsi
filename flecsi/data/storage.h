@@ -123,6 +123,19 @@ struct storage__ : public STORAGE_POLICY {
   }
 
   //--------------------------------------------------------------------------//
+  //! Search for a client at the runtime.
+  //!
+  //! @param client_key The data client indentifier hash.
+  //--------------------------------------------------------------------------//
+
+  void assert_client_exists(size_t client_key) {
+    clog_assert( client_registry_.find(client_key) != client_registry_.end(),
+        "\nThe data_client you are trying to access with key " << 
+        client_key << " does not exist!" <<
+        "\nMake sure it has been properly registered!" );
+  } // register_client
+
+  //--------------------------------------------------------------------------//
   //! Myer's singleton instance.
   //!
   //! @return The single instance of this type.
