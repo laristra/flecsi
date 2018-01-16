@@ -69,7 +69,7 @@ int internal_task_example_1(const Legion::Task * task,
   IndexSpace parent_is = runtime->get_parent_index_space(parent_ip); 
 
   Domain parent_dom = runtime->get_index_space_domain(context, parent_is);
-  Rect<1> parent_rect = parent_dom.get_rect<1>();
+  LegionRuntime::Arrays::Rect<1> parent_rect = parent_dom.get_rect<1>();
 
   //we get an accessor to the exclusive LR because it points to the
   //first element in the compacted physical instanse
@@ -116,7 +116,9 @@ void driver(int argc, char ** argv) {
   int num_elmts = 20;
   int num_ghost=4;
 
-  Rect<1> elem_rect(Point<1>(0),Point<1>(num_elmts+num_ghost-1));
+  LegionRuntime::Arrays::Rect<1> elem_rect(
+      LegionRuntime::Arrays::Point<1>(0),
+      LegionRuntime::Arrays::Point<1>(num_elmts+num_ghost-1));
   IndexSpace is = runtime->create_index_space(context ,
                           Domain::from_rect<1>(elem_rect));
   FieldSpace fs = runtime->create_field_space(context );
@@ -141,7 +143,8 @@ void driver(int argc, char ** argv) {
   runtime->execute_task(context, task_launcher);
 
 
-  Rect<1> color_bounds(Point<1>(0),Point<1>(1-1));
+  LegionRuntime::Arrays::Rect<1> color_bounds(
+      LegionRuntime::Arrays::Point<1>(0),LegionRuntime::Arrays::Point<1>(1-1));
   Domain color_domain = Domain::from_rect<1>(color_bounds);
 
 
@@ -154,9 +157,15 @@ void driver(int argc, char ** argv) {
     // for both partitions for each color.
     for (int color = 0; color < 1; color++)
     {
-      Rect<1> subrect1(Point<1>(0),Point<1>(num_elmts-num_ghost-1));
-      Rect<1> subrect2(Point<1>(num_elmts-num_ghost),Point<1>(num_elmts-1));
-      Rect<1> subrect3(Point<1>(num_elmts),Point<1>(num_elmts+num_ghost-1));
+      LegionRuntime::Arrays::Rect<1> subrect1(
+        LegionRuntime::Arrays::Point<1>(0),
+        LegionRuntime::Arrays::Point<1>(num_elmts-num_ghost-1));
+      LegionRuntime::Arrays::Rect<1> subrect2(
+        LegionRuntime::Arrays::Point<1>(num_elmts-num_ghost),
+        LegionRuntime::Arrays::Point<1>(num_elmts-1));
+      LegionRuntime::Arrays::Rect<1> subrect3(
+        LegionRuntime::Arrays::Point<1>(num_elmts),
+        LegionRuntime::Arrays::Point<1>(num_elmts+num_ghost-1));
       ex_coloring[color] = Domain::from_rect<1>(subrect1);
       sh_coloring[color] = Domain::from_rect<1>(subrect2);
       gh_coloring[color] = Domain::from_rect<1>(subrect3);
