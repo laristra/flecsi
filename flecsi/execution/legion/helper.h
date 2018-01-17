@@ -21,11 +21,18 @@
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
-#include <arrays.h>
+#include <legion/arrays.h>
 #include <legion.h>
 
 namespace flecsi {
 namespace execution {
+
+template<typename FT, int N, typename T = long long>
+using AccessorRO = Legion::FieldAccessor<READ_ONLY,FT,N,T,Realm::AffineAccessor<FT,N,T> >;
+template<typename FT, int N, typename T = long long>
+using AccessorWO = Legion::FieldAccessor<WRITE_DISCARD,FT,N,T,Realm::AffineAccessor<FT,N,T> >;
+template<typename FT, int N, typename T = long long>
+using AccessorRW = Legion::FieldAccessor<READ_WRITE,FT,N,T,Realm::AffineAccessor<FT,N,T> >;
 
 /*!
   The Legion helper class define a number of convenience methods for handling
@@ -68,8 +75,7 @@ public:
   }
 
   // unstructured
-  Legion::IndexSpace create_index_space(size_t n) const {
-    assert(n > 0);
+  Legion::IndexSpace create_index_space(Legion::Domain n) const {
     return runtime_->create_index_space(context_, n);
   }
 
@@ -105,9 +111,6 @@ public:
     return runtime_->execute_index_space(context_, l);
   }
 
-  Legion::IndexAllocator create_index_allocator(Legion::IndexSpace is) const {
-    return runtime_->create_index_allocator(context_, is);
-  }
 
   Legion::Domain get_domain(Legion::PhysicalRegion pr) const {
     Legion::LogicalRegion lr = pr.get_logical_region();
@@ -131,14 +134,14 @@ public:
    /*!
     Get a raw (byte) buffer from a physical region and field ID.
    */
-   char * get_raw_buffer(Legion::PhysicalRegion pr, size_t field = 0) const {
-    auto ac = pr.get_field_accessor(field).typeify<char>();
-    Legion::Domain domain = get_domain(pr);
-    LegionRuntime::Arrays::Rect<1> r = domain.get_rect<1>();
-    LegionRuntime::Arrays::Rect<1> sr;
-    LegionRuntime::Accessor::ByteOffset bo[1];
-    return ac.template raw_rect_ptr<1>(r, sr, bo);
-  }
+   char* get_raw_buffer(Legion::PhysicalRegion pr, size_t field = 0) const{
+      AccessorRW<char, 1> ac(pr, field);
+      Legion::Rect<1> rect = runtime_->get_index_space_domain(context_,
+                  pr.get_logical_region().get_index_space());
+      
+      assert(ac.accessor.is_dense_arbitrary(rect));
+      return ac.ptr(rect.lo);
+    }
 
   /*!
     Unmap a physical region.
