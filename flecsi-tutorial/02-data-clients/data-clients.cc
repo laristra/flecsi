@@ -99,7 +99,7 @@ void driver(int argc, char ** argv) {
   // that we defined above. This handle is an opaque reference to the
   // data client variable that cannot be accessed outside of a task.
   // During task execution, this handle will be mapped into the task's
-  // memory space. Only then, will it be accessible by the user.
+  // memory space, at which point it will be accessible by the user.
 
   auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
 
