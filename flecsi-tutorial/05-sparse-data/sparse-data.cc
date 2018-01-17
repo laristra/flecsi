@@ -12,6 +12,7 @@
    All rights reserved.
                                                                               */
 
+#include <cstdlib>
 #include <iostream>
 
 #include<flecsi-tutorial/specialization/mesh/mesh.h>
@@ -22,26 +23,33 @@ using namespace flecsi;
 using namespace flecsi::tutorial;
 
 flecsi_register_data_client(mesh_t, clients, mesh);
-flecsi_register_field(mesh_t, hydro, pressure, double, dense, 1, cells);
+flecsi_register_field(mesh_t, hydro, pressure, double, sparse, 1, cells);
 
 namespace hydro {
 
-void initialize_pressure(mesh<ro> mesh, field<rw> p) {
+void initialize_materials(mesh<ro> mesh, sparse_field_mutator p) {
+
   for(auto c: mesh.cells(owned)) {
-    p(c) = double(c->id());
+    const size_t random = rand()/double(RAND_MAX) * 5;
+
+    for(size_t i{0}; i<random; ++i) {
+      p(c,i) = i;
+    } // for
   } // for
 } // initialize_pressure
 
-flecsi_register_task(initialize_pressure, hydro, loc, single);
+flecsi_register_task(initialize_materials, hydro, loc, single);
 
-void print_pressure(mesh<ro> mesh, field<ro> p) {
-  for(auto c: mesh.cells(owned)) {
-    std::cout << "cell id: " << c->id() << " has pressure " <<
-      p(c) << std::endl;
+void print_materials(mesh<ro> mesh, sparse_field<ro> p) {
+  for(auto i: p.indices()) {
+    for(auto e: p.entries(i)) {
+      std::cout << p(i,e) << " ";
+    } // for
+    std::cout << std::endl;
   } // for
 } // print_pressure
 
-flecsi_register_task(print_pressure, hydro, loc, single);
+flecsi_register_task(print_materials, hydro, loc, single);
 
 } // namespace hydro
 
@@ -51,10 +59,18 @@ namespace execution {
 void driver(int argc, char ** argv) {
 
   auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
-  auto p = flecsi_get_handle(m, hydro, pressure, double, dense, 0);
 
-  flecsi_execute_task(initialize_pressure, hydro, single, m, p);
-  flecsi_execute_task(print_pressure, hydro, single, m, p);
+  {
+  auto p = flecsi_get_mutator(m, hydro, pressure, double, sparse, 0, 5);
+
+  flecsi_execute_task(initialize_materials, hydro, single, m, p);
+  } // scope
+
+  {
+  auto p = flecsi_get_handle(m, hydro, pressure, double, sparse, 0);
+
+  flecsi_execute_task(print_materials, hydro, single, m, p);
+  } // scope
 
 } // driver
 

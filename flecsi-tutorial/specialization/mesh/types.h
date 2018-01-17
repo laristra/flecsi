@@ -11,6 +11,7 @@ enum index_spaces : size_t {
   vertices,
   edges,
   cells,
+  vertices_to_cells,
   cells_to_vertices
 }; // enum index_spaces
 
@@ -28,6 +29,9 @@ struct specialization_mesh_policy_t
   );
 
   flecsi_register_connectivities(
+#if 0
+    flecsi_connectivity(index_spaces::vertices_to_cells, 0, vertex_t, cell_t),
+#endif
     flecsi_connectivity(index_spaces::cells_to_vertices, 0, cell_t, vertex_t)
   );
 

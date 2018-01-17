@@ -24,6 +24,10 @@ struct vertex_t : public flecsi::topology::mesh_entity__<0, 1>
 
   point_t const & coordinates() const { return p_; }
 
+  void print(const char * string) {
+    std::cout << string << " My id is " << id<0>() << std::endl;
+  } // print
+
 private:
 
   point_t p_;

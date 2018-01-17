@@ -14,7 +14,7 @@ set(mesh_HEADERS
 
 set(mesh_SOURCES
   coloring.cc
-  control.cc
+  control_points.cc
   mesh.cc
   tasks.cc
   PARENT_SCOPE

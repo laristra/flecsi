@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <algorithm>
+#include <functional>
 #include <map>
 #include <type_traits>
 #include <vector>

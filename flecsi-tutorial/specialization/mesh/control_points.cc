@@ -28,6 +28,29 @@ void specialization_tlt_init(int argc, char ** argv) {
   auto & cinfo { context.coloring_info(index_spaces::cells) };
 
   coloring::adjacency_info_t ai;
+
+#if 0
+  // Add adjacency information for vertices -> cells
+  //
+  // NOTE: This logic assumes that we are using the 16x16 input
+  //       mesh for the tutorial. In a real setting, the number
+  //       of cells for each vertex would depend on the actual
+  //       topology of the mesh being created!
+  ai.index_space = index_spaces::vertices_to_cells;
+  ai.from_index_space = index_spaces::vertices;
+  ai.to_index_space = index_spaces::cells;
+  ai.color_sizes.resize(vinfo.size());
+
+  for(auto & itr : vinfo){
+    size_t color{itr.first};
+    const coloring::coloring_info_t & ci = itr.second;
+    ai.color_sizes[color] = (ci.exclusive + ci.shared + ci.ghost) * 4;
+  } // for
+
+  context.add_adjacency(ai);
+#endif
+
+  // Add adjacency information for cells -> vertices
   ai.index_space = index_spaces::cells_to_vertices;
   ai.from_index_space = index_spaces::cells;
   ai.to_index_space = index_spaces::vertices;
@@ -40,6 +63,13 @@ void specialization_tlt_init(int argc, char ** argv) {
   } // for
 
   context.add_adjacency(ai);
+
+  // Add sparse support for cells
+  execution::context_t::sparse_index_space_info_t isi;
+    isi.max_entries_per_index = 5;
+  isi.reserve_chunk = 8192;
+  context.set_sparse_index_space_info(index_spaces::cells, isi);
+
 
 } // specialization_tlt_init
 

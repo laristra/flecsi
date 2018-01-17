@@ -31,8 +31,23 @@ namespace hydro {
 
 void simple(mesh<ro> mesh) {
 
+  for(auto v: mesh.vertices()) {
+    v->print("Hello World! I'm a vertex!");
+
+#if 0
+    for(auto c: mesh.cells(v)) {
+      c->print("I'm a cell!");
+    } // for
+#endif
+  } // for
+
   for(auto c: mesh.cells(owned)) {
     c->print("Hello World! I am a cell!");
+
+    for(auto v: mesh.vertices(c)) {
+      v->print("I'm a vertex!");
+    } // for
+
   } // for
 
 } // simple

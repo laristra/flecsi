@@ -17,6 +17,8 @@
 
 #include <unordered_set>
 
+#include <cinchlog.h>
+
 #include <flecsi/data/sparse_data_handle.h>
 #include <flecsi/topology/index_space.h>
 
