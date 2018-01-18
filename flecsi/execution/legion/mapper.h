@@ -135,11 +135,13 @@ public:
       Legion::Mapping::Mapper::MapTaskOutput & output) {
     DefaultMapper::map_task(ctx, task, input, output);
 
-    if ((task.tag & MAPPER_COMPACTED_STORAGE) != 0) {
+
+    if ( ((task.tag & MAPPER_COMPACTED_STORAGE) != 0) &&                                                                                                                                                                                                                                                                  
+            (task.regions.size()>0)){
 
       Legion::Memory target_mem =
           DefaultMapper::default_policy_select_target_memory(
-              ctx, task.target_proc);
+              ctx, task.target_proc,task.regions[0]);
 
       // check if we get region requirements for "exclusive, shared and ghost"
       // logical regions for each data handle

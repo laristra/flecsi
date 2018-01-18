@@ -15,6 +15,10 @@
 
 /*! @file */
 
+#include <cstring>
+#include <set>
+#include <unordered_map>
+
 #include <flecsi/data/common/data_types.h>
 
 namespace flecsi {

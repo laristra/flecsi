@@ -64,7 +64,7 @@ public:
   //!
   //! \return The id of the entity.
   //-----------------------------------------------------------------//
-  template<size_t DOM>
+  template<size_t DOM = 0>
   id_t global_id() const {
     return ids_[DOM];
   } // id
@@ -73,7 +73,7 @@ public:
     return ids_[domain];
   } // id
 
-  template<size_t DOM>
+  template<size_t DOM = 0>
   size_t id() const {
     return ids_[DOM].entity();
   } // id
@@ -82,7 +82,7 @@ public:
     return ids_[domain].entity();
   } // id
 
-  template<size_t DOM>
+  template<size_t DOM = 0>
   uint16_t info() const {
     return ids_[DOM] >> 48;
   } // info
@@ -90,7 +90,7 @@ public:
   //-----------------------------------------------------------------//
   //! Set the id of this entity.
   //-----------------------------------------------------------------//
-  template<size_t DOM>
+  template<size_t DOM = 0>
   void set_global_id(const id_t & id) {
     ids_[DOM] = id;
   } // id
@@ -106,12 +106,14 @@ public:
   friend class mesh_topology__;
 
 protected:
-  template<size_t DOM>
+
+  template<size_t DOM = 0>
   void set_info(uint16_t info) {
     ids_[DOM] = (uint64_t(info) << 48) | ids_[DOM];
   } // set_info
 
 private:
+
   std::array<id_t, NUM_DOMAINS> ids_;
 
 }; // class mesh_entity_base__

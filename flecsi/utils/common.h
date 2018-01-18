@@ -74,9 +74,9 @@ square(const T & a) {
   return a * a;
 }
 
-//----------------------------------------------------------------------------//
-// C++ demangler
-//----------------------------------------------------------------------------//
+/*!
+  C++ demangler
+ */
 
 std::string demangle(const char * const name);
 
@@ -206,8 +206,3 @@ struct function_traits__<const volatile T &&> : public function_traits__<T> {};
 
 #define _UTIL_STRINGIFY(s) #s
 #define EXPAND_AND_STRINGIFY(s) _UTIL_STRINGIFY(s)
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

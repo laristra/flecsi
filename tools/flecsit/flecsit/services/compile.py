@@ -98,7 +98,7 @@ class FleCSIT_Analysis(Service):
             main = args.main
 
         if main is None:
-            main = build['prefix'] + '/share/flecsi/runtime/runtime_main.cc '
+            main = build['prefix'] + '/share/FleCSI/runtime/runtime_main.cc '
 
         build['main'] = main
 

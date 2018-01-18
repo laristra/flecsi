@@ -78,9 +78,9 @@ struct entity_info_t {
   /*!
    Constructor.
   
-   \param id_ The entity id. This is generally specified by the
-              mesh definition.
-   \param rank_ The rank that owns this entity.
+   \param id_     The entity id. This is generally specified by the
+                  mesh definition.
+   \param rank_   The rank that owns this entity.
    \param offset_ The local id or offset of the entity.
    \param shared_ The list of ranks that share this entity.
    */
@@ -93,7 +93,7 @@ struct entity_info_t {
       : id(id_), rank(rank_), offset(offset_), shared(shared_) {}
 
   /*!
-   Comparision operator for container insertion. This sorts by the
+   Comparison operator for container insertion. This sorts by the
    entity id, e.g., as set by the id_ parameter to the constructor.
    */
 
@@ -102,8 +102,9 @@ struct entity_info_t {
   } // operator <
 
   /*!
-    Comparision operator for equivalence.
+    Comparison operator for equivalence.
    */
+
   bool operator==(const entity_info_t & c) const {
     return id == c.id && rank == c.rank && offset == c.offset &&
            shared == c.shared;

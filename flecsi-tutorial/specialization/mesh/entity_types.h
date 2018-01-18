@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <iostream>
 #include <vector>
 
 namespace flecsi {
@@ -23,6 +24,10 @@ struct vertex_t : public flecsi::topology::mesh_entity__<0, 1>
 
   point_t const & coordinates() const { return p_; }
 
+  void print(const char * string) {
+    std::cout << string << " My id is " << id<0>() << std::endl;
+  } // print
+
 private:
 
   point_t p_;
@@ -44,6 +49,10 @@ struct edge_t : public flecsi::topology::mesh_entity__<1, 1>
 struct cell_t : public flecsi::topology::mesh_entity__<2, 1>
 {
   using id_t = flecsi::utils::id_t;
+
+  void print(const char * string) {
+    std::cout << string << " My id is " << id<0>() << std::endl;
+  } // print
 
   std::vector<size_t>
   create_entities(

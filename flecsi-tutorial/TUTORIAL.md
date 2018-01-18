@@ -91,7 +91,7 @@ To use the bash or csh script, simply source the script (located in the
 bin directory of your FleCSI install path):
 
 ```
-$ source CMAKE_INSTALL_PREFIX/bin/flecsi.{sh,csh}
+$ source CMAKE_INSTALL_PREFIX/bin/flecsi-tutorial.{sh,csh}
 ```
 
 To use the environment module, you will need to install the module file
@@ -99,7 +99,7 @@ in an appropriate path (This may have been done by your administrator.)
 You can then load the module as usual:
 
 ```
-$ module load flecsi
+$ module load flecsi-tutorial
 ```
 
 Once your environment has been correctly configured, you can build any

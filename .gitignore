@@ -13,3 +13,8 @@ builds
 *.tex
 *.log
 *.aux
+
+flecsi-tutorial/*/*.tex
+flecsi-tutorial/*/*.log
+flecsi-tutorial/*/*.aux
+flecsi-tutorial/*/*.pdf

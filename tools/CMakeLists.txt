@@ -177,9 +177,9 @@ add_custom_target(runtime_driver ALL
 
 # Install the auxiliary files
 install(FILES ${_runtime_path}/runtime_main.cc
-  DESTINATION share/flecsi/runtime)
+  DESTINATION ${FLECSI_SHARE_DIR}/runtime)
 install(FILES ${_runtime_path}/runtime_driver.cc
-  DESTINATION share/flecsi/runtime)
+  DESTINATION ${FLECSI_SHARE_DIR}/runtime)
 
 #------------------------------------------------------------------------------#
 # FleCSI environment module

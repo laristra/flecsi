@@ -24,8 +24,8 @@
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
-#include <arrays.h>
 #include <legion.h>
+#include <legion/arrays.h>
 
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>

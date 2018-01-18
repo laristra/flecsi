@@ -139,6 +139,12 @@ set(FLECSI_COUNTER_TYPE "int32_t" CACHE STRING
 option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" OFF)
 
 #------------------------------------------------------------------------------#
+# Globally shared variables
+#------------------------------------------------------------------------------#
+
+set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/FleCSI)
+
+#------------------------------------------------------------------------------#
 # Add options for runtime selection
 #------------------------------------------------------------------------------#
 
@@ -452,7 +458,6 @@ set(FLECSI_LIBRARY_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR})
 set(FLECSI_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include
   ${FLECSI_EXTERNAL_INCLUDE_DIRS})
 set(FLECSI_CMAKE_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/cmake/FleCSI)
-set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/flecsi)
 set(FLECSI_RUNTIME_MAIN ${FLECSI_SHARE_DIR}/runtime/runtime_main.cc)
 set(FLECSI_RUNTIME_DRIVER ${FLECSI_SHARE_DIR}/runtime/runtime_driver.cc)
 

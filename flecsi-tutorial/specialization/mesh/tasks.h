@@ -23,7 +23,7 @@ inline void initialize_mesh(mesh<wo> m) {
 
   std::vector<vertex_t *> vertices;
 
-  const size_t width { 8 };
+  const size_t width { 16 };
   const double dt { 1.0/width };
 
   for(auto & vm: vertex_map) {
