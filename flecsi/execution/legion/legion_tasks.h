@@ -218,6 +218,23 @@ __flecsi_internal_legion_task(unset_call_mpi_task, void) {
   context_t::instance().set_mpi_state(false);
 } // unset_call_mpi_task
 
+
+#if 0
+/*!
+ Interprocess communication to set mpi execute state.
+
+ @ingroup legion-execution
+*/
+__flecsi_internal_legion_task (set_state_to_true, void)
+{
+  context_t::instance().set_mpi_state(true);
+}
+
+  __flecsi_internal_register_legion_task(set_state_to_true,
+  flecsi::processor_type_t::loc, single);
+#endif
+
+
 /*!
  Compaction task writes new location in old location.
 

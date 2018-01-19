@@ -20,9 +20,24 @@
 
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/execution/legion/wrapper_task.h>
 
 namespace flecsi {
 namespace execution {
+
+
+void set_state_to_true(
+  const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime
+)
+{
+  context_t::instance().set_mpi_state(true);
+}
+
+  __flecsi_internal_register_legion_task(set_state_to_true,
+  flecsi::processor_type_t::loc, single);
 
 /*!
   Register the top-level SMPD task.

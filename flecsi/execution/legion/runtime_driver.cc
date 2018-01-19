@@ -61,7 +61,7 @@ runtime_driver(
   // Initialize MPI Interoperability
   context_t & context_ = context_t::instance();
   context_.connect_with_mpi(ctx, runtime);
-  context_.wait_on_mpi(ctx, runtime);
+ // context_.wait_on_mpi(ctx, runtime);
 
   using field_info_t = context_t::field_info_t;
 
@@ -133,6 +133,8 @@ runtime_driver(
   specialization_tlt_init(args.argc, args.argv);
 
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+
+  //context_.handoff_to_mpi(ctx, runtime);
 
   //--------------------------------------------------------------------------//
   //  Create Legion index spaces and logical regions
@@ -549,7 +551,7 @@ runtime_driver(
   phase_barriers_map.clear();
 
   context_.unset_call_mpi(ctx, runtime);
-  context_.handoff_to_mpi(ctx, runtime);
+  //context_.handoff_to_mpi(ctx, runtime);
 } // runtime_driver
 
 void

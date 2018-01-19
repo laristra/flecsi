@@ -248,6 +248,23 @@ struct legion_context_policy_t {
     handshake_.legion_wait_on_mpi();
   } // wait_on_legion
 
+  template <typename LAUNCHERTYPE>
+  void add_wait_handshake(LAUNCHERTYPE &l)
+  {
+    l.add_wait_handshake(handshake_);
+  }
+
+  template <typename LAUNCHERTYPE>
+  void add_arrival_handshake(LAUNCHERTYPE &l)
+  {
+    l.add_arrival_handshake(handshake_);
+  }
+
+  void advance_handshake()
+  {
+    handshake_.advance_legion_handshake();
+  }
+
   /*!  
     Unset the MPI active state to pass execution back to
     the Legion runtime.
@@ -257,6 +274,11 @@ struct legion_context_policy_t {
    */
 
   void unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
+
+  void unset_call_mpi_single()
+  {
+    mpi_active_=false;
+  }
 
   /*!
     Switch execution to the MPI runtime.

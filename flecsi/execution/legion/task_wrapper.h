@@ -32,6 +32,7 @@
 #include <flecsi/execution/legion/finalize_handles.h>
 #include <flecsi/execution/legion/init_handles.h>
 #include <flecsi/execution/legion/registration_wrapper.h>
+#include <flecsi/execution/legion/wrapper_task.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/tuple_function.h>
 #include <flecsi/utils/tuple_type_converter.h>
@@ -41,6 +42,27 @@ clog_register_tag(wrapper);
 
 namespace flecsi {
 namespace execution {
+
+#if 0
+/*!
+ Interprocess communication to set mpi execute state.
+
+ @ingroup legion-execution
+*/
+void set_state_to_true(
+  const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime
+)
+{
+  context_t::instance().set_mpi_state(true);
+}
+
+  __flecsi_internal_register_legion_task(set_state_to_true,
+  flecsi::processor_type_t::loc, single);
+#endif
+
 
 /*!
  Wrapper to handle returns from user task execution.
@@ -313,7 +335,23 @@ struct task_wrapper__ {
 
     // Set the MPI function and make the runtime active.
     context_t::instance().set_mpi_task(bound_mpi_task);
-    context_t::instance().set_mpi_state(true);
+
+    auto key = flecsi::utils::const_string_t{
+      EXPAND_AND_STRINGIFY(set_state_to_true)}.hash();    
+
+    Legion::TaskLauncher state_launcher(
+      context_t::instance().task_id(key),
+      LegionRuntime::HighLevel::TaskArgument(0,0));
+
+    if (context_t::instance().execution_state()==SPECIALIZATION_TLT_INIT){
+      context_t::instance().add_wait_handshake(state_launcher);
+      context_t::instance().advance_handshake();
+      context_t::instance().add_arrival_handshake(state_launcher);
+    }
+
+    auto f=runtime->execute_task(context, state_launcher);
+    //f.wait();
+    //context_t::instance().set_mpi_state(true);
   } // execute_mpi_task
 
 }; // struct task_wrapper__
