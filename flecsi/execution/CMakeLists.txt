@@ -61,7 +61,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/task_epilog.h
     legion/task_prolog.h
     legion/task_wrapper.h
-    legion/wrapper_task.h
   )
 
   set(execution_SOURCES
