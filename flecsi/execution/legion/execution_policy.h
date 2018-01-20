@@ -189,10 +189,10 @@ struct legion_execution_policy_t {
         future.wait_all_results(true);
 
         // Handoff to the MPI runtime.
-     //   context_.handoff_to_mpi(legion_context, legion_runtime);
+        context_.handoff_to_mpi(legion_context, legion_runtime);
 
         // Wait for MPI to finish execution (synchronous).
-     //   context_.wait_on_mpi(legion_context, legion_runtime);
+        context_.wait_on_mpi(legion_context, legion_runtime);
 
         // Reset the calling state to false.
         context_.unset_call_mpi(legion_context, legion_runtime);
@@ -204,15 +204,17 @@ struct legion_execution_policy_t {
           TaskLauncher task_launcher(
               context_.task_id<KEY>(),
               TaskArgument(&task_args, sizeof(ARG_TUPLE)));
-          
-          context_.add_wait_handshake(task_launcher);
-          context_.advance_handshake();
-          context_.add_arrival_handshake(task_launcher);
 
           auto future =
               legion_runtime->execute_task(legion_context, task_launcher);
 
-          future.wait();
+          future.wait();         
+ 
+           // Handoff to the MPI runtime.
+          context_.handoff_to_mpi();
+
+        // Wait for MPI to finish execution (synchronous).
+          context_.wait_on_mpi();
 
          context_.unset_call_mpi_single();
 

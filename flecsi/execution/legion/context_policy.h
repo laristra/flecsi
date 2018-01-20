@@ -289,6 +289,11 @@ struct legion_context_policy_t {
 
   void handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
+  void handoff_to_mpi_single()
+  {
+    handshake_.legion_handoff_to_mpi();
+  }
+
   /*!
     Wait on the MPI runtime to finish the current task execution.
   
@@ -300,6 +305,11 @@ struct legion_context_policy_t {
 
   Legion::FutureMap
   wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
+
+  void wait_on_mpi_single()
+  {
+    handshake_.legion_wait_on_mpi();
+  }
 
   /*!
     Connect with the MPI runtime.
