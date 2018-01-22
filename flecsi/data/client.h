@@ -77,8 +77,6 @@ struct data_client_policy_handler__<global_data_client_t> {
     h.namespace_hash = NAMESPACE_HASH;
     h.name_hash = NAME_HASH;
 
-    storage_t::instance().assert_client_exists( h.client_hash );
-      
     return h;
   } // get_client_handle
 
