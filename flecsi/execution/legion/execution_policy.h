@@ -288,13 +288,13 @@ struct legion_execution_policy_t {
    */
 
   template<
+      size_t KEY,
       typename RETURN,
       typename ARG_TUPLE,
-      RETURN (*FUNCTION)(ARG_TUPLE),
-      size_t KEY>
+      RETURN (*FUNCTION)(ARG_TUPLE)>
   static bool register_function() {
     return context_t::instance()
-        .template register_function<RETURN, ARG_TUPLE, FUNCTION, KEY>();
+        .template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
   } // register_function
 
   /*!
@@ -306,7 +306,7 @@ struct legion_execution_policy_t {
   static decltype(auto)
   execute_function(FUNCTION_HANDLE & handle, ARGS &&... args) {
     return handle(
-        context_t::instance().function(handle.key()),
+        context_t::instance().function(handle.get_key()),
         std::forward_as_tuple(args...));
   } // execute_function
 

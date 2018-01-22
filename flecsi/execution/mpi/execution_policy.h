@@ -164,7 +164,7 @@ struct mpi_execution_policy_t
   )
   {
     return context_t::instance().template register_function<
-      RETURN, ARG_TUPLE, DELEGATE, KEY>();
+      KEY, RETURN, ARG_TUPLE, DELEGATE>();
   } // register_task
 
   /*!
@@ -214,17 +214,16 @@ struct mpi_execution_policy_t
    */
 
   template<
+    size_t KEY,
     typename RETURN,
     typename ARG_TUPLE,
-    RETURN (*FUNCTION)(ARG_TUPLE),
-    size_t KEY
-  >
+    RETURN (*FUNCTION)(ARG_TUPLE)>
   static
   bool
   register_function()
   {
     return context_t::instance().template register_function<
-      RETURN, ARG_TUPLE, FUNCTION, KEY>();
+      KEY, RETURN, ARG_TUPLE, FUNCTION>();
   } // register_function
 
   /*!
@@ -243,7 +242,7 @@ struct mpi_execution_policy_t
     ARGS && ... args
   )
   {
-    return handle(context_t::instance().function(handle.key()),
+    return handle(context_t::instance().function(handle.get_key()),
       std::forward_as_tuple(args ...));
   } // execute_function
 
