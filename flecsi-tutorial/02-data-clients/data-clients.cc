@@ -73,7 +73,7 @@ flecsi_register_data_client(mesh_t, clients, mesh);
 
 namespace hydro {
 
-void simple(mesh<ro> mesh) {
+void simple_task(mesh<ro> mesh) {
 
   // Our specialization mesh interface provides a "print" method. The
   // mechanism that allows a mesh handle to be passed to a task inherits
@@ -82,11 +82,11 @@ void simple(mesh<ro> mesh) {
 
   mesh.print("Hello World! I am a mesh!");
 
-} // simple
+} // simple_task
 
 // Task registration is as usual...
 
-flecsi_register_task(simple, hydro, loc, single);
+flecsi_register_task(simple_task, hydro, loc, single);
 
 } // namespace hydro
 
@@ -105,7 +105,7 @@ void driver(int argc, char ** argv) {
 
   // Task execution is as usual...
 
-  flecsi_execute_task(simple, hydro, single, m);
+  flecsi_execute_task(simple_task, hydro, single, m);
 
 } // driver
 

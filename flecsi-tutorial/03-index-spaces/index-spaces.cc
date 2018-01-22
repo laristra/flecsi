@@ -33,12 +33,6 @@ void simple(mesh<ro> mesh) {
 
   for(auto v: mesh.vertices()) {
     v->print("Hello World! I'm a vertex!");
-
-#if 0
-    for(auto c: mesh.cells(v)) {
-      c->print("I'm a cell!");
-    } // for
-#endif
   } // for
 
   for(auto c: mesh.cells(owned)) {

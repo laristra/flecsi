@@ -23,27 +23,28 @@ using namespace flecsi;
 using namespace flecsi::tutorial;
 
 flecsi_register_data_client(mesh_t, clients, mesh);
-flecsi_register_field(mesh_t, hydro, fractions, double, sparse, 1, cells);
+flecsi_register_field(mesh_t, hydro, densities, double, sparse, 1, cells);
 
 namespace hydro {
 
-void initialize_materials(mesh<ro> mesh, sparse_field_mutator f) {
+void initialize_materials(mesh<ro> mesh, sparse_field_mutator d) {
 
-  for(auto c: mesh.cells(owned)) {
-    const size_t random = rand()/double(RAND_MAX) * 5;
+  for(auto c: mesh.cells()) {
+    const size_t random = (rand()/double{RAND_MAX}) * 5;
 
     for(size_t i{0}; i<random; ++i) {
-      f(c,i) = i;
+      const size_t index = (rand()/double{RAND_MAX}) * 5;
+      d(c,index) = index;
     } // for
   } // for
 } // initialize_pressure
 
 flecsi_register_task(initialize_materials, hydro, loc, single);
 
-void print_materials(mesh<ro> mesh, sparse_field<ro> f) {
+void print_materials(mesh<ro> mesh, sparse_field<ro> d) {
   for(auto c: mesh.cells()) {
-    for(auto e: f.entries(c)) {
-      std::cout << f(c,e) << " ";
+    for(auto m: d.entries(c)) {
+      std::cout << d(c,m) << " ";
     } // for
     std::cout << std::endl;
   } // for
@@ -61,15 +62,15 @@ void driver(int argc, char ** argv) {
   auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
 
   {
-  auto f = flecsi_get_mutator(m, hydro, fractions, double, sparse, 0, 5);
+  auto d = flecsi_get_mutator(m, hydro, densities, double, sparse, 0, 5);
 
-  flecsi_execute_task(initialize_materials, hydro, single, m, f);
+  flecsi_execute_task(initialize_materials, hydro, single, m, d);
   } // scope
 
   {
-  auto f = flecsi_get_handle(m, hydro, fractions, double, sparse, 0);
+  auto d = flecsi_get_handle(m, hydro, densities, double, sparse, 0);
 
-  flecsi_execute_task(print_materials, hydro, single, m, f);
+  flecsi_execute_task(print_materials, hydro, single, m, d);
   } // scope
 
 } // driver

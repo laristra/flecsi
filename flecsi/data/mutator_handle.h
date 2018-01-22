@@ -15,7 +15,10 @@
 
 /*! @file */
 
+#include <algorithm>
 #include <cstring>
+#include <limits>
+#include <map>
 #include <set>
 #include <unordered_map>
 
