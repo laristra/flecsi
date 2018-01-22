@@ -124,14 +124,14 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   template<
+      size_t KEY,
       typename RETURN,
       typename ARG_TUPLE,
-      RETURN (*FUNCTION)(ARG_TUPLE),
-      size_t KEY>
+      RETURN (*FUNCTION)(ARG_TUPLE)>
   bool register_function() {
     clog_assert(
-        function_registry_.find(KEY) == function_registry_.end(),
-        "function has already been registered");
+      function_registry_.find(KEY) == function_registry_.end(),
+      "function has already been registered");
 
     const std::size_t addr = reinterpret_cast<std::size_t>(FUNCTION);
     clog(info) << "Registering function: " << addr << std::endl;

@@ -26,7 +26,7 @@ double test_function(double r, double e) {
   return r*e;
 } // function1
 
-flecsi_register_function(test_function);
+flecsi_register_function(test_function, flecsi::execution);
 
 //----------------------------------------------------------------------------//
 // Driver.
@@ -34,7 +34,7 @@ flecsi_register_function(test_function);
 
 void driver(int argc, char ** argv) {
 //FIXME IRINA do something with the handle
-  auto handle = flecsi_function_handle(test_function);
+  auto handle = flecsi_function_handle(test_function, flecsi::execution);
 
   double result = flecsi_execute_function(handle, 2.0, 10.0);
 
