@@ -37,6 +37,8 @@ void write_task(
         const int my_color, const size_t cycle, const bool delay);
 flecsi_register_task_simple(write_task, loc, single);
 
+flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
+
 flecsi_register_field(empty_mesh_2d_t, name_space, field1, size_t, dense,
     VERSIONS, INDEX_ID);
 flecsi_register_field(empty_mesh_2d_t, name_space, field2, size_t, dense,
