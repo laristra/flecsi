@@ -46,13 +46,13 @@ struct function_interface__ {
    */
 
   template<
+      size_t KEY,
       typename RETURN,
       typename ARG_TUPLE,
-      RETURN (*FUNCTION)(ARG_TUPLE),
-      size_t KEY>
+      RETURN (*FUNCTION)(ARG_TUPLE)>
   static decltype(auto) register_function() {
     return EXECUTION_POLICY::template register_function<
-        RETURN, ARG_TUPLE, FUNCTION, KEY>();
+        KEY, RETURN, ARG_TUPLE, FUNCTION>();
   } // register_function
 
   /*!
