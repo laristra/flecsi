@@ -18,6 +18,7 @@
 #include <vector>
 
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/static_verify.h>
 
 namespace flecsi {
 namespace topology {
@@ -331,6 +332,25 @@ public:
   std::vector<int_t> offset;
   std::vector<int_t> index;
   std::vector<int_t> partition;
+};
+
+FLECSI_MEMBER_CHECKER(num_specialization_index_spaces);
+
+template<typename MESH_TYPE, bool HAS_NUM>
+struct num_specialization_index_spaces_helper_{
+  static const size_t value = MESH_TYPE::num_specialization_index_spaces;
+};
+
+template<typename MESH_TYPE>
+struct num_specialization_index_spaces_helper_<MESH_TYPE, false>{
+  static const size_t value = 0;
+};
+
+template<typename MESH_TYPE>
+struct num_specialization_index_spaces__{
+  static const size_t value = 
+    num_specialization_index_spaces_helper_<MESH_TYPE,
+      has_member_num_specialization_index_spaces<MESH_TYPE>::value>::value;
 };
 
 } // namespace topology

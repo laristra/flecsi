@@ -31,9 +31,9 @@
 
 namespace flecsi {
 
-template<size_t ND, size_t NM>
+template<size_t ND, size_t NM, size_t NUM_SPEC_INDEX_SPACES>
 using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
-    topology::legion_topology_storage_policy_t__<ND, NM>;
+    topology::legion_topology_storage_policy_t__<ND, NM, NUM_SPEC_INDEX_SPACES>;
 
 } // namespace flecsi
 
@@ -44,9 +44,9 @@ using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
 
 namespace flecsi {
 
-template<size_t ND, size_t NM>
+template<size_t ND, size_t NM, size_t NUM_SPEC_INDEX_SPACES>
 using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
-    topology::mpi_topology_storage_policy__<ND, NM>;
+    topology::mpi_topology_storage_policy__<ND, NM, NUM_SPEC_INDEX_SPACES>;
 
 } // namespace flecsi
 
