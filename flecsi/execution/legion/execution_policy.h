@@ -170,11 +170,20 @@ struct legion_execution_policy_t {
       }
       
       if (context_.execution_state()==SPECIALIZATION_TLT_INIT){
+
+        init_args_t init_args(legion_runtime, legion_context);
+        init_args.walk(task_args);
+
+
         ArgumentMap arg_map;
         IndexLauncher launcher(
           context_.task_id<KEY>(),
           Legion::Domain::from_rect<1>(context_.all_processes()),
           TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
+
+        for (auto & req : init_args.region_reqs) {
+            launcher.add_region_requirement(req);
+          }
 
         //! \todo Do we need this comment?
         // Enqueue the MPI task.
@@ -200,10 +209,17 @@ struct legion_execution_policy_t {
         return legion_future__<RETURN>(future);
       } else { // check for execution_state
 
+         init_args_t init_args(legion_runtime, legion_context);
+         init_args.walk(task_args);
+
           // Create a task launcher, passing the task arguments.
           TaskLauncher task_launcher(
               context_.task_id<KEY>(),
               TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+
+          for (auto & req : init_args.region_reqs) {
+            task_launcher.add_region_requirement(req);
+          }
 
           auto future =
               legion_runtime->execute_task(legion_context, task_launcher);
