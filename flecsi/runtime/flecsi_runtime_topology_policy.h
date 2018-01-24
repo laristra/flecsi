@@ -31,9 +31,10 @@
 
 namespace flecsi {
 
-template<size_t ND, size_t NM>
+template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
 using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
-    topology::legion_topology_storage_policy_t__<ND, NM>;
+  topology::legion_topology_storage_policy_t__<NUM_DIMS, NUM_DOMAINS,
+  NUM_INDEX_SUBSPACES>;
 
 } // namespace flecsi
 
@@ -44,9 +45,10 @@ using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
 
 namespace flecsi {
 
-template<size_t ND, size_t NM>
+template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
 using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
-    topology::mpi_topology_storage_policy__<ND, NM>;
+  topology::mpi_topology_storage_policy__<NUM_DIMS, NUM_DOMAINS,
+  NUM_INDEX_SUBSPACES>;
 
 } // namespace flecsi
 

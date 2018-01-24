@@ -105,7 +105,8 @@ entity set - contains an iterable set of entities. Support set operations such
 template<class MESH_TYPE>
 class mesh_topology__
     : public mesh_topology_base__<
-          mesh_storage__<MESH_TYPE::num_dimensions, MESH_TYPE::num_domains>> {
+          mesh_storage__<MESH_TYPE::num_dimensions, MESH_TYPE::num_domains,
+          num_index_subspaces__<MESH_TYPE>::value>> {
   // static verification of mesh policy
 
   static_assert(
@@ -155,7 +156,8 @@ class mesh_topology__
 public:
   // mesh storage type definition
   using storage_t = mesh_storage__<MESH_TYPE::num_dimensions,
-    MESH_TYPE::num_domains>;
+    MESH_TYPE::num_domains,
+    num_index_subspaces__<MESH_TYPE>::value>;
 
   // mesh topology base definition
   using base_t = mesh_topology_base__<storage_t>;

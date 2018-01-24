@@ -308,12 +308,19 @@ struct task_wrapper__ {
     // Unpack task arguments.
     ARG_TUPLE & mpi_task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
+    init_handles_t init_handles(runtime, context, regions);
+    init_handles.walk(mpi_task_args);
+
     // Create bound function to pass to MPI runtime.
     std::function<void()> bound_mpi_task = std::bind(DELEGATE, mpi_task_args);
 
     // Set the MPI function and make the runtime active.
     context_t::instance().set_mpi_task(bound_mpi_task);
     context_t::instance().set_mpi_state(true);
+
+    finalize_handles_t finalize_handles;
+    finalize_handles.walk(mpi_task_args);
+
   } // execute_mpi_task
 
 }; // struct task_wrapper__
