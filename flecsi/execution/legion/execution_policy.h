@@ -34,8 +34,7 @@
 #include <flecsi/execution/legion/future.h>
 #include <flecsi/execution/legion/init_args.h>
 #include <flecsi/execution/legion/runtime_state.h>
-#include <flecsi/execution/legion/task_epilog.h>
-#include <flecsi/execution/legion/task_prolog.h>
+#include <flecsi/data/data.h>
 #include <flecsi/execution/legion/task_wrapper.h>
 #include <flecsi/utils/const_string.h>
 
@@ -261,21 +260,11 @@ struct legion_execution_policy_t {
             task_launcher.add_region_requirement(req);
           }
 
-          // Enqueue the prolog.
-          task_prolog_t task_prolog(
-              legion_runtime, legion_context, task_launcher);
-          task_prolog.walk(task_args);
-          task_prolog.launch_copies();
-
           // Enqueue the task.
           clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
                       << legion_runtime->find_local_MPI_rank() << std::endl;
           auto future =
               legion_runtime->execute_task(legion_context, task_launcher);
-
-          // Enqueue the epilog.
-          task_epilog_t task_epilog(legion_runtime, legion_context);
-          task_epilog.walk(task_args);
 
           return legion_future__<RETURN>(future);
         } // scope
