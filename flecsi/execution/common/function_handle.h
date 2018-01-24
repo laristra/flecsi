@@ -52,6 +52,7 @@ struct function_handle__ {
 
   function_handle__ & operator = (const function_handle__ & fh) {
     this->key_ = fh.key_;
+    return *this;
   } // operator =
 
   /*!

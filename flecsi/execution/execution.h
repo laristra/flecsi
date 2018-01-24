@@ -176,6 +176,32 @@ clog_register_tag(execution);
 //----------------------------------------------------------------------------//
 
 /*!
+  @def flecsi_color
+
+  Return the index of the currently executing color.
+
+  @ingroup execution
+ */
+
+#define flecsi_color()                                                         \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::execution::context_t::instance().color()
+
+/*!
+  @def flecsi_colors
+
+  Return the number of colors in the currently executing code.
+
+  @ingroup execution
+ */
+
+#define flecsi_colors()                                                        \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::execution::context_t::instance().colors()
+
+/*!
   @def flecsi_execute_task_simple
 
   This macro executes a simple user task, i.e., one that is not scoped in
