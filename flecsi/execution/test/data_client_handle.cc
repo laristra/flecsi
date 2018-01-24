@@ -251,7 +251,6 @@ void specialization_spmd_init(int argc, char ** argv) {
 //  auto runtime = Legion::Runtime::get_runtime();
 //  const int my_color = runtime->find_local_MPI_rank();
 //  clog(error) << "Rank " << my_color << " in specialization_spmd_init" << std::endl;
-
   {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, dense, 0);
@@ -267,7 +266,6 @@ void specialization_spmd_init(int argc, char ** argv) {
   auto f2 = flecsi_execute_task_simple(print_task, single, ch, ph);
   f2.wait();
   } // scope
-
 } // specialization_spmd_init
 
 //----------------------------------------------------------------------------//

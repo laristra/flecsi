@@ -182,12 +182,12 @@ void driver(int argc, char ** argv) {
 
   flecsi_execute_task_simple(global_data_handle_dump, single, global_handle);
 
- //get color handle
-  auto color_handle=flecsi_get_handle(ch, ns, density, double, color, 0);
+ //get color handle  -- what is that?
+  //auto color_handle=flecsi_get_handle(ch, ns, density, double, color, 0);
 
-  flecsi_execute_task_simple(color_data_handle_dump, single, color_handle);
-  flecsi_execute_task_simple(color_writer, single, color_handle);
-  flecsi_execute_task_simple(color_reader, single, color_handle);
+  //flecsi_execute_task_simple(color_data_handle_dump, single, color_handle);
+  //flecsi_execute_task_simple(color_writer, single, color_handle);
+  //flecsi_execute_task_simple(color_reader, single, color_handle);
   flecsi_execute_task(mpi_task,, single, 10, global_handle);
 #endif
 

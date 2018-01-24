@@ -243,12 +243,6 @@ runtime_driver(
   const auto spmd_id =
     context_.task_id<__flecsi_internal_task_key(spmd_task)>();
 
-  {
-  clog_tag_guard(runtime_driver);
-  clog(trace) << "spmd_task is: " << spmd_id << std::endl;
-  } // scope
-
-
   // Add colors to must_epoch_launcher
   for(size_t color(0); color<num_colors; ++color) {
 
@@ -279,10 +273,6 @@ runtime_driver(
     args_serializers[color].serialize(&num_fields, sizeof(size_t));
     args_serializers[color].serialize(
       &context_.registered_fields()[0], num_fields * sizeof(field_info_t));
-
-    // #4 serialize num_ghost_owners[
-    args_serializers[color].serialize(&num_ghost_owners[0], num_idx_spaces
-        * sizeof(size_t));
 
     // #6 serialize reduction
     args_serializers[color].serialize(&max_reduction,
@@ -377,7 +367,7 @@ runtime_driver(
         for (const field_id_t& field_id : fields_map[idx_space]){
           owner_reg_req.add_field(field_id);
         }
-        spmd_launcher.add_region_requirement(owner_reg_req);
+        //spmd_launcher.add_region_requirement(owner_reg_req);
 
       }// for ghost_owner
 
@@ -558,23 +548,7 @@ spmd_task(
     }//for
   }//end for is
 
-  //for (size_t i=0; i<num_phase_barriers;i++ )
-  //  {
-  //  clog_tag_guard(runtime_driver);
-  //  clog(trace) <<my_color <<" has pbarrier_as_owner "<<
-	//		pbarriers_as_owner[i]<<std::endl;
-  //  } // scope
-
-  // #4 deserialize num_ghost_owners[
-  size_t* num_owners = new size_t [num_idx_spaces];
-  args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
-      * num_idx_spaces);
-
   // Prevent these objects destructors being called until after driver()
-  std::map<size_t, std::vector<Legion::LogicalRegion>>
-    ghost_owners_lregions;
-  std::map<size_t, std::vector<Legion::LogicalRegion>>
-    ghost_owners_subregions;
   std::map<size_t,Legion::IndexPartition> primary_ghost_ips;
   std::map<size_t,Legion::IndexPartition> exclusive_shared_ips;
   std::map<size_t,std::map<size_t,Legion::IndexPartition>> owner_subrect_ips;
@@ -677,71 +651,6 @@ spmd_task(
     ispace_dmap[idx_space].shared_lr = 
     runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, SHARED_PART);
 
-    // Add neighbors regions to context_
-    ghost_owners_subregions[idx_space].resize(num_owners[consecutive_index]);
-    for(size_t owner = 0; owner < num_owners[consecutive_index]; owner++) {
-      ghost_owners_lregions[idx_space].push_back(regions[region_index]
-        .get_logical_region());
-      const void* owner_color;
-      size_t size;
-      const bool can_fail = false;
-      const bool wait_until_ready = true;
-
-      clog_assert(region_index < regions.size(),
-          "SPMD attempted to access more regions than passed");
-
-      runtime->retrieve_semantic_information(regions[region_index]
-          .get_logical_region(), OWNER_COLOR_TAG,
-          owner_color, size, can_fail, wait_until_ready);
-      clog_assert(size == sizeof(LegionRuntime::Arrays::coord_t),
-          "Unable to map gid to lid with Legion semantic tag");
-      ispace_dmap[idx_space]
-       .global_to_local_color_map[*(LegionRuntime::Arrays::coord_t*)owner_color]
-       = owner;
-
-      {
-      clog_tag_guard(runtime_driver);
-      clog(trace) << my_color << " key " << idx_space << " gid " <<
-          *(LegionRuntime::Arrays::coord_t*)owner_color <<
-          " maps to " << owner << std::endl;
-      } // scope
-
-      region_index++;
-      clog_assert(region_index <= regions.size(),
-          "SPMD attempted to access more regions than passed");
-    } // for owner
-
-    ispace_dmap[idx_space].ghost_owners_lregions
-      = ghost_owners_lregions[idx_space];
-
-
-    // Fix ghost reference/pointer to point to compacted position of
-    // shared that it needs
-    Legion::TaskLauncher fix_ghost_refs_launcher(context_.task_id<
-      __flecsi_internal_task_key(owner_pos_correction_task)>(),
-      Legion::TaskArgument(nullptr, 0));
-
-    {
-    clog_tag_guard(runtime_driver);
-    clog(trace) << "Rank" << my_color << " Index " << idx_space <<
-      " RW " << ispace_dmap[idx_space].color_region << std::endl;
-    } // scope
-
-    fix_ghost_refs_launcher.add_region_requirement(
-        Legion::RegionRequirement(ispace_dmap[idx_space].ghost_lr, READ_WRITE,
-            EXCLUSIVE, ispace_dmap[idx_space].color_region)
-        .add_field(ghost_owner_pos_fid));
-
-    fix_ghost_refs_launcher.add_future(Legion::Future::from_value(runtime,
-            ispace_dmap[idx_space].global_to_local_color_map));
-
-    for(size_t owner = 0; owner < num_owners[consecutive_index]; owner++)
-      fix_ghost_refs_launcher.add_region_requirement(
-         Legion::RegionRequirement(ghost_owners_lregions[idx_space][owner],
-              READ_ONLY, EXCLUSIVE, ghost_owners_lregions[idx_space][owner])
-              .add_field(ghost_owner_pos_fid));
-
-    runtime->execute_task(ctx, fix_ghost_refs_launcher);
 
     // Find subrects from each owner that I must copy in ghost_copy_task
     Legion::TaskLauncher owners_subregions_launcher(context_.task_id<
@@ -770,8 +679,6 @@ spmd_task(
       size_t owner = owner_itr->first;
       LegionRuntime::Arrays::Rect<2> sub_rect = owner_itr->second;
 
-      Legion::IndexSpace color_ispace =
-          ghost_owners_lregions[idx_space][owner].get_index_space();
       LegionRuntime::Arrays::Rect<1> color_bounds_1D(0,1);
       Legion::Domain color_domain_1D
       = Legion::Domain::from_rect<1>(color_bounds_1D);
@@ -788,19 +695,8 @@ spmd_task(
        // owner_subrect_ips[owner].resize(num_idx_spaces);
       owner_subrect_ips[owner][idx_space] = owner_subrect_ip;
 
-      Legion::LogicalPartition owner_subrect_lp =
-        runtime->get_logical_partition(ctx,
-            ghost_owners_lregions[idx_space][owner], owner_subrect_ip);
-
-      Legion::LogicalRegion subrect_lr =
-      runtime->get_logical_subregion_by_color(ctx, owner_subrect_lp,
-                                              SUBRECT_PART);
-
-      ghost_owners_subregions[idx_space][owner] = subrect_lr;
 
     } //owner_itr
-    ispace_dmap[idx_space].ghost_owners_subregions
-      = ghost_owners_subregions[idx_space];
 
     consecutive_index++;
   } // for idx_space
@@ -969,9 +865,7 @@ spmd_task(
   for(auto ipart: exclusive_shared_ips)
       runtime->destroy_index_partition(ctx, ipart.second);
   delete [] field_info_buf;
-  delete [] num_owners;
   delete [] adjacencies;
-//  delete [] idx_spaces;
 
 } // spmd_task
 
