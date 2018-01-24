@@ -457,7 +457,6 @@ public:
       attach_name(is, is.logical_region, "expanded logical region");
 
       // Partition expanded IndexSpace color-wise & create associated
-      // PhaseBarriers
       DomainColoring color_partitioning;
       for (int color = 0; color < num_colors_; color++) {
         auto citr = coloring_info_map.find(color);

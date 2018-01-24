@@ -65,8 +65,6 @@ struct legion_dense_data_handle_policy_t {
 
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.
-  Legion::PhaseBarrier * pbarrier_as_owner_ptr;
-  std::vector<Legion::PhaseBarrier *> ghost_owners_pbarriers_ptrs;
   const Legion::STL::map<
       LegionRuntime::Arrays::coord_t,
       LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;

@@ -437,9 +437,6 @@ struct legion_context_policy_t {
   struct index_space_data_t {
     std::map<field_id_t, bool> ghost_is_readable;
     std::map<field_id_t, bool> write_phase_started;
-    std::map<field_id_t, Legion::PhaseBarrier> pbarriers_as_owner;
-    std::map<field_id_t, std::vector<Legion::PhaseBarrier>>
-        ghost_owners_pbarriers;
     std::vector<Legion::LogicalRegion> ghost_owners_lregions;
     std::vector<Legion::LogicalRegion> ghost_owners_subregions;
     Legion::STL::
