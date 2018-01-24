@@ -198,16 +198,8 @@ runtime_driver(
 
   fm.wait_all_results(true);
 
-  
-  //--------------------------------------------------------------------------//
-  //  Create Phase barriers per each Field
-  //-------------------------------------------------------------------------//
-
   // map of index space to the field_ids that are mapped to this index space
   std::map<size_t, std::vector<field_id_t>> fields_map;
-
-  //total number of Phase Barriers 
-  size_t num_phase_barriers =0;
 
   size_t number_of_color_fields = 0;
 
@@ -226,9 +218,8 @@ runtime_driver(
         default:
           if(field_info.index_space == idx_space){
             fields_map[idx_space].push_back(field_info.fid);
-            num_phase_barriers++;
           } // if
-          break;          
+          break;
       }
     } // for
 
@@ -238,7 +229,6 @@ runtime_driver(
         fields_map[idx_space].size()<< " fields"<<std::endl;
     } // scope
   } // for
-
 
 
   //--------------------------------------------------------------------------//
@@ -281,9 +271,7 @@ runtime_driver(
     
     // #1 serialize num_indx_spaces & num_phase_barriers
     args_serializers[color].serialize(&num_idx_spaces, sizeof(size_t));
-    args_serializers[color].serialize(&num_phase_barriers, sizeof(size_t));
     args_serializers[color].serialize(&number_of_global_fields, sizeof(size_t));
-    args_serializers[color].serialize(&number_of_color_fields, sizeof(size_t));
    
 
     // #2 serialize field info
@@ -516,9 +504,7 @@ spmd_task(
   size_t number_of_global_fields;
   size_t number_of_color_fields;
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
-  args_deserializer.deserialize(&num_phase_barriers, sizeof(size_t));
   args_deserializer.deserialize(&number_of_global_fields, sizeof(size_t));
-  args_deserializer.deserialize(&number_of_color_fields, sizeof(size_t));
 
   {
   size_t total_num_idx_spaces = num_idx_spaces;
