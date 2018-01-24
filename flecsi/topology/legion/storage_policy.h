@@ -44,7 +44,7 @@ class mesh_entity__;
 /// \brief legion_data_handle_policy_t provides...
 ///
 
-template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_SPEC_INDEX_SPACES>
+template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
 struct legion_topology_storage_policy_t__ {
   static constexpr size_t num_partitions = 5;
 
@@ -60,7 +60,7 @@ struct legion_topology_storage_policy_t__ {
           topology_storage__>,
       NUM_DIMS + 1>;
 
-  using specialization_index_spaces_t = std::array<
+  using index_subspaces_t = std::array<
       index_space__<
           mesh_entity_base_ *,
           true,
@@ -68,7 +68,7 @@ struct legion_topology_storage_policy_t__ {
           true,
           void,
           topology_storage__>,
-      NUM_SPEC_INDEX_SPACES>;
+      NUM_INDEX_SUBSPACES>;
 
   using partition_index_spaces_t = std::array<
       index_space__<
@@ -86,7 +86,7 @@ struct legion_topology_storage_policy_t__ {
 
   std::array<index_spaces_t, NUM_DOMAINS> index_spaces;
 
-  std::array<index_spaces_t, NUM_SPEC_INDEX_SPACES> specialization_index_spaces;
+  std::array<index_spaces_t, NUM_INDEX_SUBSPACES> subindex_spaces;
 
   std::array<std::array<partition_index_spaces_t, NUM_DOMAINS>, num_partitions>
       partition_index_spaces;
@@ -161,14 +161,14 @@ struct legion_topology_storage_policy_t__ {
     }
   } // init_entities
 
-  void init_specialization_entities(
+  void init_subentities(
       size_t index_space,
       mesh_entity_base_ * entities,
       utils::id_t * ids,
       size_t size,
       size_t num_entities,
       bool read) {
-    auto & is = specialization_index_spaces[index_space];
+    auto & is = subindex_spaces[index_space];
 
     auto s = is.storage();
     s->set_buffer(entities, num_entities, read);
@@ -181,7 +181,7 @@ struct legion_topology_storage_policy_t__ {
     }
 
     is.set_end(num_entities);
-  } // init_specialization_entities
+  } // init_subentities
 
   void init_connectivity(
       size_t from_domain,

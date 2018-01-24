@@ -334,23 +334,29 @@ public:
   std::vector<int_t> partition;
 };
 
-FLECSI_MEMBER_CHECKER(num_specialization_index_spaces);
+FLECSI_MEMBER_CHECKER(index_subspaces);
 
-template<typename MESH_TYPE, bool HAS_NUM>
-struct num_specialization_index_spaces_helper_{
-  static const size_t value = MESH_TYPE::num_specialization_index_spaces;
+template<typename MESH_TYPE, bool HAS_SUBENTITIES>
+struct index_subspaces_tuple__{
+  using type = typename MESH_TYPE::index_subspaces;
 };
 
 template<typename MESH_TYPE>
-struct num_specialization_index_spaces_helper_<MESH_TYPE, false>{
-  static const size_t value = 0;
+struct index_subspaces_tuple__<MESH_TYPE, false>{
+  using type = std::tuple<>;
 };
 
 template<typename MESH_TYPE>
-struct num_specialization_index_spaces__{
-  static const size_t value = 
-    num_specialization_index_spaces_helper_<MESH_TYPE,
-      has_member_num_specialization_index_spaces<MESH_TYPE>::value>::value;
+struct get_index_subspaces__{
+  using type = typename index_subspaces_tuple__<MESH_TYPE,
+    has_member_index_subspaces<MESH_TYPE>::value>::type;
+};
+
+template<typename MESH_TYPE>
+struct num_index_subspaces__{
+  using type = typename get_index_subspaces__<MESH_TYPE>::type;
+
+  static constexpr size_t value = std::tuple_size<type>::value;  
 };
 
 } // namespace topology
