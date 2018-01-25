@@ -343,8 +343,9 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(hi.from_index_space);
       clog_assert(ritr != ism.end(), "invalid from index space");
-      adj.from_color_region = ritr->second.color_region;
-      adj.from_primary_region = ritr->second.primary_lr;
+      adj.from_entire_region = ritr->second.entire_region;
+      adj.from_color_partition = ritr->second.color_partition;
+      adj.from_primary_partition = ritr->second.primary_lp;
 
       ritr = ism.find(hi.index_space);
       clog_assert(ritr != ism.end(), "invalid index space");

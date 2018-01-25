@@ -560,7 +560,7 @@ spmd_task(
     size_t idx_space = is.first;
     
     ispace_dmap[idx_space].entire_region = regions[region_index]
-                                                  .get_logical_region();
+                                                  .get_logical_region();  // FIXME place holder
 
     const std::unordered_map<size_t, flecsi::coloring::coloring_info_t>
       coloring_info_map = context_.coloring_info(idx_space);
@@ -614,9 +614,9 @@ spmd_task(
     runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                             PRIMARY_PART);
 
-    ispace_dmap[idx_space].primary_lp = primary_ghost_lp;
+    ispace_dmap[idx_space].primary_lp = primary_ghost_lp;  // FIXME place holder
 
-    ispace_dmap[idx_space].ghost_lp = primary_ghost_lp;
+    ispace_dmap[idx_space].ghost_lp = primary_ghost_lp;  // FIXME place holder
 
     Legion::DomainColoring excl_shared_coloring;
     LegionRuntime::Arrays::Rect<2> exclusive_rect(
@@ -642,59 +642,9 @@ spmd_task(
     Legion::LogicalPartition excl_shared_lp
       = runtime->get_logical_partition(ctx, primary_lr, excl_shared_ip);
 
-    ispace_dmap[idx_space].exclusive_lr = 
-    runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, 
-                                            EXCLUSIVE_PART);
+    ispace_dmap[idx_space].exclusive_lp = excl_shared_lp;  // FIXME place holder
 
-    ispace_dmap[idx_space].shared_lr = 
-    runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, SHARED_PART);
-
-
-    // Find subrects from each owner that I must copy in ghost_copy_task
-    Legion::TaskLauncher owners_subregions_launcher(context_.task_id<
-      __flecsi_internal_task_key(owners_subregions_task)>(),
-      Legion::TaskArgument(nullptr, 0));
-
-    owners_subregions_launcher.add_future(Legion::Future::from_value(runtime,
-            ispace_dmap[idx_space].global_to_local_color_map));
-
-    owners_subregions_launcher.add_region_requirement(
-        Legion::RegionRequirement(ispace_dmap[idx_space].ghost_lr, READ_ONLY,
-            EXCLUSIVE, ispace_dmap[idx_space].color_region)
-        .add_field(ghost_owner_pos_fid));
-
-    Legion::Future owner_to_subrect_future =
-        runtime->execute_task(ctx, owners_subregions_launcher);
-
-    bool silence_warnings = true;   // more efficient to defer this to just
-                                    // before calling driver, but this is
-                                    // only a one-time setup
-    subrect_map owner_to_subrect_map =
-        owner_to_subrect_future.get_result<subrect_map>(silence_warnings);
-
-    for(auto owner_itr=owner_to_subrect_map.begin();
-        owner_itr!=owner_to_subrect_map.end(); owner_itr++) {
-      size_t owner = owner_itr->first;
-      LegionRuntime::Arrays::Rect<2> sub_rect = owner_itr->second;
-
-      LegionRuntime::Arrays::Rect<1> color_bounds_1D(0,1);
-      Legion::Domain color_domain_1D
-      = Legion::Domain::from_rect<1>(color_bounds_1D);
-
-      Legion::DomainColoring owner_subrect_coloring;
-      owner_subrect_coloring[SUBRECT_PART]
-                             = Legion::Domain::from_rect<2>(sub_rect);
-      Legion::IndexPartition owner_subrect_ip =
-        runtime->create_index_partition(ctx, color_ispace, color_domain_1D,
-        owner_subrect_coloring, true /*disjoint*/);
-
-      //auto ips_itr = owner_subrect_ips.find(owner);
-      //if (ips_itr == owner_subrect_ips.end())
-       // owner_subrect_ips[owner].resize(num_idx_spaces);
-      owner_subrect_ips[owner][idx_space] = owner_subrect_ip;
-
-
-    } //owner_itr
+    ispace_dmap[idx_space].shared_lp = excl_shared_lp;  // FIXME place holder
 
     consecutive_index++;
   } // for idx_space
@@ -805,8 +755,8 @@ spmd_task(
   }
 
   for(auto& itr : context_.adjacencies()) {
-    ispace_dmap[itr.first].color_region = 
-      regions[region_index].get_logical_region();
+    ispace_dmap[itr.first].entire_region =
+      regions[region_index].get_logical_region();  // FIXME place holder
 
     region_index++;
   }
@@ -817,8 +767,8 @@ spmd_task(
     size_t global_index_space =
       execution::internal_index_space::global_is;
 
-    ispace_dmap[global_index_space].color_region =
-        regions[region_index].get_logical_region();
+    ispace_dmap[global_index_space].entire_region =
+        regions[region_index].get_logical_region();  // FIXME place holder
 
     region_index++;
   }//end if
@@ -828,8 +778,8 @@ spmd_task(
     size_t color_index_space =
       execution::internal_index_space::color_is;
 
-    ispace_dmap[color_index_space].color_region =
-      regions[region_index].get_logical_region();  
+    ispace_dmap[color_index_space].entire_region =
+      regions[region_index].get_logical_region();   // FIXME place holder
   }//end if
 
   // Call the specialization color initialization function.

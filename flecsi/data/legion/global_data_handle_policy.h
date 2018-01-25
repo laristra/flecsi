@@ -56,7 +56,8 @@ struct legion_global_data_handle_policy_t {
 
   // These depend on color but are only used in specifying
   // the region requirements
-  Legion::LogicalRegion color_region;
+  Legion::LogicalRegion entire_region;
+  Legion::LogicalPartition color_partition;
 
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.
