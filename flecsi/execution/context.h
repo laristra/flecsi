@@ -116,6 +116,39 @@ struct context__ : public CONTEXT_POLICY {
       std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
 
   //--------------------------------------------------------------------------//
+  // Object interface.
+  //--------------------------------------------------------------------------//
+
+  template<
+    size_t NAMESPACE_HASH,
+    size_t INDEX,
+    typename OBJECT_TYPE>
+  bool register_global_object() {
+    size_t KEY = NAMESPACE_HASH ^ INDEX;
+    global_object_registry_[KEY] = {};
+    return true;
+  } // register_global_object
+
+  template<
+    size_t NAMESPACE_HASH,
+    typename OBJECT_TYPE>
+  bool set_global_object(size_t index, OBJECT_TYPE * obj) {
+    size_t KEY = NAMESPACE_HASH ^ index;
+    assert(global_object_registry_.find(KEY) != global_object_registry_.end());
+    global_object_registry_[KEY] = reinterpret_cast<uintptr_t>(obj);
+    return true;
+  } // set_global_object
+
+  template<
+    size_t NAMESPACE_HASH,
+    typename OBJECT_TYPE>
+  OBJECT_TYPE * get_global_object(size_t index) {
+    size_t KEY = NAMESPACE_HASH ^ index;
+    assert(global_object_registry_.find(KEY) != global_object_registry_.end());
+    return reinterpret_cast<OBJECT_TYPE *>(global_object_registry_[KEY]);
+  } // get_global_object
+
+  //--------------------------------------------------------------------------//
   // Function interface.
   //--------------------------------------------------------------------------//
 
@@ -623,6 +656,12 @@ private:
   context__ & operator=(const context__ &) = delete;
   context__(context__ &&) = delete;
   context__ & operator=(context__ &&) = delete;
+
+  //--------------------------------------------------------------------------//
+  // Object data members.
+  //--------------------------------------------------------------------------//
+
+  std::unordered_map<size_t, uintptr_t> global_object_registry_;
 
   //--------------------------------------------------------------------------//
   // Function data members.

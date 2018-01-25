@@ -13,7 +13,15 @@
                                                                               */
 #include <iostream>
 
+#include<flecsi-tutorial/specialization/mesh/mesh.h>
+#include<flecsi/data/data.h>
 #include<flecsi/execution/execution.h>
+
+using namespace flecsi;
+using namespace flecsi::tutorial;
+
+flecsi_register_data_client(mesh_t, clients, mesh);
+flecsi_register_field(mesh_t, hydro, pressure, double, dense, 1, cells);
 
 namespace example {
 
@@ -90,15 +98,18 @@ int argument_function(double arg) {
 
 flecsi_register_function(argument_function, example);
 
-#if 0
 int argument_task(mesh<ro> m, field<ro> p, argument_function_t fh) {
 
   for(auto c: m.cells()) {
-    flecsi_execution_function(fh, p(c));
+    if(flecsi_execute_function(fh, p(c))) {
+      return 1;
+    } // if
   } // for
 
+  return 0;
 } // argument_task
-#endif
+
+flecsi_register_task(argument_task, example, loc, single);
 
 } // namespace example
 
@@ -120,12 +131,13 @@ void driver(int argc, char ** argv) {
   int retval = flecsi_execute_function(fh, 5.0);
   } // arguemnt function scope
 
-#if 0
   {
+  auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
   auto fh = flecsi_function_handle(argument_function, example);
-  int retval = flecsi_execute_function(fh, 5.0);
+  auto p = flecsi_get_handle(m, hydro, pressure, double, dense, 0);
+  auto retval = flecsi_execute_task(argument_task, example, single, m, p,
+      fh);
   } // argument function scope
-#endif
 
 } // driver
 
