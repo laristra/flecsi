@@ -58,6 +58,73 @@ clog_register_tag(execution);
   typename flecsi::utils::function_traits__<decltype(task)>::arguments_type
 
 //----------------------------------------------------------------------------//
+// Object Registration Interface
+//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_register_global_object
+
+  Register a global object with the runtime. A global object must be
+  intitialized and mutated consistently by all colors.
+
+  @param index  The index of the global object within the given namespace.
+  @param nspace The namespace of the global object.
+  @param type   The type of the global object.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_global_object(index, nspace, type)                     \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  static bool registered_global_object_ ## nspace ## _ ## index =              \
+    context_t::instance().template register_global_object<                     \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      index, type>();
+
+/*!
+  @def flecsi_set_global_object
+
+  Set the address of a global object that has been registered with the
+  FleCSI runtime.
+
+  @param index  The index of the global object within the given namespace.
+  @param nspace The namespace of the global object.
+  @param type   The type of the global object.
+  @param obj    The address of the global object. Normally, this is just
+                the pointer to the object, which will be converted into
+                a uintptr_t.
+
+  @ingroup execution
+ */
+
+#define flecsi_set_global_object(index, nspace, type, obj)                     \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  context_t::instance().template set_global_object<                            \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    type>(index, obj);
+
+/*!
+  @def flecsi_get_global_object
+
+  Get a global object instance.
+
+  @param index  The index of the global object within the given namespace.
+  @param nspace The namespace of the global object.
+  @param type   The type of the global object.
+
+  @ingroup execution
+ */
+
+#define flecsi_get_global_object(index, nspace, type)                          \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  context_t::instance().template get_global_object<                            \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    type>(index);
+
+//----------------------------------------------------------------------------//
 // Task Registration Interface
 //----------------------------------------------------------------------------//
 
