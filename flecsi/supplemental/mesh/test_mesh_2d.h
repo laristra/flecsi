@@ -113,6 +113,13 @@ struct test_mesh_2d_policy_t
 
   flecsi_register_bindings();
 
+#ifdef FLECSI_TEST_MESH_INDEX_SUBSPACES
+  using index_subspaces = std::tuple<
+    std::tuple<flecsi::topology::index_space_<0>,
+               flecsi::topology::index_subspace_<0>>
+    >;
+#endif
+
   template<
     size_t M,
     size_t D,

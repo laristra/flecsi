@@ -336,7 +336,7 @@ public:
 
 FLECSI_MEMBER_CHECKER(index_subspaces);
 
-template<typename MESH_TYPE, bool HAS_SUBENTITIES>
+template<typename MESH_TYPE, bool HAS_SUBSPACES>
 struct index_subspaces_tuple__{
   using type = typename MESH_TYPE::index_subspaces;
 };

@@ -97,6 +97,11 @@ struct context__ : public CONTEXT_POLICY {
     size_t active_migration_capacity;
   };
 
+  struct index_subspace_info_t {
+    size_t index_subspace;
+    size_t capacity;
+  };
+
   /*!
     Structure needed to initialize a set topology.
    */
@@ -472,6 +477,32 @@ struct context__ : public CONTEXT_POLICY {
     return adjacency_info_;
   } // adjacencies
 
+  void
+  add_index_subspace(
+    size_t index_subspace,
+    size_t capacity
+  )
+  {
+    index_subspace_info_t info;
+    info.index_subspace = index_subspace;
+    info.capacity = capacity;
+
+    index_subspace_map_.emplace(index_subspace, std::move(info));
+  }
+
+  void
+  add_index_subspace(
+    const index_subspace_info_t & info
+  )
+  {
+    index_subspace_map_.emplace(info.index_subspace, info);
+  }
+
+  const std::map<size_t, index_subspace_info_t>&
+  index_subspace_info() const {
+    return index_subspace_map_;
+  }
+
   /*!
     Register field info for index space and field id.
 
@@ -736,6 +767,12 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, adjacency_info_t> adjacency_info_;
+
+  //--------------------------------------------------------------------------//
+  // key: index subspace
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, index_subspace_info_t> index_subspace_map_;
 
   //--------------------------------------------------------------------------//
   // Execution state
