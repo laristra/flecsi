@@ -28,10 +28,11 @@ struct data_client_handle_entity_t {
   size_t num_ghost;
   field_id_t fid;
   field_id_t id_fid;
-  Legion::LogicalRegion color_region;
-  Legion::LogicalRegion exclusive_region;
-  Legion::LogicalRegion shared_region;
-  Legion::LogicalRegion ghost_region;
+  Legion::LogicalRegion entire_region;
+  Legion::LogicalPartition color_partition;
+  Legion::LogicalPartition exclusive_partition;
+  Legion::LogicalPartition shared_partition;
+  Legion::LogicalPartition ghost_partition;
 }; // struct data_client_handle_entity_t
 
 //----------------------------------------------------------------------------//

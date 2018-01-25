@@ -175,7 +175,8 @@ struct storage_class__<color> {
     size_t index_space = field_info.index_space;
     auto & ism = context.index_space_data_map();
     h.data_client_hash = field_info.data_client_hash;
-    h.color_region = ism[index_space].color_region;
+    h.entire_region = ism[index_space].entire_region;
+    h.color_partition = ism[index_space].color_partition;
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
     h.color = true;

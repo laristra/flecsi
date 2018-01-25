@@ -227,17 +227,16 @@ struct storage_class__<dense> {
     auto & ism = context.index_space_data_map();
 
     h.data_client_hash = field_info.data_client_hash;
-    h.exclusive_lr = ism[index_space].exclusive_lr;
-    h.shared_lr = ism[index_space].shared_lr;
-    h.ghost_lr = ism[index_space].ghost_lr;
+    h.exclusive_lp = ism[index_space].exclusive_lp;
+    h.shared_lp = ism[index_space].shared_lp;
+    h.ghost_lp = ism[index_space].ghost_lp;
     h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
     h.write_phase_started =
         &(ism[index_space].write_phase_started[field_info.fid]);
 
 
-    h.ghost_owners_lregions = ism[index_space].ghost_owners_lregions;
-    h.ghost_owners_subregions = ism[index_space].ghost_owners_subregions;
-    h.color_region = ism[index_space].color_region;
+    h.entire_region = ism[index_space].entire_region;
+    h.color_partition = ism[index_space].color_partition;
     h.global_to_local_color_map_ptr =
         &ism[index_space].global_to_local_color_map;
     h.fid = field_info.fid;

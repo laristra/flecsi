@@ -186,32 +186,13 @@ template<
       region_map[ent.index_space] = region_reqs.size();
 
       Legion::RegionRequirement rr(
-          ent.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
-          ent.color_region);
+          ent.color_partition, 0 /*PROJECTION*/, privilege_mode(PERMISSIONS), EXCLUSIVE,
+          ent.entire_region);
 
-      Legion::IndexSpace is = ent.exclusive_region.get_index_space();
-
-      Legion::Domain d = runtime->get_index_space_domain(context, is);
-
-      auto dr = d.get_rect<2>();
-
-      ent.num_exclusive = dr.hi[1] - dr.lo[1] + 1;
-
-      is = ent.shared_region.get_index_space();
-
-      d = runtime->get_index_space_domain(context, is);
-
-      dr = d.get_rect<2>();
-
-      ent.num_shared = dr.hi[1] - dr.lo[1] + 1;
-
-      is = ent.ghost_region.get_index_space();
-
-      d = runtime->get_index_space_domain(context, is);
-
-      dr = d.get_rect<2>();
-
-      ent.num_ghost = dr.hi[1] - dr.lo[1] + 1;
+      // Do we need to know the number of exclusive/shared/ghost per color at the TopLevelTask?
+      //ent.num_exclusive = dr.hi[1] - dr.lo[1] + 1;
+      //ent.num_shared = dr.hi[1] - dr.lo[1] + 1;
+      //ent.num_ghost = dr.hi[1] - dr.lo[1] + 1;
 
       rr.add_field(ent.fid);
       rr.add_field(ent.id_fid);
@@ -247,8 +228,8 @@ template<
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
       Legion::RegionRequirement rr(
-          ent.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
-          ent.color_region);
+          ent.color_partition, 0/*PROJECTION*/, privilege_mode(PERMISSIONS), EXCLUSIVE,
+          ent.entire_region);
       rr.add_field(ent.fid);
       region_reqs.push_back(rr);
     } // for

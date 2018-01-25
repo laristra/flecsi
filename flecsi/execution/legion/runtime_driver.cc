@@ -119,7 +119,7 @@ runtime_driver(
     size_t global_index_space =
       execution::internal_index_space::global_is;
 
-    ispace_dmap[global_index_space].color_region =
+    ispace_dmap[global_index_space].entire_region =
         data.global_index_space().logical_region;
   }
 
@@ -559,7 +559,7 @@ spmd_task(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     
-    ispace_dmap[idx_space].color_region = regions[region_index]
+    ispace_dmap[idx_space].entire_region = regions[region_index]
                                                   .get_logical_region();
 
     const std::unordered_map<size_t, flecsi::coloring::coloring_info_t>
@@ -614,11 +614,9 @@ spmd_task(
     runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                             PRIMARY_PART);
 
-    ispace_dmap[idx_space].primary_lr = primary_lr;
+    ispace_dmap[idx_space].primary_lp = primary_ghost_lp;
 
-    ispace_dmap[idx_space].ghost_lr = 
-      runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
-                                              GHOST_PART);
+    ispace_dmap[idx_space].ghost_lp = primary_ghost_lp;
 
     Legion::DomainColoring excl_shared_coloring;
     LegionRuntime::Arrays::Rect<2> exclusive_rect(

@@ -281,10 +281,11 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
       auto ritr = ism.find(ent.index_space);
       clog_assert(ritr != ism.end(), "invalid index space " << ei.index_space);
 
-      ent.color_region = ritr->second.color_region;
-      ent.exclusive_region = ritr->second.exclusive_lr;
-      ent.shared_region = ritr->second.shared_lr;
-      ent.ghost_region = ritr->second.ghost_lr;
+      ent.entire_region = ritr->second.entire_region;
+      ent.color_partition = ritr->second.color_partition;
+      ent.exclusive_partition = ritr->second.exclusive_lp;
+      ent.shared_partition = ritr->second.shared_lp;
+      ent.ghost_partition = ritr->second.ghost_lp;
 #endif
 
       ++entity_index;
@@ -441,7 +442,7 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
       auto ritr = ism.find(ent.index_space);
       clog_assert(ritr != ism.end(), "invalid index space " << ei.index_space);
 
-      ent.color_region = ritr->second.region;
+      ent.entire_region = ritr->second.region;
 #endif
 
       ++entity_index;

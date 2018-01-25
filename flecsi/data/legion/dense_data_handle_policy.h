@@ -56,12 +56,11 @@ struct legion_dense_data_handle_policy_t {
 
   // These depend on color but are only used in specifying
   // the region requirements
-  Legion::LogicalRegion color_region;
-  Legion::LogicalRegion exclusive_lr;
-  Legion::LogicalRegion shared_lr;
-  Legion::LogicalRegion ghost_lr;
-  std::vector<Legion::LogicalRegion> ghost_owners_lregions;
-  std::vector<Legion::LogicalRegion> ghost_owners_subregions;
+  Legion::LogicalRegion entire_region;
+  Legion::LogicalPartition color_partition;
+  Legion::LogicalPartition exclusive_lp;
+  Legion::LogicalPartition shared_lp;
+  Legion::LogicalPartition ghost_lp;
 
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.
