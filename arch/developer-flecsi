@@ -57,7 +57,7 @@ done
 #------------------------------------------------------------------------------#
 
 $cmake_mode \
-  -DCMAKE_CXX_COMPILER=clang++ \
+  -DCMAKE_CXX_COMPILER=flecsi-clang++ \
   -DCMAKE_CXX_FLAGS="-fcolor-diagnostics" \
   -DCMAKE_C_COMPILER=clang \
   -DCMAKE_C_FLAGS="-fcolor-diagnostics" \

@@ -135,8 +135,7 @@ void driver(int argc, char ** argv) {
   auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
   auto fh = flecsi_function_handle(argument_function, example);
   auto p = flecsi_get_handle(m, hydro, pressure, double, dense, 0);
-  auto retval = flecsi_execute_task(argument_task, example, single, m, p,
-      fh);
+  auto retval = flecsi_execute_task(argument_task, example, single, m, p, fh);
   } // argument function scope
 
 } // driver
