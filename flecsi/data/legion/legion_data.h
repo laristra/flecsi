@@ -82,7 +82,7 @@ public:
   };
 
   /*!
-    Collects all of the information needed to represent a local index space.
+    Collects all of the information needed to represent an index subspace.
    */
   struct index_subspace_t {
     size_t index_subspace_id;
