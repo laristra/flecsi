@@ -65,46 +65,6 @@ struct hpx_context_policy_t {
     return start_hpx(&hpx_runtime_driver, argc, argv);
   } // hpx_context_policy_t::initialize
 
-  //------------------------------------------------------------------------//
-  // Function registration.
-  //------------------------------------------------------------------------//
-
-  ///
-  /// \tparam T The type of the function being registered.
-  ///
-  /// \param key A unique function identifier.
-  ///
-  /// \return A boolean value that is true if the registration succeeded,
-  ///         false otherwise.
-  ///
-  template<
-      typename RETURN,
-      typename ARG_TUPLE,
-      RETURN (*FUNCTION)(ARG_TUPLE),
-      size_t KEY>
-  bool register_function() {
-    clog_assert(
-        function_registry_.find(KEY) == function_registry_.end(),
-        "function has already been registered");
-
-    clog(info) << "Registering function: " << FUNCTION << std::endl;
-
-    function_registry_[KEY] = reinterpret_cast<void *>(FUNCTION);
-    return true;
-  } // register_function
-
-  ///
-  /// Return the function associated with \e key.
-  ///
-  /// \param key The unique function identifier.
-  ///
-  /// \return A pointer to a std::function<void(void)> that may be cast
-  ///         back to the original function type using reinterpret_cast.
-  ///
-  void * function(size_t key) {
-    return function_registry_[key];
-  } // function
-
 protected:
   // Helper function for HPX start-up and shutdown
   FLECSI_EXPORT int
@@ -113,21 +73,6 @@ protected:
   // Start the HPX runtime system,
   FLECSI_EXPORT int
   start_hpx(int (*driver)(int, char * []), int argc, char * argv[]);
-
-private:
-  //--------------------------------------------------------------------------//
-  // Task data members.
-  //--------------------------------------------------------------------------//
-
-  // Map to store task registration callback methods.
-  //  std::map<
-  //    size_t,
-  //    task_info_t
-  //  > task_registry_;
-
-  // Function registry
-  std::unordered_map<size_t, void *> function_registry_;
-
 }; // struct hpx_context_policy_t
 
 } // namespace execution

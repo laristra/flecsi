@@ -17,6 +17,7 @@
 
 #include <array>
 #include <cassert>
+#include <cstdint>
 #include <iostream>
 #include <unordered_map>
 #include <vector>
@@ -159,7 +160,7 @@ using entity_vector_t = std::vector<mesh_entity_base__<NUM_DOMAINS> *>;
 //-----------------------------------------------------------------//
 //! \class domain_entity__ mesh_types.h
 //!
-//! \brief domain_entity__ is a simple wrapper to mesh entity that 
+//! \brief domain_entity__ is a simple wrapper to mesh entity that
 //! associates with its a domain id
 //!
 //! \tparam DOM Domain
@@ -305,7 +306,7 @@ public:
         index_space_.batch_push_(id);
       } // for
 
-      offsets_.add_count(iv.size());
+      offsets_.add_count(static_cast<std::uint32_t>(iv.size()));
     } // for
 
     index_space_.end_push_(start);
@@ -324,7 +325,7 @@ public:
     uint64_t size = 0;
 
     for (size_t i = 0; i < n; ++i) {
-      uint32_t count = num_conns[i];
+      uint32_t count = static_cast<std::uint32_t>(num_conns[i]);
       offsets_.add_count(count);
       size += count;
     } // for
