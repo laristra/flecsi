@@ -22,26 +22,26 @@ using namespace flecsi;
 using namespace flecsi::tutorial;
 
 flecsi_register_data_client(mesh_t, clients, mesh);
-flecsi_register_field(mesh_t, hydro, pressure, double, dense, 1, cells);
+flecsi_register_field(mesh_t, hydro, field, double, dense, 1, cells);
 
 namespace hydro {
 
-void initialize_pressure(mesh<ro> mesh, field<rw> p) {
+void initialize_field(mesh<ro> mesh, field<rw> f) {
   for(auto c: mesh.cells(owned)) {
-    p(c) = double(c->id());
+    f(c) = double(c->id());
   } // for
-} // initialize_pressure
+} // initialize_field
 
-flecsi_register_task(initialize_pressure, hydro, loc, single);
+flecsi_register_task(initialize_field, hydro, loc, single);
 
-void print_pressure(mesh<ro> mesh, field<ro> p) {
+void print_field(mesh<ro> mesh, field<ro> f) {
   for(auto c: mesh.cells(owned)) {
-    std::cout << "cell id: " << c->id() << " has pressure " <<
-      p(c) << std::endl;
+    std::cout << "cell id: " << c->id() << " has value " <<
+      f(c) << std::endl;
   } // for
-} // print_pressure
+} // print_field
 
-flecsi_register_task(print_pressure, hydro, loc, single);
+flecsi_register_task(print_field, hydro, loc, single);
 
 } // namespace hydro
 
@@ -51,10 +51,10 @@ namespace execution {
 void driver(int argc, char ** argv) {
 
   auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
-  auto p = flecsi_get_handle(m, hydro, pressure, double, dense, 0);
+  auto p = flecsi_get_handle(m, hydro, field, double, dense, 0);
 
-  flecsi_execute_task(initialize_pressure, hydro, single, m, p);
-  flecsi_execute_task(print_pressure, hydro, single, m, p);
+  flecsi_execute_task(initialize_field, hydro, single, m, p);
+  flecsi_execute_task(print_field, hydro, single, m, p);
 
 } // driver
 
