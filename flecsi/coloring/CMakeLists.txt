@@ -28,6 +28,9 @@ set(coloring_HEADERS
   mpi_communicator.h
   mpi_utils.h
   parmetis_colorer.h
+  box_types.h
+  box_colorer.h
+  simple_box_colorer.h
 )
 
 #------------------------------------------------------------------------------#
@@ -116,6 +119,20 @@ cinch_add_devel_target(devel-dcrs
   THREADS 5
 )
 
+cinch_add_unit(boxcolor2d
+  SOURCES test/test_simple_box_colorer_2d.cc
+  INPUTS
+  LIBRARIES ${COLORING_LIBRARIES}
+  POLICY MPI
+  THREADS 4
+)
+cinch_add_unit(boxcolor3d
+  SOURCES test/test_simple_box_colorer_3d.cc
+  INPUTS
+  LIBRARIES ${COLORING_LIBRARIES}
+  POLICY MPI
+  THREADS 4
+)
 # Both of these tests depend on ParMETIS.
 # This could change if we add more colorer types.
 if(ENABLE_COLORING AND ENABLE_PARMETIS)
