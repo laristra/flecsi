@@ -41,8 +41,8 @@ using namespace flecsi::tutorial;
   specialization may expose several different mesh types and other
   specializations, and would likely have a different interface.
 
-  The registration interface for data clients tasks the following
-  arguemnts:
+  The registration interface for data clients takes the following
+  arguments:
 
   (1) The data client type. This must be a valid specialization type. In
       general, application developers and end-users will not create this
