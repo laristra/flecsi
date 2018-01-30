@@ -82,7 +82,20 @@ void color_reader(color_accessor<double, ro> x) {
   clog(info) << "color exclusive reader read: " << std::endl;
     ASSERT_EQ(x, static_cast<double>(16));
 }
+
+void mpi_task(int val, global_accessor<double, ro> x)
+{
+  std::cout << "This is an mpi task, val = "<<val << std::endl;
+  ASSERT_EQ(x, static_cast<double>(3.14));
+}
 #endif
+
+void exclusive_mpi(dense_accessor<double, ro, ro, ro> x) {
+  clog(info) << "exclusive reader read: " << std::endl;
+  for (int i = 0; i < x.exclusive_size(); i++) {
+    ASSERT_EQ(x(i), static_cast<double>(i));
+  }
+}
 
 
 flecsi_register_task_simple(task1, loc, single);
@@ -98,7 +111,9 @@ flecsi_register_task_simple(global_writer, loc, single);
 flecsi_register_task_simple(global_reader, loc, single);
 flecsi_register_task_simple(color_writer, loc, single);
 flecsi_register_task_simple(color_reader, loc, single);
+flecsi_register_task(mpi_task, , mpi, single);
 #endif
+flecsi_register_task(exclusive_mpi, , mpi, single);
 
 flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
 
@@ -134,6 +149,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   flecsi_execute_task_simple(global_data_handle_dump, single, global_handle);
   flecsi_execute_task_simple(global_writer, single, global_handle);
   flecsi_execute_task_simple(global_reader, single, global_handle);
+  flecsi_execute_task(mpi_task,, single, 10, global_handle);
 #endif
 } // specialization_tlt_init
 
@@ -172,7 +188,10 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task_simple(color_data_handle_dump, single, color_handle);
   flecsi_execute_task_simple(color_writer, single, color_handle);
   flecsi_execute_task_simple(color_reader, single, color_handle);
+  flecsi_execute_task(mpi_task,, single, 10, global_handle);
 #endif
+
+  flecsi_execute_task(exclusive_mpi,, single, h);
 
 } // driver
 

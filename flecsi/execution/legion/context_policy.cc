@@ -89,6 +89,7 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
 
   while (mpi_active_) {
     invoke_mpi_task();
+    mpi_active_=false;
     handoff_to_legion();
     wait_on_legion();
   }

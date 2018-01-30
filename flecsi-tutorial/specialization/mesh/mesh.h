@@ -1,3 +1,17 @@
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
 #pragma once
 
 #include <iostream>
@@ -5,10 +19,12 @@
 
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/ragged_accessor.h>
+#include <flecsi/data/ragged_mutator.h>
 #include <flecsi/data/sparse_accessor.h>
 #include <flecsi/data/sparse_mutator.h>
 #include <flecsi/data/common/privilege.h>
-#include <specialization/mesh/types.h>
+#include <specialization/mesh/policy.h>
 
 namespace flecsi {
 namespace tutorial {
@@ -64,6 +80,12 @@ using mesh = data_client_handle__<mesh_t, PRIVILEGES>;
 template<
   size_t SHARED_PRIVILEGES>
 using field = dense_accessor<double, rw, SHARED_PRIVILEGES, ro>;
+
+template<
+  size_t SHARED_PRIVILEGES>
+using ragged_field = ragged_accessor<double, rw, SHARED_PRIVILEGES, ro>;
+
+using ragged_field_mutator = ragged_mutator<double>;
 
 template<
   size_t SHARED_PRIVILEGES>

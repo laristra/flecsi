@@ -1,3 +1,17 @@
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
 #pragma once
 
 #include <flecsi/topology/mesh.h>
@@ -29,9 +43,6 @@ struct specialization_mesh_policy_t
   );
 
   flecsi_register_connectivities(
-#if 0
-    flecsi_connectivity(index_spaces::vertices_to_cells, 0, vertex_t, cell_t),
-#endif
     flecsi_connectivity(index_spaces::cells_to_vertices, 0, cell_t, vertex_t)
   );
 

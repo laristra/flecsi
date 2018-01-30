@@ -26,11 +26,11 @@ namespace hydro {
 
   A FleCSI task is a C/C++ function. Tasks that are defined in a header
   file must either be inline or static. As you can see below, this
-  example defines a task called "simple", and registers it with the
+  example defines a task called "simple_task", and registers it with the
   runtime. The arguments to the task registration interface are:
 
     (1) The task name. This must be the actual name of the C/C++
-        function. In this example, the task name is "simple".
+        function. In this example, the task name is "simple_task".
 
     (2) The namespace of the task. This must be the actual namespace in
         which the task is defined. In this example, the namespace is
@@ -80,19 +80,18 @@ namespace hydro {
       be repeated in the registration call. This is tedious. However, it
       is a limitation of the current mechanism we have chosen to
       implement the task interface. Future versions of FleCSI will
-      likely employ a DSL for the interface, which will cleanup the
-      current interface.
+      likely employ a DSL, which will be cleaner than the current interface.
 
  *----------------------------------------------------------------------------*/
 
-void simple() {
+void simple_task() {
 
   // Print message from inside of the task
   std::cout << "Hello World from " << __FUNCTION__ << std::endl;
 
-} // simple
+} // simple_task
 
-flecsi_register_task(simple, hydro, loc, single);
+flecsi_register_task(simple_task, hydro, loc, single);
 
 } // namespace hydro
 
@@ -102,7 +101,7 @@ namespace execution {
 void driver(int argc, char ** argv) {
 
   // This time, the driver executes a task to do the output
-  flecsi_execute_task(simple, hydro, single);
+  flecsi_execute_task(simple_task, hydro, single);
 
 } // driver
 

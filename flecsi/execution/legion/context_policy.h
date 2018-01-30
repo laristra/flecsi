@@ -248,6 +248,23 @@ struct legion_context_policy_t {
     handshake_.legion_wait_on_mpi();
   } // wait_on_legion
 
+  template <typename LAUNCHERTYPE>
+  void add_wait_handshake(LAUNCHERTYPE &l)
+  {
+    l.add_wait_handshake(handshake_);
+  }
+
+  template <typename LAUNCHERTYPE>
+  void add_arrival_handshake(LAUNCHERTYPE &l)
+  {
+    l.add_arrival_handshake(handshake_);
+  }
+
+  void advance_handshake()
+  {
+    handshake_.advance_legion_handshake();
+  }
+
   /*!  
     Unset the MPI active state to pass execution back to
     the Legion runtime.
@@ -258,6 +275,11 @@ struct legion_context_policy_t {
 
   void unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
+  void unset_call_mpi_single()
+  {
+    mpi_active_=false;
+  }
+
   /*!
     Switch execution to the MPI runtime.
   
@@ -266,6 +288,11 @@ struct legion_context_policy_t {
    */
 
   void handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
+
+  void handoff_to_mpi_single()
+  {
+    handshake_.legion_handoff_to_mpi();
+  }
 
   /*!
     Wait on the MPI runtime to finish the current task execution.
@@ -278,6 +305,11 @@ struct legion_context_policy_t {
 
   Legion::FutureMap
   wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
+
+  void wait_on_mpi_single()
+  {
+    handshake_.legion_wait_on_mpi();
+  }
 
   /*!
     Connect with the MPI runtime.
@@ -420,6 +452,10 @@ struct legion_context_policy_t {
     Legion::LogicalRegion ghost_lr;
   };
 
+  struct index_subspace_data_t {
+    Legion::LogicalRegion region;
+  };
+
   /*!
     Collects Legion data associated with a local FleCSI index space.
    */
@@ -442,6 +478,14 @@ struct legion_context_policy_t {
 
   auto & local_index_space_data_map() {
     return local_index_space_data_map_;
+  }
+
+  /*!
+    Get the index subspace data map.
+   */
+
+  auto & index_subspace_data_map() {
+    return index_subspace_data_map_;
   }
 
   /*!
@@ -584,6 +628,7 @@ private:
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
+  std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
   Legion::DynamicCollective max_reduction_;
   Legion::DynamicCollective min_reduction_;
 

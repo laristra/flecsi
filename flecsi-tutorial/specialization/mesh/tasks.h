@@ -1,10 +1,25 @@
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
 #pragma once
 
 #include <flecsi-config.h>
 
 #include <flecsi/execution/context.h>
+#include <specialization/mesh/inputs.h>
 #include <specialization/mesh/mesh.h>
-#include <specialization/mesh/types.h>
+#include <specialization/mesh/policy.h>
 
 namespace flecsi {
 namespace tutorial {
@@ -23,7 +38,7 @@ inline void initialize_mesh(mesh<wo> m) {
 
   std::vector<vertex_t *> vertices;
 
-  const size_t width { 16 };
+  const size_t width { input_mesh_dimension_x };
   const double dt { 1.0/width };
 
   for(auto & vm: vertex_map) {

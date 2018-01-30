@@ -58,6 +58,73 @@ clog_register_tag(execution);
   typename flecsi::utils::function_traits__<decltype(task)>::arguments_type
 
 //----------------------------------------------------------------------------//
+// Object Registration Interface
+//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_register_global_object
+
+  Register a global object with the runtime. A global object must be
+  intitialized and mutated consistently by all colors.
+
+  @param index  The index of the global object within the given namespace.
+  @param nspace The namespace of the global object.
+  @param type   The type of the global object.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_global_object(index, nspace, type)                     \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  static bool registered_global_object_ ## nspace ## _ ## index =              \
+    context_t::instance().template register_global_object<                     \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      index, type>();
+
+/*!
+  @def flecsi_set_global_object
+
+  Set the address of a global object that has been registered with the
+  FleCSI runtime.
+
+  @param index  The index of the global object within the given namespace.
+  @param nspace The namespace of the global object.
+  @param type   The type of the global object.
+  @param obj    The address of the global object. Normally, this is just
+                the pointer to the object, which will be converted into
+                a uintptr_t.
+
+  @ingroup execution
+ */
+
+#define flecsi_set_global_object(index, nspace, type, obj)                     \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  context_t::instance().template set_global_object<                            \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    type>(index, obj);
+
+/*!
+  @def flecsi_get_global_object
+
+  Get a global object instance.
+
+  @param index  The index of the global object within the given namespace.
+  @param nspace The namespace of the global object.
+  @param type   The type of the global object.
+
+  @ingroup execution
+ */
+
+#define flecsi_get_global_object(index, nspace, type)                          \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  context_t::instance().template get_global_object<                            \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    type>(index);
+
+//----------------------------------------------------------------------------//
 // Task Registration Interface
 //----------------------------------------------------------------------------//
 
@@ -176,6 +243,32 @@ clog_register_tag(execution);
 //----------------------------------------------------------------------------//
 
 /*!
+  @def flecsi_color
+
+  Return the index of the currently executing color.
+
+  @ingroup execution
+ */
+
+#define flecsi_color()                                                         \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::execution::context_t::instance().color()
+
+/*!
+  @def flecsi_colors
+
+  Return the number of colors in the currently executing code.
+
+  @ingroup execution
+ */
+
+#define flecsi_colors()                                                        \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::execution::context_t::instance().colors()
+
+/*!
   @def flecsi_execute_task_simple
 
   This macro executes a simple user task, i.e., one that is not scoped in
@@ -267,31 +360,33 @@ clog_register_tag(execution);
   @ingroup execution
  */
 
-#define flecsi_register_function(func)                                         \
+#define flecsi_register_function(func, nspace)                                 \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  /* Function return type (frt) */                                             \
-  using func##_frt_t =                                                         \
-      typename flecsi::utils::function_traits__<decltype(func)>::return_type;  \
-                                                                               \
-  /* Function arguments type (fat) */                                          \
-  using func##_fat_t = typename flecsi::utils::function_traits__<decltype(     \
-      func)>::arguments_type;                                                  \
-                                                                               \
   /* Define a delegate function to the user's function that takes a tuple */   \
-  /* of the arguments (as opposed to the raw argument pack) */                 \
-  inline func##_frt_t func##_tuple_delegate(func##_fat_t args) {               \
+  /* of the arguments (as opposed to the raw argument pack). This is */        \
+  /* necessary because we cannot infer the argument type without using */      \
+  /* a tuple. */                                                               \
+  inline __flecsi_internal_return_type(func)                                   \
+      func##_tuple_delegate(__flecsi_internal_arguments_type(func) args) {     \
     return flecsi::utils::tuple_function(func, args);                          \
-  } /* delegate function */                                                    \
+  } /* delegate func */                                                        \
                                                                                \
   using function_handle_##func##_t =                                           \
-      flecsi::execution::function_handle__<func##_frt_t, func##_fat_t>;        \
+      flecsi::execution::function_handle__<                                    \
+        __flecsi_internal_return_type(func),                                   \
+        __flecsi_internal_arguments_type(func)                                 \
+      >;                                                                       \
                                                                                \
   /* Call the execution policy to register the function delegate */            \
   bool func##_func_registered =                                                \
       flecsi::execution::function_interface_t::register_function<              \
-          func##_frt_t, func##_fat_t, func##_tuple_delegate,                   \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(func)}.hash()>()
+        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}      \
+          .hash(), \
+        __flecsi_internal_return_type(func), \
+        __flecsi_internal_arguments_type(func), \
+        func##_tuple_delegate \
+      >()
 
 /*!
   @def flecsi_execute_function
@@ -321,12 +416,12 @@ clog_register_tag(execution);
   @ingroup execution
  */
 
-#define flecsi_function_handle(func)                                           \
+#define flecsi_function_handle(func, nspace)                                   \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Create a function handle instance */                                      \
-  function_handle_##func##_t(                                                  \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(func)}.hash())
+  nspace::function_handle_##func##_t(                                          \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}.hash())
 
 /*!
   @def flecsi_define_function_type
