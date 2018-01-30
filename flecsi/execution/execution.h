@@ -78,7 +78,8 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   static bool registered_global_object_ ## nspace ## _ ## index =              \
-    context_t::instance().template register_global_object<                     \
+    flecsi::execution::context_t::instance().                                  \
+      template register_global_object<                                         \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
       index, type>();
 
@@ -101,7 +102,7 @@ clog_register_tag(execution);
 #define flecsi_set_global_object(index, nspace, type, obj)                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  context_t::instance().template set_global_object<                            \
+  flecsi::execution::context_t::instance().template set_global_object<         \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
     type>(index, obj);
 
@@ -120,7 +121,7 @@ clog_register_tag(execution);
 #define flecsi_get_global_object(index, nspace, type)                          \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  context_t::instance().template get_global_object<                            \
+  flecsi::execution::context_t::instance().template get_global_object<         \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
     type>(index);
 
