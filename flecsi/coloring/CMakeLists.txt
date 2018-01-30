@@ -101,7 +101,9 @@ cinch_add_unit(dcrs
   INPUTS
     test/simple2d-8x8.msh
     test/simple2d-16x16.msh
-  LIBRARIES ${COLORING_LIBRARIES}
+  LIBRARIES 
+    ${CINCH_RUNTIME_LIBRARIES}
+    ${COLORING_LIBRARIES}
   POLICY MPI
   THREADS 5
 )
