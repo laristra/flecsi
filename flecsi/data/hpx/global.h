@@ -20,12 +20,12 @@
 // Using this approach allows us to have only one storage_type_t
 // definition that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE hpx
-#include "flecsi/data/storage_type.h"
+//#include "flecsi/data/storage_type.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
 #include "flecsi/data/data_client.h"
-#include "flecsi/data/data_handle.h"
+#include "flecsi/data/global_data_handle.h"
 #include "flecsi/utils/const_string.h"
 
 #include <algorithm>
@@ -225,8 +225,8 @@ struct global_handle_t {}; // struct global_handle_t
 ///
 // FIXME: Scalar storage type.
 ///
-template<typename DS, typename MD>
-struct storage_type_t<global, DS, MD> {
+template<>
+struct storage_class__<global> {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -241,7 +241,7 @@ struct storage_type_t<global, DS, MD> {
   template<typename T, size_t PS>
   using handle_t = global_handle_t<T, PS>;
 
-  using st_t = storage_type_t<global, DS, MD>;
+  using st_t = storage_class__<global>;
 
   //--------------------------------------------------------------------------//
   // Data registration.

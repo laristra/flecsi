@@ -105,6 +105,42 @@ struct hpx_context_policy_t {
     return function_registry_[key];
   } // function
 
+  //--------------------------------------------------------------------
+  // Data maps
+  //--------------------------------------------------------------------
+  struct index_space_data_t {
+    // TODO: to be defined.
+  };
+
+  struct local_index_space_data_t{
+    size_t size;
+    size_t capacity;
+  };
+
+  auto&
+  index_space_data_map()
+  {
+    return index_space_data_map_;
+  }
+
+  auto&
+  local_index_space_data_map()
+  {
+    return local_index_space_data_map_;
+  }
+
+  struct field_metadata_t {
+    //TODO: to be defined
+  };
+
+  struct sparse_field_data_t {
+    //TODO: to be defined
+  };
+
+  struct sparse_field_metadata_t {
+    //TODO: to be defined
+  };
+
 protected:
   // Helper function for HPX start-up and shutdown
   FLECSI_EXPORT int
@@ -127,6 +163,15 @@ private:
 
   // Function registry
   std::unordered_map<size_t, void *> function_registry_;
+
+  std::map<field_id_t, std::vector<uint8_t>> field_data;
+  std::map<field_id_t, field_metadata_t> field_metadata;
+
+  std::map<size_t, index_space_data_t> index_space_data_map_;
+  std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
+
+  std::map<field_id_t, sparse_field_data_t> sparse_field_data;
+  std::map<field_id_t, sparse_field_metadata_t> sparse_field_metadata;
 
 }; // struct hpx_context_policy_t
 

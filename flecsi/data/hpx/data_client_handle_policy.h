@@ -12,10 +12,49 @@
 //----------------------------------------------------------------------------//
 
 namespace flecsi {
-
 //----------------------------------------------------------------------------//
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
+struct data_client_handle_entity_t
+{
+  //FIXME check context
+  using field_id_t = size_t;
+
+  data_client_handle_entity_t() : index_space(0), dim(0), domain(0), size(0), fid(0) {}
+
+  size_t index_space;
+  size_t dim;
+  size_t domain;
+  size_t size;
+  size_t num_exclusive;
+  size_t num_shared;
+  size_t num_ghost;
+  field_id_t fid;
+  field_id_t id_fid;
+};
+
+//----------------------------------------------------------------------------//
+//! Provides a collection of fields which are populated when, in the case of
+//! mesh topology, traversing the data client adjacency specifications,
+//! which is then passed the data client handle.
+//----------------------------------------------------------------------------//
+struct data_client_handle_adjacency_t
+{
+  size_t adj_index_space;
+  size_t from_index_space;
+  size_t to_index_space;
+  size_t from_domain;
+  size_t to_domain;
+  size_t from_dim;
+  size_t to_dim;
+  size_t num_offsets;
+  size_t num_indices;
+  field_id_t index_fid;
+  field_id_t offset_fid;
+  size_t * offsets_buf;
+  uint64_t * indices_buf;
+};
+
 
 struct hpx_data_client_handle_policy_t {}; // struct data_client_handle_policy_t
 
