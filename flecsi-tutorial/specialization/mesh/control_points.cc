@@ -1,11 +1,25 @@
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
 #include <flecsi-config.h>
 
 #include <flecsi/execution/execution.h>
 #include <flecsi/execution/context.h>
 #include <specialization/mesh/coloring.h>
 #include <specialization/mesh/mesh.h>
+#include <specialization/mesh/policy.h>
 #include <specialization/mesh/tasks.h>
-#include <specialization/mesh/types.h>
 
 namespace flecsi {
 namespace execution {
