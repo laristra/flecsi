@@ -484,67 +484,6 @@ __flecsi_internal_legion_task(owners_subregions_task, subrect_map) {
   return lid_to_subrect_map;
 } // owners_subregions
 
-/*!
- Fill connectivity task fills connectivity for from/to index space and
- and index launched.
-
- @ingroup legion-execution
- */
-
-__flecsi_internal_legion_task(fill_connectivity_task, void) {
-  using namespace std;
-
-  using namespace Legion;
-  using namespace LegionRuntime;
-  using namespace Arrays;
-
-  using namespace execution;
-
-  clog(trace) << "fill connectivity" << std::endl;
-  using tuple_t = std::tuple<size_t, size_t, size_t>;
-
-  context_t & context = context_t::instance();
-
-  legion_helper h(runtime, ctx);
-
-  const tuple_t & p = *(tuple_t *)task->args;
-
-  size_t from_index_space = std::get<0>(p);
-  size_t to_index_space = std::get<1>(p);
-  size_t size = std::get<2>(p);
-
-  FieldID adjacency_fid =
-      context.adjacency_fid(from_index_space, to_index_space);
-
-  auto adjacency_offset_fid = FieldID(internal_field::adjacency_offset);
-
-  auto adjacency_index_fid = FieldID(internal_field::adjacency_index);
-
-  uint64_t * indices;
-  h.get_buffer(regions[0], indices, adjacency_index_fid);
-
-  LegionRuntime::Arrays::Point<2>* positions;
-  h.get_buffer(regions[1], positions, adjacency_fid);
-
-  uint64_t * src_offsets;
-  h.get_buffer(regions[2], src_offsets, adjacency_offset_fid);
-
-  uint64_t * src_indices;
-  h.get_buffer(regions[2], src_indices, adjacency_index_fid);
-
-  size_t last_offset = 0;
-  for (size_t i = 0; i < size; ++i) {
-    size_t offset = src_offsets[i];
-    size_t count = offset - last_offset;
-    std::memcpy(indices, src_indices, count * sizeof(size_t));
-    (*positions).x[0] = offset;
-    (*positions).x[1] = count;
-    indices += count;
-    ++positions;
-    last_offset = offset;
-  }
-}
-
 #undef __flecsi_internal_legion_task
 
 /*!

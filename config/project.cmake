@@ -136,7 +136,7 @@ set(FLECSI_COUNTER_TYPE "int32_t" CACHE STRING
 # Add option for FleCSIT command-line tool.
 #------------------------------------------------------------------------------#
 
-option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" OFF)
+option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" ON)
 
 #------------------------------------------------------------------------------#
 # Globally shared variables

@@ -105,7 +105,8 @@ entity set - contains an iterable set of entities. Support set operations such
 template<class MESH_TYPE>
 class mesh_topology__
     : public mesh_topology_base__<
-          mesh_storage__<MESH_TYPE::num_dimensions, MESH_TYPE::num_domains>> {
+          mesh_storage__<MESH_TYPE::num_dimensions, MESH_TYPE::num_domains,
+          num_index_subspaces__<MESH_TYPE>::value>> {
   // static verification of mesh policy
 
   static_assert(
@@ -155,7 +156,8 @@ class mesh_topology__
 public:
   // mesh storage type definition
   using storage_t = mesh_storage__<MESH_TYPE::num_dimensions,
-    MESH_TYPE::num_domains>;
+    MESH_TYPE::num_domains,
+    num_index_subspaces__<MESH_TYPE>::value>;
 
   // mesh topology base definition
   using base_t = mesh_topology_base__<storage_t>;
@@ -546,7 +548,7 @@ public:
     class ENT_TYPE>
   const auto entities(const ENT_TYPE * e) const {
 
-    const connectivity_t & c = 
+    const connectivity_t & c =
       get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
 
@@ -571,7 +573,7 @@ public:
   template<size_t DIM, size_t FROM_DOM, size_t TO_DOM = FROM_DOM,
     class ENT_TYPE>
   auto entities(ENT_TYPE * e) {
-    connectivity_t & c = 
+    connectivity_t & c =
       get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
 
@@ -705,7 +707,7 @@ public:
   template<size_t DIM, size_t FROM_DOM = 0, size_t TO_DOM = FROM_DOM,
     class ENT_TYPE>
   auto entity_ids(const ENT_TYPE * e) const {
-    const connectivity_t & c = 
+    const connectivity_t & c =
       get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
     return c.get_index_space().ids(c.range(e->template id<FROM_DOM>()));
@@ -932,23 +934,23 @@ public:
     uint32_t num_dimensions;
     std::memcpy(&num_dimensions, buf + pos, sizeof(num_dimensions));
     pos += sizeof(num_dimensions);
-    assert(num_dimensions == MESH_TYPE::num_dimensions && 
+    assert(num_dimensions == MESH_TYPE::num_dimensions &&
       "dimension size mismatch");
 
     unserialize_domains_<
         storage_t, MESH_TYPE, MESH_TYPE::num_domains, MESH_TYPE::num_dimensions,
         0>::unserialize(*this, buf, pos);
 
-    for (size_t from_domain = 0; from_domain < MESH_TYPE::num_domains; 
+    for (size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
          ++from_domain) {
-      for (size_t to_domain = 0; to_domain < MESH_TYPE::num_domains; 
+      for (size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
            ++to_domain) {
 
         auto & dc = base_t::ms_->topology[from_domain][to_domain];
 
-        for (size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions; 
+        for (size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions;
              ++from_dim) {
-          for (size_t to_dim = 0; to_dim <= MESH_TYPE::num_dimensions; 
+          for (size_t to_dim = 0; to_dim <= MESH_TYPE::num_dimensions;
                ++to_dim) {
             connectivity_t & c = dc.get(from_dim, to_dim);
 
@@ -987,13 +989,13 @@ public:
 
 private:
   template<size_t, size_t, class>
-  friend class compute_connectivity__;
+  friend struct compute_connectivity__;
 
   template<size_t, size_t, class>
-  friend class compute_bindings__;
+  friend struct compute_bindings__;
 
   template<size_t DOM, typename VERT_TYPE>
-  void init_cell_(entity_type<MESH_TYPE::num_dimensions, DOM> * cell, 
+  void init_cell_(entity_type<MESH_TYPE::num_dimensions, DOM> * cell,
                   VERT_TYPE && verts) {
     auto & c = get_connectivity_(DOM, MESH_TYPE::num_dimensions, 0);
 
@@ -1070,7 +1072,7 @@ private:
         UsingDimension <= MESH_TYPE::num_dimensions,
         "UsingDimension must be <= total number of dimensions");
     static_assert(
-        Domain < MESH_TYPE::num_domains, 
+        Domain < MESH_TYPE::num_domains,
         "Domain must be < total number of domains");
 
     // Reference to storage from cells to the entity (to be created here).
@@ -1378,7 +1380,7 @@ private:
     // std::cerr << "intersect: " << FROM_DIM << " -> " << TO_DIM << std::endl;
 
     // The connectivity we will be populating
-    connectivity_t & out_conn = 
+    connectivity_t & out_conn =
       get_connectivity_(FROM_DOM, TO_DOM, FROM_DIM, TO_DIM);
     if (!out_conn.empty()) {
       return;
@@ -1650,7 +1652,7 @@ private:
     //           <<  ", dim " << FROM_DIM << " -> " << TO_DIM << std::endl;
 
     // check if requested connectivity is already there, nothing to do
-    connectivity_t & out_conn = 
+    connectivity_t & out_conn =
       get_connectivity_(FROM_DOM, TO_DOM, FROM_DIM, TO_DIM);
 
     if (!out_conn.empty())
@@ -1732,7 +1734,7 @@ private:
       for (size_t i = 0; i < n; ++i) {
         size_t m = sv[i];
 
-        id_t create_id = 
+        id_t create_id =
           id_t::make<TO_DIM, TO_DOM>(entity_id, cell_id.partition());
 
         // Add this id to the cell entity connections
@@ -1766,7 +1768,7 @@ private:
           }
         }
 
-        auto ent = 
+        auto ent =
           MESH_TYPE::template create_entity<TO_DOM, TO_DIM>(this, num_vertices);
 
         ++entity_id;

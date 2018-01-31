@@ -50,6 +50,8 @@ public:
   using coloring_info_t = coloring::coloring_info_t;
 
   using adjacency_info_t = coloring::adjacency_info_t;
+  
+  using index_subspace_info_t = execution::context_t::index_subspace_info_t;
 
   using coloring_info_map_t = std::unordered_map<size_t, coloring_info_t>;
 
@@ -77,6 +79,18 @@ public:
     Legion::FieldSpace field_space;
     Legion::LogicalRegion logical_region;
     size_t capacity;
+  };
+
+  /*!
+    Collects all of the information needed to represent an index subspace.
+   */
+  struct index_subspace_t {
+    size_t index_subspace_id;
+    Legion::IndexSpace index_space;
+    Legion::FieldSpace field_space;
+    Legion::LogicalRegion logical_region;
+    size_t capacity;
+    Legion::FieldID fid;
   };
 
   /*!
@@ -288,8 +302,8 @@ public:
     is.capacity = local_index_space.capacity;
 
     LegionRuntime::Arrays::Rect<1> rect(
-	LegionRuntime::Arrays::Point<1>(0),
-	LegionRuntime::Arrays::Point<1>(is.capacity - 1));
+	  LegionRuntime::Arrays::Point<1>(0),
+	  LegionRuntime::Arrays::Point<1>(is.capacity - 1));
     is.index_space_id = index_space_id;
     is.index_space =
         runtime->create_index_space(ctx, Legion::Domain::from_rect<1>(rect));
@@ -402,6 +416,42 @@ public:
     attach_name(c, c.index_partition, "color partitioning");
 
     adjacency_map_.emplace(adjacency_info.index_space, std::move(c));
+  }
+
+  index_subspace_t add_index_subspace(const index_subspace_info_t & info) {
+    using namespace std;
+
+    using namespace Legion;
+    using namespace LegionRuntime;
+    using namespace Arrays;
+
+    using namespace execution;
+
+    context_t & context = context_t::instance();
+
+    index_subspace_t is;
+    is.index_subspace_id = info.index_subspace;
+    is.capacity = info.capacity;
+
+    LegionRuntime::Arrays::Rect<1> rect(
+      LegionRuntime::Arrays::Point<1>(0),
+      LegionRuntime::Arrays::Point<1>(is.capacity - 1));
+
+    is.index_space =
+        runtime_->create_index_space(ctx_, Legion::Domain::from_rect<1>(rect));
+    is.field_space = runtime_->create_field_space(ctx_);
+
+    using field_info_t = context_t::field_info_t;
+
+    FieldAllocator allocator =
+        runtime_->create_field_allocator(ctx_, is.field_space);
+
+    //allocator.allocate_field(fi.size, fi.fid);
+
+    is.logical_region =
+        runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
+
+    index_subspace_map_.emplace(info.index_subspace, std::move(is));
   }
 
   /*!
@@ -536,6 +586,10 @@ public:
     return adjacency_map_;
   }
 
+  const std::unordered_map<size_t, index_subspace_t> & index_subspace_map() const {
+    return index_subspace_map_;
+  }
+
   index_space_t global_index_space() {
     return global_index_space_;
   }
@@ -564,6 +618,9 @@ private:
 
   // key: index space
   std::unordered_map<size_t, adjacency_t> adjacency_map_;
+
+  // key: index space
+  std::unordered_map<size_t, index_subspace_t> index_subspace_map_;
 
   std::set<size_t> adjacencies_;
 

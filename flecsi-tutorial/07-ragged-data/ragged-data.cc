@@ -12,6 +12,7 @@
    All rights reserved.
                                                                               */
 
+#include <cstdlib>
 #include <iostream>
 
 #include<flecsi-tutorial/specialization/mesh/mesh.h>
@@ -21,34 +22,36 @@
 using namespace flecsi;
 using namespace flecsi::tutorial;
 
-/*----------------------------------------------------------------------------*
-
- *----------------------------------------------------------------------------*/
-
 flecsi_register_data_client(mesh_t, clients, mesh);
+flecsi_register_field(mesh_t, hydro, densities, double, ragged, 1, cells);
 
 namespace hydro {
 
-void simple(mesh<ro> mesh) {
-
-  for(auto v: mesh.vertices()) {
-    v->print("Hello World! I'm a vertex!");
-  } // for
+void initialize_materials(mesh<ro> mesh, ragged_field_mutator d) {
 
   for(auto c: mesh.cells(owned)) {
-    c->print("Hello World! I am a cell!");
+    const size_t random = (rand()/double{RAND_MAX}) * 5;
 
-    for(auto v: mesh.vertices(c)) {
-      v->print("I'm a vertex!");
+    d.resize(c, random);
+
+    for(size_t i{0}; i<random; ++i) {
+      d(c,i) = i;
     } // for
-
   } // for
+} // initialize_pressure
 
-} // simple
+flecsi_register_task(initialize_materials, hydro, loc, single);
 
-// Task registration is as usual...
+void print_materials(mesh<ro> mesh, ragged_field<ro> d) {
+  for(auto c: mesh.cells()) {
+    for(auto m: d.entries(c)) {
+      std::cout << d(c,m) << " ";
+    } // for
+    std::cout << std::endl;
+  } // for
+} // print_pressure
 
-flecsi_register_task(simple, hydro, loc, single);
+flecsi_register_task(print_materials, hydro, loc, single);
 
 } // namespace hydro
 
@@ -57,17 +60,21 @@ namespace execution {
 
 void driver(int argc, char ** argv) {
 
-  // Get a data client handle as usual...
-
   auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
 
-  // Task execution is as usual...
+  {
+  auto d = flecsi_get_mutator(m, hydro, densities, double, ragged, 0, 5);
 
-  flecsi_execute_task(simple, hydro, single, m);
+  flecsi_execute_task(initialize_materials, hydro, single, m, d);
+  } // scope
+
+  {
+  auto d = flecsi_get_handle(m, hydro, densities, double, ragged, 0);
+
+  flecsi_execute_task(print_materials, hydro, single, m, d);
+  } // scope
 
 } // driver
 
 } // namespace execution
 } // namespace flecsi
-
-/* vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : */

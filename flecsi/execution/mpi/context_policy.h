@@ -192,6 +192,10 @@ struct mpi_context_policy_t
     // TODO: to be defined.
   };
 
+  struct index_subspace_data_t {
+    size_t capacity;
+  };
+
   struct local_index_space_data_t{
     size_t size;
     size_t capacity;
@@ -201,6 +205,14 @@ struct mpi_context_policy_t
   index_space_data_map()
   {
     return index_space_data_map_;
+  }
+
+  /*!
+    Get the index subspace data map.
+   */
+
+  auto & index_subspace_data_map() {
+    return index_subspace_data_map_;
   }
 
   auto&
@@ -683,6 +695,7 @@ private:
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
+  std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
 
   std::map<field_id_t, sparse_field_data_t> sparse_field_data;
   std::map<field_id_t, sparse_field_metadata_t> sparse_field_metadata;

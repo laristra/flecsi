@@ -134,6 +134,7 @@ runtime_driver(
 
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
+
   //--------------------------------------------------------------------------//
   //  Create Legion index spaces and logical regions
   //-------------------------------------------------------------------------//
@@ -144,6 +145,10 @@ runtime_driver(
 
   for(auto& itr : context_.adjacency_info()){
     data.add_adjacency(itr.second);
+  }
+
+  for(auto& itr : context_.index_subspace_info()){
+    data.add_index_subspace(itr.second);
   }
 
   data.finalize(coloring_info);
@@ -383,6 +388,23 @@ runtime_driver(
     args_serializers[color].serialize(&num_adjacencies, sizeof(size_t));
     args_serializers[color].serialize(&adjacencies_vec[0], num_adjacencies
       * sizeof(adjacency_triple_t));
+
+    // #8 serialize index subspaces info
+
+    using index_subspace_info_t = context_t::index_subspace_info_t;
+
+    std::vector<index_subspace_info_t> index_subspaces_vec;
+
+    for(auto& itr : context_.index_subspace_info()){
+      const index_subspace_info_t& ii = itr.second;
+      index_subspaces_vec.push_back(ii);
+    }//for
+
+    size_t num_index_subspaces = index_subspaces_vec.size();
+
+    args_serializers[color].serialize(&num_index_subspaces, sizeof(size_t));
+    args_serializers[color].serialize(&index_subspaces_vec[0],
+      num_index_subspaces * sizeof(index_subspace_info_t));
    
    //-----------------------------------------------------------------------//
    //add region requirements to the spmd_launcher
@@ -481,6 +503,15 @@ runtime_driver(
 
       spmd_launcher.add_region_requirement(reg_req);
     }//adjacency_indx
+
+    for(auto& itr : data.index_subspace_map()){
+      const data::legion_data_t::index_subspace_t& info = itr.second;
+
+      Legion::RegionRequirement
+        reg_req(info.logical_region, READ_WRITE, SIMULTANEOUS,
+          info.logical_region);
+        reg_req.add_field(info.fid);
+    }
 
     auto global_ispace = data.global_index_space();
     Legion::RegionRequirement global_reg_req(global_ispace.logical_region,
@@ -1062,6 +1093,30 @@ spmd_task(
     region_index++;
   }
 
+  // #8 deserialize index subspaces
+  size_t num_index_subspaces;
+  args_deserializer.deserialize(&num_index_subspaces, sizeof(size_t));
+   
+  using index_subspace_info_t = context_t::index_subspace_info_t;
+  index_subspace_info_t* index_subspaces =
+     new index_subspace_info_t[num_index_subspaces]; 
+     
+  args_deserializer.deserialize((void*)index_subspaces,
+    sizeof(index_subspace_info_t) * num_index_subspaces);
+   
+  for(size_t i = 0; i < num_index_subspaces; ++i){
+    context_.add_index_subspace(index_subspaces[i]);
+  }
+
+  auto& isubspace_dmap = context_.index_subspace_data_map();
+
+  for(auto& itr : context_.index_subspace_info()) {
+    isubspace_dmap[itr.first].region = 
+      regions[region_index].get_logical_region();
+
+    region_index++;
+  }
+
   //adding information for the global and color handles to the ispace_map
   if (number_of_global_fields>0){
 
@@ -1117,6 +1172,7 @@ spmd_task(
   delete [] num_owners;
   delete [] pbarriers_as_owner;
   delete [] adjacencies;
+  delete [] index_subspaces;
 //  delete [] idx_spaces;
 
 } // spmd_task

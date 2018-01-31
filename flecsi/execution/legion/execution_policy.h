@@ -168,35 +168,74 @@ struct legion_execution_policy_t {
         clog_tag_guard(execution);
         clog(info) << "Executing MPI task: " << KEY << std::endl;
       }
+      
+      if (context_.execution_state()==SPECIALIZATION_TLT_INIT){
 
-      ArgumentMap arg_map;
-      IndexLauncher launcher(
+        init_args_t init_args(legion_runtime, legion_context);
+        init_args.walk(task_args);
+
+
+        ArgumentMap arg_map;
+        IndexLauncher launcher(
           context_.task_id<KEY>(),
           Legion::Domain::from_rect<1>(context_.all_processes()),
           TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
 
-      //! \todo Do we need this comment?
-      // Enqueue the MPI task.
-      //  auto future =
-      //    legion_runtime->execute_index_space(legion_context, launcher);
-      // future.wait_all_results();
+        for (auto & req : init_args.region_reqs) {
+            launcher.add_region_requirement(req);
+          }
 
-      Legion::MustEpochLauncher must_epoch_launcher;
-      must_epoch_launcher.add_index_task(launcher);
-      auto future = legion_runtime->execute_must_epoch(
+        //! \todo Do we need this comment?
+        // Enqueue the MPI task.
+        //  auto future =
+        //    legion_runtime->execute_index_space(legion_context, launcher);
+        // future.wait_all_results();
+
+        Legion::MustEpochLauncher must_epoch_launcher;
+        must_epoch_launcher.add_index_task(launcher);
+        auto future = legion_runtime->execute_must_epoch(
           legion_context, must_epoch_launcher);
-      future.wait_all_results(true);
+        future.wait_all_results(true);
 
-      // Handoff to the MPI runtime.
-      context_.handoff_to_mpi(legion_context, legion_runtime);
+        // Handoff to the MPI runtime.
+        context_.handoff_to_mpi(legion_context, legion_runtime);
 
-      // Wait for MPI to finish execution (synchronous).
-      context_.wait_on_mpi(legion_context, legion_runtime);
+        // Wait for MPI to finish execution (synchronous).
+        context_.wait_on_mpi(legion_context, legion_runtime);
 
-      // Reset the calling state to false.
-      context_.unset_call_mpi(legion_context, legion_runtime);
+        // Reset the calling state to false.
+        context_.unset_call_mpi(legion_context, legion_runtime);
 
-      return legion_future__<RETURN>(future);
+        return legion_future__<RETURN>(future);
+      } else { // check for execution_state
+
+         init_args_t init_args(legion_runtime, legion_context);
+         init_args.walk(task_args);
+
+          // Create a task launcher, passing the task arguments.
+          TaskLauncher task_launcher(
+              context_.task_id<KEY>(),
+              TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+
+          for (auto & req : init_args.region_reqs) {
+            task_launcher.add_region_requirement(req);
+          }
+
+          auto future =
+              legion_runtime->execute_task(legion_context, task_launcher);
+
+          future.wait();         
+ 
+           // Handoff to the MPI runtime.
+          context_.handoff_to_mpi();
+
+        // Wait for MPI to finish execution (synchronous).
+          context_.wait_on_mpi();
+
+         context_.unset_call_mpi_single();
+
+        return legion_future__<RETURN>(future);
+      }//if check for execution state
     } else {
       // Initialize the arguments to pass through the runtime.
       init_args_t init_args(legion_runtime, legion_context);
@@ -288,13 +327,13 @@ struct legion_execution_policy_t {
    */
 
   template<
+      size_t KEY,
       typename RETURN,
       typename ARG_TUPLE,
-      RETURN (*FUNCTION)(ARG_TUPLE),
-      size_t KEY>
+      RETURN (*FUNCTION)(ARG_TUPLE)>
   static bool register_function() {
     return context_t::instance()
-        .template register_function<RETURN, ARG_TUPLE, FUNCTION, KEY>();
+        .template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
   } // register_function
 
   /*!
@@ -306,7 +345,7 @@ struct legion_execution_policy_t {
   static decltype(auto)
   execute_function(FUNCTION_HANDLE & handle, ARGS &&... args) {
     return handle(
-        context_t::instance().function(handle.key()),
+        context_t::instance().function(handle.get_key()),
         std::forward_as_tuple(args...));
   } // execute_function
 

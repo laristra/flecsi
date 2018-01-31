@@ -40,7 +40,7 @@ class mesh_entity_t;
 /// \brief hpx_data_handle_policy_t provides...
 ///
 
-template<size_t NUM_DIMS, size_t NUM_DOMS>
+template<size_t NUM_DIMS, size_t NUM_DOMS, size_t NUM_INDEX_SUBSPACES>
 struct hpx_topology_storage_policy__ {
   static constexpr size_t num_partitions = 5;
   using id_t = utils::id_t;
@@ -66,8 +66,8 @@ struct hpx_topology_storage_policy__ {
       NUM_DIMS + 1>;
 
   // array of array of domain_connectivity__
-  std::array<std::array<domain_connectivity__<NUM_DIMS>, NUM_DOMS>, NUM_DOMS>
-      topology;
+  std::array<std::array<domain_connectivity__<NUM_DIMS>, NUM_DOMS>,
+    NUM_DOMS> topology;
 
   std::array<index_spaces_t, NUM_DOMS> index_spaces;
 

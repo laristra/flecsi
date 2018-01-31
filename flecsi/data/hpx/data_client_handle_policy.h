@@ -56,6 +56,10 @@ struct data_client_handle_adjacency_t
 };
 
 
+//----------------------------------------------------------------------------//
+//! FIXME: Description of class
+//----------------------------------------------------------------------------//
+
 struct hpx_data_client_handle_policy_t {}; // struct data_client_handle_policy_t
 
 } // namespace flecsi

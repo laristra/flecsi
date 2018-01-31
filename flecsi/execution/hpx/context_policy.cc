@@ -60,10 +60,8 @@ hpx_context_policy_t::start_hpx(
       // disable HPX' short options
       "hpx.commandline.aliasing!=0"};
 
-  using hpx::util::placeholders::_1;
-  using hpx::util::placeholders::_2;
   hpx::util::function_nonser<int(int, char **)> start_function =
-      hpx::util::bind(&hpx_context_policy_t::hpx_main, this, driver, _1, _2);
+      hpx::util::bind_front(&hpx_context_policy_t::hpx_main, this, driver);
 
   return hpx::init(start_function, argc, argv, cfg);
 }

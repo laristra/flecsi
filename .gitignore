@@ -18,3 +18,11 @@ flecsi-tutorial/*/*.tex
 flecsi-tutorial/*/*.log
 flecsi-tutorial/*/*.aux
 flecsi-tutorial/*/*.pdf
+flecsi-tutorial/*/driver
+flecsi-tutorial/*/tasks
+flecsi-tutorial/*/data-clients
+flecsi-tutorial/*/functions
+flecsi-tutorial/*/index-spaces
+flecsi-tutorial/*/fields
+flecsi-tutorial/*/sparse-data
+flecsi-tutorial/*/forall

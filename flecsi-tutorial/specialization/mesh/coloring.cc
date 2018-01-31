@@ -11,6 +11,7 @@
 #include <flecsi/supplemental/coloring/coloring_functions.h>
 #include <flecsi/supplemental/coloring/tikz.h>
 #include <specialization/mesh/coloring.h>
+#include <specialization/mesh/inputs.h>
 
 clog_register_tag(coloring);
 clog_register_tag(coloring_output);
@@ -36,9 +37,8 @@ void add_colorings(coloring_map_t map) {
   clog(info) << "add_colorings, rank: " << rank << std::endl;
   }
 
-  const size_t M(16), N(16);
-  char * input_mesh = getenv("FLECSI_TUTORIAL_INPUT_MESH");
-  //flecsi::io::simple_definition_t sd("../inputs/simple2d-16x16.msh");
+  const size_t M(input_mesh_dimension_y), N(input_mesh_dimension_x);
+  char * input_mesh = input_mesh_file();
   flecsi::io::simple_definition_t sd(input_mesh);
 
   // Create the dCRS representation for the distributed colorer.

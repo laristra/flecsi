@@ -18,6 +18,7 @@
 #include <vector>
 
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/static_verify.h>
 
 namespace flecsi {
 namespace topology {
@@ -331,6 +332,31 @@ public:
   std::vector<int_t> offset;
   std::vector<int_t> index;
   std::vector<int_t> partition;
+};
+
+FLECSI_MEMBER_CHECKER(index_subspaces);
+
+template<typename MESH_TYPE, bool HAS_SUBSPACES>
+struct index_subspaces_tuple__{
+  using type = typename MESH_TYPE::index_subspaces;
+};
+
+template<typename MESH_TYPE>
+struct index_subspaces_tuple__<MESH_TYPE, false>{
+  using type = std::tuple<>;
+};
+
+template<typename MESH_TYPE>
+struct get_index_subspaces__{
+  using type = typename index_subspaces_tuple__<MESH_TYPE,
+    has_member_index_subspaces<MESH_TYPE>::value>::type;
+};
+
+template<typename MESH_TYPE>
+struct num_index_subspaces__{
+  using type = typename get_index_subspaces__<MESH_TYPE>::type;
+
+  static constexpr size_t value = std::tuple_size<type>::value;  
 };
 
 } // namespace topology

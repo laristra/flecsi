@@ -97,6 +97,11 @@ struct context__ : public CONTEXT_POLICY {
     size_t active_migration_capacity;
   };
 
+  struct index_subspace_info_t {
+    size_t index_subspace;
+    size_t capacity;
+  };
+
   /*!
     Structure needed to initialize a set topology.
    */
@@ -116,6 +121,39 @@ struct context__ : public CONTEXT_POLICY {
       std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
 
   //--------------------------------------------------------------------------//
+  // Object interface.
+  //--------------------------------------------------------------------------//
+
+  template<
+    size_t NAMESPACE_HASH,
+    size_t INDEX,
+    typename OBJECT_TYPE>
+  bool register_global_object() {
+    size_t KEY = NAMESPACE_HASH ^ INDEX;
+    global_object_registry_[KEY] = {};
+    return true;
+  } // register_global_object
+
+  template<
+    size_t NAMESPACE_HASH,
+    typename OBJECT_TYPE>
+  bool set_global_object(size_t index, OBJECT_TYPE * obj) {
+    size_t KEY = NAMESPACE_HASH ^ index;
+    assert(global_object_registry_.find(KEY) != global_object_registry_.end());
+    global_object_registry_[KEY] = reinterpret_cast<uintptr_t>(obj);
+    return true;
+  } // set_global_object
+
+  template<
+    size_t NAMESPACE_HASH,
+    typename OBJECT_TYPE>
+  OBJECT_TYPE * get_global_object(size_t index) {
+    size_t KEY = NAMESPACE_HASH ^ index;
+    assert(global_object_registry_.find(KEY) != global_object_registry_.end());
+    return reinterpret_cast<OBJECT_TYPE *>(global_object_registry_[KEY]);
+  } // get_global_object
+
+  //--------------------------------------------------------------------------//
   // Function interface.
   //--------------------------------------------------------------------------//
 
@@ -124,14 +162,14 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   template<
+      size_t KEY,
       typename RETURN,
       typename ARG_TUPLE,
-      RETURN (*FUNCTION)(ARG_TUPLE),
-      size_t KEY>
+      RETURN (*FUNCTION)(ARG_TUPLE)>
   bool register_function() {
     clog_assert(
-        function_registry_.find(KEY) == function_registry_.end(),
-        "function has already been registered");
+      function_registry_.find(KEY) == function_registry_.end(),
+      "function has already been registered");
 
     const std::size_t addr = reinterpret_cast<std::size_t>(FUNCTION);
     clog(info) << "Registering function: " << addr << std::endl;
@@ -472,6 +510,32 @@ struct context__ : public CONTEXT_POLICY {
     return adjacency_info_;
   } // adjacencies
 
+  void
+  add_index_subspace(
+    size_t index_subspace,
+    size_t capacity
+  )
+  {
+    index_subspace_info_t info;
+    info.index_subspace = index_subspace;
+    info.capacity = capacity;
+
+    index_subspace_map_.emplace(index_subspace, std::move(info));
+  }
+
+  void
+  add_index_subspace(
+    const index_subspace_info_t & info
+  )
+  {
+    index_subspace_map_.emplace(info.index_subspace, info);
+  }
+
+  const std::map<size_t, index_subspace_info_t>&
+  index_subspace_info() const {
+    return index_subspace_map_;
+  }
+
   /*!
     Register field info for index space and field id.
 
@@ -625,6 +689,12 @@ private:
   context__ & operator=(context__ &&) = delete;
 
   //--------------------------------------------------------------------------//
+  // Object data members.
+  //--------------------------------------------------------------------------//
+
+  std::unordered_map<size_t, uintptr_t> global_object_registry_;
+
+  //--------------------------------------------------------------------------//
   // Function data members.
   //--------------------------------------------------------------------------//
 
@@ -736,6 +806,12 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, adjacency_info_t> adjacency_info_;
+
+  //--------------------------------------------------------------------------//
+  // key: index subspace
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, index_subspace_info_t> index_subspace_map_;
 
   //--------------------------------------------------------------------------//
   // Execution state

@@ -128,14 +128,21 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   ///           user task arguments.
   ///
   template<
-      size_t KEY,
-      typename RETURN,
-      typename ARG_TUPLE,
-      RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool
-  register_task(processor_type_t processor, launch_t launch, std::string name) {
-    return context_t::instance()
-        .template register_function<RETURN, ARG_TUPLE, DELEGATE, KEY>();
+    size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*DELEGATE)(ARG_TUPLE)
+  >
+  static
+  bool
+  register_task(
+     processor_type_t processor,
+     launch_t launch,
+     std::string name
+  )
+  {
+    return context_t::instance().template register_function<
+      KEY, RETURN, ARG_TUPLE, DELEGATE>();
   } // register_task
 
   ///
@@ -165,13 +172,16 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   // Function interface.
   //--------------------------------------------------------------------------//
   template<
-      typename RETURN,
-      typename ARG_TUPLE,
-      RETURN (*FUNCTION)(ARG_TUPLE),
-      size_t KEY>
-  static bool register_function() {
-    return context_t::instance()
-        .template register_function<RETURN, ARG_TUPLE, FUNCTION, KEY>();
+    size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE)>
+  static
+  bool
+  register_function()
+  {
+    return context_t::instance().template register_function<
+      KEY, RETURN, ARG_TUPLE, FUNCTION>();
   } // register_function
 
   ///

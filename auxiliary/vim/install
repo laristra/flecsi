@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+mkdir -p ~/.vim/syntax
+mkdir -p ~/.vim/ftdetect
+
+cp syntax_fcc.vim ~/.vim/syntax/fcc.vim
+cp ftdetect_fcc.vim ~/.vim/ftdetect/fcc.vim
