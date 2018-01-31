@@ -4,6 +4,7 @@
 #pragma once
 
 #include <flecsi/data/common/data_types.h>
+#include <vector>
 
 //----------------------------------------------------------------------------//
 /// @file

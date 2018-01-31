@@ -1,3 +1,17 @@
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
 #pragma once
 
 #include <flecsi-config.h>
@@ -5,7 +19,7 @@
 #include <flecsi/execution/context.h>
 #include <specialization/mesh/inputs.h>
 #include <specialization/mesh/mesh.h>
-#include <specialization/mesh/types.h>
+#include <specialization/mesh/policy.h>
 
 namespace flecsi {
 namespace tutorial {
