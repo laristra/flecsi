@@ -397,8 +397,9 @@ install(
 #------------------------------------------------------------------------------#
 
 cinch_add_library_target(FleCSI flecsi)
+if( NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
-
+endif()
 #------------------------------------------------------------------------------#
 # Install Tutorial inputs
 #------------------------------------------------------------------------------#
