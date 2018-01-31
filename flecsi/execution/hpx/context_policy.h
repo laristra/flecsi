@@ -27,6 +27,9 @@
 #include <map>
 #include <mutex>
 
+#include <cinchlog.h>
+#include <flecsi-config.h>
+
 #include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/hpx/runtime_driver.h"
@@ -45,6 +48,9 @@ namespace execution {
 
 ///////////////////////////////////////////////////////////////////////////////
 struct hpx_context_policy_t {
+
+  using field_id_t = size_t;
+
   //------------------------------------------------------------------------//
   // Initialization.
   //------------------------------------------------------------------------//
@@ -112,6 +118,10 @@ struct hpx_context_policy_t {
     // TODO: to be defined.
   };
 
+   struct index_subspace_data_t {
+    size_t capacity;
+  };
+
   struct local_index_space_data_t{
     size_t size;
     size_t capacity;
@@ -121,6 +131,14 @@ struct hpx_context_policy_t {
   index_space_data_map()
   {
     return index_space_data_map_;
+  }
+
+  /*!
+    Get the index subspace data map.
+   */
+
+  auto & index_subspace_data_map() {
+    return index_subspace_data_map_;
   }
 
   auto&
@@ -169,6 +187,7 @@ private:
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
+  std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
 
   std::map<field_id_t, sparse_field_data_t> sparse_field_data;
   std::map<field_id_t, sparse_field_metadata_t> sparse_field_metadata;

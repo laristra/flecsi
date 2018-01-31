@@ -55,12 +55,19 @@ struct data_client_handle_adjacency_t
   uint64_t * indices_buf;
 };
 
+struct data_client_handle_index_subspace_t {
+  size_t index_space;
+  size_t index_subspace;
+  field_id_t index_fid;
+  uint64_t * indices_buf;
+};
 
 //----------------------------------------------------------------------------//
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
 
 struct hpx_data_client_handle_policy_t {}; // struct data_client_handle_policy_t
+//data_client_handle_index_subspace_t handle_index_subspaces[MAX_INDEX_SUBSPACES];
 
 } // namespace flecsi
 

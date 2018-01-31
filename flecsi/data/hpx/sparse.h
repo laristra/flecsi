@@ -46,6 +46,10 @@ namespace flecsi {
 namespace data {
 namespace hpx {
 
+
+//FIXME: sparce data was completely refactored in December 2017. 
+#if 0
+
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Helper type definitions.
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -665,6 +669,7 @@ struct storage_type_t<sparse, DS, MD> {
   } // get_handle
 
 }; // struct storage_type_t
+#endif
 
 } // namespace hpx
 } // namespace data

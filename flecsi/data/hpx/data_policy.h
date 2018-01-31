@@ -29,7 +29,7 @@ namespace data {
 
 struct hpx_data_policy_t {
   template<size_t STORAGE_TYPE>
-  using storage_type__ = hpx::storage_type__<STORAGE_TYPE>;
+  using storage_class__ = hpx::storage_class__<STORAGE_TYPE>;
 
   template<
       typename DATA_CLIENT_TYPE,

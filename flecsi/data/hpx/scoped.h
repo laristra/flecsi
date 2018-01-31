@@ -36,46 +36,26 @@ namespace data {
 namespace hpx {
 
 ///
-/// FIXME: Scoped storage type.
+// FIXME: Scoped storage type.
 ///
-template<typename data_store_t, typename meta_data_t>
-struct storage_type_t<scoped, data_store_t, meta_data_t> {
+template<>
+struct storage_class__<scoped> {
 
-  struct scoped_accessor_t {}; // struct scoped_accessor_t
-
+  ///
+  //
+  ///
   struct scoped_handle_t {}; // struct scoped_handle_t
 
-  template<typename T, size_t NS, typename... Args>
-  static decltype(auto) register_data(
-      data_store_t & data_store,
-      uintptr_t runtime_namespace,
-      const utils::const_string_t & key,
-      size_t indices,
-      Args &&... args) {} // register_data
-
   ///
-  ///
+  //
   ///
   template<typename T, size_t NS>
-  static scoped_accessor_t get_accessor(
-      data_store_t & data_store,
-      uintptr_t runtime_namespace,
-      const utils::const_string_t & key) {
-    return {};
-  } // get_accessor
-
-  ///
-  ///
-  ///
-  template<typename T, size_t NS>
-  static scoped_handle_t get_handle(
-      data_store_t & data_store,
-      uintptr_t runtime_namespace,
-      const utils::const_string_t & key) {
+  static scoped_handle_t
+  get_handle(uintptr_t runtime_namespace, const utils::const_string_t & key) {
     return {};
   } // get_handle
 
-}; // struct storage_type_t
+}; // struct storage_class__
 
 } // namespace hpx
 } // namespace data
