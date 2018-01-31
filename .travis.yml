@@ -34,7 +34,7 @@ env:
 matrix:
   allow_failures:
     - compiler: clang
-      env: DISTRO=ubuntu RUNTIME=legion    WERROR=yes 
+      env: DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true WERROR=yes 
     - compiler: clang
       env: DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes 
     - compiler: gcc
