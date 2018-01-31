@@ -7,8 +7,8 @@ services:
 
 env:
   matrix:
-    - DISTRO=ubuntu RUNTIME=legion    DOCKERHUB=true
-    - DISTRO=ubuntu RUNTIME=legion    WERROR=yes
+    - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+    - DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true WERROR=yes
     - DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true
     - DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes
     - DISTRO=ubuntu_mpich RUNTIME=mpi DOCKERHUB=true
