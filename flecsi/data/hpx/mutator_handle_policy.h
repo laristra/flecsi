@@ -5,12 +5,6 @@
 
 #include <flecsi-config.h>
 
-#if !defined(FLECSI_ENABLE_LEGION)
-#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
-#endif
-
-#include <legion.h>
-
 #include <flecsi/runtime/types.h>
 
 //----------------------------------------------------------------------------//
@@ -21,7 +15,7 @@
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
-//! The legion_mutator_handle_policy_t type provides backend storage for
+//! The hpx_mutator_handle_policy_t type provides backend storage for
 //! interfacing to the Legion runtime.
 //!
 //! @ingroup data
@@ -33,7 +27,7 @@ struct hpx_mutator_handle_policy_t {
   hpx_mutator_handle_policy_t(const hpx_mutator_handle_policy_t & p) =
       default;
 
-}; // class legion_mutator_handle_policy_t
+}; // class hpx_mutator_handle_policy_t
 
 } // namespace flecsi
 
