@@ -280,6 +280,12 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     message (FATAL_ERROR "HPX is required for the HPX runtime model")
   endif()
 
+  if(NOT MPI_${MPI_LANGUAGE}_FOUND)
+    message (FATAL_ERROR "MPI is required for the hpx runtime model")
+  endif()
+
+   set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
+
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/hpx)
 
 #

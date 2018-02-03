@@ -46,7 +46,7 @@ endif()
   # Add link dependencies
   #----------------------------------------------------------------------------#
 
-  target_link_libraries(tasks_and_drivers FleCSI mpi ${FLECSI_RUNTIME_LIBRARIES})
+  target_link_libraries(tasks_and_drivers FleCSI ${FLECSI_RUNTIME_LIBRARIES})
 
 endif()
 #~---------------------------------------------------------------------------~-#
