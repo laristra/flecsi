@@ -452,6 +452,8 @@ public:
         runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
 
     index_subspace_map_.emplace(info.index_subspace, std::move(is));
+
+    return is;
   }
 
   /*!
