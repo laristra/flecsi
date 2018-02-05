@@ -225,6 +225,7 @@ runtime_driver(
         case color:
           number_of_color_fields++;
           break;
+        case subspace:
         case local:
           break;
         default:
@@ -496,7 +497,8 @@ runtime_driver(
           adjacency.logical_region);
 
       for(const field_info_t& fi : context_.registered_fields()){
-        if(fi.index_space == adjacency_idx_space){
+        if(fi.storage_class != data::subspace &&
+           fi.index_space == adjacency_idx_space){
           reg_req.add_field(fi.fid);
         }
       }
@@ -510,7 +512,10 @@ runtime_driver(
       Legion::RegionRequirement
         reg_req(info.logical_region, READ_WRITE, SIMULTANEOUS,
           info.logical_region);
-        reg_req.add_field(info.fid);
+      
+      reg_req.add_field(info.fid);
+
+      spmd_launcher.add_region_requirement(reg_req);
     }
 
     auto global_ispace = data.global_index_space();
@@ -673,8 +678,9 @@ spmd_task(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
-      if((field_info.storage_class != global) &&
-        (field_info.storage_class != color)){
+      if(field_info.storage_class != global &&
+        field_info.storage_class != color &&
+        field_info.storage_class != subspace){
         if(field_info.index_space == idx_space){
           fields_map[idx_space].push_back(field_info.fid);
         }

@@ -446,7 +446,13 @@ public:
     FieldAllocator allocator =
         runtime_->create_field_allocator(ctx_, is.field_space);
 
-    //allocator.allocate_field(fi.size, fi.fid);
+    for (const field_info_t & fi : context.registered_fields()) {
+      if (fi.storage_class == data::subspace &&
+          fi.index_space == is.index_subspace_id) {
+        allocator.allocate_field(fi.size, fi.fid);
+        is.fid = fi.fid;
+      }
+    }
 
     is.logical_region =
         runtime_->create_logical_region(ctx_, is.index_space, is.field_space);

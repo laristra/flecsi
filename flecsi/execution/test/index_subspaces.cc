@@ -266,7 +266,7 @@ void driver(int argc, char ** argv) {
 } // namespace execution
 } // namespace flecsi
 
-DEVEL(devel_handle) {}
+DEVEL(index_subspaces) {}
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options for vim.
