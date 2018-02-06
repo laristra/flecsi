@@ -62,6 +62,8 @@ struct data_client_handle_index_subspace_t {
   size_t index_subspace;
   field_id_t index_fid;
   uint64_t * indices_buf;
+  size_t domain;
+  size_t dim;
 };
 
 struct mpi_data_client_handle_policy_t

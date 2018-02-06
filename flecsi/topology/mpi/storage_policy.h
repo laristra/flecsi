@@ -79,7 +79,7 @@ struct mpi_topology_storage_policy__ {
 
   std::array<index_spaces_t, NUM_DOMS> index_spaces;
 
-  index_subspaces_t subindex_spaces;
+  index_subspaces_t index_subspaces;
 
   std::array<std::array<partition_index_spaces_t, NUM_DOMS>, num_partitions>
       partition_index_spaces;
@@ -155,26 +155,28 @@ struct mpi_topology_storage_policy__ {
   } // init_entities
 
   void init_index_subspaces(
+      size_t index_space,
       size_t index_subspace,
-      mesh_entity_base_ * entities,
+      size_t domain,
+      size_t dim,
       utils::id_t * ids,
-      size_t size,
       size_t num_entities,
       bool read) {
-    auto & is = subindex_spaces[index_subspace];
 
-    auto s = is.storage();
-    s->set_buffer(entities, num_entities, read);
+    auto & is = index_spaces[domain][dim];
+    auto & iss = index_subspaces[index_subspace];
 
-    auto & id_storage = is.id_storage();
+    iss.set_storage(is.storage());
+
+    auto & id_storage = iss.id_storage();
     id_storage.set_buffer(ids, num_entities, true);
 
     if (!read) {
       return;
     }
 
-    is.set_end(num_entities);
-  } // init_subentities
+    iss.set_end(num_entities);
+  } // init_index_subspaces
 
   void init_connectivity(
       size_t from_domain,

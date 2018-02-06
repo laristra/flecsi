@@ -114,6 +114,8 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
   struct index_subspace_info_t {
     size_t index_space;
     size_t index_subspace;
+    size_t domain;
+    size_t dim;
   }; // struct entity_info_t
 
   struct entity_walker_t
@@ -235,6 +237,8 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
       : public flecsi::utils::tuple_walker__<
         index_subspace_walker__<MESH_TYPE>> {
 
+    using entity_types_t = typename MESH_TYPE::entity_types;
+
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {
       using INDEX_TYPE = typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
@@ -245,6 +249,22 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
 
       si.index_space = INDEX_TYPE::value;
       si.index_subspace = INDEX_SUBSPACE_TYPE::value;
+
+      constexpr size_t index = topology::find_index_space_from_id__<
+          std::tuple_size<entity_types_t>::value, entity_types_t,
+          INDEX_TYPE::value>::find();
+
+      using ENT_TUPLE_ENTRY_TYPE = 
+          typename std::tuple_element<index, entity_types_t>::type;
+
+      using DOMAIN_TYPE =
+          typename std::tuple_element<1, ENT_TUPLE_ENTRY_TYPE>::type;
+      
+      using ENTITY_TYPE =
+          typename std::tuple_element<2, ENT_TUPLE_ENTRY_TYPE>::type;
+
+      si.domain = DOMAIN_TYPE::value;
+      si.dim = ENTITY_TYPE::dimension;
 
       index_subspace_info.push_back(si);
     } // handle_type
@@ -404,6 +424,8 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
 
       iss.index_space = si.index_space;
       iss.index_subspace = si.index_subspace;
+      iss.domain = si.domain;
+      iss.dim = si.dim;
 
       const field_info_t * fi = context.get_field_info_from_key(
           h.client_hash,

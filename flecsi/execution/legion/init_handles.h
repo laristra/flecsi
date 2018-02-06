@@ -475,7 +475,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
       storage->init_index_subspaces(
-          iss.index_space, iss.index_subspace, ids, num_indices, _read);
+          iss.index_space, iss.index_subspace, iss.domain, iss.dim, ids,
+          num_indices, _read);
 
       ++region;
     }

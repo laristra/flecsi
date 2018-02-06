@@ -164,24 +164,26 @@ struct legion_topology_storage_policy_t__ {
   void init_index_subspaces(
       size_t index_space,
       size_t index_subspace,
+      size_t domain,
+      size_t dim,
       utils::id_t * ids,
       size_t num_entities,
       bool read) {
-    
-    auto & is = index_subspaces[index_subspace];
 
-    auto s = is.storage();
-    //s->set_buffer(entities, num_entities, read);
+    auto & is = index_spaces[domain][dim];
+    auto & iss = index_subspaces[index_subspace];
 
-    auto & id_storage = is.id_storage();
+    iss.set_storage(is.storage());
+
+    auto & id_storage = iss.id_storage();
     id_storage.set_buffer(ids, num_entities, true);
 
     if (!read) {
       return;
     }
 
-    is.set_end(num_entities);
-  } // init_subentities
+    iss.set_end(num_entities);
+  } // init_index_subspaces
 
   void init_connectivity(
       size_t from_domain,

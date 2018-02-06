@@ -64,6 +64,8 @@ struct data_client_handle_index_subspace_t {
   size_t index_subspace;
   field_id_t index_fid;
   Legion::LogicalRegion region;
+  size_t domain;
+  size_t dim;
 };
 
 //----------------------------------------------------------------------------//
