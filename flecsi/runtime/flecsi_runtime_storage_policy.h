@@ -50,4 +50,16 @@ using FLECSI_RUNTIME_STORAGE_POLICY = mpi_storage_policy_t;
 } // namespace data
 } // namespace flecsi
 
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include <flecsi/data/hpx/storage_policy.h>
+
+namespace flecsi {
+namespace data {
+
+using FLECSI_RUNTIME_STORAGE_POLICY = hpx_storage_policy_t;
+
+} // namespace data
+} // namespace flecsi
+
 #endif // FLECSI_RUNTIME_MODEL

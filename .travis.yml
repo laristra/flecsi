@@ -15,6 +15,7 @@ env:
     - DISTRO=ubuntu_mpich RUNTIME=mpi WERROR=yes
     - DISTRO=ubuntu COVERAGE=ON RUNTIME=legion SONARQUBE=ON
     - DISTRO=ubuntu COVERAGE=ON RUNTIME=mpi    SONARQUBE=ON
+    - DISTRO=ubuntu COVERAGE=ON RUNTIME=hpx    SONARQUBE=ON
 
     - DISTRO=fedora RUNTIME=legion    DOCKERHUB=true
     - DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
@@ -22,6 +23,9 @@ env:
     - DISTRO=fedora RUNTIME=mpi    DOCKERHUB=true
     - DISTRO=fedora RUNTIME=mpi    IGNORE_NOCI=true
     - DISTRO=fedora RUNTIME=mpi    WERROR=yes
+    - DISTRO=fedora RUNTIME=hpx    DOCKERHUB=true
+    - DISTRO=fedora RUNTIME=hpx    IGNORE_NOCI=true
+    - DISTRO=fedora RUNTIME=hpx    WERROR=yes
     - DISTRO=fedora_mpich RUNTIME=legion DOCKERHUB=true
     - DISTRO=fedora_mpich RUNTIME=legion IGNORE_NOCI=true
     - DISTRO=fedora_mpich RUNTIME=legion WERROR=yes
@@ -30,6 +34,7 @@ env:
     - DISTRO=fedora_mpich RUNTIME=mpi WERROR=yes
     - DISTRO=fedora RUNTIME=legion COVERAGE=ON
     - DISTRO=fedora RUNTIME=mpi    COVERAGE=ON
+    - DISTRO=fedora RUNTIME=hpx    COVERAGE=ON
 
 matrix:
   allow_failures:
@@ -49,6 +54,16 @@ matrix:
       env: DISTRO=ubuntu_mpich RUNTIME=mpi WERROR=yes
     - compiler: clang
       env: DISTRO=fedora RUNTIME=mpi WERROR=yes
+    - compiler: clang
+      env: DISTRO=ubuntu COVERAGE=ON RUNTIME=hpx    SONARQUBE=ON
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=hpx    DOCKERHUB=true
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=hpx    IGNORE_NOCI=true
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=hpx    WERROR=yes
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=hpx    COVERAGE=ON
 
 before_install:
  - git fetch --unshallow && git fetch --tags #for versioning

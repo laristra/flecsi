@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <flecsi/utils/export_definitions.h>
 
 #ifndef IM_OK_TO_INCLUDE_DBC_IMPL
 #warning                                                                       \
@@ -33,17 +34,17 @@ using action_t =
     std::function<void(std::string const &, const char *, const char *, int)>;
 
 /**\brief Constructs error/exception message */
-std::string build_message(
+FLECSI_EXPORT std::string build_message(
     std::string const & cond,
     const char * file_name,
     const char * func_name,
     int line);
 
 /**\brief Stream used for error reporting, defaults to std::cerr. */
-extern std::ostream * p_str;
+FLECSI_EXPORT extern std::ostream *p_str;
 
 /**\brief Core assertion function. */
-bool assertf(
+FLECSI_EXPORT bool assertf(
     bool cond,
     std::string const & cond_str,
     const char * file_name,

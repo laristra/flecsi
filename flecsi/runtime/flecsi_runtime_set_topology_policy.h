@@ -50,4 +50,16 @@ using FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY =
 
 } // namespace flecsi
 
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include <flecsi/topology/hpx/set_storage_policy.h>
+
+namespace flecsi {
+
+template<typename SET_TYPES>
+using FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY =
+    topology::hpx_set_topology_storage_policy__<SET_TYPES>;
+
+} // namespace flecsi
+
 #endif // FLECSI_RUNTIME_MODEL

@@ -90,7 +90,7 @@ field_hash(size_t version) {
 
 inline size_t
 field_hash(size_t nspace, size_t name, size_t version) {
-  return ((nspace ^ name) << field_hash_version_bits | version) & ~(1ul << 63);
+  return ((nspace ^ name) << field_hash_version_bits | version) & ~(1ull << 63);
 } // field_hash
 
 inline constexpr size_t
@@ -107,7 +107,7 @@ field_hash_version(size_t key) {
 //----------------------------------------------------------------------------//
 
 bool inline is_internal(size_t key) {
-  return key & (1ul << 63);
+  return key & (1ull << 63);
 } // is_internal
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -321,12 +321,12 @@ client_adjacency_to_dimension(size_t key) {
 template<size_t NAME, size_t INDEX_SPACE>
 inline constexpr size_t
 client_internal_field_hash() {
-  return ((NAME << 8) | INDEX_SPACE) | (1ul << 63);
+  return ((NAME << 8) | INDEX_SPACE) | (1ull << 63);
 } // field_hash__
 
 inline size_t
 client_internal_field_hash(size_t name, size_t index_space) {
-  return ((name << 8) | index_space) | (1ul << 63);
+  return ((name << 8) | index_space) | (1ull << 63);
 } // field_hash__
 
 inline constexpr size_t

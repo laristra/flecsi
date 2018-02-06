@@ -6,8 +6,8 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
@@ -94,6 +94,21 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(UNIT_POLICY MPI)
   set(RUNTIME_DRIVER mpi/runtime_driver.cc)
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  set(execution_HEADERS
+    ${execution_HEADERS}
+    hpx/context_policy.h
+    hpx/execution_policy.h
+    hpx/runtime_driver.h
+  )
+  set(execution_SOURCES
+    ${execution_SOURCES}
+    hpx/context_policy.cc
+    )
+  set(UNIT_POLICY HPX)
+  set(RUNTIME_DRIVER hpx/runtime_driver.cc)
+
 endif()
 
 #------------------------------------------------------------------------------#
@@ -117,6 +132,9 @@ set(execution_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
+
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
 cinch_add_unit(launch
   SOURCES
     test/launch.cc
@@ -592,3 +610,5 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   endif()
 endif()
+
+endif()#hpx
