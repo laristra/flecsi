@@ -210,6 +210,32 @@ client_adjacency_hash() {
          (TO_DOMAIN << 4) | (FROM_DIMENSION << 2) | TO_DIMENSION;
 } // client_adjacency_hash
 
+////////////////////////////////////////////////////////////////////////////////
+// Client index subspace hash interface.
+////////////////////////////////////////////////////////////////////////////////
+
+//----------------------------------------------------------------------------//
+//! Create a hash key suitable for registering client index subspaces with
+//! the low-level field registry.
+//!
+//! @tparam NAMESPACE      A namespace identifier.
+//! @tparam NAME           A name identifier.
+//! @tparam INDEX          The associated index space.
+//! @tparam INDEX_SUBSPACE The associated index subspace.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+template<
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t INDEX,
+    size_t INDEX_SUBSPACE>
+inline constexpr size_t
+client_index_subspace_hash() {
+  return ((NAMESPACE ^ NAME) << 16) | (INDEX << 8) | INDEX_SUBSPACE;
+} // client_adjacency_hash
+
 //----------------------------------------------------------------------------//
 //! Recover the index space from a key to a client entity.
 //!

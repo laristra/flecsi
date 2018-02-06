@@ -253,6 +253,38 @@ struct client_registration_wrapper__<
 
   }; // struct binding_walker__
 
+  struct index_subspaces_walker__
+      : public flecsi::utils::tuple_walker__<index_subspaces_walker__> {
+
+    template<typename TUPLE_ENTRY_TYPE>
+    void handle_type() {
+      using INDEX_TYPE = typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
+      using INDEX_SUBSPACE_TYPE = 
+        typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
+
+      constexpr size_t index_subspace_hash = 
+        utils::hash::client_index_subspace_hash<
+        NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value,
+        INDEX_SUBSPACE_TYPE::value>();
+
+      using wrapper_t = field_registration_wrapper__<
+          CLIENT_TYPE, flecsi::data::subspace, utils::id_t, index_subspace_hash,
+          0, 1, INDEX_TYPE::value>;
+
+      const size_t client_key =
+          typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+
+      const size_t key = utils::hash::client_internal_field_hash<
+          utils::const_string_t("__flecsi_internal_index_subspace_index__").
+          hash(), INDEX_SUBSPACE_TYPE::value>();
+
+      storage_t::instance().register_field(
+          client_key, key, wrapper_t::register_callback);
+
+    } // handle_type
+
+  }; // struct index_subspaces_walker__
+
   //--------------------------------------------------------------------------//
   //!
   //--------------------------------------------------------------------------//
@@ -279,6 +311,12 @@ struct client_registration_wrapper__<
 
       binding_walker__ binding_walker;
       binding_walker.template walk_types<bindings>();
+
+      using index_subspaces = typename topology::get_index_subspaces__<
+        POLICY_TYPE>::type;
+
+      index_subspaces_walker__ index_subspaces_walker;
+      index_subspaces_walker.template walk_types<index_subspaces>();      
     } // if
 
   } // register_callback
