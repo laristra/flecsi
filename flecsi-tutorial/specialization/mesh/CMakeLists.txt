@@ -7,8 +7,8 @@ set(mesh_HEADERS
   coloring.h
   entity_types.h
   mesh.h
+  policy.h
   tasks.h
-  types.h
   PARENT_SCOPE
 )
 

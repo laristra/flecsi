@@ -116,10 +116,12 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     hpx/dense.h
     hpx/global.h
     hpx/meta_data.h
+    hpx/mutator_handle_policy.h
     hpx/registration_wrapper.h
     hpx/scoped.h
     hpx/sparse.h
     hpx/storage_policy.h
+    hpx/sparse_data_handle_policy.h
     hpx/tuple.h
   )
 

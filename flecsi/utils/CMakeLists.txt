@@ -109,7 +109,6 @@ set(utils_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
 cinch_add_devel_target(clog
   SOURCES
@@ -247,5 +246,3 @@ if(ENABLE_OPENSSL)
       ${OPENSSL_LIBRARIES}
   )
 endif()
-
-endif()#hpx

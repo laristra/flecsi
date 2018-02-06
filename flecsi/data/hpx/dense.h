@@ -89,6 +89,11 @@ struct dense_handle_t : public dense_data_handle__<T, EP, SP, GP> {
   ///
   dense_handle_t() {}
 
+  template<typename, size_t, size_t, size_t>
+  friend class dense_handle_t;
+};
+
+#if 0
   ///
   /// Copy constructor.
   ///
@@ -355,7 +360,7 @@ struct dense_handle_t : public dense_data_handle__<T, EP, SP, GP> {
 private:
   std::string label_ = "";
 }; // struct dense_handle_t
-
+#endif
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -385,6 +390,7 @@ struct storage_class__<dense> {
   static handle_t<DATA_TYPE, 0, 0, 0>
   get_handle(const data_client_t & data_client) {
     handle_t<DATA_TYPE, 0, 0, 0> h;
+    //FIXME add logic here
     return h;
   }
 

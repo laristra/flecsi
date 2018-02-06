@@ -127,8 +127,8 @@ if(ENABLE_FLECSIT)
     DESTINATION ${PYTHON_INSTDIR}
     FILES_MATCHING PATTERN "*.py")
 
-  configure_file(${CMAKE_SOURCE_DIR}/tools/flecsit/bin/flecsit.in
-    ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
+    configure_file(${PROJECT_SOURCE_DIR}/tools/flecsit/bin/flecsit.in
+		${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
 
   install(PROGRAMS ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit
     DESTINATION bin

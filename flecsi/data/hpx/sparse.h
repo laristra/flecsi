@@ -26,7 +26,7 @@
 // Using this approach allows us to have only one storage_type_t
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE hpx
-#include "flecsi/data/storage_type.h"
+//#include "flecsi/data/storage_type.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
@@ -45,6 +45,10 @@
 namespace flecsi {
 namespace data {
 namespace hpx {
+
+
+//FIXME: sparce data was completely refactored in December 2017. 
+#if 0
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Helper type definitions.
@@ -665,6 +669,7 @@ struct storage_type_t<sparse, DS, MD> {
   } // get_handle
 
 }; // struct storage_type_t
+#endif
 
 } // namespace hpx
 } // namespace data

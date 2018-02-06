@@ -20,7 +20,7 @@
 // Using this approach allows us to have only one storage_type_t
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE hpx
-#include "flecsi/data/storage_type.h"
+//#include "flecsi/data/storage_type.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
@@ -36,6 +36,26 @@ namespace flecsi {
 namespace data {
 namespace hpx {
 
+///
+// FIXME: Tuple storage type.
+///
+template<>
+struct storage_class__<tuple> {
+
+  struct tuple_handle_t {}; // struct tuple_handle_t
+
+  ///
+  //
+  ///
+  template<typename T, size_t NS>
+  static tuple_handle_t
+  get_handle(uintptr_t runtime_namespace, const utils::const_string_t & key) {
+    return {};
+  } // get_handle
+
+
+
+#if 0
 ///
 // FIXME: Tuple storage type.
 ///
@@ -75,6 +95,7 @@ struct storage_type_t<tuple, data_store_t, meta_data_t> {
       const utils::const_string_t & key) {
     return {};
   } // get_handle
+#endif
 
 }; // struct storage_type_t
 

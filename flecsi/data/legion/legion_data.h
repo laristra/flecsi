@@ -418,7 +418,7 @@ public:
     adjacency_map_.emplace(adjacency_info.index_space, std::move(c));
   }
 
-  index_subspace_t add_index_subspace(const index_subspace_info_t & info) {
+  void add_index_subspace(const index_subspace_info_t & info) {
     using namespace std;
 
     using namespace Legion;

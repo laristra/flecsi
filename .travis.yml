@@ -7,8 +7,8 @@ services:
 
 env:
   matrix:
-    - DISTRO=ubuntu RUNTIME=legion    DOCKERHUB=true
-    - DISTRO=ubuntu RUNTIME=legion    WERROR=yes
+    - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+    - DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true WERROR=yes
     - DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true
     - DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes
     - DISTRO=ubuntu_mpich RUNTIME=mpi DOCKERHUB=true
@@ -39,7 +39,7 @@ env:
 matrix:
   allow_failures:
     - compiler: clang
-      env: DISTRO=ubuntu RUNTIME=legion    WERROR=yes 
+      env: DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true WERROR=yes 
     - compiler: clang
       env: DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes 
     - compiler: gcc
@@ -54,6 +54,16 @@ matrix:
       env: DISTRO=ubuntu_mpich RUNTIME=mpi WERROR=yes
     - compiler: clang
       env: DISTRO=fedora RUNTIME=mpi WERROR=yes
+    - compiler: clang
+      env: DISTRO=ubuntu COVERAGE=ON RUNTIME=hpx    SONARQUBE=ON
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=hpx    DOCKERHUB=true
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=hpx    IGNORE_NOCI=true
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=hpx    WERROR=yes
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=hpx    COVERAGE=ON
 
 before_install:
  - git fetch --unshallow && git fetch --tags #for versioning

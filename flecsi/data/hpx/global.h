@@ -20,12 +20,12 @@
 // Using this approach allows us to have only one storage_type_t
 // definition that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE hpx
-#include "flecsi/data/storage_type.h"
+//#include "flecsi/data/storage_type.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
 #include "flecsi/data/data_client.h"
-#include "flecsi/data/data_handle.h"
+#include "flecsi/data/global_data_handle.h"
 #include "flecsi/utils/const_string.h"
 
 #include <algorithm>
@@ -42,6 +42,8 @@ namespace hpx {
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Helper type definitions.
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+
+#if 0
 
 //----------------------------------------------------------------------------//
 // Scalar accessor.
@@ -206,13 +208,15 @@ private:
   bitset_t * user_attributes_ = nullptr;
 
 }; // struct global_accessor_t
+#endif
 
 //----------------------------------------------------------------------------//
 // Scalar handle.
 //----------------------------------------------------------------------------//
 
 template<typename T, size_t PS>
-struct global_handle_t {}; // struct global_handle_t
+struct global_handle__ : public global_data_handle__<T, PS> {};
+ // struct global_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -225,24 +229,25 @@ struct global_handle_t {}; // struct global_handle_t
 ///
 // FIXME: Scalar storage type.
 ///
-template<typename DS, typename MD>
-struct storage_type_t<global, DS, MD> {
+template<>
+struct storage_class__<global> {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using data_store_t = DS;
-  using meta_data_t = MD;
+//  using data_store_t = DS;
+//  using meta_data_t = MD;
 
-  template<typename T>
-  using accessor_t = global_accessor_t<T, MD>;
+//  template<typename T>
+//  using accessor_t = global_accessor_t<T, MD>;
 
   template<typename T, size_t PS>
-  using handle_t = global_handle_t<T, PS>;
+  using handle_t = global_handle__<T, PS>;
 
-  using st_t = storage_type_t<global, DS, MD>;
+//  using st_t = storage_class__<global>;
 
+#if 0
   //--------------------------------------------------------------------------//
   // Data registration.
   //--------------------------------------------------------------------------//
@@ -580,7 +585,7 @@ struct storage_type_t<global, DS, MD> {
     return as;
 
   } // get_accessor
-
+#endif
   //--------------------------------------------------------------------------//
   // Data handles.
   //--------------------------------------------------------------------------//
@@ -588,11 +593,17 @@ struct storage_type_t<global, DS, MD> {
   ///
   ///
   ///
-  template<typename T, size_t NS, size_t PS>
-  static handle_t<T, PS> get_handle(
-      const data_client_t & data_client,
-      data_store_t & data_store,
-      const utils::const_string_t & key) {
+  template<
+      typename DATA_CLIENT_TYPE,
+      typename DATA_TYPE,
+      size_t NAMESPACE,
+      size_t NAME,
+      size_t VERSION,
+      size_t PERMISSIONS>
+  static handle_t<DATA_TYPE, 0>
+  get_handle(const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS> &
+                 client_handle) {
+    handle_t<DATA_TYPE, 0> h;
     return {};
   } // get_handle
 
