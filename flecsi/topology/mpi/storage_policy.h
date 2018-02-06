@@ -154,14 +154,14 @@ struct mpi_topology_storage_policy__ {
     }
   } // init_entities
 
-  void init_subentities(
-      size_t index_space,
+  void init_index_subspaces(
+      size_t index_subspace,
       mesh_entity_base_ * entities,
       utils::id_t * ids,
       size_t size,
       size_t num_entities,
       bool read) {
-    auto & is = subindex_spaces[index_space];
+    auto & is = subindex_spaces[index_subspace];
 
     auto s = is.storage();
     s->set_buffer(entities, num_entities, read);

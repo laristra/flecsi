@@ -86,7 +86,7 @@ struct legion_topology_storage_policy_t__ {
 
   std::array<index_spaces_t, NUM_DOMAINS> index_spaces;
 
-  std::array<index_spaces_t, NUM_INDEX_SUBSPACES> subindex_spaces;
+  index_subspaces_t index_subspaces;
 
   std::array<std::array<partition_index_spaces_t, NUM_DOMAINS>, num_partitions>
       partition_index_spaces;
@@ -161,17 +161,17 @@ struct legion_topology_storage_policy_t__ {
     }
   } // init_entities
 
-  void init_subentities(
+  void init_index_subspaces(
       size_t index_space,
-      mesh_entity_base_ * entities,
+      size_t index_subspace,
       utils::id_t * ids,
-      size_t size,
       size_t num_entities,
       bool read) {
-    auto & is = subindex_spaces[index_space];
+    
+    auto & is = index_subspaces[index_subspace];
 
     auto s = is.storage();
-    s->set_buffer(entities, num_entities, read);
+    //s->set_buffer(entities, num_entities, read);
 
     auto & id_storage = is.id_storage();
     id_storage.set_buffer(ids, num_entities, true);

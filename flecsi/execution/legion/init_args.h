@@ -231,6 +231,20 @@ template<
 
       region_reqs.push_back(adj_rr);
     }
+
+    for (size_t i{0}; i < h.num_index_subspaces; ++i) {
+      data_client_handle_index_subspace_t & iss = 
+        h.handle_index_subspaces[i];
+
+      Legion::RegionRequirement iss_rr(
+          iss.region, privilege_mode(PERMISSIONS), EXCLUSIVE,
+          iss.region);
+
+      iss_rr.add_field(iss.index_fid);
+
+      region_reqs.push_back(iss_rr); 
+    }
+
   } // handle
 
   /*!

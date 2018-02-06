@@ -434,12 +434,15 @@ public:
     is.index_subspace_id = info.index_subspace;
     is.capacity = info.capacity;
 
-    LegionRuntime::Arrays::Rect<1> rect(
-      LegionRuntime::Arrays::Point<1>(0),
-      LegionRuntime::Arrays::Point<1>(is.capacity * num_colors_ - 1));
+    // Create expanded index space
+    LegionRuntime::Arrays::Rect<2> expanded_bounds = 
+      LegionRuntime::Arrays::Rect<2>(
+        LegionRuntime::Arrays::Point<2>::ZEROES(),
+          make_point(num_colors_, is.capacity));
 
-    is.index_space =
-        runtime_->create_index_space(ctx_, Legion::Domain::from_rect<1>(rect));
+    Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
+
+    is.index_space = runtime_->create_index_space(ctx_, expanded_dom);
     is.field_space = runtime_->create_field_space(ctx_);
 
     using field_info_t = context_t::field_info_t;

@@ -454,6 +454,32 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       ++region;
     } // for
 
+    for (size_t i{0}; i < h.num_index_subspaces; ++i) {
+      data_client_handle_index_subspace_t & iss = 
+        h.handle_index_subspaces[i];
+
+      Legion::PhysicalRegion pr = regions[region];
+      Legion::LogicalRegion lr = pr.get_logical_region();
+      Legion::IndexSpace is = lr.get_index_space();
+
+      auto ac = regions[region]
+                     .get_field_accessor(iss.index_fid)
+                     .template typeify<utils::id_t>();
+
+      Legion::Domain d = runtime->get_index_space_domain(context, is);
+
+      dr = d.get_rect<2>();
+
+      utils::id_t * ids = ac.template raw_rect_ptr<2>(dr, sr, bo);
+
+      size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
+
+      storage->init_index_subspaces(
+          iss.index_space, iss.index_subspace, ids, num_indices, _read);
+
+      ++region;
+    }
+
     if (!_read) {
       h.initialize_storage();
     }
