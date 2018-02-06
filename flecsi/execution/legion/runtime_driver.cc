@@ -509,8 +509,15 @@ runtime_driver(
     for(auto& itr : data.index_subspace_map()){
       const data::legion_data_t::index_subspace_t& info = itr.second;
 
+      Legion::LogicalPartition color_lpart =
+        runtime->get_logical_partition(ctx,
+          info.logical_region, info.index_partition);
+      
+      Legion::LogicalRegion color_lregion =
+        runtime->get_logical_subregion_by_color(ctx, color_lpart, color);
+
       Legion::RegionRequirement
-        reg_req(info.logical_region, READ_WRITE, SIMULTANEOUS,
+        reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
           info.logical_region);
       
       reg_req.add_field(info.fid);

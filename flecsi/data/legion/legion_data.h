@@ -89,6 +89,7 @@ public:
     Legion::IndexSpace index_space;
     Legion::FieldSpace field_space;
     Legion::LogicalRegion logical_region;
+    Legion::IndexPartition index_partition;
     size_t capacity;
     Legion::FieldID fid;
   };
@@ -435,7 +436,7 @@ public:
 
     LegionRuntime::Arrays::Rect<1> rect(
       LegionRuntime::Arrays::Point<1>(0),
-      LegionRuntime::Arrays::Point<1>(is.capacity - 1));
+      LegionRuntime::Arrays::Point<1>(is.capacity * num_colors_ - 1));
 
     is.index_space =
         runtime_->create_index_space(ctx_, Legion::Domain::from_rect<1>(rect));
@@ -456,6 +457,19 @@ public:
 
     is.logical_region =
         runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
+
+    DomainColoring color_partitioning;
+    for(size_t color = 0; color < num_colors_; ++color){
+      LegionRuntime::Arrays::Rect<2> subrect(
+        make_point(color, 0), make_point(color,
+        is.capacity - 1));
+
+      color_partitioning[color] = Domain::from_rect<2>(subrect);
+    }
+
+    is.index_partition = runtime_->create_index_partition(
+        ctx_, is.index_space, color_domain_, color_partitioning,
+        true /*disjoint*/);    
 
     index_subspace_map_.emplace(info.index_subspace, std::move(is));
   }
@@ -499,6 +513,7 @@ public:
           case global:
           case color:
           case local:
+          case subspace:
             break;
           default:
             if (fi.index_space == is.index_space_id) {
