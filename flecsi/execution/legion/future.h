@@ -29,69 +29,22 @@
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-// Future concept.
-//----------------------------------------------------------------------------//
-
 /*!
- Abstract interface type for Legion futures.
-
- @ingroup legion-execution
+ Future abstract base class (need it to store pointers to legion futures
+ passed to the task)
  */
 
-template<typename RETURN>
-struct legion_future_concept__ {
+struct future_base_t {
+public:
+  virtual void
+  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const = 0;
 
-  virtual ~legion_future_concept__() {}
-
-  /*!
-    Abstract interface to wait on a task result.
-   */
-
-  virtual void wait(bool silence_warnings = false) = 0;
-
-  /*!
-    Abstract interface to get a task result.
-   */
-
-  virtual RETURN get(size_t index = 0, bool silence_warnings = false) = 0;
-
-  /*!
-    Abstract interface for reduction step.
-   */
-
-  virtual void defer_dynamic_collective_arrival(
-      Legion::Runtime * runtime,
-      Legion::Context ctx,
-      Legion::DynamicCollective & dc_reduction) = 0;
-
-}; // struct legion_future_concept__
+  virtual void
+  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const = 0;
+};
 
 /*!
-  Explicit specialization for void.
- 
-  @ingroup legion-execution
- */
-
-template<>
-struct legion_future_concept__<void> {
-
-  virtual ~legion_future_concept__() {}
-
-  /*!
-    Abstract interface to wait on a task result.
-   */
-
-  virtual void wait(bool silence_warnings = false) = 0;
-
-}; // struct legion_future_concept__
-
-//----------------------------------------------------------------------------//
-// Future model.
-//----------------------------------------------------------------------------//
-
-/*!
-  Base future model type.
+  Base legion future  type.
 
   @tparam RETURN The return type of the task.
   @tparam FUTURE The Legion runtime future type.
@@ -99,7 +52,231 @@ struct legion_future_concept__<void> {
   @ingroup legion-execution
 */
 
+template <typename RETURN, typename FUTURE> struct legion_future__ {};
+
+/*! Partial specialization for the Legion:Future
+
+  @tparam RETURN The return type of the task.
+
+  @ingroup legion-execution
+ */
+
+template <typename RETURN>
+struct legion_future__<RETURN, Legion::Future> : public future_base_t {
+  /*!
+      Construct a future from a Legion future.
+
+      @param legion_future The Legion future instance.
+     */
+
+  legion_future__(const Legion::Future &legion_future)
+      : legion_future_(legion_future) {}
+
+  /*!
+    Wait on a task result.
+   */
+
+  void wait(bool silence_warnings = false) { legion_future_.wait(); } // wait
+
+  /*!
+    Get a task result.
+
+    @param index The index of the task.
+
+    @remark This method only applies to indexed task invocations.
+   */
+
+  RETURN
+  get(size_t index = 0, bool silence_warnings = false) {
+    return legion_future_.template get_result<RETURN>(silence_warnings);
+  } // get
+
+  void
+  defer_dynamic_collective_arrival(Legion::Runtime *runtime,
+                                   Legion::Context ctx,
+                                   Legion::DynamicCollective &dc_reduction) {
+    runtime->defer_dynamic_collective_arrival(ctx, dc_reduction,
+                                              legion_future_);
+  } // defer_dynamic_collective_arrival
+
+  /*!
+    Add Legion Future to the task launcher
+   */
+  void
+  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const {
+    launcher.add_future(legion_future_);
+  }
+
+  void
+  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
+    launcher.add_future(legion_future_);
+  }
+
+private:
+  Legion::Future legion_future_;
+}; // legion_future
+
+/*! void specialization for the Legion:Future
+
+  @ingroup legion-execution
+ */
+
+template <>
+struct legion_future__<void, Legion::Future> : public future_base_t {
+
+  /*!
+    Construct a future from a Legion future.
+
+    @param legion_future The Legion future instance.
+   */
+
+  legion_future__(const Legion::Future &legion_future)
+      : legion_future_(legion_future) {}
+
+  /*!
+    Wait on a task result.
+   */
+
+  void wait(bool silence_warnings = false) {
+    legion_future_.get_void_result(silence_warnings);
+  } // wait
+
+  void
+  defer_dynamic_collective_arrival(Legion::Runtime *runtime,
+                                   Legion::Context ctx,
+                                   Legion::DynamicCollective &dc_reduction) {
+    // reduction of a void is still void
+  }
+
+  /*!
+    Add Legion Future to the task launcher
+   */
+  void
+  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const {
+    launcher.add_future(legion_future_);
+  }
+
+  void
+  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
+    launcher.add_future(legion_future_);
+  }
+
+private:
+  Legion::Future legion_future_;
+}; // legion_future
+
+/*! Partial specialization for the Legion:FutureMap
+
+  @tparam RETURN The return type of the task.
+
+  @ingroup legion-execution
+ */
+
+template <typename RETURN>
+struct legion_future__<RETURN, Legion::FutureMap> : public future_base_t {
+
+  /*!
+    Construct a future from a Legion future map.
+
+    @param legion_future The Legion future instance.
+   */
+
+  legion_future__(const Legion::FutureMap &legion_future)
+      : legion_future_(legion_future) {}
+
+  /*!
+    Wait on a task result.
+   */
+
+  void wait(bool silence_warnings = false) {
+    legion_future_.wait_all_results(silence_warnings);
+  } // wait
+
+  /*!
+    Get a task result.
+
+    @param index The index of the task.
+
+    @remark This method only applies to indexed task invocations.
+   */
+
+  RETURN
+  get(size_t index = 0, bool silence_warnings = false) {
+    return legion_future_.get_result<RETURN>(
+        Legion::DomainPoint::from_point<1>(
+            LegionRuntime::Arrays::Point<1>(index)),
+        silence_warnings);
+  } // get
+
+  void
+  defer_dynamic_collective_arrival(Legion::Runtime *runtime,
+                                   Legion::Context ctx,
+                                   Legion::DynamicCollective &dc_reduction) {
+    // Not sure what reducing a map with other maps would mean
+  }
+
+  /*!
+    Add Legion Future to the task launcher
+   */
+  void
+  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const {
+    assert(false && "you can't pass future from index task to any task");
+  }
+
+  void
+  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
+    assert(false && "you can't pass future handle from index task to any task");
+  }
+
+private:
+  Legion::FutureMap legion_future_;
+}; // legion_future
+
+/*!
+  Explicit specialization for index launch FutureMap and void.
+ */
+
+template <>
+struct legion_future__<void, Legion::FutureMap> : public future_base_t {
+
+  /*!
+      Construct a future from a Legion future map.
+
+      @param legion_future The Legion future instance.
+     */
+
+  legion_future__(const Legion::FutureMap &legion_future)
+      : legion_future_(legion_future) {}
+
+  /*!
+    Wait on a task result.
+   */
+
+  void wait(bool silence_warnings = false) {
+    legion_future_.wait_all_results(silence_warnings);
+  } // wait
+
+  /*!
+    Add Legion Future to the task launcher
+   */
+  void
+  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const {
+    assert(false && "you can't pass future from index task to any task");
+  }
+
+  void
+  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
+    assert(false && "you can't pass future handle from index task to any task");
+  }
+
+private:
+  Legion::FutureMap legion_future_;
+
+}; // legion_future
+
+#if 0
 template<typename RETURN, typename FUTURE>
+
 struct legion_future_model__ : public legion_future_concept__<RETURN> {
 
   /*!
@@ -186,6 +363,7 @@ private:
 
 }; // struct legion_future_model__
 
+
 /*!
   Partial specialization for index launch FutureMap.
  */
@@ -268,7 +446,6 @@ private:
   Legion::FutureMap legion_future_;
 
 }; // struct legion_future_model__
-
 //----------------------------------------------------------------------------//
 // Future.
 //----------------------------------------------------------------------------//
@@ -381,6 +558,6 @@ struct legion_future__<void> {
   std::shared_ptr<legion_future_concept__<void>> state_;
 
 }; // struct legion_future__
-
+#endif
 } // namespace execution
 } // namespace flecsi
