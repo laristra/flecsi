@@ -789,6 +789,26 @@ public:
   } // entities
 
   //--------------------------------------------------------------------------//
+  //! Get the subentities of the specified index subspace
+  //!
+  //! @tparam INDEX_SUBSPACE index subspace id
+  //--------------------------------------------------------------------------//
+  template<size_t INDEX_SUBSPACE>
+  auto& subentities(){
+    return get_index_subspace<INDEX_SUBSPACE>();
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Get the subentities of the specified index subspace
+  //!
+  //! @tparam INDEX_SUBSPACE index subspace id
+  //--------------------------------------------------------------------------//
+  template<size_t INDEX_SUBSPACE>
+  const auto& subentities() const{
+    return get_index_subspace<INDEX_SUBSPACE>();
+  }
+
+  //--------------------------------------------------------------------------//
   //! Debug method to dump the connectivity of the mesh over all domains and
   //! topological dimensions.
   //!
@@ -988,7 +1008,7 @@ public:
   }
 
   template<size_t INDEX_SUBSPACE>
-  auto& get_index_subspace_()
+  auto& get_index_subspace()
   {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
@@ -1020,6 +1040,10 @@ public:
 
     return base_t::ms_->index_subspaces[INDEX_SUBSPACE].template
       cast<domain_entity__<domain_t::value, entity_t>>();
+  }
+
+  size_t get_index_subspace_size_(size_t index_subspace){
+    return base_t::ms_->index_subspaces[index_subspace].size();
   }
 
 private:

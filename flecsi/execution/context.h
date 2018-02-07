@@ -100,6 +100,7 @@ struct context__ : public CONTEXT_POLICY {
   struct index_subspace_info_t {
     size_t index_subspace;
     size_t capacity;
+    size_t size = 0;
   };
 
   /*!
@@ -531,8 +532,8 @@ struct context__ : public CONTEXT_POLICY {
     index_subspace_map_.emplace(info.index_subspace, info);
   }
 
-  const std::map<size_t, index_subspace_info_t>&
-  index_subspace_info() const {
+  std::map<size_t, index_subspace_info_t>&
+  index_subspace_info() {
     return index_subspace_map_;
   }
 
