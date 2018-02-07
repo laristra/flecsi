@@ -173,6 +173,7 @@ struct mpi_execution_policy_t
    */
 
   template<
+    launch_type_t launch,
     size_t KEY,
     typename RETURN,
     typename ARG_TUPLE,
@@ -181,7 +182,6 @@ struct mpi_execution_policy_t
   static
   decltype(auto)
   execute_task(
-    launch_type_t launch,
     ARGS && ... args
   )
   {
