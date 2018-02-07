@@ -987,6 +987,41 @@ public:
     is.append_(ents, ids);
   }
 
+  template<size_t INDEX_SUBSPACE>
+  auto& get_index_subspace_()
+  {
+    using entity_types_t = typename MESH_TYPE::entity_types;
+
+    using index_subspaces = typename get_index_subspaces__<MESH_TYPE>::type;
+
+    constexpr size_t subspace_index =
+      find_index_subspace_from_id__<std::tuple_size<index_subspaces>::value,
+      index_subspaces, INDEX_SUBSPACE>::find();
+
+    static_assert(subspace_index != -1, "invalid index subspace");
+
+    using subspace_entry_t = 
+      typename std::tuple_element<subspace_index, index_subspaces>::type;
+
+    using index_space_t =
+        typename std::tuple_element<0, subspace_entry_t>::type;
+
+    constexpr size_t index =
+      find_index_space_from_id__<std::tuple_size<entity_types_t>::value, 
+        entity_types_t, index_space_t::value>::find();
+
+    static_assert(index != -1, "invalid index space");
+
+    using entry_t = typename std::tuple_element<index, entity_types_t>::type;
+
+    using domain_t = typename std::tuple_element<1, entry_t>::type;
+
+    using entity_t = typename std::tuple_element<2, entry_t>::type;
+
+    return base_t::ms_->index_subspaces[INDEX_SUBSPACE].template
+      cast<domain_entity__<domain_t::value, entity_t>>();
+  }
+
 private:
   template<size_t, size_t, class>
   friend struct compute_connectivity__;

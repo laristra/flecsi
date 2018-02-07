@@ -116,6 +116,8 @@ flecsi_register_task(initialize_mesh, flecsi::execution, loc, single);
 //----------------------------------------------------------------------------//
 
 void initialize_pressure(mesh<ro> m, field<rw, rw, ro> p) {
+  m.get_index_subspace_<0>();
+
   size_t count{0};
 
   auto & context { execution::context_t::instance() };
