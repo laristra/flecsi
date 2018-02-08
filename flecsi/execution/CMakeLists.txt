@@ -195,6 +195,25 @@ cinch_add_unit(simple_task
   NOCI
   )
 
+#
+# Test basic task to test future_handle
+#
+cinch_add_unit(future
+  SOURCES
+    test/future.cc
+    ${DRIVER_INITIALIZATION}
+    ${RUNTIME_DRIVER}
+  DEFINES
+    -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+    -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+  POLICY
+    ${UNIT_POLICY}
+  LIBRARIES
+    FleCSI
+    ${CINCH_RUNTIME_LIBRARIES}
+  )
+
+
 
 if(ENABLE_COLORING AND ENABLE_PARMETIS)
 

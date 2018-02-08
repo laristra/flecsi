@@ -184,6 +184,9 @@ struct legion_execution_policy_t {
           for (auto &req : init_args.region_reqs) {
             launcher.add_region_requirement(req);
           }
+          for (auto &future : init_args.futures) {
+            future->add_future_to_index_task_launcher(launcher);
+          }
 
           //! \todo Do we need this comment?
           // Enqueue the MPI task.
@@ -218,6 +221,9 @@ struct legion_execution_policy_t {
 
           for (auto &req : init_args.region_reqs) {
             task_launcher.add_region_requirement(req);
+          }
+          for (auto &future : init_args.futures) {
+            future->add_future_to_single_task_launcher(task_launcher);
           }
 
           auto f = legion_runtime->execute_task(legion_context, task_launcher);
@@ -316,6 +322,9 @@ struct legion_execution_policy_t {
 
         for (auto &req : init_args.region_reqs) {
           task_launcher.add_region_requirement(req);
+        }
+        for (auto &future : init_args.futures) {
+          future->add_future_to_single_task_launcher(task_launcher);
         }
 
         // Enqueue the prolog.
