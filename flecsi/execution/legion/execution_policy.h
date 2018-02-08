@@ -226,6 +226,8 @@ struct legion_execution_policy_t {
             future->add_future_to_single_task_launcher(task_launcher);
           }
 
+          task_launcher.tag = MAPPER_SUBRANK_LAUNCH;
+
           auto f = legion_runtime->execute_task(legion_context, task_launcher);
 
           f.wait();
