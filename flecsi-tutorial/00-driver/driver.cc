@@ -11,12 +11,11 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
-#include <iostream>
-
-namespace flecsi {
-namespace execution {
 
 /*----------------------------------------------------------------------------*
+
+  Driver Example
+  ==============
 
   As a runtime abstraction layer, FleCSI replaces the normal main
   function with a driver function. Like main, the driver is the most
@@ -47,6 +46,11 @@ namespace execution {
     - The driver must be defined in the flecsi::execution namespace.
 
  *----------------------------------------------------------------------------*/
+
+#include <iostream>
+
+namespace flecsi {
+namespace execution {
 
 void driver(int argc, char ** argv) {
 

@@ -11,6 +11,20 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
+/*----------------------------------------------------------------------------*
+
+  Global Object Example
+  =====================
+
+  The functional programming model enforced by the FleCSI runtime makes
+  it difficult to implement traditional C++ object models that employ
+  dynamic polymorphism. In general, you are not allowed to register data
+  with the runtime that use virtual tables, i.e., the FleCSI data model
+  does not allow virtual or pure virtual types. Experimentation with
+  various application projects has shown that virtual inheritance is a
+  useful design pattern for certain dynamic data needs.
+
+ *----------------------------------------------------------------------------*/
 
 #include <iostream>
 #include <cstdlib>
@@ -64,8 +78,6 @@ namespace eos_example {
 void update(mesh<ro> m, cell_data<rw> cd) {
   for(auto c: m.cells(owned)) {
     const size_t flip = double(rand())/RAND_MAX + 0.5;
-
-    std::cout << "flip: " << flip << std::endl;
 
     if(flip) {
       cd(c).m = m1;
