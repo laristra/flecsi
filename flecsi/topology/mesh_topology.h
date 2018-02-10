@@ -789,6 +789,26 @@ public:
   } // entities
 
   //--------------------------------------------------------------------------//
+  //! Get the subentities of the specified index subspace
+  //!
+  //! @tparam INDEX_SUBSPACE index subspace id
+  //--------------------------------------------------------------------------//
+  template<size_t INDEX_SUBSPACE>
+  auto& subentities(){
+    return get_index_subspace<INDEX_SUBSPACE>();
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Get the subentities of the specified index subspace
+  //!
+  //! @tparam INDEX_SUBSPACE index subspace id
+  //--------------------------------------------------------------------------//
+  template<size_t INDEX_SUBSPACE>
+  const auto& subentities() const{
+    return get_index_subspace<INDEX_SUBSPACE>();
+  }
+
+  //--------------------------------------------------------------------------//
   //! Debug method to dump the connectivity of the mesh over all domains and
   //! topological dimensions.
   //!
@@ -985,6 +1005,45 @@ public:
       std::vector<id_t> & ids) override {
     auto & is = base_t::ms_->index_spaces[domain][dim];
     is.append_(ents, ids);
+  }
+
+  template<size_t INDEX_SUBSPACE>
+  auto& get_index_subspace()
+  {
+    using entity_types_t = typename MESH_TYPE::entity_types;
+
+    using index_subspaces = typename get_index_subspaces__<MESH_TYPE>::type;
+
+    constexpr size_t subspace_index =
+      find_index_subspace_from_id__<std::tuple_size<index_subspaces>::value,
+      index_subspaces, INDEX_SUBSPACE>::find();
+
+    static_assert(subspace_index != -1, "invalid index subspace");
+
+    using subspace_entry_t = 
+      typename std::tuple_element<subspace_index, index_subspaces>::type;
+
+    using index_space_t =
+        typename std::tuple_element<0, subspace_entry_t>::type;
+
+    constexpr size_t index =
+      find_index_space_from_id__<std::tuple_size<entity_types_t>::value, 
+        entity_types_t, index_space_t::value>::find();
+
+    static_assert(index != -1, "invalid index space");
+
+    using entry_t = typename std::tuple_element<index, entity_types_t>::type;
+
+    using domain_t = typename std::tuple_element<1, entry_t>::type;
+
+    using entity_t = typename std::tuple_element<2, entry_t>::type;
+
+    return base_t::ms_->index_subspaces[INDEX_SUBSPACE].template
+      cast<domain_entity__<domain_t::value, entity_t>>();
+  }
+
+  size_t get_index_subspace_size_(size_t index_subspace){
+    return base_t::ms_->index_subspaces[index_subspace].size();
   }
 
 private:

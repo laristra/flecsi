@@ -249,6 +249,49 @@ struct find_index_space_from_id__<0, TUPLE, ID> {
 
 }; // struct find_index_space_from_id__
 
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+
+template<size_t INDEX, typename TUPLE, size_t ID>
+struct find_index_subspace_from_id__ {
+  //--------------------------------------------------------------------------//
+  //! Find the index corresponding to an entity type in the connectivities
+  //! tuple - either from or to
+  //!
+  //! @tparam INDEX The current index in tuple.
+  //! @tparam TUPLE The tuple type.
+  //! @tparam ID Index space id to search for.
+  //--------------------------------------------------------------------------//
+
+  static constexpr size_t find() {
+    // grab current types
+    using TUPLE_ELEMENT = typename std::tuple_element<INDEX - 1, TUPLE>::type;
+    using INDEX_SUBSPACE = typename std::tuple_element<1, TUPLE_ELEMENT>::type;
+
+    // Check match for ID and return if matched, recurse otherwise.
+    return ID == INDEX_SUBSPACE::value ? INDEX - 1
+               : find_index_subspace_from_id__<INDEX - 1, TUPLE, ID>::find();
+  } // find
+
+}; // find_index_subspace_from_id__
+
+//----------------------------------------------------------------------------//
+//! End recursion condition.
+//----------------------------------------------------------------------------//
+
+template<typename TUPLE, size_t ID>
+struct find_index_subspace_from_id__<0, TUPLE, ID> {
+
+  //--------------------------------------------------------------------------//
+  //! Search last tuple element.
+  //--------------------------------------------------------------------------//
+
+  static constexpr size_t find() {
+    return -1;
+  } // find
+
+}; // struct find_index_subspace_from_id__
+
 /*----------------------------------------------------------------------------*
  * Connectivity utilities.
  *----------------------------------------------------------------------------*/
