@@ -55,7 +55,6 @@ struct mpi_future__
    */
   void set(const result_t & result) { result_ = result; }
 
-#if 0
   operator R &() {
     return result_;
   }
@@ -64,7 +63,6 @@ struct mpi_future__
     return result_;
   }
 
-#endif
   result_t result_;
 
 }; // struct mpi_future__
