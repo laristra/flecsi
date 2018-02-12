@@ -17,6 +17,7 @@
 
 #include <functional>
 #include <memory>
+#include <iostream>  
 
 #include <flecsi-config.h>
 
@@ -112,7 +113,30 @@ struct legion_future__<RETURN, Legion::Future> : public future_base_t {
     launcher.add_future(legion_future_);
   }
 
-  RETURN data() { return data_; }
+  legion_future__& operator=(RETURN const &rhs) {
+        data_=rhs;
+        return *this;
+   }
+
+  RETURN & operator = (legion_future__ const &f){
+    return data_;
+  }
+
+  operator RETURN &() {
+    return data_;
+  }
+
+  operator const RETURN  &() const {
+    return data_;
+  }
+
+
+  friend std::ostream & operator<<(std::ostream & stream, const legion_future__ & f) {
+      stream << f.data_;
+      return stream;
+  } // switch
+
+//  RETURN data() { return data_; }
 
   RETURN data_;
 
@@ -277,6 +301,27 @@ private:
   Legion::FutureMap legion_future_;
 
 }; // legion_future
+
+//template<
+//    typename RETURN,
+//    typename FUTURE>
+//using flecsi_future = legion_future__<
+//    RETURN,
+//    FUTURE>;
+
+using flecsi_future = future_base_t;
+
+template<
+    typename RETURN>
+using flecsi_single_future = legion_future__<
+    RETURN,
+    Legion::Future>;
+
+template<
+    typename RETURN>
+using flecsi_index_future = legion_future__<
+    RETURN,
+    Legion::FutureMap>;
 
 } // namespace execution
 } // namespace flecsi

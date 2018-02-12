@@ -12,7 +12,6 @@
 #include <cinchtest.h>
 
 #include "flecsi/execution/execution.h"
-#include "flecsi/execution/legion/future.h"
 #include "flecsi/io/simple_definition.h"
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
@@ -25,12 +24,15 @@ clog_register_tag(coloring);
 
 
 template<typename T>
-using handle_t = flecsi::execution::legion_future__<T, Legion::Future>;
+using handle_t = flecsi::execution::flecsi_single_future<T>;
+
+//using handle_t = flecsi::execution::flecsi_future;
 
 
 void future_handle_dump(handle_t<double> x) {
- double tmp = x.data();
-  std::cout << "future_handle =  " << tmp << std::endl;
+//void future_handle_dump(handle_t x) {
+ double tmp = x;
+    std::cout << "future_handle =  " << x << std::endl;
 }
 
 
@@ -41,9 +43,10 @@ double writer( double something) {
 }
 
 void reader(handle_t<double> x, handle_t<double> y) {
+//void reader(handle_t x, handle_t y) {
   clog(info) << "reader read: " << std::endl;
-  ASSERT_EQ(x.data(), static_cast<double>(3.14));
-  ASSERT_EQ(x.data(),y.data());
+  ASSERT_EQ(x, static_cast<double>(3.14));
+  ASSERT_EQ(x,y);
 }
 
 flecsi_register_task(writer, , loc, single);
