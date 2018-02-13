@@ -27,6 +27,7 @@ set(utils_HEADERS
   dbc_impl.h
   debruijn.h
   dimensioned_array.h
+  export_definitions.h
   factory.h
   hash.h
   humble.h
