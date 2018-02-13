@@ -198,9 +198,9 @@ cinch_add_unit(simple_task
 #
 # Test basic task to test future_handle
 #
-cinch_add_unit(future
+cinch_add_unit(future_handle
   SOURCES
-    test/future.cc
+    test/future_handle.cc
     ${DRIVER_INITIALIZATION}
     ${RUNTIME_DRIVER}
   DEFINES
