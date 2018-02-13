@@ -93,7 +93,7 @@ struct executor__ {
 /// \brief hpx_execution_policy provides...
 ///
 struct FLECSI_EXPORT hpx_execution_policy_t {
-  template<typename R>
+  template<typename R, typename FUTURE = int>
   using future__ = hpx::future<R>;
 
   //--------------------------------------------------------------------------//
