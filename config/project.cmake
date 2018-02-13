@@ -403,13 +403,17 @@ install(
 #------------------------------------------------------------------------------#
 
 cinch_add_library_target(FleCSI flecsi)
-if( NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
+
+option(ENABLE_FLECSI_TUTORIAL
+  "Enable library support for the FleCSI tutorial" ON)
+
+if(ENABLE_FLECSI_TUTORIAL)
+  cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
 endif()
+
 #------------------------------------------------------------------------------#
 # Install Tutorial inputs
 #------------------------------------------------------------------------------#
-message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 
 install(
   FILES ${PROJECT_SOURCE_DIR}/flecsi-tutorial/specialization/inputs/simple2d-16x16.msh

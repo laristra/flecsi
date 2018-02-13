@@ -113,10 +113,9 @@ where *example.cc* is the name of the example source file. This will
 produce an executable that can be run like:
 
 ```
-$ ./example.Linux
+$ ./example
 ```
 
-Note that the executable suffix will depend on your operating system.
 Some exmaples are designed to run in parallel (indicated in the example
 documentation). These should be run with a suitable MPI interpreter:
 
