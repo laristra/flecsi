@@ -125,8 +125,8 @@ using task_interface_t = task_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
   @ingroup execution
  */
 
-template<typename RETURN, typename FUTURE>
-using future__ = FLECSI_RUNTIME_EXECUTION_POLICY::future__<RETURN, FUTURE>;
+template<typename RETURN, launch_type_t launch>
+using future__ = FLECSI_RUNTIME_EXECUTION_POLICY::future__<RETURN, launch>;
 
 //----------------------------------------------------------------------------//
 // Static verification of public future interface for type defined by

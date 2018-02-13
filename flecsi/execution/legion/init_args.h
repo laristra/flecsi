@@ -227,9 +227,9 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   ///
   // Initialize arguments for future handle
   ///
-  template <typename T, typename FUTURE>
-  void handle(legion_future__<T, FUTURE> &h) {
-    futures.push_back(std::make_shared<legion_future__<T, FUTURE>>(h));
+  template <typename T, launch_type_t launch>
+  void handle(legion_future__<T, launch> &h) {
+    futures.push_back(std::make_shared<legion_future__<T, launch>>(h));
   }
 
   /*!

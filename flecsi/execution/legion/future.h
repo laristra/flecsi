@@ -53,7 +53,7 @@ public:
   @ingroup legion-execution
 */
 
-template <typename RETURN, typename FUTURE> struct legion_future__ {};
+template <typename RETURN, launch_type_t launch> struct legion_future__ {};
 
 /*! Partial specialization for the Legion:Future
 
@@ -63,7 +63,7 @@ template <typename RETURN, typename FUTURE> struct legion_future__ {};
  */
 
 template <typename RETURN>
-struct legion_future__<RETURN, Legion::Future> : public future_base_t {
+struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
   /*!
       Construct a future from a Legion future.
 
@@ -150,7 +150,7 @@ private:
  */
 
 template <>
-struct legion_future__<void, Legion::Future> : public future_base_t {
+struct legion_future__<void, launch_type_t::single> : public future_base_t {
 
   /*!
     Construct a future from a Legion future.
@@ -201,7 +201,7 @@ private:
  */
 
 template <typename RETURN>
-struct legion_future__<RETURN, Legion::FutureMap> : public future_base_t {
+struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
 
   /*!
     Construct a future from a Legion future map.
@@ -265,7 +265,7 @@ private:
  */
 
 template <>
-struct legion_future__<void, Legion::FutureMap> : public future_base_t {
+struct legion_future__<void, launch_type_t::index> : public future_base_t {
 
   /*!
       Construct a future from a Legion future map.
@@ -302,26 +302,14 @@ private:
 
 }; // legion_future
 
-//template<
-//    typename RETURN,
-//    typename FUTURE>
-//using flecsi_future = legion_future__<
-//    RETURN,
-//    FUTURE>;
+template<
+    typename RETURN,
+    launch_type_t launch>
+using flecsi_future = legion_future__<
+    RETURN,
+    launch>;
 
 using flecsi_future = future_base_t;
-
-template<
-    typename RETURN>
-using flecsi_single_future = legion_future__<
-    RETURN,
-    Legion::Future>;
-
-template<
-    typename RETURN>
-using flecsi_index_future = legion_future__<
-    RETURN,
-    Legion::FutureMap>;
 
 } // namespace execution
 } // namespace flecsi

@@ -32,7 +32,7 @@ namespace execution {
  */
 template<
   typename R,
-  typename FUTURE = int
+  launch_type_t launch = launch_type_t::single
 >
 struct mpi_future__
 {
@@ -70,8 +70,8 @@ struct mpi_future__
 /*!
  FIXME documentation
  */
-template<typename FUTURE>
-struct mpi_future__<void, FUTURE>
+template<launch_type_t launch>
+struct mpi_future__<void, launch>
 {
   /*!
    FIXME documentation
@@ -82,20 +82,10 @@ struct mpi_future__<void, FUTURE>
 
 template<
     typename RETURN,
-    typename FUTURE>
+    launch_type_t launch>
 using flecsi_future = mpi_future__<
     RETURN,
-    FUTURE>;
-
-template<
-    typename RETURN>
-using flecsi_single_future = mpi_future__<
-    RETURN>;
-
-template<
-    typename RETURN>
-using flecsi_index_future = mpi_future__<
-    RETURN>;
+    launch>;
 
 } // namespace execution
 } // namespace flecsi

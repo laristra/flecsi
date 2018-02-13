@@ -333,8 +333,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
   /*!
    Initialize arguments for future handle
    */
-  template <typename T, typename FUTURE>
-  void handle(legion_future__<T, FUTURE> &h) {
+  template <typename T, launch_type_t launch>
+  void handle(legion_future__<T, launch> &h) {
     h.data_ = Legion::Future(futures[future_id]).get_result<T>();
     future_id++;
   } // handle

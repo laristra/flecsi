@@ -10,6 +10,7 @@
 #include <cinchtest.h>
 
 #include <flecsi/utils/common.h>
+#include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/execution.h>
 
@@ -20,7 +21,8 @@
 //----------------------------------------------------------------------------//
 
 template<typename T>
-using handle_t = flecsi::execution::flecsi_single_future<T>;
+using handle_t = flecsi::execution::flecsi_future<T, 
+    flecsi::execution::launch_type_t::single>;
 
 void future_dump(handle_t<double> x)
 {

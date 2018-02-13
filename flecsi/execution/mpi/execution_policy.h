@@ -111,8 +111,8 @@ struct mpi_execution_policy_t
    @tparam RETURN The return type of the task.
    */
 
-  template<typename RETURN, typename FUTURE>
-  using future__ = mpi_future__<RETURN, FUTURE>;
+  template<typename RETURN, launch_type_t launch>
+  using future__ = mpi_future__<RETURN, launch>;
 
   template<
     typename FUNCTOR_TYPE
