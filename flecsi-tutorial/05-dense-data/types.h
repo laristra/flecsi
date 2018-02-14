@@ -30,6 +30,7 @@ struct struct_type_t {
 }; // struct_type_t
 
 /*----------------------------------------------------------------------------*
+
   Here, we define an accessor type to use in the task signatures in our
   example. Notice that the base type that we are using "dense_accessor"
   takes four parameters. The first parameter is the type that has been

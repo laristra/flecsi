@@ -36,9 +36,14 @@ You can run it like:
 $ ./driver arg1 arg2
 ```
 
+You can experiment with changing the output or handling of the
+command-line arguments.
+
 NOTES:
 
 * The driver must be defined in the flecsi::execution namespace.
+
+The code for this example can be found in *driver.cc*:
 
 ```cpp
 #include <iostream>
@@ -49,9 +54,11 @@ namespace execution {
 void driver(int argc, char ** argv) {
 
   // Print the message
+
   std::cout << "Hello World" << std::endl;
 
   // Print the arguments that were passed on the command line
+
   for(size_t i{1}; i<argc; ++i) {
     std::cout << "\targ(" << i << "): " << argv[i] << std::endl;
   } // for

@@ -19,36 +19,35 @@ example defines a task called "simple_task", and registers it with the
 runtime. The arguments to the task registration interface are:
 
 1. The task name. This must be the actual name of the C/C++
-function. In this example, the task name is "simple_task".
+   function. In this example, the task name is "simple_task".
 
 2. The namespace of the task. This must be the actual namespace in
-which the task is defined. In this example, the namespace is
-"hydro".
+   which the task is defined. In this example, the namespace is "hydro".
 
 3. The processor type on which the task should be executed.
-Currently, FleCSI has support for:
+   Currently, FleCSI has support for:
 
-  * loc - Latency-optimized core
-  * toc - Throughput-optimized core
-  * mpi - An MPI task
+   * loc - Latency-optimized core
+   * toc - Throughput-optimized core
+   * mpi - An MPI task
 
-  In this example, the processor type is "loc".
+   In this example, the processor type is "loc".
 
 4. The launch type. This tells the runtime whether the task should
-be launched as a member of a group of executing tasks (SPMD), or
-as a single conventional task (MPMD). These launch types
-correspond to the arguments, respectively:
+   be launched as a member of a group of executing tasks (SPMD), or
+   as a single conventional task (MPMD). These launch types
+   correspond to the arguments, respectively:
 
-  * index  - Launch the task as part of a group
-  * single - Launch the task as a single, independent thread of execution
+   * index  - Launch the task as part of a group
+   * single - Launch the task as a single, independent thread of execution
 
-This nomenclature was adopted from the Legion programming
-system, and was originally developed by Nvidia. Future versions
-of FleCSI may add-to or change this. The most current version of
-the FleCSI interface can be found in the Doxygen and User Guide
-documentation.
+   This nomenclature was adopted from the Legion programming
+   system, and was originally developed by Nvidia. Future versions
+   of FleCSI may add-to or change this. The most current version of
+   the FleCSI interface can be found in the Doxygen and User Guide
+   documentation.
 
-In this example, the launch type is single.
+   In this example, the launch type is single.
 
 The driver in this example executes the task by invoking the execution
 interface. The arguments to the execution interface are:
@@ -70,17 +69,32 @@ NOTES:
   implement the task interface. Future versions of FleCSI will
   likely employ a DSL, which will be cleaner than the current interface.
 
+The code for this example can be found in *tasks.cc*:
+
 ```cpp
+#include <iostream>
+
+#include<flecsi/execution/execution.h>
+
+namespace example {
+
 void simple_task() {
 
   // Print message from inside of the task
+
   std::cout << "Hello World from " << __FUNCTION__ << std::endl;
 
 } // simple_task
 
-flecsi_register_task(simple_task, hydro, loc, single);
+// This line registers the "simple_task" (defined directly above)
+// with the FleCSI runtime.
+//
+// NOTE: The task must be registered using the actual C++
+// namespace in which it is defined, i.e., "example".
 
-} // namespace hydro
+flecsi_register_task(simple_task, example, loc, single);
+
+} // namespace example
 
 namespace flecsi {
 namespace execution {
@@ -88,7 +102,8 @@ namespace execution {
 void driver(int argc, char ** argv) {
 
   // This time, the driver executes a task to do the output
-  flecsi_execute_task(simple_task, hydro, single);
+
+  flecsi_execute_task(simple_task, example, single);
 
 } // driver
 
