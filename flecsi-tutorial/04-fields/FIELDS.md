@@ -8,10 +8,10 @@
 
 # Fields
 
-In FleCSI, a field is a logical array that is defined at each index of
-an index space. The elements of the field are defined through a template
-argument, so that, with some restrictions, a field element can be any
-P.O.D. or user-defined type.
+In FleCSI, a field is a logical array that is defined on an index space.
+The elements of the field are defined through a template argument, so
+that, with some restrictions, a field element can be any P.O.D. or
+user-defined type.
 
 Fields must be registered with the FleCSI runtime. This is somewhat
 analogous to defining a variable in C++, except that variables in FleCSI
