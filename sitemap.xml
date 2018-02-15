@@ -17,6 +17,9 @@
     <image:image>
       <image:loc>https://laristra.github.io/flecsi/images/los-alamos-lab-logo-white.png</image:loc>
     </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/pasted%20image%20229x378.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://laristra.github.io/flecsi/people.html</loc>
@@ -34,6 +37,12 @@
     </image:image>
     <image:image>
       <image:loc>https://laristra.github.io/flecsi/images/los-alamos-lab-logo-white.png</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/ben-1.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/oleg.jpg</image:loc>
     </image:image>
   </url>
   <url>
