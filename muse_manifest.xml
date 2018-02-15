@@ -1,55 +1,61 @@
-<manifest alg="2" build="2018.0.0.379" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1518718579449">
+<manifest alg="2" build="2018.0.0.379" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1518718848495">
   <folder name="css">
     <file name="site_global.css" crc="3801055710"/>
-    <file name="master_main.css" crc="4195366790" ref="index:people:documentation:download"/>
-    <file name="index.css" crc="439992596" ref="index"/>
-    <file name="people.css" crc="494936212" ref="people"/>
-    <file name="documentation.css" crc="242607211" ref="documentation"/>
-    <file name="download.css" crc="494936212" ref="download"/>
+    <file name="master_main.css" crc="4083527926" ref="index:people:documentation:download:projects"/>
+    <file name="index.css" crc="142263749" ref="index"/>
+    <file name="people.css" crc="4269210313" ref="people"/>
+    <file name="documentation.css" crc="3961001231" ref="documentation"/>
+    <file name="download.css" crc="4269210313" ref="download"/>
+    <file name="projects.css" crc="4269210313" ref="projects"/>
   </folder>
   <folder name="assets">
-    <file name="flecsi-user-guide.pdf" crc="4080023803" seo="true" mt="1518717527000"/>
-    <file name="flecsi-developer-guide.pdf" crc="3788488316" seo="true" mt="1518717527000"/>
-    <file name="index.html" crc="3841567287" seo="true" mt="1518717527000"/>
+    <file name="flecsi-user-guide.pdf" crc="4080023803" seo="true" mt="1518718579000"/>
+    <file name="flecsi-developer-guide.pdf" crc="3788488316" seo="true" mt="1518718579000"/>
+    <file name="index.html" crc="3916994035" seo="true" mt="1518718579000"/>
   </folder>
   <folder name="scripts">
-    <file name="jquery-1.8.3.min.js" crc="209076791" ref="index:people:documentation:download"/>
-    <file name="museutils.js" crc="3803043152" ref="index:people:documentation:download"/>
-    <file name="whatinput.js" crc="86476730" ref="index:people:documentation:download"/>
-    <file name="museconfig.js" crc="4153641093" ref="index:people:documentation:download"/>
-    <file name="jquery.watch.js" crc="99325471" ref="index:people:documentation:download"/>
-    <file name="jquery.musemenu.js" crc="3784699396" ref="index:people:documentation:download"/>
-    <file name="html5shiv.js" crc="4241844378" ref="index:people:documentation:download"/>
-    <file name="require.js" crc="4157109226" ref="index:people:documentation:download"/>
+    <file name="jquery-1.8.3.min.js" crc="209076791" ref="index:people:documentation:download:projects"/>
+    <file name="museutils.js" crc="3803043152" ref="index:people:documentation:download:projects"/>
+    <file name="whatinput.js" crc="86476730" ref="index:people:documentation:download:projects"/>
+    <file name="museconfig.js" crc="4153641093" ref="index:people:documentation:download:projects"/>
+    <file name="jquery.watch.js" crc="99325471" ref="index:people:documentation:download:projects"/>
+    <file name="jquery.musemenu.js" crc="3784699396" ref="index:people:documentation:download:projects"/>
+    <file name="html5shiv.js" crc="4241844378" ref="index:people:documentation:download:projects"/>
+    <file name="require.js" crc="4157109226" ref="index:people:documentation:download:projects"/>
   </folder>
   <folder name="images">
-    <file name="flecsi.png" crc="142940395" seo="true" ref="index:people:documentation:download">
+    <file name="flecsi.png" crc="142940395" seo="true" ref="index:people:documentation:download:projects">
       <caption webpage="index" alt=""/>
+      <caption webpage="projects" alt=""/>
       <caption webpage="documentation" alt=""/>
       <caption webpage="people" alt=""/>
       <caption webpage="download" alt=""/>
     </file>
-    <file name="ecp_logo.png" crc="3889968369" seo="true" ref="index:people:documentation:download">
+    <file name="ecp_logo.png" crc="3889968369" seo="true" ref="index:people:documentation:download:projects">
       <caption webpage="index" alt=""/>
+      <caption webpage="projects" alt=""/>
       <caption webpage="documentation" alt=""/>
       <caption webpage="people" alt=""/>
       <caption webpage="download" alt=""/>
     </file>
-    <file name="1200px-nnsa_logo.png" crc="63578105" seo="true" ref="index:people:documentation:download">
+    <file name="1200px-nnsa_logo.png" crc="63578105" seo="true" ref="index:people:documentation:download:projects">
       <caption webpage="index" alt=""/>
+      <caption webpage="projects" alt=""/>
       <caption webpage="documentation" alt=""/>
       <caption webpage="people" alt=""/>
       <caption webpage="download" alt=""/>
     </file>
-    <file name="los-alamos-lab-logo-white.png" crc="4105952716" seo="true" ref="index:people:documentation:download">
+    <file name="los-alamos-lab-logo-white.png" crc="4105952716" seo="true" ref="index:people:documentation:download:projects">
       <caption webpage="index" alt=""/>
+      <caption webpage="projects" alt=""/>
       <caption webpage="documentation" alt=""/>
       <caption webpage="people" alt=""/>
       <caption webpage="download" alt=""/>
     </file>
   </folder>
-  <file name="index.html" crc="3916994035" seo="true" mt="1518718327319" redirect="true"/>
-  <file name="people.html" crc="274854585" seo="true" mt="1518718327319" redirect="true"/>
-  <file name="documentation.html" crc="4026151858" seo="true" mt="1518718327319" redirect="true"/>
-  <file name="download.html" crc="437244612" seo="true" mt="1518718327319" redirect="true"/>
+  <file name="index.html" crc="140873803" seo="true" mt="1518718831347" redirect="true"/>
+  <file name="people.html" crc="3976256609" seo="true" mt="1518718831347" redirect="true"/>
+  <file name="documentation.html" crc="4284560222" seo="true" mt="1518718831347" redirect="true"/>
+  <file name="download.html" crc="4125751403" seo="true" mt="1518718831347" redirect="true"/>
+  <file name="projects.html" crc="4079632906" seo="true" mt="1518718831347" redirect="true"/>
 </manifest>

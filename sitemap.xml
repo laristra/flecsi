@@ -73,19 +73,37 @@
     </image:image>
   </url>
   <url>
+    <loc>https://laristra.github.io/flecsi/projects.html</loc>
+    <lastmod>2018-02-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/flecsi.png</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/ecp_logo.png</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/1200px-nnsa_logo.png</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/los-alamos-lab-logo-white.png</image:loc>
+    </image:image>
+  </url>
+  <url>
     <loc>https://laristra.github.io/flecsi/assets/flecsi-user-guide.pdf</loc>
     <lastmod>2018-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://laristra.github.io/flecsi/assets/index.html</loc>
+    <loc>https://laristra.github.io/flecsi/assets/flecsi-developer-guide.pdf</loc>
     <lastmod>2018-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://laristra.github.io/flecsi/assets/flecsi-developer-guide.pdf</loc>
+    <loc>https://laristra.github.io/flecsi/assets/index.html</loc>
     <lastmod>2018-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
