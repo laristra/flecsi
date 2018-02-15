@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['dimension',['dimension',['../classflecsi_1_1utils_1_1dimensioned__array.html#a608933444e156e54326c85e7a481b220',1,'flecsi::utils::dimensioned_array']]]
+  ['color_5fsizes',['color_sizes',['../structflecsi_1_1coloring_1_1adjacency__info__t.html#a20847a151e35b27f71e1e24e3f4c1bf1',1,'flecsi::coloring::adjacency_info_t']]]
 ];

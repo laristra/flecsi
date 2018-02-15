@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: /home/flecsi/flecsi/flecsi/utils/dbc.h File Reference</title>
+<title>Interface Documentation: /home/flecsi/flecsi/flecsi/utils/dbc.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -89,7 +91,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
@@ -99,25 +100,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p>Design By Contract (DBC) assertions.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;dbc_impl.h&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="dbc__impl_8h_source.html">dbc_impl.h</a>&quot;</code><br />
 <code>#include &lt;functional&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 </div>
 <p><a href="dbc_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceflecsi"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html">flecsi</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a56b37041e3636b4a67ef65f240a2354e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56b37041e3636b4a67ef65f240a2354e"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>IM_OK_TO_INCLUDE_DBC_IMPL</b></td></tr>
 <tr class="separator:a56b37041e3636b4a67ef65f240a2354e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6517178ff4b44393120210d625a2bd31"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6517178ff4b44393120210d625a2bd31"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>Insist</b>(c,  cs)&#160;&#160;&#160;assertf(c,cs,__FILE__,__FUNCTION__,__LINE__,dbc_action);</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>Insist</b>(c,  cs)&#160;&#160;&#160;assertf(c, cs, __FILE__, __FUNCTION__, __LINE__, dbc_action);</td></tr>
 <tr class="separator:a6517178ff4b44393120210d625a2bd31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b09ff9f668bd6111f58eba7594266a1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3b09ff9f668bd6111f58eba7594266a1"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>Require</b>(c,  cs)</td></tr>

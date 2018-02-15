@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: Class Members</title>
+<title>Interface Documentation: Class Members</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -90,12 +92,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_g.html#index_g"><span>g</span></a></li>
       <li><a href="functions_h.html#index_h"><span>h</span></a></li>
       <li><a href="functions_i.html#index_i"><span>i</span></a></li>
+      <li><a href="functions_j.html#index_j"><span>j</span></a></li>
       <li><a href="functions_k.html#index_k"><span>k</span></a></li>
       <li><a href="functions_l.html#index_l"><span>l</span></a></li>
       <li><a href="functions_m.html#index_m"><span>m</span></a></li>
       <li><a href="functions_n.html#index_n"><span>n</span></a></li>
       <li class="current"><a href="functions_o.html#index_o"><span>o</span></a></li>
       <li><a href="functions_p.html#index_p"><span>p</span></a></li>
+      <li><a href="functions_q.html#index_q"><span>q</span></a></li>
       <li><a href="functions_r.html#index_r"><span>r</span></a></li>
       <li><a href="functions_s.html#index_s"><span>s</span></a></li>
       <li><a href="functions_t.html#index_t"><span>t</span></a></li>
@@ -125,13 +129,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <h3><a class="anchor" id="index_o"></a>- o -</h3><ul>
 <li>operator bool()
-: <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1dense__accessor__t.html#a7d7cc04d062543bb158c9070165a2ae4">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::dense_accessor_t&lt; T &gt;</a>
-, <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1global__accessor__t.html#a053813cd8d7dde6b88e903a33a8dc213">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::global_accessor_t&lt; T &gt;</a>
-, <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1sparse__accessor__t.html#a1c82738310e3fd19c6d56bebbddca026">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::sparse_accessor_t&lt; T &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1legion_1_1dense__accessor__t.html#afcfc7be3981f87bc8dfb69b2f4882a08">flecsi::data::legion::dense_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1legion_1_1global__accessor__t.html#a35dfda65a4496d858d0c122f0353a45a">flecsi::data::legion::global_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a9e1a1203f850bc6b9b9297982e19b54c">flecsi::data::serial::dense_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html#a17d412676652dc93c4a2117abc13a3e3">flecsi::data::serial::global_accessor_t&lt; T, MD &gt;</a>
+: <a class="el" href="structflecsi_1_1data_1_1legion_1_1color__handle____.html#af37ac23efe302388898d0e3fa63c6f52">flecsi::data::legion::color_handle__&lt; T, PERMISSIONS &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1legion_1_1global__handle____.html#ac9ada79729eddbd8f04394e13026d86b">flecsi::data::legion::global_handle__&lt; T, PERMISSIONS &gt;</a>
+</li>
+<li>operator size_t()
+: <a class="el" href="classflecsi_1_1topology_1_1simple__id.html#aa3a940f9efd5dd8f4a8cc9d2decbc8db">flecsi::topology::simple_id</a>
 </li>
 <li>operator std::basic_string&lt; T, traits, Allocator &gt;()
 : <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#ad90640442dd84cbd42c563e251ff8f8b">flecsi::utils::array_ref&lt; T &gt;</a>
@@ -140,89 +142,98 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a68e13bd7cbe72e3fba608ab1f5f31b24">flecsi::utils::array_ref&lt; T &gt;</a>
 </li>
 <li>operator T()
-: <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1global__accessor__t.html#aff6df4250a8b448c427204439632190a">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::global_accessor_t&lt; T &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html#a65c52d1767753e9aa484f3979ef89838">flecsi::data::serial::global_accessor_t&lt; T, MD &gt;</a>
+: <a class="el" href="classflecsi_1_1topology_1_1simple__entry____.html#a5a18e77a8a4b819e0147f77edde14e0a">flecsi::topology::simple_entry__&lt; T &gt;</a>
 , <a class="el" href="classflecsi_1_1utils_1_1any__t.html#ab5e5022cff56f98e76b0f9f0e6a022d3">flecsi::utils::any_t</a>
 </li>
 <li>operator!=()
-: <a class="el" href="classflecsi_1_1utils_1_1iterator.html#a3a3c0beb381da2a253e2c74cc45070c5">flecsi::utils::iterator&lt; C, T &gt;</a>
+: <a class="el" href="classflecsi_1_1topology_1_1index__space_____1_1iterator__base__.html#a4d52acd39cd7658e553e8d156b76ea9d">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;::iterator_base_&lt; S &gt;</a>
+, <a class="el" href="classflecsi_1_1utils_1_1iterator.html#a3a3c0beb381da2a253e2c74cc45070c5">flecsi::utils::iterator&lt; C, T &gt;</a>
+</li>
+<li>operator&amp;()
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#a2735c15b9ef185026c811cb93b0265e4">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
+</li>
+<li>operator&amp;=()
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#a466409ea04d588adf0460fa671426356">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
 </li>
 <li>operator()()
-: <a class="el" href="structflecsi_1_1data_1_1legion_1_1dense__accessor__t.html#a85038709ed51348dc6c7faed33395314">flecsi::data::legion::dense_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1legion_1_1sparse__accessor__t.html#aaabe016970df5478f66430be5d928a89">flecsi::data::legion::sparse_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1legion_1_1sparse__mutator__t.html#a21bc24dea2c9d86f07b459b5a86cf8d3">flecsi::data::legion::sparse_mutator_t&lt; T, MD &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a0b2e791782b4854e75993155c1149494">flecsi::data::serial::dense_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="structflecsi_1_1execution_1_1function__handle____.html#aab1ba325cfde71e0949364532d3c2519">flecsi::execution::function_handle__&lt; R, A &gt;</a>
+: <a class="el" href="structflecsi_1_1accessor_____3_01data_1_1color_00_01T_00_01PERMISSIONS_00_010_00_010_01_4.html#a7f6e13f578103ce5dce409eb5dc2b375">flecsi::accessor__&lt; data::color, T, PERMISSIONS, 0, 0 &gt;</a>
+, <a class="el" href="structflecsi_1_1accessor_____3_01data_1_1dense_00_01T_00_01EXCLUSIVE__PERMISSIONS_00_01SHARED__Pe927e95b5549d371feaf66e9ea26f6d3.html#ac36a783557e5576a3ded5712a8d8429d">flecsi::accessor__&lt; data::dense, T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS &gt;</a>
+, <a class="el" href="structflecsi_1_1accessor_____3_01data_1_1global_00_01T_00_01PERMISSIONS_00_010_00_010_01_4.html#a5ad7c2c46a93ca605033b84bb513f632">flecsi::accessor__&lt; data::global, T, PERMISSIONS, 0, 0 &gt;</a>
+, <a class="el" href="structflecsi_1_1execution_1_1function__handle____.html#a66a739a45b7e70929dba4dae8654ea78">flecsi::execution::function_handle__&lt; RETURN, ARG_TUPLE &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#ae940c259dd1af2d20eaff00f4441ff6d">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
 </li>
 <li>operator*()
-: <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1global__accessor__t.html#ad710af56895ebe3de19a9043418ea359">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::global_accessor_t&lt; T &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html#a3ae3701d9fdeb6bcdee069309eb8bb5f">flecsi::data::serial::global_accessor_t&lt; T, MD &gt;</a>
+: <a class="el" href="classflecsi_1_1topology_1_1index__space_____1_1iterator__.html#ad68cc7e6fcdae07146448703af11b9d1">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;::iterator_&lt; S, P &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1index__space_____1_1iterator___3_01S_00_01void_01_4.html#af2f900b0519c4424746de71da2dd13ca">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;::iterator_&lt; S, void &gt;</a>
 , <a class="el" href="classflecsi_1_1utils_1_1iterator.html#a381ed7181dfb0b2b46b1fbce3980e040">flecsi::utils::iterator&lt; C, T &gt;</a>
 </li>
-<li>operator*=()
-: <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html#ad879e6f0ca550be5dcd12cea2baaa5b7">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a>
-</li>
 <li>operator++()
-: <a class="el" href="classflecsi_1_1utils_1_1iterator.html#a253783ab7bd3175548b5f86b19937eb7">flecsi::utils::iterator&lt; C, T &gt;</a>
+: <a class="el" href="classflecsi_1_1topology_1_1index__space_____1_1iterator__.html#a1ab8fd08853cdef320712c62c5e33eab">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;::iterator_&lt; S, P &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1index__space_____1_1iterator___3_01S_00_01void_01_4.html#ae948c55abb5057e1b1131d86b0e9d771">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;::iterator_&lt; S, void &gt;</a>
+, <a class="el" href="classflecsi_1_1utils_1_1iterator.html#a253783ab7bd3175548b5f86b19937eb7">flecsi::utils::iterator&lt; C, T &gt;</a>
 </li>
-<li>operator+=()
-: <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html#a7a03bd938c73d2f467e60e98ce87886f">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a>
+<li>operator-()
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#a6cdbf8ad50ce7ad989e27cedceaec948">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
 </li>
 <li>operator-=()
-: <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html#ae6044cce0a9591fecc50bfa7255065b0">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a>
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#a02972056b33efac1ca6123b2e7f5a126">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
 </li>
 <li>operator-&gt;()
-: <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1global__accessor__t.html#a71a544fe35edcf5271e3a39c920eb5ed">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::global_accessor_t&lt; T &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1legion_1_1global__accessor__t.html#abd15e02d311538244e492a1fd79a1d33">flecsi::data::legion::global_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="classflecsi_1_1utils_1_1iterator.html#a76b638fa18f234f2edf1f05ce86830b0">flecsi::utils::iterator&lt; C, T &gt;</a>
+: <a class="el" href="classflecsi_1_1topology_1_1index__space_____1_1iterator__.html#a420628eff1949b5071a0bb233e7a9070">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;::iterator_&lt; S, P &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1index__space_____1_1iterator___3_01S_00_01void_01_4.html#af893c00b97363e4e71813efc9849440f">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;::iterator_&lt; S, void &gt;</a>
 </li>
 <li>operator/()
-: <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html#a78c98f9481a4193f87958fee184f4a96">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a>
-</li>
-<li>operator/=()
-: <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html#af88e85fc529993d9d2de6a1b56b2789c">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a>
+: <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array____.html#acdcf1b91b6db9c7dea84365f06384314">flecsi::utils::dimensioned_array__&lt; TYPE, DIMENSION, NAMESPACE &gt;</a>
 </li>
 <li>operator&lt;()
-: <a class="el" href="structflecsi_1_1dmp_1_1entry__info__t.html#a9db378ddcb5867c44b74a45746cdd2a9">flecsi::dmp::entry_info_t</a>
+: <a class="el" href="structflecsi_1_1coloring_1_1entity__info__t.html#a59e5bb349b82b35e87498b424e49677e">flecsi::coloring::entity_info_t</a>
+, <a class="el" href="classflecsi_1_1topology_1_1simple__id.html#aa9908685f3e947d2a5c00c7cfe2ae3e0">flecsi::topology::simple_id</a>
+</li>
+<li>operator&lt;&lt;()
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#a947d9dbabfb5fdb8ed7b86946b24af46">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
 </li>
 <li>operator=()
-: <a class="el" href="classflecsi_1_1data_1_1data__client__t.html#aea8bbb2f45b384f4efdc430f2ffc0dff">flecsi::data::data_client_t</a>
-, <a class="el" href="classflecsi_1_1data_1_1data__t.html#ad5aa32a9f2bc24382d6d68b4dd88dd49">flecsi::data::data_t&lt; user_meta_data_t, storage_policy_t &gt;</a>
-, <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1dense__accessor__t.html#a6cf5038a811cbc09e38bb2139a5a4f71">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::dense_accessor_t&lt; T &gt;</a>
-, <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1global__accessor__t.html#a2e75254dc0bdd1ecca45b43c7000bcd0">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::global_accessor_t&lt; T &gt;</a>
-, <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1sparse__accessor__t.html#abacb51ad4a1cc21d4f0995ccb60a38e9">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::sparse_accessor_t&lt; T &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#afb987f1a615c68aaef8d1773dad77659">flecsi::data::serial::dense_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html#a2ad45a658335423e8e2492a72aeb30c5">flecsi::data::serial::global_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="classflecsi_1_1dmp_1_1communicator__t.html#a6f2847ccd8f7e3ede29fa868de45b6bb">flecsi::dmp::communicator_t</a>
-, <a class="el" href="classflecsi_1_1dmp_1_1mpi__communicator__t.html#a3cb3d6209c30e97b192b0fe6a5d6714a">flecsi::dmp::mpi_communicator_t</a>
-, <a class="el" href="structflecsi_1_1dmp_1_1parmetis__partitioner__t.html#a1b40ce155547aafcaa88632fc0027f35">flecsi::dmp::parmetis_partitioner_t</a>
-, <a class="el" href="classflecsi_1_1dmp_1_1partitioner__t.html#acdbe14daef9a099ef0f1aa3f1f43bb7b">flecsi::dmp::partitioner_t</a>
-, <a class="el" href="structflecsi_1_1execution_1_1context____.html#abbeaf0b8a7c8eb92951bf6f32c164b07">flecsi::execution::context__&lt; context_policy_t &gt;</a>
-, <a class="el" href="structflecsi_1_1execution_1_1mpi__legion__interop__t.html#a970fd3fae34fe89ed8211ff2f090a6d0">flecsi::execution::mpi_legion_interop_t</a>
+: <a class="el" href="classcinch_1_1clog__t.html#a70123a2db89d4cc6820ffa61679afa03">cinch::clog_t</a>
+, <a class="el" href="classflecsi_1_1coloring_1_1communicator__t.html#a64a4b898b56b0b7c6672c24f0b2c2aa1">flecsi::coloring::communicator_t</a>
+, <a class="el" href="classflecsi_1_1coloring_1_1mpi__communicator__t.html#a1f705a3fe7cda795da2040ad75a0a9d0">flecsi::coloring::mpi_communicator_t</a>
+, <a class="el" href="structflecsi_1_1coloring_1_1parmetis__colorer__t.html#a03ba8d3b2280f1aa42bb6b8e257ae771">flecsi::coloring::parmetis_colorer_t</a>
+, <a class="el" href="structflecsi_1_1coloring_1_1simple__box__colorer__t.html#a1cd88680e38037fd00ed912e1399348e">flecsi::coloring::simple_box_colorer_t&lt; D &gt;</a>
+, <a class="el" href="classflecsi_1_1data_1_1data__client__t.html#aea8bbb2f45b384f4efdc430f2ffc0dff">flecsi::data::data_client_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1legion__future____.html#a388768ca55a88768181fc4bee9e3b22c">flecsi::execution::legion_future__&lt; RETURN &gt;</a>
 , <a class="el" href="classflecsi_1_1io_1_1simple__definition__t.html#a646d7b42c2cd6989187326bb0064d336">flecsi::io::simple_definition_t</a>
-, <a class="el" href="classflecsi_1_1topology_1_1graph__definition____.html#af302efd942aa83d88469c8c9db1d26e9">flecsi::topology::graph_definition__&lt; D &gt;</a>
-, <a class="el" href="classflecsi_1_1topology_1_1index__space.html#a8998d02dbeb9c7af2a1231a477b6ce21">flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F &gt;</a>
-, <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__t.html#a1a11e9d843ff7f4e18e488e399e81b78">flecsi::topology::mesh_topology_base_t</a>
-, <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__t.html#a132062799b874bd856749d321542588f">flecsi::topology::mesh_topology_t&lt; MT &gt;</a>
-, <a class="el" href="classflecsi_1_1topology_1_1structured__mesh__topology__t.html#a35ad39a8272b5b6bb688db7aef914a43">flecsi::topology::structured_mesh_topology_t&lt; MT &gt;</a>
-, <a class="el" href="classflecsi_1_1topology_1_1test__definition__t.html#a28440e93727d4fca0d3293b68a38c43e">flecsi::topology::test_definition_t</a>
+, <a class="el" href="classflecsi_1_1topology_1_1index__space_____1_1id__range__.html#ae1192ebe1f5db491bd6e8ef26f7c7743">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;::id_range_</a>
+, <a class="el" href="classflecsi_1_1topology_1_1index__space_____1_1iterator__base__.html#a070de718feddc5ced630f4393d44cf84">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;::iterator_base_&lt; S &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#ae92b0b74dfaf6bf4d57b2d2c228cfac0">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1mesh__definition____.html#ae76bffc83949d4557a4e0deb16e58cd8">flecsi::topology::mesh_definition__&lt; DIMENSION &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1mesh__topology____.html#a3eb90c1d660c7dbb245526ddb1b1f542">flecsi::topology::mesh_topology__&lt; MESH_TYPE &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base____.html#a3db39ac89f0efb5a0982945f1f25c569">flecsi::topology::mesh_topology_base__&lt; STORAGE_TYPE &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1set__topology__base____.html#afc6c9933915e8ce32ec926d9ed749137">flecsi::topology::set_topology_base__&lt; STORAGE_TYPE &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1structured__mesh__topology____.html#a23824a0d1788de22faf651d618a080ef">flecsi::topology::structured_mesh_topology__&lt; MT &gt;</a>
 , <a class="el" href="classflecsi_1_1utils_1_1any__t.html#aa4011202e69d86b4d6d91c12146ded41">flecsi::utils::any_t</a>
-, <a class="el" href="classflecsi_1_1utils_1_1bitfield____.html#a3c6ef51dc41013f932e92ba1c55d7240">flecsi::utils::bitfield__&lt; T &gt;</a>
-, <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html#a81158ffc778d0e5bec50aa638abf0118">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a>
-, <a class="el" href="classflecsi_1_1utils_1_1Factory__.html#ad193caaac18eb9263157940e3201e9a2">flecsi::utils::Factory_&lt; T, K, Args &gt;</a>
+, <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array____.html#aee3d059ffa6b593431f860fe40b14845">flecsi::utils::dimensioned_array__&lt; TYPE, DIMENSION, NAMESPACE &gt;</a>
+, <a class="el" href="classflecsi_1_1utils_1_1Factory__.html#af538e41f6001c3dc43d5d2b4cfc04228">flecsi::utils::Factory_&lt; RETURN, KEY, Args &gt;</a>
 , <a class="el" href="classflecsi_1_1utils_1_1index__space__t.html#a9201bc4f52b508f6665b59082ce4df58">flecsi::utils::index_space_t</a>
 , <a class="el" href="classflecsi_1_1utils_1_1iterator.html#acaccc7d31859026a21f5df1bf6314f3e">flecsi::utils::iterator&lt; C, T &gt;</a>
 </li>
 <li>operator==()
-: <a class="el" href="structflecsi_1_1dmp_1_1index__partition____.html#a9ef7128a7211098d9878f18e93457512">flecsi::dmp::index_partition__&lt; T &gt;</a>
+: <a class="el" href="structflecsi_1_1coloring_1_1entity__info__t.html#ae1418d2e3b1c3373a2fef79f2b6abdac">flecsi::coloring::entity_info_t</a>
+, <a class="el" href="structflecsi_1_1coloring_1_1index__coloring__t.html#a82d058fd27da94c3936a670a12f199aa">flecsi::coloring::index_coloring_t</a>
+, <a class="el" href="classflecsi_1_1topology_1_1index__space_____1_1iterator__base__.html#a6c61521aff3f1d2bf7231b324d5c633b">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;::iterator_base_&lt; S &gt;</a>
 , <a class="el" href="classflecsi_1_1utils_1_1iterator.html#ab5e6f8b670c44c5018b22c70949a953d">flecsi::utils::iterator&lt; C, T &gt;</a>
 </li>
 <li>operator[]()
-: <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1dense__accessor__t.html#aeb9b261224aac0a2bc2ac4c79bdf042f">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::dense_accessor_t&lt; T &gt;</a>
-, <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1sparse__accessor__t.html#af9343519de634d3df6a1a6c93eb30a32">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::sparse_accessor_t&lt; T &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1legion_1_1dense__accessor__t.html#aa1228a1d27b8948f0c9a6bde9ef807ca">flecsi::data::legion::dense_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a0d0d2cd8fb2c0f8eb38615aa237df269">flecsi::data::serial::dense_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html#ac37554f931cd80bd73062fb7d347810e">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a>
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#a4e43c0445217e81b0b4cc70bcf18401a">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
+, <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html#a83cde3576d0d3f43c2df421f1df39123">flecsi::utils::const_string_t</a>
+, <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array____.html#a33c89339844d590bdc1763b1c2dabff2">flecsi::utils::dimensioned_array__&lt; TYPE, DIMENSION, NAMESPACE &gt;</a>
+</li>
+<li>operator|()
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#acaa3f2e3afbceb3344d9b093000aad60">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
+</li>
+<li>operator|=()
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#a7804b9a9118ea58c47b18b059ff18a2f">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
+</li>
+<li>overflow()
+: <a class="el" href="classcinch_1_1tee__buffer__t.html#aec2f6e815f6f2c6a8edc05e972824c09">cinch::tee_buffer_t</a>
 </li>
 </ul>
 </div><!-- contents -->

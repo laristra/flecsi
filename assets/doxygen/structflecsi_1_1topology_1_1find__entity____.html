@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: flecsi::topology::find_entity__&lt; I, T, D, M &gt; Struct Template Reference</title>
+<title>Interface Documentation: flecsi::topology::find_entity__&lt; I, T, DIM, DOM &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +88,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="structflecsi_1_1topology_1_1find__entity____.html">find_entity__</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="structflecsi_1_1topology_1_1find__entity____.html">find_entity__</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -94,38 +96,37 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="structflecsi_1_1topology_1_1find__entity____-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::topology::find_entity__&lt; I, T, D, M &gt; Struct Template Reference</div>  </div>
+<div class="title">flecsi::topology::find_entity__&lt; I, T, DIM, DOM &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="structflecsi_1_1topology_1_1find__entity____.html" title="find_entity__ provides static search capabilities. ">find_entity__</a> provides static search capabilities.  
+<p><a class="el" href="structflecsi_1_1topology_1_1find__entity____.html" title="find_entity__ provides a specialization for the root recursion. ">find_entity__</a> provides a specialization for the root recursion.  
  <a href="structflecsi_1_1topology_1_1find__entity____.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="mesh__utils_8h_source.html">mesh_utils.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a3112e736ade43d6feb26bbcb7d8934ce"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1find__entity____.html#a3112e736ade43d6feb26bbcb7d8934ce">find</a> ()</td></tr>
-<tr class="separator:a3112e736ade43d6feb26bbcb7d8934ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcb74ee0b955dd4e6e398acab9838c55"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1find__entity____.html#afcb74ee0b955dd4e6e398acab9838c55">find</a> ()</td></tr>
+<tr class="separator:afcb74ee0b955dd4e6e398acab9838c55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;size_t I, class T, size_t D, size_t M&gt;<br />
-struct flecsi::topology::find_entity__&lt; I, T, D, M &gt;</h3>
+<div class="textblock"><h3>template&lt;size_t I, class T, size_t DIM, size_t DOM&gt;<br />
+struct flecsi::topology::find_entity__&lt; I, T, DIM, DOM &gt;</h3>
 
-<p><a class="el" href="structflecsi_1_1topology_1_1find__entity____.html" title="find_entity__ provides static search capabilities. ">find_entity__</a> provides static search capabilities. </p>
-<p><a class="el" href="structflecsi_1_1topology_1_1find__entity____.html" title="find_entity__ provides static search capabilities. ">find_entity__</a> provides a specialization for the root recursion. </p>
+<p><a class="el" href="structflecsi_1_1topology_1_1find__entity____.html" title="find_entity__ provides a specialization for the root recursion. ">find_entity__</a> provides a specialization for the root recursion. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a3112e736ade43d6feb26bbcb7d8934ce"></a>
+<a class="anchor" id="afcb74ee0b955dd4e6e398acab9838c55"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;size_t I, class T , size_t D, size_t M&gt; </div>
+template&lt;size_t I, class T , size_t DIM, size_t DOM&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static constexpr size_t <a class="el" href="structflecsi_1_1topology_1_1find__entity____.html">flecsi::topology::find_entity__</a>&lt; I, T, D, M &gt;::find </td>
+          <td class="memname">static constexpr size_t <a class="el" href="structflecsi_1_1topology_1_1find__entity____.html">flecsi::topology::find_entity__</a>&lt; I, T, DIM, DOM &gt;::find </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -142,8 +143,8 @@ template&lt;size_t I, class T , size_t D, size_t M&gt; </div>
   <table class="tparams">
     <tr><td class="paramname">I</td><td>The current index in tuple. </td></tr>
     <tr><td class="paramname">T</td><td>The tuple type. </td></tr>
-    <tr><td class="paramname">D</td><td>The dimension to match. </td></tr>
-    <tr><td class="paramname">M</td><td>The domain to match. </td></tr>
+    <tr><td class="paramname">DIM</td><td>The dimension to match. </td></tr>
+    <tr><td class="paramname">DOM</td><td>The domain to match. </td></tr>
   </table>
   </dd>
 </dl>

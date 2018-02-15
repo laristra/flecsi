@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: Class Members - Functions</title>
+<title>Interface Documentation: Class Members - Functions</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -90,11 +92,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_func_g.html#index_g"><span>g</span></a></li>
       <li><a href="functions_func_h.html#index_h"><span>h</span></a></li>
       <li><a href="functions_func_i.html#index_i"><span>i</span></a></li>
+      <li><a href="functions_func_j.html#index_j"><span>j</span></a></li>
       <li><a href="functions_func_l.html#index_l"><span>l</span></a></li>
       <li class="current"><a href="functions_func_m.html#index_m"><span>m</span></a></li>
       <li><a href="functions_func_n.html#index_n"><span>n</span></a></li>
       <li><a href="functions_func_o.html#index_o"><span>o</span></a></li>
       <li><a href="functions_func_p.html#index_p"><span>p</span></a></li>
+      <li><a href="functions_func_q.html#index_q"><span>q</span></a></li>
       <li><a href="functions_func_r.html#index_r"><span>r</span></a></li>
       <li><a href="functions_func_s.html#index_s"><span>s</span></a></li>
       <li><a href="functions_func_t.html#index_t"><span>t</span></a></li>
@@ -124,53 +128,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <h3><a class="anchor" id="index_m"></a>- m -</h3><ul>
 <li>make()
-: <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__t.html#ad9e245c5049d753ead6030085155da36">flecsi::topology::mesh_topology_base_t</a>
+: <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base____.html#a6cabe4a1794938f4c441770c3d11ae64">flecsi::topology::mesh_topology_base__&lt; STORAGE_TYPE &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1set__topology__base____.html#a8f78f2426c3c4994b1fb611d5241da3a">flecsi::topology::set_topology_base__&lt; STORAGE_TYPE &gt;</a>
 </li>
 <li>make_entity()
 : <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a25c86377708ddc94c72ba8bd2e977d30">flecsi::topology::tree_topology&lt; P &gt;</a>
 </li>
-<li>map_data()
-: <a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#ab2f8860cfbb26d998d3492ece62890ba">flecsi::execution::legion_dpd</a>
+<li>map()
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#a4f952da4bce4396dfd0d02697e3ba276">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
+</li>
+<li>map_task()
+: <a class="el" href="classflecsi_1_1execution_1_1mpi__mapper__t.html#af60668f8dabfea988b8a47ee1c2f1e9b">flecsi::execution::mpi_mapper_t</a>
 </li>
 <li>max_depth()
 : <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#af596e170f07acf09d5e07397263f8853">flecsi::topology::tree_topology&lt; P &gt;</a>
 </li>
-<li>mesh_topology_base_t()
-: <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__t.html#a4ee542121b356079f509cea94bf1587f">flecsi::topology::mesh_topology_base_t</a>
+<li>max_reduction()
+: <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#afa533181e7ff198e6a1a6b55340ddbe4">flecsi::execution::legion_context_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1mpi__context__policy__t.html#a2ec25cf09bac34d1c68cb7573cd9532d">flecsi::execution::mpi_context_policy_t</a>
 </li>
-<li>mesh_topology_t()
-: <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__t.html#a021e041d7817200fedd5c2986a9d6088">flecsi::topology::mesh_topology_t&lt; MT &gt;</a>
+<li>merge()
+: <a class="el" href="classflecsi_1_1mutator__handle__base____.html#aea750cb35dfe117475557f4da76884c9">flecsi::mutator_handle_base__&lt; T, MUTATOR_POLICY &gt;</a>
 </li>
-<li>meta()
-: <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1dense__accessor__t.html#a1d8eb6fb29626ccef93f2864e86be6b4">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::dense_accessor_t&lt; T &gt;</a>
-, <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1global__accessor__t.html#a41dd427893dfa48fc3a7b267c05b3e67">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::global_accessor_t&lt; T &gt;</a>
-, <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1sparse__accessor__t.html#afcb4dfd980cc751db042eb85a0c790bc">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::sparse_accessor_t&lt; T &gt;</a>
+<li>mesh_definition__()
+: <a class="el" href="classflecsi_1_1topology_1_1mesh__definition____.html#aa7d4747e5c61b83bbaaef6d2dbe17a08">flecsi::topology::mesh_definition__&lt; DIMENSION &gt;</a>
 </li>
-<li>meta_data()
-: <a class="el" href="classflecsi_1_1data_1_1data__t.html#a03f0e42bb797c79756c88d3e4227b47b">flecsi::data::data_t&lt; user_meta_data_t, storage_policy_t &gt;</a>
-, <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t.html#a908b6bca56af020f378bf475228bcbc4">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1legion_1_1dense__accessor__t.html#a487f5450bcdba7509ac5e1b70c1523dc">flecsi::data::legion::dense_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a129c3131bedf39a3cc29d91d14d660d0">flecsi::data::serial::dense_accessor_t&lt; T, MD &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html#a4a9f11c5ef44ef4fe28bf8223b7a570c">flecsi::data::serial::global_accessor_t&lt; T, MD &gt;</a>
+<li>mesh_topology__()
+: <a class="el" href="classflecsi_1_1topology_1_1mesh__topology____.html#a5b654d93fe79f5c3743393ee96f60294">flecsi::topology::mesh_topology__&lt; MESH_TYPE &gt;</a>
 </li>
-<li>move()
-: <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t.html#a7a26c270a2b3098a54a16f2a4c7a3846">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1serial__storage__policy__t.html#ae47f11ac20d182a0a579af818bf5ca49">flecsi::data::serial_storage_policy_t&lt; user_meta_data_t &gt;</a>
+<li>mesh_topology_base__()
+: <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base____.html#ae1ed6ac240f51ada283f0ca207c2663d">flecsi::topology::mesh_topology_base__&lt; STORAGE_TYPE &gt;</a>
+</li>
+<li>min_reduction()
+: <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#adea9a60baf8d1c3c4dbf626e478a220d">flecsi::execution::legion_context_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1mpi__context__policy__t.html#ac3b4b9ca4825ea282f2ca75a587aae3a">flecsi::execution::mpi_context_policy_t</a>
 </li>
 <li>mpi_communicator_t()
-: <a class="el" href="classflecsi_1_1dmp_1_1mpi__communicator__t.html#a4a8411c40567b37d9bbabfce895982b9">flecsi::dmp::mpi_communicator_t</a>
-</li>
-<li>mpi_handoff_to_legion()
-: <a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html#ab39c39e3d2acecd2a78981c0e3b1975d">flecsi::execution::ext_legion_handshake_t</a>
-</li>
-<li>mpi_legion_interop_t()
-: <a class="el" href="structflecsi_1_1execution_1_1mpi__legion__interop__t.html#a069316cb20450182a2e6b8cbae662f26">flecsi::execution::mpi_legion_interop_t</a>
+: <a class="el" href="classflecsi_1_1coloring_1_1mpi__communicator__t.html#a78f20cc85f15531187d7bce760416615">flecsi::coloring::mpi_communicator_t</a>
 </li>
 <li>mpi_mapper_t()
-: <a class="el" href="classflecsi_1_1execution_1_1mpi__mapper__t.html#a4efcfcbdea50163520ac0ccfd2d9fd7d">flecsi::execution::mpi_mapper_t</a>
+: <a class="el" href="classflecsi_1_1execution_1_1mpi__mapper__t.html#a3a9b6a41806ef8649480b5bc942fe16f">flecsi::execution::mpi_mapper_t</a>
 </li>
-<li>mpi_wait_on_legion()
-: <a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html#a245cd961b23226f23b8030d8290e8b82">flecsi::execution::ext_legion_handshake_t</a>
+<li>mutator__()
+: <a class="el" href="structflecsi_1_1mutator_____3_01data_1_1ragged_00_01T_01_4.html#a57b4acfb7e4add776606e4fd68f72cce">flecsi::mutator__&lt; data::ragged, T &gt;</a>
+, <a class="el" href="structflecsi_1_1mutator_____3_01data_1_1sparse_00_01T_01_4.html#a8638d1b13cc6f1b0c56e39284eeddb0c">flecsi::mutator__&lt; data::sparse, T &gt;</a>
+</li>
+<li>mutator_handle_base__()
+: <a class="el" href="classflecsi_1_1mutator__handle__base____.html#afd1311c78a4dbe36ff85bc7b55d013c6">flecsi::mutator_handle_base__&lt; T, MUTATOR_POLICY &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->

@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: flecsi::execution::legion_helper Class Reference</title>
+<title>Interface Documentation: flecsi::execution::legion_helper Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +88,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="classflecsi_1_1execution_1_1legion__helper.html">legion_helper</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="classflecsi_1_1execution_1_1legion__helper.html">legion_helper</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -117,9 +119,9 @@ Legion::Domain&#160;</td><td class="memItemRight" valign="bottom"><b>domain_from
 <tr class="memitem:af5c8b75c3fea27ec3e7d5bd407ca470d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af5c8b75c3fea27ec3e7d5bd407ca470d"></a>
 Legion::Domain&#160;</td><td class="memItemRight" valign="bottom"><b>domain_from_rect</b> (size_t start, size_t end)</td></tr>
 <tr class="separator:af5c8b75c3fea27ec3e7d5bd407ca470d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af3426990ad95e8b2b1e4e6d5760046bf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af3426990ad95e8b2b1e4e6d5760046bf"></a>
-Legion::IndexSpace&#160;</td><td class="memItemRight" valign="bottom"><b>create_index_space</b> (size_t n) const </td></tr>
-<tr class="separator:af3426990ad95e8b2b1e4e6d5760046bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7125c66f12fd510d5be3c87b6df793af"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7125c66f12fd510d5be3c87b6df793af"></a>
+Legion::IndexSpace&#160;</td><td class="memItemRight" valign="bottom"><b>create_index_space</b> (Legion::Domain n) const </td></tr>
+<tr class="separator:a7125c66f12fd510d5be3c87b6df793af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8c480a77c8f7ec6964e8572dcd85cde"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac8c480a77c8f7ec6964e8572dcd85cde"></a>
 Legion::FieldSpace&#160;</td><td class="memItemRight" valign="bottom"><b>create_field_space</b> () const </td></tr>
 <tr class="separator:ac8c480a77c8f7ec6964e8572dcd85cde"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -138,26 +140,19 @@ Legion::DomainPoint&#160;</td><td class="memItemRight" valign="bottom"><b>domain
 <tr class="memitem:aaf7a9c975895c05f24206070af054791"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaf7a9c975895c05f24206070af054791"></a>
 Legion::FutureMap&#160;</td><td class="memItemRight" valign="bottom"><b>execute_index_space</b> (Legion::IndexLauncher l) const </td></tr>
 <tr class="separator:aaf7a9c975895c05f24206070af054791"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a112bcca48b02897637270a40b96639fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a112bcca48b02897637270a40b96639fe"></a>
-Legion::IndexAllocator&#160;</td><td class="memItemRight" valign="bottom"><b>create_index_allocator</b> (Legion::IndexSpace is) const </td></tr>
-<tr class="separator:a112bcca48b02897637270a40b96639fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24f80c7fafaad18181284b0f286b8e4a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a24f80c7fafaad18181284b0f286b8e4a"></a>
 Legion::Domain&#160;</td><td class="memItemRight" valign="bottom"><b>get_domain</b> (Legion::PhysicalRegion pr) const </td></tr>
 <tr class="separator:a24f80c7fafaad18181284b0f286b8e4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade8ba336fe5d82e488cd82e0c927f902"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
 <tr class="memitem:ade8ba336fe5d82e488cd82e0c927f902"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__helper.html#ade8ba336fe5d82e488cd82e0c927f902">get_buffer</a> (Legion::PhysicalRegion pr, T *&amp;buf, size_t field=0) const </td></tr>
 <tr class="separator:ade8ba336fe5d82e488cd82e0c927f902"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a187a9227a2c1a72fe229ddd2fbf4b8b2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a187a9227a2c1a72fe229ddd2fbf4b8b2"></a>
-char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__helper.html#a187a9227a2c1a72fe229ddd2fbf4b8b2">get_raw_buffer</a> (Legion::PhysicalRegion pr, size_t field=0) const </td></tr>
-<tr class="memdesc:a187a9227a2c1a72fe229ddd2fbf4b8b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">FIXME documentation. <br /></td></tr>
+<tr class="memitem:a187a9227a2c1a72fe229ddd2fbf4b8b2"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__helper.html#a187a9227a2c1a72fe229ddd2fbf4b8b2">get_raw_buffer</a> (Legion::PhysicalRegion pr, size_t field=0) const </td></tr>
 <tr class="separator:a187a9227a2c1a72fe229ddd2fbf4b8b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c079310a533dd26cbd740dc9a7876de"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2c079310a533dd26cbd740dc9a7876de"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__helper.html#a2c079310a533dd26cbd740dc9a7876de">unmap_region</a> (Legion::PhysicalRegion pr) const </td></tr>
-<tr class="memdesc:a2c079310a533dd26cbd740dc9a7876de"><td class="mdescLeft">&#160;</td><td class="mdescRight">FIXME documentation. <br /></td></tr>
+<tr class="memitem:a2c079310a533dd26cbd740dc9a7876de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__helper.html#a2c079310a533dd26cbd740dc9a7876de">unmap_region</a> (Legion::PhysicalRegion pr) const </td></tr>
 <tr class="separator:a2c079310a533dd26cbd740dc9a7876de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>FIXME documentation </p>
+<div class="textblock"><p>The Legion helper class define a number of convenience methods for handling common Legion operations such as creating index spaces, field spaces, and allocators, getting buffers from accessors, etc. in the cases common to FleCSI. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="ade8ba336fe5d82e488cd82e0c927f902"></a>
 <div class="memitem">
@@ -198,7 +193,67 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>FIXME documentation </p>
+<p>Get a typed buffer from a physical region and field ID. </p>
+
+</div>
+</div>
+<a class="anchor" id="a187a9227a2c1a72fe229ddd2fbf4b8b2"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char* flecsi::execution::legion_helper::get_raw_buffer </td>
+          <td>(</td>
+          <td class="paramtype">Legion::PhysicalRegion&#160;</td>
+          <td class="paramname"><em>pr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>field</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get a raw (byte) buffer from a physical region and field ID. </p>
+
+</div>
+</div>
+<a class="anchor" id="a2c079310a533dd26cbd740dc9a7876de"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_helper::unmap_region </td>
+          <td>(</td>
+          <td class="paramtype">Legion::PhysicalRegion&#160;</td>
+          <td class="paramname"><em>pr</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Unmap a physical region. </p>
 
 </div>
 </div>

@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: flecsi::utils::array_ref&lt; T &gt; Class Template Reference</title>
+<title>Interface Documentation: flecsi::utils::array_ref&lt; T &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +88,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>utils</b></li><li class="navelem"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>utils</b></li><li class="navelem"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -96,8 +98,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::utils::array_ref&lt; T &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;<a class="el" href="array__ref_8h_source.html">array_ref.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -123,9 +123,9 @@ typedef std::reverse_iterator&lt; <a class="el" href="classflecsi_1_1utils_1_1ar
 <tr class="memitem:a11dfa2d7f0da4fbfc9fecf293edbb9a0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a11dfa2d7f0da4fbfc9fecf293edbb9a0"></a>
 typedef const_reverse_iterator&#160;</td><td class="memItemRight" valign="bottom"><b>reverse_iterator</b></td></tr>
 <tr class="separator:a11dfa2d7f0da4fbfc9fecf293edbb9a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c109ff17afda637f3785b2e2d5739a3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c109ff17afda637f3785b2e2d5739a3"></a>
-typedef size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size_type</b></td></tr>
-<tr class="separator:a1c109ff17afda637f3785b2e2d5739a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa38f5e41198367b1261cdd806e21d36"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afa38f5e41198367b1261cdd806e21d36"></a>
+typedef std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size_type</b></td></tr>
+<tr class="separator:afa38f5e41198367b1261cdd806e21d36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a930968fa6c5ce431834a204459f53d81"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a930968fa6c5ce431834a204459f53d81"></a>
 typedef ptrdiff_t&#160;</td><td class="memItemRight" valign="bottom"><b>difference_type</b></td></tr>
 <tr class="separator:a930968fa6c5ce431834a204459f53d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,9 +141,9 @@ constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>array_ref</b> (c
 <tr class="memitem:a89a2f0f9d094aca5ae3ecd9589a7c086"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a89a2f0f9d094aca5ae3ecd9589a7c086"></a>
 <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a> &amp;)=default</td></tr>
 <tr class="separator:a89a2f0f9d094aca5ae3ecd9589a7c086"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ff4ddc43704e09be4d319adec69bf45"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3ff4ddc43704e09be4d319adec69bf45"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>array_ref</b> (const T *array, size_type length)</td></tr>
-<tr class="separator:a3ff4ddc43704e09be4d319adec69bf45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b29ca0fe63cf026dbc6c0c6531eebef"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9b29ca0fe63cf026dbc6c0c6531eebef"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>array_ref</b> (const T *array, const size_type length)</td></tr>
+<tr class="separator:a9b29ca0fe63cf026dbc6c0c6531eebef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75091e53095aff11d9f764b0b80e0a76"><td class="memTemplParams" colspan="2">template&lt;typename Allocator &gt; </td></tr>
 <tr class="memitem:a75091e53095aff11d9f764b0b80e0a76"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a75091e53095aff11d9f764b0b80e0a76">array_ref</a> (const std::vector&lt; T, Allocator &gt; &amp;v)</td></tr>
 <tr class="separator:a75091e53095aff11d9f764b0b80e0a76"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -158,8 +158,8 @@ template&lt;size_type N&gt; </td></tr>
 <tr class="memitem:a291bda96c312b39454590578d2ffa519"><td class="memTemplParams" colspan="2">template&lt;size_type N&gt; </td></tr>
 <tr class="memitem:a291bda96c312b39454590578d2ffa519"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a291bda96c312b39454590578d2ffa519">array_ref</a> (const std::array&lt; T, N &gt; &amp;a)</td></tr>
 <tr class="separator:a291bda96c312b39454590578d2ffa519"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6380d7f2fa283da1aab260a4de0146c4"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a6380d7f2fa283da1aab260a4de0146c4">substr</a> (size_type pos, size_type n=size_type(-1)) const </td></tr>
-<tr class="separator:a6380d7f2fa283da1aab260a4de0146c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42e1c01f91711dd15a2ef89b4e79e9c1"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a42e1c01f91711dd15a2ef89b4e79e9c1">substr</a> (const size_type pos, const size_type n=size_type(-1)) const </td></tr>
+<tr class="separator:a42e1c01f91711dd15a2ef89b4e79e9c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">iterators</div></td></tr>
 <tr class="memitem:a2326e2fde6c7dfa2794e4949a29d1981"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2326e2fde6c7dfa2794e4949a29d1981"></a>
 constexpr <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#acc22a04db9d1399eec3d937da58ffeb9">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () const </td></tr>
@@ -196,12 +196,12 @@ constexpr size_type&#160;</td><td class="memItemRight" valign="bottom"><b>max_si
 constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>empty</b> () const </td></tr>
 <tr class="separator:a9bc4513075af2f204b4339bcd798d409"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">element access</div></td></tr>
-<tr class="memitem:aae2dbb7f84bfe105a50a99d90f415ac0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aae2dbb7f84bfe105a50a99d90f415ac0"></a>
-constexpr const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (size_type i) const </td></tr>
-<tr class="separator:aae2dbb7f84bfe105a50a99d90f415ac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fd3f331d58391b2d9a50a6602251487"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8fd3f331d58391b2d9a50a6602251487"></a>
-constexpr const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size_type i) const </td></tr>
-<tr class="separator:a8fd3f331d58391b2d9a50a6602251487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31d9ebc21b0ff8405acd867356dff602"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a31d9ebc21b0ff8405acd867356dff602"></a>
+constexpr const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (const size_type i) const </td></tr>
+<tr class="separator:a31d9ebc21b0ff8405acd867356dff602"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afadc980b9833766e7e2d34f286a2e4b5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afadc980b9833766e7e2d34f286a2e4b5"></a>
+constexpr const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (const size_type i) const </td></tr>
+<tr class="separator:afadc980b9833766e7e2d34f286a2e4b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cdefdcf1cf164906a65e863ff48a690"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8cdefdcf1cf164906a65e863ff48a690"></a>
 constexpr const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>front</b> () const </td></tr>
 <tr class="separator:a8cdefdcf1cf164906a65e863ff48a690"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -226,33 +226,23 @@ std::vector&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vec
 std::basic_string&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>str</b> () const </td></tr>
 <tr class="separator:a817914d9e78125cb96f1db06074015f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">mutators</div></td></tr>
-<tr class="memitem:a03cc486c185e6745abdd67d412de1692"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a03cc486c185e6745abdd67d412de1692">clear</a> ()</td></tr>
+<tr class="memitem:a03cc486c185e6745abdd67d412de1692"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1utils_1_1void.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a03cc486c185e6745abdd67d412de1692">clear</a> ()</td></tr>
 <tr class="separator:a03cc486c185e6745abdd67d412de1692"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bad489a32f4f0ae13f9c32821082ef9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a7bad489a32f4f0ae13f9c32821082ef9">remove_prefix</a> (size_type n)</td></tr>
-<tr class="separator:a7bad489a32f4f0ae13f9c32821082ef9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16d7c861bfc75f71573e44a77411f1d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a16d7c861bfc75f71573e44a77411f1d3">remove_suffix</a> (size_type n)</td></tr>
-<tr class="separator:a16d7c861bfc75f71573e44a77411f1d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace90eb562cc15c0cd62330c9a6351c36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#ace90eb562cc15c0cd62330c9a6351c36">pop_back</a> ()</td></tr>
+<tr class="memitem:a0f658eaa6fa81d550ed1bccd556ae232"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1utils_1_1void.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a0f658eaa6fa81d550ed1bccd556ae232">remove_prefix</a> (const size_type n)</td></tr>
+<tr class="separator:a0f658eaa6fa81d550ed1bccd556ae232"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afffcdd4341c9aa512f7924dcfa615037"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1utils_1_1void.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#afffcdd4341c9aa512f7924dcfa615037">remove_suffix</a> (const size_type n)</td></tr>
+<tr class="separator:afffcdd4341c9aa512f7924dcfa615037"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace90eb562cc15c0cd62330c9a6351c36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1utils_1_1void.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#ace90eb562cc15c0cd62330c9a6351c36">pop_back</a> ()</td></tr>
 <tr class="separator:ace90eb562cc15c0cd62330c9a6351c36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69ec8afeb61c6f26efe16eaa3fe83583"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a69ec8afeb61c6f26efe16eaa3fe83583">pop_front</a> ()</td></tr>
+<tr class="memitem:a69ec8afeb61c6f26efe16eaa3fe83583"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1utils_1_1void.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a69ec8afeb61c6f26efe16eaa3fe83583">pop_front</a> ()</td></tr>
 <tr class="separator:a69ec8afeb61c6f26efe16eaa3fe83583"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename T&gt;<br />
-class flecsi::utils::array_ref&lt; T &gt;</h3>
-
-<p>An <code>array_ref&lt;T&gt;</code> represents an immutable array of <code>size()</code> elements of type T. The storage for the array is <em>not</em> owned by the <code><a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a></code> object, and clients must arrange for the backing store to remain live while the <code><a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a></code> object is in use.</p>
-<p>Implicit conversion operations are provided from types with contiguous iterators like <code>std::vector</code>, <code>std::string</code>, <code>std::array</code>, and primitive arrays. <code><a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a></code> objects are invalidated by any operation that invalidates their underlying pointers.</p>
-<p>One common use for <code><a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a></code> is when passing arguments to a routine where you want to be able to accept a variety of array types. The usual approach here is to have the client explicitly pass in a pointer and a length, as in: </p><div class="fragment"></div><!-- fragment --> <dl class="section user"><dt></dt><dd>Unfortunately, this leads to ugly and error-prone code at the call site: <div class="fragment"></div><!-- fragment --> </dd></dl>
-<dl class="section user"><dt></dt><dd>Instead, you can use an <code><a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a></code> as the argument to the routine: <div class="fragment"></div><!-- fragment --> </dd></dl>
-<dl class="section user"><dt></dt><dd>This makes the call sites cleaner, for the most part: <div class="fragment"></div><!-- fragment --> </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>The existing <code><a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a></code> classes make the view const. It may be useful to extend that to allow modifications of the referenced array elements, and use <code>array_ref&lt;const T&gt;</code> for immutable views. </dd></dl>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
 <a class="anchor" id="acc22a04db9d1399eec3d937da58ffeb9"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">typedef const T* <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::<a class="el" href="classflecsi_1_1utils_1_1array__ref.html#acc22a04db9d1399eec3d937da58ffeb9">const_iterator</a></td>
@@ -267,7 +257,7 @@ template&lt;typename T&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">typedef <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#acc22a04db9d1399eec3d937da58ffeb9">const_iterator</a> <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::<a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a2c42b6cbac23cafb40ab40ff60a5c9d0">iterator</a></td>
@@ -282,14 +272,14 @@ template&lt;typename T&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">typedef const T* <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::<a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a3f1d32653d18ac149cf013b467ba367b">pointer</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>Should the pointer type be configurable as a template argument? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000012">Todo:</a></b></dt><dd>Should the pointer type be configurable as a template argument? </dd></dl>
 
 </div>
 </div>
@@ -298,7 +288,7 @@ template&lt;typename T&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -324,7 +314,7 @@ template&lt;typename T&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
 <div class="memtemplate">
 template&lt;typename Allocator &gt; </div>
 <table class="mlabels">
@@ -345,7 +335,7 @@ template&lt;typename Allocator &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Arguably, this conversion should be a std::vector conversion operator. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000013">Todo:</a></b></dt><dd>Arguably, this conversion should be a std::vector conversion operator. </dd></dl>
 
 </div>
 </div>
@@ -353,7 +343,7 @@ template&lt;typename Allocator &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
 <div class="memtemplate">
 template&lt;size_type N&gt; </div>
 <table class="mlabels">
@@ -374,7 +364,7 @@ template&lt;size_type N&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Arguably, this conversion should be a std::array conversion operator. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000014">Todo:</a></b></dt><dd>Arguably, this conversion should be a std::array conversion operator. </dd></dl>
 
 </div>
 </div>
@@ -383,13 +373,13 @@ template&lt;size_type N&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::clear </td>
+          <td class="memname"><a class="el" href="structflecsi_1_1utils_1_1void.html">void</a> <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::clear </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -409,7 +399,7 @@ template&lt;typename T&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -435,7 +425,7 @@ template&lt;typename T&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
 <div class="memtemplate">
 template&lt;typename traits , typename Allocator &gt; </div>
 <table class="mlabels">
@@ -455,7 +445,7 @@ template&lt;typename traits , typename Allocator &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000007">Todo:</a></b></dt><dd>Arguably, this conversion should be a std::basic_string constructor. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000017">Todo:</a></b></dt><dd>Arguably, this conversion should be a std::basic_string constructor. </dd></dl>
 
 </div>
 </div>
@@ -463,7 +453,7 @@ template&lt;typename traits , typename Allocator &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -481,7 +471,7 @@ template&lt;typename T&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>Arguably, this conversion should be a std::vector constructor. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000016">Todo:</a></b></dt><dd>Arguably, this conversion should be a std::vector constructor. </dd></dl>
 
 </div>
 </div>
@@ -489,13 +479,13 @@ template&lt;typename T&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::pop_back </td>
+          <td class="memname"><a class="el" href="structflecsi_1_1utils_1_1void.html">void</a> <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::pop_back </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -515,13 +505,13 @@ template&lt;typename T&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::pop_front </td>
+          <td class="memname"><a class="el" href="structflecsi_1_1utils_1_1void.html">void</a> <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::pop_front </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -537,19 +527,19 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a7bad489a32f4f0ae13f9c32821082ef9"></a>
+<a class="anchor" id="a0f658eaa6fa81d550ed1bccd556ae232"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::remove_prefix </td>
+          <td class="memname"><a class="el" href="structflecsi_1_1utils_1_1void.html">void</a> <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::remove_prefix </td>
           <td>(</td>
-          <td class="paramtype">size_type&#160;</td>
+          <td class="paramtype">const size_type&#160;</td>
           <td class="paramname"><em>n</em></td><td>)</td>
           <td></td>
         </tr>
@@ -564,19 +554,19 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a16d7c861bfc75f71573e44a77411f1d3"></a>
+<a class="anchor" id="afffcdd4341c9aa512f7924dcfa615037"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::remove_suffix </td>
+          <td class="memname"><a class="el" href="structflecsi_1_1utils_1_1void.html">void</a> <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::remove_suffix </td>
           <td>(</td>
-          <td class="paramtype">size_type&#160;</td>
+          <td class="paramtype">const size_type&#160;</td>
           <td class="paramname"><em>n</em></td><td>)</td>
           <td></td>
         </tr>
@@ -591,11 +581,11 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a6380d7f2fa283da1aab260a4de0146c4"></a>
+<a class="anchor" id="a42e1c01f91711dd15a2ef89b4e79e9c1"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -603,13 +593,13 @@ template&lt;typename T&gt; </div>
         <tr>
           <td class="memname">constexpr <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a> <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref</a>&lt; T &gt;::substr </td>
           <td>(</td>
-          <td class="paramtype">size_type&#160;</td>
+          <td class="paramtype">const size_type&#160;</td>
           <td class="paramname"><em>pos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_type&#160;</td>
+          <td class="paramtype">const size_type&#160;</td>
           <td class="paramname"><em>n</em> = <code>size_type(-1)</code>&#160;</td>
         </tr>
         <tr>
@@ -624,7 +614,7 @@ template&lt;typename T&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>See <code>basic_string_ref::substr</code> for interface questions. We want something like this on <code><a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a></code>, but probably not with this name. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000015">Todo:</a></b></dt><dd>See <code>basic_string_ref::substr</code> for interface questions. We want something like this on <code><a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a></code>, but probably not with this name. </dd></dl>
 
 </div>
 </div>

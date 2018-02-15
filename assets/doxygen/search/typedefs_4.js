@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['global_5faccessor_5ft',['global_accessor_t',['../classflecsi_1_1data_1_1data__t.html#a38ab5feb0d726f825400d56f55af699b',1,'flecsi::data::data_t']]]
+  ['entity_5fvector_5ft',['entity_vector_t',['../mesh__types_8h.html#a211a19f0c94dce0db37dfbd2f9921169',1,'flecsi::topology']]]
 ];

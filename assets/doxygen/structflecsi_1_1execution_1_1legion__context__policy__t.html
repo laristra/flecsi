@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: flecsi::execution::legion_context_policy_t Class Reference</title>
+<title>Interface Documentation: flecsi::execution::legion_context_policy_t Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,104 +88,189 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html">legion_context_policy_t</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html">legion_context_policy_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
-<a href="classflecsi_1_1execution_1_1legion__context__policy__t-members.html">List of all members</a>  </div>
+<a href="structflecsi_1_1execution_1_1legion__context__policy__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::execution::legion_context_policy_t Class Reference</div>  </div>
+<div class="title">flecsi::execution::legion_context_policy_t Struct Reference<div class="ingroups"><a class="el" href="group__execution.html">Execution Interface</a> &raquo; <a class="el" href="group__legion-execution.html">Legion Execution Backend</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html" title="legion_context_policy_t provides... ">legion_context_policy_t</a> provides...  
- <a href="structflecsi_1_1execution_1_1legion__context__policy__t.html#details">More...</a></p>
-
-<p><code>#include &lt;<a class="el" href="mpilegion_2context__policy_8h_source.html">legion/context_policy.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="legion_2context__policy_8h_source.html">context_policy.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t_1_1index__space__data__t.html">index_space_data_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t_1_1index__subspace__data__t.html">index_subspace_data_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t_1_1local__index__space__data__t.html">local_index_space_data_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ab338b716e70df1be6eb085d0f3cb087d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab338b716e70df1be6eb085d0f3cb087d"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>task_id_t</b> = LegionRuntime::HighLevel::TaskID</td></tr>
-<tr class="separator:ab338b716e70df1be6eb085d0f3cb087d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03b8e24dfe1c9177df61b69f8e9a6273"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a03b8e24dfe1c9177df61b69f8e9a6273"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>register_function_t</b> = std::function&lt; void(size_t)&gt;</td></tr>
-<tr class="separator:a03b8e24dfe1c9177df61b69f8e9a6273"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada455165e10ca05231e52d23035ff2d3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ada455165e10ca05231e52d23035ff2d3"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>unique_tid_t</b> = <a class="el" href="structflecsi_1_1utils_1_1unique__id__t.html">utils::unique_id_t</a>&lt; task_id_t &gt;</td></tr>
-<tr class="separator:ada455165e10ca05231e52d23035ff2d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cacf5c5d7f491b8326b8160ccdcf12c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a8cacf5c5d7f491b8326b8160ccdcf12c">registration_function_t</a> = std::function&lt; void(task_id_t, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>, std::string &amp;)&gt;</td></tr>
+<tr class="separator:a8cacf5c5d7f491b8326b8160ccdcf12c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42b969b49b7f03b6eb8e9eaa61e4ed9d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a42b969b49b7f03b6eb8e9eaa61e4ed9d">unique_tid_t</a> = <a class="el" href="structflecsi_1_1utils_1_1unique__id__t.html">utils::unique_id_t</a>&lt; task_id_t, FLECSI_GENERATED_ID_MAX &gt;</td></tr>
+<tr class="separator:a42b969b49b7f03b6eb8e9eaa61e4ed9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b959d08d237d648cc1294e4f1e1c0ea"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b959d08d237d648cc1294e4f1e1c0ea">task_info_t</a> = std::tuple&lt; task_id_t, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>, std::string, <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a8cacf5c5d7f491b8326b8160ccdcf12c">registration_function_t</a> &gt;</td></tr>
+<tr class="separator:a9b959d08d237d648cc1294e4f1e1c0ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a4b663e8e89d3ef76adb3f8904dadfe9c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a4b663e8e89d3ef76adb3f8904dadfe9c">initialize</a> (int argc, char **argv)</td></tr>
 <tr class="separator:a4b663e8e89d3ef76adb3f8904dadfe9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a243a4125de123ee18d42a80a84f202eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a243a4125de123ee18d42a80a84f202eb">push_state</a> (size_t key, LegionRuntime::HighLevel::Context &amp;<a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a5b416a2b186ae28401e3add2971b9c71">context</a>, LegionRuntime::HighLevel::HighLevelRuntime *<a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ad16286e4c05746615ab84434a5662bce">runtime</a>, const LegionRuntime::HighLevel::Task *<a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ab523efc2326997df108cd09a0cecc7a5">task</a>, const std::vector&lt; LegionRuntime::HighLevel::PhysicalRegion &gt; &amp;<a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a427d05c8bfe349502e539c4083d8aa40">regions</a>)</td></tr>
-<tr class="separator:a243a4125de123ee18d42a80a84f202eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45f5d07b1c8209ed6b0173f52cc0448d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a45f5d07b1c8209ed6b0173f52cc0448d">pop_state</a> (size_t key)</td></tr>
-<tr class="separator:a45f5d07b1c8209ed6b0173f52cc0448d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2feb28c6e9e380b5a3d37110a291fd9e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a2feb28c6e9e380b5a3d37110a291fd9e">register_task</a> (<a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a> key, const register_function_t &amp;f)</td></tr>
-<tr class="separator:a2feb28c6e9e380b5a3d37110a291fd9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7669457c80729cfe6ce9c2f04e2865f3"><td class="memItemLeft" align="right" valign="top">task_id_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a7669457c80729cfe6ce9c2f04e2865f3">task_id</a> (<a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a> key)</td></tr>
-<tr class="separator:a7669457c80729cfe6ce9c2f04e2865f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a320f12a5e3433e7ad38a87769aa1c5a6"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a320f12a5e3433e7ad38a87769aa1c5a6"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a320f12a5e3433e7ad38a87769aa1c5a6">register_function</a> (const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, T &amp;<a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a0d77a64600f2c8cb6a27bed8d8a8323e">function</a>)</td></tr>
-<tr class="separator:a320f12a5e3433e7ad38a87769aa1c5a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d77a64600f2c8cb6a27bed8d8a8323e"><td class="memItemLeft" align="right" valign="top">std::function&lt; void(void)&gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a0d77a64600f2c8cb6a27bed8d8a8323e">function</a> (size_t key)</td></tr>
-<tr class="separator:a0d77a64600f2c8cb6a27bed8d8a8323e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b416a2b186ae28401e3add2971b9c71"><td class="memItemLeft" align="right" valign="top">LegionRuntime::HighLevel::Context &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a5b416a2b186ae28401e3add2971b9c71">context</a> (size_t task_key)</td></tr>
-<tr class="separator:a5b416a2b186ae28401e3add2971b9c71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad16286e4c05746615ab84434a5662bce"><td class="memItemLeft" align="right" valign="top">LegionRuntime::HighLevel::HighLevelRuntime *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ad16286e4c05746615ab84434a5662bce">runtime</a> (size_t task_key)</td></tr>
-<tr class="separator:ad16286e4c05746615ab84434a5662bce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab523efc2326997df108cd09a0cecc7a5"><td class="memItemLeft" align="right" valign="top">const LegionRuntime::HighLevel::Task *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ab523efc2326997df108cd09a0cecc7a5">task</a> (size_t task_key)</td></tr>
-<tr class="separator:ab523efc2326997df108cd09a0cecc7a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a427d05c8bfe349502e539c4083d8aa40"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; LegionRuntime::HighLevel::PhysicalRegion &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a427d05c8bfe349502e539c4083d8aa40">regions</a> (size_t task_key)</td></tr>
-<tr class="separator:a427d05c8bfe349502e539c4083d8aa40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b68246679a6e9ea2264f6340d09b6a1"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a4b68246679a6e9ea2264f6340d09b6a1">color</a> () const </td></tr>
+<tr class="separator:a4b68246679a6e9ea2264f6340d09b6a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42689037ff2cfc11b59ef1930f9a3f52"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a42689037ff2cfc11b59ef1930f9a3f52">colors</a> () const </td></tr>
+<tr class="separator:a42689037ff2cfc11b59ef1930f9a3f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a592ff8f5dbf2f8e6cf496282d4fb51a9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a592ff8f5dbf2f8e6cf496282d4fb51a9">set_mpi_state</a> (bool active)</td></tr>
+<tr class="separator:a592ff8f5dbf2f8e6cf496282d4fb51a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b91a3c955cd1572cdee39b1339d7563"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b91a3c955cd1572cdee39b1339d7563">set_mpi_task</a> (std::function&lt; void()&gt; &amp;mpi_task)</td></tr>
+<tr class="separator:a9b91a3c955cd1572cdee39b1339d7563"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea0844c45d70f9b92a240dff4a9c9390"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#aea0844c45d70f9b92a240dff4a9c9390">invoke_mpi_task</a> ()</td></tr>
+<tr class="separator:aea0844c45d70f9b92a240dff4a9c9390"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6d6edaaf621be53b29e3f8f42e450d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ab6d6edaaf621be53b29e3f8f42e450d1">set_all_processes</a> (const LegionRuntime::Arrays::Rect&lt; 1 &gt; &amp;<a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a4ea7ce9250fa40f9ce2168f334d1034a">all_processes</a>)</td></tr>
+<tr class="separator:ab6d6edaaf621be53b29e3f8f42e450d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ea7ce9250fa40f9ce2168f334d1034a"><td class="memItemLeft" align="right" valign="top">const LegionRuntime::Arrays::Rect&lt; 1 &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a4ea7ce9250fa40f9ce2168f334d1034a">all_processes</a> () const </td></tr>
+<tr class="separator:a4ea7ce9250fa40f9ce2168f334d1034a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa5d16311467328bcf77638554627938"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#aaa5d16311467328bcf77638554627938">handoff_to_legion</a> ()</td></tr>
+<tr class="separator:aaa5d16311467328bcf77638554627938"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae35fd32261f19f4ca8ca6f4306be56ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ae35fd32261f19f4ca8ca6f4306be56ef">wait_on_legion</a> ()</td></tr>
+<tr class="separator:ae35fd32261f19f4ca8ca6f4306be56ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af547e4abf000dd60e80ce2664cbebc51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#af547e4abf000dd60e80ce2664cbebc51">handoff_to_mpi</a> ()</td></tr>
+<tr class="separator:af547e4abf000dd60e80ce2664cbebc51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e6fe89dcb48a85f5fc39146fdb69549"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a2e6fe89dcb48a85f5fc39146fdb69549">wait_on_mpi</a> ()</td></tr>
+<tr class="separator:a2e6fe89dcb48a85f5fc39146fdb69549"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0628658d59cb9b1720181299d10493e4"><td class="memTemplParams" colspan="2"><a class="anchor" id="a0628658d59cb9b1720181299d10493e4"></a>
+template&lt;typename LAUNCHERTYPE &gt; </td></tr>
+<tr class="memitem:a0628658d59cb9b1720181299d10493e4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>add_wait_handshake</b> (LAUNCHERTYPE &amp;l)</td></tr>
+<tr class="separator:a0628658d59cb9b1720181299d10493e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa8d4723309b59c8d8f73e670208a1ed"><td class="memTemplParams" colspan="2"><a class="anchor" id="afa8d4723309b59c8d8f73e670208a1ed"></a>
+template&lt;typename LAUNCHERTYPE &gt; </td></tr>
+<tr class="memitem:afa8d4723309b59c8d8f73e670208a1ed"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>add_arrival_handshake</b> (LAUNCHERTYPE &amp;l)</td></tr>
+<tr class="separator:afa8d4723309b59c8d8f73e670208a1ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7392f9f9c0cb41650c6f9d507c1e5d6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac7392f9f9c0cb41650c6f9d507c1e5d6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>advance_handshake</b> ()</td></tr>
+<tr class="separator:ac7392f9f9c0cb41650c6f9d507c1e5d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03ab2a465050bb032af45095121395d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a03ab2a465050bb032af45095121395d5">unset_call_mpi</a> (Legion::Context &amp;ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="separator:a03ab2a465050bb032af45095121395d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5ff47be4fd7f73958a054041417a5c3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa5ff47be4fd7f73958a054041417a5c3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>unset_call_mpi_single</b> ()</td></tr>
+<tr class="separator:aa5ff47be4fd7f73958a054041417a5c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaae9e10c0be04afe2831b8f0fd62ddb6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#aaae9e10c0be04afe2831b8f0fd62ddb6">handoff_to_mpi</a> (Legion::Context &amp;ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="separator:aaae9e10c0be04afe2831b8f0fd62ddb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d1bee594bb0b953bf6500d843c85b77"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1d1bee594bb0b953bf6500d843c85b77"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>handoff_to_mpi_single</b> ()</td></tr>
+<tr class="separator:a1d1bee594bb0b953bf6500d843c85b77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2100cbb4796ef5b8df0586e4ee3c3887"><td class="memItemLeft" align="right" valign="top">Legion::FutureMap&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a2100cbb4796ef5b8df0586e4ee3c3887">wait_on_mpi</a> (Legion::Context &amp;ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="separator:a2100cbb4796ef5b8df0586e4ee3c3887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fd7c1a918887fbd6f4e9319a76c57b9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7fd7c1a918887fbd6f4e9319a76c57b9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>wait_on_mpi_single</b> ()</td></tr>
+<tr class="separator:a7fd7c1a918887fbd6f4e9319a76c57b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e4e03c5491bfc70727d5097046f0c50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a2e4e03c5491bfc70727d5097046f0c50">connect_with_mpi</a> (Legion::Context &amp;ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="separator:a2e4e03c5491bfc70727d5097046f0c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2685a1ad3028601bb21a7fd7b80ac045"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a2685a1ad3028601bb21a7fd7b80ac045">register_task</a> (size_t key, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a> launch, std::string &amp;name, const <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a8cacf5c5d7f491b8326b8160ccdcf12c">registration_function_t</a> &amp;callback)</td></tr>
+<tr class="separator:a2685a1ad3028601bb21a7fd7b80ac045"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d2bd5ee16f6a046e4f2c33297da9009"><td class="memTemplParams" colspan="2">template&lt;size_t KEY&gt; </td></tr>
+<tr class="memitem:a3d2bd5ee16f6a046e4f2c33297da9009"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b959d08d237d648cc1294e4f1e1c0ea">task_info_t</a> &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a3d2bd5ee16f6a046e4f2c33297da9009">task_info</a> ()</td></tr>
+<tr class="separator:a3d2bd5ee16f6a046e4f2c33297da9009"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b93a5338f907beb89949ff4aa4cf83a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b959d08d237d648cc1294e4f1e1c0ea">task_info_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a6b93a5338f907beb89949ff4aa4cf83a">task_info</a> (size_t key)</td></tr>
+<tr class="separator:a6b93a5338f907beb89949ff4aa4cf83a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecf7ef0d807edc85e071243ea89aaabc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#aecf7ef0d807edc85e071243ea89aaabc">task_info_template_method</a> (task_id, task_id_t, 0)</td></tr>
+<tr class="separator:aecf7ef0d807edc85e071243ea89aaabc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a220b0ba0344c73cf24f17853d6d2367b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a220b0ba0344c73cf24f17853d6d2367b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>task_info_method</b> (task_id, task_id_t, 0)</td></tr>
+<tr class="separator:a220b0ba0344c73cf24f17853d6d2367b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a841c4e4cca61b6d0e5c407812582b1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8a841c4e4cca61b6d0e5c407812582b1"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>task_info_template_method</b> (processor_type, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>, 1)</td></tr>
+<tr class="separator:a8a841c4e4cca61b6d0e5c407812582b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a800ce584b03b4c28a89492f57f7e76bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a800ce584b03b4c28a89492f57f7e76bd"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>task_info_method</b> (processor_type, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>, 1)</td></tr>
+<tr class="separator:a800ce584b03b4c28a89492f57f7e76bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70df02f2ff805a7e951a4391c9c570b0"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a70df02f2ff805a7e951a4391c9c570b0">index_space_data_map</a> ()</td></tr>
+<tr class="separator:a70df02f2ff805a7e951a4391c9c570b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2c13cc0eb3e0a08be67460ea62b72c5"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#af2c13cc0eb3e0a08be67460ea62b72c5">local_index_space_data_map</a> ()</td></tr>
+<tr class="separator:af2c13cc0eb3e0a08be67460ea62b72c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54a365d4abc5fa17641cf83221c4e5be"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a54a365d4abc5fa17641cf83221c4e5be">index_subspace_data_map</a> ()</td></tr>
+<tr class="separator:a54a365d4abc5fa17641cf83221c4e5be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9003305bd08b185f2bc2e1fbd19cbf62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9003305bd08b185f2bc2e1fbd19cbf62">set_max_reduction</a> (Legion::DynamicCollective &amp;<a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#afa533181e7ff198e6a1a6b55340ddbe4">max_reduction</a>)</td></tr>
+<tr class="separator:a9003305bd08b185f2bc2e1fbd19cbf62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa533181e7ff198e6a1a6b55340ddbe4"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#afa533181e7ff198e6a1a6b55340ddbe4">max_reduction</a> ()</td></tr>
+<tr class="separator:afa533181e7ff198e6a1a6b55340ddbe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35104fb9e2e2357052b93a704d3edea7"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a35104fb9e2e2357052b93a704d3edea7"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a35104fb9e2e2357052b93a704d3edea7">reduce_max</a> (<a class="el" href="structflecsi_1_1execution_1_1legion__future____.html">legion_future__</a>&lt; T &gt; &amp;local_future)</td></tr>
+<tr class="separator:a35104fb9e2e2357052b93a704d3edea7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb87fd94cacfd0241c2a481e40946938"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#adb87fd94cacfd0241c2a481e40946938">set_min_reduction</a> (Legion::DynamicCollective &amp;<a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#adea9a60baf8d1c3c4dbf626e478a220d">min_reduction</a>)</td></tr>
+<tr class="separator:adb87fd94cacfd0241c2a481e40946938"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adea9a60baf8d1c3c4dbf626e478a220d"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#adea9a60baf8d1c3c4dbf626e478a220d">min_reduction</a> ()</td></tr>
+<tr class="separator:adea9a60baf8d1c3c4dbf626e478a220d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe965bb8c5ec20002fcffcf15a119316"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:afe965bb8c5ec20002fcffcf15a119316"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#afe965bb8c5ec20002fcffcf15a119316">reduce_min</a> (<a class="el" href="structflecsi_1_1execution_1_1legion__future____.html">legion_future__</a>&lt; T &gt; &amp;local_future)</td></tr>
+<tr class="separator:afe965bb8c5ec20002fcffcf15a119316"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1ac2d14f646df2056afa6a5fc62cc45"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ab1ac2d14f646df2056afa6a5fc62cc45">adjacency_fid</a> (size_t from_index_space, size_t to_index_space) const </td></tr>
+<tr class="separator:ab1ac2d14f646df2056afa6a5fc62cc45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2cc27d3ed620bcae14e6f7a58b62cc2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae2cc27d3ed620bcae14e6f7a58b62cc2"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>entity_data_fid</b> (size_t index_space) const </td></tr>
+<tr class="separator:ae2cc27d3ed620bcae14e6f7a58b62cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a19471e620dc28b1aa29c702f4f54d8e3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a19471e620dc28b1aa29c702f4f54d8e3"></a>
 const size_t&#160;</td><td class="memItemRight" valign="bottom"><b>TOP_LEVEL_TASK_ID</b> = 0</td></tr>
 <tr class="separator:a19471e620dc28b1aa29c702f4f54d8e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
-Static Public Attributes</h2></td></tr>
-<tr class="memitem:a407c6aa9a1e18ad8ebc12f34451bfabd"><td class="memItemLeft" align="right" valign="top">static const LegionRuntime::HighLevel::Processor::Kind&#160;</td><td class="memItemRight" valign="bottom"><b>lr_loc</b></td></tr>
-<tr class="separator:a407c6aa9a1e18ad8ebc12f34451bfabd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html" title="legion_context_policy_t provides... ">legion_context_policy_t</a> provides... </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a5b416a2b186ae28401e3add2971b9c71"></a>
+<div class="textblock"><p>The <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html">legion_context_policy_t</a> is the backend runtime context policy for Legion. </p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="a8cacf5c5d7f491b8326b8160ccdcf12c"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">LegionRuntime::HighLevel::Context&amp; flecsi::execution::legion_context_policy_t::context </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>task_key</em></td><td>)</td>
-          <td></td>
+          <td class="memname">using <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a8cacf5c5d7f491b8326b8160ccdcf12c">flecsi::execution::legion_context_policy_t::registration_function_t</a> =  std::function&lt;void(task_id_t, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>, std::string &amp;)&gt;</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
-<p>return context corresponding to the taks_key </p>
+<p>The registration_function_t type defines a function type for registration callbacks. </p>
 
 </div>
 </div>
-<a class="anchor" id="a0d77a64600f2c8cb6a27bed8d8a8323e"></a>
+<a class="anchor" id="a9b959d08d237d648cc1294e4f1e1c0ea"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b959d08d237d648cc1294e4f1e1c0ea">flecsi::execution::legion_context_policy_t::task_info_t</a> =  std::tuple&lt; task_id_t, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>, std::string, <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a8cacf5c5d7f491b8326b8160ccdcf12c">registration_function_t</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The task_info_t type is a convenience type for defining the task registration map below. </p>
+
+</div>
+</div>
+<a class="anchor" id="a42b969b49b7f03b6eb8e9eaa61e4ed9d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a42b969b49b7f03b6eb8e9eaa61e4ed9d">flecsi::execution::legion_context_policy_t::unique_tid_t</a> =  <a class="el" href="structflecsi_1_1utils_1_1unique__id__t.html">utils::unique_id_t</a>&lt;task_id_t, FLECSI_GENERATED_ID_MAX&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The unique_tid_t type create a unique id generator for registering tasks. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ab1ac2d14f646df2056afa6a5fc62cc45"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -191,10 +278,156 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::function&lt;void(void)&gt;* flecsi::execution::legion_context_policy_t::function </td>
+          <td class="memname">size_t flecsi::execution::legion_context_policy_t::adjacency_fid </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
+          <td class="paramname"><em>from_index_space</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>to_index_space</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Compute internal field id for from/to index space pair for connectivity. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">from_index_space</td><td>from index space </td></tr>
+    <tr><td class="paramname">to_index_space</td><td>to index space </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a4ea7ce9250fa40f9ce2168f334d1034a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const LegionRuntime::Arrays::Rect&lt;1&gt;&amp; flecsi::execution::legion_context_policy_t::all_processes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the distributed-memory domain. </p>
+
+</div>
+</div>
+<a class="anchor" id="a4b68246679a6e9ea2264f6340d09b6a1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t flecsi::execution::legion_context_policy_t::color </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the color for which the context was initialized. </p>
+
+</div>
+</div>
+<a class="anchor" id="a42689037ff2cfc11b59ef1930f9a3f52"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t flecsi::execution::legion_context_policy_t::colors </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the number of colors. </p>
+
+</div>
+</div>
+<a class="anchor" id="a2e4e03c5491bfc70727d5097046f0c50"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_context_policy_t::connect_with_mpi </td>
+          <td>(</td>
+          <td class="paramtype">Legion::Context &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Connect with the MPI runtime.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>The Legion runtime context. </td></tr>
+    <tr><td class="paramname">runtime</td><td>The Legion task runtime pointer. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aaa5d16311467328bcf77638554627938"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_context_policy_t::handoff_to_legion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -204,16 +437,119 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>return function by it's key </p>
+<p>Handoff to legion runtime from MPI. </p>
+
+</div>
+</div>
+<a class="anchor" id="af547e4abf000dd60e80ce2664cbebc51"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_context_policy_t::handoff_to_mpi </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Handoff to MPI from Legion. </p>
+
+</div>
+</div>
+<a class="anchor" id="aaae9e10c0be04afe2831b8f0fd62ddb6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_context_policy_t::handoff_to_mpi </td>
+          <td>(</td>
+          <td class="paramtype">Legion::Context &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Switch execution to the MPI runtime.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>The Legion runtime context. </td></tr>
+    <tr><td class="paramname">runtime</td><td>The Legion task runtime pointer. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a70df02f2ff805a7e951a4391c9c570b0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto&amp; flecsi::execution::legion_context_policy_t::index_space_data_map </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get the index space data map. </p>
+
+</div>
+</div>
+<a class="anchor" id="a54a365d4abc5fa17641cf83221c4e5be"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto&amp; flecsi::execution::legion_context_policy_t::index_subspace_data_map </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get the index subspace data map. </p>
 
 </div>
 </div>
 <a class="anchor" id="a4b663e8e89d3ef76adb3f8904dadfe9c"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">int flecsi::execution::legion_context_policy_t::initialize </td>
@@ -233,17 +569,20 @@ Static Public Attributes</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
-<p>FleCSI context initialization: registering all tasks and start Legion runtime </p>
+<p>FleCSI context initialization. This method initializes the FleCSI runtime using Legion.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">argc</td><td>The command-line argument count passed from main. </td></tr>
+    <tr><td class="paramname">argv</td><td>The command-line argument values passed from main.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An integer value with a non-zero error code upon failure, zero otherwise. </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a45f5d07b1c8209ed6b0173f52cc0448d"></a>
+<a class="anchor" id="aea0844c45d70f9b92a240dff4a9c9390"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -251,10 +590,9 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void flecsi::execution::legion_context_policy_t::pop_state </td>
+          <td class="memname">void flecsi::execution::legion_context_policy_t::invoke_mpi_task </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -264,11 +602,11 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>pops_state(key) is used to control the state of the legion task with id=key. It removes the task state from the state_pbject when the task is completed. </p>
+<p>Invoke the current MPI task. </p>
 
 </div>
 </div>
-<a class="anchor" id="a243a4125de123ee18d42a80a84f202eb"></a>
+<a class="anchor" id="af2c13cc0eb3e0a08be67460ea62b72c5"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -276,63 +614,9 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void flecsi::execution::legion_context_policy_t::push_state </td>
+          <td class="memname">auto&amp; flecsi::execution::legion_context_policy_t::local_index_space_data_map </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">LegionRuntime::HighLevel::Context &amp;&#160;</td>
-          <td class="paramname"><em>context</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">LegionRuntime::HighLevel::HighLevelRuntime *&#160;</td>
-          <td class="paramname"><em>runtime</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const LegionRuntime::HighLevel::Task *&#160;</td>
-          <td class="paramname"><em>task</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; LegionRuntime::HighLevel::PhysicalRegion &gt; &amp;&#160;</td>
-          <td class="paramname"><em>regions</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>push_state is used to control the state of the legion task with id==key. Task is considered being completed when it's state is removed from the state_ object; Key - is a task-id. </p>
-
-</div>
-</div>
-<a class="anchor" id="a427d05c8bfe349502e539c4083d8aa40"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const std::vector&lt;LegionRuntime::HighLevel::PhysicalRegion&gt;&amp; flecsi::execution::legion_context_policy_t::regions </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>task_key</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -342,11 +626,59 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>return PhysicalRegions for the task with the key=task_key </p>
+<p>Get the local index space data map. </p>
 
 </div>
 </div>
-<a class="anchor" id="a320f12a5e3433e7ad38a87769aa1c5a6"></a>
+<a class="anchor" id="afa533181e7ff198e6a1a6b55340ddbe4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto&amp; flecsi::execution::legion_context_policy_t::max_reduction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get DynamicCollective for &lt;double&gt; max reduction </p>
+
+</div>
+</div>
+<a class="anchor" id="adea9a60baf8d1c3c4dbf626e478a220d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto&amp; flecsi::execution::legion_context_policy_t::min_reduction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get DynamicCollective for &lt;double&gt; max reduction </p>
+
+</div>
+</div>
+<a class="anchor" id="a35104fb9e2e2357052b93a704d3edea7"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -356,21 +688,11 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool flecsi::execution::legion_context_policy_t::register_function </td>
+          <td class="memname">auto flecsi::execution::legion_context_policy_t::reduce_max </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;&#160;</td>
-          <td class="paramname"><em>key</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1legion__future____.html">legion_future__</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_future</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">T &amp;&#160;</td>
-          <td class="paramname"><em>function</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -379,11 +701,48 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>register FLeCSI function </p>
+<p>Perform reduction of the maximum value </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">task</td><td>future </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a class="anchor" id="a2feb28c6e9e380b5a3d37110a291fd9e"></a>
+<a class="anchor" id="afe965bb8c5ec20002fcffcf15a119316"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto flecsi::execution::legion_context_policy_t::reduce_min </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1legion__future____.html">legion_future__</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_future</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Perform reduction of the minimum value </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">task</td><td>future </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a2685a1ad3028601bb21a7fd7b80ac045"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -393,14 +752,32 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">bool flecsi::execution::legion_context_policy_t::register_task </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a>&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>key</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const register_function_t &amp;&#160;</td>
-          <td class="paramname"><em>f</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>&#160;</td>
+          <td class="paramname"><em>processor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>&#160;</td>
+          <td class="paramname"><em>launch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a8cacf5c5d7f491b8326b8160ccdcf12c">registration_function_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>callback</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -414,11 +791,19 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>registering FLeCSI task by using task_key and function pointer </p>
+<p>Register a task with the runtime.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The task hash key. </td></tr>
+    <tr><td class="paramname">name</td><td>The task name string. </td></tr>
+    <tr><td class="paramname">callback</td><td>The registration call back function. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a class="anchor" id="ad16286e4c05746615ab84434a5662bce"></a>
+<a class="anchor" id="ab6d6edaaf621be53b29e3f8f42e450d1"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -426,10 +811,10 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">LegionRuntime::HighLevel::HighLevelRuntime* flecsi::execution::legion_context_policy_t::runtime </td>
+          <td class="memname">void flecsi::execution::legion_context_policy_t::set_all_processes </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>task_key</em></td><td>)</td>
+          <td class="paramtype">const LegionRuntime::Arrays::Rect&lt; 1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>all_processes</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -439,11 +824,11 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>return runtime corresponding to the taks_key </p>
+<p>Set the distributed-memory domain. </p>
 
 </div>
 </div>
-<a class="anchor" id="ab523efc2326997df108cd09a0cecc7a5"></a>
+<a class="anchor" id="a9003305bd08b185f2bc2e1fbd19cbf62"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -451,10 +836,10 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const LegionRuntime::HighLevel::Task* flecsi::execution::legion_context_policy_t::task </td>
+          <td class="memname">void flecsi::execution::legion_context_policy_t::set_max_reduction </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>task_key</em></td><td>)</td>
+          <td class="paramtype">Legion::DynamicCollective &amp;&#160;</td>
+          <td class="paramname"><em>max_reduction</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -464,11 +849,17 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>return taks pointer by the taks_key </p>
+<p>Set DynamicCollective for &lt;double&gt; max reduction</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">max_reduction</td><td>Legion DynamicCollective for &lt;double&gt; max reduction </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a class="anchor" id="a7669457c80729cfe6ce9c2f04e2865f3"></a>
+<a class="anchor" id="adb87fd94cacfd0241c2a481e40946938"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -476,9 +867,123 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">task_id_t flecsi::execution::legion_context_policy_t::task_id </td>
+          <td class="memname">void flecsi::execution::legion_context_policy_t::set_min_reduction </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a>&#160;</td>
+          <td class="paramtype">Legion::DynamicCollective &amp;&#160;</td>
+          <td class="paramname"><em>min_reduction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set DynamicCollective for &lt;double&gt; in reduction</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">min_reduction</td><td>Legion DynamicCollective for &lt;double&gt; max reduction </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a592ff8f5dbf2f8e6cf496282d4fb51a9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool flecsi::execution::legion_context_policy_t::set_mpi_state </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>active</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set the MPI runtime state. When the state is changed to active, the handshake interface will begin executing the current MPI task.</p>
+<dl class="section return"><dt>Returns</dt><dd>A boolean indicating the current MPI runtime state. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a9b91a3c955cd1572cdee39b1339d7563"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_context_policy_t::set_mpi_task </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; void()&gt; &amp;&#160;</td>
+          <td class="paramname"><em>mpi_task</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set the MPI user task. When control is given to the MPI runtime it will execute whichever function is currently set. </p>
+
+</div>
+</div>
+<a class="anchor" id="a3d2bd5ee16f6a046e4f2c33297da9009"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t KEY&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b959d08d237d648cc1294e4f1e1c0ea">task_info_t</a>&amp; flecsi::execution::legion_context_policy_t::task_info </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the task registration tuple.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The task hash key. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a6b93a5338f907beb89949ff4aa4cf83a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b959d08d237d648cc1294e4f1e1c0ea">task_info_t</a>&amp; flecsi::execution::legion_context_policy_t::task_info </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
           <td></td>
         </tr>
@@ -489,12 +994,90 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>return task_id for the task with task_key = key </p>
+<p>Return the task registration tuple.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The task hash key. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="a407c6aa9a1e18ad8ebc12f34451bfabd"></a>
+<a class="anchor" id="aecf7ef0d807edc85e071243ea89aaabc"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::execution::legion_context_policy_t::task_info_template_method </td>
+          <td>(</td>
+          <td class="paramtype">task_id&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">task_id_t&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">0&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>FIXME</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The task hash key. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a03ab2a465050bb032af45095121395d5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_context_policy_t::unset_call_mpi </td>
+          <td>(</td>
+          <td class="paramtype">Legion::Context &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Unset the MPI active state to pass execution back to the Legion runtime.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>The Legion runtime context. </td></tr>
+    <tr><td class="paramname">runtime</td><td>The Legion task runtime pointer. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ae35fd32261f19f4ca8ca6f4306be56ef"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -502,20 +1085,84 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const LegionRuntime::HighLevel::Processor::Kind flecsi::execution::legion_context_policy_t::lr_loc</td>
+          <td class="memname">void flecsi::execution::legion_context_policy_t::wait_on_legion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div><div class="line">    LegionRuntime::HighLevel::Processor::LOC_PROC</div></div><!-- fragment -->
+<p>Wait for Legion runtime to complete. </p>
+
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<a class="anchor" id="a2e6fe89dcb48a85f5fc39146fdb69549"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_context_policy_t::wait_on_mpi </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Wait for MPI runtime to complete task execution. </p>
+
+</div>
+</div>
+<a class="anchor" id="a2100cbb4796ef5b8df0586e4ee3c3887"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Legion::FutureMap flecsi::execution::legion_context_policy_t::wait_on_mpi </td>
+          <td>(</td>
+          <td class="paramtype">Legion::Context &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Wait on the MPI runtime to finish the current task execution.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>The Legion runtime context. </td></tr>
+    <tr><td class="paramname">runtime</td><td>The Legion task runtime pointer.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A future map with the result of the task execution. </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following files:<ul>
 <li>/home/flecsi/flecsi/flecsi/execution/legion/<a class="el" href="legion_2context__policy_8h_source.html">context_policy.h</a></li>
+<li>/home/flecsi/flecsi/flecsi/execution/legion/<a class="el" href="legion_2context__policy_8cc.html">context_policy.cc</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['object',['object',['../structobject.html',1,'']]],
-  ['object_5fid',['object_id',['../structobject__id.html',1,'']]],
-  ['offset_5fcount',['offset_count',['../structflecsi_1_1execution_1_1legion__dpd_1_1offset__count.html',1,'flecsi::execution::legion_dpd']]]
+  ['num_5findex_5fsubspaces_5f_5f',['num_index_subspaces__',['../structflecsi_1_1topology_1_1num__index__subspaces____.html',1,'flecsi::topology']]],
+  ['num_5fvariables',['num_variables',['../structflecsi_1_1utils_1_1reflection_1_1num__variables.html',1,'flecsi::utils::reflection']]]
 ];

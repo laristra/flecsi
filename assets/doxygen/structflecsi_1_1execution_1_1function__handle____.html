@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: flecsi::execution::function_handle__&lt; R, A &gt; Class Template Reference</title>
+<title>Interface Documentation: flecsi::execution::function_handle__&lt; RETURN, ARG_TUPLE &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,65 +88,70 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">function_handle__</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">function_handle__</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="classflecsi_1_1execution_1_1function__handle____-members.html">List of all members</a>  </div>
+<a href="structflecsi_1_1execution_1_1function__handle____-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::execution::function_handle__&lt; R, A &gt; Class Template Reference</div>  </div>
+<div class="title">flecsi::execution::function_handle__&lt; RETURN, ARG_TUPLE &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="structflecsi_1_1execution_1_1function__handle____.html" title="function_handle__ provides... ">function_handle__</a> provides...  
- <a href="structflecsi_1_1execution_1_1function__handle____.html#details">More...</a></p>
-
 <p><code>#include &lt;<a class="el" href="function__handle_8h_source.html">function_handle.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:ac1b0be6caf7153b2ed0d007cab3c17f4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac1b0be6caf7153b2ed0d007cab3c17f4"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>return_t</b> = RETURN</td></tr>
+<tr class="separator:ac1b0be6caf7153b2ed0d007cab3c17f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adea50b5be096e791d811a1380539cd91"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adea50b5be096e791d811a1380539cd91"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>arg_tuple_t</b> = ARG_TUPLE</td></tr>
+<tr class="separator:adea50b5be096e791d811a1380539cd91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:addff06853070309981171c57af8cb479"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1function__handle____.html#addff06853070309981171c57af8cb479">function_handle__</a> (const size_t key_)</td></tr>
-<tr class="separator:addff06853070309981171c57af8cb479"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab1ba325cfde71e0949364532d3c2519"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aab1ba325cfde71e0949364532d3c2519"><td class="memTemplItemLeft" align="right" valign="top">R&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1function__handle____.html#aab1ba325cfde71e0949364532d3c2519">operator()</a> (std::function&lt; void(void)&gt; *user_function, T &amp;&amp;args)</td></tr>
-<tr class="separator:aab1ba325cfde71e0949364532d3c2519"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:ad614d95b366a14b1a607d5cea7b84572"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad614d95b366a14b1a607d5cea7b84572"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>key</b></td></tr>
-<tr class="separator:ad614d95b366a14b1a607d5cea7b84572"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91517c192704810ff5003abc3f0eeed0"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1function__handle____.html#a91517c192704810ff5003abc3f0eeed0">function_handle__</a> (const size_t key=0)</td></tr>
+<tr class="separator:a91517c192704810ff5003abc3f0eeed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66a739a45b7e70929dba4dae8654ea78"><td class="memItemLeft" align="right" valign="top">RETURN&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1function__handle____.html#a66a739a45b7e70929dba4dae8654ea78">operator()</a> (void *function, ARG_TUPLE &amp;&amp;args)</td></tr>
+<tr class="separator:a66a739a45b7e70929dba4dae8654ea78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a39ee61943a8d61ea9a76146b02c975"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0a39ee61943a8d61ea9a76146b02c975"></a>
+<a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">function_handle__</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">function_handle__</a> &amp;fh)</td></tr>
+<tr class="separator:a0a39ee61943a8d61ea9a76146b02c975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a345ce53cc7dff6cf056772f7368c38d5"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1function__handle____.html#a345ce53cc7dff6cf056772f7368c38d5">set_key</a> (size_t key)</td></tr>
+<tr class="separator:a345ce53cc7dff6cf056772f7368c38d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaeb6950902def6e67fd4356e71e81e12"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1function__handle____.html#aaeb6950902def6e67fd4356e71e81e12">get_key</a> () const </td></tr>
+<tr class="separator:aaeb6950902def6e67fd4356e71e81e12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename R, typename A&gt;<br />
-class flecsi::execution::function_handle__&lt; R, A &gt;</h3>
+<div class="textblock"><h3>template&lt;typename RETURN, typename ARG_TUPLE&gt;<br />
+struct flecsi::execution::function_handle__&lt; RETURN, ARG_TUPLE &gt;</h3>
 
-<p><a class="el" href="structflecsi_1_1execution_1_1function__handle____.html" title="function_handle__ provides... ">function_handle__</a> provides... </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">R</td><td>Return value type. </td></tr>
-    <tr><td class="paramname">A</td><td>Argument type (std::tuple). </td></tr>
+    <tr><td class="paramname">RETURN</td><td>Return value type. </td></tr>
+    <tr><td class="paramname">ARG_TUPLE</td><td>Argument type (std::tuple). </td></tr>
   </table>
   </dd>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="addff06853070309981171c57af8cb479"></a>
+<a class="anchor" id="a91517c192704810ff5003abc3f0eeed0"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename R , typename A &gt; </div>
+template&lt;typename RETURN , typename ARG_TUPLE &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">flecsi::execution::function_handle__</a>&lt; R, A &gt;::<a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">function_handle__</a> </td>
+          <td class="memname">constexpr <a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">flecsi::execution::function_handle__</a>&lt; RETURN, ARG_TUPLE &gt;::<a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">function_handle__</a> </td>
           <td>(</td>
           <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>key_</em></td><td>)</td>
+          <td class="paramname"><em>key</em> = <code>0</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -154,32 +161,62 @@ template&lt;typename R , typename A &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>default constructor </p>
+<p>Constructor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>A hash key identifier for the function. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="aab1ba325cfde71e0949364532d3c2519"></a>
+<a class="anchor" id="aaeb6950902def6e67fd4356e71e81e12"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename R , typename A &gt; </div>
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
+template&lt;typename RETURN , typename ARG_TUPLE &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">R <a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">flecsi::execution::function_handle__</a>&lt; R, A &gt;::operator() </td>
+          <td class="memname">size_t <a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">flecsi::execution::function_handle__</a>&lt; RETURN, ARG_TUPLE &gt;::get_key </td>
           <td>(</td>
-          <td class="paramtype">std::function&lt; void(void)&gt; *&#160;</td>
-          <td class="paramname"><em>user_function</em>, </td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the identifier key. </p>
+
+</div>
+</div>
+<a class="anchor" id="a66a739a45b7e70929dba4dae8654ea78"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename RETURN , typename ARG_TUPLE &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">RETURN <a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">flecsi::execution::function_handle__</a>&lt; RETURN, ARG_TUPLE &gt;::operator() </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>function</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">T &amp;&amp;&#160;</td>
+          <td class="paramtype">ARG_TUPLE &amp;&amp;&#160;</td>
           <td class="paramname"><em>args</em>&#160;</td>
         </tr>
         <tr>
@@ -194,11 +231,38 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>operator() </p>
+<p>Execute the function. </p>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<a class="anchor" id="a345ce53cc7dff6cf056772f7368c38d5"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename RETURN , typename ARG_TUPLE &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">flecsi::execution::function_handle__</a>&lt; RETURN, ARG_TUPLE &gt;::set_key </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set the identifier key. </p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/execution/common/<a class="el" href="function__handle_8h_source.html">function_handle.h</a></li>
 </ul>
 </div><!-- contents -->

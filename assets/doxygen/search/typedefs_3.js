@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['future_5f_5f',['future__',['../structflecsi_1_1execution_1_1legion__execution__policy__t.html#a8324f53ece01a85b7c86006c656f168d',1,'flecsi::execution::legion_execution_policy_t']]]
+  ['data_5fclient_5fhandle_5f_5f',['data_client_handle__',['../group__data.html#ga7ec0a7a6abde96d9d690d57cc60627db',1,'flecsi']]],
+  ['dense_5fdata_5fhandle_5f_5f',['dense_data_handle__',['../group__data.html#gad91f8413dd1bed8fbbae11b428056b90',1,'flecsi']]]
 ];

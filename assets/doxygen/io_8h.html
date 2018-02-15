@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: /home/flecsi/flecsi/flecsi/io/io.h File Reference</title>
+<title>Interface Documentation: /home/flecsi/flecsi/flecsi/io/io.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -89,33 +91,27 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">io.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="io__base_8h_source.html">flecsi/io/io_base.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="io__base_8h_source.html">flecsi/io/io_base.h</a>&gt;</code><br />
 </div>
 <p><a href="io_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceflecsi"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html">flecsi</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a36e4d527361a4a3789f5699b06a68713"><td class="memTemplParams" colspan="2">template&lt;typename mesh_t &gt; </td></tr>
-<tr class="memitem:a36e4d527361a4a3789f5699b06a68713"><td class="memTemplItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="io_8h.html#a36e4d527361a4a3789f5699b06a68713">flecsi::io::read_mesh</a> (const std::string &amp;name, <a class="el" href="structmesh__t.html">mesh_t</a> &amp;m)</td></tr>
+<tr class="memitem:a36e4d527361a4a3789f5699b06a68713"><td class="memTemplItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="io_8h.html#a36e4d527361a4a3789f5699b06a68713">flecsi::io::read_mesh</a> (const std::string &amp;name, mesh_t &amp;m)</td></tr>
 <tr class="memdesc:a36e4d527361a4a3789f5699b06a68713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic mesh reader that calls the correct method based on the suffix.  <a href="io_8h.html#a36e4d527361a4a3789f5699b06a68713">More...</a><br /></td></tr>
 <tr class="separator:a36e4d527361a4a3789f5699b06a68713"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a775d8742c3b43395bb5f0fc780b52675"><td class="memTemplParams" colspan="2">template&lt;typename mesh_t &gt; </td></tr>
-<tr class="memitem:a775d8742c3b43395bb5f0fc780b52675"><td class="memTemplItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="io_8h.html#a775d8742c3b43395bb5f0fc780b52675">flecsi::io::write_mesh</a> (const std::string &amp;name, <a class="el" href="structmesh__t.html">mesh_t</a> &amp;m)</td></tr>
+<tr class="memitem:a775d8742c3b43395bb5f0fc780b52675"><td class="memTemplItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="io_8h.html#a775d8742c3b43395bb5f0fc780b52675">flecsi::io::write_mesh</a> (const std::string &amp;name, mesh_t &amp;m)</td></tr>
 <tr class="memdesc:a775d8742c3b43395bb5f0fc780b52675"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic mesh writer that calls the correct method based on the suffix.  <a href="io_8h.html#a775d8742c3b43395bb5f0fc780b52675">More...</a><br /></td></tr>
 <tr class="separator:a775d8742c3b43395bb5f0fc780b52675"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af830f8dd0139b976e4511cc97cb1dab5"><td class="memTemplParams" colspan="2">template&lt;typename mesh_t &gt; </td></tr>
-<tr class="memitem:af830f8dd0139b976e4511cc97cb1dab5"><td class="memTemplItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="io_8h.html#af830f8dd0139b976e4511cc97cb1dab5">flecsi::io::write_mesh</a> (const std::string &amp;name, <a class="el" href="structmesh__t.html">mesh_t</a> &amp;m, bool binary)</td></tr>
+<tr class="memitem:af830f8dd0139b976e4511cc97cb1dab5"><td class="memTemplItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="io_8h.html#af830f8dd0139b976e4511cc97cb1dab5">flecsi::io::write_mesh</a> (const std::string &amp;name, mesh_t &amp;m, bool binary)</td></tr>
 <tr class="memdesc:af830f8dd0139b976e4511cc97cb1dab5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic mesh writer that calls the correct method based on the suffix.  <a href="io_8h.html#af830f8dd0139b976e4511cc97cb1dab5">More...</a><br /></td></tr>
 <tr class="separator:af830f8dd0139b976e4511cc97cb1dab5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -137,7 +133,7 @@ template&lt;typename mesh_t &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structmesh__t.html">mesh_t</a> &amp;&#160;</td>
+          <td class="paramtype">mesh_t &amp;&#160;</td>
           <td class="paramname"><em>m</em>&#160;</td>
         </tr>
         <tr>
@@ -151,7 +147,7 @@ template&lt;typename mesh_t &gt; </div>
 <p>Generic mesh reader that calls the correct method based on the suffix. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname"><a class="el" href="structmesh__t.html">mesh_t</a></td><td>Mesh type to read.</td></tr>
+    <tr><td class="paramname">mesh_t</td><td>Mesh type to read.</td></tr>
   </table>
   </dd>
 </dl>
@@ -181,7 +177,7 @@ template&lt;typename mesh_t &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structmesh__t.html">mesh_t</a> &amp;&#160;</td>
+          <td class="paramtype">mesh_t &amp;&#160;</td>
           <td class="paramname"><em>m</em>&#160;</td>
         </tr>
         <tr>
@@ -195,7 +191,7 @@ template&lt;typename mesh_t &gt; </div>
 <p>Generic mesh writer that calls the correct method based on the suffix. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname"><a class="el" href="structmesh__t.html">mesh_t</a></td><td>Mesh type to write.</td></tr>
+    <tr><td class="paramname">mesh_t</td><td>Mesh type to write.</td></tr>
   </table>
   </dd>
 </dl>
@@ -207,7 +203,7 @@ template&lt;typename mesh_t &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Error code. 0 on success.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>should allow for const <a class="el" href="structmesh__t.html">mesh_t</a> &amp; int32_t write_mesh(const std::string &amp;name, const mesh_t &amp;m) </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>should allow for const mesh_t &amp; int32_t write_mesh(const std::string &amp;name, const mesh_t &amp;m) </dd></dl>
 
 </div>
 </div>
@@ -226,7 +222,7 @@ template&lt;typename mesh_t &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structmesh__t.html">mesh_t</a> &amp;&#160;</td>
+          <td class="paramtype">mesh_t &amp;&#160;</td>
           <td class="paramname"><em>m</em>, </td>
         </tr>
         <tr>
@@ -246,7 +242,7 @@ template&lt;typename mesh_t &gt; </div>
 <p>Generic mesh writer that calls the correct method based on the suffix. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname"><a class="el" href="structmesh__t.html">mesh_t</a></td><td>Mesh type to write.</td></tr>
+    <tr><td class="paramname">mesh_t</td><td>Mesh type to write.</td></tr>
   </table>
   </dd>
 </dl>
@@ -259,7 +255,7 @@ template&lt;typename mesh_t &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Error code. 0 on success.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>should allow for const <a class="el" href="structmesh__t.html">mesh_t</a> &amp; int32_t write_mesh(const std::string &amp;name, const mesh_t &amp;m) </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>should allow for const mesh_t &amp; int32_t write_mesh(const std::string &amp;name, const mesh_t &amp;m) </dd></dl>
 
 </div>
 </div>
