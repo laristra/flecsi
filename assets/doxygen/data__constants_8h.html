@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: /home/flecsi/flecsi/flecsi/data/data_constants.h File Reference</title>
+<title>Interface Documentation: /home/flecsi/flecsi/flecsi/data/data_constants.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -89,73 +91,34 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">data_constants.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;limits&gt;</code><br />
-<code>#include &quot;<a class="el" href="bitfield_8h_source.html">flecsi/utils/bitfield.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="const__string_8h_source.html">flecsi/utils/const_string.h</a>&quot;</code><br />
-</div>
+
 <p><a href="data__constants_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceflecsi"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html">flecsi</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a7d9fefd2da33161bc83e8bb9338119fa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d9fefd2da33161bc83e8bb9338119fa"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>storage_label_type_t</b> : size_t { <br />
-&#160;&#160;<b>global</b>, 
+<tr class="memitem:a7d9fefd2da33161bc83e8bb9338119fa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d9fefd2da33161bc83e8bb9338119fa"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data__constants_8h.html#a7d9fefd2da33161bc83e8bb9338119fa">flecsi::data::storage_label_type_t</a> : size_t { <br />
+&#160;&#160;<b>base</b>, 
 <b>dense</b>, 
-<b>sparse</b>, 
+<b>global</b>, 
+<b>color</b>, 
+<br />
+&#160;&#160;<b>sparse</b>, 
+<b>ragged</b>, 
 <b>scoped</b>, 
+<b>tuple</b>, 
 <br />
-&#160;&#160;<b>tuple</b>
+&#160;&#160;<b>local</b>, 
+<b>subspace</b>
 <br />
- }</td></tr>
-<tr class="separator:a7d9fefd2da33161bc83e8bb9338119fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30c9c3d8f976269fdd0a93d59edb0431"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data__constants_8h.html#a30c9c3d8f976269fdd0a93d59edb0431">flecsi::data::data_attribute_old_t</a> : utils::bitfield_t::field_type_t { <b>persistent</b> = 0x0001, 
-<b>temporary</b> = 0x0002
- }<tr class="memdesc:a30c9c3d8f976269fdd0a93d59edb0431"><td class="mdescLeft">&#160;</td><td class="mdescRight">data_attribute_old_t defines different data attributes.  <a href="data__constants_8h.html#a30c9c3d8f976269fdd0a93d59edb0431">More...</a><br /></td></tr>
+ }<tr class="memdesc:a7d9fefd2da33161bc83e8bb9338119fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of supported storage types. <br /></td></tr>
 </td></tr>
-<tr class="separator:a30c9c3d8f976269fdd0a93d59edb0431"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afae604b251bfaf1a669c54edad206a45"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afae604b251bfaf1a669c54edad206a45"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>data_attribute_t</b> : size_t { <b>persistent</b> = 0x0001, 
-<b>persistent</b> = 0x0001, 
-<b>temporary</b>, 
-<b>temporary</b> = 0x0002
- }</td></tr>
-<tr class="separator:afae604b251bfaf1a669c54edad206a45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a7d9fefd2da33161bc83e8bb9338119fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="section date"><dt>Date</dt><dd>Initial file creation: Feb 26, 2016 </dd></dl>
-</div><h2 class="groupheader">Enumeration Type Documentation</h2>
-<a class="anchor" id="file_a30c9c3d8f976269fdd0a93d59edb0431"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="data__constants_8h.html#a30c9c3d8f976269fdd0a93d59edb0431">flecsi::data::data_attribute_old_t</a> : utils::bitfield_t::field_type_t</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>data_attribute_old_t defines different data attributes. </p>
-<p>This type should probably be pushed up in the interface so that users can define their own attributes. </p>
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

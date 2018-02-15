@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: Class Members</title>
+<title>Interface Documentation: Class Members</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -90,12 +92,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_g.html#index_g"><span>g</span></a></li>
       <li><a href="functions_h.html#index_h"><span>h</span></a></li>
       <li><a href="functions_i.html#index_i"><span>i</span></a></li>
+      <li><a href="functions_j.html#index_j"><span>j</span></a></li>
       <li><a href="functions_k.html#index_k"><span>k</span></a></li>
       <li><a href="functions_l.html#index_l"><span>l</span></a></li>
       <li><a href="functions_m.html#index_m"><span>m</span></a></li>
       <li><a href="functions_n.html#index_n"><span>n</span></a></li>
       <li><a href="functions_o.html#index_o"><span>o</span></a></li>
       <li><a href="functions_p.html#index_p"><span>p</span></a></li>
+      <li><a href="functions_q.html#index_q"><span>q</span></a></li>
       <li><a href="functions_r.html#index_r"><span>r</span></a></li>
       <li><a href="functions_s.html#index_s"><span>s</span></a></li>
       <li><a href="functions_t.html#index_t"><span>t</span></a></li>
@@ -124,37 +128,31 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div>
 
 <h3><a class="anchor" id="index_b"></a>- b -</h3><ul>
+<li>back()
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#ac6712a7d523f99c07bd51aa049f86f48">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
+</li>
+<li>base_t
+: <a class="el" href="structflecsi_1_1data_1_1legion_1_1dense__handle__t.html#aba8650cb70c9f167751bbb3ff19eb949">flecsi::data::legion::dense_handle_t&lt; T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1legion_1_1global__handle____.html#a2168b07c8a2618d141d889ff8783f623">flecsi::data::legion::global_handle__&lt; T, PERMISSIONS &gt;</a>
+</li>
 <li>begin()
-: <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1dense__accessor__t.html#aa319e2fa2f3578d46f2a59a136824fe6">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::dense_accessor_t&lt; T &gt;</a>
-, <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1sparse__accessor__t.html#adb29d8e254ecc878d121b430ca36fa4e">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::sparse_accessor_t&lt; T &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1legion_1_1dense__accessor__t.html#abf0400ff12fdbe16d3b0d438d60b3ef9">flecsi::data::legion::dense_accessor_t&lt; T, MD &gt;</a>
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#a4af9f7bd92cc93c101f6a71055ffd9c5">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1index__space_____1_1id__range__.html#a2d2ca5fbbd9c96976c227e7d3f5e65a5">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;::id_range_</a>
+</li>
+<li>begin_offset()
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#a1cb82f2218b25541b566b43303e2e48a">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
 </li>
 <li>bin()
-: <a class="el" href="classflecsi_1_1topology_1_1index__space.html#acdc58a224530ac8a47b72b3dc2484d13">flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F &gt;</a>
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#af770473963e8837b60ddec19ea46388c">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
 </li>
 <li>bin_as_map()
-: <a class="el" href="classflecsi_1_1topology_1_1index__space.html#a8df29bac3cd09bfdf64026be6eb12229">flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F &gt;</a>
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#ace9a4dbfe4a0dd840f70a1ae7c11a018">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
 </li>
 <li>bin_as_vector()
-: <a class="el" href="classflecsi_1_1topology_1_1index__space.html#ad0f94c01becfef9e9bc7490d85082ed2">flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F &gt;</a>
+: <a class="el" href="classflecsi_1_1topology_1_1index__space____.html#a1064bf272924d9a9bc05d2d4476efad4">flecsi::topology::index_space__&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
 </li>
-<li>bitclear()
-: <a class="el" href="classflecsi_1_1utils_1_1bitfield____.html#a8d9e65fe0c44510fa0c67f1708237101">flecsi::utils::bitfield__&lt; T &gt;</a>
-</li>
-<li>bitfield__()
-: <a class="el" href="classflecsi_1_1utils_1_1bitfield____.html#acd4cf172a598ff815c07455b101c4d2a">flecsi::utils::bitfield__&lt; T &gt;</a>
-</li>
-<li>bitsclear()
-: <a class="el" href="classflecsi_1_1utils_1_1bitfield____.html#ad54fa85fa53cc0384a7c667d0d836c0c">flecsi::utils::bitfield__&lt; T &gt;</a>
-</li>
-<li>bitset()
-: <a class="el" href="classflecsi_1_1utils_1_1bitfield____.html#acefa785db110de4e54063a24bb7bf8a8">flecsi::utils::bitfield__&lt; T &gt;</a>
-</li>
-<li>bitsset()
-: <a class="el" href="classflecsi_1_1utils_1_1bitfield____.html#a1b27fd1117da8a2d180cca3f99b4c97e">flecsi::utils::bitfield__&lt; T &gt;</a>
-</li>
-<li>branch_id()
-: <a class="el" href="classflecsi_1_1topology_1_1branch__id.html#ab7c3d9bf1d70ad5382aa36eb61049b37">flecsi::topology::branch_id&lt; T, D &gt;</a>
+<li>branch_id__()
+: <a class="el" href="classflecsi_1_1topology_1_1branch__id____.html#a007ab9034e9e537e98ba5e84bfe33b44">flecsi::topology::branch_id__&lt; T, DIM &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->

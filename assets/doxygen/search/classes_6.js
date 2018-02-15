@@ -1,12 +1,13 @@
 var searchData=
 [
   ['generic_5ftuple_5ft',['generic_tuple_t',['../structflecsi_1_1utils_1_1generic__tuple__t.html',1,'flecsi::utils']]],
-  ['global_5faccessor_5ft',['global_accessor_t',['../classflecsi_1_1data_1_1default__data__storage__policy__t_1_1global__accessor__t.html',1,'flecsi::data::default_data_storage_policy_t']]],
-  ['global_5faccessor_5ft',['global_accessor_t',['../structflecsi_1_1data_1_1serial_1_1global__accessor__t.html',1,'flecsi::data::serial']]],
-  ['global_5faccessor_5ft',['global_accessor_t',['../structflecsi_1_1data_1_1legion_1_1global__accessor__t.html',1,'flecsi::data::legion']]],
-  ['global_5fhandle_5fmetadata_5ft',['global_handle_metadata_t',['../structflecsi_1_1data_1_1serial_1_1global__handle__metadata__t.html',1,'flecsi::data::serial']]],
-  ['global_5fhandle_5ft',['global_handle_t',['../structflecsi_1_1data_1_1serial_1_1global__handle__t.html',1,'flecsi::data::serial']]],
-  ['global_5fhandle_5ft',['global_handle_t',['../structflecsi_1_1data_1_1legion_1_1global__handle__t.html',1,'flecsi::data::legion']]],
-  ['graph_5fdefinition_5f_5f',['graph_definition__',['../classflecsi_1_1topology_1_1graph__definition____.html',1,'flecsi::topology']]],
-  ['graph_5fdefinition_5f_5f_3c_202_20_3e',['graph_definition__&lt; 2 &gt;',['../classflecsi_1_1topology_1_1graph__definition____.html',1,'flecsi::topology']]]
+  ['get_5findex_5fsubspaces_5f_5f',['get_index_subspaces__',['../structflecsi_1_1topology_1_1get__index__subspaces____.html',1,'flecsi::topology']]],
+  ['ghost_5fcopy_5fargs',['ghost_copy_args',['../structflecsi_1_1execution_1_1task__prolog__t_1_1ghost__copy__args.html',1,'flecsi::execution::task_prolog_t']]],
+  ['global_5faccessor_5fbase_5ft',['global_accessor_base_t',['../structflecsi_1_1global__accessor__base__t.html',1,'flecsi']]],
+  ['global_5fdata_5fclient_5ft',['global_data_client_t',['../structflecsi_1_1data_1_1global__data__client__t.html',1,'flecsi::data']]],
+  ['global_5fdata_5fhandle_5fbase_5f_5f',['global_data_handle_base__',['../structflecsi_1_1global__data__handle__base____.html',1,'flecsi']]],
+  ['global_5fdata_5fhandle_5fbase_5f_5f_3c_20t_2c_20permissions_20_3e',['global_data_handle_base__&lt; T, PERMISSIONS &gt;',['../structflecsi_1_1global__data__handle__base____.html',1,'flecsi']]],
+  ['global_5fdata_5fhandle_5fbase_5ft',['global_data_handle_base_t',['../structflecsi_1_1global__data__handle__base__t.html',1,'flecsi']]],
+  ['global_5fhandle_5f_5f',['global_handle__',['../structflecsi_1_1data_1_1hpx_1_1global__handle____.html',1,'flecsi::data::hpx']]],
+  ['global_5fhandle_5f_5f',['global_handle__',['../structflecsi_1_1data_1_1legion_1_1global__handle____.html',1,'flecsi::data::legion']]]
 ];

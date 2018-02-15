@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: flecsi::topology::tree_entity&lt; T, D &gt; Class Template Reference</title>
+<title>Interface Documentation: flecsi::topology::tree_entity&lt; T, DIM &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +88,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1tree__entity.html">tree_entity</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1tree__entity.html">tree_entity</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -96,34 +98,39 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#friends">Friends</a> &#124;
 <a href="classflecsi_1_1topology_1_1tree__entity-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::topology::tree_entity&lt; T, D &gt; Class Template Reference</div>  </div>
+<div class="title">flecsi::topology::tree_entity&lt; T, DIM &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Tree entity base class.  
+ <a href="classflecsi_1_1topology_1_1tree__entity.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="tree__topology_8h_source.html">tree_topology.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a875c5814a810930d72f99ee3253b77e0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a875c5814a810930d72f99ee3253b77e0"></a>
+<tr class="memitem:ac96823b8748ea654af5f1871bc87a84b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac96823b8748ea654af5f1871bc87a84b"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>id_t</b> = <a class="el" href="classflecsi_1_1topology_1_1entity__id__t.html">entity_id_t</a></td></tr>
-<tr class="separator:a875c5814a810930d72f99ee3253b77e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1fa3e1827dd17e5f342dfd50b688d0ed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1fa3e1827dd17e5f342dfd50b688d0ed"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>branch_id_t</b> = <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a>&lt; T, D &gt;</td></tr>
-<tr class="separator:a1fa3e1827dd17e5f342dfd50b688d0ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:ac96823b8748ea654af5f1871bc87a84b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a208cd439ed6f8eabf479b6122e2becfe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a208cd439ed6f8eabf479b6122e2becfe"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>branch_id_t</b> = <a class="el" href="classflecsi_1_1topology_1_1branch__id____.html">branch_id__</a>&lt; T, DIM &gt;</td></tr>
+<tr class="separator:a208cd439ed6f8eabf479b6122e2becfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a21e85b8612466d89fafd7a264310fa1b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a21e85b8612466d89fafd7a264310fa1b"></a>
-<a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_branch_id</b> () const </td></tr>
-<tr class="separator:a21e85b8612466d89fafd7a264310fa1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9197933b2ad71b2d67804ad85ac12be4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9197933b2ad71b2d67804ad85ac12be4"></a>
+<tr class="memitem:a7bbc6160dee7a8240f7518dcac170209"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7bbc6160dee7a8240f7518dcac170209"></a>
+<a class="el" href="classflecsi_1_1topology_1_1branch__id____.html">branch_id_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_branch_id</b> () const </td></tr>
+<tr class="separator:a7bbc6160dee7a8240f7518dcac170209"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47b14c812cea35aec1c56df13805f4a1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a47b14c812cea35aec1c56df13805f4a1"></a>
 <a class="el" href="classflecsi_1_1topology_1_1entity__id__t.html">entity_id_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>id</b> () const </td></tr>
-<tr class="separator:a9197933b2ad71b2d67804ad85ac12be4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08ce2741dd918242e5a4c298c1e7d8cf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a08ce2741dd918242e5a4c298c1e7d8cf"></a>
+<tr class="separator:a47b14c812cea35aec1c56df13805f4a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35b974647320355458e47a726bb5f0cf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a35b974647320355458e47a726bb5f0cf"></a>
 <a class="el" href="classflecsi_1_1topology_1_1entity__id__t.html">entity_id_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>index_space_id</b> () const </td></tr>
-<tr class="separator:a08ce2741dd918242e5a4c298c1e7d8cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadff3ea63fa4867a404674f84c6769b3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__entity.html#aadff3ea63fa4867a404674f84c6769b3">is_valid</a> () const </td></tr>
-<tr class="separator:aadff3ea63fa4867a404674f84c6769b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a35b974647320355458e47a726bb5f0cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a10208a75665e00bd55be5498df2c0f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3a10208a75665e00bd55be5498df2c0f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__entity.html#a3a10208a75665e00bd55be5498df2c0f">is_valid</a> () const </td></tr>
+<tr class="memdesc:a3a10208a75665e00bd55be5498df2c0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the entity is current inserted in a tree. <br /></td></tr>
+<tr class="separator:a3a10208a75665e00bd55be5498df2c0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -133,38 +140,11 @@ template&lt;class P &gt; </td></tr>
 <tr class="separator:a137b1f459875157219a5209a48bb3bc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename T, size_t D&gt;<br />
-class flecsi::topology::tree_entity&lt; T, D &gt;</h3>
+<div class="textblock"><h3>template&lt;typename T, size_t DIM&gt;<br />
+class flecsi::topology::tree_entity&lt; T, DIM &gt;</h3>
 
 <p>Tree entity base class. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="aadff3ea63fa4867a404674f84c6769b3"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T, size_t D&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool <a class="el" href="classflecsi_1_1topology_1_1tree__entity.html">flecsi::topology::tree_entity</a>&lt; T, D &gt;::is_valid </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Return whether the entity is current inserted in a tree. </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/topology/<a class="el" href="tree__topology_8h_source.html">tree_topology.h</a></li>
 </ul>
 </div><!-- contents -->

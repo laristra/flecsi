@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: /home/flecsi/flecsi/flecsi/topology/tree_topology.h File Reference</title>
+<title>Interface Documentation: /home/flecsi/flecsi/flecsi/topology/tree_topology.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -90,63 +92,61 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">tree_topology.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;map&gt;</code><br />
+<div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;array&gt;</code><br />
+<code>#include &lt;bitset&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;mutex&gt;</code><br />
+<code>#include &lt;set&gt;</code><br />
 <code>#include &lt;unordered_map&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
-<code>#include &lt;array&gt;</code><br />
-<code>#include &lt;cmath&gt;</code><br />
-<code>#include &lt;bitset&gt;</code><br />
-<code>#include &lt;algorithm&gt;</code><br />
-<code>#include &lt;cassert&gt;</code><br />
-<code>#include &lt;iostream&gt;</code><br />
-<code>#include &lt;set&gt;</code><br />
-<code>#include &lt;functional&gt;</code><br />
-<code>#include &lt;mutex&gt;</code><br />
-<code>#include &quot;<a class="el" href="point_8h_source.html">flecsi/geometry/point.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="thread__pool_8h_source.html">flecsi/concurrency/thread_pool.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="data__client_8h_source.html">flecsi/data/data_client.h</a>&quot;</code><br />
-<code>#include &quot;flecsi/topology/index_space.h&quot;</code><br />
+<code>#include &lt;<a class="el" href="thread__pool_8h_source.html">flecsi/concurrency/thread_pool.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="data__client_8h_source.html">flecsi/data/data_client.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="storage_8h_source.html">flecsi/data/storage.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="point_8h_source.html">flecsi/geometry/point.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="topology_2index__space_8h_source.html">flecsi/topology/index_space.h</a>&gt;</code><br />
 </div>
 <p><a href="tree__topology_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__geometry.html">flecsi::topology::tree_geometry&lt; T, D &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__geometry____.html">flecsi::topology::tree_geometry__&lt; T, DIM &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__geometry_3_01T_00_011_01_4.html">flecsi::topology::tree_geometry&lt; T, 1 &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">1d geometry class for computing intersections and distances.  <a href="structflecsi_1_1topology_1_1tree__geometry_3_01T_00_011_01_4.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__geometry_____3_01T_00_011_01_4.html">flecsi::topology::tree_geometry__&lt; T, 1 &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">1d geometry class for computing intersections and distances.  <a href="structflecsi_1_1topology_1_1tree__geometry_____3_01T_00_011_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__geometry_3_01T_00_012_01_4.html">flecsi::topology::tree_geometry&lt; T, 2 &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2d geometry class for computing intersections and distances.  <a href="structflecsi_1_1topology_1_1tree__geometry_3_01T_00_012_01_4.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__geometry_____3_01T_00_012_01_4.html">flecsi::topology::tree_geometry__&lt; T, 2 &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2d geometry class for computing intersections and distances.  <a href="structflecsi_1_1topology_1_1tree__geometry_____3_01T_00_012_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__geometry_3_01T_00_013_01_4.html">flecsi::topology::tree_geometry&lt; T, 3 &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">1d geometry class for computing intersections and distances.  <a href="structflecsi_1_1topology_1_1tree__geometry_3_01T_00_013_01_4.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__geometry_____3_01T_00_013_01_4.html">flecsi::topology::tree_geometry__&lt; T, 3 &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">1d geometry class for computing intersections and distances.  <a href="structflecsi_1_1topology_1_1tree__geometry_____3_01T_00_013_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id&lt; T, D &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id____.html">flecsi::topology::branch_id__&lt; T, DIM &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1entity__id__t.html">flecsi::topology::entity_id_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">All tree entities have an associated entity id of this type which is needed.  <a href="classflecsi_1_1topology_1_1entity__id__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1branch__id__hasher____.html">flecsi::topology::branch_id_hasher__&lt; T, D &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1branch__id__hasher____.html">flecsi::topology::branch_id_hasher__&lt; T, DIM &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology&lt; P &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__topology_1_1filter__valid.html">flecsi::topology::tree_topology&lt; P &gt;::filter_valid</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__entity.html">flecsi::topology::tree_entity&lt; T, D &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__entity.html">flecsi::topology::tree_entity&lt; T, DIM &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tree entity base class.  <a href="classflecsi_1_1topology_1_1tree__entity.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__branch.html">flecsi::topology::tree_branch&lt; T, D &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceflecsi"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html">flecsi</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__branch____.html">flecsi::topology::tree_branch__&lt; T, DIM &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tree branch base class.  <a href="classflecsi_1_1topology_1_1tree__branch____.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
@@ -159,15 +159,12 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a569a43251d9eb5ce7829c5d66ea0dd10"><td class="memTemplParams" colspan="2"><a class="anchor" id="a569a43251d9eb5ce7829c5d66ea0dd10"></a>
-template&lt;typename T , size_t D&gt; </td></tr>
-<tr class="memitem:a569a43251d9eb5ce7829c5d66ea0dd10"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::topology::operator&lt;&lt;</b> (std::ostream &amp;ostr, const branch_id&lt; T, D &gt; &amp;id)</td></tr>
-<tr class="separator:a569a43251d9eb5ce7829c5d66ea0dd10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cbfed3cc76689d8d8c83cca633b90b0"><td class="memTemplParams" colspan="2"><a class="anchor" id="a0cbfed3cc76689d8d8c83cca633b90b0"></a>
+template&lt;typename T , size_t DIM&gt; </td></tr>
+<tr class="memitem:a0cbfed3cc76689d8d8c83cca633b90b0"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::topology::operator&lt;&lt;</b> (std::ostream &amp;ostr, const branch_id__&lt; T, DIM &gt; &amp;id)</td></tr>
+<tr class="separator:a0cbfed3cc76689d8d8c83cca633b90b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="section author"><dt>Authors</dt><dd><a href="#" onclick="location.href='mai'+'lto:'+'nic'+'km'+'@la'+'nl'+'.go'+'v'; return false;">nickm<span style="display: none;">.nosp@m.</span>@lan<span style="display: none;">.nosp@m.</span>l.gov</a> </dd></dl>
-<dl class="section date"><dt>Date</dt><dd>Initial file creation: Apr 5, 2016 </dd></dl>
-</div><h2 class="groupheader">Enumeration Type Documentation</h2>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
 <a class="anchor" id="file_a8f7b319d3e182892a584424d77f95c51"></a>
 <div class="memitem">
 <div class="memproto">

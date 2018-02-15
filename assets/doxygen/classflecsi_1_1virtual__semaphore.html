@@ -1,10 +1,12 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: flecsi::virtual_semaphore Class Reference</title>
+<title>Interface Documentation: flecsi::virtual_semaphore Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,10 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0(master)</span>
+   <div id="projectname">Interface Documentation<br>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -41,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +88,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -98,6 +100,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::virtual_semaphore Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="virtual__semaphore_8h_source.html">virtual_semaphore.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -107,23 +111,29 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>lock_t</b> = std::un
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ada20a58ce96651370758a2848d4b7556"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ada20a58ce96651370758a2848d4b7556"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>virtual_semaphore</b> (int count=0)</td></tr>
+<tr class="memitem:ada20a58ce96651370758a2848d4b7556"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#ada20a58ce96651370758a2848d4b7556">virtual_semaphore</a> (int count=0)</td></tr>
 <tr class="separator:ada20a58ce96651370758a2848d4b7556"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c98d4772af611fdd9aced9d85392692"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8c98d4772af611fdd9aced9d85392692"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>virtual_semaphore</b> (int count, int max_count)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#a8c98d4772af611fdd9aced9d85392692">virtual_semaphore</a> (int count, int max_count)</td></tr>
+<tr class="memdesc:a8c98d4772af611fdd9aced9d85392692"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Initialize with count and max count. <br /></td></tr>
 <tr class="separator:a8c98d4772af611fdd9aced9d85392692"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab74d3d2cf9da52dc402f62c7f99e9770"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab74d3d2cf9da52dc402f62c7f99e9770"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#ab74d3d2cf9da52dc402f62c7f99e9770">~virtual_semaphore</a> ()</td></tr>
+<tr class="memdesc:ab74d3d2cf9da52dc402f62c7f99e9770"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br /></td></tr>
+<tr class="separator:ab74d3d2cf9da52dc402f62c7f99e9770"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe37a20a2d8f91da5b1e781b3f905b39"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe37a20a2d8f91da5b1e781b3f905b39"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>acquire</b> ()</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#abe37a20a2d8f91da5b1e781b3f905b39">acquire</a> ()</td></tr>
+<tr class="memdesc:abe37a20a2d8f91da5b1e781b3f905b39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block until successfully acquiring the semaphore, i.e. count &gt; 0. <br /></td></tr>
 <tr class="separator:abe37a20a2d8f91da5b1e781b3f905b39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee4ef405c01719c7ec4b92c779e788d5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aee4ef405c01719c7ec4b92c779e788d5"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>try_acquire</b> ()</td></tr>
+<tr class="memitem:aee4ef405c01719c7ec4b92c779e788d5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#aee4ef405c01719c7ec4b92c779e788d5">try_acquire</a> ()</td></tr>
 <tr class="separator:aee4ef405c01719c7ec4b92c779e788d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30e257fa997a81a69ceb800fd03e68a1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a30e257fa997a81a69ceb800fd03e68a1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>release</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#a30e257fa997a81a69ceb800fd03e68a1">release</a> ()</td></tr>
+<tr class="memdesc:a30e257fa997a81a69ceb800fd03e68a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release one count on the semaphore. <br /></td></tr>
 <tr class="separator:a30e257fa997a81a69ceb800fd03e68a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a087bcc0f653bd3633d773bd1810887c0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a087bcc0f653bd3633d773bd1810887c0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>interrupt</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#a087bcc0f653bd3633d773bd1810887c0">interrupt</a> ()</td></tr>
+<tr class="memdesc:a087bcc0f653bd3633d773bd1810887c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable semaphore and unblock all acquire operations. <br /></td></tr>
 <tr class="separator:a087bcc0f653bd3633d773bd1810887c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adac75cb8c6e8c347d28ae7b286cc6e79"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adac75cb8c6e8c347d28ae7b286cc6e79"></a>
 <a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a> &amp;)=delete</td></tr>
@@ -132,6 +142,65 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>interrupt</b> ()</td>
 &#160;</td><td class="memItemRight" valign="bottom"><b>virtual_semaphore</b> (const <a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a> &amp;)=delete</td></tr>
 <tr class="separator:ac79d7a0d9490dd4353db74d76d90dd36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The virtual semaphore class provides a semaphore-like interface implemented in terms of condition variables and mutexes. Unlike real semaphores which consume system resources, this class can be instantiated indefinitely. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="ada20a58ce96651370758a2848d4b7556"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::virtual_semaphore::virtual_semaphore </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Constructor</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">count</td><td>initialize with count </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="aee4ef405c01719c7ec4b92c779e788d5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool flecsi::virtual_semaphore::try_acquire </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Non-blocking, attempt to acquire the semaphore and return true upon success </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/concurrency/<a class="el" href="virtual__semaphore_8h_source.html">virtual_semaphore.h</a></li>
 </ul>
