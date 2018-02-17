@@ -16,6 +16,7 @@ var searchData=
   ['data_5fclient_5ftype_5f_5f_3c_20flecsi_3a_3adata_5fclient_5fhandle_5fbase_5f_5f_3c_20data_5fclient_5ftype_2c_20permissions_2c_20data_5fpolicy_20_3e_20_3e',['data_client_type__&lt; flecsi::data_client_handle_base__&lt; DATA_CLIENT_TYPE, PERMISSIONS, DATA_POLICY &gt; &gt;',['../structflecsi_1_1data__client__type_____3_01flecsi_1_1data__client__handle__base_____3_01DATA__CL6391ce3e894df7576369e4a839a5bc17.html',1,'flecsi']]],
   ['data_5fhash_5fkey_5ft',['data_hash_key_t',['../structflecsi_1_1data_1_1data__hash__key__t.html',1,'flecsi::data']]],
   ['data_5fhash_5ft',['data_hash_t',['../structflecsi_1_1data_1_1data__hash__t.html',1,'flecsi::data']]],
+  ['data_5ft',['data_t',['../structdata__t.html',1,'']]],
   ['dcrs_5ft',['dcrs_t',['../structflecsi_1_1coloring_1_1dcrs__t.html',1,'flecsi::coloring']]],
   ['debruijn32_5ft',['debruijn32_t',['../classflecsi_1_1utils_1_1debruijn32__t.html',1,'flecsi::utils']]],
   ['debruijn_5ft',['debruijn_t',['../classdebruijn__t.html',1,'']]],
