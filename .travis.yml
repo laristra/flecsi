@@ -115,7 +115,7 @@ after_success:
       mv doc/*.pdf assets;
       rm -rf doc;
       git add --all assets/doxygen assets/*.pdf;
-      if [[ ${TRAVIS_BRANCH} = stable && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
+      if [[ ${TRAVIS_BRANCH} = master && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
         git config --global user.name "Automatic Deployment (Travis CI)";
         git config --global user.email "flecsi-commit@lanl.gov";
         git commit -m "Documentation Update";

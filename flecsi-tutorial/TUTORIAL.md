@@ -77,7 +77,7 @@ subdirectory of this tutorial (The complete source code is in the
 This tutorial assumes that you have successfully downloaded and built
 FleCSI, and that you have installed it somewhere on your system.
 Instructions for building FleCSI are available from the related pages
-[here](pages.html).
+[here](https://laristra.github.io/flecsi/assets/doxygen/md__home_flecsi_flecsi_auxiliary_markdown_01-Build.html).
 
 # Building the Examples
 

@@ -11,19 +11,12 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
+
 /*----------------------------------------------------------------------------*
+  Documentation for this example can be found in GLOBAL-OBJECTS.md.
 
-  Global Object Example
-  =====================
-
-  The functional programming model enforced by the FleCSI runtime makes
-  it difficult to implement traditional C++ object models that employ
-  dynamic polymorphism. In general, you are not allowed to register data
-  with the runtime that use virtual tables, i.e., the FleCSI data model
-  does not allow virtual or pure virtual types. Experimentation with
-  various application projects has shown that virtual inheritance is a
-  useful design pattern for certain dynamic data needs.
-
+  Note: This example covers advanced topics and is primarily intended
+  for specialization developers.
  *----------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -36,94 +29,130 @@
 using namespace flecsi;
 using namespace flecsi::tutorial;
 
-enum material_t : size_t {
-  m1,
-  m2
-}; // enum material_t
+// Create an identifier type. This will allow us to switch between
+// object instances using an integer id.
 
-struct cell_data_t {
-  material_t m;
-}; // struct cell_data_t
+enum identifier_t : size_t {
+  type_1,
+  type_2
+}; // enum identifier_t
+
+// Create a data type to store the integer id.
+
+struct data_t {
+  identifier_t id;
+}; // struct data_t
+
+// Define an accessor type to use as the task argument.
 
 template<
 size_t SHARED_PRIVILEGES>
-using cell_data = dense_accessor<cell_data_t, rw, SHARED_PRIVILEGES, ro>;
+using cell_data = dense_accessor<data_t, rw, SHARED_PRIVILEGES, ro>;
+
+// This is a simple base type with one pure virtual method that we will
+// use to demonstrate the global object interface.
 
 struct base_t {
   virtual ~base_t() {}
 
-  virtual double pressure(double r, double e) = 0;
+  virtual double compute(double x, double y) = 0;
+
 }; // struct base_t
 
-struct ideal_t : public base_t {
+// A derived type with a non-trivial constructor.
 
-  ideal_t(double K, double gamma)
-    : K_(K), gamma_(gamma) {}
+struct type_1_t : public base_t {
 
-  double pressure(double r, double e) override {
-    return K_*r*(gamma_-1.0)*e;
-  } // pressure
+  type_1_t(double w0, double w1)
+    : w0_(w0), w1_(w1) {}
+
+  double compute(double x, double y) override {
+    return w0_*x + w1_*y;
+  } // compute
 
 private:
 
-  double K_;
-  double gamma_;
+  double w0_;
+  double w1_;
 
-}; // struct ideal_t
+}; // struct type_1_t
 
-namespace eos_example {
+// A derived type with a trivial constructor.
 
-// Define a task to initialize the cell data
+struct type_2_t : public base_t {
+
+  double compute(double x, double y) override {
+    return x*y;
+  } // compute
+
+}; // struct type_2_t
+
+namespace example {
+
+// Define a task to initialize the cell data. This will randomly pick
+// one of the integer ids for each cell.
 
 void update(mesh<ro> m, cell_data<rw> cd) {
   for(auto c: m.cells(owned)) {
     const size_t flip = double(rand())/RAND_MAX + 0.5;
 
     if(flip) {
-      cd(c).m = m1;
+      cd(c).id = type_1;
     }
     else {
-      cd(c).m = m2;
+      cd(c).id = type_2;
     } // if
   } // for
 } // update
 
-flecsi_register_task(update, eos_example, loc, single);
+flecsi_register_task(update, example, loc, single);
+
+// Print the results of executing the "compute" method.
 
 void print(mesh<ro> m, cell_data<ro> cd) {
   for(auto c: m.cells(owned)) {
-    auto eos = flecsi_get_global_object(cd(c).m, eos, base_t);
+    auto derived = flecsi_get_global_object(cd(c).id, derived, base_t);
 
-    std::cout << "pressure: " << eos->pressure(1.0, 1.0) << std::endl;
+    std::cout << "compute: " << derived->compute(5.0, 1.0) << std::endl;
   } // for
 } // print
 
-flecsi_register_task(print, eos_example, loc, single);
+flecsi_register_task(print, example, loc, single);
 
-} // namespace eos_example
+} // namespace example
+
+// Normal registration of the data client and cell data.
 
 flecsi_register_data_client(mesh_t, clients, mesh);
-flecsi_register_field(mesh_t, eos_example, cell_data,
-  cell_data_t, dense, 1, cells);
+flecsi_register_field(mesh_t, example, cell_data,
+  data_t, dense, 1, cells);
 
-flecsi_register_global_object(m1, eos, base_t);
-flecsi_register_global_object(m2, eos, base_t);
+// Register the derived object instances that we will set and use in the
+// example.
+
+flecsi_register_global_object(type_1, derived, base_t);
+flecsi_register_global_object(type_2, derived, base_t);
 
 namespace flecsi {
 namespace execution {
 
 void driver(int argc, char ** argv) {
 
-  // This should move into the specialization
-  flecsi_set_global_object(m1, eos, base_t, new ideal_t(1.0, 7.0/2.0));
-  flecsi_set_global_object(m2, eos, base_t, new ideal_t(1.0, 1.66666));
+  // Initialization of the object instances. In a real code this would
+  // need to occur in the specialization initialization control point.
+
+  flecsi_set_global_object(type_1, derived, base_t, new type_1_t(1.0, 2.0));
+  flecsi_set_global_object(type_2, derived, base_t, new type_2_t());
+
+  // Get client and data handles as usual.
 
   auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
-  auto cd = flecsi_get_handle(m, eos_example, cell_data, cell_data_t,
-    dense, 0);
+  auto cd = flecsi_get_handle(m, example, cell_data, data_t, dense, 0);
 
-  flecsi_execute_task(update, eos_example, single, m, cd);
-  flecsi_execute_task(print, eos_example, single, m, cd);
+  // Execute the tasks.
+
+  flecsi_execute_task(update, example, single, m, cd);
+  flecsi_execute_task(print, example, single, m, cd);
 
 } // driver
 
