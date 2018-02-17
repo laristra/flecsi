@@ -404,12 +404,13 @@ install(
 
 cinch_add_library_target(FleCSI flecsi)
 
+set(ENABLE_FLECSI_TUTORIAL_DEFAULT ON)
 if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-  option(ENABLE_FLECSI_TUTORIAL
-  "Enable library support for the FleCSI tutorial" OFF)
-else()
+  set(ENABLE_FLECSI_TUTORIAL_DEFAULT OFF)
+endif()
 option(ENABLE_FLECSI_TUTORIAL
-  "Enable library support for the FleCSI tutorial" ON)
+  "Enable library support for the FleCSI tutorial"
+  ${ENABLE_FLECSI_TUTORIAL_DEFAULT})
 endif()
 
 if(ENABLE_FLECSI_TUTORIAL)

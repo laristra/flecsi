@@ -133,8 +133,6 @@ set(execution_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-
 cinch_add_unit(launch
   SOURCES
     test/launch.cc
@@ -174,8 +172,6 @@ cinch_add_unit(reduction
   THREADS 2
   NOCI
   )
-
-endif()
 
 #
 # Test basic task calling capability using the register_task
