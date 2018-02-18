@@ -87,7 +87,7 @@ hpx_context_policy_t::start_hpx(
   rp.create_thread_pool("default", hpx::resource::local_priority_fifo);
 
   // Create a thread pool for executing MPI tasks
-  rp.create_thread_pool("mpi", hpx::resource::local_priority_fifo);
+  rp.create_thread_pool("mpi", hpx::resource::static_);
 
   // Add first core to mpi pool
   rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], "mpi");
