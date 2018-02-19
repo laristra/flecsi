@@ -118,6 +118,8 @@ Macros</h2></td></tr>
 <tr class="separator:ga54a9a7044278974adfe8099ec48430b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab8d25e256b30b2206f534da1415fad0e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#gab8d25e256b30b2206f534da1415fad0e">flecsi_set_global_object</a>(index,  nspace,  type,  obj)</td></tr>
 <tr class="separator:gab8d25e256b30b2206f534da1415fad0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59561d5f783301bac5d25190bfe1bd95"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_initialize_global_object</b>(index,  nspace,  type, ...)</td></tr>
+<tr class="separator:a59561d5f783301bac5d25190bfe1bd95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacb1635615dcaaf3dc633ce0c286da42d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#gacb1635615dcaaf3dc633ce0c286da42d">flecsi_get_global_object</a>(index,  nspace,  type)</td></tr>
 <tr class="separator:gacb1635615dcaaf3dc633ce0c286da42d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab6f878599630e07ba05b4b82b3c1aa89"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#gab6f878599630e07ba05b4b82b3c1aa89">flecsi_register_task_simple</a>(task,  processor,  launch)</td></tr>
@@ -155,6 +157,46 @@ Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>clog_register_tag</b> (execution)</td></tr>
 <tr class="separator:a4e25a3dd6fd1bb208efafec5680c7e19"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="a59561d5f783301bac5d25190bfe1bd95"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define flecsi_initialize_global_object</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">index, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">nspace, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   <a class="code" href="structflecsi_1_1execution_1_1context____.html#a06e65cb09fbc27217419bfe00e97ab87">\</a></div><div class="line"><a class="code" href="structflecsi_1_1execution_1_1context____.html#a06e65cb09fbc27217419bfe00e97ab87">                                                                               \</a></div><div class="line"><a class="code" href="structflecsi_1_1execution_1_1context____.html#a06e65cb09fbc27217419bfe00e97ab87">  flecsi::execution::context_t::instance</a>().template initialize_global_object&lt;  \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \</div><div class="line">    type&gt;(index, ##__VA_ARGS__);</div><div class="ttc" id="structflecsi_1_1execution_1_1context_____html_a06e65cb09fbc27217419bfe00e97ab87"><div class="ttname"><a href="structflecsi_1_1execution_1_1context____.html#a06e65cb09fbc27217419bfe00e97ab87">flecsi::execution::context__::instance</a></div><div class="ttdeci">static context__ &amp; instance()</div><div class="ttdef"><b>Definition:</b> context.h:217</div></div>
+</div><!-- fragment -->
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

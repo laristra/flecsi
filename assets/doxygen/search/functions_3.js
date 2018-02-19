@@ -6,6 +6,7 @@ var searchData=
   ['checksum',['checksum',['../group__utils.html#gab2a7b452e19b5f67a27d9a129f44b805',1,'flecsi::utils']]],
   ['child',['child',['../classflecsi_1_1topology_1_1tree__topology.html#a5ca7793dfe53ab05aae59ca6a6a435eb',1,'flecsi::topology::tree_topology']]],
   ['cis_5fto_5fgis_5fmap',['cis_to_gis_map',['../structflecsi_1_1execution_1_1context____.html#a9be1343b931e0ace952ab8ca79954580',1,'flecsi::execution::context__']]],
+  ['cleanup',['cleanup',['../structflecsi_1_1execution_1_1global__object__wrapper____.html#a718ff14cd575f28ea8082baf9bfdfff9',1,'flecsi::execution::global_object_wrapper__']]],
   ['clear',['clear',['../classflecsi_1_1topology_1_1index__space____.html#acce6b18c345eef2e75f6e1e456c3d57a',1,'flecsi::topology::index_space__::clear()'],['../classflecsi_1_1topology_1_1connectivity__t.html#a578dc8dd05bb20470e80dd269dbc3b5c',1,'flecsi::topology::connectivity_t::clear()'],['../classflecsi_1_1utils_1_1array__ref.html#a03cc486c185e6745abdd67d412de1692',1,'flecsi::utils::array_ref::clear()']]],
   ['client_5fadjacency_5ffrom_5fdimension',['client_adjacency_from_dimension',['../group__utils.html#ga07c5140f08bc6d2b2a2ebbb6ac3a381c',1,'flecsi::utils::hash']]],
   ['client_5fadjacency_5ffrom_5fdomain',['client_adjacency_from_domain',['../group__utils.html#ga883bec76c428dd41ef3d5c75300852e5',1,'flecsi::utils::hash']]],
