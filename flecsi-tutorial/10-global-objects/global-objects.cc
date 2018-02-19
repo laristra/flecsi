@@ -95,13 +95,7 @@ namespace example {
 void update(mesh<ro> m, cell_data<rw> cd) {
   for(auto c: m.cells(owned)) {
     const size_t flip = double(rand())/RAND_MAX + 0.5;
-
-    if(flip) {
-      cd(c).id = type_1;
-    }
-    else {
-      cd(c).id = type_2;
-    } // if
+    cd(c).id = flip ? type_1 : type_2;
   } // for
 } // update
 
