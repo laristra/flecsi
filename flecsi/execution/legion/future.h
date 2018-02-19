@@ -309,7 +309,7 @@ using flecsi_future = legion_future__<
     RETURN,
     launch>;
 
-using flecsi_future = future_base_t;
+//using flecsi_future = future_base_t;
 
 } // namespace execution
 } // namespace flecsi
