@@ -53,7 +53,7 @@ using cell_data = dense_accessor<data_t, rw, SHARED_PRIVILEGES, ro>;
 // use to demonstrate the global object interface.
 
 struct base_t {
-  virtual ~base_t() {}
+  virtual ~base_t() { std::cout << "delete called" << std::endl; }
 
   virtual double compute(double x, double y) = 0;
 
@@ -138,11 +138,11 @@ namespace execution {
 
 void driver(int argc, char ** argv) {
 
-  // Initialization of the object instances. In a real code this would
+  // Initialization of the object instances. In a real code, this would
   // need to occur in the specialization initialization control point.
 
-  flecsi_set_global_object(type_1, derived, base_t, new type_1_t(1.0, 2.0));
-  flecsi_set_global_object(type_2, derived, base_t, new type_2_t());
+  flecsi_initialize_global_object(type_1, derived, type_1_t, 1.0, 2.0);
+  flecsi_initialize_global_object(type_2, derived, type_2_t);
 
   // Get client and data handles as usual.
 
