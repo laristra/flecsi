@@ -12,10 +12,6 @@
    All rights reserved.
                                                                               */
 
-/*----------------------------------------------------------------------------*
-  Documentation for this example can be found in FIELDS.md.
- *----------------------------------------------------------------------------*/
-
 #include <iostream>
 
 #include<flecsi-tutorial/specialization/mesh/mesh.h>

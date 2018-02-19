@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <functional>
 #include <map>
 #include <unordered_map>
 
@@ -26,6 +27,7 @@
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/execution/common/execution_state.h>
+#include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/const_string.h>
 
@@ -131,7 +133,12 @@ struct context__ : public CONTEXT_POLICY {
     typename OBJECT_TYPE>
   bool register_global_object() {
     size_t KEY = NAMESPACE_HASH ^ INDEX;
-    global_object_registry_[KEY] = {};
+
+    using wrapper_t = global_object_wrapper__<OBJECT_TYPE>;
+
+    std::get<0>(global_object_registry_[KEY]) = {};
+    std::get<1>(global_object_registry_[KEY]) = &wrapper_t::cleanup;
+
     return true;
   } // register_global_object
 
@@ -141,9 +148,22 @@ struct context__ : public CONTEXT_POLICY {
   bool set_global_object(size_t index, OBJECT_TYPE * obj) {
     size_t KEY = NAMESPACE_HASH ^ index;
     assert(global_object_registry_.find(KEY) != global_object_registry_.end());
-    global_object_registry_[KEY] = reinterpret_cast<uintptr_t>(obj);
+    std::get<0>(global_object_registry_[KEY]) =
+      reinterpret_cast<uintptr_t>(obj);
     return true;
   } // set_global_object
+
+  template<
+    size_t NAMESPACE_HASH,
+    typename OBJECT_TYPE,
+    typename ... ARGS>
+  bool initialize_global_object(size_t index, ARGS && ... args) {
+    size_t KEY = NAMESPACE_HASH ^ index;
+    assert(global_object_registry_.find(KEY) != global_object_registry_.end());
+    std::get<0>(global_object_registry_[KEY]) =
+      reinterpret_cast<uintptr_t>(new OBJECT_TYPE(std::forward<ARGS>(args)...));
+    return true;
+  } // new_global_object
 
   template<
     size_t NAMESPACE_HASH,
@@ -151,7 +171,8 @@ struct context__ : public CONTEXT_POLICY {
   OBJECT_TYPE * get_global_object(size_t index) {
     size_t KEY = NAMESPACE_HASH ^ index;
     assert(global_object_registry_.find(KEY) != global_object_registry_.end());
-    return reinterpret_cast<OBJECT_TYPE *>(global_object_registry_[KEY]);
+    return reinterpret_cast<OBJECT_TYPE *>(
+      std::get<0>(global_object_registry_[KEY]));
   } // get_global_object
 
   //--------------------------------------------------------------------------//
@@ -674,11 +695,17 @@ struct context__ : public CONTEXT_POLICY {
   } // execution_state
 
 private:
+
   // Default constructor
   context__() : CONTEXT_POLICY() {}
 
   // Destructor
-  ~context__() {}
+  ~context__() {
+    // Invoke the cleanup function for each global object
+    for(auto & go: global_object_registry_) {
+      std::get<1>(go.second)(std::get<0>(go.second));
+    } // for
+  }
 
   //--------------------------------------------------------------------------//
   // We don't need any of these
@@ -693,7 +720,10 @@ private:
   // Object data members.
   //--------------------------------------------------------------------------//
 
-  std::unordered_map<size_t, uintptr_t> global_object_registry_;
+  using global_object_data_t =
+    std::pair<uintptr_t, std::function<void(uintptr_t)>>;
+
+  std::unordered_map<size_t, global_object_data_t> global_object_registry_;
 
   //--------------------------------------------------------------------------//
   // Function data members.

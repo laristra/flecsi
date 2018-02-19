@@ -106,6 +106,13 @@ clog_register_tag(execution);
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
     type>(index, obj);
 
+#define flecsi_initialize_global_object(index, nspace, type, ...)              \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::execution::context_t::instance().template initialize_global_object<  \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    type>(index, ##__VA_ARGS__);
+
 /*!
   @def flecsi_get_global_object
 

@@ -28,7 +28,7 @@ texfiles = $(wildcard *.tex)
 pdffiles = $(patsubst %.tex, %.pdf, $(texfiles))
 
 %.pdf: %.tex
-	pdflatex $<
+	@pdflatex $< 2>&1 > /dev/null
 
 pdfs: $(pdffiles)
 

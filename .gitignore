@@ -24,5 +24,8 @@ flecsi-tutorial/*/data-clients
 flecsi-tutorial/*/functions
 flecsi-tutorial/*/index-spaces
 flecsi-tutorial/*/fields
+flecsi-tutorial/*/dense-data
 flecsi-tutorial/*/sparse-data
+flecsi-tutorial/*/ragged-data
 flecsi-tutorial/*/forall
+flecsi-tutorial/*/global-objects

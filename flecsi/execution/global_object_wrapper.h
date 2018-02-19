@@ -12,28 +12,34 @@
    All rights reserved.
                                                                               */
 
-/*----------------------------------------------------------------------------*
-  Documentation for this example can be found in DRIVER.md.
- *----------------------------------------------------------------------------*/
+#pragma once
 
-#include <iostream>
+/*! @file */
 
 namespace flecsi {
 namespace execution {
 
-void driver(int argc, char ** argv) {
+/*!
+  The global_object_wrapper__ type provides a mechanism to recover type
+  information so that global objects can be properly deleted.
+ */
 
-  // Print the message
+template<
+  typename OBJECT_TYPE>
+struct global_object_wrapper__
+{
 
-  std::cout << "Hello World" << std::endl;
+  /*!
+    Delete the object referenced by \em address.
 
-  // Print the arguments that were passed on the command line
+    @param address The address of the object to delete.
+   */
 
-  for(size_t i{1}; i<argc; ++i) {
-    std::cout << "\targ(" << i << "): " << argv[i] << std::endl;
-  } // for
+  static void cleanup(uintptr_t address) {
+    delete reinterpret_cast<OBJECT_TYPE *>(address);
+  } // cleanup
 
-} // driver
+}; // class global_object_wrapper__
 
 } // namespace execution
 } // namespace flecsi
