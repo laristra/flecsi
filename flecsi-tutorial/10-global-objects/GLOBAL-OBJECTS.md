@@ -37,11 +37,11 @@ reason about what execution path has taken place, regardless of how the
 processes have been mapped to node resources. Using this reasoning,
 FleCSI can support a global object interface that allows users to
 register dynamically polymorphic types with the runtime. These can then
-be set during an appropriate phase of execution, and are available
-during task execution. The types themselves may have any legal C++
-interface, and they are not restricted by the general data model rules
-of FleCSI. The FleCSI global object interface has three methods:
-*flecsi_register_global_object*, *flecsi_set_global_object*, and
+be initialized during an appropriate phase of execution, and are
+available during task execution. The types themselves may have any legal
+C++ interface, and they are not restricted by the general data model
+rules of FleCSI. The FleCSI global object interface has three methods:
+*flecsi_register_global_object*, *flecsi_initialize_global_object*, and
 *flecsi_get_global_object*.
 
 The registration interface takes the following arguments:
@@ -59,13 +59,18 @@ The registration interface takes the following arguments:
 3. The base class type of the global object instance. This must be a
    valid C++ type. In this example, the base class is *base_t*.
 
-The set interface takes the following arguments:
+The initialization interface takes the following arguments:
 
 1. The name of the global object instance.
 
 2. The namespace of the object instance.
 
-3. A pointer to the allocated object instance.
+3. The type with which the object should be initialized. In general,
+   this is a derived type. Initialization will instantiate a new object of
+   this type.
+
+4. A variadic argument list that will be passed to the constructor of
+   the type argument.
 
 The get interface takes the following arguments:
 
@@ -83,6 +88,9 @@ NOTES:
   possible race conditions. This restriction may be relaxed in future
   versions.
 
+* Global object instances are managed by the runtime, e.g., the
+  destructor will be called for each global object that is registered.
+
 The code for this example can be found in *global-objects.cc*:
 
 ```cpp
@@ -96,24 +104,37 @@ The code for this example can be found in *global-objects.cc*:
 using namespace flecsi;
 using namespace flecsi::tutorial;
 
+// Create an identifier type. This will allow us to switch between
+// object instances using an integer id.
+
 enum identifier_t : size_t {
   type_1,
   type_2
 }; // enum identifier_t
 
+// Create a data type to store the integer id.
+
 struct data_t {
   identifier_t id;
 }; // struct data_t
+
+// Define an accessor type to use as the task argument.
 
 template<
 size_t SHARED_PRIVILEGES>
 using cell_data = dense_accessor<data_t, rw, SHARED_PRIVILEGES, ro>;
 
+// This is a simple base type with one pure virtual method that we will
+// use to demonstrate the global object interface.
+
 struct base_t {
-  virtual ~base_t() {}
+  virtual ~base_t() { std::cout << "delete called" << std::endl; }
 
   virtual double compute(double x, double y) = 0;
+
 }; // struct base_t
+
+// A derived type with a non-trivial constructor.
 
 struct type_1_t : public base_t {
 
@@ -131,6 +152,8 @@ private:
 
 }; // struct type_1_t
 
+// A derived type with a trivial constructor.
+
 struct type_2_t : public base_t {
 
   double compute(double x, double y) override {
@@ -141,7 +164,8 @@ struct type_2_t : public base_t {
 
 namespace example {
 
-// Define a task to initialize the cell data
+// Define a task to initialize the cell data. This will randomly pick
+// one of the integer ids for each cell.
 
 void update(mesh<ro> m, cell_data<rw> cd) {
   for(auto c: m.cells(owned)) {
@@ -158,11 +182,17 @@ void update(mesh<ro> m, cell_data<rw> cd) {
 
 flecsi_register_task(update, example, loc, single);
 
+// Print the results of executing the "compute" method.
+
 void print(mesh<ro> m, cell_data<ro> cd) {
   for(auto c: m.cells(owned)) {
+
+    // This call gets the global object associated with the id we
+    // randomly set in the update task.
+
     auto derived = flecsi_get_global_object(cd(c).id, derived, base_t);
 
-    std::cout << "compute: " << derived->compute(1.0, 1.0) << std::endl;
+    std::cout << "compute: " << derived->compute(5.0, 1.0) << std::endl;
   } // for
 } // print
 
@@ -170,9 +200,14 @@ flecsi_register_task(print, example, loc, single);
 
 } // namespace example
 
+// Normal registration of the data client and cell data.
+
 flecsi_register_data_client(mesh_t, clients, mesh);
 flecsi_register_field(mesh_t, example, cell_data,
   data_t, dense, 1, cells);
+
+// Register the derived object instances that we will initialize and
+// use in the example.
 
 flecsi_register_global_object(type_1, derived, base_t);
 flecsi_register_global_object(type_2, derived, base_t);
@@ -182,12 +217,21 @@ namespace execution {
 
 void driver(int argc, char ** argv) {
 
-  // This should move into the specialization
-  flecsi_set_global_object(type_1, derived, base_t, new type_1_t(1.0, 2.0));
-  flecsi_set_global_object(type_2, derived, base_t, new type_1_t(3.0, 4.0));
+  // Initialization of the object instances. In a real code, this would
+  // need to occur in the specialization initialization control point.
+  //
+  // Notice that the interface call accept a variadic argument list
+  // that is passed to the constructor of the particular type.
+
+  flecsi_initialize_global_object(type_1, derived, type_1_t, 1.0, 2.0);
+  flecsi_initialize_global_object(type_2, derived, type_2_t);
+
+  // Get client and data handles as usual.
 
   auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
   auto cd = flecsi_get_handle(m, example, cell_data, data_t, dense, 0);
+
+  // Execute the tasks.
 
   flecsi_execute_task(update, example, single, m, cd);
   flecsi_execute_task(print, example, single, m, cd);

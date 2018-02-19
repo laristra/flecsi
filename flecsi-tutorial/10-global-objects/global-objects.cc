@@ -111,6 +111,10 @@ flecsi_register_task(update, example, loc, single);
 
 void print(mesh<ro> m, cell_data<ro> cd) {
   for(auto c: m.cells(owned)) {
+
+    // This call gets the global object associated with the id we
+    // randomly set in the update task.
+
     auto derived = flecsi_get_global_object(cd(c).id, derived, base_t);
 
     std::cout << "compute: " << derived->compute(5.0, 1.0) << std::endl;
@@ -127,8 +131,8 @@ flecsi_register_data_client(mesh_t, clients, mesh);
 flecsi_register_field(mesh_t, example, cell_data,
   data_t, dense, 1, cells);
 
-// Register the derived object instances that we will set and use in the
-// example.
+// Register the derived object instances that we will initialize and
+// use in the example.
 
 flecsi_register_global_object(type_1, derived, base_t);
 flecsi_register_global_object(type_2, derived, base_t);
@@ -140,6 +144,9 @@ void driver(int argc, char ** argv) {
 
   // Initialization of the object instances. In a real code, this would
   // need to occur in the specialization initialization control point.
+  //
+  // Notice that the interface call accept a variadic argument list
+  // that is passed to the constructor of the particular type.
 
   flecsi_initialize_global_object(type_1, derived, type_1_t, 1.0, 2.0);
   flecsi_initialize_global_object(type_2, derived, type_2_t);
@@ -158,5 +165,3 @@ void driver(int argc, char ** argv) {
 
 } // namespace execution
 } // namespace flecsi
-
-/* vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : */
