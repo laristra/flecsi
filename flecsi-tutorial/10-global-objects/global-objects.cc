@@ -145,7 +145,7 @@ void driver(int argc, char ** argv) {
   // Initialization of the object instances. In a real code, this would
   // need to occur in the specialization initialization control point.
   //
-  // Notice that the interface call accept a variadic argument list
+  // Notice that the interface call accepts a variadic argument list
   // that is passed to the constructor of the particular type.
 
   flecsi_initialize_global_object(type_1, derived, type_1_t, 1.0, 2.0);
