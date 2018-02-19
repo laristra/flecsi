@@ -232,23 +232,51 @@ struct client_registration_wrapper__<
       using TO_ENTITY_TYPE =
           typename std::tuple_element<4, TUPLE_ENTRY_TYPE>::type;
 
+      using entity_types_t = typename POLICY_TYPE::entity_types;
+
+      constexpr size_t from_index_space = topology::find_index_space__<
+          std::tuple_size<entity_types_t>::value, entity_types_t,
+          FROM_ENTITY_TYPE>::find();
+
+      constexpr size_t to_index_space = topology::find_index_space__<
+          std::tuple_size<entity_types_t>::value, entity_types_t,
+          TO_ENTITY_TYPE>::find();
+
       constexpr size_t adjacency_hash = utils::hash::client_adjacency_hash<
-          NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value, FROM_DOMAIN_TYPE::value,
-          TO_DOMAIN_TYPE::value, FROM_ENTITY_TYPE::dimension,
+          NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value,
+          FROM_DOMAIN_TYPE::value,
+          TO_DOMAIN_TYPE::value,
+          FROM_ENTITY_TYPE::dimension,
           TO_ENTITY_TYPE::dimension>();
 
-      using wrapper_t = field_registration_wrapper__<
-          CLIENT_TYPE, flecsi::data::dense, size_t, adjacency_hash, 0, 1,
+      using index_wrapper_t = field_registration_wrapper__<
+          CLIENT_TYPE, flecsi::data::dense, utils::id_t, adjacency_hash, 0, 1,
           INDEX_TYPE::value>;
 
       const size_t client_key =
           typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
-      const size_t key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_field_hash_base__").hash(),
+
+      const size_t index_key = utils::hash::client_internal_field_hash<
+          utils::const_string_t("__flecsi_internal_adjacency_index__").hash(),
           INDEX_TYPE::value>();
       int ispace = INDEX_TYPE::value;
       storage_t::instance().register_field(
-          client_key, key, wrapper_t::register_callback);
+          client_key, index_key, index_wrapper_t::register_callback);
+
+      using offset_wrapper_t = field_registration_wrapper__<
+          CLIENT_TYPE, flecsi::data::dense, utils::offset_t, adjacency_hash, 0,
+          1, from_index_space>;
+
+      // This field resides in the main entities (BLIS) index space, but
+      // is unique to an adjacency, so it is registered using the
+      // adjacency hash.
+      const size_t offset_key = utils::hash::client_internal_field_hash<
+          utils::const_string_t("__flecsi_internal_adjacency_offset__").hash(),
+          INDEX_TYPE::value>();
+
+      storage_t::instance().register_field(
+          client_key, offset_key, offset_wrapper_t::register_callback);
+
     } // handle_type
 
   }; // struct binding_walker__

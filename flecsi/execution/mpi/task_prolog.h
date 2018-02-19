@@ -225,7 +225,7 @@ namespace execution {
         const size_t adj_index_space = adj.adj_index_space;
         const size_t from_index_space = adj.from_index_space;
         const size_t to_index_space = adj.to_index_space;
-
+        
         auto& color_info = (context_.coloring_info(from_index_space)).at(color);
         auto& registered_field_data = context_.registered_field_data();
 
