@@ -121,7 +121,7 @@ flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
 flecsi_register_global( ns, velocity, double, 1);
 
-flecsi_register_field(empty_mesh_2d_t, ns, density, double, color, 1);
+flecsi_register_color(ns, density, double, 1);
 
 namespace flecsi {
 namespace execution {
@@ -183,7 +183,7 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task_simple(global_data_handle_dump, single, global_handle);
 
  //get color handle
-  auto color_handle=flecsi_get_handle(ch, ns, density, double, color, 0);
+  auto color_handle=flecsi_get_color( ns, density, double, 0);
 
   flecsi_execute_task_simple(color_data_handle_dump, single, color_handle);
   flecsi_execute_task_simple(color_writer, single, color_handle);
