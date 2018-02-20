@@ -26,6 +26,11 @@ struct global_data_client_t {
   using type_identifier_t = global_data_client_t;
 };
 
+struct color_data_client_t {
+  using type_identifier_t = color_data_client_t;
+};
+
+
 using sparse_data_offset_t = utils::offset__<16>;
 
 template<typename T>
