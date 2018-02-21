@@ -182,8 +182,6 @@ runtime_driver(
       data.color_domain(), Legion::TaskArgument(nullptr, 0),
       Legion::ArgumentMap());
   
-  //pos_compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     auto& flecsi_ispace = data.index_space(idx_space);

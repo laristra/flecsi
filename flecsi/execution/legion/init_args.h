@@ -155,7 +155,6 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   typename std::enable_if_t<
       std::is_base_of<topology::mesh_topology_base_t, T>::value>
   handle(data_client_handle__<T, PERMISSIONS> &h) {
-    auto &context_ = context_t::instance();
 
     std::unordered_map<size_t, size_t> region_map;
 
@@ -240,7 +239,6 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   typename std::enable_if_t<
       std::is_base_of<topology::set_topology_base_t, T>::value>
   handle(data_client_handle__<T, PERMISSIONS> &h) {
-    auto &context_ = context_t::instance();
 
     for (size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t &ent = h.handle_entities[i];
