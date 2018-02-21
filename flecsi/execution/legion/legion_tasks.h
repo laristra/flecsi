@@ -34,6 +34,9 @@
 #define SHARED_PART 1
 #define SUBRECT_PART 0
 #define OWNER_COLOR_TAG 1
+#define EXCLUSIVE_ACCESS 0
+#define SHARED_ACCESS 1
+#define GHOST_ACCESS 2
 
 using legion_map = Legion::STL::
     map<LegionRuntime::Arrays::coord_t, LegionRuntime::Arrays::coord_t>;

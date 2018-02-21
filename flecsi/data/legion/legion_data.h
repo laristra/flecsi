@@ -65,6 +65,10 @@ public:
     Legion::FieldSpace field_space;
     Legion::LogicalRegion logical_region;
     Legion::IndexPartition color_partition;
+    Legion::IndexPartition access_partition;
+    Legion::IndexPartition exclusive_partition;
+    Legion::IndexPartition shared_partition;
+    Legion::IndexPartition ghost_partition;
     size_t total_num_entities;
   };
 
@@ -458,6 +462,7 @@ public:
 
       // Partition expanded IndexSpace color-wise & create associated
       DomainColoring color_partitioning;
+      MultiDomainColoring access_partitioning;
       for (int color = 0; color < num_colors_; color++) {
         auto citr = coloring_info_map.find(color);
         clog_assert(citr != coloring_info_map.end(), "invalid color info");
@@ -468,14 +473,40 @@ public:
             make_point(
                 color, color_info.exclusive + color_info.shared +
                            color_info.ghost - 1));
-
         color_partitioning[color] = Domain::from_rect<2>(subrect);
+
+        LegionRuntime::Arrays::Rect<2> exclusive_rect(
+            make_point(color, 0),
+            make_point(
+                color, color_info.exclusive - 1));
+        access_partitioning[EXCLUSIVE_ACCESS].insert(
+            Domain::from_rect<2>(exclusive_rect));
+
+        LegionRuntime::Arrays::Rect<2> shared_rect(
+            make_point(color, color_info.exclusive),
+            make_point(
+                color, color_info.exclusive + color_info.shared - 1));
+        access_partitioning[SHARED_ACCESS].insert(
+            Domain::from_rect<2>(shared_rect));
+
+        LegionRuntime::Arrays::Rect<2> ghost_rect(
+            make_point(color, color_info.exclusive + color_info.shared),
+            make_point(
+                color, color_info.exclusive + color_info.shared +
+                color_info.ghost - 1));
+        access_partitioning[GHOST_ACCESS].insert(
+            Domain::from_rect<2>(ghost_rect));
       }
 
       is.color_partition = runtime_->create_index_partition(
           ctx_, is.index_space, color_domain_, color_partitioning,
           true /*disjoint*/);
       attach_name(is, is.color_partition, "color partitioning");
+
+      is.access_partition = runtime_->create_index_partition(
+          ctx_, is.index_space, color_domain_, access_partitioning,
+          true /*disjoint*/);
+      attach_name(is, is.access_partition, "access partitioning");
     }
 
     // create logical regions for color_index_space_
