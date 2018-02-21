@@ -440,6 +440,31 @@ runtime_driver(
   bool silence_warnings = true;
   future.wait_all_results(silence_warnings);
 
+
+  // Add additional setup.
+  context_.advance_state();
+
+  auto& ispace_dmap = context_.index_space_data_map();
+
+  //fill ispace_dmap with logical partitions
+  size_t region_index = 0;
+  size_t consecutive_index = 0;
+  for(auto is: context_.coloring_map()) {
+    size_t idx_space = is.first;
+    auto& flecsi_ispace = data.index_space(idx_space);
+
+    ispace_dmap[idx_space].entire_region = flecsi_ispace.logical_region;
+    ispace_dmap[idx_space].color_partition = runtime->get_logical_partition(
+        ctx, flecsi_ispace.logical_region, flecsi_ispace.color_partition);
+    //ispace_dmap[idx_space].primary_lp = // FIXME: if no longer removed, clean out of all files
+    ispace_dmap[idx_space].exclusive_lp = runtime->get_logical_partition(
+        ctx, flecsi_ispace.logical_region, flecsi_ispace.exclusive_partition);
+    ispace_dmap[idx_space].shared_lp = runtime->get_logical_partition(
+        ctx, flecsi_ispace.logical_region, flecsi_ispace.shared_partition);
+    ispace_dmap[idx_space].ghost_lp = runtime->get_logical_partition(
+        ctx, flecsi_ispace.logical_region, flecsi_ispace.ghost_partition);
+  } // idx_space
+
   //-----------------------------------------------------------------------//
   // Finish up Legion runtime and fall back out to MPI.
   // ----------------------------------------------------------------------//
