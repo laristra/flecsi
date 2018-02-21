@@ -465,6 +465,9 @@ runtime_driver(
         ctx, flecsi_ispace.logical_region, flecsi_ispace.ghost_partition);
   } // idx_space
 
+  // run default or user-defined driver
+  driver(args.argc, args.argv);
+
   //-----------------------------------------------------------------------//
   // Finish up Legion runtime and fall back out to MPI.
   // ----------------------------------------------------------------------//
@@ -583,9 +586,6 @@ spmd_task(
   size_t consecutive_index = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-    
-    ispace_dmap[idx_space].entire_region = regions[region_index]
-                                                  .get_logical_region();  // FIXME place holder
 
     const std::unordered_map<size_t, flecsi::coloring::coloring_info_t>
       coloring_info_map = context_.coloring_info(idx_space);
@@ -639,10 +639,6 @@ spmd_task(
     runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                             PRIMARY_PART);
 
-    ispace_dmap[idx_space].primary_lp = primary_ghost_lp;  // FIXME place holder
-
-    ispace_dmap[idx_space].ghost_lp = primary_ghost_lp;  // FIXME place holder
-
     Legion::DomainColoring excl_shared_coloring;
     LegionRuntime::Arrays::Rect<2> exclusive_rect(
         LegionRuntime::Arrays::make_point(my_color, 0),
@@ -666,10 +662,6 @@ spmd_task(
 
     Legion::LogicalPartition excl_shared_lp
       = runtime->get_logical_partition(ctx, primary_lr, excl_shared_ip);
-
-    ispace_dmap[idx_space].exclusive_lp = excl_shared_lp;  // FIXME place holder
-
-    ispace_dmap[idx_space].shared_lp = excl_shared_lp;  // FIXME place holder
 
     consecutive_index++;
   } // for idx_space
@@ -749,10 +741,6 @@ spmd_task(
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  // Get the input arguments from the Legion runtime
-  const Legion::InputArgs & args =
-    Legion::Runtime::get_input_args();
-
   // #6 deserialize reduction
   Legion::DynamicCollective max_reduction;
   args_deserializer.deserialize((void*)&max_reduction,
@@ -809,6 +797,10 @@ spmd_task(
 
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
+  // Get the input arguments from the Legion runtime
+  const Legion::InputArgs & args =
+    Legion::Runtime::get_input_args();
+
   specialization_spmd_init(args.argc, args.argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
@@ -828,9 +820,6 @@ spmd_task(
     lis_data.region = lis.logical_region;
     lism.emplace(index_space, std::move(lis_data));
   }
-
-  // run default or user-defined driver
-  driver(args.argc, args.argv);
 
   // Cleanup memory
   for(auto ipart: primary_ghost_ips)
