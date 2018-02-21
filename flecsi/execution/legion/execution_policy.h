@@ -247,24 +247,32 @@ struct legion_execution_policy_t {
           clog_tag_guard(execution);
           clog(info) << "Executing single task: " << KEY << std::endl;
 
+          LegionRuntime::Arrays::Rect<1> launch_bounds(0,context_.colors()-1);
+          Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+
           // Create a task launcher, passing the task arguments.
-          TaskLauncher task_launcher(
-              context_.task_id<KEY>(),
-              TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+          IndexTaskLauncher index_task_launcher(
+              context_.task_id<KEY>(), launch_domain,
+              TaskArgument(&task_args, sizeof(ARG_TUPLE)), Legion::ArgumentMap());
+
+          index_task_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
 #ifdef MAPPER_COMPACTION
-          task_launcher.tag = MAPPER_COMPACTED_STORAGE;
+          index_task_launcher.tag = MAPPER_COMPACTED_STORAGE;
 #endif
 
           for (auto & req : init_args.region_reqs) {
-            task_launcher.add_region_requirement(req);
+          //  index_task_launcher.add_region_requirement(req);
           }
 
           // Enqueue the task.
           clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
                       << legion_runtime->find_local_MPI_rank() << std::endl;
+          Legion::MustEpochLauncher must_epoch_launcher;
+           must_epoch_launcher.add_index_task(index_task_launcher);
           auto future =
-              legion_runtime->execute_task(legion_context, task_launcher);
+              legion_runtime->execute_index_space(legion_context, index_task_launcher);
+          //legion_runtime->execute_must_epoch(legion_context, must_epoch_launcher);
 
           return legion_future__<RETURN>(future);
         } // scope

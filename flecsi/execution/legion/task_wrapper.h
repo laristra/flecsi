@@ -271,14 +271,15 @@ struct task_wrapper__ {
       Legion::Runtime * runtime) {
     {
       clog_tag_guard(wrapper);
-      clog(info) << "In execute_user_task" << std::endl;
+      //clog(info)
+      std::cout << "In execute_user_task" << std::endl;
     }
 
     // Unpack task arguments
     ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
     init_handles_t init_handles(runtime, context, regions);
-    init_handles.walk(task_args);
+    //init_handles.walk(task_args);
 
     // Execute the user's task
     // return (*DELEGATE)(task_args);
