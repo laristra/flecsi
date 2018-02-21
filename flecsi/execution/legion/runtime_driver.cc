@@ -185,7 +185,7 @@ runtime_driver(
     auto& flecsi_ispace = data.index_space(idx_space);
 
     Legion::LogicalPartition color_lpart = runtime->get_logical_partition(ctx,
-        flecsi_ispace.logical_region, flecsi_ispace.index_partition);
+        flecsi_ispace.logical_region, flecsi_ispace.color_partition);
         pos_compaction_launcher.add_region_requirement(
         Legion::RegionRequirement(color_lpart, 0/*projection ID*/,
             WRITE_DISCARD, EXCLUSIVE, flecsi_ispace.logical_region))
@@ -314,7 +314,7 @@ runtime_driver(
 
       Legion::LogicalPartition color_lpart =
         runtime->get_logical_partition(ctx,
-          flecsi_ispace.logical_region, flecsi_ispace.index_partition);
+          flecsi_ispace.logical_region, flecsi_ispace.color_partition);
       
       Legion::LogicalRegion color_lregion =
         runtime->get_logical_subregion_by_color(ctx, color_lpart, color);
@@ -413,7 +413,7 @@ runtime_driver(
     auto color_ispace = data.color_index_space();
 
     Legion::LogicalPartition color_lp = runtime->get_logical_partition(ctx,
-        color_ispace.logical_region, color_ispace.index_partition);
+        color_ispace.logical_region, color_ispace.color_partition);
 
     Legion::LogicalRegion color_lregion2 =
         runtime->get_logical_subregion_by_color(ctx, color_lp, color);

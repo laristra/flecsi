@@ -64,7 +64,7 @@ public:
     Legion::IndexSpace index_space;
     Legion::FieldSpace field_space;
     Legion::LogicalRegion logical_region;
-    Legion::IndexPartition index_partition;
+    Legion::IndexPartition color_partition;
     size_t total_num_entities;
   };
 
@@ -106,7 +106,7 @@ public:
     for (auto & itr : index_space_map_) {
       index_space_t & is = itr.second;
 
-      runtime_->destroy_index_partition(ctx_, is.index_partition);
+      runtime_->destroy_index_partition(ctx_, is.color_partition);
       runtime_->destroy_index_space(ctx_, is.index_space);
       runtime_->destroy_field_space(ctx_, is.field_space);
       runtime_->destroy_logical_region(ctx_, is.logical_region);
@@ -472,10 +472,10 @@ public:
         color_partitioning[color] = Domain::from_rect<2>(subrect);
       }
 
-      is.index_partition = runtime_->create_index_partition(
+      is.color_partition = runtime_->create_index_partition(
           ctx_, is.index_space, color_domain_, color_partitioning,
           true /*disjoint*/);
-      attach_name(is, is.index_partition, "color partitioning");
+      attach_name(is, is.color_partition, "color partitioning");
     }
 
     // create logical regions for color_index_space_
@@ -497,11 +497,11 @@ public:
           "color logical region");
 
       LegionRuntime::Arrays::Blockify<1> coloring(1);
-      color_index_space_.index_partition = runtime_->create_index_partition(
+      color_index_space_.color_partition = runtime_->create_index_partition(
           ctx_, color_index_space_.index_space, coloring);
 
       attach_name(
-          color_index_space_, color_index_space_.index_partition,
+          color_index_space_, color_index_space_.color_partition,
           "color partitioning");
     } // scope
 
