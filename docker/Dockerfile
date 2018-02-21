@@ -46,8 +46,7 @@ RUN cmake \
           -DENABLE_COLORING=ON \
           -DENABLE_DOXYGEN=ON \
           -DENABLE_DOCUMENTATION=ON \
-          ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} \
-          ${RUNTIME=hpx:+-DENABLE_FLECSI_TUTORIAL=OFF} ..
+          ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
 RUN ${SONARQUBE:+build-wrapper-linux-x86-64 --out-dir bw-output} make VERBOSE=1 -j2
 RUN ccache -s
