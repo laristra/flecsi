@@ -87,11 +87,11 @@ void driver(int argc, char ** argv) {
       INDEX_ID);
 
   for(size_t cycle=0; cycle<3; cycle++) {
-    flecsi_execute_task_simple(set_primary_cells_task, single, handle,
-      test_handle, my_color,cycle);
+ //   flecsi_execute_task_simple(set_primary_cells_task, single, handle,
+ //     test_handle, my_color,cycle);
 
-    flecsi_execute_task_simple(check_all_cells_task, single, handle,
-      test_handle, my_color, cycle);
+  //  flecsi_execute_task_simple(check_all_cells_task, single, handle,
+  //    test_handle, my_color, cycle);
   }
 
 } // driver
