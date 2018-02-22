@@ -73,6 +73,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
               EXCLUSIVE_PERMISSIONS,
               SHARED_PERMISSIONS,
               GHOST_PERMISSIONS> & a) {
+ std::cout << "DENSE" << std::endl;
     auto & h = a.handle;
 
     constexpr size_t num_regions = 3;
@@ -112,6 +113,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
         data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
         // data[r] += bo[1];
         sizes[r] = sr.hi[1] - sr.lo[1] + 1;
+        std::cout << "regions " << region + r << " size " << sizes[r] << std::endl;
         h.combined_size += sizes[r];
       } // if
     } // for
@@ -155,11 +157,17 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
           default:
             clog_fatal("invalid permissions case");
         } // switch
-
+std::cout << "memcpy "  << pos << " for " << sizes[r] << std::endl;
+T* data_ptr = h.combined_data + pos;
+for (size_t i{0}; i < sizes[r]; i++)
+  std::cout << data_ptr[i] << " ";
         std::memcpy(h.combined_data + pos, data[r], sizes[r] * sizeof(T));
         pos += sizes[r];
+        std::cout << std::endl;
       } // for
 #ifdef COMPACTED_STORAGE_SORT
+      /*
+      std::cout << "nightmare" << std::endl;
       h.combined_data_sort = new T[h.combined_size];
 
       context_t & context_ = context_t::instance();
@@ -173,7 +181,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
         h.combined_data_sort[indx] = h.combined_data[c];
         indx++;
       }
-
+*/
 #endif
 
 #else
@@ -200,7 +208,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
         h.combined_data = ac.template raw_rect_ptr<2>(parent_rect, sr, bo);
         // h.combined_data += bo[1];
       } // scope
-
+std::cout << "setting up non-compacted accessors?" << std::endl;
       size_t pos{0};
       for (size_t r{0}; r < num_regions; ++r) {
         switch (r) {
@@ -370,7 +378,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     LegionRuntime::Arrays::Rect<2> dr;
     LegionRuntime::Arrays::Rect<2> sr;
     LegionRuntime::Accessor::ByteOffset bo[2];
-
+std::cout << "h.num_handle_entities " << h.num_handle_entities << std::endl;
     for (size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
@@ -390,7 +398,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       auto ents = reinterpret_cast<topology::mesh_entity_base_ *>(ents_raw);
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
-
+std::cout << "handle " << i << " num_ents " << num_ents << std::endl;
       auto ac2 = regions[region]
                      .get_field_accessor(ent.id_fid)
                      .template typeify<utils::id_t>();

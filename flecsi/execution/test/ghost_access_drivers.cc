@@ -32,7 +32,7 @@ flecsi_register_data_client(empty_mesh_t, meshes, mesh1);
 void check_all_cells_task(
         dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
         dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
-        int my_color, size_t cycle);
+        size_t cycle);
 flecsi_register_task_simple(check_all_cells_task, loc, single|leaf);
 
 void set_primary_cells_task(
@@ -83,8 +83,8 @@ void driver(int argc, char ** argv) {
     flecsi_execute_task_simple(set_primary_cells_task, single, handle,
       test_handle, cycle);
 
-  //  flecsi_execute_task_simple(check_all_cells_task, single, handle,
-  //    test_handle, my_color, cycle);
+    flecsi_execute_task_simple(check_all_cells_task, single, handle,
+      test_handle, cycle);
   }
 
 } // driver
@@ -120,7 +120,7 @@ void set_primary_cells_task(
     std::cout << "Rank " << my_color << " exclusive " <<  exclusive.id <<
         std::endl;
     cell_ID.exclusive(index) = exclusive.id + cycle;
-    //test.exclusive(index) = double(exclusive.id + cycle);
+    test.exclusive(index) = double(exclusive.id + cycle);
     index++;
   } // exclusive_itr
 
@@ -130,8 +130,8 @@ void set_primary_cells_task(
     flecsi::coloring::entity_info_t shared = *shared_itr;
     //clog_rank(trace, 1)
     std::cout << "Rank " << my_color << " shared " <<  shared.id << std::endl;
-    //cell_ID.shared(index) = shared.id + cycle;
-    //test.shared(index) = double(shared.id + cycle);
+    cell_ID.shared(index) = shared.id + cycle;
+    test.shared(index) = double(shared.id + cycle);
     index++;
   } // shared_itr
 
@@ -148,12 +148,21 @@ void set_primary_cells_task(
 void check_all_cells_task(
         dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
         dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
-        int my_color, size_t cycle) {
-  //clog(trace) << "Rank " << my_color << " READING " << std::endl;
+        size_t cycle) {
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+  auto runtime = Legion::Runtime::get_runtime();
+  const int my_color = runtime->find_local_MPI_rank();
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
+  int my_color;
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
+#endif
+  //clog(trace)
+  std::cout << "Rank " << my_color << " READING " << std::endl;
 
-  //for (size_t i=0; i < cell_ID.exclusive_size(); i++)
-      //clog(trace) << "Rank " << my_color << " exclusive " << i << " = " <<
-      //cell_ID.exclusive(i) << std::endl;
+  for (size_t i=0; i < cell_ID.exclusive_size(); i++)
+      //clog(trace)
+    std::cout << "Rank " << my_color << " exclusive " << i << " = " <<
+      cell_ID.exclusive(i) << std::endl;
 
   flecsi::execution::context_t & context_
     = flecsi::execution::context_t::instance();
