@@ -705,7 +705,7 @@ private:
     for(auto & go: global_object_registry_) {
       std::get<1>(go.second)(std::get<0>(go.second));
     } // for
-  }
+  } // ~context_t
 
   //--------------------------------------------------------------------------//
   // We don't need any of these

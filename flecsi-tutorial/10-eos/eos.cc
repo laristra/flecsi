@@ -109,7 +109,7 @@ void print(mesh<ro> m, cell_data<ro> cd) {
     // This call gets the global object associated with the id we
     // randomly set in the update task.
 
-    auto derived = flecsi_get_global_object(cd(c).id, derived, base_t);
+    base_t * derived = flecsi_get_global_object(cd(c).id, derived, base_t);
 
     std::cout << "compute: " << derived->compute(5.0, 1.0) << std::endl;
   } // for
