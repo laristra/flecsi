@@ -1,9 +1,8 @@
 var searchData=
 [
   ['cell',['cell',['../classflecsi_1_1supplemental_1_1cell.html',1,'flecsi::supplemental']]],
-  ['cell_5fdata_5ft',['cell_data_t',['../structcell__data__t.html',1,'']]],
-  ['cell_5ft',['cell_t',['../structflecsi_1_1supplemental_1_1cell__t.html',1,'flecsi::supplemental']]],
   ['cell_5ft',['cell_t',['../structflecsi_1_1tutorial_1_1cell__t.html',1,'flecsi::tutorial']]],
+  ['cell_5ft',['cell_t',['../structflecsi_1_1supplemental_1_1cell__t.html',1,'flecsi::supplemental']]],
   ['checksum_5ft',['checksum_t',['../structflecsi_1_1utils_1_1checksum__t.html',1,'flecsi::utils']]],
   ['client_5fregistration_5fwrapper_5f_5f',['client_registration_wrapper__',['../structflecsi_1_1data_1_1client__registration__wrapper____.html',1,'flecsi::data']]],
   ['client_5fregistration_5fwrapper_5f_5f_3c_20flecsi_3a_3atopology_3a_3amesh_5ftopology_5f_5f_3c_20policy_5ftype_20_3e_2c_20namespace_5fhash_2c_20name_5fhash_20_3e',['client_registration_wrapper__&lt; flecsi::topology::mesh_topology__&lt; POLICY_TYPE &gt;, NAMESPACE_HASH, NAME_HASH &gt;',['../structflecsi_1_1data_1_1client__registration__wrapper_____3_01flecsi_1_1topology_1_1mesh__topolocac2b4f1592f18140c1ea6c40cf59d64.html',1,'flecsi::data']]],
@@ -14,8 +13,8 @@ var searchData=
   ['color_5fhandle_5f_5f',['color_handle__',['../structflecsi_1_1data_1_1legion_1_1color__handle____.html',1,'flecsi::data::legion']]],
   ['colorer_5ft',['colorer_t',['../structflecsi_1_1coloring_1_1colorer__t.html',1,'flecsi::coloring']]],
   ['coloring_5finfo_5ft',['coloring_info_t',['../structflecsi_1_1coloring_1_1coloring__info__t.html',1,'flecsi::coloring']]],
-  ['coloring_5fmap_5ft',['coloring_map_t',['../structflecsi_1_1execution_1_1coloring__map__t.html',1,'flecsi::execution']]],
   ['coloring_5fmap_5ft',['coloring_map_t',['../structflecsi_1_1tutorial_1_1coloring__map__t.html',1,'flecsi::tutorial']]],
+  ['coloring_5fmap_5ft',['coloring_map_t',['../structflecsi_1_1execution_1_1coloring__map__t.html',1,'flecsi::execution']]],
   ['commit_5finfo_5ft',['commit_info_t',['../structflecsi_1_1mutator__handle__base_____1_1commit__info__t.html',1,'flecsi::mutator_handle_base__']]],
   ['communicator_5ft',['communicator_t',['../classflecsi_1_1coloring_1_1communicator__t.html',1,'flecsi::coloring']]],
   ['compute_5fbindings_5f_5f',['compute_bindings__',['../structflecsi_1_1topology_1_1compute__bindings____.html',1,'flecsi::topology']]],
