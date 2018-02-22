@@ -307,72 +307,6 @@ runtime_driver(
                              args_serializers[color].get_used_bytes()));
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
-    // Add region requirements
-    for(auto is: context_.coloring_map()) {
-      size_t idx_space = is.first;
-      auto& flecsi_ispace = data.index_space(idx_space);
-
-      Legion::LogicalPartition color_lpart =
-        runtime->get_logical_partition(ctx,
-          flecsi_ispace.logical_region, flecsi_ispace.color_partition);
-      
-      Legion::LogicalRegion color_lregion =
-        runtime->get_logical_subregion_by_color(ctx, color_lpart, color);
-
-      Legion::RegionRequirement reg_req(color_lregion, READ_WRITE,
-          SIMULTANEOUS, flecsi_ispace.logical_region);
-
-      reg_req.add_field(ghost_owner_pos_fid);
-
-      for (const field_id_t& field_id : fields_map[idx_space]){
-          reg_req.add_field(field_id);
-      }//for field_info
-
-      for(auto& itr : context_.adjacency_info()){
-        if(itr.first == idx_space){
-          Legion::FieldID adjacency_fid = 
-            context_.adjacency_fid(itr.second.from_index_space,
-              itr.second.to_index_space);
-          
-          reg_req.add_field(adjacency_fid);
-        }
-      }
-
-      spmd_launcher.add_region_requirement(reg_req);
-
-      flecsi::coloring::coloring_info_t color_info = 
-        coloring_info[idx_space][color];
-      
-      for(auto ghost_owner : color_info.ghost_owners) {
-        {
-        clog_tag_guard(runtime_driver);
-        clog(trace) << " Color " << color << " idx_space " << idx_space << 
-          " has owner " << ghost_owner << std::endl;
-        } // scope
-
-        Legion::LogicalRegion ghost_owner_lregion =
-          runtime->get_logical_subregion_by_color(ctx, color_lpart,
-            ghost_owner);
-
-        const LegionRuntime::Arrays::coord_t owner_color = ghost_owner;
-        const bool is_mutable = false;
-        runtime->attach_semantic_information(ghost_owner_lregion,
-          OWNER_COLOR_TAG, (void*)&owner_color,
-          sizeof(LegionRuntime::Arrays::coord_t), is_mutable);
-
-        Legion::RegionRequirement owner_reg_req(ghost_owner_lregion, READ_ONLY,
-          SIMULTANEOUS, flecsi_ispace.logical_region);
-        owner_reg_req.add_flags(NO_ACCESS_FLAG);
-        owner_reg_req.add_field(ghost_owner_pos_fid);
-        for (const field_id_t& field_id : fields_map[idx_space]){
-          owner_reg_req.add_field(field_id);
-        }
-        //spmd_launcher.add_region_requirement(owner_reg_req);
-
-      }// for ghost_owner
-
-    } // for idx_space
-
     for(size_t adjacency_idx_space : data.adjacencies()){
       auto& adjacency = data.adjacency(adjacency_idx_space);
 
@@ -456,7 +390,7 @@ runtime_driver(
     ispace_dmap[idx_space].entire_region = flecsi_ispace.logical_region;
     ispace_dmap[idx_space].color_partition = runtime->get_logical_partition(
         ctx, flecsi_ispace.logical_region, flecsi_ispace.color_partition);
-    //ispace_dmap[idx_space].primary_lp = // FIXME: if no longer removed, clean out of all files
+    //ispace_dmap[idx_space].primary_lp = // FIXME: if no longer needed, clean out of all files
     ispace_dmap[idx_space].exclusive_lp = runtime->get_logical_partition(
         ctx, flecsi_ispace.logical_region, flecsi_ispace.exclusive_partition);
     ispace_dmap[idx_space].shared_lp = runtime->get_logical_partition(
