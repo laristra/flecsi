@@ -271,8 +271,7 @@ struct legion_execution_policy_t {
           Legion::MustEpochLauncher must_epoch_launcher;
            must_epoch_launcher.add_index_task(index_task_launcher);
           auto future =
-              legion_runtime->execute_index_space(legion_context, index_task_launcher);
-          //legion_runtime->execute_must_epoch(legion_context, must_epoch_launcher);
+              legion_runtime->execute_must_epoch(legion_context, must_epoch_launcher);
 
           return legion_future__<RETURN>(future);
         } // scope
