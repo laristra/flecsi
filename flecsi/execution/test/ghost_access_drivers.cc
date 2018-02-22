@@ -119,7 +119,7 @@ void set_primary_cells_task(
     //clog_rank(trace, 1)
     std::cout << "Rank " << my_color << " exclusive " <<  exclusive.id <<
         std::endl;
-    //cell_ID.exclusive(index) = exclusive.id + cycle;
+    cell_ID.exclusive(index) = exclusive.id + cycle;
     //test.exclusive(index) = double(exclusive.id + cycle);
     index++;
   } // exclusive_itr

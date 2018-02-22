@@ -496,7 +496,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
       ++region;
     } // for
-  } // handle
+  } // handle -- fix this?
 
   //-----------------------------------------------------------------------//
   // If this is not a data handle, then simply skip it.

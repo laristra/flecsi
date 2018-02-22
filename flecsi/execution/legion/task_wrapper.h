@@ -279,7 +279,7 @@ struct task_wrapper__ {
     ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
     init_handles_t init_handles(runtime, context, regions);
-    //init_handles.walk(task_args);
+    init_handles.walk(task_args);
 
     // Execute the user's task
     // return (*DELEGATE)(task_args);
