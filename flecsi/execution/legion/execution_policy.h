@@ -258,7 +258,7 @@ struct legion_execution_policy_t {
           index_task_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
 #ifdef MAPPER_COMPACTION
-          //index_task_launcher.tag = MAPPER_COMPACTED_STORAGE;
+          index_task_launcher.tag = MAPPER_COMPACTED_STORAGE;
 #endif
 
           for (auto & req : init_args.region_reqs) {
