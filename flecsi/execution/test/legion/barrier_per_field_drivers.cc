@@ -77,6 +77,7 @@ void driver(int argc, char ** argv) {
       INDEX_ID);
   auto handle2 = flecsi_get_handle(ch, name_space,field2, size_t, dense,
       INDEX_ID);
+#if 0
 
   for(size_t cycle=0; cycle<3; cycle++) {
     bool delay = false;
@@ -108,6 +109,7 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task_simple(write_task, single, handle1, my_color, 2, delay);
   flecsi_execute_task_simple(read_task, single, handle1, my_color, 2);
   flecsi_execute_task_simple(read_task, single, handle2, my_color, 1);
+#endif
 
 } // driver
 

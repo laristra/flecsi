@@ -465,6 +465,30 @@ runtime_driver(
         ctx, flecsi_ispace.logical_region, flecsi_ispace.ghost_partition);
   } // idx_space
 
+
+  // FIXME: set this up for IndexLaunch
+#if 0
+  //adding information for the global and color handles to the ispace_map
+  if (number_of_global_fields>0){
+
+    size_t global_index_space =
+      execution::internal_index_space::global_is;
+
+    ispace_dmap[global_index_space].entire_region =
+        regions[region_index].get_logical_region();  // FIXME place holder
+
+    region_index++;
+  }//end if
+
+  if(number_of_color_fields>0){
+
+    size_t color_index_space =
+      execution::internal_index_space::color_is;
+
+    ispace_dmap[color_index_space].entire_region =
+      regions[region_index].get_logical_region();   // FIXME place holder
+  }//end if
+#endif
   // run default or user-defined driver
   driver(args.argc, args.argv);
 
@@ -576,97 +600,6 @@ spmd_task(
     }//for
   }//end for is
 
-  // Prevent these objects destructors being called until after driver()
-  std::map<size_t,Legion::IndexPartition> primary_ghost_ips;
-  std::map<size_t,Legion::IndexPartition> exclusive_shared_ips;
-  std::map<size_t,std::map<size_t,Legion::IndexPartition>> owner_subrect_ips;
-
-  //fill ispace_dmap with logical regions
-  size_t region_index = 0;
-  size_t consecutive_index = 0;
-  for(auto is: context_.coloring_map()) {
-    size_t idx_space = is.first;
-
-    const std::unordered_map<size_t, flecsi::coloring::coloring_info_t>
-      coloring_info_map = context_.coloring_info(idx_space);
-
-    auto itr = coloring_info_map.find(my_color);
-    clog_assert(itr != coloring_info_map.end(),
-        "Can't find partition info for my color");
-    const flecsi::coloring::coloring_info_t coloring_info = itr->second;
-
-    {
-    clog_tag_guard(runtime_driver);
-    clog(trace) << my_color << " handle " << idx_space <<
-        " exclusive " << coloring_info.exclusive <<
-        " shared " << coloring_info.shared <<
-        " ghost " << coloring_info.ghost << std::endl;
-    } // scope
-
-    Legion::IndexSpace color_ispace = 
-      regions[region_index].get_logical_region().get_index_space();
-    LegionRuntime::Arrays::Rect<1> color_bounds_1D(0,1);
-    Legion::Domain color_domain_1D
-    = Legion::Domain::from_rect<1>(color_bounds_1D);
-
-    Legion::DomainColoring primary_ghost_coloring;
-    LegionRuntime::Arrays::Rect<2>
-    primary_rect(LegionRuntime::Arrays::make_point(my_color, 0),
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
-            + coloring_info.shared - 1));
-    primary_ghost_coloring[PRIMARY_PART]
-                           = Legion::Domain::from_rect<2>(primary_rect);
-    LegionRuntime::Arrays::Rect<2> ghost_rect(
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
-            + coloring_info.shared),
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
-            + coloring_info.shared + coloring_info.ghost - 1));
-    primary_ghost_coloring[GHOST_PART]
-                           = Legion::Domain::from_rect<2>(ghost_rect);
-
-    Legion::IndexPartition primary_ghost_ip =
-      runtime->create_index_partition(ctx, color_ispace, color_domain_1D,
-      primary_ghost_coloring, true /*disjoint*/);
-
-    primary_ghost_ips[idx_space] = primary_ghost_ip;
-
-    Legion::LogicalPartition primary_ghost_lp =
-      runtime->get_logical_partition(ctx,
-        regions[region_index].get_logical_region(), primary_ghost_ip);
-    region_index++;
-
-    Legion::LogicalRegion primary_lr =
-    runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
-                                            PRIMARY_PART);
-
-    Legion::DomainColoring excl_shared_coloring;
-    LegionRuntime::Arrays::Rect<2> exclusive_rect(
-        LegionRuntime::Arrays::make_point(my_color, 0),
-        LegionRuntime::Arrays::make_point(my_color,
-          coloring_info.exclusive - 1));
-    excl_shared_coloring[EXCLUSIVE_PART]
-                         = Legion::Domain::from_rect<2>(exclusive_rect);
-    LegionRuntime::Arrays::Rect<2> shared_rect(
-        LegionRuntime::Arrays::make_point(my_color,
-        coloring_info.exclusive),
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
-            + coloring_info.shared - 1));
-    excl_shared_coloring[SHARED_PART]
-                         = Legion::Domain::from_rect<2>(shared_rect);
-
-    Legion::IndexPartition excl_shared_ip = runtime->create_index_partition(ctx,
-        primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring,
-        true /*disjoint*/);
-
-    exclusive_shared_ips[idx_space] = excl_shared_ip;
-
-    Legion::LogicalPartition excl_shared_lp
-      = runtime->get_logical_partition(ctx, primary_lr, excl_shared_ip);
-
-    consecutive_index++;
-  } // for idx_space
-  
-
   // Setup maps from mesh to compacted (local) index space and vice versa
   //
   // This depends on the ordering of the BLIS data structure setup.
@@ -689,7 +622,7 @@ spmd_task(
     } // for
 
     context_.add_index_map(is.first, _map);
-  } // for
+  } // for coloring_map
 
   //////////////////////////////////////////////////////////////////////////////
   // FIX for Legion cluster fuck reordering nightmare...
@@ -735,7 +668,7 @@ spmd_task(
       ++cid;
     } // for
 
-  } // for
+  } // for coloring_map
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -767,34 +700,6 @@ spmd_task(
     context_.add_adjacency_triple(adjacencies[i]);
   }
 
-  for(auto& itr : context_.adjacencies()) {
-    ispace_dmap[itr.first].entire_region =
-      regions[region_index].get_logical_region();  // FIXME place holder
-
-    region_index++;
-  }
-
-  //adding information for the global and color handles to the ispace_map
-  if (number_of_global_fields>0){
-
-    size_t global_index_space =
-      execution::internal_index_space::global_is;
-
-    ispace_dmap[global_index_space].entire_region =
-        regions[region_index].get_logical_region();  // FIXME place holder
-
-    region_index++;
-  }//end if
-
-  if(number_of_color_fields>0){
-
-    size_t color_index_space =
-      execution::internal_index_space::color_is;
-
-    ispace_dmap[color_index_space].entire_region =
-      regions[region_index].get_logical_region();   // FIXME place holder
-  }//end if
-
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   // Get the input arguments from the Legion runtime
@@ -806,6 +711,9 @@ spmd_task(
 
   context_.advance_state();
 
+  // FIXME: local_index_space is now problematic in control replication
+  // It made sense in SPMD, but now each IndexLaunch starts from a clean slate.
+#if 0
   auto& local_index_space_map = context_.local_index_space_map();
   for(auto& itr : local_index_space_map){
     size_t index_space = itr.first;
@@ -820,12 +728,9 @@ spmd_task(
     lis_data.region = lis.logical_region;
     lism.emplace(index_space, std::move(lis_data));
   }
+#endif
 
   // Cleanup memory
-  for(auto ipart: primary_ghost_ips)
-      runtime->destroy_index_partition(ctx, ipart.second);
-  for(auto ipart: exclusive_shared_ips)
-      runtime->destroy_index_partition(ctx, ipart.second);
   delete [] field_info_buf;
   delete [] adjacencies;
 
