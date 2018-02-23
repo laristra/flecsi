@@ -58,15 +58,14 @@ struct legion_dense_data_handle_policy_t {
   // the region requirements
   Legion::LogicalRegion entire_region;
   Legion::LogicalPartition color_partition;
+  Legion::LogicalPartition primary_lp;
   Legion::LogicalPartition exclusive_lp;
   Legion::LogicalPartition shared_lp;
   Legion::LogicalPartition ghost_lp;
+  Legion::LogicalPartition ghost_owners_lp;
 
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.
-  const Legion::STL::map<
-      LegionRuntime::Arrays::coord_t,
-      LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
 
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions

@@ -30,6 +30,7 @@ struct data_client_handle_entity_t {
   field_id_t id_fid;
   Legion::LogicalRegion entire_region;
   Legion::LogicalPartition color_partition;
+  Legion::LogicalPartition primary_partition;
   Legion::LogicalPartition exclusive_partition;
   Legion::LogicalPartition shared_partition;
   Legion::LogicalPartition ghost_partition;

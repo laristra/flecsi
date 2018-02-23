@@ -58,6 +58,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/registration_wrapper.h
     legion/runtime_driver.h
     legion/runtime_state.h
+    legion/task_epilog.h
+    legion/task_prolog.h
     legion/task_wrapper.h
   )
 

@@ -283,6 +283,7 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
 
       ent.entire_region = ritr->second.entire_region;
       ent.color_partition = ritr->second.color_partition;
+      ent.primary_partition = ritr->second.primary_lp;
       ent.exclusive_partition = ritr->second.exclusive_lp;
       ent.shared_partition = ritr->second.shared_lp;
       ent.ghost_partition = ritr->second.ghost_lp;

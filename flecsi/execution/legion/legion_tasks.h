@@ -34,10 +34,10 @@
 #define SHARED_PART 1
 #define SUBRECT_PART 0
 #define OWNER_COLOR_TAG 1
-#define EXCLUSIVE_ACCESS 0
-#define SHARED_ACCESS 1
-#define PRIMARY_ACCESS 2
-#define GHOST_ACCESS 3
+#define EXCLUSIVE_OWNER 0
+#define SHARED_OWNER 1
+#define PRIMARY_ACCESS 0
+#define GHOST_ACCESS 1
 
 using legion_map = Legion::STL::
     map<LegionRuntime::Arrays::coord_t, LegionRuntime::Arrays::coord_t>;
@@ -142,8 +142,6 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
 
     region_idx++;
 
-    for (Legion::Domain::DomainPointIterator itr(owner_domain); itr; itr++)
-      std::cout << "shared has " << itr.p[0] << "," << itr.p[1]  << std::endl;
     for (LegionRuntime::Arrays::GenericPointInRectIterator<2> itr(ghost_rect);
          itr; itr++) {
       auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
@@ -152,8 +150,7 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
 
       {
         clog_tag_guard(legion_tasks);
-        //clog(trace)
-        std::cout << "points to " << old_location.x[0] << ","
+        clog(trace) << "points to " << old_location.x[0] << ","
                     << old_location.x[1] << " local mirror is "
                     << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1]
                     << std::endl;
@@ -168,8 +165,7 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
 
       {
         clog_tag_guard(legion_tasks);
-        //clog(trace)
-        std::cout << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1]
+        clog(trace) << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1]
                     << " points to " << new_location.x[0] << ","
                     << new_location.x[1] << std::endl;
       } // scope
@@ -309,6 +305,7 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
  */
 
 __flecsi_internal_legion_task(ghost_copy_task, void) {
+
   const int my_color = runtime->find_local_MPI_rank();
 
   context_t & context = context_t::instance();
@@ -316,7 +313,6 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   struct args_t {
     size_t data_client_hash;
     size_t index_space;
-    size_t owner;
   };
   args_t args = *(args_t *)task->args;
 
@@ -326,15 +322,6 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
       (task->regions[1].privilege_fields.size() -
        task->regions[0].privilege_fields.size()) == 1,
       "ghost region additionally requires ghost_owner_pos_fid");
-
-  legion_map owner_map = task->futures[0].get_result<legion_map>();
-
-  for (auto itr = owner_map.begin(); itr != owner_map.end(); itr++) {
-    clog_tag_guard(legion_tasks);
-    clog(trace) << "my_color= " << my_color << " gid " << itr->first
-                << " maps to lid " << itr->second << " current owner lid is "
-                << args.owner << std::endl;
-  }
 
   auto ghost_owner_pos_fid =
       LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
@@ -348,17 +335,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   Legion::Domain ghost_domain = runtime->get_index_space_domain(
       ctx, regions[1].get_logical_region().get_index_space());
 
-  LegionRuntime::Arrays::Rect<2> owner_rect = owner_domain.get_rect<2>();
-  LegionRuntime::Arrays::Rect<2> ghost_rect = ghost_domain.get_rect<2>();
-  LegionRuntime::Arrays::Rect<2> owner_sub_rect;
-  LegionRuntime::Arrays::Rect<2> ghost_sub_rect;
-  LegionRuntime::Accessor::ByteOffset byte_offset[2];
-
-  LegionRuntime::Arrays::Point<2> * position_ref_data =
-      reinterpret_cast<LegionRuntime::Arrays::Point<2> *>(
-          position_ref_acc.template raw_rect_ptr<2>(
-              ghost_rect, ghost_sub_rect, byte_offset));
-  size_t position_max = ghost_rect.hi[1] - ghost_rect.lo[1] + 1;
+  for (Legion::Domain::DomainPointIterator itr(owner_domain); itr; itr++)
+    std::cout << "owner has " << itr.p[0] << "," << itr.p[1]  << std::endl;
 
   // For each field, copy data from shared to ghost
   for (auto fid : task->regions[0].privilege_fields) {
@@ -369,44 +347,67 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     auto fitr = iitr->second.find(fid);
     clog_assert(fitr != iitr->second.end(), "invalid fid");
     const context_t::field_info_t & field_info = fitr->second;
+    std::cout << "SIZE " << field_info.size <<
+        " vs " << sizeof(size_t) << " vs " << sizeof(uint64_t) << std::endl;
 
-    auto acc_shared = regions[0].get_field_accessor(fid);
-    auto acc_ghost = regions[1].get_field_accessor(fid);
-
-    uint8_t * data_shared =
-        reinterpret_cast<uint8_t *>(acc_shared.template raw_rect_ptr<2>(
-            owner_rect, owner_sub_rect, byte_offset));
-
-    {
-      clog_tag_guard(legion_tasks);
-      clog(trace) << "my_color = " << my_color << " owner lid = " << args.owner
-                  << " owner rect = " << owner_rect.lo[0] << ","
-                  << owner_rect.lo[1] << " to " << owner_rect.hi[0] << ","
-                  << owner_rect.hi[1] << std::endl;
-    }
-
-    uint8_t * ghost_data =
-        reinterpret_cast<uint8_t *>(acc_ghost.template raw_rect_ptr<2>(
-            ghost_rect, ghost_sub_rect, byte_offset));
-
-    for (size_t ghost_pt = 0; ghost_pt < position_max; ghost_pt++) {
-      LegionRuntime::Arrays::Point<2> ghost_ref = position_ref_data[ghost_pt];
-
+    for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
+      auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
+      LegionRuntime::Arrays::Point<2> owner_location = position_ref_acc.read(ghost_ptr);
+      std::cout << itr.p[0] << "," << itr.p[1] << " points to "
+          << owner_location.x[0] << "," << owner_location.x[1] << std::endl;
+      auto owner_ptr = Legion::DomainPoint::from_point<2>(owner_location);
+      // FIXME: hack until gather copies are implemented
+      switch (field_info.size) {
+      case 1:
+        {
+          auto owner_acc = regions[0].get_field_accessor(fid).typeify<uint8_t>();
+          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<uint8_t>();
+          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
+        }
+          break;
+      case 2:
       {
-        clog_tag_guard(legion_tasks);
-        clog(trace) << my_color << " copy from position " << ghost_ref.x[0]
-                    << "," << ghost_ref.x[1] << std::endl;
+          auto owner_acc = regions[0].get_field_accessor(fid).typeify<uint16_t>();
+          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<uint16_t>();
+          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
       }
+          break;
+      case 4:
+      {
+          auto owner_acc = regions[0].get_field_accessor(fid).typeify<uint32_t>();
+          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<uint32_t>();
+          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
+          std::cout << " read4 " << owner_acc.read(owner_ptr) << std::endl;
+      }
+          break;
+      case 8:
+      {
+          auto owner_acc = regions[0].get_field_accessor(fid).typeify<size_t>();
+          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<size_t>();
+          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
+          auto rloc = owner_ptr.point_data;
+          auto gloc = ghost_ptr.point_data;
+          std::cout << " read8 " << owner_acc.read(owner_ptr) <<
+              " from " << rloc[0] << "," << rloc[1] <<
+              " to " << gloc[0] << "'" << gloc[1] << std::endl;
+      }
+          break;
+      case 12:
+      {
+          auto owner_acc = regions[0].get_field_accessor(fid).typeify<long double>();
+          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<long double>();
+          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
+          std::cout << " read12 " << owner_acc.read(owner_ptr) << std::endl;
+      }
+          break;
+      default:
+          clog_assert(false, "ghost_copy hack does not support data type.");
+          break;
+      }
+    } // for itr
 
-      if (owner_map[ghost_ref.x[0]] == args.owner) {
-        size_t owner_offset = ghost_ref.x[1] - owner_sub_rect.lo[1];
-        uint8_t * owner_copy_ptr = data_shared + owner_offset * field_info.size;
-        size_t ghost_offset = ghost_pt;
-        uint8_t * ghost_copy_ptr = ghost_data + ghost_offset * field_info.size;
-        std::memcpy(ghost_copy_ptr, owner_copy_ptr, field_info.size);
-      } // if
-    } // for ghost_pt
   } // for fid
+
 } // ghost_copy_task
 
 /*!

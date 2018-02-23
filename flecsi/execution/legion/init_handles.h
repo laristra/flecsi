@@ -158,6 +158,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
         std::memcpy(h.combined_data + pos, data[r], sizes[r] * sizeof(T));
         pos += sizes[r];
       } // for
+
 #ifdef COMPACTED_STORAGE_SORT
       /*
       std::cout << "nightmare" << std::endl;
