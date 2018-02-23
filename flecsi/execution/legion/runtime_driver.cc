@@ -289,27 +289,6 @@ runtime_driver(
                              args_serializers[color].get_used_bytes()));
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
-    auto color_ispace = data.color_index_space();
-
-    Legion::LogicalPartition color_lp = runtime->get_logical_partition(ctx,
-        color_ispace.logical_region, color_ispace.color_partition);
-
-    Legion::LogicalRegion color_lregion2 =
-        runtime->get_logical_subregion_by_color(ctx, color_lp, color);
-
-    Legion::RegionRequirement color_reg_req(color_lregion2,
-          READ_WRITE, SIMULTANEOUS, color_ispace.logical_region);
-
-   // color_reg_req.add_flags(NO_ACCESS_FLAG);
-    for(const field_info_t& field_info : context_.registered_fields()){
-       if(field_info.storage_class == data::color ){
-         color_reg_req.add_field(field_info.fid);
-       }//if
-     }//for
-
-     if (number_of_color_fields>0)
-       spmd_launcher.add_region_requirement(color_reg_req);
-
     Legion::DomainPoint point(color);
     must_epoch_launcher.add_single_task(point, spmd_launcher);
   } // for color
@@ -318,7 +297,6 @@ runtime_driver(
   auto future = runtime->execute_must_epoch(ctx, must_epoch_launcher);
   bool silence_warnings = true;
   future.wait_all_results(silence_warnings);
-
 
   // Add additional setup.
   context_.advance_state();
@@ -364,18 +342,19 @@ runtime_driver(
 
     ispace_dmap[global_index_space].entire_region = global_ispace.logical_region;
   }
-  // FIXME: set this up for IndexLaunch
-#if 0
+
+  auto color_ispace = data.color_index_space();
 
   if(number_of_color_fields>0){
-
     size_t color_index_space =
       execution::internal_index_space::color_is;
 
-    ispace_dmap[color_index_space].entire_region =
-      regions[region_index].get_logical_region();   // FIXME place holder
-  }//end if
-#endif
+    ispace_dmap[color_index_space].entire_region = color_ispace.logical_region;
+
+    ispace_dmap[color_index_space].color_partition =
+        runtime->get_logical_partition(ctx, color_ispace.logical_region,
+            color_ispace.color_partition);
+  }
 
   // run default or user-defined driver
   driver(args.argc, args.argv);
