@@ -250,7 +250,7 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
     // In compacted position of ghost, write the reference/pointer
     // to pre-compacted shared
     // ghost reference/pointer will need to communicate with other ranks in
-    // spmd_task() to obtain corrected pointer
+    // correction_task to obtain corrected pointer
     size_t region_idx = 0;
     for (auto idx_space : coloring_map) {
 

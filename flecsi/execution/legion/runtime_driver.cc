@@ -240,8 +240,8 @@ runtime_driver(
 
   std::map<size_t,Legion::Serializer> args_serializers;
 
-  const auto spmd_id =
-    context_.task_id<__flecsi_internal_task_key(spmd_task)>();
+  const auto setup_rank_context_id =
+    context_.task_id<__flecsi_internal_task_key(setup_rank_context_task)>();
 
   // Add colors to must_epoch_launcher
   for(size_t color(0); color<num_colors; ++color) {
@@ -281,19 +281,19 @@ runtime_driver(
         sizeof(Legion::DynamicCollective));
    
    //-----------------------------------------------------------------------//
-   //add region requirements to the spmd_launcher
+   //add region requirements to the setup_rank_context_launcher
    //-----------------------------------------------------------------------//
    
-    Legion::TaskLauncher spmd_launcher(spmd_id,
+    Legion::TaskLauncher setup_rank_context_launcher(setup_rank_context_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(),
                              args_serializers[color].get_used_bytes()));
-    spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+    setup_rank_context_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
     Legion::DomainPoint point(color);
-    must_epoch_launcher.add_single_task(point, spmd_launcher);
+    must_epoch_launcher.add_single_task(point, setup_rank_context_launcher);
   } // for color
 
-  // Launch the spmd tasks
+  // Launch the setup_rank_context tasks
   auto future = runtime->execute_must_epoch(ctx, must_epoch_launcher);
   bool silence_warnings = true;
   future.wait_all_results(silence_warnings);
@@ -371,7 +371,7 @@ runtime_driver(
 } // runtime_driver
 
 void
-spmd_task(
+setup_rank_context_task(
   const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
@@ -382,12 +382,9 @@ spmd_task(
 
   const int my_color = task->index_point.point_data[0];
 
-  // spmd_task is an inner task
-  runtime->unmap_all_regions(ctx);
-
   {
   clog_tag_guard(runtime_driver);
-  clog(info) << "Executing spmd task " << my_color << std::endl;
+  clog(info) << "Executing setup rank context task " << my_color << std::endl;
   }
 
   // Add additional setup.
@@ -399,7 +396,7 @@ spmd_task(
   auto ghost_owner_pos_fid = 
     Legion::FieldID(internal_field::ghost_owner_pos);
 
-  clog_assert(task->arglen > 0, "spmd_task called without arguments");
+  clog_assert(task->arglen > 0, "setup_rank_context_task called without arguments");
 
   //---------------------------------------------------------------------//
   // Deserialize task arguments
@@ -580,7 +577,7 @@ spmd_task(
   // Cleanup memory
   delete [] field_info_buf;
 
-} // spmd_task
+} // setup_rank_context_task
 
 } // namespace execution 
 } // namespace flecsi
