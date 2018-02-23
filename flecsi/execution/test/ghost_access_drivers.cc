@@ -116,8 +116,7 @@ void set_primary_cells_task(
   for (auto exclusive_itr = index_coloring->second.exclusive.begin();
     exclusive_itr != index_coloring->second.exclusive.end(); ++exclusive_itr) {
     flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
-    //clog_rank(trace, 1)
-    std::cout << "Rank " << my_color << " exclusive " <<  exclusive.id <<
+    clog_rank(trace, 1) << "Rank " << my_color << " exclusive " <<  exclusive.id <<
         std::endl;
     cell_ID.exclusive(index) = exclusive.id + cycle;
     test.exclusive(index) = double(exclusive.id + cycle);
@@ -128,8 +127,7 @@ void set_primary_cells_task(
   for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
       index_coloring->second.shared.end(); ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
-    //clog_rank(trace, 1)
-    std::cout << "Rank " << my_color << " shared " <<  shared.id << std::endl;
+    clog_rank(trace, 1) << "Rank " << my_color << " shared " <<  shared.id << std::endl;
     cell_ID.shared(index) = shared.id + cycle;
     test.shared(index) = double(shared.id + cycle);
     index++;
@@ -139,8 +137,7 @@ void set_primary_cells_task(
   for (auto ghost_itr = index_coloring->second.ghost.begin(); ghost_itr !=
       index_coloring->second.ghost.end(); ++ghost_itr) {
     flecsi::coloring::entity_info_t ghost = *ghost_itr;
-    //clog_rank(trace, 1)
-    std::cout << "Rank " << my_color << " ghost " <<  ghost.id << std::endl;
+    clog_rank(trace, 1) << "Rank " << my_color << " ghost " <<  ghost.id << std::endl;
   } // ghost_itr
 
 } // set_primary_cells_task
@@ -156,12 +153,10 @@ void check_all_cells_task(
   int my_color;
   MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
 #endif
-  //clog(trace)
-  std::cout << "Rank " << my_color << " READING " << std::endl;
+  clog(trace) << "Rank " << my_color << " READING " << std::endl;
 
   for (size_t i=0; i < cell_ID.exclusive_size(); i++)
-      //clog(trace)
-    std::cout << "Rank " << my_color << " exclusive " << i << " = " <<
+      clog(trace) << "Rank " << my_color << " exclusive " << i << " = " <<
       cell_ID.exclusive(i) << std::endl;
 
   flecsi::execution::context_t & context_

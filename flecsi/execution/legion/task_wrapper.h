@@ -271,8 +271,7 @@ struct task_wrapper__ {
       Legion::Runtime * runtime) {
     {
       clog_tag_guard(wrapper);
-      //clog(info)
-      std::cout << "In execute_user_task" << std::endl;
+      clog(info) << "In execute_user_task" << std::endl;
     }
 
     // Unpack task arguments

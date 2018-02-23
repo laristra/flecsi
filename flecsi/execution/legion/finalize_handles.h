@@ -38,7 +38,20 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
               T,
               EXCLUSIVE_PERMISSIONS,
               SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {} // handle
+              GHOST_PERMISSIONS> & a) {
+#ifndef MAPPER_COMPACTION
+
+  auto & h = a.handle;
+
+  if ((EXCLUSIVE_PERMISSIONS == rw) || (EXCLUSIVE_PERMISSIONS == wo))
+    std::memcpy(h.exclusive_buf, h.exclusive_data, h.exclusive_size * sizeof(T));
+
+
+  if ((SHARED_PERMISSIONS == rw) || (SHARED_PERMISSIONS == wo))
+    std::memcpy(h.shared_buf, h.shared_data, h.shared_size * sizeof(T));
+
+#endif
+  } // handle
 
   /*!
      The finalize_handles_t type can be called to walk task args after task
