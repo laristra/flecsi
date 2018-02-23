@@ -139,8 +139,8 @@ void specialization_tlt_init(int argc, char ** argv) {
 
   auto & context = execution::context_t::instance();
  
-  ASSERT_EQ(context.execution_state(),
-    static_cast<size_t>(SPECIALIZATION_TLT_INIT));
+//  ASSERT_EQ(context.execution_state(),
+//    static_cast<size_t>(SPECIALIZATION_TLT_INIT));
 
   coloring_map_t map;
   map.vertices = 1;
@@ -167,7 +167,7 @@ void driver(int argc, char ** argv) {
   clog(info) << "In driver" << std::endl;
 
   auto & context = execution::context_t::instance();
-  ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
+  //ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
 
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
