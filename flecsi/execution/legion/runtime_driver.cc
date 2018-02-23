@@ -289,20 +289,6 @@ runtime_driver(
                              args_serializers[color].get_used_bytes()));
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
-    auto global_ispace = data.global_index_space();
-    Legion::RegionRequirement global_reg_req(global_ispace.logical_region,
-          READ_ONLY, SIMULTANEOUS, global_ispace.logical_region);
-
-    global_reg_req.add_flags(NO_ACCESS_FLAG);
-    for(const field_info_t& field_info : context_.registered_fields()){
-      if(field_info.storage_class == data::global ){
-         global_reg_req.add_field(field_info.fid);
-       }//if
-     }//for
-
-     if (number_of_global_fields>0)
-       spmd_launcher.add_region_requirement(global_reg_req);
-
     auto color_ispace = data.color_index_space();
 
     Legion::LogicalPartition color_lp = runtime->get_logical_partition(ctx,
@@ -367,19 +353,19 @@ runtime_driver(
 
   }
 
-  // FIXME: set this up for IndexLaunch
-#if 0
   //adding information for the global and color handles to the ispace_map
-  if (number_of_global_fields>0){
+
+   if (number_of_global_fields>0){
 
     size_t global_index_space =
       execution::internal_index_space::global_is;
 
-    ispace_dmap[global_index_space].entire_region =
-        regions[region_index].get_logical_region();  // FIXME place holder
+    auto global_ispace = data.global_index_space();
 
-    region_index++;
-  }//end if
+    ispace_dmap[global_index_space].entire_region = global_ispace.logical_region;
+  }
+  // FIXME: set this up for IndexLaunch
+#if 0
 
   if(number_of_color_fields>0){
 
