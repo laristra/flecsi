@@ -25,7 +25,7 @@ namespace flecsi {
 namespace execution {
 
 /*!
-  Register the top-level SMPD task.
+  Register the task to setup the context for each MPI rank.
 
   \remark The translation unit that contains this call will not be
          necessary with C++17, as it will be possible to move this call
@@ -35,7 +35,7 @@ namespace execution {
  */
 
 __flecsi_internal_register_legion_task(
-    spmd_task,
+    setup_rank_context_task,
     processor_type_t::loc,
     index | inner);
 

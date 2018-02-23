@@ -70,12 +70,12 @@ void runtime_driver(
 // initialization.
 
 /*!
- Initial SPMD task.
+ Setup rank context task.
 
  @ingroup legion-execution
  */
 
-void spmd_task(
+void setup_rank_context_task(
     const Legion::Task * task,
     const std::vector<Legion::PhysicalRegion> & regions,
     Legion::Context ctx,

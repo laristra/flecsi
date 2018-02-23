@@ -240,8 +240,8 @@ runtime_driver(
 
   std::map<size_t,Legion::Serializer> args_serializers;
 
-  const auto spmd_id =
-    context_.task_id<__flecsi_internal_task_key(spmd_task)>();
+  const auto setup_rank_context_id =
+    context_.task_id<__flecsi_internal_task_key(setup_rank_context_task)>();
 
   // Add colors to must_epoch_launcher
   for(size_t color(0); color<num_colors; ++color) {
@@ -281,81 +281,22 @@ runtime_driver(
         sizeof(Legion::DynamicCollective));
    
    //-----------------------------------------------------------------------//
-   //add region requirements to the spmd_launcher
+   //add region requirements to the setup_rank_context_launcher
    //-----------------------------------------------------------------------//
    
-    Legion::TaskLauncher spmd_launcher(spmd_id,
+    Legion::TaskLauncher setup_rank_context_launcher(setup_rank_context_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(),
                              args_serializers[color].get_used_bytes()));
-    spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
-    for(size_t adjacency_idx_space : data.adjacencies()){
-      auto& adjacency = data.adjacency(adjacency_idx_space);
-
-      Legion::LogicalPartition color_lpart =
-        runtime->get_logical_partition(ctx,
-          adjacency.logical_region, adjacency.index_partition);
-      
-      Legion::LogicalRegion color_lregion =
-        runtime->get_logical_subregion_by_color(ctx, color_lpart, color);
-
-      Legion::RegionRequirement
-        reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
-          adjacency.logical_region);
-
-      for(const field_info_t& fi : context_.registered_fields()){
-        if(fi.index_space == adjacency_idx_space){
-          reg_req.add_field(fi.fid);
-        }
-      }
-
-      spmd_launcher.add_region_requirement(reg_req);
-    }//adjacency_indx
-
-    auto global_ispace = data.global_index_space();
-    Legion::RegionRequirement global_reg_req(global_ispace.logical_region,
-          READ_ONLY, SIMULTANEOUS, global_ispace.logical_region);
-
-    global_reg_req.add_flags(NO_ACCESS_FLAG);
-    for(const field_info_t& field_info : context_.registered_fields()){
-      if(field_info.storage_class == data::global ){
-         global_reg_req.add_field(field_info.fid);
-       }//if
-     }//for
-
-     if (number_of_global_fields>0)
-       spmd_launcher.add_region_requirement(global_reg_req);
-
-    auto color_ispace = data.color_index_space();
-
-    Legion::LogicalPartition color_lp = runtime->get_logical_partition(ctx,
-        color_ispace.logical_region, color_ispace.color_partition);
-
-    Legion::LogicalRegion color_lregion2 =
-        runtime->get_logical_subregion_by_color(ctx, color_lp, color);
-
-    Legion::RegionRequirement color_reg_req(color_lregion2,
-          READ_WRITE, SIMULTANEOUS, color_ispace.logical_region);
-
-   // color_reg_req.add_flags(NO_ACCESS_FLAG);
-    for(const field_info_t& field_info : context_.registered_fields()){
-       if(field_info.storage_class == data::color ){
-         color_reg_req.add_field(field_info.fid);
-       }//if
-     }//for
-
-     if (number_of_color_fields>0)
-       spmd_launcher.add_region_requirement(color_reg_req);
+    setup_rank_context_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
     Legion::DomainPoint point(color);
-    must_epoch_launcher.add_single_task(point, spmd_launcher);
+    must_epoch_launcher.add_single_task(point, setup_rank_context_launcher);
   } // for color
 
-  // Launch the spmd tasks
+  // Launch the setup_rank_context tasks
   auto future = runtime->execute_must_epoch(ctx, must_epoch_launcher);
   bool silence_warnings = true;
   future.wait_all_results(silence_warnings);
-
 
   // Add additional setup.
   context_.advance_state();
@@ -390,29 +331,31 @@ runtime_driver(
 
   }
 
-  // FIXME: set this up for IndexLaunch
-#if 0
   //adding information for the global and color handles to the ispace_map
-  if (number_of_global_fields>0){
+
+   if (number_of_global_fields>0){
 
     size_t global_index_space =
       execution::internal_index_space::global_is;
 
-    ispace_dmap[global_index_space].entire_region =
-        regions[region_index].get_logical_region();  // FIXME place holder
+    auto global_ispace = data.global_index_space();
 
-    region_index++;
-  }//end if
+    ispace_dmap[global_index_space].entire_region = global_ispace.logical_region;
+  }
+
+  auto color_ispace = data.color_index_space();
 
   if(number_of_color_fields>0){
-
     size_t color_index_space =
       execution::internal_index_space::color_is;
 
-    ispace_dmap[color_index_space].entire_region =
-      regions[region_index].get_logical_region();   // FIXME place holder
-  }//end if
-#endif
+    ispace_dmap[color_index_space].entire_region = color_ispace.logical_region;
+
+    ispace_dmap[color_index_space].color_partition =
+        runtime->get_logical_partition(ctx, color_ispace.logical_region,
+            color_ispace.color_partition);
+  }
+
   // run default or user-defined driver
   driver(args.argc, args.argv);
 
@@ -428,7 +371,7 @@ runtime_driver(
 } // runtime_driver
 
 void
-spmd_task(
+setup_rank_context_task(
   const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
@@ -439,12 +382,9 @@ spmd_task(
 
   const int my_color = task->index_point.point_data[0];
 
-  // spmd_task is an inner task
-  runtime->unmap_all_regions(ctx);
-
   {
   clog_tag_guard(runtime_driver);
-  clog(info) << "Executing spmd task " << my_color << std::endl;
+  clog(info) << "Executing setup rank context task " << my_color << std::endl;
   }
 
   // Add additional setup.
@@ -456,7 +396,7 @@ spmd_task(
   auto ghost_owner_pos_fid = 
     Legion::FieldID(internal_field::ghost_owner_pos);
 
-  clog_assert(task->arglen > 0, "spmd_task called without arguments");
+  clog_assert(task->arglen > 0, "setup_rank_context_task called without arguments");
 
   //---------------------------------------------------------------------//
   // Deserialize task arguments
@@ -637,7 +577,7 @@ spmd_task(
   // Cleanup memory
   delete [] field_info_buf;
 
-} // spmd_task
+} // setup_rank_context_task
 
 } // namespace execution 
 } // namespace flecsi
