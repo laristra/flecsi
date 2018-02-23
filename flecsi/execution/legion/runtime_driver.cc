@@ -279,24 +279,6 @@ runtime_driver(
         sizeof(Legion::DynamicCollective));
     args_serializers[color].serialize(&min_reduction,
         sizeof(Legion::DynamicCollective));
-
-    // #7 serialize adjacency info
-    using adjacency_triple_t = context_t::adjacency_triple_t;
-  
-    std::vector<adjacency_triple_t> adjacencies_vec;
-  
-    for(auto& itr : context_.adjacency_info()){
-      const coloring::adjacency_info_t& ai = itr.second;
-      auto t = std::make_tuple(ai.index_space, ai.from_index_space,
-        ai.to_index_space);
-      adjacencies_vec.push_back(t);
-    }//for
-
-    size_t num_adjacencies = adjacencies_vec.size();
-
-    args_serializers[color].serialize(&num_adjacencies, sizeof(size_t));
-    args_serializers[color].serialize(&adjacencies_vec[0], num_adjacencies
-      * sizeof(adjacency_triple_t));
    
    //-----------------------------------------------------------------------//
    //add region requirements to the spmd_launcher
@@ -399,6 +381,14 @@ runtime_driver(
         ctx, flecsi_ispace.logical_region, flecsi_ispace.ghost_partition);
   } // idx_space
 
+  for (size_t idx : data.adjacencies()) {
+    auto& adjacency = data.adjacency(idx);
+
+    ispace_dmap[idx].color_partition =
+        runtime->get_logical_partition(ctx,
+            adjacency.logical_region, adjacency.index_partition);
+
+  }
 
   // FIXME: set this up for IndexLaunch
 #if 0
@@ -486,12 +476,7 @@ spmd_task(
   size_t total_num_idx_spaces = num_idx_spaces;
   if (number_of_global_fields>0) total_num_idx_spaces++;
   if (number_of_color_fields>0) total_num_idx_spaces++;
-
-  clog_assert(regions.size() >= (total_num_idx_spaces),
-      "fewer regions than data handles");
-  clog_assert(task->regions.size() >= (total_num_idx_spaces),
-      "fewer regions than data handles");
-  }//scope
+  } //scope
 
   // #2 deserialize field info
   size_t num_fields;
@@ -619,21 +604,6 @@ spmd_task(
     sizeof(Legion::DynamicCollective));
   context_.set_min_reduction(min_reduction);
 
-  // #7 deserialize adjacency info
-  size_t num_adjacencies;
-  args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
-   
-  using adjacency_triple_t = context_t::adjacency_triple_t;
-  adjacency_triple_t* adjacencies =
-     new adjacency_triple_t [num_adjacencies]; 
-     
-  args_deserializer.deserialize((void*)adjacencies,
-    sizeof(adjacency_triple_t) * num_adjacencies);
-   
-  for(size_t i = 0; i < num_adjacencies; ++i){
-    context_.add_adjacency_triple(adjacencies[i]);
-  }
-
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   // Get the input arguments from the Legion runtime
@@ -666,7 +636,6 @@ spmd_task(
 
   // Cleanup memory
   delete [] field_info_buf;
-  delete [] adjacencies;
 
 } // spmd_task
 
