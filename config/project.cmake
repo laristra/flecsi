@@ -194,6 +194,23 @@ endif()
 # OpenSSL
 #------------------------------------------------------------------------------#
 
+option(ENABLE_VTK_OUTPUT "Enable VTK output" OFF)
+
+if(ENABLE_VTK_OUTPUT)
+  find_package(VTK REQUIRED)
+
+  if(VTK_FOUND)
+    include(${VTK_USE_FILE})
+    add_definitions(-DHAVE_VTK)
+  else()
+    message(FATAL_ERROR "Could not find VTK!") 
+  endif()
+endif()
+
+#------------------------------------------------------------------------------#
+# VTK
+#------------------------------------------------------------------------------#
+
 option(ENABLE_OPENSSL "Enable OpenSSL Support" OFF)
 
 if(ENABLE_OPENSSL)

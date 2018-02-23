@@ -17,6 +17,7 @@
 #include<flecsi-tutorial/specialization/mesh/mesh.h>
 #include<flecsi/data/data.h>
 #include<flecsi/execution/execution.h>
+#include<flecsi/io/vtk/structuredGrid.h>
 
 using namespace flecsi;
 using namespace flecsi::tutorial;
@@ -43,6 +44,33 @@ void print_field(mesh<ro> mesh, field<ro> f) {
 
 flecsi_register_task(print_field, example, loc, single);
 
+
+
+void output_field(mesh<ro> mesh, field<ro> f) {
+
+  vtkOutput::StructuredGrid temp;
+  temp.setDims(256,0,0);
+  double *cellData = new double[256];
+
+  int count = 0;
+  for(auto c: mesh.cells(owned)) {
+
+    double pnt[3];
+    pnt[0]=c->id(); pnt[1]=0; pnt[2]=0;
+    temp.addPoint(pnt);
+
+    cellData[count] = f(c);
+    count++;
+  } // for
+
+  temp.addScalarCellData("cell-data-scalar", 256, cellData);
+  temp.pushPointsToGrid();
+  temp.write("testVTK");
+} // print_field
+
+
+flecsi_register_task(output_field, example, loc, single);
+
 } // namespace example
 
 namespace flecsi {
@@ -60,3 +88,26 @@ void driver(int argc, char ** argv) {
 
 } // namespace execution
 } // namespace flecsi
+
+
+/*
+int testStructured1(std::string filename)
+{
+  vtkOutput::StructuredGrid temp;
+
+  temp.setDims(2,3,1);
+
+  double pnt[3];
+  pnt[0]=0; pnt[1]=0; pnt[2]=0; temp.addPoint(pnt);
+  pnt[0]=1; pnt[1]=0; pnt[2]=0; temp.addPoint(pnt);
+  pnt[0]=0; pnt[1]=1; pnt[2]=0; temp.addPoint(pnt);
+  pnt[0]=1; pnt[1]=1; pnt[2]=0; temp.addPoint(pnt);
+  pnt[0]=0; pnt[1]=2; pnt[2]=0; temp.addPoint(pnt);
+  pnt[0]=1; pnt[1]=2; pnt[2]=1; temp.addPoint(pnt);
+  
+  temp.pushPointsToGrid();
+  temp.write(filename);
+
+  return 0;
+}
+*/
