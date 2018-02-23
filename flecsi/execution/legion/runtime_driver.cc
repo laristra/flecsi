@@ -289,29 +289,6 @@ runtime_driver(
                              args_serializers[color].get_used_bytes()));
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
-    for(size_t adjacency_idx_space : data.adjacencies()){
-      auto& adjacency = data.adjacency(adjacency_idx_space);
-
-      Legion::LogicalPartition color_lpart =
-        runtime->get_logical_partition(ctx,
-          adjacency.logical_region, adjacency.index_partition);
-      
-      Legion::LogicalRegion color_lregion =
-        runtime->get_logical_subregion_by_color(ctx, color_lpart, color);
-
-      Legion::RegionRequirement
-        reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
-          adjacency.logical_region);
-
-      for(const field_info_t& fi : context_.registered_fields()){
-        if(fi.index_space == adjacency_idx_space){
-          reg_req.add_field(fi.fid);
-        }
-      }
-
-      spmd_launcher.add_region_requirement(reg_req);
-    }//adjacency_indx
-
     auto global_ispace = data.global_index_space();
     Legion::RegionRequirement global_reg_req(global_ispace.logical_region,
           READ_ONLY, SIMULTANEOUS, global_ispace.logical_region);
@@ -413,6 +390,7 @@ runtime_driver(
       regions[region_index].get_logical_region();   // FIXME place holder
   }//end if
 #endif
+
   // run default or user-defined driver
   driver(args.argc, args.argv);
 
