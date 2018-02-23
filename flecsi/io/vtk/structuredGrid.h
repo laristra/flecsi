@@ -38,6 +38,7 @@ class StructuredGrid
 
   public:
 	StructuredGrid();
+	StructuredGrid(int x, int y, int z);
 	~StructuredGrid() {};
 
 	vtkSmartPointer<vtkStructuredGrid> getGrid() { return strucGrid; }
@@ -46,6 +47,7 @@ class StructuredGrid
 	template <typename T> void addPoint(T *pointData, int _dims = 3);
 	void setPoints(vtkSmartPointer<vtkPoints> _pnts) { strucGrid->SetPoints(_pnts); }
 	void pushPointsToGrid() { strucGrid->SetPoints(pnts); }
+	
 	void setDims(int x, int y, int z);
 	void setExtents(int minX, int maxX,  int minY, int maxY,  int minZ, int maxZ);
 	void setWholeExtents(int minX, int maxX,  int minY, int maxY,  int minZ, int maxZ);
@@ -79,6 +81,11 @@ inline StructuredGrid::StructuredGrid()
 }
 
 
+inline StructuredGrid::StructuredGrid(int x, int y, int z)
+{
+	StructuredGrid();
+	setDims(x,y,z);
+}
 
 inline void StructuredGrid::setDims(int x, int y, int z)
 {

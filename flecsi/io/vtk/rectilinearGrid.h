@@ -41,6 +41,7 @@ class RectilinearGrid
 
 public:
 	RectilinearGrid();
+	RectilinearGrid(int x, int y, int z);
 	~RectilinearGrid(){};
 
 	vtkSmartPointer<vtkRectilinearGrid> getGrid(){ return rectGrid; }
@@ -82,6 +83,11 @@ inline RectilinearGrid::RectilinearGrid()
 }
 
 
+inline RectilinearGrid::RectilinearGrid(int x, int y, int z)
+{
+	RectilinearGrid();
+	setDims(x,y,z);
+}
 
 inline void RectilinearGrid::setDims(int x, int y, int z)
 { 
