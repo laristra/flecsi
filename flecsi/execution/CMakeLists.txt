@@ -211,6 +211,7 @@ cinch_add_unit(future_handle
   LIBRARIES
     FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
+  NOCI
   )
 
 
