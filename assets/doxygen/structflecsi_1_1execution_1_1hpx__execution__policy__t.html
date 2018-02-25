@@ -109,10 +109,10 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:afd58df3a455e085e76a49991c304e0ef"><td class="memTemplParams" colspan="2"><a class="anchor" id="afd58df3a455e085e76a49991c304e0ef"></a>
-template&lt;typename R &gt; </td></tr>
-<tr class="memitem:afd58df3a455e085e76a49991c304e0ef"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>future__</b> = hpx::future&lt; R &gt;</td></tr>
-<tr class="separator:afd58df3a455e085e76a49991c304e0ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21bf7a88d7d454ca901f5373f2747d46"><td class="memTemplParams" colspan="2"><a class="anchor" id="a21bf7a88d7d454ca901f5373f2747d46"></a>
+template&lt;typename R , launch_type_t launch = launch_type_t::single&gt; </td></tr>
+<tr class="memitem:a21bf7a88d7d454ca901f5373f2747d46"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>future__</b> = hpx::future&lt; R &gt;</td></tr>
+<tr class="separator:a21bf7a88d7d454ca901f5373f2747d46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac82beb479a5560c2c96b13e70d76103a"><td class="memTemplParams" colspan="2">template&lt;typename FUNCTOR_TYPE &gt; </td></tr>
 <tr class="memitem:ac82beb479a5560c2c96b13e70d76103a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__execution__policy__t.html#ac82beb479a5560c2c96b13e70d76103a">functor_task_wrapper__</a> = typename <a class="el" href="structflecsi_1_1execution_1_1functor__task__wrapper____.html">flecsi::execution::functor_task_wrapper__</a>&lt; FUNCTOR_TYPE &gt;</td></tr>
 <tr class="separator:ac82beb479a5560c2c96b13e70d76103a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -122,9 +122,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a50dd61f0f8af35c39b26ad5021254d11"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) DELEGATE&gt; </td></tr>
 <tr class="memitem:a50dd61f0f8af35c39b26ad5021254d11"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__execution__policy__t.html#a50dd61f0f8af35c39b26ad5021254d11">register_task</a> (<a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a> launch, std::string name)</td></tr>
 <tr class="separator:a50dd61f0f8af35c39b26ad5021254d11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a467e8129aa27e955d87ecfe9353db5"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </td></tr>
-<tr class="memitem:a5a467e8129aa27e955d87ecfe9353db5"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__execution__policy__t.html#a5a467e8129aa27e955d87ecfe9353db5">execute_task</a> (<a class="el" href="launch_8h.html#a962b06e2aac495f8f819f65bdd10d9fd">launch_type_t</a> launch, ARGS &amp;&amp;...args)</td></tr>
-<tr class="separator:a5a467e8129aa27e955d87ecfe9353db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a714cff397e0e41862531ed11a3cbbc54"><td class="memTemplParams" colspan="2">template&lt;launch_type_t launch, size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </td></tr>
+<tr class="memitem:a714cff397e0e41862531ed11a3cbbc54"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__execution__policy__t.html#a714cff397e0e41862531ed11a3cbbc54">execute_task</a> (ARGS &amp;&amp;...args)</td></tr>
+<tr class="separator:a714cff397e0e41862531ed11a3cbbc54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2a403bd19f6ce7c36dbaf282045ee3f"><td class="memTemplParams" colspan="2"><a class="anchor" id="ac2a403bd19f6ce7c36dbaf282045ee3f"></a>
 template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) FUNCTION&gt; </td></tr>
 <tr class="memitem:ac2a403bd19f6ce7c36dbaf282045ee3f"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_function</b> ()</td></tr>
@@ -201,11 +201,11 @@ template&lt;typename FUNCTION_HANDLE , typename... ARGS&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a5a467e8129aa27e955d87ecfe9353db5"></a>
+<a class="anchor" id="a714cff397e0e41862531ed11a3cbbc54"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </div>
+template&lt;launch_type_t launch, size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -213,19 +213,9 @@ template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&
         <tr>
           <td class="memname">static decltype(auto) flecsi::execution::hpx_execution_policy_t::execute_task </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="launch_8h.html#a962b06e2aac495f8f819f65bdd10d9fd">launch_type_t</a>&#160;</td>
-          <td class="paramname"><em>launch</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">ARGS &amp;&amp;...&#160;</td>
-          <td class="paramname"><em>args</em>&#160;</td>
-        </tr>
-        <tr>
+          <td class="paramname"><em>args</em></td><td>)</td>
           <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>

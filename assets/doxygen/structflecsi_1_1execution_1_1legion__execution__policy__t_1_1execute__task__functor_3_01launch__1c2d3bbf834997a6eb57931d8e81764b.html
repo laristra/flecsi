@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: Member List</title>
+<title>Interface Documentation: flecsi::execution::legion_execution_policy_t::execute_task_functor&lt; launch_type_t::index, KEY, RETURN, ARG_TUPLE, ARGS... &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -88,22 +88,56 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1task__interface____.html">task_interface__</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html">legion_execution_policy_t</a></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t_1_1execute__task__functor_3_01launch__1c2d3bbf834997a6eb57931d8e81764b.html">execute_task_functor&lt; launch_type_t::index, KEY, RETURN, ARG_TUPLE, ARGS... &gt;</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="structflecsi_1_1execution_1_1legion__execution__policy__t_1_1execute__task__functor_3_01launch__6db786d06d157a0465e595fd99c1f97a.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::execution::task_interface__&lt; EXECUTION_POLICY &gt; Member List</div>  </div>
+<div class="title">flecsi::execution::legion_execution_policy_t::execute_task_functor&lt; launch_type_t::index, KEY, RETURN, ARG_TUPLE, ARGS... &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:acfa80db2b4a4d91d398026ddc3af2a10"><td class="memItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t_1_1execute__task__functor_3_01launch__1c2d3bbf834997a6eb57931d8e81764b.html#acfa80db2b4a4d91d398026ddc3af2a10">execute</a> (ARG_TUPLE task_args)</td></tr>
+<tr class="separator:acfa80db2b4a4d91d398026ddc3af2a10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="acfa80db2b4a4d91d398026ddc3af2a10"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static decltype(auto) <a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t_1_1execute__task__functor.html">flecsi::execution::legion_execution_policy_t::execute_task_functor</a>&lt; launch_type_t::index, KEY, RETURN, ARG_TUPLE, ARGS... &gt;::execute </td>
+          <td>(</td>
+          <td class="paramtype">ARG_TUPLE&#160;</td>
+          <td class="paramname"><em>task_args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000009">Todo:</a></b></dt><dd>Do we need this comment? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000010">Todo:</a></b></dt><dd>FIXME: </dd></dl>
 
-<p>This is the complete list of members for <a class="el" href="structflecsi_1_1execution_1_1task__interface____.html">flecsi::execution::task_interface__&lt; EXECUTION_POLICY &gt;</a>, including all inherited members.</p>
-<table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1task__interface____.html#ae9f34d5a63cbfd6cd311ef8d309c3476">execute_task</a>(ARGS &amp;&amp;...args)</td><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1task__interface____.html">flecsi::execution::task_interface__&lt; EXECUTION_POLICY &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
-  <tr><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1task__interface____.html#ae46b8a01163311a27f48c25c2634d0f2">register_task</a>(processor_type_t processor, launch_t launch, std::string name)</td><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1task__interface____.html">flecsi::execution::task_interface__&lt; EXECUTION_POLICY &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>runtime_state</b>(void *task) (defined in <a class="el" href="structflecsi_1_1execution_1_1task__interface____.html">flecsi::execution::task_interface__&lt; EXECUTION_POLICY &gt;</a>)</td><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1task__interface____.html">flecsi::execution::task_interface__&lt; EXECUTION_POLICY &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
-  <tr><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1task__interface____.html#a2128ea8e65acc640a2382663ea292fb0">runtime_state_t</a> typedef</td><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1task__interface____.html">flecsi::execution::task_interface__&lt; EXECUTION_POLICY &gt;</a></td><td class="entry"></td></tr>
-</table></div><!-- contents -->
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/flecsi/flecsi/flecsi/execution/legion/<a class="el" href="legion_2execution__policy_8h_source.html">execution_policy.h</a></li>
+</ul>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

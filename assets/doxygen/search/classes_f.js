@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['scoped_5fhandle_5ft',['scoped_handle_t',['../structflecsi_1_1data_1_1legion_1_1storage__class_____3_01scoped_01_4_1_1scoped__handle__t.html',1,'flecsi::data::legion::storage_class__&lt; scoped &gt;']]],
   ['scoped_5fhandle_5ft',['scoped_handle_t',['../structflecsi_1_1data_1_1hpx_1_1storage__class_____3_01scoped_01_4_1_1scoped__handle__t.html',1,'flecsi::data::hpx::storage_class__&lt; scoped &gt;']]],
+  ['scoped_5fhandle_5ft',['scoped_handle_t',['../structflecsi_1_1data_1_1legion_1_1storage__class_____3_01scoped_01_4_1_1scoped__handle__t.html',1,'flecsi::data::legion::storage_class__&lt; scoped &gt;']]],
   ['set_5fcolor_5finfo_5ft',['set_color_info_t',['../structflecsi_1_1coloring_1_1set__color__info__t.html',1,'flecsi::coloring']]],
   ['set_5fcoloring_5finfo_5ft',['set_coloring_info_t',['../structflecsi_1_1coloring_1_1set__coloring__info__t.html',1,'flecsi::coloring']]],
   ['set_5fentity_5ft',['set_entity_t',['../classflecsi_1_1topology_1_1set__entity__t.html',1,'flecsi::topology']]],
@@ -39,16 +39,16 @@ var searchData=
   ['storage_5fclass_5f_5f',['storage_class__',['../structflecsi_1_1data_1_1POLICY__NAMESPACE_1_1storage__class____.html',1,'flecsi::data::POLICY_NAMESPACE']]],
   ['storage_5fclass_5f_5f_3c_20color_20_3e',['storage_class__&lt; color &gt;',['../structflecsi_1_1data_1_1legion_1_1storage__class_____3_01color_01_4.html',1,'flecsi::data::legion']]],
   ['storage_5fclass_5f_5f_3c_20dense_20_3e',['storage_class__&lt; dense &gt;',['../structflecsi_1_1data_1_1hpx_1_1storage__class_____3_01dense_01_4.html',1,'flecsi::data::hpx']]],
-  ['storage_5fclass_5f_5f_3c_20dense_20_3e',['storage_class__&lt; dense &gt;',['../structflecsi_1_1data_1_1mpi_1_1storage__class_____3_01dense_01_4.html',1,'flecsi::data::mpi']]],
   ['storage_5fclass_5f_5f_3c_20dense_20_3e',['storage_class__&lt; dense &gt;',['../structflecsi_1_1data_1_1legion_1_1storage__class_____3_01dense_01_4.html',1,'flecsi::data::legion']]],
-  ['storage_5fclass_5f_5f_3c_20global_20_3e',['storage_class__&lt; global &gt;',['../structflecsi_1_1data_1_1legion_1_1storage__class_____3_01global_01_4.html',1,'flecsi::data::legion']]],
+  ['storage_5fclass_5f_5f_3c_20dense_20_3e',['storage_class__&lt; dense &gt;',['../structflecsi_1_1data_1_1mpi_1_1storage__class_____3_01dense_01_4.html',1,'flecsi::data::mpi']]],
   ['storage_5fclass_5f_5f_3c_20global_20_3e',['storage_class__&lt; global &gt;',['../structflecsi_1_1data_1_1hpx_1_1storage__class_____3_01global_01_4.html',1,'flecsi::data::hpx']]],
+  ['storage_5fclass_5f_5f_3c_20global_20_3e',['storage_class__&lt; global &gt;',['../structflecsi_1_1data_1_1legion_1_1storage__class_____3_01global_01_4.html',1,'flecsi::data::legion']]],
   ['storage_5fclass_5f_5f_3c_20ragged_20_3e',['storage_class__&lt; ragged &gt;',['../structflecsi_1_1data_1_1mpi_1_1storage__class_____3_01ragged_01_4.html',1,'flecsi::data::mpi']]],
   ['storage_5fclass_5f_5f_3c_20scoped_20_3e',['storage_class__&lt; scoped &gt;',['../structflecsi_1_1data_1_1hpx_1_1storage__class_____3_01scoped_01_4.html',1,'flecsi::data::hpx']]],
   ['storage_5fclass_5f_5f_3c_20scoped_20_3e',['storage_class__&lt; scoped &gt;',['../structflecsi_1_1data_1_1legion_1_1storage__class_____3_01scoped_01_4.html',1,'flecsi::data::legion']]],
   ['storage_5fclass_5f_5f_3c_20sparse_20_3e',['storage_class__&lt; sparse &gt;',['../structflecsi_1_1data_1_1mpi_1_1storage__class_____3_01sparse_01_4.html',1,'flecsi::data::mpi']]],
-  ['storage_5fclass_5f_5f_3c_20tuple_20_3e',['storage_class__&lt; tuple &gt;',['../structflecsi_1_1data_1_1legion_1_1storage__class_____3_01tuple_01_4.html',1,'flecsi::data::legion']]],
   ['storage_5fclass_5f_5f_3c_20tuple_20_3e',['storage_class__&lt; tuple &gt;',['../structflecsi_1_1data_1_1hpx_1_1storage__class_____3_01tuple_01_4.html',1,'flecsi::data::hpx']]],
+  ['storage_5fclass_5f_5f_3c_20tuple_20_3e',['storage_class__&lt; tuple &gt;',['../structflecsi_1_1data_1_1legion_1_1storage__class_____3_01tuple_01_4.html',1,'flecsi::data::legion']]],
   ['struct_5ftype_5ft',['struct_type_t',['../structtypes_1_1struct__type__t.html',1,'types']]],
   ['structured_5fmesh_5ftopology_5f_5f',['structured_mesh_topology__',['../classflecsi_1_1topology_1_1structured__mesh__topology____.html',1,'flecsi::topology']]]
 ];

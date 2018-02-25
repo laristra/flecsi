@@ -116,9 +116,9 @@ static <a class="el" href="structflecsi_1_1execution_1_1task__interface____.html
 <tr class="memitem:ae46b8a01163311a27f48c25c2634d0f2"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) DELEGATE&gt; </td></tr>
 <tr class="memitem:ae46b8a01163311a27f48c25c2634d0f2"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task__interface____.html#ae46b8a01163311a27f48c25c2634d0f2">register_task</a> (<a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a> launch, std::string name)</td></tr>
 <tr class="separator:ae46b8a01163311a27f48c25c2634d0f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3450fb80096184d2604ac7654199ef6d"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </td></tr>
-<tr class="memitem:a3450fb80096184d2604ac7654199ef6d"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task__interface____.html#a3450fb80096184d2604ac7654199ef6d">execute_task</a> (<a class="el" href="launch_8h.html#a962b06e2aac495f8f819f65bdd10d9fd">launch_type_t</a> launch, ARGS &amp;&amp;...args)</td></tr>
-<tr class="separator:a3450fb80096184d2604ac7654199ef6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9f34d5a63cbfd6cd311ef8d309c3476"><td class="memTemplParams" colspan="2">template&lt;launch_type_t launch, size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </td></tr>
+<tr class="memitem:ae9f34d5a63cbfd6cd311ef8d309c3476"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task__interface____.html#ae9f34d5a63cbfd6cd311ef8d309c3476">execute_task</a> (ARGS &amp;&amp;...args)</td></tr>
+<tr class="separator:ae9f34d5a63cbfd6cd311ef8d309c3476"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename EXECUTION_POLICY&gt;<br />
@@ -148,13 +148,13 @@ template&lt;typename EXECUTION_POLICY &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a3450fb80096184d2604ac7654199ef6d"></a>
+<a class="anchor" id="ae9f34d5a63cbfd6cd311ef8d309c3476"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename EXECUTION_POLICY &gt; </div>
 <div class="memtemplate">
-template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </div>
+template&lt;launch_type_t launch, size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -162,19 +162,9 @@ template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&
         <tr>
           <td class="memname">static decltype(auto) <a class="el" href="structflecsi_1_1execution_1_1task__interface____.html">flecsi::execution::task_interface__</a>&lt; EXECUTION_POLICY &gt;::execute_task </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="launch_8h.html#a962b06e2aac495f8f819f65bdd10d9fd">launch_type_t</a>&#160;</td>
-          <td class="paramname"><em>launch</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">ARGS &amp;&amp;...&#160;</td>
-          <td class="paramname"><em>args</em>&#160;</td>
-        </tr>
-        <tr>
+          <td class="paramname"><em>args</em></td><td>)</td>
           <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>

@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: flecsi::execution::legion_future_concept__&lt; void &gt; Struct Template Reference</title>
+<title>Interface Documentation: flecsi::execution::future_base_t Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -88,69 +88,44 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1legion__future__concept_____3_01void_01_4.html">legion_future_concept__&lt; void &gt;</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1future__base__t.html">future_base_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="structflecsi_1_1execution_1_1legion__future__concept_____3_01void_01_4-members.html">List of all members</a>  </div>
+<a href="structflecsi_1_1execution_1_1future__base__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::execution::legion_future_concept__&lt; void &gt; Struct Template Reference<span class="mlabels"><span class="mlabel">abstract</span></span><div class="ingroups"><a class="el" href="group__execution.html">Execution Interface</a> &raquo; <a class="el" href="group__legion-execution.html">Legion Execution Backend</a></div></div>  </div>
+<div class="title">flecsi::execution::future_base_t Struct Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="legion_2future_8h_source.html">future.h</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for flecsi::execution::legion_future_concept__&lt; void &gt;:</div>
+Inheritance diagram for flecsi::execution::future_base_t:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="structflecsi_1_1execution_1_1legion__future__concept_____3_01void_01_4.png" usemap="#flecsi::execution::legion_5Ffuture_5Fconcept_5F_5F_3C_20void_20_3E_map" alt=""/>
-  <map id="flecsi::execution::legion_5Ffuture_5Fconcept_5F_5F_3C_20void_20_3E_map" name="flecsi::execution::legion_future_concept__&lt; void &gt;_map">
-<area href="structflecsi_1_1execution_1_1legion__future__model_____3_01void_00_01FUTURE_01_4.html" alt="flecsi::execution::legion_future_model__&lt; void, FUTURE &gt;" shape="rect" coords="0,56,399,80"/>
-<area href="structflecsi_1_1execution_1_1legion__future__model_____3_01void_00_01Legion_1_1FutureMap_01_4.html" alt="flecsi::execution::legion_future_model__&lt; void, Legion::FutureMap &gt;" shape="rect" coords="409,56,808,80"/>
+  <img src="structflecsi_1_1execution_1_1future__base__t.png" usemap="#flecsi::execution::future_5Fbase_5Ft_map" alt=""/>
+  <map id="flecsi::execution::future_5Fbase_5Ft_map" name="flecsi::execution::future_base_t_map">
+<area href="structflecsi_1_1execution_1_1legion__future_____3_01RETURN_00_01launch__type__t_1_1index_01_4.html" alt="flecsi::execution::legion_future__&lt; RETURN, launch_type_t::index &gt;" shape="rect" coords="0,56,395,80"/>
+<area href="structflecsi_1_1execution_1_1legion__future_____3_01RETURN_00_01launch__type__t_1_1single_01_4.html" alt="flecsi::execution::legion_future__&lt; RETURN, launch_type_t::single &gt;" shape="rect" coords="405,56,800,80"/>
+<area href="structflecsi_1_1execution_1_1legion__future_____3_01void_00_01launch__type__t_1_1index_01_4.html" alt="flecsi::execution::legion_future__&lt; void, launch_type_t::index &gt;" shape="rect" coords="810,56,1205,80"/>
+<area href="structflecsi_1_1execution_1_1legion__future_____3_01void_00_01launch__type__t_1_1single_01_4.html" alt="flecsi::execution::legion_future__&lt; void, launch_type_t::single &gt;" shape="rect" coords="1215,56,1610,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9b3868c660e1f68af93a7fefb7bc09e6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__future__concept_____3_01void_01_4.html#a9b3868c660e1f68af93a7fefb7bc09e6">wait</a> (bool silence_warnings=false)=0</td></tr>
-<tr class="separator:a9b3868c660e1f68af93a7fefb7bc09e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2cf9d5b0cd231ecb4488d85dd1d5c53"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad2cf9d5b0cd231ecb4488d85dd1d5c53"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>add_future_to_single_task_launcher</b> (Legion::TaskLauncher &amp;launcher) const =0</td></tr>
+<tr class="separator:ad2cf9d5b0cd231ecb4488d85dd1d5c53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00f822f715f6c2c9acf74f92e47c5fd8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a00f822f715f6c2c9acf74f92e47c5fd8"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>add_future_to_index_task_launcher</b> (Legion::IndexLauncher &amp;launcher) const =0</td></tr>
+<tr class="separator:a00f822f715f6c2c9acf74f92e47c5fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;&gt;<br />
-struct flecsi::execution::legion_future_concept__&lt; void &gt;</h3>
-
-<p>Explicit specialization for void. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a9b3868c660e1f68af93a7fefb7bc09e6"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void <a class="el" href="structflecsi_1_1execution_1_1legion__future__concept____.html">flecsi::execution::legion_future_concept__</a>&lt; void &gt;::wait </td>
-          <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>silence_warnings</em> = <code>false</code></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Abstract interface to wait on a task result. </p>
-
-<p>Implemented in <a class="el" href="structflecsi_1_1execution_1_1legion__future__model_____3_01void_00_01Legion_1_1FutureMap_01_4.html#aa7dfb0e9342c6c9d58d3afefdbf6df25">flecsi::execution::legion_future_model__&lt; void, Legion::FutureMap &gt;</a>, and <a class="el" href="structflecsi_1_1execution_1_1legion__future__model_____3_01void_00_01FUTURE_01_4.html#a13fcdb34a7519767cc94224c220eed73">flecsi::execution::legion_future_model__&lt; void, FUTURE &gt;</a>.</p>
-
-</div>
-</div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<div class="textblock"><p>Future abstract base class (need it to store pointers to legion futures passed to the task) </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/execution/legion/<a class="el" href="legion_2future_8h_source.html">future.h</a></li>
 </ul>
 </div><!-- contents -->

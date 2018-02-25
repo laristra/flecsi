@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: flecsi::execution::mpi_future__&lt; R &gt; Struct Template Reference</title>
+<title>Interface Documentation: flecsi::execution::mpi_future__&lt; R, launch &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -98,7 +98,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structflecsi_1_1execution_1_1mpi__future____-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::execution::mpi_future__&lt; R &gt; Struct Template Reference<div class="ingroups"><a class="el" href="group__execution.html">Execution Interface</a> &raquo; <a class="el" href="group__legion-execution.html">Legion Execution Backend</a></div></div>  </div>
+<div class="title">flecsi::execution::mpi_future__&lt; R, launch &gt; Struct Template Reference<div class="ingroups"><a class="el" href="group__execution.html">Execution Interface</a> &raquo; <a class="el" href="group__legion-execution.html">Legion Execution Backend</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -106,42 +106,48 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a6234e2c82893a0e0331740618889aec1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6234e2c82893a0e0331740618889aec1"></a>
+<tr class="memitem:a37f457c71c751fa3a68a802e3db7f494"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a37f457c71c751fa3a68a802e3db7f494"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>result_t</b> = R</td></tr>
-<tr class="separator:a6234e2c82893a0e0331740618889aec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a37f457c71c751fa3a68a802e3db7f494"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a81c763761f385760037c88ebcfc9ec11"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html#a81c763761f385760037c88ebcfc9ec11">wait</a> ()</td></tr>
-<tr class="separator:a81c763761f385760037c88ebcfc9ec11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a680e0fbc16fc6b0041a94240a0af26"><td class="memItemLeft" align="right" valign="top">const result_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html#a7a680e0fbc16fc6b0041a94240a0af26">get</a> (size_t index=0) const </td></tr>
-<tr class="separator:a7a680e0fbc16fc6b0041a94240a0af26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afaf175afd82135e5b8c71e4f3e828da4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html#afaf175afd82135e5b8c71e4f3e828da4">set</a> (const result_t &amp;result)</td></tr>
-<tr class="separator:afaf175afd82135e5b8c71e4f3e828da4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05ab24aa928b4e449b2b062cf86a9070"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html#a05ab24aa928b4e449b2b062cf86a9070">wait</a> ()</td></tr>
+<tr class="separator:a05ab24aa928b4e449b2b062cf86a9070"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c0140a7f45174c68402fa60872fbe2a"><td class="memItemLeft" align="right" valign="top">const result_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html#a3c0140a7f45174c68402fa60872fbe2a">get</a> (size_t index=0) const </td></tr>
+<tr class="separator:a3c0140a7f45174c68402fa60872fbe2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2458302091f6846df566f8ad78326acb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html#a2458302091f6846df566f8ad78326acb">set</a> (const result_t &amp;result)</td></tr>
+<tr class="separator:a2458302091f6846df566f8ad78326acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abde3e0ec040cd7d05e85997e72fe3a45"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abde3e0ec040cd7d05e85997e72fe3a45"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>operator R &amp;</b> ()</td></tr>
+<tr class="separator:abde3e0ec040cd7d05e85997e72fe3a45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec74e22829961015d4836136a6b3bce8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aec74e22829961015d4836136a6b3bce8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>operator const R &amp;</b> () const </td></tr>
+<tr class="separator:aec74e22829961015d4836136a6b3bce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a838db60544dd0073c1a51b15badaf37e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a838db60544dd0073c1a51b15badaf37e"></a>
+<tr class="memitem:a2e8df9ab1479db4b05686ae04fa60d8b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2e8df9ab1479db4b05686ae04fa60d8b"></a>
 result_t&#160;</td><td class="memItemRight" valign="bottom"><b>result_</b></td></tr>
-<tr class="separator:a838db60544dd0073c1a51b15badaf37e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a2e8df9ab1479db4b05686ae04fa60d8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename R&gt;<br />
-struct flecsi::execution::mpi_future__&lt; R &gt;</h3>
+<div class="textblock"><h3>template&lt;typename R, launch_type_t launch = launch_type_t::single&gt;<br />
+struct flecsi::execution::mpi_future__&lt; R, launch &gt;</h3>
 
 <p>Abstract interface type for MPI futures. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a7a680e0fbc16fc6b0041a94240a0af26"></a>
+<a class="anchor" id="a3c0140a7f45174c68402fa60872fbe2a"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename R&gt; </div>
+template&lt;typename R, launch_type_t launch = launch_type_t::single&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const result_t&amp; <a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html">flecsi::execution::mpi_future__</a>&lt; R &gt;::get </td>
+          <td class="memname">const result_t&amp; <a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html">flecsi::execution::mpi_future__</a>&lt; R, launch &gt;::get </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>index</em> = <code>0</code></td><td>)</td>
@@ -154,21 +160,21 @@ template&lt;typename R&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p><a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html#a7a680e0fbc16fc6b0041a94240a0af26">get()</a> mothod </p>
+<p><a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html#a3c0140a7f45174c68402fa60872fbe2a">get()</a> mothod </p>
 
 </div>
 </div>
-<a class="anchor" id="afaf175afd82135e5b8c71e4f3e828da4"></a>
+<a class="anchor" id="a2458302091f6846df566f8ad78326acb"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename R&gt; </div>
+template&lt;typename R, launch_type_t launch = launch_type_t::single&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html">flecsi::execution::mpi_future__</a>&lt; R &gt;::set </td>
+          <td class="memname">void <a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html">flecsi::execution::mpi_future__</a>&lt; R, launch &gt;::set </td>
           <td>(</td>
           <td class="paramtype">const result_t &amp;&#160;</td>
           <td class="paramname"><em>result</em></td><td>)</td>
@@ -185,17 +191,17 @@ template&lt;typename R&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a81c763761f385760037c88ebcfc9ec11"></a>
+<a class="anchor" id="a05ab24aa928b4e449b2b062cf86a9070"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename R&gt; </div>
+template&lt;typename R, launch_type_t launch = launch_type_t::single&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html">flecsi::execution::mpi_future__</a>&lt; R &gt;::wait </td>
+          <td class="memname">void <a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html">flecsi::execution::mpi_future__</a>&lt; R, launch &gt;::wait </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -207,7 +213,7 @@ template&lt;typename R&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p><a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html#a81c763761f385760037c88ebcfc9ec11">wait()</a> method </p>
+<p><a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html#a05ab24aa928b4e449b2b062cf86a9070">wait()</a> method </p>
 
 </div>
 </div>

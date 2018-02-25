@@ -115,8 +115,8 @@ Inheritance diagram for flecsi::execution::init_handles_t:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1de6f76cab360113cf570569a69d65ee"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1init__handles__t.html#a1de6f76cab360113cf570569a69d65ee">init_handles_t</a> (Legion::Runtime *runtime, Legion::Context &amp;context, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions)</td></tr>
-<tr class="separator:a1de6f76cab360113cf570569a69d65ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb706d6b6f85a32532cf7363f91e54b2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1init__handles__t.html#aeb706d6b6f85a32532cf7363f91e54b2">init_handles_t</a> (Legion::Runtime *runtime, Legion::Context &amp;context, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, const std::vector&lt; Legion::Future &gt; &amp;futures)</td></tr>
+<tr class="separator:aeb706d6b6f85a32532cf7363f91e54b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a607b8dc750459d01302add0800437ee0"><td class="memTemplParams" colspan="2"><a class="anchor" id="a607b8dc750459d01302add0800437ee0"></a>
 template&lt;typename T , size_t EXCLUSIVE_PERMISSIONS, size_t SHARED_PERMISSIONS, size_t GHOST_PERMISSIONS&gt; </td></tr>
 <tr class="memitem:a607b8dc750459d01302add0800437ee0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle</b> (<a class="el" href="structflecsi_1_1accessor_____3_01data_1_1dense_00_01T_00_01EXCLUSIVE__PERMISSIONS_00_01SHARED__Pe927e95b5549d371feaf66e9ea26f6d3.html">dense_accessor__</a>&lt; T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS &gt; &amp;a)</td></tr>
@@ -129,6 +129,9 @@ template&lt;typename T , size_t PERMISSIONS&gt; </td></tr>
 template&lt;typename T , size_t PERMISSIONS&gt; </td></tr>
 <tr class="memitem:a6bf673a0c0b7a81fa2624296d2b5fd06"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle</b> (<a class="el" href="structflecsi_1_1accessor_____3_01data_1_1color_00_01T_00_01PERMISSIONS_00_010_00_010_01_4.html">color_accessor__</a>&lt; T, PERMISSIONS &gt; &amp;a)</td></tr>
 <tr class="separator:a6bf673a0c0b7a81fa2624296d2b5fd06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78818fb5818a56668244b70ea64fed90"><td class="memTemplParams" colspan="2">template&lt;typename T , launch_type_t launch&gt; </td></tr>
+<tr class="memitem:a78818fb5818a56668244b70ea64fed90"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1init__handles__t.html#a78818fb5818a56668244b70ea64fed90">handle</a> (<a class="el" href="structflecsi_1_1execution_1_1legion__future____.html">legion_future__</a>&lt; T, launch &gt; &amp;h)</td></tr>
+<tr class="separator:a78818fb5818a56668244b70ea64fed90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87beb64333ffef7a50444e3fa75262a7"><td class="memTemplParams" colspan="2"><a class="anchor" id="a87beb64333ffef7a50444e3fa75262a7"></a>
 template&lt;typename T , size_t PERMISSIONS&gt; </td></tr>
 <tr class="memitem:a87beb64333ffef7a50444e3fa75262a7"><td class="memTemplItemLeft" align="right" valign="top">std::enable_if_t&lt; std::is_base_of&lt; <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__t.html">topology::mesh_topology_base_t</a>, T &gt;::value &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle</b> (<a class="el" href="group__data.html#ga7ec0a7a6abde96d9d690d57cc60627db">data_client_handle__</a>&lt; T, PERMISSIONS &gt; &amp;h)</td></tr>
@@ -164,11 +167,17 @@ const std::vector&lt; Legion::PhysicalRegion &gt; &amp;&#160;</td><td class="mem
 <tr class="memitem:abf60273c1c64c2f28786c3fb2873ac94"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf60273c1c64c2f28786c3fb2873ac94"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>region</b></td></tr>
 <tr class="separator:abf60273c1c64c2f28786c3fb2873ac94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a933d36f193e1e4bd2b712e6386b3fe90"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a933d36f193e1e4bd2b712e6386b3fe90"></a>
+const std::vector&lt; Legion::Future &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>futures</b></td></tr>
+<tr class="separator:a933d36f193e1e4bd2b712e6386b3fe90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4440767343ee2c62c2f628da3c80282"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab4440767343ee2c62c2f628da3c80282"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>future_id</b></td></tr>
+<tr class="separator:ab4440767343ee2c62c2f628da3c80282"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="structflecsi_1_1execution_1_1init__handles__t.html">init_handles_t</a> type can be called to walk task args after task launch. This allows us to map physical regions to internal handle buffers/accessors. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a1de6f76cab360113cf570569a69d65ee"></a>
+<a class="anchor" id="aeb706d6b6f85a32532cf7363f91e54b2"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -191,7 +200,13 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>region</b></td></tr
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::vector&lt; Legion::PhysicalRegion &gt; &amp;&#160;</td>
-          <td class="paramname"><em>regions</em>&#160;</td>
+          <td class="paramname"><em>regions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Legion::Future &gt; &amp;&#160;</td>
+          <td class="paramname"><em>futures</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -213,6 +228,34 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>region</b></td></tr
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a78818fb5818a56668244b70ea64fed90"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , launch_type_t launch&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::init_handles_t::handle </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1legion__future____.html">legion_future__</a>&lt; T, launch &gt; &amp;&#160;</td>
+          <td class="paramname"><em>h</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Initialize arguments for future handle </p>
 
 </div>
 </div>

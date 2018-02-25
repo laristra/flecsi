@@ -131,6 +131,10 @@ template&lt;typename T , size_t PERMISSIONS&gt; </td></tr>
 <tr class="memitem:a1bcfed5db041ae382de0db31b827a887"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t PERMISSIONS&gt; </td></tr>
 <tr class="memitem:a1bcfed5db041ae382de0db31b827a887"><td class="memTemplItemLeft" align="right" valign="top">std::enable_if_t&lt; std::is_base_of&lt; <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__t.html">topology::mesh_topology_base_t</a>, T &gt;::value &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1init__args__t.html#a1bcfed5db041ae382de0db31b827a887">handle</a> (<a class="el" href="group__data.html#ga7ec0a7a6abde96d9d690d57cc60627db">data_client_handle__</a>&lt; T, PERMISSIONS &gt; &amp;h)</td></tr>
 <tr class="separator:a1bcfed5db041ae382de0db31b827a887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1568dfcfc5b32e5041d0c5cf82eddd9b"><td class="memTemplParams" colspan="2"><a class="anchor" id="a1568dfcfc5b32e5041d0c5cf82eddd9b"></a>
+template&lt;typename T , launch_type_t launch&gt; </td></tr>
+<tr class="memitem:a1568dfcfc5b32e5041d0c5cf82eddd9b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle</b> (<a class="el" href="structflecsi_1_1execution_1_1legion__future____.html">legion_future__</a>&lt; T, launch &gt; &amp;h)</td></tr>
+<tr class="separator:a1568dfcfc5b32e5041d0c5cf82eddd9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f71ac46ffacecfe122b3b8c9797c1fd"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t PERMISSIONS&gt; </td></tr>
 <tr class="memitem:a8f71ac46ffacecfe122b3b8c9797c1fd"><td class="memTemplItemLeft" align="right" valign="top">std::enable_if_t&lt; std::is_base_of&lt; <a class="el" href="classflecsi_1_1topology_1_1set__topology__base__t.html">topology::set_topology_base_t</a>, T &gt;::value &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1init__args__t.html#a8f71ac46ffacecfe122b3b8c9797c1fd">handle</a> (<a class="el" href="group__data.html#ga7ec0a7a6abde96d9d690d57cc60627db">data_client_handle__</a>&lt; T, PERMISSIONS &gt; &amp;h)</td></tr>
 <tr class="separator:a8f71ac46ffacecfe122b3b8c9797c1fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -160,6 +164,9 @@ Legion::Context &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>cont
 <tr class="memitem:a5932e48fa50ad4e659cd839d2da74639"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5932e48fa50ad4e659cd839d2da74639"></a>
 std::vector&lt; Legion::RegionRequirement &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>region_reqs</b></td></tr>
 <tr class="separator:a5932e48fa50ad4e659cd839d2da74639"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8777d46910719d6dea33e38bbd786678"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8777d46910719d6dea33e38bbd786678"></a>
+std::vector&lt; std::shared_ptr&lt; <a class="el" href="structflecsi_1_1execution_1_1future__base__t.html">future_base_t</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>futures</b></td></tr>
+<tr class="separator:a8777d46910719d6dea33e38bbd786678"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="structflecsi_1_1execution_1_1init__args__t.html">init_args_t</a> type can be called to walk task args before the task launcher is created. This allows us to gather region requirements and to set state on the associated data handles <em>before</em> Legion gets the task arguments tuple. </p>

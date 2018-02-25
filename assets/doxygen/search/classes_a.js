@@ -35,7 +35,7 @@ var searchData=
   ['mpi_5fdata_5fpolicy_5ft',['mpi_data_policy_t',['../structflecsi_1_1data_1_1mpi__data__policy__t.html',1,'flecsi::data']]],
   ['mpi_5fexecution_5fpolicy_5ft',['mpi_execution_policy_t',['../structflecsi_1_1execution_1_1mpi__execution__policy__t.html',1,'flecsi::execution']]],
   ['mpi_5ffuture_5f_5f',['mpi_future__',['../structflecsi_1_1execution_1_1mpi__future____.html',1,'flecsi::execution']]],
-  ['mpi_5ffuture_5f_5f_3c_20void_20_3e',['mpi_future__&lt; void &gt;',['../structflecsi_1_1execution_1_1mpi__future_____3_01void_01_4.html',1,'flecsi::execution']]],
+  ['mpi_5ffuture_5f_5f_3c_20void_2c_20launch_20_3e',['mpi_future__&lt; void, launch &gt;',['../structflecsi_1_1execution_1_1mpi__future_____3_01void_00_01launch_01_4.html',1,'flecsi::execution']]],
   ['mpi_5fmapper_5ft',['mpi_mapper_t',['../classflecsi_1_1execution_1_1mpi__mapper__t.html',1,'flecsi::execution']]],
   ['mpi_5fmutator_5fhandle_5fpolicy_5ft',['mpi_mutator_handle_policy_t',['../structflecsi_1_1mpi__mutator__handle__policy__t.html',1,'flecsi']]],
   ['mpi_5fset_5ftopology_5fstorage_5fpolicy_5f_5f',['mpi_set_topology_storage_policy__',['../structflecsi_1_1topology_1_1mpi__set__topology__storage__policy____.html',1,'flecsi::topology']]],

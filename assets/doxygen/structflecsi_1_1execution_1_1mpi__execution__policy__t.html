@@ -111,9 +111,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a43666781a762fe805a1ac15fc4bd4a0e"><td class="memTemplParams" colspan="2">template&lt;typename RETURN &gt; </td></tr>
-<tr class="memitem:a43666781a762fe805a1ac15fc4bd4a0e"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html#a43666781a762fe805a1ac15fc4bd4a0e">future__</a> = <a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html">mpi_future__</a>&lt; RETURN &gt;</td></tr>
-<tr class="separator:a43666781a762fe805a1ac15fc4bd4a0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8d8cfe26b6758dbdc82590620b3e2d4"><td class="memTemplParams" colspan="2">template&lt;typename RETURN , launch_type_t launch&gt; </td></tr>
+<tr class="memitem:aa8d8cfe26b6758dbdc82590620b3e2d4"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html#aa8d8cfe26b6758dbdc82590620b3e2d4">future__</a> = <a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html">mpi_future__</a>&lt; RETURN, launch &gt;</td></tr>
+<tr class="separator:aa8d8cfe26b6758dbdc82590620b3e2d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5796c39335f1f2caa648aaf37edef8bc"><td class="memTemplParams" colspan="2"><a class="anchor" id="a5796c39335f1f2caa648aaf37edef8bc"></a>
 template&lt;typename FUNCTOR_TYPE &gt; </td></tr>
 <tr class="memitem:a5796c39335f1f2caa648aaf37edef8bc"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>functor_task_wrapper__</b> = typename <a class="el" href="structflecsi_1_1execution_1_1functor__task__wrapper____.html">flecsi::execution::functor_task_wrapper__</a>&lt; FUNCTOR_TYPE &gt;</td></tr>
@@ -126,9 +126,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:acf6112937ca416aaec7f1260e24af160"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) DELEGATE&gt; </td></tr>
 <tr class="memitem:acf6112937ca416aaec7f1260e24af160"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html#acf6112937ca416aaec7f1260e24af160">register_task</a> (<a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a> launch, std::string name)</td></tr>
 <tr class="separator:acf6112937ca416aaec7f1260e24af160"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f5500a7f57bc556c272a7ab9be59c23"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </td></tr>
-<tr class="memitem:a7f5500a7f57bc556c272a7ab9be59c23"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html#a7f5500a7f57bc556c272a7ab9be59c23">execute_task</a> (<a class="el" href="launch_8h.html#a962b06e2aac495f8f819f65bdd10d9fd">launch_type_t</a> launch, ARGS &amp;&amp;...args)</td></tr>
-<tr class="separator:a7f5500a7f57bc556c272a7ab9be59c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1f7badb059fb7057f106622c3622efc"><td class="memTemplParams" colspan="2">template&lt;launch_type_t launch, size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </td></tr>
+<tr class="memitem:aa1f7badb059fb7057f106622c3622efc"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html#aa1f7badb059fb7057f106622c3622efc">execute_task</a> (ARGS &amp;&amp;...args)</td></tr>
+<tr class="separator:aa1f7badb059fb7057f106622c3622efc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6a1ef26c752c90b35ae44808745a8b5"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) FUNCTION&gt; </td></tr>
 <tr class="memitem:ab6a1ef26c752c90b35ae44808745a8b5"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html#ab6a1ef26c752c90b35ae44808745a8b5">register_function</a> ()</td></tr>
 <tr class="separator:ab6a1ef26c752c90b35ae44808745a8b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,14 +139,14 @@ Static Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html">mpi_execution_policy_t</a> is the backend runtime execution policy for MPI. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a class="anchor" id="a43666781a762fe805a1ac15fc4bd4a0e"></a>
+<a class="anchor" id="aa8d8cfe26b6758dbdc82590620b3e2d4"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename RETURN &gt; </div>
+template&lt;typename RETURN , launch_type_t launch&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html#a43666781a762fe805a1ac15fc4bd4a0e">flecsi::execution::mpi_execution_policy_t::future__</a> =  <a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html">mpi_future__</a>&lt;RETURN&gt;</td>
+          <td class="memname">using <a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html#aa8d8cfe26b6758dbdc82590620b3e2d4">flecsi::execution::mpi_execution_policy_t::future__</a> =  <a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html">mpi_future__</a>&lt;RETURN, launch&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -198,11 +198,11 @@ template&lt;typename FUNCTION_HANDLE , typename... ARGS&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a7f5500a7f57bc556c272a7ab9be59c23"></a>
+<a class="anchor" id="aa1f7badb059fb7057f106622c3622efc"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </div>
+template&lt;launch_type_t launch, size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -210,19 +210,9 @@ template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , typename... ARGS&
         <tr>
           <td class="memname">static decltype(auto) flecsi::execution::mpi_execution_policy_t::execute_task </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="launch_8h.html#a962b06e2aac495f8f819f65bdd10d9fd">launch_type_t</a>&#160;</td>
-          <td class="paramname"><em>launch</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">ARGS &amp;&amp;...&#160;</td>
-          <td class="paramname"><em>args</em>&#160;</td>
-        </tr>
-        <tr>
+          <td class="paramname"><em>args</em></td><td>)</td>
           <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>

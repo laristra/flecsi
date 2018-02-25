@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: Member List</title>
+<title>Interface Documentation: flecsi::execution::legion_execution_policy_t::execute_task_functor&lt; launch, KEY, RETURN, ARG_TUPLE, ARGS &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -88,23 +88,35 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1legion__future__model____.html">legion_future_model__</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html">legion_execution_policy_t</a></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t_1_1execute__task__functor.html">execute_task_functor</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="structflecsi_1_1execution_1_1legion__execution__policy__t_1_1execute__task__functor-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::execution::legion_future_model__&lt; RETURN, FUTURE &gt; Member List</div>  </div>
+<div class="title">flecsi::execution::legion_execution_policy_t::execute_task_functor&lt; launch, KEY, RETURN, ARG_TUPLE, ARGS &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This is the complete list of members for <a class="el" href="structflecsi_1_1execution_1_1legion__future__model____.html">flecsi::execution::legion_future_model__&lt; RETURN, FUTURE &gt;</a>, including all inherited members.</p>
-<table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1legion__future__model____.html#ad8260db214ccdfda1a09c920d6bd09da">defer_dynamic_collective_arrival</a>(Legion::Runtime *runtime, Legion::Context ctx, Legion::DynamicCollective &amp;dc_reduction)</td><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1legion__future__model____.html">flecsi::execution::legion_future_model__&lt; RETURN, FUTURE &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1legion__future__model____.html#ad5906d1f95ed0e810c3f8dc2a1d26d07">get</a>(size_t index=0, bool silence_warnings=false)</td><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1legion__future__model____.html">flecsi::execution::legion_future_model__&lt; RETURN, FUTURE &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1legion__future__model____.html#a9bdcce54f38c3be0f8aaffc72770bc51">legion_future_model__</a>(const FUTURE &amp;legion_future)</td><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1legion__future__model____.html">flecsi::execution::legion_future_model__&lt; RETURN, FUTURE &gt;</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1legion__future__model____.html#a5db17d4e328e99ebca87ab304b309dae">wait</a>(bool silence_warnings=false)</td><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1legion__future__model____.html">flecsi::execution::legion_future_model__&lt; RETURN, FUTURE &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>~legion_future_concept__</b>() (defined in <a class="el" href="structflecsi_1_1execution_1_1legion__future__concept____.html">flecsi::execution::legion_future_concept__&lt; RETURN &gt;</a>)</td><td class="entry"><a class="el" href="structflecsi_1_1execution_1_1legion__future__concept____.html">flecsi::execution::legion_future_concept__&lt; RETURN &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
-</table></div><!-- contents -->
+<p><code>#include &lt;<a class="el" href="legion_2execution__policy_8h_source.html">execution_policy.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:aa8f7f294b3828febc94d6170c784db07"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8f7f294b3828febc94d6170c784db07"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>execute</b> (ARGS &amp;&amp;...args)</td></tr>
+<tr class="separator:aa8f7f294b3828febc94d6170c784db07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;launch_type_t launch, size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS&gt;<br />
+struct flecsi::execution::legion_execution_policy_t::execute_task_functor&lt; launch, KEY, RETURN, ARG_TUPLE, ARGS &gt;</h3>
+
+<p>Legion backend task execution. For documentation on this method, please see task__::execute_task. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/flecsi/flecsi/flecsi/execution/legion/<a class="el" href="legion_2execution__policy_8h_source.html">execution_policy.h</a></li>
+</ul>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
