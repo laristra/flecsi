@@ -209,6 +209,31 @@ public:
 
   } // map_task
 
+  virtual
+  void
+  slice_task(
+      const Legion::Mapping::MapperContext ctx,
+      const Legion::Task& task,
+      const Legion::Mapping::Mapper::SliceTaskInput& input,
+      Legion::Mapping::Mapper::SliceTaskOutput& output
+             )
+  {
+    using legion_proc=Legion::Processor;
+    context_t & context_ = context_t::instance();
+    if((task.tag & MAPPER_SUBRANK_LAUNCH) != 0) {
+      // expect a 1-D index domain
+      assert(input.domain.get_dim() == 1);
+      // send the whole domain to our local processor
+      output.slices.resize(1);
+      output.slices[0].domain = input.domain;
+      output.slices[0].proc = task.target_proc;
+      return;
+    } //end if MAPPER_SUBRANK_LAUNCH
+    else{
+      DefaultMapper::slice_task(ctx, task, input, output);
+    }//end else
+  }
+
 private:
   std::map<Legion::Processor, std::map<Realm::Memory::Kind, Realm::Memory>>
       proc_mem_map;

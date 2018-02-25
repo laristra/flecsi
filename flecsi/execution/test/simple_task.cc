@@ -53,7 +53,7 @@ flecsi_register_task(task, flecsi::execution, loc, single | index);
 flecsi_register_task(single_task, flecsi::execution, loc, single);
 flecsi_register_task(index_task, flecsi::execution, loc, index);
 flecsi_register_task(taskvoid, flecsi::execution, loc, single | index);
-flecsi_register_task(mpi_task, flecsi::execution, mpi, single);
+flecsi_register_task(mpi_task, flecsi::execution, mpi, index);
 
 //----------------------------------------------------------------------------//
 // Driver.
@@ -86,7 +86,7 @@ void driver(int argc, char ** argv) {
 
   f5.wait();
 
-  auto f6 = flecsi_execute_task(mpi_task, flecsi::execution, single);
+  auto f6 = flecsi_execute_task(mpi_task, flecsi::execution, index);
 
   //f6.wait();
 } // driver
