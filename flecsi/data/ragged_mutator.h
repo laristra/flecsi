@@ -56,15 +56,17 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
   using offset_t = typename base_t::offset_t;
   using entry_value_t = typename base_t::entry_value_t;
   using erase_set_t = typename base_t::erase_set_t;
-  using size_map_t = typename handle_t::size_map_t;
+  using ragged_changes_t = typename mutator_handle__<T>::ragged_changes_t;
+  using ragged_changes_map_t = 
+    typename mutator_handle__<T>::ragged_changes_map_t;
 
   //--------------------------------------------------------------------------//
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
   mutator__(const mutator_handle__<T> & h) : base_t(h) {
-    assert(!base_t::h_.size_map_ && "expected null size map");
-    base_t::h_.size_map_ = new size_map_t;
+    assert(!base_t::h_.ragged_changes_map_ && "expected null changes map");
+    base_t::h_.ragged_changes_map_ = new ragged_changes_map_t;
   }
 
   T & operator()(size_t index, size_t ragged_index) {
@@ -115,11 +117,57 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
     return itr->value;
   } // operator ()
 
-  void resize(size_t index, size_t length) {
+  void resize(size_t index, size_t size) {
     assert(
-        length <= base_t::h_.max_entries_per_index_ &&
+        size <= base_t::h_.max_entries_per_index_ &&
         "resize length exceeds max entries per index");
-    base_t::h_.size_map_->emplace(index, length);
+
+    auto itr = base_t::h_.ragged_changes_map_->find(index);
+    if(itr == base_t::h_.ragged_changes_map_->end()){
+      ragged_changes_t changes;
+      changes.size = size;
+      base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
+    }
+    else{
+      itr->second.size = size;
+    }
+  }
+
+  void erase(size_t index, size_t ragged_index) {
+    auto itr = base_t::h_.ragged_changes_map_->find(index);
+    if(itr == base_t::h_.ragged_changes_map_->end()){
+      ragged_changes_t changes;
+      changes.erase_set.insert(ragged_index);
+      base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
+    }
+    else{
+      itr->second.erase_set.insert(ragged_index);
+    }
+  }
+
+  void push_back(size_t index, const T& value) {
+    auto itr = base_t::h_.ragged_changes_map_->find(index);
+    if(itr == base_t::h_.ragged_changes_map_->end()){
+      ragged_changes_t changes;
+      changes.push_values.push_back(value);
+      base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
+    }
+    else{
+      itr->second.push_values.push_back(value);
+    }
+  }
+
+  // insert BEFORE ragged index
+  void insert(size_t index, size_t ragged_index, const T& value) {
+    auto itr = base_t::h_.ragged_changes_map_->find(index);
+    if(itr == base_t::h_.ragged_changes_map_->end()){
+      ragged_changes_t changes;
+      changes.insert_values.emplace(ragged_index, value);
+      base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
+    }
+    else{
+      itr->second.insert_values.emplace(ragged_index, value);
+    }
   }
 };
 

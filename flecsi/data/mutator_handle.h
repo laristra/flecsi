@@ -97,7 +97,7 @@ public:
     if (erase_set_) {
       commit_<true>(ci);
     } else {
-      if (size_map_) {
+      if (ragged_changes_map_) {
         raggedCommit_(ci);
       } else {
         commit_<false>(ci);
@@ -200,9 +200,9 @@ public:
     entry_value_t * entries = ci->entries[0];
     offset_t * offsets = ci->offsets;
 
-    for (auto & itr : *size_map_) {
+    for (auto & itr : *ragged_changes_map_) {
       num_exclusive_entries +=
-          int64_t(itr.second) - int64_t(offsets[itr.first].count());
+          int64_t(itr.second.size) - int64_t(offsets[itr.first].count());
     }
 
     entry_value_t * cbuf = new entry_value_t[num_exclusive_entries];
@@ -243,10 +243,10 @@ public:
 
       coi.set_offset(offset);
 
-      auto sitr = size_map_->find(index);
+      auto citr = ragged_changes_map_->find(index);
 
-      if (sitr != size_map_->end()) {
-        size_t resize = sitr->second;
+      if (citr != ragged_changes_map_->end()) {
+        size_t resize = citr->second.size;
         coi.set_count(resize);
         offset += resize;
         cptr += resize;
@@ -300,10 +300,10 @@ public:
 
       size_t size;
 
-      auto sitr = size_map_->find(index);
+      auto citr = ragged_changes_map_->find(index);
 
-      if (sitr != size_map_->end()) {
-        size = sitr->second;
+      if (citr != ragged_changes_map_->end()) {
+        size = citr->second.size;
         coi.set_count(size);
       } else {
         size = num_existing;
@@ -323,8 +323,8 @@ public:
     delete spare_map_;
     spare_map_ = nullptr;
 
-    delete size_map_;
-    size_map_ = nullptr;
+    delete ragged_changes_map_;
+    ragged_changes_map_ = nullptr;
   }
 
   size_t num_exclusive() const {
@@ -351,9 +351,16 @@ public:
     return ci_;
   }
 
+  struct ragged_changes_t{
+    size_t size = 0;
+    std::set<size_t> erase_set;
+    std::vector<T> push_values;
+    std::map<size_t, T> insert_values;
+  };
+
   using spare_map_t = std::multimap<size_t, entry_value_t>;
   using erase_set_t = std::set<std::pair<size_t, size_t>>;
-  using size_map_t = std::unordered_map<size_t, size_t>;
+  using ragged_changes_map_t = std::unordered_map<size_t, ragged_changes_t>;
 
   partition_info_t pi_;
   size_t num_exclusive_;
@@ -364,7 +371,7 @@ public:
   entry_value_t * entries_ = nullptr;
   spare_map_t * spare_map_ = nullptr;
   erase_set_t * erase_set_ = nullptr;
-  size_map_t * size_map_ = nullptr;
+  ragged_changes_map_t* ragged_changes_map_ = nullptr;
   commit_info_t ci_;
 
   //--------------------------------------------------------------------------//
