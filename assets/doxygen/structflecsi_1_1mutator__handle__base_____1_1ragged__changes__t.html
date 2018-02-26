@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: /home/flecsi/flecsi/flecsi/data/mutator_handle.h File Reference</title>
+<title>Interface Documentation: flecsi::mutator_handle_base__&lt; T, MUTATOR_POLICY &gt;::ragged_changes_t Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -44,8 +44,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li class="current"><a href="files.html"><span>Files</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -66,8 +66,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
-      <li><a href="files.html"><span>File&#160;List</span></a></li>
-      <li><a href="globals.html"><span>File&#160;Members</span></a></li>
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -86,46 +88,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_688c864b7b93022ab3a371d21adf78fb.html">flecsi</a></li><li class="navelem"><a class="el" href="dir_e37f8bb81981d72df6422a26362081de.html">data</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><a class="el" href="classflecsi_1_1mutator__handle__base____.html">mutator_handle_base__</a></li><li class="navelem"><a class="el" href="structflecsi_1_1mutator__handle__base_____1_1ragged__changes__t.html">ragged_changes_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structflecsi_1_1mutator__handle__base_____1_1ragged__changes__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">mutator_handle.h File Reference</div>  </div>
+<div class="title">flecsi::mutator_handle_base__&lt; T, MUTATOR_POLICY &gt;::ragged_changes_t Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
-<code>#include &lt;cstring&gt;</code><br />
-<code>#include &lt;limits&gt;</code><br />
-<code>#include &lt;map&gt;</code><br />
-<code>#include &lt;set&gt;</code><br />
-<code>#include &lt;unordered_map&gt;</code><br />
-<code>#include &lt;<a class="el" href="data__types_8h_source.html">flecsi/data/common/data_types.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="flecsi__runtime__data__handle__policy_8h_source.html">flecsi/runtime/flecsi_runtime_data_handle_policy.h</a>&gt;</code><br />
-</div>
-<p><a href="mutator__handle_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mutator__handle__base____.html">flecsi::mutator_handle_base__&lt; T, MUTATOR_POLICY &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1mutator__handle__base_____1_1partition__info__t.html">flecsi::mutator_handle_base__&lt; T, MUTATOR_POLICY &gt;::partition_info_t</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1mutator__handle__base_____1_1commit__info__t.html">flecsi::mutator_handle_base__&lt; T, MUTATOR_POLICY &gt;::commit_info_t</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1mutator__handle__base_____1_1ragged__changes__t.html">flecsi::mutator_handle_base__&lt; T, MUTATOR_POLICY &gt;::ragged_changes_t</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a536771a51e10dbba3b222d17a0d4f004"><td class="memTemplParams" colspan="2"><a class="anchor" id="a536771a51e10dbba3b222d17a0d4f004"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a536771a51e10dbba3b222d17a0d4f004"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::mutator_handle__</b> = mutator_handle_base__&lt; T, FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY &gt;</td></tr>
-<tr class="separator:a536771a51e10dbba3b222d17a0d4f004"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a8e3a4d2266f4434881bb0cfff6cafbf4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8e3a4d2266f4434881bb0cfff6cafbf4"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> = 0</td></tr>
+<tr class="separator:a8e3a4d2266f4434881bb0cfff6cafbf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fb54c6263b083d5ecfe7a2a5caee869"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2fb54c6263b083d5ecfe7a2a5caee869"></a>
+std::set&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>erase_set</b></td></tr>
+<tr class="separator:a2fb54c6263b083d5ecfe7a2a5caee869"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32f1b86e71da1db014a0c9ea391db4c6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a32f1b86e71da1db014a0c9ea391db4c6"></a>
+std::vector&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>push_values</b></td></tr>
+<tr class="separator:a32f1b86e71da1db014a0c9ea391db4c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af991f45ce0042549429943574d5010db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af991f45ce0042549429943574d5010db"></a>
+std::map&lt; size_t, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>insert_values</b></td></tr>
+<tr class="separator:af991f45ce0042549429943574d5010db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/flecsi/flecsi/flecsi/data/<a class="el" href="mutator__handle_8h_source.html">mutator_handle.h</a></li>
+</ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

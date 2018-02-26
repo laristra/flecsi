@@ -119,6 +119,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1mutator__handle__base_____1_1partition__info__t.html">partition_info_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1mutator__handle__base_____1_1ragged__changes__t.html">ragged_changes_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -137,9 +139,9 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>spare_map_t</b> = st
 <tr class="memitem:ac6d7f1539455a345d38a0f687145678e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac6d7f1539455a345d38a0f687145678e"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>erase_set_t</b> = std::set&lt; std::pair&lt; size_t, size_t &gt;&gt;</td></tr>
 <tr class="separator:ac6d7f1539455a345d38a0f687145678e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2edac5778927784b2b9c227fd4ff704"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af2edac5778927784b2b9c227fd4ff704"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>size_map_t</b> = std::unordered_map&lt; size_t, size_t &gt;</td></tr>
-<tr class="separator:af2edac5778927784b2b9c227fd4ff704"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b6dd3b44657b97f393911a85630f655"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1b6dd3b44657b97f393911a85630f655"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ragged_changes_map_t</b> = std::unordered_map&lt; size_t, <a class="el" href="structflecsi_1_1mutator__handle__base_____1_1ragged__changes__t.html">ragged_changes_t</a> &gt;</td></tr>
+<tr class="separator:a1b6dd3b44657b97f393911a85630f655"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -217,9 +219,9 @@ spare_map_t *&#160;</td><td class="memItemRight" valign="bottom"><b>spare_map_</
 <tr class="memitem:a75a9741b1606744b36cd357ee7933f16"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a75a9741b1606744b36cd357ee7933f16"></a>
 erase_set_t *&#160;</td><td class="memItemRight" valign="bottom"><b>erase_set_</b> = nullptr</td></tr>
 <tr class="separator:a75a9741b1606744b36cd357ee7933f16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abca32eab32cfb1e26edd3e5d6ed4d531"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abca32eab32cfb1e26edd3e5d6ed4d531"></a>
-size_map_t *&#160;</td><td class="memItemRight" valign="bottom"><b>size_map_</b> = nullptr</td></tr>
-<tr class="separator:abca32eab32cfb1e26edd3e5d6ed4d531"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac64db8241f5771ce1d6c94f2cbeee1d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac64db8241f5771ce1d6c94f2cbeee1d2"></a>
+ragged_changes_map_t *&#160;</td><td class="memItemRight" valign="bottom"><b>ragged_changes_map_</b> = nullptr</td></tr>
+<tr class="separator:ac64db8241f5771ce1d6c94f2cbeee1d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ae12c4146b80c0037eb62aa2b4cbd7f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6ae12c4146b80c0037eb62aa2b4cbd7f"></a>
 <a class="el" href="structflecsi_1_1mutator__handle__base_____1_1commit__info__t.html">commit_info_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ci_</b></td></tr>
 <tr class="separator:a6ae12c4146b80c0037eb62aa2b4cbd7f"><td class="memSeparator" colspan="2">&#160;</td></tr>

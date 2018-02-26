@@ -132,9 +132,12 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>entry_value_t</b> = 
 <tr class="memitem:a00f4b280d80fad97c22cdcac144c0c0b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a00f4b280d80fad97c22cdcac144c0c0b"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>erase_set_t</b> = typename base_t::erase_set_t</td></tr>
 <tr class="separator:a00f4b280d80fad97c22cdcac144c0c0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67a371d1f762973b08d595b4543c54aa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a67a371d1f762973b08d595b4543c54aa"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>size_map_t</b> = typename handle_t::size_map_t</td></tr>
-<tr class="separator:a67a371d1f762973b08d595b4543c54aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf8633872ec2f9656d0653f0a358b0cf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adf8633872ec2f9656d0653f0a358b0cf"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ragged_changes_t</b> = typename <a class="el" href="classflecsi_1_1mutator__handle__base____.html">mutator_handle__</a>&lt; T &gt;::ragged_changes_t</td></tr>
+<tr class="separator:adf8633872ec2f9656d0653f0a358b0cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54108542b05df25bc328aeb48b4d7594"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a54108542b05df25bc328aeb48b4d7594"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ragged_changes_map_t</b> = typename <a class="el" href="classflecsi_1_1mutator__handle__base____.html">mutator_handle__</a>&lt; T &gt;::ragged_changes_map_t</td></tr>
+<tr class="separator:a54108542b05df25bc328aeb48b4d7594"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_types_structflecsi_1_1mutator_____3_01data_1_1sparse_00_01T_01_4"><td colspan="2" onclick="javascript:toggleInherit('pub_types_structflecsi_1_1mutator_____3_01data_1_1sparse_00_01T_01_4')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="structflecsi_1_1mutator_____3_01data_1_1sparse_00_01T_01_4.html">flecsi::mutator__&lt; data::sparse, T &gt;</a></td></tr>
 <tr class="memitem:afec7dff102fa29f8d9ca01f084e1ac45 inherit pub_types_structflecsi_1_1mutator_____3_01data_1_1sparse_00_01T_01_4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afec7dff102fa29f8d9ca01f084e1ac45"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>handle_t</b> = <a class="el" href="classflecsi_1_1mutator__handle__base____.html">mutator_handle__</a>&lt; T &gt;</td></tr>
@@ -158,9 +161,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa7d5c887b3ef70ec5ae0a98bc5fc53fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa7d5c887b3ef70ec5ae0a98bc5fc53fe"></a>
 T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (size_t index, size_t ragged_index)</td></tr>
 <tr class="separator:aa7d5c887b3ef70ec5ae0a98bc5fc53fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6670bd0d10fe18b837aa850c5f0e0d67"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6670bd0d10fe18b837aa850c5f0e0d67"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>resize</b> (size_t index, size_t length)</td></tr>
-<tr class="separator:a6670bd0d10fe18b837aa850c5f0e0d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41d0618bc7a91f75b422e5143a83e9c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a41d0618bc7a91f75b422e5143a83e9c7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>resize</b> (size_t index, size_t size)</td></tr>
+<tr class="separator:a41d0618bc7a91f75b422e5143a83e9c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afec05d610404177b4c05410b9e9d8f75"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afec05d610404177b4c05410b9e9d8f75"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>erase</b> (size_t index, size_t ragged_index)</td></tr>
+<tr class="separator:afec05d610404177b4c05410b9e9d8f75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70ef13ff9fa8059ee757318096f5dc28"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a70ef13ff9fa8059ee757318096f5dc28"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>push_back</b> (size_t index, const T &amp;value)</td></tr>
+<tr class="separator:a70ef13ff9fa8059ee757318096f5dc28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae523be377f528584d357e3f5aead9561"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae523be377f528584d357e3f5aead9561"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>insert</b> (size_t index, size_t ragged_index, const T &amp;value)</td></tr>
+<tr class="separator:ae523be377f528584d357e3f5aead9561"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structflecsi_1_1mutator_____3_01data_1_1sparse_00_01T_01_4"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structflecsi_1_1mutator_____3_01data_1_1sparse_00_01T_01_4')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structflecsi_1_1mutator_____3_01data_1_1sparse_00_01T_01_4.html">flecsi::mutator__&lt; data::sparse, T &gt;</a></td></tr>
 <tr class="memitem:a8638d1b13cc6f1b0c56e39284eeddb0c inherit pub_methods_structflecsi_1_1mutator_____3_01data_1_1sparse_00_01T_01_4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8638d1b13cc6f1b0c56e39284eeddb0c"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1mutator_____3_01data_1_1sparse_00_01T_01_4.html#a8638d1b13cc6f1b0c56e39284eeddb0c">mutator__</a> (const <a class="el" href="classflecsi_1_1mutator__handle__base____.html">mutator_handle__</a>&lt; T &gt; &amp;h)</td></tr>
