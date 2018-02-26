@@ -478,6 +478,13 @@ public:
                            color_info.ghost - 1));
         color_partitioning[color] = Domain::from_rect<2>(subrect);
 
+        LegionRuntime::Arrays::Rect<2> primary_rect(
+            make_point(color, 0),
+            make_point(
+                color, color_info.exclusive + color_info.shared - 1));
+        access_partitioning[PRIMARY_ACCESS].insert(
+            Domain::from_rect<2>(primary_rect));
+
         LegionRuntime::Arrays::Rect<2> exclusive_rect(
             make_point(color, 0),
             make_point(

@@ -193,8 +193,44 @@ runtime_driver(
   } // for idx_space
 
   Legion::MustEpochLauncher must_epoch_launcher1;
-   must_epoch_launcher1.add_index_task(pos_compaction_launcher);
-  auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher1);
+  must_epoch_launcher1.add_index_task(pos_compaction_launcher);
+  runtime->execute_must_epoch(ctx, must_epoch_launcher1);
+
+  // Fix ghost reference/pointer to point to compacted position of
+  // shared that it needs
+  const auto pos_correction_id =
+    context_.task_id<__flecsi_internal_task_key(owner_pos_correction_task)>();
+
+  Legion::IndexLauncher fix_ghost_refs_launcher(pos_correction_id,
+    data.color_domain(), Legion::TaskArgument(nullptr, 0), Legion::ArgumentMap());
+
+  fix_ghost_refs_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  for(auto is: context_.coloring_map()) {
+    size_t idx_space = is.first;
+    auto& flecsi_ispace = data.index_space(idx_space);
+
+    Legion::LogicalPartition ghost_lpart = runtime->get_logical_partition(ctx,
+    flecsi_ispace.logical_region, flecsi_ispace.ghost_partition);
+    fix_ghost_refs_launcher.add_region_requirement(
+    Legion::RegionRequirement(ghost_lpart, 0/*projection ID*/,
+      READ_WRITE, EXCLUSIVE, flecsi_ispace.logical_region))
+      .add_field(ghost_owner_pos_fid);
+
+    Legion::LogicalPartition access_lpart = runtime->get_logical_partition(ctx,
+        flecsi_ispace.logical_region, flecsi_ispace.access_partition);
+    Legion::LogicalRegion primary_lregion =
+        runtime->get_logical_subregion_by_color(ctx, access_lpart,
+            PRIMARY_ACCESS);
+    fix_ghost_refs_launcher.add_region_requirement(
+       Legion::RegionRequirement(primary_lregion, READ_ONLY, EXCLUSIVE,
+           flecsi_ispace.logical_region)
+            .add_field(ghost_owner_pos_fid));
+  } // for idx_space
+
+  Legion::MustEpochLauncher must_epoch_launcher2;
+  must_epoch_launcher2.add_index_task(fix_ghost_refs_launcher);
+  auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher2);
 
   fm.wait_all_results(true);
 
