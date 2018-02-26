@@ -287,7 +287,7 @@ runtime_driver(
     Legion::TaskLauncher setup_rank_context_launcher(setup_rank_context_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(),
                              args_serializers[color].get_used_bytes()));
-    setup_rank_context_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+ //   setup_rank_context_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
     Legion::DomainPoint point(color);
     must_epoch_launcher.add_single_task(point, setup_rank_context_launcher);
@@ -299,7 +299,7 @@ runtime_driver(
   future.wait_all_results(silence_warnings);
 
   // Add additional setup.
-  context_.advance_state();
+  //context_.advance_state();
 
   auto& ispace_dmap = context_.index_space_data_map();
 
@@ -356,6 +356,7 @@ runtime_driver(
             color_ispace.color_partition);
   }
 
+  context_.advance_state();
   // run default or user-defined driver
   driver(args.argc, args.argv);
 

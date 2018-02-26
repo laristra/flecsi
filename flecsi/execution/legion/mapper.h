@@ -173,7 +173,10 @@ public:
               (task.regions.size() >= (indx + 2)),
               "ERROR:: wrong number of regions passed to the task wirth \
                the  tag = MAPPER_COMPACTED_STORAGE");
-
+          
+          clog_assert((!task.regions[indx].region.exists()),
+            "ERROR:: pasing not existing REGION to the mapper"
+            );
           regions.push_back(task.regions[indx].region);
           regions.push_back(task.regions[indx + 1].region);
           regions.push_back(task.regions[indx + 2].region);
