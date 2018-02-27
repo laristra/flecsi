@@ -221,8 +221,73 @@ public:
       size_t num_existing = coi.count();
       size_t used_slots = oi.count();
 
-      for (size_t j = 0; j < num_existing; ++j) {
-        cptr[j] = eptr[j];
+      auto citr = ragged_changes_map_->find(index);
+
+      ragged_changes_t* changes;
+
+      size_t ri = 0;
+
+      if (citr != ragged_changes_map_->end()) {
+        changes = &citr->second;
+      
+        if(changes->insert_values && changes->erase_set){
+          auto iitr = changes->insert_values->begin();
+          auto iitr_end = changes->insert_values->end();
+          
+          auto eitr = changes->erase_set->begin();
+          auto eitr_end = changes->erase_set->end();
+
+          for (size_t j = 0; j < num_existing; ++j) {
+            if(iitr != iitr_end && iitr->first == j){
+              cptr[ri++] = iitr->second;
+              ++iitr;
+            }
+            
+            if(eitr != eitr_end && *eitr == j){
+              ++eitr;
+            }
+            else{
+              cptr[ri++] = eptr[j];
+            }
+          }
+        }
+        else if(changes->insert_values){
+          auto iitr = changes->insert_values->begin();
+          auto iitr_end = changes->insert_values->end();
+
+          for (size_t j = 0; j < num_existing; ++j) {
+            if(iitr != iitr_end && iitr->first == j){
+              cptr[ri++] = iitr->second;
+              ++iitr;
+            }
+
+            cptr[ri++] = eptr[j];
+          }
+        }
+        else if(changes->erase_set){
+          auto eitr = changes->erase_set->begin();
+          auto eitr_end = changes->erase_set->end();
+
+          for (size_t j = 0; j < num_existing; ++j) {
+            if(eitr != eitr_end && *eitr == j){
+              ++eitr;
+            }
+            else{
+              cptr[ri++] = eptr[j];
+            }
+          }
+        }
+        else{
+          for (size_t j = 0; j < num_existing; ++j) {
+            cptr[ri++] = eptr[j];
+          }  
+        }
+      }
+      else{
+        changes = nullptr;
+        for (size_t j = 0; j < num_existing; ++j) {
+          cptr[ri++] = eptr[j];
+        }        
       }
 
       for (size_t j = 0; j < used_slots; ++j) {
@@ -243,10 +308,8 @@ public:
 
       coi.set_offset(offset);
 
-      auto citr = ragged_changes_map_->find(index);
-
-      if (citr != ragged_changes_map_->end()) {
-        size_t resize = citr->second.size;
+      if (changes) {
+        size_t resize = changes->size;
         coi.set_count(resize);
         offset += resize;
         cptr += resize;
@@ -352,10 +415,40 @@ public:
   }
 
   struct ragged_changes_t{
-    size_t size = 0;
-    std::set<size_t> erase_set;
-    std::vector<T> push_values;
-    std::map<size_t, T> insert_values;
+    ragged_changes_t(size_t size)
+    : size(size){}
+
+    ~ragged_changes_t(){
+      if(erase_set){
+        delete erase_set;
+      }
+
+      if(push_values){
+        delete push_values;
+      }
+
+      if(insert_values){
+        delete insert_values;
+      }
+    }
+
+    size_t size;
+    std::set<size_t>* erase_set = nullptr;
+    std::vector<T>* push_values = nullptr;
+    std::map<size_t, T>* insert_values = nullptr;
+
+    void init_erase_set(){
+      erase_set = new std::set<size_t>;
+    }
+
+    void init_push_values(){
+      push_values = new std::vector<T>;
+    }
+
+    void init_insert_values(){
+      insert_values = new std::map<size_t, T>;
+    }
+
   };
 
   using spare_map_t = std::multimap<size_t, entry_value_t>;
