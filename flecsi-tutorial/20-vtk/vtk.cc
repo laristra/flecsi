@@ -46,7 +46,8 @@ flecsi_register_task(print_field, example, loc, single);
 
 
 
-void output_field(mesh<ro> mesh, field<ro> f, std::string filename) {
+void output_field(mesh<ro> mesh, field<ro> f) 
+{
 
   vtkOutput::StructuredGrid temp(256,1,1);
   double *cellData = new double[256];
@@ -64,8 +65,12 @@ void output_field(mesh<ro> mesh, field<ro> f, std::string filename) {
   temp.pushPointsToGrid();
 
   temp.addScalarCellData("cell-data-scalar", 256, cellData);
-  //temp.addScalarCellData("cell-data-scalar", 256, f);
-  temp.write(filename);
+ //  //temp.addScalarCellData("cell-data-scalar", 256, f);
+  temp.write("testVTK");
+
+  //if (cellData != NULL)
+  //  delete []cellData;
+  //cellData = NULL;
 } // print_field
 
 
@@ -82,9 +87,8 @@ void driver(int argc, char ** argv) {
   auto f = flecsi_get_handle(m, example, field, double, dense, 0);
 
   flecsi_execute_task(initialize_field, example, single, m, f);
-  flecsi_execute_task(output_field, example, single, m, f, "testVTK");
-  flecsi_execute_task(print_field, example, single, m, f);
-
+  //flecsi_execute_task(print_field, example, single, m, f);
+  flecsi_execute_task(output_field, example, single, m, f);
 } // driver
 
 } // namespace execution

@@ -83,7 +83,10 @@ inline StructuredGrid::StructuredGrid()
 
 inline StructuredGrid::StructuredGrid(int x, int y, int z)
 {
-	StructuredGrid();
+	writer = vtkSmartPointer<vtkXMLPStructuredGridWriter>::New();
+	strucGrid = vtkSmartPointer<vtkStructuredGrid>::New();
+
+	pnts = vtkSmartPointer<vtkPoints>::New();
 	setDims(x,y,z);
 }
 
