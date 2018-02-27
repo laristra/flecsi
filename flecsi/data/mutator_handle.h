@@ -229,59 +229,7 @@ public:
 
       if (citr != ragged_changes_map_->end()) {
         changes = &citr->second;
-      
-        if(changes->insert_values && changes->erase_set){
-          auto iitr = changes->insert_values->begin();
-          auto iitr_end = changes->insert_values->end();
-          
-          auto eitr = changes->erase_set->begin();
-          auto eitr_end = changes->erase_set->end();
-
-          for (size_t j = 0; j < num_existing; ++j) {
-            if(iitr != iitr_end && iitr->first == j){
-              cptr[ri++] = iitr->second;
-              ++iitr;
-            }
-            
-            if(eitr != eitr_end && *eitr == j){
-              ++eitr;
-            }
-            else{
-              cptr[ri++] = eptr[j];
-            }
-          }
-        }
-        else if(changes->insert_values){
-          auto iitr = changes->insert_values->begin();
-          auto iitr_end = changes->insert_values->end();
-
-          for (size_t j = 0; j < num_existing; ++j) {
-            if(iitr != iitr_end && iitr->first == j){
-              cptr[ri++] = iitr->second;
-              ++iitr;
-            }
-
-            cptr[ri++] = eptr[j];
-          }
-        }
-        else if(changes->erase_set){
-          auto eitr = changes->erase_set->begin();
-          auto eitr_end = changes->erase_set->end();
-
-          for (size_t j = 0; j < num_existing; ++j) {
-            if(eitr != eitr_end && *eitr == j){
-              ++eitr;
-            }
-            else{
-              cptr[ri++] = eptr[j];
-            }
-          }
-        }
-        else{
-          for (size_t j = 0; j < num_existing; ++j) {
-            cptr[ri++] = eptr[j];
-          }  
-        }
+        apply_raggged_changes(changes, cptr, eptr, num_existing);        
       }
       else{
         changes = nullptr;
@@ -341,8 +289,21 @@ public:
 
       size_t used_slots = oi.count();
 
-      for (size_t j = 0; j < num_existing; ++j) {
-        cbuf[j] = eptr[j];
+      auto citr = ragged_changes_map_->find(index);
+
+      ragged_changes_t* changes;
+
+      size_t ri = 0;
+
+      if (citr != ragged_changes_map_->end()) {
+        changes = &citr->second;
+        apply_raggged_changes(changes, cptr, eptr, num_existing);        
+      }
+      else{
+        changes = nullptr;
+        for (size_t j = 0; j < num_existing; ++j) {
+          cptr[ri++] = eptr[j];
+        }        
       }
 
       for (size_t j = 0; j < used_slots; ++j) {
@@ -363,10 +324,8 @@ public:
 
       size_t size;
 
-      auto citr = ragged_changes_map_->find(index);
-
-      if (citr != ragged_changes_map_->end()) {
-        size = citr->second.size;
+      if (changes) {
+        size = changes->size;
         coi.set_count(size);
       } else {
         size = num_existing;
@@ -539,6 +498,77 @@ public:
 
     return dest - dest_start;
   }
+  
+  void
+  apply_raggged_changes(
+    ragged_changes_t* changes,
+    entry_value_t* cptr,
+    entry_value_t* eptr,
+    size_t num_existing
+  )
+  {
+    size_t ri = 0;
+
+    if(changes->insert_values && changes->erase_set){
+      auto iitr = changes->insert_values->begin();
+      auto iitr_end = changes->insert_values->end();
+      
+      auto eitr = changes->erase_set->begin();
+      auto eitr_end = changes->erase_set->end();
+
+      for (size_t j = 0; j < num_existing; ++j) {
+        if(iitr != iitr_end && iitr->first == j){
+          cptr[ri++] = iitr->second;
+          ++iitr;
+        }
+        
+        if(eitr != eitr_end && *eitr == j){
+          ++eitr;
+        }
+        else{
+          cptr[ri++] = eptr[j];
+        }
+      }
+    }
+    else if(changes->insert_values){
+      auto iitr = changes->insert_values->begin();
+      auto iitr_end = changes->insert_values->end();
+
+      for (size_t j = 0; j < num_existing; ++j) {
+        if(iitr != iitr_end && iitr->first == j){
+          cptr[ri++] = iitr->second;
+          ++iitr;
+        }
+
+        cptr[ri++] = eptr[j];
+      }
+    }
+    else if(changes->erase_set){
+      auto eitr = changes->erase_set->begin();
+      auto eitr_end = changes->erase_set->end();
+
+      for (size_t j = 0; j < num_existing; ++j) {
+        if(eitr != eitr_end && *eitr == j){
+          ++eitr;
+        }
+        else{
+          cptr[ri++] = eptr[j];
+        }
+      }
+    }
+    else{
+      for (size_t j = 0; j < num_existing; ++j) {
+        cptr[ri++] = eptr[j];
+      }  
+    }
+
+    if(changes->push_values){
+      for(auto& vi : *changes->push_values){
+        cptr[ri++] = vi;
+      }
+    }
+  }
+
 };
 
 } // namespace flecsi
