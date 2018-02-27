@@ -93,6 +93,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structflecsi_1_1mutator__handle__base_____1_1ragged__changes__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -100,20 +101,35 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a8f815baf4ab3daf19b2bd103672af76a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8f815baf4ab3daf19b2bd103672af76a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ragged_changes_t</b> (size_t size)</td></tr>
+<tr class="separator:a8f815baf4ab3daf19b2bd103672af76a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11fb9f363dc2d02c2ad73fc7287b219f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a11fb9f363dc2d02c2ad73fc7287b219f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>init_erase_set</b> ()</td></tr>
+<tr class="separator:a11fb9f363dc2d02c2ad73fc7287b219f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18e5d258902f81a07902df68ce2e2f77"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a18e5d258902f81a07902df68ce2e2f77"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>init_push_values</b> ()</td></tr>
+<tr class="separator:a18e5d258902f81a07902df68ce2e2f77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8b14db9ca903dd6989183a049f097eb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae8b14db9ca903dd6989183a049f097eb"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>init_insert_values</b> ()</td></tr>
+<tr class="separator:ae8b14db9ca903dd6989183a049f097eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a8e3a4d2266f4434881bb0cfff6cafbf4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8e3a4d2266f4434881bb0cfff6cafbf4"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> = 0</td></tr>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b></td></tr>
 <tr class="separator:a8e3a4d2266f4434881bb0cfff6cafbf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fb54c6263b083d5ecfe7a2a5caee869"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2fb54c6263b083d5ecfe7a2a5caee869"></a>
-std::set&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>erase_set</b></td></tr>
-<tr class="separator:a2fb54c6263b083d5ecfe7a2a5caee869"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32f1b86e71da1db014a0c9ea391db4c6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a32f1b86e71da1db014a0c9ea391db4c6"></a>
-std::vector&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>push_values</b></td></tr>
-<tr class="separator:a32f1b86e71da1db014a0c9ea391db4c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af991f45ce0042549429943574d5010db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af991f45ce0042549429943574d5010db"></a>
-std::map&lt; size_t, T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>insert_values</b></td></tr>
-<tr class="separator:af991f45ce0042549429943574d5010db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d2d0ce2a45b5d6306daedadea6c800a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d2d0ce2a45b5d6306daedadea6c800a"></a>
+std::set&lt; size_t &gt; *&#160;</td><td class="memItemRight" valign="bottom"><b>erase_set</b> = nullptr</td></tr>
+<tr class="separator:a3d2d0ce2a45b5d6306daedadea6c800a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14bbaabf86c359d874dd00376d792f89"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a14bbaabf86c359d874dd00376d792f89"></a>
+std::vector&lt; T &gt; *&#160;</td><td class="memItemRight" valign="bottom"><b>push_values</b> = nullptr</td></tr>
+<tr class="separator:a14bbaabf86c359d874dd00376d792f89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25d589ccbaca2f62d525390663e94415"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a25d589ccbaca2f62d525390663e94415"></a>
+std::map&lt; size_t, T &gt; *&#160;</td><td class="memItemRight" valign="bottom"><b>insert_values</b> = nullptr</td></tr>
+<tr class="separator:a25d589ccbaca2f62d525390663e94415"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/data/<a class="el" href="mutator__handle_8h_source.html">mutator_handle.h</a></li>
