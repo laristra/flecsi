@@ -225,17 +225,13 @@ public:
 
       ragged_changes_t* changes;
 
-      size_t ri = 0;
-
       if (citr != ragged_changes_map_->end()) {
         changes = &citr->second;
         apply_raggged_changes(changes, cptr, eptr, num_existing);        
       }
       else{
         changes = nullptr;
-        for (size_t j = 0; j < num_existing; ++j) {
-          cptr[ri++] = eptr[j];
-        }        
+        std::memcpy(cptr, eptr, sizeof(entry_value_t) * num_existing);
       }
 
       for (size_t j = 0; j < used_slots; ++j) {
@@ -258,6 +254,16 @@ public:
 
       if (changes) {
         size_t resize = changes->size;
+
+        if(changes->push_values){
+          std::vector<T>& values = *changes->push_values;
+          size_t ri = resize - values.size();
+          for(auto& vi : values){
+            cptr[ri].entry = ri;
+            cptr[ri++].value = vi;
+          }
+        }
+
         coi.set_count(resize);
         offset += resize;
         cptr += resize;
@@ -293,17 +299,13 @@ public:
 
       ragged_changes_t* changes;
 
-      size_t ri = 0;
-
       if (citr != ragged_changes_map_->end()) {
         changes = &citr->second;
-        apply_raggged_changes(changes, cptr, eptr, num_existing);        
+        apply_raggged_changes(changes, cbuf, eptr, num_existing);        
       }
       else{
         changes = nullptr;
-        for (size_t j = 0; j < num_existing; ++j) {
-          cptr[ri++] = eptr[j];
-        }        
+        std::memcpy(cbuf, eptr, sizeof(entry_value_t) * num_existing);
       }
 
       for (size_t j = 0; j < used_slots; ++j) {
@@ -326,6 +328,19 @@ public:
 
       if (changes) {
         size = changes->size;
+
+        assert(size <= max_entries_per_index_ &&
+               "ragged data: exceeded max_entries_per_index in shared/ghost");
+
+        if(changes->push_values){
+          std::vector<T>& values = *changes->push_values;
+          size_t ri = size - values.size();
+          for(auto& vi : values){
+            cptr[ri].entry = ri;
+            cptr[ri++].value = vi;
+          }
+        }
+        
         coi.set_count(size);
       } else {
         size = num_existing;
@@ -498,7 +513,7 @@ public:
 
     return dest - dest_start;
   }
-  
+
   void
   apply_raggged_changes(
     ragged_changes_t* changes,
@@ -536,7 +551,7 @@ public:
 
       for (size_t j = 0; j < num_existing; ++j) {
         if(iitr != iitr_end && iitr->first == j){
-          cptr[ri++] = iitr->second;
+          cptr[ri++].value = iitr->second;
           ++iitr;
         }
 
@@ -560,12 +575,6 @@ public:
       for (size_t j = 0; j < num_existing; ++j) {
         cptr[ri++] = eptr[j];
       }  
-    }
-
-    if(changes->push_values){
-      for(auto& vi : *changes->push_values){
-        cptr[ri++] = vi;
-      }
     }
   }
 

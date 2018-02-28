@@ -140,6 +140,7 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
     auto itr = base_t::h_.ragged_changes_map_->find(index);
     if(itr == base_t::h_.ragged_changes_map_->end()){
       const offset_t & offset = base_t::h_.offsets_[index];
+      assert(ragged_index < offset.count());
       ragged_changes_t changes(offset.count() - 1);
       changes.init_erase_set();
       changes.erase_set->insert(ragged_index);
@@ -148,11 +149,15 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
     else{
       ragged_changes_t& changes = itr->second;
 
+      assert(ragged_index < changes.size);
+
       if(!changes.erase_set){
         changes.init_erase_set();
       }
 
-      changes.erase_set->insert(ragged_index);
+      if(changes.erase_set->insert(ragged_index).second){
+        --changes.size;
+      }
     }
   }
 
@@ -174,6 +179,7 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
         changes.init_push_values();
       }
 
+      ++changes.size;
       changes.push_values->push_back(value);
     }
   }
@@ -185,6 +191,7 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
     auto itr = base_t::h_.ragged_changes_map_->find(index);
     if(itr == base_t::h_.ragged_changes_map_->end()){
       const offset_t & offset = base_t::h_.offsets_[index];
+      assert(ragged_index < offset.count());
       ragged_changes_t changes(offset.count() + 1);
       changes.init_insert_values();
       changes.insert_values->emplace(ragged_index, value);
@@ -193,11 +200,19 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
     else{
       ragged_changes_t& changes = itr->second;
 
+      assert(ragged_index < changes.size);
+
       if(!changes.insert_values){
         changes.init_insert_values();
       }
 
-      changes.insert_values->emplace(ragged_index, value);
+      auto p = changes.insert_values->emplace(ragged_index, value);
+      if(p.second){
+        ++changes.size;
+      }
+      else{
+        p.first->second = value;
+      }
     }
   }
 };
