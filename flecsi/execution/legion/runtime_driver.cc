@@ -354,26 +354,34 @@ runtime_driver(
     ispace_dmap[idx_space].entire_region = flecsi_ispace.logical_region;
     ispace_dmap[idx_space].color_partition = runtime->get_logical_partition(
         ctx, flecsi_ispace.logical_region, flecsi_ispace.color_partition);
+    runtime->attach_name(ispace_dmap[idx_space].color_partition, "color logical partition");
     ispace_dmap[idx_space].primary_lp = runtime->get_logical_partition(
         ctx, primary_lr, flecsi_ispace.primary_partition);
+    runtime->attach_name(ispace_dmap[idx_space].primary_lp, "primary logical partition");
     ispace_dmap[idx_space].exclusive_lp = runtime->get_logical_partition(
         ctx, primary_lr, flecsi_ispace.exclusive_partition);
+    runtime->attach_name(ispace_dmap[idx_space].exclusive_lp, "exclusive logical partition");
     ispace_dmap[idx_space].shared_lp = runtime->get_logical_partition(
         ctx, primary_lr, flecsi_ispace.shared_partition);
+    runtime->attach_name(ispace_dmap[idx_space].shared_lp, "shared logical partition");
     ispace_dmap[idx_space].ghost_lp = runtime->get_logical_partition(
         ctx, ghost_lr, flecsi_ispace.ghost_partition);
+    runtime->attach_name(ispace_dmap[idx_space].ghost_lp, "ghost logical partition");
 
     // Now that ghosts point to post-compacted shared positions, we can
     // partition set of shared positions that ghosts need
     Legion::IndexSpace is_of_colors = runtime->create_index_space(ctx,
         data.color_domain());
 
-    Legion::IndexPartition ghost_owners_partition = runtime->
-        create_partition_by_image(ctx, primary_lr.get_index_space(),
-            ispace_dmap[idx_space].ghost_lp, flecsi_ispace.logical_region,
-            ghost_owner_pos_fid, is_of_colors);
+    ispace_dmap[idx_space].ghost_owners_ip = runtime->create_partition_by_image(ctx,
+        primary_lr.get_index_space(), ispace_dmap[idx_space].ghost_lp,
+        flecsi_ispace.logical_region, ghost_owner_pos_fid, is_of_colors);
+    runtime->attach_name(ispace_dmap[idx_space].ghost_owners_ip,
+        "ghost owners index partition");
     ispace_dmap[idx_space].ghost_owners_lp = runtime->get_logical_partition(
-        ctx, primary_lr, ghost_owners_partition);
+        ctx, primary_lr, ispace_dmap[idx_space].ghost_owners_ip);
+    runtime->attach_name(ispace_dmap[idx_space].ghost_owners_lp,
+        "ghost owners logical partition");
   } // idx_space
 
   // initialize read/write flags for task_prolog
