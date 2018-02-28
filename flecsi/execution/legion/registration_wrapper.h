@@ -63,6 +63,14 @@ struct registration_wrapper__ {
       registrar.set_leaf(config_options.leaf);
       registrar.set_inner(config_options.inner);
       registrar.set_idempotent(config_options.idempotent);
+      //std::vector<Legion::DimensionKind> ordering;
+      //ordering.push_back(Legion::DimensionKind::DIM_Y);
+      //ordering.push_back(Legion::DimensionKind::DIM_X);
+      //ordering.push_back(Legion::DimensionKind::DIM_F);  // SOA
+      //Legion::OrderingConstraint ordering_constraint(ordering, true /*contiguous*/);
+      //Legion::LayoutConstraintRegistrar layout_constraint;
+      //layout_constraint.add_constraint(ordering_constraint);
+      //registrar.add_layout_constraint_set(0, Legion::Runtime::preregister_layout(layout_constraint));
       Legion::Runtime::preregister_task_variant<RETURN, TASK>(
           registrar, task_name.c_str());
     } // scope
