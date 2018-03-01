@@ -198,13 +198,13 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
         // we need to get Rect for the parent index space in purpose to loop
         // over  compacted physical instance
-        Legion::IndexPartition parent_ip =
-            runtime->get_parent_index_partition(is);
-        Legion::IndexSpace parent_is =
-            runtime->get_parent_index_space(parent_ip);
+//        Legion::IndexPartition parent_ip =
+//            runtime->get_parent_index_partition(is);
+//        Legion::IndexSpace parent_is =
+//            runtime->get_parent_index_space(parent_ip);
 
         Legion::Domain parent_dom =
-            runtime->get_index_space_domain(context, parent_is);
+            runtime->get_index_space_domain(context, is);
         LegionRuntime::Arrays::Rect<2> parent_rect = parent_dom.get_rect<2>();
 
         LegionRuntime::Arrays::Rect<2> sr;
