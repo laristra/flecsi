@@ -24,9 +24,11 @@
 #include <default_mapper.h>
 #include <legion.h>
 #include <legion_mapping.h>
+#include <mappers/default_mapper.h>
 
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/legion_tasks.h>
+
 
 clog_register_tag(legion_mapper);
 
@@ -114,6 +116,38 @@ public:
     Destructor
    */
   virtual ~mpi_mapper_t(){};
+
+  Legion::LayoutConstraintID default_policy_select_layout_constraints(
+      Legion::Mapping::MapperContext ctx,
+      Realm::Memory target_memory,
+      const Legion::RegionRequirement &req,
+      Legion::Mapping::DefaultMapper::MappingKind mapping_kind,
+      bool needs_field_constraint_check,
+      bool &force_new_instances)
+  {
+      // We always set force_new_instances to false since we are
+      // deciding to optimize for minimizing memory usage instead
+      // of avoiding Write-After-Read (WAR) dependences
+      force_new_instances = false;
+std::cout<<"IRINA DEBUG"<<std::endl;
+      std::vector<Legion::DimensionKind> ordering;
+      ordering.push_back(Legion::DimensionKind::DIM_Y);
+      ordering.push_back(Legion::DimensionKind::DIM_X);
+      ordering.push_back(Legion::DimensionKind::DIM_F);  // SOA
+      Legion::OrderingConstraint ordering_constraint(ordering, true /*contiguous*/);
+      Legion::LayoutConstraintSet layout_constraint;
+      layout_constraint.add_constraint(ordering_constraint);
+
+      // Do the registration
+      Legion::LayoutConstraintID result =
+        runtime->register_layout(ctx, layout_constraint);
+      // Record our results, there is a benign race here as another mapper
+      // call could have registered the exact same registration constraints
+      // here if we were preempted during the registration call. The 
+      // constraint sets are identical though so it's all good.
+      //layout_constraint_cache[constraint_key] = result;
+      return result;
+  }
 
   /*!
    Specialization of the map_task funtion for FLeCSI
