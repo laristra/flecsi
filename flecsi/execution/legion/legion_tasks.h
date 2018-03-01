@@ -335,8 +335,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   Legion::Domain ghost_domain = runtime->get_index_space_domain(
       ctx, regions[1].get_logical_region().get_index_space());
 
-  for (Legion::Domain::DomainPointIterator itr(owner_domain); itr; itr++)
-    std::cout << "owner has " << itr.p[0] << "," << itr.p[1]  << std::endl;
+  //for (Legion::Domain::DomainPointIterator itr(owner_domain); itr; itr++)
+  //  std::cout << "owner has " << itr.p[0] << "," << itr.p[1]  << std::endl;
 
   // For each field, copy data from shared to ghost
   for (auto fid : task->regions[0].privilege_fields) {
@@ -347,14 +347,14 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     auto fitr = iitr->second.find(fid);
     clog_assert(fitr != iitr->second.end(), "invalid fid");
     const context_t::field_info_t & field_info = fitr->second;
-    std::cout << "SIZE " << field_info.size <<
-        " vs " << sizeof(size_t) << " vs " << sizeof(uint64_t) << std::endl;
+  //  std::cout << "SIZE " << field_info.size <<
+     //   " vs " << sizeof(size_t) << " vs " << sizeof(uint64_t) << std::endl;
 
     for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
       auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
       LegionRuntime::Arrays::Point<2> owner_location = position_ref_acc.read(ghost_ptr);
-      std::cout << itr.p[0] << "," << itr.p[1] << " points to "
-          << owner_location.x[0] << "," << owner_location.x[1] << std::endl;
+    //  std::cout << itr.p[0] << "," << itr.p[1] << " points to "
+    //      << owner_location.x[0] << "," << owner_location.x[1] << std::endl;
       auto owner_ptr = Legion::DomainPoint::from_point<2>(owner_location);
       // FIXME: hack until gather copies are implemented
       switch (field_info.size) {
@@ -377,7 +377,7 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
           auto owner_acc = regions[0].get_field_accessor(fid).typeify<uint32_t>();
           auto ghost_acc = regions[1].get_field_accessor(fid).typeify<uint32_t>();
           ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
-          std::cout << " read4 " << owner_acc.read(owner_ptr) << std::endl;
+         // std::cout << " read4 " << owner_acc.read(owner_ptr) << std::endl;
       }
           break;
       case 8:
@@ -387,9 +387,9 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
           ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
           auto rloc = owner_ptr.point_data;
           auto gloc = ghost_ptr.point_data;
-          std::cout << " read8 " << owner_acc.read(owner_ptr) <<
-              " from " << rloc[0] << "," << rloc[1] <<
-              " to " << gloc[0] << "'" << gloc[1] << std::endl;
+         // std::cout << " read8 " << owner_acc.read(owner_ptr) <<
+         //     " from " << rloc[0] << "," << rloc[1] <<
+         //     " to " << gloc[0] << "'" << gloc[1] << std::endl;
       }
           break;
       case 12:
@@ -397,7 +397,7 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
           auto owner_acc = regions[0].get_field_accessor(fid).typeify<long double>();
           auto ghost_acc = regions[1].get_field_accessor(fid).typeify<long double>();
           ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
-          std::cout << " read12 " << owner_acc.read(owner_ptr) << std::endl;
+          //std::cout << " read12 " << owner_acc.read(owner_ptr) << std::endl;
       }
           break;
       default:
