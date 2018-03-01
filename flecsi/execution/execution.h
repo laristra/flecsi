@@ -295,7 +295,7 @@ clog_register_tag(execution);
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_interface_t::execute_task<                           \
-      launch_type_t::launch,                                                   \
+      flecsi::execution::launch_type_t::launch,                                \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       __flecsi_internal_return_type(task),                                     \
       __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
