@@ -129,7 +129,6 @@ public:
       // deciding to optimize for minimizing memory usage instead
       // of avoiding Write-After-Read (WAR) dependences
       force_new_instances = false;
-std::cout<<"IRINA DEBUG"<<std::endl;
       std::vector<Legion::DimensionKind> ordering;
       ordering.push_back(Legion::DimensionKind::DIM_Y);
       ordering.push_back(Legion::DimensionKind::DIM_X);
@@ -141,11 +140,6 @@ std::cout<<"IRINA DEBUG"<<std::endl;
       // Do the registration
       Legion::LayoutConstraintID result =
         runtime->register_layout(ctx, layout_constraint);
-      // Record our results, there is a benign race here as another mapper
-      // call could have registered the exact same registration constraints
-      // here if we were preempted during the registration call. The 
-      // constraint sets are identical though so it's all good.
-      //layout_constraint_cache[constraint_key] = result;
       return result;
   }
 
