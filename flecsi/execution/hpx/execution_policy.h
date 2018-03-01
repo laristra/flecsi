@@ -93,7 +93,7 @@ struct executor__ {
 /// \brief hpx_execution_policy provides...
 ///
 struct FLECSI_EXPORT hpx_execution_policy_t {
-  template<typename R>
+  template<typename R, launch_type_t launch = launch_type_t::single>
   using future__ = hpx::future<R>;
 
   //--------------------------------------------------------------------------//
@@ -154,8 +154,9 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   /// \param user_task_handle
   /// \param args
   ///
-  template<size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
-  static decltype(auto) execute_task(launch_type_t launch, ARGS &&... args) {
+  template<launch_type_t launch,size_t KEY, typename RETURN,
+    typename ARG_TUPLE, typename... ARGS>
+  static decltype(auto) execute_task(ARGS &&... args) {
     context_t & context_ = context_t::instance();
 
     // Get the function and processor type.

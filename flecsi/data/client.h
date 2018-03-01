@@ -84,6 +84,30 @@ struct data_client_policy_handler__<global_data_client_t> {
 }; // struct data_client_policy_handler__
 
 //----------------------------------------------------------------------------//
+//! The data client policy handler for color data client. Populate the
+//! required fields on the client handle.
+//----------------------------------------------------------------------------//
+
+template<>
+struct data_client_policy_handler__<color_data_client_t> {
+
+  template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
+  static data_client_handle__<DATA_CLIENT_TYPE, 0> get_client_handle() {
+    data_client_handle__<DATA_CLIENT_TYPE, 0> h;
+
+    h.client_hash =
+        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+    h.namespace_hash = NAMESPACE_HASH;
+    h.name_hash = NAME_HASH;
+
+    return h;
+  } // get_client_handle
+
+}; // struct data_client_policy_handler__
+
+
+
+//----------------------------------------------------------------------------//
 //! The data client policy handler for mesh topology. This class provides
 //! tuple walkers for extracting information from the entity types, bindings,
 //! and connectivity tuples and obtaining information about field IDs in order

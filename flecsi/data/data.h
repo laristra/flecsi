@@ -109,6 +109,37 @@
           versions, ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
 
 /*!
+  @def flecsi_register_color
+
+  This macro registers color field data.
+  This call does not necessarily cause memory to be allocated. It's
+  primary function is to describe the field data to the runtime.
+  Memory allocation will likely be deferred.
+
+  @param nspace        The namespace to use to register the variable.
+  @param name          The name of the data variable to register.
+  @param data_type     The data type to store, e.g., double or my_type_t.
+  @param versions      The number of versions of the data to register. This
+                       parameter can be used to manage multiple data versions,
+                       e.g., for new and old state.
+
+  @ingroup data
+ */
+
+#define flecsi_register_color(nspace, name, data_type, versions, ...)         \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* Call the storage policy to register the data */                           \
+  bool client_type##_##nspace##_##name##_data_registered =                     \
+      flecsi::data::field_interface_t::register_field<                         \
+          flecsi::data::color_data_client_t, flecsi::data::color, data_type, \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
+          versions, ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
+
+
+
+/*!
   @def flecsi_get_handle
 
   Access data with a data_client_t instance.
@@ -162,6 +193,30 @@
       flecsi_get_client_handle(                                                \
           flecsi::data::global_data_client_t, nspace, name),                   \
       nspace, name, data_type, global, version)
+
+/*!
+  @def flecsi_get_color
+
+  Access color data
+
+  @param nspace        The namespace to use to access the variable.
+  @param name          The name of the data variable to access.
+  @param data_type     The data type to access, e.g., double or my_type_t.
+  @param version       The version number of the data to access. This
+                       parameter can be used to manage multiple data versions,
+                       e.g., for new and old state.
+
+  @ingroup data
+ */
+
+#define flecsi_get_color(nspace, name, data_type, version)                    \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* WARNING: This macro returns a handle. Don't add terminations! */          \
+  flecsi_get_handle(                                                           \
+      flecsi_get_client_handle(                                                \
+          flecsi::data::color_data_client_t, nspace, name),                   \
+      nspace, name, data_type, color, version)
 
 /*!
   @def flecsi_get_client_handle

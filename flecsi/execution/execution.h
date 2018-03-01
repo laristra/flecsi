@@ -106,6 +106,13 @@ clog_register_tag(execution);
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
     type>(index, obj);
 
+#define flecsi_initialize_global_object(index, nspace, type, ...)              \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::execution::context_t::instance().template initialize_global_object<  \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    type>(index, ##__VA_ARGS__);
+
 /*!
   @def flecsi_get_global_object
 
@@ -288,10 +295,10 @@ clog_register_tag(execution);
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_interface_t::execute_task<                           \
+      launch_type_t::launch,                                                   \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       __flecsi_internal_return_type(task),                                     \
-      __flecsi_internal_arguments_type(task)>(                                 \
-      flecsi::execution::mask_to_type(flecsi::launch), ##__VA_ARGS__)
+      __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
 
 /*!
   @def flecsi_execute_task

@@ -111,8 +111,8 @@ struct mpi_execution_policy_t
    @tparam RETURN The return type of the task.
    */
 
-  template<typename RETURN>
-  using future__ = mpi_future__<RETURN>;
+  template<typename RETURN, launch_type_t launch>
+  using future__ = mpi_future__<RETURN, launch>;
 
   template<
     typename FUNCTOR_TYPE
@@ -173,6 +173,7 @@ struct mpi_execution_policy_t
    */
 
   template<
+    launch_type_t launch,
     size_t KEY,
     typename RETURN,
     typename ARG_TUPLE,
@@ -181,7 +182,6 @@ struct mpi_execution_policy_t
   static
   decltype(auto)
   execute_task(
-    launch_type_t launch,
     ARGS && ... args
   )
   {
