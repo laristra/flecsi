@@ -116,16 +116,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
         sizes[r] = sr.hi[1] - sr.lo[1] + 1;
         h.combined_size += sizes[r];
 
-        for (Legion::Domain::DomainPointIterator itr(domain); itr; itr++) {
-         auto ptr = Legion::DomainPoint::from_point<2>(itr.p);
-         std::cout << "Rank " << my_color << " region " << r <<
-             " Legion layout " << itr.p[0] << "," << itr.p[1] <<
-         " = " << ac.read(ptr) << std::endl;
-       }
-       T* buffer = data[r];
-       for (size_t i{0}; i < sizes[r]; i++)
-         std::cout << "Rank " << my_color << " region " << r
-          << " FleCSI assumptions " << i << " = " << buffer[i] << std::endl;
       } // if
     } // for
 
