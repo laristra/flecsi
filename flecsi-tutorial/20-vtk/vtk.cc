@@ -87,7 +87,7 @@ void driver(int argc, char ** argv) {
   auto f = flecsi_get_handle(m, example, field, double, dense, 0);
 
   flecsi_execute_task(initialize_field, example, single, m, f);
-  //flecsi_execute_task(print_field, example, single, m, f);
+  flecsi_execute_task(print_field, example, single, m, f);
   flecsi_execute_task(output_field, example, single, m, f);
 } // driver
 
