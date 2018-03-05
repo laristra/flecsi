@@ -166,8 +166,8 @@ template<
         h.state > SPECIALIZATION_TLT_INIT, "accessing color data    \
          handle from specialization_tlt_init is not supported");
     Legion::RegionRequirement rr(
-         h.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
-         h.color_region);
+         h.color_partition, 0/*projection ID*/, privilege_mode(PERMISSIONS),
+         EXCLUSIVE, h.entire_region);
     rr.add_field(h.fid);
     region_reqs.push_back(rr);
   } // handle
