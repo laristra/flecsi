@@ -35,7 +35,7 @@ void driver(int argc, char ** argv) {
   MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
   MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
   clog(trace) << "Rank " << my_color << " in driver" << std::endl;
-#if 0
+
   for(int cycle=1; cycle < 10; cycle++) {
     auto local_future =
       flecsi_execute_task(local_value_task, flecsi::execution, single,
@@ -50,7 +50,7 @@ void driver(int argc, char ** argv) {
     ASSERT_EQ(global_max, static_cast<double>(num_colors * cycle));
     ASSERT_EQ(global_min, static_cast<double>(cycle));
   } // cycle
-#endif
+
 } // driver
 
 } // namespace execution

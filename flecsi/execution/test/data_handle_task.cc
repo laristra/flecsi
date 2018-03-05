@@ -101,21 +101,17 @@ void exclusive_mpi(dense_accessor<double, ro, ro, ro> x) {
 flecsi_register_task_simple(task1, loc, single);
 flecsi_register_task_simple(data_handle_dump, loc, single);
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-#if 0
 flecsi_register_task_simple(global_data_handle_dump, loc, single);
 flecsi_register_task_simple(color_data_handle_dump, loc, single);
-#endif
 #endif
 flecsi_register_task_simple(exclusive_writer, loc, single);
 flecsi_register_task_simple(exclusive_reader, loc, single);
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-#if 0
 flecsi_register_task_simple(global_writer, loc, single);
 flecsi_register_task_simple(global_reader, loc, single);
 flecsi_register_task_simple(color_writer, loc, single);
 flecsi_register_task_simple(color_reader, loc, single);
 flecsi_register_task(mpi_task, , mpi, single);
-#endif
 #endif
 flecsi_register_task(exclusive_mpi, , mpi, single);
 
@@ -139,8 +135,8 @@ void specialization_tlt_init(int argc, char ** argv) {
 
   auto & context = execution::context_t::instance();
  
-//  ASSERT_EQ(context.execution_state(),
-//    static_cast<size_t>(SPECIALIZATION_TLT_INIT));
+  ASSERT_EQ(context.execution_state(),
+    static_cast<size_t>(SPECIALIZATION_TLT_INIT));
 
   coloring_map_t map;
   map.vertices = 1;
@@ -149,13 +145,11 @@ void specialization_tlt_init(int argc, char ** argv) {
   flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-#if 0
   auto global_handle = flecsi_get_global(ns, velocity, double, 0);
   flecsi_execute_task_simple(global_data_handle_dump, single, global_handle);
   flecsi_execute_task_simple(global_writer, single, global_handle);
   flecsi_execute_task_simple(global_reader, single, global_handle);
   flecsi_execute_task(mpi_task,, single, 10, global_handle);
-#endif
 #endif
 } // specialization_tlt_init
 
@@ -167,7 +161,7 @@ void driver(int argc, char ** argv) {
   clog(info) << "In driver" << std::endl;
 
   auto & context = execution::context_t::instance();
-  //ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
+  ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
 
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -188,12 +182,12 @@ void driver(int argc, char ** argv) {
 
   flecsi_execute_task_simple(global_data_handle_dump, single, global_handle);
 
- //get color handle  -- what is that?
-  //auto color_handle=flecsi_get_handle(ch, ns, density, double, color, 0);
+  //get color handle
+  auto color_handle=flecsi_get_handle(ch, ns, density, double, color, 0);
 
-  //flecsi_execute_task_simple(color_data_handle_dump, single, color_handle);
-  //flecsi_execute_task_simple(color_writer, single, color_handle);
-  //flecsi_execute_task_simple(color_reader, single, color_handle);
+  flecsi_execute_task_simple(color_data_handle_dump, single, color_handle);
+  flecsi_execute_task_simple(color_writer, single, color_handle);
+  flecsi_execute_task_simple(color_reader, single, color_handle);
   flecsi_execute_task(mpi_task,, single, 10, global_handle);
 #endif
 
