@@ -143,7 +143,6 @@ make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
   // Set the first offset (always zero).
   dcrs.offsets.push_back(0);
 
-#if 1
   // Add the graph adjacencies by getting the neighbors of each
   // cell index
   using cellid = size_t;
@@ -151,8 +150,6 @@ make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
 
   // essentially vertex to cell and cell to cell through vertices
   // connectivity.
-  // FIXME: use vertex2cell connectivity from mesh_definition rather than
-  // building our own.
   std::map<vertexid, std::vector<cellid>> vertex2cells;
   std::map<cellid, std::vector<cellid>> cell2cells;
 
@@ -168,7 +165,6 @@ make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
       // Count the number of times this cell shares a common vertex with
       // some other cell. O(n_cells * n_polygon_sides * vertex to cells degrees)
       for (auto other : vertex2cells[vertex]) {
-        // for (auto other : md.entities(0, FROM_DIMENSION, vertex)) {
         if (other != cell)
           cell_counts[other] += 1;
       }
@@ -188,18 +184,6 @@ make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
   for (size_t i(0); i < init_indices; ++i) {
     auto cell = dcrs.distribution[rank] + i;
 
-    //    if (rank == 0) {
-    //      std::cout << "cell: " << cell << ", neighbors: ";
-    //
-    //      for (auto neighbor : cell2cells[cell]) {
-    //        if (rank == 0) {
-    //          std::cout << neighbor << " ";
-    //        }
-    //      }
-    //      if (rank == 0)
-    //        std::cout << std::endl;
-    //    }
-
     for (auto n : cell2cells[cell]) {
       dcrs.indices.push_back(n);
     } // for
@@ -207,37 +191,6 @@ make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
     dcrs.offsets.push_back(dcrs.offsets[i] + cell2cells[cell].size());
   }
 
-#else
-  for (size_t i(0); i < init_indices; ++i) {
-
-    // Get the neighboring cells of the current cell index (i) using
-    // a matching criteria of "md.dimension()" vertices. The dimension
-    // argument will pick neighbors that are adjacent across facets, e.g.,
-    // across edges in two dimension, or across faces in three dimensions.
-    auto neighbors = topology::entity_neighbors<
-        FROM_DIMENSION, TO_DIMENSION, THRU_DIMENSION>(
-        md, dcrs.distribution[rank] + i);
-
-#if 1
-    if (rank == 0) {
-      std::cout << "cell: " << dcrs.distribution[rank] + i << ", neighbors: ";
-      for (auto i : neighbors) {
-        std::cout << i << " ";
-      } // for
-      std::cout << std::endl;
-    } // if
-#endif
-
-    for (auto n : neighbors) {
-      dcrs.indices.push_back(n);
-    } // for
-
-    dcrs.offsets.push_back(dcrs.offsets[i] + neighbors.size());
-  } // for
-#endif
-
-  //  if (rank == 0)
-  //    std::cout << dcrs;
   return dcrs;
 } // make_dcrs
 
