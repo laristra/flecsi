@@ -258,11 +258,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   auto & index_map(size_t index_space) {
+    auto it = index_map_.find(index_space);
     clog_assert(
-        index_map_.find(index_space) != index_map_.end(),
+        it != index_map_.end(),
         "invalid index space");
 
-    return index_map_[index_space];
+    return it->second;
   } // index_map
 
   /*!
@@ -270,11 +271,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   const auto & index_map(size_t index_space) const {
+    auto it = index_map_.find(index_space);
     clog_assert(
-        index_map_.find(index_space) != index_map_.end(),
+        it != index_map_.end(),
         "invalid index space");
 
-    return index_map_.at(index_space);
+    return it->second;
   } // index_map
 
   /*!
@@ -357,11 +359,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   auto & reverse_index_map(size_t index_space) {
+    auto it = reverse_index_map_.find(index_space);
     clog_assert(
-        reverse_index_map_.find(index_space) != reverse_index_map_.end(),
+        it != reverse_index_map_.end(),
         "invalid index space");
 
-    return reverse_index_map_[index_space];
+    return it->second;
   } // reverse_index_map
 
   /*!
@@ -369,11 +372,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   const auto & reverse_index_map(size_t index_space) const {
+    auto it = reverse_index_map_.find(index_space);
     clog_assert(
-        reverse_index_map_.find(index_space) != reverse_index_map_.end(),
+        it != reverse_index_map_.end(),
         "invalid index space");
 
-    return reverse_index_map_.at(index_space);
+    return it->second;
   } // reverse_index_map
 
   /*!
@@ -408,11 +412,12 @@ struct context__ : public CONTEXT_POLICY {
   auto const & intermediate_map(size_t dimension, size_t domain) const {
     const size_t key = utils::hash::intermediate_hash(dimension, domain);
 
+    auto it = reverse_intermediate_map_.find(key);
     clog_assert(
-        intermediate_map_.find(key) != intermediate_map_.end(),
+        it != intermediate_map_.end(),
         "invalid index space");
 
-    return intermediate_map_.at(key);
+    return it->second;
   } // intermediate_map
 
   /*!
@@ -425,11 +430,12 @@ struct context__ : public CONTEXT_POLICY {
   auto const & reverse_intermediate_map(size_t dimension, size_t domain) const {
     const size_t key = utils::hash::intermediate_hash(dimension, domain);
 
+    auto it = reverse_intermediate_map_.find(key);
     clog_assert(
-        reverse_intermediate_map_.find(key) != reverse_intermediate_map_.end(),
+        it != reverse_intermediate_map_.end(),
         "invalid index space");
 
-    return reverse_intermediate_map_.at(key);
+    return it->second;
   } // reverse_intermediate_map
 
   /*!
@@ -459,11 +465,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   index_coloring_t & coloring(size_t index_space) {
-    if (colorings_.find(index_space) == colorings_.end()) {
+    auto it = colorings_.find(index_space);
+    if (it == colorings_.end()) {
       clog(fatal) << "invalid index_space " << index_space << std::endl;
     } // if
 
-    return colorings_[index_space];
+    return it->second;
   } // coloring
 
   /*!
@@ -475,11 +482,12 @@ struct context__ : public CONTEXT_POLICY {
 
   const std::unordered_map<size_t, coloring_info_t> &
   coloring_info(size_t index_space) {
-    if (coloring_info_.find(index_space) == coloring_info_.end()) {
+    auto it = coloring_info_.find(index_space);
+    if (it == coloring_info_.end()) {
       clog(fatal) << "invalid index space " << index_space << std::endl;
     } // if
 
-    return coloring_info_[index_space];
+    return it->second;
   } // coloring_info
 
   /*!
