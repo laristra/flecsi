@@ -17,9 +17,16 @@ namespace flecsi {
 namespace execution {
 
 double local_value_task(
-        const int my_color)
+        const int cycle)
 {
-  return static_cast<double>(my_color);
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+  auto runtime = Legion::Runtime::get_runtime();
+  const int my_color = runtime->find_local_MPI_rank();
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
+  int my_color;
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
+#endif
+  return static_cast<double>((my_color+1) * cycle);
 }
 
 flecsi_register_task(local_value_task, flecsi::execution, loc, single);
@@ -37,15 +44,19 @@ void driver(int argc, char ** argv) {
   clog(trace) << "Rank " << my_color << " in driver" << std::endl;
 
   for(int cycle=1; cycle < 10; cycle++) {
-    auto local_future =
-      flecsi_execute_task(local_value_task, flecsi::execution, single,
-        (my_color + 1) * cycle);
+    auto global_min_future =
+      flecsi_execute_reduction_task(local_value_task, flecsi::execution, single,
+          min_redop_id, cycle);
+
+    auto global_max_future =
+      flecsi_execute_reduction_task(local_value_task, flecsi::execution, single,
+          max_redop_id, cycle);
 
     double global_max =
-      flecsi::execution::context_t::instance().reduce_max(local_future); 
+      flecsi::execution::context_t::instance().reduce_max(global_max_future);
 
     double global_min =
-      flecsi::execution::context_t::instance().reduce_min(local_future);
+      flecsi::execution::context_t::instance().reduce_min(global_min_future);
  
     ASSERT_EQ(global_max, static_cast<double>(num_colors * cycle));
     ASSERT_EQ(global_min, static_cast<double>(cycle));

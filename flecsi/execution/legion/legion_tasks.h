@@ -25,6 +25,7 @@
 #include <legion_stl.h>
 #include <legion_utilities.h>
 
+#include <flecsi/execution/execution.h>
 #include <flecsi/execution/legion/helper.h>
 #include <flecsi/execution/legion/internal_task.h>
 
@@ -545,7 +546,7 @@ __flecsi_internal_legion_task(fill_connectivity_task, void) {
   FIXME DEOCUMENTATION
  */
 struct MaxReductionOp {
-  static const Legion::ReductionOpID redop_id = (size_t(1) << 20) - 4095;
+  static const Legion::ReductionOpID redop_id = max_redop_id;
 
   typedef double LHS;
   typedef double RHS;
@@ -562,7 +563,7 @@ struct MaxReductionOp {
   FIXME DEOCUMENTATION
  */
 struct MinReductionOp {
-  static const Legion::ReductionOpID redop_id = (size_t(1) << 20) - 4096;
+  static const Legion::ReductionOpID redop_id = min_redop_id;
 
   typedef double LHS;
   typedef double RHS;

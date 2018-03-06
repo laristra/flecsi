@@ -153,16 +153,6 @@ runtime_driver(
   //  Create Legion reduction 
   //-------------------------------------------------------------------------//
 
-  double min = std::numeric_limits<double>::min();
-  Legion::DynamicCollective max_reduction =
-  runtime->create_dynamic_collective(ctx, num_colors, MaxReductionOp::redop_id,
-             &min, sizeof(min));
-
-  double max = std::numeric_limits<double>::max();
-  Legion::DynamicCollective min_reduction =
-  runtime->create_dynamic_collective(ctx, num_colors, MinReductionOp::redop_id,
-             &max, sizeof(max));
-
   //-------------------------------------------------------------------------//
   // Excute Legion task to maps between pre-compacted and compacted
   // data placement
@@ -310,12 +300,6 @@ runtime_driver(
     args_serializers[color].serialize(
       &context_.registered_fields()[0], num_fields * sizeof(field_info_t));
 
-    // #6 serialize reduction
-    args_serializers[color].serialize(&max_reduction,
-        sizeof(Legion::DynamicCollective));
-    args_serializers[color].serialize(&min_reduction,
-        sizeof(Legion::DynamicCollective));
-   
    //-----------------------------------------------------------------------//
    //add region requirements to the setup_rank_context_launcher
    //-----------------------------------------------------------------------//
@@ -434,9 +418,6 @@ runtime_driver(
   //-----------------------------------------------------------------------//
   // Finish up Legion runtime and fall back out to MPI.
   // ----------------------------------------------------------------------//
-
-  runtime->destroy_dynamic_collective(ctx, max_reduction);
-  runtime->destroy_dynamic_collective(ctx, min_reduction);
 
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);
@@ -604,17 +585,6 @@ setup_rank_context_task(
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-
-  // #6 deserialize reduction
-  Legion::DynamicCollective max_reduction;
-  args_deserializer.deserialize((void*)&max_reduction,
-    sizeof(Legion::DynamicCollective));
-  context_.set_max_reduction(max_reduction);
-  
-  Legion::DynamicCollective min_reduction;
-  args_deserializer.deserialize((void*)&min_reduction,
-    sizeof(Legion::DynamicCollective));
-  context_.set_min_reduction(min_reduction);
 
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)

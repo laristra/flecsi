@@ -148,7 +148,8 @@ struct legion_execution_policy_t {
    */
 
   template<size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
-  static decltype(auto) execute_task(launch_type_t launch, ARGS &&... args) {
+  static decltype(auto) execute_task(launch_type_t launch,
+      Legion::ReductionOpID redop_id, ARGS &&... args) {
     using namespace Legion;
 
     // Make a tuple from the task arguments.
@@ -276,14 +277,25 @@ struct legion_execution_policy_t {
           // Enqueue the task.
           clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
                       << legion_runtime->find_local_MPI_rank() << std::endl;
-          auto future =
-              legion_runtime->execute_index_space(legion_context, index_task_launcher);
+
+          Legion::Future future;
+          Legion::FutureMap future_map;
+
+          if (redop_id == 0)
+              future_map = legion_runtime->execute_index_space(legion_context,
+                  index_task_launcher);
+          else
+            future = legion_runtime->execute_index_space(legion_context,
+                index_task_launcher, redop_id);
 
           // Enqueue the epilog.
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
 
-          return legion_future__<RETURN>(future);
+          if (redop_id == 0)
+            return legion_future__<RETURN>(future_map);
+          else
+            return legion_future__<RETURN>(future);
         } // scope
 
         case launch_type_t::index: {

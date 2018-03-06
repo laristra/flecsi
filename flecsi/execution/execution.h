@@ -31,6 +31,8 @@ clog_register_tag(execution);
 // Helper Macros
 //----------------------------------------------------------------------------//
 
+#define min_redop_id (size_t(1) << 20) - 4096
+#define max_redop_id (size_t(1) << 20) - 4095
 /*!
   @def __flecsi_internal_return_type
 
@@ -197,7 +199,18 @@ clog_register_tag(execution);
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       __flecsi_internal_return_type(task),                                     \
       __flecsi_internal_arguments_type(task)>(                                 \
-      flecsi::execution::mask_to_type(flecsi::launch), ##__VA_ARGS__)
+      flecsi::execution::mask_to_type(flecsi::launch), 0, ##__VA_ARGS__)
+
+#define flecsi_execute_reduction_task_simple(task, launch, redop_id, ...)                          \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* Execute the user task */                                                  \
+  /* WARNING: This macro returns a future. Don't add terminations! */          \
+  flecsi::execution::task_interface_t::execute_task<                           \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+      __flecsi_internal_return_type(task),                                     \
+      __flecsi_internal_arguments_type(task)>(                                 \
+      flecsi::execution::mask_to_type(flecsi::launch), redop_id, ##__VA_ARGS__)
 
 /*!
   @def flecsi_execute_task
@@ -217,6 +230,12 @@ clog_register_tag(execution);
                                                                                \
   /* Execute the user task */                                                  \
   flecsi_execute_task_simple(nspace::task, launch, ##__VA_ARGS__)
+
+#define flecsi_execute_reduction_task(task, nspace, launch, redop_id, ...)                         \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* Execute the user task */                                                  \
+  flecsi_execute_reduction_task_simple(nspace::task, launch, redop_id, ##__VA_ARGS__)
 
 /*!
   @def flecsi_execute_mpi_task_simple

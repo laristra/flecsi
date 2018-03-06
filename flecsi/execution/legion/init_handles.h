@@ -188,10 +188,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
         // we need to get Rect for the parent index space in purpose to loop
         // over  compacted physical instance
-//        Legion::IndexPartition parent_ip =
-//            runtime->get_parent_index_partition(is);
-//        Legion::IndexSpace parent_is =
-//            runtime->get_parent_index_space(parent_ip);
 
         Legion::Domain parent_dom =
             runtime->get_index_space_domain(context, is);
@@ -501,7 +497,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
       ++region;
     } // for
-  } // handle -- fix this?
+  } // handle
 
   //-----------------------------------------------------------------------//
   // If this is not a data handle, then simply skip it.
