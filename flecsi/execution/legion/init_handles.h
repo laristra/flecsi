@@ -115,7 +115,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
         // data[r] += bo[1];
         sizes[r] = sr.hi[1] - sr.lo[1] + 1;
         h.combined_size += sizes[r];
-
       } // if
     } // for
 
@@ -158,13 +157,11 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
           default:
             clog_fatal("invalid permissions case");
         } // switch
+
         std::memcpy(h.combined_data + pos, data[r], sizes[r] * sizeof(T));
         pos += sizes[r];
       } // for
-
 #ifdef COMPACTED_STORAGE_SORT
-      /*
-      std::cout << "nightmare" << std::endl;
       h.combined_data_sort = new T[h.combined_size];
 
       context_t & context_ = context_t::instance();
@@ -178,7 +175,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
         h.combined_data_sort[indx] = h.combined_data[c];
         indx++;
       }
-*/
+
 #endif
 
 #else

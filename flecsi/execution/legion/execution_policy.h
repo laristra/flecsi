@@ -171,7 +171,7 @@ struct legion_execution_policy_t {
         clog(info) << "Executing MPI task: " << KEY << std::endl;
       }
       
-      if (context_.execution_state()==SPECIALIZATION_TLT_INIT){
+      if (launch==launch_type_t::single){
 
         init_args_t init_args(legion_runtime, legion_context);
         init_args.walk(task_args);
@@ -209,7 +209,7 @@ struct legion_execution_policy_t {
         context_.unset_call_mpi(legion_context, legion_runtime);
 
         return legion_future__<RETURN>(future);
-      } else { // check for execution_state
+      } else { // check for launch
 
          init_args_t init_args(legion_runtime, legion_context);
          init_args.walk(task_args);
@@ -243,15 +243,50 @@ struct legion_execution_policy_t {
       init_args_t init_args(legion_runtime, legion_context);
       init_args.walk(task_args);
 
+      LegionRuntime::Arrays::Rect<1> launch_bounds(0,context_.colors()-1);
+      Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+
       // Switch on launch type: single or index.
       switch (launch) {
+
+        case launch_type_t::index: {
+          clog_tag_guard(execution);
+          clog(info) << "Executing single task: " << KEY << std::endl;
+
+          // Create a task launcher, passing the task arguments.
+          TaskLauncher task_launcher(
+              context_.task_id<KEY>(),
+              TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+
+#ifdef MAPPER_COMPACTION
+          task_launcher.tag = MAPPER_COMPACTED_STORAGE;
+#endif
+
+          for (auto & req : init_args.region_reqs) {
+            task_launcher.add_region_requirement(req);
+          }
+
+          // Enqueue the prolog.
+          task_prolog_t task_prolog(
+              legion_runtime, legion_context, launch_domain);
+          task_prolog.walk(task_args);
+          task_prolog.launch_copies();
+
+          // Enqueue the task.
+          clog(trace) << "Execute flecsi/legion task " << KEY << std::endl;
+          auto future =
+              legion_runtime->execute_task(legion_context, task_launcher);
+
+          // Enqueue the epilog.
+          task_epilog_t task_epilog(legion_runtime, legion_context);
+          task_epilog.walk(task_args);
+
+          return legion_future__<RETURN>(future);
+        } // scope
 
         case launch_type_t::single: {
           clog_tag_guard(execution);
           clog(info) << "Executing single task: " << KEY << std::endl;
-
-          LegionRuntime::Arrays::Rect<1> launch_bounds(0,context_.colors()-1);
-          Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
           // Create a task launcher, passing the task arguments.
           IndexTaskLauncher index_task_launcher(
@@ -296,35 +331,6 @@ struct legion_execution_policy_t {
             return legion_future__<RETURN>(future_map);
           else
             return legion_future__<RETURN>(future);
-        } // scope
-
-        case launch_type_t::index: {
-          clog_tag_guard(execution);
-          clog(info) << "Executing index task: " << KEY << std::endl;
-
-          //! \todo FIXME:
-          // FIXME: This looks incomplete!
-          // FIXME:
-          // FIXME: get launch domain from partitioning of the data used in
-          // the task following launch domeing calculation is temporary:
-          LegionRuntime::Arrays::Rect<1> launch_bounds(
-              LegionRuntime::Arrays::Point<1>(0),
-              LegionRuntime::Arrays::Point<1>(5));
-          Domain launch_domain = Domain::from_rect<1>(launch_bounds);
-
-          Legion::ArgumentMap arg_map;
-          Legion::IndexLauncher index_launcher(
-              context_.task_id<KEY>(), launch_domain,
-              TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
-
-#ifdef MAPPER_COMPACTION
-          index_launcher.tag = MAPPER_COMPACTED_STORAGE;
-#endif
-          // Enqueue the task.
-          auto future = legion_runtime->execute_index_space(
-              legion_context, index_launcher);
-
-          return legion_future__<RETURN>(future);
         } // scope
 
         default:

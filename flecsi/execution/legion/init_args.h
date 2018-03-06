@@ -136,9 +136,10 @@ template<
   {
     auto & h = a.handle;
 
+      // FIXME this no longer does anything under control replication
       if (h.state < SPECIALIZATION_SPMD_INIT) {
         Legion::RegionRequirement rr(
-            h.color_partition, 0/*projection ID*/,
+            h.entire_region,
             privilege_mode(PERMISSIONS), EXCLUSIVE,
             h.entire_region);
         rr.add_field(h.fid);
@@ -148,7 +149,7 @@ template<
             PERMISSIONS == size_t(ro), "you are not allowed  \
             to modify global data in specialization_spmd_init or driver");
         Legion::RegionRequirement rr(
-            h.color_partition, 0/*projection ID*/, READ_ONLY, EXCLUSIVE, h.entire_region);
+            h.entire_region, READ_ONLY, EXCLUSIVE, h.entire_region);
         rr.add_field(h.fid);
         region_reqs.push_back(rr);
       } // if
@@ -162,9 +163,6 @@ template<
               PERMISSIONS> & a)
   {
     auto & h = a.handle;
-    clog_assert(
-        h.state > SPECIALIZATION_TLT_INIT, "accessing color data    \
-         handle from specialization_tlt_init is not supported");
     Legion::RegionRequirement rr(
          h.color_partition, 0/*projection ID*/, privilege_mode(PERMISSIONS),
          EXCLUSIVE, h.entire_region);
@@ -192,11 +190,6 @@ template<
       Legion::RegionRequirement rr(
           ent.color_partition, 0 /*PROJECTION*/, privilege_mode(PERMISSIONS), EXCLUSIVE,
           ent.entire_region);
-
-      // Do we need to know the number of exclusive/shared/ghost per color at the TopLevelTask?
-      //ent.num_exclusive = dr.hi[1] - dr.lo[1] + 1;
-      //ent.num_shared = dr.hi[1] - dr.lo[1] + 1;
-      //ent.num_ghost = dr.hi[1] - dr.lo[1] + 1;
 
       rr.add_field(ent.fid);
       rr.add_field(ent.id_fid);

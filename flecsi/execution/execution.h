@@ -252,7 +252,7 @@ clog_register_tag(execution);
 #define flecsi_execute_mpi_task_simple(task, ...)                              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi_execute_task_simple(task, index, ##__VA_ARGS__)
+  flecsi_execute_task_simple(task, single, ##__VA_ARGS__)
 
 /*!
   @def flecsi_execute_mpi_task
@@ -269,7 +269,7 @@ clog_register_tag(execution);
 #define flecsi_execute_mpi_task(task, nspace, ...)                             \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi_execute_task(task, nspace, index, ##__VA_ARGS__)
+  flecsi_execute_task(task, nspace, single, ##__VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Function Interface

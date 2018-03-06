@@ -51,14 +51,14 @@ void color_data_handle_dump(color_accessor<double, ro> x) {
 void exclusive_writer(dense_accessor<double, wo, ro, ro> x) {
   clog(info) << "exclusive writer write" << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
-    x(i) = static_cast<double>(i);
+    x.exclusive(i) = static_cast<double>(i);
   }
 }
 
 void exclusive_reader(dense_accessor<double, ro, ro, ro> x) {
   clog(info) << "exclusive reader read: " << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
-    ASSERT_EQ(x(i), static_cast<double>(i));
+    ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
   }
 }
 
@@ -93,7 +93,7 @@ void mpi_task(int val, global_accessor<double, ro> x)
 void exclusive_mpi(dense_accessor<double, ro, ro, ro> x) {
   clog(info) << "exclusive reader read: " << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
-    ASSERT_EQ(x(i), static_cast<double>(i));
+    ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
   }
 }
 
@@ -107,7 +107,7 @@ flecsi_register_task_simple(color_data_handle_dump, loc, single);
 flecsi_register_task_simple(exclusive_writer, loc, single);
 flecsi_register_task_simple(exclusive_reader, loc, single);
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-flecsi_register_task_simple(global_writer, loc, single);
+flecsi_register_task_simple(global_writer, loc, index);
 flecsi_register_task_simple(global_reader, loc, single);
 flecsi_register_task_simple(color_writer, loc, single);
 flecsi_register_task_simple(color_reader, loc, single);
@@ -147,7 +147,7 @@ void specialization_tlt_init(int argc, char ** argv) {
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
   auto global_handle = flecsi_get_global(ns, velocity, double, 0);
   flecsi_execute_task_simple(global_data_handle_dump, single, global_handle);
-  flecsi_execute_task_simple(global_writer, single, global_handle);
+  flecsi_execute_task_simple(global_writer, index, global_handle);
   flecsi_execute_task_simple(global_reader, single, global_handle);
   flecsi_execute_task(mpi_task,, single, 10, global_handle);
 #endif
@@ -161,7 +161,9 @@ void driver(int argc, char ** argv) {
   clog(info) << "In driver" << std::endl;
 
   auto & context = execution::context_t::instance();
-  ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
+  // There no longer is a separate state for driver and specialization_tlt_init
+  // under control replication.
+  //ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
 
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
