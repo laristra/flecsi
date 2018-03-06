@@ -77,7 +77,9 @@ void driver(int argc, char ** argv) {
   clog(info) << "In driver" << std::endl;
 
   auto & context = execution::context_t::instance();
-  ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
+  // There no longer is a separate state for driver and specialization_tlt_init
+  // under control replication.
+  //ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
 
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
