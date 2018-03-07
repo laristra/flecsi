@@ -586,15 +586,6 @@ setup_rank_context_task(
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  // Call the specialization color initialization function.
-#if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
-  // Get the input arguments from the Legion runtime
-  const Legion::InputArgs & args =
-    Legion::Runtime::get_input_args();
-
-  specialization_spmd_init(args.argc, args.argv);
-#endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-
   context_.advance_state();
 
   // FIXME: local_index_space is now problematic in control replication
