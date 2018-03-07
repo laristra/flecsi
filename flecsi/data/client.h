@@ -350,7 +350,8 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
 
       ritr = ism.find(hi.index_space);
       clog_assert(ritr != ism.end(), "invalid index space");
-      // FIXME adj.adj_region = ritr->second.color_region;
+      adj.adj_region = ritr->second.entire_region;
+      adj.adj_color_partition = ritr->second.color_partition;
 #endif
       ++handle_index;
     }

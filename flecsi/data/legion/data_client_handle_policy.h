@@ -57,6 +57,7 @@ struct data_client_handle_adjacency_t {
   field_id_t index_fid;
   field_id_t offset_fid;
   Legion::LogicalRegion adj_region;
+  Legion::LogicalPartition adj_color_partition;
   Legion::LogicalRegion from_entire_region;
   Legion::LogicalPartition from_color_partition;
   Legion::LogicalPartition from_primary_partition;

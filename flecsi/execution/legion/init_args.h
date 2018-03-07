@@ -202,7 +202,7 @@ template<
       region_reqs[region_map[adj.from_index_space]].add_field(adj.offset_fid);
 
       Legion::RegionRequirement adj_rr(
-          adj.adj_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
+          adj.adj_color_partition, 0 /*PROJECTION*/, privilege_mode(PERMISSIONS), EXCLUSIVE,
           adj.adj_region);
 
       adj_rr.add_field(adj.index_fid);

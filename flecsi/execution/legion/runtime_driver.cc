@@ -307,7 +307,7 @@ runtime_driver(
     Legion::TaskLauncher setup_rank_context_launcher(setup_rank_context_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(),
                              args_serializers[color].get_used_bytes()));
- //   setup_rank_context_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+    setup_rank_context_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
     Legion::DomainPoint point(color);
     must_epoch_launcher.add_single_task(point, setup_rank_context_launcher);
@@ -380,6 +380,7 @@ runtime_driver(
   for (size_t idx : data.adjacencies()) {
     auto& adjacency = data.adjacency(idx);
 
+    ispace_dmap[idx].entire_region = adjacency.logical_region;
     ispace_dmap[idx].color_partition =
         runtime->get_logical_partition(ctx,
             adjacency.logical_region, adjacency.index_partition);

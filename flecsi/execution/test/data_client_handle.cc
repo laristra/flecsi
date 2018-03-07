@@ -245,12 +245,11 @@ void specialization_tlt_init(int argc, char ** argv) {
   context.add_adjacency(ai);
 } // specialization_tlt_init
 
-void specialization_spmd_init(int argc, char ** argv) {
-//  auto& context = execution::context_t::instance();
-//
-//  auto runtime = Legion::Runtime::get_runtime();
-//  const int my_color = runtime->find_local_MPI_rank();
-//  clog(error) << "Rank " << my_color << " in specialization_spmd_init" << std::endl;
+//----------------------------------------------------------------------------//
+// User driver.
+//----------------------------------------------------------------------------//
+
+void driver(int argc, char ** argv) {
 
   {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
@@ -268,13 +267,6 @@ void specialization_spmd_init(int argc, char ** argv) {
   f2.wait();
   } // scope
 
-} // specialization_spmd_init
-
-//----------------------------------------------------------------------------//
-// User driver.
-//----------------------------------------------------------------------------//
-
-void driver(int argc, char ** argv) {
 #if 0
   clog(info) << "In driver" << std::endl;
 
