@@ -51,14 +51,14 @@ void color_data_handle_dump(color_accessor<double, ro> x) {
 void exclusive_writer(dense_accessor<double, wo, ro, ro> x) {
   clog(info) << "exclusive writer write" << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
-    x.exclusive(i) = static_cast<double>(i);
+    x(i) = static_cast<double>(i);
   }
 }
 
 void exclusive_reader(dense_accessor<double, ro, ro, ro> x) {
   clog(info) << "exclusive reader read: " << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
-    ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
+    ASSERT_EQ(x(i), static_cast<double>(i));
   }
 }
 
@@ -93,7 +93,7 @@ void mpi_task(int val, global_accessor<double, ro> x)
 void exclusive_mpi(dense_accessor<double, ro, ro, ro> x) {
   clog(info) << "exclusive reader read: " << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
-    ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
+    ASSERT_EQ(x(i), static_cast<double>(i));
   }
 }
 
