@@ -289,11 +289,6 @@ runtime_driver(
     // data serialization:
     //-----------------------------------------------------------------------//
     
-    // #1 serialize num_indx_spaces & num_phase_barriers
-    args_serializers[color].serialize(&num_idx_spaces, sizeof(size_t));
-    args_serializers[color].serialize(&number_of_global_fields, sizeof(size_t));
-   
-
     // #2 serialize field info
     size_t num_fields = context_.registered_fields().size();
     args_serializers[color].serialize(&num_fields, sizeof(size_t));
@@ -443,12 +438,6 @@ setup_rank_context_task(
 
   // Add additional setup.
   context_t & context_ = context_t::instance();
-  context_.advance_state();
-
-  auto& ispace_dmap = context_.index_space_data_map();
-
-  auto ghost_owner_pos_fid = 
-    Legion::FieldID(internal_field::ghost_owner_pos);
 
   clog_assert(task->arglen > 0, "setup_rank_context_task called without arguments");
 
@@ -458,20 +447,6 @@ setup_rank_context_task(
 
   Legion::Deserializer args_deserializer(task->args, task->arglen);
  
-  //#1 serialize num_indx_spaces & num_phase_barriers
-  size_t num_idx_spaces;
-  size_t num_phase_barriers;
-  size_t number_of_global_fields;
-  size_t number_of_color_fields;
-  args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
-  args_deserializer.deserialize(&number_of_global_fields, sizeof(size_t));
-
-  {
-  size_t total_num_idx_spaces = num_idx_spaces;
-  if (number_of_global_fields>0) total_num_idx_spaces++;
-  if (number_of_color_fields>0) total_num_idx_spaces++;
-  } //scope
-
   // #2 deserialize field info
   size_t num_fields;
   args_deserializer.deserialize(&num_fields, sizeof(size_t));
@@ -489,29 +464,6 @@ setup_rank_context_task(
       context_.put_field_info(fi);
     }//end for i
   }//if
-
-  //if there is no information about fields in the context, add it there
-  if (context_.registered_fields().size()==0)
-  {
-    for(size_t i = 0; i < num_fields; ++i){
-      field_info_t& fi = field_info_buf[i];
-      context_.register_field_info(fi);
-    }
-  }
-
- // map of index space to the field_ids that are mapped to this index space
-  std::map<size_t, std::vector<field_id_t>> fields_map;
-  for(auto is: context_.coloring_map()) {
-    size_t idx_space = is.first;
-    for(const field_info_t& field_info : context_.registered_fields()){
-      if((field_info.storage_class != global) &&
-        (field_info.storage_class != color)){
-        if(field_info.index_space == idx_space){
-          fields_map[idx_space].push_back(field_info.fid);
-        }
-      }//if
-    }//for
-  }//end for is
 
   // Setup maps from mesh to compacted (local) index space and vice versa
   //
@@ -536,59 +488,6 @@ setup_rank_context_task(
 
     context_.add_index_map(is.first, _map);
   } // for coloring_map
-
-  //////////////////////////////////////////////////////////////////////////////
-  // FIX for Legion cluster fuck reordering nightmare...
-  //////////////////////////////////////////////////////////////////////////////
-
-  for(auto is: context_.coloring_map()) {
-    size_t index_space = is.first;
-
-    auto& _cis_to_gis = context_.cis_to_gis_map(index_space);
-    auto& _gis_to_cis = context_.gis_to_cis_map(index_space);
-
-    auto & _color_map = context_.coloring_info(index_space);
-
-    std::vector<size_t> _rank_offsets(context_.colors()+1, 0);
-
-    size_t offset = 0;
-
-    for(size_t c{0}; c<context_.colors(); ++c) {
-      auto & _color_info = _color_map.at(c);
-      _rank_offsets[c] = offset;
-      offset += (_color_info.exclusive + _color_info.shared);
-    } // for
-
-    size_t cid{0};
-    for(auto entity: is.second.exclusive) {
-      size_t gid = _rank_offsets[entity.rank] + entity.offset;
-      _cis_to_gis[cid] = gid;
-      _gis_to_cis[gid] = cid;
-      ++cid;
-    } // for
-
-    for(auto entity: is.second.shared) {
-      size_t gid = _rank_offsets[entity.rank] + entity.offset;
-      _cis_to_gis[cid] = gid;
-      _gis_to_cis[gid] = cid;
-      ++cid;
-    } // for
-
-    for(auto entity: is.second.ghost) {
-      size_t gid = _rank_offsets[entity.rank] + entity.offset;
-      _cis_to_gis[cid] = gid;
-      _gis_to_cis[gid] = cid;
-      ++cid;
-    } // for
-
-  } // for coloring_map
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  context_.advance_state();
-
   // FIXME: local_index_space is now problematic in control replication
   // It made sense in SPMD, but now each IndexLaunch starts from a clean slate.
 #if 0
@@ -607,9 +506,6 @@ setup_rank_context_task(
     lism.emplace(index_space, std::move(lis_data));
   }
 #endif
-
-  // Cleanup memory
-  delete [] field_info_buf;
 
 } // setup_rank_context_task
 
