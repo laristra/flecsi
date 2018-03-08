@@ -145,7 +145,7 @@ if(ENABLE_FLECSIT)
         "export PYTHONPATH=\${PYTHONPATH}:${PYTHON_INSTDIR}"
     )
     set(FLECSI_PYTHON_PATH_CSH
-        "setenv PYTHONPATH $PYTHONPATH:${PYTHON_INSTDIR}"
+        "setenv PYTHONPATH ${PYTHONPATH}:${PYTHON_INSTDIR}"
     )
 
 endif()
