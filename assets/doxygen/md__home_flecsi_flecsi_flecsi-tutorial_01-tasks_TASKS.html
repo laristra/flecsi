@@ -89,7 +89,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>A FleCSI task is a C/C++ function. Tasks that are defined in a header file must either be inline or static. As you can see below, this example defines a task called "simple_task", and registers it with the runtime. The arguments to the task registration interface are:</p>
 <ol type="1">
 <li>The task name. This must be the actual name of the C/C++ function. In this example, the task name is "simple_task".</li>
-<li>The namespace of the task. This must be the actual namespace in which the task is defined. In this example, the namespace is "hydro".</li>
+<li>The namespace of the task. This must be the actual namespace in which the task is defined. In this example, the namespace is "example".</li>
 <li><p class="startli">The processor type on which the task should be executed. Currently, FleCSI has support for:</p><ul>
 <li>loc - Latency-optimized core</li>
 <li>toc - Throughput-optimized core</li>
@@ -107,8 +107,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ol>
 <p>The driver in this example executes the task by invoking the execution interface. The arguments to the execution interface are:</p>
 <ol type="1">
-<li>The task name. This has the same caveats of the registration interface. In this example, the task name is "simple".</li>
-<li>The namespace of the task. This also has the same caveats of the registration interface. In this example, the namespace is "hydro".</li>
+<li>The task name. This has the same caveats of the registration interface. In this example, the task name is "simple_task".</li>
+<li>The namespace of the task. This also has the same caveats of the registration interface. In this example, the namespace is "example".</li>
 <li>The launch type. In this example, the launch type is "single".</li>
 </ol>
 <p>NOTES:</p>
