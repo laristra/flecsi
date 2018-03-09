@@ -138,6 +138,7 @@ int main(int argc, char ** argv) {
 
   // Execute the flecsi runtime.
   auto retval = flecsi::execution::context_t::instance().initialize(argc, argv);
+  Legion::Runtime::wait_for_shutdown();
 
 #if defined(FLECSI_ENABLE_MPI)
   // FIXME: This is some kind of GASNet bug (or maybe Legion).

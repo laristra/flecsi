@@ -280,6 +280,9 @@ struct task_wrapper__ {
     init_handles_t init_handles(runtime, context, regions);
     init_handles.walk(task_args);
 
+    context_t & context_ = context_t::instance();
+    context_.set_color(task->index_point.point_data[0]);
+
     // Execute the user's task
     // return (*DELEGATE)(task_args);
     execution_wrapper__<RETURN, ARG_TUPLE, DELEGATE> wrapper;

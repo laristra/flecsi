@@ -183,6 +183,7 @@ runtime_driver(
   } // for idx_space
 
   Legion::MustEpochLauncher must_epoch_launcher1;
+  must_epoch_launcher1.launch_domain = data.color_domain();
   must_epoch_launcher1.add_index_task(pos_compaction_launcher);
   runtime->execute_must_epoch(ctx, must_epoch_launcher1);
 
@@ -219,6 +220,7 @@ runtime_driver(
   } // for idx_space
 
   Legion::MustEpochLauncher must_epoch_launcher2;
+  must_epoch_launcher2.launch_domain = data.color_domain();
   must_epoch_launcher2.add_index_task(fix_ghost_refs_launcher);
   auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher2);
 
@@ -271,19 +273,6 @@ runtime_driver(
 
   // Add colors to must_epoch_launcher
   for(size_t color(0); color<num_colors; ++color) {
-
-    std::vector<size_t> num_ghost_owners;
-
-    for(auto is: context_.coloring_map()) {
-      size_t idx_space = is.first;
-
-      flecsi::coloring::coloring_info_t color_info =
-          coloring_info[idx_space][color];
-
-      num_ghost_owners.push_back(color_info.ghost_owners.size());
-    } // for idx_space
-
-    size_t num_idx_spaces = context_.coloring_map().size();
    
     //-----------------------------------------------------------------------//
     // data serialization:

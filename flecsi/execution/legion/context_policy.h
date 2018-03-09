@@ -123,10 +123,17 @@ struct legion_context_policy_t {
   /*!
     Return the color for which the context was initialized.
    */
+  // FIXME: As long as MAPPER_FORCE_RANK_MATCH is really only doing RDMA and
+  // not forcing the rank match, this will never do what it is supposed to
+  // without a setter.
 
   size_t color() const {
     return color_;
   } // color
+
+  void set_color(size_t color) {
+    color_ = color;
+  }
 
   /*!
     Return the number of colors.
