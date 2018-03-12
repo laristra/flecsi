@@ -26,8 +26,8 @@ kinds of interfaces that can be defined using FleCSI. A real
 specialization may expose several different mesh types and other
 specializations, and would likely have a different interface.
 
-The registration interface for data clients tasks the following
-arguemnts:
+The registration interface for data clients takes the following
+arguments:
 
 1. The data client type. This must be a valid specialization type. In
    general, application developers and end-users will not create this
@@ -36,7 +36,7 @@ arguemnts:
 2. The namespace of the data client instance that is being
    registered. Unlike task registration, this namespace does not have
    to be a valid C++ namespace. The namespace is intended to allow
-   users to avoid naming collisions, i.e., internally, this argument will 
+   users to avoid naming collisions, i.e., internally, this argument will
    will be used to distinguish data client instances with the same
    name from one another. In this example, the namespace is "clients".
 
