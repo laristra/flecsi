@@ -238,10 +238,52 @@ public:
     }
 
     //-----------------------------------------------------------------//
+    //! Less than operator
+    //-----------------------------------------------------------------//
+    bool operator<(const iterator_base_& itr) const {
+      return index_ < itr.index_;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Less than equal operator
+    //-----------------------------------------------------------------//
+    bool operator<=(const iterator_base_& itr) const {
+      return index_ <= itr.index_;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Greater than operator
+    //-----------------------------------------------------------------//
+    bool operator>(const iterator_base_& itr) const {
+      return index_ > itr.index_;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Greater than equal operator
+    //-----------------------------------------------------------------//
+    bool operator>=(const iterator_base_& itr) const {
+      return index_ >= itr.index_;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Difference
+    //-----------------------------------------------------------------//
+    size_t operator-(const iterator_base_& itr) const {
+      return index_ - itr.index_;
+    }
+
+    //-----------------------------------------------------------------//
     //! Helper method. Get item at index
     //-----------------------------------------------------------------//
     auto get_(size_t index) {
       return static_cast<cast_t>((*s_)[(*items_)[index].index_space_index()]);
+    }
+
+    //-----------------------------------------------------------------//
+    //! Get item at index
+    //-----------------------------------------------------------------//
+    auto operator[](size_t index) const{
+      return get_(index_);
     }
 
   protected:
@@ -298,6 +340,84 @@ public:
     }
 
     //-----------------------------------------------------------------//
+    //! Decrement operator
+    //-----------------------------------------------------------------//
+    iterator_ & operator--() {
+      --B::index_;
+      return *this;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Post-increment operator
+    //-----------------------------------------------------------------//
+    iterator_ operator++(int) {
+      iterator_ itr(*this);
+      B::index_++;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Post-decrement operator
+    //-----------------------------------------------------------------//
+    iterator_ operator--(int) {
+      iterator_ itr(*this);
+      B::index_--;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Plus offset operator
+    //-----------------------------------------------------------------//
+    iterator_ operator+(size_t offset) const {
+      iterator_ itr(*this);
+      itr.B::index_ += offset;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Plus offset operator
+    //-----------------------------------------------------------------//
+    friend iterator_ operator+(size_t offset, const iterator_& itr){
+      iterator_ itr2(itr);
+      itr2.B::index_ += offset;
+      return itr2;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Minus offset operator
+    //-----------------------------------------------------------------//
+    iterator_ operator-(size_t offset) const {
+      iterator_ itr(*this);
+      itr.B::index_ -= offset;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Minus offset operator
+    //-----------------------------------------------------------------//
+    friend iterator_ operator-(size_t offset, const iterator_& itr){
+      iterator_ itr2(itr);
+      itr2.B::index_ = offset - itr.B::index_;
+      return itr2;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Plus assignment offset operator
+    //-----------------------------------------------------------------//
+    iterator_ & operator+=(size_t offset) {
+      B::index_ += offset;
+      return *this;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Minus assignment offset operator
+    //-----------------------------------------------------------------//
+    iterator_ & operator-=(size_t offset) {
+      B::index_ -= offset;
+      return *this;
+    }
+
+    //-----------------------------------------------------------------//
     //! Dereference operator
     //-----------------------------------------------------------------//
     S & operator*() {
@@ -325,6 +445,13 @@ public:
       }
 
       assert(false && "end of range");
+    }
+
+    friend void swap(iterator_& a, iterator_& b){
+      std::swap(a.B::items_, b.B::items_);
+      std::swap(a.B::index_, b.B::index_);
+      std::swap(a.B::end_, b.B::end_);
+      std::swap(a.B::s_, b.B::s_);
     }
   };
 
@@ -376,6 +503,84 @@ public:
     }
 
     //-----------------------------------------------------------------//
+    //! Decrement operator
+    //-----------------------------------------------------------------//
+    iterator_ & operator--() {
+      --B::index_;
+      return *this;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Post-increment operator
+    //-----------------------------------------------------------------//
+    iterator_ operator++(int) {
+      iterator_ itr(*this);
+      B::index_++;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Post-decrement operator
+    //-----------------------------------------------------------------//
+    iterator_ operator--(int) {
+      iterator_ itr(*this);
+      B::index_--;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Plus offset operator
+    //-----------------------------------------------------------------//
+    iterator_ operator+(size_t offset) const {
+      iterator_ itr(*this);
+      itr.B::index_ += offset;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Plus offset operator
+    //-----------------------------------------------------------------//
+    friend iterator_ operator+(size_t offset, const iterator_& itr){
+      iterator_ itr2(itr);
+      itr2.B::index_ += offset;
+      return itr2;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Minus offset operator
+    //-----------------------------------------------------------------//
+    iterator_ operator-(size_t offset) const {
+      iterator_ itr(*this);
+      itr.B::index_ -= offset;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Minus offset operator
+    //-----------------------------------------------------------------//
+    friend iterator_ operator-(size_t offset, const iterator_& itr){
+      iterator_ itr2(itr);
+      itr2.B::index_ = offset - itr.B::index_;
+      return itr2;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Plus assignment offset operator
+    //-----------------------------------------------------------------//
+    iterator_ & operator+=(size_t offset) {
+      B::index_ += offset;
+      return *this;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Minus assignment offset operator
+    //-----------------------------------------------------------------//
+    iterator_ & operator-=(size_t offset) {
+      B::index_ -= offset;
+      return *this;
+    }
+
+    //-----------------------------------------------------------------//
     //! Dereference operator
     //-----------------------------------------------------------------//
     S operator*() {
@@ -387,6 +592,13 @@ public:
     //-----------------------------------------------------------------//
     S * operator->() {
       return &B::get_(B::index_);
+    }
+
+    friend void swap(iterator_& a, iterator_& b){
+      std::swap(a.B::items_, b.B::items_);
+      std::swap(a.B::index_, b.B::index_);
+      std::swap(a.B::end_, b.B::end_);
+      std::swap(a.B::s_, b.B::s_);
     }
   };
 
