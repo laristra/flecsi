@@ -14,12 +14,12 @@
 
 // includes: flecsi
 #include <flecsi/utils/id.h>
+#include <flecsi/utils/common.h>
 
 // includes: C++
 #include <vector>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
 
 // =============================================================================
@@ -27,11 +27,15 @@
 // =============================================================================
 
 // prtype
-// Print boost-demangled type.
+// Print demangled type.
 template<class T>
 inline void
 prtype(void) {
-  CINCH_CAPTURE() << boost::core::demangle(typeid(T).name()) << std::endl;
+#ifdef __GNUG__
+  CINCH_CAPTURE() << flecsi::utils::demangle(typeid(T).name()) << std::endl;
+#else
+  // Skip name printing; is unpredictable in this case
+#endif
 }
 
 // print
@@ -310,8 +314,11 @@ TEST(id, all) {
   // Compare
   // ------------------------
 
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("id.blessed.gnug"));
+#else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("id.blessed"));
-
+#endif
 } // TEST
 
 /*~------------------------------------------------------------------------~--*

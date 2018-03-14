@@ -5,6 +5,7 @@
 
 // includes: flecsi
 #include <flecsi/utils/iterator.h>
+#include <flecsi/utils/common.h>
 
 // includes: C++
 #include <array>
@@ -12,13 +13,16 @@
 #include <vector>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
 
 // print_type
 inline void
 print_type(const char * const name) {
-  CINCH_CAPTURE() << boost::core::demangle(name) << std::endl;
+#ifdef __GNUG__
+  CINCH_CAPTURE() << flecsi::utils::demangle(name) << std::endl;
+#else
+  // Skip name printing; is unpredictable in this case
+#endif
 }
 
 // =============================================================================
@@ -81,8 +85,11 @@ TEST(iterator, all) {
   EXPECT_TRUE(i2 != i); // because there were some i++s after constructing i2
 
   // compare
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed.gnug"));
+#else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed"));
-
+#endif
 } // TEST
 
 /*~-------------------------------------------------------------------------~-*

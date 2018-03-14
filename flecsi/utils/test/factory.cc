@@ -14,11 +14,11 @@
 
 // includes: flecsi
 #include <flecsi/utils/factory.h>
+#include <flecsi/utils/common.h>
 
 // includes: C++
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
 
 // =============================================================================
@@ -79,11 +79,15 @@ TEST(factory, sanity) {
 // More-complete exercising of factory.h's constructs
 // =============================================================================
 
-// prtype: print boost-demangled type
+// prtype: print demangled type
 template<class T>
 inline void
 prtype(void) {
-  CINCH_CAPTURE() << boost::core::demangle(typeid(T).name()) << std::endl;
+#ifdef __GNUG__
+  CINCH_CAPTURE() << flecsi::utils::demangle(typeid(T).name()) << std::endl;
+#else
+  // Skip name printing; is unpredictable in this case
+#endif
 }
 
 // Creation handlers for the Factory_ type variants in TEST() below. These
@@ -246,8 +250,11 @@ TEST(factory, all) {
   // Compare
   // ------------------------
 
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("factory.blessed.gnug"));
+#else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("factory.blessed"));
-
+#endif
 } // TEST
 
 /*----------------------------------------------------------------------------*

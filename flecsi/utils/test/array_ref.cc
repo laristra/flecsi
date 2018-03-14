@@ -5,18 +5,22 @@
 
 // includes: flecsi
 #include <flecsi/utils/array_ref.h>
+#include <flecsi/utils/common.h>
 
 // includes: C++
 #include <iostream>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
 
 // print_type
 inline void
 print_type(const char * const name) {
-  CINCH_CAPTURE() << boost::core::demangle(name) << std::endl;
+#ifdef __GNUG__
+  CINCH_CAPTURE() << flecsi::utils::demangle(name) << std::endl;
+#else
+  // Skip name printing; is unpredictable in this case
+#endif
 }
 
 // print_refc
@@ -300,8 +304,11 @@ TEST(array_ref, all) {
   // compare
   // ------------------------
 
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("array_ref.blessed.gnug"));
+#else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("array_ref.blessed"));
-
+#endif
 } // TEST
 
 /*~-------------------------------------------------------------------------~-*

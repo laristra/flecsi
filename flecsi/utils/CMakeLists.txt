@@ -136,12 +136,12 @@ cinch_add_devel_target(clog
 #)
 
 cinch_add_unit(const_string
-  SOURCES test/const_string.cc
+  SOURCES test/const_string.cc common.cc
 )
 
 cinch_add_unit(factory
-  SOURCES test/factory.cc
-  INPUTS  test/factory.blessed
+  SOURCES test/factory.cc common.cc
+  INPUTS  test/factory.blessed test/factory.blessed.gnug
 )
 
 cinch_add_unit(reorder
@@ -149,8 +149,8 @@ cinch_add_unit(reorder
 )
 
 cinch_add_unit(any
-  SOURCES test/any.cc
-  INPUTS  test/any.blessed
+  SOURCES test/any.cc common.cc
+  INPUTS  test/any.blessed test/any.blessed.gnug
 )
 
 cinch_add_unit(reflection
@@ -169,8 +169,8 @@ cinch_add_unit(humble
 )
 
 cinch_add_unit(utils_iterator
-  SOURCES test/iterator.cc
-  INPUTS  test/iterator.blessed
+  SOURCES test/iterator.cc common.cc
+  INPUTS  test/iterator.blessed test/iterator.blessed.gnug
 )
 
 cinch_add_unit(logging
@@ -191,13 +191,13 @@ cinch_add_unit(static_verify
 )
 
 cinch_add_unit(test_utility
-  SOURCES test/utility.cc
-  INPUTS  test/utility.blessed
+  SOURCES test/utility.cc common.cc
+  INPUTS  test/utility.blessed.gnug
 )
 
 cinch_add_unit(tuple_type_converter
-  SOURCES test/tuple_type_converter.cc
-  INPUTS  test/tuple_type_converter.blessed
+  SOURCES test/tuple_type_converter.cc common.cc
+  INPUTS  test/tuple_type_converter.blessed.gnug
 )
 
 cinch_add_unit(tuple_walker
@@ -206,7 +206,7 @@ cinch_add_unit(tuple_walker
 )
 
 cinch_add_unit(tuple_wrapper
-  SOURCES test/tuple_wrapper.cc
+  SOURCES test/tuple_wrapper.cc common.cc
 )
 
 cinch_add_unit(tuple_function
@@ -214,19 +214,19 @@ cinch_add_unit(tuple_function
 )
 
 cinch_add_unit(index_space
-  SOURCES test/index_space.cc
-  INPUTS  test/index_space.blessed
+  SOURCES test/index_space.cc common.cc
+  INPUTS  test/index_space.blessed test/index_space.blessed.gnug
 )
 
 cinch_add_unit(array_ref
-  SOURCES test/array_ref.cc
-  INPUTS  test/array_ref.blessed
+  SOURCES test/array_ref.cc common.cc
+  INPUTS  test/array_ref.blessed test/array_ref.blessed.gnug
 )
 
 cinch_add_unit(common
   SOURCES common.cc
           test/common.cc
-  INPUTS  test/common.blessed
+  INPUTS  test/common.blessed test/common.blessed.gnug
 )
 
 cinch_add_unit(debruijn
@@ -235,8 +235,8 @@ cinch_add_unit(debruijn
 )
 
 cinch_add_unit(id
-  SOURCES test/id.cc
-  INPUTS  test/id.blessed
+  SOURCES test/id.cc common.cc
+  INPUTS  test/id.blessed test/id.blessed.gnug
 )
 
 if(ENABLE_OPENSSL)

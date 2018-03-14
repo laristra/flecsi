@@ -14,12 +14,12 @@
 
 // includes: flecsi
 #include <flecsi/utils/const_string.h>
+#include <flecsi/utils/common.h>
 
 // includes: C++
 #include <iostream>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
 
 // =============================================================================
@@ -42,11 +42,11 @@ TEST(const_string, sanity) {
 // More-complete exercising of const_string.h's constructs
 // =============================================================================
 
-// typestr: string with boost-demangled type
+// typestr: string with demangled type
 template<class T>
 inline std::string
 typestr(void) {
-  return boost::core::demangle(typeid(T).name());
+  return flecsi::utils::demangle(typeid(T).name());
 }
 
 // TEST
@@ -59,7 +59,9 @@ TEST(const_string, all) {
   using flecsi::utils::const_string_t;
 
   // hash_type_t
+#ifdef __GNUG__
   EXPECT_EQ(typestr<const_string_t::hash_type_t>(), "unsigned long");
+#endif
 
   // constructor from C-style string
   // ...................0123456789

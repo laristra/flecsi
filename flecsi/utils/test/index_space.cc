@@ -5,18 +5,22 @@
 
 // includes: flecsi
 #include <flecsi/utils/index_space.h>
+#include <flecsi/utils/common.h>
 
 // includes: C++
 #include <iostream>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
 
 // print_type
 inline void
 print_type(const char * const name) {
-  CINCH_CAPTURE() << boost::core::demangle(name) << std::endl;
+#ifdef __GNUG__
+  CINCH_CAPTURE() << flecsi::utils::demangle(name) << std::endl;
+#else
+  // Skip name printing; is unpredictable in this case
+#endif
 }
 
 // =============================================================================
@@ -60,7 +64,11 @@ TEST(index_space, all) {
     CINCH_CAPTURE() << *iter << std::endl;
 
   // compare
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("index_space.blessed.gnug"));
+#else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("index_space.blessed"));
+#endif
 
 } // TEST
 

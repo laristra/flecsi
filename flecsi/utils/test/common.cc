@@ -7,14 +7,17 @@
 #include <flecsi/utils/common.h>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
 
-// prtype: print boost-demangled type
+// prtype: print demangled type
 template<class T>
 inline void
 prtype(void) {
-  CINCH_CAPTURE() << boost::core::demangle(typeid(T).name()) << std::endl;
+#ifdef __GNUG__
+  CINCH_CAPTURE() << flecsi::utils::demangle(typeid(T).name()) << std::endl;
+#else
+  // Skip name printing; is unpredictable in this case
+#endif
 }
 
 // =============================================================================
@@ -186,8 +189,11 @@ TEST(common, all) {
   // Compare
   // ------------------------
 
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.gnug"));
+#else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed"));
-
+#endif
 } // TEST
 
 /*~-------------------------------------------------------------------------~-*

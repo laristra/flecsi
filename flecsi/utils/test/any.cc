@@ -18,9 +18,7 @@
 // user includes
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/utils/any.h>
-
-// boost includes
-#include "boost/core/demangle.hpp"
+#include <flecsi/utils/common.h>
 
 using flecsi::coloring::index_coloring_t;
 using flecsi::utils::any_t;
@@ -112,7 +110,11 @@ TEST(any, simple) {
 // print_type
 inline void
 print_type(const char * const name) {
-  CINCH_CAPTURE() << boost::core::demangle(name) << std::endl;
+#ifdef __GNUG__
+  CINCH_CAPTURE() << flecsi::utils::demangle(name) << std::endl;
+#else
+  // Skip name printing; is unpredictable in this case
+#endif
 }
 
 // some_class
@@ -216,7 +218,11 @@ TEST(any, all) {
   CINCH_CAPTURE() << flecsi::utils::any_cast<std::string>(vec[4]) << std::endl;
 
   // compare
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("any.blessed.gnug"));
+#else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("any.blessed"));
+#endif
 
 } // TEST
 
