@@ -61,6 +61,11 @@ enum FieldIDs {
   FID_VERTEX_PARTITION_COLOR,
 };
 
+typedef struct init_mesh_task_rt_s {
+	int cell_to_cell_count;
+	int cell_to_vertex_count;
+}init_mesh_task_rt_t;
+
 /*!
  This is the color-specific initialization function to be defined by the
  FleCSI specialization layer. This symbol will be undefined in the compiled
@@ -507,8 +512,8 @@ __flecsi_internal_legion_task(owners_subregions_task, subrect_map) {
  @ingroup legion-execution
  */
 
-__flecsi_internal_legion_task(init_mesh_task, int) {
-	const int my_color = runtime->find_local_MPI_rank();
+__flecsi_internal_legion_task(init_mesh_task, init_mesh_task_rt_t) {
+	const int my_rank = runtime->find_local_MPI_rank();
 	Legion::FieldAccessor<READ_WRITE,int,1> cell_id_acc(regions[0], FID_CELL_ID);
 	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Point<1>,1> cell_color_acc(regions[0], FID_CELL_PARTITION_COLOR);
 	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Rect<1>,1> cell_cell_nrange_acc(regions[0], FID_CELL_CELL_NRANGE);
@@ -527,10 +532,10 @@ __flecsi_internal_legion_task(init_mesh_task, int) {
   auto colorer = std::make_shared<flecsi::coloring::parmetis_colorer_t>();
 	auto color_results = colorer->parmetis_color(partetis_dcrs);
 	
-	
 	int ct = 0;								 
-  for (Legion::PointInDomainIterator<1> pir(cell_domain); pir(); pir++) {
-	  int cell_id = my_color * num_cells_per_partition + ct;
+  int cell_to_vertex_count = 0;
+	for (Legion::PointInDomainIterator<1> pir(cell_domain); pir(); pir++) {
+	  int cell_id = my_rank * num_cells_per_partition + ct;
 #if 0
 		int y_idx = cell_id / num_rows;
 		int x_idx = cell_id % num_rows;
@@ -540,13 +545,22 @@ __flecsi_internal_legion_task(init_mesh_task, int) {
 #endif
 		cell_id_acc[*pir] = cell_id;
     cell_color_acc[*pir] = LegionRuntime::Arrays::Point<1>(color_results[ct]);
-		printf("color %d, cell_id %d, cell_id_acc %d, new color %d\n", my_color, cell_id, (int)cell_id_acc[*pir], color_results[ct]);
+		std::vector<size_t> vertices_of_cell = sd.entities(2, 0, cell_id);
+		printf("rank %d, cell_id %d, cell_id_acc %d, new color %d\n", my_rank, cell_id, (int)cell_id_acc[*pir], color_results[ct]);
+		for(int i = 0; i < vertices_of_cell.size(); i++) {
+			printf("%d ", vertices_of_cell[i]);
+		}
+		printf("\n");
+		cell_to_vertex_count += vertices_of_cell.size();
 		ct ++;
 	}
 
 	auto dcrs = flecsi::coloring::make_dcrs<2,2,2,0>(sd);
-	printf("color %d, index size %d\n", my_color, dcrs.indices.size());
-	return dcrs.indices.size();
+	printf("rank %d, index size %d\n", my_rank, dcrs.indices.size());
+	init_mesh_task_rt_t rt_value;
+	rt_value.cell_to_cell_count = dcrs.indices.size();
+	rt_value.cell_to_vertex_count = cell_to_vertex_count;
+	return rt_value;
 }
 
 /*!
@@ -556,20 +570,31 @@ __flecsi_internal_legion_task(init_mesh_task, int) {
  */
 
 __flecsi_internal_legion_task(init_adjacency_task, void) {
-	const int my_color = runtime->find_local_MPI_rank();
+	const int my_rank = runtime->find_local_MPI_rank();
 	const Legion::FieldAccessor<READ_WRITE,int,1> cell_id_acc(regions[0], FID_CELL_ID);
 	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Point<1>,1> cell_color_acc(regions[0], FID_CELL_PARTITION_COLOR);
 	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Rect<1>,1> cell_cell_nrange_acc(regions[0], FID_CELL_CELL_NRANGE);
+	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Rect<1>,1> cell_vertex_nrange_acc(regions[0], FID_CELL_VERTEX_NRANGE);
 	const Legion::FieldAccessor<WRITE_DISCARD,int,1> cell_to_cell_id_acc(regions[1], FID_CELL_TO_CELL_ID);
 	const Legion::FieldAccessor<WRITE_DISCARD,LegionRuntime::Arrays::Point<1>,1> cell_to_cell_ptr_acc(regions[1], FID_CELL_TO_CELL_PTR);
+	const Legion::FieldAccessor<WRITE_DISCARD,int,1> cell_to_vertex_id_acc(regions[2], FID_CELL_TO_VERTEX_ID);
+	const Legion::FieldAccessor<WRITE_DISCARD,LegionRuntime::Arrays::Point<1>,1> cell_to_vertex_ptr_acc(regions[2], FID_CELL_TO_VERTEX_PTR);
 	
 	int num_color;
 	MPI_Comm_size(MPI_COMM_WORLD, &num_color);
 	
 	const int* cell_to_cell_count_per_subspace = (const int*)task->args;
+	const int* cell_to_vertex_count_per_subspace = &(cell_to_cell_count_per_subspace[num_color+1]);
 	
+	printf("cell to cell ");
 	for (int i = 0; i <= num_color; i++) {
 		printf("%d ", cell_to_cell_count_per_subspace[i]);
+	}
+	printf("\n");
+	
+	printf("cell to vertex ");
+	for (int i = 0; i <= num_color; i++) {
+		printf("%d ", cell_to_vertex_count_per_subspace[i]);
 	}
 	printf("\n");
 	
@@ -577,37 +602,60 @@ __flecsi_internal_legion_task(init_adjacency_task, void) {
                    task->regions[0].region.get_index_space());
   Legion::Domain cell_to_cell_domain = runtime->get_index_space_domain(ctx,
                    task->regions[1].region.get_index_space());
+  Legion::Domain cell_to_vertex_domain = runtime->get_index_space_domain(ctx,
+                   task->regions[2].region.get_index_space());
 							 
 	flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
 	auto dcrs = flecsi::coloring::make_dcrs<2,2,2,0>(sd);
 	
 	assert(cell_to_cell_domain.get_volume() == dcrs.indices.size());
-	printf("color %d, index size %d, cell %d, cell2cell %d\n", my_color, dcrs.indices.size(), cell_domain.get_volume(), cell_to_cell_domain.get_volume());
-	printf("color %d, index ", my_color);
+	printf("rank %d, index size %d, cell %d, cell2cell %d, cell2vertex %ld\n", my_rank, dcrs.indices.size(), cell_domain.get_volume(), cell_to_cell_domain.get_volume(), cell_to_vertex_domain.get_volume());
+	printf("rank %d, index ", my_rank);
 	for (int i = 0; i < dcrs.indices.size(); i++) {
 		printf("%d ", dcrs.indices[i]);
 	}
 	printf("\n");
 	
-	printf("color %d, offset", my_color);
+	printf("rank %d, offset", my_rank);
 	for (int i = 0; i < dcrs.offsets.size(); i++) {
 		printf("%d ", dcrs.offsets[i]);
 	}
 	printf("\n");
 	
-	int idx = 0;
+	int idx_cell2cell = 0;
+	int idx_cell2vertex = 0;
+	Legion::PointInDomainIterator<1> pir_cell2vertex(cell_to_vertex_domain);
 	for (Legion::PointInDomainIterator<1> pir(cell_domain); pir(); pir++) {
+		int cell_id = cell_id_acc[*pir];
 		cell_cell_nrange_acc[*pir] = LegionRuntime::Arrays::Rect<1>(
-	    LegionRuntime::Arrays::Point<1>(cell_to_cell_count_per_subspace[my_color] + dcrs.offsets[idx]),
-		  LegionRuntime::Arrays::Point<1>(cell_to_cell_count_per_subspace[my_color] + dcrs.offsets[idx+1]-1));
-		idx++;
+	    LegionRuntime::Arrays::Point<1>(cell_to_cell_count_per_subspace[my_rank] + dcrs.offsets[idx_cell2cell]),
+		  LegionRuntime::Arrays::Point<1>(cell_to_cell_count_per_subspace[my_rank] + dcrs.offsets[idx_cell2cell+1]-1));
+		idx_cell2cell++;
+		
+		std::vector<size_t> vertices_of_cell = sd.entities(2, 0, cell_id);
+		for (int i = 0; i < vertices_of_cell.size(); i++) {
+			cell_to_vertex_id_acc[*pir_cell2vertex] = vertices_of_cell[i];
+			cell_to_vertex_ptr_acc[*pir_cell2vertex] = LegionRuntime::Arrays::Point<1>(cell_to_vertex_id_acc[*pir_cell2vertex]); 
+			pir_cell2vertex ++;
+		}
+		cell_vertex_nrange_acc[*pir] = LegionRuntime::Arrays::Rect<1>(
+	    LegionRuntime::Arrays::Point<1>(cell_to_vertex_count_per_subspace[my_rank] + idx_cell2vertex),
+		  LegionRuntime::Arrays::Point<1>(cell_to_vertex_count_per_subspace[my_rank] + idx_cell2vertex + vertices_of_cell.size() -1));
+		idx_cell2vertex += vertices_of_cell.size();
+
 	}
-	idx = 0;
+	idx_cell2cell = 0;
   for (Legion::PointInDomainIterator<1> pir(cell_to_cell_domain); pir(); pir++) {
-		cell_to_cell_id_acc[*pir] = dcrs.indices[idx];
+		cell_to_cell_id_acc[*pir] = dcrs.indices[idx_cell2cell];
 		cell_to_cell_ptr_acc[*pir] = LegionRuntime::Arrays::Point<1>(cell_to_cell_id_acc[*pir]); 
-		idx ++;
+		idx_cell2cell ++;
 	}
+	
+	printf("rank %d, cell to vertex ", my_rank);
+  for (Legion::PointInDomainIterator<1> pir(cell_to_vertex_domain); pir(); pir++) {
+		printf("%d ", (int)cell_to_vertex_id_acc[*pir]);
+	}
+	printf("\n");
 }
 
 /*!
@@ -617,7 +665,7 @@ __flecsi_internal_legion_task(init_adjacency_task, void) {
  */
 
 __flecsi_internal_legion_task(verify_dp_task, void) {
-	const int my_color = runtime->find_local_MPI_rank();
+	const int my_rank = runtime->find_local_MPI_rank();
 	const Legion::FieldAccessor<READ_ONLY,int,1> primary_cell_id_acc(regions[0], FID_CELL_ID);
 	const Legion::FieldAccessor<READ_ONLY,LegionRuntime::Arrays::Point<1>,1> cell_color_acc(regions[0], FID_CELL_PARTITION_COLOR);
 	
@@ -629,9 +677,13 @@ __flecsi_internal_legion_task(verify_dp_task, void) {
   Legion::Domain cell_primary_domain = runtime->get_index_space_domain(ctx,
                    task->regions[0].region.get_index_space());
 	
-	printf("primary color %d, ", my_color);								 
+	printf("primary rank %d, ", my_rank);								 
   for (Legion::PointInDomainIterator<1> pir(cell_primary_domain); pir(); pir++) {
-	  printf("%d ", (int)primary_cell_id_acc[*pir]);
+	  if (ct == 0) {
+		  int color = cell_color_acc.read(*pir);
+			printf("parmetis color %d, ", color);
+		}
+		printf("%d ", (int)primary_cell_id_acc[*pir]);
 	  ct ++;
 	}
 	printf(" total %d\n", ct);
@@ -640,7 +692,7 @@ __flecsi_internal_legion_task(verify_dp_task, void) {
   Legion::Domain cell_ghost_domain = runtime->get_index_space_domain(ctx,
                    task->regions[1].region.get_index_space());
 	
-	printf("ghost color %d, ", my_color);								 
+	printf("ghost rank %d, ", my_rank);								 
   for (Legion::PointInDomainIterator<1> pir(cell_ghost_domain); pir(); pir++) {
 	  printf("%d ", (int)ghost_cell_id_acc[*pir]);
 		ct ++;
@@ -651,7 +703,7 @@ __flecsi_internal_legion_task(verify_dp_task, void) {
   Legion::Domain cell_shared_domain = runtime->get_index_space_domain(ctx,
                    task->regions[2].region.get_index_space());
 	
-	printf("shared color %d, ", my_color);								 
+	printf("shared rank %d, ", my_rank);								 
   for (Legion::PointInDomainIterator<1> pir(cell_shared_domain); pir(); pir++) {
 	  printf("%d ", (int)shared_cell_id_acc[*pir]);
 		ct ++;
@@ -662,7 +714,7 @@ __flecsi_internal_legion_task(verify_dp_task, void) {
   Legion::Domain cell_execlusive_domain = runtime->get_index_space_domain(ctx,
                    task->regions[3].region.get_index_space());
 	
-	printf("execlusive color %d, ", my_color);								 
+	printf("execlusive rank %d, ", my_rank);								 
   for (Legion::PointInDomainIterator<1> pir(cell_execlusive_domain); pir(); pir++) {
 	  printf("%d ", (int)execlusive_cell_id_acc[*pir]);
 		ct ++;
