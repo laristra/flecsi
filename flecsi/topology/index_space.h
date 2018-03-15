@@ -1173,7 +1173,7 @@ public:
   //-----------------------------------------------------------------//
   template<typename Predicate>
   auto filter(Predicate && f) const {
-    index_space__<T, false, true, false> is;
+    index_space__<T, false, true, false, void, std::vector, STORAGE_TYPE> is;
     is.set_master(*this);
 
     for (auto item : *this) {
@@ -1201,7 +1201,7 @@ public:
   //-----------------------------------------------------------------//
   template<class S>
   auto map(map_function<S> f) const {
-    index_space__<S, false, true, false> is;
+    index_space__<S, false, true, false, void, std::vector, STORAGE_TYPE> is;
     is.set_master(*this);
 
     is.begin_push_(v_->size());
