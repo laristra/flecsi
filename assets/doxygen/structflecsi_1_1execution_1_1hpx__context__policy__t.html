@@ -128,6 +128,8 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>field_id_t</b> = siz
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a743b86201548b3b48ea22b879d91c333"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__context__policy__t.html#a743b86201548b3b48ea22b879d91c333">initialize</a> (int argc, char *argv[])</td></tr>
 <tr class="separator:a743b86201548b3b48ea22b879d91c333"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9944137dfd81018ebc4713eb505c7c7c"><td class="memItemLeft" align="right" valign="top">FLECSI_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__context__policy__t.html#a9944137dfd81018ebc4713eb505c7c7c">color</a> () const </td></tr>
+<tr class="separator:a9944137dfd81018ebc4713eb505c7c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb3f6c23fa8e66384e9f51644180006d"><td class="memTemplParams" colspan="2">template&lt;typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) FUNCTION, size_t KEY&gt; </td></tr>
 <tr class="memitem:adb3f6c23fa8e66384e9f51644180006d"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__context__policy__t.html#adb3f6c23fa8e66384e9f51644180006d">register_function</a> ()</td></tr>
 <tr class="separator:adb3f6c23fa8e66384e9f51644180006d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,6 +143,26 @@ auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>index_space_dat
 <tr class="memitem:a89c5721c851c06dc39dea52691bc3dda"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a89c5721c851c06dc39dea52691bc3dda"></a>
 auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>local_index_space_data_map</b> ()</td></tr>
 <tr class="separator:a89c5721c851c06dc39dea52691bc3dda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa45a12afe19aa43fdec767100d7a2323"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__context__policy__t.html#aa45a12afe19aa43fdec767100d7a2323">max_reduction</a> ()</td></tr>
+<tr class="separator:aa45a12afe19aa43fdec767100d7a2323"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac831abc53e4e8eb229948b9d48e74b13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__context__policy__t.html#ac831abc53e4e8eb229948b9d48e74b13">set_max_reduction</a> (double <a class="el" href="structflecsi_1_1execution_1_1hpx__context__policy__t.html#aa45a12afe19aa43fdec767100d7a2323">max_reduction</a>)</td></tr>
+<tr class="separator:ac831abc53e4e8eb229948b9d48e74b13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97d14496418c54050645afa3f9591c09"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a97d14496418c54050645afa3f9591c09"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__context__policy__t.html#a97d14496418c54050645afa3f9591c09">reduce_max</a> (hpx::shared_future&lt; T &gt; &amp;local_future) -&gt; T</td></tr>
+<tr class="separator:a97d14496418c54050645afa3f9591c09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0fbc63602ba6fa690e563c3020bd4e4"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__context__policy__t.html#ad0fbc63602ba6fa690e563c3020bd4e4">min_reduction</a> ()</td></tr>
+<tr class="separator:ad0fbc63602ba6fa690e563c3020bd4e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adafe9d53c9f1c8ab05c9a4e9de46a9cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__context__policy__t.html#adafe9d53c9f1c8ab05c9a4e9de46a9cc">set_min_reduction</a> (double <a class="el" href="structflecsi_1_1execution_1_1hpx__context__policy__t.html#ad0fbc63602ba6fa690e563c3020bd4e4">min_reduction</a>)</td></tr>
+<tr class="separator:adafe9d53c9f1c8ab05c9a4e9de46a9cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2a1ae25ea54daa0b83cfc7a348b17c2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ae2a1ae25ea54daa0b83cfc7a348b17c2"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1hpx__context__policy__t.html#ae2a1ae25ea54daa0b83cfc7a348b17c2">reduce_min</a> (hpx::shared_future&lt; T &gt; &amp;local_future) -&gt; T</td></tr>
+<tr class="separator:ae2a1ae25ea54daa0b83cfc7a348b17c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b3358e679d7744fa9d8d986a1f47847"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3b3358e679d7744fa9d8d986a1f47847"></a>
+hpx::threads::executors::pool_executor &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_default_executor</b> ()</td></tr>
+<tr class="separator:a3b3358e679d7744fa9d8d986a1f47847"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a898227ca11780b158a61c24c006b72fc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a898227ca11780b158a61c24c006b72fc"></a>
+hpx::threads::executors::pool_executor &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_mpi_executor</b> ()</td></tr>
+<tr class="separator:a898227ca11780b158a61c24c006b72fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -152,6 +174,22 @@ FLECSI_EXPORT int&#160;</td><td class="memItemRight" valign="bottom"><b>start_hp
 <tr class="separator:a5596fca8a74820e0e1b9e695b5cbde5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a9944137dfd81018ebc4713eb505c7c7c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t flecsi::execution::hpx_context_policy_t::color </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Return the color for which the context was initialized. </p>
+
+</div>
+</div>
 <a class="anchor" id="aa9a33d53c679a3bf406cae06852f6475"></a>
 <div class="memitem">
 <div class="memproto">
@@ -251,6 +289,122 @@ FLECSI_EXPORT int&#160;</td><td class="memItemRight" valign="bottom"><b>start_hp
 
 </div>
 </div>
+<a class="anchor" id="aa45a12afe19aa43fdec767100d7a2323"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto&amp; flecsi::execution::hpx_context_policy_t::max_reduction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>return &lt;double&gt; max reduction </p>
+
+</div>
+</div>
+<a class="anchor" id="ad0fbc63602ba6fa690e563c3020bd4e4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto&amp; flecsi::execution::hpx_context_policy_t::min_reduction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>return &lt;double&gt; min reduction </p>
+
+</div>
+</div>
+<a class="anchor" id="a97d14496418c54050645afa3f9591c09"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto flecsi::execution::hpx_context_policy_t::reduce_max </td>
+          <td>(</td>
+          <td class="paramtype">hpx::shared_future&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_future</em></td><td>)</td>
+          <td> -&gt; T
+  </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Perform reduction for the maximum value type &lt;double&gt;</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname"></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ae2a1ae25ea54daa0b83cfc7a348b17c2"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto flecsi::execution::hpx_context_policy_t::reduce_min </td>
+          <td>(</td>
+          <td class="paramtype">hpx::shared_future&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_future</em></td><td>)</td>
+          <td> -&gt; T
+  </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Perform reduction for the minimum value type &lt;double&gt;</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname"></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="adb3f6c23fa8e66384e9f51644180006d"></a>
 <div class="memitem">
 <div class="memproto">
@@ -286,6 +440,68 @@ template&lt;typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) FUNCTION
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A boolean value that is true if the registration succeeded, false otherwise. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac831abc53e4e8eb229948b9d48e74b13"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::hpx_context_policy_t::set_max_reduction </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>max_reduction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set max_reduction</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">double</td><td>max_reduction </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="adafe9d53c9f1c8ab05c9a4e9de46a9cc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::hpx_context_policy_t::set_min_reduction </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>min_reduction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set min_reduction</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">double</td><td>min_reduction </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
