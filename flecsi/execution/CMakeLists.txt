@@ -133,8 +133,6 @@ set(execution_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-
 cinch_add_unit(launch
   SOURCES
     test/launch.cc
@@ -175,7 +173,6 @@ cinch_add_unit(reduction
   NOCI
   )
 
-
 #
 # Test basic task calling capability using the register_task
 # interface.
@@ -195,6 +192,7 @@ cinch_add_unit(simple_task
   NOCI
   )
 
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 #
 # Test basic task to test future_handle
 #
