@@ -283,7 +283,7 @@ public:
     //! Get item at index
     //-----------------------------------------------------------------//
     auto operator[](size_t index) const{
-      return get_(index_);
+      return get_(index);
     }
 
   protected:
