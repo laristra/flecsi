@@ -209,7 +209,7 @@ struct hpx_context_policy_t {
            MPI_COMM_WORLD);
         return global_max;
       });
-    return gloabl_max_f.get();    // FIXME: reduce_max should return future
+    return gloabl_max_f;
   }
 
 
@@ -255,7 +255,7 @@ struct hpx_context_policy_t {
            MPI_COMM_WORLD);
         return global_min;
       });
-    return global_min_f.get();    // FIXME: reduce_min should return future
+    return global_min_f;
   }
 
   hpx::threads::executors::pool_executor& get_default_executor() {
