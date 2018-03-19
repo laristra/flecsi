@@ -73,7 +73,7 @@ struct data_client_policy_handler__<global_data_client_t> {
   static data_client_handle__<DATA_CLIENT_TYPE, 0> get_client_handle() {
     data_client_handle__<DATA_CLIENT_TYPE, 0> h;
 
-    h.client_hash =
+    h.type_hash =
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
     h.namespace_hash = NAMESPACE_HASH;
     h.name_hash = NAME_HASH;
@@ -95,7 +95,7 @@ struct data_client_policy_handler__<color_data_client_t> {
   static data_client_handle__<DATA_CLIENT_TYPE, 0> get_client_handle() {
     data_client_handle__<DATA_CLIENT_TYPE, 0> h;
 
-    h.client_hash =
+    h.type_hash =
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
     h.namespace_hash = NAMESPACE_HASH;
     h.name_hash = NAME_HASH;
@@ -104,8 +104,6 @@ struct data_client_policy_handler__<color_data_client_t> {
   } // get_client_handle
 
 }; // struct data_client_policy_handler__
-
-
 
 //----------------------------------------------------------------------------//
 //! The data client policy handler for mesh topology. This class provides
@@ -312,12 +310,18 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
 
     auto & ism = context.index_space_data_map();
 
-    h.client_hash =
+    h.type_hash =
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
     h.name_hash = NAME_HASH;
     h.namespace_hash = NAMESPACE_HASH;
-      
-    storage_t::instance().assert_client_exists( h.client_hash );
+
+    const size_t key = utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
+    std::cout << "key: " << key << std::endl;
+    std::cout << "name: " << NAME_HASH << std::endl;
+    std::cout << "namespace: " << NAMESPACE_HASH << std::endl;
+
+    storage_t::instance().assert_client_exists(h.type_hash,
+      utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>());
 
     entity_walker_t entity_walker;
     entity_walker.template walk_types<entity_types>();
@@ -333,7 +337,7 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
       ent.size = ei.size;
 
       const field_info_t * fi = context.get_field_info_from_key(
-          h.client_hash,
+          h.type_hash,
           utils::hash::client_internal_field_hash(
               utils::const_string_t("__flecsi_internal_entity_data__").hash(),
               ent.index_space));
@@ -343,7 +347,7 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
       }
 
       fi = context.get_field_info_from_key(
-          h.client_hash,
+          h.type_hash,
           utils::hash::client_internal_field_hash(
               utils::const_string_t("__flecsi_internal_entity_id__").hash(),
               ent.index_space));
@@ -393,7 +397,7 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
       adj.to_dim = hi.to_dim;
 
       const field_info_t * fi = context.get_field_info_from_key(
-          h.client_hash,
+          h.type_hash,
           utils::hash::client_internal_field_hash(
               utils::const_string_t("__flecsi_internal_adjacency_offset__")
                   .hash(),
@@ -404,7 +408,7 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
       }
 
       fi = context.get_field_info_from_key(
-          h.client_hash,
+          h.type_hash,
           utils::hash::client_internal_field_hash(
               utils::const_string_t("__flecsi_internal_adjacency_index__")
                   .hash(),
@@ -452,7 +456,7 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
       iss.dim = si.dim;
 
       const field_info_t * fi = context.get_field_info_from_key(
-          h.client_hash,
+          h.type_hash,
           utils::hash::client_internal_field_hash(
               utils::const_string_t("__flecsi_internal_index_subspace_index__")
                   .hash(),
@@ -528,12 +532,13 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
 
     auto & ism = context.local_index_space_data_map();
 
-    h.client_hash =
+    h.type_hash =
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
     h.name_hash = NAME_HASH;
     h.namespace_hash = NAMESPACE_HASH;
 
-    storage_t::instance().assert_client_exists( h.client_hash );
+    storage_t::instance().assert_client_exists(h.type_hash,
+      utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>());
 
     entity_walker_t entity_walker;
     entity_walker.template walk_types<entity_types>();
@@ -547,7 +552,7 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
       ent.size = ei.size;
 
       const field_info_t * fi = context.get_field_info_from_key(
-          h.client_hash,
+          h.type_hash,
           utils::hash::client_internal_field_hash(
               utils::const_string_t("__flecsi_internal_entity_data__").hash(),
               ent.index_space));
@@ -602,14 +607,20 @@ struct data_client_interface__ {
         typename DATA_CLIENT_TYPE::type_identifier_t, NAMESPACE_HASH,
         NAME_HASH>;
 
-    const size_t client_key =
+    std::cout << "name: " << NAME_HASH << std::endl;
+    std::cout << "namespace: " << NAMESPACE_HASH << std::endl;
+
+    const size_t type_key =
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
-    //! \todo move to hash.h
-    const size_t key = NAMESPACE_HASH ^ NAME_HASH;
+
+    const size_t key = utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
 
     return storage_t::instance().register_client(
-        client_key, key, wrapper_t::register_callback);
+        type_key, key, wrapper_t::register_callback);
   } // register_data_client
+
+  /*!
+   */
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
   static data_client_handle__<DATA_CLIENT_TYPE, 0> get_client_handle() {
