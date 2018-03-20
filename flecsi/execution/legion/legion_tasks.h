@@ -904,10 +904,14 @@ __flecsi_internal_legion_task(init_vertex_color_task, void) {
 	//				,Realm::AffineAccessor<double,1,Legion::coord_t
 //					> > vertex_alias_color_acc(regions[0], FID_VERTEX_PARTITION_COLOR_ID, MinReductionOp::redop_id);
 	//const Legion::FieldAccessor<READ_ONLY,int,1> ghost_cell_id_acc(regions[1], FID_CELL_ID);
-		const Legion::FieldAccessor<REDUCE,LegionRuntime::Arrays::Point<1>,1,Legion::coord_t
-					,Realm::AffineAccessor<LegionRuntime::Arrays::Point<1>,1,Legion::coord_t
+/*		const Legion::FieldAccessor<REDUCE,LegionRuntime::Arrays::Point<1>,1,Legion::coord_t,
+					Realm::AffineAccessor<LegionRuntime::Arrays::Point<1>,1,Legion::coord_t
 								> > vertex_alias_color_acc(regions[0], FID_VERTEX_PARTITION_COLOR, MinReductionPointOp::redop_id);
-	
+*/	
+	const Legion::ReductionAccessor<MinReductionPointOp, false, 1, Legion::coord_t,
+																	Realm::AffineAccessor<LegionRuntime::Arrays::Point<1>,1,Legion::coord_t>>
+																  vertex_alias_color_acc(regions[0], FID_VERTEX_PARTITION_COLOR, MinReductionPointOp::redop_id); 
+																	
 	int ct = 0;
   Legion::Domain vertex_alias_domain = runtime->get_index_space_domain(ctx,
                    task->regions[0].region.get_index_space());
@@ -917,7 +921,8 @@ __flecsi_internal_legion_task(init_vertex_color_task, void) {
 //		printf("%d ", (int)vertex_alias_id_acc[*pir]);
 		int color = my_rank;
 		//vertex_alias_color_acc.reduce<MinReductionOp, false>(*pir, color);
-		vertex_alias_color_acc.reduce<MinReductionPointOp, false>(*pir, LegionRuntime::Arrays::Point<1>(color));
+		vertex_alias_color_acc.reduce(*pir, LegionRuntime::Arrays::Point<1>(color));
+	//	vertex_alias_color_acc[*pir] <<= LegionRuntime::Arrays::Point<1>(color);
 	  ct ++;
 	}
 	printf(" total %d\n", ct);
