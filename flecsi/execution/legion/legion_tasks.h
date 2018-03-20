@@ -657,18 +657,22 @@ __flecsi_internal_legion_task(init_adjacency_task, void) {
 		idx_cell2cell++;
 		
 		// find the vertex of a cell and fill into the cell2vertex 
+		printf("\nrank %d, %d(", my_rank, cell_id);
 		std::vector<size_t> vertices_of_cell = sd.entities(2, 0, cell_id);
 		for (int i = 0; i < vertices_of_cell.size(); i++) {
+			printf("%d,", vertices_of_cell[i]);
 			cell_to_vertex_id_acc[*pir_cell2vertex] = vertices_of_cell[i];
 			cell_to_vertex_ptr_acc[*pir_cell2vertex] = LegionRuntime::Arrays::Point<1>(cell_to_vertex_id_acc[*pir_cell2vertex]); 
 			pir_cell2vertex ++;
 		}
+		printf(")[%d,%d]; ", cell_to_vertex_count_per_subspace[my_rank] + idx_cell2vertex, cell_to_vertex_count_per_subspace[my_rank] + idx_cell2vertex + vertices_of_cell.size() -1);
 		cell_vertex_nrange_acc[*pir] = LegionRuntime::Arrays::Rect<1>(
 	    LegionRuntime::Arrays::Point<1>(cell_to_vertex_count_per_subspace[my_rank] + idx_cell2vertex),
 		  LegionRuntime::Arrays::Point<1>(cell_to_vertex_count_per_subspace[my_rank] + idx_cell2vertex + vertices_of_cell.size() -1));
 		idx_cell2vertex += vertices_of_cell.size();
 
 	}
+	printf("\n");
 	idx_cell2cell = 0;
   for (Legion::PointInDomainIterator<1> pir(cell_to_cell_domain); pir(); pir++) {
 		cell_to_cell_id_acc[*pir] = dcrs.indices[idx_cell2cell];
@@ -727,12 +731,16 @@ __flecsi_internal_legion_task(verify_dp_task, void) {
 	
 	const Legion::FieldAccessor<READ_ONLY,int,1> primary_vertex_id_acc(regions[4], FID_VERTEX_ID);
 	const Legion::FieldAccessor<READ_ONLY,int,1> ghost_vertex_id_acc(regions[5], FID_VERTEX_ID);
+	const Legion::FieldAccessor<READ_ONLY,int,1> shared_vertex_id_acc(regions[6], FID_VERTEX_ID);
+	const Legion::FieldAccessor<READ_ONLY,int,1> exclusive_vertex_id_acc(regions[7], FID_VERTEX_ID);
+	
+	const Legion::FieldAccessor<READ_ONLY,int,1> vertex_of_ghost_cell_id_acc(regions[8], FID_VERTEX_ID);
 	
 	int ct = 0;
   Legion::Domain cell_primary_domain = runtime->get_index_space_domain(ctx,
                    task->regions[0].region.get_index_space());
 	
-	printf("primary rank %d, ", my_rank);								 
+	printf("[Cell] primary rank %d, ", my_rank);								 
   for (Legion::PointInDomainIterator<1> pir(cell_primary_domain); pir(); pir++) {
 	  if (ct == 0) {
 		  int color = cell_color_acc.read(*pir);
@@ -741,62 +749,96 @@ __flecsi_internal_legion_task(verify_dp_task, void) {
 		printf("%d ", (int)primary_cell_id_acc[*pir]);
 	  ct ++;
 	}
-	printf(" total %d\n", ct);
+	printf(" CP total %d\n", ct);
 	
 	ct = 0;
   Legion::Domain cell_ghost_domain = runtime->get_index_space_domain(ctx,
                    task->regions[1].region.get_index_space());
 	
-	printf("ghost rank %d, ", my_rank);								 
+	printf("[Cell] ghost rank %d, ", my_rank);								 
   for (Legion::PointInDomainIterator<1> pir(cell_ghost_domain); pir(); pir++) {
 	  printf("%d ", (int)ghost_cell_id_acc[*pir]);
 		ct ++;
 	}
-  printf(" total %d\n", ct);
+  printf(" CG total %d\n", ct);
 	
 	ct = 0;
   Legion::Domain cell_shared_domain = runtime->get_index_space_domain(ctx,
                    task->regions[2].region.get_index_space());
 	
-	printf("shared rank %d, ", my_rank);								 
+	printf("[Cell] shared rank %d, ", my_rank);								 
   for (Legion::PointInDomainIterator<1> pir(cell_shared_domain); pir(); pir++) {
 	  printf("%d ", (int)shared_cell_id_acc[*pir]);
 		ct ++;
 	}
-	printf(" total %d\n", ct);
+	printf(" CS total %d\n", ct);
 	
 	ct = 0;
   Legion::Domain cell_execlusive_domain = runtime->get_index_space_domain(ctx,
                    task->regions[3].region.get_index_space());
 	
-	printf("execlusive rank %d, ", my_rank);								 
+	printf("[Cell] execlusive rank %d, ", my_rank);								 
   for (Legion::PointInDomainIterator<1> pir(cell_execlusive_domain); pir(); pir++) {
 	  printf("%d ", (int)execlusive_cell_id_acc[*pir]);
 		ct ++;
 	}
-	printf(" total %d\n", ct);
+	printf(" CE total %d\n", ct);
 	
 	ct = 0;
   Legion::Domain vertex_primary_domain = runtime->get_index_space_domain(ctx,
                    task->regions[4].region.get_index_space());
 	
-	printf("vertex primary rank %d, ", my_rank);								 
+	printf("[Vertex] primary rank %d, ", my_rank);								 
   for (Legion::PointInDomainIterator<1> pir(vertex_primary_domain); pir(); pir++) {
 	  printf("%d ", (int)primary_vertex_id_acc[*pir]);
 		ct ++;
 	}
-	printf(" total %d\n", ct);
+	printf(" VP total %d\n", ct);
 	
 	ct = 0;
   Legion::Domain vertex_ghost_domain = runtime->get_index_space_domain(ctx,
                    task->regions[5].region.get_index_space());
 	
-	printf("vertex ghost rank %d, ", my_rank);								 
+	printf("[Vertex] ghost rank %d, ", my_rank);								 
   for (Legion::PointInDomainIterator<1> pir(vertex_ghost_domain); pir(); pir++) {
 	  printf("%d ", (int)ghost_vertex_id_acc[*pir]);
 		ct ++;
 	}
+	printf(" VG total %d\n", ct);
+	
+	ct = 0;
+  Legion::Domain vertex_shared_domain = runtime->get_index_space_domain(ctx,
+                   task->regions[6].region.get_index_space());
+	
+	printf("[Vertex] shared rank %d, ", my_rank);								 
+  for (Legion::PointInDomainIterator<1> pir(vertex_shared_domain); pir(); pir++) {
+	  printf("%d ", (int)shared_vertex_id_acc[*pir]);
+		ct ++;
+	}
+	printf(" VS total %d\n", ct);
+	
+	ct = 0;
+  Legion::Domain vertex_exclusive_domain = runtime->get_index_space_domain(ctx,
+                   task->regions[7].region.get_index_space());
+	
+	printf("[Vertex] exclusive rank %d, ", my_rank);								 
+  for (Legion::PointInDomainIterator<1> pir(vertex_exclusive_domain); pir(); pir++) {
+	  printf("%d ", (int)exclusive_vertex_id_acc[*pir]);
+		ct ++;
+	}
+	printf(" VE total %d\n", ct);
+	
+	ct = 0;
+  Legion::Domain vertex_of_ghost_cell_domain = runtime->get_index_space_domain(ctx,
+                   task->regions[8].region.get_index_space());
+	
+	printf("[Vertex] ghostcell rank %d, ", my_rank);								 
+  for (Legion::PointInDomainIterator<1> pir(vertex_of_ghost_cell_domain); pir(); pir++) {
+	  printf("%d ", (int)vertex_of_ghost_cell_id_acc[*pir]);
+		ct ++;
+	}
 	printf(" total %d\n", ct);
+	printf("\n");
 }
 
 

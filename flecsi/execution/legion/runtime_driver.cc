@@ -462,30 +462,70 @@ runtime_driver(
 	  fm_epoch3.wait_all_results(true);
 	}
 	
-	//vertex
-	Legion::IndexPartition vertex_primary_ip = runtime->create_partition_by_field(ctx, vertex_lr,
-	                                                                 vertex_lr,
-	                                                                 FID_VERTEX_PARTITION_COLOR,
-	                                                                 partition_is);
+	// Primary vertex
+	Legion::IndexPartition vertex_primary_ip = 
+		runtime->create_partition_by_field(ctx, vertex_lr,
+                                       vertex_lr,
+                                       FID_VERTEX_PARTITION_COLOR,
+                                       partition_is);
 	
-	//
-	 Legion::IndexPartition ghost_c2v_image_nrange_ip = runtime->create_partition_by_image_range(ctx, cell_to_vertex_lr.get_index_space(),
-	                                                                                 runtime->get_logical_partition(cell_lr, cell_ghost_ip), 
-	                                                                                 cell_lr,
-	                                                                                 FID_CELL_VERTEX_NRANGE,
-	                                                                                 partition_is);																																	 
+	// Ghost vertex
+	 Legion::IndexPartition cell_ghost_c2v_image_nrange_ip = 
+		 runtime->create_partition_by_image_range(ctx, cell_to_vertex_lr.get_index_space(),
+                                              runtime->get_logical_partition(cell_lr, cell_ghost_ip), 
+                                              cell_lr,
+                                              FID_CELL_VERTEX_NRANGE,
+                                              partition_is);																																	 
 	
-	 Legion::IndexPartition ghost_cells_vertices_ip = runtime->create_partition_by_image(ctx, vertex_lr.get_index_space(),
-	                                                                    runtime->get_logical_partition(cell_to_vertex_lr, ghost_c2v_image_nrange_ip), 
-	                                                                    cell_to_vertex_lr,
-	                                                                    FID_CELL_TO_VERTEX_PTR,
-	                                                                    partition_is);
-	Legion::IndexPartition vertex_ghost_ip = runtime->create_partition_by_difference(ctx, vertex_lr.get_index_space(),
-	                                                           ghost_cells_vertices_ip, vertex_primary_ip, partition_is); 
- Legion::LogicalPartition vertex_primary_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_primary_ip);
-   runtime->attach_name(vertex_primary_lp, "vertex_primary_lp");
-   Legion::LogicalPartition vertex_ghost_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_ghost_ip);
-   runtime->attach_name(vertex_ghost_lp, "vertex_ghost_lp");
+	 Legion::IndexPartition vertex_of_ghost_cell_ip = 
+		 runtime->create_partition_by_image(ctx, vertex_lr.get_index_space(),
+                                        runtime->get_logical_partition(cell_to_vertex_lr, cell_ghost_c2v_image_nrange_ip), 
+                                        cell_to_vertex_lr,
+                                        FID_CELL_TO_VERTEX_PTR,
+                                        partition_is);
+	Legion::IndexPartition vertex_ghost_ip = 
+		runtime->create_partition_by_difference(ctx, vertex_lr.get_index_space(),
+	                                          vertex_of_ghost_cell_ip, vertex_primary_ip, partition_is); 
+  
+	// Shared vertex
+	Legion::IndexPartition cell_shared_c2v_image_nrange_ip = 
+		runtime->create_partition_by_image_range(ctx, cell_to_vertex_lr.get_index_space(),
+	                                           runtime->get_logical_partition(cell_lr, cell_shared_ip), 
+                                             cell_lr,
+                                             FID_CELL_VERTEX_NRANGE,
+                                             partition_is);
+
+	Legion::IndexPartition vertex_of_shared_cell_ip = 
+		runtime->create_partition_by_image(ctx, vertex_lr.get_index_space(),
+                                       runtime->get_logical_partition(cell_to_vertex_lr, cell_shared_c2v_image_nrange_ip), 
+                                       cell_to_vertex_lr,
+                                       FID_CELL_TO_VERTEX_PTR,
+                                       partition_is);
+
+
+	Legion::IndexPartition vertex_shared_ip = runtime->create_partition_by_intersection(ctx, vertex_lr.get_index_space(),
+	                                                           vertex_of_shared_cell_ip, vertex_primary_ip, partition_is); 
+	runtime->attach_name(vertex_shared_ip, "vertex_shared_ip");
+	
+	// Exclusive vertex
+	Legion::IndexPartition vertex_exclusive_ip = runtime->create_partition_by_difference(ctx, vertex_lr.get_index_space(),
+	                                                           vertex_primary_ip, vertex_shared_ip, partition_is); 
+	runtime->attach_name(vertex_exclusive_ip, "vertex_exclusive_ip");
+	
+	// Get logical region
+	Legion::LogicalPartition vertex_primary_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_primary_ip);
+  runtime->attach_name(vertex_primary_lp, "vertex_primary_lp");
+  Legion::LogicalPartition vertex_ghost_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_ghost_ip);
+  runtime->attach_name(vertex_ghost_lp, "vertex_ghost_lp");
+  Legion::LogicalPartition vertex_shared_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_shared_ip);
+  runtime->attach_name(vertex_shared_lp, "vertex_shared_lp");
+  Legion::LogicalPartition vertex_exclusive_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_exclusive_ip);
+  runtime->attach_name(vertex_exclusive_lp, "vertex_exclusive_lp");
+	
+	//test
+  Legion::LogicalPartition vertex_of_ghost_cell_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_of_ghost_cell_ip);
+  runtime->attach_name(vertex_of_ghost_cell_lp, "vertex_of_ghost_cell_lp");
+	
 	// Launch index task to verify partition results
   const auto verify_dp_task_id =
     context_.task_id<__flecsi_internal_task_key(verify_dp_task)>();
@@ -520,11 +560,25 @@ runtime_driver(
 	                            READ_ONLY, EXCLUSIVE, vertex_lr));
   verify_dp_launcher.region_requirements[4].add_field(FID_VERTEX_ID);
 	
-	
 	verify_dp_launcher.add_region_requirement(
 	  Legion::RegionRequirement(vertex_ghost_lp, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, vertex_lr));
   verify_dp_launcher.region_requirements[5].add_field(FID_VERTEX_ID);
+	
+	verify_dp_launcher.add_region_requirement(
+	  Legion::RegionRequirement(vertex_shared_lp, 0/*projection ID*/,
+	                            READ_ONLY, EXCLUSIVE, vertex_lr));
+  verify_dp_launcher.region_requirements[6].add_field(FID_VERTEX_ID);
+	
+	verify_dp_launcher.add_region_requirement(
+	  Legion::RegionRequirement(vertex_exclusive_lp, 0/*projection ID*/,
+	                            READ_ONLY, EXCLUSIVE, vertex_lr));
+  verify_dp_launcher.region_requirements[7].add_field(FID_VERTEX_ID);
+	
+	verify_dp_launcher.add_region_requirement(
+	  Legion::RegionRequirement(vertex_of_ghost_cell_lp, 0/*projection ID*/,
+	                            READ_ONLY, EXCLUSIVE, vertex_lr));
+  verify_dp_launcher.region_requirements[8].add_field(FID_VERTEX_ID);
 	
   Legion::MustEpochLauncher must_epoch_launcher_verify_dp;
   must_epoch_launcher_verify_dp.add_index_task(verify_dp_launcher);
