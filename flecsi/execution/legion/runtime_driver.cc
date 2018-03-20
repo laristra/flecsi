@@ -170,6 +170,8 @@ runtime_driver(
 	runtime->attach_name(vertex_field_space, FID_VERTEX_ID, "FID_VERTEX_ID");
 	vertex_allocator.allocate_field(sizeof(LegionRuntime::Arrays::Point<1>), FID_VERTEX_PARTITION_COLOR);
 	runtime->attach_name(vertex_field_space, FID_VERTEX_PARTITION_COLOR, "FID_VERTEX_PARTITION_COLOR");
+	vertex_allocator.allocate_field(sizeof(double), FID_VERTEX_PARTITION_COLOR_ID);
+	runtime->attach_name(vertex_field_space, FID_VERTEX_PARTITION_COLOR_ID, "FID_VERTEX_PARTITION_COLOR_ID");
 	Legion::LogicalRegion vertex_lr = runtime->create_logical_region(ctx,vertex_index_space,vertex_field_space);
 	runtime->attach_name(vertex_lr, "vertex_lr");
 	
@@ -185,6 +187,9 @@ runtime_driver(
 	Legion::IndexPartition cell_equal_ip = 
 	  runtime->create_equal_partition(ctx, cell_lr.get_index_space(), partition_is);
 	Legion::LogicalPartition cell_equal_lp = runtime->get_logical_partition(ctx, cell_lr, cell_equal_ip);
+	Legion::IndexPartition vertex_equal_ip = 
+	  runtime->create_equal_partition(ctx, vertex_lr.get_index_space(), partition_is);
+	Legion::LogicalPartition vertex_equal_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_equal_ip);
 
   const auto init_mesh_task_id =
     context_.task_id<__flecsi_internal_task_key(init_mesh_task)>();
@@ -199,6 +204,13 @@ runtime_driver(
   init_mesh_launcher.region_requirements[0].add_field(FID_CELL_ID);
   init_mesh_launcher.region_requirements[0].add_field(FID_CELL_PARTITION_COLOR);
   init_mesh_launcher.region_requirements[0].add_field(FID_CELL_CELL_NRANGE);
+	
+	init_mesh_launcher.add_region_requirement(
+	  Legion::RegionRequirement(vertex_equal_lp, 0/*projection ID*/,
+	                            READ_WRITE, EXCLUSIVE, vertex_lr));
+  init_mesh_launcher.region_requirements[1].add_field(FID_VERTEX_ID);
+  init_mesh_launcher.region_requirements[1].add_field(FID_VERTEX_PARTITION_COLOR_ID);
+	init_mesh_launcher.region_requirements[1].add_field(FID_VERTEX_PARTITION_COLOR);
 			
   Legion::MustEpochLauncher must_epoch_launcher_init_mesh;
   must_epoch_launcher_init_mesh.add_index_task(init_mesh_launcher);
@@ -379,6 +391,21 @@ runtime_driver(
 	                                          cell_primary_ip, cell_shared_ip, partition_is); 
 	runtime->attach_name(cell_execlusive_ip, "cell_execlusive_ip");
 	
+	// alias vertex
+	Legion::IndexPartition vertex_alias_image_nrange_ip = 
+		runtime->create_partition_by_image_range(ctx, cell_to_vertex_lr.get_index_space(),
+	                                           runtime->get_logical_partition(cell_lr, cell_primary_ip), 
+	                                           cell_lr,
+	                                           FID_CELL_VERTEX_NRANGE,
+	                                           partition_is);
+
+	Legion::IndexPartition vertex_alias_ip = 
+		runtime->create_partition_by_image(ctx, vertex_lr.get_index_space(),
+                                       runtime->get_logical_partition(cell_to_vertex_lr, vertex_alias_image_nrange_ip), 
+                                       cell_to_vertex_lr,
+                                       FID_CELL_TO_VERTEX_PTR,
+                                       partition_is);
+	
 	// Get logical region
 	Legion::LogicalPartition cell_primary_lp = runtime->get_logical_partition(ctx, cell_lr, cell_primary_ip);
   runtime->attach_name(cell_primary_lp, "cell_primary_lp");
@@ -388,7 +415,77 @@ runtime_driver(
   runtime->attach_name(cell_shared_lp, "cell_shared_lp");
 	Legion::LogicalPartition cell_execlusive_lp = runtime->get_logical_partition(ctx, cell_lr, cell_execlusive_ip);
   runtime->attach_name(cell_execlusive_lp, "cell_execlusive_lp");
+	Legion::LogicalPartition vertex_alias_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_alias_ip);
+  runtime->attach_name(vertex_alias_lp, "vertex_alias_lp");
+
+  // Launch index task to init vertex color
+  const auto init_vertex_color_task_id =
+    context_.task_id<__flecsi_internal_task_key(init_vertex_color_task)>();
+  
+  Legion::IndexLauncher init_vertex_color_launcher(init_vertex_color_task_id,
+    																			 partition_is, Legion::TaskArgument(nullptr, 0),
+      																		 Legion::ArgumentMap());
 	
+	init_vertex_color_launcher.add_region_requirement(
+	  Legion::RegionRequirement(vertex_alias_lp, 0/*projection ID*/,
+	                            MinReductionPointOp::redop_id, SIMULTANEOUS, vertex_lr));
+ // init_vertex_color_launcher.region_requirements[0].add_field(FID_VERTEX_ID);
+  init_vertex_color_launcher.region_requirements[0].add_field(FID_VERTEX_PARTITION_COLOR);
+#if 0	
+	init_vertex_color_launcher.add_region_requirement(
+	  Legion::RegionRequirement(cell_ghost_lp, 0/*projection ID*/,
+	                            READ_ONLY, EXCLUSIVE, cell_lr));
+  init_vertex_color_launcher.region_requirements[1].add_field(FID_CELL_ID);
+#endif	
+  Legion::MustEpochLauncher must_epoch_launcher_init_vertex_color;
+  must_epoch_launcher_init_vertex_color.add_index_task(init_vertex_color_launcher);
+  Legion::FutureMap fm_epoch3 = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_vertex_color);
+  fm_epoch3.wait_all_results(true);
+	
+	{
+	  const auto verify_vertex_color_task_id =
+	    context_.task_id<__flecsi_internal_task_key(verify_vertex_color_task)>();
+  
+	  Legion::IndexLauncher verify_vertex_color_launcher(verify_vertex_color_task_id,
+	    																			 partition_is, Legion::TaskArgument(nullptr, 0),
+	      																		 Legion::ArgumentMap());
+	
+		verify_vertex_color_launcher.add_region_requirement(
+		  Legion::RegionRequirement(vertex_alias_lp, 0/*projection ID*/,
+		                            READ_ONLY, EXCLUSIVE, vertex_lr));
+		verify_vertex_color_launcher.region_requirements[0].add_field(FID_VERTEX_ID);
+	  verify_vertex_color_launcher.region_requirements[0].add_field(FID_VERTEX_PARTITION_COLOR);
+
+	  Legion::MustEpochLauncher must_epoch_launcher_verify_vertex_color;
+	  must_epoch_launcher_verify_vertex_color.add_index_task(verify_vertex_color_launcher);
+	  Legion::FutureMap fm_epoch3 = runtime->execute_must_epoch(ctx, must_epoch_launcher_verify_vertex_color);
+	  fm_epoch3.wait_all_results(true);
+	}
+	
+	//vertex
+	Legion::IndexPartition vertex_primary_ip = runtime->create_partition_by_field(ctx, vertex_lr,
+	                                                                 vertex_lr,
+	                                                                 FID_VERTEX_PARTITION_COLOR,
+	                                                                 partition_is);
+	
+	//
+	 Legion::IndexPartition ghost_c2v_image_nrange_ip = runtime->create_partition_by_image_range(ctx, cell_to_vertex_lr.get_index_space(),
+	                                                                                 runtime->get_logical_partition(cell_lr, cell_ghost_ip), 
+	                                                                                 cell_lr,
+	                                                                                 FID_CELL_VERTEX_NRANGE,
+	                                                                                 partition_is);																																	 
+	
+	 Legion::IndexPartition ghost_cells_vertices_ip = runtime->create_partition_by_image(ctx, vertex_lr.get_index_space(),
+	                                                                    runtime->get_logical_partition(cell_to_vertex_lr, ghost_c2v_image_nrange_ip), 
+	                                                                    cell_to_vertex_lr,
+	                                                                    FID_CELL_TO_VERTEX_PTR,
+	                                                                    partition_is);
+	Legion::IndexPartition vertex_ghost_ip = runtime->create_partition_by_difference(ctx, vertex_lr.get_index_space(),
+	                                                           ghost_cells_vertices_ip, vertex_primary_ip, partition_is); 
+ Legion::LogicalPartition vertex_primary_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_primary_ip);
+   runtime->attach_name(vertex_primary_lp, "vertex_primary_lp");
+   Legion::LogicalPartition vertex_ghost_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_ghost_ip);
+   runtime->attach_name(vertex_ghost_lp, "vertex_ghost_lp");
 	// Launch index task to verify partition results
   const auto verify_dp_task_id =
     context_.task_id<__flecsi_internal_task_key(verify_dp_task)>();
@@ -418,10 +515,21 @@ runtime_driver(
 	                            READ_ONLY, EXCLUSIVE, cell_lr));
   verify_dp_launcher.region_requirements[3].add_field(FID_CELL_ID);
 	
+	verify_dp_launcher.add_region_requirement(
+	  Legion::RegionRequirement(vertex_primary_lp, 0/*projection ID*/,
+	                            READ_ONLY, EXCLUSIVE, vertex_lr));
+  verify_dp_launcher.region_requirements[4].add_field(FID_VERTEX_ID);
+	
+	
+	verify_dp_launcher.add_region_requirement(
+	  Legion::RegionRequirement(vertex_ghost_lp, 0/*projection ID*/,
+	                            READ_ONLY, EXCLUSIVE, vertex_lr));
+  verify_dp_launcher.region_requirements[5].add_field(FID_VERTEX_ID);
+	
   Legion::MustEpochLauncher must_epoch_launcher_verify_dp;
   must_epoch_launcher_verify_dp.add_index_task(verify_dp_launcher);
-  Legion::FutureMap fm_epoch3 = runtime->execute_must_epoch(ctx, must_epoch_launcher_verify_dp);
-  fm_epoch3.wait_all_results(true);
+  Legion::FutureMap fm_epoch4 = runtime->execute_must_epoch(ctx, must_epoch_launcher_verify_dp);
+  fm_epoch4.wait_all_results(true);
 	
 	// Clean up
 	free(cell_to_cell_vertex_count_per_subspace);
@@ -433,9 +541,11 @@ runtime_driver(
 	runtime->destroy_field_space(ctx, cell_field_space);
 	runtime->destroy_field_space(ctx, vertex_field_space);
 	runtime->destroy_field_space(ctx, cell_to_cell_field_space);
+	runtime->destroy_field_space(ctx, cell_to_vertex_field_space);
 	runtime->destroy_index_space(ctx, cell_index_space);
 	runtime->destroy_index_space(ctx, vertex_index_space);
 	runtime->destroy_index_space(ctx, cell_to_cell_index_space);
+	runtime->destroy_index_space(ctx, cell_to_vertex_index_space);
 	runtime->destroy_index_space(ctx, partition_is);
 			
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT

@@ -77,6 +77,7 @@ int legion_context_policy_t::initialize(int argc, char **argv) {
 
   Runtime::register_reduction_op<MaxReductionOp>(MaxReductionOp::redop_id);
   Runtime::register_reduction_op<MinReductionOp>(MinReductionOp::redop_id);
+	Runtime::register_reduction_op<MinReductionPointOp>(MinReductionPointOp::redop_id);
 
   // Start the Legion runtime
   Runtime::start(argc, argv, true);
