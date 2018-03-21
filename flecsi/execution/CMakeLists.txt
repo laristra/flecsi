@@ -26,6 +26,7 @@ set(execution_HEADERS
   default_driver.h
   execution.h
   function.h
+  global_object_wrapper.h  
   internal_index_space.h
   kernel.h
   task.h
