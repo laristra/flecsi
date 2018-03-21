@@ -132,6 +132,7 @@ runtime_driver(
   // Invoke the specialization top-level task initialization function.
   specialization_tlt_init(args.argc, args.argv);
 
+  context_.advance_state();
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
 
@@ -197,7 +198,7 @@ runtime_driver(
   Legion::IndexLauncher fix_ghost_refs_launcher(pos_correction_id,
     data.color_domain(), Legion::TaskArgument(nullptr, 0), Legion::ArgumentMap());
 
-  fix_ghost_refs_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  //fix_ghost_refs_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
