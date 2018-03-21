@@ -6,6 +6,7 @@
 // includes: flecsi
 #include <flecsi/utils/utility.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/test/print_type.h>
 
 // includes: C++
 #include <iostream>
@@ -13,28 +14,15 @@
 // includes: other
 #include <cinchtest.h>
 
-// print_type
-inline void
-print_type(const char * const name) {
-#ifdef __GNUG__
-  CINCH_CAPTURE() << flecsi::utils::demangle(name) << std::endl;
-#else
-  // Skip name printing; is unpredictable in this case
-#endif
-}
-
 // =============================================================================
 // Test various constructs in utility.h
 // =============================================================================
 
 // TEST
 TEST(utility, all) {
-  print_type(typeid(typename flecsi::utils::as_const<char, char>::type).name());
-  print_type(typeid(typename flecsi::utils::as_const<char, int>::type).name());
-  print_type(
-      typeid(
-          typename flecsi::utils::as_const<char, const volatile double>::type)
-          .name());
+  print_type<typename flecsi::utils::as_const<char, char>::type>();
+  print_type<typename flecsi::utils::as_const<char, int >::type>();
+  print_type<typename flecsi::utils::as_const<char, const volatile double>::type>();
 
   // compare
 #ifdef __GNUG__

@@ -19,6 +19,7 @@
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/utils/any.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/test/print_type.h>
 
 using flecsi::coloring::index_coloring_t;
 using flecsi::utils::any_t;
@@ -106,16 +107,6 @@ TEST(any, simple) {
 //=============================================================================
 //! \brief Exercise everything in the any_t class, and any_cast() as well
 //=============================================================================
-
-// print_type
-inline void
-print_type(const char * const name) {
-#ifdef __GNUG__
-  CINCH_CAPTURE() << flecsi::utils::demangle(name) << std::endl;
-#else
-  // Skip name printing; is unpredictable in this case
-#endif
-}
 
 // some_class
 template<class T>

@@ -15,6 +15,7 @@
 // includes: flecsi
 #include <flecsi/utils/factory.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/test/print_type.h>
 
 // includes: C++
 
@@ -79,17 +80,6 @@ TEST(factory, sanity) {
 // More-complete exercising of factory.h's constructs
 // =============================================================================
 
-// prtype: print demangled type
-template<class T>
-inline void
-prtype(void) {
-#ifdef __GNUG__
-  CINCH_CAPTURE() << flecsi::utils::demangle(typeid(T).name()) << std::endl;
-#else
-  // Skip name printing; is unpredictable in this case
-#endif
-}
-
 // Creation handlers for the Factory_ type variants in TEST() below. These
 // accept the arguments as given in those types, and return pointers to the
 // return types as given. Keys play no role here.
@@ -130,17 +120,17 @@ TEST(factory, all) {
   // one variant
   using factory_charkey_t = // return, key,  arguments...
       flecsi::utils::Factory_<float, char, int, float, double>;
-  prtype<factory_charkey_t::createHandler>();
-  prtype<factory_charkey_t::key_t>();
-  prtype<factory_charkey_t::map_t>();
+  print_type<factory_charkey_t::createHandler>();
+  print_type<factory_charkey_t::key_t>();
+  print_type<factory_charkey_t::map_t>();
   CINCH_CAPTURE() << std::endl;
 
   // another variant
   using factory_longkey_t = // return, key,  arguments...
       flecsi::utils::Factory_<double, long, double, double>;
-  prtype<factory_longkey_t::createHandler>();
-  prtype<factory_longkey_t::key_t>();
-  prtype<factory_longkey_t::map_t>();
+  print_type<factory_longkey_t::createHandler>();
+  print_type<factory_longkey_t::key_t>();
+  print_type<factory_longkey_t::map_t>();
   CINCH_CAPTURE() << std::endl;
 
   // ------------------------

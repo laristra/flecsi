@@ -42,13 +42,6 @@ TEST(const_string, sanity) {
 // More-complete exercising of const_string.h's constructs
 // =============================================================================
 
-// typestr: string with demangled type
-template<class T>
-inline std::string
-typestr(void) {
-  return flecsi::utils::demangle(typeid(T).name());
-}
-
 // TEST
 TEST(const_string, all) {
 
@@ -60,7 +53,7 @@ TEST(const_string, all) {
 
   // hash_type_t
 #ifdef __GNUG__
-  EXPECT_EQ(typestr<const_string_t::hash_type_t>(), "unsigned long");
+  EXPECT_EQ(flecsi::utils::type<typename const_string_t::hash_type_t>(), "unsigned long");
 #endif
 
   // constructor from C-style string

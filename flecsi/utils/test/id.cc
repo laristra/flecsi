@@ -15,6 +15,7 @@
 // includes: flecsi
 #include <flecsi/utils/id.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/test/print_type.h>
 
 // includes: C++
 #include <vector>
@@ -25,18 +26,6 @@
 // =============================================================================
 // Helper constructs
 // =============================================================================
-
-// prtype
-// Print demangled type.
-template<class T>
-inline void
-prtype(void) {
-#ifdef __GNUG__
-  CINCH_CAPTURE() << flecsi::utils::demangle(typeid(T).name()) << std::endl;
-#else
-  // Skip name printing; is unpredictable in this case
-#endif
-}
 
 // print
 // Print a flecsi::utils::id_.
@@ -106,7 +95,7 @@ TEST(id, all) {
   // ------------------------
 
   // local_id_t
-  prtype<flecsi::utils::local_id_t>();
+  print_type<flecsi::utils::local_id_t>();
   CINCH_CAPTURE() << "sizeof(flecsi::utils::local_id_t) == "
                   << sizeof(flecsi::utils::local_id_t) << std::endl;
 

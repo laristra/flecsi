@@ -6,6 +6,7 @@
 // includes: flecsi
 #include <flecsi/utils/index_space.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/test/print_type.h>
 
 // includes: C++
 #include <iostream>
@@ -13,23 +14,13 @@
 // includes: other
 #include <cinchtest.h>
 
-// print_type
-inline void
-print_type(const char * const name) {
-#ifdef __GNUG__
-  CINCH_CAPTURE() << flecsi::utils::demangle(name) << std::endl;
-#else
-  // Skip name printing; is unpredictable in this case
-#endif
-}
-
 // =============================================================================
 // Test various aspects of flecsi::utils::index_space
 // =============================================================================
 
 TEST(index_space, all) {
   // iterator_t
-  print_type(typeid(flecsi::utils::index_space_t::iterator_t).name());
+  print_type<flecsi::utils::index_space_t::iterator_t>();
   CINCH_CAPTURE() << std::endl;
 
   // default constructor
