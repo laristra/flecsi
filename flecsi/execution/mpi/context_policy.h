@@ -192,6 +192,10 @@ struct mpi_context_policy_t
     // TODO: to be defined.
   };
 
+  struct index_subspace_data_t {
+    size_t capacity;
+  };
+
   struct local_index_space_data_t{
     size_t size;
     size_t capacity;
@@ -201,6 +205,14 @@ struct mpi_context_policy_t
   index_space_data_map()
   {
     return index_space_data_map_;
+  }
+
+  /*!
+    Get the index subspace data map.
+   */
+
+  auto & index_subspace_data_map() {
+    return index_subspace_data_map_;
   }
 
   auto&
@@ -613,7 +625,9 @@ struct mpi_context_policy_t
     MPI_Allreduce(&local_max_, &global_max_, 1,
            flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
            MPI_COMM_WORLD);
-    return global_max_;
+    mpi_future__<T> fut;
+    fut.set(global_max_);
+    return fut;
   }
 
 
@@ -654,7 +668,9 @@ struct mpi_context_policy_t
     MPI_Allreduce(&local_min_, &global_min_, 1,
            flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MIN,
            MPI_COMM_WORLD);
-    return global_min_;
+    mpi_future__<T> fut;
+    fut.set(global_min_);
+    return fut;
   }
 
 
@@ -683,6 +699,7 @@ private:
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
+  std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
 
   std::map<field_id_t, sparse_field_data_t> sparse_field_data;
   std::map<field_id_t, sparse_field_metadata_t> sparse_field_metadata;

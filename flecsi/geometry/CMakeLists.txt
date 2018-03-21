@@ -6,8 +6,8 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
@@ -43,6 +43,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(UNIT_POLICY LEGION)
   set(RUNTIME_DRIVER mpi/runtime_driver.cc)
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  set(UNIT_POLICY HPX)
+  set(RUNTIME_DRIVER hpx/runtime_driver.cc)
 
 endif()
 

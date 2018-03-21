@@ -32,6 +32,19 @@ double local_value_task(
 flecsi_register_task(local_value_task, flecsi::execution, loc, single);
 
 
+template<typename T>
+using handle_t = flecsi::execution::flecsi_future<T,
+    flecsi::execution::launch_type_t::single>;
+
+void reduction_check_task(handle_t<double> f_max, handle_t<double> f_min,
+      int num_colors, int cycle)
+{
+    ASSERT_EQ(f_max, static_cast<double>(num_colors * cycle));
+    ASSERT_EQ(f_min, static_cast<double>(cycle));
+}
+
+flecsi_register_task(reduction_check_task, flecsi::execution, loc, single);
+
 //----------------------------------------------------------------------------//
 // User driver.
 //----------------------------------------------------------------------------//
@@ -52,14 +65,19 @@ void driver(int argc, char ** argv) {
       flecsi_execute_reduction_task(local_value_task, flecsi::execution, single,
           max_redop_id, cycle);
 
-    double global_max =
-      flecsi::execution::context_t::instance().reduce_max(global_max_future);
+//    double global_max =
+//      flecsi::execution::context_t::instance().reduce_max(global_max_future);
 
-    double global_min =
-      flecsi::execution::context_t::instance().reduce_min(global_min_future);
+//    double global_min =
+//      flecsi::execution::context_t::instance().reduce_min(global_min_future);
+
+    ASSERT_EQ(global_max_future.get(),
+        static_cast<double>(num_colors * cycle));
+    ASSERT_EQ(global_min_future.get(), static_cast<double>(cycle));
  
-    ASSERT_EQ(global_max, static_cast<double>(num_colors * cycle));
-    ASSERT_EQ(global_min, static_cast<double>(cycle));
+   flecsi_execute_task(reduction_check_task, flecsi::execution, single,
+     global_max_future, global_min_future, num_colors, cycle); 
+
   } // cycle
 
 } // driver

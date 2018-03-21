@@ -6,8 +6,8 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
@@ -28,6 +28,9 @@ set(coloring_HEADERS
   mpi_communicator.h
   mpi_utils.h
   parmetis_colorer.h
+  box_types.h
+  box_colorer.h
+  simple_box_colorer.h
 )
 
 #------------------------------------------------------------------------------#
@@ -51,6 +54,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(UNIT_POLICY MPI)
   set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  set(UNIT_POLICY HPX)
+  set(RUNTIME_DRIVER ../execution/hpx/runtime_driver.cc)
 
 endif()
 
@@ -101,7 +109,9 @@ cinch_add_unit(dcrs
   INPUTS
     test/simple2d-8x8.msh
     test/simple2d-16x16.msh
-  LIBRARIES ${COLORING_LIBRARIES}
+  LIBRARIES 
+    ${CINCH_RUNTIME_LIBRARIES}
+    ${COLORING_LIBRARIES}
   POLICY MPI
   THREADS 5
 )
@@ -116,6 +126,20 @@ cinch_add_devel_target(devel-dcrs
   THREADS 5
 )
 
+cinch_add_unit(boxcolor2d
+  SOURCES test/test_simple_box_colorer_2d.cc
+  INPUTS
+  LIBRARIES ${COLORING_LIBRARIES}
+  POLICY MPI
+  THREADS 4
+)
+cinch_add_unit(boxcolor3d
+  SOURCES test/test_simple_box_colorer_3d.cc
+  INPUTS
+  LIBRARIES ${COLORING_LIBRARIES}
+  POLICY MPI
+  THREADS 4
+)
 # Both of these tests depend on ParMETIS.
 # This could change if we add more colorer types.
 if(ENABLE_COLORING AND ENABLE_PARMETIS)

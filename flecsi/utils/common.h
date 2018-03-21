@@ -106,7 +106,7 @@ type() {
 //! Generate unique ids
 template<
     typename T,
-    std::size_t MAXIMUM = std::numeric_limits<std::size_t>::max()>
+    std::size_t MAXIMUM = (std::numeric_limits<std::size_t>::max)()>
 struct unique_id_t {
   static unique_id_t & instance() {
     static unique_id_t u;

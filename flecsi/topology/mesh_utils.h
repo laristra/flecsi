@@ -206,6 +206,92 @@ struct find_index_space_from_dimension__<0, TUPLE, DIM, DOM> {
 
 }; // struct find_index_space_from_dimension__
 
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+
+template<size_t INDEX, typename TUPLE, size_t ID>
+struct find_index_space_from_id__ {
+  //--------------------------------------------------------------------------//
+  //! Find the index corresponding to an entity type in the connectivities
+  //! tuple - either from or to
+  //!
+  //! @tparam INDEX The current index in tuple.
+  //! @tparam TUPLE The tuple type.
+  //! @tparam ID Index space id to search for.
+  //--------------------------------------------------------------------------//
+
+  static constexpr size_t find() {
+    // grab current types
+    using TUPLE_ELEMENT = typename std::tuple_element<INDEX - 1, TUPLE>::type;
+    using INDEX_SPACE = typename std::tuple_element<0, TUPLE_ELEMENT>::type;
+
+    // Check match for ID and return if matched, recurse otherwise.
+    return ID == INDEX_SPACE::value ? INDEX - 1
+               : find_index_space_from_id__<INDEX - 1, TUPLE, ID>::find();
+  } // find
+
+}; // find_index_space_from_id__
+
+//----------------------------------------------------------------------------//
+//! End recursion condition.
+//----------------------------------------------------------------------------//
+
+template<typename TUPLE, size_t ID>
+struct find_index_space_from_id__<0, TUPLE, ID> {
+
+  //--------------------------------------------------------------------------//
+  //! Search last tuple element.
+  //--------------------------------------------------------------------------//
+
+  static constexpr size_t find() {
+    return -1;
+  } // find
+
+}; // struct find_index_space_from_id__
+
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+
+template<size_t INDEX, typename TUPLE, size_t ID>
+struct find_index_subspace_from_id__ {
+  //--------------------------------------------------------------------------//
+  //! Find the index corresponding to an entity type in the connectivities
+  //! tuple - either from or to
+  //!
+  //! @tparam INDEX The current index in tuple.
+  //! @tparam TUPLE The tuple type.
+  //! @tparam ID Index space id to search for.
+  //--------------------------------------------------------------------------//
+
+  static constexpr size_t find() {
+    // grab current types
+    using TUPLE_ELEMENT = typename std::tuple_element<INDEX - 1, TUPLE>::type;
+    using INDEX_SUBSPACE = typename std::tuple_element<1, TUPLE_ELEMENT>::type;
+
+    // Check match for ID and return if matched, recurse otherwise.
+    return ID == INDEX_SUBSPACE::value ? INDEX - 1
+               : find_index_subspace_from_id__<INDEX - 1, TUPLE, ID>::find();
+  } // find
+
+}; // find_index_subspace_from_id__
+
+//----------------------------------------------------------------------------//
+//! End recursion condition.
+//----------------------------------------------------------------------------//
+
+template<typename TUPLE, size_t ID>
+struct find_index_subspace_from_id__<0, TUPLE, ID> {
+
+  //--------------------------------------------------------------------------//
+  //! Search last tuple element.
+  //--------------------------------------------------------------------------//
+
+  static constexpr size_t find() {
+    return -1;
+  } // find
+
+}; // struct find_index_subspace_from_id__
+
 /*----------------------------------------------------------------------------*
  * Connectivity utilities.
  *----------------------------------------------------------------------------*/
@@ -334,23 +420,29 @@ public:
   std::vector<int_t> partition;
 };
 
-FLECSI_MEMBER_CHECKER(num_specialization_index_spaces);
+FLECSI_MEMBER_CHECKER(index_subspaces);
 
-template<typename MESH_TYPE, bool HAS_NUM>
-struct num_specialization_index_spaces_helper_{
-  static const size_t value = MESH_TYPE::num_specialization_index_spaces;
+template<typename MESH_TYPE, bool HAS_SUBSPACES>
+struct index_subspaces_tuple__{
+  using type = typename MESH_TYPE::index_subspaces;
 };
 
 template<typename MESH_TYPE>
-struct num_specialization_index_spaces_helper_<MESH_TYPE, false>{
-  static const size_t value = 0;
+struct index_subspaces_tuple__<MESH_TYPE, false>{
+  using type = std::tuple<>;
 };
 
 template<typename MESH_TYPE>
-struct num_specialization_index_spaces__{
-  static const size_t value = 
-    num_specialization_index_spaces_helper_<MESH_TYPE,
-      has_member_num_specialization_index_spaces<MESH_TYPE>::value>::value;
+struct get_index_subspaces__{
+  using type = typename index_subspaces_tuple__<MESH_TYPE,
+    has_member_index_subspaces<MESH_TYPE>::value>::type;
+};
+
+template<typename MESH_TYPE>
+struct num_index_subspaces__{
+  using type = typename get_index_subspaces__<MESH_TYPE>::type;
+
+  static constexpr size_t value = std::tuple_size<type>::value;  
 };
 
 } // namespace topology

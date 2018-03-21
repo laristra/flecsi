@@ -38,7 +38,7 @@ namespace topology {
 /// \brief mpi_data_handle_policy_t provides...
 ///
 
-template<size_t NUM_DIMS, size_t NUM_DOMS, size_t NUM_SPEC_INDEX_SPACES>
+template<size_t NUM_DIMS, size_t NUM_DOMS, size_t NUM_INDEX_SUBSPACES>
 struct mpi_topology_storage_policy__ {
   static constexpr size_t num_partitions = 5;
   using id_t = utils::id_t;
@@ -53,15 +53,15 @@ struct mpi_topology_storage_policy__ {
           topology_storage__>,
       NUM_DIMS + 1>;
 
-  using specialization_index_spaces_t = std::array<
+  using index_subspaces_t = std::array<
       index_space__<
           mesh_entity_base_ *,
+          false,
           true,
-          true,
-          true,
+          false,
           void,
           topology_storage__>,
-      NUM_SPEC_INDEX_SPACES>;
+      NUM_INDEX_SUBSPACES>;
 
   using partition_index_spaces_t = std::array<
       index_space__<
@@ -79,7 +79,7 @@ struct mpi_topology_storage_policy__ {
 
   std::array<index_spaces_t, NUM_DOMS> index_spaces;
 
-  specialization_index_spaces_t specialization_index_spaces;
+  index_subspaces_t index_subspaces;
 
   std::array<std::array<partition_index_spaces_t, NUM_DOMS>, num_partitions>
       partition_index_spaces;
@@ -154,27 +154,35 @@ struct mpi_topology_storage_policy__ {
     }
   } // init_entities
 
-  void init_specialization_entities(
+  void init_index_subspace(
       size_t index_space,
-      mesh_entity_base_ * entities,
+      size_t index_subspace,
+      size_t domain,
+      size_t dim,
       utils::id_t * ids,
-      size_t size,
       size_t num_entities,
       bool read) {
-    auto & is = specialization_index_spaces[index_space];
 
-    auto s = is.storage();
-    s->set_buffer(entities, num_entities, read);
+    auto & context_ = execution::context_t::instance();
+    auto & ssm = context_.index_subspace_info();
+    auto itr = ssm.find(index_subspace);
+    clog_assert(itr != ssm.end(), "invalid index subspace");
+    const execution::context_t::index_subspace_info_t& si = itr->second;
 
-    auto & id_storage = is.id_storage();
-    id_storage.set_buffer(ids, num_entities, true);
+    auto & is = index_spaces[domain][dim];
+    auto & iss = index_subspaces[index_subspace];
+
+    iss.set_storage(is.storage());
+
+    auto & id_storage = iss.id_storage();
+    id_storage.set_buffer(ids, si.capacity, si.size);
 
     if (!read) {
       return;
     }
 
-    is.set_end(num_entities);
-  } // init_specialization_entities
+    iss.set_end(si.size);
+  } // init_index_subspaces
 
   void init_connectivity(
       size_t from_domain,

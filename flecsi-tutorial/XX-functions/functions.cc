@@ -13,9 +13,17 @@
                                                                               */
 #include <iostream>
 
+#include<flecsi-tutorial/specialization/mesh/mesh.h>
+#include<flecsi/data/data.h>
 #include<flecsi/execution/execution.h>
 
-namespace hydro {
+using namespace flecsi;
+using namespace flecsi::tutorial;
+
+flecsi_register_data_client(mesh_t, clients, mesh);
+flecsi_register_field(mesh_t, hydro, pressure, double, dense, 1, cells);
+
+namespace example {
 
 /*----------------------------------------------------------------------------*
 
@@ -51,6 +59,8 @@ namespace hydro {
       (2) The return type of the function signature. In this example
 
       (3-N) The arguments to the function signature.
+
+  (3) ...
   
   NOTE: If you do not require a function that can be passed as data, you
   do not need to use a FleCSI function! Invoking a function through the
@@ -59,42 +69,75 @@ namespace hydro {
 
  *----------------------------------------------------------------------------*/
 
-flecsi_define_function_type(void_function_t, void);
-flecsi_define_function_type(pressure_eos_t, double, double, double);
+#define PRINT_MESSAGE(s) \
+  std::cout << "Executing " << s << std::endl;
+
+// Define a function type for a very simple function.
+// NOTE: For functions that do not take any arguments, it is only
+// necessary to specify the return type. In this example, the return
+// type is 'void'.
+
+flecsi_define_function_type(simple_function_t, void);
 
 void simple_function() {
 
-  // Print message from inside of the task
-  std::cout << "Hello World from " << __FUNCTION__ << std::endl;
+  PRINT_MESSAGE(__FUNCTION__);
 
 } // simple_function
 
-flecsi_register_function(simple_function, hydro);
+flecsi_register_function(simple_function, example);
 
-double gamma(double rho, double rho_e) {
-} // gamma
+//---
 
-struct data_t {
-  void_function_t test;
-}; // data_t
+flecsi_define_function_type(argument_function_t, int, double);
 
-void calling_function(data_t & d) {
+int argument_function(double arg) {
+  PRINT_MESSAGE(__FUNCTION__ << " with value " << arg);
+  return 0;
+} // arugment_function
 
-  flecsi_execute_function(d.test);
+flecsi_register_function(argument_function, example);
 
-} // calling_function
+int argument_task(mesh<ro> m, field<ro> p, argument_function_t fh) {
 
-} // namespace hydro
+  for(auto c: m.cells()) {
+    if(flecsi_execute_function(fh, p(c))) {
+      return 1;
+    } // if
+  } // for
+
+  return 0;
+} // argument_task
+
+flecsi_register_task(argument_task, example, loc, single);
+
+} // namespace example
 
 namespace flecsi {
 namespace execution {
 
 void driver(int argc, char ** argv) {
 
-  hydro::data_t d;
-  d.test = flecsi_function_handle(simple_function, hydro);
+  {
+  // Get a handle to the simple function
+  auto fh = flecsi_function_handle(simple_function, example);
 
-  calling_function(d);
+  // Invoke the simple function
+  flecsi_execute_function(fh);
+  } // simple function scope
+
+  {
+  auto fh = flecsi_function_handle(argument_function, example);
+  int retval = flecsi_execute_function(fh, 5.0);
+  } // arguemnt function scope
+
+  {
+  auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
+  auto fh = flecsi_function_handle(argument_function, example);
+  auto p = flecsi_get_handle(m, hydro, pressure, double, dense, 0);
+  auto retval = flecsi_execute_task(argument_task, example, single, m, p, fh);
+  } // argument function scope
+
 } // driver
 
 } // namespace execution

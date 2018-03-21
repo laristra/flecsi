@@ -29,7 +29,7 @@ namespace hydro {
 
 void initialize_materials(mesh<ro> mesh, ragged_field_mutator d) {
 
-  for(auto c: mesh.cells()) {
+  for(auto c: mesh.cells(owned)) {
     const size_t random = (rand()/double{RAND_MAX}) * 5;
 
     d.resize(c, random);

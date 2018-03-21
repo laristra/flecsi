@@ -85,6 +85,9 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
   set(ENABLE_LEGION ON CACHE BOOL "Enable Legion" FORCE)
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+  set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
+  set(ENABLE_HPX ON CACHE BOOL "Enable HPX" FORCE)
 endif()
 
 mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
@@ -110,7 +113,7 @@ set(FLECSI_DBC_REQUIRE ON CACHE BOOL
 # Load the cinch extras
 #------------------------------------------------------------------------------#
 
-cinch_load_extras(MPI LEGION)
+cinch_load_extras(MPI LEGION HPX)
 
 #------------------------------------------------------------------------------#
 # Add option for setting id bits
@@ -145,7 +148,7 @@ set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/FleCSI)
 # Add options for runtime selection
 #------------------------------------------------------------------------------#
 
-set(FLECSI_RUNTIME_MODELS legion mpi)
+set(FLECSI_RUNTIME_MODELS legion mpi hpx)
 
 if(NOT FLECSI_RUNTIME_MODEL)
   list(GET FLECSI_RUNTIME_MODELS 0 FLECSI_RUNTIME_MODEL)
@@ -230,11 +233,11 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   if(NOT MPI_${MPI_LANGUAGE}_FOUND)
     message (FATAL_ERROR "MPI is required for the legion runtime model")
   endif()
- 
+
   if(NOT Legion_FOUND)
     message (FATAL_ERROR "Legion is required for the legion runtime model")
   endif()
- 
+
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/legion)
 
   set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${Legion_LIBRARIES}
@@ -271,12 +274,26 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  if(NOT HPX_FOUND)
+    message (FATAL_ERROR "HPX is required for the HPX runtime model")
+  endif()
+
+  if(NOT MPI_${MPI_LANGUAGE}_FOUND)
+    message (FATAL_ERROR "MPI is required for the hpx runtime model")
+  endif()
+
+   set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
+
+  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/hpx)
+
 #
 # Default
 #
 else()
 
-  message(FATAL_ERROR "Unrecognized runtime selection")  
+  message(FATAL_ERROR "Unrecognized runtime selection")
 
 endif()
 
@@ -386,12 +403,22 @@ install(
 #------------------------------------------------------------------------------#
 
 cinch_add_library_target(FleCSI flecsi)
-cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+  option(ENABLE_FLECSI_TUTORIAL
+    "Enable library support for the FleCSI tutorial" OFF)
+else()
+  option(ENABLE_FLECSI_TUTORIAL
+    "Enable library support for the FleCSI tutorial" ON)
+endif()
+
+if(ENABLE_FLECSI_TUTORIAL)
+  cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
+endif()
 
 #------------------------------------------------------------------------------#
 # Install Tutorial inputs
 #------------------------------------------------------------------------------#
-message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 
 install(
   FILES ${PROJECT_SOURCE_DIR}/flecsi-tutorial/specialization/inputs/simple2d-16x16.msh
@@ -407,6 +434,11 @@ if(FLECSI_RUNTIME_LIBRARIES OR COLORING_LIBRARIES)
   )
 endif()
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  hpx_setup_target(FleCSI NONAMEPREFIX)
+
+endif()
 #------------------------------------------------------------------------------#
 # Set application directory
 #------------------------------------------------------------------------------#

@@ -1,4 +1,4 @@
-# FleCSI: Tutorial Specialization
+# FleCSI: Tutorial - Specialization
 <!--
   The above header ("FleCSI: Tutorial") is required for Doxygen to
   correctly name the auto-generated page. It is ignored in the FleCSI
@@ -7,7 +7,7 @@
 
 <!-- CINCHDOC DOCUMENT(user-guide) SECTION(tutorial) -->
 
-# Tutorial Specialization
+# Tutorial - Specialization
 
 FleCSI is intended as a developer tool that can be used to create
 interfaces for application developers and scientists. As such, FleCSI

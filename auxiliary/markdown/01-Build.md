@@ -48,6 +48,9 @@ options, but is not necessary for a particular build:
 * **CMake**<br>  
   We currently require CMake version 2.8 or greater.
 
+* **Python**<br>  
+  We currently require Python 2.7 or greater.
+
 ## FleCSI Third Party Libraries Project
 
 To facilitate FleCSI adoption by a broad set of users, we have provided

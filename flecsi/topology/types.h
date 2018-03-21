@@ -44,6 +44,9 @@ using domain_ = typeify<size_t, DOM>;
 template<size_t IS>
 using index_space_ = typeify<size_t, IS>;
 
+template<size_t ISS>
+using index_subspace_ = typeify<size_t, ISS>;
+
 /*----------------------------------------------------------------------------*
  * Simple types
  *----------------------------------------------------------------------------*/
@@ -56,7 +59,7 @@ struct id_vector_hash_t {
   size_t operator()(const id_vector_t & v) const {
     size_t h = 0;
     for (utils::id_t id : v) {
-      h |= id.local_id();
+      h |= static_cast<size_t>(id.local_id());
     } // for
 
     return h;

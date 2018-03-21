@@ -60,6 +60,81 @@ clog_register_tag(execution);
   typename flecsi::utils::function_traits__<decltype(task)>::arguments_type
 
 //----------------------------------------------------------------------------//
+// Object Registration Interface
+//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_register_global_object
+
+  Register a global object with the runtime. A global object must be
+  intitialized and mutated consistently by all colors.
+
+  @param index  The index of the global object within the given namespace.
+  @param nspace The namespace of the global object.
+  @param type   The type of the global object.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_global_object(index, nspace, type)                     \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  static bool registered_global_object_ ## nspace ## _ ## index =              \
+    flecsi::execution::context_t::instance().                                  \
+      template register_global_object<                                         \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      index, type>();
+
+/*!
+  @def flecsi_set_global_object
+
+  Set the address of a global object that has been registered with the
+  FleCSI runtime.
+
+  @param index  The index of the global object within the given namespace.
+  @param nspace The namespace of the global object.
+  @param type   The type of the global object.
+  @param obj    The address of the global object. Normally, this is just
+                the pointer to the object, which will be converted into
+                a uintptr_t.
+
+  @ingroup execution
+ */
+
+#define flecsi_set_global_object(index, nspace, type, obj)                     \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::execution::context_t::instance().template set_global_object<         \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    type>(index, obj);
+
+#define flecsi_initialize_global_object(index, nspace, type, ...)              \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::execution::context_t::instance().template initialize_global_object<  \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    type>(index, ##__VA_ARGS__);
+
+/*!
+  @def flecsi_get_global_object
+
+  Get a global object instance.
+
+  @param index  The index of the global object within the given namespace.
+  @param nspace The namespace of the global object.
+  @param type   The type of the global object.
+
+  @ingroup execution
+ */
+
+#define flecsi_get_global_object(index, nspace, type)                          \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::execution::context_t::instance().template get_global_object<         \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    type>(index);
+
+//----------------------------------------------------------------------------//
 // Task Registration Interface
 //----------------------------------------------------------------------------//
 
@@ -178,6 +253,32 @@ clog_register_tag(execution);
 //----------------------------------------------------------------------------//
 
 /*!
+  @def flecsi_color
+
+  Return the index of the currently executing color.
+
+  @ingroup execution
+ */
+
+#define flecsi_color()                                                         \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::execution::context_t::instance().color()
+
+/*!
+  @def flecsi_colors
+
+  Return the number of colors in the currently executing code.
+
+  @ingroup execution
+ */
+
+#define flecsi_colors()                                                        \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::execution::context_t::instance().colors()
+
+/*!
   @def flecsi_execute_task_simple
 
   This macro executes a simple user task, i.e., one that is not scoped in
@@ -196,21 +297,21 @@ clog_register_tag(execution);
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_interface_t::execute_task<                           \
+      flecsi::execution::launch_type_t::launch,                                \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       __flecsi_internal_return_type(task),                                     \
-      __flecsi_internal_arguments_type(task)>(                                 \
-      flecsi::execution::mask_to_type(flecsi::launch), 0, ##__VA_ARGS__)
+      __flecsi_internal_arguments_type(task)>(0, ##__VA_ARGS__)
 
-#define flecsi_execute_reduction_task_simple(task, launch, redop_id, ...)                          \
+#define flecsi_execute_reduction_task_simple(task, launch, redop_id, ...)      \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_interface_t::execute_task<                           \
+      flecsi::execution::launch_type_t::launch,                                \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       __flecsi_internal_return_type(task),                                     \
-      __flecsi_internal_arguments_type(task)>(                                 \
-      flecsi::execution::mask_to_type(flecsi::launch), redop_id, ##__VA_ARGS__)
+      __flecsi_internal_arguments_type(task)>(redop_id, ##__VA_ARGS__)
 
 /*!
   @def flecsi_execute_task

@@ -27,6 +27,7 @@ set(utils_HEADERS
   dbc_impl.h
   debruijn.h
   dimensioned_array.h
+  export_definitions.h
   factory.h
   hash.h
   humble.h
@@ -80,6 +81,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(UNIT_POLICY MPI)
   set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  set(UNIT_POLICY HPX)
+  set(RUNTIME_DRIVER ../execution/hpx/runtime_driver.cc)
 
 endif()
 

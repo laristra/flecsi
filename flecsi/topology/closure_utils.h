@@ -94,26 +94,23 @@ template<
     typename = std::enable_if_t<utils::is_iterative_container_v<U>>>
 std::set<size_t>
 entity_neighbors(const mesh_definition__<D> & md, U && indices) {
+  clog_assert(from_dim == to_dim, "from_dim does not equal to to_dim");
+  
   // Closure should include the initial set
   std::set<size_t> closure(
       std::forward<U>(indices).begin(), std::forward<U>(indices).end());
 
-#if 1
   using entityid = size_t;
   using vertexid = size_t;
 
   // essentially vertex to cell and cell to cell through vertices
   // connectivity.
-  // FIXME: use vertex2entities connectivity from mesh_definition rather than
-  // building our own.
   std::map<vertexid, std::vector<entityid>> vertex2entities;
   std::map<entityid, std::vector<entityid>> entity_neighbors;
 
   // build global entity to entity through # of shared vertices connectivity
   for (size_t cell(0); cell < md.num_entities(from_dim); ++cell) {
     std::map<entityid, size_t> cell_counts;
-    // FIXME: change to "to_dim"?
-    // FIXME: Is the algorithm correct when from_dim != to_dim?
     for (auto vertex : md.entities(from_dim, 0, cell)) {
       // build vertex to cell connectivity, O(n_cells * n_polygon_sides)
       // of insert().
@@ -143,15 +140,6 @@ entity_neighbors(const mesh_definition__<D> & md, U && indices) {
       closure.insert(n);
     }
   }
-
-#else
-  // Iterate over the entity indices and add all neighbors
-  for (auto i : indices) {
-    auto ncurr = entity_neighbors<from_dim, to_dim, thru_dim>(md, i);
-
-    closure = flecsi::utils::set_union(ncurr, closure);
-  } // for
-#endif
 
   return closure;
 } // entity_closure

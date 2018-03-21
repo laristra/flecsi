@@ -22,6 +22,7 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/topology/mesh_types.h>
+#include <flecsi/topology/mesh_utils.h>
 #include <flecsi/utils/tuple_walker.h>
 
 namespace flecsi {
@@ -83,6 +84,30 @@ struct data_client_policy_handler__<global_data_client_t> {
 }; // struct data_client_policy_handler__
 
 //----------------------------------------------------------------------------//
+//! The data client policy handler for color data client. Populate the
+//! required fields on the client handle.
+//----------------------------------------------------------------------------//
+
+template<>
+struct data_client_policy_handler__<color_data_client_t> {
+
+  template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
+  static data_client_handle__<DATA_CLIENT_TYPE, 0> get_client_handle() {
+    data_client_handle__<DATA_CLIENT_TYPE, 0> h;
+
+    h.client_hash =
+        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+    h.namespace_hash = NAMESPACE_HASH;
+    h.name_hash = NAME_HASH;
+
+    return h;
+  } // get_client_handle
+
+}; // struct data_client_policy_handler__
+
+
+
+//----------------------------------------------------------------------------//
 //! The data client policy handler for mesh topology. This class provides
 //! tuple walkers for extracting information from the entity types, bindings,
 //! and connectivity tuples and obtaining information about field IDs in order
@@ -109,6 +134,13 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
     size_t from_dim;
     size_t to_dim;
   }; // struct adjacency_info_t
+
+  struct index_subspace_info_t {
+    size_t index_space;
+    size_t index_subspace;
+    size_t domain;
+    size_t dim;
+  }; // struct entity_info_t
 
   struct entity_walker_t
       : public flecsi::utils::tuple_walker__<entity_walker_t> {
@@ -224,11 +256,54 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
     std::vector<adjacency_info_t> adjacency_info;
   }; // struct binding_walker__
 
+  template<typename MESH_TYPE>
+  struct index_subspace_walker__
+      : public flecsi::utils::tuple_walker__<
+        index_subspace_walker__<MESH_TYPE>> {
+
+    using entity_types_t = typename MESH_TYPE::entity_types;
+
+    template<typename TUPLE_ENTRY_TYPE>
+    void handle_type() {
+      using INDEX_TYPE = typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
+      using INDEX_SUBSPACE_TYPE = 
+        typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
+
+      index_subspace_info_t si;
+
+      si.index_space = INDEX_TYPE::value;
+      si.index_subspace = INDEX_SUBSPACE_TYPE::value;
+
+      constexpr size_t index = topology::find_index_space_from_id__<
+          std::tuple_size<entity_types_t>::value, entity_types_t,
+          INDEX_TYPE::value>::find();
+
+      using ENT_TUPLE_ENTRY_TYPE = 
+          typename std::tuple_element<index, entity_types_t>::type;
+
+      using DOMAIN_TYPE =
+          typename std::tuple_element<1, ENT_TUPLE_ENTRY_TYPE>::type;
+      
+      using ENTITY_TYPE =
+          typename std::tuple_element<2, ENT_TUPLE_ENTRY_TYPE>::type;
+
+      si.domain = DOMAIN_TYPE::value;
+      si.dim = ENTITY_TYPE::dimension;
+
+      index_subspace_info.push_back(si);
+    } // handle_type
+
+    std::vector<index_subspace_info_t> index_subspace_info;
+
+  }; // struct index_subspace_walker_t
+
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
   static data_client_handle__<DATA_CLIENT_TYPE, 0> get_client_handle() {
     using entity_types = typename POLICY_TYPE::entity_types;
     using connectivities = typename POLICY_TYPE::connectivities;
     using bindings = typename POLICY_TYPE::bindings;
+    using index_subspaces = typename topology::get_index_subspaces__<
+      POLICY_TYPE>::type;
     using field_info_t = execution::context_t::field_info_t;
 
     data_client_handle__<DATA_CLIENT_TYPE, 0> h;
@@ -353,6 +428,50 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
       adj.adj_region = ritr->second.entire_region;
       adj.adj_color_partition = ritr->second.color_partition;
 #endif
+      ++handle_index;
+    }
+
+    auto & issm = context.index_subspace_data_map();
+
+    index_subspace_walker__<POLICY_TYPE> index_subspace_walker;
+    index_subspace_walker.template walk_types<index_subspaces>();
+
+    handle_index = 0;
+
+    clog_assert(
+        index_subspace_walker.index_subspace_info.size() <= h.MAX_INDEX_SUBSPACES,
+        "handle max index subspaces exceeded");
+
+    h.num_index_subspaces = index_subspace_walker.index_subspace_info.size();
+
+    for (index_subspace_info_t & si : 
+      index_subspace_walker.index_subspace_info) {
+
+      data_client_handle_index_subspace_t & iss = 
+        h.handle_index_subspaces[handle_index];
+
+      iss.index_space = si.index_space;
+      iss.index_subspace = si.index_subspace;
+      iss.domain = si.domain;
+      iss.dim = si.dim;
+
+      const field_info_t * fi = context.get_field_info_from_key(
+          h.client_hash,
+          utils::hash::client_internal_field_hash(
+              utils::const_string_t("__flecsi_internal_index_subspace_index__")
+                  .hash(),
+              si.index_subspace));
+
+      if (fi) {
+        iss.index_fid = fi->fid;
+      }
+
+      #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+            auto ritr = issm.find(si.index_subspace);
+            clog_assert(ritr != issm.end(), "invalid index subspace");
+            iss.region = ritr->second.region;
+      #endif      
+
       ++handle_index;
     }
 

@@ -169,7 +169,7 @@ public:
     return length_;
   }
   constexpr size_type max_size() const {
-    return std::numeric_limits<size_type>::max() / sizeof(T);
+    return (std::numeric_limits<size_type>::max)() / sizeof(T);
   }
   constexpr bool empty() const {
     return length_ == 0;

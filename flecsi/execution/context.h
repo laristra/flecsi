@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <functional>
 #include <map>
 #include <unordered_map>
 
@@ -26,6 +27,7 @@
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/execution/common/execution_state.h>
+#include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/const_string.h>
 
@@ -97,6 +99,12 @@ struct context__ : public CONTEXT_POLICY {
     size_t active_migration_capacity;
   };
 
+  struct index_subspace_info_t {
+    size_t index_subspace;
+    size_t capacity;
+    size_t size = 0;
+  };
+
   /*!
     Structure needed to initialize a set topology.
    */
@@ -114,6 +122,58 @@ struct context__ : public CONTEXT_POLICY {
 
   using field_info_map_t =
       std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
+
+  //--------------------------------------------------------------------------//
+  // Object interface.
+  //--------------------------------------------------------------------------//
+
+  template<
+    size_t NAMESPACE_HASH,
+    size_t INDEX,
+    typename OBJECT_TYPE>
+  bool register_global_object() {
+    size_t KEY = NAMESPACE_HASH ^ INDEX;
+
+    using wrapper_t = global_object_wrapper__<OBJECT_TYPE>;
+
+    std::get<0>(global_object_registry_[KEY]) = {};
+    std::get<1>(global_object_registry_[KEY]) = &wrapper_t::cleanup;
+
+    return true;
+  } // register_global_object
+
+  template<
+    size_t NAMESPACE_HASH,
+    typename OBJECT_TYPE>
+  bool set_global_object(size_t index, OBJECT_TYPE * obj) {
+    size_t KEY = NAMESPACE_HASH ^ index;
+    assert(global_object_registry_.find(KEY) != global_object_registry_.end());
+    std::get<0>(global_object_registry_[KEY]) =
+      reinterpret_cast<uintptr_t>(obj);
+    return true;
+  } // set_global_object
+
+  template<
+    size_t NAMESPACE_HASH,
+    typename OBJECT_TYPE,
+    typename ... ARGS>
+  bool initialize_global_object(size_t index, ARGS && ... args) {
+    size_t KEY = NAMESPACE_HASH ^ index;
+    assert(global_object_registry_.find(KEY) != global_object_registry_.end());
+    std::get<0>(global_object_registry_[KEY]) =
+      reinterpret_cast<uintptr_t>(new OBJECT_TYPE(std::forward<ARGS>(args)...));
+    return true;
+  } // new_global_object
+
+  template<
+    size_t NAMESPACE_HASH,
+    typename OBJECT_TYPE>
+  OBJECT_TYPE * get_global_object(size_t index) {
+    size_t KEY = NAMESPACE_HASH ^ index;
+    assert(global_object_registry_.find(KEY) != global_object_registry_.end());
+    return reinterpret_cast<OBJECT_TYPE *>(
+      std::get<0>(global_object_registry_[KEY]));
+  } // get_global_object
 
   //--------------------------------------------------------------------------//
   // Function interface.
@@ -198,11 +258,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   auto & index_map(size_t index_space) {
+    auto it = index_map_.find(index_space);
     clog_assert(
-        index_map_.find(index_space) != index_map_.end(),
+        it != index_map_.end(),
         "invalid index space");
 
-    return index_map_[index_space];
+    return it->second;
   } // index_map
 
   /*!
@@ -210,11 +271,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   const auto & index_map(size_t index_space) const {
+    auto it = index_map_.find(index_space);
     clog_assert(
-        index_map_.find(index_space) != index_map_.end(),
+        it != index_map_.end(),
         "invalid index space");
 
-    return index_map_.at(index_space);
+    return it->second;
   } // index_map
 
   /*!
@@ -297,11 +359,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   auto & reverse_index_map(size_t index_space) {
+    auto it = reverse_index_map_.find(index_space);
     clog_assert(
-        reverse_index_map_.find(index_space) != reverse_index_map_.end(),
+        it != reverse_index_map_.end(),
         "invalid index space");
 
-    return reverse_index_map_[index_space];
+    return it->second;
   } // reverse_index_map
 
   /*!
@@ -309,11 +372,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   const auto & reverse_index_map(size_t index_space) const {
+    auto it = reverse_index_map_.find(index_space);
     clog_assert(
-        reverse_index_map_.find(index_space) != reverse_index_map_.end(),
+        it != reverse_index_map_.end(),
         "invalid index space");
 
-    return reverse_index_map_.at(index_space);
+    return it->second;
   } // reverse_index_map
 
   /*!
@@ -348,11 +412,12 @@ struct context__ : public CONTEXT_POLICY {
   auto const & intermediate_map(size_t dimension, size_t domain) const {
     const size_t key = utils::hash::intermediate_hash(dimension, domain);
 
+    auto it = reverse_intermediate_map_.find(key);
     clog_assert(
-        intermediate_map_.find(key) != intermediate_map_.end(),
+        it != intermediate_map_.end(),
         "invalid index space");
 
-    return intermediate_map_.at(key);
+    return it->second;
   } // intermediate_map
 
   /*!
@@ -365,11 +430,12 @@ struct context__ : public CONTEXT_POLICY {
   auto const & reverse_intermediate_map(size_t dimension, size_t domain) const {
     const size_t key = utils::hash::intermediate_hash(dimension, domain);
 
+    auto it = reverse_intermediate_map_.find(key);
     clog_assert(
-        reverse_intermediate_map_.find(key) != reverse_intermediate_map_.end(),
+        it != reverse_intermediate_map_.end(),
         "invalid index space");
 
-    return reverse_intermediate_map_.at(key);
+    return it->second;
   } // reverse_intermediate_map
 
   /*!
@@ -399,11 +465,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   index_coloring_t & coloring(size_t index_space) {
-    if (colorings_.find(index_space) == colorings_.end()) {
+    auto it = colorings_.find(index_space);
+    if (it == colorings_.end()) {
       clog(fatal) << "invalid index_space " << index_space << std::endl;
     } // if
 
-    return colorings_[index_space];
+    return it->second;
   } // coloring
 
   /*!
@@ -415,11 +482,12 @@ struct context__ : public CONTEXT_POLICY {
 
   const std::unordered_map<size_t, coloring_info_t> &
   coloring_info(size_t index_space) {
-    if (coloring_info_.find(index_space) == coloring_info_.end()) {
+    auto it = coloring_info_.find(index_space);
+    if (it == coloring_info_.end()) {
       clog(fatal) << "invalid index space " << index_space << std::endl;
     } // if
 
-    return coloring_info_[index_space];
+    return it->second;
   } // coloring_info
 
   /*!
@@ -471,6 +539,32 @@ struct context__ : public CONTEXT_POLICY {
   const std::map<size_t, adjacency_info_t> & adjacency_info() const {
     return adjacency_info_;
   } // adjacencies
+
+  void
+  add_index_subspace(
+    size_t index_subspace,
+    size_t capacity
+  )
+  {
+    index_subspace_info_t info;
+    info.index_subspace = index_subspace;
+    info.capacity = capacity;
+
+    index_subspace_map_.emplace(index_subspace, std::move(info));
+  }
+
+  void
+  add_index_subspace(
+    const index_subspace_info_t & info
+  )
+  {
+    index_subspace_map_.emplace(info.index_subspace, info);
+  }
+
+  std::map<size_t, index_subspace_info_t>&
+  index_subspace_info() {
+    return index_subspace_map_;
+  }
 
   /*!
     Register field info for index space and field id.
@@ -609,11 +703,17 @@ struct context__ : public CONTEXT_POLICY {
   } // execution_state
 
 private:
+
   // Default constructor
   context__() : CONTEXT_POLICY() {}
 
   // Destructor
-  ~context__() {}
+  ~context__() {
+    // Invoke the cleanup function for each global object
+    for(auto & go: global_object_registry_) {
+      std::get<1>(go.second)(std::get<0>(go.second));
+    } // for
+  } // ~context_t
 
   //--------------------------------------------------------------------------//
   // We don't need any of these
@@ -623,6 +723,15 @@ private:
   context__ & operator=(const context__ &) = delete;
   context__(context__ &&) = delete;
   context__ & operator=(context__ &&) = delete;
+
+  //--------------------------------------------------------------------------//
+  // Object data members.
+  //--------------------------------------------------------------------------//
+
+  using global_object_data_t =
+    std::pair<uintptr_t, std::function<void(uintptr_t)>>;
+
+  std::unordered_map<size_t, global_object_data_t> global_object_registry_;
 
   //--------------------------------------------------------------------------//
   // Function data members.
@@ -736,6 +845,12 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, adjacency_info_t> adjacency_info_;
+
+  //--------------------------------------------------------------------------//
+  // key: index subspace
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, index_subspace_info_t> index_subspace_map_;
 
   //--------------------------------------------------------------------------//
   // Execution state

@@ -50,6 +50,8 @@ public:
   using coloring_info_t = coloring::coloring_info_t;
 
   using adjacency_info_t = coloring::adjacency_info_t;
+  
+  using index_subspace_info_t = execution::context_t::index_subspace_info_t;
 
   using coloring_info_map_t = std::unordered_map<size_t, coloring_info_t>;
 
@@ -82,6 +84,19 @@ public:
     Legion::FieldSpace field_space;
     Legion::LogicalRegion logical_region;
     size_t capacity;
+  };
+
+  /*!
+    Collects all of the information needed to represent an index subspace.
+   */
+  struct index_subspace_t {
+    size_t index_subspace_id;
+    Legion::IndexSpace index_space;
+    Legion::FieldSpace field_space;
+    Legion::LogicalRegion logical_region;
+    Legion::IndexPartition index_partition;
+    size_t capacity;
+    Legion::FieldID fid;
   };
 
   /*!
@@ -293,8 +308,8 @@ public:
     is.capacity = local_index_space.capacity;
 
     LegionRuntime::Arrays::Rect<1> rect(
-	LegionRuntime::Arrays::Point<1>(0),
-	LegionRuntime::Arrays::Point<1>(is.capacity - 1));
+	  LegionRuntime::Arrays::Point<1>(0),
+	  LegionRuntime::Arrays::Point<1>(is.capacity - 1));
     is.index_space_id = index_space_id;
     is.index_space =
         runtime->create_index_space(ctx, Legion::Domain::from_rect<1>(rect));
@@ -409,6 +424,64 @@ public:
     adjacency_map_.emplace(adjacency_info.index_space, std::move(c));
   }
 
+  void add_index_subspace(const index_subspace_info_t & info) {
+    using namespace std;
+
+    using namespace Legion;
+    using namespace LegionRuntime;
+    using namespace Arrays;
+
+    using namespace execution;
+
+    context_t & context = context_t::instance();
+
+    index_subspace_t is;
+    is.index_subspace_id = info.index_subspace;
+    is.capacity = info.capacity;
+
+    // Create expanded index space
+    LegionRuntime::Arrays::Rect<2> expanded_bounds = 
+      LegionRuntime::Arrays::Rect<2>(
+        LegionRuntime::Arrays::Point<2>::ZEROES(),
+          make_point(num_colors_, is.capacity));
+
+    Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
+
+    is.index_space = runtime_->create_index_space(ctx_, expanded_dom);
+    is.field_space = runtime_->create_field_space(ctx_);
+
+    using field_info_t = context_t::field_info_t;
+
+    FieldAllocator allocator =
+        runtime_->create_field_allocator(ctx_, is.field_space);
+
+    for (const field_info_t & fi : context.registered_fields()) {
+      if (fi.storage_class == data::subspace &&
+          fi.index_space == is.index_subspace_id) {
+        allocator.allocate_field(fi.size, fi.fid);
+        is.fid = fi.fid;
+      }
+    }
+
+    is.logical_region =
+        runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
+
+    DomainColoring color_partitioning;
+    for(size_t color = 0; color < num_colors_; ++color){
+      LegionRuntime::Arrays::Rect<2> subrect(
+        make_point(color, 0), make_point(color,
+        is.capacity - 1));
+
+      color_partitioning[color] = Domain::from_rect<2>(subrect);
+    }
+
+    is.index_partition = runtime_->create_index_partition(
+        ctx_, is.index_space, color_domain_, color_partitioning,
+        true /*disjoint*/);    
+
+    index_subspace_map_.emplace(info.index_subspace, std::move(is));
+  }
+
   /*!
     After gathering all of the necessary information specified in the methods
     above this method is finally called to assemble and allocate fields spaces
@@ -448,6 +521,7 @@ public:
           case global:
           case color:
           case local:
+          case subspace:
             break;
           default:
             if (fi.index_space == is.index_space_id) {
@@ -636,6 +710,10 @@ public:
     return adjacency_map_;
   }
 
+  const std::unordered_map<size_t, index_subspace_t> & index_subspace_map() const {
+    return index_subspace_map_;
+  }
+
   index_space_t global_index_space() {
     return global_index_space_;
   }
@@ -664,6 +742,9 @@ private:
 
   // key: index space
   std::unordered_map<size_t, adjacency_t> adjacency_map_;
+
+  // key: index space
+  std::unordered_map<size_t, index_subspace_t> index_subspace_map_;
 
   std::set<size_t> adjacencies_;
 

@@ -50,4 +50,17 @@ using FLECSI_RUNTIME_CONTEXT_POLICY = mpi_context_policy_t;
 } // namespace execution
 } // namespace flecsi
 
+// HPX Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include <flecsi/execution/hpx/context_policy.h>
+
+namespace flecsi {
+namespace execution {
+
+using FLECSI_RUNTIME_CONTEXT_POLICY = hpx_context_policy_t;
+
+} // namespace execution
+} // namespace flecsi
+
 #endif // FLECSI_RUNTIME_MODEL

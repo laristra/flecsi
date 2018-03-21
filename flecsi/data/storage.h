@@ -155,6 +155,7 @@ struct storage__ : public STORAGE_POLICY {
   void reset(uintptr_t runtime_namespace) {}
 
 private:
+
   // Default constructor
   storage__() : STORAGE_POLICY() {}
 

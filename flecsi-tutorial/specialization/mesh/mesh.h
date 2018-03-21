@@ -1,3 +1,17 @@
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
 #pragma once
 
 #include <iostream>
@@ -10,7 +24,7 @@
 #include <flecsi/data/sparse_accessor.h>
 #include <flecsi/data/sparse_mutator.h>
 #include <flecsi/data/common/privilege.h>
-#include <specialization/mesh/types.h>
+#include <specialization/mesh/policy.h>
 
 namespace flecsi {
 namespace tutorial {

@@ -63,6 +63,15 @@ struct data_client_handle_adjacency_t {
   Legion::LogicalPartition from_primary_partition;
 }; // struct data_client_handle_adjacency_t
 
+struct data_client_handle_index_subspace_t {
+  size_t index_space;
+  size_t index_subspace;
+  field_id_t index_fid;
+  Legion::LogicalRegion region;
+  size_t domain;
+  size_t dim;
+};
+
 //----------------------------------------------------------------------------//
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
@@ -73,15 +82,20 @@ struct legion_data_client_handle_policy_t {
   
   // maximum number of adjacencies to read, this limits the size of the
   // serialize struct passed to Legion
-  static constexpr size_t MAX_ADJACENCIES = 20;
+  static constexpr size_t MAX_ADJACENCIES = 32;
   
   // maximum number of handle entities
-  static constexpr size_t MAX_ENTITIES = 5;
+  static constexpr size_t MAX_ENTITIES = 6;
+
+  // maximum number of handle index subspaces
+  static constexpr size_t MAX_INDEX_SUBSPACES = 10;
 
   size_t num_handle_entities;
   size_t num_handle_adjacencies;
+  size_t num_index_subspaces;
   data_client_handle_entity_t handle_entities[MAX_ENTITIES];
   data_client_handle_adjacency_t handle_adjacencies[MAX_ADJACENCIES];
+  data_client_handle_index_subspace_t handle_index_subspaces[MAX_INDEX_SUBSPACES];
 }; // struct data_client_handle_policy_t
 
 } // namespace flecsi

@@ -111,9 +111,9 @@ flecsi_register_task_simple(global_writer, loc, index);
 flecsi_register_task_simple(global_reader, loc, single);
 flecsi_register_task_simple(color_writer, loc, single);
 flecsi_register_task_simple(color_reader, loc, single);
-flecsi_register_task(mpi_task, , mpi, single);
+flecsi_register_task(mpi_task, , mpi, index);
 #endif
-flecsi_register_task(exclusive_mpi, , mpi, single);
+flecsi_register_task(exclusive_mpi, , mpi, index);
 
 flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
 
@@ -121,7 +121,7 @@ flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
 flecsi_register_global( ns, velocity, double, 1);
 
-flecsi_register_field(empty_mesh_2d_t, ns, density, double, color, 1);
+flecsi_register_color(ns, density, double, 1);
 
 namespace flecsi {
 namespace execution {
@@ -149,7 +149,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   flecsi_execute_task_simple(global_data_handle_dump, single, global_handle);
   flecsi_execute_task_simple(global_writer, index, global_handle);
   flecsi_execute_task_simple(global_reader, single, global_handle);
-  flecsi_execute_task(mpi_task,, single, 10, global_handle);
+  flecsi_execute_task(mpi_task,, index, 10, global_handle);
 #endif
 } // specialization_tlt_init
 
@@ -185,15 +185,15 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task_simple(global_data_handle_dump, single, global_handle);
 
  //get color handle
-  auto color_handle=flecsi_get_handle(ch, ns, density, double, color, 0);
+  auto color_handle=flecsi_get_color( ns, density, double, 0);
 
   flecsi_execute_task_simple(color_data_handle_dump, single, color_handle);
   flecsi_execute_task_simple(color_writer, single, color_handle);
   flecsi_execute_task_simple(color_reader, single, color_handle);
-  flecsi_execute_task(mpi_task,, single, 10, global_handle);
+  flecsi_execute_task(mpi_task,, index, 10, global_handle);
 #endif
 
-  flecsi_execute_task(exclusive_mpi,, single, h);
+  flecsi_execute_task(exclusive_mpi,, index, h);
 
 } // driver
 

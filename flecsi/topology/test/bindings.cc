@@ -153,6 +153,10 @@ public:
       std::tuple<domain_<1>, domain_<0>, Wedge, Edge>,
       std::tuple<domain_<1>, domain_<0>, Wedge, Vertex>>;
 
+  using index_subspaces = std::tuple<
+    std::tuple<index_space_<0>, index_subspace_<0>>
+  >;
+
   template<size_t M, size_t D, typename ST>
   static mesh_entity_base__<num_domains> *
   create_entity(mesh_topology_base__<ST> * mesh, size_t num_vertices) {
