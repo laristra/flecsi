@@ -143,7 +143,8 @@ can be done like this:
            -DFLECSI_RUNTIME_MODEL=legion \
            -DENABLE_MPI=ON \
            -DENABLE_PARMETIS=ON \
-           -DENABLE_COLORING=ON
+           -DENABLE_COLORING=ON \
+           -DBOOST_INCLUDEDIR=/path/to/boost/include
 
          make
 
