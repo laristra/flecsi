@@ -141,6 +141,7 @@ runtime_driver(
 	int num_vertices = sd.num_entities(0);
 	printf("num_cells %d, num_vertex %d\n", num_cells, num_vertices);
 	
+  // **************************************************************************
 	// Create cell index space, field space and logical region
 	LegionRuntime::Arrays::Rect<1> cell_bound(LegionRuntime::Arrays::Point<1>(0),
 																						LegionRuntime::Arrays::Point<1>(num_cells-1));
@@ -159,9 +160,10 @@ runtime_driver(
 	Legion::LogicalRegion cell_lr = runtime->create_logical_region(ctx,cell_index_space,cell_field_space);
 	runtime->attach_name(cell_lr, "cells_lr");
 	
+  // **************************************************************************
 	// Create vertex index space, field space and logical region
 	LegionRuntime::Arrays::Rect<1> vertex_bound(LegionRuntime::Arrays::Point<1>(0),
-																						LegionRuntime::Arrays::Point<1>(num_vertices-1));
+																						  LegionRuntime::Arrays::Point<1>(num_vertices-1));
 	Legion::Domain vertex_dom(Legion::Domain::from_rect<1>(vertex_bound));
 	Legion::IndexSpace vertex_index_space = runtime->create_index_space(ctx, vertex_dom);
 	Legion::FieldSpace vertex_field_space = runtime->create_field_space(ctx);
@@ -175,15 +177,22 @@ runtime_driver(
 	Legion::LogicalRegion vertex_lr = runtime->create_logical_region(ctx,vertex_index_space,vertex_field_space);
 	runtime->attach_name(vertex_lr, "vertex_lr");
 	
+  // **************************************************************************
+  // Create color domain the same size of MPI comm size
 	int num_color;
 	MPI_Comm_size(MPI_COMM_WORLD, &num_color);
-	
+  
 	LegionRuntime::Arrays::Rect<1> color_bound(LegionRuntime::Arrays::Point<1>(0),
 																						 LegionRuntime::Arrays::Point<1>(num_color-1));
 	Legion::Domain color_domain(Legion::Domain::from_rect<1>(color_bound));
 	Legion::IndexSpace partition_is = runtime->create_index_space(ctx, color_domain);
 	
+  // **************************************************************************
 	// Create equal partition and launch index task to init cell and vertex
+  // "Equal partition" for cell is not Legion's create_equal_partition because Legion's 
+  // "equal partition" strategy is different from Flecsi make_dcrs, we rely on
+  // make_dcrs to create cell to cell connectivity, so here we use
+  // the strategy of make_dcrs
 	int *cell_count_per_subspace_scan = (int*)malloc(sizeof(int) * (num_color+1));
 	int total_cell_count = 0;
 	int j;
@@ -191,31 +200,37 @@ runtime_driver(
 	int rem = num_cells % num_color;
 	int cell_count_per_color = 0;	
 	cell_count_per_subspace_scan[0] = 0;
+  printf("[TOP] num_cells_per_rank: ");
 	for (j = 0; j < num_color; j++) {
 		cell_count_per_color = quot + ((j >= (num_color - rem)) ? 1 : 0);
-		printf("rank %d, num_cells %d\n", j, cell_count_per_color);
+		printf("%d, ", j, cell_count_per_color);
 		total_cell_count += cell_count_per_color;
 		cell_count_per_subspace_scan[j+1] = total_cell_count;
 	}
+  printf("\n");
 	
+  printf("[TOP] cell_count_per_subspace_scan: ");
 	Legion::DomainColoring cell_equal_color_partitioning;
   for(j = 0; j < num_color; j++){
     LegionRuntime::Arrays::Rect<1> subrect(
       LegionRuntime::Arrays::Point<1>(cell_count_per_subspace_scan[j]), 
 			LegionRuntime::Arrays::Point<1>(cell_count_per_subspace_scan[j+1]-1));
     cell_equal_color_partitioning[j] = Legion::Domain::from_rect<1>(subrect);
-		printf("start %d, end %d\n", cell_count_per_subspace_scan[j], cell_count_per_subspace_scan[j+1]-1);
+		printf("(%d, %d), ", cell_count_per_subspace_scan[j], cell_count_per_subspace_scan[j+1]-1);
   }
+  printf("\n");
 	
-	Legion::IndexPartition cell_equal_ip = runtime->create_index_partition(ctx, cell_lr.get_index_space(), color_domain, cell_equal_color_partitioning, true /*disjoint*/);
-	/*
 	Legion::IndexPartition cell_equal_ip = 
-	  runtime->create_equal_partition(ctx, cell_lr.get_index_space(), partition_is);*/
+    runtime->create_index_partition(ctx, cell_lr.get_index_space(), color_domain, cell_equal_color_partitioning, true /*disjoint*/);
 	Legion::LogicalPartition cell_equal_lp = runtime->get_logical_partition(ctx, cell_lr, cell_equal_ip);
-	Legion::IndexPartition vertex_equal_ip = 
+	// We use Legion create_equal_partition for vertex because we do not use Flecsi function to
+  // create cell to vertex connectivity. 
+  Legion::IndexPartition vertex_equal_ip = 
 	  runtime->create_equal_partition(ctx, vertex_lr.get_index_space(), partition_is);
 	Legion::LogicalPartition vertex_equal_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_equal_ip);
 
+  // **************************************************************************
+  // Launch index task to init cell and vertex
   const auto init_mesh_task_id =
     context_.task_id<__flecsi_internal_task_key(init_mesh_task)>();
   
@@ -242,23 +257,24 @@ runtime_driver(
   Legion::FutureMap fm_epoch1 = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_mesh);
   fm_epoch1.wait_all_results(true);
 	
+  // **************************************************************************
 	// Get the count of cell to cell connectivity from init_mesh_task and add them together
 	int total_cell_to_cell_count = 0;
 	int total_cell_to_vertex_count = 0;
 	// a array to store cell2cell and cell2vertex, first num_color-1 is cell2cell, second one is cell2vertex
-	int *cell_to_cell_vertex_count_per_subspace = (int*)malloc(sizeof(int) * (num_color+1) * 2);
-	int *cell_to_cell_count_per_subspace = cell_to_cell_vertex_count_per_subspace;
-	int *cell_to_vertex_count_per_subspace = &(cell_to_cell_vertex_count_per_subspace[num_color+1]);
-	cell_to_cell_count_per_subspace[0] = 0;
-	cell_to_vertex_count_per_subspace[0] = 0;
+	int *cell_to_cell_vertex_count_per_subspace_scan = (int*)malloc(sizeof(int) * (num_color+1) * 2);
+	int *cell_to_cell_count_per_subspace_scan = cell_to_cell_vertex_count_per_subspace_scan;
+	int *cell_to_vertex_count_per_subspace_scan = &(cell_to_cell_vertex_count_per_subspace_scan[num_color+1]);
+	cell_to_cell_count_per_subspace_scan[0] = 0;
+	cell_to_vertex_count_per_subspace_scan[0] = 0;
 	for (j = 0; j < num_color; j++) {
 		init_mesh_task_rt_t rt_value = fm_epoch1.get_result<init_mesh_task_rt_t>(j);
 		total_cell_to_cell_count += rt_value.cell_to_cell_count;
-		cell_to_cell_count_per_subspace[j+1] = total_cell_to_cell_count;
+		cell_to_cell_count_per_subspace_scan[j+1] = total_cell_to_cell_count;
 		total_cell_to_vertex_count += rt_value.cell_to_vertex_count;
-		cell_to_vertex_count_per_subspace[j+1] = total_cell_to_vertex_count;
+		cell_to_vertex_count_per_subspace_scan[j+1] = total_cell_to_vertex_count;
 	}
-	printf("total cell to cell count %d\n", total_cell_to_cell_count);
+	printf("[TOP] total cell to cell count %d\n", total_cell_to_cell_count);
 	
 	// create cell to cell connectivity index space, field space and logical region with the total_cell_to_cell_count
 	LegionRuntime::Arrays::Rect<1> cell_to_cell_bound(LegionRuntime::Arrays::Point<1>(0),
@@ -277,7 +293,7 @@ runtime_driver(
 	
 	// create cell to vertex connectivity index space, field space and logical region with the total_cell_to_vertex_count
 	LegionRuntime::Arrays::Rect<1> cell_to_vertex_bound(LegionRuntime::Arrays::Point<1>(0),
-																										LegionRuntime::Arrays::Point<1>(total_cell_to_vertex_count-1));
+																								  		LegionRuntime::Arrays::Point<1>(total_cell_to_vertex_count-1));
 	Legion::Domain cell_to_vertex_dom(Legion::Domain::from_rect<1>(cell_to_vertex_bound));
 	Legion::IndexSpace cell_to_vertex_index_space = runtime->create_index_space(ctx, cell_to_vertex_dom);
 	runtime->attach_name(cell_to_vertex_index_space, "cell_to_vertex_index_space");
@@ -290,49 +306,57 @@ runtime_driver(
 	Legion::LogicalRegion cell_to_vertex_lr = runtime->create_logical_region(ctx,cell_to_vertex_index_space,cell_to_vertex_field_space);
 	runtime->attach_name(cell_to_vertex_lr, "cell_to_vertex_lr");
 	
-	// Partition the cell to cell connectivity following the pattern of cell_to_cell_count_per_subspace.
-	// For example, the cell_to_cell_count_per subspace is 40,40,50,50, then the partition is also 40,40,50,50
+	// Partition the cell to cell connectivity following the pattern of cell_to_cell_count_per_subspace_scan.
+	// For example, the cell_to_cell_count_per_subspace_scan is 40,40,50,50, then the partition is also 40,40,50,50
+  printf("[TOP] cell_to_cell_count_per_subspace_scan: ");
 	Legion::DomainColoring cell_to_cell_color_partitioning;
   for(j = 0; j < num_color; j++){
     LegionRuntime::Arrays::Rect<1> subrect(
-      LegionRuntime::Arrays::Point<1>(cell_to_cell_count_per_subspace[j]), 
-			LegionRuntime::Arrays::Point<1>(cell_to_cell_count_per_subspace[j+1]-1));
+      LegionRuntime::Arrays::Point<1>(cell_to_cell_count_per_subspace_scan[j]), 
+			LegionRuntime::Arrays::Point<1>(cell_to_cell_count_per_subspace_scan[j+1]-1));
     cell_to_cell_color_partitioning[j] = Legion::Domain::from_rect<1>(subrect);
-		printf("start %d, end %d\n", cell_to_cell_count_per_subspace[j], cell_to_cell_count_per_subspace[j+1]-1);
+		printf("(%d, %d), ", cell_to_cell_count_per_subspace_scan[j], cell_to_cell_count_per_subspace_scan[j+1]-1);
   }
+  printf("\n");
 	
-	Legion::IndexPartition cell_to_cell_ip = runtime->create_index_partition(ctx, cell_to_cell_lr.get_index_space(), color_domain, cell_to_cell_color_partitioning, true /*disjoint*/);
+	Legion::IndexPartition cell_to_cell_ip = 
+    runtime->create_index_partition(ctx, cell_to_cell_lr.get_index_space(), 
+                                    color_domain, cell_to_cell_color_partitioning, true /*disjoint*/);
 	Legion::LogicalPartition cell_to_cell_lp = runtime->get_logical_partition(ctx, cell_to_cell_lr, cell_to_cell_ip);
 	
-	// Partition the cell to vertex connectivity following the pattern of cell_to_cell_count_per_subspace.
-	// For example, the cell_to_cell_count_per subspace is 40,40,50,50, then the partition is also 40,40,50,50
+	// Partition the cell to vertex connectivity following the pattern of cell_to_vertex_count_per_subspace_scan.
+	// For example, the cell_to_vertex_count_per subspace_scan is 40,40,50,50, then the partition is also 40,40,50,50
+  printf("[TOP] cell_to_vertex_count_per_subspace_scan: ");
 	Legion::DomainColoring cell_to_vertex_color_partitioning;
   for(j = 0; j < num_color; j++){
     LegionRuntime::Arrays::Rect<1> subrect(
-      LegionRuntime::Arrays::Point<1>(cell_to_vertex_count_per_subspace[j]), 
-			LegionRuntime::Arrays::Point<1>(cell_to_vertex_count_per_subspace[j+1]-1));
+      LegionRuntime::Arrays::Point<1>(cell_to_vertex_count_per_subspace_scan[j]), 
+			LegionRuntime::Arrays::Point<1>(cell_to_vertex_count_per_subspace_scan[j+1]-1));
     cell_to_vertex_color_partitioning[j] = Legion::Domain::from_rect<1>(subrect);
-		printf("start %d, end %d\n", cell_to_vertex_count_per_subspace[j], cell_to_vertex_count_per_subspace[j+1]-1);
+		printf("(%d, %d), ", cell_to_vertex_count_per_subspace_scan[j], cell_to_vertex_count_per_subspace_scan[j+1]-1);
   }
+  printf("\n");
 	
-	Legion::IndexPartition cell_to_vertex_ip = runtime->create_index_partition(ctx, cell_to_vertex_lr.get_index_space(), color_domain, cell_to_vertex_color_partitioning, true /*disjoint*/);
+	Legion::IndexPartition cell_to_vertex_ip = 
+    runtime->create_index_partition(ctx, cell_to_vertex_lr.get_index_space(), 
+                                    color_domain, cell_to_vertex_color_partitioning, true /*disjoint*/);
 	Legion::LogicalPartition cell_to_vertex_lp = runtime->get_logical_partition(ctx, cell_to_vertex_lr, cell_to_vertex_ip);
 	
-	// Launch index task to init cell to cell connectivity
+  // **************************************************************************
+	// Launch index task to init cell to cell and cell to vertex connectivity
   const auto init_adjacency_task_id =
     context_.task_id<__flecsi_internal_task_key(init_adjacency_task)>();
   
 	Legion::ArgumentMap arg_map_init_adjacency;
   Legion::IndexLauncher init_adjacency_launcher(init_adjacency_task_id,
       																					partition_is, 
-																								Legion::TaskArgument(cell_to_cell_vertex_count_per_subspace, sizeof(int)*(num_color+1)*2),
+																								Legion::TaskArgument(cell_to_cell_vertex_count_per_subspace_scan, sizeof(int)*(num_color+1)*2),
       																					arg_map_init_adjacency);
 	
 	init_adjacency_launcher.add_region_requirement(
 	  Legion::RegionRequirement(cell_equal_lp, 0/*projection ID*/,
 	                            READ_WRITE, EXCLUSIVE, cell_lr));
   init_adjacency_launcher.region_requirements[0].add_field(FID_CELL_ID);
-  init_adjacency_launcher.region_requirements[0].add_field(FID_CELL_PARTITION_COLOR);
   init_adjacency_launcher.region_requirements[0].add_field(FID_CELL_CELL_NRANGE);
 	init_adjacency_launcher.region_requirements[0].add_field(FID_CELL_VERTEX_NRANGE);
 	
@@ -353,10 +377,12 @@ runtime_driver(
   Legion::FutureMap fm_epoch2 = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_adjacency);
   fm_epoch2.wait_all_results(true);
 	
+  // **************************************************************************
 	// Partition cell by color
 	Legion::IndexPartition cell_primary_ip = 
 		runtime->create_partition_by_field(ctx, cell_lr,
 	                            				 cell_lr, FID_CELL_PARTITION_COLOR, partition_is);
+  runtime->attach_name(cell_primary_ip, "cell_primary_ip");
   
 	// Ghost cell
 	Legion::IndexPartition cell_primary_image_nrange_ip = 
@@ -376,7 +402,8 @@ runtime_driver(
 	Legion::IndexPartition cell_ghost_ip = 
 		runtime->create_partition_by_difference(ctx, cell_lr.get_index_space(),
 														                cell_reachable_ip, cell_primary_ip, partition_is);
-	// Shared cell	
+	runtime->attach_name(cell_ghost_ip, "cell_ghost_ip");
+  // Shared cell	
 #if 1	
 	Legion::IndexPartition cell_ghost_preimage_ip = 
 		runtime->create_partition_by_image_range(ctx, cell_to_cell_lr.get_index_space(),
@@ -415,7 +442,7 @@ runtime_driver(
 	                                          cell_primary_ip, cell_shared_ip, partition_is); 
 	runtime->attach_name(cell_execlusive_ip, "cell_execlusive_ip");
 	
-	// alias vertex
+	// Non-disjoint vertex
 	Legion::IndexPartition vertex_alias_image_nrange_ip = 
 		runtime->create_partition_by_image_range(ctx, cell_to_vertex_lr.get_index_space(),
 	                                           runtime->get_logical_partition(cell_lr, cell_primary_ip), 
@@ -441,7 +468,8 @@ runtime_driver(
   runtime->attach_name(cell_execlusive_lp, "cell_execlusive_lp");
 	Legion::LogicalPartition vertex_alias_lp = runtime->get_logical_partition(ctx, vertex_lr, vertex_alias_ip);
   runtime->attach_name(vertex_alias_lp, "vertex_alias_lp");
-
+  
+  // **************************************************************************
   // Launch index task to init vertex color
   const auto init_vertex_color_task_id =
     context_.task_id<__flecsi_internal_task_key(init_vertex_color_task)>();
@@ -453,14 +481,8 @@ runtime_driver(
 	init_vertex_color_launcher.add_region_requirement(
 	  Legion::RegionRequirement(vertex_alias_lp, 0/*projection ID*/,
 	                            MinReductionPointOp::redop_id, SIMULTANEOUS, vertex_lr));
- // init_vertex_color_launcher.region_requirements[0].add_field(FID_VERTEX_ID);
   init_vertex_color_launcher.region_requirements[0].add_field(FID_VERTEX_PARTITION_COLOR);
-#if 0	
-	init_vertex_color_launcher.add_region_requirement(
-	  Legion::RegionRequirement(cell_ghost_lp, 0/*projection ID*/,
-	                            READ_ONLY, EXCLUSIVE, cell_lr));
-  init_vertex_color_launcher.region_requirements[1].add_field(FID_CELL_ID);
-#endif	
+
   Legion::MustEpochLauncher must_epoch_launcher_init_vertex_color;
   must_epoch_launcher_init_vertex_color.add_index_task(init_vertex_color_launcher);
   Legion::FutureMap fm_epoch3 = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_vertex_color);
@@ -482,17 +504,19 @@ runtime_driver(
 
 	  Legion::MustEpochLauncher must_epoch_launcher_verify_vertex_color;
 	  must_epoch_launcher_verify_vertex_color.add_index_task(verify_vertex_color_launcher);
-	  Legion::FutureMap fm_epoch3 = runtime->execute_must_epoch(ctx, must_epoch_launcher_verify_vertex_color);
+	  Legion::FutureMap fm_epoch_test1 = runtime->execute_must_epoch(ctx, must_epoch_launcher_verify_vertex_color);
 	  fm_epoch3.wait_all_results(true);
 	}
 	
+  // **************************************************************************
 	// Primary vertex
 	Legion::IndexPartition vertex_primary_ip = 
 		runtime->create_partition_by_field(ctx, vertex_lr,
                                        vertex_lr,
                                        FID_VERTEX_PARTITION_COLOR,
                                        partition_is);
-	
+	runtime->attach_name(vertex_primary_ip, "vertex_primary_ip");
+  
 	// Ghost vertex
 	 Legion::IndexPartition cell_ghost_c2v_image_nrange_ip = 
 		 runtime->create_partition_by_image_range(ctx, cell_to_vertex_lr.get_index_space(),
@@ -510,6 +534,7 @@ runtime_driver(
 	Legion::IndexPartition vertex_ghost_ip = 
 		runtime->create_partition_by_difference(ctx, vertex_lr.get_index_space(),
 	                                          vertex_of_ghost_cell_ip, vertex_primary_ip, partition_is); 
+  runtime->attach_name(vertex_ghost_ip, "vertex_ghost_ip");
   
 	// Shared vertex
 	Legion::IndexPartition cell_shared_c2v_image_nrange_ip = 
@@ -556,6 +581,7 @@ runtime_driver(
   Legion::LogicalPartition cell_primary_image_nrange_lp = runtime->get_logical_partition(ctx, cell_to_cell_lr, cell_primary_image_nrange_ip);
   runtime->attach_name(cell_primary_image_nrange_lp, "cell_primary_image_nrange_lp");
 	
+  // **************************************************************************
 	// Launch index task to verify partition results
   const auto verify_dp_task_id =
     context_.task_id<__flecsi_internal_task_key(verify_dp_task)>();
@@ -626,14 +652,15 @@ runtime_driver(
   fm_epoch4.wait_all_results(true);
 	
 	// Clean up
-	free(cell_to_cell_vertex_count_per_subspace);
-	cell_to_cell_vertex_count_per_subspace = NULL;
+	free(cell_to_cell_vertex_count_per_subspace_scan);
+	cell_to_cell_vertex_count_per_subspace_scan = NULL;
 	free(cell_count_per_subspace_scan);
 	cell_count_per_subspace_scan = NULL;
 	
 	runtime->destroy_logical_region(ctx, cell_lr);
 	runtime->destroy_logical_region(ctx, vertex_lr);
 	runtime->destroy_logical_region(ctx, cell_to_cell_lr);
+  runtime->destroy_logical_region(ctx, cell_to_vertex_lr);
 	runtime->destroy_field_space(ctx, cell_field_space);
 	runtime->destroy_field_space(ctx, vertex_field_space);
 	runtime->destroy_field_space(ctx, cell_to_cell_field_space);
