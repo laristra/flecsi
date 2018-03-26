@@ -27,6 +27,7 @@ set(topology_HEADERS
   mesh.h
   mesh_storage.h
   mesh_topology.h
+  global_topology.h
   mesh_types.h
   mesh_utils.h
   partition.h
