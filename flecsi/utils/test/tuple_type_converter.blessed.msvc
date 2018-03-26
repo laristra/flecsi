@@ -1,0 +1,12 @@
+char
+char
+
+class std::tuple<>
+class std::tuple<char>
+class std::tuple<int,double>
+
+int
+char
+
+class std::tuple<>
+class std::tuple<int,double,double,char,class thing,double>

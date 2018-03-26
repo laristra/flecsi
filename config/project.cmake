@@ -386,8 +386,15 @@ install(
 
 cinch_add_library_target(FleCSI flecsi EXPORT_TARGET FleCSITargets)
 
-option(ENABLE_FLECSI_TUTORIAL
-  "Enable library support for the FleCSI tutorial" ON)
+set_target_properties(FleCSI PROPERTIES FOLDER "Core")
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+  option(ENABLE_FLECSI_TUTORIAL
+    "Enable library support for the FleCSI tutorial" OFF)
+else()
+  option(ENABLE_FLECSI_TUTORIAL
+    "Enable library support for the FleCSI tutorial" ON)
+endif()
 
 if(ENABLE_FLECSI_TUTORIAL)
   option(ENABLE_FLECSI_TUTORIAL_VTK "Enable VTK output for tutorial examples"

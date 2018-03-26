@@ -66,6 +66,8 @@ TEST(tuple_type_converter, all) {
   // compare
 #ifdef __GNUG__
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("tuple_type_converter.blessed.gnug"));
+#elif defined(_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("tuple_type_converter.blessed.msvc"));
 #endif
 } // TEST
 

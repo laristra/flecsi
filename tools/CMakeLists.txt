@@ -135,7 +135,7 @@ if(ENABLE_FLECSIT)
         FILES_MATCHING PATTERN "*.py")
 
     configure_file(${PROJECT_SOURCE_DIR}/tools/flecsit/bin/flecsit.in
-		${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
+      ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
 
     install(PROGRAMS ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit
         DESTINATION bin
@@ -172,6 +172,8 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_main.cc
 add_custom_target(runtime_main ALL
   DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_main.cc)
 
+set_target_properties(runtime_main PROPERTIES FOLDER "Dependencies")
+
 add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_driver.cc
   COMMAND ${CMAKE_COMMAND} -E copy
     ${_runtime_path}/runtime_driver.cc
@@ -181,6 +183,8 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_driver.cc
 
 add_custom_target(runtime_driver ALL
   DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_driver.cc)
+
+set_target_properties(runtime_driver PROPERTIES FOLDER "Dependencies")
 
 # Install the auxiliary files
 install(FILES ${_runtime_path}/runtime_main.cc
