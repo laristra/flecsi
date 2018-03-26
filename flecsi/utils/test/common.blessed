@@ -3,9 +3,6 @@
 4
 60
 
-flecsi::utils::id_<20ul, 40ul, 4ul, 60ul>
-int
-int
 
 100
 400
@@ -14,46 +11,10 @@ int
 2
 3
 
-int
-std::tuple<float, double, long double>
 
-float
-std::tuple<double, int, long>
-float
-std::tuple<double, int, long>
 
-void
-std::tuple<char, int>
-MyClass
-void
-std::tuple<char, int>
-MyClass
-void
-std::tuple<char, int>
-MyClass
-void
-std::tuple<char, int>
-MyClass
 
-float
-std::tuple<double, int, long>
 
-int
-std::tuple<float, double, long double>
-int
-std::tuple<float, double, long double>
-int
-std::tuple<float, double, long double>
-int
-std::tuple<float, double, long double>
-int
-std::tuple<float, double, long double>
-int
-std::tuple<float, double, long double>
-int
-std::tuple<float, double, long double>
-int
-std::tuple<float, double, long double>
 
 hello
 hello again
