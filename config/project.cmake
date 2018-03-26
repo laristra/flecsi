@@ -60,20 +60,6 @@ set(FLECSI_LIBRARY_DEPENDENCIES)
 set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 
 #------------------------------------------------------------------------------#
-# Boost
-#
-# Note that this find package only sets the header information. To find
-# library dependencies, add COMPONENTS and specify the ones that you need.
-#------------------------------------------------------------------------------#
-
-find_package(Boost 1.58.0 REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-
-# FIXME: This should be optional
-#set(FLECSI_INCLUDE_DEPENDENCIES ${Boost_INCLUDE_DIRS})
-#set(FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
-
-#------------------------------------------------------------------------------#
 # cinch_load_extras will try and find legion and mpi. If we want to
 # override the defaults, i.e. ENABLE_MPI=on and ENABLE_LEGION=on, we
 # need to do it before cinch_load_extras is called.
