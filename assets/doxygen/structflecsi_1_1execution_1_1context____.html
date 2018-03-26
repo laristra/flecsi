@@ -121,9 +121,7 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1local__index__space__t.html">local_index_space_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__topology__index__space__t.html">set_topology_index_space_t</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__topology__info__t.html">set_topology_info_t</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__index__space__info__t.html">set_index_space_info_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1sparse__index__space__info__t.html">sparse_index_space_info_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -185,8 +183,8 @@ template&lt;size_t NAMESPACE_HASH, typename OBJECT_TYPE &gt; </td></tr>
 <tr class="separator:a678f56e543620a90c4fe8517574dfc32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86f088f2c1183bdd25645908eac0cf76"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context____.html#a86f088f2c1183bdd25645908eac0cf76">local_index_space_map</a> () const </td></tr>
 <tr class="separator:a86f088f2c1183bdd25645908eac0cf76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3c70487a7775da067eec7ab410f0b1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context____.html#ae3c70487a7775da067eec7ab410f0b1c">add_set_topology</a> (const <a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__topology__info__t.html">set_topology_info_t</a> &amp;info)</td></tr>
-<tr class="separator:ae3c70487a7775da067eec7ab410f0b1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20ce41fddcdba418a7678e20f1cecbfa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context____.html#a20ce41fddcdba418a7678e20f1cecbfa">add_set_index_space</a> (size_t index_space, const <a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__index__space__info__t.html">set_index_space_info_t</a> &amp;info)</td></tr>
+<tr class="separator:a20ce41fddcdba418a7678e20f1cecbfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e22196241805e00e18667caa29c4364"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3e22196241805e00e18667caa29c4364"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_sparse_index_space_info</b> (size_t index_space, const <a class="el" href="structflecsi_1_1execution_1_1context_____1_1sparse__index__space__info__t.html">sparse_index_space_info_t</a> &amp;info)</td></tr>
 <tr class="separator:a3e22196241805e00e18667caa29c4364"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -540,7 +538,7 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="ae3c70487a7775da067eec7ab410f0b1c"></a>
+<a class="anchor" id="a20ce41fddcdba418a7678e20f1cecbfa"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -550,11 +548,21 @@ template&lt;class CONTEXT_POLICY &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structflecsi_1_1execution_1_1context____.html">flecsi::execution::context__</a>&lt; CONTEXT_POLICY &gt;::add_set_topology </td>
+          <td class="memname">void <a class="el" href="structflecsi_1_1execution_1_1context____.html">flecsi::execution::context__</a>&lt; CONTEXT_POLICY &gt;::add_set_index_space </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__topology__info__t.html">set_topology_info_t</a> &amp;&#160;</td>
-          <td class="paramname"><em>info</em></td><td>)</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index_space</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__index__space__info__t.html">set_index_space_info_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>

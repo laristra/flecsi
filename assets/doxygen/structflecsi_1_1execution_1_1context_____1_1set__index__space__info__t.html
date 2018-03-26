@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: flecsi::execution::context__&lt; CONTEXT_POLICY &gt;::set_topology_info_t Struct Reference</title>
+<title>Interface Documentation: flecsi::execution::context__&lt; CONTEXT_POLICY &gt;::set_index_space_info_t Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -88,36 +88,42 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1context____.html">context__</a></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__topology__info__t.html">set_topology_info_t</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1context____.html">context__</a></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__index__space__info__t.html">set_index_space_info_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structflecsi_1_1execution_1_1context_____1_1set__topology__info__t-members.html">List of all members</a>  </div>
+<a href="structflecsi_1_1execution_1_1context_____1_1set__index__space__info__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::execution::context__&lt; CONTEXT_POLICY &gt;::set_topology_info_t Struct Reference</div>  </div>
+<div class="title">flecsi::execution::context__&lt; CONTEXT_POLICY &gt;::set_index_space_info_t Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="context_8h_source.html">context.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__index__space__info__t_1_1color__info__t.html">color_info_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a5b1e610164c6e1a5cb53a93c8c4030b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5b1e610164c6e1a5cb53a93c8c4030b3"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>index_space_map_t</b> = std::unordered_map&lt; size_t, <a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__topology__index__space__t.html">set_topology_index_space_t</a> &gt;</td></tr>
-<tr class="separator:a5b1e610164c6e1a5cb53a93c8c4030b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0c405c91d059ba0ae35e292df8e4df8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab0c405c91d059ba0ae35e292df8e4df8"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>color_info_map_t</b> = std::unordered_map&lt; size_t, <a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__index__space__info__t_1_1color__info__t.html">color_info_t</a> &gt;</td></tr>
+<tr class="separator:ab0c405c91d059ba0ae35e292df8e4df8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ae73877592930ea34b43f58164d5685bb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae73877592930ea34b43f58164d5685bb"></a>
-index_space_map_t&#160;</td><td class="memItemRight" valign="bottom"><b>index_space_map</b></td></tr>
-<tr class="separator:ae73877592930ea34b43f58164d5685bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae22bc27edea604d10e4711340e769053"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae22bc27edea604d10e4711340e769053"></a>
+color_info_map_t&#160;</td><td class="memItemRight" valign="bottom"><b>color_info_map</b></td></tr>
+<tr class="separator:ae22bc27edea604d10e4711340e769053"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;class CONTEXT_POLICY&gt;<br />
-struct flecsi::execution::context__&lt; CONTEXT_POLICY &gt;::set_topology_info_t</h3>
+struct flecsi::execution::context__&lt; CONTEXT_POLICY &gt;::set_index_space_info_t</h3>
 
 <p>Structure needed to initialize a set topology. </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
