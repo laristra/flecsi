@@ -33,7 +33,7 @@ def execute(verbose, build):
 #        print command
 
 #    subprocess.call(command.split())
-
+    
     cwd = os.getcwd()
     tmpdir = tempfile.mkdtemp(dir=cwd)
     os.chdir(tmpdir)
@@ -46,7 +46,9 @@ def execute(verbose, build):
         FLECSI_RUNTIME_MAIN=build['main'],
         FLECSI_RUNTIME_DRIVER=build['prefix'] +
             '/share/FleCSI/runtime/runtime_driver.cc',
-        INSTALL_PREFIX=cwd
+        INSTALL_PREFIX=cwd,
+        FLECSI_DEFINES=build['defines'],
+        FLECSI_LIBRARIES=build['libraries']
     )
 
     fd = open('CMakeLists.txt', 'w')
