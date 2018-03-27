@@ -91,14 +91,6 @@ struct context__ : public CONTEXT_POLICY {
     size_t max_entries_per_index;
   };
 
-  /*!
-    Gathers info about set topology index spaces.
-   */
-  struct set_topology_index_space_t{
-    size_t main_capacity;
-    size_t active_migration_capacity;
-  };
-
   struct index_subspace_info_t {
     size_t index_subspace;
     size_t capacity;
@@ -108,11 +100,19 @@ struct context__ : public CONTEXT_POLICY {
   /*!
     Structure needed to initialize a set topology.
    */
-  struct set_topology_info_t{
-    using index_space_map_t =
-      std::unordered_map<size_t, set_topology_index_space_t>;
+  struct set_index_space_info_t{
+    /*!
+      Gathers info about set topology index spaces per color.
+     */
+    struct color_info_t{
+      size_t main_capacity;
+      size_t active_migration_capacity;
+    };
 
-    index_space_map_t index_space_map;
+    // key = color
+    using color_info_map_t = std::unordered_map<size_t, color_info_t>;
+
+    color_info_map_t color_info_map;
   };
 
   //--------------------------------------------------------------------------//
@@ -305,9 +305,10 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   void
-  add_set_topology(const set_topology_info_t & info)
+  add_set_index_space(size_t index_space, const set_index_space_info_t & info)
   {
-
+    auto itr = set_index_space_map_.insert({index_space, info});
+    clog_assert(itr->second, "set index space exists: " << index_space);
   }
 
   void set_sparse_index_space_info(
@@ -851,6 +852,12 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, index_subspace_info_t> index_subspace_map_;
+
+  //--------------------------------------------------------------------------//
+  // key: set index space
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, set_index_space_info_t> set_index_space_map_;
 
   //--------------------------------------------------------------------------//
   // Execution state

@@ -1,10 +1,4 @@
-float* (*)(int, float, double)
-char
-std::map<char, float* (*)(int, float, double), std::less<char>, std::allocator<std::pair<char const, float* (*)(int, float, double)> > >
 
-double* (*)(double, double)
-long
-std::map<long, double* (*)(double, double), std::less<long>, std::allocator<std::pair<long const, double* (*)(double, double)> > >
 
 1
 1

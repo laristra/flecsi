@@ -64,7 +64,7 @@ using offset_t = offset__<16>;
 using counter_t = FLECSI_COUNTER_TYPE;
 
 //----------------------------------------------------------------------------//
-// FIXME: Is this actually used anywhere?
+// Square
 //----------------------------------------------------------------------------//
 
 //! P.O.D.
@@ -74,9 +74,9 @@ square(const T & a) {
   return a * a;
 }
 
-/*!
-  C++ demangler
- */
+//----------------------------------------------------------------------------//
+// C++ demangler
+//----------------------------------------------------------------------------//
 
 std::string demangle(const char * const name);
 
@@ -84,7 +84,12 @@ template<class T>
 inline std::string
 type() {
   return demangle(typeid(T).name());
-} // type
+}
+
+inline std::string
+type(const std::type_info &type_info) {
+  return demangle(type_info.name());
+}
 
   //----------------------------------------------------------------------------//
   // Unique Identifier Utilities
