@@ -15,7 +15,7 @@ from flecsit.services.compile_driver.execute import *
 # Documentation handler.
 #------------------------------------------------------------------------------#
 
-class FleCSIT_Analysis(Service):
+class FleCSIT_Compile(Service):
 
     #--------------------------------------------------------------------------#
     # Initialization.
@@ -112,10 +112,10 @@ class FleCSIT_Analysis(Service):
     #--------------------------------------------------------------------------#
 
     class Factory:
-        def create(self, subparsers): return FleCSIT_Analysis(subparsers)
+        def create(self, subparsers): return FleCSIT_Compile(subparsers)
     # class Factory
 
-# class FleCSIT_Analysis
+# class FleCSIT_Compile
 
 #------------------------------------------------------------------------------#
 # Formatting options for emacs and vim.
