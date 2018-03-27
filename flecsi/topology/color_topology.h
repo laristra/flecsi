@@ -15,7 +15,7 @@
 
 /*! @file */
 
-#include <flecsi/execution/context.h>
+//#include <flecsi/execution/context.h>
 #include <flecsi/data/data_client.h>
 
 namespace flecsi {
