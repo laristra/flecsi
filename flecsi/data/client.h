@@ -23,6 +23,7 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/topology/global_topology.h>
+#include <flecsi/topology/color_topology.h>
 #include <flecsi/topology/mesh_types.h>
 #include <flecsi/topology/mesh_utils.h>
 #include <flecsi/utils/tuple_walker.h>
@@ -91,7 +92,7 @@ struct data_client_policy_handler__<topology::global_topology__> {
 //----------------------------------------------------------------------------//
 
 template<>
-struct data_client_policy_handler__<color_data_client_t> {
+struct data_client_policy_handler__<topology::color_topology__> {
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
   static data_client_handle__<DATA_CLIENT_TYPE, 0> get_client_handle() {

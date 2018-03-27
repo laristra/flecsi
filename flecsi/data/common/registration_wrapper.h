@@ -27,6 +27,7 @@
 #include <flecsi/topology/mesh_topology.h>
 #include <flecsi/topology/set_topology.h>
 #include <flecsi/topology/global_topology.h>
+#include <flecsi/topology/color_topology.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
 #include <flecsi/utils/tuple_walker.h>
@@ -503,6 +504,92 @@ struct client_registration_wrapper__<
 
 
 }; // class client_registration_wrapper__
+
+
+//----------------------------------------------------------------------------//
+//!
+//----------------------------------------------------------------------------//
+
+template<size_t NAMESPACE_HASH, size_t NAME_HASH>
+struct client_registration_wrapper__<
+    flecsi::topology::color_topology__,
+    NAMESPACE_HASH,
+    NAME_HASH> {
+
+  using CLIENT_TYPE = typename flecsi::topology::color_topology__;
+
+  //--------------------------------------------------------------------------//
+  //!
+  //--------------------------------------------------------------------------//
+
+  struct entity_walker_t
+      : public flecsi::utils::tuple_walker__<entity_walker_t> {
+
+    template<typename T, T V>
+    T value(topology::typeify<T, V>) {
+      return V;
+    }
+
+#if 0
+    template<typename TUPLE_ENTRY_TYPE>
+    void handle_type() {
+      using INDEX_TYPE = typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
+      using DOMAIN_TYPE =
+          typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
+      using ENTITY_TYPE =
+          typename std::tuple_element<2, TUPLE_ENTRY_TYPE>::type;
+
+      constexpr size_t entity_hash = utils::hash::client_entity_hash<
+          NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value, DOMAIN_TYPE::value,
+          ENTITY_TYPE::dimension>();
+
+      using wrapper_t = field_registration_wrapper__<
+          CLIENT_TYPE, flecsi::data::color, ENTITY_TYPE, entity_hash, 0, 1,
+          INDEX_TYPE::value>;
+
+      const size_t client_key =
+          typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+
+      const size_t key = utils::hash::client_internal_field_hash<
+          utils::const_string_t("__flecsi_internal_entity_data__").hash(),
+          INDEX_TYPE::value>();
+
+      storage_t::instance().register_field(
+          client_key, key, wrapper_t::register_callback);
+
+      using id_wrapper_t = field_registration_wrapper__<
+          CLIENT_TYPE, flecsi::data::color, utils::id_t, entity_hash, 0, 1,
+          INDEX_TYPE::value>;
+
+      const size_t id_key = utils::hash::client_internal_field_hash<
+          utils::const_string_t("__flecsi_internal_entity_id__").hash(),
+          INDEX_TYPE::value>();
+
+      storage_t::instance().register_field(
+          client_key, id_key, id_wrapper_t::register_callback);
+
+    } // handle_type
+#endif
+
+  }; // struct entity_walker_t
+
+   static void register_callback(field_id_t fid) {
+
+    auto & storage = storage_t::instance();
+
+    const size_t client_key =
+        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+
+    auto const & field_registry = storage.field_registry();
+
+    entity_walker_t entity_walker;
+//    entity_walker.template walk_types<entity_types_t>();
+  } // register_callback
+
+
+}; // class client_registration_wrapper__
+
+
 
 } // namespace data
 } // namespace flecsi

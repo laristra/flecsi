@@ -19,6 +19,7 @@
 
 set(topology_HEADERS
   closure_utils.h
+  color_topology.h
   common/array_buffer.h
   common/entity_storage.h
   entity_storage.h
