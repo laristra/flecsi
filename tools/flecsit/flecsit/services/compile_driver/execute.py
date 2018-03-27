@@ -58,7 +58,7 @@ def execute(verbose, build):
     subprocess.call(['/usr/bin/make', 'install'], stdout=devnull,
         stderr=devnull)
 
-    shutil.rmtree(tmpdir)
+    #shutil.rmtree(tmpdir)
 # execute
 
 #------------------------------------------------------------------------------#
