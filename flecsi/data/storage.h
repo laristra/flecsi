@@ -23,24 +23,19 @@
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Apr 17, 2016
-//----------------------------------------------------------------------------//
-
 namespace flecsi {
 namespace data {
 
-//----------------------------------------------------------------------------//
-//! The storage__ type provides a high-level data model context interface that
-//! is implemented by the given storage policy. It provides an interface for
-//! client and field registration.
-//!
-//! @tparam USER_META_DATA A user-defined meta data type.
-//! @tparam STORAGE_POLICY The backend storage policy.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+/*!
+  The storage__ type provides a high-level data model context interface that
+  is implemented by the given storage policy. It provides an interface for
+  client and field registration.
+
+  @tparam USER_META_DATA A user-defined meta data type.
+  @tparam STORAGE_POLICY The backend storage policy.
+
+  @ingroup data
+ */
 
 template<typename STORAGE_POLICY>
 struct storage__ : public STORAGE_POLICY {
@@ -58,13 +53,13 @@ struct storage__ : public STORAGE_POLICY {
   using field_entry_t = std::unordered_map<size_t, field_value_t>;
   using client_entry_t = std::unordered_map<size_t, client_value_t>;
 
-  //--------------------------------------------------------------------------//
-  //! Register a field with the runtime.
-  //!
-  //! @param client_key The data client indentifier hash.
-  //! @param key        The identifier hash.
-  //! @param callback   The registration call back function.
-  //--------------------------------------------------------------------------//
+  /*!
+    Register a field with the runtime.
+    
+    @param client_key The data client indentifier hash.
+    @param key        The identifier hash.
+    @param callback   The registration call back function.
+   */
 
   bool register_field(
       size_t client_key,
@@ -83,23 +78,27 @@ struct storage__ : public STORAGE_POLICY {
     return true;
   } // register_field
 
+  /*!
+   */
+
   auto const & field_registry() const {
     return field_registry_;
   } // field_registry
+
+  /*!
+   */
 
   auto const & client_registry() const {
     return client_registry_;
   } // client_registry
 
-  ////////////////////////////////////////////////////////////////////////////////
+  /*!
+    Register a client with the runtime.
 
-  //--------------------------------------------------------------------------//
-  //! Register a client with the runtime.
-  //!
-  //! @param client_key The data client indentifier hash.
-  //! @param key        The identifier hash.
-  //! @param callback   The registration call back function.
-  //--------------------------------------------------------------------------//
+    @param client_key The data client indentifier hash.
+    @param key        The identifier hash.
+    @param callback   The registration call back function.
+   */
 
   bool register_client(
       size_t client_key,
@@ -118,15 +117,18 @@ struct storage__ : public STORAGE_POLICY {
     return true;
   } // register_client
 
+  /*!
+   */
+
   bool register_client_fields(size_t client_key) {
     return registered_client_fields_.insert(client_key).second;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Search for a client at the runtime.
-  //!
-  //! @param client_key The data client indentifier hash.
-  //--------------------------------------------------------------------------//
+  /*!
+    Search for a client at the runtime.
+
+    @param client_key The data client indentifier hash.
+   */
 
   void assert_client_exists(size_t client_key) {
     clog_assert( client_registry_.find(client_key) != client_registry_.end(),
@@ -135,11 +137,11 @@ struct storage__ : public STORAGE_POLICY {
         "\nMake sure it has been properly registered!" );
   } // register_client
 
-  //--------------------------------------------------------------------------//
-  //! Myer's singleton instance.
-  //!
-  //! @return The single instance of this type.
-  //--------------------------------------------------------------------------//
+  /*!
+    Myer's singleton instance.
+
+    @return The single instance of this type.
+   */
 
   static storage__ & instance() {
     static storage__ d;
