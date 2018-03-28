@@ -6,6 +6,8 @@ var searchData=
   ['index_5fspace_2eh',['index_space.h',['../utils_2index__space_8h.html',1,'']]],
   ['init_5fargs_2eh',['init_args.h',['../init__args_8h.html',1,'']]],
   ['init_5fhandles_2eh',['init_handles.h',['../init__handles_8h.html',1,'']]],
+  ['internal_5fclient_2ecc',['internal_client.cc',['../internal__client_8cc.html',1,'']]],
+  ['internal_5fclient_2eh',['internal_client.h',['../internal__client_8h.html',1,'']]],
   ['internal_5ffield_2eh',['internal_field.h',['../internal__field_8h.html',1,'']]],
   ['internal_5findex_5fspace_2eh',['internal_index_space.h',['../internal__index__space_8h.html',1,'']]],
   ['internal_5ftask_2eh',['internal_task.h',['../hpx_2internal__task_8h.html',1,'']]],

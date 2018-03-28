@@ -146,13 +146,13 @@ auto const &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>field_reg
 <tr class="memitem:a1ec3a53bc5252bc64d209091ba38c242"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1ec3a53bc5252bc64d209091ba38c242"></a>
 auto const &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>client_registry</b> () const </td></tr>
 <tr class="separator:a1ec3a53bc5252bc64d209091ba38c242"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c0c7f8cd6e6174e8baac808dd797ab3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a0c0c7f8cd6e6174e8baac808dd797ab3">register_client</a> (size_t client_key, size_t key, const registration_function_t &amp;callback)</td></tr>
-<tr class="separator:a0c0c7f8cd6e6174e8baac808dd797ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bb2a36a31e20d58252e35990d78515f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a1bb2a36a31e20d58252e35990d78515f">register_client</a> (size_t type_hash, size_t key, const registration_function_t &amp;callback)</td></tr>
+<tr class="separator:a1bb2a36a31e20d58252e35990d78515f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e48601f1b1f4e1f32029af1870dfacb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e48601f1b1f4e1f32029af1870dfacb"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>register_client_fields</b> (size_t client_key)</td></tr>
 <tr class="separator:a6e48601f1b1f4e1f32029af1870dfacb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0b1cfc926fb9c9f4c5264b3edf52069"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#ae0b1cfc926fb9c9f4c5264b3edf52069">assert_client_exists</a> (size_t client_key)</td></tr>
-<tr class="separator:ae0b1cfc926fb9c9f4c5264b3edf52069"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adde8cfc00d5106a3d892c69f00769871"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#adde8cfc00d5106a3d892c69f00769871">assert_client_exists</a> (size_t type_hash, size_t client_hash)</td></tr>
+<tr class="separator:adde8cfc00d5106a3d892c69f00769871"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d7100cc978a1a2fe0310377f0e501ed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5d7100cc978a1a2fe0310377f0e501ed"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>move</b> (uintptr_t from, uintptr_t to)</td></tr>
 <tr class="separator:a5d7100cc978a1a2fe0310377f0e501ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -178,7 +178,7 @@ struct flecsi::data::storage__&lt; STORAGE_POLICY &gt;</h3>
   </dd>
 </dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="ae0b1cfc926fb9c9f4c5264b3edf52069"></a>
+<a class="anchor" id="adde8cfc00d5106a3d892c69f00769871"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -191,8 +191,18 @@ template&lt;typename STORAGE_POLICY &gt; </div>
           <td class="memname">void <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; STORAGE_POLICY &gt;::assert_client_exists </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>client_key</em></td><td>)</td>
+          <td class="paramname"><em>type_hash</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>client_hash</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -238,7 +248,7 @@ template&lt;typename STORAGE_POLICY &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a0c0c7f8cd6e6174e8baac808dd797ab3"></a>
+<a class="anchor" id="a1bb2a36a31e20d58252e35990d78515f"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -251,7 +261,7 @@ template&lt;typename STORAGE_POLICY &gt; </div>
           <td class="memname">bool <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; STORAGE_POLICY &gt;::register_client </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>client_key</em>, </td>
+          <td class="paramname"><em>type_hash</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

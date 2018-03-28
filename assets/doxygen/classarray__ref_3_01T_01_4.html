@@ -98,7 +98,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>One common use for <code>array_ref</code> is when passing arguments to a routine where you want to be able to accept a variety of array types. The usual approach here is to have the client explicitly pass in a pointer and a length, as in: </p><div class="fragment"></div><!-- fragment --> <dl class="section user"><dt></dt><dd>Unfortunately, this leads to ugly and error-prone code at the call site: <div class="fragment"></div><!-- fragment --> </dd></dl>
 <dl class="section user"><dt></dt><dd>Instead, you can use an <code>array_ref</code> as the argument to the routine: <div class="fragment"></div><!-- fragment --> </dd></dl>
 <dl class="section user"><dt></dt><dd>This makes the call sites cleaner, for the most part: <div class="fragment"></div><!-- fragment --> </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000011">Todo:</a></b></dt><dd>The existing <code>array_ref</code> classes make the view const. It may be useful to extend that to allow modifications of the referenced array elements, and use <code>array_ref&lt;const T&gt;</code> for immutable views.</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000010">Todo:</a></b></dt><dd>The existing <code>array_ref</code> classes make the view const. It may be useful to extend that to allow modifications of the referenced array elements, and use <code>array_ref&lt;const T&gt;</code> for immutable views.</dd></dl>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/utils/<a class="el" href="array__ref_8h_source.html">array_ref.h</a></li>
 </ul>

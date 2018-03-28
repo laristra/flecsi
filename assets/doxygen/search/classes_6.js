@@ -10,5 +10,8 @@ var searchData=
   ['global_5fdata_5fhandle_5fbase_5ft',['global_data_handle_base_t',['../structflecsi_1_1global__data__handle__base__t.html',1,'flecsi']]],
   ['global_5fhandle_5f_5f',['global_handle__',['../structflecsi_1_1data_1_1hpx_1_1global__handle____.html',1,'flecsi::data::hpx']]],
   ['global_5fhandle_5f_5f',['global_handle__',['../structflecsi_1_1data_1_1legion_1_1global__handle____.html',1,'flecsi::data::legion']]],
-  ['global_5fobject_5fwrapper_5f_5f',['global_object_wrapper__',['../structflecsi_1_1execution_1_1global__object__wrapper____.html',1,'flecsi::execution']]]
+  ['global_5fobject_5fwrapper_5f_5f',['global_object_wrapper__',['../structflecsi_1_1execution_1_1global__object__wrapper____.html',1,'flecsi::execution']]],
+  ['global_5ftopology_5f_5f',['global_topology__',['../classflecsi_1_1topology_1_1global__topology____.html',1,'flecsi::topology']]],
+  ['global_5ftopology_5fbase_5f_5f',['global_topology_base__',['../classflecsi_1_1topology_1_1global__topology__base____.html',1,'flecsi::topology']]],
+  ['global_5ftopology_5fbase_5ft',['global_topology_base_t',['../classflecsi_1_1topology_1_1global__topology__base__t.html',1,'flecsi::topology']]]
 ];

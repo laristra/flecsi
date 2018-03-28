@@ -47,9 +47,14 @@ var searchData=
   ['global_5fdata_5fhandle_5fbase_5ft',['global_data_handle_base_t',['../structflecsi_1_1global__data__handle__base__t.html',1,'flecsi']]],
   ['global_5fdata_5fhandle_5fpolicy_2eh',['global_data_handle_policy.h',['../global__data__handle__policy_8h.html',1,'']]],
   ['global_5fhandle_5f_5f',['global_handle__',['../structflecsi_1_1data_1_1legion_1_1global__handle____.html',1,'flecsi::data::legion']]],
-  ['global_5fhandle_5f_5f',['global_handle__',['../structflecsi_1_1data_1_1legion_1_1global__handle____.html#a7f1d735a963c478db6ff6248afd0f6a8',1,'flecsi::data::legion::global_handle__']]],
   ['global_5fhandle_5f_5f',['global_handle__',['../structflecsi_1_1data_1_1hpx_1_1global__handle____.html',1,'flecsi::data::hpx']]],
+  ['global_5fhandle_5f_5f',['global_handle__',['../structflecsi_1_1data_1_1legion_1_1global__handle____.html#a7f1d735a963c478db6ff6248afd0f6a8',1,'flecsi::data::legion::global_handle__']]],
   ['global_5fid',['global_id',['../classflecsi_1_1topology_1_1mesh__entity__base____.html#a1cd541af8ca277b3412d01fc876751c4',1,'flecsi::topology::mesh_entity_base__']]],
   ['global_5fobject_5fwrapper_2eh',['global_object_wrapper.h',['../global__object__wrapper_8h.html',1,'']]],
-  ['global_5fobject_5fwrapper_5f_5f',['global_object_wrapper__',['../structflecsi_1_1execution_1_1global__object__wrapper____.html',1,'flecsi::execution']]]
+  ['global_5fobject_5fwrapper_5f_5f',['global_object_wrapper__',['../structflecsi_1_1execution_1_1global__object__wrapper____.html',1,'flecsi::execution']]],
+  ['global_5ftopology_2eh',['global_topology.h',['../global__topology_8h.html',1,'']]],
+  ['global_5ftopology_5f_5f',['global_topology__',['../classflecsi_1_1topology_1_1global__topology____.html',1,'flecsi::topology']]],
+  ['global_5ftopology_5f_5f',['global_topology__',['../classflecsi_1_1topology_1_1global__topology____.html#a8e41a7a54e518cf1205f437091d0acc4',1,'flecsi::topology::global_topology__::global_topology__()'],['../classflecsi_1_1topology_1_1global__topology____.html#ae5270bca528f539fea0f8627968319af',1,'flecsi::topology::global_topology__::global_topology__(const global_topology__ &amp;m)']]],
+  ['global_5ftopology_5fbase_5f_5f',['global_topology_base__',['../classflecsi_1_1topology_1_1global__topology__base____.html',1,'flecsi::topology']]],
+  ['global_5ftopology_5fbase_5ft',['global_topology_base_t',['../classflecsi_1_1topology_1_1global__topology__base__t.html',1,'flecsi::topology']]]
 ];
