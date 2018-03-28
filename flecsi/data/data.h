@@ -17,6 +17,7 @@
 
 #include <flecsi/data/client.h>
 #include <flecsi/data/common/data_types.h>
+#include <flecsi/data/internal_client.h>
 #include <flecsi/data/field.h>
 
 /*!
@@ -191,7 +192,7 @@
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_handle(                                                           \
       flecsi_get_client_handle(                                                \
-          flecsi::data::global_data_client_t, nspace, name),                   \
+          flecsi::data::global_data_client_t, global_client, global_client),   \
       nspace, name, data_type, global, version)
 
 /*!
@@ -215,7 +216,7 @@
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_handle(                                                           \
       flecsi_get_client_handle(                                                \
-          flecsi::data::color_data_client_t, nspace, name),                   \
+          flecsi::data::color_data_client_t, color_client, color_client),      \
       nspace, name, data_type, color, version)
 
 /*!

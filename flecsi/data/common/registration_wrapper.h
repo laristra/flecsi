@@ -26,6 +26,8 @@
 #include <flecsi/runtime/types.h>
 #include <flecsi/topology/mesh_topology.h>
 #include <flecsi/topology/set_topology.h>
+#include <flecsi/topology/global_topology.h>
+#include <flecsi/topology/color_topology.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
 #include <flecsi/utils/tuple_walker.h>
@@ -48,6 +50,7 @@ template<
     size_t VERSIONS,
     size_t INDEX_SPACE>
 struct field_registration_wrapper__ {
+
   //--------------------------------------------------------------------------//
   //!
   //--------------------------------------------------------------------------//
@@ -419,6 +422,62 @@ struct client_registration_wrapper__<
   } // register_callback
 
 }; // class client_registration_wrapper__
+
+
+//----------------------------------------------------------------------------//
+//!
+//----------------------------------------------------------------------------//
+
+template<size_t NAMESPACE_HASH, size_t NAME_HASH>
+struct client_registration_wrapper__<
+    flecsi::topology::global_topology__,
+    NAMESPACE_HASH,
+    NAME_HASH> {
+
+  using CLIENT_TYPE = flecsi::topology::global_topology__;
+
+  static void register_callback(field_id_t fid) {
+
+    auto & storage = storage_t::instance();
+
+    const size_t client_key =
+        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+
+
+    storage.register_client_fields(client_key);
+
+  } // register_callback
+
+
+}; // class client_registration_wrapper__
+
+
+//----------------------------------------------------------------------------//
+//!
+//----------------------------------------------------------------------------//
+
+template<size_t NAMESPACE_HASH, size_t NAME_HASH>
+struct client_registration_wrapper__<
+    flecsi::topology::color_topology__,
+    NAMESPACE_HASH,
+    NAME_HASH> {
+
+  using CLIENT_TYPE = flecsi::topology::color_topology__;
+
+  static void register_callback(field_id_t fid) {
+
+    auto & storage = storage_t::instance();
+
+    const size_t client_key =
+        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+
+    storage.register_client_fields(client_key);
+  } // register_callback
+
+
+}; // class client_registration_wrapper__
+
+
 
 } // namespace data
 } // namespace flecsi

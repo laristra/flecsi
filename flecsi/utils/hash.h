@@ -61,7 +61,7 @@ template<size_t NAMESPACE, size_t NAME>
 inline constexpr size_t
 client_hash() {
   return NAMESPACE ^ NAME;
-} // field_hash__
+} // client_hash
 
 ////////////////////////////////////////////////////////////////////////////////
 // Field data hash interface.

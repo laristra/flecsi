@@ -101,17 +101,17 @@ struct storage__ : public STORAGE_POLICY {
    */
 
   bool register_client(
-      size_t client_key,
+      size_t type_hash,
       size_t key,
       const registration_function_t & callback) {
-    if (client_registry_.find(client_key) != client_registry_.end()) {
+    if (client_registry_.find(type_hash) != client_registry_.end()) {
       clog_assert(
-          client_registry_[client_key].find(key) ==
-              client_registry_[client_key].end(),
+          client_registry_[type_hash].find(key) ==
+              client_registry_[type_hash].end(),
           "client key already exists");
     } // if
 
-    client_registry_[client_key][key] =
+    client_registry_[type_hash][key] =
         std::make_pair(unique_fid_t::instance().next(), callback);
 
     return true;
@@ -130,11 +130,16 @@ struct storage__ : public STORAGE_POLICY {
     @param client_key The data client indentifier hash.
    */
 
-  void assert_client_exists(size_t client_key) {
-    clog_assert( client_registry_.find(client_key) != client_registry_.end(),
-        "\nThe data_client you are trying to access with key " << 
-        client_key << " does not exist!" <<
-        "\nMake sure it has been properly registered!" );
+  void assert_client_exists(size_t type_hash, size_t client_hash) {
+    clog_assert(client_registry_.find(type_hash) != client_registry_.end(),
+        "\nThe data_client type you are trying to access with key " << 
+        type_hash << " does not exist!" <<
+        "\nMake sure it has been properly registered!");
+    clog_assert(client_registry_[type_hash].find(client_hash) !=
+      client_registry_[type_hash].end(),
+      "\nThe data_client instance you are trying to access with key " << 
+      client_hash << " does not exist!" <<
+      "\nMake sure it has been properly registered!");
   } // register_client
 
   /*!
