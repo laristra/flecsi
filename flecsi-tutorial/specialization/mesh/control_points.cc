@@ -73,7 +73,7 @@ void specialization_spmd_init(int argc, char ** argv) {
 
   using namespace tutorial;
 
-  auto mh = flecsi_get_client_handle(mesh_t, clients, m);
+  auto mh = flecsi_get_client_handle(mesh_t, clients, mesh);
   flecsi_execute_task(initialize_mesh, flecsi::tutorial, single, mh);
 
 } // specialization_spmd_ini

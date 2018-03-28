@@ -21,12 +21,18 @@
 namespace flecsi {
 namespace data {
 
+  /*!
+  global_data_client_t is a type used for the global data client registration 
+  */
   struct global_data_client_t :
-  public flecsi::topology::global_topology__
+  flecsi::topology::global_topology__
   {};
 
+  /*!
+    color_data_client_t is a type used for the color data client registration 
+ */
   struct color_data_client_t :
-  public flecsi::topology::color_topology__
+  flecsi::topology::color_topology__
   {};
 
 

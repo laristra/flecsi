@@ -19,7 +19,7 @@ project(${PROJECT})
 find_package(FleCSI REQUIRED)
 
 include_directories($${FLECSI_INCLUDE_DIRS})
-
+${REQUIRED_PACKAGES}
 # This is needed to correctly handle flecsi-clang++ files with
 # .fcc suffix. It should have no effect on normal C++ driver files.
 set_source_files_properties(${DRIVER} PROPERTIES LANGUAGE CXX)

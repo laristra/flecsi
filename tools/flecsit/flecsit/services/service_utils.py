@@ -82,25 +82,36 @@ def add_command_line_compiler_options(parser):
              ' command line arguements.'
     )
 
+    parser.add_argument('-p', '--package', action='append',
+        help='Specify a CMake package dependency. This argument may be given' +
+             ' multiple times. Arguments must be of the form' +
+             ' -ppackage, -p package, ' +
+             ' or --package package. Packages may' +
+             ' also be specified by setting the FLECSIT_PACKAGES' +
+             ' environment variable. If FLECSIT_PACKAGES is set,' +
+             ' it will override any packages passed as' +
+             ' command line arguements.'
+    )
+
 # add_compiler_options
 
 #------------------------------------------------------------------------------#
 # Generate a compile string from config information and user arguements.
 #------------------------------------------------------------------------------#
 
-def generate_compiler_options(config, paths, environment, option):
+def generate_compiler_options(config, entries, environment, option):
 
     """
     General function to process compiler flags for include, ldflags,
-    and libraries.
+    libraries, and packages.
     """
 
     options = ""
 
-    # Add paths from cmake config
+    # Add entries from cmake config
     if config:
-        for path in config.split(' ') or []:
-            options += option + path + ' '
+        for entry in config.split(' ') or []:
+            options += option + entry + ' '
 
     # Read the environment variable
     envflags = os.getenv(environment)
@@ -111,9 +122,9 @@ def generate_compiler_options(config, paths, environment, option):
         for flag in envflags.split(':') or []:
             options += option + flag + ' '
     else:
-        if paths:
-            for path in paths or []:
-                options += option + path + ' '
+        if entries:
+            for entry in entries or []:
+                options += option + entry + ' '
 
     return options.strip()
 

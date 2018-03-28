@@ -174,7 +174,7 @@ struct field_interface__ {
     return storage_class_t::template get_mutator<
         DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE_HASH, NAME_HASH, VERSION>(
         client_handle, slots);
-  } // get_handle
+  } // get_mutator
 
   //--------------------------------------------------------------------------//
   //! Return all handles of the given storage type, data type, and

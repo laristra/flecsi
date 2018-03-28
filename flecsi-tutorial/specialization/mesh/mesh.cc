@@ -18,7 +18,7 @@
 namespace flecsi {
 namespace tutorial {
 
-flecsi_register_data_client(mesh_t, clients, default_mesh);
+flecsi_register_data_client(mesh_t, clients, mesh);
 
 } // namespace tutorial
 } // namespace flecsi
