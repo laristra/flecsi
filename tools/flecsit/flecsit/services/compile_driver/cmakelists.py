@@ -31,7 +31,7 @@ add_executable(${TARGET}
 )
 
 target_compile_definitions(${TARGET} PRIVATE ${FLECSI_DEFINES})
-target_link_libraries(${TARGET} FleCSI FleCSI-Tut)
+target_link_libraries(${TARGET} FleCSI ${FLECSI_LIBRARIES})
 
 install(TARGETS ${TARGET} DESTINATION ${INSTALL_PREFIX})
 """)
