@@ -19,6 +19,7 @@
 
 set(topology_HEADERS
   closure_utils.h
+  color_topology.h
   common/array_buffer.h
   common/entity_storage.h
   entity_storage.h
@@ -27,6 +28,7 @@ set(topology_HEADERS
   mesh.h
   mesh_storage.h
   mesh_topology.h
+  global_topology.h
   mesh_types.h
   mesh_utils.h
   partition.h
