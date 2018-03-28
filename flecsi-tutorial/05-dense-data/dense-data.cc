@@ -13,7 +13,7 @@
                                                                               */
 
 /*----------------------------------------------------------------------------*
-  Documentation for this example can be found in DRIVER.md.
+  Documentation for this example can be found in DENSE-DATA.md.
  *----------------------------------------------------------------------------*/
 
 #include <iostream>
