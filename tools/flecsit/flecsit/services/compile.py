@@ -39,6 +39,11 @@ class FleCSIT_Compile(Service):
             help='Turn on verbose output.'
         )
 
+        # Add debug flag
+        self.parser.add_argument('-d', '--debug', action='store_true',
+            help='Turn on debug output (temporaries not deleted).'
+        )
+
         # Add verbose flag
         self.parser.add_argument('-m', '--main', action='store',
             help='Allow override of the default runtime main file. The ' +
@@ -103,7 +108,7 @@ class FleCSIT_Compile(Service):
         build['main'] = main
 
         # Execute build
-        execute(args.verbose, build)
+        execute(args.verbose, args.debug, build)
 
     # main
 

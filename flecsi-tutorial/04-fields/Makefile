@@ -34,4 +34,4 @@ pdfs: $(pdffiles)
 
 clean:
 	$(eval test := $(shell pwd | sed 's,^.*\/,,g;s,[0-9][0-9]-,,g'))
-	rm -rf *.tex *.aux *.log *.pdf $(test)
+	rm -rf *.tex *.aux *.log *.pdf $(test) tmp*
