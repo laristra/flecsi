@@ -210,7 +210,7 @@
   @ingroup data
  */
 
-#define flecsi_get_color(nspace, name, data_type, version)                    \
+#define flecsi_get_color(nspace, name, data_type, version)                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
@@ -238,7 +238,8 @@
   flecsi::data::data_client_interface_t::get_client_handle<                    \
       client_type,                                                             \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>()
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>( \
+          EXPAND_AND_STRINGIFY(name))
 
 /*!
   @def flecsi_get_handles
