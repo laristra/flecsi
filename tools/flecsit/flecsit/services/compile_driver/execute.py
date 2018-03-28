@@ -21,18 +21,32 @@ def execute(verbose, debug, build):
     tmpdir = tempfile.mkdtemp(dir=cwd)
     os.chdir(tmpdir)
 
+    # Expand packages arguments for substitution
+    required_packages = ''
+    packages = build['packages'].split()
+    if packages:
+        required_packages += \
+            '\n# Adding package dependencies specified by the user.\n'
+
+        for package in packages:
+            required_packages += \
+                'find_package(' + package + ' REQUIRED)\n' + \
+                'include_directories(${' + package + '_INCLUDE_DIRS})\n'
+            build['libraries'] += ' ${' + package + '_LIBRARIES}'
+
     # Do substitutions to create the CMakeLists.txt file
     cmakelists_txt = cmakelists_template.substitute(
-        CMAKE_MINIMUM_REQUIRED='2.8',
-        PROJECT='flecsit_compile_' + build['deck'],
-        TARGET=build['deck'],
-        DRIVER=cwd + '/' + build['driver'],
-        FLECSI_RUNTIME_MAIN=build['main'],
-        FLECSI_RUNTIME_DRIVER=build['prefix'] +
+        CMAKE_MINIMUM_REQUIRED = '2.8',
+        REQUIRED_PACKAGES = required_packages,
+        PROJECT = 'flecsit_compile_' + build['deck'],
+        TARGET = build['deck'],
+        DRIVER = cwd + '/' + build['driver'],
+        FLECSI_RUNTIME_MAIN = build['main'],
+        FLECSI_RUNTIME_DRIVER = build['prefix'] +
             '/share/FleCSI/runtime/runtime_driver.cc',
-        INSTALL_PREFIX=cwd,
-        FLECSI_DEFINES=build['defines'],
-        FLECSI_LIBRARIES=build['libraries']
+        INSTALL_PREFIX = cwd,
+        FLECSI_DEFINES = build['defines'],
+        FLECSI_LIBRARIES = build['libraries']
     )
 
     fd = open('CMakeLists.txt', 'w')
@@ -41,8 +55,14 @@ def execute(verbose, debug, build):
 
     if verbose:
         devnull = None
+        verbose_flag = 'VERBOSE=1'
     else:
         devnull = open(os.devnull, 'w')
+
+        # This needs to be set this way. Passing an empty string to
+        # subprocess.call fucks it up...
+        verbose_flag = 'VERBOSE=0'
+    # if
 
     # Setup compiler and flags
     cxx_compiler = '-DCMAKE_CXX_COMPILER=' + build['compiler']
@@ -51,7 +71,7 @@ def execute(verbose, debug, build):
     # Call CMake and make to build the example
     subprocess.call(['/usr/bin/cmake', cxx_compiler, cxx_flags, '.'],
         stdout=devnull, stderr=devnull)
-    subprocess.call(['/usr/bin/make', 'install'], stdout=devnull,
+    subprocess.call(['/usr/bin/make', 'install', verbose_flag], stdout=devnull,
         stderr=devnull)
 
     if not debug:

@@ -31,7 +31,7 @@ class FleCSIT_Compile(Service):
             help='Service for compiling user driver files.'
         )
 
-        # Add general compiler options -I, -L, and -l
+        # Add general compiler options -I, -L, -l, and -p
         add_command_line_compiler_options(self.parser)
 
         # Add verbose flag
@@ -91,10 +91,13 @@ class FleCSIT_Compile(Service):
             args.include, 'FLECSIT_DEFINES', '-D')
         libraries = generate_compiler_options(config['libraries'],
             args.library, 'FLECSIT_LIBRARIES', '')
+        packages = generate_compiler_options(config['packages'],
+            args.package, 'FLECSIT_PACKAGES', '')
 
         build['includes'] = includes
         build['defines'] = defines
         build['libraries'] = libraries
+        build['packages'] = packages
 
         # Runtime main
         main = os.getenv('FLECSIT_RUNTIME_MAIN')
