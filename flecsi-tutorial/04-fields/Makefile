@@ -9,7 +9,7 @@ all:
 	@echo "To build the tutorial example, execute:"
 	@echo "   $$ flecsit compile $(test).cc"
 	@echo ""
-	@echo "You make need to load the flecsi-tutorial environment module:"
+	@echo "You may need to load the flecsi-tutorial environment module:"
 	@echo "   $$ module load flecsi-tutorial"
 	@echo ""
 	@echo "OR source the bash or csh configuration file:"
