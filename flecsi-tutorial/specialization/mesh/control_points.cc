@@ -16,10 +16,10 @@
 
 #include <flecsi/execution/execution.h>
 #include <flecsi/execution/context.h>
-#include <specialization/mesh/coloring.h>
-#include <specialization/mesh/mesh.h>
-#include <specialization/mesh/policy.h>
-#include <specialization/mesh/tasks.h>
+#include <flecsi-tutorial/specialization/mesh/coloring.h>
+#include <flecsi-tutorial/specialization/mesh/mesh.h>
+#include <flecsi-tutorial/specialization/mesh/policy.h>
+#include <flecsi-tutorial/specialization/mesh/tasks.h>
 
 namespace flecsi {
 namespace execution {

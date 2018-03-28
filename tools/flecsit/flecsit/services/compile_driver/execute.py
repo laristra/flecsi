@@ -11,33 +11,17 @@ import subprocess
 import sys
 import tempfile
 
-def execute(verbose, build):
+def execute(verbose, debug, build):
 
     """
     """
 
-    # Build the compile command
-#    command = build['compiler'] + ' ' + \
-#              build['flags'] + ' ' + \
-#              build['defines'] + ' ' + \
-#              build['includes'] + ' ' + \
-#              build['main'] + ' ' + \
-#              build['prefix'] + '/share/FleCSI/runtime/runtime_driver.cc ' + \
-#              build['driver'] + ' ' + \
-#              '-o ' + build['deck'] + ' ' + \
-#              '-L' + build['prefix'] + '/' + build['libprefix'] + ' ' + \
-#              build['flecsi'] + ' ' + \
-#              build['libraries']
-
-#    if verbose:
-#        print command
-
-#    subprocess.call(command.split())
-    
+    # Create a temporary directory for the build
     cwd = os.getcwd()
     tmpdir = tempfile.mkdtemp(dir=cwd)
     os.chdir(tmpdir)
 
+    # Do substitutions to create the CMakeLists.txt file
     cmakelists_txt = cmakelists_template.substitute(
         CMAKE_MINIMUM_REQUIRED='2.8',
         PROJECT='flecsit_compile_' + build['deck'],
@@ -55,12 +39,23 @@ def execute(verbose, build):
     fd.write(cmakelists_txt[1:-1])
     fd.close()
 
-    devnull = open(os.devnull, 'w')
-    subprocess.call(['/usr/bin/cmake', '.'], stdout=devnull, stderr=devnull)
+    if verbose:
+        devnull = None
+    else:
+        devnull = open(os.devnull, 'w')
+
+    # Setup compiler and flags
+    cxx_compiler = '-DCMAKE_CXX_COMPILER=' + build['compiler']
+    cxx_flags = '-DCMAKE_CXX_FLAGS=' + build['flags']
+
+    # Call CMake and make to build the example
+    subprocess.call(['/usr/bin/cmake', cxx_compiler, cxx_flags, '.'],
+        stdout=devnull, stderr=devnull)
     subprocess.call(['/usr/bin/make', 'install'], stdout=devnull,
         stderr=devnull)
 
-    #shutil.rmtree(tmpdir)
+    if not debug:
+        shutil.rmtree(tmpdir)
 # execute
 
 #------------------------------------------------------------------------------#

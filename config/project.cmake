@@ -388,7 +388,7 @@ install(
 # Add library targets
 #------------------------------------------------------------------------------#
 
-cinch_add_library_target(FleCSI FleCSITargets flecsi)
+cinch_add_library_target(FleCSI flecsi EXPORT_TARGET FleCSITargets)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   option(ENABLE_FLECSI_TUTORIAL
@@ -399,8 +399,7 @@ else()
 endif()
 
 if(ENABLE_FLECSI_TUTORIAL)
-  cinch_add_library_target(FleCSI-Tut FleCSITargets
-    flecsi-tutorial/specialization)
+  cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
 endif()
 
 #------------------------------------------------------------------------------#
@@ -461,11 +460,6 @@ set(FLECSI_LIBRARY_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR})
 set(FLECSI_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include
   ${FLECSI_EXTERNAL_INCLUDE_DIRS})
 
-if (ENABLE_FLECSI_TUTORIAL)
-  set(FLECSI_INCLUDE_DIRS ${FLECSI_INCLUDE_DIRS}
-     ${CMAKE_INSTALL_PREFIX}/include/flecsi-tutorial)
-endif()
-
 set(FLECSI_CMAKE_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/cmake/FleCSI)
 set(FLECSI_RUNTIME_MAIN ${FLECSI_SHARE_DIR}/runtime/runtime_main.cc)
 set(FLECSI_RUNTIME_DRIVER ${FLECSI_SHARE_DIR}/runtime/runtime_driver.cc)
@@ -488,17 +482,10 @@ endforeach()
 # Export targets and package.
 #------------------------------------------------------------------------------#
 
-if(ENABLE_FLECSI_TUTORIAL)
-  export(
-    TARGETS FleCSI FleCSI-Tut
-    FILE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSITargets.cmake
-  )
-else()
 export(
   TARGETS FleCSI
   FILE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSITargets.cmake
 )
-endif()
 
 export(PACKAGE FleCSI)
 

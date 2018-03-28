@@ -20,6 +20,10 @@ find_package(FleCSI REQUIRED)
 
 include_directories($${FLECSI_INCLUDE_DIRS})
 
+# This is needed to correctly handle flecsi-clang++ files with
+# .fcc suffix. It should have no effect on normal C++ driver files.
+set_source_files_properties(${DRIVER} PROPERTIES LANGUAGE CXX)
+
 add_executable(${TARGET}
   ${DRIVER}
   ${FLECSI_RUNTIME_DRIVER}
