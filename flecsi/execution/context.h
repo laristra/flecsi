@@ -91,14 +91,6 @@ struct context__ : public CONTEXT_POLICY {
     size_t max_entries_per_index;
   };
 
-  /*!
-    Gathers info about set topology index spaces.
-   */
-  struct set_topology_index_space_t{
-    size_t main_capacity;
-    size_t active_migration_capacity;
-  };
-
   struct index_subspace_info_t {
     size_t index_subspace;
     size_t capacity;
@@ -108,11 +100,19 @@ struct context__ : public CONTEXT_POLICY {
   /*!
     Structure needed to initialize a set topology.
    */
-  struct set_topology_info_t{
-    using index_space_map_t =
-      std::unordered_map<size_t, set_topology_index_space_t>;
+  struct set_index_space_info_t{
+    /*!
+      Gathers info about set topology index spaces per color.
+     */
+    struct color_info_t{
+      size_t main_capacity;
+      size_t active_migration_capacity;
+    };
 
-    index_space_map_t index_space_map;
+    // key = color
+    using color_info_map_t = std::unordered_map<size_t, color_info_t>;
+
+    color_info_map_t color_info_map;
   };
 
   //--------------------------------------------------------------------------//
@@ -258,11 +258,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   auto & index_map(size_t index_space) {
+    auto it = index_map_.find(index_space);
     clog_assert(
-        index_map_.find(index_space) != index_map_.end(),
+        it != index_map_.end(),
         "invalid index space");
 
-    return index_map_[index_space];
+    return it->second;
   } // index_map
 
   /*!
@@ -270,11 +271,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   const auto & index_map(size_t index_space) const {
+    auto it = index_map_.find(index_space);
     clog_assert(
-        index_map_.find(index_space) != index_map_.end(),
+        it != index_map_.end(),
         "invalid index space");
 
-    return index_map_.at(index_space);
+    return it->second;
   } // index_map
 
   /*!
@@ -303,9 +305,10 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   void
-  add_set_topology(const set_topology_info_t & info)
+  add_set_index_space(size_t index_space, const set_index_space_info_t & info)
   {
-
+    auto itr = set_index_space_map_.insert({index_space, info});
+    clog_assert(itr->second, "set index space exists: " << index_space);
   }
 
   void set_sparse_index_space_info(
@@ -357,11 +360,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   auto & reverse_index_map(size_t index_space) {
+    auto it = reverse_index_map_.find(index_space);
     clog_assert(
-        reverse_index_map_.find(index_space) != reverse_index_map_.end(),
+        it != reverse_index_map_.end(),
         "invalid index space");
 
-    return reverse_index_map_[index_space];
+    return it->second;
   } // reverse_index_map
 
   /*!
@@ -369,11 +373,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   const auto & reverse_index_map(size_t index_space) const {
+    auto it = reverse_index_map_.find(index_space);
     clog_assert(
-        reverse_index_map_.find(index_space) != reverse_index_map_.end(),
+        it != reverse_index_map_.end(),
         "invalid index space");
 
-    return reverse_index_map_.at(index_space);
+    return it->second;
   } // reverse_index_map
 
   /*!
@@ -408,11 +413,12 @@ struct context__ : public CONTEXT_POLICY {
   auto const & intermediate_map(size_t dimension, size_t domain) const {
     const size_t key = utils::hash::intermediate_hash(dimension, domain);
 
+    auto it = reverse_intermediate_map_.find(key);
     clog_assert(
-        intermediate_map_.find(key) != intermediate_map_.end(),
+        it != intermediate_map_.end(),
         "invalid index space");
 
-    return intermediate_map_.at(key);
+    return it->second;
   } // intermediate_map
 
   /*!
@@ -425,11 +431,12 @@ struct context__ : public CONTEXT_POLICY {
   auto const & reverse_intermediate_map(size_t dimension, size_t domain) const {
     const size_t key = utils::hash::intermediate_hash(dimension, domain);
 
+    auto it = reverse_intermediate_map_.find(key);
     clog_assert(
-        reverse_intermediate_map_.find(key) != reverse_intermediate_map_.end(),
+        it != reverse_intermediate_map_.end(),
         "invalid index space");
 
-    return reverse_intermediate_map_.at(key);
+    return it->second;
   } // reverse_intermediate_map
 
   /*!
@@ -459,11 +466,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   index_coloring_t & coloring(size_t index_space) {
-    if (colorings_.find(index_space) == colorings_.end()) {
+    auto it = colorings_.find(index_space);
+    if (it == colorings_.end()) {
       clog(fatal) << "invalid index_space " << index_space << std::endl;
     } // if
 
-    return colorings_[index_space];
+    return it->second;
   } // coloring
 
   /*!
@@ -475,11 +483,12 @@ struct context__ : public CONTEXT_POLICY {
 
   const std::unordered_map<size_t, coloring_info_t> &
   coloring_info(size_t index_space) {
-    if (coloring_info_.find(index_space) == coloring_info_.end()) {
+    auto it = coloring_info_.find(index_space);
+    if (it == coloring_info_.end()) {
       clog(fatal) << "invalid index space " << index_space << std::endl;
     } // if
 
-    return coloring_info_[index_space];
+    return it->second;
   } // coloring_info
 
   /*!
@@ -705,7 +714,7 @@ private:
     for(auto & go: global_object_registry_) {
       std::get<1>(go.second)(std::get<0>(go.second));
     } // for
-  }
+  } // ~context_t
 
   //--------------------------------------------------------------------------//
   // We don't need any of these
@@ -843,6 +852,12 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, index_subspace_info_t> index_subspace_map_;
+
+  //--------------------------------------------------------------------------//
+  // key: set index space
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, set_index_space_info_t> set_index_space_map_;
 
   //--------------------------------------------------------------------------//
   // Execution state

@@ -60,20 +60,6 @@ set(FLECSI_LIBRARY_DEPENDENCIES)
 set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 
 #------------------------------------------------------------------------------#
-# Boost
-#
-# Note that this find package only sets the header information. To find
-# library dependencies, add COMPONENTS and specify the ones that you need.
-#------------------------------------------------------------------------------#
-
-find_package(Boost 1.58.0 REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-
-# FIXME: This should be optional
-#set(FLECSI_INCLUDE_DEPENDENCIES ${Boost_INCLUDE_DIRS})
-#set(FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
-
-#------------------------------------------------------------------------------#
 # cinch_load_extras will try and find legion and mpi. If we want to
 # override the defaults, i.e. ENABLE_MPI=on and ENABLE_LEGION=on, we
 # need to do it before cinch_load_extras is called.
@@ -423,10 +409,15 @@ install(
 # Add library targets
 #------------------------------------------------------------------------------#
 
-cinch_add_library_target(FleCSI flecsi)
+cinch_add_library_target(FleCSI flecsi EXPORT_TARGET FleCSITargets)
 
-option(ENABLE_FLECSI_TUTORIAL
-  "Enable library support for the FleCSI tutorial" ON)
+if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+  option(ENABLE_FLECSI_TUTORIAL
+    "Enable library support for the FleCSI tutorial" OFF)
+else()
+  option(ENABLE_FLECSI_TUTORIAL
+    "Enable library support for the FleCSI tutorial" ON)
+endif()
 
 if(ENABLE_FLECSI_TUTORIAL)
   cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
@@ -489,6 +480,7 @@ endforeach()
 set(FLECSI_LIBRARY_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR})
 set(FLECSI_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include
   ${FLECSI_EXTERNAL_INCLUDE_DIRS})
+
 set(FLECSI_CMAKE_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/cmake/FleCSI)
 set(FLECSI_RUNTIME_MAIN ${FLECSI_SHARE_DIR}/runtime/runtime_main.cc)
 set(FLECSI_RUNTIME_DRIVER ${FLECSI_SHARE_DIR}/runtime/runtime_driver.cc)
@@ -515,6 +507,7 @@ export(
   TARGETS FleCSI
   FILE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSITargets.cmake
 )
+
 export(PACKAGE FleCSI)
 
 #------------------------------------------------------------------------------#

@@ -22,7 +22,7 @@ runtime. The arguments to the task registration interface are:
    function. In this example, the task name is "simple_task".
 
 2. The namespace of the task. This must be the actual namespace in
-   which the task is defined. In this example, the namespace is "hydro".
+   which the task is defined. In this example, the namespace is "example".
 
 3. The processor type on which the task should be executed.
    Currently, FleCSI has support for:
@@ -53,11 +53,11 @@ The driver in this example executes the task by invoking the execution
 interface. The arguments to the execution interface are:
 
 1. The task name. This has the same caveats of the registration
-   interface. In this example, the task name is "simple".
+   interface. In this example, the task name is "simple_task".
 
 2. The namespace of the task. This also has the same caveats of the
    registration interface. In this example, the namespace is
-   "hydro".
+   "example".
 
 3. The launch type. In this example, the launch type is "single".
 

@@ -18,22 +18,23 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
+  accessor.h
+  client.h
   common/data_hash.h
   common/data_types.h
   common/privilege.h
   common/registration_wrapper.h
-  accessor.h
-  client.h
   data.h
   data_client.h
   data_client_handle.h
   data_client_handle.h
   data_constants.h
   dense_data_handle.h
-  global_data_handle.h
   dense_accessor.h
-  global_accessor.h
   field.h
+  global_accessor.h
+  global_data_handle.h
+  internal_client.h
   mutator.h
   mutator_handle.h
   ragged_accessor.h
@@ -52,6 +53,7 @@ set(data_HEADERS
 
 set(data_SOURCES
   data_client.cc
+  internal_client.cc
 )
 
 set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)

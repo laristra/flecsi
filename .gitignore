@@ -2,7 +2,6 @@
 *.pyc
 CMakeCache.txt
 CMakeFiles
-Makefile
 cmake_install.cmake
 *~
 .DS_Store

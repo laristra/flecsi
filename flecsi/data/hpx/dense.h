@@ -90,7 +90,7 @@ struct dense_handle_t : public dense_data_handle__<T, EP, SP, GP> {
   dense_handle_t() {}
 
   template<typename, size_t, size_t, size_t>
-  friend class dense_handle_t;
+  friend struct dense_handle_t;
 };
 
 #if 0

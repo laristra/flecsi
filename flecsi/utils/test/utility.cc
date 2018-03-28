@@ -5,19 +5,14 @@
 
 // includes: flecsi
 #include <flecsi/utils/utility.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/test/print_type.h>
 
 // includes: C++
 #include <iostream>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
-
-// print_type
-inline void
-print_type(const char * const name) {
-  CINCH_CAPTURE() << boost::core::demangle(name) << std::endl;
-}
 
 // =============================================================================
 // Test various constructs in utility.h
@@ -25,16 +20,14 @@ print_type(const char * const name) {
 
 // TEST
 TEST(utility, all) {
-  print_type(typeid(typename flecsi::utils::as_const<char, char>::type).name());
-  print_type(typeid(typename flecsi::utils::as_const<char, int>::type).name());
-  print_type(
-      typeid(
-          typename flecsi::utils::as_const<char, const volatile double>::type)
-          .name());
+  print_type<typename flecsi::utils::as_const<char, char>::type>();
+  print_type<typename flecsi::utils::as_const<char, int >::type>();
+  print_type<typename flecsi::utils::as_const<char, const volatile double>::type>();
 
   // compare
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("utility.blessed"));
-
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("utility.blessed.gnug"));
+#endif
 } // TEST
 
 /*~-------------------------------------------------------------------------~-*

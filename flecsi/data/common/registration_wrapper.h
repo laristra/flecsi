@@ -26,19 +26,20 @@
 #include <flecsi/runtime/types.h>
 #include <flecsi/topology/mesh_topology.h>
 #include <flecsi/topology/set_topology.h>
+#include <flecsi/topology/global_topology.h>
+#include <flecsi/topology/color_topology.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
 #include <flecsi/utils/tuple_walker.h>
 
-// clog_register_tag(registration);
+ clog_register_tag(registration);
 
 namespace flecsi {
 namespace data {
 
-//----------------------------------------------------------------------------//
-//!
-//----------------------------------------------------------------------------//
-
+/*!
+ 
+*/
 template<
     typename DATA_CLIENT_TYPE,
     size_t STORAGE_CLASS,
@@ -48,6 +49,7 @@ template<
     size_t VERSIONS,
     size_t INDEX_SPACE>
 struct field_registration_wrapper__ {
+
   //--------------------------------------------------------------------------//
   //!
   //--------------------------------------------------------------------------//
@@ -63,16 +65,7 @@ struct field_registration_wrapper__ {
     fi.namespace_hash = NAMESPACE_HASH;
     fi.name_hash = NAME_HASH;
     fi.versions = VERSIONS;
-
-    // This seems like it could be improved to get rid of the
-    // conditional logic
-    if (STORAGE_CLASS == global)
-      fi.index_space = execution::internal_index_space::global_is;
-    else if (STORAGE_CLASS == color)
-      fi.index_space = execution::internal_index_space::color_is;
-    else
-      fi.index_space = INDEX_SPACE;
-
+    fi.index_space = INDEX_SPACE;
     fi.fid = fid;
     fi.key = key;
 
@@ -419,6 +412,58 @@ struct client_registration_wrapper__<
   } // register_callback
 
 }; // class client_registration_wrapper__
+
+
+//----------------------------------------------------------------------------//
+//!
+//----------------------------------------------------------------------------//
+
+template<size_t NAMESPACE_HASH, size_t NAME_HASH>
+struct client_registration_wrapper__<
+    flecsi::topology::global_topology__,
+    NAMESPACE_HASH,
+    NAME_HASH> {
+
+  using CLIENT_TYPE = flecsi::topology::global_topology__;
+
+  static void register_callback(field_id_t fid) {
+
+    auto & storage = storage_t::instance();
+
+    const size_t client_key =
+        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+
+  } // register_callback
+
+
+}; // class client_registration_wrapper__
+
+
+//----------------------------------------------------------------------------//
+//!
+//----------------------------------------------------------------------------//
+
+template<size_t NAMESPACE_HASH, size_t NAME_HASH>
+struct client_registration_wrapper__<
+    flecsi::topology::color_topology__,
+    NAMESPACE_HASH,
+    NAME_HASH> {
+
+  using CLIENT_TYPE = flecsi::topology::color_topology__;
+
+  static void register_callback(field_id_t fid) {
+
+    auto & storage = storage_t::instance();
+
+    const size_t client_key =
+        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+
+  } // register_callback
+
+
+}; // class client_registration_wrapper__
+
+
 
 } // namespace data
 } // namespace flecsi

@@ -33,7 +33,7 @@ void mpi_use(color_accessor<uintptr_t, rw> p) {
 
 flecsi_register_task(mpi_use, example, mpi, single);
 
-void print(color_accessor<uintptr_t, rw> p) {
+void print(color_accessor<uintptr_t, ro> p) {
   double * ptr = reinterpret_cast<double *>(p);
   std::cout << "ptr: " << *ptr << std::endl;
 } // mpi_task

@@ -9,6 +9,7 @@
 #ifndef UTIL_INTEGER_UINT128_HPP
 #define UTIL_INTEGER_UINT128_HPP
 
+#if !defined(__clang__)
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
@@ -462,5 +463,6 @@ namespace utils {
 }}
 
 typedef flecsi::utils::uint128 __uint128_t;
+#endif
 
 #endif
