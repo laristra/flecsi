@@ -319,9 +319,6 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
     h.namespace_hash = NAMESPACE_HASH;
 
     const size_t key = utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
-    std::cout << "key: " << key << std::endl;
-    std::cout << "name: " << NAME_HASH << std::endl;
-    std::cout << "namespace: " << NAMESPACE_HASH << std::endl;
 
     storage_t::instance().assert_client_exists(h.type_hash,
       utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>());
@@ -609,9 +606,6 @@ struct data_client_interface__ {
     using wrapper_t = client_registration_wrapper__<
         typename DATA_CLIENT_TYPE::type_identifier_t, NAMESPACE_HASH,
         NAME_HASH>;
-
-    std::cout << "name: " << NAME_HASH << std::endl;
-    std::cout << "namespace: " << NAMESPACE_HASH << std::endl;
 
     const size_t type_key =
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
