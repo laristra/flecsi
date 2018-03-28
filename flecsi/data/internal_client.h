@@ -22,11 +22,11 @@ namespace flecsi {
 namespace data {
 
   struct global_data_client_t :
-  public flecsi::topology::global_topology__
+  flecsi::topology::global_topology__
   {};
 
   struct color_data_client_t :
-  public flecsi::topology::color_topology__
+  flecsi::topology::color_topology__
   {};
 
 
