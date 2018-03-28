@@ -580,6 +580,24 @@ runtime_driver(
 	
   Legion::LogicalPartition cell_primary_image_nrange_lp = runtime->get_logical_partition(ctx, cell_to_cell_lr, cell_primary_image_nrange_ip);
   runtime->attach_name(cell_primary_image_nrange_lp, "cell_primary_image_nrange_lp");
+  
+  // All shared cell and vertex
+	LegionRuntime::Arrays::Rect<1> pending_partition_bound(LegionRuntime::Arrays::Point<1>(0),
+																						LegionRuntime::Arrays::Point<1>(0));
+	Legion::Domain pending_partition_dom(Legion::Domain::from_rect<1>(pending_partition_bound));
+	Legion::IndexSpace pending_partition_color_space = runtime->create_index_space(ctx, pending_partition_dom);
+  Legion::DomainPoint pending_color_point(0);
+  Legion::IndexPartition cell_shared_pending_ip = runtime->create_pending_partition(ctx, cell_index_space, pending_partition_color_space);
+  Legion::IndexSpace cell_all_shared_is = runtime->create_index_space_union(ctx, cell_shared_pending_ip, pending_color_point, cell_shared_ip);
+	//Legion::LogicalRegion cell_all_shared_lr = runtime->get_logical_subregion(ctx, runtime->get_logical_partition(ctx, cell_lr, cell_shared_pending_ip), cell_all_shared_is);
+  Legion::LogicalRegion cell_all_shared_lr = runtime->get_logical_subregion_by_tree(ctx,cell_all_shared_is,cell_field_space, cell_lr.get_tree_id());
+	runtime->attach_name(cell_all_shared_lr, "cell_all_shared_lr");
+  
+  Legion::IndexPartition vertex_shared_pending_ip = runtime->create_pending_partition(ctx, vertex_index_space, pending_partition_color_space);
+  Legion::IndexSpace vertex_all_shared_is = runtime->create_index_space_union(ctx, vertex_shared_pending_ip, pending_color_point, vertex_shared_ip);
+	//Legion::LogicalRegion vertex_all_shared_lr = runtime->get_logical_subregion(ctx, runtime->get_logical_partition(ctx, vertex_lr, vertex_shared_pending_ip), vertex_all_shared_is);
+  Legion::LogicalRegion vertex_all_shared_lr = runtime->get_logical_subregion_by_tree(ctx, vertex_all_shared_is, vertex_field_space, vertex_lr.get_tree_id());
+	runtime->attach_name(vertex_all_shared_lr, "vertex_all_shared_lr");
 	
   // **************************************************************************
 	// Launch index task to verify partition results
@@ -645,6 +663,18 @@ runtime_driver(
 	  Legion::RegionRequirement(cell_primary_image_nrange_lp, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, cell_to_cell_lr));
   verify_dp_launcher.region_requirements[10].add_field(FID_CELL_TO_CELL_ID);
+  
+	verify_dp_launcher.add_region_requirement(
+	  Legion::RegionRequirement(cell_all_shared_lr, 0/*projection ID*/,
+	                            READ_ONLY, EXCLUSIVE, cell_lr));
+  verify_dp_launcher.region_requirements[11].add_field(FID_CELL_ID);
+  verify_dp_launcher.region_requirements[11].add_field(FID_CELL_PARTITION_COLOR);
+  
+	verify_dp_launcher.add_region_requirement(
+	  Legion::RegionRequirement(vertex_all_shared_lr, 0/*projection ID*/,
+	                            READ_ONLY, EXCLUSIVE, vertex_lr));
+  verify_dp_launcher.region_requirements[12].add_field(FID_VERTEX_ID);
+  verify_dp_launcher.region_requirements[12].add_field(FID_VERTEX_PARTITION_COLOR);
 	
   Legion::MustEpochLauncher must_epoch_launcher_verify_dp;
   must_epoch_launcher_verify_dp.add_index_task(verify_dp_launcher);
