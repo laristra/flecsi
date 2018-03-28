@@ -240,8 +240,7 @@
   flecsi::data::data_client_interface_t::get_client_handle<                    \
       client_type,                                                             \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>( \
-          EXPAND_AND_STRINGIFY(name))
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>()
 
 /*!
   @def flecsi_get_handles
