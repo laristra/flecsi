@@ -52,6 +52,14 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
 endif()
 
+if (ENABLE_VTK_OUTPUT)
+  set(io_HEADERS
+      vtk/rectilinearGrid.h
+      vtk/structuredGrid.h
+      vtk/unstructuredGrid.h
+      vtk/vtkMPI.h)
+endif()
+
 #------------------------------------------------------------------------------#
 # Export header list to parent scope.
 #------------------------------------------------------------------------------#

@@ -32,6 +32,7 @@ add_executable(${TARGET}
 
 target_compile_definitions(${TARGET} PRIVATE ${FLECSI_DEFINES})
 target_link_libraries(${TARGET} FleCSI ${FLECSI_LIBRARIES})
+target_compile_features(${TARGET} PUBLIC cxx_std_14)
 
 install(TARGETS ${TARGET} DESTINATION ${INSTALL_PREFIX})
 """)
