@@ -44,8 +44,13 @@ def execute(verbose, debug, build):
     else:
         devnull = open(os.devnull, 'w')
 
+    # Setup compiler and flags
+    cxx_compiler = '-DCMAKE_CXX_COMPILER=' + build['compiler']
+    cxx_flags = '-DCMAKE_CXX_FLAGS=' + build['flags']
+
     # Call CMake and make to build the example
-    subprocess.call(['/usr/bin/cmake', '.'], stdout=devnull, stderr=devnull)
+    subprocess.call(['/usr/bin/cmake', cxx_compiler, cxx_flags, '.'],
+        stdout=devnull, stderr=devnull)
     subprocess.call(['/usr/bin/make', 'install'], stdout=devnull,
         stderr=devnull)
 
