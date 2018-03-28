@@ -53,7 +53,7 @@ using cell_data = dense_accessor<data_t, rw, SHARED_PRIVILEGES, ro>;
 // use to demonstrate the global object interface.
 
 struct base_t {
-  virtual ~base_t() { std::cout << "delete called" << std::endl; }
+  virtual ~base_t() {}
 
   virtual double compute(double x, double y) = 0;
 
@@ -121,9 +121,7 @@ flecsi_register_task(print, example, loc, single);
 
 // Normal registration of the data client and cell data.
 
-flecsi_register_data_client(mesh_t, clients, mesh);
-flecsi_register_field(mesh_t, example, cell_data,
-  data_t, dense, 1, cells);
+flecsi_register_field(mesh_t, example, cell_data, data_t, dense, 1, cells);
 
 // Register the derived object instances that we will initialize and
 // use in the example.

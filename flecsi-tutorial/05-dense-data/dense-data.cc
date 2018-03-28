@@ -28,7 +28,6 @@ using namespace flecsi;
 using namespace flecsi::tutorial;
 using namespace types;
 
-flecsi_register_data_client(mesh_t, clients, mesh);
 flecsi_register_field(mesh_t, types, f, struct_type_t, dense, 1, cells);
 
 namespace example {
