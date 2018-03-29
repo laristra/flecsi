@@ -25,8 +25,6 @@
 using namespace flecsi;
 using namespace flecsi::tutorial;
 
-flecsi_register_data_client(mesh_t, clients, mesh);
-
 namespace example {
 
 void simple(mesh<ro> mesh) {

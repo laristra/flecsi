@@ -32,7 +32,7 @@ namespace flecsi {
 namespace topology {
 
 //----------------------------------------------------------------------------//
-// Forward declaration
+// Forward declarations
 //----------------------------------------------------------------------------//
 
 template<typename>
@@ -40,10 +40,6 @@ class mesh_topology__;
 
 template<typename>
 class set_topology__;
-
-//----------------------------------------------------------------------------//
-// Forward declaration
-//----------------------------------------------------------------------------//
 
 template<size_t, size_t>
 class mesh_entity__;
