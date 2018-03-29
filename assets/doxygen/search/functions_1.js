@@ -12,7 +12,6 @@ var searchData=
   ['add_5findex_5fmap',['add_index_map',['../structflecsi_1_1execution_1_1context____.html#af6612996a10e17df75f316db2959b9ed',1,'flecsi::execution::context__']]],
   ['add_5findex_5fspace',['add_index_space',['../classflecsi_1_1data_1_1legion__data__t.html#a40c6f09c3a75c7ab655bb15876d20ad3',1,'flecsi::data::legion_data_t']]],
   ['add_5fintermediate_5fmap',['add_intermediate_map',['../structflecsi_1_1execution_1_1context____.html#a320fcc96cdddbc4b19e09045eb014d11',1,'flecsi::execution::context__']]],
-  ['add_5flocal_5findex_5fspace',['add_local_index_space',['../structflecsi_1_1execution_1_1context____.html#a678f56e543620a90c4fe8517574dfc32',1,'flecsi::execution::context__']]],
   ['add_5fset_5findex_5fspace',['add_set_index_space',['../structflecsi_1_1execution_1_1context____.html#a20ce41fddcdba418a7678e20f1cecbfa',1,'flecsi::execution::context__']]],
   ['adjacencies',['adjacencies',['../structflecsi_1_1execution_1_1context____.html#a4aa8e350910dbe1032140e64fdba171e',1,'flecsi::execution::context__']]],
   ['adjacency_5ffid',['adjacency_fid',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#ab1ac2d14f646df2056afa6a5fc62cc45',1,'flecsi::execution::legion_context_policy_t']]],

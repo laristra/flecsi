@@ -96,7 +96,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classflecsi_1_1data_1_1legion__data__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">flecsi::data::legion_data_t Class Reference<div class="ingroups"><a class="el" href="group__data.html">Data Interface</a></div></div>  </div>
@@ -112,8 +111,6 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__data__t_1_1index__space__t.html">index_space_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__data__t_1_1index__subspace__t.html">index_subspace_t</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__data__t_1_1local__index__space__t.html">local_index_space_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
@@ -181,12 +178,6 @@ const std::unordered_map&lt; size_t, <a class="el" href="structflecsi_1_1data_1_
 <tr class="memitem:a643c127673de13b3ac1242995e766061"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a643c127673de13b3ac1242995e766061"></a>
 <a class="el" href="structflecsi_1_1data_1_1legion__data__t_1_1index__space__t.html">index_space_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>color_index_space</b> ()</td></tr>
 <tr class="separator:a643c127673de13b3ac1242995e766061"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ac58ebd5680e76ab1eec6189b09ebeca4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac58ebd5680e76ab1eec6189b09ebeca4"></a>
-static <a class="el" href="structflecsi_1_1data_1_1legion__data__t_1_1local__index__space__t.html">local_index_space_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>create_local_index_space</b> (Legion::Context ctx, Legion::Runtime *runtime, size_t index_space_id, const <a class="el" href="structflecsi_1_1execution_1_1context_____1_1local__index__space__t.html">execution::context_t::local_index_space_t</a> &amp;local_index_space)</td></tr>
-<tr class="separator:ac58ebd5680e76ab1eec6189b09ebeca4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class provides a centralized mechanism for creating Legion index spaces, field spaces, partitions, and logical regions using FleCSI data representation schemes: distributed 2d BLIS, global, and color, and mesh topology adjacency data. This class is instantiated to create such structures, but it is destroyed afterwards, then this data is retained in the execution context. </p>

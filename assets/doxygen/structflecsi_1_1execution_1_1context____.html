@@ -119,8 +119,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1index__subspace__info__t.html">index_subspace_info_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1local__index__space__t.html">local_index_space_t</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__index__space__info__t.html">set_index_space_info_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1sparse__index__space__info__t.html">sparse_index_space_info_t</a></td></tr>
@@ -179,10 +177,6 @@ template&lt;size_t NAMESPACE_HASH, typename OBJECT_TYPE &gt; </td></tr>
 <tr class="separator:ad0e2e0b22ab04bc0d7aea105e2592488"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b79c529bd17c765821af06c085a1ca2"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context____.html#a3b79c529bd17c765821af06c085a1ca2">index_map</a> (size_t index_space) const </td></tr>
 <tr class="separator:a3b79c529bd17c765821af06c085a1ca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a678f56e543620a90c4fe8517574dfc32"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context____.html#a678f56e543620a90c4fe8517574dfc32">add_local_index_space</a> (size_t index_space, size_t capacity)</td></tr>
-<tr class="separator:a678f56e543620a90c4fe8517574dfc32"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86f088f2c1183bdd25645908eac0cf76"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context____.html#a86f088f2c1183bdd25645908eac0cf76">local_index_space_map</a> () const </td></tr>
-<tr class="separator:a86f088f2c1183bdd25645908eac0cf76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20ce41fddcdba418a7678e20f1cecbfa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context____.html#a20ce41fddcdba418a7678e20f1cecbfa">add_set_index_space</a> (size_t index_space, const <a class="el" href="structflecsi_1_1execution_1_1context_____1_1set__index__space__info__t.html">set_index_space_info_t</a> &amp;info)</td></tr>
 <tr class="separator:a20ce41fddcdba418a7678e20f1cecbfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e22196241805e00e18667caa29c4364"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3e22196241805e00e18667caa29c4364"></a>
@@ -498,43 +492,6 @@ template&lt;class CONTEXT_POLICY &gt; </div>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a class="anchor" id="a678f56e543620a90c4fe8517574dfc32"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class CONTEXT_POLICY &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="structflecsi_1_1execution_1_1context____.html">flecsi::execution::context__</a>&lt; CONTEXT_POLICY &gt;::add_local_index_space </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>index_space</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>capacity</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Add a local index space of specified. The index space is local to a color. This method is called from <a class="el" href="group__legion-execution.html#ga903c2716c2a314fbc06f98a2174a2faa">specialization_spmd_init()</a>. </p>
 
 </div>
 </div>
@@ -1202,32 +1159,6 @@ template&lt;class CONTEXT_POLICY &gt; </div>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a class="anchor" id="a86f088f2c1183bdd25645908eac0cf76"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class CONTEXT_POLICY &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const auto&amp; <a class="el" href="structflecsi_1_1execution_1_1context____.html">flecsi::execution::context__</a>&lt; CONTEXT_POLICY &gt;::local_index_space_map </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Return the map of local index space info. </p>
 
 </div>
 </div>
