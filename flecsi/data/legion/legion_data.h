@@ -71,17 +71,6 @@ public:
   };
 
   /*!
-    Collects all of the information needed to represent a local index space.
-   */
-  struct local_index_space_t {
-    size_t index_space_id;
-    Legion::IndexSpace index_space;
-    Legion::FieldSpace field_space;
-    Legion::LogicalRegion logical_region;
-    size_t capacity;
-  };
-
-  /*!
     Collects all of the information needed to represent an index subspace.
    */
   struct index_subspace_t {
@@ -281,51 +270,6 @@ public:
     attach_name(is, is.field_space, "expanded field space");
 
     index_space_map_[index_space_id] = std::move(is);
-  }
-
-  static local_index_space_t create_local_index_space(
-      Legion::Context ctx,
-      Legion::Runtime * runtime,
-      size_t index_space_id,
-      const execution::context_t::local_index_space_t & local_index_space) {
-    using namespace std;
-
-    using namespace Legion;
-    using namespace LegionRuntime;
-    using namespace Arrays;
-
-    using namespace execution;
-
-    context_t & context = context_t::instance();
-
-    local_index_space_t is;
-    is.index_space_id = index_space_id;
-    is.capacity = local_index_space.capacity;
-
-    LegionRuntime::Arrays::Rect<1> rect(
-	  LegionRuntime::Arrays::Point<1>(0),
-	  LegionRuntime::Arrays::Point<1>(is.capacity - 1));
-    is.index_space_id = index_space_id;
-    is.index_space =
-        runtime->create_index_space(ctx, Legion::Domain::from_rect<1>(rect));
-    is.field_space = runtime->create_field_space(ctx);
-
-    using field_info_t = context_t::field_info_t;
-
-    FieldAllocator allocator =
-        runtime->create_field_allocator(ctx, is.field_space);
-
-    for (const field_info_t & fi : context.registered_fields()) {
-      if (fi.index_space == is.index_space_id) {
-        clog_assert(fi.storage_class == local, "expected local storage");
-        allocator.allocate_field(fi.size, fi.fid);
-      }
-    } // for
-
-    is.logical_region =
-        runtime->create_logical_region(ctx, is.index_space, is.field_space);
-
-    return is;
   }
 
   /*!
