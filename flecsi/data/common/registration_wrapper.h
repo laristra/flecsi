@@ -32,15 +32,14 @@
 #include <flecsi/utils/hash.h>
 #include <flecsi/utils/tuple_walker.h>
 
-// clog_register_tag(registration);
+ clog_register_tag(registration);
 
 namespace flecsi {
 namespace data {
 
-//----------------------------------------------------------------------------//
-//!
-//----------------------------------------------------------------------------//
-
+/*!
+ 
+*/
 template<
     typename DATA_CLIENT_TYPE,
     size_t STORAGE_CLASS,
@@ -66,16 +65,7 @@ struct field_registration_wrapper__ {
     fi.namespace_hash = NAMESPACE_HASH;
     fi.name_hash = NAME_HASH;
     fi.versions = VERSIONS;
-
-    // This seems like it could be improved to get rid of the
-    // conditional logic
-    if (STORAGE_CLASS == global)
-      fi.index_space = execution::internal_index_space::global_is;
-    else if (STORAGE_CLASS == color)
-      fi.index_space = execution::internal_index_space::color_is;
-    else
-      fi.index_space = INDEX_SPACE;
-
+    fi.index_space = INDEX_SPACE;
     fi.fid = fid;
     fi.key = key;
 
@@ -443,9 +433,6 @@ struct client_registration_wrapper__<
     const size_t client_key =
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
-
-    storage.register_client_fields(client_key);
-
   } // register_callback
 
 
@@ -471,7 +458,6 @@ struct client_registration_wrapper__<
     const size_t client_key =
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
-    storage.register_client_fields(client_key);
   } // register_callback
 
 

@@ -19,8 +19,11 @@ namespace flecsi {
 namespace data {
 
 
-  flecsi_register_data_client(global_data_client_t, global_client,
+ //register global data client
+ flecsi_register_data_client(global_data_client_t, global_client,
       global_client);
+
+ //register color data client
  flecsi_register_data_client(color_data_client_t, color_client, color_client);
 
 } // namespace data
