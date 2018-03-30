@@ -177,6 +177,27 @@ if(FLECSI_DBC_REQUIRE)
 endif()
 
 #------------------------------------------------------------------------------#
+# VTK
+#------------------------------------------------------------------------------#
+
+option(ENABLE_VTK_OUTPUT "Enable VTK output" OFF)
+
+if(ENABLE_VTK_OUTPUT)
+  find_package(VTK REQUIRED)
+
+  if(VTK_FOUND)
+    include(${VTK_USE_FILE})
+    add_definitions(-DHAVE_VTK)
+
+    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${VTK_INCLUDE_DIRS})
+    #list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${VTK_LIBRARY_DIRS}${VTK_LIBRARIES})
+
+  else()
+    message(FATAL_ERROR "Could not find VTK!") 
+  endif()
+endif()
+
+#------------------------------------------------------------------------------#
 # OpenSSL
 #------------------------------------------------------------------------------#
 
