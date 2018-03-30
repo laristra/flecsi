@@ -297,8 +297,8 @@ namespace execution {
         auto iitr = ism.find(ent.index_space);
         clog_assert(iitr != ism.end(), "invalid index space:" << ent.index_space);
 
-        auto citr = iitr->second.find(color);
-        clog_assert(citr != iitr->second.end(),
+        auto citr = iitr->second.color_info_map.find(color);
+        clog_assert(citr != iitr->second.color_info_map.end(),
                     "invalid color:" << color);
         auto& color_info = citr->second;
 
