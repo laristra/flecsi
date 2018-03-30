@@ -289,29 +289,22 @@ namespace execution {
 
       int color = context_.color();
 
-      auto& im = context_.local_index_space_data_map();
-
       for(size_t i{0}; i<h.num_handle_entities; ++i) {
         data_client_handle_entity_t & ent = h.handle_entities[i];
-
-        auto itr = im.find(ent.index_space);
-        clog_assert(itr != im.end(),
-          "invalid local index space: " << ent.index_space);
-        const context_t::local_index_space_data_t& isd = itr->second;
 
         // see if the field data is registered for this entity field.
         auto& registered_field_data = context_.registered_field_data();
         auto fieldDataIter = registered_field_data.find(ent.fid);
         if (fieldDataIter == registered_field_data.end()) {
-          size_t size = ent.size * isd.capacity;
-          context_.register_field_data(ent.fid, size);
+          //size_t size = ent.size * isd.capacity;
+          //context_.register_field_data(ent.fid, size);
         }
 
         auto ents =
           reinterpret_cast<topology::set_entity_t*>(
           registered_field_data[ent.fid].data());
 
-        storage->init_entities(ent.index_space, ents, ent.size, isd.size, _read);
+        storage->init_entities(ent.index_space, ents, ent.size, 0, _read);
       }
     }
 

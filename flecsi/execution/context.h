@@ -75,14 +75,6 @@ struct context__ : public CONTEXT_POLICY {
   }; // struct field_info_t
 
   /*!
-    Gathers info about local index spaces.
-   */
-  struct local_index_space_t {
-    size_t index_space;
-    size_t capacity;
-  };
-
-  /*!
     Gathers info about sparse index spaces.
    */
   struct sparse_index_space_info_t {
@@ -278,27 +270,6 @@ struct context__ : public CONTEXT_POLICY {
 
     return it->second;
   } // index_map
-
-  /*!
-    Add a local index space of specified. The index space is local
-    to a color. This method is called from specialization_spmd_init().
-   */
-  void add_local_index_space(size_t index_space, size_t capacity) {
-    clog_assert(
-        coloring_info_.find(index_space) == coloring_info_.end(),
-        "non-local index space exists");
-    local_index_space_t is;
-    is.capacity = capacity;
-    local_index_space_map_.emplace(index_space, std::move(is));
-  }
-
-  /*!
-    Return the map of local index space info.
-   */
-
-  const auto & local_index_space_map() const {
-    return local_index_space_map_;
-  }
 
   /*!
     Register set topology index space sizes and other needed metadata.
@@ -780,12 +751,6 @@ private:
 
   std::map<size_t, std::map<size_t, size_t>> index_map_;
   std::map<size_t, std::map<size_t, size_t>> reverse_index_map_;
-
-  //--------------------------------------------------------------------------//
-  // key: index space
-  //--------------------------------------------------------------------------//
-
-  std::map<size_t, local_index_space_t> local_index_space_map_;
 
   //--------------------------------------------------------------------------//
   // key: index space

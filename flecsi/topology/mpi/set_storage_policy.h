@@ -88,6 +88,7 @@ struct mpi_set_topology_storage_policy__ {
   void finalize_storage(){
     auto& context = execution::context_t::instance();
 
+    /*
     auto& im = context.local_index_space_data_map();
     for(auto& itr : im){
       size_t index_space = itr.first;
@@ -98,6 +99,7 @@ struct mpi_set_topology_storage_policy__ {
       execution::context_t::local_index_space_data_t& isd = itr.second;
       isd.size = is.size();
     }
+    */
   }
 
   template<class T, class... ARG_TYPES>
