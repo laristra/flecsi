@@ -17,6 +17,7 @@
 #include<flecsi-tutorial/specialization/mesh/mesh.h>
 #include<flecsi/data/data.h>
 #include<flecsi/execution/execution.h>
+#include<flecsi/io/vtk/structuredGrid.h>
 
 using namespace flecsi;
 using namespace flecsi::tutorial;
@@ -42,6 +43,38 @@ void print_field(mesh<ro> mesh, field<ro> f) {
 
 flecsi_register_task(print_field, example, loc, single);
 
+
+
+void output_field(mesh<ro> mesh, field<ro> f) 
+{
+
+  vtkOutput::StructuredGrid temp(256,1,1);
+  double *cellData = new double[256];
+
+  int count = 0;
+  for(auto c: mesh.cells(owned)) {
+
+    double pnt[3];
+    pnt[0]=c->id(); pnt[1]=0; pnt[2]=0;
+    temp.addPoint(pnt);
+
+    cellData[count] = f(c);
+    count++;
+  } // for
+  temp.pushPointsToGrid();
+
+  temp.addScalarCellData("cell-data-scalar", 256, cellData);
+ //  //temp.addScalarCellData("cell-data-scalar", 256, f);
+  temp.write("testVTK");
+
+  //if (cellData != NULL)
+  //  delete []cellData;
+  //cellData = NULL;
+} // print_field
+
+
+flecsi_register_task(output_field, example, loc, single);
+
 } // namespace example
 
 namespace flecsi {
@@ -54,7 +87,7 @@ void driver(int argc, char ** argv) {
 
   flecsi_execute_task(initialize_field, example, single, m, f);
   flecsi_execute_task(print_field, example, single, m, f);
-
+  flecsi_execute_task(output_field, example, single, m, f);
 } // driver
 
 } // namespace execution

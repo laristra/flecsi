@@ -40,6 +40,7 @@ add_executable(${TARGET}
 
 target_compile_definitions(${TARGET} PRIVATE ${FLECSI_DEFINES})
 target_link_libraries(${TARGET} FleCSI ${FLECSI_LIBRARIES})
+target_compile_features(${TARGET} PUBLIC cxx_std_14)
 
 # make install strips RPATH without this.
 set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
