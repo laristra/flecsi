@@ -67,16 +67,31 @@ struct mpi_set_topology_storage_policy__ {
 
   void init_entities(
       size_t index_space,
+      size_t active_migrate_index_space,
       set_entity_t * entities,
-      size_t size,
       size_t num_entities,
+      set_entity_t * active_entities,
+      size_t num_active_entities,
+      set_entity_t * migrate_entities,
+      size_t num_migrate_entities,
+      size_t size,
       bool read) {
+
     auto itr = index_space_map.find(index_space);
     clog_assert(itr != index_space_map.end(), "invalid index space");
     auto & is = index_spaces[itr->second];
     auto s = is.storage();
 
     s->set_buffer(entities, num_entities, read);
+
+    itr = index_space_map.find(active_migrate_index_space);
+    clog_assert(itr != index_space_map.end(),
+                "invalid active migrate index space");
+    auto & amis = index_spaces[itr->second];
+    auto s2 = amis.storage();
+
+    // how to handle migration buffer?
+    s2->set_buffer(active_entities, num_entities, read);
 
     if (!read) {
       return;

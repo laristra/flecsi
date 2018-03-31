@@ -489,6 +489,7 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
 
   struct entity_info_t {
     size_t index_space;
+    size_t active_migrate_index_space;
     size_t size;
   }; // struct entity_info_t
 
@@ -504,6 +505,8 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
       entity_info_t ei;
 
       ei.index_space = INDEX_TYPE::value;
+      // TODO these ranges need to be formalized
+      ei.active_migrate_index_space = INDEX_TYPE::value + 1024;
       ei.size = sizeof(ENTITY_TYPE);
 
       // entity_info.emplace_back(std::move(ei));
@@ -543,6 +546,7 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
     for (auto & ei : entity_walker.entity_info) {
       data_client_handle_entity_t & ent = h.handle_entities[entity_index];
       ent.index_space = ei.index_space;
+      ent.index_space2 = ei.active_migrate_index_space;
       ent.size = ei.size;
 
       const field_info_t * fi = context.get_field_info_from_key(
@@ -553,6 +557,28 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
 
       if (fi) {
         ent.fid = fi->fid;
+      }
+
+      fi = context.get_field_info_from_key(
+          h.type_hash,
+          utils::hash::client_internal_field_hash(
+              utils::const_string_t(
+              "__flecsi_internal_active_entity_data__").hash(),
+              ent.index_space));
+
+      if (fi) {
+        ent.fid2 = fi->fid;
+      }
+
+      fi = context.get_field_info_from_key(
+          h.type_hash,
+          utils::hash::client_internal_field_hash(
+              utils::const_string_t(
+              "__flecsi_internal_migrate_entity_data__").hash(),
+              ent.index_space));
+
+      if (fi) {
+        ent.fid3 = fi->fid;
       }
 
       ++entity_index;

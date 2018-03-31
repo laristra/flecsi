@@ -390,6 +390,20 @@ struct client_registration_wrapper__<
       storage_t::instance().register_field(
           client_key, key, wrapper_t::register_callback);
 
+      const size_t active_key = utils::hash::client_internal_field_hash<
+          utils::const_string_t("__flecsi_internal_active_entity_data__").
+          hash(),INDEX_TYPE::value>();
+
+      storage_t::instance().register_field(
+          client_key, active_key, wrapper_t::register_callback);
+
+      const size_t migrate_key = utils::hash::client_internal_field_hash<
+          utils::const_string_t("__flecsi_internal_migrate_entity_data__").
+          hash(),INDEX_TYPE::value>();
+
+      storage_t::instance().register_field(
+          client_key, migrate_key, wrapper_t::register_callback);
+
     } // handle_type
 
   }; // struct binding_walker__

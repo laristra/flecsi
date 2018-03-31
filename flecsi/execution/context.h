@@ -98,7 +98,7 @@ struct context__ : public CONTEXT_POLICY {
      */
     struct color_info_t{
       size_t main_capacity;
-      size_t active_migration_capacity;
+      size_t active_migrate_capacity;
     };
 
     // key = color
@@ -280,6 +280,10 @@ struct context__ : public CONTEXT_POLICY {
   {
     auto itr = set_index_space_map_.insert({index_space, info});
     clog_assert(itr->second, "set index space exists: " << index_space);
+  }
+
+  const auto& set_index_space_map() const{
+    return set_index_space_map_;
   }
 
   void set_sparse_index_space_info(

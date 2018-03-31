@@ -18,6 +18,7 @@ namespace flecsi {
 
 struct data_client_handle_entity_t {
   size_t index_space;
+  size_t index_space2;
   // topological dimension
   size_t dim;
   // topological domain
@@ -27,6 +28,8 @@ struct data_client_handle_entity_t {
   size_t num_shared;
   size_t num_ghost;
   field_id_t fid;
+  field_id_t fid2;
+  field_id_t fid3;
   field_id_t id_fid;
   Legion::LogicalRegion color_region;
   Legion::LogicalRegion exclusive_region;

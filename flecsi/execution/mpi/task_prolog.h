@@ -282,6 +282,8 @@ namespace execution {
     {
       auto& context_ = context_t::instance();
 
+      auto& ism = context_.set_index_space_map();
+
       // h is partially initialized in client.h
       auto storage = h.set_storage(new typename T::storage_t);
 
@@ -292,19 +294,40 @@ namespace execution {
       for(size_t i{0}; i<h.num_handle_entities; ++i) {
         data_client_handle_entity_t & ent = h.handle_entities[i];
 
+        auto iitr = ism.find(ent.index_space);
+        clog_assert(iitr != ism.end(), "invalid index space:" << ent.index_space);
+
+        auto citr = iitr->second.color_info_map.find(color);
+        clog_assert(citr != iitr->second.color_info_map.end(),
+                    "invalid color:" << color);
+        auto& color_info = citr->second;
+
         // see if the field data is registered for this entity field.
         auto& registered_field_data = context_.registered_field_data();
         auto fieldDataIter = registered_field_data.find(ent.fid);
         if (fieldDataIter == registered_field_data.end()) {
-          //size_t size = ent.size * isd.capacity;
-          //context_.register_field_data(ent.fid, size);
+          size_t size = ent.size * color_info.main_capacity;
+          context_.register_field_data(ent.fid, size);
+
+          size = ent.size * color_info.active_migrate_capacity;
+          context_.register_field_data(ent.fid2, size);
+          context_.register_field_data(ent.fid3, size);
         }
 
         auto ents =
           reinterpret_cast<topology::set_entity_t*>(
           registered_field_data[ent.fid].data());
 
-        storage->init_entities(ent.index_space, ents, ent.size, 0, _read);
+        auto active_ents =
+          reinterpret_cast<topology::set_entity_t*>(
+          registered_field_data[ent.fid2].data());
+
+        auto migrate_ents =
+          reinterpret_cast<topology::set_entity_t*>(
+          registered_field_data[ent.fid3].data());
+
+        storage->init_entities(ent.index_space, ent.index_space2, ents, 0,
+          active_ents, 0, migrate_ents, 0, ent.size, _read);
       }
     }
 
