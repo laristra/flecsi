@@ -107,7 +107,7 @@
           flecsi::data::global_data_client_t, flecsi::data::global, data_type, \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-          versions, execution::internal_index_space::global_is,                \
+          versions, flecsi::execution::internal_index_space::global_is,        \
 	  ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
 
 /*!
@@ -137,7 +137,7 @@
           flecsi::data::color_data_client_t, flecsi::data::color, data_type,   \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-          versions, execution::internal_index_space::color_is,                 \
+          versions, flecsi::execution::internal_index_space::color_is,         \
           ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
 
 
@@ -390,11 +390,11 @@
   @param client_handle the data client handle
   @param nspace data namespace
   @param name data names
-  @param data_type data type e.g. float, long -- 
+  @param data_type data type e.g. float, long --
     any data type so long as it is trivially copyable
   @param storage_class storage class, e.g. dense, sparse
   @param version version number
-  @param slots number of slots to use for data commit -- 
+  @param slots number of slots to use for data commit --
     for optimal performance this should roughly be set to the expected
     number of entries that will be inserted per index although, it is fine
     if the number of inserted entries exceeds this value.
@@ -415,7 +415,7 @@
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
       version>(client_handle, slots)
-      
+
 /*!
  FIXME documentation
 */
