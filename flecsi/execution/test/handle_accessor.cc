@@ -42,8 +42,8 @@ void reader(dense_accessor<double, ro, ro, ro> x) {
 
 flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
 
-flecsi_register_task_simple(writer, loc, single);
-flecsi_register_task_simple(reader, loc, single);
+flecsi_register_task_simple(writer, loc, index);
+flecsi_register_task_simple(reader, loc, index);
 
 flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
@@ -89,8 +89,8 @@ void driver(int argc, char ** argv) {
 
   auto h = flecsi_get_handle(ch, ns, pressure, double, dense, 0);
 
-  flecsi_execute_task_simple(writer, single, h);
-  flecsi_execute_task_simple(reader, single, h);
+  flecsi_execute_task_simple(writer, index, h);
+  flecsi_execute_task_simple(reader, index, h);
 } // driver
 
 //----------------------------------------------------------------------------//
