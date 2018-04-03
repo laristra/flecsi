@@ -172,36 +172,22 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
 #else
       {
-        Legion::LogicalRegion lr = regions[region].get_logical_region();
+       Legion::LogicalRegion lr = regions[region].get_logical_region();
         Legion::IndexSpace is = lr.get_index_space();
 
         // we need to get Rect for the parent index space in purpose to loop
         // over  compacted physical instance
 
-        Legion::Domain parent_dom =
+        Legion::Domain dom =
             runtime->get_index_space_domain(context, is);
-        LegionRuntime::Arrays::Rect<2> parent_rect = parent_dom.get_rect<2>();
+        LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
 
         LegionRuntime::Arrays::Rect<2> sr;
         LegionRuntime::Accessor::ByteOffset bo[2];
 
-      // we need to get Rect for the parent index space in purpose to loop
-      // over  compacted physical instance
-      Legion::IndexPartition parent_ip =
-          runtime->get_parent_index_partition(is);
-      Legion::IndexSpace parent_is = runtime->get_parent_index_space(parent_ip);
-
-      Legion::Domain parent_dom =
-          runtime->get_index_space_domain(context, parent_is);
-      LegionRuntime::Arrays::Rect<2> parent_rect = parent_dom.get_rect<2>();
-
-      LegionRuntime::Arrays::Rect<2> sr;
-      LegionRuntime::Accessor::ByteOffset bo[2];
-
-      // get an accessor to the first element in exclusive LR:
-      auto ac = prs[0].get_field_accessor(h.fid).template typeify<T>();
-      h.combined_data = ac.template raw_rect_ptr<2>(parent_rect, sr, bo);
-      // h.combined_data += bo[1];
+        // get an accessor to the first element in exclusive LR:
+        auto ac = prs[0].get_field_accessor(h.fid).template typeify<T>();
+        h.combined_data = ac.template raw_rect_ptr<2>(rect, sr, bo);
     } // scope
 
     size_t pos{0};

@@ -192,12 +192,6 @@ struct legion_execution_policy_t {
             future->add_future_to_index_task_launcher(launcher);
           }
 
-        //! \todo Do we need this comment?
-        // Enqueue the MPI task.
-        //  auto future =
-        //    legion_runtime->execute_index_space(legion_context, launcher);
-        // future.wait_all_results();
-
         Legion::MustEpochLauncher must_epoch_launcher;
         must_epoch_launcher.launch_domain =
             Legion::Domain::from_rect<1>(context_.all_processes());
@@ -315,6 +309,7 @@ struct legion_execution_policy_t {
       // Handle MPI and Legion invocations separately.
       if (processor_type == processor_type_t::mpi) {
 
+std::cout<< "IRINA DEBUG, tyring to execute mpi task in single"<<std::endl;
 //FIXME
 #if 0        
         if (!(legion_context->is_inner_context())) {

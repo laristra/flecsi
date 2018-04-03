@@ -117,6 +117,7 @@ void legion_context_policy_t::unset_call_mpi(
           .task_id<__flecsi_internal_task_key(unset_call_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
+//IRINA DEBUG check number of processors
   Legion::IndexLauncher launcher(
       tid, Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
       Legion::TaskArgument(NULL, 0), arg_map);
