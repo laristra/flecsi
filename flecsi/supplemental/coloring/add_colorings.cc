@@ -445,7 +445,8 @@ void add_colorings(coloring_map_t map) {
 
 } // add_colorings
 
-flecsi_register_mpi_task(add_colorings, flecsi::execution);
+//flecsi_register_mpi_task(add_colorings, flecsi::execution);
+flecsi_register_task(add_colorings, flecsi::execution , mpi, index);
 
 } // namespace execution
 } // namespace flecsi
