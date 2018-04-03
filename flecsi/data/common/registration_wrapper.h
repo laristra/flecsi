@@ -317,13 +317,15 @@ struct client_registration_wrapper__<
 
     auto & storage = storage_t::instance();
 
-    const size_t client_key =
-        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+    const size_t type_hash =
+      typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+    const size_t instance_hash =
+      utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
     auto const & field_registry = storage.field_registry();
 
     // Only register field attributes if this is the first time
     // that we have seen this type.
-    if (storage.register_client_fields(client_key)) {
+    if(storage.register_client_fields(type_hash, instance_hash)) {
       entity_walker_t entity_walker;
       entity_walker.template walk_types<entity_types_t>();
 
