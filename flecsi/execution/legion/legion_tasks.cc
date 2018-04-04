@@ -144,6 +144,81 @@ __flecsi_internal_register_legion_task(
     processor_type_t::loc,
     single | leaf);
 
+/*!
+  Register init mesh index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */
+
+__flecsi_internal_register_legion_task(
+    init_mesh_task,
+    processor_type_t::loc,
+    index | leaf);
+	
+/*!
+  Register init adjacency index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */
+
+__flecsi_internal_register_legion_task(
+    init_adjacency_task,
+    processor_type_t::loc,
+    index | leaf);
+	
+/*!
+  Register init vertex color index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */
+
+__flecsi_internal_register_legion_task(
+    init_vertex_color_task,
+    processor_type_t::loc,
+    index | leaf);
+
+/*!
+  Register verify vertex color index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */	
+  	
+__flecsi_internal_register_legion_task(
+    verify_vertex_color_task,
+    processor_type_t::loc,
+    index | leaf);
+	
+/*!
+  Register verify dependent partition index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */
+
+__flecsi_internal_register_legion_task(
+    verify_dp_task,
+    processor_type_t::loc,
+    index | leaf);
+
 const double MaxReductionOp::identity = std::numeric_limits<double>::min();
 
 template<>
@@ -225,6 +300,49 @@ MinReductionOp::fold<false>(RHS & rhs1, RHS rhs2) {
   do {
     oldval.as_int = *target;
     newval.as_T = std::min(oldval.as_T, rhs2);
+  } while (!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
+}
+
+// reduction point
+const LegionRuntime::Arrays::Point<1> MinReductionPointOp::identity = LegionRuntime::Arrays::Point<1>(21);
+
+template<>
+void
+MinReductionPointOp::apply<true>(LHS & lhs, RHS rhs) {
+  lhs = std::min(lhs.x[0], rhs.x[0]);
+}
+
+template<>
+void
+MinReductionPointOp::apply<false>(LHS & lhs, RHS rhs) {
+  int64_t * target = (int64_t *)&(lhs.x[0]);
+  union {
+    int64_t as_int;
+    long long as_T;
+  } oldval, newval;
+  do {
+    oldval.as_int = *target;
+    newval.as_T = std::min(oldval.as_T, rhs.x[0]);
+  } while (!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
+}
+
+template<>
+void
+MinReductionPointOp::fold<true>(RHS & rhs1, RHS rhs2) {
+  rhs1 = std::min(rhs1.x[0], rhs2.x[0]);
+}
+
+template<>
+void
+MinReductionPointOp::fold<false>(RHS & rhs1, RHS rhs2) {
+  int64_t * target = (int64_t *)&(rhs1.x[0]);
+  union {
+    int64_t as_int;
+    long long as_T;
+  } oldval, newval;
+  do {
+    oldval.as_int = *target;
+    newval.as_T = std::min(oldval.as_T, rhs2.x[0]);
   } while (!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
 }
 

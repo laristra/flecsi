@@ -31,6 +31,7 @@ clog_register_tag(execution);
 // Helper Macros
 //----------------------------------------------------------------------------//
 
+#define min_pt_repo_id (size_t(1) << 20) - 4097
 #define min_redop_id (size_t(1) << 20) - 4096
 #define max_redop_id (size_t(1) << 20) - 4095
 /*!

@@ -258,6 +258,8 @@ public:
                     << std::endl;
       } // scope
 
+      printf("E: %d, S: %d, G: %d\n", color_idx.second.exclusive, color_idx.second.shared, color_idx.second.ghost);
+
       is.total_num_entities = std::max(
           is.total_num_entities, color_idx.second.exclusive +
                                      color_idx.second.shared +
