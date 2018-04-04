@@ -1,4 +1,4 @@
-#if defined(HAVE_VTK)
+#if defined(ENABLE_VTK)
 
 #ifndef _VTK_MPI_H_
 #define _VTK_MPI_H_
@@ -62,4 +62,4 @@ inline void VTKMpi::terminate()
 }
 
 #endif	//_VTK_MPI_H_
-#endif 	//HAVE_VTK
+#endif 	//ENABLE_VTK

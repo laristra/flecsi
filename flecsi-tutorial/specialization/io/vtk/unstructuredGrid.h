@@ -1,4 +1,4 @@
-#if defined(HAVE_VTK)
+#if defined(ENABLE_VTK)
 
 #ifndef _UNSTRUCTURED_GRID_H_
 #define _UNSTRUCTURED_GRID_H_
@@ -181,5 +181,5 @@ inline void UnstructuredGrid::write(std::string fileName, int parallel)
 } // vtkOutput
 
 #endif	//_UNSTRUCTURED_GRID_H_
-#endif	//HAVE_VTK
+#endif	//ENABLE_VTK
 

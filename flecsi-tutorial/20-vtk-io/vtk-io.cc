@@ -17,7 +17,7 @@
 #include<flecsi-tutorial/specialization/mesh/mesh.h>
 #include<flecsi/data/data.h>
 #include<flecsi/execution/execution.h>
-#include<flecsi/io/vtk/structuredGrid.h>
+#include<flecsi-tutorial/specialization/io/vtk/structuredGrid.h>
 
 using namespace flecsi;
 using namespace flecsi::tutorial;

@@ -177,27 +177,6 @@ if(FLECSI_DBC_REQUIRE)
 endif()
 
 #------------------------------------------------------------------------------#
-# VTK
-#------------------------------------------------------------------------------#
-
-option(ENABLE_VTK_OUTPUT "Enable VTK output" OFF)
-
-if(ENABLE_VTK_OUTPUT)
-  find_package(VTK REQUIRED)
-
-  if(VTK_FOUND)
-    include(${VTK_USE_FILE})
-    add_definitions(-DHAVE_VTK)
-
-    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${VTK_INCLUDE_DIRS})
-    #list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${VTK_LIBRARY_DIRS}${VTK_LIBRARIES})
-
-  else()
-    message(FATAL_ERROR "Could not find VTK!") 
-  endif()
-endif()
-
-#------------------------------------------------------------------------------#
 # OpenSSL
 #------------------------------------------------------------------------------#
 
@@ -411,15 +390,19 @@ install(
 
 cinch_add_library_target(FleCSI flecsi EXPORT_TARGET FleCSITargets)
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-  option(ENABLE_FLECSI_TUTORIAL
-    "Enable library support for the FleCSI tutorial" OFF)
-else()
-  option(ENABLE_FLECSI_TUTORIAL
-    "Enable library support for the FleCSI tutorial" ON)
-endif()
+option(ENABLE_FLECSI_TUTORIAL
+  "Enable library support for the FleCSI tutorial" ON)
 
 if(ENABLE_FLECSI_TUTORIAL)
+  option(ENABLE_FLECSI_TUTORIAL_VTK "Enable VTK output for tutorial examples"
+    ON)
+
+  set(FLECSI_TUTORIAL_ENABLE_VTK)
+
+  if(ENABLE_FLECSI_TUTORIAL_VTK)
+    set(FLECSI_TUTORIAL_ENABLE_VTK ":ENABLE_VTK")
+  endif()
+
   cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
 endif()
 
