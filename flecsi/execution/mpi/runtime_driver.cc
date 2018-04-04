@@ -104,16 +104,6 @@ runtime_driver(
   clog(info) << "In MPI runtime driver" << std::endl;
   }
 
-#if defined(FLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
-  {
-  clog_tag_guard(runtime_driver);
-  clog(info) << "Executing specialization tlt task" << std::endl;
-  }
-
-  // Execute the specialization driver.
-  specialization_tlt_init(argc, argv);
-#endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-
   //--------------------------------------------------------------------------//
   // Invoke callbacks for entries in the client registry.
   //
@@ -148,6 +138,16 @@ runtime_driver(
   for (auto fi : flecsi_context.registered_fields()) {
     flecsi_context.put_field_info(fi);
   }
+
+#if defined(FLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "Executing specialization tlt task" << std::endl;
+  }
+
+  // Execute the specialization driver.
+  specialization_tlt_init(argc, argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
   remap_shared_entities();
 
@@ -188,5 +188,5 @@ runtime_driver(
 
 } // runtime_driver
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi

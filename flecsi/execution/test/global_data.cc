@@ -27,30 +27,20 @@ using namespace flecsi;
 template<size_t PERMISSION>
 using gint = global_accessor__<int, PERMISSION>;
 
-void set_global_int(gint<rw> global, int value, const char * message) {
+void set_global_int(gint<rw> global, int value) {
   auto& context = execution::context_t::instance();
   auto rank = context.color();
 
-  std::cout<< "[" << rank << "] starting " << message << std::endl;
-
-  std::cout << "[" << rank << "] global = " << global.data() << std::endl;
   if (rank == 0) {
     std::cout << "[" << rank << "] setting value" << std::endl;
     global = value;
-  } else {
-    std::cout << "[" << rank << "] do nothing" << std::endl;
   }
-  std::cout << "[" << rank << "] global = " << global.data() << std::endl;
-
-  std::cout << "[" << rank << "] done " << message << std::endl;
 }
 
-void print_global_int(gint<ro> global, const char * message) {
+void print_global_int(gint<ro> global) {
   auto& context = execution::context_t::instance();
   auto rank = context.color();
-  std::cout<< "[" << rank << "] starting " << message << std::endl;
   std::cout << "[" << rank << "] global = " << global.data() << std::endl;
-  std::cout << "[" << rank << "] done " << message << std::endl;
 }
 
 void hello_world() {
@@ -77,22 +67,18 @@ void specialization_tlt_init(int argc, char ** argv) {
   auto gh0 = flecsi_get_global(global, int1, int, 0);
   auto gh1 = flecsi_get_global(global, int2, int, 0);
 
-  gh0 = 1042;
-  gh1 = 2042;
+  // rank 0
+  flecsi_execute_task_simple(set_global_int, single, gh0, 42);
 
-  // // rank 0
-  // flecsi_execute_task_simple(set_global_int, single, gh0, 1042, "tlt_init g0");
+  // rank 1
+  // flecsi_execute_task_simple(hello_world, single);
 
-  // // rank 1
-  // //flecsi_execute_task_simple(hello_world, single);
+  // rank 0
+  // flecsi_execute_task_simple(set_global_int, single, gh1, 2042);
 
-  // // CAN'T SET TWO DIFFERENT GLOBAS HERE
-  // // rank 0
-  // flecsi_execute_task_simple(set_global_int, single, gh1, 2042, "tlt_init g1");
-
-  // flecsi_execute_task_simple(print_global_int, single, /*gh0,*/ "tlt_init");
-  // flecsi_execute_task_simple(print_global_int, single, gh1, "tlt_init");
-  flecsi_execute_task_simple(hello_world, single);
+  // flecsi_execute_task_simple(print_global_int, single, gh0);
+  // flecsi_execute_task_simple(print_global_int, single, gh1);
+  // flecsi_execute_task_simple(hello_world, single);
 
 } // specialization_tlt_init
 
@@ -100,10 +86,13 @@ void specialization_spmd_init(int argc, char ** argv) {
   auto gh0 = flecsi_get_global(global, int1, int, 0);
   auto gh1 = flecsi_get_global(global, int2, int, 0);
 
-  flecsi_execute_task_simple(print_global_int, single, gh0, "spmd_init g0");
-  flecsi_execute_task_simple(print_global_int, single, gh1, "spmd_init g1");
+  // not allowed
+  // flecsi_execute_task_simple(set_global_int, single, gh0, 43);
 
-  flecsi_execute_task_simple(hello_world, single);
+  flecsi_execute_task_simple(print_global_int, single, gh0);
+  // flecsi_execute_task_simple(print_global_int, single, gh1);
+
+  // flecsi_execute_task_simple(hello_world, single);
 
 } // specialization_spmd_init
 
@@ -115,10 +104,10 @@ void driver(int argc, char ** argv) {
   auto gh0 = flecsi_get_global(global, int1, int, 0);
   auto gh1 = flecsi_get_global(global, int2, int, 0);
 
-  flecsi_execute_task_simple(print_global_int, single, gh0, "driver g0");
-  flecsi_execute_task_simple(print_global_int, single, gh1, "driver g1");
+  flecsi_execute_task_simple(print_global_int, single, gh0);
+  // flecsi_execute_task_simple(print_global_int, single, gh1);
 
-  flecsi_execute_task_simple(hello_world, single);
+  // flecsi_execute_task_simple(hello_world, single);
 
   // auto& context = execution::context_t::instance();
   // if(context.color() == 0){
