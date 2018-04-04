@@ -120,15 +120,15 @@ struct client_registration_wrapper__<
           CLIENT_TYPE, flecsi::data::dense, ENTITY_TYPE, entity_hash, 0, 1,
           INDEX_TYPE::value>;
 
-      const size_t client_key =
+      const size_t type_key =
           typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
-      const size_t key = utils::hash::client_internal_field_hash<
+      const size_t field_key = utils::hash::client_internal_field_hash<
           utils::const_string_t("__flecsi_internal_entity_data__").hash(),
           INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
-          client_key, key, wrapper_t::register_callback);
+          type_key, field_key, wrapper_t::register_callback);
 
       using id_wrapper_t = field_registration_wrapper__<
           CLIENT_TYPE, flecsi::data::dense, utils::id_t, entity_hash, 0, 1,
@@ -139,7 +139,7 @@ struct client_registration_wrapper__<
           INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
-          client_key, id_key, id_wrapper_t::register_callback);
+          type_key, id_key, id_wrapper_t::register_callback);
 
     } // handle_type
 
@@ -183,7 +183,7 @@ struct client_registration_wrapper__<
           CLIENT_TYPE, flecsi::data::dense, utils::id_t, adjacency_hash, 0, 1,
           INDEX_TYPE::value>;
 
-      const size_t client_key =
+      const size_t type_key =
           typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
       const size_t index_key = utils::hash::client_internal_field_hash<
@@ -191,7 +191,7 @@ struct client_registration_wrapper__<
           INDEX_TYPE::value>();
       int ispace = INDEX_TYPE::value;
       storage_t::instance().register_field(
-          client_key, index_key, index_wrapper_t::register_callback);
+          type_key, index_key, index_wrapper_t::register_callback);
 
       using offset_wrapper_t = field_registration_wrapper__<
           CLIENT_TYPE, flecsi::data::dense, utils::offset_t, adjacency_hash, 0,
@@ -205,7 +205,7 @@ struct client_registration_wrapper__<
           INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
-          client_key, offset_key, offset_wrapper_t::register_callback);
+          type_key, offset_key, offset_wrapper_t::register_callback);
     } // handle_type
 
   }; // struct connectivity_walker__
@@ -246,7 +246,7 @@ struct client_registration_wrapper__<
           CLIENT_TYPE, flecsi::data::dense, utils::id_t, adjacency_hash, 0, 1,
           INDEX_TYPE::value>;
 
-      const size_t client_key =
+      const size_t type_key =
           typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
       const size_t index_key = utils::hash::client_internal_field_hash<
@@ -254,7 +254,7 @@ struct client_registration_wrapper__<
           INDEX_TYPE::value>();
       int ispace = INDEX_TYPE::value;
       storage_t::instance().register_field(
-          client_key, index_key, index_wrapper_t::register_callback);
+          type_key, index_key, index_wrapper_t::register_callback);
 
       using offset_wrapper_t = field_registration_wrapper__<
           CLIENT_TYPE, flecsi::data::dense, utils::offset_t, adjacency_hash, 0,
@@ -268,7 +268,7 @@ struct client_registration_wrapper__<
           INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
-          client_key, offset_key, offset_wrapper_t::register_callback);
+          type_key, offset_key, offset_wrapper_t::register_callback);
 
     } // handle_type
 
@@ -292,15 +292,15 @@ struct client_registration_wrapper__<
           CLIENT_TYPE, flecsi::data::subspace, utils::id_t, index_subspace_hash,
           0, 1, INDEX_TYPE::value>;
 
-      const size_t client_key =
+      const size_t type_key =
           typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
-      const size_t key = utils::hash::client_internal_field_hash<
+      const size_t field_key = utils::hash::client_internal_field_hash<
           utils::const_string_t("__flecsi_internal_index_subspace_index__").
           hash(), INDEX_SUBSPACE_TYPE::value>();
 
       storage_t::instance().register_field(
-          client_key, key, wrapper_t::register_callback);
+          type_key, field_key, wrapper_t::register_callback);
 
     } // handle_type
 
@@ -382,29 +382,29 @@ struct client_registration_wrapper__<
           CLIENT_TYPE, flecsi::data::local, ENTITY_TYPE, entity_hash, 0, 1,
           INDEX_TYPE::value>;
 
-      const size_t client_key =
+      const size_t type_key =
           typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
-      const size_t key = utils::hash::client_internal_field_hash<
+      const size_t field_key = utils::hash::client_internal_field_hash<
           utils::const_string_t("__flecsi_internal_entity_data__").hash(),
           INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
-          client_key, key, wrapper_t::register_callback);
+          type_key, field_key, wrapper_t::register_callback);
 
       const size_t active_key = utils::hash::client_internal_field_hash<
           utils::const_string_t("__flecsi_internal_active_entity_data__").
           hash(),INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
-          client_key, active_key, wrapper_t::register_callback);
+          type_key, active_key, wrapper_t::register_callback);
 
       const size_t migrate_key = utils::hash::client_internal_field_hash<
           utils::const_string_t("__flecsi_internal_migrate_entity_data__").
           hash(),INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
-          client_key, migrate_key, wrapper_t::register_callback);
+          type_key, migrate_key, wrapper_t::register_callback);
 
     } // handle_type
 
@@ -419,7 +419,7 @@ struct client_registration_wrapper__<
 
     auto & storage = storage_t::instance();
 
-    const size_t client_key =
+    const size_t type_key =
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
     auto const & field_registry = storage.field_registry();
 
@@ -442,14 +442,7 @@ struct client_registration_wrapper__<
 
   using CLIENT_TYPE = flecsi::topology::global_topology__;
 
-  static void register_callback(field_id_t fid) {
-
-    auto & storage = storage_t::instance();
-
-    const size_t client_key =
-        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
-
-  } // register_callback
+  static void register_callback(field_id_t fid) {}
 
 
 }; // class client_registration_wrapper__
@@ -467,14 +460,7 @@ struct client_registration_wrapper__<
 
   using CLIENT_TYPE = flecsi::topology::color_topology__;
 
-  static void register_callback(field_id_t fid) {
-
-    auto & storage = storage_t::instance();
-
-    const size_t client_key =
-        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
-
-  } // register_callback
+  static void register_callback(field_id_t fid) {}
 
 
 }; // class client_registration_wrapper__
