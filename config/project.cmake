@@ -194,6 +194,10 @@ if(ENABLE_OPENSSL)
   endif()
 endif()
 
+if(ENABLE_CALIPER)
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Caliper_LIBRARIES})
+endif()
+
 #------------------------------------------------------------------------------#
 # Runtime models
 #------------------------------------------------------------------------------#

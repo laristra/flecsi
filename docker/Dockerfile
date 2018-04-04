@@ -35,19 +35,14 @@ USER flecsi
 WORKDIR /home/flecsi/flecsi
 RUN mkdir build
 
-RUN if [ "$RUNTIME" == "hpx" ]; then \
-        export ENABLE_TUTORIAL=OFF; \
-    else \
-        export ENABLE_TUTORIAL=ON; \
-    fi
-
 WORKDIR build
 RUN ccache -z
 RUN cmake \
           -DENABLE_LEGION=$LEGION \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
-	  -DFLECSI_ENABLE_TUTORIAL=$ENABLE_TUTORIAL \
+	  -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && \
+                     echo OFF || echo ON) \
           -DENABLE_UNIT_TESTS=ON \
           -DENABLE_PARMETIS=ON \
           -DENABLE_COLORING=ON \
