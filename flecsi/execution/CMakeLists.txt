@@ -430,6 +430,24 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       NOCI
     )
 
+    cinch_add_unit(global_data
+      SOURCES
+        test/global_data.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/global_data.blessed
+      LIBRARIES
+        FleCSI
+        ${CINCH_RUNTIME_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+      POLICY ${UNIT_POLICY}
+      THREADS 2
+      NOCI
+    )
 
     if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
       cinch_add_unit(set_topology
