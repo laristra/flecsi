@@ -135,6 +135,13 @@ struct mpi_context_policy_t
   {
     return color_;
   } // color
+  
+  /*!
+    Return the number of colors.
+   */
+
+  size_t colors() const { return colors_; } // color
+
 
   //--------------------------------------------------------------------------//
   // Task interface.
@@ -675,6 +682,7 @@ struct mpi_context_policy_t
 private:
 
   int color_ = 0;
+  int colors_ = 0;
 
   // Define the map type using the task_hash_t hash function.
 //  std::unordered_map<
