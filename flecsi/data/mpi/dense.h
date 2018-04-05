@@ -167,20 +167,22 @@ struct storage_class__<dense>
     auto &index_coloring = context.coloring(field_info.index_space);
 
     auto& registered_field_data = context.registered_field_data();
-    auto fieldDataIter = registered_field_data.find(field_info.fid);
+    auto fieldDataIter = registered_field_data.find({field_info.fid, data_client.runtime_id()});
     if (fieldDataIter == registered_field_data.end()) {
       size_t size = field_info.size * (color_info.exclusive +
                                        color_info.shared +
                                        color_info.ghost);
       // TODO: deal with VERSION
       context.register_field_data(field_info.fid,
+                                  data_client.runtime_id(),
                                   size);
       context.register_field_metadata<DATA_TYPE>(field_info.fid,
+                                                 data_client.runtime_id(),
                                                  color_info,
                                                  index_coloring);
     }
 
-    auto data = registered_field_data[field_info.fid].data();
+    auto data = registered_field_data[{field_info.fid, data_client.runtime_id()}].data();
     // populate data member of data_handle_t
     auto &hb = dynamic_cast<dense_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
 

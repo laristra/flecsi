@@ -191,25 +191,27 @@ namespace execution {
 
         // see if the field data is registered for this entity field.
         auto& registered_field_data = context_.registered_field_data();
-        auto fieldDataIter = registered_field_data.find(ent.fid);
+        auto fieldDataIter = registered_field_data.find({ent.fid, h.runtime_id()});
         if (fieldDataIter == registered_field_data.end()) {
           size_t size = ent.size * num_entities;
 
           execution::context_t::instance().register_field_data(ent.fid,
+                                                               h.runtime_id(),
                                                                size);
         }
         auto ents =
-          reinterpret_cast<topology::mesh_entity_base_*>(registered_field_data[ent.fid].data());
+          reinterpret_cast<topology::mesh_entity_base_*>(registered_field_data[{ent.fid, h.runtime_id()}].data());
 
-        fieldDataIter = registered_field_data.find(ent.id_fid);
+        fieldDataIter = registered_field_data.find({ent.id_fid, h.runtime_id()});
         if (fieldDataIter == registered_field_data.end()) {
           size_t size = ent.size * num_entities;
 
           execution::context_t::instance().register_field_data(ent.id_fid,
+                                                               h.runtime_id(),
                                                                size);
         }
         auto ids =
-          reinterpret_cast<utils::id_t *>(registered_field_data[ent.id_fid].data());
+          reinterpret_cast<utils::id_t *>(registered_field_data[{ent.id_fid, h.runtime_id()}].data());
 
         // new allocation every time.
         storage->init_entities(ent.domain, ent.dim,
@@ -230,24 +232,26 @@ namespace execution {
         auto& registered_field_data = context_.registered_field_data();
 
         adj.num_offsets = (color_info.exclusive + color_info.shared + color_info.ghost);
-        auto fieldDataIter = registered_field_data.find(adj.offset_fid);
+        auto fieldDataIter = registered_field_data.find({adj.offset_fid, h.runtime_id()});
         if (fieldDataIter == registered_field_data.end()) {
           size_t size = sizeof(size_t) * adj.num_offsets;
 
           execution::context_t::instance().register_field_data(adj.offset_fid,
+                                                               h.runtime_id(),
                                                                size);
         }
-        adj.offsets_buf = reinterpret_cast<size_t *>(registered_field_data[adj.offset_fid].data());
+        adj.offsets_buf = reinterpret_cast<size_t *>(registered_field_data[{adj.offset_fid, h.runtime_id()}].data());
 
         auto adj_info = (context_.adjacency_info()).at(adj_index_space);
         adj.num_indices = adj_info.color_sizes[color];
-        fieldDataIter = registered_field_data.find(adj.index_fid);
+        fieldDataIter = registered_field_data.find({adj.index_fid, h.runtime_id()});
         if (fieldDataIter == registered_field_data.end()) {
           size_t size = sizeof(utils::id_t) * adj.num_indices;
           execution::context_t::instance().register_field_data(adj.index_fid,
+                                                               h.runtime_id(),
                                                                size);
         }
-        adj.indices_buf = reinterpret_cast<size_t *>(registered_field_data[adj.index_fid].data());
+        adj.indices_buf = reinterpret_cast<size_t *>(registered_field_data[{adj.index_fid, h.runtime_id()}].data());
 
         storage->init_connectivity(adj.from_domain, adj.to_domain,
                                    adj.from_dim, adj.to_dim,
@@ -304,27 +308,27 @@ namespace execution {
 
         // see if the field data is registered for this entity field.
         auto& registered_field_data = context_.registered_field_data();
-        auto fieldDataIter = registered_field_data.find(ent.fid);
+        auto fieldDataIter = registered_field_data.find({ent.fid, h.runtime_id()});
         if (fieldDataIter == registered_field_data.end()) {
           size_t size = ent.size * color_info.main_capacity;
-          context_.register_field_data(ent.fid, size);
+          context_.register_field_data(ent.fid, h.runtime_id(), size);
 
           size = ent.size * color_info.active_migrate_capacity;
-          context_.register_field_data(ent.fid2, size);
-          context_.register_field_data(ent.fid3, size);
+          context_.register_field_data(ent.fid2, h.runtime_id(),size);
+          context_.register_field_data(ent.fid3, h.runtime_id(),size);
         }
 
         auto ents =
           reinterpret_cast<topology::set_entity_t*>(
-          registered_field_data[ent.fid].data());
+          registered_field_data[{ent.fid, h.runtime_id()}].data());
 
         auto active_ents =
           reinterpret_cast<topology::set_entity_t*>(
-          registered_field_data[ent.fid2].data());
+          registered_field_data[{ent.fid2, h.runtime_id()}].data());
 
         auto migrate_ents =
           reinterpret_cast<topology::set_entity_t*>(
-          registered_field_data[ent.fid3].data());
+          registered_field_data[{ent.fid3, h.runtime_id()}].data());
 
         storage->init_entities(ent.index_space, ent.index_space2, ents, 0,
           active_ents, 0, migrate_ents, 0, ent.size, _read);

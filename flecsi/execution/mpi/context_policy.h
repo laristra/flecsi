@@ -255,6 +255,7 @@ struct mpi_context_policy_t
    */
   template <typename T>
   void register_field_metadata(const field_id_t fid,
+                               const size_t data_client_id,
                                const coloring_info_t& coloring_info,
                                const index_coloring_t& index_coloring) {
     std::map<int, std::vector<int>> compact_origin_lengs;
@@ -291,7 +292,7 @@ struct mpi_context_policy_t
     }
 
 
-    auto data = field_data[fid].data();
+    auto data = field_data[{fid, data_client_id}].data();
     auto shared_data = data + coloring_info.exclusive * sizeof(T);
     MPI_Win_create(shared_data, coloring_info.shared * sizeof(T),
                    sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD,
@@ -534,12 +535,13 @@ struct mpi_context_policy_t
    ID.
    */
   void register_field_data(field_id_t fid,
+                           size_t data_client_id,
                            size_t size) {
     // TODO: VERSIONS
-    field_data.insert({fid, std::vector<uint8_t>(size)});
+    field_data.insert({{fid, data_client_id}, std::vector<uint8_t>(size)});
   }
 
-  std::map<field_id_t, std::vector<uint8_t>>&
+  std::map<std::tuple<field_id_t, size_t>, std::vector<uint8_t>>&
   registered_field_data()
   {
     return field_data;
@@ -683,7 +685,8 @@ private:
 //    task_info_t
 //  > task_registry_;
 
-  std::map<field_id_t, std::vector<uint8_t>> field_data;
+  std::map<std::tuple<field_id_t, size_t>, std::vector<uint8_t>> field_data;
+
   std::map<field_id_t, field_metadata_t> field_metadata;
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
