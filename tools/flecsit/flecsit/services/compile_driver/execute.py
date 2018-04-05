@@ -67,10 +67,22 @@ def execute(verbose, debug, build):
     # Setup compiler and flags
     cxx_compiler = '-DCMAKE_CXX_COMPILER=' + build['compiler']
     cxx_flags = '-DCMAKE_CXX_FLAGS=' + build['flags']
+    cxx_debug_flags = '-DCMAKE_CXX_FLAGS_DEBUG=' + build['debug_flags']
+
+    # Echo the subprocess call
+    if verbose:
+        print 'Invoking:'
+        print '/usr/bin/cmake ' + cxx_compiler + ' ' + cxx_flags + ' ' + \
+            cxx_debug_flags + ' .'
 
     # Call CMake and make to build the example
-    subprocess.call(['/usr/bin/cmake', cxx_compiler, cxx_flags, '.'],
-        stdout=devnull, stderr=devnull)
+    subprocess.call(['/usr/bin/cmake', cxx_compiler, cxx_flags,
+        cxx_debug_flags, '.'], stdout=devnull, stderr=devnull)
+
+    if verbose:
+        print 'Invoking:'
+        print '/usr/bin/make install ' + verbose_flag
+
     subprocess.call(['/usr/bin/make', 'install', verbose_flag], stdout=devnull,
         stderr=devnull)
 

@@ -18,12 +18,6 @@ project(${PROJECT})
 
 find_package(FleCSI REQUIRED)
 
-# Do we really need this? For some version (8.1.0) of vtk, the -std=c++11
-# flag will be passed no mater how the user configure the CMAKE_CXX_FLAG
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 include_directories($${FLECSI_INCLUDE_DIRS})
 
 ${REQUIRED_PACKAGES}
