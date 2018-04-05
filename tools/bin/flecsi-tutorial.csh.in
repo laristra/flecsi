@@ -2,8 +2,8 @@
 # FleCSI Csh/Tcsh configuration file.
 ################################################################################
 
-setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH:@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@:@FLECSI_LD_DEPENDS@
-setenv PATH $PATH:@CMAKE_INSTALL_PREFIX@/bin
+setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@:@FLECSI_LD_DEPENDS@
+setenv PATH ${PATH}:@CMAKE_INSTALL_PREFIX@/bin
 @FLECSI_PYTHON_PATH_CSH@
 
 setenv FLECSI_TUTORIAL_INPUT_MESH @CMAKE_INSTALL_PREFIX@/share/FleCSI-Tut/inputs/simple2d-16x16.msh
