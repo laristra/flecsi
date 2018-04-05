@@ -12,6 +12,10 @@
    All rights reserved.
                                                                               */
 
+/*----------------------------------------------------------------------------*
+  Documentation for this example can be found in README.md.
+ *----------------------------------------------------------------------------*/
+
 #include <iostream>
 
 #include<flecsi-tutorial/specialization/mesh/mesh.h>

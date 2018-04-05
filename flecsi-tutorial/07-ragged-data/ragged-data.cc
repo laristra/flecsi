@@ -12,6 +12,10 @@
    All rights reserved.
                                                                               */
 
+/*----------------------------------------------------------------------------*
+  Documentation for this example can be found in README.md.
+ *----------------------------------------------------------------------------*/
+
 #include <cstdlib>
 #include <iostream>
 

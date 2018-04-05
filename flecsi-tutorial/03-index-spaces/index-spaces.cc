@@ -13,7 +13,7 @@
                                                                               */
 
 /*----------------------------------------------------------------------------*
-  Documentation for this example can be found in INDEX-SPACES.md.
+  Documentation for this example can be found in README.md.
  *----------------------------------------------------------------------------*/
 
 #include <iostream>

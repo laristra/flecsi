@@ -13,7 +13,7 @@
                                                                               */
 
 /*----------------------------------------------------------------------------*
-  Documentation for this example can be found in FIELDS.md.
+  Documentation for this example can be found in README.md.
  *----------------------------------------------------------------------------*/
 
 #include <iostream>
