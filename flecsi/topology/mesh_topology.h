@@ -1957,7 +1957,6 @@ private:
 					// get domain and dimension again
 					auto dim = connection_id.dimension();
           auto dom = connection_id.domain();
-					std::cout << " ("<<dom<<", "<<dim<<", "<<connection_id.entity()<<" ) ";
 
 					// search the map for this particular connectivity info, if its
         	// not found, create it
