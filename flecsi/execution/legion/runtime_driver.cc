@@ -135,6 +135,7 @@ runtime_driver(
   // Invoke the specialization top-level task initialization function.
   specialization_tlt_init(args.argc, args.argv);
 	
+  printf("start DP\n");
 	flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
 	
 	int num_cells = sd.num_entities(1);
@@ -505,7 +506,7 @@ runtime_driver(
 	  Legion::MustEpochLauncher must_epoch_launcher_verify_vertex_color;
 	  must_epoch_launcher_verify_vertex_color.add_index_task(verify_vertex_color_launcher);
 	  Legion::FutureMap fm_epoch_test1 = runtime->execute_must_epoch(ctx, must_epoch_launcher_verify_vertex_color);
-	  fm_epoch3.wait_all_results(true);
+	  fm_epoch_test1.wait_all_results(true);
 	}
 	
   // **************************************************************************
