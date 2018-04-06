@@ -185,6 +185,31 @@ std::ostream & print( std::ostream & output, const TupleA & a, const char * sep 
 
 } // namespace detail
 
+////////////////////////////////////////////////////////////////////////////////
+//! This struct provides a simple lexical comparison
+//! \tparam T  The type to perform the lexical comparison
+//! \remark This version is the empty one
+////////////////////////////////////////////////////////////////////////////////
+
+template<typename T>
+struct lexical_comparison
+{};
+
+//! Specialized version of lexical_comparison accepting tuples
+//! \tparam Args  The tuple argument types
+template<typename...Args>
+struct lexical_comparison< std::tuple<Args...> >
+{
+  using value_type = typename std::tuple<Args...>;
+  bool operator()(
+		const value_type & a,
+	 	const value_type & b
+	) const
+ 	{
+   	return detail::less_than( a, b );
+ 	}
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief A simple id type that can be constructed from multiple indexes.
@@ -195,8 +220,16 @@ std::ostream & print( std::ostream & output, const TupleA & a, const char * sep 
 ///
 /// \tparam Args the different integral types that form the overall id.
 ////////////////////////////////////////////////////////////////////////////////
-template <typename... Args>
+
+template<typename T, typename Compare>
 class simple_id_t
+{};
+
+template <
+  template<typename> typename Compare,
+  typename... Args
+>
+class simple_id_t< std::tuple<Args...>, Compare< std::tuple<Args...> > >
 {
 
   //===========================================================================
@@ -211,10 +244,6 @@ class simple_id_t
 
 	//! the length of the tuple
 	static constexpr auto length_ = sizeof...(Args);
-
-	//! All variants with the same number of arguments are friends
-	template<typename...Ts>
-	friend class simple_id_t;
 
 
 public:
@@ -266,54 +295,25 @@ public:
   //! Check for equality
   //! \param [in] id  the id to test agains this object
   //! \return true if this=id
-	template<
-		typename...Ts,
-		typename = std::enable_if_t< sizeof...(Ts) == sizeof...(Args) >
-	>
   bool operator==(
-	 	const simple_id_t<Ts...> & id
+	 	const simple_id_t & id
 	) const
  	{
    	return detail::equal_to( data_, id.data_ );
  	}
 
-  //! This struct provides a simple lexical comparison
-  //! \remark  We dont set operator<.  Instead we provide some general
-  //!          comparison operators that one may use.  But they are also
-  //!          able to construct their own.
-  struct lexical_compare_t
-  {
-  	template<
-  		typename...Ts,
-			typename...Us,
-  		typename = std::enable_if_t< sizeof...(Ts) == sizeof...(Us) >
-  	>
-    bool operator()(
-			const simple_id_t<Ts...> & a,
-		 	const simple_id_t<Us...> & b
-		) const
-   	{
-     	return detail::less_than( a.data_, b.data_ );
-   	}
-	};
+  //! Check for equality
+  //! \param [in] id  the id to test agains this object
+  //! \return true if this=id
+  bool operator<(
+	 	const simple_id_t & id
+	) const
+ 	{
+   	return Compare<value_type>{}( data_, id.data_ );
+ 	}
 
 
 }; // simple_id
-
-////////////////////////////////////////////////////////////////////////////////
-/// \brief Make a simple_id_t from a set of arguments
-/// \param [in] args   The arguments that will form the id
-/// \tparam Args  The argument types.
-////////////////////////////////////////////////////////////////////////////////
-template <
-  typename... Args,
-  typename = std::enable_if_t< detail::are_integral_v<std::decay_t<Args>...> >
->
-auto make_simple_id(Args&&... args)
-{
-  return simple_id_t<std::decay_t<Args>...>( std::forward<Args>(args)... );
-}
-
 
 } // namespace utils
 } // namespace flecsi
