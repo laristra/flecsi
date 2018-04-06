@@ -1287,6 +1287,7 @@ private:
           } // for
 
           // Lookup the MIS id of the entity.
+          std::sort( vertices_mis.begin(), vertices_mis.end() );
           const auto entity_id_mis = reverse_intermediate_map.at(vertices_mis);
 
           // Lookup the CIS id of the entity.
@@ -1750,23 +1751,27 @@ private:
     // Get cell definitions from domain 0
     using cell_type = entity_type<cell_dim, FROM_DOM>;
     // alias the entity type we are building
-    using to_entity_type = entity_type<TO_DIM, TO_DOM>;
+    using binding_type = entity_type<TO_DIM, TO_DOM>;
 
     // get the cells from mesh storage
-    auto & cis = base_t::ms_->index_spaces[FROM_DOM][cell_dim]
+    auto & cell_storage = base_t::ms_->index_spaces[FROM_DOM][cell_dim]
       .template cast<domain_entity__<FROM_DOM, cell_type>>();
     
     // get the entities from mesh storage
-    auto & eis = base_t::ms_->index_spaces[TO_DOM][TO_DIM]
-      .template cast<domain_entity__<TO_DOM, to_entity_type>>();
+    auto & binding_storage = base_t::ms_->index_spaces[TO_DOM][TO_DIM]
+      .template cast<domain_entity__<TO_DOM, binding_type>>();
 
     // Lookup the index space for the cell type.
     constexpr auto cell_index_space = find_index_space_from_dimension__<
         std::tuple_size<typename MESH_TYPE::entity_types>::value,
         typename MESH_TYPE::entity_types, cell_dim, FROM_DOM>::find();
+    
+    // lookup all primal index spaces in the FROM_DOM
+    auto entity_index_spaces =
+ 			find_all_index_spaces_in_domain__<MESH_TYPE, FROM_DOM>();
 
     // Lookup the index space for the entity type being created.
-    constexpr auto entity_index_space = find_index_space_from_dimension__<
+    constexpr auto binding_index_space = find_index_space_from_dimension__<
         std::tuple_size<typename MESH_TYPE::entity_types>::value,
         typename MESH_TYPE::entity_types, TO_DIM, TO_DOM>::find();
 
@@ -1779,60 +1784,83 @@ private:
     // get the global to local index space map
     auto & context_ = flecsi::execution::context_t::instance();
     auto color = context_.color();
-    auto & gis_to_cis = context_.reverse_index_map(cell_index_space);
-    
+    const auto & cell_gis_to_cis = context_.reverse_index_map(cell_index_space);
+		const auto & binding_gis_to_cis =
+ 			context_.reverse_index_map( binding_index_space );
+
+    // Get the map of the different entity ids. This map takes
+    // local compacted vids to mesh index space ids.
+    // CIS -> MIS.
+		using entity_map_t = std::decay_t< decltype(context_.index_map(0)) >;
+		std::map< size_t, entity_map_t* > entity_cis_to_mis;
+		for ( int dim=0; dim<=num_dims; ++dim ) {
+			entity_cis_to_mis[ dim ] = 
+				&context_.index_map( entity_index_spaces[dim] );
+		}
+ 
+    // Get the reverse map of the intermediate ids. This maps
+    // connected entities to their id within the MIS.
+    const auto & reverse_intermediate_map = 
+        context_.reverse_intermediate_binding_map(TO_DIM, TO_DOM);
+    // stop if one of the mappings is empty
+    auto has_intermediate_map =  ( !reverse_intermediate_map.empty() );
+		// the simplified id type used for searching
+		using simple_id_vector_t = 
+			std::decay_t< decltype(reverse_intermediate_map) >::key_type;
+
+
     // This buffer should be large enough to hold all entities
     // that potentially need to be created
-    std::array<id_t, 4096> new_entity_connection_ids;
+    std::array<id_t, 4096> new_binding_connection_ids;
 
-    // Storage for cell connectivity information
+    // Storage all connectivity information
+    // - A binding is the higher domain elemeent we are trying to build.
+    // - An entity is an vertex/edge/element from the primal mesh.
+    std::map< size_t, connection_vector_t > binding_to_entity_conn;
+    // make a hashing function to get a unique key
+    auto key = [](auto dom, auto dim)
+    { return MESH_TYPE::num_dimensions*dom+dim; };
+
+    // we know we need cell to entity connectivity
     const auto num_cells = num_entities<cell_dim, FROM_DOM>();
-    connection_vector_t cell_to_entity_conn(num_cells);
-    
-    // a counter for added entities
-    size_t entity_counter{0};
+    connection_vector_t cell_to_binding_conn( num_cells );
 
-    // Iterate over cells
-    for (auto & citr : gis_to_cis) {
+    // a counter for added entities
+    size_t binding_counter{0};
+
+    // Iterate over cells (this lets us iterate in the order of the global
+    // index space)
+    for (auto & cell_itr : cell_gis_to_cis) {
 
       // Get the cell object
-      auto c = citr.second;
-      auto cell = static_cast<cell_type *>(cis[c]);
+      auto c = cell_itr.second;
+      auto cell = static_cast<cell_type *>(cell_storage[c]);
       auto cell_id = cell->template global_id<FROM_DOM>();
-
-      // Map used to ensure unique entity creation
-      id_vector_map_t entity_ids_map;
 
       // This call allows the users specialization to create
       // whatever entities are needed to complete the mesh.
       //
-      // p.first:   The number of entities per cell.
-      // p.second:  A std::vector of id_t containing the ids of the
-      //            entities that define the bound entity.
-      auto new_entity_connection_sizes = cell->template create_bound_entities(
+      // new_entity_connection_sizes: The number of entities per cell.
+      // new_entity_connection_ids:   A std::vector of id_t containing
+      //                              the ids of the entities that define
+      //                              the bound entity.
+      auto new_binding_connection_sizes = cell->template create_bound_entities(
           FROM_DOM, TO_DOM, TO_DIM, cell_id, primal_conn, domain_conn,
-          new_entity_connection_ids.data());
+          new_binding_connection_ids.data());
 
-      auto num_new_entities = new_entity_connection_sizes.size();
+      auto num_new_bindings = new_binding_connection_sizes.size();
 
       // pre-reserve storage for connected entities
-      auto & this_cell_to_entity_conn = cell_to_entity_conn[c];
-      this_cell_to_entity_conn.reserve(num_new_entities);
+      auto & this_cell_to_binding_conn = cell_to_binding_conn[c];
+      this_cell_to_binding_conn.reserve(num_new_bindings);
 
       // Iterate over the newly-defined entities
-      size_t new_entity_pos = 0; 
-      for ( auto num_connections : new_entity_connection_sizes ) {
-        
-        // figure out the new entity id.  if there is no map, just use our own
-        // counter
-        auto new_entity_id = entity_counter;
+      size_t new_binding_pos = 0; 
+      for ( auto num_connections : new_binding_connection_sizes ) {
 
-        // now create the entity id, on the same partition as the connected cell
-        auto created_new_entity_id =
-          id_t::make<TO_DIM, TO_DOM>(new_entity_id, color);
-
-        // Add this id to the cell entity connections
-        this_cell_to_entity_conn.push_back(created_new_entity_id);
+        //---------------------------------------------------------------------
+        // Loop over all the connections, and store both their mesh id (mis)
+        // and compact id (cis)
 
         // loop over items connected to the new entity, and add them to the
         // connectivity lists.  We have to do some extra work to keep track of
@@ -1841,54 +1869,141 @@ private:
         // arrays were populated and need to be closed after.
         uint32_t dim_flags = 0;
         uint32_t dom_flags = 0;
-        size_t num_new_entity_vertices = 0;
+        size_t num_new_binding_vertices = 0;
+
+				// entities_mis is used to figure out what the binding id is supposed to
+				// be (+1 for cell)
+				simple_id_vector_t connected_entities_mis;
+				connected_entities_mis.reserve( num_connections+1 );
+				connected_entities_mis.emplace_back(
+	 				0, cell_dim, entity_cis_to_mis[ cell_dim ]->at( cell_id.entity() )
+		 		);	
+
+				// entities_cis is used to store the original encodied binding connections
+				// ( no cell in this one, its connectivitty will be sorted out later )
+				id_vector_t connected_entities;
+				connected_entities.reserve( num_connections );
 
         for (size_t k = 0; k < num_connections; ++k) {
+
           // get the connected item id
-          auto connection_id = new_entity_connection_ids[new_entity_pos + k];
+          auto connection_id = new_binding_connection_ids[new_binding_pos + k];
           auto dim = connection_id.dimension();
           auto dom = connection_id.domain();
-          // add the connection to the new entities connectivity
-          get_connectivity_(TO_DOM, dom, TO_DIM, dim).push(connection_id);
+
+					// add it to the main list
+					connected_entities.push_back( connection_id );
+
           // if domain is the same as from domain, the connected item is part
           // of the primal mesh
           if (dom == FROM_DOM) {
             dim_flags |= 1U << dim;
-            num_new_entity_vertices += dim == 0 ? 1 : 0;
+            num_new_binding_vertices += dim == 0 ? 1 : 0;
+						// also add to entity search list
+						auto entity_cis = connection_id.entity();
+						auto entity_mis = entity_cis_to_mis[ dim ]->at( entity_cis );
+						connected_entities_mis.emplace_back(dom, dim, entity_mis );
           }
           // else its part of the to domain
           else
             dom_flags |= 1U << dim;
-        }
+        
+        } // for connection
 
-        // close the connectivity arrays
-        for (size_t i = 0; i < num_dims; ++i) {
-          if (dim_flags & (1U << i)) {
-            get_connectivity_<TO_DOM, FROM_DOM, TO_DIM>(i).end_from();
-          }
-        }
+        //---------------------------------------------------------------------
+        // Figure out the binding's id
 
-        for (size_t i = 0; i < TO_DIM; ++i) {
-          if (dom_flags & (1U << i)) {
-            get_connectivity_(TO_DOM, TO_DOM, TO_DIM, i).end_from();
-          }
+        // If we have an intermediate mapping, map the connected enitities to 
+        // an binding id.  This makes sure the created bound entity has the
+        // the right id.  Otherwise, it may not match the exclusive, shared,
+        // ghost sets.
+        size_t new_binding_id_cis;
+        if ( has_intermediate_map ) {
+          // sort for comparison
+					std::sort(
+	 					connected_entities_mis.begin(),
+ 						connected_entities_mis.end()
+ 					);
+          // map the connected entities to a global binding id
+        	auto new_binding_id_gis =
+ 						reverse_intermediate_map.at( connected_entities_mis );
+          // then get the new compact id
+          new_binding_id_cis = binding_gis_to_cis.at( new_binding_id_gis );
         }
+        // just use the counter since we dont have a 
+        else {
+          new_binding_id_cis = binding_counter;
+        }
+        
+        // now create the entity id, on the same partition as the connected cell.
+        // this 
+        auto new_binding_id =
+          id_t::make<TO_DIM, TO_DOM>(new_binding_id_cis, color);
+
+        // Add this id to the cell entity connections
+        this_cell_to_binding_conn.push_back(new_binding_id);
 
         // now buid the new entity
         auto ent = MESH_TYPE::template create_entity<TO_DOM, TO_DIM>(this,
-            num_new_entity_vertices, created_new_entity_id);
+            num_new_binding_vertices, new_binding_id);
+       
+        //---------------------------------------------------------------------
+				// Now add the connected entities to the connectivity table, now that
+				// we know where it is going.  Note: we could have appended them to
+				// a list, and reordered it later, avoiding the dynamic resizing.  But
+				// this was WAAAAAYYYYY slower.  
+				for ( auto connection_id : connected_entities ) {
+          
+					// get domain and dimension again
+					auto dim = connection_id.dimension();
+          auto dom = connection_id.domain();
+					std::cout << " ("<<dom<<", "<<dim<<", "<<connection_id.entity()<<" ) ";
+
+					// search the map for this particular connectivity info, if its
+        	// not found, create it
+	        auto map_key = key(dom,dim);
+  	      auto bit = binding_to_entity_conn.find( map_key );
+    	    if ( bit == binding_to_entity_conn.end() ) {
+      	    bit = binding_to_entity_conn.emplace(
+        		    std::make_pair( map_key, connection_vector_t{} )
+          	).first; // first is iterator, second is insertion flag
+        	}
+
+        	// resize it and add the connection to the new entities connectivity
+					auto & this_binding_to_entities = bit->second;
+					if ( this_binding_to_entities.size() <= new_binding_id_cis )
+        		this_binding_to_entities.resize( new_binding_id_cis + 1 );
+        	this_binding_to_entities[new_binding_id_cis].push_back(connection_id);
+
+				} // for
+
+
+        // Done building this entity
+        //---------------------------------------------------------------------
 
         // bump the counters
-        ++entity_counter;
-        new_entity_pos += num_connections;
+        ++binding_counter;
+        new_binding_pos += num_connections;
 
       } // for
     } // for
 
     // Reference to storage from cells to the entity (to be created here).
-    auto & cell_out =
-        get_connectivity_(FROM_DOM, TO_DOM, MESH_TYPE::num_dimensions, TO_DIM);
-    cell_out.init(cell_to_entity_conn);
+    get_connectivity_(FROM_DOM, TO_DOM, cell_dim, TO_DIM)
+      .init( std::move(cell_to_binding_conn) );
+
+		// binding to entity conn is a little different.
+    for ( const auto & binding_pair : binding_to_entity_conn ) {
+      // first is the key, and second is the connectivity
+			auto & binding_to_entity = binding_pair.second;
+      // domain and dimension is encoded in the ids
+			const auto & first = binding_to_entity.at(0).at(0);
+			auto dom = first.domain();
+			auto dim = first.dimension();
+      // initialize the connectivity
+      get_connectivity_(TO_DOM, dom, TO_DIM, dim)
+        .init( std::move(binding_to_entity) );
+		}
 
   } // build_bindings
 
