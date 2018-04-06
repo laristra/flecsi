@@ -181,7 +181,7 @@ set(data_SOURCES
 #      ${CINCH_RUNTIME_LIBRARIES}
 #  )
 #
-#  if(ENABLE_COLORING AND ENABLE_PARMETIS)
+#  if(ENABLE_PARMETIS)
 #    cinch_add_unit(serial_data_handle
 #      SOURCES
 #        ../execution/test/task_driver.cc
@@ -216,7 +216,7 @@ set(data_SOURCES
 #)
 #
 #
-#  if(ENABLE_COLORING AND ENABLE_PARMETIS)
+#  if(ENABLE_PARMETIS)
 #    cinch_add_unit(mpilegion_data_handle
 #      SOURCES
 #        ../execution/test/task_driver.cc
@@ -238,7 +238,7 @@ set(data_SOURCES
 
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
-if(ENABLE_COLORING AND ENABLE_PARMETIS)
+if(ENABLE_PARMETIS)
 
   cinch_add_unit(client_registration
     SOURCES

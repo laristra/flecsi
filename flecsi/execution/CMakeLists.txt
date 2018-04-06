@@ -213,7 +213,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     NOCI
     )
 
-  if(ENABLE_COLORING AND ENABLE_PARMETIS)
+  if(ENABLE_PARMETIS)
 
     cinch_add_devel_target(execution_structure
       SOURCES
@@ -516,7 +516,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       )
     endif() # mpi
 
-  endif() # (ENABLE_COLORING AND ENABLE_PARMETIS)
+  endif() # (ENABLE_PARMETIS)
 
   if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   #
@@ -554,7 +554,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       NOCI
     )
 
-    if(ENABLE_COLORING AND ENABLE_PARMETIS)
+    if(ENABLE_PARMETIS)
 
       cinch_add_unit(barrier_per_field
         SOURCES
@@ -620,7 +620,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         NOCI
       )
 
-    endif() # (ENABLE_COLORING AND ENABLE_PARMETIS)
+    endif() # (ENABLE_PARMETIS)
 
   endif() # legion
 
