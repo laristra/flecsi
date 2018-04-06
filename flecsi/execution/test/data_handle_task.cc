@@ -121,6 +121,8 @@ flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
 flecsi_register_global( ns, velocity, double, 1);
 
+flecsi_register_global (ns, time, double, 1);
+
 flecsi_register_color(ns, density, double, 1);
 
 namespace flecsi {
@@ -150,6 +152,9 @@ void specialization_tlt_init(int argc, char ** argv) {
   flecsi_execute_task_simple(global_writer, single, global_handle);
   flecsi_execute_task_simple(global_reader, single, global_handle);
   flecsi_execute_task(mpi_task,, index, 10, global_handle);
+  auto global_handle2 = flecsi_get_global(ns, time, double, 0);
+  flecsi_execute_task_simple(global_writer, single, global_handle2);
+  flecsi_execute_task(mpi_task,, index, 11, global_handle2);
 #endif
 } // specialization_tlt_init
 

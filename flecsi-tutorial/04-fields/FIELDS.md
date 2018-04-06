@@ -60,7 +60,7 @@ registration interface are:
    the data client type passed in argument 1. In this example, the index
    space is *cells*.
 
-User's reference fields using a handle, and an iterator of the
+Users reference fields using a handle and an iterator of the
 corresponding index space on which the field was registered. The current
 interface is somewhat complicated and bears further discussion:
 

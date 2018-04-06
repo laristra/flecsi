@@ -36,6 +36,7 @@ set(data_HEADERS
   field.h
   mutator.h
   mutator_handle.h
+  internal_client.h
   ragged_accessor.h
   ragged_mutator.h
   sparse_accessor.h
@@ -52,6 +53,7 @@ set(data_HEADERS
 
 set(data_SOURCES
   data_client.cc
+  internal_client.cc
 )
 
 set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)

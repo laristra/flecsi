@@ -76,28 +76,12 @@ struct context__ : public CONTEXT_POLICY {
   }; // struct field_info_t
 
   /*!
-    Gathers info about local index spaces.
-   */
-  struct local_index_space_t {
-    size_t index_space;
-    size_t capacity;
-  };
-
-  /*!
     Gathers info about sparse index spaces.
    */
   struct sparse_index_space_info_t {
     size_t index_space;
     size_t reserve_chunk;
     size_t max_entries_per_index;
-  };
-
-  /*!
-    Gathers info about set topology index spaces.
-   */
-  struct set_topology_index_space_t{
-    size_t main_capacity;
-    size_t active_migration_capacity;
   };
 
   struct index_subspace_info_t {
@@ -109,11 +93,19 @@ struct context__ : public CONTEXT_POLICY {
   /*!
     Structure needed to initialize a set topology.
    */
-  struct set_topology_info_t{
-    using index_space_map_t =
-      std::unordered_map<size_t, set_topology_index_space_t>;
+  struct set_index_space_info_t{
+    /*!
+      Gathers info about set topology index spaces per color.
+     */
+    struct color_info_t{
+      size_t main_capacity;
+      size_t active_migrate_capacity;
+    };
 
-    index_space_map_t index_space_map;
+    // key = color
+    using color_info_map_t = std::unordered_map<size_t, color_info_t>;
+
+    color_info_map_t color_info_map;
   };
 
   //--------------------------------------------------------------------------//
@@ -281,34 +273,18 @@ struct context__ : public CONTEXT_POLICY {
   } // index_map
 
   /*!
-    Add a local index space of specified. The index space is local
-    to a color. This method is called from specialization_spmd_init().
-   */
-  void add_local_index_space(size_t index_space, size_t capacity) {
-    clog_assert(
-        coloring_info_.find(index_space) == coloring_info_.end(),
-        "non-local index space exists");
-    local_index_space_t is;
-    is.capacity = capacity;
-    local_index_space_map_.emplace(index_space, std::move(is));
-  }
-
-  /*!
-    Return the map of local index space info.
-   */
-
-  const auto & local_index_space_map() const {
-    return local_index_space_map_;
-  }
-
-  /*!
     Register set topology index space sizes and other needed metadata.
    */
 
   void
-  add_set_topology(const set_topology_info_t & info)
+  add_set_index_space(size_t index_space, const set_index_space_info_t & info)
   {
+    auto itr = set_index_space_map_.insert({index_space, info});
+    clog_assert(itr->second, "set index space exists: " << index_space);
+  }
 
+  const auto& set_index_space_map() const{
+    return set_index_space_map_;
   }
 
   void set_sparse_index_space_info(
@@ -929,12 +905,6 @@ private:
   // key: index space
   //--------------------------------------------------------------------------//
 
-  std::map<size_t, local_index_space_t> local_index_space_map_;
-
-  //--------------------------------------------------------------------------//
-  // key: index space
-  //--------------------------------------------------------------------------//
-
   std::map<size_t, sparse_index_space_info_t> sparse_index_space_info_map_;
 
 #if 0
@@ -1048,6 +1018,12 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, index_subspace_info_t> index_subspace_map_;
+
+  //--------------------------------------------------------------------------//
+  // key: set index space
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, set_index_space_info_t> set_index_space_map_;
 
   //--------------------------------------------------------------------------//
   // Execution state

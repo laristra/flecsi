@@ -421,24 +421,10 @@ struct legion_context_policy_t {
   };
 
   /*!
-    Collects Legion data associated with a local FleCSI index space.
-   */
-
-  struct local_index_space_data_t {
-    Legion::LogicalRegion region;
-  };
-
-  /*!
     Get the index space data map.
    */
 
   auto &index_space_data_map() { return index_space_data_map_; }
-
-  /*!
-    Get the local index space data map.
-   */
-
-  auto &local_index_space_data_map() { return local_index_space_data_map_; }
 
   /*!
     Get the index subspace data map.
@@ -483,9 +469,7 @@ struct legion_context_policy_t {
     auto global_future = legion_runtime->get_dynamic_collective_result(
         legion_context, max_reduction);
 
-    auto global_max_ = global_future.get_result<double>();
-
-    return global_max_;
+    return legion_future__<T, launch_type_t::single>(global_future);
   }
 
   /*!
@@ -525,9 +509,7 @@ struct legion_context_policy_t {
     auto global_future = legion_runtime->get_dynamic_collective_result(
         legion_context, min_reduction);
 
-    auto global_min_ = global_future.get_result<double>();
-
-    return global_min_;
+    return legion_future__<T, launch_type_t::single>(global_future);
   }
 
   /*!
@@ -581,7 +563,6 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
-  std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
   Legion::DynamicCollective max_reduction_;
   Legion::DynamicCollective min_reduction_;

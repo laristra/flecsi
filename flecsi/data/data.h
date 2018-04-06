@@ -17,6 +17,7 @@
 
 #include <flecsi/data/client.h>
 #include <flecsi/data/common/data_types.h>
+#include <flecsi/data/internal_client.h>
 #include <flecsi/data/field.h>
 
 /*!
@@ -106,7 +107,8 @@
           flecsi::data::global_data_client_t, flecsi::data::global, data_type, \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-          versions, ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
+          versions, flecsi::execution::internal_index_space::global_is,        \
+	  ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
 
 /*!
   @def flecsi_register_color
@@ -132,10 +134,11 @@
   /* Call the storage policy to register the data */                           \
   bool client_type##_##nspace##_##name##_data_registered =                     \
       flecsi::data::field_interface_t::register_field<                         \
-          flecsi::data::color_data_client_t, flecsi::data::color, data_type, \
+          flecsi::data::color_data_client_t, flecsi::data::color, data_type,   \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-          versions, ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
+          versions, flecsi::execution::internal_index_space::color_is,         \
+          ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
 
 
 
@@ -191,7 +194,7 @@
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_handle(                                                           \
       flecsi_get_client_handle(                                                \
-          flecsi::data::global_data_client_t, nspace, name),                   \
+          flecsi::data::global_data_client_t, global_client, global_client),   \
       nspace, name, data_type, global, version)
 
 /*!
@@ -215,7 +218,7 @@
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_handle(                                                           \
       flecsi_get_client_handle(                                                \
-          flecsi::data::color_data_client_t, nspace, name),                   \
+          flecsi::data::color_data_client_t, color_client, color_client),      \
       nspace, name, data_type, color, version)
 
 /*!
@@ -387,11 +390,11 @@
   @param client_handle the data client handle
   @param nspace data namespace
   @param name data names
-  @param data_type data type e.g. float, long -- 
+  @param data_type data type e.g. float, long --
     any data type so long as it is trivially copyable
   @param storage_class storage class, e.g. dense, sparse
   @param version version number
-  @param slots number of slots to use for data commit -- 
+  @param slots number of slots to use for data commit --
     for optimal performance this should roughly be set to the expected
     number of entries that will be inserted per index although, it is fine
     if the number of inserted entries exceeds this value.
@@ -412,7 +415,7 @@
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
       version>(client_handle, slots)
-      
+
 /*!
  FIXME documentation
 */
