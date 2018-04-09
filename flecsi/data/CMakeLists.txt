@@ -52,7 +52,6 @@ set(data_HEADERS
 #------------------------------------------------------------------------------#
 
 set(data_SOURCES
-  data_client.cc
   internal_client.cc
 )
 
@@ -154,15 +153,6 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-#cinch_add_unit(data_client
-#  SOURCES
-#    test/data_client.cc
-#    ${RUNTIME_DRIVER}
-#  LIBRARIES
-#    FleCSI
-#    ${CINCH_RUNTIME_LIBRARIES}
-#)
-
 # cinch_add_unit(compaction
 #   SOURCES
 #     test/legion/compaction.cc
@@ -243,7 +233,6 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
   cinch_add_unit(client_registration
     SOURCES
       test/client_registration.cc
-      data_client.cc
       ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
     DEFINES

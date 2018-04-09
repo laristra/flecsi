@@ -399,7 +399,7 @@ option(ENABLE_FLECSI_TUTORIAL
 
 if(ENABLE_FLECSI_TUTORIAL)
   option(ENABLE_FLECSI_TUTORIAL_VTK "Enable VTK output for tutorial examples"
-    ON)
+    OFF)
 
   set(FLECSI_TUTORIAL_ENABLE_VTK)
 
