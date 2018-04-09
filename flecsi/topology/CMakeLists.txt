@@ -102,8 +102,6 @@ set(topology_SOURCES
 # Mesh unit tests.
 #------------------------------------------------------------------------------#
 
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   cinch_add_unit(traversal
@@ -135,6 +133,8 @@ cinch_add_unit(dual
     test/dual.cc
   INPUTS
     test/dual.blessed
+  FOLDER
+    "Tests/Topology"
 )
 
 #------------------------------------------------------------------------------#
@@ -185,6 +185,8 @@ cinch_add_unit(dual
 cinch_add_unit(structured
   SOURCES
     test/structured.cc
+  FOLDER
+    "Tests/Topology"
 )
 
 #------------------------------------------------------------------------------#
@@ -222,4 +224,3 @@ cinch_add_unit(devel-closure
 #    test/index-space.cc test/pseudo_random.h
 #)
 
-endif()#hpx
