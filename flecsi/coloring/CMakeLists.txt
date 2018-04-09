@@ -142,7 +142,7 @@ cinch_add_unit(boxcolor3d
 )
 # Both of these tests depend on ParMETIS.
 # This could change if we add more colorer types.
-if(ENABLE_COLORING AND ENABLE_PARMETIS)
+if(ENABLE_PARMETIS)
 
 cinch_add_devel_target(coloring
   SOURCES test/coloring.cc

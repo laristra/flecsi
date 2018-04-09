@@ -30,6 +30,7 @@
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/const_string.h>
+#include <flecsi/utils/simple_id.h>
 
 clog_register_tag(context);
 
@@ -356,63 +357,207 @@ struct context__ : public CONTEXT_POLICY {
     return it->second;
   } // reverse_index_map
 
+  //--------------------------------------------------------------------------//
+  // Intermediate mapping interface.
+  //--------------------------------------------------------------------------//
+
   /*!
-    Add an intermediate map. This map can be used to go between mesh and
+    Return a reference to the intermediate mapping.
+    This map can be used to go between mesh and
     locally compacted index spaces for intermediate entities.
 
     @param dimension        The entity dimension.
     @param domain           The entity domain.
-    @param intermediate_map The map to add.
+    @return The map to add.
    */
 
-  void add_intermediate_map(
+  auto & intermediate_map(
       size_t dimension,
-      size_t domain,
-      std::unordered_map<size_t, std::vector<size_t>> & intermediate_map) {
-    const size_t key = utils::hash::intermediate_hash(dimension, domain);
-    intermediate_map_[key] = intermediate_map;
+      size_t domain) {
 
-    for (auto i : intermediate_map) {
-      reverse_intermediate_map_[key][i.second] = i.first;
-    } // for
-  } // add_intermediate_map
-
-  /*!
-    Return the intermediate map associated with the given dimension and
-    domain.
-
-    @param dimension The entity dimension.
-    @param domain    The entity domain.
-   */
-
-  auto const & intermediate_map(size_t dimension, size_t domain) const {
-    const size_t key = utils::hash::intermediate_hash(dimension, domain);
-
-    auto it = reverse_intermediate_map_.find(key);
-    clog_assert(
-        it != intermediate_map_.end(),
-        "invalid index space");
-
-    return it->second;
+    const auto key = utils::hash::intermediate_hash(dimension, domain);
+    return intermediate_map_[key];
   } // intermediate_map
 
+
   /*!
-    Return the index map associated with the given index space.
+    Return a const reference to the reverse intermediate mapping.
 
     @param dimension The entity dimension.
     @param domain    The entity domain.
    */
 
-  auto const & reverse_intermediate_map(size_t dimension, size_t domain) const {
-    const size_t key = utils::hash::intermediate_hash(dimension, domain);
+  auto const & reverse_intermediate_map(
+      size_t dimension,
+      size_t domain) const
+  {
+    const auto key = utils::hash::intermediate_hash(dimension, domain);
 
     auto it = reverse_intermediate_map_.find(key);
+
     clog_assert(
         it != reverse_intermediate_map_.end(),
+        "invalid intermediate mapping");
+
+    return it->second;
+  } // reverse_intermediate_map
+
+  /*!
+    Return a modifyable reference to the reverse intermediate mapping.
+
+    This lets the user create the reverse intermediate mapping themselves.
+    Or they can build it by calling build_reverse_intermediate_map.
+
+    @param dimension The entity dimension.
+    @param domain    The entity domain.
+   */
+
+  auto & reverse_intermediate_map(
+      size_t dimension,
+      size_t domain)
+  {
+    const auto key = utils::hash::intermediate_hash(dimension, domain);
+    return reverse_intermediate_map_[key];
+  } // reverse_intermediate_map
+
+  /*!
+    A utility to automatically flip the intermediate maps.
+
+    @param reset  If true, clear the map before proceding.
+    @param sort  If true, assume the entries are unsorted.
+   */
+  void build_reverse_intermediate_maps(
+      bool reset = false, bool sort = false)
+  {
+
+    // clear the map for safety
+    if ( reset )
+      reverse_intermediate_map_.clear();
+
+    // now flip all the mappings
+    for ( const auto & forward_map : intermediate_map_ ) {
+      auto key = forward_map.first;
+      auto & reverse_map = reverse_intermediate_map_[key];
+      // it will be empty if never set, or reset==true
+      if ( reverse_map.empty() ) {
+
+        // assume unsorted
+        if ( sort ) {
+          for ( auto & entry : forward_map.second ) {
+            std::sort( entry.second.begin(), entry.second.end() );
+            reverse_map[entry.second] = entry.first;
+          }
+        }
+        // assume sorted
+        else {
+          for ( const auto & entry : forward_map.second )
+            reverse_map[entry.second] = entry.first;
+        }
+      }
+    }
+
+  }
+
+
+  /*!
+    Add an intermediate binding map. This map can be used to go between mesh and
+    locally compacted index spaces for intermediate entities.
+
+    @param dimension        The entity dimension.
+    @param domain           The entity domain.
+    @return A reference to the map.
+   */
+
+  auto & intermediate_binding_map(
+      size_t from_dimension,
+      size_t from_domain)
+  {
+    const auto key = utils::hash::intermediate_hash(from_dimension, from_domain);  
+    return intermediate_binding_map_[key];
+  } // add_intermediate_binding_map
+
+  /*!
+    Return a const reference to the reverse intermediate mapping.
+
+    @param dimension The entity dimension.
+    @param domain    The entity domain.
+   */
+
+  auto const & reverse_intermediate_binding_map(
+      size_t dimension,
+      size_t domain) const 
+  {
+    const auto key = utils::hash::intermediate_hash(dimension, domain);
+
+    auto it = reverse_intermediate_binding_map_.find(key);
+    clog_assert(
+        it != reverse_intermediate_binding_map_.end(),
         "invalid index space");
 
     return it->second;
   } // reverse_intermediate_map
+
+
+  /*!
+    Return a modifyable reference to the reverse intermediate mapping.
+
+    This lets the user create the reverse intermediate mapping themselves.
+    Or they can build it by calling build_reverse_intermediate_map.
+
+    @param dimension The entity dimension.
+    @param domain    The entity domain.
+   */
+
+  auto & reverse_intermediate_binding_map(
+      size_t dimension,
+      size_t domain)
+  {
+    const auto key = utils::hash::intermediate_hash(dimension, domain);
+    return reverse_intermediate_binding_map_[key];
+  } // reverse_intermediate_map
+  
+  /*!
+    A utility to automatically flip the intermediate maps.
+
+    @param reset  If true, clear the map before proceding.
+    @param sort  If true, assume the entries are unsorted.
+   */
+  void build_reverse_intermediate_binding_maps(
+      bool reset = false, bool sort = false)
+  {
+
+    // clear the map for safety
+    if ( reset )
+      reverse_intermediate_binding_map_.clear();
+
+    // now flip all the mappings
+    for ( const auto & forward_map : intermediate_binding_map_ ) {
+      auto key = forward_map.first;
+      auto & reverse_map = reverse_intermediate_binding_map_[key];
+      // it will be empty if never set, or reset==true
+      if ( reverse_map.empty() ) {
+
+        // assume unsorted
+        if ( sort ) {
+          for ( auto & entry : forward_map.second ) {
+            std::sort( entry.second.begin(), entry.second.end() );
+            reverse_map[entry.second] = entry.first;
+          }
+        }
+        // assume sorted
+        else {
+          for ( const auto & entry : forward_map.second )
+            reverse_map[entry.second] = entry.first;
+        }
+      }
+    }
+
+  }
+
+
+  //--------------------------------------------------------------------------//
+  // Coloring interface.
+  //--------------------------------------------------------------------------//
 
   /*!
     Add an index coloring.
@@ -771,6 +916,10 @@ private:
   std::map<size_t, std::map<size_t, size_t>> cis_to_gis_map_;
   std::map<size_t, std::map<size_t, size_t>> gis_to_cis_map_;
 
+  //--------------------------------------------------------------------------//
+  // Data members for ntermediate mapping
+  //--------------------------------------------------------------------------//
+
   // key: intermediate entity to vertex ids
   std::map<size_t, std::unordered_map<size_t, std::vector<size_t>>>
       intermediate_map_;
@@ -787,9 +936,12 @@ private:
   }; // struct vector_hash_t
 
   struct vector_equal_t {
-    bool operator()(std::vector<size_t> a, std::vector<size_t> b) const {
-      std::sort(a.begin(), a.end());
-      std::sort(b.begin(), b.end());
+    bool operator()(const std::vector<size_t> & a,
+        const std::vector<size_t> & b) const
+    {
+      //assume sorted for performance
+      //std::sort(a.begin(), a.end());
+      //std::sort(b.begin(), b.end());
       return (a == b);
     } // operator ()
   }; // struct vector_hash_t
@@ -802,6 +954,51 @@ private:
           vector_hash_t,
           vector_equal_t>>
       reverse_intermediate_map_;
+
+
+  //! the packed types used for simple_id_t
+  using simple_id_types_t = std::tuple< int, int, size_t >;
+  //! the simple id type used for comparing ids of different dimensions
+  using simple_id_t = utils::simple_id_t<
+    simple_id_types_t,
+    utils::lexical_comparison<simple_id_types_t>
+  >;
+  //! the storage type for arrays of simple_id_t's
+  using simple_id_vector_t = std::vector< simple_id_t >;
+  
+  //! A lexical comparison function for simple_id_t's
+  struct simple_id_vector_compare_t {
+    bool operator()(const simple_id_vector_t & a, const simple_id_vector_t & b)
+      const
+    {
+      return
+        std::lexicographical_compare(
+          a.begin(), a.end(),
+          b.begin(), b.end()
+        );
+    }
+  };
+
+  //! The forward intermediate binding mapping
+  std::map<
+      size_t,
+      std::unordered_map<
+          size_t,
+          simple_id_vector_t
+      >
+  > intermediate_binding_map_;
+
+  //! the reverse intermediate binding mapping
+  std::map<
+      size_t,
+      std::map<
+          simple_id_vector_t,
+          size_t,
+          simple_id_vector_compare_t
+      >
+  > reverse_intermediate_binding_map_;
+
+
 
   //--------------------------------------------------------------------------//
   // key: virtual index space.

@@ -40,6 +40,7 @@ set(utils_HEADERS
   reorder.h
   set_intersection.h
   set_utils.h
+  simple_id.h
   static_verify.h
   tuple_function.h
   tuple_type_converter.h
@@ -184,6 +185,10 @@ cinch_add_unit(set_intersection
 cinch_add_unit(set_utils
   SOURCES test/set_utils.cc
   INPUTS  test/set_utils.blessed
+)
+
+cinch_add_unit(simple_id
+  SOURCES test/simple_id.cc
 )
 
 cinch_add_unit(static_verify

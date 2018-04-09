@@ -292,6 +292,68 @@ struct find_index_subspace_from_id__<0, TUPLE, ID> {
 
 }; // struct find_index_subspace_from_id__
 
+
+//----------------------------------------------------------------------------//
+//! Find all the entity index spaces within a certain domain
+//!
+//! @tparam I The current index in tuple.
+//! @tparam MESH_TYPE The mesh type.
+//! @tparam DOM  The domain to search.
+//! @tparam Array  The deduced array type
+//----------------------------------------------------------------------------//
+//! @{
+namespace detail {
+
+template<
+  size_t I,
+  typename MESH_TYPE,
+  size_t DOM,
+  typename Array,
+  std::enable_if_t< (I == MESH_TYPE::num_dimensions) >* = nullptr
+>
+void find_all_index_spaces_in_domain__( Array && index_spaces )
+{
+  std::forward<Array>(index_spaces)[I] =
+    find_index_space_from_dimension__ <
+      std::tuple_size<typename MESH_TYPE::entity_types>::value,
+      typename MESH_TYPE::entity_types, I, DOM
+    >::find();
+}
+
+
+template<
+  size_t I,
+  typename MESH_TYPE,
+  size_t DOM,
+  typename Array,
+  typename = std::enable_if_t<
+    (I < MESH_TYPE::num_dimensions && MESH_TYPE::num_dimensions > 0 )
+  >
+>
+void find_all_index_spaces_in_domain__( Array && index_spaces )
+{
+  std::forward<Array>(index_spaces)[I] =
+    find_index_space_from_dimension__ <
+      std::tuple_size<typename MESH_TYPE::entity_types>::value,
+      typename MESH_TYPE::entity_types, I, DOM
+    >::find();
+  find_all_index_spaces_in_domain__<I+1, MESH_TYPE, DOM>( index_spaces );
+}
+
+} // namespace detail
+
+// The main calling function 
+template< typename MESH_TYPE, size_t DOM >
+auto find_all_index_spaces_in_domain__()
+{
+  std::array< size_t, MESH_TYPE::num_dimensions+1 > index_spaces;
+  detail::find_all_index_spaces_in_domain__<0, MESH_TYPE, DOM>( index_spaces );
+  return index_spaces;
+}
+//! @}
+
+
+
 /*----------------------------------------------------------------------------*
  * Connectivity utilities.
  *----------------------------------------------------------------------------*/
