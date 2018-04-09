@@ -1,5 +1,9 @@
 # FleCSI Tutorial Dockerfile
 
+#------------------------------------------------------------------------------#
+# Start with plain Fedora
+#------------------------------------------------------------------------------#
+
 FROM fedora:latest
 
 #------------------------------------------------------------------------------#
@@ -66,8 +70,8 @@ RUN \
 	make install;
 
 RUN cp /opt/flecsi-openmpi/bin/flecsi-tutorial /usr/share/modulefiles/
-RUN mkdir -p /home/flecsi/tutorial
-RUN cp -r flecsi/flecsi-tutorial/??-* /home/flecsi/tutorial
+RUN mkdir -p /home/flecsi/flecsi-tutorial
+RUN cp -r flecsi/flecsi-tutorial/??-* /home/flecsi/flecsi-tutorial/
 
 #------------------------------------------------------------------------------#
 # Environment setup
