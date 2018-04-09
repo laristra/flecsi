@@ -226,7 +226,7 @@ class simple_id_t
 {};
 
 template <
-  template<typename> typename Compare,
+  template<typename> class Compare,
   typename... Args
 >
 class simple_id_t< std::tuple<Args...>, Compare< std::tuple<Args...> > >
