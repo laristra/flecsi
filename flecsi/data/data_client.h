@@ -40,11 +40,6 @@ public:
   /// Allow move assignment
   data_client_t & operator=(data_client_t && dc) { return *this; }
 
-  //--------------------------------------------------------------------------//
-  //! Return a unique runtime identifier for namespace access to the
-  //! data manager.
-  //--------------------------------------------------------------------------//
-
   virtual ~data_client_t() {
     reset();
   }
@@ -52,12 +47,6 @@ public:
 protected:
 
   void reset() {}
-
-  //--------------------------------------------------------------------------//
-  //! Define a dummy type so that we get our own counter below.
-  //--------------------------------------------------------------------------//
-
-  struct id_t {};
 
   //--------------------------------------------------------------------------//
   //! Default constructor.

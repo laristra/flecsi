@@ -191,27 +191,27 @@ namespace execution {
 
         // see if the field data is registered for this entity field.
         auto& registered_field_data = context_.registered_field_data();
-        auto fieldDataIter = registered_field_data.find({ent.fid, h.runtime_id()});
+        auto fieldDataIter = registered_field_data.find({ent.fid, h.name_hash});
         if (fieldDataIter == registered_field_data.end()) {
           size_t size = ent.size * num_entities;
 
           execution::context_t::instance().register_field_data(ent.fid,
-                                                               h.runtime_id(),
+                                                               h.name_hash,
                                                                size);
         }
         auto ents =
-          reinterpret_cast<topology::mesh_entity_base_*>(registered_field_data[{ent.fid, h.runtime_id()}].data());
+          reinterpret_cast<topology::mesh_entity_base_*>(registered_field_data[{ent.fid, h.name_hash}].data());
 
-        fieldDataIter = registered_field_data.find({ent.id_fid, h.runtime_id()});
+        fieldDataIter = registered_field_data.find({ent.id_fid, h.name_hash});
         if (fieldDataIter == registered_field_data.end()) {
           size_t size = ent.size * num_entities;
 
           execution::context_t::instance().register_field_data(ent.id_fid,
-                                                               h.runtime_id(),
+                                                               h.name_hash,
                                                                size);
         }
         auto ids =
-          reinterpret_cast<utils::id_t *>(registered_field_data[{ent.id_fid, h.runtime_id()}].data());
+          reinterpret_cast<utils::id_t *>(registered_field_data[{ent.id_fid, h.name_hash}].data());
 
         // new allocation every time.
         storage->init_entities(ent.domain, ent.dim,
@@ -232,26 +232,26 @@ namespace execution {
         auto& registered_field_data = context_.registered_field_data();
 
         adj.num_offsets = (color_info.exclusive + color_info.shared + color_info.ghost);
-        auto fieldDataIter = registered_field_data.find({adj.offset_fid, h.runtime_id()});
+        auto fieldDataIter = registered_field_data.find({adj.offset_fid, h.name_hash});
         if (fieldDataIter == registered_field_data.end()) {
           size_t size = sizeof(size_t) * adj.num_offsets;
 
           execution::context_t::instance().register_field_data(adj.offset_fid,
-                                                               h.runtime_id(),
+                                                               h.name_hash,
                                                                size);
         }
-        adj.offsets_buf = reinterpret_cast<size_t *>(registered_field_data[{adj.offset_fid, h.runtime_id()}].data());
+        adj.offsets_buf = reinterpret_cast<size_t *>(registered_field_data[{adj.offset_fid, h.name_hash}].data());
 
         auto adj_info = (context_.adjacency_info()).at(adj_index_space);
         adj.num_indices = adj_info.color_sizes[color];
-        fieldDataIter = registered_field_data.find({adj.index_fid, h.runtime_id()});
+        fieldDataIter = registered_field_data.find({adj.index_fid, h.name_hash});
         if (fieldDataIter == registered_field_data.end()) {
           size_t size = sizeof(utils::id_t) * adj.num_indices;
           execution::context_t::instance().register_field_data(adj.index_fid,
-                                                               h.runtime_id(),
+                                                               h.name_hash,
                                                                size);
         }
-        adj.indices_buf = reinterpret_cast<size_t *>(registered_field_data[{adj.index_fid, h.runtime_id()}].data());
+        adj.indices_buf = reinterpret_cast<size_t *>(registered_field_data[{adj.index_fid, h.name_hash}].data());
 
         storage->init_connectivity(adj.from_domain, adj.to_domain,
                                    adj.from_dim, adj.to_dim,
