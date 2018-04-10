@@ -194,6 +194,10 @@ if(ENABLE_OPENSSL)
   endif()
 endif()
 
+if(ENABLE_CALIPER)
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Caliper_LIBRARIES})
+endif()
+
 #------------------------------------------------------------------------------#
 # Runtime models
 #------------------------------------------------------------------------------#
@@ -380,17 +384,21 @@ install(
 # Add library targets
 #------------------------------------------------------------------------------#
 
-cinch_add_library_target(FleCSI flecsi)
+cinch_add_library_target(FleCSI flecsi EXPORT_TARGET FleCSITargets)
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-  option(ENABLE_FLECSI_TUTORIAL
-    "Enable library support for the FleCSI tutorial" OFF)
-else()
-  option(ENABLE_FLECSI_TUTORIAL
-    "Enable library support for the FleCSI tutorial" ON)
-endif()
+option(ENABLE_FLECSI_TUTORIAL
+  "Enable library support for the FleCSI tutorial" ON)
 
 if(ENABLE_FLECSI_TUTORIAL)
+  option(ENABLE_FLECSI_TUTORIAL_VTK "Enable VTK output for tutorial examples"
+    OFF)
+
+  set(FLECSI_TUTORIAL_ENABLE_VTK)
+
+  if(ENABLE_FLECSI_TUTORIAL_VTK)
+    set(FLECSI_TUTORIAL_ENABLE_VTK ":ENABLE_VTK")
+  endif()
+
   cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
 endif()
 
@@ -451,6 +459,7 @@ endforeach()
 set(FLECSI_LIBRARY_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR})
 set(FLECSI_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include
   ${FLECSI_EXTERNAL_INCLUDE_DIRS})
+
 set(FLECSI_CMAKE_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/cmake/FleCSI)
 set(FLECSI_RUNTIME_MAIN ${FLECSI_SHARE_DIR}/runtime/runtime_main.cc)
 set(FLECSI_RUNTIME_DRIVER ${FLECSI_SHARE_DIR}/runtime/runtime_driver.cc)
@@ -477,6 +486,7 @@ export(
   TARGETS FleCSI
   FILE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSITargets.cmake
 )
+
 export(PACKAGE FleCSI)
 
 #------------------------------------------------------------------------------#

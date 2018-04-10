@@ -79,6 +79,28 @@ FleCSI, and that you have installed it somewhere on your system.
 Instructions for building FleCSI are available from the related pages
 [here](https://laristra.github.io/flecsi/assets/doxygen/md__home_flecsi_flecsi_auxiliary_markdown_01-Build.html).
 
+# Using the Docker Container
+
+The tutorial is also available as a Docker container. This simplifies
+getting and installing FleCSI and its dependencies. To use the Docker
+container, you should have the Docker daemon installed on your system.
+Docker is available for several different platforms from the
+[Docker Website](https://www.docker.com).
+
+To pull the tutorial image, do:
+```bash
+$ docker pull laristra/flecsi-tutorial:latest
+```
+This will download the image to your machine. Once the pull is complete,
+you can run the image like:
+```bash
+$ docker run -it -h tutorialhost -u flecsi laristra/flecsi-tutorial:latest
+/bin/bash
+```
+This will place you into a bash prompt, from which you can build and run
+the tutorial examples. The tutorials are in the *flecsi-tutorial*
+directory in the Docker container.
+
 # Building the Examples
 
 The example codes in the tutorial are meant to be built using the
@@ -87,40 +109,44 @@ find the script, and to include any dynamic library dependencies. We
 have provided initialization scripts for bash, csh, and environment
 modules to ease this step.
 
-To use the bash or csh script, simply source the script (located in the
-bin directory of your FleCSI install path):
-
-```
-$ source CMAKE_INSTALL_PREFIX/bin/flecsi-tutorial.{sh,csh}
-```
-
-To use the environment module, you will need to install the module file
-in an appropriate path (This may have been done by your administrator.)
-You can then load the module as usual:
-
+**If you are using the Docker container, you
+can simply run:**
 ```
 $ module load flecsi-tutorial
 ```
 
+Otherwise, to use the bash or csh script, simply source the script
+(located in the bin directory of your FleCSI install path):
+```bash
+$ source CMAKE_INSTALL_PREFIX/bin/flecsi-tutorial.{sh,csh}
+```
+To use the environment module, you will need to install the module file
+in an appropriate path (This may have been done by your administrator.)
+You can then load the module as usual:
+```bash
+$ module load flecsi-tutorial
+```
 Once your environment has been correctly configured, you can build any
 of the tutorial examples like:
-
-```
+```bash
 $ flecsit compile example.cc
 ```
-
 where *example.cc* is the name of the example source file. This will
 produce an executable that can be run like:
 
-```
+```bash
 $ ./example
+```
+For help on the flecsit compile command, type:
+```
+$ flecsit compile --help
 ```
 
 Some exmaples are designed to run in parallel (indicated in the example
 documentation). These should be run with a suitable MPI interpreter:
 
-```
-$ mpirun -np 2 example.Linux
+```bash
+$ mpirun -np 2 example
 ```
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->

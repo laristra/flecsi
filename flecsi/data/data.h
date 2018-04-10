@@ -212,7 +212,7 @@
   @ingroup data
  */
 
-#define flecsi_get_color(nspace, name, data_type, version)                    \
+#define flecsi_get_color(nspace, name, data_type, version)                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \

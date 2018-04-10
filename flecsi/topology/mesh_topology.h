@@ -1818,7 +1818,7 @@ private:
     auto has_intermediate_map =  ( !reverse_intermediate_map.empty() );
 		// the simplified id type used for searching
 		using simple_id_vector_t = 
-			std::decay_t< decltype(reverse_intermediate_map) >::key_type;
+			typename std::decay_t<decltype(reverse_intermediate_map)>::key_type;
 
 
     // This buffer should be large enough to hold all entities

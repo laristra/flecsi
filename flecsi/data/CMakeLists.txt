@@ -18,25 +18,25 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
+  accessor.h
+  client.h
   common/data_hash.h
   common/data_types.h
   common/privilege.h
   common/registration_wrapper.h
-  accessor.h
-  client.h
   data.h
   data_client.h
   data_client_handle.h
   data_client_handle.h
   data_constants.h
   dense_data_handle.h
-  global_data_handle.h
   dense_accessor.h
-  global_accessor.h
   field.h
+  global_accessor.h
+  global_data_handle.h
+  internal_client.h
   mutator.h
   mutator_handle.h
-  internal_client.h
   ragged_accessor.h
   ragged_mutator.h
   sparse_accessor.h
@@ -52,7 +52,6 @@ set(data_HEADERS
 #------------------------------------------------------------------------------#
 
 set(data_SOURCES
-  data_client.cc
   internal_client.cc
 )
 
@@ -154,15 +153,6 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-#cinch_add_unit(data_client
-#  SOURCES
-#    test/data_client.cc
-#    ${RUNTIME_DRIVER}
-#  LIBRARIES
-#    FleCSI
-#    ${CINCH_RUNTIME_LIBRARIES}
-#)
-
 # cinch_add_unit(compaction
 #   SOURCES
 #     test/legion/compaction.cc
@@ -243,7 +233,6 @@ if(ENABLE_PARMETIS)
   cinch_add_unit(client_registration
     SOURCES
       test/client_registration.cc
-      data_client.cc
       ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
     DEFINES

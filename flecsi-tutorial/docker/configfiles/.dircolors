@@ -1,0 +1,221 @@
+# Configuration file for dircolors, a utility to help you set the
+# LS_COLORS environment variable used by GNU ls with the --color option.
+# Copyright (C) 1996, 1999-2008
+# Free Software Foundation, Inc.
+# Copying and distribution of this file, with or without modification,
+# are permitted provided the copyright notice and this notice are preserved.
+# The keywords COLOR, OPTIONS, and EIGHTBIT (honored by the
+# slackware version of dircolors) are recognized but ignored.
+# Below, there should be one TERM entry for each termtype that is colorizable
+TERM Eterm
+TERM ansi
+TERM color-xterm
+TERM con132x25
+TERM con132x30
+TERM con132x43
+TERM con132x60
+TERM con80x25
+TERM con80x28
+TERM con80x30
+TERM con80x43
+TERM con80x50
+TERM con80x60
+TERM cons25
+TERM console
+TERM cygwin
+TERM dtterm
+TERM eterm-color
+TERM gnome
+TERM gnome-256color
+TERM jfbterm
+TERM konsole
+TERM kterm
+TERM linux
+TERM linux-c
+TERM mach-color
+TERM mlterm
+TERM putty
+TERM rxvt
+TERM rxvt-cygwin
+TERM rxvt-cygwin-native
+TERM rxvt-unicode
+TERM screen
+TERM screen-256color
+TERM screen-bce
+TERM screen-w
+TERM screen.linux
+TERM vt100
+TERM xterm
+TERM xterm-16color
+TERM xterm-256color
+TERM xterm-88color
+TERM xterm-color
+TERM xterm-debian
+# Below are the color init strings for the basic file types. A color init
+# string consists of one or more of the following numeric codes:
+# Attribute codes:
+# 00=none 01=bold 04=underscore 05=blink 07=reverse 08=concealed
+# Text color codes:
+# 30=black 31=red 32=green 33=yellow 34=blue 35=magenta 36=cyan 37=white
+# Background color codes:
+# 40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white
+#NORMAL 00 # no color code at all
+#FILE 00 # regular file: use no color at all
+DIR 00;36 # directory
+LINK 01;36 # symbolic link. (If you set this to 'target' instead of a
+ # numerical value, the color is as for the file pointed to.)
+FIFO 40;33 # pipe
+SOCK 01;35 # socket
+DOOR 01;35 # door
+BLK 40;33;01 # block device driver
+CHR 40;33;01 # character device driver
+ORPHAN 40;31;01 # symlink to nonexistent file, or non-stat'able file
+SETUID 37;41 # file that is setuid (u+s)
+SETGID 30;43 # file that is setgid (g+s)
+STICKY_OTHER_WRITABLE 30;42 # dir that is sticky and other-writable (+t,o+w)
+OTHER_WRITABLE 34;42 # dir that is other-writable (o+w) and not sticky
+STICKY 37;44 # dir with the sticky bit set (+t) and not other-writable
+# This is for files with execute permission:
+EXEC 01;32
+# List any file extensions like '.gz' or '.tar' that you would like ls
+# to colorize below. Put the extension, a space, and the color init string.
+# (and any comments you want to add after a '#')
+# If you use DOS-style suffixes, you may want to uncomment the following:
+#.cmd 01;32 # executables (bright green)
+#.exe 01;32
+#.com 01;32
+#.btm 01;32
+#.bat 01;32
+# Or if you want to colorize scripts even if they do not have the
+# executable bit actually set.
+#.sh 01;32
+#.csh 01;32
+ # archives or compressed (bright red)
+.tar 00;32
+.tgz 00;32
+.arj 00;32
+.taz 00;32
+.lzh 00;32
+.lzma 00;32
+.zip 00;32
+.z 00;32
+.Z 00;32
+.dz 00;32
+.gz 00;32
+.bz2 00;32
+.bz 00;32
+.tbz2 00;32
+.tz 00;32
+.deb 00;32
+.rpm 00;32
+.jar 00;32
+.rar 00;32
+.ace 00;32
+.zoo 00;32
+.cpio 00;32
+.7z 00;32
+.rz 00;32
+# image formats
+.jpg 00;31
+.JPG 00;31
+.jpeg 00;31
+.JPEG 00;31
+.gif 00;31
+.GIF 00;31
+.bmp 00;31
+.BMP 00;31
+.pbm 00;31
+.PBM 00;31
+.pgm 00;31
+.PGM 00;31
+.ppm 00;31
+.PPM 00;31
+.tga 00;31
+.xbm 00;31
+.xpm 00;31
+.tif 00;31
+.TIF 00;31
+.tiff 00;31
+.TIFF 00;31
+.png 00;31
+.PNG 00;31
+.svg 00;31
+.svgz 00;31
+.mng 00;31
+.pcx 00;31
+.mov 00;31
+.MOV 00;31
+.mpg 00;31
+.MPG 00;31
+.mpeg 00;31
+.MPEG 00;31
+.m2v 00;31
+.mkv 00;31
+.ogm 00;31
+.mp4 00;31
+.m4v 00;31
+.mp4v 00;31
+.vob 00;31
+.qt 00;31
+.nuv 00;31
+.wmv 00;31
+.asf 00;31
+.rm 00;31
+.rmvb 00;31
+.flc 00;31
+.avi 00;31
+.fli 00;31
+.flv 00;31
+.gl 00;31
+.dl 00;31
+.xcf 00;31
+.xwd 00;31
+.yuv 00;31
+# audio formats
+.aac 00;36
+.au 00;36
+.flac 00;36
+.mid 00;36
+.midi 00;36
+.mka 00;36
+.mp3 00;36
+.mpc 00;36
+.ogg 00;36
+.ra 00;36
+.wav 00;36
+# source files
+.c 00;32
+.cl 00;32
+.cc 00;32
+.cpp 00;32
+.cxx 00;32
+.C 00;32
+.CC 00;32
+.java 00;32
+.f 00;32
+.F 00;32
+.f90 00;35
+.F90 00;35
+.h 00;33
+.hh 00;33
+.hxx 00;33
+.H 00;33
+.HH 00;33
+.log 01;33
+.mod 01;33
+.md ;32
+.tex ;32
+# object and assembly files
+.o 00;35
+.class 00;35
+.ll 00;35
+# data
+.dat 01;33
+.ska 01;35
+# application files
+.pdf 00;35
+.ppt 01;34
+.pptx 01;34
+.doc 01;34
+.docx 01;34
+.xls 01;34

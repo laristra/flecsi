@@ -51,9 +51,18 @@ task execution. The concept of privileges will be covered in detail in
 a later example.
 
 ```cpp
+#include <iostream>
+
+#include<flecsi-tutorial/specialization/mesh/mesh.h>
+#include<flecsi/data/data.h>
+#include<flecsi/execution/execution.h>
+
+using namespace flecsi;
+using namespace flecsi::tutorial;
+
 // This line is essentially just declaring a variable of type "mesh_t"
-// named "mesh" in the namespace "clients".
-flecsi_register_data_client(mesh_t, clients, mesh);
+// named "example_mesh" in the namespace "clients".
+flecsi_register_data_client(mesh_t, clients, example_mesh);
 
 namespace hydro {
 
@@ -85,7 +94,7 @@ void driver(int argc, char ** argv) {
   // During task execution, this handle will be mapped into the task's
   // memory space, at which point it will be accessible by the user.
 
-  auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
+  auto m = flecsi_get_client_handle(mesh_t, clients, example_mesh);
 
   // Task execution is as usual...
 
