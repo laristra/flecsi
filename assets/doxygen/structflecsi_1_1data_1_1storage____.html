@@ -44,6 +44,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -138,8 +139,8 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>client_entry_t</b> =
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a14bdb6113a6b53d6da560f2b5916e4a0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a14bdb6113a6b53d6da560f2b5916e4a0">register_field</a> (size_t client_key, size_t key, const field_registration_function_t &amp;callback)</td></tr>
-<tr class="separator:a14bdb6113a6b53d6da560f2b5916e4a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fe601de491af1f4ed07bc9a933fdc3c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a2fe601de491af1f4ed07bc9a933fdc3c">register_field</a> (size_t client_type_key, size_t key, const field_registration_function_t &amp;callback)</td></tr>
+<tr class="separator:a2fe601de491af1f4ed07bc9a933fdc3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5630a0198431f0b7403bd50cf1b5daaf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5630a0198431f0b7403bd50cf1b5daaf"></a>
 auto const &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>field_registry</b> () const </td></tr>
 <tr class="separator:a5630a0198431f0b7403bd50cf1b5daaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -148,9 +149,8 @@ auto const &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>client_re
 <tr class="separator:a1ec3a53bc5252bc64d209091ba38c242"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1bb2a36a31e20d58252e35990d78515f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a1bb2a36a31e20d58252e35990d78515f">register_client</a> (size_t type_hash, size_t key, const registration_function_t &amp;callback)</td></tr>
 <tr class="separator:a1bb2a36a31e20d58252e35990d78515f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e48601f1b1f4e1f32029af1870dfacb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e48601f1b1f4e1f32029af1870dfacb"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>register_client_fields</b> (size_t client_key)</td></tr>
-<tr class="separator:a6e48601f1b1f4e1f32029af1870dfacb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ffd570b48b9d3766a77c5e302303daa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a6ffd570b48b9d3766a77c5e302303daa">register_client_fields</a> (size_t type_key, size_t instance_key)</td></tr>
+<tr class="separator:a6ffd570b48b9d3766a77c5e302303daa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adde8cfc00d5106a3d892c69f00769871"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#adde8cfc00d5106a3d892c69f00769871">assert_client_exists</a> (size_t type_hash, size_t client_hash)</td></tr>
 <tr class="separator:adde8cfc00d5106a3d892c69f00769871"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d7100cc978a1a2fe0310377f0e501ed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5d7100cc978a1a2fe0310377f0e501ed"></a>
@@ -290,7 +290,7 @@ template&lt;typename STORAGE_POLICY &gt; </div>
 <p>Register a client with the runtime.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">client_key</td><td>The data client indentifier hash. </td></tr>
+    <tr><td class="paramname">type_hash</td><td>The data client indentifier hash. </td></tr>
     <tr><td class="paramname">key</td><td>The identifier hash. </td></tr>
     <tr><td class="paramname">callback</td><td>The registration call back function. </td></tr>
   </table>
@@ -299,7 +299,51 @@ template&lt;typename STORAGE_POLICY &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a14bdb6113a6b53d6da560f2b5916e4a0"></a>
+<a class="anchor" id="a6ffd570b48b9d3766a77c5e302303daa"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename STORAGE_POLICY &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; STORAGE_POLICY &gt;::register_client_fields </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>type_key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>instance_key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return a boolean indicating whether or not the given instance of a data client has had its internal fields registered with the data model.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type_key</td><td>The hash key for the data client type. </td></tr>
+    <tr><td class="paramname">instance_key</td><td>The hash key for the data client instance. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a2fe601de491af1f4ed07bc9a933fdc3c"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -312,7 +356,7 @@ template&lt;typename STORAGE_POLICY &gt; </div>
           <td class="memname">bool <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; STORAGE_POLICY &gt;::register_field </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>client_key</em>, </td>
+          <td class="paramname"><em>client_type_key</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -341,7 +385,7 @@ template&lt;typename STORAGE_POLICY &gt; </div>
 <p>Register a field with the runtime.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">client_key</td><td>The data client indentifier hash. </td></tr>
+    <tr><td class="paramname">client_type_key</td><td>The data client indentifier hash. </td></tr>
     <tr><td class="paramname">key</td><td>The identifier hash. </td></tr>
     <tr><td class="paramname">callback</td><td>The registration call back function. </td></tr>
   </table>

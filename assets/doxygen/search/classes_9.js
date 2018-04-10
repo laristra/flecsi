@@ -20,6 +20,8 @@ var searchData=
   ['legion_5fsparse_5fdata_5fhandle_5fpolicy_5ft',['legion_sparse_data_handle_policy_t',['../structflecsi_1_1legion__sparse__data__handle__policy__t.html',1,'flecsi']]],
   ['legion_5fstorage_5fpolicy_5ft',['legion_storage_policy_t',['../structflecsi_1_1data_1_1legion__storage__policy__t.html',1,'flecsi::data']]],
   ['legion_5ftopology_5fstorage_5fpolicy_5ft_5f_5f',['legion_topology_storage_policy_t__',['../structflecsi_1_1topology_1_1legion__topology__storage__policy__t____.html',1,'flecsi::topology']]],
+  ['lexical_5fcomparison',['lexical_comparison',['../structflecsi_1_1utils_1_1lexical__comparison.html',1,'flecsi::utils']]],
+  ['lexical_5fcomparison_3c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_20_3e',['lexical_comparison&lt; std::tuple&lt; Args... &gt; &gt;',['../structflecsi_1_1utils_1_1lexical__comparison_3_01std_1_1tuple_3_01Args_8_8_8_01_4_01_4.html',1,'flecsi::utils']]],
   ['local_5findex_5fspace_5fdata_5ft',['local_index_space_data_t',['../structflecsi_1_1execution_1_1hpx__context__policy__t_1_1local__index__space__data__t.html',1,'flecsi::execution::hpx_context_policy_t']]],
   ['log_5fmessage_5ft',['log_message_t',['../structcinch_1_1log__message__t.html',1,'cinch']]]
 ];

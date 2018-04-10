@@ -80,7 +80,7 @@ var searchData=
   ['coloring_5fmap_5ft',['coloring_map_t',['../structflecsi_1_1tutorial_1_1coloring__map__t.html',1,'flecsi::tutorial']]],
   ['coloring_5fmap_5ft',['coloring_map_t',['../structflecsi_1_1execution_1_1coloring__map__t.html',1,'flecsi::execution']]],
   ['coloring_5ftypes_2eh',['coloring_types.h',['../coloring__types_8h.html',1,'']]],
-  ['colors',['colors',['../structflecsi_1_1execution_1_1context____.html#a664a1ba13104565b288d79633d28bd4b',1,'flecsi::execution::context__::colors()'],['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a42689037ff2cfc11b59ef1930f9a3f52',1,'flecsi::execution::legion_context_policy_t::colors()']]],
+  ['colors',['colors',['../structflecsi_1_1execution_1_1context____.html#a664a1ba13104565b288d79633d28bd4b',1,'flecsi::execution::context__::colors()'],['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a42689037ff2cfc11b59ef1930f9a3f52',1,'flecsi::execution::legion_context_policy_t::colors()'],['../structflecsi_1_1execution_1_1mpi__context__policy__t.html#a27c2beae2d809a3d8a7fbf3fade461b8',1,'flecsi::execution::mpi_context_policy_t::colors()']]],
   ['commit_5finfo_5ft',['commit_info_t',['../structflecsi_1_1mutator__handle__base_____1_1commit__info__t.html',1,'flecsi::mutator_handle_base__']]],
   ['common_2ecc',['common.cc',['../common_8cc.html',1,'']]],
   ['common_2eh',['common.h',['../common_8h.html',1,'']]],

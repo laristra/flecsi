@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['index_5fspace',['index_space',['../structflecsi_1_1coloring_1_1adjacency__info__t.html#af1beff6d2eff14fa31027bfb665bce03',1,'flecsi::coloring::adjacency_info_t']]],
-  ['is_5fcontainer_5fv',['is_container_v',['../type__traits_8h.html#a077e0ede9320f1d016cd146d92a65f20',1,'flecsi::utils']]],
-  ['is_5fiterative_5fcontainer_5fv',['is_iterative_container_v',['../type__traits_8h.html#aedf45d2a3730a028da14c03208e95bff',1,'flecsi::utils']]],
-  ['is_5fminimal_5fcontainer_5fv',['is_minimal_container_v',['../type__traits_8h.html#afb44a91f49b38ae89a7470c656a0b2a3',1,'flecsi::utils']]]
+  ['ghost',['ghost',['../structflecsi_1_1coloring_1_1box__coloring__info__t.html#a10089cf3960a114f831ffc872a9689fd',1,'flecsi::coloring::box_coloring_info_t::ghost()'],['../structflecsi_1_1coloring_1_1coloring__info__t.html#a9314f6dd6fc12275a74bbac36666598e',1,'flecsi::coloring::coloring_info_t::ghost()']]],
+  ['ghost_5fowners',['ghost_owners',['../structflecsi_1_1coloring_1_1coloring__info__t.html#a4942c1c49b6494f7df711875edfedd8b',1,'flecsi::coloring::coloring_info_t']]]
 ];
