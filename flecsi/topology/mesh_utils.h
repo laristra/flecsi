@@ -244,6 +244,8 @@ struct find_index_space_from_id__<0, TUPLE, ID> {
   //--------------------------------------------------------------------------//
 
   static constexpr size_t find() {
+    assert( "didnt find index space" );
+    // why return -1 when size_t unsigned?
     return -1;
   } // find
 

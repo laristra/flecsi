@@ -807,6 +807,17 @@ public:
   const auto& subentities() const{
     return get_index_subspace<INDEX_SUBSPACE>();
   }
+  
+  //--------------------------------------------------------------------------//
+  //! Get the subentities of the specified index subspace
+  //!
+  //! @tparam INDEX_SUBSPACE index subspace id
+  //--------------------------------------------------------------------------//
+  template<size_t INDEX_SUBSPACE>
+  auto num_subentities() const {
+    return base_t::ms_->index_subspaces[INDEX_SUBSPACE].size();
+  }
+
 
   //--------------------------------------------------------------------------//
   //! Debug method to dump the connectivity of the mesh over all domains and
@@ -1030,6 +1041,7 @@ public:
       find_index_space_from_id__<std::tuple_size<entity_types_t>::value, 
         entity_types_t, index_space_t::value>::find();
 
+    // never gonna happen since index is a size_t, and cant be negative
     static_assert(index != -1, "invalid index space");
 
     using entry_t = typename std::tuple_element<index, entity_types_t>::type;
