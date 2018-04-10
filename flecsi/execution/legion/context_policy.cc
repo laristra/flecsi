@@ -44,7 +44,7 @@ int legion_context_policy_t::initialize(int argc, char **argv) {
   {
     Legion::TaskVariantRegistrar registrar(TOP_LEVEL_TASK_ID, "runtime_driver");
     registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
-    registrar.set_inner();
+		registrar.set_inner();
     Runtime::preregister_task_variant<runtime_driver>(registrar,
                                                       "runtime_driver");
   }
@@ -77,6 +77,7 @@ int legion_context_policy_t::initialize(int argc, char **argv) {
 
   Runtime::register_reduction_op<MaxReductionOp>(MaxReductionOp::redop_id);
   Runtime::register_reduction_op<MinReductionOp>(MinReductionOp::redop_id);
+	Runtime::register_reduction_op<MinReductionPointOp>(MinReductionPointOp::redop_id);
 
   // Start the Legion runtime
   Runtime::start(argc, argv, true);

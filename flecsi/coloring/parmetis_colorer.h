@@ -236,6 +236,46 @@ struct parmetis_colorer_t : public colorer_t {
 
     return primary;
   } // color
+  
+	std::vector<int> parmetis_color(const dcrs_t & dcrs) {
+    int size;
+    int rank;
+
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+		
+		idx_t wgtflag = 0;
+    idx_t numflag = 0;
+    idx_t ncon = 1;
+    std::vector<real_t> tpwgts(size);
+
+    real_t sum = 0.0;
+    for (size_t i(0); i < tpwgts.size(); ++i) {
+      if (i == (tpwgts.size() - 1)) {
+        tpwgts[i] = 1.0 - sum;
+      } else {
+        tpwgts[i] = 1.0 / size;
+        sum += tpwgts[i];
+      } // if
+    } // for
+		
+		real_t ubvec = 1.05;		
+    idx_t options = 0;
+    idx_t edgecut;
+    MPI_Comm comm = MPI_COMM_WORLD;
+    std::vector<idx_t> part(dcrs.size(), std::numeric_limits<idx_t>::max());
+		
+    // Get the dCRS information using ParMETIS types.
+    std::vector<idx_t> vtxdist = dcrs.distribution_as<idx_t>();
+    std::vector<idx_t> xadj = dcrs.offsets_as<idx_t>();
+    std::vector<idx_t> adjncy = dcrs.indices_as<idx_t>();
+
+    // Actual call to ParMETIS.
+    int result = ParMETIS_V3_PartKway(
+        &vtxdist[0], &xadj[0], &adjncy[0], nullptr, nullptr, &wgtflag, &numflag,
+        &ncon, &size, &tpwgts[0], &ubvec, &options, &edgecut, &part[0], &comm);
+		return part;
+	}// parmetis_color
 
 }; // struct parmetis_colorer_t
 
