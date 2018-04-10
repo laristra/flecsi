@@ -128,7 +128,11 @@ if(ENABLE_FLECSIT)
 
     find_package(PythonInterp 2.7 REQUIRED)
 
-    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(${PYTHON_VERSION_MAJOR} LESS 3)
+      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    else()
+      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print(cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}'))" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    endif()
 
     install(DIRECTORY ${CMAKE_SOURCE_DIR}/tools/flecsit/flecsit
         DESTINATION ${PYTHON_INSTDIR}
