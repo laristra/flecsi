@@ -276,6 +276,9 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <tr class="memitem:ab20a4e34260888264fbc2c2b4355fa06"><td class="memTemplParams" colspan="2">template&lt;size_t INDEX_SUBSPACE&gt; </td></tr>
 <tr class="memitem:ab20a4e34260888264fbc2c2b4355fa06"><td class="memTemplItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology____.html#ab20a4e34260888264fbc2c2b4355fa06">subentities</a> () const </td></tr>
 <tr class="separator:ab20a4e34260888264fbc2c2b4355fa06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabd3b182e29c484991a60d9f3afe55dc"><td class="memTemplParams" colspan="2">template&lt;size_t INDEX_SUBSPACE&gt; </td></tr>
+<tr class="memitem:aabd3b182e29c484991a60d9f3afe55dc"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology____.html#aabd3b182e29c484991a60d9f3afe55dc">num_subentities</a> () const </td></tr>
+<tr class="separator:aabd3b182e29c484991a60d9f3afe55dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a253f4690c27e640557d08d33b65b9669"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology____.html#a253f4690c27e640557d08d33b65b9669">dump</a> (std::ostream &amp;stream)</td></tr>
 <tr class="separator:a253f4690c27e640557d08d33b65b9669"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6badc8c703d5111078cde487c33c509"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology____.html#ae6badc8c703d5111078cde487c33c509">dump</a> ()</td></tr>
@@ -1881,6 +1884,40 @@ template&lt;size_t DIM, size_t DOM = 0&gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">partition</td><td>e.g. all, owned, shared, etc. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aabd3b182e29c484991a60d9f3afe55dc"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MESH_TYPE&gt; </div>
+<div class="memtemplate">
+template&lt;size_t INDEX_SUBSPACE&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto <a class="el" href="classflecsi_1_1topology_1_1mesh__topology____.html">flecsi::topology::mesh_topology__</a>&lt; MESH_TYPE &gt;::num_subentities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get the subentities of the specified index subspace</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">INDEX_SUBSPACE</td><td>index subspace id </td></tr>
   </table>
   </dd>
 </dl>
