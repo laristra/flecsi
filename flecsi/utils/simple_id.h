@@ -43,8 +43,8 @@ class are_integral<T, Ts...>
 };
 
 //! Equal to true if Ts are all integral types.
-//template <typename... Ts>
-//constexpr bool are_integral_v = are_integral<Ts...>::value;
+template <typename... Ts>
+constexpr bool are_integral_v = are_integral<Ts...>::value;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Comparison function for two tuples
