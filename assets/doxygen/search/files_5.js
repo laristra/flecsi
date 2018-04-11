@@ -2,8 +2,8 @@ var searchData=
 [
   ['factory_2eh',['factory.h',['../flecsi_2utils_2factory_8h.html',1,'']]],
   ['field_2eh',['field.h',['../field_8h.html',1,'']]],
-  ['finalize_5fhandles_2eh',['finalize_handles.h',['../legion_2finalize__handles_8h.html',1,'']]],
   ['finalize_5fhandles_2eh',['finalize_handles.h',['../mpi_2finalize__handles_8h.html',1,'']]],
+  ['finalize_5fhandles_2eh',['finalize_handles.h',['../legion_2finalize__handles_8h.html',1,'']]],
   ['flecsi_5fruntime_5fcontext_5fpolicy_2eh',['flecsi_runtime_context_policy.h',['../flecsi__runtime__context__policy_8h.html',1,'']]],
   ['flecsi_5fruntime_5fdata_5fclient_5fhandle_5fpolicy_2eh',['flecsi_runtime_data_client_handle_policy.h',['../flecsi__runtime__data__client__handle__policy_8h.html',1,'']]],
   ['flecsi_5fruntime_5fdata_5fhandle_5fpolicy_2eh',['flecsi_runtime_data_handle_policy.h',['../flecsi__runtime__data__handle__policy_8h.html',1,'']]],
@@ -16,5 +16,6 @@ var searchData=
   ['function_2eh',['function.h',['../function_8h.html',1,'']]],
   ['function_5fhandle_2eh',['function_handle.h',['../function__handle_8h.html',1,'']]],
   ['future_2eh',['future.h',['../mpi_2future_8h.html',1,'']]],
-  ['future_2eh',['future.h',['../legion_2future_8h.html',1,'']]]
+  ['future_2eh',['future.h',['../legion_2future_8h.html',1,'']]],
+  ['future_2eh',['future.h',['../hpx_2future_8h.html',1,'']]]
 ];

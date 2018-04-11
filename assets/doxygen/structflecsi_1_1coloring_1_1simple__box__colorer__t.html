@@ -139,12 +139,22 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae3c6c3d67fa453abcc09b361fdea3c97"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae3c6c3d67fa453abcc09b361fdea3c97"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>create_primary_box</b> (<a class="el" href="structflecsi_1_1coloring_1_1box__t.html">box_t</a>&lt; D &gt; &amp;domain, size_t ncolors[D], size_t idx[D])</td></tr>
 <tr class="separator:ae3c6c3d67fa453abcc09b361fdea3c97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ad91775071e55ac9445172f5313aac4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8ad91775071e55ac9445172f5313aac4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>create_exclusive_and_shared_boxes</b> (<a class="el" href="structflecsi_1_1coloring_1_1box__coloring__info__t.html">box_coloring_info_t</a>&lt; D &gt; &amp;colbox, size_t ncolors[D], size_t idx[D], size_t rank)</td></tr>
-<tr class="separator:a8ad91775071e55ac9445172f5313aac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af63a6d72dfe7c872d928b34c1d6cdc79"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af63a6d72dfe7c872d928b34c1d6cdc79"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>create_ghost_boxes</b> (<a class="el" href="structflecsi_1_1coloring_1_1box__coloring__info__t.html">box_coloring_info_t</a>&lt; D &gt; &amp;colbox, size_t ncolors[D], size_t idx[D])</td></tr>
-<tr class="separator:af63a6d72dfe7c872d928b34c1d6cdc79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa344fde64510fc535b53ded6fc71ebd0"><td class="memTemplParams" colspan="2"><a class="anchor" id="aa344fde64510fc535b53ded6fc71ebd0"></a>
+template&lt;size_t D_ = D&gt; </td></tr>
+<tr class="memitem:aa344fde64510fc535b53ded6fc71ebd0"><td class="memTemplItemLeft" align="right" valign="top">std::enable_if&lt; D_==2 &gt;::type&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_exclusive_and_shared_boxes</b> (<a class="el" href="structflecsi_1_1coloring_1_1box__coloring__info__t.html">box_coloring_info_t</a>&lt; D &gt; &amp;colbox, size_t ncolors[D], size_t idx[D], size_t rank)</td></tr>
+<tr class="separator:aa344fde64510fc535b53ded6fc71ebd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7deedb4a0af66efe130062e4e8b064c3"><td class="memTemplParams" colspan="2"><a class="anchor" id="a7deedb4a0af66efe130062e4e8b064c3"></a>
+template&lt;size_t D_ = D&gt; </td></tr>
+<tr class="memitem:a7deedb4a0af66efe130062e4e8b064c3"><td class="memTemplItemLeft" align="right" valign="top">std::enable_if&lt; D_==3 &gt;::type&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_exclusive_and_shared_boxes</b> (<a class="el" href="structflecsi_1_1coloring_1_1box__coloring__info__t.html">box_coloring_info_t</a>&lt; D &gt; &amp;colbox, size_t ncolors[D], size_t idx[D], size_t rank)</td></tr>
+<tr class="separator:a7deedb4a0af66efe130062e4e8b064c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5296419b77fe221f6db8137dbd1c870"><td class="memTemplParams" colspan="2"><a class="anchor" id="af5296419b77fe221f6db8137dbd1c870"></a>
+template&lt;size_t D_ = D&gt; </td></tr>
+<tr class="memitem:af5296419b77fe221f6db8137dbd1c870"><td class="memTemplItemLeft" align="right" valign="top">std::enable_if&lt; D_==2 &gt;::type&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_ghost_boxes</b> (<a class="el" href="structflecsi_1_1coloring_1_1box__coloring__info__t.html">box_coloring_info_t</a>&lt; D &gt; &amp;colbox, size_t ncolors[D], size_t idx[D])</td></tr>
+<tr class="separator:af5296419b77fe221f6db8137dbd1c870"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaffbf08ced8da9b4a431143f333e6964"><td class="memTemplParams" colspan="2"><a class="anchor" id="aaffbf08ced8da9b4a431143f333e6964"></a>
+template&lt;size_t D_ = D&gt; </td></tr>
+<tr class="memitem:aaffbf08ced8da9b4a431143f333e6964"><td class="memTemplItemLeft" align="right" valign="top">std::enable_if&lt; D_==3 &gt;::type&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_ghost_boxes</b> (<a class="el" href="structflecsi_1_1coloring_1_1box__coloring__info__t.html">box_coloring_info_t</a>&lt; D &gt; &amp;colbox, size_t ncolors[D], size_t idx[D])</td></tr>
+<tr class="separator:aaffbf08ced8da9b4a431143f333e6964"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a993588a0a58a70e9242fbc75e3bc3aeb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a993588a0a58a70e9242fbc75e3bc3aeb"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>create_domain_halo_boxes</b> (<a class="el" href="structflecsi_1_1coloring_1_1box__coloring__info__t.html">box_coloring_info_t</a>&lt; D &gt; &amp;colbox)</td></tr>
 <tr class="separator:a993588a0a58a70e9242fbc75e3bc3aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
