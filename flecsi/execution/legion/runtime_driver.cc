@@ -269,6 +269,7 @@ runtime_driver(
   
   // Must epoch launch
   Legion::MustEpochLauncher must_epoch_launcher;
+  must_epoch_launcher.launch_domain = data.color_domain();
 
   std::map<size_t,Legion::Serializer> args_serializers;
 
