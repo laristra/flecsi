@@ -257,6 +257,34 @@ namespace execution {
                                    adj.num_indices,
                                    _read);
       }
+      
+      for(size_t i{0}; i<h.num_index_subspaces; ++i) {
+        // get subspace info
+        auto & iss = h.handle_index_subspaces[i];
+				auto iss_info = (context_.index_subspace_info()).at(iss.index_subspace);
+        // the num indices is the capacity ( 
+				auto num_indices = iss_info.capacity;
+        // register the field
+        auto& registered_field_data = context_.registered_field_data();
+        auto fieldDataIter = registered_field_data.find(iss.index_fid);
+        if (fieldDataIter == registered_field_data.end()) {
+          auto size = sizeof(utils::id_t) * num_indices;
+          execution::context_t::instance().register_field_data(
+						iss.index_fid, size);
+        }
+        // assign the storage to the buffer
+        iss.indices_buf =
+          reinterpret_cast<size_t *>(registered_field_data[iss.index_fid].data());
+      	// now initialize the index subspace
+        storage->init_index_subspace(
+        	iss.index_space,
+        	iss.index_subspace,
+        	iss.domain,
+        	iss.dim,
+        	reinterpret_cast<utils::id_t *>(iss.indices_buf),
+       		num_indices,
+        	_read); 
+      }
 
       if(!_read){
         h.initialize_storage();
