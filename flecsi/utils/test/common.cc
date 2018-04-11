@@ -181,6 +181,8 @@ TEST(common, all) {
 
 #ifdef __GNUG__
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.gnug"));
+#elif defined(_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.msvc"));
 #else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed"));
 #endif

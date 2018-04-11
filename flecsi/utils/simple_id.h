@@ -52,48 +52,48 @@ constexpr bool are_integral_v = are_integral<Ts...>::value;
 /// \param[in] a,b  The two tuples to compare
 /// \return true if a < b
 /// \tparam I the tuple index to check
-/// \tparam TupleA,TupleB  The types of the two tuples (dont have to match) 
+/// \tparam TupleA,TupleB  The types of the two tuples (dont have to match)
 ////////////////////////////////////////////////////////////////////////////////
 
 // This function terminates the chain
 template<
-	std::size_t I = 0,
-	typename TupleA,
-	typename TupleB,
-	std::enable_if_t<
-		std::tuple_size<TupleA>::value == std::tuple_size<TupleB>::value &&
-		I == std::tuple_size<TupleA>::value - 1
-	 >* = nullptr
+  std::size_t I = 0,
+  typename TupleA,
+  typename TupleB,
+  std::enable_if_t<
+    std::tuple_size<TupleA>::value == std::tuple_size<TupleB>::value &&
+    I == std::tuple_size<TupleA>::value - 1
+   >* = nullptr
 >
 bool less_than(
-	const TupleA & a,
- 	const TupleB & b
+  const TupleA & a,
+  const TupleB & b
  )
-{	
-	return ( std::get<I>(a) < std::get<I>(b) );
+{
+  return ( std::get<I>(a) < std::get<I>(b) );
 }
 
 // this function is the main one
 template<
-	std::size_t I = 0,
-	typename TupleA,
-	typename TupleB,
-	typename = std::enable_if_t<
-		std::tuple_size<TupleA>::value == std::tuple_size<TupleB>::value &&
-		I < std::tuple_size<TupleA>::value - 1 &&
-		std::tuple_size<TupleA>::value >= 2
-	 >
+  std::size_t I = 0,
+  typename TupleA,
+  typename TupleB,
+  typename = std::enable_if_t<
+    std::tuple_size<TupleA>::value == std::tuple_size<TupleB>::value &&
+    (I < std::tuple_size<TupleA>::value - 1) &&
+    std::tuple_size<TupleA>::value >= 2
+   >
 >
 bool less_than(
-	const TupleA & a,
- 	const TupleB & b
+  const TupleA & a,
+  const TupleB & b
  )
-{	
-	constexpr auto N = std::tuple_size<TupleA>::value;
-	if ( std::get<I>(a) == std::get<I>(b) ) 
-		return less_than<I+1>( a, b );
-	else
-		return ( std::get<I>(a) < std::get<I>(b) );
+{
+  constexpr auto N = std::tuple_size<TupleA>::value;
+  if ( std::get<I>(a) == std::get<I>(b) )
+    return less_than<I+1>( a, b );
+  else
+    return ( std::get<I>(a) < std::get<I>(b) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -101,49 +101,49 @@ bool less_than(
 /// \param[in] a,b  The two tuples to compare
 /// \return true if a = b
 /// \tparam I the tuple index to check
-/// \tparam TupleA,TupleB  The types of the two tuples (dont have to match) 
+/// \tparam TupleA,TupleB  The types of the two tuples (dont have to match)
 ////////////////////////////////////////////////////////////////////////////////
 
 // this one terminates the chain
 template<
-	std::size_t I = 0,
-	typename TupleA,
-	typename TupleB,
-	std::enable_if_t<
-		std::tuple_size<TupleA>::value == std::tuple_size<TupleB>::value &&
-		I == std::tuple_size<TupleA>::value - 1
-	 >* = nullptr
+  std::size_t I = 0,
+  typename TupleA,
+  typename TupleB,
+  std::enable_if_t<
+    std::tuple_size<TupleA>::value == std::tuple_size<TupleB>::value &&
+    I == std::tuple_size<TupleA>::value - 1
+   >* = nullptr
 >
 bool equal_to(
-	const TupleA & a,
- 	const TupleB & b
+  const TupleA & a,
+  const TupleB & b
  )
-{	
-	return ( std::get<I>(a) == std::get<I>(b) );
+{
+  return ( std::get<I>(a) == std::get<I>(b) );
 }
 
 // this is the main routine
 template<
-	std::size_t I = 0,
-	typename TupleA,
-	typename TupleB,
-	typename = std::enable_if_t<
-		std::tuple_size<TupleA>::value == std::tuple_size<TupleB>::value &&
-		I < std::tuple_size<TupleA>::value - 1 &&
-		std::tuple_size<TupleA>::value >= 2
-	 >
+  std::size_t I = 0,
+  typename TupleA,
+  typename TupleB,
+  typename = std::enable_if_t<
+    std::tuple_size<TupleA>::value == std::tuple_size<TupleB>::value &&
+    (I < std::tuple_size<TupleA>::value - 1) &&
+    std::tuple_size<TupleA>::value >= 2
+   >
 >
 bool equal_to(
-	const TupleA & a,
- 	const TupleB & b
+  const TupleA & a,
+  const TupleB & b
  )
-{	
-	constexpr auto N = std::tuple_size<TupleA>::value;
-	auto test = ( std::get<I>(a) < std::get<I>(b) );
-	if ( std::get<I>(a) != std::get<I>(b) ) 
-		return false;
-	else
-		return equal_to<I+1>( a, b );
+{
+  constexpr auto N = std::tuple_size<TupleA>::value;
+  auto test = ( std::get<I>(a) < std::get<I>(b) );
+  if ( std::get<I>(a) != std::get<I>(b) )
+    return false;
+  else
+    return equal_to<I+1>( a, b );
 }
 
 
@@ -157,29 +157,29 @@ bool equal_to(
 
 // this routine terminates the chain
 template<
-	std::size_t I = 0,
-	typename TupleA,
-	std::enable_if_t< I == std::tuple_size<TupleA>::value - 1 >* = nullptr
+  std::size_t I = 0,
+  typename TupleA,
+  std::enable_if_t< I == std::tuple_size<TupleA>::value - 1 >* = nullptr
 >
 std::ostream & print( std::ostream & output, const TupleA & a, const char * )
 {
-	output << std::get<I>(a);
-	return output;
+  output << std::get<I>(a);
+  return output;
 }
 
 // the main calling routine
 template<
-	std::size_t I = 0,
-	typename TupleA,
-	typename = std::enable_if_t<
-		I < std::tuple_size<TupleA>::value - 1 &&
-		std::tuple_size<TupleA>::value >= 2	
-	 >
+  std::size_t I = 0,
+  typename TupleA,
+  typename = std::enable_if_t<
+    (I < std::tuple_size<TupleA>::value - 1) &&
+    std::tuple_size<TupleA>::value >= 2
+   >
 >
 std::ostream & print( std::ostream & output, const TupleA & a, const char * sep )
-{	
-	output << std::get<I>(a) << sep;
-	return print<I+1>( output, a, sep );
+{
+  output << std::get<I>(a) << sep;
+  return print<I+1>( output, a, sep );
 }
 
 
@@ -202,19 +202,19 @@ struct lexical_comparison< std::tuple<Args...> >
 {
   using value_type = typename std::tuple<Args...>;
   bool operator()(
-		const value_type & a,
-	 	const value_type & b
-	) const
- 	{
-   	return detail::less_than( a, b );
- 	}
+    const value_type & a,
+    const value_type & b
+  ) const
+  {
+    return detail::less_than( a, b );
+  }
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief A simple id type that can be constructed from multiple indexes.
 ///
-/// Working towards simplifying/generalizing the id_t type that is used 
+/// Working towards simplifying/generalizing the id_t type that is used
 /// throughout flecsi.  This one is currently only used for the intermediate
 /// binding mappings.
 ///
@@ -237,13 +237,13 @@ class simple_id_t< std::tuple<Args...>, Compare< std::tuple<Args...> > >
   //===========================================================================
 
   //! The underlying data type
-	using value_type = std::tuple< Args... >;
+  using value_type = std::tuple< Args... >;
 
   //! the tuple to store the data
   value_type data_;
 
-	//! the length of the tuple
-	static constexpr auto length_ = sizeof...(Args);
+  //! the length of the tuple
+  static constexpr auto length_ = sizeof...(Args);
 
 
 public:
@@ -253,64 +253,64 @@ public:
   //===========================================================================
 
   //! force the default constructor
-	simple_id_t() = default;	
+  simple_id_t() = default;
 
   //! force the default copy constructor
-	simple_id_t( const simple_id_t & ) = default;	
+  simple_id_t( const simple_id_t & ) = default;
 
   //! constructor using tuple
   //! \param [in] data  The tuple to copy
-	simple_id_t( const value_type & data ) : data_{data}
-	{}
-	
+  simple_id_t( const value_type & data ) : data_{data}
+  {}
+
   //! In place constructor
   //! \param [in] ts  The different elements of the tuple
   //! \tparam Ts  The different typle types (they can differ from original
   //!             data type)
-	template<
-	 	typename...Ts,
-		typename = std::enable_if_t<
-	 		sizeof...(Ts) == sizeof...(Args)
-		>
-	>
+  template<
+    typename...Ts,
+    typename = std::enable_if_t<
+      sizeof...(Ts) == sizeof...(Args)
+    >
+  >
   simple_id_t( Ts&&... ts ) :
- 		data_{ std::make_tuple( std::forward<Ts>(ts)... ) }
+    data_{ std::make_tuple( std::forward<Ts>(ts)... ) }
   { }
 
   //! Return the size of the tuple
-	static constexpr auto size() noexcept
-	{ return length_; }
+  static constexpr auto size() noexcept
+  { return length_; }
 
   //! The output operator
   //! \param[in,out] output  the output stream
   //! \param[in] id  the id to print
   //! \return a reference to the output stream
   friend
- 	std::ostream &operator<<( std::ostream &output, const simple_id_t & id )
- 	{
-		detail::print( output, id.data_, ", " );
-    return output;            
+  std::ostream &operator<<( std::ostream &output, const simple_id_t & id )
+  {
+    detail::print( output, id.data_, ", " );
+    return output;
   }
 
   //! Check for equality
   //! \param [in] id  the id to test agains this object
   //! \return true if this=id
   bool operator==(
-	 	const simple_id_t & id
-	) const
- 	{
-   	return detail::equal_to( data_, id.data_ );
- 	}
+    const simple_id_t & id
+  ) const
+  {
+    return detail::equal_to( data_, id.data_ );
+  }
 
   //! Check for equality
   //! \param [in] id  the id to test agains this object
   //! \return true if this=id
   bool operator<(
-	 	const simple_id_t & id
-	) const
- 	{
-   	return Compare<value_type>{}( data_, id.data_ );
- 	}
+    const simple_id_t & id
+  ) const
+  {
+    return Compare<value_type>{}( data_, id.data_ );
+  }
 
 
 }; // simple_id

@@ -226,8 +226,6 @@ set(data_SOURCES
 
 #endif()
 
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-
 if(ENABLE_PARMETIS)
 
   cinch_add_unit(client_registration
@@ -243,8 +241,8 @@ if(ENABLE_PARMETIS)
     POLICY ${UNIT_POLICY}
     THREADS 2
     NOCI
+    FOLDER "Tests/Data"
     )
 
 endif()
 
-endif()#hpx
