@@ -312,6 +312,8 @@ runtime_driver(
 
   auto& ispace_dmap = context_.index_space_data_map();
 
+  Legion::Logger log_runtime("runtime");
+
   //fill ispace_dmap with logical partitions
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
@@ -329,9 +331,7 @@ runtime_driver(
     {
       for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           flecsi_ispace.logical_region.get_index_space())); itr; itr++) {
-        std::cout << "flecsi_space " << idx_space << " entire "
-            << itr.p[0] << "," << itr.p[1] << std::endl;
-
+        log_runtime.print("flecsi_space %d entire %d,%d",idx_space,itr.p[0],itr.p[1]);
       }
     }
 
@@ -345,8 +345,8 @@ runtime_driver(
             ctx, sub_lp, color);
         for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           sub_lr.get_index_space())); itr; itr++) {
-          std::cout << "flecsi_space " << idx_space << " color_partition "
-              << color << " " << itr.p[0] << "," << itr.p[1] << std::endl;
+          log_runtime.print("flecsi_space %d color_partition %d %d,%d",idx_space,color,
+              itr.p[0],itr.p[1]);
 
         } //itr
       } // color
@@ -363,8 +363,8 @@ runtime_driver(
             ctx, sub_lp, color);
         for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           sub_lr.get_index_space())); itr; itr++) {
-          std::cout << "flecsi_space " << idx_space << " primary_lp "
-              << color << " " << itr.p[0] << "," << itr.p[1] << std::endl;
+          log_runtime.print("flecsi_space %d primary_lp %d %d,%d",idx_space,color,
+              itr.p[0],itr.p[1]);
 
         } //itr
       } // color
@@ -380,8 +380,8 @@ runtime_driver(
             ctx, sub_lp, color);
         for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           sub_lr.get_index_space())); itr; itr++) {
-          std::cout << "flecsi_space " << idx_space << " exclusive_lp "
-              << color << " " << itr.p[0] << "," << itr.p[1] << std::endl;
+          log_runtime.print("flecsi_space %d exclusive_lp %d %d,%d",idx_space,color,
+              itr.p[0],itr.p[1]);
 
         } //itr
       } // color
@@ -397,8 +397,8 @@ runtime_driver(
             ctx, sub_lp, color);
         for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           sub_lr.get_index_space())); itr; itr++) {
-          std::cout << "flecsi_space " << idx_space << " shared_lp "
-              << color << " " << itr.p[0] << "," << itr.p[1] << std::endl;
+          log_runtime.print("flecsi_space %d shared_lp %d %d,%d",idx_space,color,
+              itr.p[0],itr.p[1]);
 
         } //itr
       } // color
@@ -414,8 +414,8 @@ runtime_driver(
             ctx, sub_lp, color);
         for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           sub_lr.get_index_space())); itr; itr++) {
-          std::cout << "flecsi_space " << idx_space << " ghost_lp "
-              << color << " " << itr.p[0] << "," << itr.p[1] << std::endl;
+          log_runtime.print("flecsi_space %d ghost_lp %d %d,%d",idx_space,color,
+              itr.p[0],itr.p[1]);
 
         } //itr
       } // color
@@ -442,8 +442,8 @@ runtime_driver(
             ctx, sub_lp, color);
         for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           sub_lr.get_index_space())); itr; itr++) {
-          std::cout << "flecsi_space " << idx_space << " ghost_owners_lp "
-              << color << " " << itr.p[0] << "," << itr.p[1] << std::endl;
+          log_runtime.print("flecsi_space %d ghost_owners_lp %d %d,%d",idx_space,color,
+              itr.p[0],itr.p[1]);
 
         } //itr
       } // color
