@@ -193,8 +193,8 @@ struct legion_execution_policy_t {
           }
 
         Legion::MustEpochLauncher must_epoch_launcher;
-        //must_epoch_launcher.launch_domain =
-        //    Legion::Domain::from_rect<1>(context_.all_processes());
+        must_epoch_launcher.launch_domain =
+            Legion::Domain::from_rect<1>(context_.all_processes());
         must_epoch_launcher.add_index_task(launcher);
         auto future = legion_runtime->execute_must_epoch(
           legion_context, must_epoch_launcher);
@@ -266,7 +266,7 @@ struct legion_execution_policy_t {
           if (redop_id == 0) {
             Legion::MustEpochLauncher must_epoch_launcher;
             must_epoch_launcher.add_index_task(index_task_launcher);
-            //must_epoch_launcher.launch_domain = launch_domain;
+            must_epoch_launcher.launch_domain = launch_domain;
             future_map = legion_runtime->execute_must_epoch(legion_context,
                 must_epoch_launcher);
           }

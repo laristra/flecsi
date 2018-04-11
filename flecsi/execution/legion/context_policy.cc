@@ -45,7 +45,7 @@ int legion_context_policy_t::initialize(int argc, char **argv) {
     Legion::TaskVariantRegistrar registrar(TOP_LEVEL_TASK_ID, "runtime_driver");
     registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
     registrar.set_inner();
-    //registrar.set_replicable();
+    registrar.set_replicable();
     Runtime::preregister_task_variant<runtime_driver>(
         registrar, "runtime_driver");
   }
@@ -123,8 +123,8 @@ void legion_context_policy_t::unset_call_mpi(
       Legion::TaskArgument(NULL, 0), arg_map);
 
   Legion::MustEpochLauncher must_epoch_launcher;
-  //must_epoch_launcher.launch_domain =
-  //    Legion::Domain::from_rect<1>(context_t::instance().all_processes());
+  must_epoch_launcher.launch_domain =
+      Legion::Domain::from_rect<1>(context_t::instance().all_processes());
   must_epoch_launcher.add_index_task(launcher);
   auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
   fm.wait_all_results(true);
@@ -168,8 +168,8 @@ void legion_context_policy_t::handoff_to_mpi(
       Legion::TaskArgument(NULL, 0), arg_map);
 
   Legion::MustEpochLauncher must_epoch_launcher;
-  //must_epoch_launcher.launch_domain =
-  //    Legion::Domain::from_rect<1>(context_t::instance().all_processes());
+  must_epoch_launcher.launch_domain =
+      Legion::Domain::from_rect<1>(context_t::instance().all_processes());
   must_epoch_launcher.add_index_task(handoff_to_mpi_launcher);
   auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
 
@@ -192,8 +192,8 @@ legion_context_policy_t::wait_on_mpi(Legion::Context &ctx,
       Legion::TaskArgument(NULL, 0), arg_map);
 
   Legion::MustEpochLauncher must_epoch_launcher;
-  //must_epoch_launcher.launch_domain =
-  //    Legion::Domain::from_rect<1>(context_t::instance().all_processes());
+  must_epoch_launcher.launch_domain =
+      Legion::Domain::from_rect<1>(context_t::instance().all_processes());
   must_epoch_launcher.add_index_task(wait_on_mpi_launcher);
   auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
 
