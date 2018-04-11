@@ -325,20 +325,101 @@ runtime_driver(
         ctx, access_lp, GHOST_ACCESS);
 
     ispace_dmap[idx_space].entire_region = flecsi_ispace.logical_region;
+
+    {
+      for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
+          flecsi_ispace.logical_region.get_index_space())); itr; itr++) {
+        std::cout << "flecsi_space " << idx_space << " entire "
+            << itr.p[0] << "," << itr.p[1] << std::endl;
+
+      }
+    }
+
     ispace_dmap[idx_space].color_partition = runtime->get_logical_partition(
         ctx, flecsi_ispace.logical_region, flecsi_ispace.color_partition);
+
+    {
+      Legion::LogicalPartition sub_lp = ispace_dmap[idx_space].color_partition;
+      for(size_t color(0); color<num_colors; ++color) {
+        Legion::LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
+            ctx, sub_lp, color);
+        for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
+          sub_lr.get_index_space())); itr; itr++) {
+          std::cout << "flecsi_space " << idx_space << " color_partition "
+              << color << " " << itr.p[0] << "," << itr.p[1] << std::endl;
+
+        } //itr
+      } // color
+    } // scope
+
     runtime->attach_name(ispace_dmap[idx_space].color_partition, "color logical partition");
     ispace_dmap[idx_space].primary_lp = runtime->get_logical_partition(
         ctx, primary_lr, flecsi_ispace.primary_partition);
+
+    {
+      Legion::LogicalPartition sub_lp = ispace_dmap[idx_space].primary_lp;
+      for(size_t color(0); color<num_colors; ++color) {
+        Legion::LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
+            ctx, sub_lp, color);
+        for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
+          sub_lr.get_index_space())); itr; itr++) {
+          std::cout << "flecsi_space " << idx_space << " primary_lp "
+              << color << " " << itr.p[0] << "," << itr.p[1] << std::endl;
+
+        } //itr
+      } // color
+    } // scope
     runtime->attach_name(ispace_dmap[idx_space].primary_lp, "primary logical partition");
     ispace_dmap[idx_space].exclusive_lp = runtime->get_logical_partition(
         ctx, primary_lr, flecsi_ispace.exclusive_partition);
+
+    {
+      Legion::LogicalPartition sub_lp = ispace_dmap[idx_space].exclusive_lp;
+      for(size_t color(0); color<num_colors; ++color) {
+        Legion::LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
+            ctx, sub_lp, color);
+        for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
+          sub_lr.get_index_space())); itr; itr++) {
+          std::cout << "flecsi_space " << idx_space << " exclusive_lp "
+              << color << " " << itr.p[0] << "," << itr.p[1] << std::endl;
+
+        } //itr
+      } // color
+    } // scope
     runtime->attach_name(ispace_dmap[idx_space].exclusive_lp, "exclusive logical partition");
     ispace_dmap[idx_space].shared_lp = runtime->get_logical_partition(
         ctx, primary_lr, flecsi_ispace.shared_partition);
+
+    {
+      Legion::LogicalPartition sub_lp = ispace_dmap[idx_space].shared_lp;
+      for(size_t color(0); color<num_colors; ++color) {
+        Legion::LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
+            ctx, sub_lp, color);
+        for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
+          sub_lr.get_index_space())); itr; itr++) {
+          std::cout << "flecsi_space " << idx_space << " shared_lp "
+              << color << " " << itr.p[0] << "," << itr.p[1] << std::endl;
+
+        } //itr
+      } // color
+    } // scope
     runtime->attach_name(ispace_dmap[idx_space].shared_lp, "shared logical partition");
     ispace_dmap[idx_space].ghost_lp = runtime->get_logical_partition(
         ctx, ghost_lr, flecsi_ispace.ghost_partition);
+
+    {
+      Legion::LogicalPartition sub_lp = ispace_dmap[idx_space].ghost_lp;
+      for(size_t color(0); color<num_colors; ++color) {
+        Legion::LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
+            ctx, sub_lp, color);
+        for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
+          sub_lr.get_index_space())); itr; itr++) {
+          std::cout << "flecsi_space " << idx_space << " ghost_lp "
+              << color << " " << itr.p[0] << "," << itr.p[1] << std::endl;
+
+        } //itr
+      } // color
+    } // scope
     runtime->attach_name(ispace_dmap[idx_space].ghost_lp, "ghost logical partition");
 
     // Now that ghosts point to post-compacted shared positions, we can
@@ -353,6 +434,20 @@ runtime_driver(
         "ghost owners index partition");
     ispace_dmap[idx_space].ghost_owners_lp = runtime->get_logical_partition(
         ctx, primary_lr, ispace_dmap[idx_space].ghost_owners_ip);
+
+    {
+      Legion::LogicalPartition sub_lp = ispace_dmap[idx_space].ghost_owners_lp;
+      for(size_t color(0); color<num_colors; ++color) {
+        Legion::LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
+            ctx, sub_lp, color);
+        for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
+          sub_lr.get_index_space())); itr; itr++) {
+          std::cout << "flecsi_space " << idx_space << " ghost_owners_lp "
+              << color << " " << itr.p[0] << "," << itr.p[1] << std::endl;
+
+        } //itr
+      } // color
+    } // scope
     runtime->attach_name(ispace_dmap[idx_space].ghost_owners_lp,
         "ghost owners logical partition");
   } // idx_space
