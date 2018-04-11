@@ -331,7 +331,7 @@ runtime_driver(
     {
       for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           flecsi_ispace.logical_region.get_index_space())); itr; itr++) {
-        log_runtime.print("flecsi_space %d entire %d,%d",idx_space,itr.p[0],itr.p[1]);
+     //   log_runtime.print("flecsi_space %d entire %d,%d",idx_space,itr.p[0],itr.p[1]);
       }
     }
 
@@ -345,8 +345,8 @@ runtime_driver(
             ctx, sub_lp, color);
         for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           sub_lr.get_index_space())); itr; itr++) {
-          log_runtime.print("flecsi_space %d color_partition %d %d,%d",idx_space,color,
-              itr.p[0],itr.p[1]);
+      //    log_runtime.print("flecsi_space %d color_partition %d %d,%d",idx_space,color,
+      //        itr.p[0],itr.p[1]);
 
         } //itr
       } // color
@@ -361,10 +361,14 @@ runtime_driver(
       for(size_t color(0); color<num_colors; ++color) {
         Legion::LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
             ctx, sub_lp, color);
+        Legion::Domain domain = runtime->get_index_space_domain(ctx, sub_lr.get_index_space());
+        LegionRuntime::Arrays::Rect<2> rect = domain.get_rect<2>();
+        log_runtime.print("flecsi_ispace %d primary_lp %d %d,%d - %d,%d",
+            idx_space, color, rect.lo[0], rect.lo[1], rect.hi[0], rect.hi[1]);
         for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           sub_lr.get_index_space())); itr; itr++) {
-          log_runtime.print("flecsi_space %d primary_lp %d %d,%d",idx_space,color,
-              itr.p[0],itr.p[1]);
+         // log_runtime.print("flecsi_space %d primary_lp %d %d,%d",idx_space,color,
+         //     itr.p[0],itr.p[1]);
 
         } //itr
       } // color
@@ -380,8 +384,8 @@ runtime_driver(
             ctx, sub_lp, color);
         for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           sub_lr.get_index_space())); itr; itr++) {
-          log_runtime.print("flecsi_space %d exclusive_lp %d %d,%d",idx_space,color,
-              itr.p[0],itr.p[1]);
+       //   log_runtime.print("flecsi_space %d exclusive_lp %d %d,%d",idx_space,color,
+       //       itr.p[0],itr.p[1]);
 
         } //itr
       } // color
@@ -397,8 +401,8 @@ runtime_driver(
             ctx, sub_lp, color);
         for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           sub_lr.get_index_space())); itr; itr++) {
-          log_runtime.print("flecsi_space %d shared_lp %d %d,%d",idx_space,color,
-              itr.p[0],itr.p[1]);
+      //    log_runtime.print("flecsi_space %d shared_lp %d %d,%d",idx_space,color,
+       //       itr.p[0],itr.p[1]);
 
         } //itr
       } // color
@@ -414,8 +418,8 @@ runtime_driver(
             ctx, sub_lp, color);
         for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           sub_lr.get_index_space())); itr; itr++) {
-          log_runtime.print("flecsi_space %d ghost_lp %d %d,%d",idx_space,color,
-              itr.p[0],itr.p[1]);
+      //    log_runtime.print("flecsi_space %d ghost_lp %d %d,%d",idx_space,color,
+      //        itr.p[0],itr.p[1]);
 
         } //itr
       } // color
@@ -442,8 +446,8 @@ runtime_driver(
             ctx, sub_lp, color);
         for (Legion::Domain::DomainPointIterator itr(runtime->get_index_space_domain(ctx,
           sub_lr.get_index_space())); itr; itr++) {
-          log_runtime.print("flecsi_space %d ghost_owners_lp %d %d,%d",idx_space,color,
-              itr.p[0],itr.p[1]);
+     //     log_runtime.print("flecsi_space %d ghost_owners_lp %d %d,%d",idx_space,color,
+      //        itr.p[0],itr.p[1]);
 
         } //itr
       } // color
