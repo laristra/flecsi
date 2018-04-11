@@ -555,7 +555,8 @@ public:
                 color, color_info.exclusive + color_info.shared +
                            color_info.ghost - 1));
         color_partitioning[color] = Domain::from_rect<2>(subrect);
-
+std::cout << "CREATE primary " << color << "," << 0 <<"-"<< color_info.exclusive + color_info.shared - 1
+    << std::endl;
         LegionRuntime::Arrays::Rect<2> primary_rect(
             make_point(color, 0),
             make_point(
