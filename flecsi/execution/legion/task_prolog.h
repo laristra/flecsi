@@ -193,7 +193,11 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       ghost_launcher.add_region_requirement(rr_owners);
       ghost_launcher.add_region_requirement(rr_ghost);
       // Execute the ghost copy task
-      runtime->execute_index_space(context, ghost_launcher);
+      Legion::MustEpochLauncher must_epoch_launcher;
+      must_epoch_launcher.launch_domain =
+      Legion::Domain::from_rect<1>(context_t::instance().all_processes());
+      must_epoch_launcher.add_index_task(ghost_launcher);
+      auto fm = runtime->execute_must_epoch(context, must_epoch_launcher);
     } // for group
 
   } // launch copies
