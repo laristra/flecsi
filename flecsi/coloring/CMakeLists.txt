@@ -156,4 +156,12 @@ cinch_add_devel_target(coloring
   THREADS 5
 )
 
+cinch_add_unit(mpi_dependent_partition
+        SOURCES test/mpi_dependent_partition.cpp
+        INPUTS
+          test/simple2d-8x8.msh
+        LIBRARIES ${COLORING_LIBRARIES}
+        POLICY MPI
+        THREADS 4
+        )
 endif()
