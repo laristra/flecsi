@@ -185,10 +185,12 @@ runtime_driver(
                 .add_field(ghost_owner_pos_fid);
   } // for idx_space
 
-  Legion::MustEpochLauncher must_epoch_launcher1;
-  must_epoch_launcher1.launch_domain = data.color_domain();
-  must_epoch_launcher1.add_index_task(pos_compaction_launcher);
-  runtime->execute_must_epoch(ctx, must_epoch_launcher1);
+  //Legion::MustEpochLauncher must_epoch_launcher1;
+ // must_epoch_launcher1.launch_domain = data.color_domain();
+ // must_epoch_launcher1.add_index_task(pos_compaction_launcher);
+  //runtime->execute_must_epoch(ctx, must_epoch_launcher1);
+  pos_compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH; 
+  runtime->execute_index_space(ctx, pos_compaction_launcher);
 
   // Fix ghost reference/pointer to point to compacted position of
   // shared that it needs
@@ -222,11 +224,13 @@ runtime_driver(
             .add_field(ghost_owner_pos_fid));
   } // for idx_space
 
-  Legion::MustEpochLauncher must_epoch_launcher2;
-  must_epoch_launcher2.launch_domain = data.color_domain();
-  must_epoch_launcher2.add_index_task(fix_ghost_refs_launcher);
-  auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher2);
+  //Legion::MustEpochLauncher must_epoch_launcher2;
+ // must_epoch_launcher2.launch_domain = data.color_domain();
+ // must_epoch_launcher2.add_index_task(fix_ghost_refs_launcher);
+ // auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher2);
 
+  fix_ghost_refs_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  auto fm = runtime->execute_index_space(ctx, fix_ghost_refs_launcher);
   fm.wait_all_results(true);
 
   // map of index space to the field_ids that are mapped to this index space
