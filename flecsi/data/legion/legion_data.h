@@ -239,6 +239,9 @@ public:
     using namespace Arrays;
 
     using namespace execution;
+    
+    int my_rank = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
     context_t & context = context_t::instance();
 
@@ -258,8 +261,9 @@ public:
                     << std::endl;
       } // scope
 
-      printf("E: %d, S: %d, G: %d\n", color_idx.second.exclusive, color_idx.second.shared, color_idx.second.ghost);
-
+      if (my_rank == 0) {
+        printf("E: %d, S: %d, G: %d\n", color_idx.second.exclusive, color_idx.second.shared, color_idx.second.ghost);
+      }
       is.total_num_entities = std::max(
           is.total_num_entities, color_idx.second.exclusive +
                                      color_idx.second.shared +

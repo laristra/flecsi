@@ -450,10 +450,10 @@ struct context__ : public CONTEXT_POLICY {
       size_t index_space,
       index_coloring_t & coloring,
       std::unordered_map<size_t, coloring_info_t> & coloring_info) {
-    clog_assert(
+ /*   clog_assert(
         colorings_.find(index_space) == colorings_.end(),
         "color index already exists");
-
+*/
     colorings_[index_space] = coloring;
     coloring_info_[index_space] = coloring_info;
   } // add_coloring

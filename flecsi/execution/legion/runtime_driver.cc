@@ -162,6 +162,8 @@ runtime_driver(
 	cell_allocator.allocate_field(sizeof(LegionRuntime::Arrays::Rect<1>), FID_CELL_VERTEX_NRANGE);
 	runtime->attach_name(cell_field_space, FID_CELL_VERTEX_NRANGE, "FID_CELL_VERTEX_NRANGE");
 	Legion::LogicalRegion cell_lr = runtime->create_logical_region(ctx,cell_index_space,cell_field_space);
+  cell_allocator.allocate_field(sizeof(int), FID_CELL_OFFSET);
+  runtime->attach_name(cell_field_space, FID_CELL_OFFSET, "FID_CELL_OFFSET");
 	runtime->attach_name(cell_lr, "cells_lr");
 	
   // **************************************************************************
@@ -178,6 +180,8 @@ runtime_driver(
 	runtime->attach_name(vertex_field_space, FID_VERTEX_PARTITION_COLOR, "FID_VERTEX_PARTITION_COLOR");
 	vertex_allocator.allocate_field(sizeof(double), FID_VERTEX_PARTITION_COLOR_ID);
 	runtime->attach_name(vertex_field_space, FID_VERTEX_PARTITION_COLOR_ID, "FID_VERTEX_PARTITION_COLOR_ID");
+  vertex_allocator.allocate_field(sizeof(int), FID_VERTEX_OFFSET);
+  runtime->attach_name(vertex_field_space, FID_VERTEX_OFFSET, "FID_VERTEX_OFFSET");
 	Legion::LogicalRegion vertex_lr = runtime->create_logical_region(ctx,vertex_index_space,vertex_field_space);
 	runtime->attach_name(vertex_lr, "vertex_lr");
 	
@@ -587,6 +591,7 @@ runtime_driver(
   runtime->attach_name(cell_primary_image_nrange_lp, "cell_primary_image_nrange_lp");
   
   // All shared cell and vertex
+#if 0
 	LegionRuntime::Arrays::Rect<1> pending_partition_bound(LegionRuntime::Arrays::Point<1>(0),
 																						LegionRuntime::Arrays::Point<1>(0));
 	Legion::Domain pending_partition_dom(Legion::Domain::from_rect<1>(pending_partition_bound));
@@ -603,7 +608,33 @@ runtime_driver(
 	//Legion::LogicalRegion vertex_all_shared_lr = runtime->get_logical_subregion(ctx, runtime->get_logical_partition(ctx, vertex_lr, vertex_shared_pending_ip), vertex_all_shared_is);
   Legion::LogicalRegion vertex_all_shared_lr = runtime->get_logical_subregion_by_tree(ctx, vertex_all_shared_is, vertex_field_space, vertex_lr.get_tree_id());
 	runtime->attach_name(vertex_all_shared_lr, "vertex_all_shared_lr");
+#endif  
+  // **************************************************************************
+	// Launch index task to init offset
+  const auto init_entity_offset_task_id =
+    context_.task_id<__flecsi_internal_task_key(init_entity_offset_task)>();
+  
+  Legion::IndexLauncher init_entity_offset_launcher(init_entity_offset_task_id,
+    																			 partition_is, Legion::TaskArgument(nullptr, 0),
+      																		 Legion::ArgumentMap());
 	
+	init_entity_offset_launcher.add_region_requirement(
+	  Legion::RegionRequirement(cell_primary_lp, 0/*projection ID*/,
+	                            READ_WRITE, EXCLUSIVE, cell_lr));
+  init_entity_offset_launcher.region_requirements[0].add_field(FID_CELL_ID);
+  init_entity_offset_launcher.region_requirements[0].add_field(FID_CELL_OFFSET);
+  
+	init_entity_offset_launcher.add_region_requirement(
+	  Legion::RegionRequirement(vertex_primary_lp, 0/*projection ID*/,
+	                            READ_WRITE, EXCLUSIVE, vertex_lr));
+  init_entity_offset_launcher.region_requirements[1].add_field(FID_VERTEX_ID);
+  init_entity_offset_launcher.region_requirements[1].add_field(FID_VERTEX_OFFSET);
+	
+  Legion::MustEpochLauncher must_epoch_launcher_init_entity_offset;
+  must_epoch_launcher_init_entity_offset.add_index_task(init_entity_offset_launcher);
+  Legion::FutureMap fm_epoch_init_entity_offset = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_entity_offset);
+  fm_epoch_init_entity_offset.wait_all_results(true);
+
   // **************************************************************************
 	// Launch index task to verify partition results
   const auto verify_dp_task_id =
@@ -623,16 +654,20 @@ runtime_driver(
 	  Legion::RegionRequirement(cell_ghost_lp, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, cell_lr));
   verify_dp_launcher.region_requirements[1].add_field(FID_CELL_ID);
+  verify_dp_launcher.region_requirements[1].add_field(FID_CELL_OFFSET);
+  verify_dp_launcher.region_requirements[1].add_field(FID_CELL_PARTITION_COLOR);
 	
 	verify_dp_launcher.add_region_requirement(
 	  Legion::RegionRequirement(cell_shared_lp, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, cell_lr));
   verify_dp_launcher.region_requirements[2].add_field(FID_CELL_ID);
+  verify_dp_launcher.region_requirements[2].add_field(FID_CELL_OFFSET);
 	
 	verify_dp_launcher.add_region_requirement(
 	  Legion::RegionRequirement(cell_execlusive_lp, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, cell_lr));
   verify_dp_launcher.region_requirements[3].add_field(FID_CELL_ID);
+  verify_dp_launcher.region_requirements[3].add_field(FID_CELL_OFFSET);
 	
 	verify_dp_launcher.add_region_requirement(
 	  Legion::RegionRequirement(vertex_primary_lp, 0/*projection ID*/,
@@ -643,16 +678,20 @@ runtime_driver(
 	  Legion::RegionRequirement(vertex_ghost_lp, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, vertex_lr));
   verify_dp_launcher.region_requirements[5].add_field(FID_VERTEX_ID);
+  verify_dp_launcher.region_requirements[5].add_field(FID_VERTEX_OFFSET);
+  verify_dp_launcher.region_requirements[5].add_field(FID_VERTEX_PARTITION_COLOR);
 	
 	verify_dp_launcher.add_region_requirement(
 	  Legion::RegionRequirement(vertex_shared_lp, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, vertex_lr));
   verify_dp_launcher.region_requirements[6].add_field(FID_VERTEX_ID);
+  verify_dp_launcher.region_requirements[6].add_field(FID_VERTEX_OFFSET);
 	
 	verify_dp_launcher.add_region_requirement(
 	  Legion::RegionRequirement(vertex_exclusive_lp, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, vertex_lr));
   verify_dp_launcher.region_requirements[7].add_field(FID_VERTEX_ID);
+  verify_dp_launcher.region_requirements[7].add_field(FID_VERTEX_OFFSET);
 	
 	verify_dp_launcher.add_region_requirement(
 	  Legion::RegionRequirement(vertex_of_ghost_cell_lp, 0/*projection ID*/,
@@ -668,7 +707,8 @@ runtime_driver(
 	  Legion::RegionRequirement(cell_primary_image_nrange_lp, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, cell_to_cell_lr));
   verify_dp_launcher.region_requirements[10].add_field(FID_CELL_TO_CELL_ID);
-  
+
+#if 0  
 	verify_dp_launcher.add_region_requirement(
 	  Legion::RegionRequirement(cell_all_shared_lr, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, cell_lr));
@@ -680,11 +720,13 @@ runtime_driver(
 	                            READ_ONLY, EXCLUSIVE, vertex_lr));
   verify_dp_launcher.region_requirements[12].add_field(FID_VERTEX_ID);
   verify_dp_launcher.region_requirements[12].add_field(FID_VERTEX_PARTITION_COLOR);
-	
+#endif
+  
   Legion::MustEpochLauncher must_epoch_launcher_verify_dp;
   must_epoch_launcher_verify_dp.add_index_task(verify_dp_launcher);
   Legion::FutureMap fm_epoch4 = runtime->execute_must_epoch(ctx, must_epoch_launcher_verify_dp);
   fm_epoch4.wait_all_results(true);
+
 	
 	// Clean up
 	free(cell_to_cell_vertex_count_per_subspace_scan);
