@@ -69,11 +69,12 @@ struct task_interface__ {
       size_t KEY,
       typename RETURN,
       typename ARG_TUPLE,
-      RETURN (*DELEGATE)(ARG_TUPLE)>
+      RETURN (*DELEGATE)(ARG_TUPLE),
+      size_t REDUCTION = 0>
   static decltype(auto)
   register_task(processor_type_t processor, launch_t launch, std::string name) {
     return EXECUTION_POLICY::template register_task<
-        KEY, RETURN, ARG_TUPLE, DELEGATE>(processor, launch, name);
+        KEY, RETURN, ARG_TUPLE, DELEGATE, REDUCTION>(processor, launch, name);
   } // register_task
 
   /*!

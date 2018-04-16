@@ -118,7 +118,8 @@ struct execution_wrapper__<void, ARG_TUPLE, DELEGATE> {
 template <typename RETURN,
           RETURN (*TASK)(const Legion::Task *,
                          const std::vector<Legion::PhysicalRegion> &,
-                         Legion::Context, Legion::Runtime *)>
+                         Legion::Context, Legion::Runtime *),
+			 size_t REDUCTION>
 struct pure_task_wrapper__ {
 
   /*!
@@ -156,7 +157,7 @@ struct pure_task_wrapper__ {
                  << std::endl
                  << std::endl;
     }
-      registration_wrapper__<RETURN, TASK>::register_task(
+      registration_wrapper__<RETURN, TASK, REDUCTION>::register_task(
           tid, Legion::Processor::LOC_PROC, config_options, task_name);
       break;
     case processor_type_t::toc: {
@@ -164,7 +165,7 @@ struct pure_task_wrapper__ {
       clog(info) << "Registering PURE toc task: " << task_name << std::endl
                  << std::endl;
     }
-      registration_wrapper__<RETURN, TASK>::register_task(
+      registration_wrapper__<RETURN, TASK, REDUCTION>::register_task(
           tid, Legion::Processor::TOC_PROC, config_options, task_name);
       break;
     case processor_type_t::mpi:
@@ -193,7 +194,7 @@ struct pure_task_wrapper__ {
  */
 
 template <size_t KEY, typename RETURN, typename ARG_TUPLE,
-          RETURN (*DELEGATE)(ARG_TUPLE)>
+          RETURN (*DELEGATE)(ARG_TUPLE), size_t REDUCTION>
 struct task_wrapper__ {
 
   /*!
@@ -227,21 +228,24 @@ struct task_wrapper__ {
       clog_tag_guard(wrapper);
       clog(info) << "Registering loc task: " << name << std::endl << std::endl;
     }
-      registration_wrapper__<RETURN, execute_user_task>::register_task(
+      registration_wrapper__<RETURN, execute_user_task,
+	REDUCTION>::register_task(
           tid, Legion::Processor::LOC_PROC, config_options, name);
       break;
     case processor_type_t::toc: {
       clog_tag_guard(wrapper);
       clog(info) << "Registering toc task: " << name << std::endl << std::endl;
     }
-      registration_wrapper__<RETURN, execute_user_task>::register_task(
+      registration_wrapper__<RETURN, execute_user_task,
+	REDUCTION>::register_task(
           tid, Legion::Processor::TOC_PROC, config_options, name);
       break;
     case processor_type_t::mpi: {
       clog_tag_guard(wrapper);
       clog(info) << "Registering MPI task: " << name << std::endl << std::endl;
     }
-      registration_wrapper__<void, execute_mpi_task>::register_task(
+      registration_wrapper__<void, execute_mpi_task, 
+	REDUCTION>::register_task(
           tid, Legion::Processor::LOC_PROC, config_options, name);
       break;
     default:

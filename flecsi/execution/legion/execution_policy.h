@@ -100,14 +100,16 @@ struct legion_execution_policy_t {
   template <size_t KEY, typename RETURN,
             RETURN (*TASK)(const Legion::Task *,
                            const std::vector<Legion::PhysicalRegion> &,
-                           Legion::Context, Legion::Runtime *)>
+                           Legion::Context, Legion::Runtime *), 
+		 	   size_t REDUCTION =0 >
   static bool register_legion_task(processor_type_t processor, launch_t launch,
                                    std::string name) {
     clog(info) << "Registering legion task " << KEY << " " << name << std::endl;
 
     if (!context_t::instance().register_task(
             KEY, processor, launch, name,
-            pure_task_wrapper__<RETURN, TASK>::registration_callback)) {
+            pure_task_wrapper__<RETURN, TASK,
+	      REDUCTION>::registration_callback)) {
       clog(fatal) << "callback registration failed for " << name << std::endl;
     } // if
 
@@ -120,10 +122,10 @@ struct legion_execution_policy_t {
    */
 
   template <size_t KEY, typename RETURN, typename ARG_TUPLE,
-            RETURN (*DELEGATE)(ARG_TUPLE)>
+            RETURN (*DELEGATE)(ARG_TUPLE), size_t REDUCTION>
   static bool register_task(processor_type_t processor, launch_t launch,
                             std::string name) {
-    using wrapper_t = task_wrapper__<KEY, RETURN, ARG_TUPLE, DELEGATE>;
+    using wrapper_t = task_wrapper__<KEY, RETURN, ARG_TUPLE, DELEGATE, REDUCTION>;
 
     if (!context_t::instance().register_task(
             KEY, processor, launch, name, wrapper_t::registration_callback)) {

@@ -72,3 +72,31 @@
           typename flecsi::utils::function_traits__<decltype(                  \
               task)>::return_type,                                             \
           task>(processor, launch, {EXPAND_AND_STRINGIFY(task)})
+
+
+/*!
+  @def __flecsi_internal_register_reduction_task
+
+  This macro registers an internal Legion task.
+
+  @param task      The Legion reduction task to register.
+  @param processor A processor_mask_t specifying the supported processor
+                  types.
+  @param launch    A launch_t specifying the launch options.
+  @param reduction Reduction ID
+
+  @ingroup legion-execution
+*/
+
+#define __flecsi_internal_register_reduction_task(task, processor, launch,     \
+	reduction)                                                             \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* Call the execution policy to register the task */                         \
+  bool task##_task_registered =                                                \
+      flecsi::execution::legion_execution_policy_t::register_legion_task<      \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
+          typename flecsi::utils::function_traits__<decltype(                  \
+              task)>::return_type,                                             \
+          task, reduction>(processor, launch, {EXPAND_AND_STRINGIFY(task)})
+

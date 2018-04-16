@@ -184,10 +184,11 @@ __flecsi_internal_register_legion_task(
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(
+__flecsi_internal_register_reduction_task(
     init_vertex_color_task,
     processor_type_t::loc,
-    index | leaf);
+    index | leaf,
+    MinReductionPointOp::redop_id);
 
 /*!
   Register verify vertex color index task.

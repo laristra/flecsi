@@ -76,7 +76,6 @@ public:
         machine(machine) {
     using legion_machine = Legion::Machine;
     using legion_proc = Legion::Processor;
-
     legion_machine::ProcessorQuery pq =
         legion_machine::ProcessorQuery(machine).same_address_space_as(local);
     for (legion_machine::ProcessorQuery::iterator pqi = pq.begin();
@@ -125,15 +124,53 @@ public:
       bool needs_field_constraint_check,
       bool &force_new_instances)
   {
-      // We always set force_new_instances to false since we are
-      // deciding to optimize for minimizing memory usage instead
-      // of avoiding Write-After-Read (WAR) dependences
-      force_new_instances = false;
+
+
       std::vector<Legion::DimensionKind> ordering;
       ordering.push_back(Legion::DimensionKind::DIM_Y);
       ordering.push_back(Legion::DimensionKind::DIM_X);
       ordering.push_back(Legion::DimensionKind::DIM_F);  // SOA
       Legion::OrderingConstraint ordering_constraint(ordering, true /*contiguous*/);
+
+      // Do something special for reductions and 
+      // it is not an explicit region-to-region copy
+      if ((req.privilege == REDUCE) && (mapping_kind != COPY_MAPPING))
+      {
+
+
+        // Always make new reduction instances
+        force_new_instances = true;
+        std::pair<Realm::Memory::Kind,Realm::ReductionOpID> constraint_key(
+            target_memory.kind(), req.redop);
+        std::map<std::pair<Realm::Memory::Kind,Realm::ReductionOpID>,
+                        Legion::LayoutConstraintID>::
+          const_iterator finder = reduction_constraint_cache.find(
+                                                            constraint_key);
+        // No need to worry about field constraint checks here
+        // since we don't actually have any field constraints
+        if (finder != reduction_constraint_cache.end())
+          return finder->second;
+
+        Legion::LayoutConstraintSet layout_constraint;
+//        layout_constraint.add_constraint(ordering_constraint);
+
+        layout_constraint.add_constraint(Legion::SpecializedConstraint(
+                            REDUCTION_FOLD_SPECIALIZE, req.redop))
+          .add_constraint(Legion::MemoryConstraint(target_memory.kind()));
+
+        // Do the registration
+        Legion::LayoutConstraintID result =
+                   runtime->register_layout(ctx, layout_constraint);
+
+        // Save the result
+        reduction_constraint_cache[constraint_key] = result;
+        return result;
+      }
+
+      // We always set force_new_instances to false since we are
+      // deciding to optimize for minimizing memory usage instead
+      // of avoiding Write-After-Read (WAR) dependences
+      force_new_instances = false;
       Legion::LayoutConstraintSet layout_constraint;
       layout_constraint.add_constraint(ordering_constraint);
 
@@ -161,7 +198,7 @@ public:
       const Legion::Task & task,
       const Legion::Mapping::Mapper::MapTaskInput & input,
       Legion::Mapping::Mapper::MapTaskOutput & output) {
-    DefaultMapper::map_task(ctx, task, input, output);
+   // DefaultMapper::map_task(ctx, task, input, output);
 
 
     if ( ((task.tag & MAPPER_COMPACTED_STORAGE) != 0) &&                                                                                                                                                                                                                                                                  
@@ -236,6 +273,8 @@ public:
         } // end if
       } // end for
 
+    }else{
+      DefaultMapper::map_task(ctx, task, input, output);
     } // end if
 
   } // map_task

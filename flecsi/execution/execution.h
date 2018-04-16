@@ -249,6 +249,46 @@ clog_register_tag(execution);
                                                                                \
   flecsi_register_task(task, nspace, mpi, index | flecsi::leaf)
 
+/*!
+  @def flecsi_register_reduction_task
+
+  This macro registers a reduction task with the FleCSI runtime.
+
+  @param task   The reduction task to register. 
+		This is normally just a function.
+  @param nspace The enclosing namespace of the task.
+  @param processor The \ref processor_type_t type.
+  @param launch    The \ref launch_t type. This may be an \em or list of
+                   supported launch types and configuration options.
+  @param reduction_id Reduction ID
+ 
+  @ingroup execution
+ */
+
+#define flecsi_register_reduction_task(task, nspace, processor, launch,        \
+   reduction_id)                                                               \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* Define a delegate function to the user's function that takes a tuple */   \
+  /* of the arguments (as opposed to the raw argument pack). This is */        \
+  /* necessary because we cannot infer the argument type without using */      \
+  /* a tuple. */                                                               \
+  inline __flecsi_internal_return_type(task)                                   \
+      task##_tuple_delegate(__flecsi_internal_arguments_type(task) args) {     \
+    return flecsi::utils::tuple_function(task, args);                          \
+  } /* delegate task */                                                        \
+                                                                               \
+  /* Call the execution policy to register the task delegate */                \
+  bool task##_task_registered =                                                \
+      flecsi::execution::task_interface_t::register_task<                      \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::task)}    \
+              .hash(),                                                         \
+          __flecsi_internal_return_type(task),                                 \
+          __flecsi_internal_arguments_type(task), task##_tuple_delegate,       \
+          reduction_id>(                                                       \
+          flecsi::processor, flecsi::launch,                                   \
+          {EXPAND_AND_STRINGIFY(nspace::task)})
+                                                                               \
 //----------------------------------------------------------------------------//
 // Task Execution Interface
 //----------------------------------------------------------------------------//
