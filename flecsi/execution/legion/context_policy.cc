@@ -123,11 +123,13 @@ void legion_context_policy_t::unset_call_mpi(
       tid, Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
       Legion::TaskArgument(NULL, 0), arg_map);
 
-  Legion::MustEpochLauncher must_epoch_launcher;
-  must_epoch_launcher.launch_domain =
-      Legion::Domain::from_rect<1>(context_t::instance().all_processes());
-  must_epoch_launcher.add_index_task(launcher);
-  auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
+  //Legion::MustEpochLauncher must_epoch_launcher;
+  //must_epoch_launcher.launch_domain =
+ //     Legion::Domain::from_rect<1>(context_t::instance().all_processes());
+ // must_epoch_launcher.add_index_task(launcher);
+ // auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
+  launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  auto fm = runtime->execute_index_space(ctx, launcher); 
   fm.wait_all_results(true);
 } // legion_context_policy_t::unset_call_mpi
 
@@ -168,11 +170,13 @@ void legion_context_policy_t::handoff_to_mpi(
       tid, Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
       Legion::TaskArgument(NULL, 0), arg_map);
 
-  Legion::MustEpochLauncher must_epoch_launcher;
-  must_epoch_launcher.launch_domain =
-      Legion::Domain::from_rect<1>(context_t::instance().all_processes());
-  must_epoch_launcher.add_index_task(handoff_to_mpi_launcher);
-  auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
+  //Legion::MustEpochLauncher must_epoch_launcher;
+  //must_epoch_launcher.launch_domain =
+  //    Legion::Domain::from_rect<1>(context_t::instance().all_processes());
+  //must_epoch_launcher.add_index_task(handoff_to_mpi_launcher);
+  //auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
+  handoff_to_mpi_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  auto fm = runtime->execute_index_space(ctx,handoff_to_mpi_launcher);
 
   fm.wait_all_results(true);
 } // legion_context_policy_t::handoff_to_mpi
@@ -192,11 +196,13 @@ legion_context_policy_t::wait_on_mpi(Legion::Context &ctx,
       tid, Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
       Legion::TaskArgument(NULL, 0), arg_map);
 
-  Legion::MustEpochLauncher must_epoch_launcher;
-  must_epoch_launcher.launch_domain =
-      Legion::Domain::from_rect<1>(context_t::instance().all_processes());
-  must_epoch_launcher.add_index_task(wait_on_mpi_launcher);
-  auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
+  //Legion::MustEpochLauncher must_epoch_launcher;
+  //must_epoch_launcher.launch_domain =
+  //    Legion::Domain::from_rect<1>(context_t::instance().all_processes());
+  //must_epoch_launcher.add_index_task(wait_on_mpi_launcher);
+  wait_on_mpi_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  auto fm = runtime->execute_index_space(ctx,wait_on_mpi_launcher);
+  //auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
 
   fm.wait_all_results(true);
 

@@ -299,6 +299,34 @@ public:
       output.slices[0].proc = task.target_proc;
       return;
     } //end if MAPPER_SUBRANK_LAUNCH
+    else if((task.tag &MAPPER_FORCE_RANK_MATCH) != 0){
+    // expect a 1-D index domain - each point goes to the corresponding node
+      assert(input.domain.get_dim() == 1);
+      LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();
+
+      // go through all the CPU processors and find a representative for each
+      //  node (i.e. address space)
+      std::map<int, Legion::Processor> targets;
+
+      Legion::Machine::ProcessorQuery pq =
+	Legion::Machine::ProcessorQuery(machine).only_kind(
+		Legion::Processor::LOC_PROC);
+      for(Legion::Machine::ProcessorQuery::iterator it = pq.begin();
+	it != pq.end(); ++it) {
+        Legion::Processor p = *it;
+        int a = p.address_space();
+        if(targets.count(a) == 0)
+  	  targets[a] = p;
+      }
+
+      output.slices.resize(r.volume());
+      for(int a = r.lo[0]; a <= r.hi[0]; a++) {
+        assert(targets.count(a) > 0);
+        output.slices[a].domain =
+          Legion::Domain::from_rect<1>(LegionRuntime::Arrays::Rect<1>(a, a));
+        output.slices[a].proc = targets[a];
+      }
+    }//MAPPER_FORCE_RANK_MATCH
     else{
       DefaultMapper::slice_task(ctx, task, input, output);
     }//end else

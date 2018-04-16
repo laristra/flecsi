@@ -557,7 +557,8 @@ public:
                 color, color_info.exclusive + color_info.shared +
                            color_info.ghost - 1));
         color_partitioning[color] = Domain::from_rect<2>(subrect);
-
+std::cout << "CREATE primary " << color << "," << 0 <<"-"<< color_info.exclusive + color_info.shared - 1
+    << std::endl;
         LegionRuntime::Arrays::Rect<2> primary_rect(
             make_point(color, 0),
             make_point(
@@ -633,8 +634,7 @@ public:
          runtime_->get_logical_partition(ctx_, primary_region,
              owner_partition);
 
-      IndexSpace primary_is = runtime_->get_logical_subregion_by_color(ctx_,
-          owner_lp, EXCLUSIVE_OWNER).get_index_space();
+      IndexSpace primary_is = primary_region.get_index_space();
       is.primary_partition = runtime_->create_index_partition(ctx_,
           primary_is, color_domain_, primary_partitioning,
           true /*disjoint*/);

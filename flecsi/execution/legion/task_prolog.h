@@ -192,7 +192,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
       ghost_launcher.add_region_requirement(rr_owners);
       ghost_launcher.add_region_requirement(rr_ghost);
-      // Execute the ghost copy task
+      ghost_launcher.tag = MAPPER_FORCE_RANK_MATCH;
       runtime->execute_index_space(context, ghost_launcher);
     } // for group
 
