@@ -29,7 +29,7 @@ double local_value_task(
   return static_cast<double>((my_color+1) * cycle);
 }
 
-flecsi_register_task(local_value_task, flecsi::execution, loc, single);
+flecsi_register_task(local_value_task, flecsi::execution, loc, index);
 
 
 template<typename T>
@@ -58,7 +58,7 @@ void driver(int argc, char ** argv) {
 
   for(int cycle=1; cycle < 10; cycle++) {
     auto global_min_future =
-      flecsi_execute_reduction_task(local_value_task, flecsi::execution, single,
+      flecsi_execute_reduction_task(local_value_task, flecsi::execution, index,
           min_redop_id, cycle);
 
     auto global_max_future =
