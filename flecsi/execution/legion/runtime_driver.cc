@@ -134,7 +134,7 @@ runtime_driver(
   }
 
   // Invoke the specialization top-level task initialization function.
-  specialization_tlt_init(args.argc, args.argv);
+  //specialization_tlt_init(args.argc, args.argv);
 
   context_.advance_state();
   
@@ -260,9 +260,11 @@ runtime_driver(
   init_mesh_launcher.region_requirements[1].add_field(FID_VERTEX_PARTITION_COLOR_ID);
 	init_mesh_launcher.region_requirements[1].add_field(FID_VERTEX_PARTITION_COLOR);
 			
-  Legion::MustEpochLauncher must_epoch_launcher_init_mesh;
-  must_epoch_launcher_init_mesh.add_index_task(init_mesh_launcher);
-  Legion::FutureMap fm_epoch1 = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_mesh);
+ // Legion::MustEpochLauncher must_epoch_launcher_init_mesh;
+//  must_epoch_launcher_init_mesh.add_index_task(init_mesh_launcher);
+  //Legion::FutureMap fm_epoch1 = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_mesh);
+  init_mesh_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  Legion::FutureMap fm_epoch1 = runtime->execute_index_space(ctx, init_mesh_launcher);
   fm_epoch1.wait_all_results(true);
 	
   // **************************************************************************
@@ -380,9 +382,11 @@ runtime_driver(
 	init_adjacency_launcher.region_requirements[2].add_field(FID_CELL_TO_VERTEX_ID);
 	init_adjacency_launcher.region_requirements[2].add_field(FID_CELL_TO_VERTEX_PTR);
 			
-  Legion::MustEpochLauncher must_epoch_launcher_init_adjacency;
-  must_epoch_launcher_init_adjacency.add_index_task(init_adjacency_launcher);
-  Legion::FutureMap fm_epoch2 = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_adjacency);
+  //Legion::MustEpochLauncher must_epoch_launcher_init_adjacency;
+  //must_epoch_launcher_init_adjacency.add_index_task(init_adjacency_launcher);
+  //Legion::FutureMap fm_epoch2 = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_adjacency);
+  init_adjacency_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  Legion::FutureMap fm_epoch2 = runtime->execute_index_space(ctx, init_adjacency_launcher);
   fm_epoch2.wait_all_results(true);
 	
   // **************************************************************************
@@ -492,9 +496,11 @@ runtime_driver(
 	                            MinReductionPointOp::redop_id, SIMULTANEOUS, vertex_lr));
   init_vertex_color_launcher.region_requirements[0].add_field(FID_VERTEX_PARTITION_COLOR);
 
-  Legion::MustEpochLauncher must_epoch_launcher_init_vertex_color;
-  must_epoch_launcher_init_vertex_color.add_index_task(init_vertex_color_launcher);
-  Legion::FutureMap fm_epoch3 = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_vertex_color);
+  //Legion::MustEpochLauncher must_epoch_launcher_init_vertex_color;
+  //must_epoch_launcher_init_vertex_color.add_index_task(init_vertex_color_launcher);
+  //Legion::FutureMap fm_epoch3 = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_vertex_color);
+  init_vertex_color_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  Legion::FutureMap fm_epoch3 = runtime->execute_index_space(ctx, init_vertex_color_launcher);
   fm_epoch3.wait_all_results(true);
 	
 	{
@@ -511,10 +517,12 @@ runtime_driver(
 		verify_vertex_color_launcher.region_requirements[0].add_field(FID_VERTEX_ID);
 	  verify_vertex_color_launcher.region_requirements[0].add_field(FID_VERTEX_PARTITION_COLOR);
 
-	  Legion::MustEpochLauncher must_epoch_launcher_verify_vertex_color;
-	  must_epoch_launcher_verify_vertex_color.add_index_task(verify_vertex_color_launcher);
-	  Legion::FutureMap fm_epoch_test1 = runtime->execute_must_epoch(ctx, must_epoch_launcher_verify_vertex_color);
-	  fm_epoch_test1.wait_all_results(true);
+	  //Legion::MustEpochLauncher must_epoch_launcher_verify_vertex_color;
+	 // must_epoch_launcher_verify_vertex_color.add_index_task(verify_vertex_color_launcher);
+	 // Legion::FutureMap fm_epoch_test1 = runtime->execute_must_epoch(ctx, must_epoch_launcher_verify_vertex_color);
+    verify_vertex_color_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+	  Legion::FutureMap fm_epoch_test1 = runtime->execute_index_space(ctx, verify_vertex_color_launcher);
+    fm_epoch_test1.wait_all_results(true);
 	}
 	
   // **************************************************************************
@@ -630,9 +638,11 @@ runtime_driver(
   init_entity_offset_launcher.region_requirements[1].add_field(FID_VERTEX_ID);
   init_entity_offset_launcher.region_requirements[1].add_field(FID_VERTEX_OFFSET);
 	
-  Legion::MustEpochLauncher must_epoch_launcher_init_entity_offset;
-  must_epoch_launcher_init_entity_offset.add_index_task(init_entity_offset_launcher);
-  Legion::FutureMap fm_epoch_init_entity_offset = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_entity_offset);
+  //Legion::MustEpochLauncher must_epoch_launcher_init_entity_offset;
+  //must_epoch_launcher_init_entity_offset.add_index_task(init_entity_offset_launcher);
+  //Legion::FutureMap fm_epoch_init_entity_offset = runtime->execute_must_epoch(ctx, must_epoch_launcher_init_entity_offset);
+  init_entity_offset_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  Legion::FutureMap fm_epoch_init_entity_offset = runtime->execute_index_space(ctx, init_entity_offset_launcher);
   fm_epoch_init_entity_offset.wait_all_results(true);
 
   // **************************************************************************
@@ -722,9 +732,11 @@ runtime_driver(
   verify_dp_launcher.region_requirements[12].add_field(FID_VERTEX_PARTITION_COLOR);
 #endif
   
-  Legion::MustEpochLauncher must_epoch_launcher_verify_dp;
-  must_epoch_launcher_verify_dp.add_index_task(verify_dp_launcher);
-  Legion::FutureMap fm_epoch4 = runtime->execute_must_epoch(ctx, must_epoch_launcher_verify_dp);
+  //Legion::MustEpochLauncher must_epoch_launcher_verify_dp;
+  //must_epoch_launcher_verify_dp.add_index_task(verify_dp_launcher);
+  //Legion::FutureMap fm_epoch4 = runtime->execute_must_epoch(ctx, must_epoch_launcher_verify_dp);
+  verify_dp_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  Legion::FutureMap fm_epoch4 = runtime->execute_index_space(ctx, verify_dp_launcher);
   fm_epoch4.wait_all_results(true);
 
 	

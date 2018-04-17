@@ -388,6 +388,7 @@ void add_colorings(coloring_map_t map) {
   } // scope
 
   // Add colorings to the context.
+  printf("rank %d, add coloring \n", rank);
   context_.add_coloring(map.cells, cells, cell_coloring_info);
   context_.add_coloring(map.vertices, vertices, vertex_coloring_info);
 
