@@ -77,6 +77,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/global.h
     legion/color.h
     legion/legion_data.h
+    legion/mutator_handle_policy.h
     legion/scoped.h
     legion/sparse.h
     legion/storage_policy.h
