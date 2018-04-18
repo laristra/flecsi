@@ -71,6 +71,8 @@ TEST(iterator, all) {
   // compare
 #ifdef __GNUG__
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed.gnug"));
+#elif defined(_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed.msvc"));
 #else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed"));
 #endif

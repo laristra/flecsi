@@ -83,7 +83,9 @@ TEST(reorder, both) {
     // ------------------------
 
     // Compute random size ( <= maxlen ) for vector
-    const std::size_t len = std::size_t(random()) % (maxlen + 1);
+    std::size_t len = std::size_t(random()) % (maxlen + 1);
+    while (len == 0)
+        len = std::size_t(random()) % (maxlen + 1);
 
     // Make an initial vector of the above-computed random size,
     // and set up a random ordering specification for the vector

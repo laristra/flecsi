@@ -57,6 +57,8 @@ TEST(index_space, all) {
   // compare
 #ifdef __GNUG__
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("index_space.blessed.gnug"));
+#elif defined(_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("index_space.blessed.msvc"));
 #else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("index_space.blessed"));
 #endif

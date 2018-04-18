@@ -294,12 +294,14 @@ TEST(array_ref, all) {
   // ------------------------
   // compare
   // ------------------------
-
 #ifdef __GNUG__
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("array_ref.blessed.gnug"));
+#elif defined(_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("array_ref.blessed.msvc"));
 #else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("array_ref.blessed"));
 #endif
+
 } // TEST
 
 /*~-------------------------------------------------------------------------~-*

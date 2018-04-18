@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cstddef>
 #include <cstring>
 #include <functional>
 #include <iostream>
@@ -1031,14 +1032,14 @@ public:
 
     static_assert(subspace_index != -1, "invalid index subspace");
 
-    using subspace_entry_t = 
+    using subspace_entry_t =
       typename std::tuple_element<subspace_index, index_subspaces>::type;
 
     using index_space_t =
         typename std::tuple_element<0, subspace_entry_t>::type;
 
     constexpr size_t index =
-      find_index_space_from_id__<std::tuple_size<entity_types_t>::value, 
+      find_index_space_from_id__<std::tuple_size<entity_types_t>::value,
         entity_types_t, index_space_t::value>::find();
 
     // never gonna happen since index is a size_t, and cant be negative
@@ -1112,7 +1113,7 @@ private:
       c.push(v->template global_id<DOM>());
     } // for
 
-    c.add_count(verts.size());
+    c.add_count(static_cast<std::uint32_t>(verts.size()));
   } // init_cell
 
   template<size_t DOM, size_t FROM_DIM, size_t TO_DIM, class ENT_TYPE2>

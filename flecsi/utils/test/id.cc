@@ -305,6 +305,8 @@ TEST(id, all) {
 
 #ifdef __GNUG__
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("id.blessed.gnug"));
+#elif defined(_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("id.blessed.msvc"));
 #else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("id.blessed"));
 #endif

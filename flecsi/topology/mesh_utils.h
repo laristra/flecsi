@@ -506,7 +506,7 @@ template<typename MESH_TYPE>
 struct num_index_subspaces__{
   using type = typename get_index_subspaces__<MESH_TYPE>::type;
 
-  static constexpr size_t value = std::tuple_size<type>::value;  
+  static constexpr size_t value = std::tuple_size<type>::value;
 };
 
 } // namespace topology

@@ -94,8 +94,7 @@ $ docker pull laristra/flecsi-tutorial:latest
 This will download the image to your machine. Once the pull is complete,
 you can run the image like:
 ```bash
-$ docker run -it -h tutorialhost -u flecsi laristra/flecsi-tutorial:latest
-/bin/bash
+$ docker run -it -h tutorialhost -u flecsi laristra/flecsi-tutorial:latest /bin/bash
 ```
 This will place you into a bash prompt, from which you can build and run
 the tutorial examples. The tutorials are in the *flecsi-tutorial*

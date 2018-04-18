@@ -239,9 +239,10 @@ TEST(factory, all) {
   // ------------------------
   // Compare
   // ------------------------
-
 #ifdef __GNUG__
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("factory.blessed.gnug"));
+#elif defined(_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("factory.blessed.msvc"));
 #else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("factory.blessed"));
 #endif
