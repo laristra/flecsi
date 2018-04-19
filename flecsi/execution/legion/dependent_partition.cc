@@ -17,9 +17,6 @@ dependent_partition_tlt_init(
 {
   printf("start DP\n");
 	flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-	
-  int num_colors;
-  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
   
 	int num_cells = sd.num_entities(1);
 	int num_vertices = sd.num_entities(0);
@@ -363,7 +360,6 @@ dependent_partition_tlt_init(
   
   // **************************************************************************
   // Launch index task to init vertex color
-  //sleep(20);
   const auto init_vertex_color_task_id =
     context_.task_id<__flecsi_internal_task_key(init_vertex_color_task)>();
   
@@ -382,7 +378,8 @@ dependent_partition_tlt_init(
   init_vertex_color_launcher.tag = MAPPER_FORCE_RANK_MATCH;
   Legion::FutureMap fm_epoch3 = runtime->execute_index_space(ctx, init_vertex_color_launcher);
   fm_epoch3.wait_all_results(true);
-	
+
+#if 0	
 	{
 	  const auto verify_vertex_color_task_id =
 	    context_.task_id<__flecsi_internal_task_key(verify_vertex_color_task)>();
@@ -404,6 +401,7 @@ dependent_partition_tlt_init(
 	  Legion::FutureMap fm_epoch_test1 = runtime->execute_index_space(ctx, verify_vertex_color_launcher);
     fm_epoch_test1.wait_all_results(true);
 	}
+#endif
 	
   // **************************************************************************
 	// Primary vertex

@@ -833,6 +833,7 @@ __flecsi_internal_legion_task(verify_dp_task, void) {
 #endif
     int color = cell_ghost_color_acc.read(*pir);
 //	  printf("%d:%d:%d ", (int)cell_ghost_id_acc[*pir], shared_color, color);
+    printf("%d ", (int)cell_ghost_id_acc[*pir]);
 		ct ++;
     cell_color_info.ghost_owners.insert(color);
     
@@ -917,6 +918,7 @@ __flecsi_internal_legion_task(verify_dp_task, void) {
 #endif
     int color = vertex_ghost_color_acc.read(*pir);
 	  //printf("%d:%d:%d ", (int)vertex_ghost_id_acc[*pir], shared_color, color);
+    printf("%d ", (int)vertex_ghost_id_acc[*pir]);
 		ct ++;
     vertex_color_info.ghost_owners.insert(color);
     
