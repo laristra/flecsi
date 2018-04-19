@@ -31,27 +31,27 @@ namespace example {
 
 void mpi_new(color_accessor<double, rw> p) {
   std::uintptr_t ptr = reinterpret_cast<std::uintptr_t>(new double);
-  p.data() = ptr;
+  p = ptr;
 } // mpi_task
 
 flecsi_register_task(mpi_new, example, mpi, index);
 
 void mpi_use(color_accessor<double, rw> p, double v) {
- double * ptr = reinterpret_cast<double *>(&p.data());
+ double * ptr = reinterpret_cast<double *>(&p);
   *ptr = v;
 } // mpi_task
 
 flecsi_register_task(mpi_use, example, mpi, index);
 
 void print(color_accessor<double, ro> p) {
-  double * ptr = reinterpret_cast<double *>(&p.data());
+  double * ptr = reinterpret_cast<double *>(&p);
   std::cout << "ptr: " << *ptr << std::endl;
 } // legion_task
 
 flecsi_register_task(print, example, loc, single);
 
 void mpi_print(color_accessor<double, ro> p) {
-  double * ptr = reinterpret_cast<double *>(&p.data());
+  double * ptr = reinterpret_cast<double *>(&p);
   std::cout << "mpi ptr: " << *ptr << std::endl;
 } // legion_task
 
