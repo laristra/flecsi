@@ -82,6 +82,11 @@ struct accessor__<data::global, T, PERMISSIONS, 0, 0>
     return *this;
   }// operator =
 
+  T* operator&() const 
+  {
+    return handle.combined_data; 
+  }
+
   //--------------------------------------------------------------------------/
   //
   // Operators.
@@ -152,6 +157,16 @@ struct accessor__<data::color, T, PERMISSIONS, 0, 0>
     data() = x;
     return *this;
   }
+
+  T & operator= (accessor__){
+    return *handle.combined_data;
+  }
+
+  T* operator&() const 
+  {
+    return handle.combined_data; 
+  }
+
 
   //--------------------------------------------------------------------------/
   //
