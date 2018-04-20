@@ -7,6 +7,12 @@
 FROM fedora:latest
 
 #------------------------------------------------------------------------------#
+# Arguments
+#------------------------------------------------------------------------------#
+
+ARG RUNTIME
+
+#------------------------------------------------------------------------------#
 # Install Fedora packages
 #------------------------------------------------------------------------------#
 
@@ -38,7 +44,7 @@ RUN \
 	cmake \
 		-DBUILD_SHARED_LIBS=ON \
 		-DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_INSTALL_PREFIX=/opt/flecsi-tpl-openmpi \
+		-DCMAKE_INSTALL_PREFIX=/opt/flecsi-tpl \
 		-DENABLE_HPX=OFF \
 		.. && \
 	make -j2;
@@ -53,23 +59,21 @@ RUN rm -rf flecsi-third-party
 RUN git clone --recursive https://github.com/laristra/flecsi.git
 RUN \
 	cd flecsi && \
-	git checkout flecsit && \
-	git submodule update --recursive && \
 	mkdir -p build && \
 	cd build && \
 	cmake \
 		-DBUILD_SHARED_LIBS=ON \
 		-DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_INSTALL_PREFIX=/opt/flecsi-openmpi \
-		-DFLECSI_RUNTIME_MODEL=mpi \
+		-DCMAKE_INSTALL_PREFIX=/opt/flecsi \
+		-DFLECSI_RUNTIME_MODEL=$RUNTIME \
 		-DENABLE_COLORING=ON \
 		-DENABLE_FLECSIT=ON \
-		-DCMAKE_PREFIX_PATH=/opt/flecsi-tpl-openmpi \
+		-DCMAKE_PREFIX_PATH=/opt/flecsi-tpl \
 		.. && \
 	make -j2 && \
 	make install;
 
-RUN cp /opt/flecsi-openmpi/bin/flecsi-tutorial /usr/share/modulefiles/
+RUN cp /opt/flecsi/bin/flecsi-tutorial /usr/share/modulefiles/
 RUN mkdir -p /home/flecsi/flecsi-tutorial
 RUN cp -r flecsi/flecsi-tutorial/??-* /home/flecsi/flecsi-tutorial/
 
