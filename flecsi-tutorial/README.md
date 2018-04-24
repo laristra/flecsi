@@ -100,6 +100,13 @@ This will place you into a bash prompt, from which you can build and run
 the tutorial examples. The tutorials are in the *flecsi-tutorial*
 directory in the Docker container.
 
+**Note:** You can also pull a Docker image for a specific runtime, e.g.,
+mpi or legion. The defalt image *latest* is built against the MPI
+backend. To pull the legion backend image do:
+```
+$ docker pull laristra/flecsi-tutorial:legion
+```
+
 # Building the Examples
 
 The example codes in the tutorial are meant to be built using the
