@@ -9,7 +9,7 @@
 
 # Introduction
 
-This tutorial attempts to give a basic overview of the design philosohpy
+This tutorial attempts to give a basic overview of the design philosophy
 and structure of the FleCSI programming system. Each subdirectory
 contains an example code that can be compiled with the *flecsit*
 compiler script. More details on how to do this are given below in the
@@ -21,7 +21,7 @@ The structure of applications built on top of the FleCSI programming
 system assumes three basic types of users. Each of the user types has
 their own set of responsibilities that are designed to separate
 concerns, and to make sure that development tasks are intuitive and
-acheivable by the associated user type.
+achievable by the associated user type.
 
 The user types are:
 
@@ -39,13 +39,13 @@ interfaces to create domain-specific interfaces for application
 developers.  These users are required to understand the components of
 the FleCSI interface that can be statically specialized, and must have a
 solid understanding of the runtime interface. Additionally,
-specialization develoeprs are assumed to understand the requirements of
+specialization developers are assumed to understand the requirements of
 the application area for which they are designing an interface. These
 users are generally computational scientists with expertise in one or
 more numerical methods areas.
 
 * **FleCSI Application Developer**<br>  
-These users are methods developers or physiciests who use a particular
+These users are methods developers or physicists who use a particular
 FleCSI specialization layer to develop and maintain application codes.
 These are the FleCSI end-users, who have expertise in designing and
 implementing numerical methods to solve complicated, multiphysics
@@ -62,7 +62,7 @@ their applications.
 
 This tutorial is primarily designed as an introduction for application
 developers, i.e., we do not go into the details of designing or
-implmenting the specialization layer, and the discussion of core FleCSI
+implementing the specialization layer, and the discussion of core FleCSI
 features is limited to the high-level execution and data interfaces.
 
 Because a specialization layer is necessary to use FleCSI, we have
@@ -101,7 +101,7 @@ the tutorial examples. The tutorials are in the *flecsi-tutorial*
 directory in the Docker container.
 
 **Note:** You can also pull a Docker image for a specific runtime, e.g.,
-mpi or legion. The defalt image *latest* is built against the MPI
+mpi or legion. The default image *latest* is built against the MPI
 backend. To pull the legion backend image do:
 ```
 $ docker pull laristra/flecsi-tutorial:legion
@@ -148,7 +148,7 @@ For help on the flecsit compile command, type:
 $ flecsit compile --help
 ```
 
-Some exmaples are designed to run in parallel (indicated in the example
+Some examples are designed to run in parallel (indicated in the example
 documentation). These should be run with a suitable MPI interpreter:
 
 ```bash
