@@ -121,7 +121,7 @@ can simply run:**
 $ module load flecsi-tutorial
 ```
 
-Otherwise, to use the bash or csh script, simply source the script
+Otherwise, to use the bash or csh script, source the script
 (located in the bin directory of your FleCSI install path):
 ```bash
 $ source CMAKE_INSTALL_PREFIX/bin/flecsi-tutorial.{sh,csh}
