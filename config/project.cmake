@@ -472,17 +472,17 @@ set(FLECSI_RUNTIME_MAIN ${FLECSI_SHARE_DIR}/runtime/runtime_main.cc)
 set(FLECSI_RUNTIME_DRIVER ${FLECSI_SHARE_DIR}/runtime/runtime_driver.cc)
 
 #------------------------------------------------------------------------------#
-# Extract all project options so they can be exported to the ProjectConfig.cmake
-# file.
+# Extract all project options so they can be exported to the
+# ProjectConfig.cmake file.
 #------------------------------------------------------------------------------#
 
 get_cmake_property(_variableNames VARIABLES)
-string (REGEX MATCHALL "(^|;)FLECSI_[A-Za-z0-9_]*" _matchedVars "${_variableNames}")
-foreach (_variableName ${_matchedVars})
-  set( FLECSI_CONFIG_CODE
-    "${FLECSI_CONFIG_CODE}
-set(${_variableName} \"${${_variableName}}\")"
-  )
+string (REGEX MATCHALL "(^|;)FLECSI_[A-Za-z0-9_]*"
+  _matchedVars "${_variableNames}")
+
+foreach(_variableName ${_matchedVars})
+  set(FLECSI_CONFIG_CODE
+    "${FLECSI_CONFIG_CODE}\nset(${_variableName} \"${${_variableName}}\")")
 endforeach()
 
 #------------------------------------------------------------------------------#

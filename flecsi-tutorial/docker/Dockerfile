@@ -25,6 +25,10 @@ RUN dnf install -y make cmake automake autoconf libtool git which vim-enhanced g
 RUN groupadd -r flecsi
 RUN useradd -r -m -g flecsi flecsi
 
+#------------------------------------------------------------------------------#
+# Set up build environment
+#------------------------------------------------------------------------------#
+
 ENV PATH=/usr/lib64/ccache:/usr/lib64/openmpi/bin/${PATH:+:}${PATH}
 ENV LD_LIBRARY_PATH=/usr/lib64/openmpi/lib/${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH}
 ENV PYTHONPATH=/usr/local/lib/python2.7/site-packages${PYTHONPATH:+:}${PYTHONPATH}
