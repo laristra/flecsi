@@ -298,9 +298,10 @@ clog_register_tag(execution);
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_interface_t::execute_task<                           \
       flecsi::execution::launch_type_t::launch,                                \
+      0,                                                                       \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       __flecsi_internal_return_type(task),                                     \
-      __flecsi_internal_arguments_type(task)>(0, ##__VA_ARGS__)
+      __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
 
 #define flecsi_execute_reduction_task_simple(task, launch, redop_id, ...)      \
   /* MACRO IMPLEMENTATION */                                                   \
@@ -309,9 +310,10 @@ clog_register_tag(execution);
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_interface_t::execute_task<                           \
       flecsi::execution::launch_type_t::launch,                                \
+      redop_id,                                                                \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       __flecsi_internal_return_type(task),                                     \
-      __flecsi_internal_arguments_type(task)>(redop_id, ##__VA_ARGS__)
+      __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
 
 /*!
   @def flecsi_execute_task
@@ -332,6 +334,19 @@ clog_register_tag(execution);
   /* Execute the user task */                                                  \
   flecsi_execute_task_simple(nspace::task, launch, ##__VA_ARGS__)
 
+/*!
+  @def flecsi_execute_reduction_task
+
+  This macro executes a user task.
+
+  @param task   The user task to execute.
+  @param nspace The enclosing namespace of the task.
+  @param launch The launch mode for the task.
+  @param redop_id Reduction ID
+  @param ...    The arguments to pass to the user task during execution.
+
+  @ingroup execution
+ */
 #define flecsi_execute_reduction_task(task, nspace, launch, redop_id, ...)                         \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
