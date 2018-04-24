@@ -24,6 +24,9 @@
 #include <flecsi/supplemental/coloring/coloring_functions.h>
 #include <flecsi/supplemental/coloring/tikz.h>
 
+#include<unistd.h>
+#include <sys/types.h>
+
 clog_register_tag(coloring);
 clog_register_tag(coloring_output);
 
@@ -31,6 +34,7 @@ namespace flecsi {
 namespace execution {
 
 void add_colorings(coloring_map_t map) {
+  return;
 
   clog_set_output_rank(0);
 
@@ -388,7 +392,8 @@ void add_colorings(coloring_map_t map) {
   } // scope
 
   // Add colorings to the context.
-  printf("rank %d, add coloring \n", rank);
+  printf("rank %d, add coloring pid %d\n", rank, getpid());
+//  sleep(20);
   context_.add_coloring(map.cells, cells, cell_coloring_info);
   context_.add_coloring(map.vertices, vertices, vertex_coloring_info);
 

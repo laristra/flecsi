@@ -132,7 +132,7 @@ runtime_driver(
   }
 
   // Invoke the specialization top-level task initialization function.
-  //specialization_tlt_init(args.argc, args.argv);
+  specialization_tlt_init(args.argc, args.argv);
 
   context_.advance_state();
   
