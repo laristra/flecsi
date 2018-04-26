@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['p_5fstr',['p_str',['../dbc__impl_8cc.html#a3e51589ce9944058478b298f05437f23',1,'flecsi::dbc']]],
   ['parent',['parent',['../classflecsi_1_1topology_1_1branch__id____.html#aefe03b7e8ac3fd9d3d326f6ed6867dfb',1,'flecsi::topology::branch_id__']]],
   ['parmetis_5fcolorer_2eh',['parmetis_colorer.h',['../parmetis__colorer_8h.html',1,'']]],
   ['parmetis_5fcolorer_5ft',['parmetis_colorer_t',['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html',1,'flecsi::coloring']]],

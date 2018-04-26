@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: /home/flecsi/flecsi/flecsi/utils/dbc_impl.h File Reference</title>
+<title>Interface Documentation: /home/flecsi/flecsi/flecsi-tutorial/08-mpi-interoperability Directory Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -67,7 +67,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
-      <li><a href="files.html"><span>File&#160;List</span></a></li>
+      <li class="current"><a href="files.html"><span>File&#160;List</span></a></li>
       <li><a href="globals.html"><span>File&#160;Members</span></a></li>
     </ul>
   </div>
@@ -87,44 +87,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_688c864b7b93022ab3a371d21adf78fb.html">flecsi</a></li><li class="navelem"><a class="el" href="dir_f75713275d4ea00e650b137792bd2c87.html">utils</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_25ac0299a8a40cc287a9a5c516f627f8.html">flecsi-tutorial</a></li><li class="navelem"><a class="el" href="dir_88f3e93e7651c047d98e342ad98c2d7e.html">08-mpi-interoperability</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">dbc_impl.h File Reference</div>  </div>
+<div class="title">08-mpi-interoperability Directory Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;flecsi/utils/export_definitions.h&gt;</code><br />
-<code>#include &lt;functional&gt;</code><br />
-<code>#include &lt;string&gt;</code><br />
-</div>
-<p><a href="dbc__impl_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a9565038fab2934ffbf281c47d8b8f696"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9565038fab2934ffbf281c47d8b8f696"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::dbc::action_t</b> = std::function&lt; void(std::string const &amp;, const char *, const char *, int)&gt;</td></tr>
-<tr class="separator:a9565038fab2934ffbf281c47d8b8f696"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:acb0f95cf37bc56d6fdff0885b6bf9073"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acb0f95cf37bc56d6fdff0885b6bf9073"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dbc__impl_8cc.html#acb0f95cf37bc56d6fdff0885b6bf9073">flecsi::dbc::build_message</a> (std::string const &amp;cond, const char *file_name, const char *func_name, int line)</td></tr>
-<tr class="memdesc:acb0f95cf37bc56d6fdff0885b6bf9073"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs error/exception message. <br /></td></tr>
-<tr class="separator:acb0f95cf37bc56d6fdff0885b6bf9073"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a5b9124693926a82df0e3616ccd7043"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2a5b9124693926a82df0e3616ccd7043"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dbc__impl_8cc.html#a2a5b9124693926a82df0e3616ccd7043">flecsi::dbc::assertf</a> (bool cond, std::string const &amp;cond_str, const char *file_name, const char *func_name, int line, action_t &amp;)</td></tr>
-<tr class="memdesc:a2a5b9124693926a82df0e3616ccd7043"><td class="mdescLeft">&#160;</td><td class="mdescRight">Core assertion function. <br /></td></tr>
-<tr class="separator:a2a5b9124693926a82df0e3616ccd7043"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5012cc8942f3951b0c084a62cf56407"><td class="memTemplParams" colspan="2"><a class="anchor" id="ac5012cc8942f3951b0c084a62cf56407"></a>
-template&lt;class error_msg_generator &gt; </td></tr>
-<tr class="memitem:ac5012cc8942f3951b0c084a62cf56407"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dbc__impl_8h.html#ac5012cc8942f3951b0c084a62cf56407">flecsi::dbc::assertf_l</a> (bool cond, error_msg_generator &amp;gen, const char *file_name, const char *func_name, int line, action_t &amp;action)</td></tr>
-<tr class="memdesc:ac5012cc8942f3951b0c084a62cf56407"><td class="mdescLeft">&#160;</td><td class="mdescRight">Core assertion function, with some hope of not constructing the error string every single time? <br /></td></tr>
-<tr class="separator:ac5012cc8942f3951b0c084a62cf56407"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
+Files</h2></td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -71,7 +71,5 @@ var searchData=
   ['array_5fref_3c_20t_20_3e',['array_ref&lt; T &gt;',['../classarray__ref_3_01T_01_4.html',1,'']]],
   ['as_5fconst',['as_const',['../structflecsi_1_1utils_1_1as__const.html',1,'flecsi::utils']]],
   ['assert_5fclient_5fexists',['assert_client_exists',['../structflecsi_1_1data_1_1storage____.html#adde8cfc00d5106a3d892c69f00769871',1,'flecsi::data::storage__']]],
-  ['assertf',['assertf',['../dbc__impl_8cc.html#a2a5b9124693926a82df0e3616ccd7043',1,'flecsi::dbc']]],
-  ['assertf_5fl',['assertf_l',['../dbc__impl_8h.html#ac5012cc8942f3951b0c084a62cf56407',1,'flecsi::dbc']]],
   ['axis',['axis',['../dimensioned__array_8h.html#a95371a68573ff7ee30033e12cea640fb',1,'flecsi::utils']]]
 ];
