@@ -79,27 +79,25 @@ endif()
 mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
 
 #------------------------------------------------------------------------------#
-# Add options for design by contract
-#------------------------------------------------------------------------------#
-
-set(FLECSI_DBC_ACTIONS throw notify nothing)
-
-if(NOT FLECSI_DBC_ACTION)
-  list(GET FLECSI_DBC_ACTIONS 0 FLECSI_DBC_ACTION)
-endif()
-
-set(FLECSI_DBC_ACTION "${FLECSI_DBC_ACTION}" CACHE STRING
-  "Select the design by contract action")
-set_property(CACHE FLECSI_DBC_ACTION PROPERTY STRINGS ${FLECSI_DBC_ACTIONS})
-
-set(FLECSI_DBC_REQUIRE ON CACHE BOOL
-  "Enable DBC Pre/Post Condition Assertions")
-
-#------------------------------------------------------------------------------#
 # Load the cinch extras
 #------------------------------------------------------------------------------#
 
+# After we load the cinch options, we need to capture the configuration
+# state for the particular Cinch build configuration and set variables that
+# are local to this project. FleCSI should never directly use the raw
+# options, e.g., ENABLE_OPTION should be captured as FLECSI_ENABLE_OPTION
+# and used as such in the code. This will handle collisions between nested
+# projects that use Cinch.
+
 cinch_load_extras(MPI LEGION HPX)
+
+get_cmake_property(_variableNames VARIABLES)
+string (REGEX MATCHALL "(^|;)ENABLE_[A-Za-z0-9_]*"
+  _matchedVars "${_variableNames}")
+
+foreach(_variableName ${_matchedVars})
+  set(FLECSI_${_variableName} ${${_variableName}})
+endforeach()
 
 #------------------------------------------------------------------------------#
 # Add option for setting id bits
@@ -146,37 +144,6 @@ set_property(CACHE FLECSI_RUNTIME_MODEL
   PROPERTY STRINGS ${FLECSI_RUNTIME_MODELS})
 
 #------------------------------------------------------------------------------#
-# Add options for design by contract
-#------------------------------------------------------------------------------#
-
-set(FLECSI_DBC_ACTIONS throw notify nothing)
-
-if(NOT FLECSI_DBC_ACTION)
-  list(GET FLECSI_DBC_ACTIONS 0 FLECSI_DBC_ACTION)
-endif()
-
-set(FLECSI_DBC_ACTION "${FLECSI_DBC_ACTION}" CACHE STRING
-  "Select the design by contract action")
-set_property(CACHE FLECSI_DBC_ACTION PROPERTY STRINGS ${FLECSI_DBC_ACTIONS})
-
-set(FLECSI_DBC_REQUIRE ON CACHE BOOL
-  "Enable DBC Pre/Post Condition Assertions")
-
-#------------------------------------------------------------------------------#
-# DBC
-#------------------------------------------------------------------------------#
-
-if(FLECSI_DBC_ACTION STREQUAL "throw")
-  add_definitions(-DFLECSI_DBC_THROW)
-elseif(FLECSI_DBC_ACTION STREQUAL "notify")
-  add_definitions(-DFLECSI_DBC_NOTIFY)
-endif()
-
-if(FLECSI_DBC_REQUIRE)
-  add_definitions(-DFLECSI_REQUIRE_ON)
-endif()
-
-#------------------------------------------------------------------------------#
 # OpenSSL
 #------------------------------------------------------------------------------#
 
@@ -194,8 +161,20 @@ if(ENABLE_OPENSSL)
   endif()
 endif()
 
+#------------------------------------------------------------------------------#
+# Caliper
+#------------------------------------------------------------------------------#
+
 if(ENABLE_CALIPER)
   list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Caliper_LIBRARIES})
+endif()
+
+#------------------------------------------------------------------------------#
+# Boost Program Options
+#------------------------------------------------------------------------------#
+
+if(ENABLE_BOOST_PROGRAM_OPTIONS)
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
 endif()
 
 #------------------------------------------------------------------------------#
@@ -368,7 +347,6 @@ set(FLECSI_ENABLE_MPI ${ENABLE_MPI})
 set(FLECSI_ENABLE_LEGION ${ENABLE_LEGION})
 set(FLECSI_ENABLE_METIS ENABLE_METIS)
 set(FLECSI_ENABLE_PARMETIS ENABLE_PARMETIS)
-set(FLECSI_ENABLE_BOOST_PREPROCESSOR ENABLE_BOOST_PREPROCESSOR)
 
 configure_file(${PROJECT_SOURCE_DIR}/config/flecsi-config.h.in
   ${CMAKE_BINARY_DIR}/flecsi-config.h @ONLY)

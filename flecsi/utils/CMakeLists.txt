@@ -23,8 +23,6 @@ set(utils_HEADERS
   checksum.h
   common.h
   const_string.h
-  dbc.h
-  dbc_impl.h
   debruijn.h
   dimensioned_array.h
   export_definitions.h
@@ -57,7 +55,6 @@ set(utils_HEADERS
 
 set(utils_SOURCES
   common.cc
-  dbc_impl.cc
   debruijn.cc
 )
 
@@ -117,24 +114,6 @@ cinch_add_devel_target(clog
     test/clog.cc
   POLICY ${UNIT_POLICY}
 )
-
-# Broken by refactor
-#cinch_add_unit(dbc
-#  SOURCES test/dbc_test.cc
-#  POLICY SERIAL
-#)
-
-# Broken by refactor
-#cinch_add_unit(dbc-no-assert
-#  SOURCES test/dbc_test_no_assert.cc
-#  POLICY SERIAL
-#)
-
-# Broken by refactor
-#cinch_add_unit(dbc-notify
-#  SOURCES test/dbc_test_notify.cc
-#  POLICY SERIAL
-#)
 
 cinch_add_unit(const_string
   SOURCES test/const_string.cc common.cc

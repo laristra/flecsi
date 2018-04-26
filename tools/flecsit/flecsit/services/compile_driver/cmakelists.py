@@ -33,6 +33,11 @@ add_executable(${TARGET}
 )
 
 target_compile_definitions(${TARGET} PRIVATE ${FLECSI_DEFINES})
+
+if(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
+  target_compile_definitions(${TARGET} PRIVATE -DENABLE_BOOST_PROGRAM_OPTIONS)
+endif()
+
 target_link_libraries(${TARGET} FleCSI ${FLECSI_LIBRARIES})
 
 # make install strips RPATH without this.
