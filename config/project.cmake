@@ -60,6 +60,21 @@ set(FLECSI_LIBRARY_DEPENDENCIES)
 set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 
 #------------------------------------------------------------------------------#
+# Add options for runtime selection
+#------------------------------------------------------------------------------#
+
+set(FLECSI_RUNTIME_MODELS legion mpi hpx)
+
+if(NOT FLECSI_RUNTIME_MODEL)
+  list(GET FLECSI_RUNTIME_MODELS 0 FLECSI_RUNTIME_MODEL)
+endif()
+
+set(FLECSI_RUNTIME_MODEL "${FLECSI_RUNTIME_MODEL}" CACHE STRING
+  "Select the runtime model")
+set_property(CACHE FLECSI_RUNTIME_MODEL
+  PROPERTY STRINGS ${FLECSI_RUNTIME_MODELS})
+
+#------------------------------------------------------------------------------#
 # cinch_load_extras will try and find legion and mpi. If we want to
 # override the defaults, i.e. ENABLE_MPI=on and ENABLE_LEGION=on, we
 # need to do it before cinch_load_extras is called.
@@ -127,21 +142,6 @@ option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" ON)
 #------------------------------------------------------------------------------#
 
 set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/FleCSI)
-
-#------------------------------------------------------------------------------#
-# Add options for runtime selection
-#------------------------------------------------------------------------------#
-
-set(FLECSI_RUNTIME_MODELS legion mpi hpx)
-
-if(NOT FLECSI_RUNTIME_MODEL)
-  list(GET FLECSI_RUNTIME_MODELS 0 FLECSI_RUNTIME_MODEL)
-endif()
-
-set(FLECSI_RUNTIME_MODEL "${FLECSI_RUNTIME_MODEL}" CACHE STRING
-  "Select the runtime model")
-set_property(CACHE FLECSI_RUNTIME_MODEL
-  PROPERTY STRINGS ${FLECSI_RUNTIME_MODELS})
 
 #------------------------------------------------------------------------------#
 # OpenSSL

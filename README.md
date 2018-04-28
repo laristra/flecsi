@@ -4,8 +4,6 @@
 [![codecov.io](https://codecov.io/github/laristra/flecsi/coverage.svg?branch=master)](https://codecov.io/github/laristra/flecsi?branch=master)
 [![Quality Gate](https://sonarqube.com/api/badges/gate?key=flecsi%3A%2Fmaster)](https://sonarqube.com/dashboard?id=flecsi%3A%2Fmaster)
 
-
-
 # Introduction
 
 FleCSI is a compile-time configurable framework designed to support
@@ -35,8 +33,6 @@ FleCSI's data model provides a low-buy-in approach that makes it an
 attractive option for many application projects, as developers are
 not locked into particular layouts or data structure representations.
 
-
-
 # Requirements
 
 The primary requirement for building FleCSI is that you have
@@ -57,15 +53,14 @@ Install tools in the customary manner for your machine, e.g. by using
 
 For documentation, you'll need these as well:
 
-   * Doxygen >= 1.8
-   * [cinch-utils](https://github.com/laristra/cinch-utils) >= 1.0
+* Doxygen >= 1.8
+* [cinch-utils](https://github.com/laristra/cinch-utils) >= 1.0
+* [Pandoc](https://pandoc.org) >= 1.19
 
 ## Darwin
 
 If you wish to build FleCSI on LANL's Darwin cluster, see the Darwin
 Cluster section later in this document.
-
-
 
 # Installing the FleCSI Third-Party Libraries
 
@@ -76,35 +71,34 @@ libraries in your home directory.
 ## Download
 
 Begin by downloading the FleCSI third-party libraries:
-
-         cd
-         git clone --recursive https://github.com/laristra/flecsi-third-party.git
+```
+$ cd
+$ git clone --recursive https://github.com/laristra/flecsi-third-party.git
+```
 
 ## Build
 
 Next, enter ``flecsi-third-party/`` and make a build directory:
-
-         cd flecsi-third-party
-         mkdir build
-         cd build
-
+```
+$ cd flecsi-third-party
+$ mkdir build
+$ cd build
+```
 Then, for example, you can do the following for a debug-mode build:
-
-         cmake .. \
-           -DCMAKE_BUILD_TYPE=Debug \
-           -DCMAKE_INSTALL_PREFIX=$HOME/flecsi-third-party-debug/
-
+```
+$ cmake .. \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_INSTALL_PREFIX=$HOME/flecsi-third-party-debug/
+```
 Alternatively, you can run ``ccmake`` in place of ``cmake``, and use
 ``ccmake``'s interface to set the options.
 
 Finally:
-
-         make
-
+```
+$ make
+```
 builds and installs the FleCSI third-party libraries in the prefix
 that you specified.
-
-
 
 # Installing FleCSI
 
@@ -115,53 +109,63 @@ we'll assume that you wish to install FleCSI in your home directory.
 ## Download
 
 First, download FleCSI from GitHub:
-
-         cd
-         git clone --recursive https://github.com/laristra/flecsi.git
-
+```
+$ cd
+$ git clone --recursive https://github.com/laristra/flecsi.git
+```
 By default, you'll be on the ``master`` branch. Let's say you wish to
 work in the ``branchname`` branch instead. Enter ``flecsi/``, switch to
 the relevant branch, and be sure that you have the latest updates:
-
-         cd flecsi
-         git checkout branchname   # if you wish to work in this branch
-         git pull
-         git submodule update --recursive
+```
+$ cd flecsi
+$ git checkout branchname   # if you wish to work in this branch
+$ git pull
+$ git submodule update --recursive
+```
 
 ## Build
 
 You can now build FleCSI. For example, a Debug build using Legion
 can be done like this:
-
-         mkdir build
-         cd build
-
-         cmake .. \
-           -DCMAKE_BUILD_TYPE=Debug \
-           -DCMAKE_PREFIX_PATH=$HOME/flecsi-third-party-debug/ \
-           -DENABLE_UNIT_TESTS=ON \
-           -DFLECSI_RUNTIME_MODEL=legion \
-           -DENABLE_MPI=ON \
-           -DENABLE_PARMETIS=ON \
-           -DENABLE_COLORING=ON
-
-         make
-
+```
+$ mkdir build
+$ cd build
+$ cmake .. \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_PREFIX_PATH=$HOME/flecsi-third-party-debug \
+    -DENABLE_UNIT_TESTS=ON \
+    -DFLECSI_RUNTIME_MODEL=legion
+$ make
+```
 where ``cmake``'s ``-DCMAKE_PREFIX_PATH`` should be the path that
 you used for your FleCSI third-party library installation.
 
 Again, you can run ``ccmake`` in place of ``cmake``.
 
+## Building the Documentation
+
+You can build the FleCSI User and Developer Guides, as well as the
+Doxygen interface documentation by specifying additional arguments to
+the CMake configuration line:
+```
+$ cmake .. \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_PREFIX_PATH=$HOME/flecsi-third-party-debug/ \
+    -DENABLE_UNIT_TESTS=ON \
+    -DFLECSI_RUNTIME_MODEL=legion \
+    -DENABLE_DOCUMENTATION=ON \
+    -DENABLE_DOXYGEN=ON
+```
+This will
+
 ## Test
 
 From within the ``build`` directory, and after running ``make``
 as described above, you can run
-
-         make test
-
+```
+$ make test
+```
 to run FleCSI's unit tests.
-
-
 
 # Workflow
 
@@ -179,37 +183,31 @@ a pull request. Your changes will be tested for compliance, and reviewed
 by the maintainers of the project. If your changes are accepted, they
 will be merged into ``master``.
 
-
-
 # Darwin Cluster
 
 On Darwin, you can simplify some of the build requirements by using
 the **ngc/devel-gnu** environment module:
-
-         module load ngc   # ngc/devel-gnu is the default
-
+```
+$ module load ngc   # ngc/devel-gnu is the default
+```
 which will load up-to-date compiler and documentation tools. You'll
 also want OpenMPI:
-
-         module load openmpi
-
+```
+$ module load openmpi
+```
 Finally, you may want a later GCC than what the ``ngc`` module might
 provide, and you'll need compatible Boost libraries:
-
-         module unload gcc
-         module load   gcc/6.2.0
-         module load   boost/1.59.0_gcc-6.2.0
-
+```
+$ module unload gcc
+$ module load gcc/6.2.0
+$ module load boost/1.59.0_gcc-6.2.0
+```
 Note that the Boost module should match the ``gcc`` version.
-
-
 
 # Release
 
 This software has been approved for open source release and has
 been assigned **LA-CC-16-022**.
-
-
 
 # Copyright
 
