@@ -55,13 +55,8 @@ def execute(verbose, debug, build):
 
     if verbose:
         devnull = None
-        verbose_flag = 'VERBOSE=1'
     else:
         devnull = open(os.devnull, 'w')
-
-        # This needs to be set this way. Passing an empty string to
-        # subprocess.call fucks it up...
-        verbose_flag = 'VERBOSE=0'
     # if
 
     # Setup compiler and flags
@@ -77,14 +72,17 @@ def execute(verbose, debug, build):
 
     # Call CMake and make to build the example
     subprocess.call(['/usr/bin/cmake', cxx_compiler, cxx_flags,
-        cxx_debug_flags, '.'], stdout=devnull, stderr=devnull)
+        cxx_debug_flags, '.'], stdout=devnull)
 
     if verbose:
         print 'Invoking:'
-        print '/usr/bin/make install ' + verbose_flag
-
-    subprocess.call(['/usr/bin/make', 'install', verbose_flag], stdout=devnull,
-        stderr=devnull)
+        print '/usr/bin/make install VERBOSE=1'
+        subprocess.call(['/usr/bin/make', 'VERBOSE=1'])
+        subprocess.call(['/usr/bin/make', 'install', 'VERBOSE=1'],
+            stdout=devnull)
+    else:
+        subprocess.call(['/usr/bin/make'])
+        subprocess.call(['/usr/bin/make', 'install'], stdout=devnull)
 
     if not debug:
         shutil.rmtree(tmpdir)

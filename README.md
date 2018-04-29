@@ -47,7 +47,7 @@ You'll need the following tools in order to build FleCSI:
    * GCC >= 6.1.1
 
 Install tools in the customary manner for your machine, e.g. by using
-``apt-get`` on a Ubuntu system.
+*apt-get* on a Ubuntu system, or *dnf* for Fedora.
 
 ## Documentation
 
@@ -78,7 +78,7 @@ $ git clone --recursive https://github.com/laristra/flecsi-third-party.git
 
 ## Build
 
-Next, enter ``flecsi-third-party/`` and make a build directory:
+Next, enter *flecsi-third-party* and make a build directory:
 ```
 $ cd flecsi-third-party
 $ mkdir build
@@ -90,8 +90,8 @@ $ cmake .. \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=$HOME/flecsi-third-party-debug/
 ```
-Alternatively, you can run ``ccmake`` in place of ``cmake``, and use
-``ccmake``'s interface to set the options.
+Alternatively, you can run *ccmake* in place of *cmake*, and use
+*ccmake*'s interface to set the options.
 
 Finally:
 ```
@@ -113,8 +113,8 @@ First, download FleCSI from GitHub:
 $ cd
 $ git clone --recursive https://github.com/laristra/flecsi.git
 ```
-By default, you'll be on the ``master`` branch. Let's say you wish to
-work in the ``branchname`` branch instead. Enter ``flecsi/``, switch to
+By default, you'll be on the *master* branch. Let's say you wish to
+work in the *branchname* branch instead. Enter *flecsi*, switch to
 the relevant branch, and be sure that you have the latest updates:
 ```
 $ cd flecsi
@@ -137,10 +137,10 @@ $ cmake .. \
     -DFLECSI_RUNTIME_MODEL=legion
 $ make
 ```
-where ``cmake``'s ``-DCMAKE_PREFIX_PATH`` should be the path that
+where *cmake*'s *-DCMAKE_PREFIX_PATH* should be the path that
 you used for your FleCSI third-party library installation.
 
-Again, you can run ``ccmake`` in place of ``cmake``.
+Again, you can run *ccmake* in place of *cmake*.
 
 ## Building the Documentation
 
@@ -155,12 +155,21 @@ $ cmake .. \
     -DFLECSI_RUNTIME_MODEL=legion \
     -DENABLE_DOCUMENTATION=ON \
     -DENABLE_DOXYGEN=ON
+$ make
 ```
-This will
+This will build the User and Developer Guides in the *doc* subdirectory.
+
+In order to build the Doxygen interface documentation, you will need to
+execute:
+```
+$ make doxygen
+```
+which will build the interface documentation (also under the *doc*
+subdirectory).
 
 ## Test
 
-From within the ``build`` directory, and after running ``make``
+From within the *build* directory, and after running *make*
 as described above, you can run
 ```
 $ make test
@@ -173,7 +182,7 @@ FleCSI uses the
 [GitHub Flow](https://guides.github.com/introduction/flow)
 workflow pattern.
 
-When you check-out FleCSI, you'll be on the ``master`` branch. This is
+When you check-out FleCSI, you'll be on the *master* branch. This is
 the FleCSI development branch, which is protected in order to ensure
 that it is always deployable.
 
@@ -181,7 +190,7 @@ New work should always be done on a separate feature branch.
 When you have finished making updates to your branch, you should submit
 a pull request. Your changes will be tested for compliance, and reviewed
 by the maintainers of the project. If your changes are accepted, they
-will be merged into ``master``.
+will be merged into *master*.
 
 # Darwin Cluster
 
@@ -195,14 +204,14 @@ also want OpenMPI:
 ```
 $ module load openmpi
 ```
-Finally, you may want a later GCC than what the ``ngc`` module might
+Finally, you may want a later GCC than what the *ngc* module might
 provide, and you'll need compatible Boost libraries:
 ```
 $ module unload gcc
 $ module load gcc/6.2.0
 $ module load boost/1.59.0_gcc-6.2.0
 ```
-Note that the Boost module should match the ``gcc`` version.
+Note that the Boost module should match the *gcc* version.
 
 # Release
 

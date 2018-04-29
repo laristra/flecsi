@@ -51,7 +51,7 @@
 
   This macro registers field data with a data_client_t type. Data
   registration creates a data attribute for the given client type.
-  This call does not necessarily cause memory to be allocated. It's
+  This call does not necessarily cause memory to be allocated. Its
   primary function is to describe the field data to the runtime.
   Memory allocation will likely be deferred.
 
@@ -83,7 +83,7 @@
   @def flecsi_register_global
 
   This macro registers global field data.
-  This call does not necessarily cause memory to be allocated. It's
+  This call does not necessarily cause memory to be allocated. Its
   primary function is to describe the field data to the runtime.
   Memory allocation will likely be deferred.
 
@@ -114,7 +114,7 @@
   @def flecsi_register_color
 
   This macro registers color field data.
-  This call does not necessarily cause memory to be allocated. It's
+  This call does not necessarily cause memory to be allocated. Its
   primary function is to describe the field data to the runtime.
   Memory allocation will likely be deferred.
 
