@@ -91,6 +91,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(data_HEADERS
     ${data_HEADERS}
+    mpi/color.h
     mpi/data_client_handle_policy.h
     mpi/data_handle_policy.h
     mpi/data_policy.h
