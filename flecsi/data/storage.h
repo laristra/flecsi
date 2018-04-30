@@ -56,7 +56,7 @@ struct storage__ : public STORAGE_POLICY {
 
   /*!
     Register a field with the runtime.
-    
+
     @param client_type_key The data client indentifier hash.
     @param key             The identifier hash.
     @param callback        The registration call back function.
@@ -128,8 +128,9 @@ struct storage__ : public STORAGE_POLICY {
    */
 
   bool register_client_fields(size_t type_key, size_t instance_key) {
-    return registered_client_fields_.insert(
-      std::make_pair(type_key, instance_key)).second;
+    return registered_client_fields_
+        .insert(std::make_pair(type_key, instance_key))
+        .second;
   } // register_client_fields
 
   /*!
@@ -139,15 +140,17 @@ struct storage__ : public STORAGE_POLICY {
    */
 
   void assert_client_exists(size_t type_hash, size_t client_hash) {
-    clog_assert(client_registry_.find(type_hash) != client_registry_.end(),
-        "\nThe data_client type you are trying to access with key " << 
-        type_hash << " does not exist!" <<
-        "\nMake sure it has been properly registered!");
-    clog_assert(client_registry_[type_hash].find(client_hash) !=
-      client_registry_[type_hash].end(),
-      "\nThe data_client instance you are trying to access with key " << 
-      client_hash << " does not exist!" <<
-      "\nMake sure it has been properly registered!");
+    clog_assert(
+        client_registry_.find(type_hash) != client_registry_.end(),
+        "\nThe data_client type you are trying to access with key "
+            << type_hash << " does not exist!"
+            << "\nMake sure it has been properly registered!");
+    clog_assert(
+        client_registry_[type_hash].find(client_hash) !=
+            client_registry_[type_hash].end(),
+        "\nThe data_client instance you are trying to access with key "
+            << client_hash << " does not exist!"
+            << "\nMake sure it has been properly registered!");
   } // register_client
 
   /*!
@@ -170,7 +173,6 @@ struct storage__ : public STORAGE_POLICY {
   void reset(uintptr_t runtime_namespace) {}
 
 private:
-
   // Default constructor
   storage__() : STORAGE_POLICY() {}
 

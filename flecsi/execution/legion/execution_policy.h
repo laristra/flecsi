@@ -60,7 +60,7 @@ struct legion_execution_policy_t {
     @tparam RETURN The return type of the task.
    */
 
-  template <typename RETURN, launch_type_t launch>
+  template<typename RETURN, launch_type_t launch>
   using future__ = legion_future__<RETURN, launch>;
 
   /*!
@@ -76,7 +76,7 @@ struct legion_execution_policy_t {
     @param task The calling task.
    */
 
-  static runtime_state_t &runtime_state(void *task);
+  static runtime_state_t & runtime_state(void * task);
 
   //--------------------------------------------------------------------------//
   // Task interface.
@@ -96,12 +96,18 @@ struct legion_execution_policy_t {
                 valid std::string value.
    */
 
-  template <size_t KEY, typename RETURN,
-            RETURN (*TASK)(const Legion::Task *,
-                           const std::vector<Legion::PhysicalRegion> &,
-                           Legion::Context, Legion::Runtime *)>
-  static bool register_legion_task(processor_type_t processor, launch_t launch,
-                                   std::string name) {
+  template<
+      size_t KEY,
+      typename RETURN,
+      RETURN (*TASK)(
+          const Legion::Task *,
+          const std::vector<Legion::PhysicalRegion> &,
+          Legion::Context,
+          Legion::Runtime *)>
+  static bool register_legion_task(
+      processor_type_t processor,
+      launch_t launch,
+      std::string name) {
     clog(info) << "Registering legion task " << KEY << " " << name << std::endl;
 
     if (!context_t::instance().register_task(
@@ -118,10 +124,13 @@ struct legion_execution_policy_t {
     method, please see task__::register_task.
    */
 
-  template <size_t KEY, typename RETURN, typename ARG_TUPLE,
-            RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool register_task(processor_type_t processor, launch_t launch,
-                            std::string name) {
+  template<
+      size_t KEY,
+      typename RETURN,
+      typename ARG_TUPLE,
+      RETURN (*DELEGATE)(ARG_TUPLE)>
+  static bool
+  register_task(processor_type_t processor, launch_t launch, std::string name) {
     using wrapper_t = task_wrapper__<KEY, RETURN, ARG_TUPLE, DELEGATE>;
 
     if (!context_t::instance().register_task(
@@ -137,8 +146,12 @@ struct legion_execution_policy_t {
     method, please see task__::execute_task.
    */
 
-  template <launch_type_t launch, size_t KEY, typename RETURN,
-            typename ARG_TUPLE, typename... ARGS>
+  template<
+      launch_type_t launch,
+      size_t KEY,
+      typename RETURN,
+      typename ARG_TUPLE,
+      typename... ARGS>
   struct execute_task_functor {
     static void execute(ARGS &&... args) {
       clog(fatal) << "invalid launch type" << std::endl;
@@ -146,15 +159,19 @@ struct legion_execution_policy_t {
     }
   };
 
-  template <size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
-  struct execute_task_functor<launch_type_t::index, KEY, RETURN, ARG_TUPLE,
-                              ARGS...> {
+  template<size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
+  struct execute_task_functor<
+      launch_type_t::index,
+      KEY,
+      RETURN,
+      ARG_TUPLE,
+      ARGS...> {
     static decltype(auto) execute(ARG_TUPLE task_args) {
       using namespace Legion;
       // Make a tuple from the task arguments.
       // ARG_TUPLE task_args = std::make_tuple(args...);
 
-      context_t &context_ = context_t::instance();
+      context_t & context_ = context_t::instance();
 
       // Get the processor type.
       auto processor_type = context_.processor_type<KEY>();
@@ -181,10 +198,10 @@ struct legion_execution_policy_t {
               Legion::Domain::from_rect<1>(context_.all_processes()),
               TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
 
-          for (auto &req : init_args.region_reqs) {
+          for (auto & req : init_args.region_reqs) {
             launcher.add_region_requirement(req);
           }
-          for (auto &future : init_args.futures) {
+          for (auto & future : init_args.futures) {
             future->add_future_to_index_task_launcher(launcher);
           }
 
@@ -196,8 +213,8 @@ struct legion_execution_policy_t {
 
           Legion::MustEpochLauncher must_epoch_launcher;
           must_epoch_launcher.add_index_task(launcher);
-          auto future = legion_runtime->execute_must_epoch(legion_context,
-                                                           must_epoch_launcher);
+          auto future = legion_runtime->execute_must_epoch(
+              legion_context, must_epoch_launcher);
           future.wait_all_results(true);
 
           // Handoff to the MPI runtime.
@@ -219,10 +236,10 @@ struct legion_execution_policy_t {
               context_.task_id<KEY>(),
               TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
-          for (auto &req : init_args.region_reqs) {
+          for (auto & req : init_args.region_reqs) {
             task_launcher.add_region_requirement(req);
           }
-          for (auto &future : init_args.futures) {
+          for (auto & future : init_args.futures) {
             future->add_future_to_single_task_launcher(task_launcher);
           }
 
@@ -282,16 +299,20 @@ struct legion_execution_policy_t {
     }
   };
 
-  template <size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
-  struct execute_task_functor<launch_type_t::single, KEY, RETURN, ARG_TUPLE,
-                              ARGS...> {
+  template<size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
+  struct execute_task_functor<
+      launch_type_t::single,
+      KEY,
+      RETURN,
+      ARG_TUPLE,
+      ARGS...> {
     static decltype(auto) execute(ARG_TUPLE task_args) {
       using namespace Legion;
 
       // Make a tuple from the task arguments.
       // ARG_TUPLE task_args = std::make_tuple(args...);
 
-      context_t &context_ = context_t::instance();
+      context_t & context_ = context_t::instance();
 
       // Get the processor type.
       auto processor_type = context_.processor_type<KEY>();
@@ -315,23 +336,24 @@ struct legion_execution_policy_t {
         clog(info) << "Executing single task: " << KEY << std::endl;
 
         // Create a task launcher, passing the task arguments.
-        TaskLauncher task_launcher(context_.task_id<KEY>(),
-                                   TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+        TaskLauncher task_launcher(
+            context_.task_id<KEY>(),
+            TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
 #ifdef MAPPER_COMPACTION
         task_launcher.tag = MAPPER_COMPACTED_STORAGE;
 #endif
 
-        for (auto &req : init_args.region_reqs) {
+        for (auto & req : init_args.region_reqs) {
           task_launcher.add_region_requirement(req);
         }
-        for (auto &future : init_args.futures) {
+        for (auto & future : init_args.futures) {
           future->add_future_to_single_task_launcher(task_launcher);
         }
 
         // Enqueue the prolog.
-        task_prolog_t task_prolog(legion_runtime, legion_context,
-                                  task_launcher);
+        task_prolog_t task_prolog(
+            legion_runtime, legion_context, task_launcher);
         task_prolog.walk(task_args);
         task_prolog.launch_copies();
 
@@ -350,14 +372,18 @@ struct legion_execution_policy_t {
     }
   };
 
-  template <launch_type_t launch, size_t KEY, typename RETURN,
-            typename ARG_TUPLE, typename... ARGS>
+  template<
+      launch_type_t launch,
+      size_t KEY,
+      typename RETURN,
+      typename ARG_TUPLE,
+      typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
 
     ARG_TUPLE task_args_tmp = std::make_tuple(args...);
 
-    return execute_task_functor<launch, KEY, RETURN, ARG_TUPLE,
-                                ARGS...>::execute(task_args_tmp);
+    return execute_task_functor<
+        launch, KEY, RETURN, ARG_TUPLE, ARGS...>::execute(task_args_tmp);
   } // execute_task
 
   //--------------------------------------------------------------------------//
@@ -369,8 +395,11 @@ struct legion_execution_policy_t {
     method, please see function__::register_function.
    */
 
-  template <size_t KEY, typename RETURN, typename ARG_TUPLE,
-            RETURN (*FUNCTION)(ARG_TUPLE)>
+  template<
+      size_t KEY,
+      typename RETURN,
+      typename ARG_TUPLE,
+      RETURN (*FUNCTION)(ARG_TUPLE)>
   static bool register_function() {
     return context_t::instance()
         .template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
@@ -381,11 +410,12 @@ struct legion_execution_policy_t {
     method, please see function__::execute_function.
    */
 
-  template <typename FUNCTION_HANDLE, typename... ARGS>
-  static decltype(auto) execute_function(FUNCTION_HANDLE &handle,
-                                         ARGS &&... args) {
-    return handle(context_t::instance().function(handle.get_key()),
-                  std::forward_as_tuple(args...));
+  template<typename FUNCTION_HANDLE, typename... ARGS>
+  static decltype(auto)
+  execute_function(FUNCTION_HANDLE & handle, ARGS &&... args) {
+    return handle(
+        context_t::instance().function(handle.get_key()),
+        std::forward_as_tuple(args...));
   } // execute_function
 
 }; // struct legion_execution_policy_t

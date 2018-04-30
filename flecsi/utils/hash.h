@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <cstddef>
 #include <utility>
 
@@ -226,11 +225,7 @@ client_adjacency_hash() {
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-template<
-    size_t NAMESPACE,
-    size_t NAME,
-    size_t INDEX,
-    size_t INDEX_SUBSPACE>
+template<size_t NAMESPACE, size_t NAME, size_t INDEX, size_t INDEX_SUBSPACE>
 inline constexpr size_t
 client_index_subspace_hash() {
   return ((NAMESPACE ^ NAME) << 16) | (INDEX << 8) | INDEX_SUBSPACE;

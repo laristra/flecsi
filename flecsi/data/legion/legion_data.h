@@ -25,8 +25,8 @@
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/execution/legion/helper.h>
 #include <flecsi/execution/internal_index_space.h>
+#include <flecsi/execution/legion/helper.h>
 #include <flecsi/execution/legion/legion_tasks.h>
 
 clog_register_tag(legion_data);
@@ -50,7 +50,7 @@ public:
   using coloring_info_t = coloring::coloring_info_t;
 
   using adjacency_info_t = coloring::adjacency_info_t;
-  
+
   using index_subspace_info_t = execution::context_t::index_subspace_info_t;
 
   using coloring_info_map_t = std::unordered_map<size_t, coloring_info_t>;
@@ -141,7 +141,7 @@ public:
     global_index_space_.index_space_id = index_space_id;
 
     LegionRuntime::Arrays::Rect<1> bounds(
-      LegionRuntime::Arrays::Point<1>(0),LegionRuntime::Arrays::Point<1>(1));
+        LegionRuntime::Arrays::Point<1>(0), LegionRuntime::Arrays::Point<1>(1));
 
     Domain dom(Domain::from_rect<1>(bounds));
 
@@ -256,9 +256,10 @@ public:
 
     // Create expanded index space
     LegionRuntime::Arrays::Rect<2> expanded_bounds =
-      LegionRuntime::Arrays::Rect<2>(LegionRuntime::Arrays::Point<2>::ZEROES(),
-      make_point(num_colors_, is.total_num_entities));
-    
+        LegionRuntime::Arrays::Rect<2>(
+            LegionRuntime::Arrays::Point<2>::ZEROES(),
+            make_point(num_colors_, is.total_num_entities));
+
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
 
     is.index_space = runtime_->create_index_space(ctx_, expanded_dom);
@@ -315,11 +316,11 @@ public:
     c.max_conn_size = fi.total_num_entities * ti.total_num_entities;
 
     // Create expanded index space
-    LegionRuntime::Arrays::Rect<2> expanded_bounds = 
-      LegionRuntime::Arrays::Rect<2>(
-        LegionRuntime::Arrays::Point<2>::ZEROES(),
-          make_point(num_colors_, c.max_conn_size));
-    
+    LegionRuntime::Arrays::Rect<2> expanded_bounds =
+        LegionRuntime::Arrays::Rect<2>(
+            LegionRuntime::Arrays::Point<2>::ZEROES(),
+            make_point(num_colors_, c.max_conn_size));
+
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
     c.index_space = runtime_->create_index_space(ctx_, expanded_dom);
     attach_name(c, c.index_space, "expanded index space");
@@ -347,10 +348,10 @@ public:
         "mismatch in color sizes");
 
     DomainColoring color_partitioning;
-    for(size_t color = 0; color < num_colors_; ++color){
+    for (size_t color = 0; color < num_colors_; ++color) {
       LegionRuntime::Arrays::Rect<2> subrect(
-        make_point(color, 0), make_point(color,
-        adjacency_info.color_sizes[color] - 1));
+          make_point(color, 0),
+          make_point(color, adjacency_info.color_sizes[color] - 1));
 
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
@@ -379,10 +380,10 @@ public:
     is.capacity = info.capacity;
 
     // Create expanded index space
-    LegionRuntime::Arrays::Rect<2> expanded_bounds = 
-      LegionRuntime::Arrays::Rect<2>(
-        LegionRuntime::Arrays::Point<2>::ZEROES(),
-          make_point(num_colors_, is.capacity));
+    LegionRuntime::Arrays::Rect<2> expanded_bounds =
+        LegionRuntime::Arrays::Rect<2>(
+            LegionRuntime::Arrays::Point<2>::ZEROES(),
+            make_point(num_colors_, is.capacity));
 
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
 
@@ -406,17 +407,16 @@ public:
         runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
 
     DomainColoring color_partitioning;
-    for(size_t color = 0; color < num_colors_; ++color){
+    for (size_t color = 0; color < num_colors_; ++color) {
       LegionRuntime::Arrays::Rect<2> subrect(
-        make_point(color, 0), make_point(color,
-        is.capacity - 1));
+          make_point(color, 0), make_point(color, is.capacity - 1));
 
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
 
     is.index_partition = runtime_->create_index_partition(
         ctx_, is.index_space, color_domain_, color_partitioning,
-        true /*disjoint*/);    
+        true /*disjoint*/);
 
     index_subspace_map_.emplace(info.index_subspace, std::move(is));
   }
@@ -451,7 +451,7 @@ public:
       auto ghost_owner_pos_fid = FieldID(internal_field::ghost_owner_pos);
 
       allocator.allocate_field(
-        sizeof(LegionRuntime::Arrays::Point<2>), ghost_owner_pos_fid);
+          sizeof(LegionRuntime::Arrays::Point<2>), ghost_owner_pos_fid);
 
       using field_info_t = context_t::field_info_t;
 
@@ -554,7 +554,8 @@ public:
     return adjacency_map_;
   }
 
-  const std::unordered_map<size_t, index_subspace_t> & index_subspace_map() const {
+  const std::unordered_map<size_t, index_subspace_t> &
+  index_subspace_map() const {
     return index_subspace_map_;
   }
 

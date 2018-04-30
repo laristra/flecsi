@@ -44,10 +44,9 @@ struct crs_t {
   std::vector<size_t> offsets;
   std::vector<size_t> indices;
 
-  define_as(offsets)
-  define_as(indices)
+  define_as(offsets) define_as(indices)
 
-  size_t size() const {
+      size_t size() const {
     return offsets.size() - 1;
   } // size
 

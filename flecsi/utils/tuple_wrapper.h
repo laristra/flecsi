@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <tuple>
 
 namespace flecsi {
@@ -46,4 +45,3 @@ private:
 
 } // namespace utils
 } // namespace flecsi
-

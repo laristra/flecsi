@@ -45,7 +45,6 @@ struct sparse_entry_value__ {
 // Generic bitfield type
 using bitset_t = std::bitset<8>;
 
-
 } // namespace data
 } // namespace flecsi
 

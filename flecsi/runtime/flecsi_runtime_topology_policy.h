@@ -33,8 +33,10 @@ namespace flecsi {
 
 template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
 using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
-  topology::legion_topology_storage_policy_t__<NUM_DIMS, NUM_DOMAINS,
-  NUM_INDEX_SUBSPACES>;
+    topology::legion_topology_storage_policy_t__<
+        NUM_DIMS,
+        NUM_DOMAINS,
+        NUM_INDEX_SUBSPACES>;
 
 } // namespace flecsi
 
@@ -46,9 +48,8 @@ using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
 namespace flecsi {
 
 template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
-using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
-  topology::mpi_topology_storage_policy__<NUM_DIMS, NUM_DOMAINS,
-  NUM_INDEX_SUBSPACES>;
+using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY = topology::
+    mpi_topology_storage_policy__<NUM_DIMS, NUM_DOMAINS, NUM_INDEX_SUBSPACES>;
 
 } // namespace flecsi
 
@@ -60,9 +61,8 @@ using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
 namespace flecsi {
 
 template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
-using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
-  topology::hpx_topology_storage_policy__<NUM_DIMS, NUM_DOMAINS,
-  NUM_INDEX_SUBSPACES>;
+using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY = topology::
+    hpx_topology_storage_policy__<NUM_DIMS, NUM_DOMAINS, NUM_INDEX_SUBSPACES>;
 
 } // namespace flecsi
 

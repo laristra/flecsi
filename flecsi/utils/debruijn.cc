@@ -14,7 +14,6 @@
 
 /*! @file */
 
-
 //!
 //! \file
 //! \date Initial file creation: Apr 09, 2017

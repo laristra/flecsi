@@ -24,9 +24,7 @@
 
 namespace flecsi {
 namespace data {
-namespace legion {
-
-} // namespace legion
+namespace legion {} // namespace legion
 } // namespace data
 } // namespace flecsi
 

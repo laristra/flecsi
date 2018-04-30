@@ -24,10 +24,8 @@ namespace execution {
   information so that global objects can be properly deleted.
  */
 
-template<
-  typename OBJECT_TYPE>
-struct global_object_wrapper__
-{
+template<typename OBJECT_TYPE>
+struct global_object_wrapper__ {
 
   /*!
     Delete the object referenced by \em address.

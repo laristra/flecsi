@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <cstdint>
 #include <functional>
 #include <limits>
@@ -87,7 +86,7 @@ type() {
 }
 
 inline std::string
-type(const std::type_info &type_info) {
+type(const std::type_info & type_info) {
   return demangle(type_info.name());
 }
 

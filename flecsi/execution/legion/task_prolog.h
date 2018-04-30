@@ -46,7 +46,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
   /*!
    Construct a task_prolog_t instance.
-  
+
    @param runtime The Legion task runtime.
    @param context The Legion task runtime context.
    */
@@ -61,7 +61,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
   /*!
    Walk the data handles for a flecsi task, store info for ghost copies
    in member variables, and add phase barriers to launcher as needed.
-  
+
    @tparam T                     The data type referenced by the handle.
    @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
                                  indices of the index partition.
@@ -69,7 +69,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
                                  indices of the index partition.
    @tparam GHOST_PERMISSIONS     The permissions required on the ghost
                                  indices of the index partition.
-  
+
    @param runtime The Legion task runtime.
    @param context The Legion task runtime context.
    */
@@ -156,10 +156,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
   /*!
    Walk the data handles for a flecsi task, store info for ghost copies
    in member variables, and add phase barriers to launcher as needed.
-  
+
    Use member variables initialized by the walk to launch 1 copy per owner
    region
-  
+
    */
 
   void launch_copies() {
@@ -238,7 +238,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
   } // launch copies
 
-  /*!  
+  /*!
     Don't do anything with flecsi task argument that are not data handles.
    */
 

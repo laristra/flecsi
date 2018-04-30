@@ -56,7 +56,7 @@ namespace legion {
 
 template<typename T, size_t PERMISSIONS>
 struct global_handle__ : public global_data_handle__<T, PERMISSIONS> {
-   
+
   /*!
     Type definitions.
    */
@@ -80,7 +80,7 @@ struct global_handle__ : public global_data_handle__<T, PERMISSIONS> {
   /*
     Copy constructor.
    */
-  
+
   template<size_t P2>
   global_handle__(const global_handle__<T, P2> & a)
       : base_t(reinterpret_cast<const base_t &>(a)), label_(a.label()),
@@ -112,7 +112,7 @@ struct global_handle__ : public global_data_handle__<T, PERMISSIONS> {
 
   /*!
    \brief Test to see if this handle is empty
-  
+
    \return true if registered.
    */
 
