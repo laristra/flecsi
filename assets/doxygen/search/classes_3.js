@@ -25,9 +25,9 @@ var searchData=
   ['dense_5fdata_5fhandle_5fbase_5f_5f',['dense_data_handle_base__',['../structflecsi_1_1dense__data__handle__base____.html',1,'flecsi']]],
   ['dense_5fdata_5fhandle_5fbase_5f_5f_3c_20t_2c_20exclusive_5fpermissions_2c_20shared_5fpermissions_2c_20ghost_5fpermissions_20_3e',['dense_data_handle_base__&lt; T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS &gt;',['../structflecsi_1_1dense__data__handle__base____.html',1,'flecsi']]],
   ['dense_5fdata_5fhandle_5fbase_5ft',['dense_data_handle_base_t',['../structflecsi_1_1dense__data__handle__base__t.html',1,'flecsi']]],
+  ['dense_5fhandle_5ft',['dense_handle_t',['../structflecsi_1_1data_1_1mpi_1_1dense__handle__t.html',1,'flecsi::data::mpi']]],
   ['dense_5fhandle_5ft',['dense_handle_t',['../structflecsi_1_1data_1_1hpx_1_1dense__handle__t.html',1,'flecsi::data::hpx']]],
   ['dense_5fhandle_5ft',['dense_handle_t',['../structflecsi_1_1data_1_1legion_1_1dense__handle__t.html',1,'flecsi::data::legion']]],
-  ['dense_5fhandle_5ft',['dense_handle_t',['../structflecsi_1_1data_1_1mpi_1_1dense__handle__t.html',1,'flecsi::data::mpi']]],
   ['dimensioned_5farray_5f_5f',['dimensioned_array__',['../classflecsi_1_1utils_1_1dimensioned__array____.html',1,'flecsi::utils']]],
   ['domain_5fconnectivity_5f_5f',['domain_connectivity__',['../classflecsi_1_1topology_1_1domain__connectivity____.html',1,'flecsi::topology']]],
   ['domain_5fentity_5f_5f',['domain_entity__',['../classflecsi_1_1topology_1_1domain__entity____.html',1,'flecsi::topology']]]
