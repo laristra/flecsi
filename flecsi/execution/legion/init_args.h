@@ -28,6 +28,10 @@
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/ragged_accessor.h>
+#include <flecsi/data/sparse_mutator.h>
+#include <flecsi/data/ragged_mutator.h>
 #include <flecsi/data/global_accessor.h>
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/topology/mesh_types.h>
@@ -237,6 +241,38 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   template<typename T, launch_type_t launch>
   void handle(legion_future__<T, launch> & h) {
     futures.push_back(std::make_shared<legion_future__<T, launch>>(h));
+  }
+
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    sparse_accessor <
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS
+    > &a
+  )
+  {
+    // TODO: implement
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    sparse_mutator<
+    T
+    > &m
+  )
+  {
+    // TODO: implement
   }
 
   /*!

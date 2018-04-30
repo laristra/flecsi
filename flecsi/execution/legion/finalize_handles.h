@@ -40,6 +40,38 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
               SHARED_PERMISSIONS,
               GHOST_PERMISSIONS> & a) {} // handle
 
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    sparse_accessor <
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS
+    > &a
+  )
+  {
+    // TODO: implement
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    sparse_mutator<
+    T
+    > &m
+  )
+  {
+    // TODO: implement
+  }
+
   /*!
      The finalize_handles_t type can be called to walk task args after task
      execution. This allows us to free memory allocated during the task.

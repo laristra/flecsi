@@ -238,6 +238,38 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
   } // launch copies
 
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    sparse_accessor <
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS
+    > &a
+  )
+  {
+    // TODO: implement
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    sparse_mutator<
+    T
+    > &m
+  )
+  {
+    // TODO: implement
+  }
+
   /*!
     Don't do anything with flecsi task argument that are not data handles.
    */
