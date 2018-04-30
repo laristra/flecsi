@@ -111,6 +111,33 @@ namespace execution {
       MPI_Win_wait(win);
     } // handle
 
+
+    template<
+      typename T,
+      size_t PERMISSIONS
+    >
+    void
+    handle(
+     global_accessor__<
+       T,
+       PERMISSIONS
+     > & a
+    )
+    {
+      auto& h = a.handle;
+
+      // Skip Read Only handles
+       if (PERMISSIONS == ro)
+         return;
+
+        auto &context = context_t::instance();
+        const int my_color = context.color();
+        MPI_Bcast(&a.data(), 1, flecsi::coloring::mpi_typetraits__<T>::type(),
+	0,
+        MPI_COMM_WORLD); 
+    } // handle
+
+
     template<
       typename T,
       size_t EXCLUSIVE_PERMISSIONS,
