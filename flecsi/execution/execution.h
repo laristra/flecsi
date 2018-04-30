@@ -108,6 +108,22 @@ clog_register_tag(execution);
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
           type>(index, obj);
 
+/*!
+  @def flecsi_initialize_global_object
+
+  Call the constructor of a global object that has been registered with the
+  FleCSI runtime. Objects constructed with this call are automatically
+  deleted when the runtime exits.
+
+  @param index  The index of the global object within the given namespace.
+  @param nspace The namespace of the global object.
+  @param type   The type of the global object.
+  @param ...    A variadic argument list of the runtime arguments to the
+                constructor.
+
+  @ingroup execution
+ */
+
 #define flecsi_initialize_global_object(index, nspace, type, ...)              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
