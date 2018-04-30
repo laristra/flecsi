@@ -119,8 +119,8 @@ Public Types</h2></td></tr>
 <tr class="separator:a8cacf5c5d7f491b8326b8160ccdcf12c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42b969b49b7f03b6eb8e9eaa61e4ed9d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a42b969b49b7f03b6eb8e9eaa61e4ed9d">unique_tid_t</a> = <a class="el" href="structflecsi_1_1utils_1_1unique__id__t.html">utils::unique_id_t</a>&lt; task_id_t, FLECSI_GENERATED_ID_MAX &gt;</td></tr>
 <tr class="separator:a42b969b49b7f03b6eb8e9eaa61e4ed9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6176656efb6d579e07647417d065b92"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ad6176656efb6d579e07647417d065b92">task_info_t</a> = std::tuple&lt; task_id_t, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>, std::string, <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a8cacf5c5d7f491b8326b8160ccdcf12c">registration_function_t</a> &gt;</td></tr>
-<tr class="separator:ad6176656efb6d579e07647417d065b92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b959d08d237d648cc1294e4f1e1c0ea"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b959d08d237d648cc1294e4f1e1c0ea">task_info_t</a> = std::tuple&lt; task_id_t, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>, std::string, <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a8cacf5c5d7f491b8326b8160ccdcf12c">registration_function_t</a> &gt;</td></tr>
+<tr class="separator:a9b959d08d237d648cc1294e4f1e1c0ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -179,9 +179,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>wait_on_mpi_single</b
 <tr class="memitem:a2685a1ad3028601bb21a7fd7b80ac045"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a2685a1ad3028601bb21a7fd7b80ac045">register_task</a> (size_t key, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a> launch, std::string &amp;name, const <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a8cacf5c5d7f491b8326b8160ccdcf12c">registration_function_t</a> &amp;callback)</td></tr>
 <tr class="separator:a2685a1ad3028601bb21a7fd7b80ac045"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d2bd5ee16f6a046e4f2c33297da9009"><td class="memTemplParams" colspan="2">template&lt;size_t KEY&gt; </td></tr>
-<tr class="memitem:a3d2bd5ee16f6a046e4f2c33297da9009"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ad6176656efb6d579e07647417d065b92">task_info_t</a> &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a3d2bd5ee16f6a046e4f2c33297da9009">task_info</a> ()</td></tr>
+<tr class="memitem:a3d2bd5ee16f6a046e4f2c33297da9009"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b959d08d237d648cc1294e4f1e1c0ea">task_info_t</a> &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a3d2bd5ee16f6a046e4f2c33297da9009">task_info</a> ()</td></tr>
 <tr class="separator:a3d2bd5ee16f6a046e4f2c33297da9009"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b93a5338f907beb89949ff4aa4cf83a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ad6176656efb6d579e07647417d065b92">task_info_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a6b93a5338f907beb89949ff4aa4cf83a">task_info</a> (size_t key)</td></tr>
+<tr class="memitem:a6b93a5338f907beb89949ff4aa4cf83a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b959d08d237d648cc1294e4f1e1c0ea">task_info_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a6b93a5338f907beb89949ff4aa4cf83a">task_info</a> (size_t key)</td></tr>
 <tr class="separator:a6b93a5338f907beb89949ff4aa4cf83a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aecf7ef0d807edc85e071243ea89aaabc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#aecf7ef0d807edc85e071243ea89aaabc">task_info_template_method</a> (task_id, task_id_t, 0)</td></tr>
 <tr class="separator:aecf7ef0d807edc85e071243ea89aaabc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -240,12 +240,12 @@ const size_t&#160;</td><td class="memItemRight" valign="bottom"><b>TOP_LEVEL_TAS
 
 </div>
 </div>
-<a class="anchor" id="ad6176656efb6d579e07647417d065b92"></a>
+<a class="anchor" id="a9b959d08d237d648cc1294e4f1e1c0ea"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ad6176656efb6d579e07647417d065b92">flecsi::execution::legion_context_policy_t::task_info_t</a> =  std::tuple&lt;task_id_t, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>, std::string, <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a8cacf5c5d7f491b8326b8160ccdcf12c">registration_function_t</a>&gt;</td>
+          <td class="memname">using <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b959d08d237d648cc1294e4f1e1c0ea">flecsi::execution::legion_context_policy_t::task_info_t</a> =  std::tuple&lt; task_id_t, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>, std::string, <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a8cacf5c5d7f491b8326b8160ccdcf12c">registration_function_t</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -924,7 +924,7 @@ template&lt;size_t KEY&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ad6176656efb6d579e07647417d065b92">task_info_t</a>&amp; flecsi::execution::legion_context_policy_t::task_info </td>
+          <td class="memname"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b959d08d237d648cc1294e4f1e1c0ea">task_info_t</a>&amp; flecsi::execution::legion_context_policy_t::task_info </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -954,7 +954,7 @@ template&lt;size_t KEY&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ad6176656efb6d579e07647417d065b92">task_info_t</a>&amp; flecsi::execution::legion_context_policy_t::task_info </td>
+          <td class="memname"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b959d08d237d648cc1294e4f1e1c0ea">task_info_t</a>&amp; flecsi::execution::legion_context_policy_t::task_info </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
