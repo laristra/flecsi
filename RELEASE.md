@@ -12,3 +12,4 @@
 * Improve CMake options, try to make defaults behave well
 * Merge topolgoy storage implementations for all runtimes
 * Document flecsit
+* What is the difference between Legion::Runtime and Legion::HighLevelRuntime?

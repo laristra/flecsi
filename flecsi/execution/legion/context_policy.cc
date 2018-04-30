@@ -105,7 +105,7 @@ int legion_context_policy_t::initialize(int argc, char **argv) {
 //----------------------------------------------------------------------------//
 
 void legion_context_policy_t::unset_call_mpi(
-    Legion::Context &ctx, Legion::HighLevelRuntime *runtime) {
+    Legion::Context &ctx, Legion::Runtime *runtime) {
   {
     clog_tag_guard(context);
     clog(info) << "In unset_call_mpi" << std::endl;
@@ -153,7 +153,7 @@ Legion::FutureMap legion_context_policy_t::unset_call_mpi_single() {
 //----------------------------------------------------------------------------//
 
 void legion_context_policy_t::handoff_to_mpi(
-    Legion::Context &ctx, Legion::HighLevelRuntime *runtime) {
+    Legion::Context &ctx, Legion::Runtime *runtime) {
   const auto tid =
       context_t::instance()
           .task_id<__flecsi_internal_task_key(handoff_to_mpi_task)>();
@@ -176,7 +176,7 @@ void legion_context_policy_t::handoff_to_mpi(
 
 Legion::FutureMap
 legion_context_policy_t::wait_on_mpi(Legion::Context &ctx,
-                                     Legion::HighLevelRuntime *runtime) {
+  Legion::Runtime *runtime) {
   const auto tid = context_t::instance()
                        .task_id<__flecsi_internal_task_key(wait_on_mpi_task)>();
 
@@ -199,7 +199,7 @@ legion_context_policy_t::wait_on_mpi(Legion::Context &ctx,
 //----------------------------------------------------------------------------//
 
 void legion_context_policy_t::connect_with_mpi(
-    Legion::Context &ctx, Legion::HighLevelRuntime *runtime) {
+    Legion::Context &ctx, Legion::Runtime *runtime) {
   int size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
