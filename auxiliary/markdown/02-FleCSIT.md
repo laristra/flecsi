@@ -1,8 +1,7 @@
 # FleCSI: FleCSIT
 <!--
-  The above header ("FleCSI: FleCSIT") is required for Doxygen to
-  correctly name the auto-generated page. It is ignored in the FleCSI
-  guide documentation.
+  The above header is required for Doxygen to correctly name the
+  auto-generated page. It is ignored in the FleCSI guide documentation.
 -->
 
 <!-- CINCHDOC DOCUMENT(user-guide) SECTION(flecsit) -->

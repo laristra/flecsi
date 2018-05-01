@@ -1,8 +1,7 @@
 # FleCSI: C++ Language Extensions
 <!--
-  The above header ("FleCSI: C++ Language Extensions") is required for
-  Doxygen to correctly name the auto-generated page. It is ignored in
-  the FleCSI documentation.
+  The above header is required for Doxygen to correctly name the
+  auto-generated page. It is ignored in the FleCSI guide documentation.
 -->
 
 <!-- CINCHDOC DOCUMENT(user-guide) SECTION(flecsi-language-extensions) -->
