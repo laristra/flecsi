@@ -13,6 +13,7 @@
 #include <flecsi/data/mpi/sparse.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/data/mpi/global.h>
+#include <flecsi/data/mpi/color.h>
 //#include <flecsi/data/mpi/scoped.h>
 //#include <flecsi/data/mpi/tuple.h>
 

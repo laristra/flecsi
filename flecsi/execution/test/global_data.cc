@@ -37,10 +37,10 @@ void set_global_int(gint<rw> global, int value) {
   }
 }
 
-void print_global_int(gint<ro> global) {
+void check_global_int(gint<ro> global, int value) {
   auto& context = execution::context_t::instance();
   auto rank = context.color();
-  std::cout << "[" << rank << "] global = " << global.data() << std::endl;
+  ASSERT_EQ(global, static_cast<int>(value));
 }
 
 void hello_world() {
@@ -50,7 +50,7 @@ void hello_world() {
 }
 
 flecsi_register_task_simple(set_global_int, loc, single);
-flecsi_register_task_simple(print_global_int, loc, single);
+flecsi_register_task_simple(check_global_int, loc, single);
 flecsi_register_task_simple(hello_world, loc, single);
 
 flecsi_register_global(global, int1, int, 1);
@@ -71,14 +71,14 @@ void specialization_tlt_init(int argc, char ** argv) {
   flecsi_execute_task_simple(set_global_int, single, gh0, 42);
 
   // rank 1
-  // flecsi_execute_task_simple(hello_world, single);
+   flecsi_execute_task_simple(hello_world, single);
 
   // rank 0
-  // flecsi_execute_task_simple(set_global_int, single, gh1, 2042);
+   flecsi_execute_task_simple(set_global_int, single, gh1, 2042);
 
-  // flecsi_execute_task_simple(print_global_int, single, gh0);
-  // flecsi_execute_task_simple(print_global_int, single, gh1);
-  // flecsi_execute_task_simple(hello_world, single);
+   flecsi_execute_task_simple(check_global_int, single, gh0, 42);
+   flecsi_execute_task_simple(check_global_int, single, gh1, 2042);
+   flecsi_execute_task_simple(hello_world, single);
 
 } // specialization_tlt_init
 
@@ -87,12 +87,12 @@ void specialization_spmd_init(int argc, char ** argv) {
   auto gh1 = flecsi_get_global(global, int2, int, 0);
 
   // not allowed
-  // flecsi_execute_task_simple(set_global_int, single, gh0, 43);
+//   flecsi_execute_task_simple(set_global_int, single, gh0, 43);
 
-  flecsi_execute_task_simple(print_global_int, single, gh0);
-  // flecsi_execute_task_simple(print_global_int, single, gh1);
+  flecsi_execute_task_simple(check_global_int, single, gh0, 42);
+  flecsi_execute_task_simple(check_global_int, single, gh1,2042);
 
-  // flecsi_execute_task_simple(hello_world, single);
+  flecsi_execute_task_simple(hello_world, single);
 
 } // specialization_spmd_init
 
@@ -104,8 +104,8 @@ void driver(int argc, char ** argv) {
   auto gh0 = flecsi_get_global(global, int1, int, 0);
   auto gh1 = flecsi_get_global(global, int2, int, 0);
 
-  flecsi_execute_task_simple(print_global_int, single, gh0);
-  // flecsi_execute_task_simple(print_global_int, single, gh1);
+  flecsi_execute_task_simple(check_global_int, single, gh0, 42);
+  flecsi_execute_task_simple(check_global_int, single, gh1, 2042);
 
   // flecsi_execute_task_simple(hello_world, single);
 

@@ -37,7 +37,6 @@ void data_handle_dump(dense_accessor<double, rw, ro, ro> x) {
   clog(info) << "ghost size: " << x.ghost_size() << std::endl;
 }
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 void global_data_handle_dump(global_accessor<double, ro> x) {
   clog(info) << "global combined size: " << x.size() << std::endl;
 }
@@ -46,7 +45,6 @@ void color_data_handle_dump(color_accessor<double, ro> x) {
   clog(info) << "color combined size: " << x.size() << std::endl;
 }
 
-#endif
 
 void exclusive_writer(dense_accessor<double, wo, ro, ro> x) {
   clog(info) << "exclusive writer write" << std::endl;
@@ -62,7 +60,6 @@ void exclusive_reader(dense_accessor<double, ro, ro, ro> x) {
   }
 }
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 void global_writer(global_accessor<double, wo> x) {
   clog(info) << "global writer write" << std::endl;
     x = static_cast<double>(3.14);
@@ -88,7 +85,6 @@ void mpi_task(int val, global_accessor<double, ro> x)
   std::cout << "This is an mpi task, val = "<<val << std::endl;
   ASSERT_EQ(x, static_cast<double>(3.14));
 }
-#endif
 
 void exclusive_mpi(dense_accessor<double, ro, ro, ro> x) {
   clog(info) << "exclusive reader read: " << std::endl;
@@ -100,19 +96,15 @@ void exclusive_mpi(dense_accessor<double, ro, ro, ro> x) {
 
 flecsi_register_task_simple(task1, loc, single);
 flecsi_register_task_simple(data_handle_dump, loc, single);
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 flecsi_register_task_simple(global_data_handle_dump, loc, single);
 flecsi_register_task_simple(color_data_handle_dump, loc, single);
-#endif
 flecsi_register_task_simple(exclusive_writer, loc, single);
 flecsi_register_task_simple(exclusive_reader, loc, single);
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 flecsi_register_task_simple(global_writer, loc, single);
 flecsi_register_task_simple(global_reader, loc, single);
 flecsi_register_task_simple(color_writer, loc, single);
 flecsi_register_task_simple(color_reader, loc, single);
 flecsi_register_task(mpi_task, , mpi, index);
-#endif
 flecsi_register_task(exclusive_mpi, , mpi, index);
 
 flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
@@ -146,7 +138,6 @@ void specialization_tlt_init(int argc, char ** argv) {
 
   flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
   auto global_handle = flecsi_get_global(ns, velocity, double, 0);
   flecsi_execute_task_simple(global_data_handle_dump, single, global_handle);
   flecsi_execute_task_simple(global_writer, single, global_handle);
@@ -155,7 +146,6 @@ void specialization_tlt_init(int argc, char ** argv) {
   auto global_handle2 = flecsi_get_global(ns, time, double, 0);
   flecsi_execute_task_simple(global_writer, single, global_handle2);
   flecsi_execute_task(mpi_task,, index, 11, global_handle2);
-#endif
 } // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
@@ -181,7 +171,6 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task_simple(exclusive_writer, single, h);
   flecsi_execute_task_simple(exclusive_reader, single, h);
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
   //get global handle
   auto global_handle=flecsi_get_global(ns, velocity, double, 0);
 
@@ -194,7 +183,6 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task_simple(color_writer, single, color_handle);
   flecsi_execute_task_simple(color_reader, single, color_handle);
   flecsi_execute_task(mpi_task,, index, 10, global_handle);
-#endif
 
   flecsi_execute_task(exclusive_mpi,, index, h);
 
