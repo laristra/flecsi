@@ -1,9 +1,10 @@
 var searchData=
 [
   ['flecsi_20doxygen_20mainpage',['FleCSI Doxygen Mainpage',['../index.html',1,'']]],
-  ['flecsi_3a_20c_2b_2b_20language_20extensions',['FleCSI: C++ Language Extensions',['../md__home_flecsi_flecsi_auxiliary_clang_flecsi-language.html',1,'']]],
+  ['flecsi_3a_20c_2b_2b_20language_20extensions',['FleCSI: C++ Language Extensions',['../md__home_flecsi_flecsi_auxiliary_clang_README.html',1,'']]],
   ['flecsi_3a_20build',['FleCSI: Build',['../md__home_flecsi_flecsi_auxiliary_markdown_01-Build.html',1,'']]],
   ['flecsi_3a_20flecsit',['FleCSI: FleCSIT',['../md__home_flecsi_flecsi_auxiliary_markdown_02-FleCSIT.html',1,'']]],
+  ['flecsi_3a_20specializations',['FleCSI: Specializations',['../md__home_flecsi_flecsi_auxiliary_specializations_README.html',1,'']]],
   ['flecsi_3a_20vim_20syntax_20highlighting',['FleCSI: Vim Syntax Highlighting',['../md__home_flecsi_flecsi_auxiliary_vim_README.html',1,'']]],
   ['flecsi_3a_20tutorial_20_2d_2000_20driver_20example',['FleCSI: Tutorial - 00 Driver Example',['../md__home_flecsi_flecsi_flecsi-tutorial_00-driver_README.html',1,'']]],
   ['flecsi_3a_20tutorial_20_2d_2001_20task_20example',['FleCSI: Tutorial - 01 Task Example',['../md__home_flecsi_flecsi_flecsi-tutorial_01-tasks_README.html',1,'']]],

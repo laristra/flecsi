@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['readme',['readme',['../md__home_flecsi_flecsi_flecsi-tutorial_specialization_io_vtk_readme.html',1,'']]],
   ['ragged_5faccessor_2eh',['ragged_accessor.h',['../ragged__accessor_8h.html',1,'']]],
   ['ragged_5faccessor_5fbase_5ft',['ragged_accessor_base_t',['../structflecsi_1_1ragged__accessor__base__t.html',1,'flecsi']]],
   ['ragged_5fchanges_5ft',['ragged_changes_t',['../structflecsi_1_1mutator__handle__base_____1_1ragged__changes__t.html',1,'flecsi::mutator_handle_base__']]],
