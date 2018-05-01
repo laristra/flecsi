@@ -126,6 +126,38 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
     } // if global and color
   } // handle
 
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    sparse_accessor <
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS
+    > &a
+  )
+  {
+    // TODO: implement
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    sparse_mutator<
+    T
+    > &m
+  )
+  {
+    // TODO: implement
+  }
+
   /*!
    This method is a no-op and is called when the task argument does not match
    one of the handle types above. For example, these could be simple scalars

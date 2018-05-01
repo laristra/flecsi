@@ -30,6 +30,10 @@
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/ragged_accessor.h>
+#include <flecsi/data/sparse_mutator.h>
+#include <flecsi/data/ragged_mutator.h>
 #include <flecsi/data/global_accessor.h>
 #include <flecsi/topology/mesh_topology.h>
 #include <flecsi/topology/mesh_types.h>
@@ -528,6 +532,38 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       !std::is_base_of<dense_accessor_base_t, T>::value &&
       !std::is_base_of<data_client_handle_base_t, T>::value>
   handle(T &) {} // handle
+
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    sparse_accessor <
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS
+    > &a
+  )
+  {
+    // TODO: implement
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    sparse_mutator<
+    T
+    > &m
+  )
+  {
+    // TODO: implement
+  }
 
   Legion::Runtime * runtime;
   Legion::Context & context;

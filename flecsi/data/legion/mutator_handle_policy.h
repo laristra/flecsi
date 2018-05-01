@@ -33,6 +33,8 @@ struct legion_mutator_handle_policy_t {
   legion_mutator_handle_policy_t(const legion_mutator_handle_policy_t & p) =
       default;
 
+  size_t index_space;
+
 }; // class legion_mutator_handle_policy_t
 
 } // namespace flecsi
