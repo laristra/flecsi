@@ -167,18 +167,11 @@ struct storage_class__<global> {
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
         utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
-    // get color_info for this field.
-    // auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
-    // auto& index_coloring = context.coloring(field_info.index_space);
-
     auto& registered_field_data = context.registered_field_data();
     auto fieldDataIter = registered_field_data.find(field_info.fid);
     if (fieldDataIter == registered_field_data.end()) {
       // TODO: deal with VERSION
       context.register_field_data(field_info.fid, field_info.size);
-      // context.register_field_metadata<DATA_TYPE>(field_info.fid,
-      //                                            color_info,
-      //                                            index_coloring);
     }
 
     auto data = registered_field_data[field_info.fid].data();

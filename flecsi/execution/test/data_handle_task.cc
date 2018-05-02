@@ -26,6 +26,10 @@ clog_register_tag(coloring);
 
 using global_t = double;
 
+//---------------------------------------------------------------------------//
+// FleCSI tasks
+//---------------------------------------------------------------------------//
+
 void task1(dense_accessor<double, ro, ro, ro> x, double y) {
   //np(y);
 } // task1
@@ -93,7 +97,9 @@ void exclusive_mpi(dense_accessor<double, ro, ro, ro> x) {
   }
 }
 
-
+//---------------------------------------------------------------------------//
+// Tasks registration
+//---------------------------------------------------------------------------//
 flecsi_register_task_simple(task1, loc, single);
 flecsi_register_task_simple(data_handle_dump, loc, single);
 flecsi_register_task_simple(global_data_handle_dump, loc, single);
@@ -107,8 +113,14 @@ flecsi_register_task_simple(color_reader, loc, single);
 flecsi_register_task(mpi_task, , mpi, index);
 flecsi_register_task(exclusive_mpi, , mpi, index);
 
+//---------------------------------------------------------------------------//
+// Data client registration
+//---------------------------------------------------------------------------//
 flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
 
+//---------------------------------------------------------------------------//
+// Fields
+//---------------------------------------------------------------------------//
 flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
 flecsi_register_global( ns, velocity, double, 1);
