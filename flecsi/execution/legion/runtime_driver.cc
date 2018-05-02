@@ -141,7 +141,8 @@ runtime_driver(
 
   auto coloring_info = context_.coloring_info_map();
 
-  data.init_from_coloring_info_map(coloring_info);
+  data.init_from_coloring_info_map(coloring_info,
+    context_.sparse_index_space_info_map());
 
   for(auto& itr : context_.adjacency_info()){
     data.add_adjacency(itr.second);

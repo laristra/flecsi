@@ -44,7 +44,7 @@ namespace data {
 
    @ingroup data
  */
-
+  
 class legion_data_t {
 public:
   using coloring_info_t = coloring::coloring_info_t;
@@ -57,6 +57,12 @@ public:
 
   using indexed_coloring_info_map_t = std::map<size_t, coloring_info_map_t>;
 
+  using sparse_index_space_info_t = 
+    execution::context_t::sparse_index_space_info_t;
+
+  using sparse_index_space_info_map_t = 
+    std::map<size_t, sparse_index_space_info_t>;
+
   /*!
     Collects all of the information needed to represent a FleCSI BLIS
     index space.
@@ -68,6 +74,14 @@ public:
     Legion::LogicalRegion logical_region;
     Legion::IndexPartition index_partition;
     size_t total_num_entities;
+  };
+
+  struct sparse_index_space_t{
+    size_t index_space_id;
+    Legion::IndexSpace index_space;
+    Legion::FieldSpace field_space;
+    Legion::LogicalRegion logical_region;
+    Legion::IndexPartition index_partition;
   };
 
   /*!
@@ -177,13 +191,24 @@ public:
   } // init_global_handles
 
   void init_from_coloring_info_map(
-      const indexed_coloring_info_map_t & indexed_coloring_info_map) {
+      const indexed_coloring_info_map_t & indexed_coloring_info_map,
+      const sparse_index_space_info_map_t& sparse_info_map) {
     using namespace Legion;
     using namespace LegionRuntime;
     using namespace Arrays;
 
     for (auto & idx_space : indexed_coloring_info_map) {
-      add_index_space(idx_space.first, idx_space.second);
+      auto itr = sparse_info_map.find(idx_space.first);
+      const sparse_index_space_info_t* sparse_info;
+      
+      if(itr == sparse_info_map.end()){
+        sparse_info = &itr->second;
+      }
+      else{
+        sparse_info = nullptr;
+      }
+
+      add_index_space(idx_space.first, idx_space.second, sparse_info);
     }
 
     // Create color index space
@@ -215,7 +240,8 @@ public:
    */
   void add_index_space(
       size_t index_space_id,
-      const coloring_info_map_t & coloring_info_map) {
+      const coloring_info_map_t & coloring_info_map,
+      const sparse_index_space_info_t* sparse_info) {
     using namespace std;
 
     using namespace Legion;
@@ -271,6 +297,41 @@ public:
     attach_name(is, is.field_space, "expanded field space");
 
     index_space_map_[index_space_id] = std::move(is);
+
+    if(sparse_info){
+      sparse_index_space_t sis;
+      // TODO: need to formalize this index space offset scheme
+      sis.index_space_id = index_space_id + 8192;
+
+      size_t max_shared_ghost = 0;
+
+      for (auto color_idx : coloring_info_map) {
+        max_shared_ghost = std::max(
+            max_shared_ghost, color_idx.second.shared + color_idx.second.ghost);
+      }
+
+      size_t size = 
+        sparse_info->max_exclusive_entries + 
+        max_shared_ghost * sparse_info->max_entries_per_index;
+
+      // Create expanded index space
+      LegionRuntime::Arrays::Rect<2> expanded_bounds =
+          LegionRuntime::Arrays::Rect<2>(
+              LegionRuntime::Arrays::Point<2>::ZEROES(),
+              make_point(num_colors_, size));      
+
+      Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
+
+      is.index_space = runtime_->create_index_space(ctx_, expanded_dom);
+      attach_name(is, is.index_space, "expanded sparse index space");
+
+      // Read user + FleCSI registered field spaces
+      is.field_space = runtime_->create_field_space(ctx_);
+
+      attach_name(is, is.field_space, "expanded sparse field space");
+
+      sparse_index_space_map_[index_space_id] = std::move(sis);
+    }
   }
 
   /*!
@@ -440,6 +501,17 @@ public:
     for (auto & itr : index_space_map_) {
       index_space_t & is = itr.second;
 
+      const sparse_index_space_t* sparse_index_space;
+
+      // TODO: formalize index space offset
+      auto sitr = sparse_index_space_map_.find(is.index_space_id + 8192);
+      if(sitr != sparse_index_space_map_.end()){
+        sparse_index_space = &sitr->second;
+      }
+      else{
+        sparse_index_space = nullptr;
+      }
+
       auto citr = indexed_coloring_info_map.find(is.index_space_id);
       clog_assert(
           citr != indexed_coloring_info_map.end(), "invalid index space");
@@ -464,7 +536,14 @@ public:
             break;
           default:
             if (fi.index_space == is.index_space_id) {
-              allocator.allocate_field(fi.size, fi.fid);
+              if(sparse_index_space){
+                if(utils::hash::is_internal(fi.key)){
+                  allocator.allocate_field(fi.size, fi.fid);
+                }
+              }
+              else{
+                allocator.allocate_field(fi.size, fi.fid);
+              }
             }
             break;
         }
@@ -584,6 +663,9 @@ private:
 
   // key: index space
   std::unordered_map<size_t, index_space_t> index_space_map_;
+
+  // key: index space
+  std::unordered_map<size_t, sparse_index_space_t> sparse_index_space_map_;
 
   // key: index space
   std::unordered_map<size_t, adjacency_t> adjacency_map_;
