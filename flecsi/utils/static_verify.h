@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <tuple>
 
 // Description of FLECSI_MEMBER_CHECKER.

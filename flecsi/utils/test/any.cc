@@ -21,6 +21,8 @@
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/test/print_type.h>
 
+#include <array>
+
 using flecsi::coloring::index_coloring_t;
 using flecsi::utils::any_t;
 using std::cout;
@@ -211,6 +213,8 @@ TEST(any, all) {
   // compare
 #ifdef __GNUG__
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("any.blessed.gnug"));
+#elif (_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("any.blessed.msvc"));
 #else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("any.blessed"));
 #endif

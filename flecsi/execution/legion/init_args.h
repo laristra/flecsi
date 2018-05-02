@@ -28,6 +28,10 @@
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/ragged_accessor.h>
+#include <flecsi/data/sparse_mutator.h>
+#include <flecsi/data/ragged_mutator.h>
 #include <flecsi/data/global_accessor.h>
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/topology/mesh_types.h>
@@ -55,7 +59,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     @param context The Legion task runtime context.
    */
 
-  init_args_t(Legion::Runtime *runtime, Legion::Context &context)
+  init_args_t(Legion::Runtime * runtime, Legion::Context & context)
       : runtime(runtime), context(context) {} // init_args
 
   /*!
@@ -66,16 +70,16 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
 
   static Legion::PrivilegeMode privilege_mode(size_t mode) {
     switch (mode) {
-    case size_t(reserved):
-      return NO_ACCESS;
-    case size_t(ro):
-      return READ_ONLY;
-    case size_t(wo):
-      return WRITE_DISCARD;
-    case size_t(rw):
-      return READ_WRITE;
-    default:
-      clog_fatal("invalid privilege mode");
+      case size_t(reserved):
+        return NO_ACCESS;
+      case size_t(ro):
+        return READ_ONLY;
+      case size_t(wo):
+        return WRITE_DISCARD;
+      case size_t(rw):
+        return READ_WRITE;
+      default:
+        clog_fatal("invalid privilege mode");
     } // switch
     // should never get here, but this is needed
     // to avoid compiler warnings
@@ -86,44 +90,52 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     FIXME
    */
 
-  template <typename T, size_t EXCLUSIVE_PERMISSIONS, size_t SHARED_PERMISSIONS,
-            size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor__<T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS,
-                               GHOST_PERMISSIONS> &a) {
-    auto &h = a.handle;
+  template<
+      typename T,
+      size_t EXCLUSIVE_PERMISSIONS,
+      size_t SHARED_PERMISSIONS,
+      size_t GHOST_PERMISSIONS>
+  void handle(dense_accessor__<
+              T,
+              EXCLUSIVE_PERMISSIONS,
+              SHARED_PERMISSIONS,
+              GHOST_PERMISSIONS> & a) {
+    auto & h = a.handle;
 
-    clog_assert(h.state > SPECIALIZATION_TLT_INIT,
-                "accessing  data "
-                "handle from specialization_tlt_init is not supported");
+    clog_assert(
+        h.state > SPECIALIZATION_TLT_INIT,
+        "accessing  data "
+        "handle from specialization_tlt_init is not supported");
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
 
-    Legion::RegionRequirement ex_rr(h.exclusive_lr,
-                                    privilege_mode(EXCLUSIVE_PERMISSIONS),
-                                    EXCLUSIVE, h.color_region, tag);
+    Legion::RegionRequirement ex_rr(
+        h.exclusive_lr, privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE,
+        h.color_region, tag);
     ex_rr.add_field(h.fid);
     region_reqs.push_back(ex_rr);
 
-    Legion::RegionRequirement sh_rr(h.shared_lr,
-                                    privilege_mode(SHARED_PERMISSIONS),
-                                    EXCLUSIVE, h.color_region);
+    Legion::RegionRequirement sh_rr(
+        h.shared_lr, privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE,
+        h.color_region);
     sh_rr.add_field(h.fid);
     region_reqs.push_back(sh_rr);
 
-    Legion::RegionRequirement gh_rr(h.ghost_lr,
-                                    privilege_mode(GHOST_PERMISSIONS),
-                                    EXCLUSIVE, h.color_region);
+    Legion::RegionRequirement gh_rr(
+        h.ghost_lr, privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE,
+        h.color_region);
     gh_rr.add_field(h.fid);
     region_reqs.push_back(gh_rr);
   } // handle
 
-  template <typename T, size_t PERMISSIONS>
-  void handle(global_accessor__<T, PERMISSIONS> &a) {
-    auto &h = a.handle;
+  template<typename T, size_t PERMISSIONS>
+  void handle(global_accessor__<T, PERMISSIONS> & a) {
+    auto & h = a.handle;
 
     if (h.state < SPECIALIZATION_SPMD_INIT) {
-      Legion::RegionRequirement rr(h.color_region, privilege_mode(PERMISSIONS),
-                                   EXCLUSIVE, h.color_region);
+      Legion::RegionRequirement rr(
+          h.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
+          h.color_region);
       rr.add_field(h.fid);
       region_reqs.push_back(rr);
     } else {
@@ -136,13 +148,13 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     } // if
   }
 
-  template <typename T, size_t PERMISSIONS>
-  void handle(color_accessor__<T, PERMISSIONS> &a) {
-    auto &h = a.handle;
+  template<typename T, size_t PERMISSIONS>
+  void handle(color_accessor__<T, PERMISSIONS> & a) {
+    auto & h = a.handle;
     clog_assert(h.state > SPECIALIZATION_TLT_INIT, "accessing color data    \
          handle from specialization_tlt_init is not supported");
-    Legion::RegionRequirement rr(h.color_region, privilege_mode(PERMISSIONS),
-                                 EXCLUSIVE, h.color_region);
+    Legion::RegionRequirement rr(
+        h.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE, h.color_region);
     rr.add_field(h.fid);
     region_reqs.push_back(rr);
   } // handle
@@ -151,21 +163,21 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     FIXME
    */
 
-  template <typename T, size_t PERMISSIONS>
+  template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
       std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> &h) {
+  handle(data_client_handle__<T, PERMISSIONS> & h) {
 
     std::unordered_map<size_t, size_t> region_map;
 
     for (size_t i{0}; i < h.num_handle_entities; ++i) {
-      data_client_handle_entity_t &ent = h.handle_entities[i];
+      data_client_handle_entity_t & ent = h.handle_entities[i];
 
       region_map[ent.index_space] = region_reqs.size();
 
-      Legion::RegionRequirement rr(ent.color_region,
-                                   privilege_mode(PERMISSIONS), EXCLUSIVE,
-                                   ent.color_region);
+      Legion::RegionRequirement rr(
+          ent.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
+          ent.color_region);
 
       Legion::IndexSpace is = ent.exclusive_region.get_index_space();
 
@@ -197,13 +209,13 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     } // for
 
     for (size_t i{0}; i < h.num_handle_adjacencies; ++i) {
-      data_client_handle_adjacency_t &adj = h.handle_adjacencies[i];
+      data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
 
       region_reqs[region_map[adj.from_index_space]].add_field(adj.offset_fid);
 
-      Legion::RegionRequirement adj_rr(adj.adj_region,
-                                       privilege_mode(PERMISSIONS), EXCLUSIVE,
-                                       adj.adj_region);
+      Legion::RegionRequirement adj_rr(
+          adj.adj_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
+          adj.adj_region);
 
       adj_rr.add_field(adj.index_fid);
 
@@ -211,10 +223,10 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     }
 
     for (size_t i{0}; i < h.num_index_subspaces; ++i) {
-      data_client_handle_index_subspace_t &iss = h.handle_index_subspaces[i];
+      data_client_handle_index_subspace_t & iss = h.handle_index_subspaces[i];
 
-      Legion::RegionRequirement iss_rr(iss.region, privilege_mode(PERMISSIONS),
-                                       EXCLUSIVE, iss.region);
+      Legion::RegionRequirement iss_rr(
+          iss.region, privilege_mode(PERMISSIONS), EXCLUSIVE, iss.region);
 
       iss_rr.add_field(iss.index_fid);
 
@@ -226,26 +238,58 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   ///
   // Initialize arguments for future handle
   ///
-  template <typename T, launch_type_t launch>
-  void handle(legion_future__<T, launch> &h) {
+  template<typename T, launch_type_t launch>
+  void handle(legion_future__<T, launch> & h) {
     futures.push_back(std::make_shared<legion_future__<T, launch>>(h));
+  }
+
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    sparse_accessor <
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS
+    > &a
+  )
+  {
+    // TODO: implement
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    sparse_mutator<
+    T
+    > &m
+  )
+  {
+    // TODO: implement
   }
 
   /*!
     FIXME
    */
 
-  template <typename T, size_t PERMISSIONS>
+  template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
       std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> &h) {
+  handle(data_client_handle__<T, PERMISSIONS> & h) {
 
     for (size_t i{0}; i < h.num_handle_entities; ++i) {
-      data_client_handle_entity_t &ent = h.handle_entities[i];
+      data_client_handle_entity_t & ent = h.handle_entities[i];
 
-      Legion::RegionRequirement rr(ent.color_region,
-                                   privilege_mode(PERMISSIONS), EXCLUSIVE,
-                                   ent.color_region);
+      Legion::RegionRequirement rr(
+          ent.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
+          ent.color_region);
       rr.add_field(ent.fid);
       region_reqs.push_back(rr);
     } // for
@@ -255,14 +299,14 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   // If this is not a data handle, then simply skip it.
   //-----------------------------------------------------------------------//
 
-  template <typename T>
+  template<typename T>
   static typename std::enable_if_t<
       !std::is_base_of<dense_accessor_base_t, T>::value &&
       !std::is_base_of<data_client_handle_base_t, T>::value>
   handle(T &) {} // handle
 
-  Legion::Runtime *runtime;
-  Legion::Context &context;
+  Legion::Runtime * runtime;
+  Legion::Context & context;
   std::vector<Legion::RegionRequirement> region_reqs;
   std::vector<std::shared_ptr<future_base_t>> futures;
 

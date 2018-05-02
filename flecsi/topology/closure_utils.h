@@ -95,7 +95,7 @@ template<
 std::set<size_t>
 entity_neighbors(const mesh_definition__<D> & md, U && indices) {
   clog_assert(from_dim == to_dim, "from_dim does not equal to to_dim");
-  
+
   // Closure should include the initial set
   std::set<size_t> closure(
       std::forward<U>(indices).begin(), std::forward<U>(indices).end());

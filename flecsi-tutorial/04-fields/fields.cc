@@ -13,7 +13,7 @@
                                                                               */
 
 /*----------------------------------------------------------------------------*
-  Documentation for this example can be found in FIELDS.md.
+  Documentation for this example can be found in README.md.
  *----------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -25,7 +25,6 @@
 using namespace flecsi;
 using namespace flecsi::tutorial;
 
-flecsi_register_data_client(mesh_t, clients, mesh);
 flecsi_register_field(mesh_t, example, field, double, dense, 1, cells);
 
 namespace example {

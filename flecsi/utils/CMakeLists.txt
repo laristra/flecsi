@@ -23,8 +23,6 @@ set(utils_HEADERS
   checksum.h
   common.h
   const_string.h
-  dbc.h
-  dbc_impl.h
   debruijn.h
   dimensioned_array.h
   export_definitions.h
@@ -40,6 +38,7 @@ set(utils_HEADERS
   reorder.h
   set_intersection.h
   set_utils.h
+  simple_id.h
   static_verify.h
   tuple_function.h
   tuple_type_converter.h
@@ -56,7 +55,6 @@ set(utils_HEADERS
 
 set(utils_SOURCES
   common.cc
-  dbc_impl.cc
   debruijn.cc
 )
 
@@ -117,126 +115,171 @@ cinch_add_devel_target(clog
   POLICY ${UNIT_POLICY}
 )
 
-# Broken by refactor
-#cinch_add_unit(dbc
-#  SOURCES test/dbc_test.cc
-#  POLICY SERIAL
-#)
-
-# Broken by refactor
-#cinch_add_unit(dbc-no-assert
-#  SOURCES test/dbc_test_no_assert.cc
-#  POLICY SERIAL
-#)
-
-# Broken by refactor
-#cinch_add_unit(dbc-notify
-#  SOURCES test/dbc_test_notify.cc
-#  POLICY SERIAL
-#)
-
 cinch_add_unit(const_string
   SOURCES test/const_string.cc common.cc
+  FOLDER "Tests/Util"
 )
 
+set(factory_blessed_input test/factory.blessed.gnug)
+if(MSVC)
+  set(factory_blessed_input test/factory.blessed.msvc)
+endif()
 cinch_add_unit(factory
   SOURCES test/factory.cc common.cc
-  INPUTS  test/factory.blessed test/factory.blessed.gnug
+  INPUTS  test/factory.blessed ${factory_blessed_input}
+  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(reorder
   SOURCES test/reorder.cc
+  FOLDER "Tests/Util"
 )
 
+set(any_blessed_input test/any.blessed.gnug)
+if(MSVC)
+  set(any_blessed_input test/any.blessed.msvc)
+endif()
 cinch_add_unit(any
   SOURCES test/any.cc common.cc
-  INPUTS  test/any.blessed test/any.blessed.gnug
+  SOURCES test/any.cc
+  INPUTS  test/any.blessed ${any_blessed_input}
+  FOLDER "Tests/Util"
 )
 
-cinch_add_unit(reflection
+if(NOT MSVC)
+  # FIXME: MSVC's preprocessor is too broken for this
+  cinch_add_unit(reflection
   SOURCES
     test/reflection.cc
   POLICY
     SERIAL_DEVEL
-)
+    FOLDER
+      "Tests/Util"
+  )
+endif()
 
 cinch_add_unit(hash
   SOURCES test/hash.cc
+  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(humble
   SOURCES test/humble.cc
+  FOLDER "Tests/Util"
 )
 
+set(iterator_blessed_input test/iterator.blessed.gnug)
+if(MSVC)
+  set(iterator_blessed_input test/iterator.blessed.msvc)
+endif()
 cinch_add_unit(utils_iterator
   SOURCES test/iterator.cc common.cc
-  INPUTS  test/iterator.blessed test/iterator.blessed.gnug
+  INPUTS  test/iterator.blessed ${iterator_blessed_input}
+  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(logging
   SOURCES test/logging.cc
+  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(set_intersection
   SOURCES test/set_intersection.cc
+  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(set_utils
   SOURCES test/set_utils.cc
   INPUTS  test/set_utils.blessed
+  FOLDER "Tests/Util"
+)
+
+cinch_add_unit(simple_id
+  SOURCES test/simple_id.cc
 )
 
 cinch_add_unit(static_verify
   SOURCES test/static_verify.cc
+  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(test_utility
   SOURCES test/utility.cc common.cc
   INPUTS  test/utility.blessed.gnug
+  FOLDER "Tests/Util"
 )
 
+set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.gnug)
+if(MSVC)
+  set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.msvc)
+endif()
 cinch_add_unit(tuple_type_converter
   SOURCES test/tuple_type_converter.cc common.cc
-  INPUTS  test/tuple_type_converter.blessed.gnug
+  INPUTS  ${tuple_type_converter_blessed_input}
+  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(tuple_walker
   SOURCES test/tuple_walker.cc
   INPUTS  test/tuple_walker.blessed
+  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(tuple_wrapper
   SOURCES test/tuple_wrapper.cc common.cc
+  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(tuple_function
   SOURCES test/tuple_function.cc
+  FOLDER "Tests/Util"
 )
 
+set(index_space_blessed_input test/index_space.blessed.gnug)
+if(MSVC)
+  set(index_space_blessed_input test/index_space.blessed.msvc)
+endif()
 cinch_add_unit(index_space
   SOURCES test/index_space.cc common.cc
-  INPUTS  test/index_space.blessed test/index_space.blessed.gnug
+  INPUTS  test/index_space.blessed ${index_space_blessed_input}
+  FOLDER "Tests/Util"
 )
 
+set(array_ref_blessed_input test/array_ref.blessed.gnug)
+if(MSVC)
+  set(array_ref_blessed_input test/array_ref.blessed.msvc)
+endif()
 cinch_add_unit(array_ref
   SOURCES test/array_ref.cc common.cc
-  INPUTS  test/array_ref.blessed test/array_ref.blessed.gnug
+  INPUTS  test/array_ref.blessed ${array_ref_blessed_input}
+  FOLDER "Tests/Util"
 )
 
+set(common_blessed_input test/common.blessed.gnug)
+if(MSVC)
+  set(common_blessed_input test/common.blessed.msvc)
+endif()
 cinch_add_unit(common
   SOURCES common.cc
           test/common.cc
-  INPUTS  test/common.blessed test/common.blessed.gnug
+  INPUTS  test/common.blessed ${common_blessed_input}
+  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(debruijn
   SOURCES debruijn.cc
           test/debruijn.cc
+  FOLDER "Tests/Util"
 )
 
+set(id_blessed_input test/id.blessed.gnug)
+if(MSVC)
+  set(id_blessed_input test/id.blessed.msvc)
+endif()
 cinch_add_unit(id
   SOURCES test/id.cc common.cc
-  INPUTS  test/id.blessed test/id.blessed.gnug
+  INPUTS  test/id.blessed ${id_blessed_input}
+  FOLDER "Tests/Util"
 )
 
 if(ENABLE_OPENSSL)
@@ -245,5 +288,7 @@ if(ENABLE_OPENSSL)
       test/checksum.cc
     LIBRARIES
       ${OPENSSL_LIBRARIES}
+    FOLDER
+      "Tests/Util"
   )
 endif()

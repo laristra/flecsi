@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <typeinfo>
 
 namespace flecsi {
@@ -24,8 +23,8 @@ namespace utils {
 /*!
  \class any_t any.h
  \brief any_t class can store arbitrary types of information.
- 
- @ingroup utils 
+
+ @ingroup utils
 */
 class any_t {
 public:

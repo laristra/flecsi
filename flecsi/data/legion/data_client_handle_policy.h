@@ -78,11 +78,11 @@ struct data_client_handle_index_subspace_t {
 struct legion_data_client_handle_policy_t {
 
   // FIXME: This needs to be exposed at a higher level
-  
+
   // maximum number of adjacencies to read, this limits the size of the
   // serialize struct passed to Legion
   static constexpr size_t MAX_ADJACENCIES = 32;
-  
+
   // maximum number of handle entities
   static constexpr size_t MAX_ENTITIES = 6;
 
@@ -94,7 +94,8 @@ struct legion_data_client_handle_policy_t {
   size_t num_index_subspaces;
   data_client_handle_entity_t handle_entities[MAX_ENTITIES];
   data_client_handle_adjacency_t handle_adjacencies[MAX_ADJACENCIES];
-  data_client_handle_index_subspace_t handle_index_subspaces[MAX_INDEX_SUBSPACES];
+  data_client_handle_index_subspace_t
+      handle_index_subspaces[MAX_INDEX_SUBSPACES];
 }; // struct data_client_handle_policy_t
 
 } // namespace flecsi

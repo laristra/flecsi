@@ -24,7 +24,6 @@ env:
     - DISTRO=fedora RUNTIME=mpi    IGNORE_NOCI=true
     - DISTRO=fedora RUNTIME=mpi    WERROR=yes
     - DISTRO=fedora RUNTIME=hpx    DOCKERHUB=true
-    - DISTRO=fedora RUNTIME=hpx    IGNORE_NOCI=true
     - DISTRO=fedora RUNTIME=hpx    WERROR=yes
     - DISTRO=fedora_mpich RUNTIME=legion DOCKERHUB=true
     - DISTRO=fedora_mpich RUNTIME=legion IGNORE_NOCI=true
@@ -66,6 +65,7 @@ matrix:
       env: DISTRO=fedora RUNTIME=hpx    COVERAGE=ON
 
 before_install:
+ - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
  - git fetch --unshallow && git fetch --tags #for versioning
 
 script:
@@ -76,7 +76,8 @@ script:
   - cp -r $HOME/.ccache ${HOME}/docker/ccache
   - cp -r $HOME/.sonar ${HOME}/docker/sonar
   - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
-  - if [[ ${TRAVIS_BRANCH} != stable ]]; then TAG="${TAG}_${TRAVIS_BRANCH}"; fi
+  - if [[ ${TRAVIS_BRANCH} != stable ]]; then TAG="${TAG}_${TRAVIS_BRANCH//\//_}"; fi
+  - travis_retry timeout 540 docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
   - docker build 
                 --build-arg LEGION=${LEGION} 
                 --build-arg RUNTIME=${RUNTIME} 

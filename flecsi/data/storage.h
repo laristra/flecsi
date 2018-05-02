@@ -17,6 +17,7 @@
 
 #include <cinchlog.h>
 #include <functional>
+#include <set>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -55,24 +56,24 @@ struct storage__ : public STORAGE_POLICY {
 
   /*!
     Register a field with the runtime.
-    
-    @param client_key The data client indentifier hash.
-    @param key        The identifier hash.
-    @param callback   The registration call back function.
+
+    @param client_type_key The data client indentifier hash.
+    @param key             The identifier hash.
+    @param callback        The registration call back function.
    */
 
   bool register_field(
-      size_t client_key,
+      size_t client_type_key,
       size_t key,
       const field_registration_function_t & callback) {
-    if (field_registry_.find(client_key) != field_registry_.end()) {
-      if (field_registry_[client_key].find(key) !=
-          field_registry_[client_key].end()) {
+    if (field_registry_.find(client_type_key) != field_registry_.end()) {
+      if (field_registry_[client_type_key].find(key) !=
+          field_registry_[client_type_key].end()) {
         clog(warn) << "field key already exists" << std::endl;
       } // if
     } // if
 
-    field_registry_[client_key][key] =
+    field_registry_[client_type_key][key] =
         std::make_pair(unique_fid_t::instance().next(), callback);
 
     return true;
@@ -95,7 +96,7 @@ struct storage__ : public STORAGE_POLICY {
   /*!
     Register a client with the runtime.
 
-    @param client_key The data client indentifier hash.
+    @param type_hash  The data client indentifier hash.
     @param key        The identifier hash.
     @param callback   The registration call back function.
    */
@@ -118,11 +119,19 @@ struct storage__ : public STORAGE_POLICY {
   } // register_client
 
   /*!
+    Return a boolean indicating whether or not the given instance of
+    a data client has had its internal fields registered with the
+    data model.
+
+    @param type_key     The hash key for the data client type.
+    @param instance_key The hash key for the data client instance.
    */
 
-  bool register_client_fields(size_t client_key) {
-    return registered_client_fields_.insert(client_key).second;
-  }
+  bool register_client_fields(size_t type_key, size_t instance_key) {
+    return registered_client_fields_
+        .insert(std::make_pair(type_key, instance_key))
+        .second;
+  } // register_client_fields
 
   /*!
     Search for a client at the runtime.
@@ -131,15 +140,17 @@ struct storage__ : public STORAGE_POLICY {
    */
 
   void assert_client_exists(size_t type_hash, size_t client_hash) {
-    clog_assert(client_registry_.find(type_hash) != client_registry_.end(),
-        "\nThe data_client type you are trying to access with key " << 
-        type_hash << " does not exist!" <<
-        "\nMake sure it has been properly registered!");
-    clog_assert(client_registry_[type_hash].find(client_hash) !=
-      client_registry_[type_hash].end(),
-      "\nThe data_client instance you are trying to access with key " << 
-      client_hash << " does not exist!" <<
-      "\nMake sure it has been properly registered!");
+    clog_assert(
+        client_registry_.find(type_hash) != client_registry_.end(),
+        "\nThe data_client type you are trying to access with key "
+            << type_hash << " does not exist!"
+            << "\nMake sure it has been properly registered!");
+    clog_assert(
+        client_registry_[type_hash].find(client_hash) !=
+            client_registry_[type_hash].end(),
+        "\nThe data_client instance you are trying to access with key "
+            << client_hash << " does not exist!"
+            << "\nMake sure it has been properly registered!");
   } // register_client
 
   /*!
@@ -162,7 +173,6 @@ struct storage__ : public STORAGE_POLICY {
   void reset(uintptr_t runtime_namespace) {}
 
 private:
-
   // Default constructor
   storage__() : STORAGE_POLICY() {}
 
@@ -175,7 +185,7 @@ private:
   storage__(storage__ &&) = delete;
   storage__ & operator=(storage__ &&) = delete;
 
-  std::unordered_set<size_t> registered_client_fields_;
+  std::set<std::pair<size_t, size_t>> registered_client_fields_;
   std::unordered_map<size_t, field_entry_t> field_registry_;
   std::unordered_map<size_t, client_entry_t> client_registry_;
 

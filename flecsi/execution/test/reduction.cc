@@ -32,8 +32,8 @@ using handle_t = flecsi::execution::flecsi_future<T,
 void reduction_check_task(handle_t<double> f_max, handle_t<double> f_min,
       int num_colors, int cycle)
 {
-    ASSERT_EQ(f_max, static_cast<double>(num_colors * cycle));
-    ASSERT_EQ(f_min, static_cast<double>(cycle));
+    ASSERT_EQ(f_max.get(), static_cast<double>(num_colors * cycle));
+    ASSERT_EQ(f_min.get(), static_cast<double>(cycle));
 }
 
 flecsi_register_task(reduction_check_task, flecsi::execution, loc, single);
@@ -62,9 +62,9 @@ void driver(int argc, char ** argv) {
 
     ASSERT_EQ(global_max.get(), static_cast<double>(num_colors * cycle));
     ASSERT_EQ(global_min.get(), static_cast<double>(cycle));
- 
+
    flecsi_execute_task(reduction_check_task, flecsi::execution, single,
-     global_max, global_min, num_colors, cycle); 
+     global_max, global_min, num_colors, cycle);
 
   } // cycle
 

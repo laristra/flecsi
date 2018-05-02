@@ -16,8 +16,8 @@
 /*! @file */
 
 #include <functional>
+#include <iostream>
 #include <memory>
-#include <iostream>  
 
 #include <flecsi-config.h>
 
@@ -38,10 +38,10 @@ namespace execution {
 struct future_base_t {
 public:
   virtual void
-  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const = 0;
+  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const = 0;
 
   virtual void
-  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const = 0;
+  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const = 0;
 };
 
 /*!
@@ -53,7 +53,8 @@ public:
   @ingroup legion-execution
 */
 
-template <typename RETURN, launch_type_t launch> struct legion_future__ {};
+template<typename RETURN, launch_type_t launch>
+struct legion_future__ {};
 
 /*! Partial specialization for the Legion:Future
 
@@ -62,7 +63,7 @@ template <typename RETURN, launch_type_t launch> struct legion_future__ {};
   @ingroup legion-execution
  */
 
-template <typename RETURN>
+template<typename RETURN>
 struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
   /*!
       Construct a future from a Legion future.
@@ -70,14 +71,16 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
       @param legion_future The Legion future instance.
      */
 
-  legion_future__(const Legion::Future &legion_future)
+  legion_future__(const Legion::Future & legion_future)
       : legion_future_(legion_future) {}
 
   /*!
     Wait on a task result.
    */
 
-  void wait(bool silence_warnings = false) { legion_future_.wait(); } // wait
+  void wait(bool silence_warnings = false) {
+    legion_future_.wait();
+  } // wait
 
   /*!
     Get a task result.
@@ -92,33 +95,33 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
     return legion_future_.template get_result<RETURN>(silence_warnings);
   } // get
 
-  void
-  defer_dynamic_collective_arrival(Legion::Runtime *runtime,
-                                   Legion::Context ctx,
-                                   Legion::DynamicCollective &dc_reduction) {
-    runtime->defer_dynamic_collective_arrival(ctx, dc_reduction,
-                                              legion_future_);
+  void defer_dynamic_collective_arrival(
+      Legion::Runtime * runtime,
+      Legion::Context ctx,
+      Legion::DynamicCollective & dc_reduction) {
+    runtime->defer_dynamic_collective_arrival(
+        ctx, dc_reduction, legion_future_);
   } // defer_dynamic_collective_arrival
 
   /*!
     Add Legion Future to the task launcher
    */
   void
-  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const {
+  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
   void
-  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
+  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
-  legion_future__& operator=(RETURN const &rhs) {
-        data_=rhs;
-        return *this;
-   }
+  legion_future__ & operator=(RETURN const & rhs) {
+    data_ = rhs;
+    return *this;
+  }
 
-  RETURN & operator = (legion_future__ const &f){
+  RETURN & operator=(legion_future__ const & f) {
     return data_;
   }
 
@@ -126,17 +129,17 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
     return data_;
   }
 
-  operator const RETURN  &() const {
+  operator const RETURN &() const {
     return data_;
   }
 
-
-  friend std::ostream & operator<<(std::ostream & stream, const legion_future__ & f) {
-      stream << f.data_;
-      return stream;
+  friend std::ostream &
+  operator<<(std::ostream & stream, const legion_future__ & f) {
+    stream << f.data_;
+    return stream;
   } // switch
 
-//  RETURN data() { return data_; }
+  //  RETURN data() { return data_; }
 
   RETURN data_;
 
@@ -149,7 +152,7 @@ private:
   @ingroup legion-execution
  */
 
-template <>
+template<>
 struct legion_future__<void, launch_type_t::single> : public future_base_t {
 
   /*!
@@ -158,7 +161,7 @@ struct legion_future__<void, launch_type_t::single> : public future_base_t {
     @param legion_future The Legion future instance.
    */
 
-  legion_future__(const Legion::Future &legion_future)
+  legion_future__(const Legion::Future & legion_future)
       : legion_future_(legion_future) {}
 
   /*!
@@ -169,10 +172,10 @@ struct legion_future__<void, launch_type_t::single> : public future_base_t {
     legion_future_.get_void_result(silence_warnings);
   } // wait
 
-  void
-  defer_dynamic_collective_arrival(Legion::Runtime *runtime,
-                                   Legion::Context ctx,
-                                   Legion::DynamicCollective &dc_reduction) {
+  void defer_dynamic_collective_arrival(
+      Legion::Runtime * runtime,
+      Legion::Context ctx,
+      Legion::DynamicCollective & dc_reduction) {
     // reduction of a void is still void
   }
 
@@ -180,12 +183,12 @@ struct legion_future__<void, launch_type_t::single> : public future_base_t {
     Add Legion Future to the task launcher
    */
   void
-  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const {
+  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
   void
-  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
+  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
@@ -200,7 +203,7 @@ private:
   @ingroup legion-execution
  */
 
-template <typename RETURN>
+template<typename RETURN>
 struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
 
   /*!
@@ -209,7 +212,7 @@ struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
     @param legion_future The Legion future instance.
    */
 
-  legion_future__(const Legion::FutureMap &legion_future)
+  legion_future__(const Legion::FutureMap & legion_future)
       : legion_future_(legion_future) {}
 
   /*!
@@ -236,10 +239,10 @@ struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
         silence_warnings);
   } // get
 
-  void
-  defer_dynamic_collective_arrival(Legion::Runtime *runtime,
-                                   Legion::Context ctx,
-                                   Legion::DynamicCollective &dc_reduction) {
+  void defer_dynamic_collective_arrival(
+      Legion::Runtime * runtime,
+      Legion::Context ctx,
+      Legion::DynamicCollective & dc_reduction) {
     // Not sure what reducing a map with other maps would mean
   }
 
@@ -247,12 +250,12 @@ struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
     Add Legion Future to the task launcher
    */
   void
-  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const {
+  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
     assert(false && "you can't pass future from index task to any task");
   }
 
   void
-  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
+  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
     assert(false && "you can't pass future handle from index task to any task");
   }
 
@@ -264,7 +267,7 @@ private:
   Explicit specialization for index launch FutureMap and void.
  */
 
-template <>
+template<>
 struct legion_future__<void, launch_type_t::index> : public future_base_t {
 
   /*!
@@ -273,7 +276,7 @@ struct legion_future__<void, launch_type_t::index> : public future_base_t {
       @param legion_future The Legion future instance.
      */
 
-  legion_future__(const Legion::FutureMap &legion_future)
+  legion_future__(const Legion::FutureMap & legion_future)
       : legion_future_(legion_future) {}
 
   /*!
@@ -288,12 +291,12 @@ struct legion_future__<void, launch_type_t::index> : public future_base_t {
     Add Legion Future to the task launcher
    */
   void
-  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const {
+  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
     assert(false && "you can't pass future from index task to any task");
   }
 
   void
-  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
+  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
     assert(false && "you can't pass future handle from index task to any task");
   }
 
@@ -302,12 +305,8 @@ private:
 
 }; // legion_future
 
-template<
-    typename RETURN,
-    launch_type_t launch>
-using flecsi_future = legion_future__<
-    RETURN,
-    launch>;
+template<typename RETURN, launch_type_t launch>
+using flecsi_future = legion_future__<RETURN, launch>;
 
 } // namespace execution
 } // namespace flecsi

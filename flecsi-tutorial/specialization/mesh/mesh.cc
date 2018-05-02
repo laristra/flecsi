@@ -13,7 +13,7 @@
                                                                               */
 
 #include <flecsi/data/data.h>
-#include <specialization/mesh/mesh.h>
+#include <flecsi-tutorial/specialization/mesh/mesh.h>
 
 namespace flecsi {
 namespace tutorial {

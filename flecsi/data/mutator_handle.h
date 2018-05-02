@@ -223,13 +223,12 @@ public:
 
       auto citr = ragged_changes_map_->find(index);
 
-      ragged_changes_t* changes;
+      ragged_changes_t * changes;
 
       if (citr != ragged_changes_map_->end()) {
         changes = &citr->second;
-        apply_raggged_changes(changes, cptr, eptr, num_existing);        
-      }
-      else{
+        apply_raggged_changes(changes, cptr, eptr, num_existing);
+      } else {
         changes = nullptr;
         std::memcpy(cptr, eptr, sizeof(entry_value_t) * num_existing);
       }
@@ -255,10 +254,10 @@ public:
       if (changes) {
         size_t resize = changes->size;
 
-        if(changes->push_values){
-          std::vector<T>& values = *changes->push_values;
+        if (changes->push_values) {
+          std::vector<T> & values = *changes->push_values;
           size_t ri = resize - values.size();
-          for(auto& vi : values){
+          for (auto & vi : values) {
             cptr[ri].entry = ri;
             cptr[ri++].value = vi;
           }
@@ -297,13 +296,12 @@ public:
 
       auto citr = ragged_changes_map_->find(index);
 
-      ragged_changes_t* changes;
+      ragged_changes_t * changes;
 
       if (citr != ragged_changes_map_->end()) {
         changes = &citr->second;
-        apply_raggged_changes(changes, cbuf, eptr, num_existing);        
-      }
-      else{
+        apply_raggged_changes(changes, cbuf, eptr, num_existing);
+      } else {
         changes = nullptr;
         std::memcpy(cbuf, eptr, sizeof(entry_value_t) * num_existing);
       }
@@ -329,18 +327,19 @@ public:
       if (changes) {
         size = changes->size;
 
-        assert(size <= max_entries_per_index_ &&
-               "ragged data: exceeded max_entries_per_index in shared/ghost");
+        assert(
+            size <= max_entries_per_index_ &&
+            "ragged data: exceeded max_entries_per_index in shared/ghost");
 
-        if(changes->push_values){
-          std::vector<T>& values = *changes->push_values;
+        if (changes->push_values) {
+          std::vector<T> & values = *changes->push_values;
           size_t ri = size - values.size();
-          for(auto& vi : values){
+          for (auto & vi : values) {
             cptr[ri].entry = ri;
             cptr[ri++].value = vi;
           }
         }
-        
+
         coi.set_count(size);
       } else {
         size = num_existing;
@@ -388,41 +387,39 @@ public:
     return ci_;
   }
 
-  struct ragged_changes_t{
-    ragged_changes_t(size_t size)
-    : size(size){}
+  struct ragged_changes_t {
+    ragged_changes_t(size_t size) : size(size) {}
 
-    ~ragged_changes_t(){
-      if(erase_set){
+    ~ragged_changes_t() {
+      if (erase_set) {
         delete erase_set;
       }
 
-      if(push_values){
+      if (push_values) {
         delete push_values;
       }
 
-      if(insert_values){
+      if (insert_values) {
         delete insert_values;
       }
     }
 
     size_t size;
-    std::set<size_t>* erase_set = nullptr;
-    std::vector<T>* push_values = nullptr;
-    std::map<size_t, T>* insert_values = nullptr;
+    std::set<size_t> * erase_set = nullptr;
+    std::vector<T> * push_values = nullptr;
+    std::map<size_t, T> * insert_values = nullptr;
 
-    void init_erase_set(){
+    void init_erase_set() {
       erase_set = new std::set<size_t>;
     }
 
-    void init_push_values(){
+    void init_push_values() {
       push_values = new std::vector<T>;
     }
 
-    void init_insert_values(){
+    void init_insert_values() {
       insert_values = new std::map<size_t, T>;
     }
-
   };
 
   using spare_map_t = std::multimap<size_t, entry_value_t>;
@@ -438,7 +435,7 @@ public:
   entry_value_t * entries_ = nullptr;
   spare_map_t * spare_map_ = nullptr;
   erase_set_t * erase_set_ = nullptr;
-  ragged_changes_map_t* ragged_changes_map_ = nullptr;
+  ragged_changes_map_t * ragged_changes_map_ = nullptr;
   commit_info_t ci_;
 
   //--------------------------------------------------------------------------//
@@ -514,70 +511,61 @@ public:
     return dest - dest_start;
   }
 
-  void
-  apply_raggged_changes(
-    ragged_changes_t* changes,
-    entry_value_t* cptr,
-    entry_value_t* eptr,
-    size_t num_existing
-  )
-  {
+  void apply_raggged_changes(
+      ragged_changes_t * changes,
+      entry_value_t * cptr,
+      entry_value_t * eptr,
+      size_t num_existing) {
     size_t ri = 0;
 
-    if(changes->insert_values && changes->erase_set){
+    if (changes->insert_values && changes->erase_set) {
       auto iitr = changes->insert_values->begin();
       auto iitr_end = changes->insert_values->end();
-      
+
       auto eitr = changes->erase_set->begin();
       auto eitr_end = changes->erase_set->end();
 
       for (size_t j = 0; j < num_existing; ++j) {
-        if(iitr != iitr_end && iitr->first == j){
+        if (iitr != iitr_end && iitr->first == j) {
           cptr[ri++] = iitr->second;
           ++iitr;
         }
-        
-        if(eitr != eitr_end && *eitr == j){
+
+        if (eitr != eitr_end && *eitr == j) {
           ++eitr;
-        }
-        else{
+        } else {
           cptr[ri++] = eptr[j];
         }
       }
-    }
-    else if(changes->insert_values){
+    } else if (changes->insert_values) {
       auto iitr = changes->insert_values->begin();
       auto iitr_end = changes->insert_values->end();
 
       for (size_t j = 0; j < num_existing; ++j) {
-        if(iitr != iitr_end && iitr->first == j){
+        if (iitr != iitr_end && iitr->first == j) {
           cptr[ri++].value = iitr->second;
           ++iitr;
         }
 
         cptr[ri++] = eptr[j];
       }
-    }
-    else if(changes->erase_set){
+    } else if (changes->erase_set) {
       auto eitr = changes->erase_set->begin();
       auto eitr_end = changes->erase_set->end();
 
       for (size_t j = 0; j < num_existing; ++j) {
-        if(eitr != eitr_end && *eitr == j){
+        if (eitr != eitr_end && *eitr == j) {
           ++eitr;
-        }
-        else{
+        } else {
           cptr[ri++] = eptr[j];
         }
       }
-    }
-    else{
+    } else {
       for (size_t j = 0; j < num_existing; ++j) {
         cptr[ri++] = eptr[j];
-      }  
+      }
     }
   }
-
 };
 
 } // namespace flecsi

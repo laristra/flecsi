@@ -42,7 +42,7 @@ add_executable(simple_drivers ${simple_drivers_src})
 target_link_libraries(simple_drivers FleCSI ${FLECSI_RUNTIME_LIBRARIES})
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-  hpx_setup_target(simple_drivers)
+  hpx_setup_target(simple_drivers FOLDER "Examples")
 endif()
 
 #~---------------------------------------------------------------------------~-#

@@ -197,7 +197,7 @@ struct hpx_context_policy_t {
 
   template <typename T>
   auto
-  reduce_max(hpx::shared_future<T>& local_future) -> T
+  reduce_max(hpx::shared_future<T>& local_future) -> hpx::shared_future<T>
   {
     auto gloabl_max_f = local_future.then(
       mpi_exec_,
@@ -243,7 +243,7 @@ struct hpx_context_policy_t {
 
   template <typename T>
   auto
-  reduce_min(hpx::shared_future<T> & local_future) -> T
+  reduce_min(hpx::shared_future<T> & local_future) -> hpx::shared_future<T>
   {
     auto global_min_f = local_future.then(
       mpi_exec_,

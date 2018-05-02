@@ -101,6 +101,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     ${execution_HEADERS}
     hpx/context_policy.h
     hpx/execution_policy.h
+    hpx/future.h
     hpx/runtime_driver.h
   )
   set(execution_SOURCES
@@ -139,6 +140,8 @@ cinch_add_unit(launch
     test/launch.cc
   POLICY
     SERIAL
+  FOLDER
+    "Tests/Execution"
 )
 
 cinch_add_unit(simple_function
@@ -153,6 +156,8 @@ cinch_add_unit(simple_function
   LIBRARIES
     FleCSI
   NOCI
+  FOLDER
+    "Tests/Execution"
   )
 
 #
@@ -172,6 +177,8 @@ cinch_add_unit(reduction
     FleCSI
   THREADS 2
   NOCI
+  FOLDER
+    "Tests/Execution"
   )
 
 #
@@ -191,6 +198,8 @@ cinch_add_unit(simple_task
     FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
   NOCI
+  FOLDER
+    "Tests/Execution"
   )
 
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
