@@ -30,11 +30,8 @@ using gint = global_accessor__<int, PERMISSION>;
 void set_global_int(gint<rw> global, int value) {
   auto& context = execution::context_t::instance();
   auto rank = context.color();
-
-  if (rank == 0) {
-    std::cout << "[" << rank << "] setting value" << std::endl;
-    global = value;
-  }
+  std::cout << "[" << rank << "] setting value" << std::endl;
+  global = value;
 }
 
 void check_global_int(gint<ro> global, int value) {
