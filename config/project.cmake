@@ -144,6 +144,23 @@ option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" ON)
 set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/FleCSI)
 
 #------------------------------------------------------------------------------#
+# RistraLL
+#------------------------------------------------------------------------------#
+
+option(ENABLE_RISTRALL "Enable Ristra Low-Level Library Support" OFF)
+
+if(ENABLE_RISTRALL)
+  find_package(RistraLL REQUIRED)
+
+  if(RistraLL_FOUND)
+    include_directories(${RistraLL_INCLUDE_DIRS})
+
+    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${RistraLL_INCLUDE_DIRS})
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${RistraLL_LIBRARIES})
+  endif()
+endif()
+
+#------------------------------------------------------------------------------#
 # OpenSSL
 #------------------------------------------------------------------------------#
 
