@@ -251,7 +251,8 @@ public:
   {
     using legion_proc=Legion::Processor;
     context_t & context_ = context_t::instance();
-    if((task.tag & MAPPER_SUBRANK_LAUNCH) != 0) {
+
+    if(task.tag == MAPPER_SUBRANK_LAUNCH) {
       // expect a 1-D index domain
       assert(input.domain.get_dim() == 1);
       // send the whole domain to our local processor
@@ -260,7 +261,8 @@ public:
       output.slices[0].proc = task.target_proc;
       return;
     } //end if MAPPER_SUBRANK_LAUNCH
-    else if((task.tag &MAPPER_FORCE_RANK_MATCH) != 0){
+
+    if(task.tag ==MAPPER_FORCE_RANK_MATCH){
     // expect a 1-D index domain - each point goes to the corresponding node
       assert(input.domain.get_dim() == 1);
       LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();
@@ -287,10 +289,11 @@ public:
           Legion::Domain::from_rect<1>(LegionRuntime::Arrays::Rect<1>(a, a));
         output.slices[a].proc = targets[a];
       }
+      return;
     }//MAPPER_FORCE_RANK_MATCH
-    else{
-      DefaultMapper::slice_task(ctx, task, input, output);
-    }//end else
+    
+    DefaultMapper::slice_task(ctx, task, input, output);
+    
   }
 
 private:
