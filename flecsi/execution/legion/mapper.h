@@ -134,7 +134,7 @@ public:
       Legion::Mapping::Mapper::MapTaskOutput & output) {
     DefaultMapper::map_task(ctx, task, input, output);
 
-    if (((task.tag & MAPPER_COMPACTED_STORAGE) != 0) &&
+    if ((task.tag == MAPPER_COMPACTED_STORAGE) &&
         (task.regions.size() > 0)) {
 
       Legion::Memory target_mem =
@@ -214,7 +214,7 @@ public:
       Legion::Mapping::Mapper::SliceTaskOutput & output) {
     using legion_proc = Legion::Processor;
     context_t & context_ = context_t::instance();
-    if ((task.tag & MAPPER_SUBRANK_LAUNCH) != 0) {
+    if (task.tag == MAPPER_SUBRANK_LAUNCH) {
       // expect a 1-D index domain
       assert(input.domain.get_dim() == 1);
       // send the whole domain to our local processor
@@ -223,9 +223,39 @@ public:
       output.slices[0].proc = task.target_proc;
       return;
     } // end if MAPPER_SUBRANK_LAUNCH
-    else {
-      DefaultMapper::slice_task(ctx, task, input, output);
-    } // end else
+   
+    if(task.tag ==MAPPER_FORCE_RANK_MATCH){
+    // expect a 1-D index domain - each point goes to the corresponding node
+      assert(input.domain.get_dim() == 1);
+      LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();
+
+      // go through all the CPU processors and find a representative for each
+      //  node (i.e. address space)
+      std::map<int, Legion::Processor> targets;
+
+      Legion::Machine::ProcessorQuery pq =
+        Legion::Machine::ProcessorQuery(machine).only_kind(
+                Legion::Processor::LOC_PROC);
+      for(Legion::Machine::ProcessorQuery::iterator it = pq.begin();
+        it != pq.end(); ++it) {
+        Legion::Processor p = *it;
+        int a = p.address_space();
+        if(targets.count(a) == 0)
+          targets[a] = p;
+      }
+
+      output.slices.resize(r.volume());
+      for(int a = r.lo[0]; a <= r.hi[0]; a++) {
+        assert(targets.count(a) > 0);
+        output.slices[a].domain =
+          Legion::Domain::from_rect<1>(LegionRuntime::Arrays::Rect<1>(a, a));
+        output.slices[a].proc = targets[a];
+      }
+      return;
+    }//MAPPER_FORCE_RANK_MATCH 
+ 
+    DefaultMapper::slice_task(ctx, task, input, output);
+     // end else
   }
 
 private:
