@@ -5,19 +5,14 @@
 
 // includes: flecsi
 #include <flecsi/utils/array_ref.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/test/print_type.h>
 
 // includes: C++
 #include <iostream>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
-
-// print_type
-inline void
-print_type(const char * const name) {
-  CINCH_CAPTURE() << boost::core::demangle(name) << std::endl;
-}
 
 // print_refc
 // Prints an array_ref<char>, as a character string
@@ -47,16 +42,16 @@ TEST(array_ref, all) {
   // types
   // ------------------------
 
-  print_type(typeid(refd::value_type).name());
-  print_type(typeid(refd::pointer).name());
-  print_type(typeid(refd::reference).name());
-  print_type(typeid(refd::const_reference).name());
-  print_type(typeid(refd::const_iterator).name());
-  print_type(typeid(refd::iterator).name());
-  print_type(typeid(refd::const_reverse_iterator).name());
-  print_type(typeid(refd::reverse_iterator).name());
-  print_type(typeid(refd::size_type).name());
-  print_type(typeid(refd::difference_type).name());
+  print_type<refd::value_type>();
+  print_type<refd::pointer>();
+  print_type<refd::reference>();
+  print_type<refd::const_reference>();
+  print_type<refd::const_iterator>();
+  print_type<refd::iterator>();
+  print_type<refd::const_reverse_iterator>();
+  print_type<refd::reverse_iterator>();
+  print_type<refd::size_type>();
+  print_type<refd::difference_type>();
   CINCH_CAPTURE() << std::endl;
 
   // ------------------------
@@ -299,8 +294,13 @@ TEST(array_ref, all) {
   // ------------------------
   // compare
   // ------------------------
-
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("array_ref.blessed.gnug"));
+#elif defined(_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("array_ref.blessed.msvc"));
+#else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("array_ref.blessed"));
+#endif
 
 } // TEST
 

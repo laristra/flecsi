@@ -6,6 +6,8 @@
 #ifndef flecsi_data_hpx_data_client_handle_policy_h
 #define flecsi_data_hpx_data_client_handle_policy_h
 
+#include <cstddef>
+
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: Jun 21, 2017
@@ -18,18 +20,21 @@ namespace flecsi {
 struct data_client_handle_entity_t
 {
   //FIXME check context
-  using field_id_t = size_t;
+  using field_id_t = std::size_t;
 
   data_client_handle_entity_t() : index_space(0), dim(0), domain(0), size(0), fid(0) {}
 
-  size_t index_space;
-  size_t dim;
-  size_t domain;
-  size_t size;
-  size_t num_exclusive;
-  size_t num_shared;
-  size_t num_ghost;
+  std::size_t index_space;
+  std::size_t index_space2;
+  std::size_t dim;
+  std::size_t domain;
+  std::size_t size;
+  std::size_t num_exclusive;
+  std::size_t num_shared;
+  std::size_t num_ghost;
   field_id_t fid;
+  field_id_t fid2;
+  field_id_t fid3;
   field_id_t id_fid;
 };
 
@@ -40,26 +45,28 @@ struct data_client_handle_entity_t
 //----------------------------------------------------------------------------//
 struct data_client_handle_adjacency_t
 {
-  size_t adj_index_space;
-  size_t from_index_space;
-  size_t to_index_space;
-  size_t from_domain;
-  size_t to_domain;
-  size_t from_dim;
-  size_t to_dim;
-  size_t num_offsets;
-  size_t num_indices;
+  std::size_t adj_index_space;
+  std::size_t from_index_space;
+  std::size_t to_index_space;
+  std::size_t from_domain;
+  std::size_t to_domain;
+  std::size_t from_dim;
+  std::size_t to_dim;
+  std::size_t num_offsets;
+  std::size_t num_indices;
   field_id_t index_fid;
   field_id_t offset_fid;
-  size_t * offsets_buf;
+  std::size_t * offsets_buf;
   uint64_t * indices_buf;
 };
 
 struct data_client_handle_index_subspace_t {
-  size_t index_space;
-  size_t index_subspace;
+  std::size_t index_space;
+  std::size_t index_subspace;
   field_id_t index_fid;
   uint64_t * indices_buf;
+  std::size_t domain;
+  std::size_t dim;
 };
 
 //----------------------------------------------------------------------------//

@@ -30,6 +30,7 @@ mpi_context_policy_t::initialize(
 )
 {
   MPI_Comm_rank(MPI_COMM_WORLD, &color_);
+  MPI_Comm_size(MPI_COMM_WORLD, &colors_);
 
   runtime_driver(argc, argv);
 

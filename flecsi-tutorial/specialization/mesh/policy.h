@@ -16,7 +16,7 @@
 
 #include <flecsi/topology/mesh.h>
 #include <flecsi/topology/mesh_topology.h>
-#include <specialization/mesh/entity_types.h>
+#include <flecsi-tutorial/specialization/mesh/entity_types.h>
 
 namespace flecsi {
 namespace tutorial {

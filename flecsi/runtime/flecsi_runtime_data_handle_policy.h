@@ -83,7 +83,8 @@ using FLECSI_RUNTIME_GLOBAL_DATA_HANDLE_POLICY = hpx_data_handle_policy_t;
 using FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY =
     hpx_sparse_data_handle_policy_t;
 
-using FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY = hpx_mutator_handle_policy_t;;
+using FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY = hpx_mutator_handle_policy_t;
+;
 
 } // namespace flecsi
 

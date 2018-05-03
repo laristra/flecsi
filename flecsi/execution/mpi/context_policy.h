@@ -135,6 +135,13 @@ struct mpi_context_policy_t
   {
     return color_;
   } // color
+  
+  /*!
+    Return the number of colors.
+   */
+
+  size_t colors() const { return colors_; } // color
+
 
   //--------------------------------------------------------------------------//
   // Task interface.
@@ -196,11 +203,6 @@ struct mpi_context_policy_t
     size_t capacity;
   };
 
-  struct local_index_space_data_t{
-    size_t size;
-    size_t capacity;
-  };
-
   auto&
   index_space_data_map()
   {
@@ -213,12 +215,6 @@ struct mpi_context_policy_t
 
   auto & index_subspace_data_map() {
     return index_subspace_data_map_;
-  }
-
-  auto&
-  local_index_space_data_map()
-  {
-    return local_index_space_data_map_;
   }
 
   using coloring_info_t = flecsi::coloring::coloring_info_t;
@@ -625,7 +621,9 @@ struct mpi_context_policy_t
     MPI_Allreduce(&local_max_, &global_max_, 1,
            flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
            MPI_COMM_WORLD);
-    return global_max_;
+    mpi_future__<T> fut;
+    fut.set(global_max_);
+    return fut;
   }
 
 
@@ -666,7 +664,9 @@ struct mpi_context_policy_t
     MPI_Allreduce(&local_min_, &global_min_, 1,
            flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MIN,
            MPI_COMM_WORLD);
-    return global_min_;
+    mpi_future__<T> fut;
+    fut.set(global_min_);
+    return fut;
   }
 
 
@@ -675,6 +675,7 @@ struct mpi_context_policy_t
 private:
 
   int color_ = 0;
+  int colors_ = 0;
 
   // Define the map type using the task_hash_t hash function.
 //  std::unordered_map<
@@ -694,7 +695,6 @@ private:
   std::map<field_id_t, field_metadata_t> field_metadata;
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
-  std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
 
   std::map<field_id_t, sparse_field_data_t> sparse_field_data;

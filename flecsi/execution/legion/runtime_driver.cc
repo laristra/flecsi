@@ -141,7 +141,8 @@ runtime_driver(
 
   auto coloring_info = context_.coloring_info_map();
 
-  data.init_from_coloring_info_map(coloring_info);
+  data.init_from_coloring_info_map(coloring_info,
+    context_.sparse_index_space_info_map());
 
   for(auto& itr : context_.adjacency_info()){
     data.add_adjacency(itr.second);
@@ -525,7 +526,7 @@ runtime_driver(
 
     auto global_ispace = data.global_index_space();
     Legion::RegionRequirement global_reg_req(global_ispace.logical_region,
-          READ_ONLY, SIMULTANEOUS, global_ispace.logical_region);
+          READ_ONLY, EXCLUSIVE, global_ispace.logical_region);
 
     global_reg_req.add_flags(NO_ACCESS_FLAG);
     for(const field_info_t& field_info : context_.registered_fields()){
@@ -1155,21 +1156,6 @@ spmd_task(
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
   context_.advance_state();
-
-  auto& local_index_space_map = context_.local_index_space_map();
-  for(auto& itr : local_index_space_map){
-    size_t index_space = itr.first;
-
-    legion_data_t::local_index_space_t lis = 
-      legion_data_t::create_local_index_space(
-      ctx, runtime, index_space, itr.second);
-    
-    auto& lism = context_.local_index_space_data_map();
-
-    context_t::local_index_space_data_t lis_data;
-    lis_data.region = lis.logical_region;
-    lism.emplace(index_space, std::move(lis_data));
-  }
 
   // run default or user-defined driver
   driver(args.argc, args.argv);

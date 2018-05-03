@@ -107,14 +107,12 @@ public:
   friend class mesh_topology__;
 
 protected:
-
   template<size_t DOM = 0>
   void set_info(uint16_t info) {
     ids_[DOM] = (uint64_t(info) << 48) | ids_[DOM];
   } // set_info
 
 private:
-
   std::array<id_t, NUM_DOMAINS> ids_;
 
 }; // class mesh_entity_base__
@@ -585,8 +583,8 @@ public:
   }
 
   template<size_t FROM_DIM, size_t NUM_DOMAINS>
-  id_t * get_entities(mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent,
-                      size_t to_dim) {
+  id_t *
+  get_entities(mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent, size_t to_dim) {
     return get<FROM_DIM>(to_dim).get_entities(from_ent->id(from_domain_));
   }
 
@@ -595,8 +593,8 @@ public:
       mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent,
       size_t to_dim,
       size_t & count) {
-    return get<FROM_DIM>(to_dim).get_entities(from_ent->id(from_domain_),
-      count);
+    return get<FROM_DIM>(to_dim).get_entities(
+        from_ent->id(from_domain_), count);
   }
 
   id_t * get_entities(id_t from_id, size_t to_dim) {
@@ -609,8 +607,9 @@ public:
   }
 
   template<size_t FROM_DIM, size_t NUM_DOMAINS>
-  auto get_entity_vec(mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent,
-    size_t to_dim) const {
+  auto get_entity_vec(
+      mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent,
+      size_t to_dim) const {
     auto & conn = get<FROM_DIM>(to_dim);
     return conn.get_entity_vec(from_ent->id(from_domain_));
   }
@@ -795,56 +794,87 @@ unserialize_dimension_(
   mesh.append_to_index_space_(DOM, DIM, ents, ids);
 }
 
-template<class STORAGE_TYPE, class MESH_TYPE, size_t NUM_DOMAINS,
-  size_t NUM_DIMS, size_t DOM, size_t DIM>
+template<
+    class STORAGE_TYPE,
+    class MESH_TYPE,
+    size_t NUM_DOMAINS,
+    size_t NUM_DIMS,
+    size_t DOM,
+    size_t DIM>
 struct unserialize_dimensions_ {
 
-  static void
-  unserialize(mesh_topology_base__<STORAGE_TYPE> & mesh, char * buf,
-    uint64_t & pos) {
+  static void unserialize(
+      mesh_topology_base__<STORAGE_TYPE> & mesh,
+      char * buf,
+      uint64_t & pos) {
     unserialize_dimension_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, DOM, DIM>(
-      mesh, buf, pos);
+        mesh, buf, pos);
     unserialize_dimensions_<
-      STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS, DOM, DIM + 1>::
-        unserialize(mesh, buf, pos);
+        STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS, DOM,
+        DIM + 1>::unserialize(mesh, buf, pos);
   }
 };
 
-template<class STORAGE_TYPE, class MESH_TYPE, size_t NUM_DOMAINS,
-  size_t NUM_DIMS, size_t DOM>
-struct unserialize_dimensions_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS,
-  NUM_DIMS, DOM, NUM_DIMS> {
+template<
+    class STORAGE_TYPE,
+    class MESH_TYPE,
+    size_t NUM_DOMAINS,
+    size_t NUM_DIMS,
+    size_t DOM>
+struct unserialize_dimensions_<
+    STORAGE_TYPE,
+    MESH_TYPE,
+    NUM_DOMAINS,
+    NUM_DIMS,
+    DOM,
+    NUM_DIMS> {
 
-  static void
-  unserialize(mesh_topology_base__<STORAGE_TYPE> & mesh, char * buf,
-    uint64_t & pos) {
-    unserialize_dimension_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, DOM,
-      NUM_DIMS>(mesh, buf, pos);
+  static void unserialize(
+      mesh_topology_base__<STORAGE_TYPE> & mesh,
+      char * buf,
+      uint64_t & pos) {
+    unserialize_dimension_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, DOM, NUM_DIMS>(
+        mesh, buf, pos);
   }
 };
 
-template<class STORAGE_TYPE, class MESH_TYPE, size_t NUM_DOMAINS,
-  size_t NUM_DIMS, size_t DOM>
+template<
+    class STORAGE_TYPE,
+    class MESH_TYPE,
+    size_t NUM_DOMAINS,
+    size_t NUM_DIMS,
+    size_t DOM>
 struct unserialize_domains_ {
 
-  static void
-  unserialize(mesh_topology_base__<STORAGE_TYPE> & mesh, char * buf,
-    uint64_t & pos) {
-    unserialize_dimensions_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS,
-      DOM, 0>::unserialize(mesh, buf, pos);
-    unserialize_domains_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS,
-      DOM + 1>::unserialize(mesh, buf, pos);
+  static void unserialize(
+      mesh_topology_base__<STORAGE_TYPE> & mesh,
+      char * buf,
+      uint64_t & pos) {
+    unserialize_dimensions_<
+        STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS, DOM,
+        0>::unserialize(mesh, buf, pos);
+    unserialize_domains_<
+        STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS,
+        DOM + 1>::unserialize(mesh, buf, pos);
   }
 };
 
-template<class STORAGE_TYPE, class MESH_TYPE, size_t NUM_DOMAINS,
-  size_t NUM_DIMS>
-struct unserialize_domains_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS,
-  NUM_DOMAINS> {
+template<
+    class STORAGE_TYPE,
+    class MESH_TYPE,
+    size_t NUM_DOMAINS,
+    size_t NUM_DIMS>
+struct unserialize_domains_<
+    STORAGE_TYPE,
+    MESH_TYPE,
+    NUM_DOMAINS,
+    NUM_DIMS,
+    NUM_DOMAINS> {
 
-  static void
-  unserialize(mesh_topology_base__<STORAGE_TYPE> & mesh, char * buf,
-    uint64_t & pos) {}
+  static void unserialize(
+      mesh_topology_base__<STORAGE_TYPE> & mesh,
+      char * buf,
+      uint64_t & pos) {}
 };
 
 } // namespace topology

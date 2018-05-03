@@ -48,6 +48,10 @@ endif()
 
   target_link_libraries(tasks_and_drivers FleCSI ${FLECSI_RUNTIME_LIBRARIES})
 
+  if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+    hpx_setup_target(tasks_and_drivers FOLDER "Examples")
+  endif()
+
 endif()
 #~---------------------------------------------------------------------------~-#
 # Formatting options

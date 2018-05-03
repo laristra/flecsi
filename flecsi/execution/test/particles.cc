@@ -60,7 +60,7 @@ namespace execution {
 
 struct set_topology_index_space_t{
   size_t main_capacity;
-  size_t active_migration_capacity;
+  size_t active_migrate_capacity;
 };
 
 struct set_topology_info_t{
@@ -77,7 +77,7 @@ void specialization_tlt_init(int argc, char ** argv) {
 
   context_t::set_topology_index_space_t is1;
   is1.main_capacity = 500;
-  is1.active_migration_capacity = 20;
+  is1.active_migrate_capacity = 20;
 
   info.index_space_map.emplace(0, std::move(is1));
 

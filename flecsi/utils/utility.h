@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 namespace flecsi {
 namespace utils {
 
