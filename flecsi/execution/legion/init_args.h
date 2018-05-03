@@ -139,10 +139,10 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
       rr.add_field(h.fid);
       region_reqs.push_back(rr);
     } else {
-      clog_assert(PERMISSIONS == size_t(ro), "you are not allowed  \
-            to modify global data in specialization_spmd_init or driver");
-      Legion::RegionRequirement rr(
-          h.color_region, READ_ONLY, EXCLUSIVE, h.color_region);
+      clog_assert(PERMISSIONS == size_t(ro), "you are not allowed "
+            "to modify global data in specialization_spmd_init or driver");
+      Legion::RegionRequirement rr(h.color_region, READ_ONLY, EXCLUSIVE,
+                                   h.color_region);
       rr.add_field(h.fid);
       region_reqs.push_back(rr);
     } // if

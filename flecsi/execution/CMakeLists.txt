@@ -219,10 +219,11 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     LIBRARIES
       FleCSI
       ${CINCH_RUNTIME_LIBRARIES}
+    THREADS 2
     NOCI
     )
 
-  if(ENABLE_PARMETIS)
+  if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
     cinch_add_devel_target(execution_structure
       SOURCES
@@ -439,6 +440,24 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       NOCI
     )
 
+    cinch_add_unit(global_data
+      SOURCES
+        test/global_data.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/global_data.blessed
+      LIBRARIES
+        FleCSI
+        ${CINCH_RUNTIME_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+      POLICY ${UNIT_POLICY}
+      THREADS 2
+      NOCI
+    )
 
     if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
       cinch_add_unit(set_topology
@@ -525,7 +544,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       )
     endif() # mpi
 
-  endif() # (ENABLE_PARMETIS)
+  endif() # (ENABLE_COLORING AND ENABLE_PARMETIS)
 
   if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   #
@@ -563,7 +582,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       NOCI
     )
 
-    if(ENABLE_PARMETIS)
+    if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
       cinch_add_unit(barrier_per_field
         SOURCES
@@ -629,7 +648,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         NOCI
       )
 
-    endif() # (ENABLE_PARMETIS)
+    endif() # (ENABLE_COLORING AND ENABLE_PARMETIS)
 
   endif() # legion
 

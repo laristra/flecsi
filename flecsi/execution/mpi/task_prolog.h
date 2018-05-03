@@ -21,6 +21,7 @@
 #include "mpi.h"
 #include <flecsi/data/data.h>
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/global_accessor.h>
 #include <flecsi/data/ragged_accessor.h>
 #include <flecsi/data/ragged_mutator.h>
 #include <flecsi/data/sparse_accessor.h>
@@ -36,7 +37,7 @@ namespace execution {
    The task_prolog_t type can be called to walk the task args after the
    task launcher is created, but before the task has run. This allows
    synchronization dependencies to be added to the execution flow.
-  
+
    @ingroup execution
    */
 
@@ -51,7 +52,7 @@ namespace execution {
 
     /*!
      FIXME: Need a description.
-    
+
      @tparam T                     The data type referenced by the handle.
      @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
                                    indices of the index partition.
@@ -59,7 +60,7 @@ namespace execution {
                                    indices of the index partition.
      @tparam GHOST_PERMISSIONS     The permissions required on the ghost
                                    indices of the index partition.
-    
+
      @param runtime The Legion task runtime.
      */
 
@@ -80,6 +81,24 @@ namespace execution {
     )
     {
       // TODO: move field data allocation here?
+    } // handle
+
+    template<
+      typename T,
+      size_t PERMISSIONS
+    >
+    void
+    handle(
+     global_accessor__<
+       T,
+       PERMISSIONS
+     > & a
+    )
+    {
+      if (a.handle.state >= SPECIALIZATION_SPMD_INIT) {
+        clog_assert(PERMISSIONS == size_t(ro), "you are not allowed "
+           "to modify global data in specialization_spmd_init or driver");
+      }
     } // handle
 
     template<
@@ -290,7 +309,7 @@ namespace execution {
         h.initialize_storage();
       }
     } // handle
-   
+
     /*!
       This method registers entity data fields as needed and initializes set
       topology index spaces and buffers from the raw MPI buffers. If we are

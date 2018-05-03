@@ -526,7 +526,7 @@ runtime_driver(
 
     auto global_ispace = data.global_index_space();
     Legion::RegionRequirement global_reg_req(global_ispace.logical_region,
-          READ_ONLY, SIMULTANEOUS, global_ispace.logical_region);
+          READ_ONLY, EXCLUSIVE, global_ispace.logical_region);
 
     global_reg_req.add_flags(NO_ACCESS_FLAG);
     for(const field_info_t& field_info : context_.registered_fields()){
