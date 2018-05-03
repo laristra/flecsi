@@ -113,6 +113,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__data__t_1_1index__subspace__t.html">index_subspace_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__data__t_1_1sparse__index__space__t.html">sparse_index_space_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -131,6 +133,12 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>coloring_info_map_t<
 <tr class="memitem:a816f034f64373ac3aa0f087a71606606"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a816f034f64373ac3aa0f087a71606606"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>indexed_coloring_info_map_t</b> = std::map&lt; size_t, coloring_info_map_t &gt;</td></tr>
 <tr class="separator:a816f034f64373ac3aa0f087a71606606"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace82f637d415eead9b5231d53118eb98"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ace82f637d415eead9b5231d53118eb98"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>sparse_index_space_info_t</b> = <a class="el" href="structflecsi_1_1execution_1_1context_____1_1sparse__index__space__info__t.html">execution::context_t::sparse_index_space_info_t</a></td></tr>
+<tr class="separator:ace82f637d415eead9b5231d53118eb98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72306ea2f1c2e9bec921aa5cd6571f4a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a72306ea2f1c2e9bec921aa5cd6571f4a"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>sparse_index_space_info_map_t</b> = std::map&lt; size_t, <a class="el" href="structflecsi_1_1execution_1_1context_____1_1sparse__index__space__info__t.html">sparse_index_space_info_t</a> &gt;</td></tr>
+<tr class="separator:a72306ea2f1c2e9bec921aa5cd6571f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -140,11 +148,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5b2cdd757b6fc91ba239cd7154e56e0b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5b2cdd757b6fc91ba239cd7154e56e0b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>init_global_handles</b> ()</td></tr>
 <tr class="separator:a5b2cdd757b6fc91ba239cd7154e56e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b83914025618a79382f5bc665766d21"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b83914025618a79382f5bc665766d21"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init_from_coloring_info_map</b> (const indexed_coloring_info_map_t &amp;indexed_coloring_info_map)</td></tr>
-<tr class="separator:a7b83914025618a79382f5bc665766d21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40c6f09c3a75c7ab655bb15876d20ad3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1data_1_1legion__data__t.html#a40c6f09c3a75c7ab655bb15876d20ad3">add_index_space</a> (size_t index_space_id, const coloring_info_map_t &amp;coloring_info_map)</td></tr>
-<tr class="separator:a40c6f09c3a75c7ab655bb15876d20ad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29800d0b5881fd7a6a09af5c442932e7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a29800d0b5881fd7a6a09af5c442932e7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>init_from_coloring_info_map</b> (const indexed_coloring_info_map_t &amp;indexed_coloring_info_map, const sparse_index_space_info_map_t &amp;sparse_info_map)</td></tr>
+<tr class="separator:a29800d0b5881fd7a6a09af5c442932e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a999987969002259e037d0ebbd383c300"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1data_1_1legion__data__t.html#a999987969002259e037d0ebbd383c300">add_index_space</a> (size_t index_space_id, const coloring_info_map_t &amp;coloring_info_map, const <a class="el" href="structflecsi_1_1execution_1_1context_____1_1sparse__index__space__info__t.html">sparse_index_space_info_t</a> *sparse_info)</td></tr>
+<tr class="separator:a999987969002259e037d0ebbd383c300"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61f0e5f8e104bef1823eeca8c2dbf33a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1data_1_1legion__data__t.html#a61f0e5f8e104bef1823eeca8c2dbf33a">add_adjacency</a> (const <a class="el" href="structflecsi_1_1coloring_1_1adjacency__info__t.html">adjacency_info_t</a> &amp;adjacency_info)</td></tr>
 <tr class="separator:a61f0e5f8e104bef1823eeca8c2dbf33a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ea3ff2d6d60aa7f5dd15d413b7ba2a2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1ea3ff2d6d60aa7f5dd15d413b7ba2a2"></a>
@@ -208,7 +216,7 @@ const std::unordered_map&lt; size_t, <a class="el" href="structflecsi_1_1data_1_
 
 </div>
 </div>
-<a class="anchor" id="a40c6f09c3a75c7ab655bb15876d20ad3"></a>
+<a class="anchor" id="a999987969002259e037d0ebbd383c300"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -225,7 +233,13 @@ const std::unordered_map&lt; size_t, <a class="el" href="structflecsi_1_1data_1_
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const coloring_info_map_t &amp;&#160;</td>
-          <td class="paramname"><em>coloring_info_map</em>&#160;</td>
+          <td class="paramname"><em>coloring_info_map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1execution_1_1context_____1_1sparse__index__space__info__t.html">sparse_index_space_info_t</a> *&#160;</td>
+          <td class="paramname"><em>sparse_info</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

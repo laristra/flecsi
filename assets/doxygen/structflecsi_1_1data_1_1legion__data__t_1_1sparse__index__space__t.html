@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: flecsi::execution::context__&lt; CONTEXT_POLICY &gt;::sparse_index_space_info_t Struct Reference</title>
+<title>Interface Documentation: flecsi::data::legion_data_t::sparse_index_space_t Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -89,42 +89,38 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1context____.html">context__</a></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1context_____1_1sparse__index__space__info__t.html">sparse_index_space_info_t</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="classflecsi_1_1data_1_1legion__data__t.html">legion_data_t</a></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1legion__data__t_1_1sparse__index__space__t.html">sparse_index_space_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structflecsi_1_1execution_1_1context_____1_1sparse__index__space__info__t-members.html">List of all members</a>  </div>
+<a href="structflecsi_1_1data_1_1legion__data__t_1_1sparse__index__space__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::execution::context__&lt; CONTEXT_POLICY &gt;::sparse_index_space_info_t Struct Reference</div>  </div>
+<div class="title">flecsi::data::legion_data_t::sparse_index_space_t Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;<a class="el" href="context_8h_source.html">context.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ae63fc70b6a076c13cd1fa57927e8d5ee"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae63fc70b6a076c13cd1fa57927e8d5ee"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>index_space</b></td></tr>
-<tr class="separator:ae63fc70b6a076c13cd1fa57927e8d5ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87b38808b666930e01b1ef72d48fb3c9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a87b38808b666930e01b1ef72d48fb3c9"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>reserve_chunk</b></td></tr>
-<tr class="separator:a87b38808b666930e01b1ef72d48fb3c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2afc5e360f7c814ca54235b8688b5de"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad2afc5e360f7c814ca54235b8688b5de"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_entries_per_index</b></td></tr>
-<tr class="separator:ad2afc5e360f7c814ca54235b8688b5de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92b9d86c8cffaa7b000d26befc0fe477"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a92b9d86c8cffaa7b000d26befc0fe477"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_exclusive_entries</b></td></tr>
-<tr class="separator:a92b9d86c8cffaa7b000d26befc0fe477"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d39714971bcab8985f3fc80edc73c11"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2d39714971bcab8985f3fc80edc73c11"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>index_space_id</b></td></tr>
+<tr class="separator:a2d39714971bcab8985f3fc80edc73c11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4dfbb6e1c7b1d043717c55548bdc9bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac4dfbb6e1c7b1d043717c55548bdc9bd"></a>
+Legion::IndexSpace&#160;</td><td class="memItemRight" valign="bottom"><b>index_space</b></td></tr>
+<tr class="separator:ac4dfbb6e1c7b1d043717c55548bdc9bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb21d9ba28650ddb1e2ba1b52f026054"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeb21d9ba28650ddb1e2ba1b52f026054"></a>
+Legion::FieldSpace&#160;</td><td class="memItemRight" valign="bottom"><b>field_space</b></td></tr>
+<tr class="separator:aeb21d9ba28650ddb1e2ba1b52f026054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f93f5f0821e20a5fb10e7f39454bc0e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f93f5f0821e20a5fb10e7f39454bc0e"></a>
+Legion::LogicalRegion&#160;</td><td class="memItemRight" valign="bottom"><b>logical_region</b></td></tr>
+<tr class="separator:a1f93f5f0821e20a5fb10e7f39454bc0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf6a75bace15f26b9e2a8bc5b17ac3ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaf6a75bace15f26b9e2a8bc5b17ac3ec"></a>
+Legion::IndexPartition&#160;</td><td class="memItemRight" valign="bottom"><b>index_partition</b></td></tr>
+<tr class="separator:aaf6a75bace15f26b9e2a8bc5b17ac3ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;class CONTEXT_POLICY&gt;<br />
-struct flecsi::execution::context__&lt; CONTEXT_POLICY &gt;::sparse_index_space_info_t</h3>
-
-<p>Gathers info about sparse index spaces. </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/flecsi/flecsi/flecsi/execution/<a class="el" href="context_8h_source.html">context.h</a></li>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/flecsi/flecsi/flecsi/data/legion/<a class="el" href="legion__data_8h_source.html">legion_data.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
