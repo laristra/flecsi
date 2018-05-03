@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['parent',['parent',['../classflecsi_1_1topology_1_1branch__id____.html#aefe03b7e8ac3fd9d3d326f6ed6867dfb',1,'flecsi::topology::branch_id__']]],
+  ['parent',['parent',['../classflecsi_1_1topology_1_1branch__id____.html#aa4bf42cfafe4dbbf23b3c8a8e357b221',1,'flecsi::topology::branch_id__']]],
   ['parmetis_5fcolorer_2eh',['parmetis_colorer.h',['../parmetis__colorer_8h.html',1,'']]],
-  ['parmetis_5fcolorer_5ft',['parmetis_colorer_t',['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html',1,'flecsi::coloring']]],
-  ['parmetis_5fcolorer_5ft',['parmetis_colorer_t',['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html#a9eb222ebab10fc00c92d03ab1bb095f2',1,'flecsi::coloring::parmetis_colorer_t::parmetis_colorer_t()'],['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html#a2bca7ae6aca7b201e5ea3a2945db6835',1,'flecsi::coloring::parmetis_colorer_t::parmetis_colorer_t(const parmetis_colorer_t &amp;)=delete']]],
+  ['parmetis_5fcolorer_5ft',['parmetis_colorer_t',['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html',1,'flecsi::coloring::parmetis_colorer_t'],['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html#a9eb222ebab10fc00c92d03ab1bb095f2',1,'flecsi::coloring::parmetis_colorer_t::parmetis_colorer_t()'],['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html#a2bca7ae6aca7b201e5ea3a2945db6835',1,'flecsi::coloring::parmetis_colorer_t::parmetis_colorer_t(const parmetis_colorer_t &amp;)=delete']]],
   ['partition_2eh',['partition.h',['../partition_8h.html',1,'']]],
   ['partition_5finfo_5ft',['partition_info_t',['../structflecsi_1_1mutator__handle__base_____1_1partition__info__t.html',1,'flecsi::mutator_handle_base__']]],
   ['point_2eh',['point.h',['../point_8h.html',1,'']]],

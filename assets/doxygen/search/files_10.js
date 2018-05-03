@@ -1,12 +1,9 @@
 var searchData=
 [
   ['task_2eh',['task.h',['../task_8h.html',1,'']]],
-  ['task_5fepilog_2eh',['task_epilog.h',['../legion_2task__epilog_8h.html',1,'']]],
-  ['task_5fepilog_2eh',['task_epilog.h',['../mpi_2task__epilog_8h.html',1,'']]],
-  ['task_5fprolog_2eh',['task_prolog.h',['../mpi_2task__prolog_8h.html',1,'']]],
-  ['task_5fprolog_2eh',['task_prolog.h',['../legion_2task__prolog_8h.html',1,'']]],
-  ['task_5fwrapper_2eh',['task_wrapper.h',['../legion_2task__wrapper_8h.html',1,'']]],
-  ['task_5fwrapper_2eh',['task_wrapper.h',['../mpi_2task__wrapper_8h.html',1,'']]],
+  ['task_5fepilog_2eh',['task_epilog.h',['../legion_2task__epilog_8h.html',1,'(Global Namespace)'],['../mpi_2task__epilog_8h.html',1,'(Global Namespace)']]],
+  ['task_5fprolog_2eh',['task_prolog.h',['../legion_2task__prolog_8h.html',1,'(Global Namespace)'],['../mpi_2task__prolog_8h.html',1,'(Global Namespace)']]],
+  ['task_5fwrapper_2eh',['task_wrapper.h',['../legion_2task__wrapper_8h.html',1,'(Global Namespace)'],['../mpi_2task__wrapper_8h.html',1,'(Global Namespace)']]],
   ['test_5fmesh_5f2d_2eh',['test_mesh_2d.h',['../test__mesh__2d_8h.html',1,'']]],
   ['thread_5fpool_2eh',['thread_pool.h',['../thread__pool_8h.html',1,'']]],
   ['tikz_2eh',['tikz.h',['../tikz_8h.html',1,'']]],
@@ -17,6 +14,5 @@ var searchData=
   ['tuple_5fwalker_2eh',['tuple_walker.h',['../tuple__walker_8h.html',1,'']]],
   ['tuple_5fwrapper_2eh',['tuple_wrapper.h',['../tuple__wrapper_8h.html',1,'']]],
   ['type_5ftraits_2eh',['type_traits.h',['../type__traits_8h.html',1,'']]],
-  ['types_2eh',['types.h',['../runtime_2types_8h.html',1,'']]],
-  ['types_2eh',['types.h',['../topology_2types_8h.html',1,'']]]
+  ['types_2eh',['types.h',['../runtime_2types_8h.html',1,'(Global Namespace)'],['../topology_2types_8h.html',1,'(Global Namespace)']]]
 ];

@@ -12,7 +12,5 @@ var searchData=
   ['mpi_5futils_2eh',['mpi_utils.h',['../mpi__utils_8h.html',1,'']]],
   ['mutator_2eh',['mutator.h',['../mutator_8h.html',1,'']]],
   ['mutator_5fhandle_2eh',['mutator_handle.h',['../mutator__handle_8h.html',1,'']]],
-  ['mutator_5fhandle_5fpolicy_2eh',['mutator_handle_policy.h',['../mpi_2mutator__handle__policy_8h.html',1,'']]],
-  ['mutator_5fhandle_5fpolicy_2eh',['mutator_handle_policy.h',['../hpx_2mutator__handle__policy_8h.html',1,'']]],
-  ['mutator_5fhandle_5fpolicy_2eh',['mutator_handle_policy.h',['../legion_2mutator__handle__policy_8h.html',1,'']]]
+  ['mutator_5fhandle_5fpolicy_2eh',['mutator_handle_policy.h',['../hpx_2mutator__handle__policy_8h.html',1,'(Global Namespace)'],['../legion_2mutator__handle__policy_8h.html',1,'(Global Namespace)'],['../mpi_2mutator__handle__policy_8h.html',1,'(Global Namespace)']]]
 ];
