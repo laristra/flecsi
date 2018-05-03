@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['label',['label',['../structflecsi_1_1data_1_1legion_1_1color__handle____.html#a1f8465b79f8507cbf371da00504f9552',1,'flecsi::data::legion::color_handle__::label()'],['../structflecsi_1_1data_1_1legion_1_1global__handle____.html#a34b88718de4063096cc84af93973aa15',1,'flecsi::data::legion::global_handle__::label()']]],
+  ['label',['label',['../structflecsi_1_1data_1_1legion_1_1color__handle____.html#a1f8465b79f8507cbf371da00504f9552',1,'flecsi::data::legion::color_handle__::label()'],['../structflecsi_1_1data_1_1legion_1_1global__handle____.html#a34b88718de4063096cc84af93973aa15',1,'flecsi::data::legion::global_handle__::label()'],['../structflecsi_1_1data_1_1mpi_1_1color__handle____.html#a399c9535730f052459c6059aa5f822b5',1,'flecsi::data::mpi::color_handle__::label()'],['../structflecsi_1_1data_1_1mpi_1_1global__handle____.html#a71bebc5f86c668a64a9a0ce90fc68825',1,'flecsi::data::mpi::global_handle__::label()']]],
   ['launch_2eh',['launch.h',['../launch_8h.html',1,'']]],
   ['launch_5fcopies',['launch_copies',['../structflecsi_1_1execution_1_1task__prolog__t.html#a65881927de0f31563c4fcc3028485f49',1,'flecsi::execution::task_prolog_t']]],
   ['launch_5fmask_5ft',['launch_mask_t',['../launch_8h.html#ac6ddfc0512bde3ea4b5f14bbbe30cf0a',1,'flecsi']]],

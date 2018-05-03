@@ -11,7 +11,7 @@ var searchData=
   ['clog_5ft',['clog_t',['../classcinch_1_1clog__t.html',1,'cinch']]],
   ['clog_5ftag_5fscope_5ft',['clog_tag_scope_t',['../structcinch_1_1clog__tag__scope__t.html',1,'cinch']]],
   ['color_5fdata_5fclient_5ft',['color_data_client_t',['../structflecsi_1_1data_1_1color__data__client__t.html',1,'flecsi::data']]],
-  ['color_5fhandle_5f_5f',['color_handle__',['../structflecsi_1_1data_1_1legion_1_1color__handle____.html',1,'flecsi::data::legion']]],
+  ['color_5fhandle_5f_5f',['color_handle__',['../structflecsi_1_1data_1_1legion_1_1color__handle____.html',1,'flecsi::data::legion::color_handle__&lt; T, PERMISSIONS &gt;'],['../structflecsi_1_1data_1_1mpi_1_1color__handle____.html',1,'flecsi::data::mpi::color_handle__&lt; T, PERMISSIONS &gt;']]],
   ['color_5finfo_5ft',['color_info_t',['../structflecsi_1_1execution_1_1context_____1_1set__index__space__info__t_1_1color__info__t.html',1,'flecsi::execution::context__::set_index_space_info_t']]],
   ['color_5ftopology_5f_5f',['color_topology__',['../classflecsi_1_1topology_1_1color__topology____.html',1,'flecsi::topology']]],
   ['color_5ftopology_5fbase_5f_5f',['color_topology_base__',['../classflecsi_1_1topology_1_1color__topology__base____.html',1,'flecsi::topology']]],

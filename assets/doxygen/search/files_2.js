@@ -4,7 +4,7 @@ var searchData=
   ['cinchlog_2eh',['cinchlog.h',['../cinchlog_8h.html',1,'']]],
   ['client_2eh',['client.h',['../client_8h.html',1,'']]],
   ['closure_5futils_2eh',['closure_utils.h',['../closure__utils_8h.html',1,'']]],
-  ['color_2eh',['color.h',['../color_8h.html',1,'']]],
+  ['color_2eh',['color.h',['../legion_2color_8h.html',1,'(Global Namespace)'],['../mpi_2color_8h.html',1,'(Global Namespace)']]],
   ['color_5ftopology_2eh',['color_topology.h',['../color__topology_8h.html',1,'']]],
   ['colorer_2eh',['colorer.h',['../colorer_8h.html',1,'']]],
   ['coloring_5ffunctions_2eh',['coloring_functions.h',['../coloring__functions_8h.html',1,'']]],
