@@ -49,7 +49,7 @@ additional entries that exceed the slot allocation.)
 NOTES:
 
 * Tasks that do not need to mutate the sparsity structure should always
-  use an *accessor* rather than a *mutator* for efficiency.
+  use an *handle* rather than a *mutator* for efficiency.
 
 * We are investigating design changes that will allow specialization
   developers to add new storage classes and storage class
