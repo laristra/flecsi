@@ -36,7 +36,7 @@ The data handle interface is the same as for *dense* data. For the
 mutator, the user must specify an additional argument that declares how
 many slots should be pre-allocated for adding new non-sparse entries:
 ```cpp
-  //                                                                v
+                                                                    v
   auto f = flecsi_get_mutator(m, example, field, double, sparse, 0, 5);
 ```
 This argument is only a hint to the runtime: Slots added within this
