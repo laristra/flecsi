@@ -9,14 +9,19 @@
 # Sparse Data
 
 The FleCSI sparse storage class allows the representation of sparse data
-fields, i.e., fields on which one or more data may be defined at each
-index of the associated index space. The sparse storage class is
+fields, i.e., fields on which zero, one or more data may be defined at
+each index of the associated index space. The sparse storage class is
 suitable for representing sparse matrices, sparse materials, or any
 other logical data structure that utilizes a compressed storage
 appraoch. *Note that although the current implementation does use a
 compressed storage scheme, there is no guaruntee that this will be the
 case.* The sparse storage class defines the interface to the registered
-field data, not the storage mechanism.  We are investigating design
+field data, not the storage mechanism.
+
+
+
+
+We are investigating design
 changes that will allow specialization developers to add new storage
 classes.
 

@@ -27,6 +27,7 @@ using namespace flecsi::tutorial;
 
 // This line is essentially just declaring a variable of type "mesh_t"
 // named "example_mesh" in the namespace "clients".
+
 flecsi_register_data_client(mesh_t, clients, example_mesh);
 
 namespace hydro {

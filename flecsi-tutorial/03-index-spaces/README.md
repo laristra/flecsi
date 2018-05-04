@@ -21,7 +21,7 @@ the previous tutorial example, which introduced the notion of a data
 client. Shown here, perhaps more concretely, is that a data client is a
 specialization type that exposes one or more index spaces. In this case,
 the data client is a simple mesh that provides an interface to the index
-spaces, "cells", and "vertices". As can be seen in the code example,
+spaces, *cells*, and *vertices*. As can be seen in the code example,
 users can iterate over these index spaces using straightforward
 range-based loop constructs. This is the preferred style for accessing
 entities that are defined on a FleCSI data client.
@@ -30,7 +30,7 @@ The entity types themselves are defined as part of the specialization.
 This allows different specialization developers to use nomenclature and
 interfaces that best reflect the intended use of their projects. As an
 example, the vertex and cell types defined with our simple mesh both
-have "print" methods that print a user-defined string and the entity's
+have *print* methods that print a user-defined string and the entity's
 id. Although these particular types are relatively trivial, an actual
 specialization type may expose interfaces that are arbitrarily complex.
 

@@ -22,6 +22,8 @@
 
 namespace example {
 
+// This is the definition of simple_task
+
 void simple_task() {
 
   // Print message from inside of the task
