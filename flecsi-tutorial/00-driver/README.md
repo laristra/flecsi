@@ -15,11 +15,11 @@ for the user's code. There is still a main function as required by
 C/C++. However, in a FleCSI application, it is normally handled by
 the specialization layer, or, in the case of this tutorial, by the
 flecsit compiler script, which uses the runtime_main.cc file that is
-installed as part of FleCSI under the share/FleCSI/runtime directory.
+installed as part of FleCSI under the *share/FleCSI/runtime* directory.
 Applications can choose to either use this default main function, or
 replace it with their own (if more explicit control is needed).
 
-This example's driver just prints out the canonical "Hello World" with
+This example's driver prints out the canonical *Hello World* with
 whatever arguments the user has passed to the command line.
 Command-line arguments are passed through the FleCSI runtime to the
 user's driver as with a normal main function.
