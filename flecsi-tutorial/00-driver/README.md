@@ -41,7 +41,7 @@ command-line arguments.
 
 NOTES:
 
-* The driver must be defined in the flecsi::execution namespace.
+* All drivers must be defined in the flecsi::execution namespace.
 
 The code for this example can be found in *driver.cc*:
 
