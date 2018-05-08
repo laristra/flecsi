@@ -435,15 +435,31 @@ runtime_driver(
       Legion::RegionRequirement sparse_reg_req;
 
       if(flecsi_ispace.sparse){
-        sparse_reg_req = Legion::RegionRequirement(color_lregion, READ_WRITE,
-          SIMULTANEOUS, flecsi_ispace.logical_region);
-        
-        auto& flecsi_sispace = data.index_space(idx_space);
+        auto& flecsi_sispace = data.sparse_index_space(idx_space);
 
+        Legion::LogicalPartition sparse_color_lpart =
+          runtime->get_logical_partition(ctx,
+            flecsi_sispace.logical_region, flecsi_sispace.index_partition);
+        
+        Legion::LogicalRegion sparse_color_lregion =
+          runtime->get_logical_subregion_by_color(ctx, sparse_color_lpart,
+          color);
+
+        sparse_reg_req = Legion::RegionRequirement(sparse_color_lregion,
+          READ_WRITE, SIMULTANEOUS, flecsi_sispace.logical_region);
+
+        for (const field_info_t* field_info : fields_map[idx_space]){
+          if(utils::hash::is_internal(field_info->key)){
+            reg_req.add_field(field_info->fid);
+          }
+          else{
+            sparse_reg_req.add_field(field_info->fid);
+          }
+        }//for field_info
       }
       else{
         for (const field_info_t* field_info : fields_map[idx_space]){
-            reg_req.add_field(field_info->fid);
+          reg_req.add_field(field_info->fid);
         }//for field_info        
       }
 
@@ -458,6 +474,10 @@ runtime_driver(
       }
 
       spmd_launcher.add_region_requirement(reg_req);
+
+      if(flecsi_ispace.sparse){
+        spmd_launcher.add_region_requirement(sparse_reg_req);
+      }
 
       flecsi::coloring::coloring_info_t color_info = 
         coloring_info[idx_space][color];
@@ -483,8 +503,14 @@ runtime_driver(
           SIMULTANEOUS, flecsi_ispace.logical_region);
         owner_reg_req.add_flags(NO_ACCESS_FLAG);
         owner_reg_req.add_field(ghost_owner_pos_fid);
+
+        auto& flecsi_ispace = data.index_space(idx_space);
+
         for (const field_info_t* field_info : fields_map[idx_space]){
-          owner_reg_req.add_field(field_info->fid);
+          if(!flecsi_ispace.sparse ||
+             utils::hash::is_internal(field_info->key)){
+            owner_reg_req.add_field(field_info->fid);
+          }
         }
         spmd_launcher.add_region_requirement(owner_reg_req);
 
@@ -653,6 +679,7 @@ spmd_task(
   args_deserializer.deserialize(&number_of_color_fields, sizeof(size_t));
 
   {
+
   size_t total_num_idx_spaces = num_idx_spaces;
   if (number_of_global_fields>0) total_num_idx_spaces++;
   if (number_of_color_fields>0) total_num_idx_spaces++;
@@ -695,13 +722,22 @@ spmd_task(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
-      if(field_info.storage_class != global &&
-        field_info.storage_class != color &&
-        field_info.storage_class != subspace){
-        if(field_info.index_space == idx_space){
-          fields_map[idx_space].push_back(&field_info);
-        }
-      }//if
+      switch(field_info.storage_class){
+        case global:
+        case subspace:
+        case color:
+          break;
+        case sparse:
+          if(utils::hash::is_internal(field_info.key)){
+            fields_map[idx_space].push_back(&field_info);
+          }
+          break;
+        default:
+          if(field_info.index_space == idx_space){
+            fields_map[idx_space].push_back(&field_info);
+          }
+          break;
+      }
     }//for
   }//end for is
 

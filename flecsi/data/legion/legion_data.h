@@ -513,8 +513,7 @@ public:
 
       sparse_index_space_t* sis;
 
-      // TODO: formalize index space offset
-      auto sitr = sparse_index_space_map_.find(is.index_space_id + 8192);
+      auto sitr = sparse_index_space_map_.find(is.index_space_id);
       if(sitr != sparse_index_space_map_.end()){
         sis = &sitr->second;
       }
