@@ -74,6 +74,7 @@ public:
     Legion::LogicalRegion logical_region;
     Legion::IndexPartition index_partition;
     size_t total_num_entities;
+    bool sparse = false;
   };
 
   struct sparse_index_space_t{
@@ -205,7 +206,7 @@ public:
       auto itr = sparse_info_map.find(idx_space.first);
       const sparse_index_space_info_t* sparse_info;
       
-      if(itr == sparse_info_map.end()){
+      if(itr != sparse_info_map.end()){
         sparse_info = &itr->second;
       }
       else{
@@ -300,9 +301,9 @@ public:
 
     attach_name(is, is.field_space, "expanded field space");
 
-    index_space_map_[index_space_id] = std::move(is);
-
     if(sparse_info){
+      is.sparse = true;
+
       sparse_index_space_t sis;
       // TODO: need to formalize this index space offset scheme
       sis.index_space_id = index_space_id + 8192;
@@ -339,6 +340,8 @@ public:
 
       sparse_index_space_map_[index_space_id] = std::move(sis);
     }
+
+    index_space_map_[index_space_id] = std::move(is);
   }
 
   /*!
@@ -657,6 +660,13 @@ public:
   const index_space_t & index_space(size_t index_space_id) const {
     auto itr = index_space_map_.find(index_space_id);
     clog_assert(itr != index_space_map_.end(), "invalid index space");
+    return itr->second;
+  }
+
+  const sparse_index_space_t & sparse_index_space(
+    size_t sparse_index_space_id) const {
+    auto itr = sparse_index_space_map_.find(sparse_index_space_id);
+    clog_assert(itr != sparse_index_space_map_.end(), "invalid sparse index space");
     return itr->second;
   }
 

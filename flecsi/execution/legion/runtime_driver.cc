@@ -207,7 +207,7 @@ runtime_driver(
   //-------------------------------------------------------------------------//
 
   // map of index space to the field_ids that are mapped to this index space
-  std::map<size_t, std::vector<field_id_t>> fields_map;
+  std::map<size_t, std::vector<const field_info_t*>> fields_map;
 
   //total number of Phase Barriers 
   size_t num_phase_barriers =0;
@@ -229,7 +229,7 @@ runtime_driver(
           break;
         default:
           if(field_info.index_space == idx_space){
-            fields_map[idx_space].push_back(field_info.fid);
+            fields_map[idx_space].push_back(&field_info);
             num_phase_barriers++;
           } // if
           break;          
@@ -251,12 +251,12 @@ runtime_driver(
   //fill the map
   for(auto idx_space : coloring_info){
     std::map<field_id_t , std::vector<Legion::PhaseBarrier>> inner;
-    for (const field_id_t& field_id : fields_map[idx_space.first]){
+    for (const field_info_t* field_info : fields_map[idx_space.first]){
       for(int color = 0; color < num_colors; color++){
         const flecsi::coloring::coloring_info_t& color_info = 
           idx_space.second[color];
 
-        inner[field_id].push_back(runtime->create_phase_barrier(ctx,
+        inner[field_info->fid].push_back(runtime->create_phase_barrier(ctx,
              1 + color_info.shared_users.size()));
       }//color
     }//field_info
@@ -296,14 +296,14 @@ runtime_driver(
       flecsi::coloring::coloring_info_t color_info =
           coloring_info[idx_space][color];
 
-      for (const field_id_t& field_id : fields_map[idx_space]){
+      for (const field_info_t* field_info : fields_map[idx_space]){
         pbarriers_as_owner.push_back(
-          phase_barriers_map[idx_space][field_id][color]);
+          phase_barriers_map[idx_space][field_info->fid][color]);
       
         {
         clog_tag_guard(runtime_driver);
         clog(trace) << " Color " << color << " idx_space " << idx_space 
-        << ", fid = " << field_id<<
+        << ", fid = " << field_info->fid<<
           " has " << color_info.ghost_owners.size() << 
           " ghost owners" << std::endl;
         } // scope
@@ -314,8 +314,8 @@ runtime_driver(
           clog(trace) << owner << std::endl;
           } // scope
 
-          owners_pbarriers[idx_space][field_id].push_back(
-            phase_barriers_map[idx_space][field_id][owner]);
+          owners_pbarriers[idx_space][field_info->fid].push_back(
+            phase_barriers_map[idx_space][field_info->fid][owner]);
        
         }
       
@@ -355,8 +355,8 @@ runtime_driver(
     std::vector <Legion::PhaseBarrier> owners_pbarriers_buf;
     for(auto is: context_.coloring_map()) {
       size_t idx_space = is.first;
-      for (const field_id_t& field_id : fields_map[idx_space])
-        for(auto pb:owners_pbarriers[idx_space][field_id])
+      for (const field_info_t* field_info : fields_map[idx_space])
+        for(auto pb:owners_pbarriers[idx_space][field_info->fid])
            owners_pbarriers_buf.push_back(pb);
     }//for
   
@@ -432,9 +432,20 @@ runtime_driver(
 
       reg_req.add_field(ghost_owner_pos_fid);
 
-      for (const field_id_t& field_id : fields_map[idx_space]){
-          reg_req.add_field(field_id);
-      }//for field_info
+      Legion::RegionRequirement sparse_reg_req;
+
+      if(flecsi_ispace.sparse){
+        sparse_reg_req = Legion::RegionRequirement(color_lregion, READ_WRITE,
+          SIMULTANEOUS, flecsi_ispace.logical_region);
+        
+        auto& flecsi_sispace = data.index_space(idx_space);
+
+      }
+      else{
+        for (const field_info_t* field_info : fields_map[idx_space]){
+            reg_req.add_field(field_info->fid);
+        }//for field_info        
+      }
 
       for(auto& itr : context_.adjacency_info()){
         if(itr.first == idx_space){
@@ -472,8 +483,8 @@ runtime_driver(
           SIMULTANEOUS, flecsi_ispace.logical_region);
         owner_reg_req.add_flags(NO_ACCESS_FLAG);
         owner_reg_req.add_field(ghost_owner_pos_fid);
-        for (const field_id_t& field_id : fields_map[idx_space]){
-          owner_reg_req.add_field(field_id);
+        for (const field_info_t* field_info : fields_map[idx_space]){
+          owner_reg_req.add_field(field_info->fid);
         }
         spmd_launcher.add_region_requirement(owner_reg_req);
 
@@ -680,7 +691,7 @@ spmd_task(
   }
 
  // map of index space to the field_ids that are mapped to this index space
-  std::map<size_t, std::vector<field_id_t>> fields_map;
+  std::map<size_t, std::vector<const field_info_t*>> fields_map;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
@@ -688,7 +699,7 @@ spmd_task(
         field_info.storage_class != color &&
         field_info.storage_class != subspace){
         if(field_info.index_space == idx_space){
-          fields_map[idx_space].push_back(field_info.fid);
+          fields_map[idx_space].push_back(&field_info);
         }
       }//if
     }//for
@@ -716,11 +727,11 @@ spmd_task(
   size_t indx = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-    for (const field_id_t& field_id : fields_map[idx_space]){
-      ispace_dmap[idx_space].pbarriers_as_owner[field_id] =
+    for (const field_info_t* field_info : fields_map[idx_space]){
+      ispace_dmap[idx_space].pbarriers_as_owner[field_info->fid] =
         pbarriers_as_owner[indx];
-      ispace_dmap[idx_space].ghost_is_readable[field_id] = true;
-      ispace_dmap[idx_space].write_phase_started[field_id] = false;
+      ispace_dmap[idx_space].ghost_is_readable[field_info->fid] = true;
+      ispace_dmap[idx_space].write_phase_started[field_info->fid] = false;
       indx++;
     }//end field_info
   }//end for idx_space
@@ -741,11 +752,11 @@ spmd_task(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     size_t n = num_owners[consec_indx];
-    for (const field_id_t& field_id : fields_map[idx_space]){
-       ispace_dmap[idx_space].ghost_owners_pbarriers[field_id].resize(n);
+    for (const field_info_t* field_info : fields_map[idx_space]){
+       ispace_dmap[idx_space].ghost_owners_pbarriers[field_info->fid].resize(n);
 
        for(size_t owner = 0; owner < n; ++owner){
-         ispace_dmap[idx_space].ghost_owners_pbarriers[field_id][owner] =
+         ispace_dmap[idx_space].ghost_owners_pbarriers[field_info->fid][owner] =
             ghost_owners_pbarriers[indx];
          indx++;
          {
