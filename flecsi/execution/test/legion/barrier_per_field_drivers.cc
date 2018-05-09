@@ -14,10 +14,10 @@
 #include <cinchlog.h>
 #include <cinchtest.h>
 
-#include "flecsi/execution/execution.h"
-#include "flecsi/data/data.h"
-#include "flecsi/supplemental/coloring/add_colorings.h"
-#include "flecsi/supplemental/mesh/empty_mesh_2d.h"
+#include <flecsi/execution/execution.h>
+#include <flecsi/data/data.h>
+#include <flecsi/supplemental/coloring/add_colorings.h>
+#include <flecsi/supplemental/mesh/empty_mesh_2d.h>
 
 #define INDEX_ID 0
 #define VERSIONS 1
@@ -36,6 +36,8 @@ void write_task(
         dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
         const int my_color, const size_t cycle, const bool delay);
 flecsi_register_task_simple(write_task, loc, single);
+
+flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
 
 flecsi_register_field(empty_mesh_2d_t, name_space, field1, size_t, dense,
     VERSIONS, INDEX_ID);

@@ -6,30 +6,29 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2017 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include "flecsi/utils/const_string.h"
+#include <flecsi/utils/const_string.h>
+#include <flecsi/utils/common.h>
 
 // includes: C++
 #include <iostream>
 
 // includes: other
 #include <cinchtest.h>
-#include "boost/core/demangle.hpp"
-
-
 
 // =============================================================================
 // Sanity check
 // =============================================================================
 
 // print_test
-int32_t print_test(flecsi::utils::const_string_t && s) {
+int32_t
+print_test(flecsi::utils::const_string_t && s) {
   std::cout << "hash: " << s.hash() << std::endl;
   return 0;
 } // print_test
@@ -39,80 +38,68 @@ TEST(const_string, sanity) {
   print_test("hello world");
 } // TEST
 
-
-
 // =============================================================================
 // More-complete exercising of const_string.h's constructs
 // =============================================================================
 
-// typestr: string with boost-demangled type
-template<class T>
-inline std::string typestr(void)
-{
-   return boost::core::demangle(typeid(T).name());
-}
-
-
-
 // TEST
 TEST(const_string, all) {
 
-   // ------------------------
-   // const_string_t
-   // ------------------------
+  // ------------------------
+  // const_string_t
+  // ------------------------
 
-   using flecsi::utils::const_string_t;
+  using flecsi::utils::const_string_t;
 
-   // hash_type_t
-   EXPECT_EQ(typestr<const_string_t::hash_type_t>(), "unsigned long");
+  // hash_type_t
+#ifdef __GNUG__
+  EXPECT_EQ(flecsi::utils::type<typename const_string_t::hash_type_t>(), "unsigned long");
+#endif
 
-   // constructor from C-style string
-   // ...................0123456789
-   const char str[10] = "abcdefghi";
-   const_string_t a(str);
+  // constructor from C-style string
+  // ...................0123456789
+  const char str[10] = "abcdefghi";
+  const_string_t a(str);
 
-   // c_str, size
-   EXPECT_EQ(std::string(a.c_str()), "abcdefghi");
-   EXPECT_EQ(a.size(), 9);
+  // c_str, size
+  EXPECT_EQ(std::string(a.c_str()), "abcdefghi");
+  EXPECT_EQ(a.size(), 9);
 
-   // operator[]
-   EXPECT_EQ(a[0], 'a');
-   EXPECT_EQ(a[1], 'b');
-   EXPECT_EQ(a[2], 'c');
-   EXPECT_EQ(a[8], 'i');
-   std::string x = "no exception";
-   try {
-      (void)a[9];  // considered to be out-of-range (not the \0)
-   }
-   catch (...)
-   {
-      x = "caught an exception";
-   }
-   EXPECT_EQ(x, "caught an exception");
+  // operator[]
+  EXPECT_EQ(a[0], 'a');
+  EXPECT_EQ(a[1], 'b');
+  EXPECT_EQ(a[2], 'c');
+  EXPECT_EQ(a[8], 'i');
+  std::string x = "no exception";
+  try {
+    (void)a[9]; // considered to be out-of-range (not the \0)
+  } catch (...) {
+    x = "caught an exception";
+  }
+  EXPECT_EQ(x, "caught an exception");
 
-   // hash
-   // Machine-dependent (via std::size_t); just do sanity checks
-   EXPECT_TRUE(a.hash() > 0);
-   const const_string_t b("");
-   EXPECT_TRUE(b.hash() == 0);  // known via i == n selection in hash__()
-   const const_string_t c("x");
-   EXPECT_TRUE(c.hash() > 0);
+  // hash
+  // Machine-dependent (via std::size_t); just do sanity checks
+  EXPECT_TRUE(a.hash() > 0);
+  const const_string_t b("");
+  EXPECT_TRUE(b.hash() == 0); // known via i == n selection in hash__()
+  const const_string_t c("x");
+  EXPECT_TRUE(c.hash() > 0);
 
-   // ==, !=
-   EXPECT_TRUE(const_string_t(""   ) == const_string_t(""    ));
-   EXPECT_TRUE(const_string_t(""   ) != const_string_t("a"   ));
-   EXPECT_TRUE(const_string_t("a"  ) != const_string_t(""    ));
-   EXPECT_TRUE(const_string_t("abc") == const_string_t("abc" ));
-   EXPECT_TRUE(const_string_t("abc") != const_string_t("abcd"));
-   EXPECT_TRUE(const_string_t("abc") != const_string_t("dabc"));
+  // ==, !=
+  EXPECT_TRUE(const_string_t("") == const_string_t(""));
+  EXPECT_TRUE(const_string_t("") != const_string_t("a"));
+  EXPECT_TRUE(const_string_t("a") != const_string_t(""));
+  EXPECT_TRUE(const_string_t("abc") == const_string_t("abc"));
+  EXPECT_TRUE(const_string_t("abc") != const_string_t("abcd"));
+  EXPECT_TRUE(const_string_t("abc") != const_string_t("dabc"));
 
+  // ------------------------
+  // const_string_hasher_t
+  // ------------------------
 
-   // ------------------------
-   // const_string_hasher_t
-   // ------------------------
-
-   const flecsi::utils::const_string_hasher_t hasher{};
-   EXPECT_EQ(const_string_t("abc").hash(), hasher(const_string_t("abc")));
+  const flecsi::utils::const_string_hasher_t hasher{};
+  EXPECT_EQ(const_string_t("abc").hash(), hasher(const_string_t("abc")));
 
 } // TEST
 

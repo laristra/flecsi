@@ -1,20 +1,26 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_ragged_accessor_h
-#define flecsi_ragged_accessor_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/data/sparse_data_handle.h"
+/*! @file */
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Nov 21, 2017
-//----------------------------------------------------------------------------//
+#include <flecsi/data/sparse_data_handle.h>
 
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
-//! The ragged_accessor_base_t type provides an empty base type for 
+//! The ragged_accessor_base_t type provides an empty base type for
 //! compile-time identification of data handle objects.
 //!
 //! @ingroup data
@@ -39,34 +45,30 @@ struct ragged_accessor_base_t {};
 //----------------------------------------------------------------------------//
 
 template<
-  typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS
->
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
 struct accessor__<
-  data::ragged,
-  T,
-  EXCLUSIVE_PERMISSIONS,
-  SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS
-> :
-public accessor__<
-  data::sparse,
-  T,
-  EXCLUSIVE_PERMISSIONS,
-  SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS
->, public ragged_accessor_base_t {
-  
-  using base_t = 
-    accessor__<
+    data::ragged,
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS>
+    : public accessor__<
+          data::sparse,
+          T,
+          EXCLUSIVE_PERMISSIONS,
+          SHARED_PERMISSIONS,
+          GHOST_PERMISSIONS>,
+      public ragged_accessor_base_t {
+
+  using base_t = accessor__<
       data::sparse,
       T,
       EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    >;
+      GHOST_PERMISSIONS>;
 
   using offset_t = typename base_t::offset_t;
 
@@ -74,44 +76,38 @@ public accessor__<
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  accessor__(const sparse_data_handle__<T, 0, 0, 0>& h)
-  : base_t(h){}
+  accessor__(const sparse_data_handle__<T, 0, 0, 0> & h) : base_t(h) {}
 
-  T &
-  operator () (
-    size_t index,
-    size_t ragged_index
-  )
-  {
-    const offset_t& offset = base_t::handle.offsets[index];
-    assert(ragged_index < offset.count() && "ragged accessor: index out of range");
+  T & operator()(size_t index, size_t ragged_index) {
+    const offset_t & offset = base_t::handle.offsets[index];
+    assert(
+        ragged_index < offset.count() && "ragged accessor: index out of range");
 
     return (base_t::handle.entries + offset.start() + ragged_index)->value;
   } // operator ()
 };
 
 template<
-  typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS
->
-using ragged_accessor__ = 
-  accessor__<data::ragged, T, EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+using ragged_accessor__ = accessor__<
+    data::ragged,
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS>;
 
 template<
-  typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS
->
-using ragged_accessor = 
-  ragged_accessor__<T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+using ragged_accessor = ragged_accessor__<
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS>;
 
 } // namespace flecsi
-
-#endif // flecsi_ragged_accessor_h
-
-/*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/

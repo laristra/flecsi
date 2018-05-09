@@ -17,8 +17,8 @@
 // declare mesh_t for io.h
 class fake_mesh_t {};
 
-#include "flecsi/io/io.h"
-#include "flecsi/io/io_exodus.h"
+#include <flecsi/io/io.h>
+#include <flecsi/io/io_exodus.h>
 
 namespace flecsi {
 namespace io {

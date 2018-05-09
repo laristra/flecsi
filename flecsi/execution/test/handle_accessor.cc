@@ -14,12 +14,12 @@
 
 #include <iostream>
 
-#include "flecsi/execution/execution.h"
-#include "flecsi/io/simple_definition.h"
-#include "flecsi/coloring/dcrs_utils.h"
-#include "flecsi/supplemental/coloring/add_colorings.h"
-#include "flecsi/supplemental/mesh/empty_mesh_2d.h"
-#include "flecsi/data/dense_accessor.h"
+#include <flecsi/execution/execution.h>
+#include <flecsi/io/simple_definition.h>
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/supplemental/coloring/add_colorings.h>
+#include <flecsi/supplemental/mesh/empty_mesh_2d.h>
+#include <flecsi/data/dense_accessor.h>
 
 using namespace flecsi;
 using namespace supplemental;
@@ -39,6 +39,8 @@ void reader(dense_accessor<double, ro, ro, ro> x) {
     ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
   }
 }
+
+flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
 
 flecsi_register_task_simple(writer, loc, single);
 flecsi_register_task_simple(reader, loc, single);

@@ -1,18 +1,24 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_topology_closure_utils_h
-#define flecsi_topology_closure_utils_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/topology/mesh_definition.h"
-#include "flecsi/utils/logging.h"
-#include "flecsi/utils/set_utils.h"
-#include "flecsi/utils/type_traits.h"
+/*! @file */
 
-///
-/// \file
-/// \date Initial file creation: Nov 21, 2016
-///
+#include <flecsi/topology/mesh_definition.h>
+#include <flecsi/utils/logging.h>
+#include <flecsi/utils/set_utils.h>
+#include <flecsi/utils/type_traits.h>
 
 namespace flecsi {
 namespace topology {
@@ -31,18 +37,9 @@ namespace topology {
 /// \param entity_id The id of the entity in from_dim for which the neighbors
 ///           are to be found.
 ///
-template<
-  size_t from_dim,
-  size_t to_dim,
-  size_t thru_dim,
-  size_t D
->
+template<size_t from_dim, size_t to_dim, size_t thru_dim, size_t D>
 std::set<size_t>
-entity_neighbors(
-  const mesh_definition__<D> & md,
-  size_t entity_id
-)
-{
+entity_neighbors(const mesh_definition__<D> & md, size_t entity_id) {
   // Get the vertices of the requested id
   auto vertices = md.entities_set(from_dim, 0, entity_id);
 
@@ -50,10 +47,10 @@ entity_neighbors(
   std::set<size_t> neighbors;
 
   // Go through the entities of the to_dim
-  for(size_t e(0); e<md.num_entities(to_dim); ++e) {
+  for (size_t e(0); e < md.num_entities(to_dim); ++e) {
 
     // Skip the input id if the dimensions are the same
-    if(from_dim == to_dim && e == entity_id) {
+    if (from_dim == to_dim && e == entity_id) {
       continue;
     } // if
 
@@ -65,7 +62,7 @@ entity_neighbors(
 
     // Add this entity id if the intersection shares at least
     // intersections vertices
-    if(intersect.size() > thru_dim) {
+    if (intersect.size() > thru_dim) {
       neighbors.insert(e);
     } // if
   } // for
@@ -89,39 +86,31 @@ entity_neighbors(
 ///                      neighboring entity.
 ///
 template<
-  size_t from_dim,
-  size_t to_dim,
-  size_t thru_dim,
-  size_t D,
-  typename U,
-  typename = std::enable_if_t< utils::is_iterative_container_v<U> >
->
+    size_t from_dim,
+    size_t to_dim,
+    size_t thru_dim,
+    size_t D,
+    typename U,
+    typename = std::enable_if_t<utils::is_iterative_container_v<U>>>
 std::set<size_t>
-entity_neighbors(
-  const mesh_definition__<D> & md,
-  U && indices
-)
-{
-  // Closure should include the initial set
-  std::set<size_t> closure( std::forward<U>(indices).begin(), 
-    std::forward<U>(indices).end() );
+entity_neighbors(const mesh_definition__<D> & md, U && indices) {
+  clog_assert(from_dim == to_dim, "from_dim does not equal to to_dim");
 
-#if 1
+  // Closure should include the initial set
+  std::set<size_t> closure(
+      std::forward<U>(indices).begin(), std::forward<U>(indices).end());
+
   using entityid = size_t;
   using vertexid = size_t;
 
   // essentially vertex to cell and cell to cell through vertices
   // connectivity.
-  // FIXME: use vertex2entities connectivity from mesh_definition rather than
-  // building our own.
   std::map<vertexid, std::vector<entityid>> vertex2entities;
   std::map<entityid, std::vector<entityid>> entity_neighbors;
 
   // build global entity to entity through # of shared vertices connectivity
   for (size_t cell(0); cell < md.num_entities(from_dim); ++cell) {
     std::map<entityid, size_t> cell_counts;
-    // FIXME: change to "to_dim"?
-    // FIXME: Is the algorithm correct when from_dim != to_dim?
     for (auto vertex : md.entities(from_dim, 0, cell)) {
       // build vertex to cell connectivity, O(n_cells * n_polygon_sides)
       // of insert().
@@ -130,7 +119,7 @@ entity_neighbors(
       // Count the number of times this cell shares a common vertex with
       // some other cell. O(n_cells * n_polygon_sides * vertex to cells degrees)
       for (auto other : vertex2entities[vertex]) {
-      //for (auto other : md.entities(0, from_dim, vertex)) {
+        // for (auto other : md.entities(0, from_dim, vertex)) {
         if (other != cell)
           cell_counts[other] += 1;
       }
@@ -147,20 +136,10 @@ entity_neighbors(
   }
 
   for (auto i : indices) {
-    for (auto n: entity_neighbors[i]) {
+    for (auto n : entity_neighbors[i]) {
       closure.insert(n);
     }
   }
-
-#else
-  // Iterate over the entity indices and add all neighbors
-  for(auto i: indices) {
-    auto ncurr =
-      entity_neighbors<from_dim, to_dim, thru_dim>(md, i);
-
-    closure = flecsi::utils::set_union(ncurr, closure);
-  } // for
-#endif
 
   return closure;
 } // entity_closure
@@ -175,28 +154,20 @@ entity_neighbors(
 ///           information.
 /// \param id The id of the vertex.
 ///
-template<
-  size_t from_dim,
-  size_t to_dim,
-  size_t D
->
+template<size_t from_dim, size_t to_dim, size_t D>
 std::set<size_t>
-entity_referencers(
-  const mesh_definition__<D> & md,
-  size_t id
-)
-{
+entity_referencers(const mesh_definition__<D> & md, size_t id) {
   std::set<size_t> referencers;
 
   // Iterate over entities adding any entity that contains
   // the vertex id to the set.
-  for(size_t e(0); e<md.num_entities(from_dim); ++e) {
+  for (size_t e(0); e < md.num_entities(from_dim); ++e) {
 
     // Get the vertex ids of current cell
     const auto & eset = md.entities(from_dim, to_dim, e);
 
     // If the cell references this vertex add it
-    if(std::find(eset.begin(), eset.end(), id) != eset.end())
+    if (std::find(eset.begin(), eset.end(), id) != eset.end())
       referencers.insert(e);
 
   } // for
@@ -215,23 +186,14 @@ entity_referencers(
 ///           information.
 /// \param indices The entity indeces.
 ///
-template<
-  size_t from_dim,
-  size_t to_dim,
-  size_t D,
-  typename U
->
+template<size_t from_dim, size_t to_dim, size_t D, typename U>
 std::set<size_t>
-entity_closure(
-  const mesh_definition__<D> & md,
-  U && indices
-)
-{
+entity_closure(const mesh_definition__<D> & md, U && indices) {
   std::set<size_t> closure;
 
   // Iterate over the entities in indices and add any vertices that are
   // referenced by one of the entity indices
-  for(auto i: std::forward<U>(indices)) {
+  for (auto i : std::forward<U>(indices)) {
     const auto & vset = md.entities(from_dim, to_dim, i);
     closure.insert(vset.begin(), vset.end());
   } // for
@@ -241,8 +203,3 @@ entity_closure(
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_topology_closure_utils_h
-
-/*~-------------------------------------------------------------------------~-*
- *~-------------------------------------------------------------------------~-*/

@@ -7,7 +7,7 @@
    /@@       /@@/@@//// //@@    @@       /@@/@@
    /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
    //       ///  //////   //////  ////////  //
-  
+
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
@@ -20,15 +20,12 @@
 namespace flecsi {
 namespace execution {
 
-/*!
-  This function is provided to prevent link errors in some instances. It
-  should be defined by the user's code.
- 
-  @ingroup execution
- */
+/*! @cond IGNORE */
 
-void driver(int argc, char ** argv) {
-} // driver
+void
+driver(int argc, char ** argv) {}
+
+/*! @endcond */
 
 } // namespace execution
 } // namespace flecsi

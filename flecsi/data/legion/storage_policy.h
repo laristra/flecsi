@@ -1,10 +1,7 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef FLECSI_DATA_LEGION_storage_policy_h
-#define FLECSI_DATA_LEGION_storage_policy_h
-
-
+#pragma once
 
 //----------------------------------------------------------------------------//
 // @file
@@ -14,14 +11,10 @@
 namespace flecsi {
 namespace data {
 
-struct legion_storage_policy_t {
-
-}; // struct legion_storage_policy_t
+struct legion_storage_policy_t {}; // struct legion_storage_policy_t
 
 } // namespace data
 } // namespace flecsi
 
-#endif // FLECSI_DATA_LEGION_storage_policy_h
-
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

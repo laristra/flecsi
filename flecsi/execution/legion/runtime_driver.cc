@@ -1,28 +1,33 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jul 26, 2016
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+/*! @file */
 
-#include "flecsi/execution/legion/runtime_driver.h"
+#include <flecsi/execution/legion/runtime_driver.h>
 
 #include <legion.h>
 #include <legion_utilities.h>
 #include <limits>
 
-#include "flecsi/data/legion/legion_data.h"
-#include "flecsi/data/storage.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/legion_tasks.h"
-#include "flecsi/execution/legion/mapper.h"
-#include "flecsi/execution/legion/internal_field.h"
-#include "flecsi/runtime/types.h"
-#include "flecsi/utils/common.h"
-#include "flecsi/data/data_constants.h" 
+#include <flecsi/data/legion/legion_data.h>
+#include <flecsi/data/storage.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/legion/legion_tasks.h>
+#include <flecsi/execution/legion/mapper.h>
+#include <flecsi/execution/legion/internal_field.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/data/data_constants.h> 
 
 clog_register_tag(runtime_driver);
 
@@ -129,16 +134,22 @@ runtime_driver(
 
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
+
   //--------------------------------------------------------------------------//
   //  Create Legion index spaces and logical regions
   //-------------------------------------------------------------------------//
 
   auto coloring_info = context_.coloring_info_map();
 
-  data.init_from_coloring_info_map(coloring_info);
+  data.init_from_coloring_info_map(coloring_info,
+    context_.sparse_index_space_info_map());
 
   for(auto& itr : context_.adjacency_info()){
     data.add_adjacency(itr.second);
+  }
+
+  for(auto& itr : context_.index_subspace_info()){
+    data.add_index_subspace(itr.second);
   }
 
   data.finalize(coloring_info);
@@ -172,8 +183,6 @@ runtime_driver(
       data.color_domain(), Legion::TaskArgument(nullptr, 0),
       Legion::ArgumentMap());
   
-  pos_compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     auto& flecsi_ispace = data.index_space(idx_space);
@@ -198,7 +207,7 @@ runtime_driver(
   //-------------------------------------------------------------------------//
 
   // map of index space to the field_ids that are mapped to this index space
-  std::map<size_t, std::vector<field_id_t>> fields_map;
+  std::map<size_t, std::vector<const field_info_t*>> fields_map;
 
   //total number of Phase Barriers 
   size_t num_phase_barriers =0;
@@ -208,18 +217,22 @@ runtime_driver(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
-      if((field_info.storage_class != global) &&
-        (field_info.storage_class != color)){
-        if(field_info.index_space == idx_space){
-          fields_map[idx_space].push_back(field_info.fid);
-          num_phase_barriers++;
-        } // if
-      }//if
-      else if(field_info.storage_class == global){
-        number_of_global_fields++;
-      }
-      else if(field_info.storage_class == color){
-        number_of_color_fields++;
+      switch(field_info.storage_class){
+        case global:
+          number_of_global_fields++;
+          break;
+        case color:
+          number_of_color_fields++;
+          break;
+        case subspace:
+        case local:
+          break;
+        default:
+          if(field_info.index_space == idx_space){
+            fields_map[idx_space].push_back(&field_info);
+            num_phase_barriers++;
+          } // if
+          break;          
       }
     } // for
 
@@ -238,12 +251,12 @@ runtime_driver(
   //fill the map
   for(auto idx_space : coloring_info){
     std::map<field_id_t , std::vector<Legion::PhaseBarrier>> inner;
-    for (const field_id_t& field_id : fields_map[idx_space.first]){
+    for (const field_info_t* field_info : fields_map[idx_space.first]){
       for(int color = 0; color < num_colors; color++){
         const flecsi::coloring::coloring_info_t& color_info = 
           idx_space.second[color];
 
-        inner[field_id].push_back(runtime->create_phase_barrier(ctx,
+        inner[field_info->fid].push_back(runtime->create_phase_barrier(ctx,
              1 + color_info.shared_users.size()));
       }//color
     }//field_info
@@ -283,14 +296,14 @@ runtime_driver(
       flecsi::coloring::coloring_info_t color_info =
           coloring_info[idx_space][color];
 
-      for (const field_id_t& field_id : fields_map[idx_space]){
+      for (const field_info_t* field_info : fields_map[idx_space]){
         pbarriers_as_owner.push_back(
-          phase_barriers_map[idx_space][field_id][color]);
+          phase_barriers_map[idx_space][field_info->fid][color]);
       
         {
         clog_tag_guard(runtime_driver);
         clog(trace) << " Color " << color << " idx_space " << idx_space 
-        << ", fid = " << field_id<<
+        << ", fid = " << field_info->fid<<
           " has " << color_info.ghost_owners.size() << 
           " ghost owners" << std::endl;
         } // scope
@@ -301,8 +314,8 @@ runtime_driver(
           clog(trace) << owner << std::endl;
           } // scope
 
-          owners_pbarriers[idx_space][field_id].push_back(
-            phase_barriers_map[idx_space][field_id][owner]);
+          owners_pbarriers[idx_space][field_info->fid].push_back(
+            phase_barriers_map[idx_space][field_info->fid][owner]);
        
         }
       
@@ -342,8 +355,8 @@ runtime_driver(
     std::vector <Legion::PhaseBarrier> owners_pbarriers_buf;
     for(auto is: context_.coloring_map()) {
       size_t idx_space = is.first;
-      for (const field_id_t& field_id : fields_map[idx_space])
-        for(auto pb:owners_pbarriers[idx_space][field_id])
+      for (const field_info_t* field_info : fields_map[idx_space])
+        for(auto pb:owners_pbarriers[idx_space][field_info->fid])
            owners_pbarriers_buf.push_back(pb);
     }//for
   
@@ -375,6 +388,23 @@ runtime_driver(
     args_serializers[color].serialize(&num_adjacencies, sizeof(size_t));
     args_serializers[color].serialize(&adjacencies_vec[0], num_adjacencies
       * sizeof(adjacency_triple_t));
+
+    // #8 serialize index subspaces info
+
+    using index_subspace_info_t = context_t::index_subspace_info_t;
+
+    std::vector<index_subspace_info_t> index_subspaces_vec;
+
+    for(auto& itr : context_.index_subspace_info()){
+      const index_subspace_info_t& ii = itr.second;
+      index_subspaces_vec.push_back(ii);
+    }//for
+
+    size_t num_index_subspaces = index_subspaces_vec.size();
+
+    args_serializers[color].serialize(&num_index_subspaces, sizeof(size_t));
+    args_serializers[color].serialize(&index_subspaces_vec[0],
+      num_index_subspaces * sizeof(index_subspace_info_t));
    
    //-----------------------------------------------------------------------//
    //add region requirements to the spmd_launcher
@@ -402,9 +432,36 @@ runtime_driver(
 
       reg_req.add_field(ghost_owner_pos_fid);
 
-      for (const field_id_t& field_id : fields_map[idx_space]){
-          reg_req.add_field(field_id);
-      }//for field_info
+      Legion::RegionRequirement sparse_reg_req;
+
+      if(flecsi_ispace.sparse){
+        auto& flecsi_sispace = data.sparse_index_space(idx_space);
+
+        Legion::LogicalPartition sparse_color_lpart =
+          runtime->get_logical_partition(ctx,
+            flecsi_sispace.logical_region, flecsi_sispace.index_partition);
+        
+        Legion::LogicalRegion sparse_color_lregion =
+          runtime->get_logical_subregion_by_color(ctx, sparse_color_lpart,
+          color);
+
+        sparse_reg_req = Legion::RegionRequirement(sparse_color_lregion,
+          READ_WRITE, SIMULTANEOUS, flecsi_sispace.logical_region);
+
+        for (const field_info_t* field_info : fields_map[idx_space]){
+          if(utils::hash::is_internal(field_info->key)){
+            reg_req.add_field(field_info->fid);
+          }
+          else{
+            sparse_reg_req.add_field(field_info->fid);
+          }
+        }//for field_info
+      }
+      else{
+        for (const field_info_t* field_info : fields_map[idx_space]){
+          reg_req.add_field(field_info->fid);
+        }//for field_info        
+      }
 
       for(auto& itr : context_.adjacency_info()){
         if(itr.first == idx_space){
@@ -417,6 +474,10 @@ runtime_driver(
       }
 
       spmd_launcher.add_region_requirement(reg_req);
+
+      if(flecsi_ispace.sparse){
+        spmd_launcher.add_region_requirement(sparse_reg_req);
+      }
 
       flecsi::coloring::coloring_info_t color_info = 
         coloring_info[idx_space][color];
@@ -442,8 +503,14 @@ runtime_driver(
           SIMULTANEOUS, flecsi_ispace.logical_region);
         owner_reg_req.add_flags(NO_ACCESS_FLAG);
         owner_reg_req.add_field(ghost_owner_pos_fid);
-        for (const field_id_t& field_id : fields_map[idx_space]){
-          owner_reg_req.add_field(field_id);
+
+        auto& flecsi_ispace = data.index_space(idx_space);
+
+        for (const field_info_t* field_info : fields_map[idx_space]){
+          if(!flecsi_ispace.sparse ||
+             utils::hash::is_internal(field_info->key)){
+            owner_reg_req.add_field(field_info->fid);
+          }
         }
         spmd_launcher.add_region_requirement(owner_reg_req);
 
@@ -466,7 +533,8 @@ runtime_driver(
           adjacency.logical_region);
 
       for(const field_info_t& fi : context_.registered_fields()){
-        if(fi.index_space == adjacency_idx_space){
+        if(fi.storage_class != data::subspace &&
+           fi.index_space == adjacency_idx_space){
           reg_req.add_field(fi.fid);
         }
       }
@@ -474,9 +542,28 @@ runtime_driver(
       spmd_launcher.add_region_requirement(reg_req);
     }//adjacency_indx
 
+    for(auto& itr : data.index_subspace_map()){
+      const data::legion_data_t::index_subspace_t& info = itr.second;
+
+      Legion::LogicalPartition color_lpart =
+        runtime->get_logical_partition(ctx,
+          info.logical_region, info.index_partition);
+      
+      Legion::LogicalRegion color_lregion =
+        runtime->get_logical_subregion_by_color(ctx, color_lpart, color);
+
+      Legion::RegionRequirement
+        reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
+          info.logical_region);
+      
+      reg_req.add_field(info.fid);
+
+      spmd_launcher.add_region_requirement(reg_req);
+    }
+
     auto global_ispace = data.global_index_space();
     Legion::RegionRequirement global_reg_req(global_ispace.logical_region,
-          READ_ONLY, SIMULTANEOUS, global_ispace.logical_region);
+          READ_ONLY, EXCLUSIVE, global_ispace.logical_region);
 
     global_reg_req.add_flags(NO_ACCESS_FLAG);
     for(const field_info_t& field_info : context_.registered_fields()){
@@ -592,6 +679,7 @@ spmd_task(
   args_deserializer.deserialize(&number_of_color_fields, sizeof(size_t));
 
   {
+
   size_t total_num_idx_spaces = num_idx_spaces;
   if (number_of_global_fields>0) total_num_idx_spaces++;
   if (number_of_color_fields>0) total_num_idx_spaces++;
@@ -630,16 +718,26 @@ spmd_task(
   }
 
  // map of index space to the field_ids that are mapped to this index space
-  std::map<size_t, std::vector<field_id_t>> fields_map;
+  std::map<size_t, std::vector<const field_info_t*>> fields_map;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
-      if((field_info.storage_class != global) &&
-        (field_info.storage_class != color)){
-        if(field_info.index_space == idx_space){
-          fields_map[idx_space].push_back(field_info.fid);
-        }
-      }//if
+      switch(field_info.storage_class){
+        case global:
+        case subspace:
+        case color:
+          break;
+        case sparse:
+          if(utils::hash::is_internal(field_info.key)){
+            fields_map[idx_space].push_back(&field_info);
+          }
+          break;
+        default:
+          if(field_info.index_space == idx_space){
+            fields_map[idx_space].push_back(&field_info);
+          }
+          break;
+      }
     }//for
   }//end for is
 
@@ -665,11 +763,11 @@ spmd_task(
   size_t indx = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-    for (const field_id_t& field_id : fields_map[idx_space]){
-      ispace_dmap[idx_space].pbarriers_as_owner[field_id] =
+    for (const field_info_t* field_info : fields_map[idx_space]){
+      ispace_dmap[idx_space].pbarriers_as_owner[field_info->fid] =
         pbarriers_as_owner[indx];
-      ispace_dmap[idx_space].ghost_is_readable[field_id] = true;
-      ispace_dmap[idx_space].write_phase_started[field_id] = false;
+      ispace_dmap[idx_space].ghost_is_readable[field_info->fid] = true;
+      ispace_dmap[idx_space].write_phase_started[field_info->fid] = false;
       indx++;
     }//end field_info
   }//end for idx_space
@@ -690,11 +788,11 @@ spmd_task(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     size_t n = num_owners[consec_indx];
-    for (const field_id_t& field_id : fields_map[idx_space]){
-       ispace_dmap[idx_space].ghost_owners_pbarriers[field_id].resize(n);
+    for (const field_info_t* field_info : fields_map[idx_space]){
+       ispace_dmap[idx_space].ghost_owners_pbarriers[field_info->fid].resize(n);
 
        for(size_t owner = 0; owner < n; ++owner){
-         ispace_dmap[idx_space].ghost_owners_pbarriers[field_id][owner] =
+         ispace_dmap[idx_space].ghost_owners_pbarriers[field_info->fid][owner] =
             ghost_owners_pbarriers[indx];
          indx++;
          {
@@ -712,9 +810,9 @@ spmd_task(
     ghost_owners_lregions;
   std::map<size_t, std::vector<Legion::LogicalRegion>>
     ghost_owners_subregions;
-  std::vector<Legion::IndexPartition> primary_ghost_ips(num_idx_spaces);
-  std::vector<Legion::IndexPartition> exclusive_shared_ips(num_idx_spaces);
-  std::map<size_t,std::vector<Legion::IndexPartition>> owner_subrect_ips;
+  std::map<size_t,Legion::IndexPartition> primary_ghost_ips;
+  std::map<size_t,Legion::IndexPartition> exclusive_shared_ips;
+  std::map<size_t,std::map<size_t,Legion::IndexPartition>> owner_subrect_ips;
 
   //fill ispace_dmap with logical regions
   size_t region_index = 0;
@@ -920,9 +1018,9 @@ spmd_task(
         runtime->create_index_partition(ctx, color_ispace, color_domain_1D,
         owner_subrect_coloring, true /*disjoint*/);
 
-      auto ips_itr = owner_subrect_ips.find(owner);
-      if (ips_itr == owner_subrect_ips.end())
-        owner_subrect_ips[owner].resize(num_idx_spaces);
+      //auto ips_itr = owner_subrect_ips.find(owner);
+      //if (ips_itr == owner_subrect_ips.end())
+       // owner_subrect_ips[owner].resize(num_idx_spaces);
       owner_subrect_ips[owner][idx_space] = owner_subrect_ip;
 
       Legion::LogicalPartition owner_subrect_lp =
@@ -1054,6 +1152,30 @@ spmd_task(
     region_index++;
   }
 
+  // #8 deserialize index subspaces
+  size_t num_index_subspaces;
+  args_deserializer.deserialize(&num_index_subspaces, sizeof(size_t));
+   
+  using index_subspace_info_t = context_t::index_subspace_info_t;
+  index_subspace_info_t* index_subspaces =
+     new index_subspace_info_t[num_index_subspaces]; 
+     
+  args_deserializer.deserialize((void*)index_subspaces,
+    sizeof(index_subspace_info_t) * num_index_subspaces);
+   
+  for(size_t i = 0; i < num_index_subspaces; ++i){
+    context_.add_index_subspace(index_subspaces[i]);
+  }
+
+  auto& isubspace_dmap = context_.index_subspace_data_map();
+
+  for(auto& itr : context_.index_subspace_info()) {
+    isubspace_dmap[itr.first].region = 
+      regions[region_index].get_logical_region();
+
+    region_index++;
+  }
+
   //adding information for the global and color handles to the ispace_map
   if (number_of_global_fields>0){
 
@@ -1082,45 +1204,22 @@ spmd_task(
 
   context_.advance_state();
 
-  auto& local_index_space_map = context_.local_index_space_map();
-  for(auto& itr : local_index_space_map){
-    size_t index_space = itr.first;
-
-    legion_data_t::local_index_space_t lis = 
-      legion_data_t::create_local_index_space(
-      ctx, runtime, index_space, itr.second);
-    
-    auto& lism = context_.local_index_space_data_map();
-
-    context_t::local_index_space_data_t lis_data;
-    lis_data.region = lis.logical_region;
-    lism.emplace(index_space, std::move(lis_data));
-  }
-
   // run default or user-defined driver
   driver(args.argc, args.argv);
 
   // Cleanup memory
-  for(auto ipart: primary_ghost_ips) {
-    runtime->destroy_index_partition(ctx, ipart);
-  } // for
-
-  for(auto ipart: exclusive_shared_ips) {
-    runtime->destroy_index_partition(ctx, ipart);
-  } // for
-
+  for(auto ipart: primary_ghost_ips)
+      runtime->destroy_index_partition(ctx, ipart.second);
+  for(auto ipart: exclusive_shared_ips)
+      runtime->destroy_index_partition(ctx, ipart.second);
   delete [] field_info_buf;
   delete [] num_owners;
   delete [] pbarriers_as_owner;
   delete [] adjacencies;
+  delete [] index_subspaces;
 //  delete [] idx_spaces;
 
 } // spmd_task
 
 } // namespace execution 
 } // namespace flecsi
-
-/*~------------------------------------------------------------------------~--*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/

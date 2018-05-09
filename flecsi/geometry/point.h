@@ -12,8 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_point_h
-#define flecsi_point_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -23,8 +22,8 @@
 #include <array>
 #include <cmath>
 
-#include "flecsi/utils/dimensioned_array.h"
-#include "flecsi/utils/common.h"
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/dimensioned_array.h>
 
 namespace flecsi {
 
@@ -39,10 +38,7 @@ namespace flecsi {
 //! @ingroup geometry
 //----------------------------------------------------------------------------//
 
-template<
-  typename TYPE,
-  size_t DIMENSION
->
+template<typename TYPE, size_t DIMENSION>
 using point__ = utils::dimensioned_array__<TYPE, DIMENSION, 1>;
 
 //----------------------------------------------------------------------------//
@@ -54,15 +50,9 @@ using point__ = utils::dimensioned_array__<TYPE, DIMENSION, 1>;
 //! @ingroup geometry
 //----------------------------------------------------------------------------//
 
-template<
-  typename TYPE,
-  size_t DIMENSION
->
+template<typename TYPE, size_t DIMENSION>
 point__<TYPE, DIMENSION>
-operator * (
-  TYPE const val, point__<TYPE, DIMENSION> const & p
-)
-{
+operator*(TYPE const val, point__<TYPE, DIMENSION> const & p) {
   point__<TYPE, DIMENSION> tmp(p);
   for (size_t d(0); d < DIMENSION; ++d) {
     tmp[d] *= val;
@@ -83,18 +73,13 @@ operator * (
 //! @ingroup geometry
 //----------------------------------------------------------------------------//
 
-template<
-  typename TYPE,
-  size_t DIMENSION
->
+template<typename TYPE, size_t DIMENSION>
 TYPE
 distance(
-  point__<TYPE, DIMENSION> const & a,
-  point__<TYPE, DIMENSION> const & b
-)
-{
+    point__<TYPE, DIMENSION> const & a,
+    point__<TYPE, DIMENSION> const & b) {
   TYPE sum(0);
-  for (size_t d(0); d<DIMENSION; ++d) {
+  for (size_t d(0); d < DIMENSION; ++d) {
     sum += utils::square(a[d] - b[d]);
   } // for
 
@@ -113,16 +98,11 @@ distance(
 //! @ingroup geometry
 //----------------------------------------------------------------------------//
 
-template<
-  typename TYPE,
-  size_t DIMENSION
->
+template<typename TYPE, size_t DIMENSION>
 point__<TYPE, DIMENSION>
 midpoint(
-  point__<TYPE, DIMENSION> const & a,
-  point__<TYPE, DIMENSION> const & b
-)
-{
+    point__<TYPE, DIMENSION> const & a,
+    point__<TYPE, DIMENSION> const & b) {
   return point__<TYPE, DIMENSION>((a + b) / 2.0);
 } // midpoint
 
@@ -137,16 +117,9 @@ midpoint(
 //! @ingroup geometry
 //----------------------------------------------------------------------------//
 
-template<
-  template <typename ...> class CONTAINER,
-  typename TYPE,
-  size_t DIMENSION
->
+template<template<typename...> class CONTAINER, typename TYPE, size_t DIMENSION>
 auto
-centroid(
-  CONTAINER<point__<TYPE, DIMENSION>> const & points
-)
-{
+centroid(CONTAINER<point__<TYPE, DIMENSION>> const & points) {
   point__<TYPE, DIMENSION> tmp(0.0);
 
   for (auto p : points) {
@@ -169,15 +142,9 @@ centroid(
 //! @ingroup geometry
 //----------------------------------------------------------------------------//
 
-template<
-  typename TYPE,
-  size_t DIMENSION
->
+template<typename TYPE, size_t DIMENSION>
 auto
-centroid(
-  std::initializer_list<point__<TYPE, DIMENSION>> points
-)
-{
+centroid(std::initializer_list<point__<TYPE, DIMENSION>> points) {
   point__<TYPE, DIMENSION> tmp(0.0);
 
   for (auto p : points) {
@@ -190,8 +157,6 @@ centroid(
 } // centroid
 
 } // namespace flecsi
-
-#endif // flecsi_point_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -14,7 +14,7 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/geometry/space_vector.h"
+#include <flecsi/geometry/space_vector.h>
 
 using namespace flecsi;
 

@@ -1,8 +1,7 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_mpi_sparse_data_handle_policy_h
-#define flecsi_data_mpi_sparse_data_handle_policy_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -28,8 +27,6 @@ struct mpi_sparse_data_handle_policy_t
 }; // class mpi_sparse_data_handle_policy_t
 
 } // namespace flecsi
-
-#endif // flecsi_data_mpi_sparse_data_handle_policy_h
 
 /*~-------------------------------------------------------------------------~-*
 *~-------------------------------------------------------------------------~-*/

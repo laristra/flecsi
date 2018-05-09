@@ -1,17 +1,23 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! \file
-//! \date Initial file creation: Jul 26, 2016
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+/*! @file */
+
 
 #include <cstddef>
 #include <cstdint>
 
-#include "flecsi/data/data.h"
+#include <flecsi/data/data.h>
 
 clog_register_tag(runtime_driver);
 
@@ -29,28 +35,36 @@ remap_shared_entities()
   auto& flecsi_context = context_t::instance();
   const int my_color = flecsi_context.color();
 
-  for (auto coloring_info_pair : flecsi_context.coloring_info_map()) {
+  for (auto& coloring_info_pair : flecsi_context.coloring_info_map()) {
     auto index_space = coloring_info_pair.first;
-    auto coloring_info = coloring_info_pair.second;
+    auto &coloring_info = coloring_info_pair.second;
 
     auto &my_coloring_info = flecsi_context.coloring_info(index_space).at(
       my_color);
-    auto index_coloring = flecsi_context.coloring(index_space);
+    auto &index_coloring = flecsi_context.coloring(index_space);
 
-    size_t index = 0;
-    for (auto shared : index_coloring.shared) {
+    std::set<flecsi::coloring::entity_info_t> new_shared;
+
+//    for (auto& shared : index_coloring.shared) {
 //      clog_rank(warn, 0) << "myrank: " << my_color
 //                         << " shared id: " << shared.id
 //                         << ", rank: " << shared.rank
 //                         << ", offset: " << shared.offset
 //                         << ", index: " << index << std::endl;
+//     }
+
+    // FIXME: does this cause deadlock?
+    size_t index = 0;
+    for (auto& shared : index_coloring.shared) {
       for (auto peer : shared.shared) {
         MPI_Send(&index, 1, MPI_UNSIGNED_LONG_LONG, peer, 77, MPI_COMM_WORLD);
       }
+      new_shared.insert(
+        flecsi::coloring::entity_info_t(shared.id, shared.rank, index, shared.shared));
       index++;
     }
+    context_t::instance().coloring(index_space).shared.swap(new_shared);
 
-    std::vector<size_t> ghost_index(index_coloring.ghost.size());
 
     MPI_Status status;
     std::set<flecsi::coloring::entity_info_t> new_ghost;
@@ -90,16 +104,6 @@ runtime_driver(
   clog(info) << "In MPI runtime driver" << std::endl;
   }
 
-#if defined(FLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
-  {
-  clog_tag_guard(runtime_driver);
-  clog(info) << "Executing specialization tlt task" << std::endl;
-  }
-
-  // Execute the specialization driver.
-  specialization_tlt_init(argc, argv);
-#endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-
   //--------------------------------------------------------------------------//
   // Invoke callbacks for entries in the client registry.
   //
@@ -135,6 +139,16 @@ runtime_driver(
     flecsi_context.put_field_info(fi);
   }
 
+#if defined(FLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "Executing specialization tlt task" << std::endl;
+  }
+
+  // Execute the specialization driver.
+  specialization_tlt_init(argc, argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+
   remap_shared_entities();
 
   // Setup maps from mesh to compacted (local) index space and vice versa
@@ -166,7 +180,7 @@ runtime_driver(
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   specialization_spmd_init(argc, argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-  
+
   flecsi_context.advance_state();
 
   // Execute the user driver.
@@ -174,10 +188,5 @@ runtime_driver(
 
 } // runtime_driver
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-
-/*~------------------------------------------------------------------------~--*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/

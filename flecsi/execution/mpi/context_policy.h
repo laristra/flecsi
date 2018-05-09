@@ -1,24 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_mpi_context_policy_h
-#define flecsi_execution_mpi_context_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 4, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <unordered_map>
 #include <map>
@@ -33,28 +28,28 @@
 
 #include <mpi.h>
 
-#include "flecsi/coloring/coloring_types.h"
-#include "flecsi/execution/common/launch.h"
-#include "flecsi/execution/common/processor.h"
-#include "flecsi/execution/mpi/runtime_driver.h"
-#include "flecsi/execution/mpi/future.h"
-#include "flecsi/runtime/types.h"
-#include "flecsi/utils/common.h"
-#include "flecsi/utils/const_string.h"
-#include "flecsi/coloring/mpi_utils.h"
-#include "flecsi/coloring/coloring_types.h"
-#include "flecsi/coloring/index_coloring.h"
-#include "flecsi/data/common/data_types.h"
+#include <flecsi/coloring/coloring_types.h>
+#include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/mpi/runtime_driver.h>
+#include <flecsi/execution/mpi/future.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/const_string.h>
+#include <flecsi/coloring/mpi_utils.h>
+#include <flecsi/coloring/coloring_types.h>
+#include <flecsi/coloring/index_coloring.h>
+#include <flecsi/data/common/data_types.h>
 
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-//! The mpi_context_policy_t is the backend runtime context policy for
-//! MPI.
-//!
-//! @ingroup mpi-execution
-//----------------------------------------------------------------------------//
+/*!
+ The mpi_context_policy_t is the backend runtime context policy for
+ MPI.
+
+ @ingroup mpi-execution
+ */
 
 struct mpi_context_policy_t
 {
@@ -72,7 +67,7 @@ struct mpi_context_policy_t
       size_t max_entries_per_index,
       size_t reserve_chunk
     )
-    : type_size(type_size), 
+    : type_size(type_size),
     num_exclusive(num_exclusive),
     num_shared(num_shared),
     num_ghost(num_ghost),
@@ -84,7 +79,7 @@ struct mpi_context_policy_t
     num_exclusive_entries(0){
 
       size_t n = num_total - num_exclusive;
-      
+
       for(size_t i = 0; i < n; ++i){
         offsets[num_exclusive + i].set_offset(
           reserve + i * max_entries_per_index);
@@ -109,20 +104,20 @@ struct mpi_context_policy_t
     size_t reserve;
     size_t num_exclusive_entries;
 
-    std::vector<offset_t> offsets;    
-    std::vector<uint8_t> entries;    
+    std::vector<offset_t> offsets;
+    std::vector<uint8_t> entries;
   };
 
-  //--------------------------------------------------------------------------//
-  //! FleCSI context initialization. This method initializes the FleCSI
-  //! runtime using MPI.
-  //!
-  //! @param argc The command-line argument count passed from main.
-  //! @param argv The command-line argument values passed from main.
-  //!
-  //! @return An integer value with a non-zero error code upon failure,
-  //!         zero otherwise.
-  //--------------------------------------------------------------------------//
+  /*!
+   FleCSI context initialization. This method initializes the FleCSI
+   runtime using MPI.
+  
+   @param argc The command-line argument count passed from main.
+   @param argv The command-line argument values passed from main.
+  
+   @return An integer value with a non-zero error code upon failure,
+           zero otherwise.
+   */
 
   int
   initialize(
@@ -130,9 +125,9 @@ struct mpi_context_policy_t
     char ** argv
   );
 
-  //--------------------------------------------------------------------------//
-  //! Return the color for which the context was initialized.
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the color for which the context was initialized.
+   */
 
   size_t
   color()
@@ -140,33 +135,40 @@ struct mpi_context_policy_t
   {
     return color_;
   } // color
+  
+  /*!
+    Return the number of colors.
+   */
+
+  size_t colors() const { return colors_; } // color
+
 
   //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
 
-  //--------------------------------------------------------------------------//
-  //! The registration_function_t type defines a function type for
-  //! registration callbacks.
-  //--------------------------------------------------------------------------//
+  /*!
+    The registration_function_t type defines a function type for
+    registration callbacks.
+   */
 
   using registration_function_t =
     std::function<void(task_id_t, processor_type_t, launch_t, std::string &)>;
 
-  //--------------------------------------------------------------------------//
-  //! The unique_tid_t type create a unique id generator for registering
-  //! tasks.
-  //--------------------------------------------------------------------------//
+  /*!
+    The unique_tid_t type create a unique id generator for registering
+    tasks.
+   */
 
   using unique_tid_t = utils::unique_id_t<task_id_t>;
 
-  //--------------------------------------------------------------------------//
-  //! Register a task with the runtime.
-  //!
-  //! @param key       The task hash key.
-  //! @param name      The task name string.
-  //! @param call_back The registration call back function.
-  //--------------------------------------------------------------------------//
+  /*!
+   Register a task with the runtime.
+  
+   @param key       The task hash key.
+   @param name      The task name string.
+   @param call_back The registration call back function.
+   */
 
 //  bool
 //  register_task(
@@ -196,14 +198,32 @@ struct mpi_context_policy_t
   struct index_space_data_t {
     // TODO: to be defined.
   };
+
+  struct index_subspace_data_t {
+    size_t capacity;
+  };
+
   auto&
   index_space_data_map()
   {
     return index_space_data_map_;
   }
 
+  /*!
+    Get the index subspace data map.
+   */
+
+  auto & index_subspace_data_map() {
+    return index_subspace_data_map_;
+  }
+
   using coloring_info_t = flecsi::coloring::coloring_info_t;
   using index_coloring_t = flecsi::coloring::index_coloring_t;
+
+  /*!
+   Field metadata is used maintain MPI information and data types for
+   MPI windows/one-sided communication to perform ghost copies.
+   */
   struct field_metadata_t {
 
     MPI_Group shared_users_grp;
@@ -215,6 +235,10 @@ struct mpi_context_policy_t
     MPI_Win win;
   };
 
+  /*!
+   Field metadata is used maintain MPI information and data types for
+   MPI windows/one-sided communication to perform ghost copies.
+   */
   struct sparse_field_metadata_t{
     MPI_Group shared_users_grp;
     MPI_Group ghost_owners_grp;
@@ -231,6 +255,11 @@ struct mpi_context_policy_t
     MPI_Win win;
   };
 
+  /*!
+   Create MPI datatypes use for ghost copy by inspecting shared regions,
+   and ghost owners, to compute origin and target lengths and displacements
+   for MPI windows.
+   */
   template <typename T>
   void register_field_metadata(const field_id_t fid,
                                const coloring_info_t& coloring_info,
@@ -247,9 +276,42 @@ struct mpi_context_policy_t
       compact_origin_lengs, compact_origin_disps, compact_target_lengs,
       compact_target_disps);
 
+    for (auto ghost_owner : coloring_info.ghost_owners) {
+      MPI_Datatype origin_type;
+      MPI_Datatype target_type;
+
+      MPI_Type_indexed(compact_origin_lengs[ghost_owner].size(),
+                       compact_origin_lengs[ghost_owner].data(),
+                       compact_origin_disps[ghost_owner].data(),
+                       flecsi::coloring::mpi_typetraits__<T>::type(),
+                       &origin_type);
+      MPI_Type_commit(&origin_type);
+      metadata.origin_types.insert({ghost_owner, origin_type});
+
+      MPI_Type_indexed(compact_target_lengs[ghost_owner].size(),
+                       compact_target_lengs[ghost_owner].data(),
+                       compact_target_disps[ghost_owner].data(),
+                       flecsi::coloring::mpi_typetraits__<T>::type(),
+                       &target_type);
+      MPI_Type_commit(&target_type);
+      metadata.target_types.insert({ghost_owner, target_type});
+    }
+
+
+    auto data = field_data[fid].data();
+    auto shared_data = data + coloring_info.exclusive * sizeof(T);
+    MPI_Win_create(shared_data, coloring_info.shared * sizeof(T),
+                   sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD,
+                   &metadata.win);
+
     field_metadata.insert({fid, metadata});
   }
 
+  /*!
+   Create MPI datatypes use for ghost copy by inspecting shared regions,
+   and ghost owners, to compute origin and target lengths and displacements
+   for MPI windows.
+   */
   template <typename T>
   void register_sparse_field_metadata(
     const field_id_t fid,
@@ -257,15 +319,61 @@ struct mpi_context_policy_t
     const index_coloring_t& index_coloring
   )
   {
-    sparse_field_metadata_t md;
+    sparse_field_metadata_t metadata;
 
-    register_field_metadata_<T>(md, fid, coloring_info, index_coloring,
-      md.compact_origin_lengs, md.compact_origin_disps,
-      md.compact_target_lengs, md.compact_target_disps);
+    register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
+      metadata.compact_origin_lengs, metadata.compact_origin_disps,
+      metadata.compact_target_lengs, metadata.compact_target_disps);
 
-    sparse_field_metadata.insert({fid, md});
+    // Each shared and ghost cells element is an array of max_entries_per_index
+    // of entry_value_t
+    MPI_Datatype shared_ghost_type;
+    MPI_Type_contiguous(sizeof(data::sparse_entry_value__<T>) * 5,
+                        MPI_BYTE, &shared_ghost_type);
+    MPI_Type_commit(&shared_ghost_type);
+    for (auto ghost_owner : coloring_info.ghost_owners) {
+      MPI_Datatype origin_type;
+      MPI_Datatype target_type;
+
+      MPI_Type_indexed(metadata.compact_origin_lengs[ghost_owner].size(),
+                       metadata.compact_origin_lengs[ghost_owner].data(),
+                       metadata.compact_origin_disps[ghost_owner].data(),
+                       //flecsi::coloring::mpi_typetraits__<T>::type(),
+                       shared_ghost_type,
+                       &origin_type);
+      MPI_Type_commit(&origin_type);
+      metadata.origin_types.insert({ghost_owner, origin_type});
+
+      MPI_Type_indexed(metadata.compact_target_lengs[ghost_owner].size(),
+                       metadata.compact_target_lengs[ghost_owner].data(),
+                       metadata.compact_target_disps[ghost_owner].data(),
+                       //flecsi::coloring::mpi_typetraits__<T>::type(),
+                       shared_ghost_type,
+                       &target_type);
+      MPI_Type_commit(&target_type);
+      metadata.target_types.insert({ghost_owner, target_type});
+    }
+
+    // create the initial MPI Window for the shared cells. The window should
+    // be updated in the tuple walker when the number of entries in exclusive
+    // part changes.
+    auto entry_value_size = (sizeof(size_t) + sizeof(T));
+    auto data = sparse_field_data[fid].entries.data();
+    auto shared_data = data + sparse_field_data[fid].reserve *
+                                sparse_field_data[fid].max_entries_per_index *
+                                entry_value_size;
+    MPI_Win_create_dynamic(MPI_INFO_NULL, MPI_COMM_WORLD, &metadata.win);
+
+//    MPI_Win_create(shared_data, coloring_info.shared * entry_value_size,
+//                   entry_value_size, MPI_INFO_NULL, MPI_COMM_WORLD,
+//                   &metadata.win);
+    sparse_field_metadata.insert({fid, metadata});
   }
 
+  /*!
+   Compute MPI datatypes, compacted length and displacement for ghost copy
+   with MPI window.
+   */
   template <typename T, typename MD>
   void register_field_metadata_(
     MD& metadata,
@@ -278,7 +386,6 @@ struct mpi_context_policy_t
     std::map<int, std::vector<int>>& compact_target_disps
   )
   {
-
     // The group for MPI_Win_post are the "origin" processes, i.e.
     // the peer processes calling MPI_Get to get our shared cells. Thus
     // granting access of local window to these processes. This is the set
@@ -321,36 +428,36 @@ struct mpi_context_policy_t
       target_disps[ghost.rank].push_back(ghost.offset);
     }
 
-    // int my_color;
-    // MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
+    int my_color;
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
 
-    //  if (my_color == 0) {
-    //    for (auto ghost_owner : ghost_owners) {
-    //      std::cout << "ghost owner: " << ghost_owner << std::endl;
-    //      std::cout << "\torigin length: ";
-    //      for (auto len : origin_lens[ghost_owner]) {
-    //        std::cout << len << " ";
-    //      }
-    //      std::cout << std::endl;
-    //      std::cout << "\torigin disp: ";
-    //      for (auto len : origin_disps[ghost_owner]) {
-    //        std::cout << len << " ";
-    //      }
-    //      std::cout << std::endl;
-    //      std::cout << "\ttarget length: ";
-    //      for (auto len : target_lens[ghost_owner]) {
-    //        std::cout << len << " ";
-    //      }
-    //      std::cout << std::endl;
+    if (my_color == 0) {
+      for (auto ghost_owner : ghost_owners) {
+        std::cout << "ghost owner: " << ghost_owner << std::endl;
+        std::cout << "\torigin length: ";
+        for (auto len : origin_lens[ghost_owner]) {
+          std::cout << len << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "\torigin disp: ";
+        for (auto len : origin_disps[ghost_owner]) {
+          std::cout << len << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "\ttarget length: ";
+        for (auto len : target_lens[ghost_owner]) {
+          std::cout << len << " ";
+        }
+        std::cout << std::endl;
 
-    //      std::cout << "\ttarget disp: ";
-    //      for (auto len : target_disps[ghost_owner]) {
-    //        std::cout << len << " ";
-    //      }
-    //      std::cout << std::endl;
+        std::cout << "\ttarget disp: ";
+        for (auto len : target_disps[ghost_owner]) {
+          std::cout << len << " ";
+        }
+        std::cout << std::endl;
 
-    //    }
-    //  }
+      }
+    }
 
     for (auto ghost_owner : ghost_owners) {
       if (origin_disps.size() == 0)
@@ -372,21 +479,21 @@ struct mpi_context_policy_t
       }
     }
 
-     // if (my_color == 0) {
-     //   for (auto ghost_owner : ghost_owners) {
-     //     std::cout << "ghost owner: " << ghost_owner << std::endl;
-     //     std::cout << "source compacted length: ";
-     //     for (auto len : compact_origin_lengs[ghost_owner]) {
-     //       std::cout << len << " ";
-     //     }
-     //     std::cout << std::endl;
-     //     std::cout << "source compacted disps: ";
-     //     for (auto disp : compact_origin_disps[ghost_owner]) {
-     //       std::cout << disp << " ";
-     //     }
-     //     std::cout << std::endl;
-     //   }
-     // }
+    if (my_color == 0) {
+      for (auto ghost_owner : ghost_owners) {
+        std::cout << "ghost owner: " << ghost_owner << std::endl;
+        std::cout << "source compacted length: ";
+        for (auto len : compact_origin_lengs[ghost_owner]) {
+          std::cout << len << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "source compacted disps: ";
+        for (auto disp : compact_origin_disps[ghost_owner]) {
+          std::cout << disp << " ";
+        }
+        std::cout << std::endl;
+      }
+    }
 
     for (auto ghost_owner : ghost_owners) {
       if (target_disps.size() == 0)
@@ -404,51 +511,24 @@ struct mpi_context_policy_t
           compact_target_disps[ghost_owner].push_back(target_disps[ghost_owner][i]);
         }
       }
-    } 
-
-    //  if (my_color == 0) {
-    //    for (auto ghost_owner : ghost_owners) {
-    //      std::cout << "ghost owner: " << ghost_owner << std::endl;
-
-    //      std::cout << "compacted target length: ";
-    //      for (auto len : compact_target_lengs[ghost_owner]) {
-    //        std::cout << len << " ";
-    //      }
-    //      std::cout << std::endl;
-    //      std::cout << "compacted target disps: ";
-    //      for (auto disp : compact_target_disps[ghost_owner]) {
-    //        std::cout << disp << " ";
-    //      }
-    //      std::cout << std::endl;
-    //    }
-    //  }
-
-    for (auto ghost_owner : ghost_owners) {
-      MPI_Datatype origin_type;
-      MPI_Datatype target_type;
-
-      MPI_Type_indexed(compact_origin_lengs[ghost_owner].size(),
-                       compact_origin_lengs[ghost_owner].data(),
-                       compact_origin_disps[ghost_owner].data(),
-                       flecsi::coloring::mpi_typetraits__<T>::type(),
-                       &origin_type);
-      MPI_Type_commit(&origin_type);
-      metadata.origin_types.insert({ghost_owner, origin_type});
-
-      MPI_Type_indexed(compact_target_lengs[ghost_owner].size(),
-                       compact_target_lengs[ghost_owner].data(),
-                       compact_target_disps[ghost_owner].data(),
-                       flecsi::coloring::mpi_typetraits__<T>::type(),
-                       &target_type);
-      MPI_Type_commit(&target_type);
-      metadata.target_types.insert({ghost_owner, target_type});
     }
 
-    auto data = field_data[fid].data();
-    auto shared_data = data + coloring_info.exclusive * sizeof(T);
-    MPI_Win_create(shared_data, coloring_info.shared * sizeof(T),
-                   sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD,
-                   &metadata.win);
+    if (my_color == 0) {
+      for (auto ghost_owner : ghost_owners) {
+        std::cout << "ghost owner: " << ghost_owner << std::endl;
+
+        std::cout << "compacted target length: ";
+        for (auto len : compact_target_lengs[ghost_owner]) {
+          std::cout << len << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "compacted target disps: ";
+        for (auto disp : compact_target_disps[ghost_owner]) {
+          std::cout << disp << " ";
+        }
+        std::cout << std::endl;
+      }
+    }
   }
 
   std::map<field_id_t, field_metadata_t>&
@@ -456,6 +536,10 @@ struct mpi_context_policy_t
     return field_metadata;
   };
 
+  /*!
+   Register new field data, i.e. allocate a new buffer for the specified field
+   ID.
+   */
   void register_field_data(field_id_t fid,
                            size_t size) {
     // TODO: VERSIONS
@@ -468,6 +552,12 @@ struct mpi_context_policy_t
     return field_data;
   }
 
+  /*!
+   Register new sparse field data, i.e. allocate a new buffer for the
+   specified field ID. Sparse data consists of a buffer of offsets
+   (start + length) and entry id / value pairs and associated metadata about
+   this field. 
+   */
   void register_sparse_field_data(
     field_id_t fid,
     size_t type_size,
@@ -479,14 +569,14 @@ struct mpi_context_policy_t
     // TODO: VERSIONS
     sparse_field_data.emplace(
       fid, sparse_field_data_t(type_size, coloring_info.exclusive,
-      coloring_info.shared, coloring_info.ghost, 
-      max_entries_per_index, reserve_chunk));
+                               coloring_info.shared, coloring_info.ghost,
+                               max_entries_per_index, reserve_chunk));
   }
 
   std::map<field_id_t, sparse_field_data_t>&
   registered_sparse_field_data()
   {
-    return sparse_field_data;    
+    return sparse_field_data;
   }
 
   std::map<field_id_t, sparse_field_metadata_t>&
@@ -494,21 +584,21 @@ struct mpi_context_policy_t
     return sparse_field_metadata;
   };
 
-  //--------------------------------------------------------------------------//
-  //! return <double> max reduction
-  //--------------------------------------------------------------------------//
+  /*!
+    return <double> max reduction
+   */
 
   auto&
   max_reduction()
-  { 
+  {
     return max_reduction_;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Set max_reduction
-  //!
-  //! @param double max_reduction
-  //--------------------------------------------------------------------------//
+  /*!
+   Set max_reduction
+  
+   @param double max_reduction
+   */
 
   void
   set_max_reduction(double max_reduction)
@@ -516,11 +606,11 @@ struct mpi_context_policy_t
     max_reduction_ = max_reduction;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Perform reduction for the maximum value type <double>
-  //!
-  //! @param 
-  //--------------------------------------------------------------------------//
+  /*!
+   Perform reduction for the maximum value type <double>
+  
+   @param
+   */
 
   template <typename T>
   auto
@@ -531,13 +621,15 @@ struct mpi_context_policy_t
     MPI_Allreduce(&local_max_, &global_max_, 1,
            flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
            MPI_COMM_WORLD);
-    return global_max_;
+    mpi_future__<T> fut;
+    fut.set(global_max_);
+    return fut;
   }
 
 
-  //--------------------------------------------------------------------------//
-  //! return <double> min reduction
-  //--------------------------------------------------------------------------//
+  /*!
+    return <double> min reduction
+   */
 
   auto&
   min_reduction()
@@ -545,11 +637,11 @@ struct mpi_context_policy_t
     return min_reduction_;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Set min_reduction
-  //!
-  //! @param double min_reduction
-  //--------------------------------------------------------------------------//
+  /*!
+   Set min_reduction
+  
+   @param double min_reduction
+   */
 
   void
   set_min_reduction(double min_reduction)
@@ -557,22 +649,24 @@ struct mpi_context_policy_t
     min_reduction_ = min_reduction;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Perform reduction for the minimum value type <double>
-  //!
-  //! @param 
-  //--------------------------------------------------------------------------//
+  /*!
+   Perform reduction for the minimum value type <double>
+  
+   @param
+   */
 
   template <typename T>
   auto
   reduce_min(mpi_future__<T> & local_future)
-  { 
+  {
     T global_min_;
     auto local_min_ = local_future.get();
     MPI_Allreduce(&local_min_, &global_min_, 1,
            flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MIN,
            MPI_COMM_WORLD);
-    return global_min_;
+    mpi_future__<T> fut;
+    fut.set(global_min_);
+    return fut;
   }
 
 
@@ -581,6 +675,7 @@ struct mpi_context_policy_t
 private:
 
   int color_ = 0;
+  int colors_ = 0;
 
   // Define the map type using the task_hash_t hash function.
 //  std::unordered_map<
@@ -600,6 +695,7 @@ private:
   std::map<field_id_t, field_metadata_t> field_metadata;
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
+  std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
 
   std::map<field_id_t, sparse_field_data_t> sparse_field_data;
   std::map<field_id_t, sparse_field_metadata_t> sparse_field_metadata;
@@ -609,12 +705,5 @@ private:
 
 }; // class mpi_context_policy_t
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_mpi_context_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

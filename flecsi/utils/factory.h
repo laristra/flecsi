@@ -1,22 +1,22 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_utils_factory_h
-#define flecsi_utils_factory_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include <map>
+/*! @file */
+
 #include <iostream>
+#include <map>
 
 namespace flecsi {
 namespace utils {
@@ -25,11 +25,9 @@ namespace utils {
 //! \class Factory_ Factory.h
 //! \brief Factory_ provides a generic object factory class.
 //!
-template <typename RETURN, typename KEY, typename... Args>
-class Factory_
-{
+template<typename RETURN, typename KEY, typename... Args>
+class Factory_ {
 public:
-
   //! Function pointer type for creation method.
   using createHandler = RETURN * (*)(Args... args);
 
@@ -49,8 +47,7 @@ public:
   //! Return an instance of the Factory_ class. This uses a
   //! Meyer's singleton.
   //!
-  static Factory_ & instance()
-  {
+  static Factory_ & instance() {
     static Factory_ f;
     return f;
   } // instance
@@ -63,8 +60,7 @@ public:
   //! \param ch The handler to call to create a new type associated
   //! with \emph id.
   //!
-  bool registerType(const key_t key, const createHandler ch)
-  {
+  bool registerType(const key_t key, const createHandler ch) {
     return map_.insert(typename map_t::value_type(key, ch)).second;
   } // registerType
 
@@ -94,8 +90,7 @@ public:
   //! This will statically cast the lvalue to an rvalue reference and
   //! everything will be good.
   //!
-  RETURN * create(const key_t key, Args && ... args)
-  {
+  RETURN * create(const key_t key, Args &&... args) {
     // lookup the create class
     typename map_t::const_iterator ita = map_.find(key);
 
@@ -110,7 +105,6 @@ public:
   } // create
 
 private:
-
   map_t map_;
 
   //! Constructor
@@ -122,10 +116,3 @@ private:
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_factory_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

@@ -1,18 +1,27 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_topology_entity_storage_h
-#define flecsi_topology_entity_storage_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/runtime/flecsi_runtime_entity_storage_policy.h"
+/*! @file */
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 01, 2016
-//----------------------------------------------------------------------------//
+#include <flecsi/runtime/flecsi_runtime_entity_storage_policy.h>
 
 namespace flecsi {
 namespace topology {
+
+// the following type definitions define topological storage types
+// as a dependent on the runtime model
 
 template<typename T>
 using entity_storage_t = FLECSI_RUNTIME_ENTITY_STORAGE_TYPE<T>;
@@ -21,8 +30,3 @@ using offset_storage_t = FLECSI_RUNTIME_OFFSET_STORAGE_TYPE;
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_topology_entity_storage_h
-
-/*~-------------------------------------------------------------------------~-*
- *~-------------------------------------------------------------------------~-*/

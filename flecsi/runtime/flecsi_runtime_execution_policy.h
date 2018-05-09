@@ -1,15 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_runtime_execution_policy_h
-#define flecsi_runtime_execution_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 01, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <flecsi-config.h>
 
@@ -23,34 +27,40 @@
 // Legion Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include "flecsi/execution/legion/execution_policy.h"
+#include <flecsi/execution/legion/execution_policy.h>
 
-  namespace flecsi {
-  namespace execution {
+namespace flecsi {
+namespace execution {
 
-  using FLECSI_RUNTIME_EXECUTION_POLICY = legion_execution_policy_t;
+using FLECSI_RUNTIME_EXECUTION_POLICY = legion_execution_policy_t;
 
-  } // namespace execution
-  } // namespace flecsi
+} // namespace execution
+} // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/execution/mpi/execution_policy.h"
+#include <flecsi/execution/mpi/execution_policy.h>
 
-  namespace flecsi {
-  namespace execution {
+namespace flecsi {
+namespace execution {
 
-  using FLECSI_RUNTIME_EXECUTION_POLICY = mpi_execution_policy_t;
+using FLECSI_RUNTIME_EXECUTION_POLICY = mpi_execution_policy_t;
 
-  } // namespace execution
-  } // namespace flecsi
+} // namespace execution
+} // namespace flecsi
+
+// HPX Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include <flecsi/execution/hpx/execution_policy.h>
+
+namespace flecsi {
+namespace execution {
+
+using FLECSI_RUNTIME_EXECUTION_POLICY = hpx_execution_policy_t;
+
+} // namespace execution
+} // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
-
-#endif // flecsi_runtime_execution_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

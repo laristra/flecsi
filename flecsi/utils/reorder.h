@@ -1,26 +1,22 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_utils_reorder_h
-#define flecsi_utils_reorder_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//!
-//! \file
-//!
+/*! @file */
 
-#include<iterator>
-#include<utility>
+#include <iterator>
+#include <utility>
 
 namespace flecsi {
 namespace utils {
@@ -32,30 +28,30 @@ namespace utils {
 //! \param [in] order_end   The end iterator for the order array
 //! \param [in,out] v The begin iterator for the value array
 //!
-template< typename order_iterator, typename value_iterator >
-void reorder(
-  const order_iterator order_begin,
-  const order_iterator order_end,
-  const value_iterator v
-) {
+template<typename order_iterator, typename value_iterator>
+void
+reorder(
+    const order_iterator order_begin,
+    const order_iterator order_end,
+    const value_iterator v) {
   using index_t = typename std::iterator_traits<order_iterator>::value_type;
-  using diff_t  = typename std::iterator_traits<order_iterator>::difference_type;
+  using diff_t = typename std::iterator_traits<order_iterator>::difference_type;
 
   auto remaining = order_end - 1 - order_begin;
-  for ( index_t s = index_t(), d; remaining > 0; ++ s ) {
-    for ( d = order_begin[diff_t(s)]; d > s; d = order_begin[diff_t(d)] ) ;
-    if ( d == s ) {
-      -- remaining;
+  for (index_t s = index_t(), d; remaining > 0; ++s) {
+    for (d = order_begin[diff_t(s)]; d > s; d = order_begin[diff_t(d)])
+      ;
+    if (d == s) {
+      --remaining;
       auto temp = v[diff_t(s)];
-      while ( d = order_begin[diff_t(d)], d != s ) {
-        std::swap( temp, v[diff_t(d)] );
-        -- remaining;
+      while (d = order_begin[diff_t(d)], d != s) {
+        std::swap(temp, v[diff_t(d)]);
+        --remaining;
       }
       v[diff_t(s)] = temp;
     }
   }
 }
-
 
 //!
 //! \brief Reorders an array in place
@@ -64,25 +60,26 @@ void reorder(
 //! \param [in,out] order_end   The end iterator for the order array
 //! \param [in,out] v The begin iterator for the value array
 //!
-template< typename order_iterator, typename value_iterator >
-void reorder_destructive(
-  const order_iterator order_begin,
-  const order_iterator order_end,
-  const value_iterator v
-) {
+template<typename order_iterator, typename value_iterator>
+void
+reorder_destructive(
+    const order_iterator order_begin,
+    const order_iterator order_end,
+    const value_iterator v) {
   using index_t = typename std::iterator_traits<order_iterator>::value_type;
-  using diff_t  = typename std::iterator_traits<order_iterator>::difference_type;
+  using diff_t = typename std::iterator_traits<order_iterator>::difference_type;
 
   auto remaining = order_end - 1 - order_begin;
-  for ( auto s = index_t(); remaining > 0; ++ s ) {
+  for (auto s = index_t(); remaining > 0; ++s) {
     auto d = order_begin[diff_t(s)];
-    if ( d == index_t(-1) ) continue;
-    -- remaining;
+    if (d == index_t(-1))
+      continue;
+    --remaining;
     auto temp = v[diff_t(s)];
-    for ( index_t d2; d != s; d = d2 ) {
-      std::swap( temp, v[diff_t(d)] );
-      std::swap( order_begin[diff_t(d)], d2 = index_t(-1) );
-      -- remaining;
+    for (index_t d2; d != s; d = d2) {
+      std::swap(temp, v[diff_t(d)]);
+      std::swap(order_begin[diff_t(d)], d2 = index_t(-1));
+      --remaining;
     }
     v[diff_t(s)] = temp;
   }
@@ -90,10 +87,3 @@ void reorder_destructive(
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_reorder_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

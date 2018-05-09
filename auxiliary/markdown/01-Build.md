@@ -1,8 +1,7 @@
 # FleCSI: Build
 <!--
-  The above header ("FleCSI: Build") is required for Doxygen to
-  correctly name the auto-generated page. It is ignored in the FleCSI
-  guide documentation.
+  The above header is required for Doxygen to correctly name the
+  auto-generated page. It is ignored in the FleCSI guide documentation.
 -->
 
 <!-- CINCHDOC DOCUMENT(user-guide | developer-guide) SECTION(build) -->
@@ -47,6 +46,9 @@ options, but is not necessary for a particular build:
 
 * **CMake**<br>  
   We currently require CMake version 2.8 or greater.
+
+* **Python**<br>  
+  We currently require Python 2.7 or greater.
 
 ## FleCSI Third Party Libraries Project
 

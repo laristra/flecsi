@@ -3,7 +3,7 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-#include "flecsi/execution/legion/internal_task.h"
+#include <flecsi/execution/legion/internal_task.h>
 #include "cinchtest.h"
 
 ///

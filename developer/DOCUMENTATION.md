@@ -141,6 +141,10 @@ Guide.
 
 # Canonical File Formats
 
+This file is a good example of a header-only implementation file. Note
+the Doxygen comment style, and multi-line template arguments in
+particular.
+
 ```cpp
 /*
     @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
@@ -151,164 +155,153 @@ Guide.
    /@@       /@@/@@//// //@@    @@       /@@/@@
    /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
    //       ///  //////   //////  ////////  //
-  
+
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
 #pragma once
 
-/*!
-  @file
- */
+/*! @file */
 
-#include <algorithm>
-#include <cstddef>
-#include <map>
-#include <unordered_map>
+#include <iostream>
+#include <string>
 
-#include <cinchlog.h>
-
-#include <flecsi/coloring/adjacency_types.h>
-#include <flecsi/coloring/coloring_types.h>
-#include <flecsi/coloring/index_coloring.h>
-#include <flecsi/execution/common/execution_state.h>
-#include <flecsi/runtime/types.h>
-#include <flecsi/utils/const_string.h>
-
-clog_register_tag(context);
+#include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/utils/static_verify.h>
 
 namespace flecsi {
 namespace execution {
 
 /*!
-  The context__ type provides a high-level runtime context interface that
-  is implemented by the given context policy.
+  The task_interface__ type provides a high-level task interface that is
+  implemented by the given execution policy.
 
-  @tparam CONTEXT_POLICY The backend context policy.
-     
+  @tparam EXECUTION_POLICY The backend execution policy.
+
   @ingroup execution
  */
 
-template<
-  class CONTEXT_POLICY
->
-struct context__ : public CONTEXT_POLICY
-{
-  using index_coloring_t = flecsi::coloring::index_coloring_t;
-  using coloring_info_t = flecsi::coloring::coloring_info_t;
-  using set_coloring_info_t = flecsi::coloring::set_coloring_info_t;
-  using adjacency_info_t = flecsi::coloring::adjacency_info_t;
+template<typename EXECUTION_POLICY>
+struct task_interface__ {
 
   /*!
-    Adjacency triple: index space, from index space, to index space
+    The runtime_state_t type stores runtime-specific state information
+    that is required to execute a user task. This is only needed for
+    the functor interface, which is currently not in use.
    */
 
-  using adjacency_triple_t = std::tuple<size_t, size_t, size_t>;
+  using runtime_state_t = typename EXECUTION_POLICY::runtime_state_t;
+
+  static runtime_state_t & runtime_state(void * task) {
+    return EXECUTION_POLICY::runtime_state(task);
+  } // runtime_state
 
   /*!
-    Gathers info about registered data fields.
-   */
+    Register a task with the FleCSI runtime.
 
-  struct field_info_t {
-    size_t data_client_hash;
-    size_t storage_class;
-    size_t size;
-    size_t namespace_hash;
-    size_t name_hash;
-    size_t versions;
-    field_id_t fid;
-    size_t index_space;
-    size_t key;
-  }; // struct field_info_t
+    @tparam KEY       A hash key identifying the task.
+    @tparam RETURN    The return type of the user task.
+    @tparam ARG_TUPLE A std::tuple of the user task argument types.
+    @tparam DELEGATE  The delegate function that invokes the user task.
 
-  //--------------------------------------------------------------------------//
-  // Field info map for fields in SPMD task, key1 =
-  //   (data client hash, index space), key2 = fid
-  //--------------------------------------------------------------------------//
+    @param processor The processor type.
+    @param launch    The launch flags.
+    @param name      The string identifier of the task.
 
-  using field_info_map_t =
-    std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
-
-  //--------------------------------------------------------------------------//
-  // Function interface.
-  //--------------------------------------------------------------------------//
-
-  /*!
-    FIXME: This interface needs to be updated.
+    @return The return type for task registration is determined by
+            the specific backend runtime being used.
    */
 
   template<
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*FUNCTION)(ARG_TUPLE),
-    size_t KEY
-  >
-  bool
-  register_function(
-  )
-  {
-    clog_assert(function_registry_.find(KEY) == function_registry_.end(),
-                "function has already been registered");
+      size_t KEY,
+      typename RETURN,
+      typename ARG_TUPLE,
+      RETURN (*DELEGATE)(ARG_TUPLE)>
+  static decltype(auto)
+  register_task(processor_type_t processor, launch_t launch, std::string name) {
+    return EXECUTION_POLICY::template register_task<
+        KEY, RETURN, ARG_TUPLE, DELEGATE>(processor, launch, name);
+  } // register_task
 
-    const std::size_t addr = reinterpret_cast<std::size_t>(FUNCTION);
-    clog(info) << "Registering function: " << addr << std::endl;
+  /*!
+    Execute a task.
 
-    function_registry_[KEY] =
-      reinterpret_cast<void *>(FUNCTION);
-    return true;
-  } // register_function
+    @tparam RETURN The return type of the task.
+    @tparam ARG_TUPLE A std::tuple of the user task argument types.
+    @tparam ARGS The task arguments.
 
-private:
+    @param launch The launch mode for this task execution.
+    @param args   The arguments to pass to the user task during execution.
+   */
 
-  //--------------------------------------------------------------------------//
-  // Function data members.
-  //--------------------------------------------------------------------------//
+  template<size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
+  static decltype(auto) execute_task(launch_type_t launch, ARGS &&... args) {
+    return EXECUTION_POLICY::template execute_task<KEY, RETURN, ARG_TUPLE>(
+        launch, std::forward<ARGS>(args)...);
+  } // execute_task
 
-  std::unordered_map<size_t, void *>
-    function_registry_;
-
-  struct vector_hash_t
-  {
-    size_t
-    operator () (
-      std::vector<size_t> const & v
-    )
-    const
-    {
-      size_t h{0};
-      for(auto i: v) {
-        h |= i;
-      } // for
-
-      return h;
-    } // operator ()
-  }; // struct vector_hash_t
-
-}; // class context__
+}; // struct task_interface__
 
 } // namespace execution
 } // namespace flecsi
 
-// This include file defines the FLECSI_RUNTIME_CONTEXT_POLICY used below.
+//----------------------------------------------------------------------------//
+// This include file defines the FLECSI_RUNTIME_EXECUTION_POLICY used below.
+//----------------------------------------------------------------------------//
 
-#include "flecsi/runtime/flecsi_runtime_context_policy.h"
+#include <flecsi/runtime/flecsi_runtime_execution_policy.h>
 
 namespace flecsi {
 namespace execution {
 
 /*!
-  The context_t type is the high-level interface to the FleCSI runtime
-  context.
- 
+  The task_interface_t type is the high-level interface to the FleCSI
+  task model.
+
   @ingroup execution
  */
 
-using context_t = context__<FLECSI_RUNTIME_CONTEXT_POLICY>;
+using task_interface_t = task_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
+
+/*!
+  Use the execution policy to define the future type.
+
+  @tparam RETURN The return type of the associated task.
+
+  @ingroup execution
+ */
+
+template<typename RETURN>
+using future__ = FLECSI_RUNTIME_EXECUTION_POLICY::future__<RETURN>;
+
+//----------------------------------------------------------------------------//
+// Static verification of public future interface for type defined by
+// execution policy.
+//----------------------------------------------------------------------------//
+
+namespace verify_future {
+
+FLECSI_MEMBER_CHECKER(wait);
+FLECSI_MEMBER_CHECKER(get);
+
+static_assert(
+    verify_future::has_member_wait<future__<double>>::value,
+    "future type missing wait method");
+
+static_assert(
+    verify_future::has_member_get<future__<double>>::value,
+    "future type missing get method");
+
+} // namespace verify_future
 
 } // namespace execution
 } // namespace flecsi
 ```
 
+This file is a good example of macro formatting. Note the *MACRO
+DEFINITION* comment line, and the overall formatting.
+
 ```cpp
 /*
     @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
@@ -325,9 +318,7 @@ using context_t = context__<FLECSI_RUNTIME_CONTEXT_POLICY>;
                                                                               */
 #pragma once
 
-/*!
-  @file
- */
+/*! @file */
 
 #include <system_file>
 

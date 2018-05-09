@@ -1,18 +1,17 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_legion_mutator_handle_policy_h
-#define flecsi_data_legion_mutator_handle_policy_h
+#pragma once
 
 #include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_LEGION)
-  #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
 #include <legion.h>
 
-#include "flecsi/runtime/types.h"
+#include <flecsi/runtime/types.h>
 
 //----------------------------------------------------------------------------//
 /// @file
@@ -28,17 +27,17 @@ namespace flecsi {
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-struct legion_mutator_handle_policy_t
-{
-  legion_mutator_handle_policy_t(){}
+struct legion_mutator_handle_policy_t {
+  legion_mutator_handle_policy_t() {}
 
-  legion_mutator_handle_policy_t(const legion_mutator_handle_policy_t& p) = default;
+  legion_mutator_handle_policy_t(const legion_mutator_handle_policy_t & p) =
+      default;
+
+  size_t index_space;
 
 }; // class legion_mutator_handle_policy_t
 
 } // namespace flecsi
 
-#endif // flecsi_data_legion_mutator_handle_policy_h
-
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

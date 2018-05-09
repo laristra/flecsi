@@ -1,15 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_runtime_storage_policy_h
-#define flecsi_runtime_storage_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 01, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <flecsi-config.h>
 
@@ -23,34 +27,39 @@
 // Legion Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include "flecsi/data/legion/storage_policy.h"
+#include <flecsi/data/legion/storage_policy.h>
 
-  namespace flecsi {
-  namespace data {
+namespace flecsi {
+namespace data {
 
-  using FLECSI_RUNTIME_STORAGE_POLICY = legion_storage_policy_t;
+using FLECSI_RUNTIME_STORAGE_POLICY = legion_storage_policy_t;
 
-  } // namespace data
-  } // namespace flecsi
+} // namespace data
+} // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/data/mpi/storage_policy.h"
+#include <flecsi/data/mpi/storage_policy.h>
 
-  namespace flecsi {
-  namespace data {
+namespace flecsi {
+namespace data {
 
-  using FLECSI_RUNTIME_STORAGE_POLICY = mpi_storage_policy_t;
+using FLECSI_RUNTIME_STORAGE_POLICY = mpi_storage_policy_t;
 
-  } // namespace data
-  } // namespace flecsi
+} // namespace data
+} // namespace flecsi
+
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include <flecsi/data/hpx/storage_policy.h>
+
+namespace flecsi {
+namespace data {
+
+using FLECSI_RUNTIME_STORAGE_POLICY = hpx_storage_policy_t;
+
+} // namespace data
+} // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
-
-#endif // flecsi_runtime_storage_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

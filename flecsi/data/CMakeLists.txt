@@ -1,4 +1,4 @@
-#~----------------------------------------------------------------------------~#
+#------------------------------------------------------------------------------#
 #  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
 # /@@/////  /@@          @@////@@ @@////// /@@
 # /@@       /@@  @@@@@  @@    // /@@       /@@
@@ -6,11 +6,11 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
-#~----------------------------------------------------------------------------~#
+#------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
 # Add header files. Note that these will be "exported" to the parent
@@ -18,25 +18,29 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
+  accessor.h
+  client.h
   common/data_hash.h
   common/data_types.h
   common/privilege.h
   common/registration_wrapper.h
-  accessor.h
-  client.h
   data.h
   data_client.h
   data_client_handle.h
   data_client_handle.h
   data_constants.h
-  data_handle.h
+  dense_data_handle.h
   dense_accessor.h
   field.h
+  global_accessor.h
+  global_data_handle.h
+  internal_client.h
   mutator.h
   mutator_handle.h
   ragged_accessor.h
   ragged_mutator.h
   sparse_accessor.h
+  sparse_mutator.h
   sparse_data_handle.h
   storage.h
   storage_class.h
@@ -48,7 +52,7 @@ set(data_HEADERS
 #------------------------------------------------------------------------------#
 
 set(data_SOURCES
-  data_client.cc
+  internal_client.cc
 )
 
 set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)
@@ -65,13 +69,16 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(data_HEADERS
     ${data_HEADERS}
     legion/data_client_handle_policy.h
-    legion/data_handle_policy.h
+    legion/dense_data_handle_policy.h
+    legion/global_data_handle_policy.h
     legion/sparse_data_handle_policy.h
+    legion/mutator_handle_policy.h
     legion/data_policy.h
     legion/dense.h
     legion/global.h
     legion/color.h
     legion/legion_data.h
+    legion/mutator_handle_policy.h
     legion/scoped.h
     legion/sparse.h
     legion/storage_policy.h
@@ -85,12 +92,15 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(data_HEADERS
     ${data_HEADERS}
+    mpi/color.h
     mpi/data_client_handle_policy.h
     mpi/data_handle_policy.h
-    mpi/sparse_data_handle_policy.h
     mpi/data_policy.h
     mpi/dense.h
+    mpi/global.h
+    mpi/mutator_handle_policy.h
     mpi/sparse.h
+    mpi/sparse_data_handle_policy.h
     mpi/storage_policy.h
   )
 
@@ -100,6 +110,28 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(UNIT_POLICY MPI)
   set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  set(data_HEADERS
+    ${data_HEADERS}
+    hpx/data_client_handle_policy.h
+    hpx/data_handle_policy.h
+    hpx/data_policy.h
+    hpx/dense.h
+    hpx/global.h
+    hpx/meta_data.h
+    hpx/mutator_handle_policy.h
+    hpx/registration_wrapper.h
+    hpx/scoped.h
+    hpx/sparse.h
+    hpx/storage_policy.h
+    hpx/sparse_data_handle_policy.h
+    hpx/tuple.h
+  )
+
+  set(UNIT_POLICY HPX)
+  set(RUNTIME_DRIVER ../execution/hpx/runtime_driver.cc)
 
 endif()
 
@@ -125,15 +157,6 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-#cinch_add_unit(data_client
-#  SOURCES
-#    test/data_client.cc
-#    ${RUNTIME_DRIVER}
-#  LIBRARIES
-#    FleCSI
-#    ${CINCH_RUNTIME_LIBRARIES}
-#)
-
 # cinch_add_unit(compaction
 #   SOURCES
 #     test/legion/compaction.cc
@@ -152,7 +175,7 @@ set(data_SOURCES
 #      ${CINCH_RUNTIME_LIBRARIES}
 #  )
 #
-#  if(ENABLE_COLORING AND ENABLE_PARMETIS)
+#  if(ENABLE_PARMETIS)
 #    cinch_add_unit(serial_data_handle
 #      SOURCES
 #        ../execution/test/task_driver.cc
@@ -187,7 +210,7 @@ set(data_SOURCES
 #)
 #
 #
-#  if(ENABLE_COLORING AND ENABLE_PARMETIS)
+#  if(ENABLE_PARMETIS)
 #    cinch_add_unit(mpilegion_data_handle
 #      SOURCES
 #        ../execution/test/task_driver.cc
@@ -207,12 +230,11 @@ set(data_SOURCES
 
 #endif()
 
-if(ENABLE_COLORING AND ENABLE_PARMETIS)
+if(ENABLE_PARMETIS)
 
   cinch_add_unit(client_registration
     SOURCES
       test/client_registration.cc
-      data_client.cc
       ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
     DEFINES
@@ -223,12 +245,8 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
     POLICY ${UNIT_POLICY}
     THREADS 2
     NOCI
+    FOLDER "Tests/Data"
     )
 
 endif()
 
-
-#----------------------------------------------------------------------------~-#
-# Formatting options for vim.
-# vim: set tabstop=2 shiftwidth=2 expandtab :
-#----------------------------------------------------------------------------~-#

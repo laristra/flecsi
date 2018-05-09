@@ -1,24 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_utils_hash_h
-#define flecsi_utils_hash_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Oct 15, 2015
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <cstddef>
 #include <utility>
@@ -32,8 +27,8 @@ namespace utils {
 
 namespace hash {
 
-constexpr size_t field_hash_version_bits = 3; 
-constexpr size_t field_max_versions = 1 << 3; 
+constexpr size_t field_hash_version_bits = 3;
+constexpr size_t field_max_versions = 1 << 3;
 
 //----------------------------------------------------------------------------//
 //! Hashing function for client registration.
@@ -42,16 +37,9 @@ constexpr size_t field_max_versions = 1 << 3;
 //! @tparam NAME      The name key.
 //----------------------------------------------------------------------------//
 
-template<
-  size_t MASK,
-  size_t SHIFT
->
-inline
-constexpr size_t
-bit_range(
-  size_t key
-)
-{
+template<size_t MASK, size_t SHIFT>
+inline constexpr size_t
+bit_range(size_t key) {
   return (key >> SHIFT) & MASK;
 } // bit_range
 
@@ -68,16 +56,11 @@ bit_range(
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-template<
-  size_t NAMESPACE,
-  size_t NAME
->
-inline
-constexpr size_t
-client_hash()
-{
+template<size_t NAMESPACE, size_t NAME>
+inline constexpr size_t
+client_hash() {
   return NAMESPACE ^ NAME;
-} // field_hash__
+} // client_hash
 
 ////////////////////////////////////////////////////////////////////////////////
 // Field data hash interface.
@@ -97,32 +80,20 @@ client_hash()
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-template<
-  size_t NAMESPACE,
-  size_t NAME
->
-inline
-constexpr size_t
-field_hash(size_t version)
-{
-  return ((NAMESPACE ^ NAME) << field_hash_version_bits | 
-    version) & ~(1ul<<63);
+template<size_t NAMESPACE, size_t NAME>
+inline constexpr size_t
+field_hash(size_t version) {
+  return ((NAMESPACE ^ NAME) << field_hash_version_bits | version) &
+         ~(1ul << 63);
 } // field_hash
 
-inline
-size_t
-field_hash(size_t nspace, size_t name, size_t version)
-{
-  return ((nspace ^ name) << field_hash_version_bits | 
-    version) & ~(1ul<<63);
+inline size_t
+field_hash(size_t nspace, size_t name, size_t version) {
+  return ((nspace ^ name) << field_hash_version_bits | version) & ~(1ull << 63);
 } // field_hash
 
-inline
-constexpr size_t
-field_hash_version(
-  size_t key
-)
-{
+inline constexpr size_t
+field_hash_version(size_t key) {
   return bit_range<(1ul << field_hash_version_bits) - 1, 0>(key);
 } // client_entity_index
 
@@ -134,11 +105,8 @@ field_hash_version(
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-bool
-inline
-is_internal(size_t key)
-{
-  return key & (1ul<<63);
+bool inline is_internal(size_t key) {
+  return key & (1ull << 63);
 } // is_internal
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -159,20 +127,14 @@ is_internal(size_t key)
 //----------------------------------------------------------------------------//
 
 template<
-  size_t NAMESPACE,
-  size_t NAME,
-  size_t INDEX,
-  size_t DOMAIN_, // FIXME: Somewhere DOMAIN is being defined
-  size_t DIMENSION
->
-inline
-constexpr size_t
-client_entity_hash()
-{
-  return ((NAMESPACE ^ NAME) << 12) |
-    (INDEX << 4) |
-    (DOMAIN_ << 2) |
-    DIMENSION;
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t INDEX,
+    size_t DOMAIN_, // FIXME: Somewhere DOMAIN is being defined
+    size_t DIMENSION>
+inline constexpr size_t
+client_entity_hash() {
+  return ((NAMESPACE ^ NAME) << 12) | (INDEX << 4) | (DOMAIN_ << 2) | DIMENSION;
 } // client_entity_hash
 
 //----------------------------------------------------------------------------//
@@ -183,12 +145,8 @@ client_entity_hash()
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-inline
-constexpr size_t
-client_entity_index(
-  size_t key
-)
-{
+inline constexpr size_t
+client_entity_index(size_t key) {
   return bit_range<0xff, 4>(key);
 } // client_entity_index
 
@@ -200,12 +158,8 @@ client_entity_index(
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-inline
-constexpr size_t
-client_entity_domain(
-  size_t key
-)
-{
+inline constexpr size_t
+client_entity_domain(size_t key) {
   return bit_range<0x03, 2>(key);
 } // client_entity_domain
 
@@ -217,12 +171,8 @@ client_entity_domain(
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-inline
-constexpr size_t
-client_entity_dimension(
-  size_t key
-)
-{
+inline constexpr size_t
+client_entity_dimension(size_t key) {
   return bit_range<0x03, 0>(key);
 } // client_entity_dimension
 
@@ -246,24 +196,39 @@ client_entity_dimension(
 //----------------------------------------------------------------------------//
 
 template<
-  size_t NAMESPACE,
-  size_t NAME,
-  size_t INDEX,
-  size_t FROM_DOMAIN,
-  size_t TO_DOMAIN,
-  size_t FROM_DIMENSION,
-  size_t TO_DIMENSION
->
-inline
-constexpr size_t
-client_adjacency_hash()
-{
-  return ((NAMESPACE ^ NAME) << 16) |
-    (INDEX << 8) |
-    (FROM_DOMAIN << 6) |
-    (TO_DOMAIN << 4) |
-    (FROM_DIMENSION << 2) |
-    TO_DIMENSION;
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t INDEX,
+    size_t FROM_DOMAIN,
+    size_t TO_DOMAIN,
+    size_t FROM_DIMENSION,
+    size_t TO_DIMENSION>
+inline constexpr size_t
+client_adjacency_hash() {
+  return ((NAMESPACE ^ NAME) << 16) | (INDEX << 8) | (FROM_DOMAIN << 6) |
+         (TO_DOMAIN << 4) | (FROM_DIMENSION << 2) | TO_DIMENSION;
+} // client_adjacency_hash
+
+////////////////////////////////////////////////////////////////////////////////
+// Client index subspace hash interface.
+////////////////////////////////////////////////////////////////////////////////
+
+//----------------------------------------------------------------------------//
+//! Create a hash key suitable for registering client index subspaces with
+//! the low-level field registry.
+//!
+//! @tparam NAMESPACE      A namespace identifier.
+//! @tparam NAME           A name identifier.
+//! @tparam INDEX          The associated index space.
+//! @tparam INDEX_SUBSPACE The associated index subspace.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+template<size_t NAMESPACE, size_t NAME, size_t INDEX, size_t INDEX_SUBSPACE>
+inline constexpr size_t
+client_index_subspace_hash() {
+  return ((NAMESPACE ^ NAME) << 16) | (INDEX << 8) | INDEX_SUBSPACE;
 } // client_adjacency_hash
 
 //----------------------------------------------------------------------------//
@@ -274,12 +239,8 @@ client_adjacency_hash()
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-inline
-constexpr size_t
-client_adjacency_index(
-  size_t key
-)
-{
+inline constexpr size_t
+client_adjacency_index(size_t key) {
   return bit_range<0xff, 8>(key);
 } // client_adjacency_index
 
@@ -291,12 +252,8 @@ client_adjacency_index(
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-inline
-constexpr size_t
-client_adjacency_from_domain(
-  size_t key
-)
-{
+inline constexpr size_t
+client_adjacency_from_domain(size_t key) {
   return bit_range<0x03, 6>(key);
 } // client_adjacency_from_domain
 
@@ -308,12 +265,8 @@ client_adjacency_from_domain(
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-inline
-constexpr size_t
-client_adjacency_to_domain(
-  size_t key
-)
-{
+inline constexpr size_t
+client_adjacency_to_domain(size_t key) {
   return bit_range<0x03, 4>(key);
 } // client_adjacency_to_domain
 
@@ -325,12 +278,8 @@ client_adjacency_to_domain(
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-inline
-constexpr size_t
-client_adjacency_from_dimension(
-  size_t key
-)
-{
+inline constexpr size_t
+client_adjacency_from_dimension(size_t key) {
   return bit_range<0x03, 2>(key);
 } // client_adjacency_from_dimension
 
@@ -342,12 +291,8 @@ client_adjacency_from_dimension(
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-inline
-constexpr size_t
-client_adjacency_to_dimension(
-  size_t key
-)
-{
+inline constexpr size_t
+client_adjacency_to_dimension(size_t key) {
   return bit_range<0x03, 0>(key);
 } // client_adjacency_to_dimension
 
@@ -368,30 +313,19 @@ client_adjacency_to_dimension(
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-template<
-  size_t NAME,
-  size_t INDEX_SPACE
->
-inline
-constexpr size_t
-client_internal_field_hash()
-{
-  return ((NAME << 8) | INDEX_SPACE) | (1ul<<63);
+template<size_t NAME, size_t INDEX_SPACE>
+inline constexpr size_t
+client_internal_field_hash() {
+  return ((NAME << 8) | INDEX_SPACE) | (1ull << 63);
 } // field_hash__
 
-inline
-size_t
-client_internal_field_hash(size_t name, size_t index_space)
-{
-  return ((name << 8) | index_space) | (1ul<<63);
+inline size_t
+client_internal_field_hash(size_t name, size_t index_space) {
+  return ((name << 8) | index_space) | (1ull << 63);
 } // field_hash__
 
-inline
-constexpr size_t
-client_internal_field_index_space(
-  size_t key
-)
-{
+inline constexpr size_t
+client_internal_field_index_space(size_t key) {
   return bit_range<0xff, 8>(key);
 } // client_internal_field_index_space
 
@@ -408,14 +342,9 @@ client_internal_field_index_space(
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-template<
-  size_t DIMENSION,
-  size_t DOMAIN_
->
-inline
-constexpr size_t
-intermediate_hash()
-{
+template<size_t DIMENSION, size_t DOMAIN_>
+inline constexpr size_t
+intermediate_hash() {
   return (DIMENSION << 32) ^ DOMAIN_;
 } // intermediate_hash
 
@@ -428,10 +357,8 @@ intermediate_hash()
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-inline
-size_t
-intermediate_hash(size_t dimension, size_t domain)
-{
+inline size_t
+intermediate_hash(size_t dimension, size_t domain) {
   return (dimension << 32) ^ domain;
 } // intermediate_hash
 
@@ -440,46 +367,24 @@ intermediate_hash(size_t dimension, size_t domain)
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//
 
-template<
-  typename T,
-  typename U
->
-constexpr
-T
-string_hash__(
-  U && str,
-  const T h,
-  const std::size_t i,
-  const std::size_t n
-)
-{
+template<typename T, typename U>
+constexpr T
+string_hash__(U && str, const T h, const std::size_t i, const std::size_t n) {
   // An unstated assumption appears to be that n is the length of str, which is
   // a string type, and that i <= n. Otherwise, we're going to have problems.
-  return i == n ?  h :
-    string_hash__(str, h ^ static_cast<T>(std::forward<U>(str)[i]) << 8*(i%8),
-      i + 1, n);
+  return i == n
+             ? h
+             : string_hash__(
+                   str,
+                   h ^ static_cast<T>(std::forward<U>(str)[i]) << 8 * (i % 8),
+                   i + 1, n);
 } // string_hash__
 
-template<
-  typename T,
-  typename U
->
-constexpr
-T
-string_hash(
-  U && str,
-  const std::size_t n
-)
-{
+template<typename T, typename U>
+constexpr T
+string_hash(U && str, const std::size_t n) {
   return string_hash__<T>(str, 0, 0, n);
 } // string_hash
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_hash_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

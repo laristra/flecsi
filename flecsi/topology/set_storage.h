@@ -1,30 +1,28 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Oct 03, 2017
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#ifndef flecsi_topology_set_storage_h
-#define flecsi_topology_set_storage_h
+/*! @file */
 
-#include "flecsi/runtime/flecsi_runtime_set_topology_policy.h"
+#include <flecsi/runtime/flecsi_runtime_set_topology_policy.h>
 
-namespace flecsi{
-namespace topology{
+namespace flecsi {
+namespace topology {
 
-template<
-  typename SET_TYPES
->
-class set_storage_t : 
-  public FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY<SET_TYPES>
-{};
+template<typename SET_TYPE>
+class set_storage__
+    : public FLECSI_RUNTIME_SET_TOPOLOGY_STORAGE_POLICY<SET_TYPE> {};
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_topology_set_storage_h
-
-/*~-------------------------------------------------------------------------~-*
- *~-------------------------------------------------------------------------~-*/

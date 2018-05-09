@@ -1,21 +1,21 @@
 /*~--------------------------------------------------------------------------~*
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_mpi_data_policy_h
-#define flecsi_data_mpi_data_policy_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
 
-#include "flecsi/data/common/registration_wrapper.h"
-#include "flecsi/data/mpi/dense.h"
-#include "flecsi/data/mpi/sparse.h"
-#include "flecsi/data/storage.h"
-//#include "flecsi/data/mpi/global.h"
-//#include "flecsi/data/mpi/scoped.h"
-//#include "flecsi/data/mpi/tuple.h"
+#include <flecsi/data/common/registration_wrapper.h>
+#include <flecsi/data/mpi/dense.h>
+#include <flecsi/data/mpi/sparse.h>
+#include <flecsi/data/storage.h>
+#include <flecsi/data/mpi/global.h>
+#include <flecsi/data/mpi/color.h>
+//#include <flecsi/data/mpi/scoped.h>
+//#include <flecsi/data/mpi/tuple.h>
 
 namespace flecsi {
 namespace data {
@@ -40,8 +40,6 @@ struct mpi_data_policy_t
 
 } // namespace data
 } // namespace flecsi
-
-#endif // flecsi_data_mpi_data_policy_h
 
 /*~-------------------------------------------------------------------------~-*
 *~-------------------------------------------------------------------------~-*/

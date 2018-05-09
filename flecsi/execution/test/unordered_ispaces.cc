@@ -12,13 +12,13 @@
 #include <cinchlog.h>
 #include <cinchtest.h>
 
-#include "flecsi/execution/execution.h"
-#include "flecsi/io/simple_definition.h"
-#include "flecsi/coloring/dcrs_utils.h"
-#include "flecsi/coloring/parmetis_colorer.h"
-#include "flecsi/coloring/mpi_communicator.h"
-#include "flecsi/supplemental/mesh/empty_mesh_2d.h"
-#include "flecsi/data/dense_accessor.h"
+#include <flecsi/execution/execution.h>
+#include <flecsi/io/simple_definition.h>
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/coloring/parmetis_colorer.h>
+#include <flecsi/coloring/mpi_communicator.h>
+#include <flecsi/supplemental/mesh/empty_mesh_2d.h>
+#include <flecsi/data/dense_accessor.h>
 
 #define CELL_ID 0
 #define VERT_ID 2   // Ensure it's OK if user does non-sequential
@@ -29,6 +29,8 @@ using namespace flecsi;
 using namespace supplemental;
 
 clog_register_tag(ghost_access);
+  
+flecsi_register_data_client(empty_mesh_t, meshes, mesh1);
 
 void check_entities_task(
         dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,

@@ -1,24 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_utils_iterator_h
-#define flecsi_utils_iterator_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//!
-//! \file
-//! \date Initial file creation: Oct 09, 2015
-//!
+/*! @file */
 
 #include <cstring> // for std::size_t
 
@@ -30,16 +25,14 @@ namespace utils {
 //! \brief iterator provides...
 //!
 template<typename C, typename T>
-class iterator
-{
+class iterator {
 public:
-
   using container_t = C;
   using type_t = T;
 
   //! Constructor from container and index
   iterator(container_t & values, const std::size_t index)
-    : values_(values), index_(index) {}
+      : values_(values), index_(index) {}
 
   //! Destructor
   ~iterator() {}
@@ -55,13 +48,13 @@ public:
   } // operator =
 
   //! Pre-increment operator
-  iterator & operator ++ () {
+  iterator & operator++() {
     ++index_;
     return *this;
   } // operator ++
 
   //! Dereference operator
-  type_t & operator * () {
+  type_t & operator*() {
     return values_[index_];
   } // operator *
 
@@ -77,17 +70,16 @@ public:
   */
 
   //! Equivalence operator
-  bool operator == (const iterator & it) const {
+  bool operator==(const iterator & it) const {
     return index_ == it.index_;
   } // operator ==
 
   //! Non-equivalence operator
-  bool operator != (const iterator & it) const {
+  bool operator!=(const iterator & it) const {
     return index_ != it.index_;
   } // operator !=
 
 private:
-
   container_t & values_;
   std::size_t index_;
 
@@ -95,10 +87,3 @@ private:
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_iterator_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

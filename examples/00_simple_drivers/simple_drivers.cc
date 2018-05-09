@@ -26,8 +26,8 @@ void
 specialization_tlt_init(
   int argc,
   char ** argv
-) 
-{ 
+)
+{
   std::cout<<"inside Specialization Driver"<<std::endl;
 }//specialization_driver
 
@@ -45,8 +45,8 @@ driver(
 
 int main(int argc, char ** argv) {
 
-  int provided;
 #if defined(ENABLE_MPI)
+  int provided;
   MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
   // If you fail this assertion, then your version of MPI
   // does not support calls from multiple threads and you
