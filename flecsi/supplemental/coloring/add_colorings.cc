@@ -44,6 +44,8 @@ void add_colorings(coloring_map_t map) {
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  printf("rank %d, add coloring pid %d\n", rank, getpid());
+//  sleep(20);
 
   {
   clog_tag_guard(coloring);
@@ -392,8 +394,6 @@ void add_colorings(coloring_map_t map) {
   } // scope
 
   // Add colorings to the context.
-  printf("rank %d, add coloring pid %d\n", rank, getpid());
-//  sleep(20);
   context_.add_coloring(map.cells, cells, cell_coloring_info);
   context_.add_coloring(map.vertices, vertices, vertex_coloring_info);
 
