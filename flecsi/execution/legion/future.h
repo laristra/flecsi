@@ -54,6 +54,10 @@ public:
 
   virtual void
   add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const = 0;
+
+  virtual void init_future(void) = 0;
+
+  virtual void finalize_future(void) = 0;
 };
 
 /*!
@@ -76,6 +80,21 @@ template <typename RETURN, launch_type_t launch> struct legion_future__ {};
 
 template <typename RETURN>
 struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
+ /*!
+   Copy constructor
+  */
+
+  legion_future__(const legion_future__ &f)
+  {
+    data_=f.data_;
+    initialized_=f.initialized_;
+    auto legion_runtime = Legion::Runtime::get_runtime();
+    if (initialized_)
+      legion_future_ = Legion::Future::from_value(legion_runtime, data_);
+    else
+      legion_future_=f.legion_future_;
+  }
+
   /*!
     Construct a future from a Legion future.
 
@@ -121,6 +140,13 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
         data_=rhs;
         return *this;
    }
+  void init_future(void){
+    initialized_ = true;
+  }
+
+  void finalize_future(void){
+    initialized_ = false;
+  }
 
   RETURN & operator = (legion_future__ const &f){
     return data_;
@@ -140,11 +166,12 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
       return stream;
   } // switch
 
-//  RETURN data() { return data_; }
+  Legion::Future & raw_future() { return legion_future_; }
 
   RETURN data_;
 
 private:
+  bool initialized_ = false;
   Legion::Future legion_future_;
 }; // legion_future
 
@@ -187,6 +214,8 @@ struct legion_future__<void, launch_type_t::single> : public future_base_t {
     launcher.add_future(legion_future_);
   }
 
+  void init_future(void){}
+  void finalize_future(void){}
 private:
   Legion::Future legion_future_;
 }; // legion_future
@@ -257,6 +286,10 @@ struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
   add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
     assert(false && "you can't pass future handle from index task to any task");
   }
+
+  void init_future(void){}
+  void finalize_future(void){}
+
 private:
   Legion::FutureMap legion_future_;
 
@@ -309,6 +342,8 @@ struct legion_future__<void, launch_type_t::index> : public future_base_t {
     assert(false && "you can't pass future handle from index task to any task");
   }
 
+  void init_future(void){}
+  void finalize_future(void){}
 private:
   Legion::FutureMap legion_future_;
 

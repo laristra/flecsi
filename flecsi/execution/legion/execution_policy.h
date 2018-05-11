@@ -191,7 +191,7 @@ struct legion_execution_policy_t {
             index_task_launcher.add_region_requirement(req);
           }
           for (auto &future : init_args.futures) {
-          future->add_future_to_index_task_launcher(index_task_launcher);
+           index_task_launcher.add_future(future);
         }
 
           // Enqueue the prolog.
@@ -262,7 +262,7 @@ struct legion_execution_policy_t {
             launcher.add_region_requirement(req);
           }
           for (auto &future : init_args.futures) {
-            future->add_future_to_index_task_launcher(launcher);
+            launcher.add_future(future);
           }
 
         launcher.tag = MAPPER_FORCE_RANK_MATCH;
@@ -317,7 +317,7 @@ struct legion_execution_policy_t {
             index_task_launcher.add_region_requirement(req);
           }
           for (auto &future : init_args.futures) {
-          future->add_future_to_index_task_launcher(index_task_launcher);
+            index_task_launcher.add_future(future);
         }
 
           // Enqueue the prolog.
@@ -448,7 +448,7 @@ struct legion_execution_policy_t {
           task_launcher.add_region_requirement(req);
         }
         for (auto &future : init_args.futures) {
-          future->add_future_to_single_task_launcher(task_launcher);
+          task_launcher.add_future(future);
         }
 
         LegionRuntime::Arrays::Rect<1> launch_bounds(0,1);

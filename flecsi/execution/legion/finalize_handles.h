@@ -69,6 +69,11 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     If this is not a data handle, then simply skip it.
    */
 
+  template<typename T, launch_type_t launch>
+  void handle(legion_future__<T, launch>  &h) {
+    h.finalize_future();
+  }
+
   template<typename T>
   static typename std::enable_if_t<
       !std::is_base_of<dense_accessor_base_t, T>::value>
