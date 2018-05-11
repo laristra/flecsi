@@ -202,7 +202,7 @@ struct legion_execution_policy_t {
             launcher.add_region_requirement(req);
           }
           for (auto & future : init_args.futures) {
-            future->add_future_to_index_task_launcher(launcher);
+             //FIXME add logic for adding futures to the index task launcher
           }
 
           //! \todo Do we need this comment?
@@ -240,7 +240,7 @@ struct legion_execution_policy_t {
             task_launcher.add_region_requirement(req);
           }
           for (auto & future : init_args.futures) {
-            future->add_future_to_single_task_launcher(task_launcher);
+            task_launcher.add_future(future);
           }
 
           task_launcher.tag = MAPPER_SUBRANK_LAUNCH;
@@ -347,15 +347,15 @@ struct legion_execution_policy_t {
         for (auto & req : init_args.region_reqs) {
           task_launcher.add_region_requirement(req);
         }
-        for (auto & future : init_args.futures) {
-          future->add_future_to_single_task_launcher(task_launcher);
+        for (auto  &future : init_args.futures) {
+           task_launcher.add_future(future);
         }
 
         // Enqueue the prolog.
-        task_prolog_t task_prolog(
-            legion_runtime, legion_context, task_launcher);
-        task_prolog.walk(task_args);
-        task_prolog.launch_copies();
+//        task_prolog_t task_prolog(
+//            legion_runtime, legion_context, task_launcher);
+//        task_prolog.walk(task_args);
+//        task_prolog.launch_copies();
 
         // Enqueue the task.
         clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
