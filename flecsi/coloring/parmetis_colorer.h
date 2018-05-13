@@ -82,9 +82,9 @@ struct parmetis_colorer_t : public colorer_t {
     real_t sum = 0.0;
     for (size_t i(0); i < tpwgts.size(); ++i) {
       if (i == (tpwgts.size() - 1)) {
-        tpwgts[i] = 1.0 - sum;
+        tpwgts[i] = static_cast<real_t>(1.0 - sum);
       } else {
-        tpwgts[i] = 1.0 / size;
+        tpwgts[i] = static_cast<real_t>(1.0 / size);
         sum += tpwgts[i];
       } // if
 
@@ -96,11 +96,11 @@ struct parmetis_colorer_t : public colorer_t {
     } // for
 
     // We may need to expose some of the ParMETIS configuration options.
-    real_t ubvec = 1.05;
+    real_t ubvec = static_cast<real_t>(1.05);
     idx_t options = 0;
     idx_t edgecut;
     MPI_Comm comm = MPI_COMM_WORLD;
-    std::vector<idx_t> part(dcrs.size(), std::numeric_limits<idx_t>::max());
+    std::vector<idx_t> part(dcrs.size(), (std::numeric_limits<idx_t>::max)());
 
 #if 0
     const size_t output_rank(1);
@@ -147,7 +147,7 @@ struct parmetis_colorer_t : public colorer_t {
 
       for (size_t i(0); i < dcrs.size(); ++i) {
         if (part[i] == r) {
-          indices.push_back(vtxdist[rank] + i);
+          indices.push_back(static_cast<MPI_Request>(vtxdist[rank] + i));
         } else if (part[i] == rank) {
           // If the index belongs to us, just add it...
           primary.insert(vtxdist[rank] + i);
@@ -155,7 +155,7 @@ struct parmetis_colorer_t : public colorer_t {
       } // for
 
       sbuffers.push_back(indices);
-      send_cnts[r] = indices.size();
+      send_cnts[r] = static_cast<MPI_Request>(indices.size());
     } // for
 
 #if 0
@@ -198,7 +198,8 @@ struct parmetis_colorer_t : public colorer_t {
         rbuffers[r].resize(recv_cnts[r]);
         requests.push_back({});
         MPI_Irecv(
-            &rbuffers[r][0], recv_cnts[r], mpi_typetraits__<idx_t>::type(), r,
+            &rbuffers[r][0], static_cast<int>(recv_cnts[r]),
+            mpi_typetraits__<idx_t>::type(), static_cast<int>(r),
             0, MPI_COMM_WORLD, &requests[requests.size() - 1]);
       } // if
     } // for
@@ -208,14 +209,15 @@ struct parmetis_colorer_t : public colorer_t {
       if (send_cnts[r]) {
         sbuffers[r].resize(send_cnts[r]);
         MPI_Send(
-            &sbuffers[r][0], send_cnts[r], mpi_typetraits__<idx_t>::type(), r,
+            &sbuffers[r][0], static_cast<int>(send_cnts[r]),
+            mpi_typetraits__<idx_t>::type(), static_cast<int>(r),
             0, MPI_COMM_WORLD);
       } // if
     } // for
 
     // Wait on the receive operations
     std::vector<MPI_Status> status(requests.size());
-    MPI_Waitall(requests.size(), &requests[0], &status[0]);
+    MPI_Waitall(static_cast<int>(requests.size()), &requests[0], &status[0]);
 
     // Add indices to primary
     for (size_t r(0); r < size; ++r) {
