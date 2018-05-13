@@ -73,7 +73,7 @@ operator<<(std::ostream & stream, const crs_t & crs) {
 } // operator <<
 
 /*!
- This type is a container for distrinuted compressed-storage of sparse data.
+ This type is a container for distributed compressed-storage of sparse data.
 
  @var distribution The index ranges for each color.
 
