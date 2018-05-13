@@ -58,7 +58,8 @@ struct executor__ {
   ///
   ///
   template<typename Exec, typename T, typename A>
-  static hpx::shared_future<RETURN> execute(Exec && exec, T fun, A && targs) {
+  static hpx_future__<RETURN, launch_type_t::single>
+  execute(Exec && exec, T fun, A && targs) {
     auto user_fun = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(fun));
     return hpx::async(
         std::forward<Exec>(exec), std::move(user_fun), std::forward<A>(targs));
@@ -123,8 +124,8 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
      std::string name
   )
   {
-    return context_t::instance().template register_function<
-      KEY, RETURN, ARG_TUPLE, DELEGATE>();
+    return context_t::instance().template register_task<
+      KEY, RETURN, ARG_TUPLE, DELEGATE>(processor, launch, name);
   } // register_task
 
   ///
@@ -142,14 +143,24 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     context_t & context_ = context_t::instance();
 
     // Get the function and processor type.
-    auto fun = context_.function(KEY);
+    auto fun = context_.task<KEY>();
 
-    //     auto processor_type = context_.processor_type<KEY>();
-    //     if (launch == processor_type_t::mpi)
+    auto processor_type = context_.processor_type<KEY>();
+    if (processor_type == processor_type_t::mpi)
+    {
+      {
+        clog_tag_guard(execution);
+        clog(info) << "Executing MPI task: " << KEY << std::endl;
+      }
+
+      return executor__<RETURN, ARG_TUPLE>::execute(
+          context_t::instance().get_mpi_executor(),
+          std::move(fun), std::make_tuple(std::forward<ARGS>(args)...));
+    }
 
     return executor__<RETURN, ARG_TUPLE>::execute(
         context_t::instance().get_default_executor(),
-        std::move(fun), std::forward_as_tuple(std::forward<ARGS>(args)...));
+        std::move(fun), std::make_tuple(std::forward<ARGS>(args)...));
   } // execute_task
 
   //--------------------------------------------------------------------------//
@@ -182,7 +193,7 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   execute_function(FUNCTION_HANDLE & handle, ARGS &&... args) {
     return handle(
         context_t::instance().function(handle.get_key()),
-        std::forward_as_tuple(std::forward<ARGS>(args)...));
+        std::make_tuple(std::forward<ARGS>(args)...));
   } // execute_function
 
 }; // struct hpx_execution_policy_t

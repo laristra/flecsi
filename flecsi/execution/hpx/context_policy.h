@@ -26,6 +26,8 @@
 #include <functional>
 #include <map>
 #include <mutex>
+#include <tuple>
+#include <unordered_map>
 
 #include <cinchlog.h>
 #include <flecsi-config.h>
@@ -83,6 +85,9 @@ struct hpx_context_policy_t {
   // Function registration.
   //------------------------------------------------------------------------//
 
+  using task_info_t =
+      std::tuple<processor_type_t, launch_t, std::string, void *>;
+
   ///
   /// \tparam T The type of the function being registered.
   ///
@@ -118,6 +123,69 @@ struct hpx_context_policy_t {
   void * function(size_t key) {
     return function_registry_[key];
   } // function
+
+  ///
+  /// Register a task with the runtime.
+  ///
+  /// \param key       The task hash key.
+  /// \param processor The task processor.
+  /// \param launch    The task launch type.
+  /// \param name      The task name string.
+  ///
+  template<
+      std::size_t KEY,
+      typename RETURN,
+      typename ARG_TUPLE,
+      RETURN (*FUNCTION)(ARG_TUPLE)>
+  bool register_task(
+      processor_type_t processor,
+      launch_t launch,
+      std::string const & name)
+  {
+    clog(info) << "Registering task " << name << " with key " << KEY
+               << std::endl;
+
+    clog_assert(
+        task_registry_.find(KEY) == task_registry_.end(),
+        "task key already exists");
+
+    task_registry_[KEY] = std::make_tuple(
+        processor, launch, name, reinterpret_cast<void *>(FUNCTION));
+
+    return true;
+  } // register_task
+
+  ///
+  /// Return the task associated with \e key.
+  ///
+  /// \param key The unique task identifier.
+  ///
+  /// \return A pointer to a std::function<void(void)> that may be cast
+  ///         back to the original function type using reinterpret_cast.
+  ///
+  template <std::size_t KEY>
+  void * task() const {
+
+    auto it = task_registry_.find(KEY);
+
+    clog_assert(
+        it != task_registry_.end(),
+        "task key does not exists");
+
+    return std::get<3>(it->second);
+  } // task
+
+  template <std::size_t KEY>
+  processor_type_t processor_type() const
+  {
+    auto it = task_registry_.find(KEY);
+
+    clog_assert(
+        it != task_registry_.end(),
+        "task key does not exists");
+
+    return std::get<0>(it->second);
+  }
 
   //--------------------------------------------------------------------
   // Data maps
@@ -281,10 +349,7 @@ private:
   //--------------------------------------------------------------------------//
 
   // Map to store task registration callback methods.
-  //  std::map<
-  //    size_t,
-  //    task_info_t
-  //  > task_registry_;
+  std::map<std::size_t, task_info_t> task_registry_;
 
   // Function registry
   std::unordered_map<size_t, void *> function_registry_;
