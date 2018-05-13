@@ -57,12 +57,12 @@ public:
   //--------------------------------------------------------------------------//
 
   mutator_handle_base_u(size_t num_exclusive,
-    size_t num_shared,
-    size_t num_ghost,
-    size_t max_entries_per_index,
-    size_t num_slots)
-    : num_entries_(num_exclusive + num_shared + num_ghost),
-      num_exclusive_(num_exclusive),
+      size_t num_shared,
+      size_t num_ghost,
+      size_t max_entries_per_index,
+      size_t num_slots)
+      : num_entries_(num_exclusive + num_shared + num_ghost),
+        num_exclusive_(num_exclusive),
       max_entries_per_index_(max_entries_per_index), num_slots_(num_slots) {
     pi_.count[0] = num_exclusive;
     pi_.count[1] = num_shared;
@@ -152,7 +152,7 @@ public:
       coi.set_offset(offset);
       coi.set_count(count);
       offset += count;
-    }
+          }
 
     size_t num_exclusive_filled = cptr - cbuf;
 
@@ -169,7 +169,7 @@ public:
 
       size_t count = new_count(index);
       assert(count <= max_entries_per_index_ &&
-             "ragged data: exceeded max_entries_per_index in shared/ghost");
+            "ragged data: exceeded max_entries_per_index in shared/ghost");
 
       if(count > num_existing) {
         value_t * eptr = entries + coi.start();
@@ -228,7 +228,7 @@ public:
   size_t new_count(size_t index) const {
     int nc = new_counts_[index];
     return (nc >= 0 ? nc : offsets_[index].count());
-  }
+    }
 
   using overflow_map_t = std::unordered_map<size_t, std::vector<value_t>>;
 

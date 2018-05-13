@@ -21,6 +21,7 @@
 #include <sstream>
 #include <typeinfo>
 
+#include <flecsi/utils/export_definitions.h>
 #include <flecsi/utils/id.h>
 #include <flecsi/utils/offset.h>
 

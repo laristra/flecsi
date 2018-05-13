@@ -14,6 +14,8 @@
 
 #include <bitset>
 #include <tuple>
+#include <thread>
+#include <chrono>
 
 #include <cinchtest.h>
 #include <flecsi/control/control.h>
@@ -21,7 +23,7 @@
 #include <flecsi/utils/macros.h>
 
 /*----------------------------------------------------------------------------*
- * Define simulation phases. This is considered part of the specializeation.
+ * Define simulation phases. This is considered part of the specialization.
  *----------------------------------------------------------------------------*/
 
 enum simulation_phases_t : size_t {

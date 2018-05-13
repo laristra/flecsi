@@ -109,7 +109,7 @@ cinch_add_unit(dcrs
   LIBRARIES
     ${CINCH_RUNTIME_LIBRARIES}
     ${COLORING_LIBRARIES}
-  POLICY MPI
+  POLICY ${UNIT_POLICY}
   THREADS 5
 )
 
@@ -119,8 +119,9 @@ cinch_add_devel_target(devel-dcrs
     test/simple2d-8x8.msh
     test/simple2d-16x16.msh
   LIBRARIES ${COLORING_LIBRARIES}
-  POLICY MPI
+  POLICY ${UNIT_POLICY}
   THREADS 5
+  FOLDER "Tests/Coloring/Devel"
 )
 
 cinch_add_unit(boxcolor2d
@@ -149,8 +150,9 @@ cinch_add_devel_target(coloring
     test/simple2d-32x32.msh
     test/simple2d-48x48.msh
   LIBRARIES ${COLORING_LIBRARIES}
-  POLICY MPI
+  POLICY ${UNIT_POLICY}
   THREADS 5
+  FOLDER "Tests/Coloring/Devel"
 )
 
 endif()
