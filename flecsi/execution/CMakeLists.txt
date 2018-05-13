@@ -202,26 +202,27 @@ cinch_add_unit(simple_task
     "Tests/Execution"
   )
 
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 #
 # Test basic task to test future_handle
 #
-  cinch_add_unit(future_handle
-    SOURCES
-      test/future_handle.cc
-      ${DRIVER_INITIALIZATION}
-      ${RUNTIME_DRIVER}
-    DEFINES
-      -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-    POLICY
-      ${UNIT_POLICY}
-    LIBRARIES
-      FleCSI
-      ${CINCH_RUNTIME_LIBRARIES}
-    THREADS 2
-    NOCI
-    )
+cinch_add_unit(future_handle
+  SOURCES
+    test/future_handle.cc
+    ${DRIVER_INITIALIZATION}
+    ${RUNTIME_DRIVER}
+  DEFINES
+    -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+    -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+  POLICY
+    ${UNIT_POLICY}
+  LIBRARIES
+    FleCSI
+    ${CINCH_RUNTIME_LIBRARIES}
+  THREADS 2
+  NOCI
+  FOLDER
+    "Tests/Execution"
+  )
 
   if(ENABLE_PARMETIS)
 
@@ -244,8 +245,11 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         -DFLECSI_8_8_MESH
       POLICY ${UNIT_POLICY}
+      FOLDER
+        "Tests/Execution"
     )
 
+  if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     cinch_add_devel_target(devel_handle
       SOURCES
         test/devel_handle.cc
@@ -565,6 +569,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       # )
     endif() # mpi
 
+    endif()# not hpx
   endif() # (ENABLE_PARMETIS)
 
   if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
@@ -673,4 +678,3 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
   endif() # legion
 
-endif()# not hpx

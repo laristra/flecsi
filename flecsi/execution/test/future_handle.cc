@@ -21,13 +21,13 @@
 //----------------------------------------------------------------------------//
 
 template<typename T>
-using handle_t = flecsi::execution::flecsi_future<T, 
+using future_handle_t = flecsi::execution::flecsi_future<T,
     flecsi::execution::launch_type_t::single>;
 
-void future_dump(handle_t<double> x)
+void future_dump(future_handle_t<double> x)
 {
-  double tmp = x;
-  std::cout << " future = "<< x << std::endl;
+  double tmp = x.get();
+  std::cout << " future = "<< x.get() << std::endl;
 }
 
 flecsi_register_task(future_dump, , loc, single);
@@ -40,10 +40,10 @@ double writer(double a)
 
 flecsi_register_task(writer, ,loc, single);
 
-void reader(handle_t<double> x, handle_t<double> y)
+void reader(future_handle_t<double> x, future_handle_t<double> y)
 {
-  ASSERT_EQ(x, static_cast<double>(3.14));
-  ASSERT_EQ(x, y);
+  ASSERT_EQ(x.get(), static_cast<double>(3.14));
+  ASSERT_EQ(x.get(), y.get());
 }
 
 flecsi_register_task(reader, , loc, single);
