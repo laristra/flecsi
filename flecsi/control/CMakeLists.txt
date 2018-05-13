@@ -38,6 +38,7 @@ cinch_add_unit(control
     test/control.cc
   LIBRARIES
     ${FLECSI_LIBRARY_DEPENDENCIES}
+  FOLDER "Tests/Control"
 )
 
 #------------------------------------------------------------------------------#

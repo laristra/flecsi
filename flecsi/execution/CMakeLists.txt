@@ -195,6 +195,8 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       ${CINCH_RUNTIME_LIBRARIES}
     THREADS 2
     NOCI
+    FOLDER
+      "Tests/Execution"
     )
 
   if(ENABLE_PARMETIS)
@@ -218,6 +220,8 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         -DFLECSI_8_8_MESH
       POLICY ${UNIT_POLICY}
+      FOLDER
+        "Tests/Execution/Devel"
     )
 
     cinch_add_devel_target(devel_handle
@@ -239,6 +243,8 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         -DFLECSI_16_16_MESH
       POLICY ${UNIT_POLICY}
+      FOLDER
+        "Tests/Execution/Devel"
     )
 
     cinch_add_devel_target(reduction_interface
@@ -281,6 +287,8 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         -DFLECSI_16_16_MESH
       POLICY ${UNIT_POLICY}
+      FOLDER
+        "Tests/Execution/Devel"
     )
 
     cinch_add_devel_target(index_subspaces
@@ -302,6 +310,8 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         -DFLECSI_8_8_MESH
       POLICY ${UNIT_POLICY}
+      FOLDER
+        "Tests/Execution/Devel"
     )
 
     # cinch_add_unit(forall
@@ -367,6 +377,8 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       POLICY ${UNIT_POLICY}
       THREADS 2
       NOCI
+      FOLDER
+        "Tests/Execution"
     )
 
     cinch_add_unit(handle_accessor
@@ -388,6 +400,8 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       POLICY ${UNIT_POLICY}
       THREADS 2
       NOCI
+      FOLDER
+        "Tests/Execution"
     )
 
     cinch_add_unit(ghost_access
@@ -409,6 +423,8 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       POLICY ${UNIT_POLICY}
       THREADS 2
       NOCI
+      FOLDER
+        "Tests/Execution"
     )
 
     cinch_add_unit(unordered_ispaces
@@ -428,6 +444,8 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
       POLICY ${UNIT_POLICY}
       NOCI
+      FOLDER
+        "Tests/Execution"
     )
 
     cinch_add_unit(data_client_handle
@@ -452,6 +470,8 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       POLICY ${UNIT_POLICY}
       THREADS 2
       NOCI
+      FOLDER
+        "Tests/Execution"
     )
 
     cinch_add_unit(dense_data
@@ -476,6 +496,8 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       POLICY ${UNIT_POLICY}
       THREADS 2
       NOCI
+      FOLDER
+        "Tests/Execution"
     )
 
     cinch_add_unit(finite_difference_dense
@@ -499,7 +521,9 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       POLICY ${UNIT_POLICY}
       THREADS 5
       NOCI
-  )
+      FOLDER
+        "Tests/Execution"
+    )
 
     cinch_add_unit(global_data
       SOURCES
@@ -518,31 +542,35 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       POLICY ${UNIT_POLICY}
       THREADS 2
       NOCI
+      FOLDER
+        "Tests/Execution"
     )
 
     cinch_add_unit(sparse_data
-      SOURCES
+        SOURCES
         test/sparse_data.cc
         ../supplemental/coloring/add_colorings.cc
-        ${DRIVER_INITIALIZATION}
-        ${RUNTIME_DRIVER}
+          ${DRIVER_INITIALIZATION}
+          ${RUNTIME_DRIVER}
       INPUTS
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
         test/sparse_data.blessed
-      LIBRARIES
-        FleCSI
-        ${CINCH_RUNTIME_LIBRARIES}
-        ${COLORING_LIBRARIES}
-      DEFINES
-        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        LIBRARIES
+            FleCSI
+          ${CINCH_RUNTIME_LIBRARIES}
+          ${COLORING_LIBRARIES}
+        DEFINES
+          -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+          -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+          -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         -DFLECSI_8_8_MESH
-      POLICY ${UNIT_POLICY}
+        POLICY ${UNIT_POLICY}
       THREADS 4
-      NOCI
-    )
+        NOCI
+        FOLDER
+          "Tests/Execution"
+      )
 
     cinch_add_unit(finite_difference_sparse
       SOURCES
@@ -565,31 +593,35 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       POLICY ${UNIT_POLICY}
       THREADS 5
       NOCI
+      FOLDER
+        "Tests/Execution"
     )
 
     cinch_add_unit(ragged_data
-      SOURCES
+        SOURCES
         test/ragged_data.cc
-        ../supplemental/coloring/add_colorings.cc
-        ${DRIVER_INITIALIZATION}
-        ${RUNTIME_DRIVER}
-      INPUTS
-        test/simple2d-8x8.msh
-        test/simple2d-16x16.msh
+          ../supplemental/coloring/add_colorings.cc
+          ${DRIVER_INITIALIZATION}
+          ${RUNTIME_DRIVER}
+        INPUTS
+          test/simple2d-8x8.msh
+          test/simple2d-16x16.msh
         test/ragged_data.blessed
-      LIBRARIES
-        FleCSI
-        ${CINCH_RUNTIME_LIBRARIES}
-        ${COLORING_LIBRARIES}
-      DEFINES
-        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-        -DFLECSI_8_8_MESH
-      POLICY ${UNIT_POLICY}
+        LIBRARIES
+          FleCSI
+          ${CINCH_RUNTIME_LIBRARIES}
+          ${COLORING_LIBRARIES}
+        DEFINES
+          -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+          -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+          -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+          -DFLECSI_8_8_MESH
+        POLICY ${UNIT_POLICY}
       THREADS 4
-      NOCI
-    )
+        NOCI
+        FOLDER
+          "Tests/Execution"
+      )
 
     if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
       cinch_add_unit(set_topology
@@ -608,6 +640,8 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         POLICY ${UNIT_POLICY}
         THREADS 2
         NOCI
+        FOLDER
+          "Tests/Execution"
       )
 
       # cinch_add_unit(particles

@@ -72,25 +72,25 @@ exclusive_reader(dense_accessor<double, ro, ro, ro> x) {
 void
 global_writer(global_accessor<double, wo> x) {
   clog(info) << "global writer write" << std::endl;
-  x = static_cast<double>(3.14);
+    x = static_cast<double>(3.14);
 }
 
 void
 global_reader(global_accessor<double, ro> x) {
   clog(info) << "global reader read: " << std::endl;
-  ASSERT_EQ(x, static_cast<double>(3.14));
+    ASSERT_EQ(x, static_cast<double>(3.14));
 }
 
 void
 color_writer(color_accessor<double, wo> x) {
   clog(info) << "color exclusive writer write" << std::endl;
-  x = static_cast<double>(16);
+    x = static_cast<double>(16);
 }
 
 void
 color_reader(color_accessor<double, ro> x) {
   clog(info) << "color exclusive reader read: " << std::endl;
-  ASSERT_EQ(x, static_cast<double>(16));
+    ASSERT_EQ(x, static_cast<double>(16));
 }
 
 void

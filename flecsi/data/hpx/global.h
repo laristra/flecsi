@@ -593,11 +593,11 @@ struct storage_class_u<global> {
   ///
   ///
   template<typename DATA_CLIENT_TYPE,
-    typename DATA_TYPE,
-    size_t NAMESPACE,
-    size_t NAME,
-    size_t VERSION,
-    size_t PERMISSIONS>
+      typename DATA_TYPE,
+      size_t NAMESPACE,
+      size_t NAME,
+      size_t VERSION,
+      size_t PERMISSIONS>
   static handle_t<DATA_TYPE, 0> get_handle(
     const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
     handle_t<DATA_TYPE, 0> h;

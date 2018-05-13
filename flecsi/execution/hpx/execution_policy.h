@@ -60,10 +60,11 @@ struct executor_u {
   ///
   ///
   template<typename Exec, typename T, typename A>
-  static hpx::shared_future<RETURN> execute(Exec && exec, T fun, A && targs) {
+  static hpx_future__<RETURN, launch_type_t::single>
+  execute(Exec && exec, T fun, A && targs) {
     auto user_fun = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(fun));
     return hpx::async(
-      std::forward<Exec>(exec), std::move(user_fun), std::forward<A>(targs));
+        std::forward<Exec>(exec), std::move(user_fun), std::forward<A>(targs));
   } // execute_task
 }; // struct executor_u
 
@@ -117,8 +118,8 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     RETURN (*DELEGATE)(ARG_TUPLE)>
   static bool
   register_task(processor_type_t processor, launch_t launch, std::string name) {
-    return context_t::instance()
-      .template register_function<KEY, RETURN, ARG_TUPLE, DELEGATE>();
+    return context_t::instance().template register_task<
+      KEY, RETURN, ARG_TUPLE, DELEGATE>(processor, launch, name);
   } // register_task
 
   ///
@@ -140,16 +141,24 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     context_t & context_ = context_t::instance();
 
     // Get the function and processor type.
-    auto fun = context_.function(TASK);
+    auto fun = context_.task<KEY>();
 
-    //     auto processor_type = context_.processor_type<KEY>();
-    //     if (launch == processor_type_t::mpi)
+    auto processor_type = context_.processor_type<KEY>();
+    if (processor_type == processor_type_t::mpi)
+    {
+      {
+        clog_tag_guard(execution);
+        clog(info) << "Executing MPI task: " << KEY << std::endl;
+      }
 
-    // FIXME add logic for reduction
+      return executor__<RETURN, ARG_TUPLE>::execute(
+          context_t::instance().get_mpi_executor(),
+          std::move(fun), std::make_tuple(std::forward<ARGS>(args)...));
+    }
 
-    return executor_u<RETURN, ARG_TUPLE>::execute(
-      context_t::instance().get_default_executor(), std::move(fun),
-      std::forward_as_tuple(std::forward<ARGS>(args)...));
+    return executor__<RETURN, ARG_TUPLE>::execute(
+        context_t::instance().get_default_executor(),
+        std::move(fun), std::make_tuple(std::forward<ARGS>(args)...));
   } // execute_task
 
   //--------------------------------------------------------------------------//
@@ -161,7 +170,7 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     RETURN (*FUNCTION)(ARG_TUPLE)>
   static bool register_function() {
     return context_t::instance()
-      .template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
+        .template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
   } // register_function
 
   ///
@@ -177,17 +186,10 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   static decltype(auto) execute_function(FUNCTION_HANDLE & handle,
     ARGS &&... args) {
     return handle(context_t::instance().function(handle.get_key()),
-      std::forward_as_tuple(std::forward<ARGS>(args)...));
+        std::make_tuple(std::forward<ARGS>(args)...));
   } // execute_function
 
 }; // struct hpx_execution_policy_t
 
 } // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_hpx_execution_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
