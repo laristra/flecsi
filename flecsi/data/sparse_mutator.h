@@ -68,14 +68,6 @@ struct mutator__<data::sparse, T> : public mutator__<data::base, T>,
 
     size_t n = offset.count();
 
-    if (n >= h_.num_slots_) {
-      if (index < h_.num_exclusive_) {
-        (*h_.num_exclusive_insertions)++;
-      }
-
-      return h_.spare_map_->emplace(index, entry_value_t(entry))->second.value;
-    } // if
-
     entry_value_t * start = h_.entries_ + index * h_.num_slots_;
     entry_value_t * end = start + n;
 
@@ -90,7 +82,19 @@ struct mutator__<data::sparse, T> : public mutator__<data::base, T>,
     if (itr != end && itr->entry == entry) {
       return itr->value;
     }
+    
+    // if we neet to add the entry, but we've exceeded the number of available
+    // slots, dump it into the extra storage
+    if (n >= h_.num_slots_) {
+      if (index < h_.num_exclusive_) {
+        (*h_.num_exclusive_insertions)++;
+      }
 
+      return h_.spare_map_->emplace(index, entry_value_t(entry))->second.value;
+    } // if
+
+
+    // otherwise, add the value normally
     while (end != itr) {
       *(end) = *(end - 1);
       --end;

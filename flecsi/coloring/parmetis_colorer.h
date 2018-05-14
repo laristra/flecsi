@@ -17,6 +17,8 @@
 
 #include <set>
 
+#include <cinchlog.h>
+
 #include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_PARMETIS)
@@ -233,6 +235,11 @@ struct parmetis_colorer_t : public colorer_t {
         std::cout << std::endl;
       } // if
 #endif
+
+    clog_assert(
+        primary.size() > 0,
+        "At least one rank has an empty primary coloring. Please either "
+        "increase the problem size or use fewer ranks");
 
     return primary;
   } // color

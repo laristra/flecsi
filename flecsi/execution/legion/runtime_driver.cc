@@ -226,6 +226,7 @@ runtime_driver(
           break;
         case subspace:
         case local:
+        case sparse:
           break;
         default:
           if(field_info.index_space == idx_space){
@@ -325,7 +326,7 @@ runtime_driver(
     } // for idx_space
 
     size_t num_idx_spaces = context_.coloring_map().size();
-   
+
     //-----------------------------------------------------------------------//
     // data serialization:
     //-----------------------------------------------------------------------//
@@ -335,7 +336,24 @@ runtime_driver(
     args_serializers[color].serialize(&num_phase_barriers, sizeof(size_t));
     args_serializers[color].serialize(&number_of_global_fields, sizeof(size_t));
     args_serializers[color].serialize(&number_of_color_fields, sizeof(size_t));
-   
+
+    // #1b serialize sparse index spaces info
+
+    using sparse_index_space_info_t = context_t::sparse_index_space_info_t;
+    
+    std::vector<sparse_index_space_info_t> sparse_index_spaces_vec;
+    
+    for(auto& itr : context_.sparse_index_space_info_map()){
+      sparse_index_spaces_vec.push_back(itr.second);
+    }
+
+    size_t num_sparse_index_spaces = sparse_index_spaces_vec.size();
+
+    args_serializers[color].serialize(&num_sparse_index_spaces, 
+      sizeof(size_t));
+    
+    args_serializers[color].serialize(&sparse_index_spaces_vec[0],
+      num_sparse_index_spaces * sizeof(num_sparse_index_spaces));
 
     // #2 serialize field info
     size_t num_fields = context_.registered_fields().size();
@@ -690,6 +708,23 @@ spmd_task(
       "fewer regions than data handles");
   }//scope
 
+  // #1b deserialize sparse index spaces
+  size_t num_sparse_index_spaces;
+  args_deserializer.deserialize(&num_sparse_index_spaces, sizeof(size_t));
+   
+  using sparse_index_space_info_t = context_t::sparse_index_space_info_t;
+  sparse_index_space_info_t* sparse_index_spaces =
+     new sparse_index_space_info_t[num_sparse_index_spaces]; 
+     
+  args_deserializer.deserialize((void*)sparse_index_spaces,
+    sizeof(sparse_index_space_info_t) * num_sparse_index_spaces);
+   
+  for(size_t i = 0; i < num_sparse_index_spaces; ++i){
+    const sparse_index_space_info_t& si = sparse_index_spaces[i];
+    context_.set_sparse_index_space_info(si.index_space,
+      sparse_index_spaces[i]);
+  }
+
   // #2 deserialize field info
   size_t num_fields;
   args_deserializer.deserialize(&num_fields, sizeof(size_t));
@@ -721,6 +756,7 @@ spmd_task(
   std::map<size_t, std::vector<const field_info_t*>> fields_map;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
+
     for(const field_info_t& field_info : context_.registered_fields()){
       switch(field_info.storage_class){
         case global:
@@ -759,11 +795,22 @@ spmd_task(
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
       * num_idx_spaces);
 
+  auto& sparse_info_map = context_.sparse_index_space_info_map();
+
   // fille index_space_data_map with pbarriers_as_owner
   size_t indx = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
+
+    if(sparse_info_map.find(idx_space) != sparse_info_map.end()){
+      continue;
+    }
+
     for (const field_info_t* field_info : fields_map[idx_space]){
+      if(field_info->storage_class == sparse){
+        continue;
+      }
+
       ispace_dmap[idx_space].pbarriers_as_owner[field_info->fid] =
         pbarriers_as_owner[indx];
       ispace_dmap[idx_space].ghost_is_readable[field_info->fid] = true;
@@ -787,6 +834,11 @@ spmd_task(
   size_t consec_indx = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
+
+    if(sparse_info_map.find(idx_space) != sparse_info_map.end()){
+      continue;
+    }
+
     size_t n = num_owners[consec_indx];
     for (const field_info_t* field_info : fields_map[idx_space]){
        ispace_dmap[idx_space].ghost_owners_pbarriers[field_info->fid].resize(n);
@@ -819,6 +871,10 @@ spmd_task(
   size_t consecutive_index = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
+
+    if(sparse_info_map.find(idx_space) != sparse_info_map.end()){
+      continue;
+    }
     
     ispace_dmap[idx_space].color_region = regions[region_index]
                                                   .get_logical_region();
@@ -1217,6 +1273,8 @@ spmd_task(
   delete [] pbarriers_as_owner;
   delete [] adjacencies;
   delete [] index_subspaces;
+  delete [] sparse_index_spaces;
+
 //  delete [] idx_spaces;
 
 } // spmd_task
