@@ -29,7 +29,7 @@
 #include <flecsi/utils/common.h>
 #include <flecsi/data/data_constants.h> 
 
-#include <flecsi/execution/legion/dependent_partition.h>
+#include <flecsi/supplemental/coloring/add_colorings_dependent_partition.h>
 
 clog_register_tag(runtime_driver);
 

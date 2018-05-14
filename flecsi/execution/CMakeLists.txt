@@ -62,7 +62,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/task_epilog.h
     legion/task_prolog.h
     legion/task_wrapper.h
-    legion/dependent_partition.h
   )
 
   set(execution_SOURCES
@@ -223,6 +222,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       SOURCES
         test/execution_structure.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_dependent_partition.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -244,6 +244,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       SOURCES
         test/devel_handle.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_dependent_partition.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -265,6 +266,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
      SOURCES
        test/index_subspaces.cc
        ../supplemental/coloring/add_colorings.cc
+       ../supplemental/coloring/add_colorings_dependent_partition.cc
        ${DRIVER_INITIALIZATION}
        ${RUNTIME_DRIVER}
      INPUTS
@@ -308,6 +310,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       SOURCES
         test/data_handle_task.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_dependent_partition.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -329,6 +332,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       SOURCES
         test/handle_accessor.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_dependent_partition.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -350,6 +354,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       SOURCES
         test/ghost_access_drivers.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_dependent_partition.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -390,6 +395,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       SOURCES
         test/data_client_handle.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_dependent_partition.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -544,6 +550,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
       SOURCES
         test/legion/barrier_per_field_drivers.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_dependent_partition.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
