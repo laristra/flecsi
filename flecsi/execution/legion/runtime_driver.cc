@@ -29,8 +29,6 @@
 #include <flecsi/utils/common.h>
 #include <flecsi/data/data_constants.h> 
 
-#include <flecsi/supplemental/coloring/add_colorings_dependent_partition.h>
-
 clog_register_tag(runtime_driver);
 
 namespace flecsi {
@@ -130,7 +128,6 @@ runtime_driver(
   clog_tag_guard(runtime_driver);
   clog(info) << "Executing specialization top-level-task init" << std::endl;
   }
-  dependent_partition_tlt_init(ctx, runtime, context_);
   // Invoke the specialization top-level task initialization function.
   specialization_tlt_init(args.argc, args.argv);
 

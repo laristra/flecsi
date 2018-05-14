@@ -12,8 +12,13 @@
 namespace flecsi {
 namespace execution {
 
-void
-dependent_partition_tlt_init(Legion::Context ctx, Legion::Runtime * runtime, context_t & context_); 
+struct coloring_map_dp_t
+{
+  size_t vertices;
+  size_t cells;
+}; // struct coloring_map_dp_t
+
+void add_colorings_dependent_partition(); 
   
 } // namespace execution
 } // namespace flecsi

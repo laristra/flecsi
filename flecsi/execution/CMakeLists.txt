@@ -68,7 +68,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     ${execution_SOURCES}
     legion/context_policy.cc
     legion/legion_tasks.cc
-    legion/dependent_partition.cc
   )
 
   set(UNIT_POLICY LEGION)
@@ -595,6 +594,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
       SOURCES
         test/gid_to_lid_map.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_dependent_partition.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS

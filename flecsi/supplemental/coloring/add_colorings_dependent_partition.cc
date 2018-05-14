@@ -5,17 +5,19 @@
 #include <flecsi/execution/legion/legion_tasks.h>
 #include <flecsi/io/simple_definition.h>
 
+
 namespace flecsi {
 namespace execution {
 
 void
-dependent_partition_tlt_init(
-  Legion::Context ctx,
-  Legion::Runtime * runtime,
-  context_t & context_
-)    
+add_colorings_dependent_partition()    
 {
   printf("start DP\n");
+  
+  Legion::Runtime *runtime = Legion::Runtime::get_runtime();
+  Legion::Context ctx = Legion::Runtime::get_context();
+  context_t & context_ = context_t::instance();
+  
 	flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
   
 	int num_cells = sd.num_entities(1);
