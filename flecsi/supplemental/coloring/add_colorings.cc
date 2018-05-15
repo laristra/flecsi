@@ -34,7 +34,7 @@ namespace flecsi {
 namespace execution {
 
 void add_colorings(coloring_map_t map) {
-  return;
+  //return;
 
   clog_set_output_rank(0);
 
