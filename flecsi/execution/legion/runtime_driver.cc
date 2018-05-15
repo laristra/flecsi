@@ -353,7 +353,7 @@ runtime_driver(
       sizeof(size_t));
     
     args_serializers[color].serialize(&sparse_index_spaces_vec[0],
-      num_sparse_index_spaces * sizeof(num_sparse_index_spaces));
+      num_sparse_index_spaces * sizeof(sparse_index_space_info_t));
 
     // #2 serialize field info
     size_t num_fields = context_.registered_fields().size();
@@ -708,6 +708,7 @@ spmd_task(
   context_.advance_state();
 
   auto& ispace_dmap = context_.index_space_data_map();
+  auto& sis_map = context_.sparse_index_space_info_map();
 
   auto ghost_owner_pos_fid = 
     Legion::FieldID(internal_field::ghost_owner_pos);
@@ -759,8 +760,6 @@ spmd_task(
       sparse_index_spaces[i]);
   }
 
-
-
   // #2 deserialize field info
   size_t num_fields;
   args_deserializer.deserialize(&num_fields, sizeof(size_t));
@@ -799,11 +798,6 @@ spmd_task(
         case subspace:
         case color:
           break;
-        case sparse:
-          if(utils::hash::is_internal(field_info.key)){
-            fields_map[idx_space].push_back(&field_info);
-          }
-          break;
         default:
           if(field_info.index_space == idx_space){
             fields_map[idx_space].push_back(&field_info);
@@ -838,15 +832,7 @@ spmd_task(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
 
-    if(sparse_info_map.find(idx_space) != sparse_info_map.end()){
-      continue;
-    }
-
     for (const field_info_t* field_info : fields_map[idx_space]){
-      if(field_info->storage_class == sparse){
-        continue;
-      }
-
       ispace_dmap[idx_space].pbarriers_as_owner[field_info->fid] =
         pbarriers_as_owner[indx];
       ispace_dmap[idx_space].ghost_is_readable[field_info->fid] = true;
@@ -870,10 +856,6 @@ spmd_task(
   size_t consec_indx = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-
-    if(sparse_info_map.find(idx_space) != sparse_info_map.end()){
-      continue;
-    }
 
     size_t n = num_owners[consec_indx];
     for (const field_info_t* field_info : fields_map[idx_space]){
@@ -908,12 +890,18 @@ spmd_task(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
 
-    if(sparse_info_map.find(idx_space) != sparse_info_map.end()){
-      continue;
+    size_t sparse_idx_space;
+
+    const sparse_index_space_info_t* sparse_info;
+    auto sitr = sis_map.find(idx_space);
+    if(sitr != sis_map.end()){
+      sparse_info = &sitr->second;
+      // TODO: formalize sparse index space offset
+      sparse_idx_space = idx_space + 8192;
     }
-    
-    ispace_dmap[idx_space].color_region = regions[region_index]
-                                                  .get_logical_region();
+    else{
+      sparse_info = nullptr;
+    }
 
     const std::unordered_map<size_t, flecsi::coloring::coloring_info_t>
       coloring_info_map = context_.coloring_info(idx_space);
@@ -931,8 +919,12 @@ spmd_task(
         " ghost " << coloring_info.ghost << std::endl;
     } // scope
 
+    ispace_dmap[idx_space].color_region =
+      regions[region_index].get_logical_region();
+
     Legion::IndexSpace color_ispace = 
       regions[region_index].get_logical_region().get_index_space();
+
     LegionRuntime::Arrays::Rect<1> color_bounds_1D(0,1);
     Legion::Domain color_domain_1D
     = Legion::Domain::from_rect<1>(color_bounds_1D);
@@ -1004,8 +996,94 @@ spmd_task(
     ispace_dmap[idx_space].shared_lr = 
     runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, SHARED_PART);
 
+    if(sparse_info){
+      ispace_dmap[sparse_idx_space].color_region =
+        regions[region_index].get_logical_region();
+
+      Legion::IndexSpace color_ispace = 
+        regions[region_index].get_logical_region().get_index_space();
+
+      size_t shared_size = 
+        coloring_info.shared * sparse_info->max_entries_per_index;
+
+      size_t ghost_size = 
+        coloring_info.ghost * sparse_info->max_entries_per_index;
+
+      Legion::DomainColoring primary_ghost_coloring;
+      LegionRuntime::Arrays::Rect<2>
+      primary_rect(LegionRuntime::Arrays::make_point(my_color, 0),
+          LegionRuntime::Arrays::make_point(my_color, sparse_info->max_exclusive_entries + shared_size - 1));
+      
+      primary_ghost_coloring[PRIMARY_PART]
+                             = Legion::Domain::from_rect<2>(primary_rect);
+      
+      LegionRuntime::Arrays::Rect<2> ghost_rect(
+          LegionRuntime::Arrays::make_point(my_color, sparse_info->max_exclusive_entries + shared_size),
+          LegionRuntime::Arrays::make_point(my_color, sparse_info->max_exclusive_entries + shared_size + ghost_size - 1));
+      
+      primary_ghost_coloring[GHOST_PART]
+                             = Legion::Domain::from_rect<2>(ghost_rect);
+
+      Legion::IndexPartition primary_ghost_ip =
+        runtime->create_index_partition(ctx, color_ispace, color_domain_1D,
+        primary_ghost_coloring, true /*disjoint*/);
+
+      primary_ghost_ips[sparse_idx_space] = primary_ghost_ip;
+
+      Legion::LogicalPartition primary_ghost_lp =
+        runtime->get_logical_partition(ctx,
+          regions[region_index].get_logical_region(), primary_ghost_ip);
+      region_index++;
+
+      Legion::LogicalRegion primary_lr =
+      runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
+                                              PRIMARY_PART);
+
+      ispace_dmap[sparse_idx_space].primary_lr = primary_lr;
+
+      ispace_dmap[sparse_idx_space].ghost_lr = 
+        runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
+                                                GHOST_PART);
+
+      Legion::DomainColoring excl_shared_coloring;
+      LegionRuntime::Arrays::Rect<2> exclusive_rect(
+          LegionRuntime::Arrays::make_point(my_color, 0),
+          LegionRuntime::Arrays::make_point(my_color,
+            sparse_info->max_exclusive_entries - 1));
+      excl_shared_coloring[EXCLUSIVE_PART]
+                           = Legion::Domain::from_rect<2>(exclusive_rect);
+      LegionRuntime::Arrays::Rect<2> shared_rect(
+          LegionRuntime::Arrays::make_point(my_color,
+          sparse_info->max_exclusive_entries),
+          LegionRuntime::Arrays::make_point(my_color, sparse_info->max_exclusive_entries + shared_size - 1));
+      excl_shared_coloring[SHARED_PART]
+                           = Legion::Domain::from_rect<2>(shared_rect);
+
+      Legion::IndexPartition excl_shared_ip = runtime->create_index_partition(ctx,
+          primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring,
+          true /*disjoint*/);
+
+      exclusive_shared_ips[sparse_idx_space] = excl_shared_ip;
+
+      Legion::LogicalPartition excl_shared_lp
+        = runtime->get_logical_partition(ctx, primary_lr, excl_shared_ip);
+
+      ispace_dmap[sparse_idx_space].exclusive_lr = 
+      runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, 
+                                              EXCLUSIVE_PART);
+
+      ispace_dmap[sparse_idx_space].shared_lr = 
+      runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, SHARED_PART);      
+    }
+
     // Add neighbors regions to context_
     ghost_owners_subregions[idx_space].resize(num_owners[consecutive_index]);
+
+    if(sparse_info){
+      ghost_owners_subregions[sparse_idx_space].
+        resize(num_owners[consecutive_index]);
+    }
+
     for(size_t owner = 0; owner < num_owners[consecutive_index]; owner++) {
       ghost_owners_lregions[idx_space].push_back(regions[region_index]
         .get_logical_region());
@@ -1036,13 +1114,30 @@ spmd_task(
       region_index++;
       clog_assert(region_index <= regions.size(),
           "SPMD attempted to access more regions than passed");
+
+      if(sparse_info){
+        ghost_owners_lregions[sparse_idx_space].push_back(regions[region_index]
+          .get_logical_region());
+
+        ispace_dmap[sparse_idx_space]
+         .global_to_local_color_map[*(LegionRuntime::Arrays::coord_t*)owner_color]
+         = owner;
+
+        region_index++;
+        clog_assert(region_index <= regions.size(),
+            "SPMD attempted to access more regions than passed");        
+      }
     } // for owner
 
     ispace_dmap[idx_space].ghost_owners_lregions
       = ghost_owners_lregions[idx_space];
 
-    // ndm- add ghost owners sparse shares from neighbors
+    if(sparse_info){
+      ispace_dmap[sparse_idx_space].ghost_owners_lregions
+        = ghost_owners_lregions[sparse_idx_space];
+    }
 
+    // ndm - added ghost owners sparse shares from neighbors
 
     // Fix ghost reference/pointer to point to compacted position of
     // shared that it needs
