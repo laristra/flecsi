@@ -195,6 +195,8 @@ runtime_driver(
                 .add_field(ghost_owner_pos_fid);
   } // for idx_space
 
+  // ndm - no changes
+
   Legion::MustEpochLauncher must_epoch_launcher1;
    must_epoch_launcher1.add_index_task(pos_compaction_launcher);
   auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher1);
@@ -226,7 +228,6 @@ runtime_driver(
           break;
         case subspace:
         case local:
-        case sparse:
           break;
         default:
           if(field_info.index_space == idx_space){
@@ -243,7 +244,6 @@ runtime_driver(
         fields_map[idx_space].size()<< " fields"<<std::endl;
     } // scope
   } // for
-
 
   // the key is index_space id, internal map key if field id 
   std::map<size_t, std::map<field_id_t, std::vector<Legion::PhaseBarrier>>>
@@ -452,7 +452,7 @@ runtime_driver(
 
       Legion::RegionRequirement sparse_reg_req;
 
-      if(flecsi_ispace.sparse){
+      if(flecsi_ispace.has_sparse_fields){
         auto& flecsi_sispace = data.sparse_index_space(idx_space);
 
         Legion::LogicalPartition sparse_color_lpart =
@@ -493,7 +493,7 @@ runtime_driver(
 
       spmd_launcher.add_region_requirement(reg_req);
 
-      if(flecsi_ispace.sparse){
+      if(flecsi_ispace.has_sparse_fields){
         spmd_launcher.add_region_requirement(sparse_reg_req);
       }
 
@@ -524,13 +524,47 @@ runtime_driver(
 
         auto& flecsi_ispace = data.index_space(idx_space);
 
-        for (const field_info_t* field_info : fields_map[idx_space]){
-          if(!flecsi_ispace.sparse ||
-             utils::hash::is_internal(field_info->key)){
-            owner_reg_req.add_field(field_info->fid);
-          }
+        Legion::RegionRequirement sparse_owner_reg_req;
+
+        if(flecsi_ispace.has_sparse_fields){
+          auto& flecsi_sispace = data.sparse_index_space(idx_space);
+
+          Legion::LogicalPartition sparse_color_lpart =
+            runtime->get_logical_partition(ctx,
+              flecsi_sispace.logical_region, flecsi_sispace.index_partition);
+
+          Legion::LogicalRegion sparse_ghost_owner_lregion =
+            runtime->get_logical_subregion_by_color(ctx, sparse_color_lpart,
+              ghost_owner);
+
+          sparse_owner_reg_req = 
+            Legion::RegionRequirement(sparse_ghost_owner_lregion, READ_ONLY,
+              SIMULTANEOUS, flecsi_sispace.logical_region);
+          
+          sparse_owner_reg_req.add_flags(NO_ACCESS_FLAG);
+
+          for (const field_info_t* field_info : fields_map[idx_space]){
+            if(utils::hash::is_internal(field_info->key)){
+              owner_reg_req.add_field(field_info->fid);
+            }
+            else{
+              sparse_owner_reg_req.add_field(field_info->fid);
+            }
+          }          
         }
+        else{
+          for (const field_info_t* field_info : fields_map[idx_space]){
+            owner_reg_req.add_field(field_info->fid);
+          }          
+        }
+
         spmd_launcher.add_region_requirement(owner_reg_req);
+
+        if(flecsi_ispace.has_sparse_fields){
+          spmd_launcher.add_region_requirement(sparse_owner_reg_req);
+        }
+
+        // ndm - added sparse rr -  check corresponding part of SPMD task
 
       }// for ghost_owner
 
@@ -724,6 +758,8 @@ spmd_task(
     context_.set_sparse_index_space_info(si.index_space,
       sparse_index_spaces[i]);
   }
+
+
 
   // #2 deserialize field info
   size_t num_fields;
@@ -1005,6 +1041,8 @@ spmd_task(
     ispace_dmap[idx_space].ghost_owners_lregions
       = ghost_owners_lregions[idx_space];
 
+    // ndm- add ghost owners sparse shares from neighbors
+
 
     // Fix ghost reference/pointer to point to compacted position of
     // shared that it needs
@@ -1017,6 +1055,8 @@ spmd_task(
     clog(trace) << "Rank" << my_color << " Index " << idx_space <<
       " RW " << ispace_dmap[idx_space].color_region << std::endl;
     } // scope
+
+    // ndm - ok
 
     fix_ghost_refs_launcher.add_region_requirement(
         Legion::RegionRequirement(ispace_dmap[idx_space].ghost_lr, READ_WRITE,
@@ -1056,6 +1096,8 @@ spmd_task(
     subrect_map owner_to_subrect_map =
         owner_to_subrect_future.get_result<subrect_map>(silence_warnings);
 
+      // ndm - ok
+
     for(auto owner_itr=owner_to_subrect_map.begin();
         owner_itr!=owner_to_subrect_map.end(); owner_itr++) {
       size_t owner = owner_itr->first;
@@ -1092,6 +1134,8 @@ spmd_task(
     } //owner_itr
     ispace_dmap[idx_space].ghost_owners_subregions
       = ghost_owners_subregions[idx_space];
+
+      // sparse += 2
 
     consecutive_index++;
   } // for idx_space

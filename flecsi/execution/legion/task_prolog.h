@@ -121,9 +121,11 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           for (size_t owner{0}; owner < _pbp_size; owner++) {
 
             owner_regions.push_back(h.ghost_owners_lregions[owner]);
+            // ndm - need sparse
             owner_subregions.push_back(h.ghost_owners_subregions[owner]);
             ghost_regions.push_back(h.ghost_lr);
             color_regions.push_back(h.color_region);
+            // ndm - need offset and range
             fids.push_back(h.fid);
             ghost_copy_args local_args;
             local_args.data_client_hash = h.data_client_hash;
@@ -206,6 +208,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
       const auto ghost_copy_tid = flecsi_context.task_id<key>();
 
+      // ndm - diff task
+
       Legion::TaskLauncher ghost_launcher(
           ghost_copy_tid,
           Legion::TaskArgument(&args[first], sizeof(args[first])));
@@ -215,6 +219,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       for (auto owner_itr = owner_groups[group].begin();
            owner_itr != owner_groups[group].end(); owner_itr++) {
         size_t owner = *owner_itr;
+
+        // ndm - need offset and range
 
         rr_shared.add_field(fids[owner]);
         rr_ghost.add_field(fids[owner]);
@@ -229,6 +235,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
         *(barrier_ptrs[owner]) =
             runtime->advance_phase_barrier(context, *(barrier_ptrs[owner]));
       } // for owner
+      // ndm - add rr for sparse shared & ghost
       ghost_launcher.add_region_requirement(rr_shared);
       ghost_launcher.add_region_requirement(rr_ghost);
       // Execute the ghost copy task

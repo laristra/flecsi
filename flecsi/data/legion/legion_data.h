@@ -74,7 +74,7 @@ public:
     Legion::LogicalRegion logical_region;
     Legion::IndexPartition index_partition;
     size_t total_num_entities;
-    bool sparse = false;
+    bool has_sparse_fields = false;
   };
 
   struct sparse_index_space_t{
@@ -302,7 +302,7 @@ public:
     attach_name(is, is.field_space, "expanded field space");
 
     if(sparse_info){
-      is.sparse = true;
+      is.has_sparse_fields = true;
 
       sparse_index_space_t sis;
       // TODO: need to formalize this index space offset scheme

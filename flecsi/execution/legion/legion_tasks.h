@@ -315,6 +315,8 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
  @ingroup legion-execution
  */
 
+// ndm - need version for sparse
+
 __flecsi_internal_legion_task(ghost_copy_task, void) {
   const int my_color = runtime->find_local_MPI_rank();
 
@@ -377,8 +379,11 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     clog_assert(fitr != iitr->second.end(), "invalid fid");
     const context_t::field_info_t & field_info = fitr->second;
 
+    // ndm - need range/offset
     auto acc_shared = regions[0].get_field_accessor(fid);
     auto acc_ghost = regions[1].get_field_accessor(fid);
+
+    // ndm - need acc for ghost/shared sparse and ptr below
 
     uint8_t * data_shared =
         reinterpret_cast<uint8_t *>(acc_shared.template raw_rect_ptr<2>(
@@ -404,6 +409,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
         clog(trace) << my_color << " copy from position " << ghost_ref.x[0]
                     << "," << ghost_ref.x[1] << std::endl;
       }
+
+      // ndm - use offset for index into sparse
 
       if (owner_map[ghost_ref.x[0]] == args.owner) {
         size_t owner_offset = ghost_ref.x[1] - owner_sub_rect.lo[1];
