@@ -60,6 +60,5 @@
 // Enable coloring
 //----------------------------------------------------------------------------//
 
-#cmakedefine FLECSI_ENABLE_COLORING
 #cmakedefine FLECSI_ENABLE_METIS
 #cmakedefine FLECSI_ENABLE_PARMETIS
