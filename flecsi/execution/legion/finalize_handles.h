@@ -103,11 +103,6 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     h.delete_storage();
   } // handle
 
-  template<typename T, launch_type_t launch>
-  void handle(legion_future__<T, launch>  &h) {
-    h.finalize_future();
-  }
-
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
       !std::is_base_of<topology::mesh_topology_base_t, T>::value>

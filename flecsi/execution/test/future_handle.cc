@@ -61,11 +61,6 @@ void specialization_tlt_init(int argc, char ** argv) {
   auto & context = execution::context_t::instance();
   ASSERT_EQ(context.execution_state(),
     static_cast<size_t>(SPECIALIZATION_TLT_INIT));
-
-  auto future = flecsi_execute_task( writer, , single, 0.0);
-  future.wait();
-  flecsi_execute_task( future_dump, , single, future);
-  flecsi_execute_task( reader, , single, future, future);
 }
 //----------------------------------------------------------------------------//
 // Driver.
