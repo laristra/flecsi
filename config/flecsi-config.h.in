@@ -26,6 +26,10 @@
 //----------------------------------------------------------------------------//
 
 #if defined(FLECSI_ENABLE_LEGION)
+  #if !defined(LEGION_USE_CMAKE)
+    #define LEGION_USE_CMAKE
+  #if !defined(REALM_USE_CMAKE)
+    #define REALM_USE_CMAKE
   #define ENABLE_LEGION_TLS
 #endif
 
