@@ -207,7 +207,7 @@ runtime_driver(
   //-------------------------------------------------------------------------//
 
   // map of index space to the field_ids that are mapped to this index space
-  std::map<size_t, std::vector<field_id_t>> fields_map;
+  std::map<size_t, std::vector<const field_info_t*>> fields_map;
 
   //total number of Phase Barriers 
   size_t num_phase_barriers =0;
@@ -226,10 +226,11 @@ runtime_driver(
           break;
         case subspace:
         case local:
+        case sparse:
           break;
         default:
           if(field_info.index_space == idx_space){
-            fields_map[idx_space].push_back(field_info.fid);
+            fields_map[idx_space].push_back(&field_info);
             num_phase_barriers++;
           } // if
           break;          
@@ -251,12 +252,12 @@ runtime_driver(
   //fill the map
   for(auto idx_space : coloring_info){
     std::map<field_id_t , std::vector<Legion::PhaseBarrier>> inner;
-    for (const field_id_t& field_id : fields_map[idx_space.first]){
+    for (const field_info_t* field_info : fields_map[idx_space.first]){
       for(int color = 0; color < num_colors; color++){
         const flecsi::coloring::coloring_info_t& color_info = 
           idx_space.second[color];
 
-        inner[field_id].push_back(runtime->create_phase_barrier(ctx,
+        inner[field_info->fid].push_back(runtime->create_phase_barrier(ctx,
              1 + color_info.shared_users.size()));
       }//color
     }//field_info
@@ -296,14 +297,14 @@ runtime_driver(
       flecsi::coloring::coloring_info_t color_info =
           coloring_info[idx_space][color];
 
-      for (const field_id_t& field_id : fields_map[idx_space]){
+      for (const field_info_t* field_info : fields_map[idx_space]){
         pbarriers_as_owner.push_back(
-          phase_barriers_map[idx_space][field_id][color]);
+          phase_barriers_map[idx_space][field_info->fid][color]);
       
         {
         clog_tag_guard(runtime_driver);
         clog(trace) << " Color " << color << " idx_space " << idx_space 
-        << ", fid = " << field_id<<
+        << ", fid = " << field_info->fid<<
           " has " << color_info.ghost_owners.size() << 
           " ghost owners" << std::endl;
         } // scope
@@ -314,8 +315,8 @@ runtime_driver(
           clog(trace) << owner << std::endl;
           } // scope
 
-          owners_pbarriers[idx_space][field_id].push_back(
-            phase_barriers_map[idx_space][field_id][owner]);
+          owners_pbarriers[idx_space][field_info->fid].push_back(
+            phase_barriers_map[idx_space][field_info->fid][owner]);
        
         }
       
@@ -325,7 +326,7 @@ runtime_driver(
     } // for idx_space
 
     size_t num_idx_spaces = context_.coloring_map().size();
-   
+
     //-----------------------------------------------------------------------//
     // data serialization:
     //-----------------------------------------------------------------------//
@@ -335,7 +336,24 @@ runtime_driver(
     args_serializers[color].serialize(&num_phase_barriers, sizeof(size_t));
     args_serializers[color].serialize(&number_of_global_fields, sizeof(size_t));
     args_serializers[color].serialize(&number_of_color_fields, sizeof(size_t));
-   
+
+    // #1b serialize sparse index spaces info
+
+    using sparse_index_space_info_t = context_t::sparse_index_space_info_t;
+    
+    std::vector<sparse_index_space_info_t> sparse_index_spaces_vec;
+    
+    for(auto& itr : context_.sparse_index_space_info_map()){
+      sparse_index_spaces_vec.push_back(itr.second);
+    }
+
+    size_t num_sparse_index_spaces = sparse_index_spaces_vec.size();
+
+    args_serializers[color].serialize(&num_sparse_index_spaces, 
+      sizeof(size_t));
+    
+    args_serializers[color].serialize(&sparse_index_spaces_vec[0],
+      num_sparse_index_spaces * sizeof(num_sparse_index_spaces));
 
     // #2 serialize field info
     size_t num_fields = context_.registered_fields().size();
@@ -355,8 +373,8 @@ runtime_driver(
     std::vector <Legion::PhaseBarrier> owners_pbarriers_buf;
     for(auto is: context_.coloring_map()) {
       size_t idx_space = is.first;
-      for (const field_id_t& field_id : fields_map[idx_space])
-        for(auto pb:owners_pbarriers[idx_space][field_id])
+      for (const field_info_t* field_info : fields_map[idx_space])
+        for(auto pb:owners_pbarriers[idx_space][field_info->fid])
            owners_pbarriers_buf.push_back(pb);
     }//for
   
@@ -432,9 +450,36 @@ runtime_driver(
 
       reg_req.add_field(ghost_owner_pos_fid);
 
-      for (const field_id_t& field_id : fields_map[idx_space]){
-          reg_req.add_field(field_id);
-      }//for field_info
+      Legion::RegionRequirement sparse_reg_req;
+
+      if(flecsi_ispace.sparse){
+        auto& flecsi_sispace = data.sparse_index_space(idx_space);
+
+        Legion::LogicalPartition sparse_color_lpart =
+          runtime->get_logical_partition(ctx,
+            flecsi_sispace.logical_region, flecsi_sispace.index_partition);
+        
+        Legion::LogicalRegion sparse_color_lregion =
+          runtime->get_logical_subregion_by_color(ctx, sparse_color_lpart,
+          color);
+
+        sparse_reg_req = Legion::RegionRequirement(sparse_color_lregion,
+          READ_WRITE, SIMULTANEOUS, flecsi_sispace.logical_region);
+
+        for (const field_info_t* field_info : fields_map[idx_space]){
+          if(utils::hash::is_internal(field_info->key)){
+            reg_req.add_field(field_info->fid);
+          }
+          else{
+            sparse_reg_req.add_field(field_info->fid);
+          }
+        }//for field_info
+      }
+      else{
+        for (const field_info_t* field_info : fields_map[idx_space]){
+          reg_req.add_field(field_info->fid);
+        }//for field_info        
+      }
 
       for(auto& itr : context_.adjacency_info()){
         if(itr.first == idx_space){
@@ -447,6 +492,10 @@ runtime_driver(
       }
 
       spmd_launcher.add_region_requirement(reg_req);
+
+      if(flecsi_ispace.sparse){
+        spmd_launcher.add_region_requirement(sparse_reg_req);
+      }
 
       flecsi::coloring::coloring_info_t color_info = 
         coloring_info[idx_space][color];
@@ -472,8 +521,14 @@ runtime_driver(
           SIMULTANEOUS, flecsi_ispace.logical_region);
         owner_reg_req.add_flags(NO_ACCESS_FLAG);
         owner_reg_req.add_field(ghost_owner_pos_fid);
-        for (const field_id_t& field_id : fields_map[idx_space]){
-          owner_reg_req.add_field(field_id);
+
+        auto& flecsi_ispace = data.index_space(idx_space);
+
+        for (const field_info_t* field_info : fields_map[idx_space]){
+          if(!flecsi_ispace.sparse ||
+             utils::hash::is_internal(field_info->key)){
+            owner_reg_req.add_field(field_info->fid);
+          }
         }
         spmd_launcher.add_region_requirement(owner_reg_req);
 
@@ -642,6 +697,7 @@ spmd_task(
   args_deserializer.deserialize(&number_of_color_fields, sizeof(size_t));
 
   {
+
   size_t total_num_idx_spaces = num_idx_spaces;
   if (number_of_global_fields>0) total_num_idx_spaces++;
   if (number_of_color_fields>0) total_num_idx_spaces++;
@@ -651,6 +707,23 @@ spmd_task(
   clog_assert(task->regions.size() >= (total_num_idx_spaces),
       "fewer regions than data handles");
   }//scope
+
+  // #1b deserialize sparse index spaces
+  size_t num_sparse_index_spaces;
+  args_deserializer.deserialize(&num_sparse_index_spaces, sizeof(size_t));
+   
+  using sparse_index_space_info_t = context_t::sparse_index_space_info_t;
+  sparse_index_space_info_t* sparse_index_spaces =
+     new sparse_index_space_info_t[num_sparse_index_spaces]; 
+     
+  args_deserializer.deserialize((void*)sparse_index_spaces,
+    sizeof(sparse_index_space_info_t) * num_sparse_index_spaces);
+   
+  for(size_t i = 0; i < num_sparse_index_spaces; ++i){
+    const sparse_index_space_info_t& si = sparse_index_spaces[i];
+    context_.set_sparse_index_space_info(si.index_space,
+      sparse_index_spaces[i]);
+  }
 
   // #2 deserialize field info
   size_t num_fields;
@@ -680,17 +753,27 @@ spmd_task(
   }
 
  // map of index space to the field_ids that are mapped to this index space
-  std::map<size_t, std::vector<field_id_t>> fields_map;
+  std::map<size_t, std::vector<const field_info_t*>> fields_map;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
+
     for(const field_info_t& field_info : context_.registered_fields()){
-      if(field_info.storage_class != global &&
-        field_info.storage_class != color &&
-        field_info.storage_class != subspace){
-        if(field_info.index_space == idx_space){
-          fields_map[idx_space].push_back(field_info.fid);
-        }
-      }//if
+      switch(field_info.storage_class){
+        case global:
+        case subspace:
+        case color:
+          break;
+        case sparse:
+          if(utils::hash::is_internal(field_info.key)){
+            fields_map[idx_space].push_back(&field_info);
+          }
+          break;
+        default:
+          if(field_info.index_space == idx_space){
+            fields_map[idx_space].push_back(&field_info);
+          }
+          break;
+      }
     }//for
   }//end for is
 
@@ -712,15 +795,26 @@ spmd_task(
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
       * num_idx_spaces);
 
+  auto& sparse_info_map = context_.sparse_index_space_info_map();
+
   // fille index_space_data_map with pbarriers_as_owner
   size_t indx = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-    for (const field_id_t& field_id : fields_map[idx_space]){
-      ispace_dmap[idx_space].pbarriers_as_owner[field_id] =
+
+    if(sparse_info_map.find(idx_space) != sparse_info_map.end()){
+      continue;
+    }
+
+    for (const field_info_t* field_info : fields_map[idx_space]){
+      if(field_info->storage_class == sparse){
+        continue;
+      }
+
+      ispace_dmap[idx_space].pbarriers_as_owner[field_info->fid] =
         pbarriers_as_owner[indx];
-      ispace_dmap[idx_space].ghost_is_readable[field_id] = true;
-      ispace_dmap[idx_space].write_phase_started[field_id] = false;
+      ispace_dmap[idx_space].ghost_is_readable[field_info->fid] = true;
+      ispace_dmap[idx_space].write_phase_started[field_info->fid] = false;
       indx++;
     }//end field_info
   }//end for idx_space
@@ -740,12 +834,17 @@ spmd_task(
   size_t consec_indx = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
+
+    if(sparse_info_map.find(idx_space) != sparse_info_map.end()){
+      continue;
+    }
+
     size_t n = num_owners[consec_indx];
-    for (const field_id_t& field_id : fields_map[idx_space]){
-       ispace_dmap[idx_space].ghost_owners_pbarriers[field_id].resize(n);
+    for (const field_info_t* field_info : fields_map[idx_space]){
+       ispace_dmap[idx_space].ghost_owners_pbarriers[field_info->fid].resize(n);
 
        for(size_t owner = 0; owner < n; ++owner){
-         ispace_dmap[idx_space].ghost_owners_pbarriers[field_id][owner] =
+         ispace_dmap[idx_space].ghost_owners_pbarriers[field_info->fid][owner] =
             ghost_owners_pbarriers[indx];
          indx++;
          {
@@ -772,6 +871,10 @@ spmd_task(
   size_t consecutive_index = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
+
+    if(sparse_info_map.find(idx_space) != sparse_info_map.end()){
+      continue;
+    }
     
     ispace_dmap[idx_space].color_region = regions[region_index]
                                                   .get_logical_region();
@@ -1170,6 +1273,8 @@ spmd_task(
   delete [] pbarriers_as_owner;
   delete [] adjacencies;
   delete [] index_subspaces;
+  delete [] sparse_index_spaces;
+
 //  delete [] idx_spaces;
 
 } // spmd_task
