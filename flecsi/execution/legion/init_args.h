@@ -239,9 +239,8 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   // Initialize arguments for future handle
   ///
   template<typename T, launch_type_t launch>
-  void handle(legion_future__<T, launch>  &h) {
-    futures.push_back (h.raw_future());
-    h.init_future();
+  void handle(legion_future__<T, launch> & h) {
+    futures.push_back(std::make_shared<legion_future__<T, launch>>(h));
   }
 
   template<
@@ -309,7 +308,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   Legion::Runtime * runtime;
   Legion::Context & context;
   std::vector<Legion::RegionRequirement> region_reqs;
-  std::vector<Legion::Future> futures;
+  std::vector<std::shared_ptr<future_base_t>> futures;
 
 }; // struct init_args_t
 
