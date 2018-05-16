@@ -218,7 +218,7 @@ struct accessor__<
   //! Return the maximum possible entries
   //-------------------------------------------------------------------------//
   auto max_entries() const noexcept {
-    return handle.num_total_;
+    return handle.max_entries_per_index;
   }
 
   handle_t handle;
