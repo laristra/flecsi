@@ -33,6 +33,10 @@
     #define REALM_USE_CMAKE
   #endif
   #define ENABLE_LEGION_TLS
+
+#cmakedefine MAPPER_COMPACTION
+#cmakedefine COMPACTED_STORAGE_SORT
+
 #endif
 
 //----------------------------------------------------------------------------//
