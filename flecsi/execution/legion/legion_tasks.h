@@ -79,6 +79,7 @@ enum FieldIDs {
 typedef struct init_mesh_task_rt_s {
 	int cell_to_cell_count;
 	int cell_to_vertex_count;
+  int cell_to_edge_count;
 }init_mesh_task_rt_t;
 
 typedef struct task_entity_s {
@@ -1096,7 +1097,7 @@ __flecsi_internal_legion_task(init_cell_task, init_mesh_task_rt_t) {
 	
 	// Init cell id and color
 	int ct = 0;								 
-  int cell_to_vertex_count = 0;
+  int cell_to_vertex_count = 0; //TODO:edge
 	for (Legion::PointInDomainIterator<1> pir(cell_domain); pir(); pir++) {
 	  int cell_id = cell_starting_point + ct;
 		cell_id_acc[*pir] = cell_id;

@@ -194,10 +194,10 @@ cinch_add_unit(structured
 # Misc. unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(closure
-  SOURCES
-    test/closure.cc
-)
+#cinch_add_unit(closure
+#  SOURCES
+#    test/closure.cc
+#)
 
 cinch_add_unit(devel-closure
   SOURCES

@@ -160,7 +160,7 @@ void add_colorings(int dummy) {
   flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
 
   // Create the dCRS representation for the distributed colorer.
-  auto dcrs = flecsi::coloring::make_dcrs(sd);
+  auto dcrs = flecsi::coloring::make_dcrs(sd, 2, 0);
 
   // Create a colorer instance to generate the primary coloring.
   auto colorer = std::make_shared<flecsi::coloring::parmetis_colorer_t>();

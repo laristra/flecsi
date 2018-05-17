@@ -23,7 +23,7 @@ TEST(dcrs, naive_coloring) {
 TEST(dcrs, simple2d_8x8) {
 
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  auto dcrs = flecsi::coloring::make_dcrs(sd);
+  auto dcrs = flecsi::coloring::make_dcrs(sd, 2, 0);
 
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -46,7 +46,7 @@ TEST(dcrs, simple2d_8x8) {
 TEST(dcrs, simple2d_16x16) {
 
   flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
-  auto dcrs = flecsi::coloring::make_dcrs(sd);
+  auto dcrs = flecsi::coloring::make_dcrs(sd, 2, 0);
 
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
