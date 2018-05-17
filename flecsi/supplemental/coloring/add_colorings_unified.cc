@@ -4,6 +4,7 @@
 #include <flecsi/supplemental/coloring/add_colorings_dependent_partition.h>
 #include <flecsi/execution/legion/legion_tasks.h>
 #include <flecsi/execution/legion/dependent_partition.h>
+#include <flecsi/topology/mesh_definition.h>
 #include <flecsi/io/simple_definition.h>
 
 
@@ -20,9 +21,9 @@ add_colorings_unified()
   int num_vertices = sd.num_entities(0);
 
   dependent_partition dp;
-  legion_entity cells = dp.load_entity(num_cells, 0, 3);
+  legion_entity cells = dp.load_entity(num_cells, 0, 2, sd);
   
-  legion_adjacency cell_to_cell = dp.load_cell_to_entity(cells, cells);
+  legion_adjacency cell_to_cell = dp.load_cell_to_entity(cells, cells, sd);
   
   legion_partition cell_primary = dp.partition_by_color(cells);
   
@@ -36,9 +37,9 @@ add_colorings_unified()
   
   legion_partition cell_exclusive = dp.partition_by_difference(cells, cell_primary, cell_shared);
   
-  legion_entity vertices = dp.load_entity(num_vertices, 1, 3);
+  legion_entity vertices = dp.load_entity(num_vertices, 1, 2, sd);
   
-  legion_adjacency cell_to_vertex = dp.load_cell_to_entity(cells, vertices);
+  legion_adjacency cell_to_vertex = dp.load_cell_to_entity(cells, vertices, sd);
   
   legion_partition vertex_alias = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_primary);
   

@@ -89,6 +89,12 @@ typedef struct task_entity_s {
   Legion::FieldID offset_fid;
 }task_entity_t;
 
+typedef struct task_mesh_definition_s {
+  intptr_t md_ptr;
+}task_mesh_definition_t;
+
+#define TASK_MD_OFFSET  10
+
 /*!
  This is the color-specific initialization function to be defined by the
  FleCSI specialization layer. This symbol will be undefined in the compiled
@@ -1085,10 +1091,10 @@ __flecsi_internal_legion_task(init_cell_task, init_mesh_task_rt_t) {
   // Starting point of cell and vertex
 	const int cell_starting_point = cell_domain.lo().point_data[0];
 
-  intptr_t sd_ptr = *(intptr_t*)task->args;
-  flecsi::topology::mesh_definition_base__ *sd = (flecsi::topology::mesh_definition_base__ *)sd_ptr;
+  task_mesh_definition_t task_md = *(task_mesh_definition_t*)task->args;
+  flecsi::topology::mesh_definition_base__ *sd = (flecsi::topology::mesh_definition_base__ *)task_md.md_ptr;
 
-  printf("md dimension %d", sd->dimension());
+  printf("md dimension %d\n", sd->dimension());
 	int total_num_cells = sd->num_entities(1);
 									 
 	auto partetis_dcrs = flecsi::coloring::make_dcrs(*sd, sd->dimension(), 1);
@@ -1188,15 +1194,18 @@ __flecsi_internal_legion_task(init_cell_to_cell_task, void) {
 	int num_color;
 	MPI_Comm_size(MPI_COMM_WORLD, &num_color);
 	
-	const int* cell_to_cell_count_per_subspace = (const int*)task->args;
+	const int* task_args_buff = (const int*)task->args;
+  const int* cell_to_cell_count_per_subspace = task_args_buff + TASK_MD_OFFSET;
+  
+  task_mesh_definition_t task_md = *(task_mesh_definition_t*)task->args;
+  flecsi::topology::mesh_definition_base__ *sd = (flecsi::topology::mesh_definition_base__ *)task_md.md_ptr;
 
   Legion::Domain cell_domain = runtime->get_index_space_domain(ctx,
                    task->regions[0].region.get_index_space());
   Legion::Domain cell_to_cell_domain = runtime->get_index_space_domain(ctx,
                    task->regions[1].region.get_index_space());
 							 
-	flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-	auto dcrs = flecsi::coloring::make_dcrs(sd, 2, 0);
+	auto dcrs = flecsi::coloring::make_dcrs(*sd, sd->dimension(), 0);
 	
 	assert(cell_to_cell_domain.get_volume() == dcrs.indices.size());
 	printf("rank %d, init_cell_to_cell_task, index size %d, num_cell %ld, cell2cell %ld\n", my_rank, dcrs.indices.size(), cell_domain.get_volume(), cell_to_cell_domain.get_volume());
@@ -1263,14 +1272,17 @@ __flecsi_internal_legion_task(init_cell_to_others_task, void) {
 	int num_color;
 	MPI_Comm_size(MPI_COMM_WORLD, &num_color);
 	
-	const int* cell_to_others_count_per_subspace = (const int*)task->args;
+	const int* task_args_buff = (const int*)task->args;
+  const int* cell_to_others_count_per_subspace = task_args_buff + TASK_MD_OFFSET;
+  
+  task_mesh_definition_t task_md = *(task_mesh_definition_t*)task->args;
+  flecsi::topology::mesh_definition_base__ *sd = (flecsi::topology::mesh_definition_base__ *)task_md.md_ptr;
 	
   Legion::Domain cell_domain = runtime->get_index_space_domain(ctx,
                    task->regions[0].region.get_index_space());
   Legion::Domain cell_to_others_domain = runtime->get_index_space_domain(ctx,
                    task->regions[1].region.get_index_space());
 							 
-	flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
 	
 	int idx_cell2others = 0;
 	Legion::PointInDomainIterator<1> pir_cell2others(cell_to_others_domain);
@@ -1279,7 +1291,7 @@ __flecsi_internal_legion_task(init_cell_to_others_task, void) {
 		
 		// find the vertex of a cell and fill into the cell2vertex 
 		printf("rank %d, cell %d, cell2others(", my_rank, cell_id);
-		std::vector<size_t> others_of_cell = sd.entities(2, 0, cell_id);
+		std::vector<size_t> others_of_cell = sd->entities(sd->dimension(), 0, cell_id);
 		for (int i = 0; i < others_of_cell.size(); i++) {
 			printf("%d,", others_of_cell[i]);
 			cell_to_others_id_acc[*pir_cell2others] = others_of_cell[i];

@@ -8,16 +8,16 @@
 namespace flecsi {
 namespace execution {
 
-legion_entity dependent_partition::load_entity(int entities_size, int entity_id, int total_num_entities)
+legion_entity dependent_partition::load_entity(int entities_size, int entity_id, int total_num_entities, flecsi::topology::mesh_definition_base__ &md)
 {
   if (entity_id == 0) {
-    return load_cell(entities_size, total_num_entities);
+    return load_cell(entities_size, total_num_entities, md);
   } else {
     return load_non_cell(entities_size, entity_id);
   }
 }
 
-legion_entity dependent_partition::load_cell(int cells_size, int total_num_entities)
+legion_entity dependent_partition::load_cell(int cells_size, int total_num_entities, flecsi::topology::mesh_definition_base__ &md)
 {
 	printf("[Load cells], num_cells %d, total_num_entities %d\n", cells_size, total_num_entities);
   
@@ -106,15 +106,15 @@ legion_entity dependent_partition::load_cell(int cells_size, int total_num_entit
   
   legion_entity cell_region;
 
-  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  intptr_t sd_ptr = (intptr_t )&sd;
+  task_mesh_definition_t task_md;
+  task_md.md_ptr = (intptr_t )&md;
 
   // Launch index task to init cell and vertex
   const auto init_cell_task_id =
     context_.task_id<__flecsi_internal_task_key(init_cell_task)>();
   
   Legion::IndexLauncher init_cell_launcher(init_cell_task_id,
-      																		 partition_index_space, Legion::TaskArgument(&sd_ptr, sizeof(intptr_t)),
+      																		 partition_index_space, Legion::TaskArgument(&task_md, sizeof(task_mesh_definition_t)),
       																		 Legion::ArgumentMap());
 	
 	init_cell_launcher.add_region_requirement(
@@ -219,16 +219,16 @@ legion_entity dependent_partition::load_non_cell(int entities_size, int entity_i
   return entity_region;
 }
 
-legion_adjacency dependent_partition::load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region)
+legion_adjacency dependent_partition::load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region, flecsi::topology::mesh_definition_base__ &md)
 {
   if (cell_region.id == entity_region.id) {
-    return load_cell_to_cell(cell_region);
+    return load_cell_to_cell(cell_region, md);
   } else {
-    return load_cell_to_others(cell_region, entity_region);
+    return load_cell_to_others(cell_region, entity_region, md);
   }
 }
 
-legion_adjacency dependent_partition::load_cell_to_cell(legion_entity &cell_region)
+legion_adjacency dependent_partition::load_cell_to_cell(legion_entity &cell_region, flecsi::topology::mesh_definition_base__ &md)
 {
   Legion::Runtime *runtime = Legion::Runtime::get_runtime();
   Legion::Context ctx = Legion::Runtime::get_context();
@@ -237,7 +237,8 @@ legion_adjacency dependent_partition::load_cell_to_cell(legion_entity &cell_regi
   // **************************************************************************
 	// Get the count of cell to cell connectivity from init_cell_task and add them together
 	int total_cell_to_cell_count = 0;
-	int *cell_to_cell_count_per_subspace_scan = (int*)malloc(sizeof(int) * (num_color+1));
+	int *task_args_buff = (int*)malloc(sizeof(int) * (num_color+1 + TASK_MD_OFFSET));
+  int *cell_to_cell_count_per_subspace_scan = task_args_buff + TASK_MD_OFFSET;
 	cell_to_cell_count_per_subspace_scan[0] = 0;
 	for (int j = 0; j < num_color; j++) {
 		init_mesh_task_rt_t rt_value = cell_region.task_fm.get_result<init_mesh_task_rt_t>(j);
@@ -284,10 +285,14 @@ legion_adjacency dependent_partition::load_cell_to_cell(legion_entity &cell_regi
   const auto init_cell_to_cell_task_id =
     context_.task_id<__flecsi_internal_task_key(init_cell_to_cell_task)>();
   
+  task_mesh_definition_t task_md;
+  task_md.md_ptr = (intptr_t )&md;
+  memcpy(task_args_buff, &task_md, sizeof(task_mesh_definition_t));
+  
 	Legion::ArgumentMap arg_map_init_cell_to_cell;
   Legion::IndexLauncher init_cell_to_cell_launcher(init_cell_to_cell_task_id,
       																					partition_index_space, 
-																								Legion::TaskArgument(cell_to_cell_count_per_subspace_scan, sizeof(int)*(num_color+1)),
+																								Legion::TaskArgument(task_args_buff, sizeof(int)*(num_color+1 + TASK_MD_OFFSET)),
       																					arg_map_init_cell_to_cell);
 	
 	init_cell_to_cell_launcher.add_region_requirement(
@@ -314,12 +319,12 @@ legion_adjacency dependent_partition::load_cell_to_cell(legion_entity &cell_regi
   cell_to_cell_adjacency.image_nrange_fid = FID_CELL_CELL_NRANGE;
   cell_to_cell_adjacency.image_fid = FID_CELL_TO_CELL_PTR;
   
-  free(cell_to_cell_count_per_subspace_scan);
+  free(task_args_buff);
   
   return cell_to_cell_adjacency;
 }
 
-legion_adjacency dependent_partition::load_cell_to_others(legion_entity &cell_region, legion_entity &entity_region)
+legion_adjacency dependent_partition::load_cell_to_others(legion_entity &cell_region, legion_entity &entity_region, flecsi::topology::mesh_definition_base__ &md)
 {
   Legion::Runtime *runtime = Legion::Runtime::get_runtime();
   Legion::Context ctx = Legion::Runtime::get_context();
@@ -343,8 +348,8 @@ legion_adjacency dependent_partition::load_cell_to_others(legion_entity &cell_re
  // **************************************************************************
 	// Get the count of cell to vertex connectivity from init_mesh_task and add them together
 	int total_cell_to_others_count = 0;
-	// a array to store cell2cell and cell2vertex, first num_color-1 is cell2cell, second one is cell2vertex
-	int *cell_to_others_count_per_subspace_scan = (int*)malloc(sizeof(int) * (num_color+1));
+	int *task_args_buff = (int*)malloc(sizeof(int) * (num_color+1 + TASK_MD_OFFSET));
+  int *cell_to_others_count_per_subspace_scan = task_args_buff + TASK_MD_OFFSET;
 	cell_to_others_count_per_subspace_scan[0] = 0;
 	for (int j = 0; j < num_color; j++) {
 		init_mesh_task_rt_t rt_value = cell_region.task_fm.get_result<init_mesh_task_rt_t>(j);
@@ -386,10 +391,14 @@ legion_adjacency dependent_partition::load_cell_to_others(legion_entity &cell_re
   const auto init_cell_to_others_task_id =
     context_.task_id<__flecsi_internal_task_key(init_cell_to_others_task)>();
   
+  task_mesh_definition_t task_md;
+  task_md.md_ptr = (intptr_t )&md;
+  memcpy(task_args_buff, &task_md, sizeof(task_mesh_definition_t));
+  
 	Legion::ArgumentMap arg_map_init_cell_to_others;
   Legion::IndexLauncher init_cell_to_others_launcher(init_cell_to_others_task_id,
       																					partition_index_space, 
-																								Legion::TaskArgument(cell_to_others_count_per_subspace_scan, sizeof(int)*(num_color+1)),
+																								Legion::TaskArgument(task_args_buff, sizeof(int)*(num_color+1 + TASK_MD_OFFSET)),
       																					arg_map_init_cell_to_others);
 	
 	init_cell_to_others_launcher.add_region_requirement(
@@ -416,7 +425,7 @@ legion_adjacency dependent_partition::load_cell_to_others(legion_entity &cell_re
   cell_to_others_adjacency.image_nrange_fid = image_nrange_fid;
   cell_to_others_adjacency.image_fid = image_fid;
   
-  free(cell_to_others_count_per_subspace_scan);
+  free(task_args_buff);
   
   return cell_to_others_adjacency;
 	

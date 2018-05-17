@@ -8,6 +8,7 @@
 
 #include <legion.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/topology/mesh_definition.h>
 
 namespace flecsi {
 namespace execution {
@@ -70,8 +71,8 @@ public:
 public:
   dependent_partition() {}
   
-  legion_entity load_entity(int entities_size, int entity_id, int total_num_entities);
-  legion_adjacency load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region);
+  legion_entity load_entity(int entities_size, int entity_id, int total_num_entities, flecsi::topology::mesh_definition_base__ &md);
+  legion_adjacency load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region, flecsi::topology::mesh_definition_base__ &md);
   legion_partition partition_by_color(legion_entity &entity);
   legion_partition partition_by_image(legion_entity &from_entity, legion_entity &to_entity, legion_adjacency &adjacency, legion_partition &from);
   legion_partition partition_by_difference(legion_entity &entity, legion_partition &par1, legion_partition &par2);
@@ -80,10 +81,10 @@ public:
   void min_reduction_by_color(legion_entity &entity, legion_partition &alias_partition);
 
 private:
-  legion_entity load_cell(int cells_size, int total_num_entities);
+  legion_entity load_cell(int cells_size, int total_num_entities, flecsi::topology::mesh_definition_base__ &md);
   legion_entity load_non_cell(int entities_size, int entity_id);
-  legion_adjacency load_cell_to_cell(legion_entity &cell_region);
-  legion_adjacency load_cell_to_others(legion_entity &cell_region, legion_entity &other_region);
+  legion_adjacency load_cell_to_cell(legion_entity &cell_region, flecsi::topology::mesh_definition_base__ &md);
+  legion_adjacency load_cell_to_others(legion_entity &cell_region, legion_entity &other_region, flecsi::topology::mesh_definition_base__ &md);
   void set_offset(legion_entity &entity, legion_partition &primary);
 };
   
