@@ -21,6 +21,7 @@
 #include <flecsi/data/mutator_handle.h>
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/supplemental/coloring/add_colorings_dependent_partition.h>
+#include <flecsi/supplemental/coloring/add_colorings_unified.h>
 
 using namespace std;
 using namespace flecsi;
@@ -226,7 +227,8 @@ void specialization_tlt_init(int argc, char ** argv) {
   map.cells = 0;
 
  // flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
-  add_colorings_dependent_partition();
+  //add_colorings_dependent_partition();
+  add_colorings_unified();
 
   auto& context = execution::context_t::instance();
 

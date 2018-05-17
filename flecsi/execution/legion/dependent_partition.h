@@ -58,8 +58,10 @@ public:
 public:
   dependent_partition() {}
   
-  legion_entity load_cell(int num_cells);
-  legion_entity load_non_cell(int num_entities, int entity_id);
+  legion_entity load_entity(int entities_size, int entity_id, int total_num_entities);
+  legion_entity load_cell(int cells_size, int total_num_entities);
+  legion_entity load_non_cell(int entities_size, int entity_id);
+  legion_adjacency load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region);
   legion_adjacency load_cell_to_cell(legion_entity &cell_region);
   legion_adjacency load_cell_to_others(legion_entity &cell_region, legion_entity &other_region);
   legion_partition partition_by_color(legion_entity &entity);
@@ -68,7 +70,7 @@ public:
   legion_partition partition_by_intersection(legion_entity &entity, legion_partition &par1, legion_partition &par2);
   void output_partition(legion_entity &entity, legion_partition &primary, legion_partition &ghost, legion_partition &shared, legion_partition &exclusive);
   void set_offset(legion_entity &entity, legion_partition &primary);
-  void min_reduction_color(legion_entity &entity, legion_partition &alias_partition);
+  void min_reduction_by_color(legion_entity &entity, legion_partition &alias_partition);
 };
   
 } // namespace execution

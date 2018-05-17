@@ -59,15 +59,21 @@ enum FieldIDs {
   FID_CELL_PARTITION_COLOR,
   FID_CELL_CELL_NRANGE,
   FID_CELL_VERTEX_NRANGE,
+  FID_CELL_EDGE_NRANGE,
   FID_CELL_TO_CELL_ID,
   FID_CELL_TO_CELL_PTR,
   FID_CELL_TO_VERTEX_ID,
   FID_CELL_TO_VERTEX_PTR,
+  FID_CELL_TO_EDGE_ID,
+  FID_CELL_TO_EDGE_PTR,
   FID_VERTEX_ID,
   FID_VERTEX_PARTITION_COLOR,
 	FID_VERTEX_PARTITION_COLOR_ID,
+  FID_EDGE_ID,
+  FID_EDGE_PARTITION_COLOR,
   FID_CELL_OFFSET,
   FID_VERTEX_OFFSET,
+  FID_EDGE_OFFSET,
 };
 
 typedef struct init_mesh_task_rt_s {
@@ -1010,7 +1016,7 @@ __flecsi_internal_legion_task(verify_dp_task, void) {
   auto vertex_coloring_info =
     communicator->gather_coloring_info(vertex_color_info);
   context_t & context_ = context_t::instance();
-  //context_.add_coloring(0, cells, cell_coloring_info);
+  context_.add_coloring(0, cells, cell_coloring_info);
   context_.add_coloring(1, vertices, vertex_coloring_info);
   //context_.add_coloring_coloring(0, cells);
   //context_.add_coloring_coloring(1, vertices);
@@ -1063,6 +1069,9 @@ __flecsi_internal_legion_task(init_cell_task, init_mesh_task_rt_t) {
   const int point = task->index_point.point_data[0];
   
   assert(point == my_rank);
+  
+  assert (task->regions.size() == 1);
+  assert (task->regions[0].privilege_fields.size() == 2);
   
 	const Legion::FieldAccessor<READ_WRITE,int,1> cell_id_acc(regions[0], FID_CELL_ID);
 	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Point<1>,1> cell_color_acc(regions[0], FID_CELL_PARTITION_COLOR);
@@ -1119,6 +1128,9 @@ __flecsi_internal_legion_task(init_non_cell_task, void) {
   
   assert(point == my_rank);
   
+  assert (task->regions.size() == 1);
+  assert (task->regions[0].privilege_fields.size() == 2);
+  
   const task_entity_t *task_entity = (const task_entity_t*)task->args;
 //  int entity_id = task_entity->entity_id;
   int id_fid = task_entity->id_fid; 
@@ -1158,7 +1170,11 @@ __flecsi_internal_legion_task(init_cell_to_cell_task, void) {
   const int point = task->index_point.point_data[0];
   
   assert(point == my_rank);
-  
+
+  assert (task->regions.size() == 2);
+  assert (task->regions[0].privilege_fields.size() == 2);
+  assert (task->regions[1].privilege_fields.size() == 2);
+    
 	const Legion::FieldAccessor<READ_WRITE,int,1> cell_id_acc(regions[0], FID_CELL_ID);
 	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Rect<1>,1> cell_cell_nrange_acc(regions[0], FID_CELL_CELL_NRANGE);
 	const Legion::FieldAccessor<WRITE_DISCARD,int,1> cell_to_cell_id_acc(regions[1], FID_CELL_TO_CELL_ID);
@@ -1221,10 +1237,23 @@ __flecsi_internal_legion_task(init_cell_to_others_task, void) {
   
   assert(point == my_rank);
   
-	const Legion::FieldAccessor<READ_WRITE,int,1> cell_id_acc(regions[0], FID_CELL_ID);
-	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Rect<1>,1> cell_others_nrange_acc(regions[0], FID_CELL_VERTEX_NRANGE);
-	const Legion::FieldAccessor<WRITE_DISCARD,int,1> cell_to_others_id_acc(regions[1], FID_CELL_TO_VERTEX_ID);
-	const Legion::FieldAccessor<WRITE_DISCARD,LegionRuntime::Arrays::Point<1>,1> cell_to_others_ptr_acc(regions[1], FID_CELL_TO_VERTEX_PTR);
+  assert (task->regions.size() == 2);
+  assert (task->regions[0].privilege_fields.size() == 2);
+  assert (task->regions[1].privilege_fields.size() == 2);
+  
+  std::set<Legion::FieldID>::iterator it = task->regions[0].privilege_fields.begin();
+  Legion::FieldID cell_id_fid = *(it);
+  it++;
+  Legion::FieldID cell_others_nrange_fid = *(it);
+  it = task->regions[1].privilege_fields.begin();
+  Legion::FieldID cell_to_others_id_fid = *(it);
+  it++;
+  Legion::FieldID cell_to_others_ptr_fid = *(it);
+  
+	const Legion::FieldAccessor<READ_WRITE,int,1> cell_id_acc(regions[0], cell_id_fid);
+	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Rect<1>,1> cell_others_nrange_acc(regions[0], cell_others_nrange_fid);
+	const Legion::FieldAccessor<WRITE_DISCARD,int,1> cell_to_others_id_acc(regions[1], cell_to_others_id_fid);
+	const Legion::FieldAccessor<WRITE_DISCARD,LegionRuntime::Arrays::Point<1>,1> cell_to_others_ptr_acc(regions[1], cell_to_others_ptr_fid);
 	
 	int num_color;
 	MPI_Comm_size(MPI_COMM_WORLD, &num_color);
@@ -1273,6 +1302,7 @@ __flecsi_internal_legion_task(set_entity_offset_task, void) {
   
   assert(point == my_rank);
   
+  assert (task->regions.size() == 1);
   assert (task->regions[0].privilege_fields.size() == 1);
   Legion::FieldID fid = *(task->regions[0].privilege_fields.begin());
   
@@ -1313,6 +1343,7 @@ __flecsi_internal_legion_task(output_partition_task, void) {
   int color_fid = task_entity->color_fid;
   int offset_fid = task_entity->offset_fid;
   
+  assert(task->regions.size() == 4);
   assert(task->regions[0].privilege_fields.size() == 2);
 	const Legion::FieldAccessor<READ_ONLY,int,1> primary_id_acc(regions[0], id_fid);
 	const Legion::FieldAccessor<READ_ONLY,LegionRuntime::Arrays::Point<1>,1> primary_color_acc(regions[0], color_fid);
@@ -1482,9 +1513,13 @@ struct MinReductionPointOp {
 
 __flecsi_internal_legion_task(init_vertex_color_task, void) {
 	const int my_rank = runtime->find_local_MPI_rank();
+  
+  assert (task->regions[0].privilege_fields.size() == 1);
+  Legion::FieldID fid = *(task->regions[0].privilege_fields.begin());
+  
 	const Legion::ReductionAccessor<MinReductionPointOp, false, 1, Legion::coord_t,
 																	Realm::AffineAccessor<LegionRuntime::Arrays::Point<1>,1,Legion::coord_t>>
-																  vertex_alias_color_acc(regions[0], FID_VERTEX_PARTITION_COLOR, MinReductionPointOp::redop_id); 
+																  vertex_alias_color_acc(regions[0], fid, MinReductionPointOp::redop_id); 
 																	
 	int ct = 0;
   Legion::Domain vertex_alias_domain = runtime->get_index_space_domain(ctx,

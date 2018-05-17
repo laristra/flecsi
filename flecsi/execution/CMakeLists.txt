@@ -312,6 +312,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         test/data_handle_task.cc
         ../supplemental/coloring/add_colorings.cc
         ../supplemental/coloring/add_colorings_dependent_partition.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -334,6 +335,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         test/handle_accessor.cc
         ../supplemental/coloring/add_colorings.cc
         ../supplemental/coloring/add_colorings_dependent_partition.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -398,6 +400,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         test/data_client_handle.cc
         ../supplemental/coloring/add_colorings.cc
         ../supplemental/coloring/add_colorings_dependent_partition.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -553,6 +556,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
         test/legion/barrier_per_field_drivers.cc
         ../supplemental/coloring/add_colorings.cc
         ../supplemental/coloring/add_colorings_dependent_partition.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -598,6 +602,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
         test/gid_to_lid_map.cc
         ../supplemental/coloring/add_colorings.cc
         ../supplemental/coloring/add_colorings_dependent_partition.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
