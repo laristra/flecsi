@@ -311,6 +311,8 @@ legion_adjacency dependent_partition::load_cell_to_cell(legion_entity &cell_regi
   cell_to_cell_adjacency.image_nrange_fid = FID_CELL_CELL_NRANGE;
   cell_to_cell_adjacency.image_fid = FID_CELL_TO_CELL_PTR;
   
+  free(cell_to_cell_count_per_subspace_scan);
+  
   return cell_to_cell_adjacency;
 }
 
@@ -410,6 +412,8 @@ legion_adjacency dependent_partition::load_cell_to_others(legion_entity &cell_re
   cell_to_others_adjacency.field_space = cell_to_others_field_space;
   cell_to_others_adjacency.image_nrange_fid = image_nrange_fid;
   cell_to_others_adjacency.image_fid = image_fid;
+  
+  free(cell_to_others_count_per_subspace_scan);
   
   return cell_to_others_adjacency;
 	

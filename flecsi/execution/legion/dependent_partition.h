@@ -24,8 +24,14 @@ public:
   Legion::FieldID offset_fid;
   int id;
 public:
-  legion_entity() 
+  legion_entity() {}
+  ~legion_entity()
   {
+    Legion::Runtime *runtime = Legion::Runtime::get_runtime();
+    Legion::Context ctx = Legion::Runtime::get_context();
+    runtime->destroy_logical_region(ctx, logical_region);
+    runtime->destroy_field_space(ctx, field_space);
+    runtime->destroy_index_space(ctx, index_space);
   }
 };
 
@@ -37,8 +43,14 @@ public:
   Legion::FieldID image_nrange_fid;
   Legion::FieldID image_fid;
 public:
-  legion_adjacency() 
+  legion_adjacency() {}
+  ~legion_adjacency()
   {
+    Legion::Runtime *runtime = Legion::Runtime::get_runtime();
+    Legion::Context ctx = Legion::Runtime::get_context();
+    runtime->destroy_logical_region(ctx, logical_region);
+    runtime->destroy_field_space(ctx, field_space);
+    runtime->destroy_index_space(ctx, index_space);
   }
 };
 
@@ -59,18 +71,20 @@ public:
   dependent_partition() {}
   
   legion_entity load_entity(int entities_size, int entity_id, int total_num_entities);
-  legion_entity load_cell(int cells_size, int total_num_entities);
-  legion_entity load_non_cell(int entities_size, int entity_id);
   legion_adjacency load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region);
-  legion_adjacency load_cell_to_cell(legion_entity &cell_region);
-  legion_adjacency load_cell_to_others(legion_entity &cell_region, legion_entity &other_region);
   legion_partition partition_by_color(legion_entity &entity);
   legion_partition partition_by_image(legion_entity &from_entity, legion_entity &to_entity, legion_adjacency &adjacency, legion_partition &from);
   legion_partition partition_by_difference(legion_entity &entity, legion_partition &par1, legion_partition &par2);
   legion_partition partition_by_intersection(legion_entity &entity, legion_partition &par1, legion_partition &par2);
   void output_partition(legion_entity &entity, legion_partition &primary, legion_partition &ghost, legion_partition &shared, legion_partition &exclusive);
-  void set_offset(legion_entity &entity, legion_partition &primary);
   void min_reduction_by_color(legion_entity &entity, legion_partition &alias_partition);
+
+private:
+  legion_entity load_cell(int cells_size, int total_num_entities);
+  legion_entity load_non_cell(int entities_size, int entity_id);
+  legion_adjacency load_cell_to_cell(legion_entity &cell_region);
+  legion_adjacency load_cell_to_others(legion_entity &cell_region, legion_entity &other_region);
+  void set_offset(legion_entity &entity, legion_partition &primary);
 };
   
 } // namespace execution
