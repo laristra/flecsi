@@ -547,8 +547,9 @@ __flecsi_internal_legion_task(init_mesh_task, init_mesh_task_rt_t) {
 	flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
 	int total_num_cells = sd.num_entities(1);
 	int total_num_vertices = sd.num_entities(0);
-									 
-	auto partetis_dcrs = flecsi::coloring::make_dcrs(sd);
+
+  // TODO: how to recover DIMENSION from sd
+	auto partetis_dcrs = flecsi::coloring::make_dcrs(sd, 2, 1);
   auto colorer = std::make_shared<flecsi::coloring::parmetis_colorer_t>();
 	auto color_results = colorer->parmetis_color(partetis_dcrs);
 	
@@ -582,7 +583,7 @@ __flecsi_internal_legion_task(init_mesh_task, init_mesh_task_rt_t) {
 	}
   printf("\n");
 
-	auto dcrs = flecsi::coloring::make_dcrs<2,2,2,0>(sd);
+	auto dcrs = flecsi::coloring::make_dcrs(sd, 2, 0);
 	printf("rank %d, init_mesh, num_cell %d, num_vertex %d, num_colors %d, cell_start %d, vertex_start %d, dcrs index size %d\n", 
 		my_rank, cell_domain.get_volume(), vertex_domain.get_volume(), total_num_colors, cell_starting_point, vertex_starting_point, dcrs.indices.size());
 	init_mesh_task_rt_t rt_value;
@@ -635,7 +636,7 @@ __flecsi_internal_legion_task(init_adjacency_task, void) {
                    task->regions[2].region.get_index_space());
 							 
 	flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-	auto dcrs = flecsi::coloring::make_dcrs<2,2,2,0>(sd);
+	auto dcrs = flecsi::coloring::make_dcrs(sd, 2, 0);
 	
 	assert(cell_to_cell_domain.get_volume() == dcrs.indices.size());
 	printf("rank %d, init_adjacency_task, index size %d, num_cell %d, cell2cell %d, cell2vertex %ld\n", my_rank, dcrs.indices.size(), cell_domain.get_volume(), cell_to_cell_domain.get_volume(), cell_to_vertex_domain.get_volume());
@@ -1083,10 +1084,13 @@ __flecsi_internal_legion_task(init_cell_task, init_mesh_task_rt_t) {
   // Starting point of cell and vertex
 	const int cell_starting_point = cell_domain.lo().point_data[0];
 
-	flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-	int total_num_cells = sd.num_entities(1);
+  intptr_t sd_ptr = *(intptr_t*)task->args;
+  flecsi::topology::mesh_definition_base__ *sd = (flecsi::topology::mesh_definition_base__ *)sd_ptr;
+
+  printf("md dimension %d", sd->dimension());
+	int total_num_cells = sd->num_entities(1);
 									 
-	auto partetis_dcrs = flecsi::coloring::make_dcrs(sd);
+	auto partetis_dcrs = flecsi::coloring::make_dcrs(*sd, sd->dimension(), 1);
   auto colorer = std::make_shared<flecsi::coloring::parmetis_colorer_t>();
 	auto color_results = colorer->parmetis_color(partetis_dcrs);
 	
@@ -1097,7 +1101,7 @@ __flecsi_internal_legion_task(init_cell_task, init_mesh_task_rt_t) {
 	  int cell_id = cell_starting_point + ct;
 		cell_id_acc[*pir] = cell_id;
     cell_color_acc[*pir] = LegionRuntime::Arrays::Point<1>(color_results[ct]);
-		std::vector<size_t> vertices_of_cell = sd.entities(2, 0, cell_id);
+		std::vector<size_t> vertices_of_cell = sd->entities(sd->dimension(), 0, cell_id);
 		printf("rank %d, cell_id %d, new color %d, V(", my_rank, (int)cell_id_acc[*pir], color_results[ct]);
 		for(int i = 0; i < vertices_of_cell.size(); i++) {
 			printf("%d ", vertices_of_cell[i]);
@@ -1107,7 +1111,7 @@ __flecsi_internal_legion_task(init_cell_task, init_mesh_task_rt_t) {
 		ct ++;
 	}
 
-	auto dcrs = flecsi::coloring::make_dcrs<2,2,2,0>(sd);
+	auto dcrs = flecsi::coloring::make_dcrs(*sd, sd->dimension(), 0);
 	printf("rank %d, init_cell, num_cell %d, num_colors %d, cell_start %d, dcrs index size %d\n", 
 		my_rank, cell_domain.get_volume(), total_num_colors, cell_starting_point, dcrs.indices.size());
 	init_mesh_task_rt_t rt_value;
@@ -1191,7 +1195,7 @@ __flecsi_internal_legion_task(init_cell_to_cell_task, void) {
                    task->regions[1].region.get_index_space());
 							 
 	flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-	auto dcrs = flecsi::coloring::make_dcrs<2,2,2,0>(sd);
+	auto dcrs = flecsi::coloring::make_dcrs(sd, 2, 0);
 	
 	assert(cell_to_cell_domain.get_volume() == dcrs.indices.size());
 	printf("rank %d, init_cell_to_cell_task, index size %d, num_cell %ld, cell2cell %ld\n", my_rank, dcrs.indices.size(), cell_domain.get_volume(), cell_to_cell_domain.get_volume());

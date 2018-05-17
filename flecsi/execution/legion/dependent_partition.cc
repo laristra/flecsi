@@ -105,13 +105,16 @@ legion_entity dependent_partition::load_cell(int cells_size, int total_num_entit
   // **************************************************************************
   
   legion_entity cell_region;
-    
+
+  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  intptr_t sd_ptr = (intptr_t )&sd;
+
   // Launch index task to init cell and vertex
   const auto init_cell_task_id =
     context_.task_id<__flecsi_internal_task_key(init_cell_task)>();
   
   Legion::IndexLauncher init_cell_launcher(init_cell_task_id,
-      																		 partition_index_space, Legion::TaskArgument(nullptr, 0),
+      																		 partition_index_space, Legion::TaskArgument(&sd_ptr, sizeof(intptr_t)),
       																		 Legion::ArgumentMap());
 	
 	init_cell_launcher.add_region_requirement(
@@ -275,7 +278,7 @@ legion_adjacency dependent_partition::load_cell_to_cell(legion_entity &cell_regi
     runtime->create_index_partition(ctx, cell_to_cell_lr.get_index_space(), 
                                     color_domain, cell_to_cell_color_partitioning, true /*disjoint*/);
 	Legion::LogicalPartition cell_to_cell_lp = runtime->get_logical_partition(ctx, cell_to_cell_lr, cell_to_cell_ip);
-  
+
   // **************************************************************************
 	// Launch index task to init cell to cell and cell to vertex connectivity
   const auto init_cell_to_cell_task_id =

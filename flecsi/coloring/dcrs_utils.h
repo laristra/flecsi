@@ -102,13 +102,15 @@ naive_coloring(topology::mesh_definition__<MESH_DIMENSION> & md) {
 
  @ingroup coloring
  */
-template<
-    std::size_t DIMENSION,
-    std::size_t FROM_DIMENSION = DIMENSION,
-    std::size_t TO_DIMENSION = DIMENSION,
-    std::size_t THRU_DIMENSION = DIMENSION - 1>
+//template<
+//    std::size_t DIMENSION,
+//    std::size_t FROM_DIMENSION = DIMENSION,
+//    std::size_t TO_DIMENSION = DIMENSION,
+//    std::size_t THRU_DIMENSION = DIMENSION - 1>
 inline dcrs_t
-make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
+//make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
+  make_dcrs(const typename topology::mesh_definition_base__ & md,
+  size_t FROM_DIMENSION, size_t THRU_DIMENSION) {
   int size;
   int rank;
 

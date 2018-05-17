@@ -34,8 +34,6 @@ namespace flecsi {
 namespace execution {
 
 void add_colorings(coloring_map_t map) {
-  //return;
-
   clog_set_output_rank(0);
 
   // Get the context instance.
@@ -64,7 +62,7 @@ void add_colorings(coloring_map_t map) {
 #endif
 
   // Create the dCRS representation for the distributed colorer.
-  auto dcrs = flecsi::coloring::make_dcrs(sd);
+  auto dcrs = flecsi::coloring::make_dcrs(sd, sd.dimension(), 1);
 
   // Create a colorer instance to generate the primary coloring.
   auto colorer = std::make_shared<flecsi::coloring::parmetis_colorer_t>();
@@ -448,7 +446,6 @@ void add_colorings(coloring_map_t map) {
   supplemental::tikz_writer_t::write_color(rank, M, N, exclusive_cells_map,
     shared_cells_map, ghost_cells_map, exclusive_vertices_map,
     shared_vertices_map, ghost_vertices_map);
-
 } // add_colorings
 
 //flecsi_register_mpi_task(add_colorings, flecsi::execution);
