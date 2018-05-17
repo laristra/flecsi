@@ -62,12 +62,14 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/task_epilog.h
     legion/task_prolog.h
     legion/task_wrapper.h
+    legion/dependent_partition.h
   )
 
   set(execution_SOURCES
     ${execution_SOURCES}
     legion/context_policy.cc
     legion/legion_tasks.cc
+    legion/dependent_partition.cc
   )
 
   set(UNIT_POLICY LEGION)
@@ -354,6 +356,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         test/ghost_access_drivers.cc
         ../supplemental/coloring/add_colorings.cc
         ../supplemental/coloring/add_colorings_dependent_partition.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS

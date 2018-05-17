@@ -232,6 +232,96 @@ __flecsi_internal_register_legion_task(
     verify_dp_task,
     processor_type_t::loc,
     index | leaf);
+    
+/*!
+  Register init cell index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */
+
+__flecsi_internal_register_legion_task(
+    init_cell_task,
+    processor_type_t::loc,
+    index | leaf);
+    
+/*!
+  Register init non_cell index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */
+
+__flecsi_internal_register_legion_task(
+    init_non_cell_task,
+    processor_type_t::loc,
+    index | leaf);
+    
+/*!
+  Register init cell_to_cell index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */
+
+__flecsi_internal_register_legion_task(
+    init_cell_to_cell_task,
+    processor_type_t::loc,
+    index | leaf);
+    
+/*!
+  Register init cell_to_others index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */
+
+__flecsi_internal_register_legion_task(
+    init_cell_to_others_task,
+    processor_type_t::loc,
+    index | leaf);
+    
+/*!
+  Register set entity offset index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */
+
+__flecsi_internal_register_legion_task(
+    set_entity_offset_task,
+    processor_type_t::loc,
+    index | leaf);
+      
+/*!
+  Register output_partition index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */
+
+__flecsi_internal_register_legion_task(
+    output_partition_task,
+    processor_type_t::loc,
+    index | leaf);
 
 const double MaxReductionOp::identity = std::numeric_limits<double>::min();
 
