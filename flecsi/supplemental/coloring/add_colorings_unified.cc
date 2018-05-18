@@ -20,7 +20,10 @@ add_colorings_unified()
   int num_cells = sd.num_entities(1);
   int num_vertices = sd.num_entities(0);
 
-  dependent_partition dp;
+  legion_dependent_partition legion_dp;
+  
+  dependent_partition &dp = legion_dp;
+  
   legion_entity cells = dp.load_entity(num_cells, 0, 2, sd);
   
   legion_adjacency cell_to_cell = dp.load_cell_to_entity(cells, cells, sd);

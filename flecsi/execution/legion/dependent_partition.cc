@@ -8,16 +8,18 @@
 namespace flecsi {
 namespace execution {
 
-legion_entity dependent_partition::load_entity(int entities_size, int entity_id, int total_num_entities, flecsi::topology::mesh_definition_base__ &md)
+dp_entity legion_dependent_partition::load_entity(int entities_size, int entity_id, int total_num_entities, flecsi::topology::mesh_definition_base__ &md)
 {
+  dp_entity entity;
   if (entity_id == 0) {
-    return load_cell(entities_size, total_num_entities, md);
+    entity.legion_entity = load_cell(entities_size, total_num_entities, md);
   } else {
-    return load_non_cell(entities_size, entity_id);
+    entity.legion_entity = load_non_cell(entities_size, entity_id);
   }
+  return entity
 }
 
-legion_entity dependent_partition::load_cell(int cells_size, int total_num_entities, flecsi::topology::mesh_definition_base__ &md)
+legion_entity legion_dependent_partition::load_cell(int cells_size, int total_num_entities, flecsi::topology::mesh_definition_base__ &md)
 {
 	printf("[Load cells], num_cells %d, total_num_entities %d\n", cells_size, total_num_entities);
   
@@ -141,7 +143,7 @@ legion_entity dependent_partition::load_cell(int cells_size, int total_num_entit
   return cell_region;
 }
 
-legion_entity dependent_partition::load_non_cell(int entities_size, int entity_id)
+legion_entity legion_dependent_partition::load_non_cell(int entities_size, int entity_id)
 {
   printf("[Load non_cells], num_entities %d, entity_id %d\n", entities_size, entity_id);
   
@@ -219,16 +221,18 @@ legion_entity dependent_partition::load_non_cell(int entities_size, int entity_i
   return entity_region;
 }
 
-legion_adjacency dependent_partition::load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region, flecsi::topology::mesh_definition_base__ &md)
+dp_adjacency legion_dependent_partition::load_cell_to_entity(dp_entity &cell_region, dp_entity &entity_region, flecsi::topology::mesh_definition_base__ &md)
 {
+  dp_adjacency adjacency;
   if (cell_region.id == entity_region.id) {
-    return load_cell_to_cell(cell_region, md);
+    adjacency.legion_adjacency = load_cell_to_cell(cell_region.legion_entity, md);
   } else {
-    return load_cell_to_others(cell_region, entity_region, md);
+    adjacency.legion_adjacency = load_cell_to_others(cell_region.legion_entity, entity_region.legion_entity, md);
   }
+  return adjacency;
 }
 
-legion_adjacency dependent_partition::load_cell_to_cell(legion_entity &cell_region, flecsi::topology::mesh_definition_base__ &md)
+legion_adjacency legion_dependent_partition::load_cell_to_cell(legion_entity &cell_region, flecsi::topology::mesh_definition_base__ &md)
 {
   Legion::Runtime *runtime = Legion::Runtime::get_runtime();
   Legion::Context ctx = Legion::Runtime::get_context();
@@ -324,7 +328,7 @@ legion_adjacency dependent_partition::load_cell_to_cell(legion_entity &cell_regi
   return cell_to_cell_adjacency;
 }
 
-legion_adjacency dependent_partition::load_cell_to_others(legion_entity &cell_region, legion_entity &entity_region, flecsi::topology::mesh_definition_base__ &md)
+legion_adjacency legion_dependent_partition::load_cell_to_others(legion_entity &cell_region, legion_entity &entity_region, flecsi::topology::mesh_definition_base__ &md)
 {
   Legion::Runtime *runtime = Legion::Runtime::get_runtime();
   Legion::Context ctx = Legion::Runtime::get_context();
@@ -431,7 +435,7 @@ legion_adjacency dependent_partition::load_cell_to_others(legion_entity &cell_re
 	
 }
 
-void dependent_partition::min_reduction_by_color(legion_entity &entity, legion_partition &alias_partition)
+void legion_dependent_partition::min_reduction_by_color(dp_entity &entity, dp_partition &alias_partition)
 {
   Legion::Runtime *runtime = Legion::Runtime::get_runtime();
   Legion::Context ctx = Legion::Runtime::get_context();
@@ -449,8 +453,8 @@ void dependent_partition::min_reduction_by_color(legion_entity &entity, legion_p
       																		 Legion::ArgumentMap());
 	
 	init_vertex_color_launcher.add_region_requirement(
-	  Legion::RegionRequirement(alias_partition.logical_partition, 0/*projection ID*/,
-	                            MinReductionPointOp::redop_id, SIMULTANEOUS, entity.logical_region));
+	  Legion::RegionRequirement(alias_partition.legion_partition.logical_partition, 0/*projection ID*/,
+	                            MinReductionPointOp::redop_id, SIMULTANEOUS, entity.legion_entity.logical_region));
   init_vertex_color_launcher.region_requirements[0].add_field(color_fid);
 
   init_vertex_color_launcher.tag = MAPPER_FORCE_RANK_MATCH;
@@ -458,7 +462,7 @@ void dependent_partition::min_reduction_by_color(legion_entity &entity, legion_p
   fm_epoch3.wait_all_results(true);
 }
 
-legion_partition dependent_partition::partition_by_color(legion_entity &entity)
+legion_partition legion_dependent_partition::partition_by_color(legion_entity &entity)
 {
   Legion::Runtime *runtime = Legion::Runtime::get_runtime();
   Legion::Context ctx = Legion::Runtime::get_context();
@@ -472,7 +476,7 @@ legion_partition dependent_partition::partition_by_color(legion_entity &entity)
   return color_par;
 }
 
-legion_partition dependent_partition::partition_by_image(legion_entity &from_entity, legion_entity &to_entity, legion_adjacency &adjacency, legion_partition &from)
+legion_partition legion_dependent_partition::partition_by_image(legion_entity &from_entity, legion_entity &to_entity, legion_adjacency &adjacency, legion_partition &from)
 {
   Legion::Runtime *runtime = Legion::Runtime::get_runtime();
   Legion::Context ctx = Legion::Runtime::get_context();
@@ -496,7 +500,7 @@ legion_partition dependent_partition::partition_by_image(legion_entity &from_ent
   return image_par;
 }
 
-legion_partition dependent_partition::partition_by_difference(legion_entity &entity, legion_partition & par1, legion_partition &par2)
+legion_partition legion_dependent_partition::partition_by_difference(legion_entity &entity, legion_partition & par1, legion_partition &par2)
 {
   Legion::Runtime *runtime = Legion::Runtime::get_runtime();
   Legion::Context ctx = Legion::Runtime::get_context();
@@ -509,7 +513,7 @@ legion_partition dependent_partition::partition_by_difference(legion_entity &ent
   return diff_par;
 }
 
-legion_partition dependent_partition::partition_by_intersection(legion_entity &entity, legion_partition & par1, legion_partition &par2)
+legion_partition legion_dependent_partition::partition_by_intersection(legion_entity &entity, legion_partition & par1, legion_partition &par2)
 {
   Legion::Runtime *runtime = Legion::Runtime::get_runtime();
   Legion::Context ctx = Legion::Runtime::get_context();
@@ -523,7 +527,7 @@ legion_partition dependent_partition::partition_by_intersection(legion_entity &e
 }
 
 
-void dependent_partition::set_offset(legion_entity &entity, legion_partition &primary)
+void legion_dependent_partition::set_offset(legion_entity &entity, legion_partition &primary)
 {
   Legion::Runtime *runtime = Legion::Runtime::get_runtime();
   Legion::Context ctx = Legion::Runtime::get_context();
@@ -552,7 +556,7 @@ void dependent_partition::set_offset(legion_entity &entity, legion_partition &pr
 }
 
 
-void dependent_partition::output_partition(legion_entity &entity, legion_partition &primary, legion_partition &ghost, legion_partition &shared, legion_partition &exclusive)
+void legion_dependent_partition::output_partition(legion_entity &entity, legion_partition &primary, legion_partition &ghost, legion_partition &shared, legion_partition &exclusive)
 {
   Legion::Runtime *runtime = Legion::Runtime::get_runtime();
   Legion::Context ctx = Legion::Runtime::get_context();

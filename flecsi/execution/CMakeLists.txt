@@ -30,6 +30,7 @@ set(execution_HEADERS
   internal_index_space.h
   kernel.h
   task.h
+  dependent_partition.h
 )
 
 set(DRIVER_INITIALIZATION driver_initialization.cc)
