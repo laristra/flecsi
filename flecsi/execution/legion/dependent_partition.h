@@ -72,16 +72,16 @@ public:
 public:
   legion_dependent_partition() {}
   
-  virtual dp_entity load_entity(int entities_size, int entity_id, int total_num_entities, flecsi::topology::mesh_definition_base__ &md) override;
-  virtual dp_adjacency load_cell_to_entity(dp_entity &cell_region, dp_entity &entity_region, flecsi::topology::mesh_definition_base__ &md) override;
-  virtual dp_partition partition_by_color(dp_entity &entity) override;
-  virtual dp_partition partition_by_image(dp_entity &from_entity, dp_entity &to_entity, dp_adjacency &adjacency, dp_partition &from) override;
-  virtual dp_partition partition_by_difference(dp_entity &entity, dp_partition &par1, dp_partition &par2) override;
-  virtual dp_partition partition_by_intersection(dp_entity &entity, dp_partition &par1, dp_partition &par2) override;
-  virtual void output_partition(dp_entity &entity, dp_partition &primary, dp_partition &ghost, dp_partition &shared, dp_partition &exclusive) override;
-  virtual void min_reduction_by_color(dp_entity &entity, dp_partition &alias_partition) override;
+  virtual legion_entity load_entity(int entities_size, int entity_id, int total_num_entities, flecsi::topology::mesh_definition_base__ &md) override;
+  virtual legion_adjacency load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region, flecsi::topology::mesh_definition_base__ &md) override;
+  virtual legion_partition partition_by_color(legion_entity &entity) override;
+  virtual legion_partition partition_by_image(legion_entity &from_entity, legion_entity &to_entity, legion_adjacency &adjacency, legion_partition &from) override;
+  virtual legion_partition partition_by_difference(legion_entity &entity, legion_partition &par1, legion_partition &par2) override;
+  virtual legion_partition partition_by_intersection(legion_entity &entity, legion_partition &par1, legion_partition &par2) override;
+  virtual void output_partition(legion_entity &entity, legion_partition &primary, legion_partition &ghost, legion_partition &shared, legion_partition &exclusive) override;
+  virtual void min_reduction_by_color(legion_entity &entity, legion_partition &alias_partition) override;
 
-private:
+public:
   legion_entity load_cell(int cells_size, int total_num_entities, flecsi::topology::mesh_definition_base__ &md);
   legion_entity load_non_cell(int entities_size, int entity_id);
   legion_adjacency load_cell_to_cell(legion_entity &cell_region, flecsi::topology::mesh_definition_base__ &md);
