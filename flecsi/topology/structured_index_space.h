@@ -26,15 +26,14 @@ namespace topology {
 //!
 //! @ingroup 
 //----------------------------------------------------------------------------//
-template<class E, size_t DM=0>
+template<class E, size_t DM>
 class structured_index_space{
 public:
-  using sm_id_t        = typename std::remove_pointer<E>::type::sm_id_t;
-  using sm_id_vector_t = typename std::conditional<DM==0, 
-                               std::vector<size_t>, 
-                               std::array<size_t,DM>>::type;
-  using sm_id_array_t  = std::vector<std::vector<sm_id_t>>;
-  using qtable_t    = typename query::QueryTable<DM,DM+1,DM,DM+1>;
+  using sm_id_t            = typename std::remove_pointer<E>::type::sm_id_t;
+  using sm_id_array_t      = std::array<sm_id_t, DM>; 
+  using sm_id_vector_t     = std::vector<sm_id_t>;
+  using sm_id_vector_2d_t  = std::vector<std::vector<sm_id_t>>;
+  using qtable_t           = typename query::QueryTable<DM,DM+1,DM,DM+1>;
 
  /******************************************************************************
  *               Constructors/Destructors/Initializations                      *    
@@ -51,19 +50,21 @@ public:
  //! @param mubnds  The 
  //--------------------------------------------------------------------------//
 
-  void init(bool primary, const sm_id_vector_t &lbnds, const sm_id_vector_t &ubnds, 
-            sm_id_array_t &mubnds)
+  void init(bool primary, 
+            const sm_id_array_t &lbnds, 
+            const sm_id_array_t &ubnds, 
+            sm_id_vector_t &mubnds)
   {
     assert(lbnds.size() == ubnds.size());
     // this check is to ensure that the primary IS doesn't have 
     // multiple boxes
     if (primary) 
-      assert (mubnds.size()==1);
+      assert (mubnds.size()==DM);
 
     offset_ = 0;
     primary_ = primary;
-    num_boxes_ = mubnds.size();
-    std::vector<size_t> ubnds_new, lbnds_new;
+    num_boxes_ = mubnds.size()/DM;
+    sm_id_vector_t ubnds_new, lbnds_new;
 
     for (size_t i = 0; i < num_boxes_; i++)
     {
@@ -72,13 +73,13 @@ public:
       lbnds_new.clear();
       for (size_t j = 0; j < DM; j++)
       {
-         cnt *= ubnds[j]+mubnds[i][j]-lbnds[j]+1;
-         ubnds_new.push_back(ubnds[j]+mubnds[i][j]);
+         cnt *= ubnds[j]+mubnds[num_boxes_*i+j]-lbnds[j]+1;
+         ubnds_new.push_back(ubnds[j]+mubnds[num_boxes_*i+j]);
          lbnds_new.push_back(lbnds[j]);
       }
 
-      box_offset_[i] = 0;
-      box_size_[i] = cnt;
+      box_offset_.push_back(0);
+      box_size_.push_back(cnt);
       box_lowbnds_.push_back(lbnds_new);
       box_upbnds_.push_back(ubnds_new);
     }
@@ -212,7 +213,7 @@ public:
  //--------------------------------------------------------------------------//
 
   template <size_t TD, class S>
-  auto traverse(size_t FD, size_t ID, sm_id_vector_t &indices, qtable_t *qt)
+  auto traverse(size_t FD, size_t ID, sm_id_array_t &indices, qtable_t *qt)
   {
     return traversal<TD, S>(this, DM, FD, ID, indices, qt);
   }
@@ -227,7 +228,7 @@ public:
       sm_id_t MD1, 
       sm_id_t FD1, 
       sm_id_t ID1, 
-      sm_id_vector_t &indices,
+      sm_id_array_t &indices,
       qtable_t *qt1):
       is_{is}, 
       MD1_{MD1}, 
@@ -256,7 +257,7 @@ public:
         sm_id_t FD2, 
         sm_id_t ID2, 
         sm_id_t TD2,
-        sm_id_vector_t &indices, 
+        sm_id_array_t &indices, 
         sm_id_t index,
         sm_id_t end_idx, 
         bool forward):
@@ -359,7 +360,7 @@ public:
 
       auto compute_id(sm_id_t vindex)
       { 
-        sm_id_vector_t adj;
+        sm_id_array_t adj;
         sm_id_t bid = qt2_->entry[FD2_][ID2_][TD2_].adjacencies[vindex].box_id;
         auto offset = qt2_->entry[FD2_][ID2_][TD2_].adjacencies[vindex].offset;
         for (sm_id_t i = 0; i < MD2_; i++)
@@ -372,7 +373,7 @@ public:
        structured_index_space<E2,DM2> *is_;
        qtable_t *qt2_; 
        sm_id_t MD2_, FD2_, ID2_, TD2_;
-       sm_id_vector_t indices_;
+       sm_id_array_t indices_;
        sm_id_t valid_idx_;
        sm_id_t end_idx_;
        S2*  valid_ent_;
@@ -394,7 +395,7 @@ public:
     private: 
        structured_index_space<E1, DM1> *is_; 
        sm_id_t MD1_, FD1_, ID1_, TD1_;
-       sm_id_vector_t indices_;
+       sm_id_array_t indices_;
        sm_id_t start_, finish_;
        qtable_t *qt1_; 
   };
@@ -415,7 +416,7 @@ public:
  //--------------------------------------------------------------------------//
    // Return the global offset id w.r.t the box id B  
   template<size_t B>
-  sm_id_t get_global_offset_from_indices(sm_id_vector_t &idv)
+  sm_id_t get_global_offset_from_indices(sm_id_array_t &idv)
   {
     sm_id_t lval = get_local_offset_from_indices<B>(idv);
     
@@ -434,7 +435,7 @@ public:
  //! @param id             The id of the entity for which the definition is
  //!                       being requested.
  //--------------------------------------------------------------------------//
-  sm_id_t get_global_offset_from_indices(sm_id_t B, sm_id_vector_t &idv)
+  sm_id_t get_global_offset_from_indices(sm_id_t B, sm_id_array_t &idv)
   {
     sm_id_t lval = get_local_offset_from_indices(B, idv);
     
@@ -455,7 +456,7 @@ public:
  //--------------------------------------------------------------------------//
   // Return the local offset id w.r.t the box id B
   template<size_t B>
-  sm_id_t get_local_offset_from_indices(sm_id_vector_t &idv) 
+  sm_id_t get_local_offset_from_indices(sm_id_array_t &idv) 
   {
     //add range check for idv to make sure it lies within the bounds
     size_t value =0;
@@ -484,7 +485,7 @@ public:
  //! @param id             The id of the entity for which the definition is
  //!                       being requested.
  //--------------------------------------------------------------------------//
-  sm_id_t get_local_offset_from_indices(size_t B, sm_id_vector_t &idv) 
+  sm_id_t get_local_offset_from_indices(size_t B, sm_id_array_t &idv) 
   {
     //add range check for idv to make sure it lies within the bounds
     size_t value =0;
@@ -524,7 +525,7 @@ public:
     for (size_t i=0; i<box_id; ++i)
       rem -= box_size_[i];
 
-    sm_id_vector_t id;
+    sm_id_array_t id;
     size_t factor, value;
 
     for (size_t i=0; i< DM; ++i)
@@ -721,8 +722,8 @@ public:
    sm_id_t        num_boxes_;      // number of boxes in this IS
    sm_id_vector_t box_size_;       // total number of entities in each box
    sm_id_vector_t box_offset_;     // starting offset of each box
-   sm_id_array_t  box_lowbnds_;    // lower bounds of each box
-   sm_id_array_t  box_upbnds_;     // upper bounds of each box
+   sm_id_vector_2d_t  box_lowbnds_;    // lower bounds of each box
+   sm_id_vector_2d_t  box_upbnds_;     // upper bounds of each box
 
 };
 } // namespace topology

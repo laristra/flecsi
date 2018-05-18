@@ -106,8 +106,8 @@ public:
   using entity_type = typename find_entity_<MT, D, M>::type;
   
   using sm_id_t        = size_t; 
-  using sm_id_vector_t = std::array<size_t, MT::num_dimensions>;  
-  using sm_id_array_t  = std::vector<std::vector<size_t>>;
+  using sm_id_array_t = std::array<size_t, MT::num_dimensions>;  
+  using sm_id_vector_2d_t  = std::vector<std::vector<size_t>>;
 
   // Don't allow the mesh to be copied or copy constructed
   structured_mesh_topology_t(const structured_mesh_topology_t &) = delete;
@@ -130,13 +130,20 @@ public:
         meshbnds_up_[i]  = MT::upper_bounds[i];
       }
 
+      //Bounds info
+      std::vector<size_t> bnds_info[3][4] =
+                           {{{{1}}, {{0}}, {{}}, {{}}},
+                            {{{1,1}}, {{1,0,0,1}}, {{0,0}}, {{}}},
+                            {{{1,1,1}}, {{1,0,1,0,1,1,1,1,0}}, 
+                            {{1,0,0,0,1,0,0,0,1}}, {{0,0,0}}}};
+
+
       bool primary = false;
-      sm_id_array_t vec;
       for (size_t i = 0; i <= meshdim_; ++i)
       {
         if ( i == meshdim_) primary = true;
-        vec = get_bnds(meshdim_, i);
-        ms_.index_spaces[0][i].init(primary, meshbnds_low_, meshbnds_up_, vec);
+        std::cout<<"bnd_info = "<<bnds_info[meshdim_-1][i].size()<<std::endl;
+        ms_.index_spaces[0][i].init(primary, meshbnds_low_, meshbnds_up_, bnds_info[meshdim_-1][i]);
       }
 
      //create query table once
@@ -302,7 +309,7 @@ public:
     size_t D,
     size_t M = 0
   >
-  auto get_global_offset(size_t box_id, sm_id_vector_t &idv) 
+  auto get_global_offset(size_t box_id, sm_id_array_t &idv) 
   {
     return ms_.index_spaces[M][D].template get_global_offset_from_indices(box_id, idv);
   }
@@ -320,7 +327,7 @@ public:
     size_t D,
     size_t M = 0
   >
-  auto get_local_offset(size_t box_id, sm_id_vector_t &idv) 
+  auto get_local_offset(size_t box_id, sm_id_array_t &idv) 
   {
     return ms_.index_spaces[M][D].template get_local_offset_from_indices(box_id, idv);
   }
@@ -524,8 +531,8 @@ public:
 private:
 
   size_t meshdim_; 
-  sm_id_vector_t meshbnds_low_;
-  sm_id_vector_t meshbnds_up_;
+  sm_id_array_t meshbnds_low_;
+  sm_id_array_t meshbnds_up_;
   structured_mesh_storage_t<MT::num_dimensions, MT::num_domains> ms_;
 
   query::QueryTable<MT::num_dimensions, MT::num_dimensions+1, 
@@ -540,69 +547,6 @@ private:
   {
     return ms_.index_spaces[domain][dim].size();
   } // num_entities_
-
-
-  //Utility methods
-  auto get_bnds(size_t mdim, size_t entdim)
-  {
-   sm_id_array_t bnds; 
-  
-   if (mdim == 1){
-    switch(entdim){
-      case 0:   
-         bnds.push_back({1});
-         break;
-      case 1: 
-         bnds.push_back({0});
-         break;
-      default:
-        std::cerr<<"Requesting non-valid entity bounds for dimension 1";
-    }
-   }
-   else if (mdim == 2){
-    switch(entdim){
-      case 0:   
-         bnds.push_back({1,1});
-         break;
-      case 1:
-         bnds.push_back({1,0});
-         bnds.push_back({0,1});
-         break;
-      case 2:
-         bnds.push_back({0,0});
-         break;
-      default:
-        std::cerr<<"Requesting non-valid entity bounds for dimension 2";
-    }
-   }
-   else if (mdim == 3){
-    switch(entdim){
-      case 0:
-         bnds.push_back({1,1,1});
-         break;
-      case 1:
-         bnds.push_back({1,0,1});
-         bnds.push_back({0,1,1});
-         bnds.push_back({1,1,0});
-         break;
-      case 2:
-         bnds.push_back({1,0,0});
-         bnds.push_back({0,1,0});
-         bnds.push_back({0,0,1});
-         break;
-      case 3:
-         bnds.push_back({0,0,0});
-         break;
-      default:
-        std::cerr<<"Requesting non-valid entity bounds for dimension 3";
-     }
-   }
-   else 
-    std::cerr<<"Requesting entity bounds for dimension greater than 3";
-      
-   return bnds;
-  }//get_bnds
-
 
 }; // class structured_mesh_topology_t
 
