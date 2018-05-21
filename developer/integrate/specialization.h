@@ -24,6 +24,12 @@ enum simulation_phases_t : size_t {
   finalize
 }; // enum phases_t
 
+enum target_attributes_t : size_t {
+  time_advance_half = 0x01,
+  time_advance_whole = 0x02,
+  updated_eos_at_faces = 0x04
+}; // enum target_attributes_t
+
 struct runtime_policy_t {
 
   static bool run_simulation() {

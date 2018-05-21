@@ -23,7 +23,7 @@ using namespace flecsi::control;
   } // action
 
 int space(int argc, char ** argv) {
-  std::cout << std::endl;
+  std::cout << std::endl << "**********************************" << std::endl;
 } // space
 
 define_action(advance_a)
@@ -56,13 +56,19 @@ define_action(finalize_b)
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(), \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())
 
-flecsi_register_target(advance, b, action_advance_b, 0 | 1 | 2);
+flecsi_register_target(advance, b, action_advance_b,
+  time_advance_half | updated_eos_at_faces);
 
 flecsi_register_target(advance, c, action_advance_c);
 flecsi_register_target(advance, e, action_advance_e);
 flecsi_register_target(advance, f, action_advance_f);
 flecsi_register_target(advance, space, space);
+
+#define ENABLE_M 0
+
+#if ENABLE_M
 flecsi_register_target(advance, m, action_advance_m);
+#endif
 
 flecsi_add_dependency(advance, b, a);
 flecsi_add_dependency(advance, c, a);
@@ -73,8 +79,10 @@ flecsi_add_dependency(advance, e, f);
 flecsi_add_dependency(advance, b, f);
 flecsi_add_dependency(advance, space, e);
 
+#if ENABLE_M
 flecsi_add_dependency(advance, m, c);
 flecsi_add_dependency(advance, d, m);
+#endif
 
 flecsi_register_target(advance, d, action_advance_d);
 flecsi_register_target(advance, a, action_advance_a);
@@ -95,50 +103,8 @@ flecsi_add_dependency(finalize, fa, fb);
 
 int main(int argc, char ** argv) {
 
-#if 0
-  size_t a = flecsi_hash(a);
-  size_t b = flecsi_hash(b);
-  size_t c = flecsi_hash(c);
-  size_t d = flecsi_hash(d);
-  size_t e = flecsi_hash(e);
-  size_t f = flecsi_hash(f);
-
-  std::cout << "a: " << a << std::endl;
-  std::cout << "b: " << b << std::endl;
-  std::cout << "c: " << c << std::endl;
-  std::cout << "d: " << d << std::endl;
-  std::cout << "e: " << e << std::endl;
-  std::cout << "f: " << f << std::endl;
-
-  dag_t g;
-
-  g.add_edge(b,a);
-  g.add_edge(c,a);
-  g.add_edge(c,b);
-  g.add_edge(d,c);
-  g.add_edge(d,a);
-  g.add_edge(e,d);
-  g.add_edge(e,b);
-  g.add_edge(e,f);
-  g.add_edge(b,f);
-
-  g.node(a).action() = action_a;
-  g.node(b).action() = action_b;
-  g.node(c).action() = action_c;
-  g.node(d).action() = action_d;
-  g.node(e).action() = action_e;
-  g.node(f).action() = action_f;
-
-  auto sorted = g.sort();
-
-  auto sorted =
-    flecsi::execution::context_t::instance().phase_map(0).sort();
-
-  for(auto n: sorted) {
-    n(argc, argv);
-  } // for
-
-#endif
+  std::bitset<8> bits(time_advance_whole | updated_eos_at_faces);
+  std::cout << "bits: " << bits << std::endl;
 
   context_t::instance().init();
 

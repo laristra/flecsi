@@ -23,7 +23,9 @@ struct phase_walker_t
     auto & sorted = context_t::instance().sorted_phase_map(PHASE_TYPE::value);
 
     for(auto & e: sorted) {
+      std::cout << "bits: " << e.bitset() << std::endl;
       e.action()(argc_, argv_);
+      std::cout << std::endl;
     } // for
 
   } // handle_type
