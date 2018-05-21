@@ -482,10 +482,9 @@ runtime_driver(
           READ_WRITE, SIMULTANEOUS, flecsi_sispace.logical_region);
 
         for (const field_info_t* field_info : fields_map[idx_space]){
-          if(utils::hash::is_internal(field_info->key)){
-            reg_req.add_field(field_info->fid);
-          }
-          else{
+          reg_req.add_field(field_info->fid);
+
+          if(!utils::hash::is_internal(field_info->key)){
             sparse_reg_req.add_field(field_info->fid);
           }
         }//for field_info

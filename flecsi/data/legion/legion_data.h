@@ -555,6 +555,10 @@ public:
               if(utils::hash::is_internal(fi.key)){
                 allocator.allocate_field(fi.size, fi.fid);
               }
+              else{
+                // this is a sparse offset
+                allocator.allocate_field(sizeof(size_t) * 2, fi.fid);
+              }
             }
             break;
           default:
@@ -600,7 +604,7 @@ public:
             case sparse:
               if (fi.index_space == is.index_space_id) {
                 if(!utils::hash::is_internal(fi.key)){
-                  allocator.allocate_field(fi.size, fi.fid);
+                  allocator.allocate_field(fi.size + sizeof(size_t), fi.fid);
                 }
               }
               break;
