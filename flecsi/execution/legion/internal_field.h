@@ -37,7 +37,8 @@ enum class internal_field : Legion::FieldID {
   adjacency_index,
   adjacency_offset,
   entity_data_start,
-  entity_data_end = entity_data_start + 10
+  entity_data_end = entity_data_start + 10,
+  sparse_metadata
 };
 
 } // namespace execution

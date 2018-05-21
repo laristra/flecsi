@@ -33,8 +33,32 @@ struct legion_mutator_handle_policy_t {
   legion_mutator_handle_policy_t(const legion_mutator_handle_policy_t & p) =
       default;
 
+  field_id_t fid;
   size_t index_space;
+  size_t data_client_hash;
 
+  // These depend on color but are only used in specifying
+  // the region requirements
+  Legion::LogicalRegion offsets_color_region;
+  Legion::LogicalRegion offsets_exclusive_lr;
+  Legion::LogicalRegion offsets_shared_lr;
+  Legion::LogicalRegion offsets_ghost_lr;
+
+  Legion::LogicalRegion entries_color_region;
+  Legion::LogicalRegion entries_exclusive_lr;
+  Legion::LogicalRegion entries_shared_lr;
+  Legion::LogicalRegion entries_ghost_lr;
+
+  Legion::Context context;
+  Legion::Runtime * runtime;
+
+  Legion::PhysicalRegion offsets_exclusive_pr;
+  Legion::PhysicalRegion offsets_shared_pr;
+  Legion::PhysicalRegion offsets_ghost_pr;
+
+  Legion::PhysicalRegion entries_exclusive_pr;
+  Legion::PhysicalRegion entries_shared_pr;
+  Legion::PhysicalRegion entries_ghost_pr;
 }; // class legion_mutator_handle_policy_t
 
 } // namespace flecsi

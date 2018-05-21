@@ -175,7 +175,14 @@ namespace legion {
           typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
         utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
+      size_t index_space = field_info.index_space;
+      auto & ism = context.index_space_data_map();
+
       mutator_handle__<DATA_TYPE> h(0, 0, 0, 0, slots);
+
+      auto& sim = context.sparse_index_space_info_map();
+      auto sitr = sim.find(index_space);
+      
 
       return h;
     }

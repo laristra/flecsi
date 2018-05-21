@@ -103,6 +103,42 @@ struct legion_context_policy_t {
       std::string,
       registration_function_t>;
 
+  struct sparse_field_data_t
+  {
+    sparse_field_data_t(){}
+
+    sparse_field_data_t(
+      size_t type_size,
+      size_t num_exclusive,
+      size_t num_shared,
+      size_t num_ghost,
+      size_t max_entries_per_index,
+      size_t reserve_chunk
+    )
+    : type_size(type_size),
+    num_exclusive(num_exclusive),
+    num_shared(num_shared),
+    num_ghost(num_ghost),
+    num_total(num_exclusive + num_shared + num_ghost),
+    max_entries_per_index(max_entries_per_index),
+    reserve_chunk(reserve_chunk),
+    reserve(reserve_chunk),
+    num_exclusive_entries(0){}
+
+    size_t type_size;
+
+    // total # of exclusive, shared, ghost entries
+    size_t num_exclusive = 0;
+    size_t num_shared = 0;
+    size_t num_ghost = 0;
+    size_t num_total = 0;
+
+    size_t max_entries_per_index;
+    size_t reserve_chunk;
+    size_t reserve;
+    size_t num_exclusive_entries;
+  };
+
   //--------------------------------------------------------------------------//
   // Runtime state.
   //--------------------------------------------------------------------------//

@@ -107,10 +107,20 @@ runtime_driver(
   data.init_global_handles();
 
   size_t number_of_global_fields = 0;
+  size_t number_of_sparse_fields = 0;
+
   for(const field_info_t& field_info : context_.registered_fields()){
     context_.put_field_info(field_info);
-    if (field_info.storage_class == global)
-      number_of_global_fields++;
+    switch(field_info.storage_class){
+      case global:
+        number_of_global_fields++;
+        break;
+      case sparse:
+        number_of_sparse_fields++;
+        break;
+      default:
+        break;
+    }
   }
 
   if (number_of_global_fields > 0)
@@ -121,6 +131,10 @@ runtime_driver(
 
     ispace_dmap[global_index_space].color_region =
         data.global_index_space().logical_region;
+  }
+
+  if(number_of_sparse_fields > 0){
+    data.init_sparse_metadata();
   }
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
