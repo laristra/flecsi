@@ -23,7 +23,7 @@ struct phase_walker_t
     auto & sorted = context_t::instance().sorted_phase_map(PHASE_TYPE::value);
 
     for(auto & e: sorted) {
-      e.action(argc_, argv_);
+      e.action()(argc_, argv_);
     } // for
 
   } // handle_type
@@ -63,7 +63,7 @@ struct phase_wrapper__<false, PHASE_TYPE>
     auto & sorted = context_t::instance().sorted_phase_map(PHASE_TYPE::value);
 
     for(auto & e: sorted) {
-      e.action(argc, argv);
+      e.action()(argc, argv);
     } // for
 
   } // handle_type

@@ -9,6 +9,7 @@
 #include <control.h>
 #include <context.h>
 #include <dag.h>
+#include <specialization.h>
 
 #include <unistd.h>
 
@@ -17,7 +18,7 @@ using namespace flecsi::control;
 
 #define define_action(name) \
   int action_##name(int argc, char ** argv) { \
-    usleep(10000); \
+    usleep(1000000); \
     std::cout << "action_" << EXPAND_AND_STRINGIFY(name) << std::endl; \
   } // action
 
@@ -44,25 +45,25 @@ define_action(f)
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(), \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())
 
-flecsi_register_target(0, b, action_b, 0 | 1 | 2);
+flecsi_register_target(advance, b, action_b, 0 | 1 | 2);
 
-flecsi_register_target(0, c, action_c);
-flecsi_register_target(0, e, action_e);
-flecsi_register_target(0, f, action_f);
+flecsi_register_target(advance, c, action_c);
+flecsi_register_target(advance, e, action_e);
+flecsi_register_target(advance, f, action_f);
 
-flecsi_add_dependency(0, b, a);
-flecsi_add_dependency(0, c, a);
-flecsi_add_dependency(0, c, b);
-flecsi_add_dependency(0, e, d);
-flecsi_add_dependency(0, e, b);
-flecsi_add_dependency(0, e, f);
-flecsi_add_dependency(0, b, f);
+flecsi_add_dependency(advance, b, a);
+flecsi_add_dependency(advance, c, a);
+flecsi_add_dependency(advance, c, b);
+flecsi_add_dependency(advance, e, d);
+flecsi_add_dependency(advance, e, b);
+flecsi_add_dependency(advance, e, f);
+flecsi_add_dependency(advance, b, f);
 
-flecsi_register_target(0, d, action_d);
-flecsi_register_target(0, a, action_a);
+flecsi_register_target(advance, d, action_d);
+flecsi_register_target(advance, a, action_a);
 
-flecsi_add_dependency(0, d, c);
-flecsi_add_dependency(0, d, a);
+flecsi_add_dependency(advance, d, c);
+flecsi_add_dependency(advance, d, a);
 
 int main(int argc, char ** argv) {
 
@@ -101,7 +102,6 @@ int main(int argc, char ** argv) {
   g.node(f).action() = action_f;
 
   auto sorted = g.sort();
-#endif
 
   auto sorted =
     flecsi::execution::context_t::instance().phase_map(0).sort();
@@ -109,6 +109,13 @@ int main(int argc, char ** argv) {
   for(auto n: sorted) {
     n(argc, argv);
   } // for
+
+#endif
+
+  context_t::instance().init();
+
+  control_t c;
+  c.execute(argc, argv);
 
   return 0;
 } // main

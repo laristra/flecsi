@@ -6,6 +6,15 @@
 
 #include "control.h"
 
+template<typename T, T M>
+struct typeify {
+  using TYPE = T;
+  static constexpr T value = M;
+};
+
+template<size_t PHASE>
+using phase_ = typeify<size_t, PHASE>;
+
 enum simulation_phases_t : size_t {
   initialize,
   advance,
@@ -32,18 +41,18 @@ struct runtime_policy_t {
 
   }; // struct cycle__
 
-  using cycle_t = cycle__<run_simulation,
+  using cycle = cycle__<run_simulation,
     phase_<advance>,
     phase_<analyze>,
     phase_<io>,
     phase_<mesh>>;
 
-  using phases_t = std::tuple<
+  using phases = std::tuple<
     phase_<initialize>,
-    cycle_t,
+    cycle,
     phase_<finalize>
   >;
 
 }; // runtime_policy_t
 
-using control_t = control__<runtime_policy_t>;
+using control_t = flecsi::control::control__<runtime_policy_t>;
