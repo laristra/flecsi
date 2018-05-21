@@ -350,6 +350,7 @@ runtime_driver(
     args_serializers[color].serialize(&num_phase_barriers, sizeof(size_t));
     args_serializers[color].serialize(&number_of_global_fields, sizeof(size_t));
     args_serializers[color].serialize(&number_of_color_fields, sizeof(size_t));
+    args_serializers[color].serialize(&number_of_sparse_fields, sizeof(size_t));
 
     // #1b serialize sparse index spaces info
 
@@ -659,8 +660,29 @@ runtime_driver(
        }//if
      }//for
 
-     if (number_of_color_fields>0)
-       spmd_launcher.add_region_requirement(color_reg_req);
+    if (number_of_color_fields>0)
+      spmd_launcher.add_region_requirement(color_reg_req);
+
+    if(number_of_sparse_fields > 0){
+      auto& sparse_metadata = data.sparse_metadata();
+
+      Legion::LogicalPartition color_lpart =
+        runtime->get_logical_partition(ctx,
+          sparse_metadata.logical_region, sparse_metadata.index_partition);
+      
+      Legion::LogicalRegion color_lregion =
+        runtime->get_logical_subregion_by_color(ctx, color_lpart, color);
+
+      Legion::RegionRequirement
+        reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
+          sparse_metadata.logical_region);
+
+      auto sparse_metadata_fid = Legion::FieldID(internal_field::sparse_metadata);
+
+      reg_req.add_field(sparse_metadata_fid);
+
+      spmd_launcher.add_region_requirement(reg_req);  
+    }
 
     Legion::DomainPoint point(color);
     must_epoch_launcher.add_single_task(point, spmd_launcher);
@@ -740,10 +762,12 @@ spmd_task(
   size_t num_phase_barriers;
   size_t number_of_global_fields;
   size_t number_of_color_fields;
+  size_t number_of_sparse_fields;
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
   args_deserializer.deserialize(&num_phase_barriers, sizeof(size_t));
   args_deserializer.deserialize(&number_of_global_fields, sizeof(size_t));
   args_deserializer.deserialize(&number_of_color_fields, sizeof(size_t));
+  args_deserializer.deserialize(&number_of_sparse_fields, sizeof(size_t));
 
   {
 
@@ -1405,6 +1429,12 @@ spmd_task(
     ispace_dmap[color_index_space].color_region =
       regions[region_index].get_logical_region();  
   }//end if
+
+  if(number_of_sparse_fields > 0){
+    context_t::sparse_metadata_t md;
+    md.color_region = regions[region_index].get_logical_region();
+    context_.set_sparse_metadata(md);
+  }
 
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
