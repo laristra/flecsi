@@ -18,16 +18,26 @@ using namespace flecsi::control;
 
 #define define_action(name) \
   int action_##name(int argc, char ** argv) { \
-    usleep(1000000); \
+    usleep(100000); \
     std::cout << "action_" << EXPAND_AND_STRINGIFY(name) << std::endl; \
   } // action
 
-define_action(a)
-define_action(b)
-define_action(c)
-define_action(d)
-define_action(e)
-define_action(f)
+int space(int argc, char ** argv) {
+  std::cout << std::endl;
+} // space
+
+define_action(advance_a)
+define_action(advance_b)
+define_action(advance_c)
+define_action(advance_d)
+define_action(advance_e)
+define_action(advance_f)
+
+define_action(initialize_a)
+define_action(initialize_b)
+
+define_action(finalize_a)
+define_action(finalize_b)
 
 #define flecsi_hash(name) \
   flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
@@ -45,11 +55,12 @@ define_action(f)
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(), \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())
 
-flecsi_register_target(advance, b, action_b, 0 | 1 | 2);
+flecsi_register_target(advance, b, action_advance_b, 0 | 1 | 2);
 
-flecsi_register_target(advance, c, action_c);
-flecsi_register_target(advance, e, action_e);
-flecsi_register_target(advance, f, action_f);
+flecsi_register_target(advance, c, action_advance_c);
+flecsi_register_target(advance, e, action_advance_e);
+flecsi_register_target(advance, f, action_advance_f);
+flecsi_register_target(advance, space, space);
 
 flecsi_add_dependency(advance, b, a);
 flecsi_add_dependency(advance, c, a);
@@ -58,12 +69,24 @@ flecsi_add_dependency(advance, e, d);
 flecsi_add_dependency(advance, e, b);
 flecsi_add_dependency(advance, e, f);
 flecsi_add_dependency(advance, b, f);
+flecsi_add_dependency(advance, space, e);
 
-flecsi_register_target(advance, d, action_d);
-flecsi_register_target(advance, a, action_a);
+flecsi_register_target(advance, d, action_advance_d);
+flecsi_register_target(advance, a, action_advance_a);
 
 flecsi_add_dependency(advance, d, c);
 flecsi_add_dependency(advance, d, a);
+
+flecsi_register_target(initialize, ia, action_initialize_a);
+flecsi_register_target(initialize, ib, action_initialize_b);
+flecsi_register_target(initialize, ispace, space);
+
+flecsi_register_target(finalize, fa, action_finalize_a);
+flecsi_register_target(finalize, fb, action_finalize_b);
+
+flecsi_add_dependency(initialize, ia, ib);
+flecsi_add_dependency(initialize, ispace, ia);
+flecsi_add_dependency(finalize, fa, fb);
 
 int main(int argc, char ** argv) {
 
