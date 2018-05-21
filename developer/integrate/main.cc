@@ -32,6 +32,7 @@ define_action(advance_c)
 define_action(advance_d)
 define_action(advance_e)
 define_action(advance_f)
+define_action(advance_m)
 
 define_action(initialize_a)
 define_action(initialize_b)
@@ -61,6 +62,7 @@ flecsi_register_target(advance, c, action_advance_c);
 flecsi_register_target(advance, e, action_advance_e);
 flecsi_register_target(advance, f, action_advance_f);
 flecsi_register_target(advance, space, space);
+flecsi_register_target(advance, m, action_advance_m);
 
 flecsi_add_dependency(advance, b, a);
 flecsi_add_dependency(advance, c, a);
@@ -70,6 +72,9 @@ flecsi_add_dependency(advance, e, b);
 flecsi_add_dependency(advance, e, f);
 flecsi_add_dependency(advance, b, f);
 flecsi_add_dependency(advance, space, e);
+
+flecsi_add_dependency(advance, m, c);
+flecsi_add_dependency(advance, d, m);
 
 flecsi_register_target(advance, d, action_advance_d);
 flecsi_register_target(advance, a, action_advance_a);
