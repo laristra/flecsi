@@ -110,5 +110,5 @@ var searchData=
   ['cross_5fmagnitude',['cross_magnitude',['../space__vector_8h.html#ae00aa0fd0011d23e53e2cd5d5c06b638',1,'flecsi::cross_magnitude(const space_vector&lt; T, 1 &gt; &amp;a, const space_vector&lt; T, 1 &gt; &amp;b)'],['../space__vector_8h.html#a8c33ed916021542824dcd39b641043e1',1,'flecsi::cross_magnitude(const space_vector&lt; T, 2 &gt; &amp;a, const space_vector&lt; T, 2 &gt; &amp;b)'],['../space__vector_8h.html#a8e86d3d804972fbb935e736f8ad5ee68',1,'flecsi::cross_magnitude(const space_vector&lt; T, 3 &gt; &amp;a, const space_vector&lt; T, 3 &gt; &amp;b)']]],
   ['crs_2eh',['crs.h',['../crs_8h.html',1,'']]],
   ['crs_5ft',['crs_t',['../structflecsi_1_1coloring_1_1crs__t.html',1,'flecsi::coloring']]],
-  ['cinch_3a_20logging',['Cinch: Logging',['../md__home_flecsi_flecsi_cinch_logging_clog.html',1,'']]]
+  ['cinch_3a_20logging',['Cinch: Logging',['../md__home_flecsi_flecsi_cinch_logging_README.html',1,'']]]
 ];

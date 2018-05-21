@@ -91,6 +91,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (std::string
 <tr class="separator:ab0c123ff2a8fe3446b00e668c8f5db30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9fbd0514c5a9458f6f7a46ef1deba4c7"><td class="memItemLeft" align="right" valign="top">const std::unordered_map&lt; std::string, size_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcinch_1_1clog__t.html#a9fbd0514c5a9458f6f7a46ef1deba4c7">tag_map</a> ()</td></tr>
 <tr class="separator:a9fbd0514c5a9458f6f7a46ef1deba4c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab498e92ef0ede674fdcb3b49c2ef0eec"><td class="memItemLeft" align="right" valign="top">std::stringstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcinch_1_1clog__t.html#ab498e92ef0ede674fdcb3b49c2ef0eec">buffer_stream</a> ()</td></tr>
+<tr class="separator:ab498e92ef0ede674fdcb3b49c2ef0eec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26e5ea8a42113cb00704110b5b77429e"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcinch_1_1clog__t.html#a26e5ea8a42113cb00704110b5b77429e">stream</a> ()</td></tr>
 <tr class="separator:a26e5ea8a42113cb00704110b5b77429e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21a09cbb7785b754c1173efd82d52ea0"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcinch_1_1clog__t.html#a21a09cbb7785b754c1173efd82d52ea0">severity_stream</a> (bool active=true)</td></tr>
@@ -111,9 +113,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>tag_enabled</b> ()</t
 <tr class="memitem:a24916962674f3dd838888da79de71c6c"><td class="memItemLeft" align="right" valign="top"><a id="a24916962674f3dd838888da79de71c6c"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>lookup_tag</b> (const char *tag)</td></tr>
 <tr class="separator:a24916962674f3dd838888da79de71c6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fc67aa860c86a763adfb59b2267cbaa"><td class="memItemLeft" align="right" valign="top"><a id="a5fc67aa860c86a763adfb59b2267cbaa"></a>
-std::mutex &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>mutex</b> ()</td></tr>
-<tr class="separator:a5fc67aa860c86a763adfb59b2267cbaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4f96e5f8a3637f1c06e39b2f4da02bc"><td class="memItemLeft" align="right" valign="top"><a id="ab4f96e5f8a3637f1c06e39b2f4da02bc"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>initialized</b> ()</td></tr>
 <tr class="separator:ab4f96e5f8a3637f1c06e39b2f4da02bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -183,6 +182,32 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Return a reference to the active tag (mutable version). </p>
+
+</div>
+</div>
+<a id="ab498e92ef0ede674fdcb3b49c2ef0eec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab498e92ef0ede674fdcb3b49c2ef0eec">&#9670;&nbsp;</a></span>buffer_stream()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::stringstream&amp; cinch::clog_t::buffer_stream </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the buffered log stream. </p>
 
 </div>
 </div>

@@ -74,8 +74,10 @@ $(function() {
 <div class="title">cinchlog.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;cassert&gt;</code><br />
+<div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
+<code>#include &lt;cstring&gt;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
 <code>#include &lt;bitset&gt;</code><br />
 <code>#include &lt;fstream&gt;</code><br />
@@ -85,6 +87,9 @@ $(function() {
 <code>#include &lt;mpi.h&gt;</code><br />
 <code>#include &lt;mutex&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;sys/time.h&gt;</code><br />
+<code>#include &lt;unistd.h&gt;</code><br />
+<code>#include &lt;thread&gt;</code><br />
 <code>#include &lt;unordered_map&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
@@ -93,6 +98,10 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcinch_1_1packet__t.html">cinch::packet_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcinch_1_1mpi__state__t.html">cinch::mpi_state_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcinch_1_1tee__buffer__t.html">cinch::tee_buffer_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcinch_1_1tee__buffer__t_1_1buffer__data__t.html">cinch::tee_buffer_t::buffer_data_t</a></td></tr>
@@ -226,10 +235,15 @@ Macros</h2></td></tr>
 <tr class="memitem:acb1ce8cdcfd7b4d44c00be947624c114"><td class="memItemLeft" align="right" valign="top"><a id="acb1ce8cdcfd7b4d44c00be947624c114"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>_clog_concat</b>(a,  b)&#160;&#160;&#160;a ## b</td></tr>
 <tr class="separator:acb1ce8cdcfd7b4d44c00be947624c114"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e9d1ef08e55844cea5e2c41beed3a4a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>begin_turnstile</b>(nway,  enabled)</td></tr>
-<tr class="separator:a6e9d1ef08e55844cea5e2c41beed3a4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abcba7f204ac485f38cdbe23daba71fcb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>end_turnstile</b>(enabled)</td></tr>
-<tr class="separator:abcba7f204ac485f38cdbe23daba71fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac81fc634afebfd73fc3db9c633d2f8be"><td class="memItemLeft" align="right" valign="top"><a id="ac81fc634afebfd73fc3db9c633d2f8be"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>CLOG_MAX_MESSAGE_SIZE</b>&#160;&#160;&#160;1024</td></tr>
+<tr class="separator:ac81fc634afebfd73fc3db9c633d2f8be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8349d13b92b8f44e11cfec14cadf25c"><td class="memItemLeft" align="right" valign="top"><a id="ae8349d13b92b8f44e11cfec14cadf25c"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>CLOG_MAX_PACKET_BUFFER</b>&#160;&#160;&#160;1024</td></tr>
+<tr class="separator:ae8349d13b92b8f44e11cfec14cadf25c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39c0df34e280eceb9a6bdf1342202fa9"><td class="memItemLeft" align="right" valign="top"><a id="a39c0df34e280eceb9a6bdf1342202fa9"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>CLOG_PACKET_FLUSH_INTERVAL</b>&#160;&#160;&#160;100</td></tr>
+<tr class="separator:a39c0df34e280eceb9a6bdf1342202fa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2016ce86137981f7fc858f519011e8a7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>clog_register_tag</b>(name)</td></tr>
 <tr class="separator:a2016ce86137981f7fc858f519011e8a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75d5cbfe24d2f06ba0b9a0386a42b9c3"><td class="memItemLeft" align="right" valign="top"><a id="a75d5cbfe24d2f06ba0b9a0386a42b9c3"></a>
@@ -241,14 +255,16 @@ Macros</h2></td></tr>
 <tr class="memitem:a76d71bdf967ee988b4f4445f8318bd54"><td class="memItemLeft" align="right" valign="top"><a id="a76d71bdf967ee988b4f4445f8318bd54"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>clog_tag_map</b>()&#160;&#160;&#160;<a class="el" href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">cinch::clog_t::instance</a>().tag_map()</td></tr>
 <tr class="separator:a76d71bdf967ee988b4f4445f8318bd54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb9da1500088f1c5a27690ec7be4efcd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>send_to_one</b>(message)</td></tr>
+<tr class="separator:afb9da1500088f1c5a27690ec7be4efcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1700c8e824a32dffd083f733f7f237a7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>severity_message_t</b>(severity,  P,  format)</td></tr>
 <tr class="separator:a1700c8e824a32dffd083f733f7f237a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a865df402ff2bd6b6b0b24adf22f7c3b7"><td class="memItemLeft" align="right" valign="top"><a id="a865df402ff2bd6b6b0b24adf22f7c3b7"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>message_stamp</b>&#160;&#160;&#160;timestamp() &lt;&lt; &quot; &quot; &lt;&lt; rstrip&lt;'/'&gt;(file_) &lt;&lt; &quot;:&quot; &lt;&lt; line_</td></tr>
 <tr class="separator:a865df402ff2bd6b6b0b24adf22f7c3b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6cf17a8642f3b1eee1a88f8ac7ebad5"><td class="memItemLeft" align="right" valign="top"><a id="ad6cf17a8642f3b1eee1a88f8ac7ebad5"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>CLOG_TURNSTILE_NWAY</b>&#160;&#160;&#160;1</td></tr>
-<tr class="separator:ad6cf17a8642f3b1eee1a88f8ac7ebad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a384e322a38e0b58f8297e445b107f5f0"><td class="memItemLeft" align="right" valign="top"><a id="a384e322a38e0b58f8297e445b107f5f0"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>mpi_stamp</b>&#160;&#160;&#160;&quot; r&quot; &lt;&lt; mpi_state_t::instance().rank()</td></tr>
+<tr class="separator:a384e322a38e0b58f8297e445b107f5f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e23609bcea68e4504507e1b324f38dd"><td class="memItemLeft" align="right" valign="top"><a id="a0e23609bcea68e4504507e1b324f38dd"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>clog_counter_varname</b>(str,  line)&#160;&#160;&#160;_clog_concat(str, line)</td></tr>
 <tr class="separator:a0e23609bcea68e4504507e1b324f38dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -318,60 +334,33 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::timesta
 template&lt;char C&gt; </td></tr>
 <tr class="memitem:a2debf0c1afad0daff2066be7e754b547"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><b>cinch::rstrip</b> (const char *file)</td></tr>
 <tr class="separator:a2debf0c1afad0daff2066be7e754b547"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac56dc2271cb62aa8c863cfe8028a89f7"><td class="memItemLeft" align="right" valign="top"><a id="ac56dc2271cb62aa8c863cfe8028a89f7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::flush_packets</b> ()</td></tr>
+<tr class="separator:ac56dc2271cb62aa8c863cfe8028a89f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaef7be40551551093f5f77c5b56b26e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cinchlog_8h.html#aaef7be40551551093f5f77c5b56b26e1">cinch::true_state</a> ()</td></tr>
 <tr class="separator:aaef7be40551551093f5f77c5b56b26e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a981d5ab075edf4d97845fef19566ee25"><td class="memItemLeft" align="right" valign="top"><a id="a981d5ab075edf4d97845fef19566ee25"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::severity_message_t</b> (trace, decltype(cinch::true_state), { std::ostream &amp;stream=clog_t::instance().severity_stream(CLOG_STRIP_LEVEL&lt; 1 &amp;&amp;predicate_() &amp;&amp;clog_t::instance().tag_enabled());begin_turnstile(CLOG_TURNSTILE_NWAY, can_turnstile_) { std::lock_guard&lt; std::mutex &gt; guard(clog_t::instance().mutex());stream&lt;&lt; OUTPUT_CYAN(&quot;[T&quot;)&lt;&lt; OUTPUT_LTGRAY(message_stamp);stream&lt;&lt; OUTPUT_CYAN(&quot;] &quot;);} end_turnstile(can_turnstile_) return stream;})</td></tr>
-<tr class="separator:a981d5ab075edf4d97845fef19566ee25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73ebe388297e05fee59ec81633697703"><td class="memItemLeft" align="right" valign="top"><a id="a73ebe388297e05fee59ec81633697703"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::severity_message_t</b> (info, decltype(cinch::true_state), { std::ostream &amp;stream=clog_t::instance().severity_stream(CLOG_STRIP_LEVEL&lt; 2 &amp;&amp;predicate_() &amp;&amp;clog_t::instance().tag_enabled());begin_turnstile(CLOG_TURNSTILE_NWAY, can_turnstile_) { std::lock_guard&lt; std::mutex &gt; guard(clog_t::instance().mutex());stream&lt;&lt; OUTPUT_GREEN(&quot;[I&quot;)&lt;&lt; OUTPUT_LTGRAY(message_stamp);stream&lt;&lt; OUTPUT_GREEN(&quot;] &quot;);} end_turnstile(can_turnstile_) return stream;})</td></tr>
-<tr class="separator:a73ebe388297e05fee59ec81633697703"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3fb556ed9cbadda2bb8b57a42696ffde"><td class="memItemLeft" align="right" valign="top"><a id="a3fb556ed9cbadda2bb8b57a42696ffde"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::severity_message_t</b> (warn, decltype(cinch::true_state), { std::lock_guard&lt; std::mutex &gt; guard(clog_t::instance().mutex());std::ostream &amp;stream=clog_t::instance().severity_stream(CLOG_STRIP_LEVEL&lt; 3 &amp;&amp;predicate_() &amp;&amp;clog_t::instance().tag_enabled());begin_turnstile(CLOG_TURNSTILE_NWAY, can_turnstile_) { stream&lt;&lt; OUTPUT_BROWN(&quot;[W&quot;)&lt;&lt; OUTPUT_LTGRAY(message_stamp);stream&lt;&lt; OUTPUT_BROWN(&quot;] &quot;)&lt;&lt; COLOR_YELLOW;} end_turnstile(can_turnstile_) clean_color_=true;return stream;})</td></tr>
-<tr class="separator:a3fb556ed9cbadda2bb8b57a42696ffde"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8feb30e031f9c715956212fa1a38306"><td class="memItemLeft" align="right" valign="top"><a id="aa8feb30e031f9c715956212fa1a38306"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::severity_message_t</b> (error, decltype(cinch::true_state), { std::lock_guard&lt; std::mutex &gt; guard(clog_t::instance().mutex());std::ostream &amp;stream=std::cerr;begin_turnstile(CLOG_TURNSTILE_NWAY, can_turnstile_) { stream&lt;&lt; OUTPUT_RED(&quot;[E&quot;)&lt;&lt; OUTPUT_LTGRAY(message_stamp);stream&lt;&lt; OUTPUT_RED(&quot;] &quot;)&lt;&lt; COLOR_LTRED;} end_turnstile(can_turnstile_) clean_color_=true;return stream;})</td></tr>
-<tr class="separator:aa8feb30e031f9c715956212fa1a38306"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acff1db8f8cbfd30d839ae0c6d97d1259"><td class="memItemLeft" align="right" valign="top"><a id="acff1db8f8cbfd30d839ae0c6d97d1259"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::severity_message_t</b> (fatal, decltype(cinch::true_state), { std::lock_guard&lt; std::mutex &gt; guard(clog_t::instance().mutex());std::ostream &amp;stream=std::cerr;begin_turnstile(CLOG_TURNSTILE_NWAY, can_turnstile_) { stream&lt;&lt; OUTPUT_RED(&quot;[F&quot;&lt;&lt; message_stamp&lt;&lt; &quot;] &quot;)&lt;&lt; COLOR_LTRED;} end_turnstile(can_turnstile_) clean_color_=true;fatal_=true;return stream;})</td></tr>
-<tr class="separator:acff1db8f8cbfd30d839ae0c6d97d1259"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad23eb1762ab4470f6feaa6bf5bcf1b00"><td class="memItemLeft" align="right" valign="top"><a id="ad23eb1762ab4470f6feaa6bf5bcf1b00"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::severity_message_t</b> (trace, decltype(cinch::true_state), { std::ostream &amp;stream=clog_t::instance().severity_stream(CLOG_STRIP_LEVEL&lt; 1 &amp;&amp;predicate_() &amp;&amp;clog_t::instance().tag_enabled());{ stream&lt;&lt; OUTPUT_CYAN(&quot;[T&quot;)&lt;&lt; OUTPUT_LTGRAY(message_stamp);stream&lt;&lt; OUTPUT_DKGRAY(mpi_stamp);stream&lt;&lt; OUTPUT_CYAN(&quot;] &quot;);} return stream;})</td></tr>
+<tr class="separator:ad23eb1762ab4470f6feaa6bf5bcf1b00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a629a980209b16f2c3f3aa785b1a2b01d"><td class="memItemLeft" align="right" valign="top"><a id="a629a980209b16f2c3f3aa785b1a2b01d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::severity_message_t</b> (info, decltype(cinch::true_state), { std::ostream &amp;stream=clog_t::instance().severity_stream(CLOG_STRIP_LEVEL&lt; 2 &amp;&amp;predicate_() &amp;&amp;clog_t::instance().tag_enabled());{ stream&lt;&lt; OUTPUT_GREEN(&quot;[I&quot;)&lt;&lt; OUTPUT_LTGRAY(message_stamp);stream&lt;&lt; OUTPUT_DKGRAY(mpi_stamp);stream&lt;&lt; OUTPUT_GREEN(&quot;] &quot;);} return stream;})</td></tr>
+<tr class="separator:a629a980209b16f2c3f3aa785b1a2b01d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc4a2780cf69df8893948051c3606fb7"><td class="memItemLeft" align="right" valign="top"><a id="afc4a2780cf69df8893948051c3606fb7"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::severity_message_t</b> (warn, decltype(cinch::true_state), { std::ostream &amp;stream=clog_t::instance().severity_stream(CLOG_STRIP_LEVEL&lt; 3 &amp;&amp;predicate_() &amp;&amp;clog_t::instance().tag_enabled());{ stream&lt;&lt; OUTPUT_BROWN(&quot;[W&quot;)&lt;&lt; OUTPUT_LTGRAY(message_stamp);stream&lt;&lt; OUTPUT_DKGRAY(mpi_stamp);stream&lt;&lt; OUTPUT_BROWN(&quot;] &quot;)&lt;&lt; COLOR_YELLOW;} clean_color_=true;return stream;})</td></tr>
+<tr class="separator:afc4a2780cf69df8893948051c3606fb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a586810a67c0c3c2909adacbfb4735530"><td class="memItemLeft" align="right" valign="top"><a id="a586810a67c0c3c2909adacbfb4735530"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::severity_message_t</b> (error, decltype(cinch::true_state), { std::ostream &amp;stream=std::cerr;{ stream&lt;&lt; OUTPUT_RED(&quot;[E&quot;)&lt;&lt; OUTPUT_LTGRAY(message_stamp);stream&lt;&lt; OUTPUT_DKGRAY(mpi_stamp);stream&lt;&lt; OUTPUT_RED(&quot;] &quot;)&lt;&lt; COLOR_LTRED;} clean_color_=true;return stream;})</td></tr>
+<tr class="separator:a586810a67c0c3c2909adacbfb4735530"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c5e6f1d7b2e2ad9f69277099b887b7a"><td class="memItemLeft" align="right" valign="top"><a id="a4c5e6f1d7b2e2ad9f69277099b887b7a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::severity_message_t</b> (fatal, decltype(cinch::true_state), { std::ostream &amp;stream=std::cerr;{ stream&lt;&lt; OUTPUT_RED(&quot;[F&quot;&lt;&lt; message_stamp&lt;&lt; &quot;] &quot;)&lt;&lt; COLOR_LTRED;} clean_color_=true;fatal_=true;return stream;})</td></tr>
+<tr class="separator:a4c5e6f1d7b2e2ad9f69277099b887b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaeabe93215950903486560045fe45ff83"><td class="memTemplParams" colspan="2">template&lt;size_t RANK&gt; </td></tr>
 <tr class="memitem:gaeabe93215950903486560045fe45ff83"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__clog.html#gaeabe93215950903486560045fe45ff83">cinch::is_static_rank</a> ()</td></tr>
 <tr class="separator:gaeabe93215950903486560045fe45ff83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac1d076bc844a8c2d11b7bf0a6afd7968"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__clog.html#gac1d076bc844a8c2d11b7bf0a6afd7968">cinch::is_active_rank</a> ()</td></tr>
 <tr class="separator:gac1d076bc844a8c2d11b7bf0a6afd7968"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="section date"><dt>Date</dt><dd>Initial file creation: Dec 15, 2016 </dd></dl>
-</div><h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a6e9d1ef08e55844cea5e2c41beed3a4a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e9d1ef08e55844cea5e2c41beed3a4a">&#9670;&nbsp;</a></span>begin_turnstile</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define begin_turnstile</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">nway, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">enabled&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                    \</div><div class="line">  int _nway = (nway), _baton;                                                  \</div><div class="line">  if(enabled &amp;&amp; clog_t::instance().initialized() &amp;&amp;                            \</div><div class="line">    clog_t::instance().rank() &gt;= _nway) {                                      \</div><div class="line">    MPI_Recv(&amp;_baton, 1, MPI_INT, clog_t::instance().rank()-_nway,             \</div><div class="line">      42, MPI_COMM_WORLD, MPI_STATUS_IGNORE);                                  \</div><div class="line">  } <span class="comment">/* if */</span>                                                                   \</div><div class="line">  do</div></div><!-- fragment -->
-</div>
-</div>
+<h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a2016ce86137981f7fc858f519011e8a7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2016ce86137981f7fc858f519011e8a7">&#9670;&nbsp;</a></span>clog_register_tag</h2>
 
@@ -387,27 +376,27 @@ template&lt;char C&gt; </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">size_t</span> name ## _clog_tag_id =                                         <a class="code" href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">\</a></div><div class="line"><a class="code" href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">  cinch::clog_t::instance</a>().<a class="code" href="classcinch_1_1clog__t.html#a7905f42d4a850c4de9b5e365a95d6a01">register_tag</a>(_clog_stringify(name))</div><div class="ttc" id="classcinch_1_1clog__t_html_ac88c470d589819992083e8b09d069da6"><div class="ttname"><a href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">cinch::clog_t::instance</a></div><div class="ttdeci">static clog_t &amp; instance()</div><div class="ttdef"><b>Definition:</b> cinchlog.h:566</div></div>
-<div class="ttc" id="classcinch_1_1clog__t_html_a7905f42d4a850c4de9b5e365a95d6a01"><div class="ttname"><a href="classcinch_1_1clog__t.html#a7905f42d4a850c4de9b5e365a95d6a01">cinch::clog_t::register_tag</a></div><div class="ttdeci">size_t register_tag(const char *tag)</div><div class="ttdef"><b>Definition:</b> cinchlog.h:685</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">size_t</span> name ## _clog_tag_id =                                         <a class="code" href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">\</a></div><div class="line"><a class="code" href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">  cinch::clog_t::instance</a>().<a class="code" href="classcinch_1_1clog__t.html#a7905f42d4a850c4de9b5e365a95d6a01">register_tag</a>(_clog_stringify(name))</div><div class="ttc" id="classcinch_1_1clog__t_html_ac88c470d589819992083e8b09d069da6"><div class="ttname"><a href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">cinch::clog_t::instance</a></div><div class="ttdeci">static clog_t &amp; instance()</div><div class="ttdef"><b>Definition:</b> cinchlog.h:701</div></div>
+<div class="ttc" id="classcinch_1_1clog__t_html_a7905f42d4a850c4de9b5e365a95d6a01"><div class="ttname"><a href="classcinch_1_1clog__t.html#a7905f42d4a850c4de9b5e365a95d6a01">cinch::clog_t::register_tag</a></div><div class="ttdeci">size_t register_tag(const char *tag)</div><div class="ttdef"><b>Definition:</b> cinchlog.h:835</div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="abcba7f204ac485f38cdbe23daba71fcb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abcba7f204ac485f38cdbe23daba71fcb">&#9670;&nbsp;</a></span>end_turnstile</h2>
+<a id="afb9da1500088f1c5a27690ec7be4efcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb9da1500088f1c5a27690ec7be4efcd">&#9670;&nbsp;</a></span>send_to_one</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define end_turnstile</td>
+          <td class="memname">#define send_to_one</td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname">enabled</td><td>)</td>
+          <td class="paramname">message</td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">while</span>(0);                                       \</div><div class="line">  if(enabled &amp;&amp; clog_t::instance().initialized() &amp;&amp;                            \</div><div class="line">    clog_t::instance().rank() + _nway &lt; clog_t::instance().size()) {           \</div><div class="line">    MPI_Send(&amp;_baton, 1, MPI_INT, clog_t::instance().rank()+_nway,             \</div><div class="line">      42, MPI_COMM_WORLD);                                                     \</div><div class="line">  } <span class="comment">/* if */</span>                                                                   \</div><div class="line">} <span class="keywordflow">while</span>(0);</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line">\</div><div class="line">  if(mpi_state_t::instance().initialized()) { \</div><div class="line">    packet_t pkt(message);                                                     \</div><div class="line">                                                                               \</div><div class="line">    packet_t * pkts = mpi_state_t::instance().rank() == 0 ?                    \</div><div class="line">      new packet_t[mpi_state_t::instance().size()] :                           \</div><div class="line">      nullptr;                                                                 \</div><div class="line">                                                                               \</div><div class="line">    MPI_Gather(pkt.data(), pkt.bytes(), MPI_BYTE,                              \</div><div class="line">      pkts, pkt.bytes(), MPI_BYTE, 0, MPI_COMM_WORLD);                         \</div><div class="line">                                                                               \</div><div class="line">    if(mpi_state_t::instance().rank()==0) {                                    \</div><div class="line">                                                                               \</div><div class="line">      std::lock_guard&lt;std::mutex&gt;                                              \</div><div class="line">        guard(mpi_state_t::instance().packets_mutex());                        \</div><div class="line">                                                                               \</div><div class="line">      for(<span class="keywordtype">size_t</span> i{0}; i&lt;mpi_state_t::instance().size(); ++i) {                \</div><div class="line">        mpi_state_t::instance().packets().push_back(pkts[i]);                  \</div><div class="line">      } <span class="comment">/* for */</span>                                                              \</div><div class="line">                                                                               \</div><div class="line">      delete[] pkts;                                                           \</div><div class="line">                                                                               \</div><div class="line">    } <span class="comment">/* if */</span>                                                                 \</div><div class="line">  } <span class="comment">/* if */</span></div></div><!-- fragment -->
 </div>
 </div>
 <a id="a1700c8e824a32dffd083f733f7f237a7"></a>
@@ -441,7 +430,7 @@ template&lt;char C&gt; </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">struct </span>severity ## _log_message_t                                              \</div><div class="line">  : <span class="keyword">public</span> log_message_t&lt;P&gt;                                                    \</div><div class="line">{                                                                              \</div><div class="line">  severity ## _log_message_t(                                                  \</div><div class="line">    <span class="keyword">const</span> <span class="keywordtype">char</span> * file,                                                         \</div><div class="line">    <span class="keywordtype">int</span> line,                                                                  \</div><div class="line">    <span class="keywordtype">bool</span> can_turnstile,                                                        \</div><div class="line">    P &amp;&amp; predicate = true_state)                                               \</div><div class="line">    : log_message_t&lt;P&gt;(file, line, can_turnstile, predicate) {}                \</div><div class="line">                                                                               \</div><div class="line">  ~severity ## _log_message_t()                                                \</div><div class="line">  {                                                                            \</div><div class="line">    <span class="comment">/* Clean colors from the stream */</span>                                         \</div><div class="line">    if(clean_color_) {                                                         \</div><div class="line">      clog_t::instance().stream() &lt;&lt; COLOR_PLAIN;                              \</div><div class="line">    }                                                                          \</div><div class="line">  }                                                                            \</div><div class="line">                                                                               \</div><div class="line">  std::ostream &amp;                                                               \</div><div class="line">  stream() override                                                            \</div><div class="line">    <span class="comment">/* This is replaced by the scoped logic */</span>                                 \</div><div class="line">    format                                                                     \</div><div class="line">}</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">struct </span>severity ## _log_message_t                                              \</div><div class="line">  : <span class="keyword">public</span> log_message_t&lt;P&gt;                                                    \</div><div class="line">{                                                                              \</div><div class="line">  severity ## _log_message_t(                                                  \</div><div class="line">    <span class="keyword">const</span> <span class="keywordtype">char</span> * file,                                                         \</div><div class="line">    <span class="keywordtype">int</span> line,                                                                  \</div><div class="line">    P &amp;&amp; predicate = true_state)                                               \</div><div class="line">    : log_message_t&lt;P&gt;(file, line, predicate) {}                               \</div><div class="line">                                                                               \</div><div class="line">  ~severity ## _log_message_t()                                                \</div><div class="line">  {                                                                            \</div><div class="line">    <span class="comment">/* Clean colors from the stream */</span>                                         \</div><div class="line">    if(clean_color_) {                                                         \</div><div class="line">      clog_t::instance().buffer_stream() &lt;&lt; COLOR_PLAIN;                       \</div><div class="line">    }                                                                          \</div><div class="line">  }                                                                            \</div><div class="line">                                                                               \</div><div class="line">  std::ostream &amp;                                                               \</div><div class="line">  stream() override                                                            \</div><div class="line">    <span class="comment">/* This is replaced by the scoped logic */</span>                                 \</div><div class="line">    format                                                                     \</div><div class="line">}</div></div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>

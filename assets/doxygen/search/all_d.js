@@ -66,6 +66,7 @@ var searchData=
   ['mpi_5fmutator_5fhandle_5fpolicy_5ft',['mpi_mutator_handle_policy_t',['../structflecsi_1_1mpi__mutator__handle__policy__t.html',1,'flecsi']]],
   ['mpi_5fset_5ftopology_5fstorage_5fpolicy_5f_5f',['mpi_set_topology_storage_policy__',['../structflecsi_1_1topology_1_1mpi__set__topology__storage__policy____.html',1,'flecsi::topology']]],
   ['mpi_5fsparse_5fdata_5fhandle_5fpolicy_5ft',['mpi_sparse_data_handle_policy_t',['../structflecsi_1_1mpi__sparse__data__handle__policy__t.html',1,'flecsi']]],
+  ['mpi_5fstate_5ft',['mpi_state_t',['../structcinch_1_1mpi__state__t.html',1,'cinch']]],
   ['mpi_5fstorage_5fpolicy_5ft',['mpi_storage_policy_t',['../structflecsi_1_1data_1_1mpi__storage__policy__t.html',1,'flecsi::data']]],
   ['mpi_5ftopology_5fstorage_5fpolicy_5f_5f',['mpi_topology_storage_policy__',['../structflecsi_1_1topology_1_1mpi__topology__storage__policy____.html',1,'flecsi::topology']]],
   ['mpi_5ftypetraits_5f_5f',['mpi_typetraits__',['../structflecsi_1_1coloring_1_1mpi__typetraits____.html',1,'flecsi::coloring']]],
