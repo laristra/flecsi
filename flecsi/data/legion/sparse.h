@@ -178,11 +178,35 @@ namespace legion {
       size_t index_space = field_info.index_space;
       auto & ism = context.index_space_data_map();
 
-      mutator_handle__<DATA_TYPE> h(0, 0, 0, 0, slots);
+      auto& im = context.sparse_index_space_info_map();
+      auto iitr = im.find(index_space);
+      clog_assert(iitr != im.end(),
+        "sparse index space info not registered for index space: " <<
+        index_space);
 
-      auto& sim = context.sparse_index_space_info_map();
-      auto sitr = sim.find(index_space);
-      
+      const size_t max_entries_per_index = iitr->second.max_entries_per_index;
+      const size_t reserve_chunk = iitr->second.reserve_chunk;
+
+      mutator_handle__<DATA_TYPE> h(max_entries_per_index, slots);
+
+      h.offsets_color_region = ism[index_space].color_region;
+      h.offsets_exclusive_lr = ism[index_space].exclusive_lr;
+      h.offsets_shared_lr = ism[index_space].shared_lr;
+      h.offsets_ghost_lr = ism[index_space].ghost_lr;
+
+      // TODO: formalize sparse offset
+      constexpr size_t sparse_offset = 8192;
+
+      h.entries_color_region = ism[index_space + sparse_offset].color_region;
+      h.entries_exclusive_lr = ism[index_space + sparse_offset].exclusive_lr;
+      h.entries_shared_lr = ism[index_space + sparse_offset].shared_lr;
+      h.entries_ghost_lr = ism[index_space + sparse_offset].ghost_lr;
+
+      h.metadata_color_region = context.sparse_metadata().color_region;
+
+      h.fid = field_info.fid;
+      h.index_space = index_space;
+      h.data_client_hash = field_info.data_client_hash;
 
       return h;
     }

@@ -68,7 +68,8 @@ public:
       size_t num_slots)
       : num_entries_(num_exclusive + num_shared + num_ghost),
         num_exclusive_(num_exclusive),
-        max_entries_per_index_(max_entries_per_index), num_slots_(num_slots) {
+        max_entries_per_index_(max_entries_per_index),
+        num_slots_(num_slots) {
     pi_.count[0] = num_exclusive;
     pi_.count[1] = num_shared;
     pi_.count[2] = num_ghost;
@@ -83,9 +84,43 @@ public:
     pi_.end[2] = pi_.end[1] + num_ghost;
   }
 
+  mutator_handle_base__(
+      size_t max_entries_per_index,
+      size_t num_slots)
+      : max_entries_per_index_(max_entries_per_index),
+        num_slots_(num_slots) {
+  }
+
   mutator_handle_base__(const mutator_handle_base__ & b) = default;
 
   ~mutator_handle_base__() {}
+
+  void init(
+    size_t num_exclusive,
+    size_t num_shared,
+    size_t num_ghost,
+    size_t max_entries_per_index,
+    size_t num_slots
+    ){
+    
+    num_entries_ = num_exclusive + num_shared + num_ghost;
+    num_exclusive_ = num_exclusive;
+
+    pi_.count[0] = num_exclusive;
+    pi_.count[1] = num_shared;
+    pi_.count[2] = num_ghost;
+
+    pi_.start[0] = 0;
+    pi_.end[0] = num_exclusive;
+
+    pi_.start[1] = num_exclusive;
+    pi_.end[1] = num_exclusive + num_shared;
+
+    pi_.start[2] = pi_.end[1];
+    pi_.end[2] = pi_.end[1] + num_ghost;
+
+    init();
+  }
 
   void init() {
     offsets_ = new offset_t[num_entries_];

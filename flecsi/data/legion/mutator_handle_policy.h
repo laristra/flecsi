@@ -49,6 +49,8 @@ struct legion_mutator_handle_policy_t {
   Legion::LogicalRegion entries_shared_lr;
   Legion::LogicalRegion entries_ghost_lr;
 
+  Legion::LogicalRegion metadata_color_region;
+
   Legion::Context context;
   Legion::Runtime * runtime;
 
@@ -59,6 +61,8 @@ struct legion_mutator_handle_policy_t {
   Legion::PhysicalRegion entries_exclusive_pr;
   Legion::PhysicalRegion entries_shared_pr;
   Legion::PhysicalRegion entries_ghost_pr;
+
+  Legion::PhysicalRegion metadata_pr;
 }; // class legion_mutator_handle_policy_t
 
 } // namespace flecsi
