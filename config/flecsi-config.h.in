@@ -26,9 +26,17 @@
 //----------------------------------------------------------------------------//
 
 #if defined(FLECSI_ENABLE_LEGION)
+  #if !defined(LEGION_USE_CMAKE)
+    #define LEGION_USE_CMAKE
+  #endif
+  #if !defined(REALM_USE_CMAKE)
+    #define REALM_USE_CMAKE
+  #endif
   #define ENABLE_LEGION_TLS
-  #define LEGION_USE_CMAKE
-  #define REALM_USE_CMAKE
+
+#cmakedefine MAPPER_COMPACTION
+#cmakedefine COMPACTED_STORAGE_SORT
+
 #endif
 
 //----------------------------------------------------------------------------//
