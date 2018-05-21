@@ -742,10 +742,11 @@ public:
     FieldAllocator allocator =
         runtime_->create_field_allocator(ctx_, sparse_metadata_.field_space);
 
-    auto sparse_metadata_fid = FieldID(internal_field::sparse_metadata);
-
-    allocator.allocate_field(
-        sizeof(context_t::sparse_field_data_t), sparse_metadata_fid);
+    for (const context_t::field_info_t & fi : context.registered_fields()) {
+      if (fi.storage_class == sparse) {
+        allocator.allocate_field(sizeof(context_t::sparse_field_data_t), fi.fid);
+      } // if
+    } // for
 
     sparse_metadata_.logical_region =
         runtime_->create_logical_region(ctx_, sparse_metadata_.index_space, sparse_metadata_.field_space);
@@ -765,7 +766,7 @@ public:
     sparse_metadata_.index_partition = runtime_->create_index_partition(
         ctx_, sparse_metadata_.index_space, color_domain_, color_partitioning,
         true /*disjoint*/);
-        
+
     attach_name(sparse_metadata_, sparse_metadata_.index_partition,
                 "sparse metadata color partitioning");
 

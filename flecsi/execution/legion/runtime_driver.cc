@@ -677,9 +677,11 @@ runtime_driver(
         reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
           sparse_metadata.logical_region);
 
-      auto sparse_metadata_fid = Legion::FieldID(internal_field::sparse_metadata);
-
-      reg_req.add_field(sparse_metadata_fid);
+      for (const field_info_t & fi : context_.registered_fields()) {
+        if (fi.storage_class == sparse) {
+          reg_req.add_field(fi.fid);
+        } // if
+      } // for
 
       spmd_launcher.add_region_requirement(reg_req);  
     }
