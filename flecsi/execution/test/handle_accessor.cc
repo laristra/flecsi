@@ -70,7 +70,7 @@ void specialization_tlt_init(int argc, char ** argv) {
 
   //flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
  // add_colorings_dependent_partition();
-  add_colorings_unified();
+  add_colorings_unified(map);
 } // specialization_tlt_init
 
 //----------------------------------------------------------------------------//

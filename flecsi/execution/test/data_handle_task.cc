@@ -146,7 +146,7 @@ void specialization_tlt_init(int argc, char ** argv) {
 
   //flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
  // add_colorings_dependent_partition();
-  add_colorings_unified();
+  add_colorings_unified(map);
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
   auto global_handle = flecsi_get_global(ns, velocity, double, 0);

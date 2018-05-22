@@ -8,11 +8,12 @@
 
 #include <legion.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/supplemental/coloring/add_colorings.h>
 
 namespace flecsi {
 namespace execution {
 
-void add_colorings_unified(); 
+void add_colorings_unified(coloring_map_t map); 
   
 } // namespace execution
 } // namespace flecsi

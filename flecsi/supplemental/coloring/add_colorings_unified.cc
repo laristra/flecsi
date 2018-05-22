@@ -6,13 +6,15 @@
 #include <flecsi/execution/legion/dependent_partition.h>
 #include <flecsi/topology/mesh_definition.h>
 #include <flecsi/io/simple_definition.h>
+#include <flecsi/supplemental/coloring/add_colorings.h>
+#include <flecsi/supplemental/coloring/add_colorings_unified.h>
 
 
 namespace flecsi {
 namespace execution {
 
 void
-add_colorings_unified()    
+add_colorings_unified(coloring_map_t map)    
 {
   printf("start DP\n");
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
@@ -24,7 +26,11 @@ add_colorings_unified()
   
   dependent_partition &dp = legion_dp;
   
-  legion_entity cells = dp.load_entity(num_cells, 0, 2, sd);
+  std::vector<int> entity_vector;
+  entity_vector.push_back(sd.dimension());
+  entity_vector.push_back(0);
+  
+  legion_entity cells = dp.load_entity(num_cells, sd.dimension(), map.cells, entity_vector, sd);
   
   legion_adjacency cell_to_cell = dp.load_cell_to_entity(cells, cells, sd);
   
@@ -40,7 +46,7 @@ add_colorings_unified()
   
   legion_partition cell_exclusive = dp.partition_by_difference(cells, cell_primary, cell_shared);
   
-  legion_entity vertices = dp.load_entity(num_vertices, 1, 2, sd);
+  legion_entity vertices = dp.load_entity(num_vertices, 0, map.vertices, entity_vector, sd);
   
   legion_adjacency cell_to_vertex = dp.load_cell_to_entity(cells, vertices, sd);
   

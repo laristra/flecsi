@@ -19,7 +19,7 @@ class legion_partition;
   
 class dependent_partition {
 public:
-  virtual legion_entity load_entity(int entities_size, int entity_id, int total_num_entities, flecsi::topology::mesh_definition_base__ &md) = 0;
+  virtual legion_entity load_entity(int entities_size, int entity_id, int entity_map_id, std::vector<int> &entity_vector, flecsi::topology::mesh_definition_base__ &md) = 0;
   virtual legion_adjacency load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region, flecsi::topology::mesh_definition_base__ &md) = 0;
   virtual legion_partition partition_by_color(legion_entity &entity) = 0;
   virtual legion_partition partition_by_image(legion_entity &from_entity, legion_entity &to_entity, legion_adjacency &adjacency, legion_partition &from) = 0;

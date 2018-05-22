@@ -8,22 +8,26 @@
 namespace flecsi {
 namespace execution {
 
-legion_entity legion_dependent_partition::load_entity(int entities_size, int entity_id, int total_num_entities, flecsi::topology::mesh_definition_base__ &md)
+legion_entity legion_dependent_partition::load_entity(int entities_size, int entity_id, int entity_map_id, std::vector<int> &entity_vector, flecsi::topology::mesh_definition_base__ &md)
 {
-  if (entity_id == 0) {
-    return load_cell(entities_size, total_num_entities, md);
+  if (entity_id == md.dimension()) {
+    return load_cell(entities_size, entity_map_id, entity_vector, md);
   } else {
-    return load_non_cell(entities_size, entity_id);
+    return load_non_cell(entities_size, entity_id, entity_map_id);
   }
 }
 
-legion_entity legion_dependent_partition::load_cell(int cells_size, int total_num_entities, flecsi::topology::mesh_definition_base__ &md)
+legion_entity legion_dependent_partition::load_cell(int cells_size, int entity_map_id, std::vector<int> &entity_vector, flecsi::topology::mesh_definition_base__ &md)
 {
-	printf("[Load cells], num_cells %d, total_num_entities %d\n", cells_size, total_num_entities);
+	printf("[Load cells], num_cells %d, total_num_entities %d\n", cells_size, entity_vector.size());
+  
+  assert(entity_vector[0] == 2);
   
   Legion::Runtime *runtime = Legion::Runtime::get_runtime();
   Legion::Context ctx = Legion::Runtime::get_context();
   context_t & context_ = context_t::instance();
+  
+  task_mesh_definition_t task_md;
   
   // **************************************************************************
 	// Create cell index space, field space and logical region
@@ -39,16 +43,16 @@ legion_entity legion_dependent_partition::load_cell(int cells_size, int total_nu
 	runtime->attach_name(cell_field_space, FID_CELL_PARTITION_COLOR, "FID_CELL_PARTITION_COLOR");
 	cell_allocator.allocate_field(sizeof(LegionRuntime::Arrays::Rect<1>), FID_CELL_CELL_NRANGE);
 	runtime->attach_name(cell_field_space, FID_CELL_CELL_NRANGE, "FID_CELL_CELL_NRANGE");
-  if (total_num_entities >= 2) {
-	  cell_allocator.allocate_field(sizeof(LegionRuntime::Arrays::Rect<1>), FID_CELL_VERTEX_NRANGE);
-	  runtime->attach_name(cell_field_space, FID_CELL_VERTEX_NRANGE, "FID_CELL_VERTEX_NRANGE");
-  }
-  if (total_num_entities >= 3) {
-	  cell_allocator.allocate_field(sizeof(LegionRuntime::Arrays::Rect<1>), FID_CELL_EDGE_NRANGE);
-	  runtime->attach_name(cell_field_space, FID_CELL_EDGE_NRANGE, "FID_CELL_EDGE_NRANGE");
-  }
-  if (total_num_entities >= 4) {
-    assert(0);
+  for (int i = 1; i < entity_vector.size(); i++) {
+    if (entity_vector[i] == 0) {
+  	  cell_allocator.allocate_field(sizeof(LegionRuntime::Arrays::Rect<1>), FID_CELL_VERTEX_NRANGE);
+  	  runtime->attach_name(cell_field_space, FID_CELL_VERTEX_NRANGE, "FID_CELL_VERTEX_NRANGE");
+    }
+    if (entity_vector[i] == 1) {
+    	cell_allocator.allocate_field(sizeof(LegionRuntime::Arrays::Rect<1>), FID_CELL_EDGE_NRANGE);
+    	runtime->attach_name(cell_field_space, FID_CELL_EDGE_NRANGE, "FID_CELL_EDGE_NRANGE");
+    }
+    task_md.entity_array[i] = entity_vector[i];
   }
 	Legion::LogicalRegion cell_lr = runtime->create_logical_region(ctx,cell_index_space,cell_field_space);
   cell_allocator.allocate_field(sizeof(int), FID_CELL_OFFSET);
@@ -106,8 +110,8 @@ legion_entity legion_dependent_partition::load_cell(int cells_size, int total_nu
   
   legion_entity cell_region;
 
-  task_mesh_definition_t task_md;
   task_md.md_ptr = (intptr_t )&md;
+  task_md.total_num_entities = entity_vector.size();
 
   // Launch index task to init cell and vertex
   const auto init_cell_task_id =
@@ -134,14 +138,15 @@ legion_entity legion_dependent_partition::load_cell(int cells_size, int total_nu
   cell_region.color_fid = FID_CELL_PARTITION_COLOR;
   cell_region.id_fid = FID_CELL_ID;
   cell_region.offset_fid = FID_CELL_OFFSET;
-  cell_region.id = 0;
+  cell_region.id = md.dimension();
+  cell_region.map_id = entity_map_id;
   
   free(cell_count_per_subspace_scan);
   
   return cell_region;
 }
 
-legion_entity legion_dependent_partition::load_non_cell(int entities_size, int entity_id)
+legion_entity legion_dependent_partition::load_non_cell(int entities_size, int entity_id, int entity_map_id)
 {
   printf("[Load non_cells], num_entities %d, entity_id %d\n", entities_size, entity_id);
   
@@ -153,11 +158,11 @@ legion_entity legion_dependent_partition::load_non_cell(int entities_size, int e
 	// Create vertex index space, field space and logical region
   
   int id_fid, color_fid, offset_fid;
-  if(entity_id == 1) {
+  if(entity_id == 0) {
     id_fid = FID_VERTEX_ID;
     color_fid = FID_VERTEX_PARTITION_COLOR;
     offset_fid = FID_VERTEX_OFFSET;
-  } else if (entity_id == 2) {
+  } else if (entity_id == 1) {
     id_fid = FID_EDGE_ID;
     color_fid = FID_EDGE_PARTITION_COLOR;
     offset_fid = FID_EDGE_OFFSET;
@@ -215,6 +220,7 @@ legion_entity legion_dependent_partition::load_non_cell(int entities_size, int e
   entity_region.id_fid = id_fid;
   entity_region.offset_fid = offset_fid;
   entity_region.id = entity_id;
+  entity_region.map_id = entity_map_id;
   
   return entity_region;
 }
@@ -331,12 +337,12 @@ legion_adjacency legion_dependent_partition::load_cell_to_others(legion_entity &
   context_t & context_ = context_t::instance();
   
   int cell_to_others_id_fid, cell_to_others_ptr_fid, image_nrange_fid, image_fid;
-  if(entity_region.id == 1) {
+  if(entity_region.id == 0) {
     cell_to_others_id_fid = FID_CELL_TO_VERTEX_ID;
     cell_to_others_ptr_fid = FID_CELL_TO_VERTEX_PTR;
     image_nrange_fid = FID_CELL_VERTEX_NRANGE;
     image_fid = FID_CELL_TO_VERTEX_PTR;
-  } else if (entity_region.id == 2) {
+  } else if (entity_region.id == 1) {
     cell_to_others_id_fid = FID_CELL_TO_EDGE_ID;
     cell_to_others_ptr_fid = FID_CELL_TO_EDGE_PTR;
     image_nrange_fid = FID_CELL_EDGE_NRANGE;
@@ -353,7 +359,14 @@ legion_adjacency legion_dependent_partition::load_cell_to_others(legion_entity &
 	cell_to_others_count_per_subspace_scan[0] = 0;
 	for (int j = 0; j < num_color; j++) {
 		init_mesh_task_rt_t rt_value = cell_region.task_fm.get_result<init_mesh_task_rt_t>(j);
-		total_cell_to_others_count += rt_value.cell_to_vertex_count;
+    //TODO face
+    if (entity_region.id == 0) {
+		  total_cell_to_others_count += rt_value.cell_to_vertex_count;
+    } else if (entity_region.id == 1) {
+      total_cell_to_others_count += rt_value.cell_to_edge_count;
+    } else {
+      assert(0);
+    }
 		cell_to_others_count_per_subspace_scan[j+1] = total_cell_to_others_count;
 	}
   
@@ -393,6 +406,7 @@ legion_adjacency legion_dependent_partition::load_cell_to_others(legion_entity &
   
   task_mesh_definition_t task_md;
   task_md.md_ptr = (intptr_t )&md;
+  task_md.entity_id = entity_region.id;
   memcpy(task_args_buff, &task_md, sizeof(task_mesh_definition_t));
   
 	Legion::ArgumentMap arg_map_init_cell_to_others;
@@ -566,6 +580,7 @@ void legion_dependent_partition::output_partition(legion_entity &entity, legion_
     context_.task_id<__flecsi_internal_task_key(output_partition_task)>();
   
   task_entity_t task_entity;
+  task_entity.entity_map_id = entity.map_id;
   task_entity.entity_id = entity.id;
   task_entity.id_fid = entity.id_fid;
   task_entity.color_fid = entity.color_fid;

@@ -59,7 +59,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   map.vertices = 1;
   map.cells = 0;
 
-  add_colorings_unified();
+  add_colorings_unified(map);
   //flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
 } // specialization_tlt_init

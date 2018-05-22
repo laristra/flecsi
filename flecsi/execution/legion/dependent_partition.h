@@ -25,6 +25,7 @@ public:
   Legion::FieldID id_fid;
   Legion::FieldID offset_fid;
   int id;
+  int map_id;
 public:
   legion_entity() {}
   ~legion_entity()
@@ -72,7 +73,7 @@ public:
 public:
   legion_dependent_partition() {}
   
-  virtual legion_entity load_entity(int entities_size, int entity_id, int total_num_entities, flecsi::topology::mesh_definition_base__ &md) override;
+  virtual legion_entity load_entity(int entities_size, int entity_id, int entity_map_id, std::vector<int> &entity_vector, flecsi::topology::mesh_definition_base__ &md) override;
   virtual legion_adjacency load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region, flecsi::topology::mesh_definition_base__ &md) override;
   virtual legion_partition partition_by_color(legion_entity &entity) override;
   virtual legion_partition partition_by_image(legion_entity &from_entity, legion_entity &to_entity, legion_adjacency &adjacency, legion_partition &from) override;
@@ -82,8 +83,8 @@ public:
   virtual void min_reduction_by_color(legion_entity &entity, legion_partition &alias_partition) override;
 
 public:
-  legion_entity load_cell(int cells_size, int total_num_entities, flecsi::topology::mesh_definition_base__ &md);
-  legion_entity load_non_cell(int entities_size, int entity_id);
+  legion_entity load_cell(int cells_size, int entity_map_id, std::vector<int> &entity_vector, flecsi::topology::mesh_definition_base__ &md);
+  legion_entity load_non_cell(int entities_size, int entity_id, int entity_map_id);
   legion_adjacency load_cell_to_cell(legion_entity &cell_region, flecsi::topology::mesh_definition_base__ &md);
   legion_adjacency load_cell_to_others(legion_entity &cell_region, legion_entity &other_region, flecsi::topology::mesh_definition_base__ &md);
   void set_offset(legion_entity &entity, legion_partition &primary);
