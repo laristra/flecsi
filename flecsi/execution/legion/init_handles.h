@@ -562,7 +562,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     > &m
   )
   {
-    // TODO: implement
+    auto & h = m.h_; 
+
   }
 
   Legion::Runtime * runtime;

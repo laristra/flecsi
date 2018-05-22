@@ -41,16 +41,36 @@ struct legion_sparse_data_handle_policy_t {
   // across multiple ranks/colors and should be used ONLY as read-only data
 
   field_id_t fid;
-  field_id_t id_fid;
   size_t index_space;
   size_t data_client_hash;
 
   // These depend on color but are only used in specifying
   // the region requirements
-  Legion::LogicalRegion color_region;
-  Legion::LogicalRegion exclusive_lr;
-  Legion::LogicalRegion shared_lr;
-  Legion::LogicalRegion ghost_lr;
+  Legion::LogicalRegion offsets_color_region;
+  Legion::LogicalRegion offsets_exclusive_lr;
+  Legion::LogicalRegion offsets_shared_lr;
+  Legion::LogicalRegion offsets_ghost_lr;
+
+  Legion::LogicalRegion entries_color_region;
+  Legion::LogicalRegion entries_exclusive_lr;
+  Legion::LogicalRegion entries_shared_lr;
+  Legion::LogicalRegion entries_ghost_lr;
+
+  Legion::LogicalRegion metadata_color_region;
+
+  Legion::Context context;
+  Legion::Runtime * runtime;
+
+  Legion::PhysicalRegion offsets_exclusive_pr;
+  Legion::PhysicalRegion offsets_shared_pr;
+  Legion::PhysicalRegion offsets_ghost_pr;
+
+  Legion::PhysicalRegion entries_exclusive_pr;
+  Legion::PhysicalRegion entries_shared_pr;
+  Legion::PhysicalRegion entries_ghost_pr;
+
+  Legion::PhysicalRegion metadata_pr;
+
   std::vector<Legion::LogicalRegion> ghost_owners_lregions;
   std::vector<Legion::LogicalRegion> ghost_owners_subregions;
 
@@ -65,11 +85,6 @@ struct legion_sparse_data_handle_policy_t {
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions
 
-  Legion::Context context;
-  Legion::Runtime * runtime;
-  Legion::PhysicalRegion exclusive_pr;
-  Legion::PhysicalRegion shared_pr;
-  Legion::PhysicalRegion ghost_pr;
   size_t exclusive_priv;
   size_t shared_priv;
   size_t ghost_priv;

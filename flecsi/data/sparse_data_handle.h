@@ -65,6 +65,13 @@ struct sparse_data_handle_base__ : public DATA_POLICY,
         num_shared_(b.num_shared_), num_ghost_(b.num_ghost_),
         num_total_(b.num_total_) {}
 
+  void init(size_t num_exclusive, size_t num_shared, size_t num_ghost){
+    num_exclusive_ = num_exclusive;
+    num_shared_ = num_shared;
+    num_ghost_ = num_ghost;
+    num_total_ = num_exclusive_ + num_shared_ + num_ghost_;
+  }
+
   size_t num_exclusive_;
   size_t num_shared_;
   size_t num_ghost_;
