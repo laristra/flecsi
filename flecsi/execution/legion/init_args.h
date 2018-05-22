@@ -259,7 +259,51 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     > &a
   )
   {
-    // TODO: implement
+    auto & h = a.handle;
+
+    Legion::MappingTagID tag = EXCLUSIVE_LR;
+
+    Legion::RegionRequirement md_rr(
+        h.metadata_color_region, READ_WRITE, EXCLUSIVE,
+        h.metadata_color_region);
+    md_rr.add_field(h.fid);
+    region_reqs.push_back(md_rr);
+
+    Legion::RegionRequirement ex_rr(
+        h.offsets_exclusive_lr, READ_WRITE, EXCLUSIVE,
+        h.offsets_color_region, tag);
+    ex_rr.add_field(h.fid);
+    region_reqs.push_back(ex_rr);
+
+    Legion::RegionRequirement sh_rr(
+        h.offsets_shared_lr, READ_WRITE, EXCLUSIVE,
+        h.offsets_color_region);
+    sh_rr.add_field(h.fid);
+    region_reqs.push_back(sh_rr);
+
+    Legion::RegionRequirement gh_rr(
+        h.offsets_ghost_lr, READ_WRITE, EXCLUSIVE,
+        h.offsets_color_region);
+    gh_rr.add_field(h.fid);
+    region_reqs.push_back(gh_rr);
+
+    Legion::RegionRequirement ex_rr2(
+        h.entries_exclusive_lr, READ_WRITE, EXCLUSIVE,
+        h.entries_color_region, tag);
+    ex_rr2.add_field(h.fid);
+    region_reqs.push_back(ex_rr2);
+
+    Legion::RegionRequirement sh_rr2(
+        h.entries_shared_lr, READ_WRITE, EXCLUSIVE,
+        h.entries_color_region);
+    sh_rr2.add_field(h.fid);
+    region_reqs.push_back(sh_rr2);
+
+    Legion::RegionRequirement gh_rr2(
+        h.entries_ghost_lr, READ_WRITE, EXCLUSIVE,
+        h.entries_color_region);
+    gh_rr2.add_field(h.fid);
+    region_reqs.push_back(gh_rr2);
   }
 
   template<
@@ -275,6 +319,12 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     auto & h = m.h_;
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
+
+    Legion::RegionRequirement md_rr(
+        h.metadata_color_region, READ_WRITE, EXCLUSIVE,
+        h.metadata_color_region);
+    md_rr.add_field(h.fid);
+    region_reqs.push_back(md_rr);
 
     Legion::RegionRequirement ex_rr(
         h.offsets_exclusive_lr, READ_WRITE, EXCLUSIVE,
