@@ -412,7 +412,7 @@ struct context__ : public CONTEXT_POLICY {
   auto const & intermediate_map(size_t dimension, size_t domain) const {
     const size_t key = utils::hash::intermediate_hash(dimension, domain);
 
-    auto it = reverse_intermediate_map_.find(key);
+    auto it = intermediate_map_.find(key);
     clog_assert(
         it != intermediate_map_.end(),
         "invalid index space");
