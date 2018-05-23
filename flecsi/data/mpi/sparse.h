@@ -130,6 +130,9 @@ struct storage_class__<sparse>
     const data_client_t & data_client
   )
   {
+    static_assert(
+        VERSION < utils::hash::field_max_versions,
+        "max field version exceeded");
 
     auto& context = execution::context_t::instance();
 

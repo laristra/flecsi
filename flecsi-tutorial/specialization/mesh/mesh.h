@@ -24,7 +24,7 @@
 #include <flecsi/data/sparse_accessor.h>
 #include <flecsi/data/sparse_mutator.h>
 #include <flecsi/data/common/privilege.h>
-#include <specialization/mesh/policy.h>
+#include <flecsi-tutorial/specialization/mesh/policy.h>
 
 namespace flecsi {
 namespace tutorial {

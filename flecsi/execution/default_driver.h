@@ -22,7 +22,8 @@ namespace execution {
 
 /*! @cond IGNORE */
 
-void driver(int argc, char ** argv) {}
+void
+driver(int argc, char ** argv) {}
 
 /*! @endcond */
 

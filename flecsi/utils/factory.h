@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <iostream>
 #include <map>
 

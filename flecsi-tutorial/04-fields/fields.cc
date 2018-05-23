@@ -13,7 +13,7 @@
                                                                               */
 
 /*----------------------------------------------------------------------------*
-  Documentation for this example can be found in FIELDS.md.
+  Documentation for this example can be found in README.md.
  *----------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -25,10 +25,17 @@
 using namespace flecsi;
 using namespace flecsi::tutorial;
 
-flecsi_register_data_client(mesh_t, clients, mesh);
+// This call registers a field called 'field' against a data client
+// with type 'mesh_t' on the index space 'cells'. The field is in the
+// namespace 'example', and is of type 'double'. The field has storage
+// class 'dense', and has '1' version.
+
 flecsi_register_field(mesh_t, example, field, double, dense, 1, cells);
 
 namespace example {
+
+// This task takes mesh and field accessors and initializes the
+// field with the id of the cell on which it is defined.
 
 void initialize_field(mesh<ro> mesh, field<rw> f) {
   for(auto c: mesh.cells(owned)) {
@@ -36,14 +43,20 @@ void initialize_field(mesh<ro> mesh, field<rw> f) {
   } // for
 } // initialize_field
 
+// Task registration is as usual...
+
 flecsi_register_task(initialize_field, example, loc, single);
+
+// This task prints the field values.
 
 void print_field(mesh<ro> mesh, field<ro> f) {
   for(auto c: mesh.cells(owned)) {
-    std::cout << "cell id: " << c->id() << " has value " <<
+    clog(info) << "cell id: " << c->id() << " has value " <<
       f(c) << std::endl;
   } // for
 } // print_field
+
+// Task registration is as usual...
 
 flecsi_register_task(print_field, example, loc, single);
 
@@ -54,8 +67,12 @@ namespace execution {
 
 void driver(int argc, char ** argv) {
 
+  // Get data handles to the client and field
+
   auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
   auto f = flecsi_get_handle(m, example, field, double, dense, 0);
+
+  // Task execution is as usual...
 
   flecsi_execute_task(initialize_field, example, single, m, f);
   flecsi_execute_task(print_field, example, single, m, f);

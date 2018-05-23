@@ -142,7 +142,8 @@ runtime_driver(
 
   auto coloring_info = context_.coloring_info_map();
 
-  data.init_from_coloring_info_map(coloring_info);
+  data.init_from_coloring_info_map(coloring_info,
+    context_.sparse_index_space_info_map());
 
   for(auto& itr : context_.adjacency_info()){
     data.add_adjacency(itr.second);
@@ -234,7 +235,7 @@ runtime_driver(
   fm.wait_all_results(true);
 
   // map of index space to the field_ids that are mapped to this index space
-  std::map<size_t, std::vector<field_id_t>> fields_map;
+  std::map<size_t, std::vector<const field_info_t*>> fields_map;
 
   size_t number_of_color_fields = 0;
 
@@ -250,10 +251,10 @@ runtime_driver(
           break;
         case subspace:
         case local:
+        case sparse:
           break;
         default:
-          if(field_info.index_space == idx_space){
-            fields_map[idx_space].push_back(field_info.fid);
+            fields_map[idx_space].push_back(&field_info);
           } // if
           break;
       }
@@ -282,11 +283,12 @@ runtime_driver(
 
   // Add colors to must_epoch_launcher
   for(size_t color(0); color<num_colors; ++color) {
-   
+
+    size_t num_idx_spaces = context_.coloring_map().size();
+
     //-----------------------------------------------------------------------//
     // data serialization:
     //-----------------------------------------------------------------------//
-    
     // #2 serialize field info
     size_t num_fields = context_.registered_fields().size();
     args_serializers[color].serialize(&num_fields, sizeof(size_t));
@@ -605,6 +607,7 @@ setup_rank_context_task(
 #endif
 
 } // setup_rank_context_task
+
 
 } // namespace execution 
 } // namespace flecsi

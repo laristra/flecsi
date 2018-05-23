@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <iterator>
 #include <utility>
 

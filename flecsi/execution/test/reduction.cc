@@ -40,8 +40,8 @@ void reduction_check_task(handle_t<double> f_max, handle_t<double> f_min,
       int num_colors, int cycle)
 {
 std::cout <<"IRINA DEBUG"<<std::endl;
-//    ASSERT_EQ(f_max, static_cast<double>(num_colors * cycle));
-//    ASSERT_EQ(f_min, static_cast<double>(cycle));
+    ASSERT_EQ(f_max.get(), static_cast<double>(num_colors * cycle));
+    ASSERT_EQ(f_min.get(), static_cast<double>(cycle));
 }
 
 flecsi_register_task(reduction_check_task, flecsi::execution, loc, single);

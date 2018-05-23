@@ -14,25 +14,18 @@
 
 // includes: flecsi
 #include <flecsi/utils/id.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/test/print_type.h>
 
 // includes: C++
 #include <vector>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
 
 // =============================================================================
 // Helper constructs
 // =============================================================================
-
-// prtype
-// Print boost-demangled type.
-template<class T>
-inline void
-prtype(void) {
-  CINCH_CAPTURE() << boost::core::demangle(typeid(T).name()) << std::endl;
-}
 
 // print
 // Print a flecsi::utils::id_.
@@ -102,7 +95,7 @@ TEST(id, all) {
   // ------------------------
 
   // local_id_t
-  prtype<flecsi::utils::local_id_t>();
+  print_type<flecsi::utils::local_id_t>();
   CINCH_CAPTURE() << "sizeof(flecsi::utils::local_id_t) == "
                   << sizeof(flecsi::utils::local_id_t) << std::endl;
 
@@ -310,8 +303,13 @@ TEST(id, all) {
   // Compare
   // ------------------------
 
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("id.blessed.gnug"));
+#elif defined(_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("id.blessed.msvc"));
+#else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("id.blessed"));
-
+#endif
 } // TEST
 
 /*~------------------------------------------------------------------------~--*

@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <algorithm>
 #include <set>
 

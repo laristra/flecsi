@@ -18,6 +18,7 @@
 #include <flecsi/data/client.h>
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/field.h>
+#include <flecsi/data/internal_client.h>
 
 /*!
   @def flecsi_register_data_client
@@ -50,7 +51,7 @@
 
   This macro registers field data with a data_client_t type. Data
   registration creates a data attribute for the given client type.
-  This call does not necessarily cause memory to be allocated. It's
+  This call does not necessarily cause memory to be allocated. Its
   primary function is to describe the field data to the runtime.
   Memory allocation will likely be deferred.
 
@@ -66,8 +67,8 @@
   @ingroup data
  */
 
-#define flecsi_register_field(                                                 \
-    client_type, nspace, name, data_type, storage_class, versions, ...)        \
+#define flecsi_register_field(client_type, nspace, name, data_type,            \
+  storage_class, versions, ...)                                                \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
@@ -82,7 +83,7 @@
   @def flecsi_register_global
 
   This macro registers global field data.
-  This call does not necessarily cause memory to be allocated. It's
+  This call does not necessarily cause memory to be allocated. Its
   primary function is to describe the field data to the runtime.
   Memory allocation will likely be deferred.
 
@@ -106,13 +107,14 @@
           flecsi::data::global_data_client_t, flecsi::data::global, data_type, \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-          versions, ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
+          versions, flecsi::execution::internal_index_space::global_is,        \
+          ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
 
 /*!
   @def flecsi_register_color
 
   This macro registers color field data.
-  This call does not necessarily cause memory to be allocated. It's
+  This call does not necessarily cause memory to be allocated. Its
   primary function is to describe the field data to the runtime.
   Memory allocation will likely be deferred.
 
@@ -126,18 +128,17 @@
   @ingroup data
  */
 
-#define flecsi_register_color(nspace, name, data_type, versions, ...)         \
+#define flecsi_register_color(nspace, name, data_type, versions, ...)          \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
   bool client_type##_##nspace##_##name##_data_registered =                     \
       flecsi::data::field_interface_t::register_field<                         \
-          flecsi::data::color_data_client_t, flecsi::data::color, data_type, \
+          flecsi::data::color_data_client_t, flecsi::data::color, data_type,   \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-          versions, ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
-
-
+          versions, flecsi::execution::internal_index_space::color_is,         \
+          ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
 
 /*!
   @def flecsi_get_handle
@@ -191,7 +192,7 @@
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_handle(                                                           \
       flecsi_get_client_handle(                                                \
-          flecsi::data::global_data_client_t, nspace, name),                   \
+          flecsi::data::global_data_client_t, global_client, global_client),   \
       nspace, name, data_type, global, version)
 
 /*!
@@ -209,13 +210,13 @@
   @ingroup data
  */
 
-#define flecsi_get_color(nspace, name, data_type, version)                    \
+#define flecsi_get_color(nspace, name, data_type, version)                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_handle(                                                           \
       flecsi_get_client_handle(                                                \
-          flecsi::data::color_data_client_t, nspace, name),                   \
+          flecsi::data::color_data_client_t, color_client, color_client),      \
       nspace, name, data_type, color, version)
 
 /*!
@@ -387,11 +388,11 @@
   @param client_handle the data client handle
   @param nspace data namespace
   @param name data names
-  @param data_type data type e.g. float, long -- 
+  @param data_type data type e.g. float, long --
     any data type so long as it is trivially copyable
   @param storage_class storage class, e.g. dense, sparse
   @param version version number
-  @param slots number of slots to use for data commit -- 
+  @param slots number of slots to use for data commit --
     for optimal performance this should roughly be set to the expected
     number of entries that will be inserted per index although, it is fine
     if the number of inserted entries exceeds this value.
@@ -412,7 +413,7 @@
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
       version>(client_handle, slots)
-      
+
 /*!
  FIXME documentation
 */

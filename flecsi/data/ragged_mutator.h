@@ -57,8 +57,8 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
   using entry_value_t = typename base_t::entry_value_t;
   using erase_set_t = typename base_t::erase_set_t;
   using ragged_changes_t = typename mutator_handle__<T>::ragged_changes_t;
-  using ragged_changes_map_t = 
-    typename mutator_handle__<T>::ragged_changes_map_t;
+  using ragged_changes_map_t =
+      typename mutator_handle__<T>::ragged_changes_map_t;
 
   //--------------------------------------------------------------------------//
   //! Copy constructor.
@@ -125,11 +125,10 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
         "resize length exceeds max entries per index");
 
     auto itr = base_t::h_.ragged_changes_map_->find(index);
-    if(itr == base_t::h_.ragged_changes_map_->end()){
+    if (itr == base_t::h_.ragged_changes_map_->end()) {
       ragged_changes_t changes(size);
       base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
-    }
-    else{
+    } else {
       itr->second.size = size;
     }
   }
@@ -138,44 +137,42 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
     assert(index < base_t::h_.num_entries_);
 
     auto itr = base_t::h_.ragged_changes_map_->find(index);
-    if(itr == base_t::h_.ragged_changes_map_->end()){
+    if (itr == base_t::h_.ragged_changes_map_->end()) {
       const offset_t & offset = base_t::h_.offsets_[index];
       assert(ragged_index < offset.count());
       ragged_changes_t changes(offset.count() - 1);
       changes.init_erase_set();
       changes.erase_set->insert(ragged_index);
       base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
-    }
-    else{
-      ragged_changes_t& changes = itr->second;
+    } else {
+      ragged_changes_t & changes = itr->second;
 
       assert(ragged_index < changes.size);
 
-      if(!changes.erase_set){
+      if (!changes.erase_set) {
         changes.init_erase_set();
       }
 
-      if(changes.erase_set->insert(ragged_index).second){
+      if (changes.erase_set->insert(ragged_index).second) {
         --changes.size;
       }
     }
   }
 
-  void push_back(size_t index, const T& value) {
+  void push_back(size_t index, const T & value) {
     assert(index < base_t::h_.num_entries_);
 
     auto itr = base_t::h_.ragged_changes_map_->find(index);
-    if(itr == base_t::h_.ragged_changes_map_->end()){
+    if (itr == base_t::h_.ragged_changes_map_->end()) {
       const offset_t & offset = base_t::h_.offsets_[index];
       ragged_changes_t changes(offset.count() + 1);
       changes.init_push_values();
       changes.push_values->push_back(value);
       base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
-    }
-    else{
-      ragged_changes_t& changes = itr->second;
+    } else {
+      ragged_changes_t & changes = itr->second;
 
-      if(!changes.push_values){
+      if (!changes.push_values) {
         changes.init_push_values();
       }
 
@@ -185,32 +182,30 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
   }
 
   // insert BEFORE ragged index
-  void insert(size_t index, size_t ragged_index, const T& value) {
+  void insert(size_t index, size_t ragged_index, const T & value) {
     assert(index < base_t::h_.num_entries_);
 
     auto itr = base_t::h_.ragged_changes_map_->find(index);
-    if(itr == base_t::h_.ragged_changes_map_->end()){
+    if (itr == base_t::h_.ragged_changes_map_->end()) {
       const offset_t & offset = base_t::h_.offsets_[index];
       assert(ragged_index < offset.count());
       ragged_changes_t changes(offset.count() + 1);
       changes.init_insert_values();
       changes.insert_values->emplace(ragged_index, value);
       base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
-    }
-    else{
-      ragged_changes_t& changes = itr->second;
+    } else {
+      ragged_changes_t & changes = itr->second;
 
       assert(ragged_index < changes.size);
 
-      if(!changes.insert_values){
+      if (!changes.insert_values) {
         changes.init_insert_values();
       }
 
       auto p = changes.insert_values->emplace(ragged_index, value);
-      if(p.second){
+      if (p.second) {
         ++changes.size;
-      }
-      else{
+      } else {
         p.first->second = value;
       }
     }

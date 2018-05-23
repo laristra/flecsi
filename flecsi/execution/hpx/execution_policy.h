@@ -28,6 +28,7 @@
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/execution/hpx/future.h>
 #include <flecsi/execution/hpx/runtime_driver.h>
 #include <flecsi/execution/hpx/task_wrapper.h>
 #include <flecsi/utils/const_string.h>
@@ -73,8 +74,9 @@ struct executor__ {
 /// \brief hpx_execution_policy provides...
 ///
 struct FLECSI_EXPORT hpx_execution_policy_t {
+
   template<typename R, launch_type_t launch = launch_type_t::single>
-  using future__ = hpx::shared_future<R>;
+  using future__ = hpx_future__<R, launch>;
 
   //--------------------------------------------------------------------------//
   //! The task_wrapper__ type FIXME

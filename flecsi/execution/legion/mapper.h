@@ -54,10 +54,9 @@ namespace execution {
 
 class mpi_mapper_t : public Legion::Mapping::DefaultMapper {
 public:
-
   /*!
    Contructor. Derives from the Legion's Default Mapper
-  
+
    @param machine Machine type for Legion's Realm
    @param _runtime Legion runtime
    @param local processor type: currently supports only
@@ -149,7 +148,7 @@ public:
    In the case the launcher has been tagged with the
    "MAPPER_COMPACTED_STORAGE" tag, mapper will create single physical
    instance for exclusive, shared and ghost partitions for each data handle
-  
+
     @param ctx Mapper Context
     @param task Legion's task
     @param input Input information about task mapping
@@ -163,13 +162,12 @@ public:
       Legion::Mapping::Mapper::MapTaskOutput & output) {
     DefaultMapper::map_task(ctx, task, input, output);
 
-
-    if ( ((task.tag & MAPPER_COMPACTED_STORAGE) != 0) &&                                                                                                                                                                                                                                                                  
-            (task.regions.size()>0)){
+    if ((task.tag == MAPPER_COMPACTED_STORAGE) &&
+        (task.regions.size() > 0)) {
 
       Legion::Memory target_mem =
           DefaultMapper::default_policy_select_target_memory(
-              ctx, task.target_proc,task.regions[0]);
+              ctx, task.target_proc, task.regions[0]);
 
       // check if we get region requirements for "exclusive, shared and ghost"
       // logical regions for each data handle
@@ -240,16 +238,12 @@ public:
 
   } // map_task
 
-  virtual
-  void
-  slice_task(
+  virtual void slice_task(
       const Legion::Mapping::MapperContext ctx,
-      const Legion::Task& task,
-      const Legion::Mapping::Mapper::SliceTaskInput& input,
-      Legion::Mapping::Mapper::SliceTaskOutput& output
-             )
-  {
-    using legion_proc=Legion::Processor;
+      const Legion::Task & task,
+      const Legion::Mapping::Mapper::SliceTaskInput & input,
+      Legion::Mapping::Mapper::SliceTaskOutput & output) {
+    using legion_proc = Legion::Processor;
     context_t & context_ = context_t::instance();
 
     if(task.tag == MAPPER_SUBRANK_LAUNCH) {
@@ -272,14 +266,14 @@ public:
       std::map<int, Legion::Processor> targets;
 
       Legion::Machine::ProcessorQuery pq =
-	Legion::Machine::ProcessorQuery(machine).only_kind(
-		Legion::Processor::LOC_PROC);
+        Legion::Machine::ProcessorQuery(machine).only_kind(
+                Legion::Processor::LOC_PROC);
       for(Legion::Machine::ProcessorQuery::iterator it = pq.begin();
-	it != pq.end(); ++it) {
+        it != pq.end(); ++it) {
         Legion::Processor p = *it;
         int a = p.address_space();
         if(targets.count(a) == 0)
-  	  targets[a] = p;
+          targets[a] = p;
       }
 
       output.slices.resize(r.volume());
@@ -290,10 +284,10 @@ public:
         output.slices[a].proc = targets[a];
       }
       return;
-    }//MAPPER_FORCE_RANK_MATCH
-    
+    }//MAPPER_FORCE_RANK_MATCH 
+ 
     DefaultMapper::slice_task(ctx, task, input, output);
-    
+     // end else
   }
 
 private:

@@ -25,6 +25,7 @@ struct data_client_handle_entity_t
   data_client_handle_entity_t() : index_space(0), dim(0), domain(0), size(0), fid(0) {}
 
   std::size_t index_space;
+  std::size_t index_space2;
   std::size_t dim;
   std::size_t domain;
   std::size_t size;
@@ -32,6 +33,8 @@ struct data_client_handle_entity_t
   std::size_t num_shared;
   std::size_t num_ghost;
   field_id_t fid;
+  field_id_t fid2;
+  field_id_t fid3;
   field_id_t id_fid;
 };
 
