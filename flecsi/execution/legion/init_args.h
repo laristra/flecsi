@@ -183,41 +183,17 @@ template<
   typename std::enable_if_t<
       std::is_base_of<topology::mesh_topology_base_t, T>::value>
   handle(data_client_handle__<T, PERMISSIONS> & h) {
-
+    
     std::unordered_map<size_t, size_t> region_map;
 
     for (size_t i{0}; i < h.num_handle_entities; ++i) {
-      data_client_handle_entity_t & ent = h.handle_entities[i];
+      data_client_handle_entity_t &ent = h.handle_entities[i];
 
       region_map[ent.index_space] = region_reqs.size();
 
       Legion::RegionRequirement rr(
-          ent.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
-          ent.color_region);
-
-      Legion::IndexSpace is = ent.exclusive_region.get_index_space();
-
-      Legion::Domain d = runtime->get_index_space_domain(context, is);
-
-      auto dr = d.get_rect<2>();
-
-      ent.num_exclusive = dr.hi[1] - dr.lo[1] + 1;
-
-      is = ent.shared_region.get_index_space();
-
-      d = runtime->get_index_space_domain(context, is);
-
-      dr = d.get_rect<2>();
-
-      ent.num_shared = dr.hi[1] - dr.lo[1] + 1;
-
-      is = ent.ghost_region.get_index_space();
-
-      d = runtime->get_index_space_domain(context, is);
-
-      dr = d.get_rect<2>();
-
-      ent.num_ghost = dr.hi[1] - dr.lo[1] + 1;
+          ent.color_partition, 0 /*PROJECTION*/, privilege_mode(PERMISSIONS), EXCLUSIVE,
+          ent.entire_region);
 
       rr.add_field(ent.fid);
       rr.add_field(ent.id_fid);
@@ -225,7 +201,7 @@ template<
     } // for
 
     for (size_t i{0}; i < h.num_handle_adjacencies; ++i) {
-      data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
+      data_client_handle_adjacency_t &adj = h.handle_adjacencies[i];
 
       region_reqs[region_map[adj.from_index_space]].add_field(adj.offset_fid);
 
@@ -239,10 +215,10 @@ template<
     }
 
     for (size_t i{0}; i < h.num_index_subspaces; ++i) {
-      data_client_handle_index_subspace_t & iss = h.handle_index_subspaces[i];
+      data_client_handle_index_subspace_t &iss = h.handle_index_subspaces[i];
 
-      Legion::RegionRequirement iss_rr(
-          iss.region, privilege_mode(PERMISSIONS), EXCLUSIVE, iss.region);
+      Legion::RegionRequirement iss_rr(iss.region, privilege_mode(PERMISSIONS),
+                                       EXCLUSIVE, iss.region);
 
       iss_rr.add_field(iss.index_fid);
 

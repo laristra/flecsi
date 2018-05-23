@@ -100,13 +100,10 @@ void exclusive_mpi(dense_accessor<double, ro, ro, ro> x) {
 
 flecsi_register_task_simple(task1, loc, index);
 flecsi_register_task_simple(data_handle_dump, loc, index);
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 flecsi_register_task_simple(global_data_handle_dump, loc, index);
 flecsi_register_task_simple(color_data_handle_dump, loc, index);
-#endif
 flecsi_register_task_simple(exclusive_writer, loc, index);
 flecsi_register_task_simple(exclusive_reader, loc, index);
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 flecsi_register_task_simple(global_writer, loc, single);
 flecsi_register_task_simple(global_reader, loc, index);
 flecsi_register_task_simple(color_writer, loc, index);

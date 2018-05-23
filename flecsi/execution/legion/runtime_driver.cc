@@ -260,18 +260,12 @@ runtime_driver(
       }
     } // for
 
-    {
-      clog_tag_guard(runtime_driver);
-      clog(trace) << "fields_map[" <<idx_space<<"] has "<<
-        fields_map[idx_space].size()<< " fields"<<std::endl;
-    } // scope
-  } // for
+  //} // for
 
 
   //--------------------------------------------------------------------------//
   //   Create Legion must epoch launcher and add Region requirements
   //-------------------------------------------------------------------------//
-  
   // Must epoch launch
   Legion::MustEpochLauncher must_epoch_launcher;
   must_epoch_launcher.launch_domain = data.color_domain();
@@ -465,9 +459,9 @@ runtime_driver(
   // initialize read/write flags for task_prolog
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-    for (const field_id_t& field_id : fields_map[idx_space]){
-      ispace_dmap[idx_space].ghost_is_readable[field_id] = true;
-      ispace_dmap[idx_space].write_phase_started[field_id] = false;
+    for (const field_info_t* field_info : fields_map[idx_space]){
+      ispace_dmap[idx_space].ghost_is_readable[field_info->fid] = true;
+      ispace_dmap[idx_space].write_phase_started[field_info->fid] = false;
     }//end field_info
   }//end for idx_space
 
