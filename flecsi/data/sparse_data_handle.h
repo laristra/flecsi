@@ -35,7 +35,7 @@ struct sparse_data_handle_base__ : public DATA_POLICY,
   /*!
     Capture the underlying data type.
    */
-  using type = T;
+  using value_type = T;
 
   size_t index_space;
   size_t data_client_hash;
