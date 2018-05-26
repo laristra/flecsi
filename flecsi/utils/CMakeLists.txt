@@ -20,13 +20,16 @@
 set(utils_HEADERS
   any.h
   array_ref.h
+  bit_buffer.h
   checksum.h
   common.h
   const_string.h
+  dag.h
   debruijn.h
   dimensioned_array.h
   export_definitions.h
   factory.h
+  graphviz.h
   hash.h
   humble.h
   id.h
@@ -45,6 +48,7 @@ set(utils_HEADERS
   tuple_walker.h
   tuple_wrapper.h
   type_traits.h
+  uint128.h
   utility.h
 )
 
@@ -233,6 +237,11 @@ cinch_add_unit(tuple_wrapper
 cinch_add_unit(tuple_function
   SOURCES test/tuple_function.cc
   FOLDER "Tests/Util"
+)
+
+cinch_add_unit(dag
+  SOURCES test/dag.cc
+  LIBRARIES ${FLECSI_LIBRARY_DEPENDENCIES}
 )
 
 set(index_space_blessed_input test/index_space.blessed.gnug)

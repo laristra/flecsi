@@ -72,3 +72,9 @@
 
 #cmakedefine FLECSI_ENABLE_METIS
 #cmakedefine FLECSI_ENABLE_PARMETIS
+
+//----------------------------------------------------------------------------//
+// Enable Graphviz
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_GRAPHVIZ
