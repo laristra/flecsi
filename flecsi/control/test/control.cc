@@ -97,7 +97,7 @@ size_t step{0};
 
 // Fixme: This needs to go into the control context somehow.
 bool evolve_control() {
-  return step++ < 5;
+  return step++ < 1;
 } // evolve_control
 
 /*----------------------------------------------------------------------------*
@@ -205,7 +205,6 @@ TEST(control, testname) {
 
   graphviz_t gv;
 
-  step=4;
   phase_writer_t phase_writer(gv);
   phase_writer.template walk_types<phases>();
 

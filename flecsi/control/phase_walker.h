@@ -160,6 +160,7 @@ struct phase_writer__
     // Add graph to output
     phase_map.add(gv_);
 
+    // Add edges from graph to control node
     auto & unsorted = phase_map.nodes();
     for(auto & n: unsorted) {
       if(n.second.edges().size() == 0) {

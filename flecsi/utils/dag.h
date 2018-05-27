@@ -159,8 +159,16 @@ struct dag__
     nodes_[to].edges().push_back(from);
   } // add_edge
 
+  /*!
+    Topological sort of the DAG using Kahn's algorithm.
+
+    @return A std::vector<node_t> with a node ordering that respects
+            the DAG dependencies.
+   */
+
   node_vector_t sort() {
     node_vector_t sorted;
+
     // Create a list of the nodes
     node_list_t nodes;
     for(auto n = nodes_.begin(); n != nodes_.end(); ++n) {
@@ -214,6 +222,10 @@ struct dag__
   } // sort
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
+
+  /*!
+    Add the DAG to the graphviz graph.
+   */
 
   void add(graphviz_t & gv) {
     std::map<size_t, Agnode_t *> node_map;
