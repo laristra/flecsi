@@ -7,6 +7,7 @@
 
 #include <cinchtest.h>
 
+#include <flecsi-config.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/dag.h>
@@ -41,7 +42,10 @@ operator << (std::ostream & stream, node_policy_t const & node) {
 } // operator <<
 
 using dag_t = flecsi::utils::dag__<node_policy_t>;
+
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
 using graphviz_t = flecsi::utils::graphviz_t;
+#endif
 
 #define flecsi_hash(name) \
   flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
@@ -81,8 +85,10 @@ TEST(dag, sanity) {
 
   std::cout << dag << std::endl;
 
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
   graphviz_t gv;
   dag.add(gv);
   gv.write("dag.gv");
+#endif
 
 } // TEST

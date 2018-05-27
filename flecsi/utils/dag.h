@@ -154,6 +154,8 @@ struct dag__
     } // if
 
     nodes_[to].edges().push_back(from);
+
+	 return true;
   } // add_edge
 
   node_vector_t sort() {

@@ -89,11 +89,13 @@ using phase_walker_t = phase_walker__<control_t>;
 int action_a(int argc, char ** argv) {
   usleep(200000);
   std::cout << "target_a" << std::endl;
+  return 0;
 } // action_a
 
 int action_b(int argc, char ** argv) {
   usleep(200000);
   std::cout << "target_b" << std::endl;
+  return 0;
 } // action_a
 
 bool a_registered = control_t::instance().phase_map(initialize).
