@@ -129,6 +129,12 @@ public:
 		return node;
 	} // add_node
 
+  Agnode_t * node(const char * name) {
+		char buffer[1024];
+		sprintf(buffer, "%s", name);
+		return agnode(graph_, buffer, ag_access);
+  } // node
+
 	/*-------------------------------------------------------------------------*
 	 * Remove a node from the graph.
 	 *-------------------------------------------------------------------------*/

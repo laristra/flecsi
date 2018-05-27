@@ -42,7 +42,11 @@ struct control__ {
                  by the specialization.
    */
   
-  dag_t & phase_map(size_t phase) {
+  dag_t & phase_map(size_t phase, std::string const & label = "default") {
+    if(registry_.find(phase) == registry_.end()) {
+      registry_[phase].label() = label;
+    } // if
+
     return registry_[phase];
   } // control_phase_map
 

@@ -18,6 +18,10 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/tuple_walker.h>
 
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
+#include <flecsi/utils/graphviz.h>
+#endif
+
 namespace flecsi {
 namespace control {
 
@@ -33,6 +37,13 @@ template<bool (*PREDICATE)(), typename ... PHASES>
 struct cycle__ {
 
   using TYPE = std::tuple<PHASES ...>;
+
+  using BEGIN_TYPE = typename std::tuple_element<0, TYPE>::type;
+  using END_TYPE =
+    typename std::tuple_element<std::tuple_size<TYPE>::value-1, TYPE>::type;
+
+  static constexpr size_t begin = BEGIN_TYPE::value;
+  static constexpr size_t end = END_TYPE::value;
 
   static bool predicate() {
     return PREDICATE();
@@ -71,8 +82,8 @@ struct phase_walker__
     auto & sorted =
       CONTROL_POLICY::instance().sorted_phase_map(PHASE_TYPE::value);
 
-    for(auto & entry: sorted) {
-      entry.action()(argc_, argv_);
+    for(auto & node: sorted) {
+      node.action()(argc_, argv_);
     } // for
   } // handle_type
 
@@ -102,6 +113,99 @@ private:
   char ** argv_;
 
 }; // struct phase_walker__
+
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
+
+/*!
+  The phase_writer__ class allows execution of statically-defined
+  control points.
+ */
+
+template<typename CONTROL_POLICY>
+struct phase_writer__
+  : public flecsi::utils::tuple_walker__<phase_writer__<CONTROL_POLICY>>
+{
+  using graphviz_t = flecsi::utils::graphviz_t;
+
+  phase_writer__(graphviz_t & gv) : gv_(gv) {}
+
+  /*!
+    Handle the tuple type \em PHASE_TYPE for type size_t.
+
+    @tparam PHASE_TYPE The phase type. This can either be a size_t
+                       or a \em cycle. Cycles are defined by the
+                       specialization and must conform to the
+                       interface used in the appropriate handle_type
+                       method.
+   */
+
+  template<typename PHASE_TYPE>
+  typename std::enable_if<
+    std::is_same<typename PHASE_TYPE::TYPE, size_t>::value>::type
+  handle_type() {
+    auto & phase_map = CONTROL_POLICY::instance().phase_map(PHASE_TYPE::value);
+
+    // Add the control point node to the graph
+    auto * root = gv_.add_node(phase_map.label().c_str(),
+      phase_map.label().c_str());
+
+    // Add edge dependency to last control point
+    if(PHASE_TYPE::value > 0) {
+      auto & last =
+        CONTROL_POLICY::instance().phase_map(PHASE_TYPE::value - 1);
+      auto * last_node = gv_.node(last.label().c_str());
+      gv_.add_edge(last_node, root);
+    } // if
+
+    // Add graph to output
+    phase_map.add(gv_);
+
+    auto & unsorted = phase_map.nodes();
+    for(auto & n: unsorted) {
+      if(n.second.edges().size() == 0) {
+        gv_.add_edge(root, gv_.node(std::to_string(n.second.hash()).c_str()));
+      } // if
+    } // for
+
+  } // handle_type
+
+  /*!
+    Handle the tuple type \em PHASE_TYPE for type cycle__.
+
+    @tparam PHASE_TYPE The phase type. This can either be a size_t
+                       or a \em cycle. Cycles are defined by the
+                       specialization and must conform to the
+                       interface used in the appropriate handle_type
+                       method.
+   */
+
+  template<typename PHASE_TYPE>
+  typename std::enable_if<
+    !std::is_same<typename PHASE_TYPE::TYPE, size_t>::value>::type
+  handle_type() {
+
+    phase_writer__ phase_writer(gv_);
+    phase_writer.template walk_types<typename PHASE_TYPE::TYPE>();
+
+    if( PHASE_TYPE::begin != PHASE_TYPE::end) {
+      auto & begin = CONTROL_POLICY::instance().phase_map(PHASE_TYPE::begin);
+      auto & end = CONTROL_POLICY::instance().phase_map(PHASE_TYPE::end);
+      auto * edge = gv_.add_edge(
+        gv_.node(end.label().c_str()),
+        gv_.node(begin.label().c_str())
+      );
+      gv_.set_edge_attribute(edge, "label", "cycle");
+    } // if
+
+  } // handle_type
+
+private:
+
+  graphviz_t & gv_;
+
+}; // struct phase_writer__
+
+#endif // FLECSI_ENABLE_GRAPHVIZ
 
 } // namespace flecsi
 } // namespace control
