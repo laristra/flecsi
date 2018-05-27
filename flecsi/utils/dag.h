@@ -31,15 +31,15 @@ struct dag_node__ : public NODE_POLICY {
   /*!
     Constructor.
 
-    @param name The string name of the node.
-    @param hash The hashed string name.
-    @param ARGS A variadic list of arguments that are passed to
-                the node policy constructor.
+    @param hash  The node identifier.
+    @param label The string label of the node.
+    @param ARGS  A variadic list of arguments that are passed to
+                 the node policy constructor.
    */
 
   template<typename ... ARGS>
-  dag_node__(std::string const & name = "", size_t hash = 0, ARGS && ... args)
-    : name_(name), hash_(hash), NODE_POLICY(std::forward<ARGS>(args) ...) {}
+  dag_node__(size_t hash = 0, std::string const & label = "", ARGS && ... args)
+    : hash_(hash), label_(label), NODE_POLICY(std::forward<ARGS>(args) ...) {}
 
   /*!
     Copy constructor.
@@ -47,17 +47,17 @@ struct dag_node__ : public NODE_POLICY {
 
   dag_node__(dag_node__ const & node)
     :
-      name_(node.name_),
       hash_(node.hash_),
+      label_(node.label_),
       edge_list_(node.edge_list_),
       NODE_POLICY(node)
     {}
 
-  std::string const & name() const { return name_; }
-  std::string & name() { return name_; }
-
   size_t const & hash() const { return hash_; }
   size_t & hash() { return hash_; }
+
+  std::string const & label() const { return label_; }
+  std::string & label() { return label_; }
 
   edge_list_t const & edges() const { return edge_list_; }
   edge_list_t & edges() { return edge_list_; }
@@ -74,16 +74,16 @@ struct dag_node__ : public NODE_POLICY {
    */
 
   bool initialize(dag_node__ const & node) {
-    name_ = node.name_;
     hash_ = node.hash_;
+    label_ = node.label_;
     return NODE_POLICY::initialize(node);
   } // update
 
   dag_node__ & operator = (dag_node__ const & node) {
     NODE_POLICY::operator = (node);
 
-    name_ = node.name_;
     hash_ = node.hash_;
+    label_ = node.label_;
     edge_list_ = node.edge_list_;
 
     return *this;
@@ -91,8 +91,8 @@ struct dag_node__ : public NODE_POLICY {
 
 private:
 
-  std::string name_;
   size_t hash_;
+  std::string label_;
   edge_list_t edge_list_;
 
 }; // struct dag_node__
@@ -100,8 +100,8 @@ private:
 template<typename NODE_POLICY>
 inline std::ostream & 
 operator << (std::ostream & stream, dag_node__<NODE_POLICY> const & node) {
-  stream << "name: " << node.name() << std::endl;
   stream << "hash: " << node.hash() << std::endl;
+  stream << "label: " << node.label() << std::endl;
   stream << static_cast<NODE_POLICY const &>(node);
 
   stream << "edges: ";
@@ -120,6 +120,9 @@ struct dag__
   using node_map_t = std::map<size_t, node_t>;
   using node_vector_t = std::vector<node_t>;
   using node_list_t = std::list<node_t>;
+
+  std::string const & label() const { return label_; }
+  std::string & label() { return label_; }
 
   node_map_t const & nodes() const { return nodes_; }
   node_map_t & nodes() { return nodes_; }
@@ -158,13 +161,19 @@ struct dag__
 	 return true;
   } // add_edge
 
+  /*!
+    Topological sort of the DAG using Kahn's algorithm.
+
+    @return A std::vector<node_t> with a node ordering that respects
+            the DAG dependencies.
+   */
+
   node_vector_t sort() {
     node_vector_t sorted;
+
     // Create a list of the nodes
     node_list_t nodes;
     for(auto n = nodes_.begin(); n != nodes_.end(); ++n) {
-#if defined(FLECSI_ENABLE_GRAPHVIZ)
-#endif
       nodes.push_back(n->second);
     } // for
 
@@ -216,16 +225,18 @@ struct dag__
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 
+  /*!
+    Add the DAG to the graphviz graph.
+   */
+
   void add(graphviz_t & gv) {
     std::map<size_t, Agnode_t *> node_map;
-
-    gv.clear();
 
     for(auto n: nodes_) {
       const std::string hash = std::to_string(n.second.hash());
 
       node_map[n.second.hash()] =
-        gv.add_node(hash.c_str(), n.second.name().c_str());
+        gv.add_node(hash.c_str(), n.second.label().c_str());
 
       gv.set_node_attribute(hash.c_str(), "color", "#c5def5");
       gv.set_node_attribute(hash.c_str(), "style", "filled");
@@ -243,6 +254,7 @@ struct dag__
 
 private:
 
+  std::string label_;
   node_map_t nodes_;
 
 }; // struct dag__

@@ -36,4 +36,6 @@ set(control_SOURCES
 cinch_add_unit(control
   SOURCES
     test/control.cc
+  LIBRARIES
+    ${FLECSI_LIBRARY_DEPENDENCIES}
 )

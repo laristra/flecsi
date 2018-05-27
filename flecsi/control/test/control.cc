@@ -10,6 +10,7 @@
 #include <flecsi/control/control.h>
 #include <flecsi/control/phase_walker.h>
 
+// FIXME: typeify needs to move into common.h in utils.
 template<typename T, T M>
 struct typeify {
   using TYPE = T;
@@ -18,6 +19,10 @@ struct typeify {
 
 template<size_t PHASE>
 using phase_ = typeify<size_t, PHASE>;
+
+/*----------------------------------------------------------------------------*
+ * Define simulation phases. This is considered part of the specializeation.
+ *----------------------------------------------------------------------------*/
 
 enum simulation_phases_t : size_t {
   initialize,
@@ -28,19 +33,18 @@ enum simulation_phases_t : size_t {
   finalize
 }; // enum simulation_phases_t
 
-enum target_attributes_t : size_t {
+/*----------------------------------------------------------------------------*
+ * Define action attributes. This is considered part of the specialization.
+ *----------------------------------------------------------------------------*/
+
+enum action_attributes_t : size_t {
   time_advance_half = 0x01,
   time_advance_whole = 0x02,
   updated_eos_at_faces = 0x04
-}; // enum target_attributes_t
-
-using phases = std::tuple<
-  phase_<initialize>,
-  phase_<finalize>
->;
+}; // enum action_attributes_t
 
 /*----------------------------------------------------------------------------*
- * Node policy
+ * Node policy (part of specialization).
  *----------------------------------------------------------------------------*/
 
 struct node_policy_t {
@@ -77,36 +81,116 @@ operator << (std::ostream & stream, node_policy_t const & node) {
   return stream;
 } // operator <<
 
-using namespace flecsi::control;
-
 /*----------------------------------------------------------------------------*
  * Control policy.
  *----------------------------------------------------------------------------*/
 
+using namespace flecsi::control;
+
 using control_t = control__<node_policy_t>;
 using phase_walker_t = phase_walker__<control_t>;
+using phase_writer_t = phase_writer__<control_t>;
 
-int action_a(int argc, char ** argv) {
-  usleep(200000);
-  std::cout << "target_a" << std::endl;
-  return 0;
-} // action_a
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
+using graphviz_t = flecsi::utils::graphviz_t;
+#endif
 
-int action_b(int argc, char ** argv) {
-  usleep(200000);
-  std::cout << "target_b" << std::endl;
-  return 0;
-} // action_a
+size_t step{0};
 
-bool a_registered = control_t::instance().phase_map(initialize).
-  initialize_node({ EXPAND_AND_STRINGIFY(a),
-  flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(a)}.hash(),
-  action_a, 0 });
+// Fixme: This needs to go into the control context somehow.
+bool evolve_control() {
+  return step++ < 1;
+} // evolve_control
 
-bool b_registered = control_t::instance().phase_map(initialize).
-  initialize_node({ EXPAND_AND_STRINGIFY(b),
-  flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(b)}.hash(),
-  action_b, 0 });
+/*----------------------------------------------------------------------------*
+ * Define the phases and sub cycles.
+ *----------------------------------------------------------------------------*/
+
+using evolve = cycle__<
+  evolve_control, // stopping predicate
+  phase_<advance>,
+  phase_<analyze>,
+  phase_<io>,
+  phase_<mesh>
+>;
+
+using phases = std::tuple<
+  phase_<initialize>,
+  evolve,
+  phase_<finalize>
+>;
+
+/*----------------------------------------------------------------------------*
+ * Convenience
+ *----------------------------------------------------------------------------*/
+
+#define define_action(name) 																    \
+  int action_##name(int argc, char ** argv) { 											 \
+    usleep(200000); 																			    \
+    std::cout << "target_" << #name << std::endl; 								       \
+	 return 0; 																						 \
+  }
+
+define_action(a)
+define_action(b)
+define_action(c)
+define_action(d)
+define_action(e)
+define_action(f)
+define_action(g)
+define_action(h)
+define_action(p)
+define_action(m)
+
+#define register_action(phase, name, action)                                   \
+  bool name##_registered = control_t::instance().phase_map(                    \
+    phase, EXPAND_AND_STRINGIFY(phase)).                                       \
+    initialize_node({                                                          \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
+      EXPAND_AND_STRINGIFY(name),                                              \
+      action, 0 });
+
+#define add_dependency(phase, to, from)                                        \
+  bool registered_##to##from = control_t::instance().phase_map(phase).         \
+    add_edge(flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(),   \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())
+
+/*----------------------------------------------------------------------------*
+ * These define the control point actions and DAG dependencies.
+ *----------------------------------------------------------------------------*/
+
+register_action(initialize, a, action_a);
+
+register_action(advance, b, action_b);
+register_action(advance, c, action_c);
+register_action(advance, d, action_d);
+register_action(advance, e, action_e);
+
+register_action(io, g, action_g);
+register_action(mesh, h, action_h);
+
+register_action(analyze, p, action_p);
+
+#define M 1
+#if M
+register_action(advance, m, action_m);
+#endif
+
+add_dependency(advance, c, b);
+add_dependency(advance, b, d);
+
+#if M
+add_dependency(advance, m, d);
+add_dependency(advance, e, m);
+#endif
+
+add_dependency(advance, e, d);
+
+register_action(finalize, f, action_f);
+
+/*----------------------------------------------------------------------------*
+ * Run the test...
+ *----------------------------------------------------------------------------*/
 
 TEST(control, testname) {
 
@@ -121,5 +205,14 @@ TEST(control, testname) {
 
   phase_walker_t phase_walker(argc, &argv[0]);
   phase_walker.template walk_types<phases>();
+
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
+  graphviz_t gv;
+
+  phase_writer_t phase_writer(gv);
+  phase_writer.template walk_types<phases>();
+
+  gv.write("control.gv");
+#endif
 
 } // TEST
