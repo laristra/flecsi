@@ -82,12 +82,15 @@ set_property(CACHE FLECSI_RUNTIME_MODEL
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
   set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
+  set(ENABLE_HPX OFF CACHE BOOL "Enable HPX" FORCE)
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
   set(ENABLE_LEGION ON CACHE BOOL "Enable Legion" FORCE)
+  set(ENABLE_HPX OFF CACHE BOOL "Enable HPX" FORCE)
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
   set(ENABLE_HPX ON CACHE BOOL "Enable HPX" FORCE)
+  set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
 endif()
 
 mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
@@ -439,6 +442,8 @@ if(ENABLE_FLECSI_TUTORIAL)
   endif()
 
   cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
+
+  set_target_properties(FleCSI-Tut PROPERTIES FOLDER "Tutorial")
 endif()
 
 #------------------------------------------------------------------------------#
