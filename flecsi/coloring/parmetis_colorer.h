@@ -147,7 +147,7 @@ struct parmetis_colorer_t : public colorer_t {
 
       for (size_t i(0); i < dcrs.size(); ++i) {
         if (part[i] == r) {
-          indices.push_back(static_cast<MPI_Request>(vtxdist[rank] + i));
+          indices.push_back(static_cast<idx_t>(vtxdist[rank] + i));
         } else if (part[i] == rank) {
           // If the index belongs to us, just add it...
           primary.insert(vtxdist[rank] + i);
@@ -155,7 +155,7 @@ struct parmetis_colorer_t : public colorer_t {
       } // for
 
       sbuffers.push_back(indices);
-      send_cnts[r] = static_cast<MPI_Request>(indices.size());
+      send_cnts[r] = static_cast<idx_t>(indices.size());
     } // for
 
 #if 0
