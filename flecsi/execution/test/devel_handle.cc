@@ -10,6 +10,7 @@
 #include <flecsi/supplemental/coloring/add_colorings.h>
 #include <flecsi/supplemental/mesh/test_mesh_2d.h>
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/data_client_handle.h>
 
 clog_register_tag(devel_handle);
 
