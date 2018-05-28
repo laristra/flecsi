@@ -249,6 +249,7 @@ cinch_add_unit(future_handle
         "Tests/Execution/Devel"
     )
 
+  if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     cinch_add_devel_target(devel_handle
       SOURCES
         test/devel_handle.cc
@@ -316,7 +317,6 @@ cinch_add_unit(future_handle
         "Tests/Execution/Devel"
     )
 
-  if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     # cinch_add_unit(forall
     #   SOURCES
     #     test/forall.fcc
@@ -501,7 +501,7 @@ cinch_add_unit(future_handle
       FOLDER
         "Tests/Execution"
     )
-    
+
     cinch_add_unit(sparse_data
         SOURCES
         test/sparse_data.cc
@@ -527,7 +527,7 @@ cinch_add_unit(future_handle
         FOLDER
           "Tests/Execution"
       )
-    
+
     cinch_add_unit(ragged_data
         SOURCES
         test/ragged_data.cc

@@ -5,13 +5,15 @@
 
 #include <bitset>
 #include <tuple>
+#include <thread>
+#include <chrono>
 
 #include <cinchtest.h>
 #include <flecsi/control/control.h>
 #include <flecsi/control/phase_walker.h>
 
 /*----------------------------------------------------------------------------*
- * Define simulation phases. This is considered part of the specializeation.
+ * Define simulation phases. This is considered part of the specialization.
  *----------------------------------------------------------------------------*/
 
 enum simulation_phases_t : size_t {
@@ -120,7 +122,7 @@ using graphviz_t = flecsi::utils::graphviz_t;
 
 #define define_action(name)                                                    \
   int action_##name(int argc, char ** argv) {                                  \
-    usleep(200000);                                                            \
+    std::this_thread::sleep_for(std::chrono::microseconds(200));               \
     std::cout << "target_" << #name << std::endl;                              \
     return 0;                                                                  \
   }

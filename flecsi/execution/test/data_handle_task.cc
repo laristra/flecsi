@@ -18,6 +18,7 @@
 #include <flecsi/supplemental/coloring/add_colorings.h>
 #include <flecsi/supplemental/mesh/empty_mesh_2d.h>
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/common/privilege.h>
 
 using namespace flecsi;
 using namespace supplemental;
@@ -140,7 +141,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   clog(info) << "In specialization top-level-task init" << std::endl;
 
   auto & context = execution::context_t::instance();
- 
+
   ASSERT_EQ(context.execution_state(),
     static_cast<size_t>(SPECIALIZATION_TLT_INIT));
 
@@ -205,7 +206,7 @@ void driver(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 TEST(data_handle, testname) {
-  
+
 } // TEST
 
 } // namespace execution

@@ -40,6 +40,7 @@
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/data/common/data_types.h>
+#include <flecsi/utils/export_definitions.h>
 
 namespace flecsi {
 namespace execution {
@@ -111,19 +112,31 @@ struct mpi_context_policy_t
   /*!
    FleCSI context initialization. This method initializes the FleCSI
    runtime using MPI.
-  
+
    @param argc The command-line argument count passed from main.
    @param argv The command-line argument values passed from main.
-  
+
    @return An integer value with a non-zero error code upon failure,
            zero otherwise.
    */
 
-  int
+private:
+  // Start the MPI runtime
+  FLECSI_EXPORT void
+  start_mpi_runtime(void (*driver)(int, char **), int argc, char ** argv);
+
+public:
+  // it is important for this to be inlined as otherwise we see unresolved
+  // external linker errors when using MSVC
+  inline int
   initialize(
     int argc,
     char ** argv
-  );
+  )
+  {
+    start_mpi_runtime(&runtime_driver, argc, argv);
+    return 0;
+  } // mpi_context_policy_t::initialize
 
   /*!
     Return the color for which the context was initialized.
@@ -135,7 +148,7 @@ struct mpi_context_policy_t
   {
     return color_;
   } // color
-  
+
   /*!
     Return the number of colors.
    */
@@ -164,7 +177,7 @@ struct mpi_context_policy_t
 
   /*!
    Register a task with the runtime.
-  
+
    @param key       The task hash key.
    @param name      The task name string.
    @param call_back The registration call back function.
@@ -556,7 +569,7 @@ struct mpi_context_policy_t
    Register new sparse field data, i.e. allocate a new buffer for the
    specified field ID. Sparse data consists of a buffer of offsets
    (start + length) and entry id / value pairs and associated metadata about
-   this field. 
+   this field.
    */
   void register_sparse_field_data(
     field_id_t fid,
@@ -596,7 +609,7 @@ struct mpi_context_policy_t
 
   /*!
    Set max_reduction
-  
+
    @param double max_reduction
    */
 
@@ -608,7 +621,7 @@ struct mpi_context_policy_t
 
   /*!
    Perform reduction for the maximum value type <double>
-  
+
    @param
    */
 
@@ -639,7 +652,7 @@ struct mpi_context_policy_t
 
   /*!
    Set min_reduction
-  
+
    @param double min_reduction
    */
 
@@ -651,7 +664,7 @@ struct mpi_context_policy_t
 
   /*!
    Perform reduction for the minimum value type <double>
-  
+
    @param
    */
 
