@@ -117,6 +117,7 @@ cinch_add_devel_target(clog
   SOURCES
     test/clog.cc
   POLICY ${UNIT_POLICY}
+  FOLDER "Tests/Util"
 )
 endif()
 
@@ -201,6 +202,7 @@ cinch_add_unit(set_utils
 
 cinch_add_unit(simple_id
   SOURCES test/simple_id.cc
+  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(static_verify
@@ -243,6 +245,7 @@ cinch_add_unit(tuple_function
 cinch_add_unit(dag
   SOURCES test/dag.cc
   LIBRARIES ${FLECSI_LIBRARY_DEPENDENCIES}
+  FOLDER "Tests/Util"
 )
 
 set(index_space_blessed_input test/index_space.blessed.gnug)

@@ -27,13 +27,13 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
   #----------------------------------------------------------------------------#
 
   set(exec_path ${PROJECT_SOURCE_DIR}/flecsi/execution)
-if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-  set (exmaple_src      tasks_and_drivers.cc
-                        ${exec_path}/legion/runtime_driver.cc)
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-  set (exmaple_src      tasks_and_drivers.cc
-                        ${exec_path}/hpx/runtime_driver.cc)
-endif()
+  if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+    set (exmaple_src      tasks_and_drivers.cc
+                          ${exec_path}/legion/runtime_driver.cc)
+  elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+    set (exmaple_src      tasks_and_drivers.cc
+                          ${exec_path}/hpx/runtime_driver.cc)
+  endif()
 
   #----------------------------------------------------------------------------#
   # Add a rule to build the executable
@@ -50,6 +50,8 @@ endif()
 
   if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     hpx_setup_target(tasks_and_drivers FOLDER "Examples")
+  else()
+    set_target_properties(tasks_and_drivers PROPERTIES FOLDER "Examples")
   endif()
 
 endif()
