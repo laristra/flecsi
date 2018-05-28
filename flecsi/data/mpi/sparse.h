@@ -82,7 +82,7 @@ struct sparse_handle__ : public sparse_data_handle__<T, EP, SP, GP>
   : base(num_exclusive, num_shared, num_ghost){}
 
   template<typename, size_t, size_t, size_t>
-  friend class sparse_handle__;
+  friend struct sparse_handle__;
 }; // struct sparse_handle__
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//

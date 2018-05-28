@@ -8,6 +8,9 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/execution.h>
 #include <flecsi/supplemental/coloring/add_colorings.h>
+#include <flecsi/data/data.h>
+#include <flecsi/data/data_client_handle.h>
+#include <flecsi/data/dense_accessor.h>
 
 #define FLECSI_TEST_MESH_INDEX_SUBSPACES 1
 #include <flecsi/supplemental/mesh/test_mesh_2d.h>
