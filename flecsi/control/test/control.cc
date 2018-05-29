@@ -89,9 +89,8 @@ using namespace flecsi::control;
 
 using control_t = control__<node_policy_t>;
 using phase_walker_t = phase_walker__<control_t>;
-using phase_writer_t = phase_writer__<control_t>;
-
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
+using phase_writer_t = phase_writer__<control_t>;
 using graphviz_t = flecsi::utils::graphviz_t;
 #endif
 
