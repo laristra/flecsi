@@ -59,7 +59,7 @@ var searchData=
   ['color_2eh',['color.h',['../legion_2color_8h.html',1,'(Global Namespace)'],['../mpi_2color_8h.html',1,'(Global Namespace)']]],
   ['color_5fdata_5fclient_5ft',['color_data_client_t',['../structflecsi_1_1data_1_1color__data__client__t.html',1,'flecsi::data']]],
   ['color_5fentity',['color_entity',['../coloring__functions_8h.html#a412a27b6dab5f41acff76f46983ca213',1,'flecsi::execution']]],
-  ['color_5fhandle_5f_5f',['color_handle__',['../structflecsi_1_1data_1_1legion_1_1color__handle____.html',1,'flecsi::data::legion::color_handle__&lt; T, PERMISSIONS &gt;'],['../structflecsi_1_1data_1_1mpi_1_1color__handle____.html',1,'flecsi::data::mpi::color_handle__&lt; T, PERMISSIONS &gt;'],['../structflecsi_1_1data_1_1legion_1_1color__handle____.html#a6380e8b4edc1e8761d9e803ae381f322',1,'flecsi::data::legion::color_handle__::color_handle__()'],['../structflecsi_1_1data_1_1legion_1_1color__handle____.html#aa785144f85ad731e901ffa94d659cdde',1,'flecsi::data::legion::color_handle__::color_handle__(const color_handle__&lt; T, P2 &gt; &amp;a)'],['../structflecsi_1_1data_1_1mpi_1_1color__handle____.html#ae5610499167d1ee48d887aae6a332a07',1,'flecsi::data::mpi::color_handle__::color_handle__()']]],
+  ['color_5fhandle_5f_5f',['color_handle__',['../structflecsi_1_1data_1_1mpi_1_1color__handle____.html',1,'flecsi::data::mpi::color_handle__&lt; T, PERMISSIONS &gt;'],['../structflecsi_1_1data_1_1legion_1_1color__handle____.html',1,'flecsi::data::legion::color_handle__&lt; T, PERMISSIONS &gt;'],['../structflecsi_1_1data_1_1legion_1_1color__handle____.html#a6380e8b4edc1e8761d9e803ae381f322',1,'flecsi::data::legion::color_handle__::color_handle__()'],['../structflecsi_1_1data_1_1legion_1_1color__handle____.html#aa785144f85ad731e901ffa94d659cdde',1,'flecsi::data::legion::color_handle__::color_handle__(const color_handle__&lt; T, P2 &gt; &amp;a)'],['../structflecsi_1_1data_1_1mpi_1_1color__handle____.html#ae5610499167d1ee48d887aae6a332a07',1,'flecsi::data::mpi::color_handle__::color_handle__()']]],
   ['color_5finfo_5ft',['color_info_t',['../structflecsi_1_1execution_1_1context_____1_1set__index__space__info__t_1_1color__info__t.html',1,'flecsi::execution::context__::set_index_space_info_t']]],
   ['color_5fsizes',['color_sizes',['../structflecsi_1_1coloring_1_1adjacency__info__t.html#a20847a151e35b27f71e1e24e3f4c1bf1',1,'flecsi::coloring::adjacency_info_t']]],
   ['color_5ftopology_2eh',['color_topology.h',['../color__topology_8h.html',1,'']]],
@@ -100,6 +100,8 @@ var searchData=
   ['context_5fpolicy_2ecc',['context_policy.cc',['../hpx_2context__policy_8cc.html',1,'(Global Namespace)'],['../legion_2context__policy_8cc.html',1,'(Global Namespace)'],['../mpi_2context__policy_8cc.html',1,'(Global Namespace)']]],
   ['context_5fpolicy_2eh',['context_policy.h',['../legion_2context__policy_8h.html',1,'(Global Namespace)'],['../mpi_2context__policy_8h.html',1,'(Global Namespace)']]],
   ['context_5ft',['context_t',['../group__execution.html#ga31ce4c85ba8392f8fc7abb47d78edf63',1,'flecsi::execution']]],
+  ['control_2eh',['control.h',['../control_8h.html',1,'']]],
+  ['control_5f_5f',['control__',['../structflecsi_1_1control_1_1control____.html',1,'flecsi::control']]],
   ['convert_5ftuple_5ftype',['convert_tuple_type',['../structflecsi_1_1utils_1_1convert__tuple__type.html',1,'flecsi::utils']]],
   ['convert_5ftuple_5ftype_3c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_20_3e',['convert_tuple_type&lt; std::tuple&lt; Args... &gt; &gt;',['../structflecsi_1_1utils_1_1convert__tuple__type_3_01std_1_1tuple_3_01Args_8_8_8_01_4_01_4.html',1,'flecsi::utils']]],
   ['convert_5ftuple_5ftype_5f',['convert_tuple_type_',['../structflecsi_1_1utils_1_1convert__tuple__type__.html',1,'flecsi::utils']]],
@@ -110,5 +112,6 @@ var searchData=
   ['cross_5fmagnitude',['cross_magnitude',['../space__vector_8h.html#ae00aa0fd0011d23e53e2cd5d5c06b638',1,'flecsi::cross_magnitude(const space_vector&lt; T, 1 &gt; &amp;a, const space_vector&lt; T, 1 &gt; &amp;b)'],['../space__vector_8h.html#a8c33ed916021542824dcd39b641043e1',1,'flecsi::cross_magnitude(const space_vector&lt; T, 2 &gt; &amp;a, const space_vector&lt; T, 2 &gt; &amp;b)'],['../space__vector_8h.html#a8e86d3d804972fbb935e736f8ad5ee68',1,'flecsi::cross_magnitude(const space_vector&lt; T, 3 &gt; &amp;a, const space_vector&lt; T, 3 &gt; &amp;b)']]],
   ['crs_2eh',['crs.h',['../crs_8h.html',1,'']]],
   ['crs_5ft',['crs_t',['../structflecsi_1_1coloring_1_1crs__t.html',1,'flecsi::coloring']]],
+  ['cycle_5f_5f',['cycle__',['../structflecsi_1_1control_1_1cycle____.html',1,'flecsi::control']]],
   ['cinch_3a_20logging',['Cinch: Logging',['../md__home_flecsi_flecsi_cinch_logging_README.html',1,'']]]
 ];

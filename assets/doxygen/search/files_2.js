@@ -16,5 +16,6 @@ var searchData=
   ['context_2eh',['context.h',['../context_8h.html',1,'']]],
   ['context_5fpolicy_2ecc',['context_policy.cc',['../hpx_2context__policy_8cc.html',1,'(Global Namespace)'],['../legion_2context__policy_8cc.html',1,'(Global Namespace)'],['../mpi_2context__policy_8cc.html',1,'(Global Namespace)']]],
   ['context_5fpolicy_2eh',['context_policy.h',['../legion_2context__policy_8h.html',1,'(Global Namespace)'],['../mpi_2context__policy_8h.html',1,'(Global Namespace)']]],
+  ['control_2eh',['control.h',['../control_8h.html',1,'']]],
   ['crs_2eh',['crs.h',['../crs_8h.html',1,'']]]
 ];

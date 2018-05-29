@@ -11,7 +11,7 @@ var searchData=
   ['clog_5ft',['clog_t',['../classcinch_1_1clog__t.html',1,'cinch']]],
   ['clog_5ftag_5fscope_5ft',['clog_tag_scope_t',['../structcinch_1_1clog__tag__scope__t.html',1,'cinch']]],
   ['color_5fdata_5fclient_5ft',['color_data_client_t',['../structflecsi_1_1data_1_1color__data__client__t.html',1,'flecsi::data']]],
-  ['color_5fhandle_5f_5f',['color_handle__',['../structflecsi_1_1data_1_1legion_1_1color__handle____.html',1,'flecsi::data::legion::color_handle__&lt; T, PERMISSIONS &gt;'],['../structflecsi_1_1data_1_1mpi_1_1color__handle____.html',1,'flecsi::data::mpi::color_handle__&lt; T, PERMISSIONS &gt;']]],
+  ['color_5fhandle_5f_5f',['color_handle__',['../structflecsi_1_1data_1_1mpi_1_1color__handle____.html',1,'flecsi::data::mpi::color_handle__&lt; T, PERMISSIONS &gt;'],['../structflecsi_1_1data_1_1legion_1_1color__handle____.html',1,'flecsi::data::legion::color_handle__&lt; T, PERMISSIONS &gt;']]],
   ['color_5finfo_5ft',['color_info_t',['../structflecsi_1_1execution_1_1context_____1_1set__index__space__info__t_1_1color__info__t.html',1,'flecsi::execution::context__::set_index_space_info_t']]],
   ['color_5ftopology_5f_5f',['color_topology__',['../classflecsi_1_1topology_1_1color__topology____.html',1,'flecsi::topology']]],
   ['color_5ftopology_5fbase_5f_5f',['color_topology_base__',['../classflecsi_1_1topology_1_1color__topology__base____.html',1,'flecsi::topology']]],
@@ -30,8 +30,10 @@ var searchData=
   ['const_5fstring_5fhasher_5ft',['const_string_hasher_t',['../structflecsi_1_1utils_1_1const__string__hasher__t.html',1,'flecsi::utils']]],
   ['const_5fstring_5ft',['const_string_t',['../classflecsi_1_1utils_1_1const__string__t.html',1,'flecsi::utils']]],
   ['context_5f_5f',['context__',['../structflecsi_1_1execution_1_1context____.html',1,'flecsi::execution']]],
+  ['control_5f_5f',['control__',['../structflecsi_1_1control_1_1control____.html',1,'flecsi::control']]],
   ['convert_5ftuple_5ftype',['convert_tuple_type',['../structflecsi_1_1utils_1_1convert__tuple__type.html',1,'flecsi::utils']]],
   ['convert_5ftuple_5ftype_3c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_20_3e',['convert_tuple_type&lt; std::tuple&lt; Args... &gt; &gt;',['../structflecsi_1_1utils_1_1convert__tuple__type_3_01std_1_1tuple_3_01Args_8_8_8_01_4_01_4.html',1,'flecsi::utils']]],
   ['convert_5ftuple_5ftype_5f',['convert_tuple_type_',['../structflecsi_1_1utils_1_1convert__tuple__type__.html',1,'flecsi::utils']]],
-  ['crs_5ft',['crs_t',['../structflecsi_1_1coloring_1_1crs__t.html',1,'flecsi::coloring']]]
+  ['crs_5ft',['crs_t',['../structflecsi_1_1coloring_1_1crs__t.html',1,'flecsi::coloring']]],
+  ['cycle_5f_5f',['cycle__',['../structflecsi_1_1control_1_1cycle____.html',1,'flecsi::control']]]
 ];

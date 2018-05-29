@@ -66,6 +66,7 @@ var searchData=
   ['flecsi_5fput_5fall_5fhandles',['flecsi_put_all_handles',['../data_8h.html#a1ecfe06d3211be3c9a26e6fe914c1ee1',1,'data.h']]],
   ['flecsi_5fregister_5fbindings',['flecsi_register_bindings',['../group__topology.html#ga108dfce00b13353fb2fe38ec75526b0f',1,'mesh.h']]],
   ['flecsi_5fregister_5fcolor',['flecsi_register_color',['../group__data.html#ga1c9f54d9b214a39f3b11c777dd743e32',1,'data.h']]],
+  ['flecsi_5fregister_5fcontrol_5faction',['flecsi_register_control_action',['../macro_8h.html#a5fd60faa32e3b29da7e298533d3eb7a8',1,'macro.h']]],
   ['flecsi_5fregister_5fdata_5fclient',['flecsi_register_data_client',['../group__data.html#gaaa855ccd1c709526c76247bce774ff64',1,'data.h']]],
   ['flecsi_5fregister_5fentity_5ftypes',['flecsi_register_entity_types',['../group__topology.html#gac36f3d771159c3fdbfdc770102f016a2',1,'mesh.h']]],
   ['flecsi_5fregister_5ffield',['flecsi_register_field',['../group__data.html#ga94367ffbedff524f08ddef3a27df2b36',1,'data.h']]],

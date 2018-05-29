@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['dag_5f_5f',['dag__',['../structflecsi_1_1utils_1_1dag____.html',1,'flecsi::utils']]],
+  ['dag_5fnode_5f_5f',['dag_node__',['../structflecsi_1_1utils_1_1dag__node____.html',1,'flecsi::utils']]],
   ['data_5fclient_5fhandle_5fadjacency_5ft',['data_client_handle_adjacency_t',['../structflecsi_1_1data__client__handle__adjacency__t.html',1,'flecsi']]],
   ['data_5fclient_5fhandle_5fbase_5f_5f',['data_client_handle_base__',['../structflecsi_1_1data__client__handle__base____.html',1,'flecsi']]],
   ['data_5fclient_5fhandle_5fbase_5f_5f_3c_20independent_5fdata_5fclient_5ftype_2c_20permissions_20_3e',['data_client_handle_base__&lt; INDEPENDENT_DATA_CLIENT_TYPE, PERMISSIONS &gt;',['../structflecsi_1_1data__client__handle__base____.html',1,'flecsi']]],

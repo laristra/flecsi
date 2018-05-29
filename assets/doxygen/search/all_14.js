@@ -60,6 +60,7 @@ var searchData=
   ['tuple_5fwalker_5f_5f_3c_20index_5fsubspaces_5fwalker_5f_5f_20_3e',['tuple_walker__&lt; index_subspaces_walker__ &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5f_5f_3c_20init_5fargs_5ft_20_3e',['tuple_walker__&lt; init_args_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5f_5f_3c_20init_5fhandles_5ft_20_3e',['tuple_walker__&lt; init_handles_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
+  ['tuple_5fwalker_5f_5f_3c_20phase_5fwalker_5f_5f_3c_20control_5fpolicy_20_3e_20_3e',['tuple_walker__&lt; phase_walker__&lt; CONTROL_POLICY &gt; &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5f_5f_3c_20task_5fepilog_5ft_20_3e',['tuple_walker__&lt; task_epilog_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5f_5f_3c_20task_5fprolog_5ft_20_3e',['tuple_walker__&lt; task_prolog_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5f_5f_3c_20type_5fwalker_5f_5f_3c_20tuple_5fentry_5ftype_20_3e_20_3e',['tuple_walker__&lt; type_walker__&lt; TUPLE_ENTRY_TYPE &gt; &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
