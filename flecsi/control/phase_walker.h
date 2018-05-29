@@ -15,8 +15,9 @@
 
 /*! @file */
 
-#include <flecsi/execution/context.h>
 #include <flecsi/utils/tuple_walker.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/const_string.h>
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 #include <flecsi/utils/graphviz.h>
@@ -76,8 +77,6 @@ struct phase_walker__
   typename std::enable_if<
     std::is_same<typename PHASE_TYPE::TYPE, size_t>::value>::type
   handle_type() {
-    auto & context = flecsi::execution::context_t::instance();
-
     // Execute each control action for this phase
     auto & sorted =
       CONTROL_POLICY::instance().sorted_phase_map(PHASE_TYPE::value);

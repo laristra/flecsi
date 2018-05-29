@@ -131,16 +131,18 @@ using phases = std::tuple<
 	 return 0; 																						                       \
   }
 
-define_action(a)
-define_action(b)
-define_action(c)
-define_action(d)
-define_action(e)
-define_action(f)
-define_action(g)
-define_action(h)
-define_action(p)
-define_action(m)
+define_action(init_mesh)
+define_action(init_fields)
+define_action(init_species)
+define_action(advance_particles)
+define_action(accumulate_currents)
+define_action(update_fields)
+define_action(poynting_flux)
+define_action(restart_dump)
+define_action(write_flux)
+define_action(fixup_mesh)
+define_action(finalize)
+define_action(super_duper)
 
 #define register_action(phase, name, action)                                   \
   bool name##_registered = control_t::instance().phase_map(                    \
@@ -159,34 +161,43 @@ define_action(m)
  * These define the control point actions and DAG dependencies.
  *----------------------------------------------------------------------------*/
 
-register_action(initialize, A, action_a);
+// Initialization
+register_action(initialize, init_mesh, action_init_mesh);
+register_action(initialize, init_fields, action_init_fields);
+register_action(initialize, init_species, action_init_species);
 
-register_action(advance, B, action_b);
-register_action(advance, C, action_c);
-register_action(advance, D, action_d);
-register_action(advance, E, action_e);
+// Advance
+register_action(advance, advance_particles, action_advance_particles);
+register_action(advance, accumulate_currents, action_accumulate_currents);
+register_action(advance, update_fields, action_update_fields);
 
-register_action(io, G, action_g);
-register_action(mesh, H, action_h);
+// Analysis
+register_action(analyze, poynting_flux, action_poynting_flux);
 
-register_action(analyze, P, action_p);
+// I/O
+register_action(io, restart_dump, action_restart_dump);
+register_action(io, write_flux, action_write_flux);
 
-#define ENABLE_M 1
+// Mesh
+register_action(mesh, fixup_mesh, action_fixup_mesh);
+
+#define ENABLE_M 0
 #if ENABLE_M
-register_action(advance, M, action_m);
+register_action(advance, super_duper, action_super_duper);
 #endif
 
-add_dependency(advance, C, B);
-add_dependency(advance, B, D);
+add_dependency(initialize, init_fields, init_mesh);
+add_dependency(initialize, init_species, init_mesh);
+
+add_dependency(advance, accumulate_currents, advance_particles);
+add_dependency(advance, update_fields, accumulate_currents);
 
 #if ENABLE_M
-add_dependency(advance, M, D);
-add_dependency(advance, E, M);
+add_dependency(advance, super_duper, advance_particles);
+add_dependency(advance, accumulate_currents, super_duper);
 #endif
 
-add_dependency(advance, E, D);
-
-register_action(finalize, F, action_f);
+register_action(finalize, finalize, action_finalize);
 
 /*----------------------------------------------------------------------------*
  * Run the test...
