@@ -85,7 +85,7 @@ struct client_registration_wrapper__ {}; // class client_registration_wrapper__
 //!
 //----------------------------------------------------------------------------//
 
-template<typename POLICY_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
+template<typename policy_type, size_t namespace_hash, size_t name_hash>
 struct client_registration_wrapper__<
     flecsi::topology::mesh_topology__<POLICY_TYPE>,
     NAMESPACE_HASH,
@@ -461,6 +461,96 @@ struct client_registration_wrapper__<
   static void register_callback(field_id_t fid) {}
 
 }; // class client_registration_wrapper__
+
+//----------------------------------------------------------------------------//
+//!
+//----------------------------------------------------------------------------//
+
+template<typename policy_type, size_t namespace_hash, size_t name_hash>
+struct client_registration_wrapper__<
+    flecsi::topology::structured_mesh_topology_t<POLICY_TYPE>,
+    NAMESPACE_HASH,
+    NAME_HASH> {
+  using CLIENT_TYPE = typename flecsi::topology::structured_mesh_topology_t<POLICY_TYPE>;
+
+  //--------------------------------------------------------------------------//
+  //!
+  //--------------------------------------------------------------------------//
+
+  struct entity_walker_t
+      : public flecsi::utils::tuple_walker__<entity_walker_t> {
+
+    template<typename T, T V>
+    T value(topology::typeify<T, V>) {
+      return V;
+    }
+
+    template<typename TUPLE_ENTRY_TYPE>
+    void handle_type() {
+      using INDEX_TYPE = typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
+      using DOMAIN_TYPE =
+          typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
+      using ENTITY_TYPE =
+          typename std::tuple_element<2, TUPLE_ENTRY_TYPE>::type;
+
+      constexpr size_t entity_hash = utils::hash::client_entity_hash<
+          NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value, DOMAIN_TYPE::value,
+          ENTITY_TYPE::dimension>();
+
+      using wrapper_t = field_registration_wrapper__<
+          CLIENT_TYPE, flecsi::data::dense, ENTITY_TYPE, entity_hash, 0, 1,
+          INDEX_TYPE::value>;
+
+      const size_t type_key =
+          typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+
+      const size_t field_key = utils::hash::client_internal_field_hash<
+          utils::const_string_t("__flecsi_internal_entity_data__").hash(),
+          INDEX_TYPE::value>();
+
+      storage_t::instance().register_field(
+          type_key, field_key, wrapper_t::register_callback);
+
+      using id_wrapper_t = field_registration_wrapper__<
+          CLIENT_TYPE, flecsi::data::dense, utils::id_t, entity_hash, 0, 1,
+          INDEX_TYPE::value>;
+
+      const size_t id_key = utils::hash::client_internal_field_hash<
+          utils::const_string_t("__flecsi_internal_entity_id__").hash(),
+          INDEX_TYPE::value>();
+
+      storage_t::instance().register_field(
+          type_key, id_key, id_wrapper_t::register_callback);
+
+    } // handle_type
+
+  }; // struct entity_walker_t
+
+  //--------------------------------------------------------------------------//
+  //!
+  //--------------------------------------------------------------------------//
+
+  static void register_callback(field_id_t fid) {
+    using entity_types_t = typename POLICY_TYPE::entity_types;
+
+    auto & storage = storage_t::instance();
+
+    const size_t type_hash =
+        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+    const size_t instance_hash =
+        utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
+    auto const & field_registry = storage.field_registry();
+
+    // Only register field attributes if this is the first time
+    // that we have seen this type.
+    if (storage.register_client_fields(type_hash, instance_hash)) {
+      entity_walker_t entity_walker;
+      entity_walker.template walk_types<entity_types_t>();
+    } // if
+
+  } // register_callback
+
+}; // class client_registration_wrapper__ for structured topology
 
 } // namespace data
 } // namespace flecsi

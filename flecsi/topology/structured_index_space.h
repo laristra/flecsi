@@ -24,7 +24,9 @@ namespace topology {
 //----------------------------------------------------------------------------//
 //! The structured_index_space type...
 //!
-//! @ingroup 
+//! @ingroup
+//! @param E  The entity type of the index space
+//! @param DM num_dimensions 
 //----------------------------------------------------------------------------//
 template<class E, size_t DM>
 class structured_index_space{
@@ -39,15 +41,24 @@ public:
  *               Constructors/Destructors/Initializations                      *    
  * ****************************************************************************/ 
  //--------------------------------------------------------------------------//
- //! Interface to initialize the index-space for given lower and upper bounds
- //! of the cartesian block.  
+ //! Interface to initialize the index-space for entities of a given dimension
+ //! in a cartesian block.  
+ //!
+ //! Block: Lower/Upper bounds of the cartesian block from integer space (Z^d). 
+ //! In the current design, the lower bound is always the zero vector. 
+ //!
+ //! Index-space: An index-space is primarily an enumeration of entities of a
+ //! particular dimension in a structurerd  mesh. Given a block representing the 
+ //! the domain,, an index-space for a particular dimension can be represented 
+ //! using either the input bounds or by creating sub-bounds from the input which
+ //!  we call the dependent index-sapces.  
  //!
  //! @param primary Boolean representing if the index-space is primary. 
  //!                Currently, the primary index-space is not allowed 
- //!                multiple sub-blocks
- //! @param lbnds   The lower-bound 
- //! @param ubnds   The upper-bound
- //! @param mubnds  The 
+ //!                multiple dependent index spaces.
+ //! @param lbnds   The lower bound of the cartesian block
+ //! @param ubnds   The upper bound of the cartesian block
+ //! @param mubnds  The lower/upper bounds of the dependent index-space 
  //--------------------------------------------------------------------------//
 
   void init(bool primary, 
@@ -55,9 +66,10 @@ public:
             const sm_id_array_t &ubnds, 
             sm_id_vector_t &mubnds)
   {
+    // Check the array sizes for lower and upper bound are equal 
     assert(lbnds.size() == ubnds.size());
-    // this check is to ensure that the primary IS doesn't have 
-    // multiple boxes
+
+    // Check that the primary IS doesn't have multiple boxes
     if (primary) 
       assert (mubnds.size()==DM);
 
@@ -202,8 +214,8 @@ public:
  *                         Query-Specific Iterators                            *    
  * ****************************************************************************/ 
  //--------------------------------------------------------------------------//
- //! Abstract interface to get the entities of dimension \em to that define
- //! the entity of dimension \em from with the given identifier \em id.
+ //! Interface to get the entities of dimension \em FD to the entities of
+ //!  dimension \em TD.
  //!
  //! @param from_dimension The dimension of the entity for which the
  //!                       definition is being requested.
@@ -238,7 +250,6 @@ public:
       qt1_{qt1}
     {
       TD1_ = TD1;
-      //auto qt = query::qtable(MD1_);
       sm_id_t nq = qt1_->entry[FD1_][ID1_][TD1_].size();
       start_ = 0;
       finish_ = nq;
@@ -555,7 +566,6 @@ public:
  //--------------------------------------------------------------------------//
   auto find_box_id(sm_id_t offset)
   {
-    //assert(num_boxes>0);
     size_t bid = 0, low = 0, up = box_size_[0];
     for (size_t i = 0; i < num_boxes_; i++)
     {
@@ -714,16 +724,18 @@ public:
   };
  
  private:
-   bool primary_;                  // primary_ is set to true only for the IS of 
-                                   // highest-dimensional entity 
-   sm_id_t offset_;                // starting offset for the entire IS
-   sm_id_t size_;                  // size of the entire IS
+   bool primary_;                     // primary_ is set to true only for the IS of 
+                                      // highest-dimensional entity. The primary IS
+                                      // can contain only one box.
+                                      
+   sm_id_t offset_;                   // starting offset for the entire IS
+   sm_id_t size_;                     // size of the entire IS
 
-   sm_id_t        num_boxes_;      // number of boxes in this IS
-   sm_id_vector_t box_size_;       // total number of entities in each box
-   sm_id_vector_t box_offset_;     // starting offset of each box
-   sm_id_vector_2d_t  box_lowbnds_;    // lower bounds of each box
-   sm_id_vector_2d_t  box_upbnds_;     // upper bounds of each box
+   sm_id_t num_boxes_;                // number of boxes in this IS
+   sm_id_vector_t box_size_;          // total number of entities in each box
+   sm_id_vector_t box_offset_;        // starting offset of each box
+   sm_id_vector_2d_t box_lowbnds_;    // lower bounds of each box
+   sm_id_vector_2d_t box_upbnds_;     // upper bounds of each box
 
 };
 } // namespace topology

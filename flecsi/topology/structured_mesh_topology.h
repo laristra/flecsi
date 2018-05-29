@@ -109,6 +109,14 @@ public:
   using sm_id_array_t = std::array<size_t, MT::num_dimensions>;  
   using sm_id_vector_2d_t  = std::vector<std::vector<size_t>>;
 
+ //--------------------------------------------------------------------------//
+  // This type definition is needed so that data client handles can be
+  // specialized for particular data client types, e.g., mesh topologies vs.
+  // tree topologies. It is also useful for detecting illegal usage, such as
+  // when a user adds data members.
+  //--------------------------------------------------------------------------//
+  using type_identifier_t = structured_mesh_topology_t; 
+
   // Don't allow the mesh to be copied or copy constructed
   structured_mesh_topology_t(const structured_mesh_topology_t &) = delete;
   structured_mesh_topology_t & operator=(const structured_mesh_topology_t &)
@@ -142,7 +150,7 @@ public:
       for (size_t i = 0; i <= meshdim_; ++i)
       {
         if ( i == meshdim_) primary = true;
-        std::cout<<"bnd_info = "<<bnds_info[meshdim_-1][i].size()<<std::endl;
+        //std::cout<<"bnd_info = "<<bnds_info[meshdim_-1][i].size()<<std::endl;
         ms_.index_spaces[0][i].init(primary, meshbnds_low_, meshbnds_up_, bnds_info[meshdim_-1][i]);
       }
 
