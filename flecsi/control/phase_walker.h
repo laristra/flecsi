@@ -196,6 +196,10 @@ struct phase_writer__
         gv_.node(begin.label().c_str())
       );
       gv_.set_edge_attribute(edge, "label", "cycle");
+      gv_.set_edge_attribute(edge, "color", "#1d76db");
+      gv_.set_edge_attribute(edge, "style", "bold");
+      gv_.set_edge_attribute(edge, "headport", "e");
+      gv_.set_edge_attribute(edge, "tailport", "e");
     } // if
 
   } // handle_type

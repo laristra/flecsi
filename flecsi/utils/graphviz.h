@@ -28,7 +28,7 @@ namespace utils {
 
 // attribute strings
 static constexpr const char * gv_graph = "graph";
-static constexpr const char * gv_label_default = "default";
+static constexpr const char * gv_label_default = "";
 static constexpr const char * gv_label = "label";
 static constexpr const char * gv_color = "color";
 static constexpr const char * gv_color_default = "black";
@@ -40,6 +40,10 @@ static constexpr const char * gv_font_color = "fontcolor";
 static constexpr const char * gv_font_color_default = "black";
 static constexpr const char * gv_dir = "dir";
 static constexpr const char * gv_dir_default = "forward";
+static constexpr const char * gv_headport = "headport";
+static constexpr const char * gv_headport_default = "c";
+static constexpr const char * gv_tailport = "tailport";
+static constexpr const char * gv_tailport_default = "c";
 
 #define GV_GRAPH const_cast<char *>(gv_graph)
 #define GV_LABEL const_cast<char *>(gv_label)
@@ -54,6 +58,10 @@ static constexpr const char * gv_dir_default = "forward";
 #define GV_FONT_COLOR_DEFAULT const_cast<char *>(gv_font_color_default)
 #define GV_DIR const_cast<char *>(gv_dir)
 #define GV_DIR_DEFAULT const_cast<char *>(gv_dir_default)
+#define GV_HEADPORT const_cast<char *>(gv_headport)
+#define GV_HEADPORT_DEFAULT const_cast<char *>(gv_headport_default)
+#define GV_TAILPORT const_cast<char *>(gv_tailport)
+#define GV_TAILPORT_DEFAULT const_cast<char *>(gv_tailport_default)
 
 const int ag_create(1);
 const int ag_access(0);
@@ -106,6 +114,11 @@ public:
 
 		// set default edge attributes
 		agattr(graph_, AGEDGE, GV_DIR, GV_DIR_DEFAULT);
+    agattr(graph_, AGEDGE, GV_LABEL, GV_LABEL_DEFAULT);
+		agattr(graph_, AGEDGE, GV_COLOR, GV_COLOR_DEFAULT);
+    agattr(graph_, AGEDGE, GV_STYLE, GV_STYLE_DEFAULT);
+    agattr(graph_, AGEDGE, GV_HEADPORT, GV_HEADPORT_DEFAULT);
+    agattr(graph_, AGEDGE, GV_TAILPORT, GV_TAILPORT_DEFAULT);
 	} // clear
 
 	/*-------------------------------------------------------------------------*
