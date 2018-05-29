@@ -21,6 +21,12 @@ def execute(verbose, debug, build):
     tmpdir = tempfile.mkdtemp(dir=cwd)
     os.chdir(tmpdir)
 
+    # Set the absolute path to the driver
+    if build['driver'].split('/')[0] in ['.', '..']:
+        driver_path = cwd + '/' + build['driver']
+    else:
+        driver_path = build['driver']
+
     # Expand packages arguments for substitution
     required_packages = ''
     packages = build['packages'].split()
@@ -29,6 +35,12 @@ def execute(verbose, debug, build):
             '\n# Adding package dependencies specified by the user.\n'
 
         for package in packages:
+            if package == "hpx":
+                package = "HPX"
+                runtime_dir = "-DHPX_DIR=" + build['hpx_dir']
+            elif package == "legion":
+                package = "Legion"
+                runtime_dir = "-DLegion_DIR=" + build['legion_dir']
             required_packages += \
                 'find_package(' + package + ' REQUIRED)\n' + \
                 'include_directories(${' + package + '_INCLUDE_DIRS})\n'
@@ -40,7 +52,7 @@ def execute(verbose, debug, build):
         REQUIRED_PACKAGES = required_packages,
         PROJECT = 'flecsit_compile_' + build['deck'],
         TARGET = build['deck'],
-        DRIVER = cwd + '/' + build['driver'],
+        DRIVER = driver_path,
         FLECSI_RUNTIME_MAIN = build['main'],
         FLECSI_RUNTIME_DRIVER = build['prefix'] +
             '/share/FleCSI/runtime/runtime_driver.cc',
@@ -63,16 +75,18 @@ def execute(verbose, debug, build):
     cxx_compiler = '-DCMAKE_CXX_COMPILER=' + build['compiler']
     cxx_flags = '-DCMAKE_CXX_FLAGS=' + build['flags']
     cxx_debug_flags = '-DCMAKE_CXX_FLAGS_DEBUG=' + build['debug_flags']
+    flecsi_dir = "-DFleCSI_DIR=" + build['prefix'] + "/lib64/cmake/FleCSI/"
+    print("FLECSI", flecsi_dir)
 
     # Echo the subprocess call
     if verbose:
         print 'Invoking:'
         print '/usr/bin/cmake ' + cxx_compiler + ' ' + cxx_flags + ' ' + \
-            cxx_debug_flags + ' .'
+            cxx_debug_flags + ' ' + flecsi_dir + ' ' + runtime_dir + ' .'
 
     # Call CMake and make to build the example
     subprocess.call(['/usr/bin/cmake', cxx_compiler, cxx_flags,
-        cxx_debug_flags, '.'], stdout=devnull)
+        cxx_debug_flags, flecsi_dir, runtime_dir, '.'], stdout=devnull)
 
     if verbose:
         print 'Invoking:'

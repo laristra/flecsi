@@ -40,7 +40,7 @@ def main():
         includes = '@FLECSIT_INCLUDES@',
 
         # CMake packages (this is generally not set by the config
-        packages = '',
+        packages = '@FLECSI_RUNTIME_MODEL@',
 
         # LD_LIBRARY_PATH hint
         ldflags = '@FLECSIT_LDFLAGS@',
@@ -67,7 +67,11 @@ def main():
         system = '@CMAKE_SYSTEM_NAME@',
 
         # Clang header path
-        clang_headers = '@CLANG_HEADER_PATH@'
+        clang_headers = '@CLANG_HEADER_PATH@',
+
+        # FleCSI runtime models' CMake paths.
+        hpx_dir = '@HPX_DIR@',
+        legion_dir = '@LEGION_DIR@'
     )
 
     return flecsit.driver.main(build)

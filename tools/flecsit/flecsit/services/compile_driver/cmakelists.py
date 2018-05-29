@@ -18,6 +18,18 @@ project(${PROJECT})
 
 find_package(FleCSI REQUIRED)
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+  find_package(HPX REQUIRED)
+  include_directories($${HPX_INCLUDE_DIRS})
+  target_link_libraries(${DRIVER} $${HPX_LIBRARY_DIR})
+endif()
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+  find_package(Legion REQUIRED)
+  include_directories($${LEGION_INCLUDE_DIRS})
+  target_link_libraries(${DRIVER} $${LEGION_LIBRARY_DIR})
+endif()
+
 include_directories($${FLECSI_INCLUDE_DIRS})
 
 ${REQUIRED_PACKAGES}
