@@ -11,6 +11,7 @@
 
 #include <legion.h>
 
+#include <flecsi/data/common/data_types.h>
 #include <flecsi/runtime/types.h>
 
 //----------------------------------------------------------------------------//
@@ -33,9 +34,12 @@ struct legion_mutator_handle_policy_t {
   legion_mutator_handle_policy_t(const legion_mutator_handle_policy_t & p) =
       default;
 
+  using offset_t = data::sparse_data_offset_t;
+
   field_id_t fid;
   size_t index_space;
   size_t data_client_hash;
+  size_t slots;
 
   // These depend on color but are only used in specifying
   // the region requirements
@@ -63,6 +67,11 @@ struct legion_mutator_handle_policy_t {
   Legion::PhysicalRegion entries_ghost_pr;
 
   Legion::PhysicalRegion metadata_pr;
+
+  offset_t* offsets;
+  size_t offsets_size = 0;
+  uint8_t* entries;
+  size_t entries_size = 0;
 }; // class legion_mutator_handle_policy_t
 
 } // namespace flecsi
