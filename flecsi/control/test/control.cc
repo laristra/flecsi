@@ -91,7 +91,9 @@ using control_t = control__<node_policy_t>;
 using phase_walker_t = phase_walker__<control_t>;
 using phase_writer_t = phase_writer__<control_t>;
 
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
 using graphviz_t = flecsi::utils::graphviz_t;
+#endif
 
 size_t step{0};
 
@@ -122,10 +124,11 @@ using phases = std::tuple<
  * Convenience
  *----------------------------------------------------------------------------*/
 
-#define define_action(name) \
-  int action_##name(int argc, char ** argv) { \
-    usleep(200000); \
-    std::cout << "target_" << #name << std::endl; \
+#define define_action(name) 																    \
+  int action_##name(int argc, char ** argv) { 											 \
+    usleep(200000); 																			    \
+    std::cout << "target_" << #name << std::endl; 								       \
+	 return 0; 																						 \
   }
 
 define_action(a)
@@ -203,10 +206,13 @@ TEST(control, testname) {
   phase_walker_t phase_walker(argc, &argv[0]);
   phase_walker.template walk_types<phases>();
 
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
   graphviz_t gv;
 
   phase_writer_t phase_writer(gv);
   phase_writer.template walk_types<phases>();
 
   gv.write("control.gv");
+#endif
+
 } // TEST
