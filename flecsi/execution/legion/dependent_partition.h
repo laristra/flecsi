@@ -65,22 +65,26 @@ public:
   legion_partition() {}
 };
 
-class legion_dependent_partition : public dependent_partition{
+class legion_dependent_partition_policy_t {
 public:
+  using entity_t = legion_entity;
+  using adjacency_t = legion_adjacency;
+  using partition_t = legion_partition;
+
   int num_color;
   Legion::IndexSpace partition_index_space;
   Legion::Domain color_domain;
 public:
-  legion_dependent_partition() {}
+  legion_dependent_partition_policy_t() {}
   
-  virtual legion_entity load_entity(int entities_size, int entity_id, int entity_map_id, std::vector<int> &entity_vector, flecsi::topology::mesh_definition_base__ &md) override;
-  virtual legion_adjacency load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region, flecsi::topology::mesh_definition_base__ &md) override;
-  virtual legion_partition partition_by_color(legion_entity &entity) override;
-  virtual legion_partition partition_by_image(legion_entity &from_entity, legion_entity &to_entity, legion_adjacency &adjacency, legion_partition &from) override;
-  virtual legion_partition partition_by_difference(legion_entity &entity, legion_partition &par1, legion_partition &par2) override;
-  virtual legion_partition partition_by_intersection(legion_entity &entity, legion_partition &par1, legion_partition &par2) override;
-  virtual void output_partition(legion_entity &entity, legion_partition &primary, legion_partition &ghost, legion_partition &shared, legion_partition &exclusive) override;
-  virtual void min_reduction_by_color(legion_entity &entity, legion_partition &alias_partition) override;
+  legion_entity load_entity(int entities_size, int entity_id, int entity_map_id, std::vector<int> &entity_vector, flecsi::topology::mesh_definition_base__ &md);
+  legion_adjacency load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region, flecsi::topology::mesh_definition_base__ &md);
+  legion_partition partition_by_color(legion_entity &entity);
+  legion_partition partition_by_image(legion_entity &from_entity, legion_entity &to_entity, legion_adjacency &adjacency, legion_partition &from);
+  legion_partition partition_by_difference(legion_entity &entity, legion_partition &par1, legion_partition &par2);
+  legion_partition partition_by_intersection(legion_entity &entity, legion_partition &par1, legion_partition &par2);
+  void output_partition(legion_entity &entity, legion_partition &primary, legion_partition &ghost, legion_partition &shared, legion_partition &exclusive);
+  void min_reduction_by_color(legion_entity &entity, legion_partition &alias_partition);
 
 public:
   legion_entity load_cell(int cells_size, int entity_map_id, std::vector<int> &entity_vector, flecsi::topology::mesh_definition_base__ &md);
@@ -89,6 +93,6 @@ public:
   legion_adjacency load_cell_to_others(legion_entity &cell_region, legion_entity &other_region, flecsi::topology::mesh_definition_base__ &md);
   void set_offset(legion_entity &entity, legion_partition &primary);
 };
-  
+
 } // namespace execution
 } // namespace flecsi

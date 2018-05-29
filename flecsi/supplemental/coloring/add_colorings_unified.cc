@@ -1,8 +1,6 @@
 #include <mpi.h>
 #include <unistd.h>
 
-#include <flecsi/supplemental/coloring/add_colorings_dependent_partition.h>
-#include <flecsi/execution/legion/legion_tasks.h>
 #include <flecsi/execution/legion/dependent_partition.h>
 #include <flecsi/topology/mesh_definition.h>
 #include <flecsi/io/simple_definition.h>
@@ -22,49 +20,52 @@ add_colorings_unified(coloring_map_t& map)
   int num_cells = sd.num_entities(1);
   int num_vertices = sd.num_entities(0);
 
-  legion_dependent_partition legion_dp;
+ // legion_dependent_partition_policy_t legion_dp;
   
-  dependent_partition &dp = legion_dp;
+  //dependent_partition &dp = legion_dp;
+  
+  dependent_partition_t<legion_dependent_partition_policy_t> dp;
   
   std::vector<int> entity_vector;
   entity_vector.push_back(sd.dimension());
   entity_vector.push_back(0);
   
-  legion_entity cells = dp.load_entity(num_cells, sd.dimension(), map.cells, entity_vector, sd);
   
-  legion_adjacency cell_to_cell = dp.load_cell_to_entity(cells, cells, sd);
+  dependent_partition_t<legion_dependent_partition_policy_t>::entity_t cells = dp.load_entity(num_cells, sd.dimension(), map.cells, entity_vector, sd);
   
-  legion_partition cell_primary = dp.partition_by_color(cells);
+  dependent_partition_t<legion_dependent_partition_policy_t>::adjacency_t cell_to_cell = dp.load_cell_to_entity(cells, cells, sd);
   
-  legion_partition cell_closure = dp.partition_by_image(cells, cells, cell_to_cell, cell_primary);
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t cell_primary = dp.partition_by_color(cells);
   
-  legion_partition cell_ghost = dp.partition_by_difference(cells, cell_closure, cell_primary);
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t cell_closure = dp.partition_by_image(cells, cells, cell_to_cell, cell_primary);
   
-  legion_partition cell_ghost_closure = dp.partition_by_image(cells, cells, cell_to_cell, cell_ghost);
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t cell_ghost = dp.partition_by_difference(cells, cell_closure, cell_primary);
   
-  legion_partition cell_shared = dp.partition_by_intersection(cells, cell_ghost_closure, cell_primary);
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t cell_ghost_closure = dp.partition_by_image(cells, cells, cell_to_cell, cell_ghost);
   
-  legion_partition cell_exclusive = dp.partition_by_difference(cells, cell_primary, cell_shared);
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t cell_shared = dp.partition_by_intersection(cells, cell_ghost_closure, cell_primary);
   
-  legion_entity vertices = dp.load_entity(num_vertices, 0, map.vertices, entity_vector, sd);
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t cell_exclusive = dp.partition_by_difference(cells, cell_primary, cell_shared);
   
-  legion_adjacency cell_to_vertex = dp.load_cell_to_entity(cells, vertices, sd);
+  dependent_partition_t<legion_dependent_partition_policy_t>::entity_t vertices = dp.load_entity(num_vertices, 0, map.vertices, entity_vector, sd);
   
-  legion_partition vertex_alias = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_primary);
+  dependent_partition_t<legion_dependent_partition_policy_t>::adjacency_t cell_to_vertex = dp.load_cell_to_entity(cells, vertices, sd);
+  
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t vertex_alias = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_primary);
   
   dp.min_reduction_by_color(vertices, vertex_alias);
   
-  legion_partition vertex_primary = dp.partition_by_color(vertices);
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t vertex_primary = dp.partition_by_color(vertices);
   
-  legion_partition vertex_of_ghost_cell = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_ghost);
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t vertex_of_ghost_cell = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_ghost);
   
-  legion_partition vertex_ghost = dp.partition_by_difference(vertices, vertex_of_ghost_cell, vertex_primary);
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t vertex_ghost = dp.partition_by_difference(vertices, vertex_of_ghost_cell, vertex_primary);
   
-  legion_partition vertex_of_shared_cell = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_shared);
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t vertex_of_shared_cell = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_shared);
   
-  legion_partition vertex_shared = dp.partition_by_intersection(vertices, vertex_of_shared_cell, vertex_primary);
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t vertex_shared = dp.partition_by_intersection(vertices, vertex_of_shared_cell, vertex_primary);
   
-  legion_partition vertex_exclusive = dp.partition_by_difference(vertices, vertex_primary, vertex_shared);
+  dependent_partition_t<legion_dependent_partition_policy_t>::partition_t vertex_exclusive = dp.partition_by_difference(vertices, vertex_primary, vertex_shared);
   
   /*
   legion_entity edges = dp.load_entity(num_vertices, 2, 3);
@@ -92,7 +93,6 @@ add_colorings_unified(coloring_map_t& map)
   dp.output_partition(vertices, vertex_primary, vertex_ghost, vertex_shared, vertex_exclusive);
   
 //  dp.output_partition(edges, edge_primary, edge_ghost, edge_shared, edge_exclusive);
-  
 }
 
 } // namespace execution
