@@ -29,41 +29,41 @@ add_colorings_unified(coloring_map_t& map)
   entity_vector.push_back(0);
   
   
-  entity_t cells = dp.load_entity(num_cells, sd.dimension(), map.cells, entity_vector, sd);
+  space_t cells = dp.load_entity(num_cells, sd.dimension(), map.cells, entity_vector, sd);
   
-  adjacency_t cell_to_cell = dp.load_cell_to_entity(cells, cells, sd);
+  map_t cell_to_cell = dp.load_cell_to_entity(cells, cells, sd);
   
-  partition_t cell_primary = dp.partition_by_color(cells);
+  set_t cell_primary = dp.partition_by_color(cells);
   
-  partition_t cell_closure = dp.partition_by_image(cells, cells, cell_to_cell, cell_primary);
+  set_t cell_closure = dp.partition_by_image(cells, cells, cell_to_cell, cell_primary);
   
-  partition_t cell_ghost = dp.partition_by_difference(cells, cell_closure, cell_primary);
+  set_t cell_ghost = dp.partition_by_difference(cells, cell_closure, cell_primary);
   
-  partition_t cell_ghost_closure = dp.partition_by_image(cells, cells, cell_to_cell, cell_ghost);
+  set_t cell_ghost_closure = dp.partition_by_image(cells, cells, cell_to_cell, cell_ghost);
   
-  partition_t cell_shared = dp.partition_by_intersection(cells, cell_ghost_closure, cell_primary);
+  set_t cell_shared = dp.partition_by_intersection(cells, cell_ghost_closure, cell_primary);
   
-  partition_t cell_exclusive = dp.partition_by_difference(cells, cell_primary, cell_shared);
+  set_t cell_exclusive = dp.partition_by_difference(cells, cell_primary, cell_shared);
   
-  entity_t vertices = dp.load_entity(num_vertices, 0, map.vertices, entity_vector, sd);
+  space_t vertices = dp.load_entity(num_vertices, 0, map.vertices, entity_vector, sd);
   
-  adjacency_t cell_to_vertex = dp.load_cell_to_entity(cells, vertices, sd);
+  map_t cell_to_vertex = dp.load_cell_to_entity(cells, vertices, sd);
   
-  partition_t vertex_alias = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_primary);
+  set_t vertex_alias = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_primary);
   
   dp.min_reduction_by_color(vertices, vertex_alias);
   
-  partition_t vertex_primary = dp.partition_by_color(vertices);
+  set_t vertex_primary = dp.partition_by_color(vertices);
   
-  partition_t vertex_of_ghost_cell = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_ghost);
+  set_t vertex_of_ghost_cell = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_ghost);
   
-  partition_t vertex_ghost = dp.partition_by_difference(vertices, vertex_of_ghost_cell, vertex_primary);
+  set_t vertex_ghost = dp.partition_by_difference(vertices, vertex_of_ghost_cell, vertex_primary);
   
-  partition_t vertex_of_shared_cell = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_shared);
+  set_t vertex_of_shared_cell = dp.partition_by_image(cells, vertices, cell_to_vertex, cell_shared);
   
-  partition_t vertex_shared = dp.partition_by_intersection(vertices, vertex_of_shared_cell, vertex_primary);
+  set_t vertex_shared = dp.partition_by_intersection(vertices, vertex_of_shared_cell, vertex_primary);
   
-  partition_t vertex_exclusive = dp.partition_by_difference(vertices, vertex_primary, vertex_shared);
+  set_t vertex_exclusive = dp.partition_by_difference(vertices, vertex_primary, vertex_shared);
   
   /*
   legion_entity edges = dp.load_entity(num_vertices, 2, 3);

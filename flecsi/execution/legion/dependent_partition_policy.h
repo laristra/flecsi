@@ -66,9 +66,9 @@ public:
 
 class legion_dependent_partition_policy_t {
 public:
-  using entity_t = legion_entity;
-  using adjacency_t = legion_adjacency;
-  using partition_t = legion_partition;
+  using space_t = legion_entity;
+  using map_t = legion_adjacency;
+  using set_t = legion_partition;
 
   int num_color;
   Legion::IndexSpace partition_index_space;
