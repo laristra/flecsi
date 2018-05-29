@@ -124,11 +124,11 @@ using phases = std::tuple<
  * Convenience
  *----------------------------------------------------------------------------*/
 
-#define define_action(name) 																    \
-  int action_##name(int argc, char ** argv) { 											 \
-    usleep(200000); 																			    \
-    std::cout << "target_" << #name << std::endl; 								       \
-	 return 0; 																						 \
+#define define_action(name) 																                   \
+  int action_##name(int argc, char ** argv) { 											           \
+    usleep(200000); 																			                     \
+    std::cout << "target_" << #name << std::endl; 								             \
+	 return 0; 																						                       \
   }
 
 define_action(a)
@@ -159,34 +159,34 @@ define_action(m)
  * These define the control point actions and DAG dependencies.
  *----------------------------------------------------------------------------*/
 
-register_action(initialize, a, action_a);
+register_action(initialize, A, action_a);
 
-register_action(advance, b, action_b);
-register_action(advance, c, action_c);
-register_action(advance, d, action_d);
-register_action(advance, e, action_e);
+register_action(advance, B, action_b);
+register_action(advance, C, action_c);
+register_action(advance, D, action_d);
+register_action(advance, E, action_e);
 
-register_action(io, g, action_g);
-register_action(mesh, h, action_h);
+register_action(io, G, action_g);
+register_action(mesh, H, action_h);
 
-register_action(analyze, p, action_p);
+register_action(analyze, P, action_p);
 
-#define M 1
-#if M
-register_action(advance, m, action_m);
+#define ENABLE_M 1
+#if ENABLE_M
+register_action(advance, M, action_m);
 #endif
 
-add_dependency(advance, c, b);
-add_dependency(advance, b, d);
+add_dependency(advance, C, B);
+add_dependency(advance, B, D);
 
-#if M
-add_dependency(advance, m, d);
-add_dependency(advance, e, m);
+#if ENABLE_M
+add_dependency(advance, M, D);
+add_dependency(advance, E, M);
 #endif
 
-add_dependency(advance, e, d);
+add_dependency(advance, E, D);
 
-register_action(finalize, f, action_f);
+register_action(finalize, F, action_f);
 
 /*----------------------------------------------------------------------------*
  * Run the test...
