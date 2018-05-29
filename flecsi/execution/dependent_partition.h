@@ -2,35 +2,14 @@
 
 #include <flecsi-config.h>
 
-#if !defined(FLECSI_ENABLE_LEGION)
-#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
-#endif
-
-#include <legion.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/topology/mesh_definition.h>
 
 namespace flecsi {
 namespace execution {
-  
-class legion_entity;
-class legion_adjacency;
-class legion_partition;
-  
-class dependent_partition {
-public:
-  virtual legion_entity load_entity(int entities_size, int entity_id, int entity_map_id, std::vector<int> &entity_vector, flecsi::topology::mesh_definition_base__ &md) = 0;
-  virtual legion_adjacency load_cell_to_entity(legion_entity &cell_region, legion_entity &entity_region, flecsi::topology::mesh_definition_base__ &md) = 0;
-  virtual legion_partition partition_by_color(legion_entity &entity) = 0;
-  virtual legion_partition partition_by_image(legion_entity &from_entity, legion_entity &to_entity, legion_adjacency &adjacency, legion_partition &from) = 0;
-  virtual legion_partition partition_by_difference(legion_entity &entity, legion_partition &par1, legion_partition &par2) = 0;
-  virtual legion_partition partition_by_intersection(legion_entity &entity, legion_partition &par1, legion_partition &par2) = 0;
-  virtual void output_partition(legion_entity &entity, legion_partition &primary, legion_partition &ghost, legion_partition &shared, legion_partition &exclusive) = 0;
-  virtual void min_reduction_by_color(legion_entity &entity, legion_partition &alias_partition) = 0;
-};
 
 template<class DEPENDENT_PARTITION_POLICY>
-struct dependent_partition_t : public DEPENDENT_PARTITION_POLICY {
+struct dependent_partition__ : public DEPENDENT_PARTITION_POLICY {
   using entity_t = typename DEPENDENT_PARTITION_POLICY::entity_t;
   using adjacency_t = typename DEPENDENT_PARTITION_POLICY::adjacency_t;
   using partition_t = typename DEPENDENT_PARTITION_POLICY::partition_t;
@@ -76,15 +55,26 @@ struct dependent_partition_t : public DEPENDENT_PARTITION_POLICY {
   }
 };
 
-/*
-template<class DEPENDENT_PARTITION_POLICY>
-using entity_t = typename dependent_partition_t<DEPENDENT_PARTITION_POLICY>::entity_t;
+} // namespace execution
+} // namespace flecsi
 
-template<class DEPENDENT_PARTITION_POLICY>
-using adjacency_t = typename dependent_partition_t<DEPENDENT_PARTITION_POLICY>::adjacency_t;
+// This include file defines the FLECSI_DEPENDENT_PARTITION_POLICY used below.
 
-template<class DEPENDENT_PARTITION_POLICY>
-using partition_t = typename dependent_partition_t<DEPENDENT_PARTITION_POLICY>::partition_t;
-*/
+#include <flecsi/execution/dependent_partition_policy.h>
+
+namespace flecsi {
+namespace execution {
+
+/*!
+  The dependent_partition_t type is the high-level interface to the FleCSI
+  dependent partition.
+  @ingroup execution
+ */
+
+using dependent_partition_t = dependent_partition__<FLECSI_DEPENDENT_PARTITION_POLICY>;
+using entity_t = dependent_partition__<FLECSI_DEPENDENT_PARTITION_POLICY>::entity_t;
+using adjacency_t = dependent_partition__<FLECSI_DEPENDENT_PARTITION_POLICY>::adjacency_t;
+using partition_t = dependent_partition__<FLECSI_DEPENDENT_PARTITION_POLICY>::partition_t;
+
 } // namespace execution
 } // namespace flecsi

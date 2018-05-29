@@ -8,7 +8,6 @@
 
 #include <legion.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/execution/dependent_partition.h>
 #include <flecsi/topology/mesh_definition.h>
 
 namespace flecsi {

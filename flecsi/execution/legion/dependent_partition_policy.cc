@@ -1,7 +1,7 @@
 #include <mpi.h>
 #include <unistd.h>
 
-#include <flecsi/execution/legion/dependent_partition.h>
+#include <flecsi/execution/legion/dependent_partition_policy.h>
 #include <flecsi/execution/legion/legion_tasks.h>
 #include <flecsi/io/simple_definition.h>
 

@@ -31,6 +31,7 @@ set(execution_HEADERS
   kernel.h
   task.h
   dependent_partition.h
+  dependent_partition_policy.h
 )
 
 set(DRIVER_INITIALIZATION driver_initialization.cc)
@@ -63,14 +64,14 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/task_epilog.h
     legion/task_prolog.h
     legion/task_wrapper.h
-    legion/dependent_partition.h
+    legion/dependent_partition_policy.h
   )
 
   set(execution_SOURCES
     ${execution_SOURCES}
     legion/context_policy.cc
     legion/legion_tasks.cc
-    legion/dependent_partition.cc
+    legion/dependent_partition_policy.cc
   )
 
   set(UNIT_POLICY LEGION)
