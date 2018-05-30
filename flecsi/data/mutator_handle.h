@@ -527,7 +527,8 @@ public:
 
       for (size_t j = 0; j < num_existing; ++j) {
         if (iitr != iitr_end && iitr->first == j) {
-          cptr[ri++] = iitr->second;
+          std::memcpy(&cptr[ri], &iitr->second, sizeof(iitr->second));
+          ++ri;
           ++iitr;
         }
 

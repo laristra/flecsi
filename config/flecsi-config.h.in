@@ -26,7 +26,17 @@
 //----------------------------------------------------------------------------//
 
 #if defined(FLECSI_ENABLE_LEGION)
+  #if !defined(LEGION_USE_CMAKE)
+    #define LEGION_USE_CMAKE
+  #endif
+  #if !defined(REALM_USE_CMAKE)
+    #define REALM_USE_CMAKE
+  #endif
   #define ENABLE_LEGION_TLS
+
+#cmakedefine MAPPER_COMPACTION
+#cmakedefine COMPACTED_STORAGE_SORT
+
 #endif
 
 //----------------------------------------------------------------------------//
@@ -60,6 +70,11 @@
 // Enable coloring
 //----------------------------------------------------------------------------//
 
-#cmakedefine FLECSI_ENABLE_COLORING
 #cmakedefine FLECSI_ENABLE_METIS
 #cmakedefine FLECSI_ENABLE_PARMETIS
+
+//----------------------------------------------------------------------------//
+// Enable Graphviz
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_GRAPHVIZ

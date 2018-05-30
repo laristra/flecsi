@@ -32,6 +32,11 @@ struct sparse_data_handle_base__ : public DATA_POLICY,
   using offset_t = data::sparse_data_offset_t;
   using entry_value_t = data::sparse_entry_value__<T>;
 
+  /*!
+    Capture the underlying data type.
+   */
+  using value_type = T;
+
   size_t index_space;
   size_t data_client_hash;
   size_t max_entries_per_index;

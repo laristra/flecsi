@@ -29,6 +29,7 @@
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
+#include <flecsi/utils/dag.h>
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/simple_id.h>
 
@@ -771,6 +772,7 @@ struct context__ : public CONTEXT_POLICY {
   } // execution_state
 
 private:
+
   // Default constructor
   context__() : CONTEXT_POLICY() {}
 
@@ -903,10 +905,12 @@ private:
 
   //! the packed types used for simple_id_t
   using simple_id_types_t = std::tuple<int, int, size_t>;
+
   //! the simple id type used for comparing ids of different dimensions
   using simple_id_t = utils::simple_id_t<
       simple_id_types_t,
       utils::lexical_comparison<simple_id_types_t>>;
+
   //! the storage type for arrays of simple_id_t's
   using simple_id_vector_t = std::vector<simple_id_t>;
 

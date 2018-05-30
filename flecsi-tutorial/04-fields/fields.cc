@@ -51,7 +51,7 @@ flecsi_register_task(initialize_field, example, loc, single);
 
 void print_field(mesh<ro> mesh, field<ro> f) {
   for(auto c: mesh.cells(owned)) {
-    std::cout << "cell id: " << c->id() << " has value " <<
+    clog(info) << "cell id: " << c->id() << " has value " <<
       f(c) << std::endl;
   } // for
 } // print_field
