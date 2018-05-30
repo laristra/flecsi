@@ -33,7 +33,7 @@
 
 namespace flecsi {
 namespace topology {
-namespace verify_mesh {
+/*namespace verify_mesh {
 
   FLECSI_MEMBER_CHECKER(num_dimensions);
   FLECSI_MEMBER_CHECKER(num_domains);
@@ -41,7 +41,7 @@ namespace verify_mesh {
   FLECSI_MEMBER_CHECKER(upper_bounds);
   FLECSI_MEMBER_CHECKER(entity_types);
 } // namespace verify_mesh
-
+*/
 
 //----------------------------------------------------------------------------//
 //! The structured_mesh_topology type...
@@ -63,7 +63,7 @@ class structured_mesh_topology_t : public structured_mesh_topology_base_t
   * mesh_bounds 
   */
   // static verification of mesh policy
-
+/*
   static_assert(verify_mesh::has_member_num_dimensions<MT>::value,
                 "mesh policy missing num_dimensions size_t");
   
@@ -99,7 +99,7 @@ class structured_mesh_topology_t : public structured_mesh_topology_base_t
   static_assert(utils::is_tuple<typename MT::entity_types>::value,
                 "mesh policy entity_types is not a tuple");
 
-
+*/
 public:
   // used to find the entity type of topological dimension D and domain M
   template<size_t D, size_t M = 0>
@@ -157,8 +157,17 @@ public:
      //create query table once
      qt = new query::QueryTable<MT::num_dimensions, MT::num_dimensions+1,
                          MT::num_dimensions, MT::num_dimensions+1>(); 
-     
-     query::qtable(qt);  
+  
+       
+     //query::qtable(qt);  
+     /*if (meshdim_ == 1) 
+       query::qtable1d(qt); 
+     else if (meshdim_ == 2)
+       query::qtable2d(qt);
+     else if (meshdim_ == 3)
+       query::qtable3d(qt);
+    */ 
+        
   }
 
   // mesh destructor

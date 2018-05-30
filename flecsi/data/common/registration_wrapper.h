@@ -28,6 +28,7 @@
 #include <flecsi/topology/global_topology.h>
 #include <flecsi/topology/mesh_topology.h>
 #include <flecsi/topology/set_topology.h>
+#include <flecsi/topology/structured_mesh_topology.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
 #include <flecsi/utils/tuple_walker.h>
@@ -85,7 +86,7 @@ struct client_registration_wrapper__ {}; // class client_registration_wrapper__
 //!
 //----------------------------------------------------------------------------//
 
-template<typename policy_type, size_t namespace_hash, size_t name_hash>
+template<typename POLICY_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
 struct client_registration_wrapper__<
     flecsi::topology::mesh_topology__<POLICY_TYPE>,
     NAMESPACE_HASH,
@@ -466,7 +467,7 @@ struct client_registration_wrapper__<
 //!
 //----------------------------------------------------------------------------//
 
-template<typename policy_type, size_t namespace_hash, size_t name_hash>
+template<typename POLICY_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
 struct client_registration_wrapper__<
     flecsi::topology::structured_mesh_topology_t<POLICY_TYPE>,
     NAMESPACE_HASH,
