@@ -28,6 +28,10 @@ struct dag_node__ : public NODE_POLICY {
 
   using edge_list_t = std::list<size_t>;
 
+  /*! Constructor */
+
+  dag_node__() : NODE_POLICY() {}
+
   /*!
     Constructor.
 
@@ -38,7 +42,7 @@ struct dag_node__ : public NODE_POLICY {
    */
 
   template<typename ... ARGS>
-  dag_node__(size_t hash = 0, std::string const & label = "", ARGS && ... args)
+  dag_node__(size_t hash, std::string const & label, ARGS && ... args)
     : hash_(hash), label_(label), NODE_POLICY(std::forward<ARGS>(args) ...) {}
 
   /*!
@@ -91,9 +95,9 @@ struct dag_node__ : public NODE_POLICY {
 
 private:
 
-  size_t hash_;
-  std::string label_;
-  edge_list_t edge_list_;
+  size_t hash_ = 0;
+  std::string label_ = "";
+  edge_list_t edge_list_ = {};
 
 }; // struct dag_node__
 

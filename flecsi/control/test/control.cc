@@ -8,7 +8,7 @@
 
 #include <cinchtest.h>
 #include <flecsi/control/control.h>
-#include <flecsi/control/phase_walker.h>
+//#include <flecsi/control/phase_walker.h>
 
 // FIXME: typeify needs to move into common.h in utils.
 template<typename T, T M>
@@ -44,91 +44,90 @@ enum action_attributes_t : size_t {
 }; // enum action_attributes_t
 
 /*----------------------------------------------------------------------------*
- * Node policy (part of specialization).
- *----------------------------------------------------------------------------*/
-
-struct node_policy_t {
-
-  using bitset_t = std::bitset<8>;
-  using action_t = std::function<int(int, char **)>;
-
-  node_policy_t(action_t const & action = {}, bitset_t const & bitset = {})
-    : action_(action), bitset_(bitset) {}
-
-  bool initialize(node_policy_t const & node) {
-    action_ = node.action_;
-    bitset_ = node.bitset_;
-    return true;
-  } // initialize
-
-  action_t const & action() const { return action_; }
-  action_t & action() { return action_; }
-
-  bitset_t const & bitset() const { return bitset_; }
-  bitset_t & bitset() { return bitset_; }
-
-private:
-
-  action_t action_;
-  bitset_t bitset_;
-
-}; // struct node_policy_t
-
-inline std::ostream &
-operator << (std::ostream & stream, node_policy_t const & node) {
-  stream << "action: " << &node.action() << std::endl;
-  stream << "bitset: " << node.bitset() << std::endl;
-  return stream;
-} // operator <<
-
-/*----------------------------------------------------------------------------*
- * Control policy.
+ * Control policy (part of specialization).
  *----------------------------------------------------------------------------*/
 
 using namespace flecsi::control;
 
-using control_t = control__<node_policy_t>;
-using phase_walker_t = phase_walker__<control_t>;
-using phase_writer_t = phase_writer__<control_t>;
+struct control_policy_t {
 
-#if defined(FLECSI_ENABLE_GRAPHVIZ)
-using graphviz_t = flecsi::utils::graphviz_t;
-#endif
+  using control_t = control__<control_policy_t>;
 
-size_t step{0};
+  /*!
+   */
 
-// Fixme: This needs to go into the control context somehow.
-bool evolve_control() {
-  return step++ < 1;
-} // evolve_control
+  static bool evolve_control() {
+    return control_t::instance().step()++ < 5;
+  } // evolve
+
+  using evolve = cycle__<
+    evolve_control, // stopping predicate
+    phase_<advance>,
+    phase_<analyze>,
+    phase_<io>,
+    phase_<mesh>
+  >;
+
+  using phases = std::tuple<
+    phase_<initialize>,
+    evolve,
+    phase_<finalize>
+  >;
+
+  size_t & step() { return step_; }
+
+  struct node_t {
+
+    using bitset_t = std::bitset<8>;
+    using action_t = std::function<int(int, char **)>;
+
+    node_t(action_t const & action = {}, bitset_t const & bitset = {})
+      : action_(action), bitset_(bitset) {}
+
+    bool initialize(node_t const & node) {
+      action_ = node.action_;
+      bitset_ = node.bitset_;
+      return true;
+    } // initialize
+
+    action_t const & action() const { return action_; }
+    action_t & action() { return action_; }
+
+    bitset_t const & bitset() const { return bitset_; }
+    bitset_t & bitset() { return bitset_; }
+
+  private:
+
+    action_t action_;
+    bitset_t bitset_;
+
+  }; // struct node_t
+
+private:
+
+  size_t step_;
+
+}; // struct control_policy_t
 
 /*----------------------------------------------------------------------------*
- * Define the phases and sub cycles.
+ * Define control policy type.
  *----------------------------------------------------------------------------*/
 
-using evolve = cycle__<
-  evolve_control, // stopping predicate
-  phase_<advance>,
-  phase_<analyze>,
-  phase_<io>,
-  phase_<mesh>
->;
-
-using phases = std::tuple<
-  phase_<initialize>,
-  evolve,
-  phase_<finalize>
->;
+using control_t = control__<control_policy_t>;
 
 /*----------------------------------------------------------------------------*
  * Convenience
  *----------------------------------------------------------------------------*/
 
-#define define_action(name) 																                   \
-  int action_##name(int argc, char ** argv) { 											           \
-    usleep(200000); 																			                     \
-    std::cout << "target_" << #name << std::endl; 								             \
-	 return 0; 																						                       \
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
+using graphviz_t = flecsi::utils::graphviz_t;
+#endif
+
+#define define_action(name)                                                    \
+  int action_##name(int argc, char ** argv) {                                  \
+    usleep(200000);                                                            \
+    std::cout << "target_" << #name << std::endl;                              \
+    return 0;                                                                  \
   }
 
 define_action(init_mesh)
@@ -212,17 +211,12 @@ TEST(control, testname) {
   argv[0] = new char[1024];
   strcpy(argv[0], "control");
 
-  control_t::instance().init();
-
-  phase_walker_t phase_walker(argc, &argv[0]);
-  phase_walker.template walk_types<phases>();
+  auto & control = control_t::instance();
+  control.execute(argc, &argv[0]);
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
   graphviz_t gv;
-
-  phase_writer_t phase_writer(gv);
-  phase_writer.template walk_types<phases>();
-
+  control.write(gv);
   gv.write("control.gv");
 #endif
 
