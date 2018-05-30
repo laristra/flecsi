@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>Interface Documentation: flecsi::control::control__&lt; NODE_POLICY &gt; Struct Template Reference</title>
+<title>Interface Documentation: flecsi::control::control__&lt; CONTROL_POLICY &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,50 +71,60 @@ $(function() {
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="structflecsi_1_1control_1_1control____-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::control::control__&lt; NODE_POLICY &gt; Struct Template Reference</div>  </div>
+<div class="title">flecsi::control::control__&lt; CONTROL_POLICY &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="dynheader">
+Inheritance diagram for flecsi::control::control__&lt; CONTROL_POLICY &gt;:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="structflecsi_1_1control_1_1control____.png" usemap="#flecsi::control::control_5F_5F_3C_20CONTROL_5FPOLICY_20_3E_map" alt=""/>
+  <map id="flecsi::control::control_5F_5F_3C_20CONTROL_5FPOLICY_20_3E_map" name="flecsi::control::control_5F_5F_3C_20CONTROL_5FPOLICY_20_3E_map">
+</map>
+ </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a185a4096c3d132aafced88f9f5985575"><td class="memItemLeft" align="right" valign="top"><a id="a185a4096c3d132aafced88f9f5985575"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>dag_t</b> = <a class="el" href="structflecsi_1_1utils_1_1dag____.html">flecsi::utils::dag__</a>&lt; NODE_POLICY &gt;</td></tr>
-<tr class="separator:a185a4096c3d132aafced88f9f5985575"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af028b6ebb4e898035f71fb372ff12545"><td class="memItemLeft" align="right" valign="top"><a id="af028b6ebb4e898035f71fb372ff12545"></a>
+<tr class="memitem:a716ebd6f9a720bf5bc10d55a3bd4a7a3"><td class="memItemLeft" align="right" valign="top"><a id="a716ebd6f9a720bf5bc10d55a3bd4a7a3"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>dag_t</b> = <a class="el" href="structflecsi_1_1utils_1_1dag____.html">flecsi::utils::dag__</a>&lt; typename CONTROL_POLICY::node_t &gt;</td></tr>
+<tr class="separator:a716ebd6f9a720bf5bc10d55a3bd4a7a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45ea47f37e5900d01cba05949083f991"><td class="memItemLeft" align="right" valign="top"><a id="a45ea47f37e5900d01cba05949083f991"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>node_t</b> = typename <a class="el" href="structflecsi_1_1utils_1_1dag__node____.html">dag_t::node_t</a></td></tr>
-<tr class="separator:af028b6ebb4e898035f71fb372ff12545"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a45ea47f37e5900d01cba05949083f991"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45dc6a753a4476ce1324404d03f438da"><td class="memItemLeft" align="right" valign="top"><a id="a45dc6a753a4476ce1324404d03f438da"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>phase_walker_t</b> = <a class="el" href="structflecsi_1_1control_1_1phase__walker____.html">phase_walker__</a>&lt; <a class="el" href="structflecsi_1_1control_1_1control____.html">control__</a>&lt; CONTROL_POLICY &gt; &gt;</td></tr>
+<tr class="separator:a45dc6a753a4476ce1324404d03f438da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8114fd130530b6951ad1434ddb1e9989"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1utils_1_1dag____.html">dag_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1control_1_1control____.html#a8114fd130530b6951ad1434ddb1e9989">phase_map</a> (size_t phase, std::string const &amp;label=&quot;default&quot;)</td></tr>
-<tr class="separator:a8114fd130530b6951ad1434ddb1e9989"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ef9055f5feaf1b44de8c5716f743589"><td class="memItemLeft" align="right" valign="top"><a id="a6ef9055f5feaf1b44de8c5716f743589"></a>
-std::vector&lt; node_t &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>sorted_phase_map</b> (size_t phase)</td></tr>
-<tr class="separator:a6ef9055f5feaf1b44de8c5716f743589"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc1679eadf46ed3079fdc30263f37ae4"><td class="memItemLeft" align="right" valign="top"><a id="abc1679eadf46ed3079fdc30263f37ae4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> ()</td></tr>
-<tr class="separator:abc1679eadf46ed3079fdc30263f37ae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6270bf4b669cff293e4c838a0735159b"><td class="memItemLeft" align="right" valign="top"><a id="a6270bf4b669cff293e4c838a0735159b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>execute</b> (int argc, char **argv)</td></tr>
+<tr class="separator:a6270bf4b669cff293e4c838a0735159b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4943f6db86f2b8782bd22c582b21ee56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1utils_1_1dag____.html">dag_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1control_1_1control____.html#a4943f6db86f2b8782bd22c582b21ee56">phase_map</a> (size_t phase, std::string const &amp;label=&quot;default&quot;)</td></tr>
+<tr class="separator:a4943f6db86f2b8782bd22c582b21ee56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbc73eda8fcc807faae477b6648b682f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; node_t &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1control_1_1control____.html#acbc73eda8fcc807faae477b6648b682f">sorted_phase_map</a> (size_t phase)</td></tr>
+<tr class="separator:acbc73eda8fcc807faae477b6648b682f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a2155db042fecbaf3f288d7bb6cf32029"><td class="memItemLeft" align="right" valign="top"><a id="a2155db042fecbaf3f288d7bb6cf32029"></a>
+<tr class="memitem:a1c86effd680d60ea996c286be116a830"><td class="memItemLeft" align="right" valign="top"><a id="a1c86effd680d60ea996c286be116a830"></a>
 static <a class="el" href="structflecsi_1_1control_1_1control____.html">control__</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>instance</b> ()</td></tr>
-<tr class="separator:a2155db042fecbaf3f288d7bb6cf32029"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a1c86effd680d60ea996c286be116a830"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a8114fd130530b6951ad1434ddb1e9989"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8114fd130530b6951ad1434ddb1e9989">&#9670;&nbsp;</a></span>phase_map()</h2>
+<a id="a4943f6db86f2b8782bd22c582b21ee56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4943f6db86f2b8782bd22c582b21ee56">&#9670;&nbsp;</a></span>phase_map()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename NODE_POLICY &gt; </div>
+template&lt;typename CONTROL_POLICY &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structflecsi_1_1utils_1_1dag____.html">dag_t</a>&amp; <a class="el" href="structflecsi_1_1control_1_1control____.html">flecsi::control::control__</a>&lt; NODE_POLICY &gt;::phase_map </td>
+          <td class="memname"><a class="el" href="structflecsi_1_1utils_1_1dag____.html">dag_t</a>&amp; <a class="el" href="structflecsi_1_1control_1_1control____.html">flecsi::control::control__</a>&lt; CONTROL_POLICY &gt;::phase_map </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>phase</em>, </td>
@@ -138,6 +148,41 @@ template&lt;typename NODE_POLICY &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Return the control map for the given phase.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">phase</td><td>The control point id or <em>phase</em>. Phases are defined by the specialization. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="acbc73eda8fcc807faae477b6648b682f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbc73eda8fcc807faae477b6648b682f">&#9670;&nbsp;</a></span>sorted_phase_map()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename CONTROL_POLICY &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;node_t&gt; const&amp; <a class="el" href="structflecsi_1_1control_1_1control____.html">flecsi::control::control__</a>&lt; CONTROL_POLICY &gt;::sorted_phase_map </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>phase</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Retrun the sorted control map for the given phase.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">phase</td><td>The control point id or <em>phase</em>. Phases are defined by the specialization. </td></tr>
