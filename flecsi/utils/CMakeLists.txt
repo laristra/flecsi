@@ -271,7 +271,7 @@ endif()
 cinch_add_unit(common
   SOURCES common.cc
           test/common.cc
-  INPUTS  test/common.blessed ${common_blessed_input}
+  INPUTS  test/common.blessed.ppc test/common.blessed ${common_blessed_input}
   FOLDER "Tests/Util"
 )
 
