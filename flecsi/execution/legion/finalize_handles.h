@@ -71,6 +71,8 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
   {
     using entry_value_t = typename mutator_handle__<T>::entry_value_t;
     using commit_info_t = typename mutator_handle__<T>::commit_info_t;
+    using offset_t = data::sparse_data_offset_t;
+    using sparse_field_data_t = context_t::sparse_field_data_t;
 
     auto & h = m.h_;
 
@@ -86,7 +88,23 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
 
     h.commit(&ci);
 
-    // set initialized on md
+    auto md = static_cast<sparse_field_data_t*>(h.metadata);
+    md->num_exclusive_entries = h.num_exclusive_entries();
+    md->initialized = true;
+    
+    std::memcpy(h.offsets_data[0], h.offsets,
+                h.num_exclusive() * sizeof(offset_t));
+    
+    std::memcpy(h.offsets_data[1], h.offsets + h.num_exclusive(),
+                h.num_shared() * sizeof(offset_t));
+
+    std::memcpy(h.entries_data[0], h.entries,
+                md->num_exclusive_entries * sizeof(entry_value_t));
+    
+    std::memcpy(h.entries_data[1],
+                h.entries + h.reserve * sizeof(entry_value_t),
+                h.num_shared() * sizeof(entry_value_t) * 
+                h.max_entries_per_index());
   }
 
   /*!

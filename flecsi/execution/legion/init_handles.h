@@ -588,6 +588,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       LegionRuntime::Accessor::ByteOffset bo[2];
       md = ac.template raw_rect_ptr<2>(dr, sr, bo);
 
+      h.metadata = md;
       h.reserve = md->reserve;
 
       h.init(md->num_exclusive, md->num_shared, md->num_ghost, md->max_entries_per_index, h.slots);
@@ -613,7 +614,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
-      offsets_data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      h.offsets_data[r] = offsets_data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
       offsets_sizes[r] = sr.hi[1] - sr.lo[1] + 1;
       h.offsets_size += offsets_sizes[r];
     } // for
@@ -659,7 +660,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
-      entries_data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      h.entries_data[r] = entries_data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
       entries_sizes[r] = sr.hi[1] - sr.lo[1] + 1;
       h.entries_size += entries_sizes[r];
     } // for

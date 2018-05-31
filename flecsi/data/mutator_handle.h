@@ -413,6 +413,10 @@ public:
     return max_entries_per_index_;
   }
 
+  size_t num_exclusive_entries() const{
+    return ci_.entries[1] - ci_.entries[0];
+  }
+
   commit_info_t & commit_info() {
     return ci_;
   }

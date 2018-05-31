@@ -69,10 +69,16 @@ struct legion_mutator_handle_policy_t {
 
   Legion::PhysicalRegion metadata_pr;
 
+  void* metadata;
+
   offset_t* offsets;
+  void* offsets_data[3];
+
   size_t offsets_size = 0;
   uint8_t* entries;
   size_t entries_size = 0;
+  void* entries_data[3];
+
 }; // class legion_mutator_handle_policy_t
 
 } // namespace flecsi
