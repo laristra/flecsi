@@ -31,6 +31,7 @@ var searchData=
   ['const_5fstring_5ft',['const_string_t',['../classflecsi_1_1utils_1_1const__string__t.html',1,'flecsi::utils']]],
   ['context_5f_5f',['context__',['../structflecsi_1_1execution_1_1context____.html',1,'flecsi::execution']]],
   ['control_5f_5f',['control__',['../structflecsi_1_1control_1_1control____.html',1,'flecsi::control']]],
+  ['control_5fpolicy_5ft',['control_policy_t',['../structflecsi_1_1tutorial_1_1control__policy__t.html',1,'flecsi::tutorial']]],
   ['convert_5ftuple_5ftype',['convert_tuple_type',['../structflecsi_1_1utils_1_1convert__tuple__type.html',1,'flecsi::utils']]],
   ['convert_5ftuple_5ftype_3c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_20_3e',['convert_tuple_type&lt; std::tuple&lt; Args... &gt; &gt;',['../structflecsi_1_1utils_1_1convert__tuple__type_3_01std_1_1tuple_3_01Args_8_8_8_01_4_01_4.html',1,'flecsi::utils']]],
   ['convert_5ftuple_5ftype_5f',['convert_tuple_type_',['../structflecsi_1_1utils_1_1convert__tuple__type__.html',1,'flecsi::utils']]],

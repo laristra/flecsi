@@ -6,6 +6,7 @@ var searchData=
   ['parmetis_5fcolorer_5ft',['parmetis_colorer_t',['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html',1,'flecsi::coloring::parmetis_colorer_t'],['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html#a9eb222ebab10fc00c92d03ab1bb095f2',1,'flecsi::coloring::parmetis_colorer_t::parmetis_colorer_t()'],['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html#a2bca7ae6aca7b201e5ea3a2945db6835',1,'flecsi::coloring::parmetis_colorer_t::parmetis_colorer_t(const parmetis_colorer_t &amp;)=delete']]],
   ['partition_2eh',['partition.h',['../partition_8h.html',1,'']]],
   ['partition_5finfo_5ft',['partition_info_t',['../structflecsi_1_1mutator__handle__base_____1_1partition__info__t.html',1,'flecsi::mutator_handle_base__']]],
+  ['phase_5f',['phase_',['../phase__walker_8h.html#a7fa9ee6bed1e3106bac6f7a04f31cf71',1,'flecsi::control']]],
   ['phase_5fmap',['phase_map',['../structflecsi_1_1control_1_1control____.html#a4943f6db86f2b8782bd22c582b21ee56',1,'flecsi::control::control__']]],
   ['phase_5fwalker_2eh',['phase_walker.h',['../phase__walker_8h.html',1,'']]],
   ['phase_5fwalker_5f_5f',['phase_walker__',['../structflecsi_1_1control_1_1phase__walker____.html',1,'flecsi::control']]],

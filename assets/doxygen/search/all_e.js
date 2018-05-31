@@ -3,6 +3,7 @@ var searchData=
   ['naive_5fcoloring',['naive_coloring',['../dcrs__utils_8h.html#ac2932ba3cbc5d1c55e40722dff10191c',1,'flecsi::coloring']]],
   ['name_5fhash',['name_hash',['../structflecsi_1_1data_1_1data__hash__key__t.html#ac42b0c078e2dc51b2be553636e27b5c4',1,'flecsi::data::data_hash_key_t']]],
   ['namespace_5fhash',['namespace_hash',['../structflecsi_1_1data_1_1data__hash__key__t.html#a4e0956de252442307b67a40d0326a69a',1,'flecsi::data::data_hash_key_t']]],
+  ['node_5ft',['node_t',['../structflecsi_1_1tutorial_1_1node__t.html',1,'flecsi::tutorial']]],
   ['normal',['normal',['../space__vector_8h.html#a8dd206954fc02fcea80ed2e85c619696',1,'flecsi::normal(const point__&lt; T, 2 &gt; &amp;a, const point__&lt; T, 2 &gt; &amp;b)'],['../space__vector_8h.html#a4d21406e33994f7c8b1ded3e8c556b38',1,'flecsi::normal(const space_vector&lt; T, 3 &gt; &amp;a, const space_vector&lt; T, 3 &gt; &amp;b)']]],
   ['null',['null',['../classflecsi_1_1topology_1_1branch__id____.html#a5cb341a24e419075a3152fc6c57e0b71',1,'flecsi::topology::branch_id__']]],
   ['null_5fstream',['null_stream',['../classcinch_1_1clog__t.html#ab2f2580a7e2190d86c6a29ab7418e6e8',1,'cinch::clog_t']]],
