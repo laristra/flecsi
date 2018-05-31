@@ -29,6 +29,13 @@ namespace flecsi {
 namespace control {
 
 /*!
+  Convenience type for defining phases.
+ */
+
+template<size_t PHASE>
+using phase_ = flecsi::utils::typeify<size_t, PHASE>;
+
+/*!
   Allow users to define cyclic control points. Cycles can be nested.
 
   @tparam PREDICATE  A predicate function that determines when

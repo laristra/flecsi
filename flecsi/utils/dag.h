@@ -43,7 +43,8 @@ struct dag_node__ : public NODE_POLICY {
 
   template<typename ... ARGS>
   dag_node__(size_t hash, std::string const & label, ARGS && ... args)
-    : hash_(hash), label_(label), NODE_POLICY(std::forward<ARGS>(args) ...) {}
+    : hash_(hash), label_(label), NODE_POLICY(std::forward<ARGS>(args) ...) {
+  }
 
   /*!
     Copy constructor.
