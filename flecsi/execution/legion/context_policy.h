@@ -137,6 +137,7 @@ struct legion_context_policy_t {
     size_t reserve_chunk;
     size_t reserve;
     size_t num_exclusive_entries;
+    bool initialized = false;
   };
 
   //--------------------------------------------------------------------------//

@@ -40,6 +40,7 @@ struct legion_mutator_handle_policy_t {
   size_t index_space;
   size_t data_client_hash;
   size_t slots;
+  size_t reserve;
 
   // These depend on color but are only used in specifying
   // the region requirements

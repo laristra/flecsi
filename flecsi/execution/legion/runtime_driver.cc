@@ -1465,8 +1465,10 @@ spmd_task(
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
       sparse_field_data_t* metadata = ac.template raw_rect_ptr<2>(dr, sr, bo);
-      *metadata = sparse_field_data_t(fi.size, ci.exclusive, ci.shared,
-        ci.ghost, si->second.max_entries_per_index, si->second.reserve_chunk);
+      *metadata = sparse_field_data_t(fi.size, ci.exclusive,
+        ci.shared,
+        ci.ghost,
+        si->second.max_entries_per_index, si->second.reserve_chunk);
     }
 
     region_index++;

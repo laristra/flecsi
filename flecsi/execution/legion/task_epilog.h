@@ -155,7 +155,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
     > &m
   )
   {
-    // TODO: implement
+    
   }
 
   /*!

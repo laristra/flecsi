@@ -102,7 +102,6 @@ public:
     size_t max_entries_per_index,
     size_t num_slots
     ){
-    
     num_entries_ = num_exclusive + num_shared + num_ghost;
     num_exclusive_ = num_exclusive;
 

@@ -69,7 +69,24 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     > &m
   )
   {
-    // TODO: implement
+    using entry_value_t = typename mutator_handle__<T>::entry_value_t;
+    using commit_info_t = typename mutator_handle__<T>::commit_info_t;
+
+    auto & h = m.h_;
+
+    entry_value_t *entries =
+      reinterpret_cast<entry_value_t *>(h.entries);
+
+    commit_info_t ci;
+    ci.offsets = h.offsets;
+    ci.entries[0] = entries;
+    ci.entries[1] = entries + h.reserve;
+    ci.entries[2] =
+      ci.entries[1] + h.num_shared() * h.max_entries_per_index();
+
+    h.commit(&ci);
+
+    // set initialized on md
   }
 
   /*!

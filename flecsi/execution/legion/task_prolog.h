@@ -274,7 +274,6 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     > &m
   )
   {
-    // TODO: implement
   }
 
   /*!

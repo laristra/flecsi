@@ -588,6 +588,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       LegionRuntime::Accessor::ByteOffset bo[2];
       md = ac.template raw_rect_ptr<2>(dr, sr, bo);
 
+      h.reserve = md->reserve;
+
       h.init(md->num_exclusive, md->num_shared, md->num_ghost, md->max_entries_per_index, h.slots);
     }
 
@@ -616,14 +618,25 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       h.offsets_size += offsets_sizes[r];
     } // for
 
+
     h.offsets = new offset_t[h.offsets_size];
 
     size_t pos = 0;
 
-    for (size_t r{0}; r < num_regions; ++r) {
-      std::memcpy(h.offsets + pos, offsets_data[r],
-                  offsets_sizes[r] * sizeof(offset_t));
-      pos += offsets_sizes[r];
+    if(md->initialized){
+      for (size_t r{0}; r < num_regions; ++r) {
+        std::memcpy(h.offsets + pos, offsets_data[r],
+                    offsets_sizes[r] * sizeof(offset_t));
+        pos += offsets_sizes[r];
+      }  
+    }
+    else{
+      size_t n = md->num_shared + md->num_ghost;
+
+      for(size_t i = 0; i < n; ++i){
+        h.offsets[md->num_exclusive + i].set_offset(
+          h.reserve + i * md->max_entries_per_index);
+      }
     }
 
     region += num_regions;
@@ -657,7 +670,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     for (size_t r{0}; r < num_regions; ++r) {
       std::memcpy(entries + pos, entries_data[r],
-                  entries_sizes[r] * sizeof(offset_t));
+                  entries_sizes[r] * sizeof(entry_value_t));
       pos += entries_sizes[r];
     }
 
