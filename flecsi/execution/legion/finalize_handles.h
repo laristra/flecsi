@@ -56,7 +56,19 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     > &a
   )
   {
-    // TODO: implement
+    using entry_value_t = typename mutator_handle__<T>::entry_value_t;
+    using sparse_field_data_t = context_t::sparse_field_data_t;
+
+    auto & h = a.handle;
+    auto md = static_cast<sparse_field_data_t*>(h.metadata);
+    
+    std::memcpy(h.entries_data[0], h.entries,
+                md->num_exclusive_entries * sizeof(entry_value_t));
+    
+    std::memcpy(h.entries_data[1],
+                h.entries + md->reserve * sizeof(entry_value_t),
+                md->num_shared * sizeof(entry_value_t) * 
+                md->max_entries_per_index);
   }
 
   template<

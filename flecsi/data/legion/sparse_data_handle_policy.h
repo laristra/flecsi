@@ -88,6 +88,13 @@ struct legion_sparse_data_handle_policy_t {
   size_t exclusive_priv;
   size_t shared_priv;
   size_t ghost_priv;
+
+  void* metadata;
+
+  size_t offsets_size = 0;
+  size_t entries_size = 0;
+
+  void* entries_data[3];
 }; // class legion_sparse_data_handle_policy_t
 
 } // namespace flecsi

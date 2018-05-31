@@ -549,7 +549,111 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     > &a
   )
   {
-    // TODO: implement
+    auto & h = a.handle;
+
+    constexpr size_t num_regions = 3;
+
+    using entry_value_t = data::sparse_entry_value__<T>;
+    using sparse_field_data_t = context_t::sparse_field_data_t;
+    using offset_t = data::sparse_data_offset_t;
+
+    sparse_field_data_t* md;
+
+    {
+      Legion::PhysicalRegion pr = regions[region];
+
+      Legion::LogicalRegion lr = pr.get_logical_region();
+      Legion::IndexSpace is = lr.get_index_space();
+
+      auto ac = pr.get_field_accessor(h.fid).
+        template typeify<sparse_field_data_t>();
+
+      Legion::Domain domain = runtime->get_index_space_domain(context, is);
+
+      LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> sr;
+      LegionRuntime::Accessor::ByteOffset bo[2];
+      md = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      h.metadata = md;
+      h.init(md->num_exclusive, md->num_shared, md->num_ghost);
+    }
+
+    ++region;
+
+    Legion::PhysicalRegion offsets_prs[num_regions];
+    offset_t * offsets_data[num_regions];
+    size_t offsets_sizes[num_regions];
+
+    // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
+    for (size_t r = 0; r < num_regions; ++r) {
+      offsets_prs[r] = regions[region + r];
+      Legion::LogicalRegion lr = offsets_prs[r].get_logical_region();
+      Legion::IndexSpace is = lr.get_index_space();
+
+      auto ac = 
+        offsets_prs[r].get_field_accessor(h.fid).template typeify<offset_t>();
+
+      Legion::Domain domain = runtime->get_index_space_domain(context, is);
+
+      LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> sr;
+      LegionRuntime::Accessor::ByteOffset bo[2];
+      offsets_data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      offsets_sizes[r] = sr.hi[1] - sr.lo[1] + 1;
+      h.offsets_size += offsets_sizes[r];
+    } // for
+
+
+    h.offsets = new offset_t[h.offsets_size];
+
+    size_t pos = 0;
+
+    assert(md->initialized);
+
+    for (size_t r{0}; r < num_regions; ++r) {
+      std::memcpy(h.offsets + pos, offsets_data[r],
+                  offsets_sizes[r] * sizeof(offset_t));
+      pos += offsets_sizes[r];
+    }  
+
+    region += num_regions;
+
+    Legion::PhysicalRegion entries_prs[num_regions];
+    entry_value_t * entries_data[num_regions];
+    size_t entries_sizes[num_regions];
+
+    // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
+    for (size_t r = 0; r < num_regions; ++r) {
+      entries_prs[r] = regions[region + r];
+      Legion::LogicalRegion lr = entries_prs[r].get_logical_region();
+      Legion::IndexSpace is = lr.get_index_space();
+
+      auto ac = entries_prs[r].get_field_accessor(h.fid).
+        template typeify<entry_value_t>();
+
+      Legion::Domain domain = runtime->get_index_space_domain(context, is);
+
+      LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> sr;
+      LegionRuntime::Accessor::ByteOffset bo[2];
+      h.entries_data[r] = entries_data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      entries_sizes[r] = sr.hi[1] - sr.lo[1] + 1;
+      h.entries_size += entries_sizes[r];
+    } // for
+
+    entry_value_t* entries = new entry_value_t[h.entries_size];
+
+    pos = 0;
+
+    for (size_t r{0}; r < num_regions; ++r) {
+      std::memcpy(entries + pos, entries_data[r],
+                  entries_sizes[r] * sizeof(entry_value_t));
+      pos += entries_sizes[r];
+    }
+
+    h.entries = entries;
+
+    region += num_regions;
   }
 
   template<
