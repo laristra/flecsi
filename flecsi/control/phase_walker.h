@@ -15,8 +15,11 @@
 
 /*! @file */
 
-#include <flecsi/execution/context.h>
 #include <flecsi/utils/tuple_walker.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/const_string.h>
+
+#include <flecsi-config.h>
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 #include <flecsi/utils/graphviz.h>
@@ -24,6 +27,13 @@
 
 namespace flecsi {
 namespace control {
+
+/*!
+  Convenience type for defining phases.
+ */
+
+template<size_t PHASE>
+using phase_ = flecsi::utils::typeify<size_t, PHASE>;
 
 /*!
   Allow users to define cyclic control points. Cycles can be nested.
@@ -76,8 +86,6 @@ struct phase_walker__
   typename std::enable_if<
     std::is_same<typename PHASE_TYPE::TYPE, size_t>::value>::type
   handle_type() {
-    auto & context = flecsi::execution::context_t::instance();
-
     // Execute each control action for this phase
     auto & sorted =
       CONTROL_POLICY::instance().sorted_phase_map(PHASE_TYPE::value);
@@ -188,16 +196,20 @@ struct phase_writer__
     phase_writer__ phase_writer(gv_);
     phase_writer.template walk_types<typename PHASE_TYPE::TYPE>();
 
-    if( PHASE_TYPE::begin != PHASE_TYPE::end) {
+    // Add edges for cycles and beautify them...
+    
+    if(PHASE_TYPE::begin != PHASE_TYPE::end) {
       auto & begin = CONTROL_POLICY::instance().phase_map(PHASE_TYPE::begin);
       auto & end = CONTROL_POLICY::instance().phase_map(PHASE_TYPE::end);
-      auto * edge = gv_.add_edge(
-        gv_.node(end.label().c_str()),
-        gv_.node(begin.label().c_str())
-      );
+      auto * edge = gv_.add_edge(gv_.node(end.label().c_str()),
+        gv_.node(begin.label().c_str()));
       gv_.set_edge_attribute(edge, "label", "cycle");
+      gv_.set_edge_attribute(edge, "color", "#1d76db");
+      gv_.set_edge_attribute(edge, "fillcolor", "#1d76db");
+      gv_.set_edge_attribute(edge, "style", "bold");
+      gv_.set_edge_attribute(edge, "headport", "e");
+      gv_.set_edge_attribute(edge, "tailport", "e");
     } // if
-
   } // handle_type
 
 private:
@@ -208,5 +220,5 @@ private:
 
 #endif // FLECSI_ENABLE_GRAPHVIZ
 
-} // namespace flecsi
 } // namespace control
+} // namespace flecsi

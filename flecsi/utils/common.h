@@ -44,6 +44,19 @@ namespace flecsi {
 namespace utils {
 
 //----------------------------------------------------------------------------//
+// Typeification.
+//----------------------------------------------------------------------------//
+
+template<typename T, T M>
+struct typeify {
+  using TYPE = T;
+  static constexpr T value = M;
+};
+
+template<typename T, T M>
+constexpr T typeify<T, M>::value;
+
+//----------------------------------------------------------------------------//
 // Entity id type.
 //----------------------------------------------------------------------------//
 
@@ -90,17 +103,17 @@ type(const std::type_info & type_info) {
   return demangle(type_info.name());
 }
 
-  //----------------------------------------------------------------------------//
-  // Unique Identifier Utilities
-  //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// Unique Identifier Utilities
+//----------------------------------------------------------------------------//
 
-  //----------------------------------------------------------------------------//
-  // This value is used by the Legion runtime backend to automatically
-  // assign task and field ids. The current maximum value that is allowed
-  // in legion_config.h is 1<<20.
-  //
-  // We are reserving 4096 places for internal use.
-  //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// This value is used by the Legion runtime backend to automatically
+// assign task and field ids. The current maximum value that is allowed
+// in legion_config.h is 1<<20.
+//
+// We are reserving 4096 places for internal use.
+//----------------------------------------------------------------------------//
 
 #if !defined(FLECSI_GENERATED_ID_MAX)
   // 1044480 = (1<<20) - 4096

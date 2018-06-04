@@ -88,7 +88,7 @@ class FleCSIT_Compile(Service):
         includes = generate_compiler_options(config['includes'],
             args.include, 'FLECSIT_INCLUDES', '-I')
         defines = generate_compiler_options(config['defines'],
-            args.include, 'FLECSIT_DEFINES', '-D')
+            args.define, 'FLECSIT_DEFINES', '-D')
         libraries = generate_compiler_options(config['libraries'],
             args.library, 'FLECSIT_LIBRARIES', '')
         packages = generate_compiler_options(config['packages'],
