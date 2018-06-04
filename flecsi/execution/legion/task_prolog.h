@@ -210,12 +210,12 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
         rr_entries_shared =
           Legion::RegionRequirement(
           owner_entries_subregions[first], READ_ONLY, EXCLUSIVE,
-          owner_regions[first]);
+          owner_entries_regions[first]);
 
         rr_entries_ghost =
           Legion::RegionRequirement(
           ghost_entries_regions[first], WRITE_DISCARD, EXCLUSIVE,
-          color_regions[first]);        
+          color_entries_regions[first]);        
       }
 
       auto ghost_owner_pos_fid =
@@ -241,8 +241,6 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       for (auto owner_itr = owner_groups[group].begin();
            owner_itr != owner_groups[group].end(); owner_itr++) {
         size_t owner = *owner_itr;
-
-        // ndm - need offset and range
 
         rr_shared.add_field(fids[owner]);
         rr_ghost.add_field(fids[owner]);

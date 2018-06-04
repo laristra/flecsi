@@ -318,6 +318,8 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
 // ndm - need version for sparse
 
 __flecsi_internal_legion_task(ghost_copy_task, void) {
+  using offset_t = data::sparse_data_offset_t;
+
   const int my_color = runtime->find_local_MPI_rank();
 
   context_t & context = context_t::instance();
@@ -326,6 +328,7 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     size_t data_client_hash;
     size_t index_space;
     size_t owner;
+    bool sparse;
   };
   args_t args = *(args_t *)task->args;
 
@@ -379,47 +382,91 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     clog_assert(fitr != iitr->second.end(), "invalid fid");
     const context_t::field_info_t & field_info = fitr->second;
 
-    // ndm - need range/offset
-    auto acc_shared = regions[0].get_field_accessor(fid);
-    auto acc_ghost = regions[1].get_field_accessor(fid);
+    if(args.sparse){
+      auto acc_shared_offsets = regions[0].get_field_accessor(fid);
+      auto acc_ghost_offsets = regions[1].get_field_accessor(fid);
 
-    // ndm - need acc for ghost/shared sparse and ptr below
+      auto acc_shared_entries = regions[2].get_field_accessor(fid);
+      auto acc_ghost_entries = regions[3].get_field_accessor(fid);
 
-    uint8_t * data_shared =
-        reinterpret_cast<uint8_t *>(acc_shared.template raw_rect_ptr<2>(
-            owner_rect, owner_sub_rect, byte_offset));
+      uint8_t * shared_offsets =
+          reinterpret_cast<uint8_t *>(acc_shared_offsets.template raw_rect_ptr<2>(
+              owner_rect, owner_sub_rect, byte_offset));
 
-    {
-      clog_tag_guard(legion_tasks);
-      clog(trace) << "my_color = " << my_color << " owner lid = " << args.owner
-                  << " owner rect = " << owner_rect.lo[0] << ","
-                  << owner_rect.lo[1] << " to " << owner_rect.hi[0] << ","
-                  << owner_rect.hi[1] << std::endl;
+      uint8_t * ghost_offsets =
+          reinterpret_cast<uint8_t *>(acc_ghost_offsets.template raw_rect_ptr<2>(
+              ghost_rect, ghost_sub_rect, byte_offset));
+
+      uint8_t * shared_entries =
+          reinterpret_cast<uint8_t *>(acc_shared_entries.template raw_rect_ptr<2>(
+              owner_rect, owner_sub_rect, byte_offset));
+
+      uint8_t * ghost_entries =
+          reinterpret_cast<uint8_t *>(acc_ghost_entries.template raw_rect_ptr<2>(
+              ghost_rect, ghost_sub_rect, byte_offset));
+
+      for (size_t ghost_pt = 0; ghost_pt < position_max; ghost_pt++) {
+        LegionRuntime::Arrays::Point<2> ghost_ref = position_ref_data[ghost_pt];
+
+        {
+          clog_tag_guard(legion_tasks);
+          clog(trace) << my_color << " copy from position " << ghost_ref.x[0]
+                      << "," << ghost_ref.x[1] << std::endl;
+        }
+
+        if (owner_map[ghost_ref.x[0]] == args.owner) {
+          size_t owner_offset = ghost_ref.x[1] - owner_sub_rect.lo[1];
+
+          uint8_t * owner_copy_ptr = 
+            shared_offsets + owner_offset * sizeof(offset_t);
+          
+          size_t ghost_offset = ghost_pt;
+          
+          uint8_t * ghost_copy_ptr = 
+            ghost_offsets + ghost_offset * sizeof(offset_t);
+          
+          std::memcpy(ghost_copy_ptr, owner_copy_ptr, sizeof(offset_t));
+        } // if
+      } // for ghost_pt
     }
+    else{
+      auto acc_shared = regions[0].get_field_accessor(fid);
+      auto acc_ghost = regions[1].get_field_accessor(fid);
 
-    uint8_t * ghost_data =
-        reinterpret_cast<uint8_t *>(acc_ghost.template raw_rect_ptr<2>(
-            ghost_rect, ghost_sub_rect, byte_offset));
-
-    for (size_t ghost_pt = 0; ghost_pt < position_max; ghost_pt++) {
-      LegionRuntime::Arrays::Point<2> ghost_ref = position_ref_data[ghost_pt];
+      uint8_t * data_shared =
+          reinterpret_cast<uint8_t *>(acc_shared.template raw_rect_ptr<2>(
+              owner_rect, owner_sub_rect, byte_offset));
 
       {
         clog_tag_guard(legion_tasks);
-        clog(trace) << my_color << " copy from position " << ghost_ref.x[0]
-                    << "," << ghost_ref.x[1] << std::endl;
+        clog(trace) << "my_color = " << my_color << " owner lid = " << args.owner
+                    << " owner rect = " << owner_rect.lo[0] << ","
+                    << owner_rect.lo[1] << " to " << owner_rect.hi[0] << ","
+                    << owner_rect.hi[1] << std::endl;
       }
 
-      // ndm - use offset for index into sparse
+      uint8_t * ghost_data =
+          reinterpret_cast<uint8_t *>(acc_ghost.template raw_rect_ptr<2>(
+              ghost_rect, ghost_sub_rect, byte_offset));
 
-      if (owner_map[ghost_ref.x[0]] == args.owner) {
-        size_t owner_offset = ghost_ref.x[1] - owner_sub_rect.lo[1];
-        uint8_t * owner_copy_ptr = data_shared + owner_offset * field_info.size;
-        size_t ghost_offset = ghost_pt;
-        uint8_t * ghost_copy_ptr = ghost_data + ghost_offset * field_info.size;
-        std::memcpy(ghost_copy_ptr, owner_copy_ptr, field_info.size);
-      } // if
-    } // for ghost_pt
+      for (size_t ghost_pt = 0; ghost_pt < position_max; ghost_pt++) {
+        LegionRuntime::Arrays::Point<2> ghost_ref = position_ref_data[ghost_pt];
+
+        {
+          clog_tag_guard(legion_tasks);
+          clog(trace) << my_color << " copy from position " << ghost_ref.x[0]
+                      << "," << ghost_ref.x[1] << std::endl;
+        }
+
+        if (owner_map[ghost_ref.x[0]] == args.owner) {
+          size_t owner_offset = ghost_ref.x[1] - owner_sub_rect.lo[1];
+          uint8_t * owner_copy_ptr = data_shared + owner_offset * field_info.size;
+          size_t ghost_offset = ghost_pt;
+          uint8_t * ghost_copy_ptr = ghost_data + ghost_offset * field_info.size;
+          std::memcpy(ghost_copy_ptr, owner_copy_ptr, field_info.size);
+        } // if
+      } // for ghost_pt
+    }
   } // for fid
 } // ghost_copy_task
 
