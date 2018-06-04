@@ -55,8 +55,6 @@ struct control_policy_t {
   using control_t = flecsi::control::control__<control_policy_t>;
 
   using node_t = flecsi::tutorial::node_t;
-  /*!
-   */
 
   static bool evolve_control() {
     return control_t::instance().step()++ < 5;

@@ -21,6 +21,7 @@ using namespace flecsi::tutorial;
 int init_species(int argc, char ** argv) {
   usleep(200000);
   std::cout << "initialize: init_species" << std::endl;
+  std::cout << std::endl;
   return 0;
 } // init_fields
 

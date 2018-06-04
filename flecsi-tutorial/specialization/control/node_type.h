@@ -50,6 +50,8 @@ private:
 
 std::ostream &
 operator << (std::ostream & stream, node_t const & node) {
+  stream << "bitset: " << node.bitset() << std::endl;
+  stream << "action: " << &node.action() << std::endl;
   return stream;
 } // operator <<
 
