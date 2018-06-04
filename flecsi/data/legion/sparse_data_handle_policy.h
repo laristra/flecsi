@@ -71,8 +71,11 @@ struct legion_sparse_data_handle_policy_t {
 
   Legion::PhysicalRegion metadata_pr;
 
-  std::vector<Legion::LogicalRegion> ghost_owners_lregions;
-  std::vector<Legion::LogicalRegion> ghost_owners_subregions;
+  std::vector<Legion::LogicalRegion> ghost_owners_offsets_lregions;
+  std::vector<Legion::LogicalRegion> ghost_owners_offsets_subregions;
+
+  std::vector<Legion::LogicalRegion> ghost_owners_entries_lregions;
+  std::vector<Legion::LogicalRegion> ghost_owners_entries_subregions;
 
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.
