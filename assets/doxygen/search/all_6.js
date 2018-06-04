@@ -79,6 +79,7 @@ var searchData=
   ['flecsi_5fregister_5fnumber_5fdomains',['flecsi_register_number_domains',['../group__topology.html#ga1b26eb047867287f503e1ce721bfd896',1,'mesh.h']]],
   ['flecsi_5fregister_5ftask',['flecsi_register_task',['../group__execution.html#ga4dcd75ac370388c816b99672d589c4bc',1,'execution.h']]],
   ['flecsi_5fregister_5ftask_5fsimple',['flecsi_register_task_simple',['../group__execution.html#gab6f878599630e07ba05b4b82b3c1aa89',1,'execution.h']]],
+  ['flecsi_5fregister_5ftop_5flevel_5fdriver',['flecsi_register_top_level_driver',['../group__execution.html#ga252247ffd95f7677a969f4cd81384969',1,'execution.h']]],
   ['flecsi_5fruntime_5fcontext_5fpolicy_2eh',['flecsi_runtime_context_policy.h',['../flecsi__runtime__context__policy_8h.html',1,'']]],
   ['flecsi_5fruntime_5fdata_5fclient_5fhandle_5fpolicy_2eh',['flecsi_runtime_data_client_handle_policy.h',['../flecsi__runtime__data__client__handle__policy_8h.html',1,'']]],
   ['flecsi_5fruntime_5fdata_5fhandle_5fpolicy_2eh',['flecsi_runtime_data_handle_policy.h',['../flecsi__runtime__data__handle__policy_8h.html',1,'']]],

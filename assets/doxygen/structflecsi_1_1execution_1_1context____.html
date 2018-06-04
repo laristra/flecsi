@@ -116,9 +116,15 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>adjacency_info_t</b>
 <tr class="memitem:a787724a20fe2d9bf59ef77daa9b83daf"><td class="memItemLeft" align="right" valign="top"><a id="a787724a20fe2d9bf59ef77daa9b83daf"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>field_info_map_t</b> = std::map&lt; std::pair&lt; size_t, size_t &gt;, std::map&lt; field_id_t, <a class="el" href="structflecsi_1_1execution_1_1context_____1_1field__info__t.html">field_info_t</a> &gt; &gt;</td></tr>
 <tr class="separator:a787724a20fe2d9bf59ef77daa9b83daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18f6520cd12be15346daea14e2ee6402"><td class="memItemLeft" align="right" valign="top"><a id="a18f6520cd12be15346daea14e2ee6402"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>tlt_driver_t</b> = std::function&lt; int(int, char **)&gt;</td></tr>
+<tr class="separator:a18f6520cd12be15346daea14e2ee6402"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a07b6262033c63e663644f578f9c8a9b7"><td class="memItemLeft" align="right" valign="top"><a id="a07b6262033c63e663644f578f9c8a9b7"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>register_top_level_driver</b> (tlt_driver_t &amp;driver)</td></tr>
+<tr class="separator:a07b6262033c63e663644f578f9c8a9b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9f136e094b5563dfccec59d164076ad"><td class="memTemplParams" colspan="2"><a id="ad9f136e094b5563dfccec59d164076ad"></a>
 template&lt;size_t NAMESPACE_HASH, size_t INDEX, typename OBJECT_TYPE &gt; </td></tr>
 <tr class="memitem:ad9f136e094b5563dfccec59d164076ad"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_global_object</b> ()</td></tr>
