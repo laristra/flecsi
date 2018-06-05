@@ -1225,10 +1225,11 @@ spmd_task(
 
   auto& isubspace_dmap = context_.index_subspace_data_map();
 
+  size_t subspace_index = region_index+num_index_subspaces-1;
   for(auto& itr : context_.index_subspace_info()) {
     isubspace_dmap[itr.first].region = 
-      regions[region_index].get_logical_region();
-
+      regions[subspace_index].get_logical_region();
+    subspace_index--;
     region_index++;
   }
 
