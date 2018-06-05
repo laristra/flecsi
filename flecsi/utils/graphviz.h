@@ -31,13 +31,12 @@ static constexpr const char * gv_graph = "graph";
 static constexpr const char * gv_label_default = "";
 static constexpr const char * gv_label = "label";
 static constexpr const char * gv_color = "color";
-static constexpr const char * gv_color_default = "black";
+static constexpr const char * gv_color_black = "black";
 static constexpr const char * gv_style = "style";
 static constexpr const char * gv_style_default = "";
 static constexpr const char * gv_fill_color = "fillcolor";
-static constexpr const char * gv_fill_color_default = "lightgrey";
+static constexpr const char * gv_color_lightgrey = "lightgrey";
 static constexpr const char * gv_font_color = "fontcolor";
-static constexpr const char * gv_font_color_default = "black";
 static constexpr const char * gv_dir = "dir";
 static constexpr const char * gv_dir_default = "forward";
 static constexpr const char * gv_headport = "headport";
@@ -49,13 +48,12 @@ static constexpr const char * gv_tailport_default = "c";
 #define GV_LABEL const_cast<char *>(gv_label)
 #define GV_LABEL_DEFAULT const_cast<char *>(gv_label_default)
 #define GV_COLOR const_cast<char *>(gv_color)
-#define GV_COLOR_DEFAULT const_cast<char *>(gv_color_default)
+#define GV_COLOR_BLACK const_cast<char *>(gv_color_black)
 #define GV_STYLE const_cast<char *>(gv_style)
 #define GV_STYLE_DEFAULT const_cast<char *>(gv_style_default)
 #define GV_FILL_COLOR const_cast<char *>(gv_fill_color)
-#define GV_FILL_COLOR_DEFAULT const_cast<char *>(gv_fill_color_default)
+#define GV_COLOR_LIGHTGREY const_cast<char *>(gv_color_lightgrey)
 #define GV_FONT_COLOR const_cast<char *>(gv_font_color)
-#define GV_FONT_COLOR_DEFAULT const_cast<char *>(gv_font_color_default)
 #define GV_DIR const_cast<char *>(gv_dir)
 #define GV_DIR_DEFAULT const_cast<char *>(gv_dir_default)
 #define GV_HEADPORT const_cast<char *>(gv_headport)
@@ -107,16 +105,18 @@ public:
 
 		// set default node attributes
 		agattr(graph_, AGNODE, GV_LABEL, GV_LABEL_DEFAULT);
-		agattr(graph_, AGNODE, GV_COLOR, GV_COLOR_DEFAULT);
+		agattr(graph_, AGNODE, GV_COLOR, GV_COLOR_BLACK);
 		agattr(graph_, AGNODE, GV_STYLE, GV_STYLE_DEFAULT);
-		agattr(graph_, AGNODE, GV_FILL_COLOR, GV_FILL_COLOR_DEFAULT);
-		agattr(graph_, AGNODE, GV_FONT_COLOR, GV_FONT_COLOR_DEFAULT);
+		agattr(graph_, AGNODE, GV_FILL_COLOR, GV_COLOR_LIGHTGREY);
+		agattr(graph_, AGNODE, GV_FONT_COLOR, GV_COLOR_BLACK);
 
 		// set default edge attributes
 		agattr(graph_, AGEDGE, GV_DIR, GV_DIR_DEFAULT);
     agattr(graph_, AGEDGE, GV_LABEL, GV_LABEL_DEFAULT);
-		agattr(graph_, AGEDGE, GV_COLOR, GV_COLOR_DEFAULT);
+		agattr(graph_, AGEDGE, GV_COLOR, GV_COLOR_BLACK);
     agattr(graph_, AGEDGE, GV_STYLE, GV_STYLE_DEFAULT);
+		agattr(graph_, AGEDGE, GV_FILL_COLOR, GV_COLOR_BLACK);
+		agattr(graph_, AGEDGE, GV_FONT_COLOR, GV_COLOR_BLACK);
     agattr(graph_, AGEDGE, GV_HEADPORT, GV_HEADPORT_DEFAULT);
     agattr(graph_, AGEDGE, GV_TAILPORT, GV_TAILPORT_DEFAULT);
 	} // clear

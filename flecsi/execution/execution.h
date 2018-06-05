@@ -58,6 +58,28 @@ clog_register_tag(execution);
   typename flecsi::utils::function_traits__<decltype(task)>::arguments_type
 
 //----------------------------------------------------------------------------//
+// Top-Level Driver Interface
+//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_register_top_level_driver
+
+  Register the top level driver function.
+
+  @param driver A std::function<int(int, char **)> that shall be invoked by
+                the FLeCSI runtime after initialization. Normally, this
+                function should be the \em execute method of a
+                flecsi::control::control__<control_policy_t> instance.
+
+  @ingroup execution
+ */
+#define flecsi_register_top_level_driver(driver)                               \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  static bool registered_top_level_driver_##driver =                           \
+    flecsi::execution::context_t::instance().register_top_level_driver(driver)
+
+//----------------------------------------------------------------------------//
 // Object Registration Interface
 //----------------------------------------------------------------------------//
 
