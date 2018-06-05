@@ -487,43 +487,7 @@ struct client_registration_wrapper__<
     }
 
     template<typename TUPLE_ENTRY_TYPE>
-    void handle_type() {
-      using INDEX_TYPE = typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
-      using DOMAIN_TYPE =
-          typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
-      using ENTITY_TYPE =
-          typename std::tuple_element<2, TUPLE_ENTRY_TYPE>::type;
-
-      constexpr size_t entity_hash = utils::hash::client_entity_hash<
-          NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value, DOMAIN_TYPE::value,
-          ENTITY_TYPE::dimension>();
-
-      using wrapper_t = field_registration_wrapper__<
-          CLIENT_TYPE, flecsi::data::dense, ENTITY_TYPE, entity_hash, 0, 1,
-          INDEX_TYPE::value>;
-
-      const size_t type_key =
-          typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
-
-      const size_t field_key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_entity_data__").hash(),
-          INDEX_TYPE::value>();
-
-      storage_t::instance().register_field(
-          type_key, field_key, wrapper_t::register_callback);
-
-      using id_wrapper_t = field_registration_wrapper__<
-          CLIENT_TYPE, flecsi::data::dense, utils::id_t, entity_hash, 0, 1,
-          INDEX_TYPE::value>;
-
-      const size_t id_key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_entity_id__").hash(),
-          INDEX_TYPE::value>();
-
-      storage_t::instance().register_field(
-          type_key, id_key, id_wrapper_t::register_callback);
-
-    } // handle_type
+    void handle_type() {} // handle_type
 
   }; // struct entity_walker_t
 

@@ -628,19 +628,15 @@ struct data_client_policy_handler__<topology::structured_mesh_topology_t<POLICY_
       ei.size = sizeof(ENTITY_TYPE);
 
       entity_info.push_back(ei);
-      entity_index_space_map.emplace(
-          typeid(ENTITY_TYPE).hash_code(), INDEX_TYPE::value);
     } // handle_type
 
     std::vector<entity_info_t> entity_info;
-    std::map<size_t, size_t> entity_index_space_map;
 
   }; // struct entity_walker_t
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
   static data_client_handle__<DATA_CLIENT_TYPE, 0> get_client_handle() {
     using entity_types = typename POLICY_TYPE::entity_types;
-    using field_info_t = execution::context_t::field_info_t;
 
     data_client_handle__<DATA_CLIENT_TYPE, 0> h;
 
@@ -668,26 +664,6 @@ struct data_client_policy_handler__<topology::structured_mesh_topology_t<POLICY_
       ent.domain = ei.domain;
       ent.dim = ei.dim;
       ent.size = ei.size;
-
-      const field_info_t * fi = context.get_field_info_from_key(
-          h.type_hash,
-          utils::hash::client_internal_field_hash(
-              utils::const_string_t("__flecsi_internal_entity_data__").hash(),
-              ent.index_space));
-
-      if (fi) {
-        ent.fid = fi->fid;
-      }
-
-      fi = context.get_field_info_from_key(
-          h.type_hash,
-          utils::hash::client_internal_field_hash(
-              utils::const_string_t("__flecsi_internal_entity_id__").hash(),
-              ent.index_space));
-
-      if (fi) {
-        ent.id_fid = fi->fid;
-      }
 
       ++entity_index;
     } // for

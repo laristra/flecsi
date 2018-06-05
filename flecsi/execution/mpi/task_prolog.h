@@ -390,6 +390,53 @@ namespace execution {
     {
     } // handle
 
+/*    template<
+      typename T,
+      size_t PERMISSIONS
+    >
+    typename std::enable_if_t<std::is_base_of<topology::structured_mesh_topology_base_t, T>::value>
+    handle(
+      data_client_handle__<T, PERMISSIONS> & h
+    )
+    {
+      auto& context_ = context_t::instance();
+
+      // h is partially initialized in client.h
+     // auto storage = h.set_storage(new typename T::storage_t);
+
+      bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
+
+      int color = context_.color();
+
+      for(size_t i{0}; i<h.num_handle_entities; ++i) {
+        data_client_handle_entity_t & ent = h.handle_entities[i];
+
+        const size_t index_space = ent.index_space;
+        const size_t dim = ent.dim;
+        const size_t domain = ent.domain;
+
+        // get color_info for this field.
+        auto& color_info = (context_.coloring_info(index_space)).at(color);
+        ent.num_exclusive = color_info.exclusive;
+        ent.num_shared = color_info.shared;
+        ent.num_ghost = color_info.ghost;
+
+        auto num_entities = ent.num_exclusive + ent.num_shared + ent.num_ghost;
+
+
+        // new allocation every time.
+        storage->init_entities(ent.domain, ent.dim,
+                               ents, ids, ent.size,
+                               num_entities, ent.num_exclusive,
+                               ent.num_shared, ent.num_ghost,
+                               _read);
+      } // for
+
+      if(!_read){
+        h.initialize_storage();
+      }
+    } // handle for structured_mesh_topology
+*/
   }; // struct task_prolog_t
 
 } // namespace execution
