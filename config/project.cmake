@@ -132,6 +132,12 @@ set(FLECSI_COUNTER_TYPE "int32_t" CACHE STRING
   "Select the type that will be used for loop and iterator values")
 
 #------------------------------------------------------------------------------#
+# Control Model
+#------------------------------------------------------------------------------#
+
+option(ENABLE_DYNAMIC_CONTROL_MODEL "Enable the new FleCSI control model" OFF)
+
+#------------------------------------------------------------------------------#
 # Add option for FleCSIT command-line tool.
 #------------------------------------------------------------------------------#
 
@@ -393,6 +399,7 @@ set(FLECSI_ENABLE_LEGION ${ENABLE_LEGION})
 set(FLECSI_ENABLE_METIS ENABLE_METIS)
 set(FLECSI_ENABLE_PARMETIS ENABLE_PARMETIS)
 set(FLECSI_ENABLE_GRAPHVIZ ${ENABLE_GRAPHVIZ})
+set(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL ${ENABLE_DYNAMIC_CONTROL_MODEL})
 
 configure_file(${PROJECT_SOURCE_DIR}/config/flecsi-config.h.in
   ${CMAKE_BINARY_DIR}/flecsi-config.h @ONLY)

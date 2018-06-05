@@ -12,19 +12,15 @@
    All rights reserved.
                                                                               */
 
-/*----------------------------------------------------------------------------*
-  Documentation for this example can be found in README.md.
- *----------------------------------------------------------------------------*/
+#include <flecsi/execution/context.h>
+#include <flecsi-tutorial/specialization/control/control.h>
 
-#include <flecsi/execution/execution.h>
+namespace flecsi {
+namespace tutorial {
 
-#include "analysis.h"
-#include "currents.h"
-#include "fields.h"
-#include "io.h"
-#include "mesh.h"
-#include "particles.h"
-#include "special.h"
-#include "species.h"
+static const bool specialization_control_registered =
+  flecsi::execution::context_t::instance().register_top_level_driver(
+    control_t::execute);
 
-flecsi_register_program(control-model);
+} // namespace tutorial
+} // namespace flecsi
