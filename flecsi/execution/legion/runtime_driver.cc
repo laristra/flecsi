@@ -558,10 +558,8 @@ runtime_driver(
           sparse_owner_reg_req.add_flags(NO_ACCESS_FLAG);
 
           for (const field_info_t* field_info : fields_map[idx_space]){
-            if(utils::hash::is_internal(field_info->key)){
-              owner_reg_req.add_field(field_info->fid);
-            }
-            else{
+            owner_reg_req.add_field(field_info->fid);
+            if(!utils::hash::is_internal(field_info->key)){
               sparse_owner_reg_req.add_field(field_info->fid);
             }
           }          
@@ -1229,8 +1227,6 @@ spmd_task(
                                     // only a one-time setup
     subrect_map owner_to_subrect_map =
         owner_to_subrect_future.get_result<subrect_map>(silence_warnings);
-
-      // ndm - ok
 
     for(auto owner_itr=owner_to_subrect_map.begin();
         owner_itr!=owner_to_subrect_map.end(); owner_itr++) {

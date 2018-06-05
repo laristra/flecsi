@@ -153,6 +153,9 @@ namespace legion {
 
       handle__<DATA_TYPE, 0, 0, 0> h;
 
+      h.reserve = reserve_chunk;
+      h.max_entries_per_index = max_entries_per_index;
+
       h.offsets_color_region = ism[index_space].color_region;
       h.offsets_exclusive_lr = ism[index_space].exclusive_lr;
       h.offsets_shared_lr = ism[index_space].shared_lr;
@@ -192,8 +195,10 @@ namespace legion {
       h.ghost_owners_entries_lregions = 
         ism[index_space + sparse_offset].ghost_owners_lregions;
       
+      /*
       h.ghost_owners_entries_subregions = 
         ism[index_space + sparse_offset].ghost_owners_subregions;
+      */
 
       h.global_to_local_color_map_ptr =
           &ism[index_space].global_to_local_color_map;
@@ -262,6 +267,7 @@ namespace legion {
       h.index_space = index_space;
       h.data_client_hash = field_info.data_client_hash;
       h.slots = slots;
+      h.num_exclusive_insertions = new size_t(0);
 
       return h;
     }

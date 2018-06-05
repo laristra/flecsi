@@ -209,7 +209,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       if(sparse){
         rr_entries_shared =
           Legion::RegionRequirement(
-          owner_entries_subregions[first], READ_ONLY, EXCLUSIVE,
+          owner_entries_regions[first], READ_ONLY, EXCLUSIVE,
           owner_entries_regions[first]);
 
         rr_entries_ghost =
@@ -292,6 +292,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     > &a
   )
   {
+    using sparse_field_data_t = context_t::sparse_field_data_t;
+
     auto & h = a.handle;
 
     auto & flecsi_context = context_t::instance();
@@ -333,9 +335,11 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
           owner_entries_regions.push_back(
             h.ghost_owners_entries_lregions[owner]);
+          /*
           owner_entries_subregions.push_back(
             h.ghost_owners_entries_subregions[owner]);
-          
+            */
+
           ghost_regions.push_back(h.offsets_ghost_lr);
           ghost_entries_regions.push_back(h.entries_ghost_lr);
           
@@ -349,6 +353,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           local_args.index_space = h.index_space;
           local_args.owner = owner;
           local_args.sparse = true;
+          local_args.reserve = h.reserve;
+          local_args.max_entries_per_index = h.max_entries_per_index;
           args.push_back(local_args);
 
           futures.push_back(Legion::Future::from_value(
@@ -401,7 +407,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
   std::vector<Legion::LogicalRegion> owner_regions;
   std::vector<Legion::LogicalRegion> owner_subregions;
   std::vector<Legion::LogicalRegion> owner_entries_regions;
-  std::vector<Legion::LogicalRegion> owner_entries_subregions;
+  //std::vector<Legion::LogicalRegion> owner_entries_subregions;
   std::vector<Legion::LogicalRegion> ghost_regions;
   std::vector<Legion::LogicalRegion> color_regions;
   std::vector<Legion::LogicalRegion> ghost_entries_regions;
@@ -412,10 +418,14 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     size_t index_space;
     size_t owner;
     bool sparse = false;
+    size_t reserve;
+    size_t max_entries_per_index;
   };
   std::vector<struct ghost_copy_args> args;
   std::vector<Legion::Future> futures;
   std::vector<Legion::PhaseBarrier *> barrier_ptrs;
+  size_t reserve;
+  size_t max_entries_per_index;
 
 }; // struct task_prolog_t
 

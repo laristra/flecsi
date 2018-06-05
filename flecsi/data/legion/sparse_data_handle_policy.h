@@ -44,6 +44,9 @@ struct legion_sparse_data_handle_policy_t {
   size_t index_space;
   size_t data_client_hash;
 
+  size_t reserve;
+  size_t max_entries_per_index;
+
   // These depend on color but are only used in specifying
   // the region requirements
   Legion::LogicalRegion offsets_color_region;
@@ -75,7 +78,7 @@ struct legion_sparse_data_handle_policy_t {
   std::vector<Legion::LogicalRegion> ghost_owners_offsets_subregions;
 
   std::vector<Legion::LogicalRegion> ghost_owners_entries_lregions;
-  std::vector<Legion::LogicalRegion> ghost_owners_entries_subregions;
+  //std::vector<Legion::LogicalRegion> ghost_owners_entries_subregions;
 
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.

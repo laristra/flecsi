@@ -329,15 +329,25 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     size_t index_space;
     size_t owner;
     bool sparse;
+    size_t reserve;
+    size_t max_entries_per_index;
   };
   args_t args = *(args_t *)task->args;
 
-  clog_assert(regions.size() == 2, "ghost_copy_task requires 2 regions");
-  clog_assert(task->regions.size() == 2, "ghost_copy_task requires 2 regions");
+  if(args.sparse){
+    clog_assert(regions.size() == 4, "ghost_copy_task requires 4 regions");
+    clog_assert(task->regions.size() == 4, "ghost_copy_task requires 4 regions");
+  }
+  else{
+    clog_assert(regions.size() == 2, "ghost_copy_task requires 2 regions");
+    clog_assert(task->regions.size() == 2, "ghost_copy_task requires 2 regions");
+  }
+
   clog_assert(
       (task->regions[1].privilege_fields.size() -
        task->regions[0].privilege_fields.size()) == 1,
       "ghost region additionally requires ghost_owner_pos_fid");
+
 
   legion_map owner_map = task->futures[0].get_result<legion_map>();
 
@@ -421,11 +431,18 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
             shared_offsets + owner_offset * sizeof(offset_t);
           
           size_t ghost_offset = ghost_pt;
-          
+
           uint8_t * ghost_copy_ptr = 
             ghost_offsets + ghost_offset * sizeof(offset_t);
           
           std::memcpy(ghost_copy_ptr, owner_copy_ptr, sizeof(offset_t));
+
+          size_t chunk = (field_info.size + sizeof(size_t)) * 
+            args.max_entries_per_index;
+
+          std::memcpy(ghost_entries + ghost_offset * chunk,
+            shared_entries + owner_offset * chunk,
+            chunk);
         } // if
       } // for ghost_pt
     }

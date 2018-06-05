@@ -16,7 +16,6 @@
 /*! @file */
 
 #include <flecsi/data/common/data_types.h>
-#include <flecsi/data/dense_data_handle.h>
 
 namespace flecsi {
 
@@ -26,15 +25,13 @@ template<
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS,
     typename DATA_POLICY>
-struct sparse_data_handle_base__ : public DATA_POLICY,
-                                   public dense_data_handle_base_t {
+struct sparse_data_handle_base__ : public DATA_POLICY{
 
   using offset_t = data::sparse_data_offset_t;
   using entry_value_t = data::sparse_entry_value__<T>;
 
   size_t index_space;
   size_t data_client_hash;
-  size_t max_entries_per_index;
 
   entry_value_t * entries = nullptr;
   offset_t * offsets = nullptr;
@@ -60,12 +57,14 @@ struct sparse_data_handle_base__ : public DATA_POLICY,
   sparse_data_handle_base__(const sparse_data_handle_base__ & b)
       : DATA_POLICY(b), index_space(b.index_space),
         data_client_hash(b.data_client_hash),
-        max_entries_per_index(b.max_entries_per_index), entries(b.entries),
+        entries(b.entries),
         offsets(b.offsets), num_exclusive_(b.num_exclusive_),
         num_shared_(b.num_shared_), num_ghost_(b.num_ghost_),
-        num_total_(b.num_total_) {}
+        num_total_(b.num_total_){}
 
-  void init(size_t num_exclusive, size_t num_shared, size_t num_ghost){
+  void init(size_t num_exclusive,
+            size_t num_shared,
+            size_t num_ghost){
     num_exclusive_ = num_exclusive;
     num_shared_ = num_shared;
     num_ghost_ = num_ghost;
