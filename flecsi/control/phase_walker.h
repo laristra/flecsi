@@ -29,6 +29,13 @@ namespace flecsi {
 namespace control {
 
 /*!
+  Convenience type for defining phases.
+ */
+
+template<size_t PHASE>
+using phase_ = flecsi::utils::typeify<size_t, PHASE>;
+
+/*!
   Allow users to define cyclic control points. Cycles can be nested.
 
   @tparam PREDICATE  A predicate function that determines when
@@ -198,6 +205,7 @@ struct phase_writer__
         gv_.node(begin.label().c_str()));
       gv_.set_edge_attribute(edge, "label", "cycle");
       gv_.set_edge_attribute(edge, "color", "#1d76db");
+      gv_.set_edge_attribute(edge, "fillcolor", "#1d76db");
       gv_.set_edge_attribute(edge, "style", "bold");
       gv_.set_edge_attribute(edge, "headport", "e");
       gv_.set_edge_attribute(edge, "tailport", "e");

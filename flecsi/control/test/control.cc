@@ -8,17 +8,7 @@
 
 #include <cinchtest.h>
 #include <flecsi/control/control.h>
-//#include <flecsi/control/phase_walker.h>
-
-// FIXME: typeify needs to move into common.h in utils.
-template<typename T, T M>
-struct typeify {
-  using TYPE = T;
-  static constexpr T value = M;
-};
-
-template<size_t PHASE>
-using phase_ = typeify<size_t, PHASE>;
+#include <flecsi/control/phase_walker.h>
 
 /*----------------------------------------------------------------------------*
  * Define simulation phases. This is considered part of the specializeation.
@@ -108,6 +98,11 @@ private:
   size_t step_;
 
 }; // struct control_policy_t
+
+std::ostream &
+operator << (std::ostream & stream, control_policy_t::node_t const & node) {
+  return stream;
+} // operator <<
 
 /*----------------------------------------------------------------------------*
  * Define control policy type.
