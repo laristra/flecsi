@@ -655,6 +655,26 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     region += num_regions;
   }
+  
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    ragged_accessor<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    > & a
+  )
+  {
+    handle(reinterpret_cast<sparse_accessor<
+      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+  } // handle
 
   template<
     typename T
@@ -782,6 +802,19 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     h.entries = reinterpret_cast<uint8_t*>(entries);
 
     region += num_regions;
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    ragged_mutator<
+      T
+    > & m
+  )
+  {
+    handle(reinterpret_cast<sparse_mutator<T>&>(m));
   }
 
   Legion::Runtime * runtime;

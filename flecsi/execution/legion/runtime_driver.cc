@@ -115,6 +115,7 @@ runtime_driver(
       case global:
         number_of_global_fields++;
         break;
+      case ragged:
       case sparse:
         number_of_sparse_fields++;
         break;
@@ -675,7 +676,7 @@ runtime_driver(
           sparse_metadata.logical_region);
 
       for (const field_info_t & fi : context_.registered_fields()) {
-        if (fi.storage_class == sparse) {
+        if (fi.storage_class == sparse || fi.storage_class == ragged) {
           reg_req.add_field(fi.fid);
         } // if
       } // for
@@ -1438,7 +1439,7 @@ spmd_task(
     Legion::IndexSpace is = lr.get_index_space();
 
     for(const field_info_t& fi : context_.registered_fields()){
-      if(fi.storage_class != data::sparse){
+      if(fi.storage_class != data::sparse && fi.storage_class != data::ragged){
         continue;
       }
 

@@ -550,6 +550,7 @@ public:
           case local:
           case subspace:
             break;
+          case ragged:
           case sparse:
             if (fi.index_space == is.index_space_id) {
               if(utils::hash::is_internal(fi.key)){
@@ -601,6 +602,7 @@ public:
 
         for (const field_info_t & fi : context.registered_fields()) {
           switch (fi.storage_class) {
+            case ragged:
             case sparse:
               if (fi.index_space == is.index_space_id) {
                 if(!utils::hash::is_internal(fi.key)){
@@ -747,7 +749,7 @@ public:
         runtime_->create_field_allocator(ctx_, sparse_metadata_.field_space);
 
     for (const context_t::field_info_t & fi : context.registered_fields()) {
-      if (fi.storage_class == sparse) {
+      if (fi.storage_class == sparse || fi.storage_class == ragged) {
         allocator.allocate_field(sizeof(context_t::sparse_field_data_t), fi.fid);
       } // if
     } // for

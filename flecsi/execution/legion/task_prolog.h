@@ -380,6 +380,26 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
   }
 
   template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    ragged_accessor<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    > & a
+  )
+  {
+    handle(reinterpret_cast<sparse_accessor<
+      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+  } // handle
+
+  template<
     typename T
   >
   void
@@ -401,6 +421,19 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       *(h.ghost_is_readable) = false;
       *(h.write_phase_started) = true;
     } // if
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    ragged_mutator<
+      T
+    > & m
+  )
+  {
+    handle(reinterpret_cast<sparse_mutator<T>&>(m));
   }
 
   /*!

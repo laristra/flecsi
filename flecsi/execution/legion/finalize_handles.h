@@ -72,6 +72,26 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
   }
 
   template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    ragged_accessor<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    > & a
+  )
+  {
+    handle(reinterpret_cast<sparse_accessor<
+      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+  } // handle
+
+  template<
     typename T
   >
   void
@@ -116,7 +136,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     }
 
     std::memcpy(h.entries_data[0], h.entries,
-                md->num_exclusive_entries * sizeof(entry_value_t));
+                md->reserve * sizeof(entry_value_t));
     
     std::memcpy(h.entries_data[1],
                 h.entries + h.reserve * sizeof(entry_value_t),
@@ -124,6 +144,19 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
                 h.max_entries_per_index());
 
     md->initialized = true;
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    ragged_mutator<
+      T
+    > & m
+  )
+  {
+    handle(reinterpret_cast<sparse_mutator<T>&>(m));
   }
 
   /*!

@@ -307,6 +307,26 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   }
 
   template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    ragged_accessor<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    > & a
+  )
+  {
+    handle(reinterpret_cast<sparse_accessor<
+      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+  } // handle
+
+  template<
     typename T
   >
   void
@@ -361,6 +381,19 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
         h.entries_color_region);
     gh_rr2.add_field(h.fid);
     region_reqs.push_back(gh_rr2);
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    ragged_mutator<
+      T
+    > & m
+  )
+  {
+    handle(reinterpret_cast<sparse_mutator<T>&>(m));
   }
 
   /*!
