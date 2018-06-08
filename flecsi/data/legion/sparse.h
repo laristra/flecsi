@@ -262,6 +262,21 @@ namespace legion {
       h.entries_ghost_lr = ism[index_space + sparse_offset].ghost_lr;
 
       h.metadata_color_region = context.sparse_metadata().color_region;
+      
+      h.pbarrier_as_owner_ptr =
+          &ism[index_space].pbarriers_as_owner[field_info.fid];
+      h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
+      h.write_phase_started =
+          &(ism[index_space].write_phase_started[field_info.fid]);
+      h.ghost_owners_pbarriers_ptrs.resize(0);
+
+      const size_t _pb_size{
+          ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
+
+      for (size_t i = 0; i < _pb_size; i++) {
+        h.ghost_owners_pbarriers_ptrs.push_back(
+            &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
+      } // for
 
       h.fid = field_info.fid;
       h.index_space = index_space;

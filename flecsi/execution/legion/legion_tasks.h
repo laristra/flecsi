@@ -393,27 +393,39 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     const context_t::field_info_t & field_info = fitr->second;
 
     if(args.sparse){
+      Legion::Domain owner_domain2 = runtime->get_index_space_domain(
+          ctx, regions[2].get_logical_region().get_index_space());
+      Legion::Domain ghost_domain2 = runtime->get_index_space_domain(
+          ctx, regions[3].get_logical_region().get_index_space());
+
+      LegionRuntime::Arrays::Rect<2> owner_rect2 = owner_domain2.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> ghost_rect2 = ghost_domain2.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> owner_sub_rect2;
+      LegionRuntime::Arrays::Rect<2> ghost_sub_rect2;
+      LegionRuntime::Accessor::ByteOffset byte_offset2[2];
+      LegionRuntime::Accessor::ByteOffset byte_offset3[2];
+
       auto acc_shared_offsets = regions[0].get_field_accessor(fid);
       auto acc_ghost_offsets = regions[1].get_field_accessor(fid);
 
       auto acc_shared_entries = regions[2].get_field_accessor(fid);
       auto acc_ghost_entries = regions[3].get_field_accessor(fid);
 
-      uint8_t * shared_offsets =
-          reinterpret_cast<uint8_t *>(acc_shared_offsets.template raw_rect_ptr<2>(
+      offset_t * shared_offsets =
+          reinterpret_cast<offset_t *>(acc_shared_offsets.template raw_rect_ptr<2>(
               owner_rect, owner_sub_rect, byte_offset));
 
-      uint8_t * ghost_offsets =
-          reinterpret_cast<uint8_t *>(acc_ghost_offsets.template raw_rect_ptr<2>(
+      offset_t * ghost_offsets =
+          reinterpret_cast<offset_t *>(acc_ghost_offsets.template raw_rect_ptr<2>(
               ghost_rect, ghost_sub_rect, byte_offset));
 
       uint8_t * shared_entries =
           reinterpret_cast<uint8_t *>(acc_shared_entries.template raw_rect_ptr<2>(
-              owner_rect, owner_sub_rect, byte_offset));
+              owner_rect2, owner_sub_rect2, byte_offset2));
 
       uint8_t * ghost_entries =
           reinterpret_cast<uint8_t *>(acc_ghost_entries.template raw_rect_ptr<2>(
-              ghost_rect, ghost_sub_rect, byte_offset));
+              ghost_rect2, ghost_sub_rect2, byte_offset3));
 
       for (size_t ghost_pt = 0; ghost_pt < position_max; ghost_pt++) {
         LegionRuntime::Arrays::Point<2> ghost_ref = position_ref_data[ghost_pt];
@@ -427,21 +439,22 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
         if (owner_map[ghost_ref.x[0]] == args.owner) {
           size_t owner_offset = ghost_ref.x[1] - owner_sub_rect.lo[1];
 
-          uint8_t * owner_copy_ptr = 
-            shared_offsets + owner_offset * sizeof(offset_t);
+          offset_t * owner_copy_ptr = shared_offsets + owner_offset;
           
           size_t ghost_offset = ghost_pt;
 
-          uint8_t * ghost_copy_ptr = 
-            ghost_offsets + ghost_offset * sizeof(offset_t);
-          
-          std::memcpy(ghost_copy_ptr, owner_copy_ptr, sizeof(offset_t));
+          offset_t * ghost_copy_ptr = ghost_offsets + ghost_offset;
+
+          ghost_copy_ptr->set_count(owner_copy_ptr->count());
 
           size_t chunk = (field_info.size + sizeof(size_t)) * 
             args.max_entries_per_index;
 
+          size_t shared_offset = 
+            args.reserve * (field_info.size + sizeof(size_t));
+ 
           std::memcpy(ghost_entries + ghost_offset * chunk,
-            shared_entries + owner_offset * chunk,
+            shared_entries + shared_offset + owner_offset * chunk,
             chunk);
         } // if
       } // for ghost_pt

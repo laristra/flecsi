@@ -389,6 +389,18 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     > &m
   )
   {
+    auto & h = m.h_;
+
+    if ((*h.ghost_is_readable)) {
+      // Phase WRITE
+      launcher.add_wait_barrier(*(h.pbarrier_as_owner_ptr));
+
+      // Phase READ
+      launcher.add_arrival_barrier(*(h.pbarrier_as_owner_ptr));
+
+      *(h.ghost_is_readable) = false;
+      *(h.write_phase_started) = true;
+    } // if
   }
 
   /*!

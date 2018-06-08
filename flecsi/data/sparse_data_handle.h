@@ -71,11 +71,25 @@ struct sparse_data_handle_base__ : public DATA_POLICY{
     num_total_ = num_exclusive_ + num_shared_ + num_ghost_;
   }
 
+  size_t num_exclusive() const{
+    return num_exclusive_;
+  }
+
+  size_t num_shared() const{
+    return num_shared_;
+  }
+
+  size_t num_ghost() const{
+    return num_ghost_;
+  }
+
   size_t num_exclusive_;
   size_t num_shared_;
   size_t num_ghost_;
   size_t num_total_;
 };
+
+
 
 } // namespace flecsi
 
