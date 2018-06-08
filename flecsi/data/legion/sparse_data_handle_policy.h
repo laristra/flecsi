@@ -64,21 +64,12 @@ struct legion_sparse_data_handle_policy_t {
   Legion::Context context;
   Legion::Runtime * runtime;
 
-  Legion::PhysicalRegion offsets_exclusive_pr;
-  Legion::PhysicalRegion offsets_shared_pr;
-  Legion::PhysicalRegion offsets_ghost_pr;
-
-  Legion::PhysicalRegion entries_exclusive_pr;
-  Legion::PhysicalRegion entries_shared_pr;
-  Legion::PhysicalRegion entries_ghost_pr;
-
   Legion::PhysicalRegion metadata_pr;
 
   std::vector<Legion::LogicalRegion> ghost_owners_offsets_lregions;
   std::vector<Legion::LogicalRegion> ghost_owners_offsets_subregions;
 
   std::vector<Legion::LogicalRegion> ghost_owners_entries_lregions;
-  //std::vector<Legion::LogicalRegion> ghost_owners_entries_subregions;
 
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.

@@ -315,8 +315,6 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
  @ingroup legion-execution
  */
 
-// ndm - need version for sparse
-
 __flecsi_internal_legion_task(ghost_copy_task, void) {
   using offset_t = data::sparse_data_offset_t;
 

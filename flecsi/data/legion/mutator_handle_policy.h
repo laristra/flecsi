@@ -62,14 +62,6 @@ struct legion_mutator_handle_policy_t {
   Legion::Context context;
   Legion::Runtime * runtime;
 
-  Legion::PhysicalRegion offsets_exclusive_pr;
-  Legion::PhysicalRegion offsets_shared_pr;
-  Legion::PhysicalRegion offsets_ghost_pr;
-
-  Legion::PhysicalRegion entries_exclusive_pr;
-  Legion::PhysicalRegion entries_shared_pr;
-  Legion::PhysicalRegion entries_ghost_pr;
-
   Legion::PhysicalRegion metadata_pr;
 
   void* metadata;

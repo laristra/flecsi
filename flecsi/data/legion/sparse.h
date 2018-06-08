@@ -149,11 +149,11 @@ namespace legion {
         index_space);
 
       const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-      const size_t reserve_chunk = iitr->second.reserve_chunk;
+      const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
       handle__<DATA_TYPE, 0, 0, 0> h;
 
-      h.reserve = reserve_chunk;
+      h.reserve = exclusive_reserve;
       h.max_entries_per_index = max_entries_per_index;
 
       h.offsets_color_region = ism[index_space].color_region;
@@ -195,11 +195,6 @@ namespace legion {
       h.ghost_owners_entries_lregions = 
         ism[index_space + sparse_offset].ghost_owners_lregions;
       
-      /*
-      h.ghost_owners_entries_subregions = 
-        ism[index_space + sparse_offset].ghost_owners_subregions;
-      */
-
       h.global_to_local_color_map_ptr =
           &ism[index_space].global_to_local_color_map;
 
@@ -244,7 +239,7 @@ namespace legion {
         index_space);
 
       const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-      const size_t reserve_chunk = iitr->second.reserve_chunk;
+      const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
       mutator_handle__<DATA_TYPE> h(max_entries_per_index, slots);
 

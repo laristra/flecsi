@@ -210,8 +210,6 @@ runtime_driver(
                 .add_field(ghost_owner_pos_fid);
   } // for idx_space
 
-  // ndm - no changes
-
   Legion::MustEpochLauncher must_epoch_launcher1;
    must_epoch_launcher1.add_index_task(pos_compaction_launcher);
   auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher1);
@@ -576,8 +574,6 @@ runtime_driver(
         if(flecsi_ispace.has_sparse_fields){
           spmd_launcher.add_region_requirement(sparse_owner_reg_req);
         }
-
-        // ndm - added sparse rr -  check corresponding part of SPMD task
 
       }// for ghost_owner
 
@@ -1175,8 +1171,6 @@ spmd_task(
         = ghost_owners_lregions[sparse_idx_space];
     }
 
-    // ndm - added ghost owners sparse shares from neighbors
-
     // Fix ghost reference/pointer to point to compacted position of
     // shared that it needs
     Legion::TaskLauncher fix_ghost_refs_launcher(context_.task_id<
@@ -1188,8 +1182,6 @@ spmd_task(
     clog(trace) << "Rank" << my_color << " Index " << idx_space <<
       " RW " << ispace_dmap[idx_space].color_region << std::endl;
     } // scope
-
-    // ndm - ok
 
     fix_ghost_refs_launcher.add_region_requirement(
         Legion::RegionRequirement(ispace_dmap[idx_space].ghost_lr, READ_WRITE,
@@ -1265,8 +1257,6 @@ spmd_task(
     } //owner_itr
     ispace_dmap[idx_space].ghost_owners_subregions
       = ghost_owners_subregions[idx_space];
-
-      // sparse += 2
 
     consecutive_index++;
   } // for idx_space
@@ -1466,7 +1456,7 @@ spmd_task(
       *metadata = sparse_field_data_t(fi.size, ci.exclusive,
         ci.shared,
         ci.ghost,
-        si->second.max_entries_per_index, si->second.reserve_chunk);
+        si->second.max_entries_per_index, si->second.exclusive_reserve);
     }
 
     region_index++;

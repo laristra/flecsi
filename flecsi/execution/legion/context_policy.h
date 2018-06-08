@@ -113,7 +113,7 @@ struct legion_context_policy_t {
       size_t num_shared,
       size_t num_ghost,
       size_t max_entries_per_index,
-      size_t reserve_chunk
+      size_t exclusive_reserve
     )
     : type_size(type_size),
     num_exclusive(num_exclusive),
@@ -121,8 +121,7 @@ struct legion_context_policy_t {
     num_ghost(num_ghost),
     num_total(num_exclusive + num_shared + num_ghost),
     max_entries_per_index(max_entries_per_index),
-    reserve_chunk(reserve_chunk),
-    reserve(reserve_chunk),
+    reserve(exclusive_reserve),
     num_exclusive_filled(0){}
 
     size_t type_size;
@@ -134,7 +133,6 @@ struct legion_context_policy_t {
     size_t num_total = 0;
 
     size_t max_entries_per_index;
-    size_t reserve_chunk;
     size_t reserve;
     size_t num_exclusive_filled = 0;
     bool initialized = false;

@@ -41,8 +41,8 @@ struct mpi_mutator_handle_policy_t
   // entries plus those unused
   size_t* reserve;
   // the current simple allocation strategy will allocate at least
-  // reserve_chunk more entries when when resizing reserve
-  size_t reserve_chunk;
+  // exclusive_reserve more entries when when resizing reserve
+  size_t exclusive_reserve;
   // the current number of actually used exclusive entries within the
   // reserve buffer
   size_t* num_exclusive_entries;
