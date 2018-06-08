@@ -103,6 +103,43 @@ struct legion_context_policy_t {
       std::string,
       registration_function_t>;
 
+  struct sparse_field_data_t
+  {
+    sparse_field_data_t(){}
+
+    sparse_field_data_t(
+      size_t type_size,
+      size_t num_exclusive,
+      size_t num_shared,
+      size_t num_ghost,
+      size_t max_entries_per_index,
+      size_t reserve_chunk
+    )
+    : type_size(type_size),
+    num_exclusive(num_exclusive),
+    num_shared(num_shared),
+    num_ghost(num_ghost),
+    num_total(num_exclusive + num_shared + num_ghost),
+    max_entries_per_index(max_entries_per_index),
+    reserve_chunk(reserve_chunk),
+    reserve(reserve_chunk),
+    num_exclusive_entries(0){}
+
+    size_t type_size;
+
+    // total # of exclusive, shared, ghost entries
+    size_t num_exclusive = 0;
+    size_t num_shared = 0;
+    size_t num_ghost = 0;
+    size_t num_total = 0;
+
+    size_t max_entries_per_index;
+    size_t reserve_chunk;
+    size_t reserve;
+    size_t num_exclusive_entries;
+    bool initialized = false;
+  };
+
   //--------------------------------------------------------------------------//
   // Runtime state.
   //--------------------------------------------------------------------------//
@@ -448,6 +485,18 @@ struct legion_context_policy_t {
     Legion::LogicalRegion region;
   };
 
+  struct sparse_metadata_t{
+    Legion::LogicalRegion color_region;
+  };
+
+  void set_sparse_metadata(const sparse_metadata_t& sparse_metadata){
+    sparse_metadata_ = sparse_metadata;
+  }
+
+  const sparse_metadata_t& sparse_metadata(){
+    return sparse_metadata_;    
+  }
+
   /*!
     Get the index space data map.
    */
@@ -600,6 +649,7 @@ private:
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
+  sparse_metadata_t sparse_metadata_;
   Legion::DynamicCollective max_reduction_;
   Legion::DynamicCollective min_reduction_;
 

@@ -232,8 +232,6 @@ struct storage_class__<sparse>
         "sparse index space info not registered for index space: " <<
         field_info.index_space);
 
-      // TODO: these parameters need to be passed in field
-      // registration, or defined elsewhere
       const size_t max_entries_per_index = iitr->second.max_entries_per_index;
       const size_t reserve_chunk = iitr->second.reserve_chunk;
 
