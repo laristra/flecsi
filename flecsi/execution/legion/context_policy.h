@@ -123,7 +123,7 @@ struct legion_context_policy_t {
     max_entries_per_index(max_entries_per_index),
     reserve_chunk(reserve_chunk),
     reserve(reserve_chunk),
-    num_exclusive_entries(0){}
+    num_exclusive_filled(0){}
 
     size_t type_size;
 
@@ -136,7 +136,7 @@ struct legion_context_policy_t {
     size_t max_entries_per_index;
     size_t reserve_chunk;
     size_t reserve;
-    size_t num_exclusive_entries;
+    size_t num_exclusive_filled = 0;
     bool initialized = false;
   };
 

@@ -655,7 +655,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     region += num_regions;
   }
-  
+
   template<
     typename T,
     size_t EXCLUSIVE_PERMISSIONS,
@@ -791,9 +791,12 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     entry_value_t* entries = new entry_value_t[h.entries_size];
 
-    pos = 0;
+    std::memcpy(entries, entries_data[0],
+                md->num_exclusive_filled * sizeof(entry_value_t));
 
-    for (size_t r{0}; r < num_regions; ++r) {
+    pos = entries_sizes[0];
+
+    for (size_t r{1}; r < num_regions; ++r) {
       std::memcpy(entries + pos, entries_data[r],
                   entries_sizes[r] * sizeof(entry_value_t));
       pos += entries_sizes[r];

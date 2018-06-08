@@ -127,20 +127,20 @@ public:
     spare_map_ = new spare_map_t;
   }
 
-  void commit(commit_info_t * ci) {
+  size_t commit(commit_info_t * ci) {
     if (erase_set_) {
-      commit_<true>(ci);
+      return commit_<true>(ci);
     } else {
       if (ragged_changes_map_) {
-        raggedCommit_(ci);
+        return raggedCommit_(ci);
       } else {
-        commit_<false>(ci);
+        return commit_<false>(ci);
       }
     }
   } // operator ()
 
   template<bool ERASE>
-  void commit_(commit_info_t * ci) {
+  size_t commit_(commit_info_t * ci) {
     assert(offsets_ && "uninitialized mutator");
     ci_ = *ci;
 
@@ -178,8 +178,10 @@ public:
       }
     }
 
+    size_t num_exclusive_filled = cptr - cbuf;
+
     assert(cptr - cbuf <= num_exclusive_entries);
-    std::memcpy(entries, cbuf, sizeof(entry_value_t) * (cptr - cbuf));
+    std::memcpy(entries, cbuf, sizeof(entry_value_t) * num_exclusive_filled);
     delete[] cbuf;
 
     size_t start = num_exclusive_;
@@ -224,9 +226,11 @@ public:
       delete erase_set_;
       erase_set_ = nullptr;
     }
+
+    return num_exclusive_filled;
   }
 
-  void raggedCommit_(commit_info_t * ci) {
+  size_t raggedCommit_(commit_info_t * ci) {
     assert(offsets_ && "uninitialized mutator");
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
@@ -308,7 +312,9 @@ public:
       eptr += num_existing;
     }
 
-    std::memcpy(entries, cbuf, sizeof(entry_value_t) * (cptr - cbuf));
+    size_t num_exclusive_filled = cptr - cbuf;
+
+    std::memcpy(entries, cbuf, sizeof(entry_value_t) * num_exclusive_filled);
     delete[] cbuf;
 
     size_t start = num_exclusive_;
@@ -395,6 +401,8 @@ public:
 
     delete ragged_changes_map_;
     ragged_changes_map_ = nullptr;
+
+    return num_exclusive_filled;
   }
 
   size_t num_exclusive() const {
