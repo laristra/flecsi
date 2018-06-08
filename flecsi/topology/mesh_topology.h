@@ -1331,7 +1331,7 @@ private:
       // p.first:   The number of entities per cell.
       // p.second:  A std::vector of id_t containing the ids of the
       //            vertices that define the entity.
-      auto sv = cell->template create_entities(
+      auto sv = cell->create_entities(
           cell_id, DimensionToBuild, dc, entity_vertices.data());
 
       size_t n = sv.size();
@@ -1946,7 +1946,7 @@ private:
       // new_entity_connection_ids:   A std::vector of id_t containing
       //                              the ids of the entities that define
       //                              the bound entity.
-      auto new_binding_connection_sizes = cell->template create_bound_entities(
+      auto new_binding_connection_sizes = cell->create_bound_entities(
           FROM_DOM, TO_DOM, TO_DIM, cell_id, primal_conn, domain_conn,
           new_binding_connection_ids.data());
 
