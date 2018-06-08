@@ -267,11 +267,13 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   if(ENABLE_MAPPER_COMPACTION)
     add_definitions(-DMAPPER_COMPACTION)
+    set (MAPPER_COMPACTION TRUE)
   else()
     option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" ON)
 
     if(COMPACTED_STORAGE_SORT)
       add_definitions(-DCOMPACTED_STORAGE_SORT)
+      set(COMPACTED_STORAGE_SORT TRUE)
     endif()
   endif()
 

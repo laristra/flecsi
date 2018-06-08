@@ -34,8 +34,12 @@
   #endif
   #define ENABLE_LEGION_TLS
 
-#cmakedefine MAPPER_COMPACTION
-#cmakedefine COMPACTED_STORAGE_SORT
+  #if !defined(MAPPER_COMPACTION)
+    #cmakedefine MAPPER_COMPACTION
+  #endif
+  #if !defined(COMPACTED_STORAGE_SORT)
+    #cmakedefine COMPACTED_STORAGE_SORT
+  #endif
 
 #endif
 
