@@ -101,7 +101,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     h.commit(&ci);
 
     auto md = static_cast<sparse_field_data_t*>(h.metadata);
-    md->num_exclusive_entries = h.num_exclusive_entries();
+    md->num_exclusive_entries = h.number_exclusive_entries();
 
     std::memcpy(h.offsets_data[0], h.offsets,
                 h.num_exclusive() * sizeof(offset_t));
