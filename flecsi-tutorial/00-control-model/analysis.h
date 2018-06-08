@@ -21,17 +21,36 @@
 
 using namespace flecsi::tutorial;
 
+/*
+  Proxy function.
+ */
+
 int poynting_flux(int argc, char ** argv) {
   usleep(200000);
   std::cout << "analyze: poynting_flux" << std::endl;
   return 0;
 } // poynting_flux
 
-register_action(analyze, poynting_flux, poynting_flux);
+/*
+  Register poynting_flux proxy function.
+ */
+
+register_action(analyze /* phase */,
+  poynting_flux /* name */,
+  poynting_flux /* action */);
+
+/*
+  Proxy function.
+ */
 
 int output_final(int argc, char ** argv) {
   usleep(200000);
   std::cout << "finalize: output_final" << std::endl;
+
+  /*
+    This section outputs the control graph for the application as a
+    graphviz file.
+   */
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
   auto & control = control_t::instance();
@@ -43,4 +62,10 @@ int output_final(int argc, char ** argv) {
   return 0;
 } // finalize
 
-register_action(finalize, output_final, output_final);
+/*
+  Register output_final proxy function.
+ */
+
+register_action(finalize /* phase */,
+  output_final /* name */,
+  output_final /* action */);
