@@ -106,10 +106,18 @@ Public Member Functions</h2></td></tr>
 template&lt;typename T , size_t EXCLUSIVE_PERMISSIONS, size_t SHARED_PERMISSIONS, size_t GHOST_PERMISSIONS&gt; </td></tr>
 <tr class="memitem:a8d52004eb2f3a021511b0e058906e092"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle</b> (<a class="el" href="structflecsi_1_1accessor_____3_01data_1_1sparse_00_01T_00_01EXCLUSIVE__PERMISSIONS_00_01SHARED__ea9975ad170d5f9e7f372254d224f9b3.html">sparse_accessor</a>&lt; T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS &gt; &amp;a)</td></tr>
 <tr class="separator:a8d52004eb2f3a021511b0e058906e092"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8f5a76542805d919c6255c3e8b59ddb"><td class="memTemplParams" colspan="2"><a id="ae8f5a76542805d919c6255c3e8b59ddb"></a>
+template&lt;typename T , size_t EXCLUSIVE_PERMISSIONS, size_t SHARED_PERMISSIONS, size_t GHOST_PERMISSIONS&gt; </td></tr>
+<tr class="memitem:ae8f5a76542805d919c6255c3e8b59ddb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle</b> (<a class="el" href="structflecsi_1_1accessor_____3_01data_1_1ragged_00_01T_00_01EXCLUSIVE__PERMISSIONS_00_01SHARED__8a1386b41ca62cd860577183e4bdbe59.html">ragged_accessor</a>&lt; T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS &gt; &amp;a)</td></tr>
+<tr class="separator:ae8f5a76542805d919c6255c3e8b59ddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af76aa7a14132e26cbb15a6cfd6cbee55"><td class="memTemplParams" colspan="2"><a id="af76aa7a14132e26cbb15a6cfd6cbee55"></a>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:af76aa7a14132e26cbb15a6cfd6cbee55"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle</b> (<a class="el" href="structflecsi_1_1mutator_____3_01data_1_1sparse_00_01T_01_4.html">sparse_mutator</a>&lt; T &gt; &amp;m)</td></tr>
 <tr class="separator:af76aa7a14132e26cbb15a6cfd6cbee55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a440d18350a1b8e0e91999f8781d42fbc"><td class="memTemplParams" colspan="2"><a id="a440d18350a1b8e0e91999f8781d42fbc"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a440d18350a1b8e0e91999f8781d42fbc"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle</b> (<a class="el" href="structflecsi_1_1mutator_____3_01data_1_1ragged_00_01T_01_4.html">ragged_mutator</a>&lt; T &gt; &amp;m)</td></tr>
+<tr class="separator:a440d18350a1b8e0e91999f8781d42fbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52864485971130fca0ab45c296883fbf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task__prolog__t.html#a52864485971130fca0ab45c296883fbf">task_prolog_t</a> ()=default</td></tr>
 <tr class="separator:a52864485971130fca0ab45c296883fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a358c14077c64c925df07923e399819d6"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t EXCLUSIVE_PERMISSIONS, size_t SHARED_PERMISSIONS, size_t GHOST_PERMISSIONS&gt; </td></tr>
@@ -171,12 +179,21 @@ std::vector&lt; Legion::LogicalRegion &gt;&#160;</td><td class="memItemRight" va
 <tr class="memitem:a6fc0605dab37c62b42b203ef5d4af42b"><td class="memItemLeft" align="right" valign="top"><a id="a6fc0605dab37c62b42b203ef5d4af42b"></a>
 std::vector&lt; Legion::LogicalRegion &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>owner_subregions</b></td></tr>
 <tr class="separator:a6fc0605dab37c62b42b203ef5d4af42b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af069d0807ecb04e3dce72f9e2bc9ca75"><td class="memItemLeft" align="right" valign="top"><a id="af069d0807ecb04e3dce72f9e2bc9ca75"></a>
+std::vector&lt; Legion::LogicalRegion &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>owner_entries_regions</b></td></tr>
+<tr class="separator:af069d0807ecb04e3dce72f9e2bc9ca75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a336f3b493dbb3d5ada3e43201eddbf92"><td class="memItemLeft" align="right" valign="top"><a id="a336f3b493dbb3d5ada3e43201eddbf92"></a>
 std::vector&lt; Legion::LogicalRegion &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ghost_regions</b></td></tr>
 <tr class="separator:a336f3b493dbb3d5ada3e43201eddbf92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e530a30b9ff9e96b9d7402cb0282803"><td class="memItemLeft" align="right" valign="top"><a id="a2e530a30b9ff9e96b9d7402cb0282803"></a>
 std::vector&lt; Legion::LogicalRegion &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>color_regions</b></td></tr>
 <tr class="separator:a2e530a30b9ff9e96b9d7402cb0282803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d9c055f3de083a24ae2277534a9aa46"><td class="memItemLeft" align="right" valign="top"><a id="a2d9c055f3de083a24ae2277534a9aa46"></a>
+std::vector&lt; Legion::LogicalRegion &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ghost_entries_regions</b></td></tr>
+<tr class="separator:a2d9c055f3de083a24ae2277534a9aa46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95f51aa557703b3a7f326882050ca0a9"><td class="memItemLeft" align="right" valign="top"><a id="a95f51aa557703b3a7f326882050ca0a9"></a>
+std::vector&lt; Legion::LogicalRegion &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>color_entries_regions</b></td></tr>
+<tr class="separator:a95f51aa557703b3a7f326882050ca0a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5313c6e0033e3c2d464b66e94466686"><td class="memItemLeft" align="right" valign="top"><a id="ae5313c6e0033e3c2d464b66e94466686"></a>
 std::vector&lt; Legion::FieldID &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>fids</b></td></tr>
 <tr class="separator:ae5313c6e0033e3c2d464b66e94466686"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -189,6 +206,12 @@ std::vector&lt; Legion::Future &gt;&#160;</td><td class="memItemRight" valign="b
 <tr class="memitem:ab4a96bee562fa2b8e96200a9af647235"><td class="memItemLeft" align="right" valign="top"><a id="ab4a96bee562fa2b8e96200a9af647235"></a>
 std::vector&lt; Legion::PhaseBarrier * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>barrier_ptrs</b></td></tr>
 <tr class="separator:ab4a96bee562fa2b8e96200a9af647235"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e2adc410fbd9d3b86e668909c4fa251"><td class="memItemLeft" align="right" valign="top"><a id="a7e2adc410fbd9d3b86e668909c4fa251"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>reserve</b></td></tr>
+<tr class="separator:a7e2adc410fbd9d3b86e668909c4fa251"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a749bc6bb6a9ad1439002ce4274b85569"><td class="memItemLeft" align="right" valign="top"><a id="a749bc6bb6a9ad1439002ce4274b85569"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_entries_per_index</b></td></tr>
+<tr class="separator:a749bc6bb6a9ad1439002ce4274b85569"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="structflecsi_1_1execution_1_1task__prolog__t.html">task_prolog_t</a> type can be called to walk the task args after the task launcher is created, but before the task has run. This allows synchronization dependencies to be added to the execution flow. </p>
@@ -359,37 +382,8 @@ template&lt;typename T , size_t EXCLUSIVE_PERMISSIONS, size_t SHARED_PERMISSIONS
 
 </div>
 </div>
-<a id="ac44cf50e04d9879bc9042f43e33b354f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac44cf50e04d9879bc9042f43e33b354f">&#9670;&nbsp;</a></span>handle() <span class="overload">[3/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static std::enable_if_t&lt; !std::is_base_of&lt;<a class="el" href="structflecsi_1_1dense__accessor__base__t.html">dense_accessor_base_t</a>, T&gt;::value&gt; flecsi::execution::task_prolog_t::handle </td>
-          <td>(</td>
-          <td class="paramtype">T &amp;&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Don't do anything with flecsi task argument that are not data handles. </p>
-
-</div>
-</div>
 <a id="a5d1b13e02f5d30bd1156c0f80dc1e7ff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d1b13e02f5d30bd1156c0f80dc1e7ff">&#9670;&nbsp;</a></span>handle() <span class="overload">[4/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d1b13e02f5d30bd1156c0f80dc1e7ff">&#9670;&nbsp;</a></span>handle() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -414,6 +408,35 @@ template&lt;typename T , size_t PERMISSIONS&gt; </div>
 </table>
 </div><div class="memdoc">
 <p>This method registers entity data fields as needed and initializes set topology index spaces and buffers from the raw MPI buffers. If we are writing to this buffer, then it sets up the size information of the index space as empty so we can call make&lt;&gt;() to push entities onto this buffer. If we are reading, this sets up the size as the size recorded in the metadata. </p>
+
+</div>
+</div>
+<a id="ac44cf50e04d9879bc9042f43e33b354f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac44cf50e04d9879bc9042f43e33b354f">&#9670;&nbsp;</a></span>handle() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::enable_if_t&lt; !std::is_base_of&lt;<a class="el" href="structflecsi_1_1dense__accessor__base__t.html">dense_accessor_base_t</a>, T&gt;::value&gt; flecsi::execution::task_prolog_t::handle </td>
+          <td>(</td>
+          <td class="paramtype">T &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Don't do anything with flecsi task argument that are not data handles. </p>
 
 </div>
 </div>

@@ -95,10 +95,18 @@ Public Member Functions</h2></td></tr>
 template&lt;typename T , size_t EXCLUSIVE_PERMISSIONS, size_t SHARED_PERMISSIONS, size_t GHOST_PERMISSIONS&gt; </td></tr>
 <tr class="memitem:accffbc056f63bbf9a3a9a7dcb2bcebe4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle</b> (<a class="el" href="structflecsi_1_1accessor_____3_01data_1_1sparse_00_01T_00_01EXCLUSIVE__PERMISSIONS_00_01SHARED__ea9975ad170d5f9e7f372254d224f9b3.html">sparse_accessor</a>&lt; T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS &gt; &amp;a)</td></tr>
 <tr class="separator:accffbc056f63bbf9a3a9a7dcb2bcebe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3291e219c0b8d11d70212fef1f4ec06d"><td class="memTemplParams" colspan="2"><a id="a3291e219c0b8d11d70212fef1f4ec06d"></a>
+template&lt;typename T , size_t EXCLUSIVE_PERMISSIONS, size_t SHARED_PERMISSIONS, size_t GHOST_PERMISSIONS&gt; </td></tr>
+<tr class="memitem:a3291e219c0b8d11d70212fef1f4ec06d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle</b> (<a class="el" href="structflecsi_1_1accessor_____3_01data_1_1ragged_00_01T_00_01EXCLUSIVE__PERMISSIONS_00_01SHARED__8a1386b41ca62cd860577183e4bdbe59.html">ragged_accessor</a>&lt; T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS &gt; &amp;a)</td></tr>
+<tr class="separator:a3291e219c0b8d11d70212fef1f4ec06d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f45186bb4c704465c76ca32d5aabb8b"><td class="memTemplParams" colspan="2"><a id="a1f45186bb4c704465c76ca32d5aabb8b"></a>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a1f45186bb4c704465c76ca32d5aabb8b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle</b> (<a class="el" href="structflecsi_1_1mutator_____3_01data_1_1sparse_00_01T_01_4.html">sparse_mutator</a>&lt; T &gt; &amp;m)</td></tr>
 <tr class="separator:a1f45186bb4c704465c76ca32d5aabb8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7fccb9890f805a5430ac914f2b99d56"><td class="memTemplParams" colspan="2"><a id="ac7fccb9890f805a5430ac914f2b99d56"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ac7fccb9890f805a5430ac914f2b99d56"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle</b> (<a class="el" href="structflecsi_1_1mutator_____3_01data_1_1ragged_00_01T_01_4.html">ragged_mutator</a>&lt; T &gt; &amp;m)</td></tr>
+<tr class="separator:ac7fccb9890f805a5430ac914f2b99d56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1bb8f5a64f54abf76c06e8b8e347e899"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t PERMISSIONS&gt; </td></tr>
 <tr class="memitem:ga1bb8f5a64f54abf76c06e8b8e347e899"><td class="memTemplItemLeft" align="right" valign="top">std::enable_if_t&lt; std::is_base_of&lt; <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__t.html">topology::mesh_topology_base_t</a>, T &gt;::value &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__execution.html#ga1bb8f5a64f54abf76c06e8b8e347e899">handle</a> (<a class="el" href="group__data.html#ga7ec0a7a6abde96d9d690d57cc60627db">data_client_handle__</a>&lt; T, PERMISSIONS &gt; &amp;h)</td></tr>
 <tr class="separator:ga1bb8f5a64f54abf76c06e8b8e347e899"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,37 +210,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a1d1c74b518460a5286740a400fcdcbcc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d1c74b518460a5286740a400fcdcbcc">&#9670;&nbsp;</a></span>handle() <span class="overload">[3/6]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static std::enable_if_t&lt; !std::is_base_of&lt;<a class="el" href="structflecsi_1_1dense__accessor__base__t.html">dense_accessor_base_t</a>, T&gt;::value&gt; flecsi::execution::finalize_handles_t::handle </td>
-          <td>(</td>
-          <td class="paramtype">T &amp;&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>If this is not a data handle, then simply skip it. </p>
-
-</div>
-</div>
 <a id="a6faf1d89efa2bb635f8f996c382625d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6faf1d89efa2bb635f8f996c382625d3">&#9670;&nbsp;</a></span>handle() <span class="overload">[4/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6faf1d89efa2bb635f8f996c382625d3">&#9670;&nbsp;</a></span>handle() <span class="overload">[3/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -257,6 +236,35 @@ template&lt;typename T , size_t PERMISSIONS&gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Finalize set topology storage. This inspects index based sizes and writes out appropriate metadata. </p>
+
+</div>
+</div>
+<a id="a1d1c74b518460a5286740a400fcdcbcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d1c74b518460a5286740a400fcdcbcc">&#9670;&nbsp;</a></span>handle() <span class="overload">[4/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::enable_if_t&lt; !std::is_base_of&lt;<a class="el" href="structflecsi_1_1dense__accessor__base__t.html">dense_accessor_base_t</a>, T&gt;::value&gt; flecsi::execution::finalize_handles_t::handle </td>
+          <td>(</td>
+          <td class="paramtype">T &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>If this is not a data handle, then simply skip it. </p>
 
 </div>
 </div>

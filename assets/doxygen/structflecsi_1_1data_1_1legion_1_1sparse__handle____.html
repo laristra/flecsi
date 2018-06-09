@@ -67,7 +67,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
-<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="structflecsi_1_1data_1_1legion_1_1sparse__handle____-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -85,8 +84,7 @@ Inheritance diagram for flecsi::data::legion::sparse_handle__&lt; T, EP, SP, GP 
  <div class="center">
   <img src="structflecsi_1_1data_1_1legion_1_1sparse__handle____.png" usemap="#flecsi::data::legion::sparse_5Fhandle_5F_5F_3C_20T_2C_20EP_2C_20SP_2C_20GP_20_3E_map" alt=""/>
   <map id="flecsi::data::legion::sparse_5Fhandle_5F_5F_3C_20T_2C_20EP_2C_20SP_2C_20GP_20_3E_map" name="flecsi::data::legion::sparse_5Fhandle_5F_5F_3C_20T_2C_20EP_2C_20SP_2C_20GP_20_3E_map">
-<area href="structflecsi_1_1sparse__data__handle__base____.html" alt="flecsi::sparse_data_handle_base__&lt; T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS, DATA_POLICY &gt;" shape="rect" coords="166,56,488,80"/>
-<area href="structflecsi_1_1dense__data__handle__base__t.html" alt="flecsi::dense_data_handle_base_t" shape="rect" coords="332,0,654,24"/>
+<area href="structflecsi_1_1sparse__data__handle__base____.html" alt="flecsi::sparse_data_handle_base__&lt; T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS, DATA_POLICY &gt;" shape="rect" coords="0,56,322,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -105,11 +103,15 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>entry_value_t</b> = 
 <tr class="memitem:a11638bfcdc5c51458e92360454e46ded inherit pub_types_structflecsi_1_1sparse__data__handle__base____"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1sparse__data__handle__base____.html#a11638bfcdc5c51458e92360454e46ded">value_type</a> = T</td></tr>
 <tr class="separator:a11638bfcdc5c51458e92360454e46ded inherit pub_types_structflecsi_1_1sparse__data__handle__base____"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:a8f69d7ee49152bff4af1925c3f42104e"><td class="memItemLeft" align="right" valign="top"><a id="a8f69d7ee49152bff4af1925c3f42104e"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>sparse_handle__</b> (size_t num_exclusive, size_t num_shared, size_t num_ghost)</td></tr>
-<tr class="separator:a8f69d7ee49152bff4af1925c3f42104e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:af91468b4ac3ae62ef6a28a15fa7b5e01"><td class="memTemplParams" colspan="2"><a id="af91468b4ac3ae62ef6a28a15fa7b5e01"></a>
+template&lt;typename , size_t , size_t , size_t &gt; </td></tr>
+<tr class="memitem:af91468b4ac3ae62ef6a28a15fa7b5e01"><td class="memTemplItemLeft" align="right" valign="top">class&#160;</td><td class="memTemplItemRight" valign="bottom"><b>sparse_handle__</b></td></tr>
+<tr class="separator:af91468b4ac3ae62ef6a28a15fa7b5e01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_methods_structflecsi_1_1sparse__data__handle__base____"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structflecsi_1_1sparse__data__handle__base____')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structflecsi_1_1sparse__data__handle__base____.html">flecsi::sparse_data_handle_base__&lt; T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS, DATA_POLICY &gt;</a></td></tr>
 <tr class="memitem:a818a88e03d15842303329e2a904a9a50 inherit pub_methods_structflecsi_1_1sparse__data__handle__base____"><td class="memItemLeft" align="right" valign="top"><a id="a818a88e03d15842303329e2a904a9a50"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1sparse__data__handle__base____.html#a818a88e03d15842303329e2a904a9a50">sparse_data_handle_base__</a> ()</td></tr>
@@ -122,16 +124,18 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1sparse__data__handle__base____.html#a85113b1d88f181e3ada86928e7ce7338">sparse_data_handle_base__</a> (const <a class="el" href="structflecsi_1_1sparse__data__handle__base____.html">sparse_data_handle_base__</a> &amp;b)</td></tr>
 <tr class="memdesc:a85113b1d88f181e3ada86928e7ce7338 inherit pub_methods_structflecsi_1_1sparse__data__handle__base____"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. <br /></td></tr>
 <tr class="separator:a85113b1d88f181e3ada86928e7ce7338 inherit pub_methods_structflecsi_1_1sparse__data__handle__base____"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:af91468b4ac3ae62ef6a28a15fa7b5e01"><td class="memTemplParams" colspan="2"><a id="af91468b4ac3ae62ef6a28a15fa7b5e01"></a>
-template&lt;typename , size_t , size_t , size_t &gt; </td></tr>
-<tr class="memitem:af91468b4ac3ae62ef6a28a15fa7b5e01"><td class="memTemplItemLeft" align="right" valign="top">class&#160;</td><td class="memTemplItemRight" valign="bottom"><b>sparse_handle__</b></td></tr>
-<tr class="separator:af91468b4ac3ae62ef6a28a15fa7b5e01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
+<tr class="memitem:a2bcc756433db28b449eca3b7d44502f1 inherit pub_methods_structflecsi_1_1sparse__data__handle__base____"><td class="memItemLeft" align="right" valign="top"><a id="a2bcc756433db28b449eca3b7d44502f1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (size_t num_exclusive, size_t num_shared, size_t num_ghost)</td></tr>
+<tr class="separator:a2bcc756433db28b449eca3b7d44502f1 inherit pub_methods_structflecsi_1_1sparse__data__handle__base____"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95e92e239f19713885ffba3ef594e477 inherit pub_methods_structflecsi_1_1sparse__data__handle__base____"><td class="memItemLeft" align="right" valign="top"><a id="a95e92e239f19713885ffba3ef594e477"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_exclusive</b> () const</td></tr>
+<tr class="separator:a95e92e239f19713885ffba3ef594e477 inherit pub_methods_structflecsi_1_1sparse__data__handle__base____"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93c24c92d5358cf16e8e9999f3111584 inherit pub_methods_structflecsi_1_1sparse__data__handle__base____"><td class="memItemLeft" align="right" valign="top"><a id="a93c24c92d5358cf16e8e9999f3111584"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_shared</b> () const</td></tr>
+<tr class="separator:a93c24c92d5358cf16e8e9999f3111584 inherit pub_methods_structflecsi_1_1sparse__data__handle__base____"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2a1390fd9151d0c492cce2e5f1ef716 inherit pub_methods_structflecsi_1_1sparse__data__handle__base____"><td class="memItemLeft" align="right" valign="top"><a id="af2a1390fd9151d0c492cce2e5f1ef716"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_ghost</b> () const</td></tr>
+<tr class="separator:af2a1390fd9151d0c492cce2e5f1ef716 inherit pub_methods_structflecsi_1_1sparse__data__handle__base____"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_structflecsi_1_1sparse__data__handle__base____"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structflecsi_1_1sparse__data__handle__base____')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structflecsi_1_1sparse__data__handle__base____.html">flecsi::sparse_data_handle_base__&lt; T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS, DATA_POLICY &gt;</a></td></tr>
 <tr class="memitem:a386ccd8480a4fe2006ea482c4213b7ca inherit pub_attribs_structflecsi_1_1sparse__data__handle__base____"><td class="memItemLeft" align="right" valign="top"><a id="a386ccd8480a4fe2006ea482c4213b7ca"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>index_space</b></td></tr>
@@ -139,9 +143,6 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>index_space</b></td
 <tr class="memitem:ac9699606984211030c359c82cc5a2e0f inherit pub_attribs_structflecsi_1_1sparse__data__handle__base____"><td class="memItemLeft" align="right" valign="top"><a id="ac9699606984211030c359c82cc5a2e0f"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>data_client_hash</b></td></tr>
 <tr class="separator:ac9699606984211030c359c82cc5a2e0f inherit pub_attribs_structflecsi_1_1sparse__data__handle__base____"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd15561bd2794cebf820184e3ae1d8f7 inherit pub_attribs_structflecsi_1_1sparse__data__handle__base____"><td class="memItemLeft" align="right" valign="top"><a id="abd15561bd2794cebf820184e3ae1d8f7"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_entries_per_index</b></td></tr>
-<tr class="separator:abd15561bd2794cebf820184e3ae1d8f7 inherit pub_attribs_structflecsi_1_1sparse__data__handle__base____"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abded7f49dc5bd599cc2e0bf55545afec inherit pub_attribs_structflecsi_1_1sparse__data__handle__base____"><td class="memItemLeft" align="right" valign="top"><a id="abded7f49dc5bd599cc2e0bf55545afec"></a>
 <a class="el" href="structflecsi_1_1data_1_1sparse__entry__value____.html">entry_value_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>entries</b> = nullptr</td></tr>
 <tr class="separator:abded7f49dc5bd599cc2e0bf55545afec inherit pub_attribs_structflecsi_1_1sparse__data__handle__base____"><td class="memSeparator" colspan="2">&#160;</td></tr>

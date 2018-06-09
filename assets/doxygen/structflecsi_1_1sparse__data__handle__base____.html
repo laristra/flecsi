@@ -80,7 +80,6 @@ Inheritance diagram for flecsi::sparse_data_handle_base__&lt; T, EXCLUSIVE_PERMI
  <div class="center">
   <img src="structflecsi_1_1sparse__data__handle__base____.png" usemap="#flecsi::sparse_5Fdata_5Fhandle_5Fbase_5F_5F_3C_20T_2C_20EXCLUSIVE_5FPERMISSIONS_2C_20SHARED_5FPERMISSIONS_2C_20GHOST_5FPERMISSIONS_2C_20DATA_5FPOLICY_20_3E_map" alt=""/>
   <map id="flecsi::sparse_5Fdata_5Fhandle_5Fbase_5F_5F_3C_20T_2C_20EXCLUSIVE_5FPERMISSIONS_2C_20SHARED_5FPERMISSIONS_2C_20GHOST_5FPERMISSIONS_2C_20DATA_5FPOLICY_20_3E_map" name="flecsi::sparse_5Fdata_5Fhandle_5Fbase_5F_5F_3C_20T_2C_20EXCLUSIVE_5FPERMISSIONS_2C_20SHARED_5FPERMISSIONS_2C_20GHOST_5FPERMISSIONS_2C_20DATA_5FPOLICY_20_3E_map">
-<area href="structflecsi_1_1dense__data__handle__base__t.html" alt="flecsi::dense_data_handle_base_t" shape="rect" coords="810,0,1610,24"/>
 <area href="structflecsi_1_1data_1_1legion_1_1sparse__handle____.html" title="Sparse_accessor_t provides logically array-based access to data variables that have been registered i..." alt="flecsi::data::legion::sparse_handle__&lt; T, EP, SP, GP &gt;" shape="rect" coords="0,112,800,136"/>
 <area href="structflecsi_1_1data_1_1mpi_1_1sparse__handle____.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in..." alt="flecsi::data::mpi::sparse_handle__&lt; T, EP, SP, GP &gt;" shape="rect" coords="810,112,1610,136"/>
 </map>
@@ -110,6 +109,18 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1sparse__data__handle__base____.html#a85113b1d88f181e3ada86928e7ce7338">sparse_data_handle_base__</a> (const <a class="el" href="structflecsi_1_1sparse__data__handle__base____.html">sparse_data_handle_base__</a> &amp;b)</td></tr>
 <tr class="memdesc:a85113b1d88f181e3ada86928e7ce7338"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. <br /></td></tr>
 <tr class="separator:a85113b1d88f181e3ada86928e7ce7338"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bcc756433db28b449eca3b7d44502f1"><td class="memItemLeft" align="right" valign="top"><a id="a2bcc756433db28b449eca3b7d44502f1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (size_t num_exclusive, size_t num_shared, size_t num_ghost)</td></tr>
+<tr class="separator:a2bcc756433db28b449eca3b7d44502f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95e92e239f19713885ffba3ef594e477"><td class="memItemLeft" align="right" valign="top"><a id="a95e92e239f19713885ffba3ef594e477"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_exclusive</b> () const</td></tr>
+<tr class="separator:a95e92e239f19713885ffba3ef594e477"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93c24c92d5358cf16e8e9999f3111584"><td class="memItemLeft" align="right" valign="top"><a id="a93c24c92d5358cf16e8e9999f3111584"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_shared</b> () const</td></tr>
+<tr class="separator:a93c24c92d5358cf16e8e9999f3111584"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2a1390fd9151d0c492cce2e5f1ef716"><td class="memItemLeft" align="right" valign="top"><a id="af2a1390fd9151d0c492cce2e5f1ef716"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_ghost</b> () const</td></tr>
+<tr class="separator:af2a1390fd9151d0c492cce2e5f1ef716"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -119,9 +130,6 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>index_space</b></td
 <tr class="memitem:ac9699606984211030c359c82cc5a2e0f"><td class="memItemLeft" align="right" valign="top"><a id="ac9699606984211030c359c82cc5a2e0f"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>data_client_hash</b></td></tr>
 <tr class="separator:ac9699606984211030c359c82cc5a2e0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd15561bd2794cebf820184e3ae1d8f7"><td class="memItemLeft" align="right" valign="top"><a id="abd15561bd2794cebf820184e3ae1d8f7"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_entries_per_index</b></td></tr>
-<tr class="separator:abd15561bd2794cebf820184e3ae1d8f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abded7f49dc5bd599cc2e0bf55545afec"><td class="memItemLeft" align="right" valign="top"><a id="abded7f49dc5bd599cc2e0bf55545afec"></a>
 <a class="el" href="structflecsi_1_1data_1_1sparse__entry__value____.html">entry_value_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>entries</b> = nullptr</td></tr>
 <tr class="separator:abded7f49dc5bd599cc2e0bf55545afec"><td class="memSeparator" colspan="2">&#160;</td></tr>

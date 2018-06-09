@@ -134,8 +134,8 @@ std::map&lt; field_id_t, <a class="el" href="structflecsi_1_1execution_1_1mpi__c
 <tr class="memitem:ae66ff42481fe6fed6ba49571fede3b40"><td class="memItemLeft" align="right" valign="top"><a id="ae66ff42481fe6fed6ba49571fede3b40"></a>
 std::map&lt; field_id_t, std::vector&lt; uint8_t &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>registered_field_data</b> ()</td></tr>
 <tr class="separator:ae66ff42481fe6fed6ba49571fede3b40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afccfeff22eb4f503424fb32e578337f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__context__policy__t.html#afccfeff22eb4f503424fb32e578337f0">register_sparse_field_data</a> (field_id_t fid, size_t type_size, const <a class="el" href="structflecsi_1_1coloring_1_1coloring__info__t.html">coloring_info_t</a> &amp;coloring_info, size_t max_entries_per_index, size_t reserve_chunk)</td></tr>
-<tr class="separator:afccfeff22eb4f503424fb32e578337f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3789aed380030f8627d80c3ef46241fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__context__policy__t.html#a3789aed380030f8627d80c3ef46241fa">register_sparse_field_data</a> (field_id_t fid, size_t type_size, const <a class="el" href="structflecsi_1_1coloring_1_1coloring__info__t.html">coloring_info_t</a> &amp;coloring_info, size_t max_entries_per_index, size_t exclusive_reserve)</td></tr>
+<tr class="separator:a3789aed380030f8627d80c3ef46241fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afed270f7172269b32ddfdc5cd8cad3d6"><td class="memItemLeft" align="right" valign="top"><a id="afed270f7172269b32ddfdc5cd8cad3d6"></a>
 std::map&lt; field_id_t, <a class="el" href="structflecsi_1_1execution_1_1mpi__context__policy__t_1_1sparse__field__data__t.html">sparse_field_data_t</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>registered_sparse_field_data</b> ()</td></tr>
 <tr class="separator:afed270f7172269b32ddfdc5cd8cad3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -591,8 +591,8 @@ template&lt;typename T , typename MD &gt; </div>
 
 </div>
 </div>
-<a id="afccfeff22eb4f503424fb32e578337f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afccfeff22eb4f503424fb32e578337f0">&#9670;&nbsp;</a></span>register_sparse_field_data()</h2>
+<a id="a3789aed380030f8627d80c3ef46241fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3789aed380030f8627d80c3ef46241fa">&#9670;&nbsp;</a></span>register_sparse_field_data()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -628,7 +628,7 @@ template&lt;typename T , typename MD &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>reserve_chunk</em>&#160;</td>
+          <td class="paramname"><em>exclusive_reserve</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
