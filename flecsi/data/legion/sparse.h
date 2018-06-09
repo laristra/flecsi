@@ -74,12 +74,7 @@ namespace legion {
     // Constructors.
     //--------------------------------------------------------------------------//
 
-    sparse_handle__(
-      size_t num_exclusive,
-      size_t num_shared,
-      size_t num_ghost
-    )
-    : base(num_exclusive, num_shared, num_ghost){}
+    sparse_handle__(){}
 
     template<typename, size_t, size_t, size_t>
     friend class sparse_handle__;
@@ -144,9 +139,68 @@ namespace legion {
           typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
         utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
-      handle__<DATA_TYPE, 0, 0, 0> h(0, 0, 0);
+      size_t index_space = field_info.index_space;
+      auto & ism = context.index_space_data_map();
 
-      auto &hb = dynamic_cast<sparse_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
+      auto& im = context.sparse_index_space_info_map();
+      auto iitr = im.find(index_space);
+      clog_assert(iitr != im.end(),
+        "sparse index space info not registered for index space: " <<
+        index_space);
+
+      const size_t max_entries_per_index = iitr->second.max_entries_per_index;
+      const size_t exclusive_reserve = iitr->second.exclusive_reserve;
+
+      handle__<DATA_TYPE, 0, 0, 0> h;
+
+      h.reserve = exclusive_reserve;
+      h.max_entries_per_index = max_entries_per_index;
+
+      h.offsets_color_region = ism[index_space].color_region;
+      h.offsets_exclusive_lr = ism[index_space].exclusive_lr;
+      h.offsets_shared_lr = ism[index_space].shared_lr;
+      h.offsets_ghost_lr = ism[index_space].ghost_lr;
+
+      // TODO: formalize sparse offset
+      constexpr size_t sparse_offset = 8192;
+
+      h.entries_color_region = ism[index_space + sparse_offset].color_region;
+      h.entries_exclusive_lr = ism[index_space + sparse_offset].exclusive_lr;
+      h.entries_shared_lr = ism[index_space + sparse_offset].shared_lr;
+      h.entries_ghost_lr = ism[index_space + sparse_offset].ghost_lr;
+
+      h.metadata_color_region = context.sparse_metadata().color_region;
+
+      h.pbarrier_as_owner_ptr =
+          &ism[index_space].pbarriers_as_owner[field_info.fid];
+      h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
+      h.write_phase_started =
+          &(ism[index_space].write_phase_started[field_info.fid]);
+      h.ghost_owners_pbarriers_ptrs.resize(0);
+
+      const size_t _pb_size{
+          ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
+
+      for (size_t i = 0; i < _pb_size; i++) {
+        h.ghost_owners_pbarriers_ptrs.push_back(
+            &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
+      } // for
+
+      h.ghost_owners_offsets_lregions = 
+        ism[index_space].ghost_owners_lregions;
+      
+      h.ghost_owners_offsets_subregions = 
+        ism[index_space].ghost_owners_subregions;
+
+      h.ghost_owners_entries_lregions = 
+        ism[index_space + sparse_offset].ghost_owners_lregions;
+      
+      h.global_to_local_color_map_ptr =
+          &ism[index_space].global_to_local_color_map;
+
+      h.fid = field_info.fid;
+      h.index_space = index_space;
+      h.data_client_hash = field_info.data_client_hash;
 
       return h;
     }
@@ -175,7 +229,55 @@ namespace legion {
           typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
         utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
-      mutator_handle__<DATA_TYPE> h(0, 0, 0, 0, slots);
+      size_t index_space = field_info.index_space;
+      auto & ism = context.index_space_data_map();
+
+      auto& im = context.sparse_index_space_info_map();
+      auto iitr = im.find(index_space);
+      clog_assert(iitr != im.end(),
+        "sparse index space info not registered for index space: " <<
+        index_space);
+
+      const size_t max_entries_per_index = iitr->second.max_entries_per_index;
+      const size_t exclusive_reserve = iitr->second.exclusive_reserve;
+
+      mutator_handle__<DATA_TYPE> h(max_entries_per_index, slots);
+
+      h.offsets_color_region = ism[index_space].color_region;
+      h.offsets_exclusive_lr = ism[index_space].exclusive_lr;
+      h.offsets_shared_lr = ism[index_space].shared_lr;
+      h.offsets_ghost_lr = ism[index_space].ghost_lr;
+
+      // TODO: formalize sparse offset
+      constexpr size_t sparse_offset = 8192;
+
+      h.entries_color_region = ism[index_space + sparse_offset].color_region;
+      h.entries_exclusive_lr = ism[index_space + sparse_offset].exclusive_lr;
+      h.entries_shared_lr = ism[index_space + sparse_offset].shared_lr;
+      h.entries_ghost_lr = ism[index_space + sparse_offset].ghost_lr;
+
+      h.metadata_color_region = context.sparse_metadata().color_region;
+      
+      h.pbarrier_as_owner_ptr =
+          &ism[index_space].pbarriers_as_owner[field_info.fid];
+      h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
+      h.write_phase_started =
+          &(ism[index_space].write_phase_started[field_info.fid]);
+      h.ghost_owners_pbarriers_ptrs.resize(0);
+
+      const size_t _pb_size{
+          ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
+
+      for (size_t i = 0; i < _pb_size; i++) {
+        h.ghost_owners_pbarriers_ptrs.push_back(
+            &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
+      } // for
+
+      h.fid = field_info.fid;
+      h.index_space = index_space;
+      h.data_client_hash = field_info.data_client_hash;
+      h.slots = slots;
+      h.num_exclusive_insertions = new size_t(0);
 
       return h;
     }

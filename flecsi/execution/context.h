@@ -81,7 +81,7 @@ struct context__ : public CONTEXT_POLICY {
    */
   struct sparse_index_space_info_t {
     size_t index_space;
-    size_t reserve_chunk;
+    size_t exclusive_reserve;
     size_t max_entries_per_index;
     size_t max_exclusive_entries;
   };

@@ -85,6 +85,9 @@ struct accessor__<
   //! Copy constructor.
   //-------------------------------------------------------------------------//
 
+  accessor__(const accessor__ & a)
+      : handle(a.handle) {}
+
   accessor__(const sparse_data_handle__<T, 0, 0, 0> & h)
       : handle(reinterpret_cast<const handle_t &>(h)) {}
 
@@ -204,7 +207,7 @@ struct accessor__<
     for (size_t i = 0; i < handle.num_total_; ++i) {
       const offset_t & offset = handle.offsets[i];
       std::cout << "index: " << i << std::endl;
-      // std::cout << "offset: " << offset.start() << std::endl;
+      std::cout << "offset: " << offset.start() << std::endl;
       for (size_t j = 0; j < offset.count(); ++j) {
         size_t k = offset.start() + j;
         std::cout << "  " << handle.entries[k].entry << " = "

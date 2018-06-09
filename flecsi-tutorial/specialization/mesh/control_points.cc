@@ -60,7 +60,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   // Add sparse support for cells
   execution::context_t::sparse_index_space_info_t isi;
   isi.max_entries_per_index = 5;
-  isi.reserve_chunk = 8192;
+  isi.exclusive_reserve = 8192;
   context.set_sparse_index_space_info(index_spaces::cells, isi);
 
 } // specialization_tlt_init
