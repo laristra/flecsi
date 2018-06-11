@@ -58,7 +58,6 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     @param runtime The Legion task runtime.
     @param context The Legion task runtime context.
    */
-
   init_args_t(Legion::Runtime * runtime, Legion::Context & context)
       : runtime(runtime), context(context) {} // init_args
 
