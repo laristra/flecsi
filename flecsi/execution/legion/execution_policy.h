@@ -245,7 +245,17 @@ struct legion_execution_policy_t {
 
           task_launcher.tag = MAPPER_SUBRANK_LAUNCH;
 
+          // Enqueue the prolog.
+          task_prolog_t task_prolog(
+              legion_runtime, legion_context, task_launcher);
+          task_prolog.walk(task_args);
+          task_prolog.launch_copies();
+
           auto f = legion_runtime->execute_task(legion_context, task_launcher);
+
+          // Enqueue the epilog.
+          task_epilog_t task_epilog(legion_runtime, legion_context);
+          task_epilog.walk(task_args);
 
           f.wait();
 
