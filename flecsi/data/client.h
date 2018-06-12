@@ -534,6 +534,7 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
     auto & context = execution::context_t::instance();
 
     //auto & ism = context.local_index_space_data_map();
+    auto & ism = context.index_space_data_map();
 
     h.type_hash =
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
@@ -565,14 +566,13 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
         ent.fid = fi->fid;
       }
 
-/*
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(ent.index_space);
       clog_assert(ritr != ism.end(), "invalid index space " << ei.index_space);
 
-      ent.entire_region = ritr->second.region;
+      ent.entire_region = ritr->second.entire_region;
 #endif
-*/
+
       fi = context.get_field_info_from_key(
           h.type_hash,
           utils::hash::client_internal_field_hash(
@@ -600,7 +600,6 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
 //!
 //! @ingroup data
 //----------------------------------------------------------------------------//
-
 template<typename DATA_POLICY>
 struct data_client_interface__ {
   //--------------------------------------------------------------------------//

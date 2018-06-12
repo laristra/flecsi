@@ -266,22 +266,22 @@ public:
       std::map<int, Legion::Processor> targets;
 
       Legion::Machine::ProcessorQuery pq =
-        Legion::Machine::ProcessorQuery(machine).only_kind(
-                Legion::Processor::LOC_PROC);
+	Legion::Machine::ProcessorQuery(machine).only_kind(
+		Legion::Processor::LOC_PROC);
       for(Legion::Machine::ProcessorQuery::iterator it = pq.begin();
-        it != pq.end(); ++it) {
+    	it != pq.end(); ++it) {
         Legion::Processor p = *it;
         int a = p.address_space();
         if(targets.count(a) == 0)
-          targets[a] = p;
+	  targets[a] = p;
       }
 
-      output.slices.resize(r.volume());
+      output.slices.resize(1);
       for(int a = r.lo[0]; a <= r.hi[0]; a++) {
         assert(targets.count(a) > 0);
-        output.slices[a].domain =
-          Legion::Domain::from_rect<1>(LegionRuntime::Arrays::Rect<1>(a, a));
-        output.slices[a].proc = targets[a];
+        output.slices[0].domain = //Legion::Domain::from_rect<1>(
+          Legion::Rect<1>(a, a);
+        output.slices[0].proc = targets[a];
       }
       return;
     }//MAPPER_FORCE_RANK_MATCH 
