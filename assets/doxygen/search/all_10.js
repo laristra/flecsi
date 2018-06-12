@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['packet_5ft',['packet_t',['../structcinch_1_1packet__t.html',1,'cinch']]],
   ['parent',['parent',['../classflecsi_1_1topology_1_1branch__id____.html#aa4bf42cfafe4dbbf23b3c8a8e357b221',1,'flecsi::topology::branch_id__']]],
   ['parmetis_5fcolorer_2eh',['parmetis_colorer.h',['../parmetis__colorer_8h.html',1,'']]],
   ['parmetis_5fcolorer_5ft',['parmetis_colorer_t',['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html',1,'flecsi::coloring::parmetis_colorer_t'],['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html#a9eb222ebab10fc00c92d03ab1bb095f2',1,'flecsi::coloring::parmetis_colorer_t::parmetis_colorer_t()'],['../structflecsi_1_1coloring_1_1parmetis__colorer__t.html#a2bca7ae6aca7b201e5ea3a2945db6835',1,'flecsi::coloring::parmetis_colorer_t::parmetis_colorer_t(const parmetis_colorer_t &amp;)=delete']]],
