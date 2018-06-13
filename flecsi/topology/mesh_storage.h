@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <flecsi/runtime/flecsi_runtime_topology_policy.h>
+#include <flecsi/runtime/flecsi_runtime_structured_topology_policy.h>
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -33,5 +34,12 @@ class mesh_storage__ : public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<
                            NUM_DOMS,
                            NUM_INDEX_SUBSPACES> {};
 
+// Define the runtime model specific structure mesh storage policy
+
+template<size_t NUM_DIMS, size_t NUM_DOMS>
+class structured_mesh_storage__ :
+      public FLECSI_RUNTIME_STRUCTURED_TOPOLOGY_STORAGE_POLICY<
+                           NUM_DIMS,
+                           NUM_DOMS> {};
 } // namespace topology
 } // namespace flecsi

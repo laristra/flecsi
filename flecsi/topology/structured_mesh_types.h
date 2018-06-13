@@ -31,8 +31,8 @@ namespace topology {
 //!
 //! @ingroup
 //----------------------------------------------------------------------------//
-
-class structured_mesh_topology_base_t;
+//template<class>
+//class structured_mesh_topology_base__;
 
 class structured_mesh_entity_base_{
 public:
@@ -40,13 +40,13 @@ public:
 };
 
 
-template <size_t N>
-class structured_mesh_entity_base_t : public structured_mesh_entity_base_ 
+template <size_t NUM_DOMAINS>
+class structured_mesh_entity_base__ : public structured_mesh_entity_base_ 
 {
  public:
-  structured_mesh_entity_base_t(){};
+  structured_mesh_entity_base__(){};
 
-  virtual ~structured_mesh_entity_base_t() {}
+  virtual ~structured_mesh_entity_base__() {}
   
   template<size_t M>
   size_t id() const
@@ -70,52 +70,45 @@ class structured_mesh_entity_base_t : public structured_mesh_entity_base_
     id_[domain] = id;
   }
 
-  template <class MT>
-  friend class structured_mesh_topology_t;
+  template <class MESH_POLICY>
+  friend class structured_mesh_topology__;
 
  private:
-  std::array<sm_id_t,N> id_;
-}; // class structured_mesh_entity_base_t
+  std::array<sm_id_t,NUM_DOMAINS> id_;
+}; // class structured_mesh_entity_base__
 
 
-template <size_t D, size_t N>
-class structured_mesh_entity_t : public structured_mesh_entity_base_t<N>
+template <size_t DIM, size_t NUM_DOMAINS>
+class structured_mesh_entity__ : public structured_mesh_entity_base__<
+                                        NUM_DOMAINS>
 {
  public:
-  static const size_t dimension = D;
+  static const size_t dimension = DIM;
 
-  structured_mesh_entity_t() : structured_mesh_entity_base_t<N>(){};
-  virtual ~structured_mesh_entity_t() {}
-}; // class mesh_entity_t
-
-/******************************************************************************
- *                       Structured Mesh Storage                              *
- ******************************************************************************/
- /*
- * D = num_dimensions, NM = num_domains
- */
-template <size_t D, size_t NM>
-struct structured_mesh_storage_t {
-  using index_spaces_t = 
-    std::array<structured_index_space<structured_mesh_entity_base_*,D>, D+1>;
-
-  std::array<index_spaces_t, NM> index_spaces;
-}; // struct mesh_storage_t
-
+  structured_mesh_entity__() : structured_mesh_entity_base__<NUM_DOMAINS>(){};
+  virtual ~structured_mesh_entity__() {}
+}; // class structured_mesh_entity__
 
 //----------------------------------------------------------------------------//
 //! The structured_mesh_topology_base_t type...
 //!
 //! @ingroup
 //----------------------------------------------------------------------------//
-class structured_mesh_topology_base_t : public data::data_client_t
-{
-public:
-  // Default constructor
-  structured_mesh_topology_base_t() = default;
+class structured_mesh_topology_base_t {};
 
-  // Don't allow the mesh to be copied or copy constructed
-  structured_mesh_topology_base_t(const structured_mesh_topology_base_t &) = delete;
+template<STORAGE_POLICY>
+class structured_mesh_topology_base__ : public data::data_client_t,
+                                        public structured_mesh_topology_base_t
+{
+  public:
+
+  // Default constructor
+  structured_mesh_topology_base_t(STORAGE_TYPE *ms = nullptr) : ms_(ms) {}
+
+  // Copy constructor
+  structured_mesh_topology_base_t(const structured_mesh_topology_base_t & m) : ms_(m.ms_){}
+
+  //Don't allow copy assignment
   structured_mesh_topology_base_t & operator=(const structured_mesh_topology_base_t &) = delete;
 
   /// Allow move operations
@@ -130,12 +123,36 @@ public:
     return *this;
   };
 
+  STORAGE_TYPE * set_storage(STORAGE_TYPE *ms)
+  {
+    ms_ = ms;
+    return ms_; 
+  } //set_storage
+
+  STORAGE_TYPE * storage()
+  {
+    return ms_;
+  } //storage
+
+  void clear_storage()
+  {
+    ms_ = nullptrl
+  } //clear_storage
+
+  void delete_storage()
+  {
+    delete ms_;
+  } //delete_storage
+
+
   /*!
     Return the number of entities in for a specific domain and topology dim.
    */
   virtual size_t num_entities(size_t dim, size_t domain) const = 0;
 
-}; // structured_mesh_topology_base_t
+  protected:
+  STORAGE_TYPE * ms_ = nullptr;
+}; // structured_mesh_topology_base__
 
 
 } // namespace topology

@@ -24,6 +24,7 @@
 #include <cinchlog.h>
 
 #include <flecsi/coloring/adjacency_types.h>
+#include <flecsi/coloring/box_types.h>
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/execution/common/execution_state.h>
@@ -49,6 +50,7 @@ namespace execution {
 
 template<class CONTEXT_POLICY>
 struct context__ : public CONTEXT_POLICY {
+  using box_coloring_info_t = flecsi::coloring::box_coloring_info_t;
   using index_coloring_t = flecsi::coloring::index_coloring_t;
   using coloring_info_t = flecsi::coloring::coloring_info_t;
   using set_coloring_info_t = flecsi::coloring::set_coloring_info_t;
@@ -548,6 +550,18 @@ struct context__ : public CONTEXT_POLICY {
     coloring_info_[index_space] = coloring_info;
   } // add_coloring
 
+  void add_box_coloring(
+      size_t index_space,
+      box_coloring_info_t & coloring,
+      std::unordered_map<size_t, coloring_info_t> & coloring_info) {
+    clog_assert(
+        box_colorings_.find(index_space) == box_colorings_.end(),
+        "color index already exists");
+
+    box_colorings_[index_space] = coloring;
+    box_coloring_info_[index_space] = coloring_info;
+  } // add_box_coloring
+
   /*!
     Return the index coloring referenced by key.
 
@@ -562,6 +576,15 @@ struct context__ : public CONTEXT_POLICY {
 
     return it->second;
   } // coloring
+
+   box_coloring_info_t & box_coloring(size_t index_space) {
+    auto it = box_colorings_.find(index_space);
+    if (it == box_colorings_.end()) {
+      clog(fatal) << "invalid index_space " << index_space << std::endl;
+    } // if
+
+    return it->second;
+  } // box_coloring
 
   /*!
     Return the index coloring information referenced by key.
@@ -580,6 +603,16 @@ struct context__ : public CONTEXT_POLICY {
     return it->second;
   } // coloring_info
 
+  const std::unordered_map<size_t, coloring_info_t> &
+  box_coloring_info(size_t index_space) {
+    auto it = box_coloring_info_.find(index_space);
+    if (it == box_coloring_info_.end()) {
+      clog(fatal) << "invalid index space " << index_space << std::endl;
+    } // if
+
+    return it->second;
+  } // box_coloring_info
+
   /*!
     Return the coloring map (convenient for iterating through all
     of the colorings.
@@ -590,6 +623,10 @@ struct context__ : public CONTEXT_POLICY {
   const std::map<size_t, index_coloring_t> & coloring_map() const {
     return colorings_;
   } // colorings
+
+  const std::map<size_t, box_coloring_info_t> & box_coloring_map() const {
+    return box_colorings_;
+  } // box_colorings
 
   /*!
     Return the coloring info map (convenient for iterating through all
@@ -602,6 +639,11 @@ struct context__ : public CONTEXT_POLICY {
   coloring_info_map() const {
     return coloring_info_;
   } // colorings
+
+  const std::map<size_t, std::unordered_map<size_t, coloring_info_t>> &
+  box_coloring_info_map() const {
+    return box_coloring_info_;
+  } // box_colorings
 
   /*!
     Add an adjacency/connectivity from one index space to another.
@@ -859,6 +901,7 @@ private:
 
   std::map<size_t, index_coloring_t> colorings_;
 
+  std::map<size_t, box_coloring_info_t> box_colorings_;
   //--------------------------------------------------------------------------//
   // key: mesh index space entity id
   //--------------------------------------------------------------------------//
@@ -956,6 +999,7 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, std::unordered_map<size_t, coloring_info_t>> coloring_info_;
+  std::map<size_t, std::unordered_map<size_t, coloring_info_t>> box_coloring_info_;
 
   //--------------------------------------------------------------------------//
   // key: index space

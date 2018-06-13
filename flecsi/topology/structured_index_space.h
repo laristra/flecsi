@@ -29,7 +29,7 @@ namespace topology {
 //! @param DM num_dimensions 
 //----------------------------------------------------------------------------//
 template<class E, size_t DM>
-class structured_index_space{
+class structured_index_space__{
 public:
   using sm_id_t            = typename std::remove_pointer<E>::type::sm_id_t;
   using sm_id_array_t      = std::array<sm_id_t, DM>; 
@@ -122,10 +122,10 @@ public:
   }
    
   //default constructor
-  structured_index_space(){};
+  structured_index_space__(){};
 
   //default destructor
-  ~structured_index_space(){};
+  ~structured_index_space(__){};
 
  /******************************************************************************
  *                              Basic Iterators                                *    

@@ -23,6 +23,7 @@
 
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/static_verify.h"
+#include "flecsi/topology/mesh_storage.h"
 #include "flecsi/topology/structured_mesh_types.h"
 #include "flecsi/topology/structured_querytable.h"
 
@@ -33,15 +34,15 @@
 
 namespace flecsi {
 namespace topology {
-/*namespace verify_mesh {
+namespace verify_structmesh {
 
   FLECSI_MEMBER_CHECKER(num_dimensions);
   FLECSI_MEMBER_CHECKER(num_domains);
   FLECSI_MEMBER_CHECKER(lower_bounds);
   FLECSI_MEMBER_CHECKER(upper_bounds);
   FLECSI_MEMBER_CHECKER(entity_types);
-} // namespace verify_mesh
-*/
+} // namespace verify_structmesh
+
 
 //----------------------------------------------------------------------------//
 //! The structured_mesh_topology type...
@@ -50,9 +51,9 @@ namespace topology {
 //----------------------------------------------------------------------------//
 
 template<
-  class MT
+  class MESH_POLICY
 >
-class structured_mesh_topology_t : public structured_mesh_topology_base_t
+class structured_mesh_topology__ : public structured_mesh_topology_base___
 {
  
   /*
@@ -63,51 +64,59 @@ class structured_mesh_topology_t : public structured_mesh_topology_base_t
   * mesh_bounds 
   */
   // static verification of mesh policy
-/*
-  static_assert(verify_mesh::has_member_num_dimensions<MT>::value,
+
+  static_assert(verify_structmesh::has_member_num_dimensions<MESH_POLICY>::value,
                 "mesh policy missing num_dimensions size_t");
   
-  static_assert(std::is_convertible<decltype(MT::num_dimensions),
+  static_assert(std::is_convertible<decltype(MESH_POLICY::num_dimensions),
     size_t>::value, "mesh policy num_dimensions must be size_t");              
 
-  static_assert(verify_mesh::has_member_num_domains<MT>::value,
+  static_assert(verify_structmesh::has_member_num_domains<MESH_POLICY>::value,
                 "mesh policy missing num_domains size_t");
   
-  static_assert(std::is_convertible<decltype(MT::num_domains),
+  static_assert(std::is_convertible<decltype(MESH_POLICY::num_domains),
     size_t>::value, "mesh policy num_domains must be size_t");
 
-  static_assert(verify_mesh::has_member_lower_bounds<MT>::value,
+  static_assert(verify_structmesh::has_member_lower_bounds<MESH_POLICY>::value,
                 "mesh policy missing lower_bounds array");
   
-  static_assert(std::is_convertible<decltype(MT::lower_bounds),
-    std::array<size_t,MT::num_dimensions>>::value,
+  static_assert(std::is_convertible<decltype(MESH_POLICY::lower_bounds),
+    std::array<size_t,MESH_POLICY::num_dimensions>>::value,
     "mesh policy lower_bounds is not an array");
 
-  static_assert(verify_mesh::has_member_upper_bounds<MT>::value,
+  static_assert(verify_structmesh::has_member_upper_bounds<MESH_POLICY>::value,
                 "mesh policy missing upper_bounds array");
   
-  static_assert(std::is_convertible<decltype(MT::upper_bounds),
-    std::array<size_t,MT::num_dimensions>>::value,
+  static_assert(std::is_convertible<decltype(MESH_POLICY::upper_bounds),
+    std::array<size_t,MESH_POLICY::num_dimensions>>::value,
     "mesh policy upper_bounds is not an array");
 
-  static_assert(MT::lower_bounds.size() == MT::upper_bounds.size(),
+  static_assert(MESH_POLICY::lower_bounds.size() == MESH_POLICY::upper_bounds.size(),
      "mesh bounds have inconsistent sizes");
 
-  static_assert(verify_mesh::has_member_entity_types<MT>::value,
+  static_assert(verify_structmesh::has_member_entity_types<MESH_POLICY>::value,
                 "mesh policy missing entity_types tuple");
   
-  static_assert(utils::is_tuple<typename MT::entity_types>::value,
+  static_assert(utils::is_tuple<typename MESH_POLICY::entity_types>::value,
                 "mesh policy entity_types is not a tuple");
 
-*/
+
 public:
   // used to find the entity type of topological dimension D and domain M
   template<size_t D, size_t M = 0>
-  using entity_type = typename find_entity_<MT, D, M>::type;
+  using entity_type = typename find_entity_<MESH_POLICY, D, M>::type;
   
   using sm_id_t        = size_t; 
-  using sm_id_array_t = std::array<size_t, MT::num_dimensions>;  
+  using sm_id_array_t = std::array<size_t, MESH_POLICY::num_dimensions>;  
   using sm_id_vector_2d_t  = std::vector<std::vector<size_t>>;
+
+  // storage type
+  using storage_t = structure_mesh_storage__<
+                    MESH_POLICY::num_dimensions,
+                    MESH_POLICY::num_domains>;
+
+  // base type for mesh
+  using base_t = structured_mesh_topology_base__<storage_t>;
 
  //--------------------------------------------------------------------------//
   // This type definition is needed so that data client handles can be
@@ -117,29 +126,45 @@ public:
   //--------------------------------------------------------------------------//
   using type_identifier_t = structured_mesh_topology_t; 
 
-  // Don't allow the mesh to be copied or copy constructed
-  structured_mesh_topology_t(const structured_mesh_topology_t &) = delete;
-  structured_mesh_topology_t & operator=(const structured_mesh_topology_t &)
+  // Don't allow the mesh to be copied 
+  structured_mesh_topology__ & operator=(const structured_mesh_topology__ &)
   = delete;
 
   // Allow move operations
-  structured_mesh_topology_t(structured_mesh_topology_t && o) = default;
-  structured_mesh_topology_t & operator=(structured_mesh_topology_t && o) 
+  structured_mesh_topology__(structured_mesh_topology__ && o) = default;
+  structured_mesh_topology__ & operator=(structured_mesh_topology__ && o) 
   = default;
 
+  // Copy constructor
+  structured_mesh_topology__(const structured_mesh_topology__ & m) : base_t(m.ms_) {}
+
   //! Constructor
-  structured_mesh_topology_t()
+  structured_mesh_topology__(storage_t * ms = nullptr) : base_t(ms)
   {
-      meshdim_ = MT::num_dimensions;  
+     if (ms != nullptr)
+     {
+       initialize_storage();
+     } 
+  }
+
+  // mesh destructor
+  virtual ~structured_mesh_topology_t()
+  {
+    delete qt;
+  }
+ 
+  void initialize_storage()
+  {
+      meshdim_ = MESH_POLICY::num_dimensions;  
 
       for (size_t i = 0; i < meshdim_; ++i)
       {
-        meshbnds_low_[i] = MT::lower_bounds[i];
-        meshbnds_up_[i]  = MT::upper_bounds[i];
+        meshbnds_low_[i] = MESH_POLICY::lower_bounds[i];
+        meshbnds_up_[i]  = MESH_POLICY::upper_bounds[i];
       }
 
       //Bounds info
-      std::vector<size_t> bnds_info[3][4] =
+      /*std::vector<size_t> bnds_info[3][4] =
                            {{{{1}}, {{0}}, {{}}, {{}}},
                             {{{1,1}}, {{1,0,0,1}}, {{0,0}}, {{}}},
                             {{{1,1,1}}, {{1,0,1,0,1,1,1,1,0}}, 
@@ -150,32 +175,17 @@ public:
       for (size_t i = 0; i <= meshdim_; ++i)
       {
         if ( i == meshdim_) primary = true;
-        //std::cout<<"bnd_info = "<<bnds_info[meshdim_-1][i].size()<<std::endl;
         ms_.index_spaces[0][i].init(primary, meshbnds_low_, meshbnds_up_, bnds_info[meshdim_-1][i]);
-      }
+      } */
 
      //create query table once
-     qt = new query::QueryTable<MT::num_dimensions, MT::num_dimensions+1,
-                         MT::num_dimensions, MT::num_dimensions+1>(); 
-  
-       
-     //query::qtable(qt);  
-     /*if (meshdim_ == 1) 
-       query::qtable1d(qt); 
-     else if (meshdim_ == 2)
-       query::qtable2d(qt);
-     else if (meshdim_ == 3)
-       query::qtable3d(qt);
-    */ 
-        
+     qt = new query::QueryTable<MESH_POLICY::num_dimensions, 
+                                MESH_POLICY::num_dimensions+1,
+                                MESH_POLICY::num_dimensions, 
+                                MESH_POLICY::num_dimensions+1>(); 
+    
   }
 
-  // mesh destructor
-  virtual ~structured_mesh_topology_t()
-  {
-    delete qt;
-  }
- 
  //--------------------------------------------------------------------------//
  //! Return the number of entities contained in specified topological 
  //! dimension and domain.
@@ -550,7 +560,7 @@ private:
   size_t meshdim_; 
   sm_id_array_t meshbnds_low_;
   sm_id_array_t meshbnds_up_;
-  structured_mesh_storage_t<MT::num_dimensions, MT::num_domains> ms_;
+  //structured_mesh_storage_t<MT::num_dimensions, MT::num_domains> ms_;
 
   query::QueryTable<MT::num_dimensions, MT::num_dimensions+1, 
                     MT::num_dimensions, MT::num_dimensions+1>  *qt; 
@@ -565,7 +575,7 @@ private:
     return ms_.index_spaces[domain][dim].size();
   } // num_entities_
 
-}; // class structured_mesh_topology_t
+}; // class structured_mesh_topology__
 
 } // namespace topology
 } // namespace flecsi
