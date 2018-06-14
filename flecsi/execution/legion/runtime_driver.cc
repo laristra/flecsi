@@ -483,7 +483,8 @@ runtime_driver(
         for (const field_info_t* field_info : fields_map[idx_space]){
           reg_req.add_field(field_info->fid);
 
-          if(!utils::hash::is_internal(field_info->key)){
+          if(field_info->storage_class == sparse &&
+             !utils::hash::is_internal(field_info->key)){
             sparse_reg_req.add_field(field_info->fid);
           }
         }//for field_info
@@ -558,7 +559,8 @@ runtime_driver(
 
           for (const field_info_t* field_info : fields_map[idx_space]){
             owner_reg_req.add_field(field_info->fid);
-            if(!utils::hash::is_internal(field_info->key)){
+            if(field_info->storage_class == sparse &&
+               !utils::hash::is_internal(field_info->key)){
               sparse_owner_reg_req.add_field(field_info->fid);
             }
           }          
