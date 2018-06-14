@@ -43,6 +43,11 @@ struct global_data_handle_base__ : public DATA_POLICY,
                                    public global_data_handle_base_t {
 
   /*!
+    Capture the underlying data type.
+   */
+  using value_type = T;
+
+  /*!
    Default constructor.
    */
 

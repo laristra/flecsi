@@ -29,6 +29,7 @@
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
+#include <flecsi/utils/dag.h>
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/simple_id.h>
 
@@ -80,7 +81,7 @@ struct context__ : public CONTEXT_POLICY {
    */
   struct sparse_index_space_info_t {
     size_t index_space;
-    size_t reserve_chunk;
+    size_t exclusive_reserve;
     size_t max_entries_per_index;
     size_t max_exclusive_entries;
   };
@@ -116,6 +117,17 @@ struct context__ : public CONTEXT_POLICY {
 
   using field_info_map_t =
       std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
+
+  //--------------------------------------------------------------------------//
+  // Top-level driver interface.
+  //--------------------------------------------------------------------------//
+
+  using tlt_driver_t = std::function<int(int, char **)>;
+
+  bool register_top_level_driver(tlt_driver_t & driver) {
+    tlt_driver_ = driver;
+    return true;
+  } // register_top_level_driver
 
   //--------------------------------------------------------------------------//
   // Object interface.
@@ -771,6 +783,7 @@ struct context__ : public CONTEXT_POLICY {
   } // execution_state
 
 private:
+
   // Default constructor
   context__() : CONTEXT_POLICY() {}
 
@@ -790,6 +803,12 @@ private:
   context__ & operator=(const context__ &) = delete;
   context__(context__ &&) = delete;
   context__ & operator=(context__ &&) = delete;
+
+  //--------------------------------------------------------------------------//
+  // Top-level driver.
+  //--------------------------------------------------------------------------//
+
+  tlt_driver_t tlt_driver_ = {};
 
   //--------------------------------------------------------------------------//
   // Object data members.
@@ -903,10 +922,12 @@ private:
 
   //! the packed types used for simple_id_t
   using simple_id_types_t = std::tuple<int, int, size_t>;
+
   //! the simple id type used for comparing ids of different dimensions
   using simple_id_t = utils::simple_id_t<
       simple_id_types_t,
       utils::lexical_comparison<simple_id_types_t>>;
+
   //! the storage type for arrays of simple_id_t's
   using simple_id_vector_t = std::vector<simple_id_t>;
 

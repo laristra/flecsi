@@ -68,7 +68,8 @@ public:
       size_t num_slots)
       : num_entries_(num_exclusive + num_shared + num_ghost),
         num_exclusive_(num_exclusive),
-        max_entries_per_index_(max_entries_per_index), num_slots_(num_slots) {
+        max_entries_per_index_(max_entries_per_index),
+        num_slots_(num_slots) {
     pi_.count[0] = num_exclusive;
     pi_.count[1] = num_shared;
     pi_.count[2] = num_ghost;
@@ -83,9 +84,42 @@ public:
     pi_.end[2] = pi_.end[1] + num_ghost;
   }
 
+  mutator_handle_base__(
+      size_t max_entries_per_index,
+      size_t num_slots)
+      : max_entries_per_index_(max_entries_per_index),
+        num_slots_(num_slots) {
+  }
+
   mutator_handle_base__(const mutator_handle_base__ & b) = default;
 
   ~mutator_handle_base__() {}
+
+  void init(
+    size_t num_exclusive,
+    size_t num_shared,
+    size_t num_ghost,
+    size_t max_entries_per_index,
+    size_t num_slots
+    ){
+    num_entries_ = num_exclusive + num_shared + num_ghost;
+    num_exclusive_ = num_exclusive;
+
+    pi_.count[0] = num_exclusive;
+    pi_.count[1] = num_shared;
+    pi_.count[2] = num_ghost;
+
+    pi_.start[0] = 0;
+    pi_.end[0] = num_exclusive;
+
+    pi_.start[1] = num_exclusive;
+    pi_.end[1] = num_exclusive + num_shared;
+
+    pi_.start[2] = pi_.end[1];
+    pi_.end[2] = pi_.end[1] + num_ghost;
+
+    init();
+  }
 
   void init() {
     offsets_ = new offset_t[num_entries_];
@@ -93,20 +127,20 @@ public:
     spare_map_ = new spare_map_t;
   }
 
-  void commit(commit_info_t * ci) {
+  size_t commit(commit_info_t * ci) {
     if (erase_set_) {
-      commit_<true>(ci);
+      return commit_<true>(ci);
     } else {
       if (ragged_changes_map_) {
-        raggedCommit_(ci);
+        return raggedCommit_(ci);
       } else {
-        commit_<false>(ci);
+        return commit_<false>(ci);
       }
     }
   } // operator ()
 
   template<bool ERASE>
-  void commit_(commit_info_t * ci) {
+  size_t commit_(commit_info_t * ci) {
     assert(offsets_ && "uninitialized mutator");
     ci_ = *ci;
 
@@ -144,8 +178,10 @@ public:
       }
     }
 
+    size_t num_exclusive_filled = cptr - cbuf;
+
     assert(cptr - cbuf <= num_exclusive_entries);
-    std::memcpy(entries, cbuf, sizeof(entry_value_t) * (cptr - cbuf));
+    std::memcpy(entries, cbuf, sizeof(entry_value_t) * num_exclusive_filled);
     delete[] cbuf;
 
     size_t start = num_exclusive_;
@@ -190,9 +226,11 @@ public:
       delete erase_set_;
       erase_set_ = nullptr;
     }
+
+    return num_exclusive_filled;
   }
 
-  void raggedCommit_(commit_info_t * ci) {
+  size_t raggedCommit_(commit_info_t * ci) {
     assert(offsets_ && "uninitialized mutator");
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
@@ -274,7 +312,9 @@ public:
       eptr += num_existing;
     }
 
-    std::memcpy(entries, cbuf, sizeof(entry_value_t) * (cptr - cbuf));
+    size_t num_exclusive_filled = cptr - cbuf;
+
+    std::memcpy(entries, cbuf, sizeof(entry_value_t) * num_exclusive_filled);
     delete[] cbuf;
 
     size_t start = num_exclusive_;
@@ -361,6 +401,8 @@ public:
 
     delete ragged_changes_map_;
     ragged_changes_map_ = nullptr;
+
+    return num_exclusive_filled;
   }
 
   size_t num_exclusive() const {
@@ -377,6 +419,10 @@ public:
 
   size_t max_entries_per_index() const {
     return max_entries_per_index_;
+  }
+
+  size_t number_exclusive_entries() const{
+    return ci_.entries[1] - ci_.entries[0];
   }
 
   commit_info_t & commit_info() {

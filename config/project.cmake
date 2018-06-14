@@ -161,6 +161,24 @@ if(ENABLE_RISTRALL)
 endif()
 
 #------------------------------------------------------------------------------#
+# Graphviz
+#------------------------------------------------------------------------------#
+
+option(ENABLE_GRAPHVIZ "Enable Graphviz Support" OFF)
+
+if(ENABLE_GRAPHVIZ)
+  find_package(Graphviz REQUIRED)
+
+  if(GRAPHVIZ_FOUND)
+    include_directories(${GRAPHVIZ_INCLUDE_DIRS})
+    add_definitions(-DENABLE_GRAPHVIZ)
+
+    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${GRAPHVIZ_INCLUDE_DIR})
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${GRAPHVIZ_LIBRARIES})
+  endif()
+endif()
+
+#------------------------------------------------------------------------------#
 # OpenSSL
 #------------------------------------------------------------------------------#
 
@@ -192,6 +210,16 @@ endif()
 
 if(ENABLE_BOOST_PROGRAM_OPTIONS)
   list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
+endif()
+
+#------------------------------------------------------------------------------#
+# Pthreads
+#------------------------------------------------------------------------------#
+
+if(ENABLE_CLOG)
+  if(CLOG_ENABLE_MPI)
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${CMAKE_THREAD_LIBS_INIT})
+  endif()
 endif()
 
 #------------------------------------------------------------------------------#
@@ -239,11 +267,13 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   if(ENABLE_MAPPER_COMPACTION)
     add_definitions(-DMAPPER_COMPACTION)
+    set (MAPPER_COMPACTION TRUE)
   else()
     option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" ON)
 
     if(COMPACTED_STORAGE_SORT)
       add_definitions(-DCOMPACTED_STORAGE_SORT)
+      set(COMPACTED_STORAGE_SORT TRUE)
     endif()
   endif()
 
@@ -364,6 +394,7 @@ set(FLECSI_ENABLE_MPI ${ENABLE_MPI})
 set(FLECSI_ENABLE_LEGION ${ENABLE_LEGION})
 set(FLECSI_ENABLE_METIS ENABLE_METIS)
 set(FLECSI_ENABLE_PARMETIS ENABLE_PARMETIS)
+set(FLECSI_ENABLE_GRAPHVIZ ${ENABLE_GRAPHVIZ})
 
 configure_file(${PROJECT_SOURCE_DIR}/config/flecsi-config.h.in
   ${CMAKE_BINARY_DIR}/flecsi-config.h @ONLY)

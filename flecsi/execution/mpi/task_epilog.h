@@ -282,47 +282,8 @@ namespace execution {
       using entry_value_t = typename mutator_handle__<T>::entry_value_t;
       using commit_info_t = typename mutator_handle__<T>::commit_info_t;
 
-      if (*h.num_exclusive_insertions > *h.reserve) {
-        size_t old_exclusive_entries = *h.num_exclusive_entries;
-        size_t old_reserve = *h.reserve;
-
-        size_t needed = *h.num_exclusive_insertions - *h.reserve;
-
-        *h.num_exclusive_entries += *h.num_exclusive_insertions;
-        *h.reserve += std::max(h.reserve_chunk, needed);
-
-        constexpr size_t entry_value_size = sizeof(size_t) + sizeof(T);
-
-        size_t count = *h.reserve +
-                       (h.num_shared() + h.num_ghost()) *
-                       h.max_entries_per_index();
-
-        h.entries->resize(count * entry_value_size);
-
-        entry_value_t *tmp =
-          new entry_value_t[(h.num_shared() + h.num_ghost()) *
-                            h.max_entries_per_index()];
-
-        size_t bytes =
-          (h.num_shared() + h.num_ghost()) * h.max_entries_per_index() *
-          entry_value_size;
-
-        std::memcpy(tmp, &(*h.entries)[0] + old_reserve *
-                                            entry_value_size, bytes);
-
-        std::memcpy(&(*h.entries)[0] + *h.reserve *
-                                       entry_value_size, tmp, bytes);
-
-        delete[] tmp;
-
-        size_t n = h.num_shared() + h.num_ghost();
-        size_t ne = h.num_exclusive();
-
-        for (size_t i = 0; i < n; ++i) {
-          offset_t &oi = (*h.offsets)[i + ne];
-          oi.set_offset(*h.reserve + i * h.max_entries_per_index());
-        }
-      }
+      clog_assert(*h.num_exclusive_insertions <= *h.reserve,
+                  "sparse exclusive reserve exceed");
 
       delete h.num_exclusive_insertions;
 

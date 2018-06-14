@@ -180,7 +180,11 @@ TEST(common, all) {
   // ------------------------
 
 #ifdef __GNUG__
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.gnug"));
+  #ifdef __PPC64__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.ppc"));
+  #else
+    EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.gnug"));
+  #endif
 #elif defined(_MSC_VER)
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.msvc"));
 #else
