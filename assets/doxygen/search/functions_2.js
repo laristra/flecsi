@@ -8,6 +8,7 @@ var searchData=
   ['bin_5fas_5fvector',['bin_as_vector',['../classflecsi_1_1topology_1_1index__space____.html#abd320768cb16d321588f7ebd3285799a',1,'flecsi::topology::index_space__']]],
   ['bit_5frange',['bit_range',['../hash_8h.html#a30d3da89b0b4e954331d554839f55778',1,'flecsi::utils::hash']]],
   ['branch_5fid_5f_5f',['branch_id__',['../classflecsi_1_1topology_1_1branch__id____.html#a007ab9034e9e537e98ba5e84bfe33b44',1,'flecsi::topology::branch_id__']]],
+  ['buffer_5fstream',['buffer_stream',['../classcinch_1_1clog__t.html#ab498e92ef0ede674fdcb3b49c2ef0eec',1,'cinch::clog_t']]],
   ['build_5freverse_5fintermediate_5fbinding_5fmaps',['build_reverse_intermediate_binding_maps',['../structflecsi_1_1execution_1_1context____.html#a2ef6a7ee34c49875f899f883e1b83cca',1,'flecsi::execution::context__']]],
   ['build_5freverse_5fintermediate_5fmaps',['build_reverse_intermediate_maps',['../structflecsi_1_1execution_1_1context____.html#ab47430bd264a78d3eccb23bbcfdaa14d',1,'flecsi::execution::context__']]]
 ];

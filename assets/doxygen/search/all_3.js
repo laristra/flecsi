@@ -114,5 +114,5 @@ var searchData=
   ['crs_2eh',['crs.h',['../crs_8h.html',1,'']]],
   ['crs_5ft',['crs_t',['../structflecsi_1_1coloring_1_1crs__t.html',1,'flecsi::coloring']]],
   ['cycle_5f_5f',['cycle__',['../structflecsi_1_1control_1_1cycle____.html',1,'flecsi::control']]],
-  ['cinch_3a_20logging',['Cinch: Logging',['../md__home_flecsi_flecsi_cinch_logging_clog.html',1,'']]]
+  ['cinch_3a_20logging',['Cinch: Logging',['../md__home_flecsi_flecsi_cinch_logging_README.html',1,'']]]
 ];
