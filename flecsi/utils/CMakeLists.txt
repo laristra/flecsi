@@ -112,12 +112,13 @@ set(utils_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
-
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 cinch_add_devel_target(clog
   SOURCES
     test/clog.cc
   POLICY ${UNIT_POLICY}
 )
+endif()
 
 cinch_add_unit(const_string
   SOURCES test/const_string.cc common.cc
