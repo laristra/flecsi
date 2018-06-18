@@ -215,7 +215,6 @@ void specialization_tlt_init(int argc, char ** argv) {
   execution::context_t::sparse_index_space_info_t isi;
   isi.max_entries_per_index = 5;
   isi.exclusive_reserve = 8192;
-  isi.max_exclusive_entries = 8192;
   context.set_sparse_index_space_info(0, isi);
 } // specialization_tlt_init
 

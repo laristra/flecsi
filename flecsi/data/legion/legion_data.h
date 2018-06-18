@@ -83,7 +83,7 @@ public:
     Legion::FieldSpace field_space;
     Legion::LogicalRegion logical_region;
     Legion::IndexPartition index_partition;
-    size_t max_exclusive_entries;
+    size_t exclusive_reserve;
     size_t max_entries_per_index;
     size_t max_shared_ghost;
     size_t color_size;
@@ -323,11 +323,11 @@ public:
             sis.max_shared_ghost, color_idx.second.shared + color_idx.second.ghost);
       }
 
-      sis.max_exclusive_entries = sparse_info->max_exclusive_entries;
+      sis.exclusive_reserve = sparse_info->exclusive_reserve;
       sis.max_entries_per_index = sparse_info->max_entries_per_index;
 
       sis.color_size = 
-        sis.max_exclusive_entries + 
+        sis.exclusive_reserve + 
         sis.max_shared_ghost * sis.max_entries_per_index;
 
       // Create expanded index space
