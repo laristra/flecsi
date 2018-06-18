@@ -12,7 +12,8 @@
    All rights reserved.
                                                                               */
 /*! @file */
-
+#include <sys/types.h>
+#include <unistd.h>
 #include <flecsi/execution/legion/runtime_driver.h>
 
 #include <legion.h>
@@ -53,6 +54,9 @@ runtime_driver(
   clog_tag_guard(runtime_driver);
   clog(info) << "In Legion runtime driver" << std::endl;
   }
+  
+  printf("pid %d, sleep\n", getpid());
+  //sleep(20);
 
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
@@ -144,7 +148,8 @@ runtime_driver(
 
   auto coloring_info = context_.coloring_info_map();
 
-  data.init_from_coloring_info_map(coloring_info);
+  data.init_from_coloring_info_map(coloring_info,
+    context_.sparse_index_space_info_map());
 
   for(auto& itr : context_.adjacency_info()){
     data.add_adjacency(itr.second);
@@ -236,7 +241,7 @@ runtime_driver(
   fm.wait_all_results(true);
 
   // map of index space to the field_ids that are mapped to this index space
-  std::map<size_t, std::vector<field_id_t>> fields_map;
+  std::map<size_t, std::vector<const field_info_t*>> fields_map;
 
   size_t number_of_color_fields = 0;
 
@@ -252,27 +257,21 @@ runtime_driver(
           break;
         case subspace:
         case local:
+        case sparse:
           break;
         default:
-          if(field_info.index_space == idx_space){
-            fields_map[idx_space].push_back(field_info.fid);
+            fields_map[idx_space].push_back(&field_info);
           } // if
           break;
       }
     } // for
 
-    {
-      clog_tag_guard(runtime_driver);
-      clog(trace) << "fields_map[" <<idx_space<<"] has "<<
-        fields_map[idx_space].size()<< " fields"<<std::endl;
-    } // scope
-  } // for
+  //} // for
 
 
   //--------------------------------------------------------------------------//
   //   Create Legion must epoch launcher and add Region requirements
   //-------------------------------------------------------------------------//
-  
   // Must epoch launch
   Legion::MustEpochLauncher must_epoch_launcher;
   must_epoch_launcher.launch_domain = data.color_domain();
@@ -284,11 +283,12 @@ runtime_driver(
 
   // Add colors to must_epoch_launcher
   for(size_t color(0); color<num_colors; ++color) {
-   
+
+    size_t num_idx_spaces = context_.coloring_map().size();
+
     //-----------------------------------------------------------------------//
     // data serialization:
     //-----------------------------------------------------------------------//
-    
     // #2 serialize field info
     size_t num_fields = context_.registered_fields().size();
     args_serializers[color].serialize(&num_fields, sizeof(size_t));
@@ -465,9 +465,9 @@ runtime_driver(
   // initialize read/write flags for task_prolog
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-    for (const field_id_t& field_id : fields_map[idx_space]){
-      ispace_dmap[idx_space].ghost_is_readable[field_id] = true;
-      ispace_dmap[idx_space].write_phase_started[field_id] = false;
+    for (const field_info_t* field_info : fields_map[idx_space]){
+      ispace_dmap[idx_space].ghost_is_readable[field_info->fid] = true;
+      ispace_dmap[idx_space].write_phase_started[field_info->fid] = false;
     }//end field_info
   }//end for idx_space
 
@@ -607,6 +607,7 @@ setup_rank_context_task(
 #endif
 
 } // setup_rank_context_task
+
 
 } // namespace execution 
 } // namespace flecsi

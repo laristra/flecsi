@@ -51,14 +51,12 @@ struct global_accessor_base_t {};
 template<typename T, size_t PERMISSIONS>
 struct accessor__<data::global, T, PERMISSIONS, 0, 0>
     : public accessor__<data::base, T, PERMISSIONS, 0, 0>,
-     global_accessor_base_t {
+      global_accessor_base_t {
 
-  using handle_t = global_data_handle__<
-      T,
-      PERMISSIONS>;
+  using handle_t = global_data_handle__<T, PERMISSIONS>;
 
-  accessor__(const global_data_handle__<T, 0> & h) : 
-		handle(reinterpret_cast<const handle_t &>(h))  {}
+  accessor__(const global_data_handle__<T, 0> & h)
+      : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   operator T &() {
     return data();
@@ -66,33 +64,36 @@ struct accessor__<data::global, T, PERMISSIONS, 0, 0>
 
   operator const T &() const {
     return data();
-  } 
+  }
 
   T & data() const {
     return *handle.combined_data;
-  }//data
+  } // data
 
-  size_t size()
-  {
+  size_t size() {
     return 1;
-  }//size
+  } // size
 
   accessor__ & operator=(const T & x) {
     data() = x;
     return *this;
-  }// operator =
+  } // operator =
+
+  T * operator&() const {
+    return handle.combined_data;
+  }
 
   //--------------------------------------------------------------------------/
   //
   // Operators.
   //--------------------------------------------------------------------------/
- 
+
   /*!
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \tparam E A complex index type.
-  
+
    This version of the operator is provided to support use with
    \e flecsi mesh entity types \ref mesh_entity_base_t.
    */
@@ -104,9 +105,9 @@ struct accessor__<data::global, T, PERMISSIONS, 0, 0>
   /*!
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \tparam E A complex index type.
-  
+
    This version of the operator is provided to support use with
    \e flecsi mesh entity types \ref mesh_entity_base_t.
    */
@@ -123,13 +124,10 @@ template<typename T, size_t PERMISSIONS>
 struct accessor__<data::color, T, PERMISSIONS, 0, 0>
     : public accessor__<data::base, T, PERMISSIONS, 0, 0> {
 
+  using handle_t = global_data_handle__<T, PERMISSIONS>;
 
-  using handle_t = global_data_handle__<
-      T,
-      PERMISSIONS>;
-
-  accessor__(const global_data_handle__<T, 0> & h) :
-                handle(reinterpret_cast<const handle_t &>(h))  {}
+  accessor__(const global_data_handle__<T, 0> & h)
+      : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   operator T &() {
     return data();
@@ -143,14 +141,21 @@ struct accessor__<data::color, T, PERMISSIONS, 0, 0>
     return *handle.combined_data;
   }
 
-  size_t size()
-  {
+  size_t size() {
     return 1;
   }
 
   accessor__ & operator=(const T & x) {
     data() = x;
     return *this;
+  }
+
+  T & operator=(accessor__) {
+    return *handle.combined_data;
+  }
+
+  T * operator&() const {
+    return handle.combined_data;
   }
 
   //--------------------------------------------------------------------------/
@@ -160,9 +165,9 @@ struct accessor__<data::color, T, PERMISSIONS, 0, 0>
   /*!
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \tparam E A complex index type.
-  
+
    This version of the operator is provided to support use with
    \e flecsi mesh entity types \ref mesh_entity_base_t.
    */
@@ -174,9 +179,9 @@ struct accessor__<data::color, T, PERMISSIONS, 0, 0>
   /*!
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \tparam E A complex index type.
-  
+
    This version of the operator is provided to support use with
    \e flecsi mesh entity types \ref mesh_entity_base_t.
    */
@@ -186,7 +191,6 @@ struct accessor__<data::color, T, PERMISSIONS, 0, 0>
   } // operator ()
 
   handle_t handle;
-
 };
 
 template<typename T, size_t PERMISSIONS>

@@ -1,0 +1,59 @@
+20
+40
+4
+60
+
+class flecsi::utils::id_<20,40,4,60>
+int
+int
+
+100
+400
+
+1
+2
+3
+
+int
+class std::tuple<float,double,long double>
+
+float
+class std::tuple<double,int,long>
+float
+class std::tuple<double,int,long>
+
+void
+class std::tuple<char,int>
+struct MyClass
+void
+class std::tuple<char,int>
+struct MyClass
+void
+class std::tuple<char,int>
+struct MyClass
+void
+class std::tuple<char,int>
+struct MyClass
+
+float
+class std::tuple<double,int,long>
+
+int
+class std::tuple<float,double,long double>
+int
+class std::tuple<float,double,long double>
+int
+class std::tuple<float,double,long double>
+int
+class std::tuple<float,double,long double>
+int
+class std::tuple<float,double,long double>
+int
+class std::tuple<float,double,long double>
+int
+class std::tuple<float,double,long double>
+int
+class std::tuple<float,double,long double>
+
+hello
+hello again

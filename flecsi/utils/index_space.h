@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <flecsi/utils/iterator.h>
 
 namespace flecsi {

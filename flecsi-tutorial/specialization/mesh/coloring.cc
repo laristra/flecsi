@@ -24,8 +24,8 @@
 #include <flecsi/coloring/mpi_communicator.h>
 #include <flecsi/supplemental/coloring/coloring_functions.h>
 #include <flecsi/supplemental/coloring/tikz.h>
-#include <specialization/mesh/coloring.h>
-#include <specialization/mesh/inputs.h>
+#include <flecsi-tutorial/specialization/mesh/coloring.h>
+#include <flecsi-tutorial/specialization/mesh/inputs.h>
 
 clog_register_tag(coloring);
 clog_register_tag(coloring_output);

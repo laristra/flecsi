@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <cstdio>
 #include <string>
 

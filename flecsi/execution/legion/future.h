@@ -16,8 +16,8 @@
 /*! @file */
 
 #include <functional>
+#include <iostream>
 #include <memory>
-#include <iostream>  
 
 #include <flecsi-config.h>
 
@@ -38,7 +38,7 @@ namespace execution {
 struct future_base_t {
 public:
   virtual void
-  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const = 0;
+  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const = 0;
 
   /*!
     Abstract interface to wait on a task result.
@@ -54,6 +54,10 @@ public:
 
   virtual void
   add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const = 0;
+
+  virtual void init_future(void) = 0;
+
+  virtual void finalize_future(void) = 0;
 };
 
 /*!
@@ -65,7 +69,8 @@ public:
   @ingroup legion-execution
 */
 
-template <typename RETURN, launch_type_t launch> struct legion_future__ {};
+template<typename RETURN, launch_type_t launch>
+struct legion_future__ {};
 
 /*! Partial specialization for the Legion:Future
 
@@ -74,22 +79,39 @@ template <typename RETURN, launch_type_t launch> struct legion_future__ {};
   @ingroup legion-execution
  */
 
-template <typename RETURN>
+template<typename RETURN>
 struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
+ /*!
+   Copy constructor
+  */
+
+  legion_future__(const legion_future__ &f)
+  {
+    data_=f.data_;
+    initialized_=f.initialized_;
+    auto legion_runtime = Legion::Runtime::get_runtime();
+    if (initialized_)
+      legion_future_ = Legion::Future::from_value(legion_runtime, data_);
+    else
+      legion_future_=f.legion_future_;
+  }
+
   /*!
     Construct a future from a Legion future.
 
     @param legion_future The Legion future instance.
    */
 
-  legion_future__(const Legion::Future &legion_future)
+  legion_future__(const Legion::Future & legion_future)
       : legion_future_(legion_future) {}
 
   /*!
     Wait on a task result.
    */
 
-  void wait(bool silence_warnings = false) { legion_future_.wait(); } // wait
+  void wait(bool silence_warnings = false) {
+    legion_future_.wait();
+  } // wait
 
   /*!
     Get a task result.
@@ -108,12 +130,12 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
     Add Legion Future to the task launcher
    */
   void
-  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const {
+  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
   void
-  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
+  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
@@ -121,8 +143,15 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
         data_=rhs;
         return *this;
    }
+  void init_future(void){
+    initialized_ = true;
+  }
 
-  RETURN & operator = (legion_future__ const &f){
+  void finalize_future(void){
+    initialized_ = false;
+  }
+
+  RETURN & operator=(legion_future__ const & f) {
     return data_;
   }
 
@@ -130,21 +159,22 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
     return data_;
   }
 
-  operator const RETURN  &() const {
+  operator const RETURN &() const {
     return data_;
   }
 
-
-  friend std::ostream & operator<<(std::ostream & stream, const legion_future__ & f) {
-      stream << f.data_;
-      return stream;
+  friend std::ostream &
+  operator<<(std::ostream & stream, const legion_future__ & f) {
+    stream << f.data_;
+    return stream;
   } // switch
 
-//  RETURN data() { return data_; }
+  Legion::Future & raw_future() { return legion_future_; }
 
   RETURN data_;
 
 private:
+  bool initialized_ = false;
   Legion::Future legion_future_;
 }; // legion_future
 
@@ -153,7 +183,7 @@ private:
   @ingroup legion-execution
  */
 
-template <>
+template<>
 struct legion_future__<void, launch_type_t::single> : public future_base_t {
 
   /*!
@@ -162,7 +192,7 @@ struct legion_future__<void, launch_type_t::single> : public future_base_t {
     @param legion_future The Legion future instance.
    */
 
-  legion_future__(const Legion::Future &legion_future)
+  legion_future__(const Legion::Future & legion_future)
       : legion_future_(legion_future) {}
 
   /*!
@@ -178,15 +208,17 @@ struct legion_future__<void, launch_type_t::single> : public future_base_t {
     Add Legion Future to the task launcher
    */
   void
-  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const {
+  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
   void
-  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
+  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
+  void init_future(void){}
+  void finalize_future(void){}
 private:
   Legion::Future legion_future_;
 }; // legion_future
@@ -198,7 +230,7 @@ private:
   @ingroup legion-execution
  */
 
-template <typename RETURN>
+template<typename RETURN>
 struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
 
   /*!
@@ -207,7 +239,7 @@ struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
     @param legion_future The Legion FutureMap instance.
    */
 
-  legion_future__(const Legion::FutureMap &legion_future)
+  legion_future__(const Legion::FutureMap & legion_future)
       : legion_future_(legion_future) {}
 
    /*!
@@ -249,14 +281,18 @@ struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
     Add Legion Future to the task launcher
    */
   void
-  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const {
+  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
     assert(false && "you can't pass future from index task to any task");
   }
 
   void
-  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
+  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
     assert(false && "you can't pass future handle from index task to any task");
   }
+
+  void init_future(void){}
+  void finalize_future(void){}
+
 private:
   Legion::FutureMap legion_future_;
 
@@ -270,7 +306,7 @@ private:
   Explicit specialization for index launch FutureMap and void.
  */
 
-template <>
+template<>
 struct legion_future__<void, launch_type_t::index> : public future_base_t {
 
   /*!
@@ -279,7 +315,7 @@ struct legion_future__<void, launch_type_t::index> : public future_base_t {
       @param legion_future The Legion future instance.
      */
 
-  legion_future__(const Legion::FutureMap &legion_future)
+  legion_future__(const Legion::FutureMap & legion_future)
       : legion_future_(legion_future) {}
 
 
@@ -300,26 +336,24 @@ struct legion_future__<void, launch_type_t::index> : public future_base_t {
     Add Legion Future to the task launcher
    */
   void
-  add_future_to_single_task_launcher(Legion::TaskLauncher &launcher) const {
+  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
     assert(false && "you can't pass future from index task to any task");
   }
 
   void
-  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const {
+  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
     assert(false && "you can't pass future handle from index task to any task");
   }
 
+  void init_future(void){}
+  void finalize_future(void){}
 private:
   Legion::FutureMap legion_future_;
 
 }; // legion_future
 
-template<
-    typename RETURN,
-    launch_type_t launch>
-using flecsi_future = legion_future__<
-    RETURN,
-    launch>;
+template<typename RETURN, launch_type_t launch>
+using flecsi_future = legion_future__<RETURN, launch>;
 
 } // namespace execution
 } // namespace flecsi

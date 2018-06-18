@@ -51,7 +51,7 @@ struct registration_wrapper__ {
 
   /*!
    This method registers the given task with the Legion runtime.
-  
+
    @tparam ARGS The variadic argument pack.
    */
 

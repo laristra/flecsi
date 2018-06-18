@@ -30,14 +30,14 @@ namespace coloring {
   }
 
 /*
- This type is a container for compressed-storage of sparse data.
+  This type is a container for compressed-storage of sparse data.
 
- @var offsets The offset at which each index begins and ends in the
-              list of indices.
- @var indices The indices of the sparse structure of the data resolved
-              by this storage member.
+  @var offsets The offset at which each index begins and ends in the
+               list of indices.
+  @var indices The indices of the sparse structure of the data resolved
+               by this storage member.
 
- @ingroup coloring
+  @ingroup coloring
 */
 
 struct crs_t {
@@ -53,7 +53,7 @@ struct crs_t {
 }; // struct crs_t
 
 /*!
- Helper function to print a crs_t instance.
+  Helper function to print a crs_t instance.
  */
 
 inline std::ostream &
@@ -81,9 +81,10 @@ operator<<(std::ostream & stream, const crs_t & crs) {
  */
 
 struct dcrs_t : public crs_t {
+  std::vector<size_t> distribution;
+
   define_as(distribution)
 
-      std::vector<size_t> distribution;
 }; // struct dcrs_t
 
 /*!

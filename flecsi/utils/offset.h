@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <cassert>
 
 namespace flecsi {

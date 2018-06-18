@@ -57,6 +57,7 @@ struct hpx_storage_policy_t {
       size_t key,
       const registration_function_t & callback) {
     // TODO:
+    return true;
   }
 
   void register_all() {

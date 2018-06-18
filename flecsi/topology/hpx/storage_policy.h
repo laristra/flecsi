@@ -55,6 +55,16 @@ struct hpx_topology_storage_policy__ {
           topology_storage__>,
       NUM_DIMS + 1>;
 
+  using index_subspaces_t = std::array<
+      index_space__<
+          mesh_entity_base_ *,
+          false,
+          true,
+          false,
+          void,
+          topology_storage__>,
+      NUM_INDEX_SUBSPACES>;
+
   using partition_index_spaces_t = std::array<
       index_space__<
           mesh_entity_base_ *,

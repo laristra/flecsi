@@ -5,6 +5,8 @@
 
 // includes: flecsi
 #include <flecsi/utils/iterator.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/test/print_type.h>
 
 // includes: C++
 #include <array>
@@ -12,14 +14,7 @@
 #include <vector>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
-
-// print_type
-inline void
-print_type(const char * const name) {
-  CINCH_CAPTURE() << boost::core::demangle(name) << std::endl;
-}
 
 // =============================================================================
 // Test various aspects of flecsi::utils::iterator
@@ -31,17 +26,10 @@ TEST(iterator, all) {
   std::array<double, 5> vecd{{1.234, 5.678, 3.1416, 2.7183, 1.414}}; // at [2]
 
   // test: types (container_t and type_t)
-  print_type(typeid(flecsi::utils::iterator<std::vector<int>, int>::container_t)
-                 .name());
-  print_type(
-      typeid(flecsi::utils::iterator<std::vector<int>, int>::type_t).name());
-  print_type(
-      typeid(
-          flecsi::utils::iterator<std::array<double, 5>, double>::container_t)
-          .name());
-  print_type(
-      typeid(flecsi::utils::iterator<std::array<double, 5>, double>::type_t)
-          .name());
+  print_type<flecsi::utils::iterator<std::vector<int>,int>::container_t>();
+  print_type<flecsi::utils::iterator<std::vector<int>,int>::type_t>();
+  print_type<flecsi::utils::iterator<std::array<double,5>,double>::container_t>();
+  print_type<flecsi::utils::iterator<std::array<double,5>,double>::type_t>();
 
   // test: constructor from container and index
   flecsi::utils::iterator<std::vector<int>, int> i(veci, 1);
@@ -81,8 +69,13 @@ TEST(iterator, all) {
   EXPECT_TRUE(i2 != i); // because there were some i++s after constructing i2
 
   // compare
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed.gnug"));
+#elif defined(_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed.msvc"));
+#else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed"));
-
+#endif
 } // TEST
 
 /*~-------------------------------------------------------------------------~-*

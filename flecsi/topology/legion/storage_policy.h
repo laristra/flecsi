@@ -81,8 +81,10 @@ struct legion_topology_storage_policy_t__ {
       NUM_DIMS + 1>;
 
   // array of array of domain_connectivity__
-  std::array<std::array<domain_connectivity__<NUM_DIMS>, NUM_DOMAINS>,
-    NUM_DOMAINS> topology;
+  std::array<
+      std::array<domain_connectivity__<NUM_DIMS>, NUM_DOMAINS>,
+      NUM_DOMAINS>
+      topology;
 
   std::array<index_spaces_t, NUM_DOMAINS> index_spaces;
 
@@ -174,7 +176,7 @@ struct legion_topology_storage_policy_t__ {
     auto & ssm = context_.index_subspace_info();
     auto itr = ssm.find(index_subspace);
     clog_assert(itr != ssm.end(), "invalid index subspace");
-    const execution::context_t::index_subspace_info_t& si = itr->second;
+    const execution::context_t::index_subspace_info_t & si = itr->second;
 
     auto & is = index_spaces[domain][dim];
     auto & iss = index_subspaces[index_subspace];

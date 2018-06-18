@@ -1,10 +1,9 @@
-/*~--------------------------------------------------------------------------~*
+/*----------------------------------------------------------------------------*
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
- *~--------------------------------------------------------------------------~*/
+ *----------------------------------------------------------------------------*/
 
-#ifndef flecsi_config_h
-#define flecsi_config_h
+#pragma once
 
 //----------------------------------------------------------------------------//
 // Runtime models
@@ -26,8 +25,18 @@
 // Enable Legion thread-local storage interface
 //----------------------------------------------------------------------------//
 
-#if defined(ENABLE_LEGION)
+#if defined(FLECSI_ENABLE_LEGION)
+  #if !defined(LEGION_USE_CMAKE)
+    #define LEGION_USE_CMAKE
+  #endif
+  #if !defined(REALM_USE_CMAKE)
+    #define REALM_USE_CMAKE
+  #endif
   #define ENABLE_LEGION_TLS
+
+#cmakedefine MAPPER_COMPACTION
+#cmakedefine COMPACTED_STORAGE_SORT
+
 #endif
 
 //----------------------------------------------------------------------------//
@@ -52,22 +61,14 @@
 #cmakedefine FLECSI_ENABLE_BOOST_PREPROCESSOR
 
 //----------------------------------------------------------------------------//
+// Boost.ProgramOptions
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS
+
+//----------------------------------------------------------------------------//
 // Enable coloring
 //----------------------------------------------------------------------------//
 
-#cmakedefine FLECSI_ENABLE_COLORING
 #cmakedefine FLECSI_ENABLE_METIS
 #cmakedefine FLECSI_ENABLE_PARMETIS
-
-//----------------------------------------------------------------------------//
-// Static container
-//----------------------------------------------------------------------------//
-
-#define MAX_COUNTER_SIZE @MAX_CONTAINER_SIZE@
-
-#endif // flecsi_config_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

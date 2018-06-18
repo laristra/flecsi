@@ -240,35 +240,35 @@ public:
     //-----------------------------------------------------------------//
     //! Less than operator
     //-----------------------------------------------------------------//
-    bool operator<(const iterator_base_& itr) const {
+    bool operator<(const iterator_base_ & itr) const {
       return index_ < itr.index_;
     }
 
     //-----------------------------------------------------------------//
     //! Less than equal operator
     //-----------------------------------------------------------------//
-    bool operator<=(const iterator_base_& itr) const {
+    bool operator<=(const iterator_base_ & itr) const {
       return index_ <= itr.index_;
     }
 
     //-----------------------------------------------------------------//
     //! Greater than operator
     //-----------------------------------------------------------------//
-    bool operator>(const iterator_base_& itr) const {
+    bool operator>(const iterator_base_ & itr) const {
       return index_ > itr.index_;
     }
 
     //-----------------------------------------------------------------//
     //! Greater than equal operator
     //-----------------------------------------------------------------//
-    bool operator>=(const iterator_base_& itr) const {
+    bool operator>=(const iterator_base_ & itr) const {
       return index_ >= itr.index_;
     }
 
     //-----------------------------------------------------------------//
     //! Difference
     //-----------------------------------------------------------------//
-    size_t operator-(const iterator_base_& itr) const {
+    size_t operator-(const iterator_base_ & itr) const {
       return index_ - itr.index_;
     }
 
@@ -282,7 +282,7 @@ public:
     //-----------------------------------------------------------------//
     //! Get item at index
     //-----------------------------------------------------------------//
-    auto operator[](size_t index) const{
+    auto operator[](size_t index) const {
       return get_(index);
     }
 
@@ -377,7 +377,7 @@ public:
     //-----------------------------------------------------------------//
     //! Plus offset operator
     //-----------------------------------------------------------------//
-    friend iterator_ operator+(size_t offset, const iterator_& itr){
+    friend iterator_ operator+(size_t offset, const iterator_ & itr) {
       iterator_ itr2(itr);
       itr2.B::index_ += offset;
       return itr2;
@@ -395,7 +395,7 @@ public:
     //-----------------------------------------------------------------//
     //! Minus offset operator
     //-----------------------------------------------------------------//
-    friend iterator_ operator-(size_t offset, const iterator_& itr){
+    friend iterator_ operator-(size_t offset, const iterator_ & itr) {
       iterator_ itr2(itr);
       itr2.B::index_ = offset - itr.B::index_;
       return itr2;
@@ -447,7 +447,7 @@ public:
       assert(false && "end of range");
     }
 
-    friend void swap(iterator_& a, iterator_& b){
+    friend void swap(iterator_ & a, iterator_ & b) {
       std::swap(a.B::items_, b.B::items_);
       std::swap(a.B::index_, b.B::index_);
       std::swap(a.B::end_, b.B::end_);
@@ -540,7 +540,7 @@ public:
     //-----------------------------------------------------------------//
     //! Plus offset operator
     //-----------------------------------------------------------------//
-    friend iterator_ operator+(size_t offset, const iterator_& itr){
+    friend iterator_ operator+(size_t offset, const iterator_ & itr) {
       iterator_ itr2(itr);
       itr2.B::index_ += offset;
       return itr2;
@@ -558,7 +558,7 @@ public:
     //-----------------------------------------------------------------//
     //! Minus offset operator
     //-----------------------------------------------------------------//
-    friend iterator_ operator-(size_t offset, const iterator_& itr){
+    friend iterator_ operator-(size_t offset, const iterator_ & itr) {
       iterator_ itr2(itr);
       itr2.B::index_ = offset - itr.B::index_;
       return itr2;
@@ -594,7 +594,7 @@ public:
       return &B::get_(B::index_);
     }
 
-    friend void swap(iterator_& a, iterator_& b){
+    friend void swap(iterator_ & a, iterator_ & b) {
       std::swap(a.B::items_, b.B::items_);
       std::swap(a.B::index_, b.B::index_);
       std::swap(a.B::end_, b.B::end_);

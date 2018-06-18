@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <array>
 #include <assert.h>
 #include <cstddef>

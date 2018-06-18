@@ -45,7 +45,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
 
   /*!
    Construct a task_epilog_t instance.
-  
+
    @param runtime The Legion task runtime.
    @param context The Legion task runtime context.
    */
@@ -55,7 +55,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
 
   /*!
    FIXME: Need description
-  
+
    @tparam T                     The data type referenced by the handle.
    @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
                                  indices of the index partition.
@@ -63,7 +63,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
                                  indices of the index partition.
    @tparam GHOST_PERMISSIONS     The permissions required on the ghost
                                  indices of the index partition.
-  
+
    @param runtime The Legion task runtime.
    @param context The Legion task runtime context.
    */
@@ -100,6 +100,38 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
     } // if global and color
 
   } // handle
+
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    sparse_accessor <
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS
+    > &a
+  )
+  {
+    // TODO: implement
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    sparse_mutator<
+    T
+    > &m
+  )
+  {
+    // TODO: implement
+  }
 
   /*!
    This method is a no-op and is called when the task argument does not match

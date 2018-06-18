@@ -100,16 +100,15 @@ struct legion_execution_policy_t {
   template <size_t KEY, typename RETURN,
             RETURN (*TASK)(const Legion::Task *,
                            const std::vector<Legion::PhysicalRegion> &,
-                           Legion::Context, Legion::Runtime *), 
-		 	   size_t REDUCTION =0 >
+                           Legion::Context, Legion::Runtime *),
+                           size_t REDUCTION =0>
   static bool register_legion_task(processor_type_t processor, launch_t launch,
                                    std::string name) {
     clog(info) << "Registering legion task " << KEY << " " << name << std::endl;
 
     if (!context_t::instance().register_task(
             KEY, processor, launch, name,
-            pure_task_wrapper__<RETURN, TASK,
-	      REDUCTION>::registration_callback)) {
+            pure_task_wrapper__<RETURN, TASK, REDUCTION>::registration_callback)) {
       clog(fatal) << "callback registration failed for " << name << std::endl;
     } // if
 
@@ -136,25 +135,98 @@ struct legion_execution_policy_t {
   } // register_task
 
   /*!
-    Legion backend task execution. For documentation on this
-    method, please see task__::execute_task.
+   We use "execute_task__" class in purose to be able to use
+   partial template specializations for the execute method
    */
 
-  template <launch_type_t launch, size_t KEY, typename RETURN,
-            typename ARG_TUPLE, typename... ARGS>
-  struct execute_task_functor {
-    static void execute(Legion::ReductionOpID redop_id, 
-      ARGS &&... args) {
+  template <launch_type_t LAUNCH, Legion::ReductionOpID REDUCTION_ID,
+     size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
+  struct execute_task__ {
+    static void execute(ARGS &&... args) {
       clog(fatal) << "invalid launch type" << std::endl;
       throw std::runtime_error("invalid launch type");
     }
   };
 
+  /*!
+    Partial template specialization for the reduction task (Index launch, 
+     REDUCTIONID!=0)
+   */
+  template <size_t KEY, Legion::ReductionOpID REDUCTION_ID, typename RETURN,	    typename ARG_TUPLE, typename... ARGS>
+  struct execute_task__<launch_type_t::index, REDUCTION_ID,  KEY, RETURN,
+	ARG_TUPLE, ARGS...> {
+    static decltype(auto) execute(ARG_TUPLE task_args) {
+      using namespace Legion;
+      context_t &context_ = context_t::instance();
+
+      // Get the processor type.
+      auto processor_type = context_.processor_type<KEY>();
+
+      // Get the runtime and context from the current task.
+      auto legion_runtime = Legion::Runtime::get_runtime();
+      auto legion_context = Legion::Runtime::get_context();
+
+      init_args_t init_args(legion_runtime, legion_context);
+      init_args.walk(task_args);
+
+      // Handle MPI and Legion invocations separately.
+      if (processor_type == processor_type_t::mpi) {
+        //FIXME implement logic for the reduction mpi task
+        clog(fatal) << "mpi_reduction task was not implemented yet" <<
+		std::endl; 
+      } else{
+        LegionRuntime::Arrays::Rect<1> launch_bounds(0,context_.colors()-1);
+        Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+        // Create a task launcher, passing the task arguments.
+          IndexTaskLauncher index_task_launcher(
+              context_.task_id<KEY>(), launch_domain,
+              TaskArgument(&task_args, sizeof(ARG_TUPLE)), Legion::ArgumentMap());
+
+          index_task_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+#ifdef MAPPER_COMPACTION
+          index_task_launcher.tag = MAPPER_COMPACTED_STORAGE;
+#endif
+
+          for (auto & req : init_args.region_reqs) {
+            index_task_launcher.add_region_requirement(req);
+          }
+          for (auto &future : init_args.futures) {
+           index_task_launcher.add_future(future);
+        }
+
+          // Enqueue the prolog.
+          task_prolog_t task_prolog(legion_runtime, legion_context,
+              launch_domain);
+          task_prolog.walk(task_args);
+          task_prolog.launch_copies();
+
+          // Enqueue the task.
+          clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
+                      << legion_runtime->find_local_MPI_rank() << std::endl;
+
+          Legion::Future future;
+
+          future = legion_runtime->execute_index_space(legion_context,
+                index_task_launcher, REDUCTION_ID);
+
+          // Enqueue the epilog.
+          task_epilog_t task_epilog(legion_runtime, legion_context);
+          task_epilog.walk(task_args);
+
+          return legion_future__<RETURN, launch_type_t::single>(future);
+      }
+    }
+  };//end execute_task__
+
+   /*!
+    Partial template specialization for the non-reduction task Index task 
+     (REDUCTIONID==0)
+   */
   template <size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
-  struct execute_task_functor<launch_type_t::index, KEY, RETURN, ARG_TUPLE,
+  struct execute_task__<launch_type_t::index, 0,  KEY, RETURN, ARG_TUPLE,
                               ARGS...> {
-    static decltype(auto) execute(Legion::ReductionOpID redop_id,
-      ARG_TUPLE task_args) {
+    static decltype(auto) execute(ARG_TUPLE task_args) {
       using namespace Legion;
       // Make a tuple from the task arguments.
       // ARG_TUPLE task_args = std::make_tuple(args...);
@@ -191,15 +263,12 @@ struct legion_execution_policy_t {
             launcher.add_region_requirement(req);
           }
           for (auto &future : init_args.futures) {
-            future->add_future_to_index_task_launcher(launcher);
+            launcher.add_future(future);
           }
 
-        Legion::MustEpochLauncher must_epoch_launcher;
-        must_epoch_launcher.launch_domain =
-            Legion::Domain::from_rect<1>(context_.all_processes());
-        must_epoch_launcher.add_index_task(launcher);
-        auto future = legion_runtime->execute_must_epoch(
-          legion_context, must_epoch_launcher);
+        launcher.tag = MAPPER_FORCE_RANK_MATCH;
+        auto future = legion_runtime->execute_index_space(
+	  legion_context,launcher);
         future.wait_all_results(true);
 
           // Handoff to the MPI runtime.
@@ -249,7 +318,7 @@ struct legion_execution_policy_t {
             index_task_launcher.add_region_requirement(req);
           }
           for (auto &future : init_args.futures) {
-          future->add_future_to_index_task_launcher(index_task_launcher);
+            index_task_launcher.add_future(future);
         }
 
           // Enqueue the prolog.
@@ -262,38 +331,42 @@ struct legion_execution_policy_t {
           clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
                       << legion_runtime->find_local_MPI_rank() << std::endl;
 
-          Legion::Future future;
           Legion::FutureMap future_map;
 
-          if (redop_id == 0) {
-            Legion::MustEpochLauncher must_epoch_launcher;
-            must_epoch_launcher.add_index_task(index_task_launcher);
-            must_epoch_launcher.launch_domain = launch_domain;
-            future_map = legion_runtime->execute_must_epoch(legion_context,
-                must_epoch_launcher);
-          }
-          else
-            future = legion_runtime->execute_index_space(legion_context,
-                index_task_launcher, redop_id);
+           index_task_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+           future_map = legion_runtime->execute_index_space(
+	    legion_context, index_task_launcher);
 
           // Enqueue the epilog.
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
 
-          if (redop_id == 0)
-            return legion_future__<RETURN, launch_type_t::index>(future_map);
-          else
-            return legion_future__<RETURN, launch_type_t::index>(future);
-
+          return legion_future__<RETURN, launch_type_t::index>(future_map);
       } // if
     }
   };
 
-  template <size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
-  struct execute_task_functor<launch_type_t::single, KEY, RETURN, ARG_TUPLE,
-                              ARGS...> {
-    static decltype(auto) execute(Legion::ReductionOpID redop_id, 
-      ARG_TUPLE task_args) {
+  /*!
+    Partial template specialization for the reduction Single task 
+   */
+  template <Legion::ReductionOpID REDUCTION_ID, size_t KEY, typename RETURN,
+    typename ARG_TUPLE, typename... ARGS>
+  struct execute_task__<launch_type_t::single, REDUCTION_ID,KEY, RETURN,
+    ARG_TUPLE, ARGS...> {
+    static decltype(auto) execute( ARG_TUPLE task_args) {
+      using namespace Legion;
+      clog(fatal)<<"there is no implementation reduction task with the single task launcher"<<std::endl;
+    }
+  };
+
+  /*!
+    Partial template specialization for the non-reduction Single task 
+     (REDUCTIONID==0)
+   */
+  template < size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
+  struct execute_task__<launch_type_t::single, 0, KEY, RETURN,
+    ARG_TUPLE, ARGS...> {
+    static decltype(auto) execute( ARG_TUPLE task_args) {
       using namespace Legion;
 
       // Make a tuple from the task arguments.
@@ -311,7 +384,6 @@ struct legion_execution_policy_t {
       // Handle MPI and Legion invocations separately.
       if (processor_type == processor_type_t::mpi) {
 
-std::cout<< "IRINA DEBUG, tyring to execute mpi task in single"<<std::endl;
 //FIXME
 #if 0        
         if (!(legion_context->is_inner_context())) {
@@ -377,7 +449,7 @@ std::cout<< "IRINA DEBUG, tyring to execute mpi task in single"<<std::endl;
           task_launcher.add_region_requirement(req);
         }
         for (auto &future : init_args.futures) {
-          future->add_future_to_single_task_launcher(task_launcher);
+          task_launcher.add_future(future);
         }
 
         LegionRuntime::Arrays::Rect<1> launch_bounds(0,1);
@@ -403,15 +475,18 @@ std::cout<< "IRINA DEBUG, tyring to execute mpi task in single"<<std::endl;
     }
   };
 
-  template <launch_type_t launch, size_t KEY, typename RETURN,
-            typename ARG_TUPLE, typename... ARGS>
-  static decltype(auto) execute_task(
-    Legion::ReductionOpID redop_id, ARGS &&... args) {
+  /*!
+    Legion backend task execution. For documentation on this
+    method, please see task__::execute_task.
+   */
+  template <launch_type_t LAUNCH, Legion::ReductionOpID REDUCTION_ID,
+	 size_t KEY, typename RETURN,  typename ARG_TUPLE, typename... ARGS>
+  static decltype(auto) execute_task(ARGS &&... args) {
 
     ARG_TUPLE task_args_tmp = std::make_tuple(args...);
 
-    return execute_task_functor<launch, KEY, RETURN, ARG_TUPLE,
-                                ARGS...>::execute(redop_id, task_args_tmp);
+    return execute_task__<LAUNCH, REDUCTION_ID, KEY, RETURN, ARG_TUPLE,
+                                ARGS...>::execute(task_args_tmp);
   } // execute_task
 
 

@@ -28,6 +28,10 @@
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/ragged_accessor.h>
+#include <flecsi/data/sparse_mutator.h>
+#include <flecsi/data/ragged_mutator.h>
 #include <flecsi/data/global_accessor.h>
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/topology/mesh_types.h>
@@ -55,7 +59,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     @param context The Legion task runtime context.
    */
 
-  init_args_t(Legion::Runtime *runtime, Legion::Context &context)
+  init_args_t(Legion::Runtime * runtime, Legion::Context & context)
       : runtime(runtime), context(context) {} // init_args
 
   /*!
@@ -66,16 +70,16 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
 
   static Legion::PrivilegeMode privilege_mode(size_t mode) {
     switch (mode) {
-    case size_t(reserved):
-      return NO_ACCESS;
-    case size_t(ro):
-      return READ_ONLY;
-    case size_t(wo):
-      return WRITE_DISCARD;
-    case size_t(rw):
-      return READ_WRITE;
-    default:
-      clog_fatal("invalid privilege mode");
+      case size_t(reserved):
+        return NO_ACCESS;
+      case size_t(ro):
+        return READ_ONLY;
+      case size_t(wo):
+        return WRITE_DISCARD;
+      case size_t(rw):
+        return READ_WRITE;
+      default:
+        clog_fatal("invalid privilege mode");
     } // switch
     // should never get here, but this is needed
     // to avoid compiler warnings
@@ -175,11 +179,11 @@ template<
     FIXME
    */
 
-  template <typename T, size_t PERMISSIONS>
+  template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
       std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> &h) {
-
+  handle(data_client_handle__<T, PERMISSIONS> & h) {
+    
     std::unordered_map<size_t, size_t> region_map;
 
     for (size_t i{0}; i < h.num_handle_entities; ++i) {
@@ -228,20 +232,53 @@ template<
   ///
   template <typename T, launch_type_t launch>
   void handle(legion_future__<T, launch> &h) {
-    futures.push_back(std::make_shared<legion_future__<T, launch>>(h));
+    futures.push_back (h.raw_future());
+    h.init_future();
+  }
+
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    sparse_accessor <
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS
+    > &a
+  )
+  {
+    // TODO: implement
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    sparse_mutator<
+    T
+    > &m
+  )
+  {
+    // TODO: implement
   }
 
   /*!
     FIXME
    */
 
-  template <typename T, size_t PERMISSIONS>
+  template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
       std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> &h) {
+  handle(data_client_handle__<T, PERMISSIONS> & h) {
 
     for (size_t i{0}; i < h.num_handle_entities; ++i) {
-      data_client_handle_entity_t &ent = h.handle_entities[i];
+      data_client_handle_entity_t & ent = h.handle_entities[i];
 
       Legion::RegionRequirement rr(
           ent.color_partition, 0/*PROJECTION*/, privilege_mode(PERMISSIONS), EXCLUSIVE,
@@ -255,16 +292,16 @@ template<
   // If this is not a data handle, then simply skip it.
   //-----------------------------------------------------------------------//
 
-  template <typename T>
+  template<typename T>
   static typename std::enable_if_t<
       !std::is_base_of<dense_accessor_base_t, T>::value &&
       !std::is_base_of<data_client_handle_base_t, T>::value>
   handle(T &) {} // handle
 
-  Legion::Runtime *runtime;
-  Legion::Context &context;
+  Legion::Runtime * runtime;
+  Legion::Context & context;
   std::vector<Legion::RegionRequirement> region_reqs;
-  std::vector<std::shared_ptr<future_base_t>> futures;
+  std::vector<Legion::Future> futures;
 
 }; // struct init_args_t
 

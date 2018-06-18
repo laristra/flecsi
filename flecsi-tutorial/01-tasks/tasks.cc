@@ -12,11 +12,17 @@
    All rights reserved.
                                                                               */
 
+/*----------------------------------------------------------------------------*
+  Documentation for this example can be found in README.md.
+ *----------------------------------------------------------------------------*/
+
 #include <iostream>
 
 #include<flecsi/execution/execution.h>
 
 namespace example {
+
+// This is the definition of simple_task
 
 void simple_task() {
 

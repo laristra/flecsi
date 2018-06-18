@@ -39,6 +39,9 @@ def main():
         # Include paths
         includes = '@FLECSIT_INCLUDES@',
 
+        # CMake packages (this is generally not set by the config
+        packages = '',
+
         # LD_LIBRARY_PATH hint
         ldflags = '@FLECSIT_LDFLAGS@',
 

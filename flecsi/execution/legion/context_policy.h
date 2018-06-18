@@ -96,8 +96,12 @@ struct legion_context_policy_t {
     registration map below.
    */
 
-  using task_info_t = std::tuple<task_id_t, processor_type_t, launch_t,
-                                 std::string, registration_function_t>;
+  using task_info_t = std::tuple<
+      task_id_t,
+      processor_type_t,
+      launch_t,
+      std::string,
+      registration_function_t>;
 
   //--------------------------------------------------------------------------//
   // Runtime state.
@@ -114,7 +118,7 @@ struct legion_context_policy_t {
            zero otherwise.
    */
 
-  int initialize(int argc, char **argv);
+  int initialize(int argc, char ** argv);
 
   /*!
     Return the color for which the context was initialized.
@@ -123,7 +127,9 @@ struct legion_context_policy_t {
   // not forcing the rank match, this will never do what it is supposed to
   // without a setter.
 
-  size_t color() const { return color_; } // color
+  size_t color() const {
+    return color_;
+  } // color
 
   void set_color(size_t color) {
     color_ = color;
@@ -133,7 +139,9 @@ struct legion_context_policy_t {
     Return the number of colors.
    */
 
-  size_t colors() const { return colors_; } // color
+  size_t colors() const {
+    return colors_;
+  } // color
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
@@ -161,7 +169,7 @@ struct legion_context_policy_t {
     it will execute whichever function is currently set.
    */
 
-  void set_mpi_task(std::function<void()> &mpi_task) {
+  void set_mpi_task(std::function<void()> & mpi_task) {
     {
       clog_tag_guard(context);
       clog(info) << "set_mpi_task" << std::endl;
@@ -174,13 +182,15 @@ struct legion_context_policy_t {
     Invoke the current MPI task.
    */
 
-  void invoke_mpi_task() { return mpi_task_(); } // invoke_mpi_task
+  void invoke_mpi_task() {
+    return mpi_task_();
+  } // invoke_mpi_task
 
   /*!
     Set the distributed-memory domain.
    */
 
-  void set_all_processes(const LegionRuntime::Arrays::Rect<1> &all_processes) {
+  void set_all_processes(const LegionRuntime::Arrays::Rect<1> & all_processes) {
     all_processes_ = all_processes;
   } // all_processes
 
@@ -188,7 +198,7 @@ struct legion_context_policy_t {
      Return the distributed-memory domain.
    */
 
-  const LegionRuntime::Arrays::Rect<1> &all_processes() const {
+  const LegionRuntime::Arrays::Rect<1> & all_processes() const {
     return all_processes_;
   } // all_processes
 
@@ -245,15 +255,19 @@ struct legion_context_policy_t {
     handshake_.legion_wait_on_mpi();
   } // wait_on_legion
 
-  template <typename LAUNCHERTYPE> void add_wait_handshake(LAUNCHERTYPE &l) {
+  template<typename LAUNCHERTYPE>
+  void add_wait_handshake(LAUNCHERTYPE & l) {
     l.add_wait_handshake(handshake_);
   }
 
-  template <typename LAUNCHERTYPE> void add_arrival_handshake(LAUNCHERTYPE &l) {
+  template<typename LAUNCHERTYPE>
+  void add_arrival_handshake(LAUNCHERTYPE & l) {
     l.add_arrival_handshake(handshake_);
   }
 
-  void advance_handshake() { handshake_.advance_legion_handshake(); }
+  void advance_handshake() {
+    handshake_.advance_legion_handshake();
+  }
 
   /*!
     Unset the MPI active state to pass execution back to
@@ -263,7 +277,7 @@ struct legion_context_policy_t {
     @param runtime The Legion task runtime pointer.
    */
 
-  void unset_call_mpi(Legion::Context &ctx, Legion::Runtime *runtime);
+  void unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
   Legion::FutureMap unset_call_mpi_single();
 
@@ -274,9 +288,11 @@ struct legion_context_policy_t {
     @param runtime The Legion task runtime pointer.
    */
 
-  void handoff_to_mpi(Legion::Context &ctx, Legion::Runtime *runtime);
+  void handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
-  void handoff_to_mpi_single() { handshake_.legion_handoff_to_mpi(); }
+  void handoff_to_mpi_single() {
+    handshake_.legion_handoff_to_mpi();
+  }
 
   /*!
     Wait on the MPI runtime to finish the current task execution.
@@ -287,9 +303,12 @@ struct legion_context_policy_t {
     @return A future map with the result of the task execution.
    */
 
-  Legion::FutureMap wait_on_mpi(Legion::Context &ctx, Legion::Runtime *runtime);
+  Legion::FutureMap
+  wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
-  void wait_on_mpi_single() { handshake_.legion_wait_on_mpi(); }
+  void wait_on_mpi_single() {
+    handshake_.legion_wait_on_mpi();
+  }
 
   /*!
     Connect with the MPI runtime.
@@ -298,7 +317,7 @@ struct legion_context_policy_t {
     @param runtime The Legion task runtime pointer.
    */
 
-  void connect_with_mpi(Legion::Context &ctx, Legion::Runtime *runtime);
+  void connect_with_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
   //--------------------------------------------------------------------------//
   // Task interface.
@@ -312,17 +331,21 @@ struct legion_context_policy_t {
     @param callback The registration call back function.
    */
 
-  bool register_task(size_t key, processor_type_t processor, launch_t launch,
-                     std::string &name,
-                     const registration_function_t &callback) {
+  bool register_task(
+      size_t key,
+      processor_type_t processor,
+      launch_t launch,
+      std::string & name,
+      const registration_function_t & callback) {
     clog(info) << "Registering task callback " << name << " with key " << key
                << std::endl;
 
-    clog_assert(task_registry_.find(key) == task_registry_.end(),
-                "task key already exists");
+    clog_assert(
+        task_registry_.find(key) == task_registry_.end(),
+        "task key already exists");
 
-    task_registry_[key] = std::make_tuple(unique_tid_t::instance().next(),
-                                          processor, launch, name, callback);
+    task_registry_[key] = std::make_tuple(
+        unique_tid_t::instance().next(), processor, launch, name, callback);
 
     return true;
   } // register_task
@@ -333,11 +356,13 @@ struct legion_context_policy_t {
     @param key The task hash key.
    */
 
-  template <size_t KEY> task_info_t &task_info() {
+  template<size_t KEY>
+  task_info_t & task_info() {
     auto task_entry = task_registry_.find(KEY);
 
-    clog_assert(task_entry != task_registry_.end(),
-                "task key " << KEY << " does not exist");
+    clog_assert(
+        task_entry != task_registry_.end(),
+        "task key " << KEY << " does not exist");
 
     return task_entry->second;
   } // task_info
@@ -348,23 +373,25 @@ struct legion_context_policy_t {
     @param key The task hash key.
    */
 
-  task_info_t &task_info(size_t key) {
+  task_info_t & task_info(size_t key) {
     auto task_entry = task_registry_.find(key);
 
-    clog_assert(task_entry != task_registry_.end(),
-                "task key " << key << " does not exist");
+    clog_assert(
+        task_entry != task_registry_.end(),
+        "task key " << key << " does not exist");
 
     return task_entry->second;
   } // task_info
 
-/*!
-  FIXME
+    /*!
+      FIXME
 
-  @param key The task hash key.
- */
+      @param key The task hash key.
+     */
 
 #define task_info_template_method(name, return_type, index)                    \
-  template <size_t KEY> return_type name() {                                   \
+  template<size_t KEY>                                                         \
+  return_type name() {                                                         \
     {                                                                          \
       clog_tag_guard(context);                                                 \
       clog(info) << "Returning " << #name << " for " << KEY << std::endl;      \
@@ -372,11 +399,11 @@ struct legion_context_policy_t {
     return std::get<index>(task_info<KEY>());                                  \
   }
 
-/*!
-  FIXME
+    /*!
+      FIXME
 
-  @param key The task hash key.
- */
+      @param key The task hash key.
+     */
 
 #define task_info_method(name, return_type, index)                             \
   return_type name(size_t key) {                                               \
@@ -417,6 +444,9 @@ struct legion_context_policy_t {
     Legion::LogicalPartition exclusive_lp;
     Legion::LogicalPartition shared_lp;
     Legion::LogicalPartition ghost_lp;
+    Legion::STL::
+        map<LegionRuntime::Arrays::coord_t, LegionRuntime::Arrays::coord_t>
+            global_to_local_color_map;
   };
 
   struct index_subspace_data_t {
@@ -424,33 +454,23 @@ struct legion_context_policy_t {
   };
 
   /*!
-    Collects Legion data associated with a local FleCSI index space.
-   */
-
-  struct local_index_space_data_t {
-    Legion::LogicalRegion region;
-  };
-
-  /*!
     Get the index space data map.
    */
 
-  auto &index_space_data_map() { return index_space_data_map_; }
-
-  /*!
-    Get the local index space data map.
-   */
-
-  auto &local_index_space_data_map() { return local_index_space_data_map_; }
+  auto & index_space_data_map() {
+    return index_space_data_map_;
+  }
 
   /*!
     Get the index subspace data map.
    */
 
-  auto &index_subspace_data_map() { return index_subspace_data_map_; }
+  auto & index_subspace_data_map() {
+    return index_subspace_data_map_;
+  }
 
-  /*!
-    Perform reduction of the maximum value
+
+    /*! Perform reduction of the maximum value
     @param task future
    */
 
@@ -462,6 +482,7 @@ struct legion_context_policy_t {
     return global_future;
   }
 
+  /*!
   /*!
     Perform reduction of the minimum value
     @param task future
@@ -525,7 +546,6 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
-  std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
 
 }; // class legion_context_policy_t
