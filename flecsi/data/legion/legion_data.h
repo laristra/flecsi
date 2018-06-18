@@ -204,7 +204,8 @@ public:
 
   void init_from_coloring_info_map(
       const indexed_coloring_info_map_t & indexed_coloring_info_map,
-      const sparse_index_space_info_map_t& sparse_info_map) {
+      const sparse_index_space_info_map_t& sparse_info_map,
+      bool has_sparse_fields) {
     using namespace Legion;
     using namespace LegionRuntime;
     using namespace Arrays;
@@ -213,7 +214,7 @@ public:
       auto itr = sparse_info_map.find(idx_space.first);
       const sparse_index_space_info_t* sparse_info;
       
-      if(itr != sparse_info_map.end()){
+      if(has_sparse_fields && itr != sparse_info_map.end()){
         sparse_info = &itr->second;
       }
       else{

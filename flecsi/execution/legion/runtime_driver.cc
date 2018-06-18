@@ -157,7 +157,7 @@ runtime_driver(
   auto coloring_info = context_.coloring_info_map();
 
   data.init_from_coloring_info_map(coloring_info,
-    context_.sparse_index_space_info_map());
+    context_.sparse_index_space_info_map(), number_of_sparse_fields > 0);
 
   for(auto& itr : context_.adjacency_info()){
     data.add_adjacency(itr.second);
@@ -925,18 +925,23 @@ spmd_task(
   size_t consecutive_index = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-
     size_t sparse_idx_space;
 
     const sparse_index_space_info_t* sparse_info;
-    auto sitr = sis_map.find(idx_space);
-    if(sitr != sis_map.end()){
-      sparse_info = &sitr->second;
-      // TODO: formalize sparse index space offset
-      sparse_idx_space = idx_space + 8192;
+
+    if(number_of_sparse_fields == 0){
+      sparse_info = nullptr;
     }
     else{
-      sparse_info = nullptr;
+      auto sitr = sis_map.find(idx_space);
+      if(sitr != sis_map.end()){
+        sparse_info = &sitr->second;
+        // TODO: formalize sparse index space offset
+        sparse_idx_space = idx_space + 8192;
+      }
+      else{
+        sparse_info = nullptr;
+      }      
     }
 
     const std::unordered_map<size_t, flecsi::coloring::coloring_info_t>
