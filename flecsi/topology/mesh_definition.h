@@ -71,7 +71,7 @@ namespace topology {
         return std::set<size_t>(vvec.begin(), vvec.end());
       } // entities_set
 
-      virtual size_t dimension() = 0;
+      virtual size_t dimension() const = 0;
 
     };
 template<size_t DIMENSION>
