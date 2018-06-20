@@ -83,7 +83,6 @@ struct context__ : public CONTEXT_POLICY {
     size_t index_space;
     size_t exclusive_reserve;
     size_t max_entries_per_index;
-    size_t max_exclusive_entries;
   };
 
   struct index_subspace_info_t {

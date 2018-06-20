@@ -83,7 +83,7 @@ public:
     Legion::FieldSpace field_space;
     Legion::LogicalRegion logical_region;
     Legion::IndexPartition index_partition;
-    size_t max_exclusive_entries;
+    size_t exclusive_reserve;
     size_t max_entries_per_index;
     size_t max_shared_ghost;
     size_t color_size;
@@ -204,7 +204,8 @@ public:
 
   void init_from_coloring_info_map(
       const indexed_coloring_info_map_t & indexed_coloring_info_map,
-      const sparse_index_space_info_map_t& sparse_info_map) {
+      const sparse_index_space_info_map_t& sparse_info_map,
+      bool has_sparse_fields) {
     using namespace Legion;
     using namespace LegionRuntime;
     using namespace Arrays;
@@ -213,7 +214,7 @@ public:
       auto itr = sparse_info_map.find(idx_space.first);
       const sparse_index_space_info_t* sparse_info;
       
-      if(itr != sparse_info_map.end()){
+      if(has_sparse_fields && itr != sparse_info_map.end()){
         sparse_info = &itr->second;
       }
       else{
@@ -322,11 +323,11 @@ public:
             sis.max_shared_ghost, color_idx.second.shared + color_idx.second.ghost);
       }
 
-      sis.max_exclusive_entries = sparse_info->max_exclusive_entries;
+      sis.exclusive_reserve = sparse_info->exclusive_reserve;
       sis.max_entries_per_index = sparse_info->max_entries_per_index;
 
       sis.color_size = 
-        sis.max_exclusive_entries + 
+        sis.exclusive_reserve + 
         sis.max_shared_ghost * sis.max_entries_per_index;
 
       // Create expanded index space

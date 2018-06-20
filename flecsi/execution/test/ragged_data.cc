@@ -125,7 +125,6 @@ void task1(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
   rm(1, 4) = 500.0;
   rm.push_back(1, 700.00);
 
-  
 } // task1
 
 void task1b(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {

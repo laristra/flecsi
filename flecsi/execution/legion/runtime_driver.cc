@@ -157,7 +157,7 @@ runtime_driver(
   auto coloring_info = context_.coloring_info_map();
 
   data.init_from_coloring_info_map(coloring_info,
-    context_.sparse_index_space_info_map());
+    context_.sparse_index_space_info_map(), number_of_sparse_fields > 0);
 
   for(auto& itr : context_.adjacency_info()){
     data.add_adjacency(itr.second);
@@ -483,7 +483,8 @@ runtime_driver(
         for (const field_info_t* field_info : fields_map[idx_space]){
           reg_req.add_field(field_info->fid);
 
-          if(field_info->storage_class == sparse &&
+          if((field_info->storage_class == sparse ||
+              field_info->storage_class == ragged) &&
              !utils::hash::is_internal(field_info->key)){
             sparse_reg_req.add_field(field_info->fid);
           }
@@ -559,7 +560,8 @@ runtime_driver(
 
           for (const field_info_t* field_info : fields_map[idx_space]){
             owner_reg_req.add_field(field_info->fid);
-            if(field_info->storage_class == sparse &&
+            if((field_info->storage_class == sparse ||
+                field_info->storage_class == ragged) &&
                !utils::hash::is_internal(field_info->key)){
               sparse_owner_reg_req.add_field(field_info->fid);
             }
@@ -925,18 +927,23 @@ spmd_task(
   size_t consecutive_index = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-
     size_t sparse_idx_space;
 
     const sparse_index_space_info_t* sparse_info;
-    auto sitr = sis_map.find(idx_space);
-    if(sitr != sis_map.end()){
-      sparse_info = &sitr->second;
-      // TODO: formalize sparse index space offset
-      sparse_idx_space = idx_space + 8192;
+
+    if(number_of_sparse_fields == 0){
+      sparse_info = nullptr;
     }
     else{
-      sparse_info = nullptr;
+      auto sitr = sis_map.find(idx_space);
+      if(sitr != sis_map.end()){
+        sparse_info = &sitr->second;
+        // TODO: formalize sparse index space offset
+        sparse_idx_space = idx_space + 8192;
+      }
+      else{
+        sparse_info = nullptr;
+      }      
     }
 
     const std::unordered_map<size_t, flecsi::coloring::coloring_info_t>
@@ -1048,14 +1055,14 @@ spmd_task(
       Legion::DomainColoring primary_ghost_coloring;
       LegionRuntime::Arrays::Rect<2>
       primary_rect(LegionRuntime::Arrays::make_point(my_color, 0),
-          LegionRuntime::Arrays::make_point(my_color, sparse_info->max_exclusive_entries + shared_size - 1));
+          LegionRuntime::Arrays::make_point(my_color, sparse_info->exclusive_reserve + shared_size - 1));
       
       primary_ghost_coloring[PRIMARY_PART]
                              = Legion::Domain::from_rect<2>(primary_rect);
       
       LegionRuntime::Arrays::Rect<2> ghost_rect(
-          LegionRuntime::Arrays::make_point(my_color, sparse_info->max_exclusive_entries + shared_size),
-          LegionRuntime::Arrays::make_point(my_color, sparse_info->max_exclusive_entries + shared_size + ghost_size - 1));
+          LegionRuntime::Arrays::make_point(my_color, sparse_info->exclusive_reserve + shared_size),
+          LegionRuntime::Arrays::make_point(my_color, sparse_info->exclusive_reserve + shared_size + ghost_size - 1));
       
       primary_ghost_coloring[GHOST_PART]
                              = Legion::Domain::from_rect<2>(ghost_rect);
@@ -1085,13 +1092,14 @@ spmd_task(
       LegionRuntime::Arrays::Rect<2> exclusive_rect(
           LegionRuntime::Arrays::make_point(my_color, 0),
           LegionRuntime::Arrays::make_point(my_color,
-            sparse_info->max_exclusive_entries - 1));
+            sparse_info->exclusive_reserve - 1));
       excl_shared_coloring[EXCLUSIVE_PART]
                            = Legion::Domain::from_rect<2>(exclusive_rect);
       LegionRuntime::Arrays::Rect<2> shared_rect(
           LegionRuntime::Arrays::make_point(my_color,
-          sparse_info->max_exclusive_entries),
-          LegionRuntime::Arrays::make_point(my_color, sparse_info->max_exclusive_entries + shared_size - 1));
+          sparse_info->exclusive_reserve),
+          LegionRuntime::Arrays::make_point(my_color,
+            sparse_info->exclusive_reserve + shared_size - 1));
       excl_shared_coloring[SHARED_PART]
                            = Legion::Domain::from_rect<2>(shared_rect);
 
