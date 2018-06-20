@@ -98,6 +98,10 @@ public:
   static constexpr size_t dimension() {
     return DIMENSION;
   } // dimension
+  
+  size_t get_dimension() const  {
+    return DIMENSION;
+  }
 
 
 }; // class mesh_definition__

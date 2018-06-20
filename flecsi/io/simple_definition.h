@@ -129,10 +129,6 @@ public:
     return v;
   } // vertex
 
-  size_t get_dimension() const  {
-    return 2;
-  }
-
 private:
   mutable std::ifstream file_;
 
