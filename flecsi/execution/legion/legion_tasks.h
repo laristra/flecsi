@@ -1100,7 +1100,7 @@ __flecsi_internal_legion_task(init_cell_task, init_mesh_task_rt_t) {
 
 	int total_num_cells = sd->num_entities(1);
 									 
-	auto partetis_dcrs = flecsi::coloring::make_dcrs(*sd, sd->dimension(), 1);
+	auto partetis_dcrs = flecsi::coloring::make_dcrs(*sd, sd->get_dimension(), 1);
   auto colorer = std::make_shared<flecsi::coloring::parmetis_colorer_t>();
 	auto color_results = colorer->parmetis_color(partetis_dcrs);
 	
@@ -1115,7 +1115,7 @@ __flecsi_internal_legion_task(init_cell_task, init_mesh_task_rt_t) {
     cell_color_acc[*pir] = LegionRuntime::Arrays::Point<1>(color_results[ct]);
     for (int i = 1; i < task_md.total_num_entities; i++) {
 		  if (task_md.entity_array[i] == 0) {
-        std::vector<size_t> vertices_of_cell = sd->entities(sd->dimension(), 0, cell_id);
+        std::vector<size_t> vertices_of_cell = sd->entities(sd->get_dimension(), 0, cell_id);
   		  printf("rank %d, cell_id %d, new color %d, Vertex(", my_rank, (int)cell_id_acc[*pir], color_results[ct]);
   		  for(int i = 0; i < vertices_of_cell.size(); i++) {
   			  printf("%d ", vertices_of_cell[i]);
@@ -1124,7 +1124,7 @@ __flecsi_internal_legion_task(init_cell_task, init_mesh_task_rt_t) {
   		  cell_to_vertex_count += vertices_of_cell.size();
       }
 		  if (task_md.entity_array[i] == 1) {
-        std::vector<size_t> edges_of_cell = sd->entities(sd->dimension(), 1, cell_id);
+        std::vector<size_t> edges_of_cell = sd->entities(sd->get_dimension(), 1, cell_id);
   		  printf("rank %d, cell_id %d, new color %d, Edge(", my_rank, (int)cell_id_acc[*pir], color_results[ct]);
   		  for(int i = 0; i < edges_of_cell.size(); i++) {
   			  printf("%d ", edges_of_cell[i]);
@@ -1136,9 +1136,9 @@ __flecsi_internal_legion_task(init_cell_task, init_mesh_task_rt_t) {
 		ct ++;
 	}
 
-	auto dcrs = flecsi::coloring::make_dcrs(*sd, sd->dimension(), 0);
+	auto dcrs = flecsi::coloring::make_dcrs(*sd, sd->get_dimension(), 0);
 	printf("<%d, init_cell>, entity_id %d, num_cell %d, num_colors %d, cell_start %d, cell_to_cell_count %d, cell_to_vertex_count %d, cell_to_edge_count %d\n", 
-		my_rank, sd->dimension(), cell_domain.get_volume(), total_num_colors, cell_starting_point, dcrs.indices.size(), cell_to_vertex_count, cell_to_edge_count);
+		my_rank, sd->get_dimension(), cell_domain.get_volume(), total_num_colors, cell_starting_point, dcrs.indices.size(), cell_to_vertex_count, cell_to_edge_count);
 	init_mesh_task_rt_t rt_value;
 	rt_value.cell_to_cell_count = dcrs.indices.size();
 	rt_value.cell_to_vertex_count = cell_to_vertex_count;
@@ -1224,7 +1224,7 @@ __flecsi_internal_legion_task(init_cell_to_cell_task, void) {
   Legion::Domain cell_to_cell_domain = runtime->get_index_space_domain(ctx,
                    task->regions[1].region.get_index_space());
 							 
-	auto dcrs = flecsi::coloring::make_dcrs(*sd, sd->dimension(), 0);
+	auto dcrs = flecsi::coloring::make_dcrs(*sd, sd->get_dimension(), 0);
 	
 	assert(cell_to_cell_domain.get_volume() == dcrs.indices.size());
 	printf("<%d, init_cell_to_cell_task>, index size %d, num_cell %ld, cell2cell %ld\n", my_rank, dcrs.indices.size(), cell_domain.get_volume(), cell_to_cell_domain.get_volume());
@@ -1313,7 +1313,7 @@ __flecsi_internal_legion_task(init_cell_to_others_task, void) {
 		
 		// find the vertex of a cell and fill into the cell2vertex 
 		printf("rank %d, cell %d, cell2others(", my_rank, cell_id);
-		std::vector<size_t> others_of_cell = sd->entities(sd->dimension(), entity_id, cell_id);
+		std::vector<size_t> others_of_cell = sd->entities(sd->get_dimension(), entity_id, cell_id);
 		for (int i = 0; i < others_of_cell.size(); i++) {
 			printf("%d,", others_of_cell[i]);
 			cell_to_others_id_acc[*pir_cell2others] = others_of_cell[i];

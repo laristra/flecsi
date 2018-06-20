@@ -129,7 +129,7 @@ public:
     return v;
   } // vertex
 
-  size_t dimension() const  {
+  size_t get_dimension() const  {
     return 2;
   }
 

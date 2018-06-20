@@ -10,7 +10,7 @@ namespace execution {
 
 legion_entity legion_dependent_partition_policy_t::load_entity(int entities_size, int entity_id, int entity_map_id, std::vector<int> &entity_vector, flecsi::topology::mesh_definition_base__ &md)
 {
-  if (entity_id == md.dimension()) {
+  if (entity_id == md.get_dimension()) {
     return load_cell(entities_size, entity_map_id, entity_vector, md);
   } else {
     return load_non_cell(entities_size, entity_id, entity_map_id);
@@ -138,7 +138,7 @@ legion_entity legion_dependent_partition_policy_t::load_cell(int cells_size, int
   cell_region.color_fid = FID_CELL_PARTITION_COLOR;
   cell_region.id_fid = FID_CELL_ID;
   cell_region.offset_fid = FID_CELL_OFFSET;
-  cell_region.id = md.dimension();
+  cell_region.id = md.get_dimension();
   cell_region.map_id = entity_map_id;
   
   free(cell_count_per_subspace_scan);

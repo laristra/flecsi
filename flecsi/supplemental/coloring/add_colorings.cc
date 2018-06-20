@@ -43,7 +43,6 @@ void add_colorings(coloring_map_t map) {
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   printf("rank %d, add coloring pid %d\n", rank, getpid());
-  sleep(20);
 
   {
   clog_tag_guard(coloring);

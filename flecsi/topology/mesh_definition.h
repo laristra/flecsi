@@ -71,7 +71,7 @@ namespace topology {
         return std::set<size_t>(vvec.begin(), vvec.end());
       } // entities_set
 
-      virtual size_t dimension() const = 0;
+      virtual size_t get_dimension() const = 0;
 
     };
 template<size_t DIMENSION>
@@ -95,9 +95,9 @@ public:
   /// Return the dimension of the mesh.
   ///
 
-//  static constexpr size_t dimension() {
-//    return DIMENSION;
-//  } // dimension
+  static constexpr size_t dimension() {
+    return DIMENSION;
+  } // dimension
 
 
 }; // class mesh_definition__
