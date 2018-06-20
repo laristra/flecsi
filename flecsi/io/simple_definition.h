@@ -72,6 +72,7 @@ public:
   /// return the set of vertices of a particular entity.
   /// \param [in] dimension  the entity dimension to query.
   /// \param [in] entity_id  the id of the entity in question.
+
   std::vector<size_t>
   entities(size_t from_dim, size_t to_dim, size_t entity_id) const override {
     clog_assert(from_dim == 2, "invalid dimension " << from_dim);
@@ -130,6 +131,7 @@ public:
   } // vertex
 
 private:
+
   mutable std::ifstream file_;
 
   size_t num_vertices_;

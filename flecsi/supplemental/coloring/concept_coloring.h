@@ -22,6 +22,7 @@
 #include <flecsi/coloring/parmetis_colorer.h>
 #include <flecsi/coloring/mpi_communicator.h>
 #include <flecsi/utils/tuple_walker.h>
+#include <flecsi/utils/tuple_visit.h>
 
 //#include <flecsi/supplemental/coloring/coloring_functions.h>
 //#include <flecsi/supplemental/coloring/tikz.h>
@@ -30,42 +31,6 @@
 
 namespace flecsi {
 namespace execution {
-
-using namespace coloring;
-
-struct coloring_policy_t {
-
-  using primary = primary_independent__<0, 2, 0, 2>;
-
-  using auxiliary = std::tuple<
-    auxiliary_independent__<1, 0, 2>,
-    auxiliary_independent__<2, 1, 2>
-  >;
-
-  static constexpr size_t auxiliary_colorings =
-    std::tuple_size<auxiliary>::value;
-
-  using mesh_definition_t = flecsi::topology::mesh_definition__<2>;
-
-}; // coloring_policy_t
-
-template<typename PRIMARY_TYPE>
-struct auxiliary_walker__
-  : public flecsi::utils::tuple_walker__<auxiliary_walker__<PRIMARY_TYPE>>
-{
-  template<typename AUXILIARY_TYPE>
-  void handle_type() {
-
-    static_assert(AUXILIARY_TYPE::primary_dimension == PRIMARY_TYPE::dimension,
-      "dimension mismatch");
-
-    std::cout << "auxiliary dimension: " <<
-      AUXILIARY_TYPE::dimension << std::endl;
-  } // handle_type
-
-private:
-
-}; // struct auxiliary_walker__
 
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//
@@ -216,9 +181,153 @@ void generic_coloring(
   } // for
   } // scope
 
-  auxiliary_walker__<typename COLORING_POLICY::primary> auxiliary_walker;
-  auxiliary_walker.template walk_types<typename COLORING_POLICY::auxiliary>();
+  //--------------------------------------------------------------------------//
+  // Lambda function to apply to auxiliary index spaces
+  //--------------------------------------------------------------------------//
+
+  auto color_entity = [&](size_t idx, auto tuple_element) {
+    using auxiliary_type = decltype(tuple_element);
+
+    constexpr size_t index_space = auxiliary_type::index_space;
+    constexpr size_t dimension = auxiliary_type::dimension;
+    constexpr size_t primary_dimension = auxiliary_type::primary_dimension;
+
+    std::cout << "idx: " << idx << std::endl;
+    std::cout << "index_space: " << index_space << std::endl;
+    std::cout << "dimension: " << dimension << std::endl;
+    std::cout << "primary_dimension: " << primary_dimension << std::endl;
+
+    // Form the closure of this entity from the primary
+    auto auxiliary_closure =
+      entity_closure<primary_dimension, dimension>(md, near_neighbor_closure);
+
+    using entity_info_t = flecsi::coloring::entity_info_t;
+
+    // Assign entity ownership
+    std::vector<std::set<size_t>> entity_requests(size);
+    std::set<entity_info_t> entity_info;
+
+    {
+    size_t offset{0};
+    for(auto i: auxiliary_closure) {
+      auto referencers =
+        entity_referencers<primary_dimension, dimension>(md, i);
+
+      size_t min_rank(std::numeric_limits<size_t>::max());
+      std::set<size_t> shared_entities;
+
+      // Iterate the direct referencers to assign entity ownership
+      for(auto c: referencers) {
+
+        // Check the remote info map to see if this primary is
+        // off-color. If it is, compare it's rank for
+        // the ownership logic below.
+        if(remote_info_map.find(c) != remote_info_map.end()) {
+          min_rank = std::min(min_rank, remote_info_map.at(c).rank);
+          shared_entities.insert(remote_info_map.at(c).rank);
+        }
+        else {
+          // If the referencing primary isn't in the remote info map
+          // it is a local primary.
+
+          // Add our rank to compare for ownership.
+          min_rank = std::min(min_rank, size_t(rank));
+
+          // If the local primary is shared, we need to add all of
+          // the ranks that reference it.
+          if(shared_primary_map.find(c) != shared_primary_map.end())
+            shared_entities.insert(
+              shared_primary_map.at(c).shared.begin(),
+              shared_primary_map.at(c).shared.end()
+            );
+        } // if
+
+        // Iterate through the closure intersection map to see if the
+        // indirect reference is part of another rank's closure, i.e.,
+        // that it is an indirect dependency.
+        for(auto ci: closure_intersection_map) {
+          if(ci.second.find(c) != ci.second.end()) {
+            shared_entities.insert(ci.first);
+          } // if
+        } // for
+
+        if(min_rank == rank) {
+          // This is a entity that belongs to our rank.
+          auto entry = entity_info_t(i, rank, offset++, shared_entities);
+          entity_info.insert(entry);
+        }
+        else {
+          // Add remote entity to the request for offset information.
+          entity_requests[min_rank].insert(i);
+        } // if
+      } // for
+    } // for
+    } // scope
+
+    auto entity_offset_info =
+      communicator->get_entity_info(entity_info, entity_requests);
+
+    // Vertices index coloring.
+    for(auto i: entity_info) {
+      // if it belongs to other colors, its a shared entity
+      if(i.shared.size()) {
+        aux_coloring[idx].shared.insert(i);
+        // Collect all colors with whom we require communication
+        // to send shared information.
+        aux_coloring_info[idx].shared_users =
+          flecsi::utils::set_union(aux_coloring_info[idx].shared_users,
+          i.shared);
+      }
+      // otherwise, its exclusive
+      else
+        aux_coloring[idx].exclusive.insert(i);
+    } // for
+
+    {
+    size_t r(0);
+    for(auto i: entity_requests) {
+
+      auto offset(entity_offset_info[r].begin());
+      for(auto s: i) {
+        aux_coloring[idx].ghost.insert(entity_info_t(s, r, *offset));
+        // Collect all colors with whom we require communication
+        // to receive ghost information.
+        aux_coloring_info[idx].ghost_owners.insert(r);
+        // increment counter
+        ++offset;
+      } // for
+
+      ++r;
+    } // for
+    } // scope
+
+  }; // color_entity
+
+  //--------------------------------------------------------------------------//
+  // End lambda
+  //--------------------------------------------------------------------------//
+
+  tuple_visit<typename COLORING_POLICY::auxiliary>(color_entity);
+
 } // generic_coloring
+
+using namespace coloring;
+
+struct coloring_policy_t {
+
+  using primary = primary_independent__<0, 2, 0, 2>;
+
+  using auxiliary = std::tuple<
+    auxiliary_independent__<1, 0, 2>,
+    auxiliary_independent__<2, 1, 2>
+  >;
+
+  static constexpr size_t auxiliary_colorings =
+    std::tuple_size<auxiliary>::value;
+
+  using mesh_definition_t = flecsi::topology::mesh_definition__<2>;
+
+}; // coloring_policy_t
 
 inline void concept_coloring() {
 
