@@ -61,7 +61,7 @@ void add_colorings(coloring_map_t map) {
 #endif
 
   // Create the dCRS representation for the distributed colorer.
-  auto dcrs = flecsi::coloring::make_dcrs(sd, sd.dimension(), 1);
+  auto dcrs = flecsi::coloring::make_dcrs(sd, sd.dimension(), sd.dimension()-1);
 
   // Create a colorer instance to generate the primary coloring.
   auto colorer = std::make_shared<flecsi::coloring::parmetis_colorer_t>();
