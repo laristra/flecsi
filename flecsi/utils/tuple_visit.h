@@ -20,9 +20,9 @@
 namespace flecsi {
 namespace utils {
 
-template <typename _Fn, typename _Tuple, size_t... _Idx>
+template <typename _Tuple, typename _Fn, size_t... _Idx>
 void
-__tuple_visit_impl(_Fn&& __f, _Tuple&& __t, std::index_sequence<_Idx...>)
+__tuple_visit_impl(_Tuple&& __t, _Fn&& __f, std::index_sequence<_Idx...>)
 {
   // This treats creates an initializer list so that the index
   // sequence is expanded properly. The (f(x), 0) uses the comma operator
@@ -44,14 +44,14 @@ __tuple_visit_impl(_Fn&& __f, _Tuple&& __t, std::index_sequence<_Idx...>)
         can be used in a proposal to add this to the standard.
  */
 
-template <typename _Fn, typename _Tuple>
+template <typename _Tuple, typename _Fn>
 void
-tuple_visit(_Fn&& __f, _Tuple&& __t)
+tuple_visit(_Tuple&& __t, _Fn&& __f)
 {
   using _Indices =
     std::make_index_sequence<std::tuple_size_v<std::decay_t<_Tuple>>>;
 
-  __tuple_visit_impl(std::forward<_Fn>(__f), std::forward<_Tuple>(__t),
+  __tuple_visit_impl(std::forward<_Tuple>(__t), std::forward<_Fn>(__f),
     _Indices{});
 }
 
@@ -79,9 +79,8 @@ tuple_visit(_Fn&& __f)
   using _Indices =
     std::make_index_sequence<std::tuple_size_v<std::decay_t<_Tuple>>>;
 
-  _Tuple __t = {};
-  __tuple_visit_impl(std::forward<_Fn>(__f), std::forward<_Tuple>(__t),
-  _Indices{});
+  __tuple_visit_impl(std::forward<_Tuple>({}), std::forward<_Fn>(__f),
+    _Indices{});
 }
 
 } // namespace utils
