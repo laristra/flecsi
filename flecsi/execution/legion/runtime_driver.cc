@@ -798,8 +798,7 @@ spmd_task(
    
   for(size_t i = 0; i < num_sparse_index_spaces; ++i){
     const sparse_index_space_info_t& si = sparse_index_spaces[i];
-    context_.set_sparse_index_space_info(si.index_space,
-      sparse_index_spaces[i]);
+    context_.set_sparse_index_space_info(si);
   }
 
   // #2 deserialize field info

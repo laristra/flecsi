@@ -284,10 +284,8 @@ struct context__ : public CONTEXT_POLICY {
     return set_index_space_map_;
   }
 
-  void set_sparse_index_space_info(
-      size_t index_space,
-      const sparse_index_space_info_t & info) {
-    sparse_index_space_info_map_.emplace(index_space, info);
+  void set_sparse_index_space_info( const sparse_index_space_info_t & info) {
+    sparse_index_space_info_map_.emplace(info.index_space, info);
   }
 
   /*!
