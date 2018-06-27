@@ -20,6 +20,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
 
         before_script:
         #CCache Config
+                - echo $HOME
                 - HOME=/home
                 - cd $HOME
                 - mkdir -p ccache
