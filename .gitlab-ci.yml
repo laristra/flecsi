@@ -1,5 +1,3 @@
-image: laristra/flecsi-third-party:fedora
-
 stages:
         - build
         - test
@@ -15,21 +13,27 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         variables:
           GLOBAL_CI_VARIABLE: "global_ci_value"
 
+        before_script:
+        #CCache Config
+                - mkdir -p ccache
+                - export CCACHE_BASEDIR=${PWD}
+                - export CCACHE_DIR=${PWD}/ccache 
+    
         script:
-        - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
-        - HOME=/home 
-        - CC=gcc
-        - cp -vr docker ${HOME}/docker
-        - pwd && ls -la && ls -la /home && ls -la /home/docker
-        - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
-        - cd ../../
-        - ls -la
-        - mv  ${CI_PROJECT_PATH} $HOME/docker
-        - ls -la
-        - ls onurcaylak/
-        #- ls -la onurcaylak/flecsi
-        #- cp -r $HOME/.ccache ${HOME}/docker/ccache
-        #- cp -r $HOME/.sonar ${HOME}/docker/sonar
-        - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
-        - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
-        - docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
+                - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+                - HOME=/home 
+                - CC=gcc
+                - cp -vr docker ${HOME}/docker
+                - pwd && ls -la && ls -la /home && ls -la /home/docker
+                - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
+                - cd ../../
+                - ls -la
+                - mv  ${CI_PROJECT_PATH} $HOME/docker
+                - ls -la
+                - ls onurcaylak/
+               #- ls -la onurcaylak/flecsi
+               #- cp -r $HOME/.ccache ${HOME}/docker/ccache
+               #- cp -r $HOME/.sonar ${HOME}/docker/sonar
+                - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
+                - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
+                - docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
