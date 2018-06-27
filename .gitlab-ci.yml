@@ -14,7 +14,6 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
           GLOBAL_CI_VARIABLE: "global_ci_value"
 
         script:
-        - sudo service docker start
         - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
         - HOME=/home 
         - CC=gcc
@@ -24,6 +23,8 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         - cd ../../
         - ls -la
         - mv  ${CI_PROJECT_PATH} $HOME/docker
+        - ls -la
+        - ls onurcaylak/
         #- ls -la onurcaylak/flecsi
         #- cp -r $HOME/.ccache ${HOME}/docker/ccache
         #- cp -r $HOME/.sonar ${HOME}/docker/sonar
