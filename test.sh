@@ -1,2 +1,0 @@
-DOCKER=$1
-echo ${DOCKER}
