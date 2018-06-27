@@ -20,6 +20,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
 
         before_script:
         #CCache Config
+                - pwd
                 - ls -la
                 - mkdir -p ccache
                 - export CCACHE_BASEDIR=${PWD}
