@@ -13,11 +13,6 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         variables:
           GLOBAL_CI_VARIABLE: "global_ci_value"
 
-       # cache:
-          #key: test
-          #paths:
-             #- /home/.sonar
-               
         script:
         - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
         - HOME=/home 
@@ -26,6 +21,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         - pwd && ls -la && ls -la /home && ls -la /home/docker
         - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
         - cd ../
+        - pwd
         - echo mv -v ${CI_PROJECT_PATH} $HOME/docker
         #- cp -r $HOME/.ccache ${HOME}/docker/ccache
         #- cp -r $HOME/.sonar ${HOME}/docker/sonar
