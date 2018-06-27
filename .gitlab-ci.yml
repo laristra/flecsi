@@ -1,7 +1,13 @@
+stages:
+        - build
+        - test
+        - deploy
+
 before_script:
         - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
         - git fetch --unshallow && git fetch --tags #for versioning
 
-job:
+UBUNTU:
+        stage: build
         script:
-        - echo hello
+        - cp -vr docker ${HOME}/docker
