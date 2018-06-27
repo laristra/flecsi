@@ -21,7 +21,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         before_script:
         #Config
                 - echo $HOME
-                - HOME=/home
+                - export HOME=/home
                 - cd $HOME
                 - mkdir -p .ccache
                 - export CCACHE_BASEDIR=${HOME}
