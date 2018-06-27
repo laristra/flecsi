@@ -7,7 +7,7 @@ before_script:
         - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
         - git fetch --unshallow && git fetch --tags #for versioning
 
-UBUNTU:
+DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         stage: build
         script:
         - cp -vr docker ${HOME}/docker
