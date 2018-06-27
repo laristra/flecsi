@@ -1,4 +1,4 @@
-image: gitlab/gitlab-runner:latest 
+image: laristra/flecsi-third-party:fedora
 
 stages:
         - build
