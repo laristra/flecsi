@@ -19,13 +19,13 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
           GLOBAL_CI_VARIABLE: "global_ci_value"
 
         before_script:
-        #CCache Config
+        #Config
                 - echo $HOME
                 - HOME=/home
                 - cd $HOME
-                - mkdir -p ccache
+                - mkdir -p .ccache
                 - export CCACHE_BASEDIR=${HOME}
-                - export CCACHE_DIR=${HOME}/ccache 
+                - export CCACHE_DIR=${HOME}/.ccache 
     
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
@@ -39,7 +39,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - ls -la
                 - ls onurcaylak/
                #- ls -la onurcaylak/flecsi
-               #- cp -r $HOME/.ccache ${HOME}/docker/ccache
+                - cp -r $HOME/.ccache ${HOME}/docker/ccache
                #- cp -r $HOME/.sonar ${HOME}/docker/sonar
                 - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
                 - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
