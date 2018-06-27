@@ -20,15 +20,14 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
 
         before_script:
         #CCache Config
-                - pwd
-                - ls -la
+                - HOME=/home
+                - cd $HOME
                 - mkdir -p ccache
-                - export CCACHE_BASEDIR=${PWD}
-                - export CCACHE_DIR=${PWD}/ccache 
+                - export CCACHE_BASEDIR=${HOME}
+                - export CCACHE_DIR=${HOME}/ccache 
     
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
-                - HOME=/home 
                 - CC=gcc
                 - cp -vr docker ${HOME}/docker
                 - pwd && ls -la && ls -la /home && ls -la /home/docker
