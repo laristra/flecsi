@@ -30,4 +30,4 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         #- cp -r $HOME/.sonar ${HOME}/docker/sonar
         - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
         - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
-
+        - docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
