@@ -23,7 +23,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         - cd ../../
         - ls -la
         - mv  ${CI_PROJECT_PATH} $HOME/docker
-        - ls -la onurcaylak/flecsi
+        #- ls -la onurcaylak/flecsi
         #- cp -r $HOME/.ccache ${HOME}/docker/ccache
         #- cp -r $HOME/.sonar ${HOME}/docker/sonar
         - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
