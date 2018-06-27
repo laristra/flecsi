@@ -35,7 +35,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - cp -vr docker ${HOME}/docker
                 - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
                 - cd ../../
-                - mv  ${CI_PROJECT_PATH} $HOME/docker
+                - cp -r  ${CI_PROJECT_PATH} $HOME/docker
                 - cp -r $HOME/.ccache ${HOME}/docker/ccache
                 - cp -r $HOME/.sonar ${HOME}/docker/sonar
                 - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
