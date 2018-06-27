@@ -13,14 +13,15 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         variables:
           GLOBAL_CI_VARIABLE: "global_ci_value"
 
-        cache:
-          key: test
-          paths:
-             - /home/.sonar
+       # cache:
+          #key: test
+          #paths:
+             #- /home/.sonar
                
         script:
         - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
         - HOME=/home 
+        - CC=gcc
         - cp -vr docker ${HOME}/docker
         - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
         - cd ../
@@ -30,5 +31,5 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
         - echo $CC
         - echo $CI_COMMIT_REF_NAME
-        #- if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${TRAVIS_BRANCH//\//_}"; fi
+        - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${TRAVIS_BRANCH//\//_}"; fi
 
