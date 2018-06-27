@@ -15,8 +15,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         script:
         - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
         - pwd
-        - mkdir /home/gitlab-ci
-        - HOME=/home/gitlab-ci
+        - ls -la /home 
         - cp -vr docker ${HOME}/docker
         - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
         - cd ../../
