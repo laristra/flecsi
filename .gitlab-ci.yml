@@ -20,9 +20,11 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
 
         before_script:
         #Config
+                - echo $HOME
                 - export HOME=/home
                 - cd $HOME
                 - mkdir -p .ccache
+                - mkdir -p .sonar
                 - export CCACHE_BASEDIR=${HOME}
                 - export SONAR_BASEDIR=${HOME}
                 - export CCACHE_DIR=${HOME}/.ccache 
