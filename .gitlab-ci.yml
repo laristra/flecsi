@@ -14,6 +14,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         - cp -vr docker ${HOME}/docker
         - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
         - cd ../../
+        - echo  $CI_JOB_ID
         - echo  $TRAVIS_REPO_SLUG
         - mv -v ${CI_ENVIRONMENT_SLUG} $HOME/docker
         - cp -r $HOME/.ccache ${HOME}/docker/ccache
