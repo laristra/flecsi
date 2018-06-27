@@ -11,25 +11,21 @@ stages:
 before_script:
         - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
         - git fetch --unshallow && git fetch --tags #for versioning
+        - export HOME=/home
+        - cd $HOME
+        - mkdir -p .ccache
+        - mkdir -p .sonar
+        - export CCACHE_BASEDIR=${HOME}
+        - export SONAR_BASEDIR=${HOME}
+        - export CCACHE_DIR=${HOME}/.ccache 
+        - export SONAR_DIR=${HOME}/.sonar 
 
 DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         stage: build
 
         variables:
           GLOBAL_CI_VARIABLE: "global_ci_value"
-
-        before_script:
-        #Config
-                - echo $HOME
-                - export HOME=/home
-                - cd $HOME
-                - mkdir -p .ccache
-                - mkdir -p .sonar
-                - export CCACHE_BASEDIR=${HOME}
-                - export SONAR_BASEDIR=${HOME}
-                - export CCACHE_DIR=${HOME}/.ccache 
-                - export SONAR_DIR=${HOME}/.sonar 
-    
+   
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
                 - CC=gcc
