@@ -20,7 +20,6 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
 
         before_script:
         #Config
-                - echo $HOME
                 - export HOME=/home
                 - cd $HOME
                 - mkdir -p .ccache
@@ -30,6 +29,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
                 - CC=gcc
+                - cd ${HOME}/${CI_PROJECT_PATH}
                 - cp -vr docker ${HOME}/docker
                 - pwd && ls -la && ls -la /home && ls -la /home/docker
                 - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
