@@ -21,7 +21,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         - pwd && ls -la && ls -la /home && ls -la /home/docker
         - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
         - cd ../../
-        - pwd
+        - ls -la
         #- mv  ${CI_PROJECT_PATH} $HOME/docker
         #- cp -r $HOME/.ccache ${HOME}/docker/ccache
         #- cp -r $HOME/.sonar ${HOME}/docker/sonar
