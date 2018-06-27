@@ -19,6 +19,7 @@ before_script:
         - export SONAR_BASEDIR=${HOME}
         - export CCACHE_DIR=${HOME}/.ccache 
         - export SONAR_DIR=${HOME}/.sonar 
+        - export CC=gcc
 
 DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         stage: build
@@ -28,22 +29,17 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
    
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
-                - CC=gcc
                 - cd ${CI_PROJECT_DIR}
                 - cp -vr docker ${HOME}/docker
                 - pwd && ls -la && ls -la /home && ls -la /home/docker
                 - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
                 - cd ../../
-                - ls -la
                 - mv  ${CI_PROJECT_PATH} $HOME/docker
-                - ls -la
-                - ls onurcaylak/
-               #- ls -la onurcaylak/flecsi
                 - cp -r $HOME/.ccache ${HOME}/docker/ccache
                 - cp -r $HOME/.sonar ${HOME}/docker/sonar
                 - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
                 - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
-                #- docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
+                - docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
         
         artifacts:
                 expire_in: 1 hour
