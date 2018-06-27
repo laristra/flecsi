@@ -14,14 +14,13 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
 
         script:
         - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
-        - pwd
+        - HOME=/home 
         - cp -vr docker ${HOME}/docker
-        - ls -la /home 
         - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
         - cd ../../
-        - echo mv -v ${CI_PROJECT_PATH} $HOME/docker
-        - cp -r $HOME/.ccache ${HOME}/docker/ccache
-        - cp -r $HOME/.sonar ${HOME}/docker/sonar
+        - echo mv -v ${CI_PROJECT_DIR} $HOME/docker
+        #- cp -r $HOME/.ccache ${HOME}/docker/ccache
+        #- cp -r $HOME/.sonar ${HOME}/docker/sonar
         - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
         - echo $CI_COMMIT_NAME
         #- if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${TRAVIS_BRANCH//\//_}"; fi
