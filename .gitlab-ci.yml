@@ -14,6 +14,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
           GLOBAL_CI_VARIABLE: "global_ci_value"
 
         script:
+        - sudo service docker start
         - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
         - HOME=/home 
         - CC=gcc
