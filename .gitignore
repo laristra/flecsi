@@ -12,6 +12,7 @@ builds
 *.tex
 *.log
 *.aux
+push.sh
 
 flecsi-tutorial/*/*.tex
 flecsi-tutorial/*/*.log
