@@ -15,8 +15,8 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         script:
         - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
         - pwd
-        - ls -la /home 
         - cp -vr docker ${HOME}/docker
+        - ls -la /home 
         - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
         - cd ../../
         - echo mv -v ${CI_PROJECT_PATH} $HOME/docker
