@@ -45,6 +45,6 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - ${HOME}/.sonar
-                        - ${HOME}/.ccache
+                        - /home/.sonar
+                        - /home/.ccache
                                                       
