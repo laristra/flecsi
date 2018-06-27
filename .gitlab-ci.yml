@@ -9,6 +9,9 @@ before_script:
 
 DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         stage: build
+        variables:
+                GLOBAL_CI_VARIABLE: "global_ci_value"
+
         script:
         - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
         - cp -vr docker ${HOME}/docker
