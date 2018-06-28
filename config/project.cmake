@@ -22,7 +22,13 @@ cinch_minimum_required(1.0)
 # Set the project name
 #------------------------------------------------------------------------------#
 
-project(FleCSI)
+option(ENABLE_CUDA "Enable support for CUDA" OFF)
+
+if(ENABLE_CUDA)
+  project(FleCSI LANGUAGES CXX C CUDA)
+else()
+  project(FleCSI LANGUAGES CXX C)
+endif()
 
 #------------------------------------------------------------------------------#
 # Set header suffix regular expression
