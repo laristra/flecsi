@@ -21,7 +21,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         before_script:
         #Config
                 - export CC=gcc
-                - mkdir /build/onurcaylak/artifacts
+                - mkdir /builds/onurcaylak/artifacts
 
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
@@ -54,5 +54,5 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - /build/onurcaylak/artifacts
+                        - /builds/onurcaylak/artifacts
                                                      
