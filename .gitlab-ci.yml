@@ -18,7 +18,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         variables:
           GLOBAL_CI_VARIABLE: "global_ci_value"
 
-        #before_script:
+        before_script:
         - mkdir /builds/onurcaylak/artifacts
 
         script:
