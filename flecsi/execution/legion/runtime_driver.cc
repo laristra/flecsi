@@ -466,6 +466,8 @@ runtime_driver(
 
       Legion::RegionRequirement sparse_reg_req;
 
+      bool sparse_fields=false;
+
       if(flecsi_ispace.has_sparse_fields){
         auto& flecsi_sispace = data.sparse_index_space(idx_space);
 
@@ -487,6 +489,7 @@ runtime_driver(
               field_info->storage_class == ragged) &&
              !utils::hash::is_internal(field_info->key)){
             sparse_reg_req.add_field(field_info->fid);
+            sparse_fields=true;
           }
         }//for field_info
       }
@@ -508,7 +511,7 @@ runtime_driver(
 
       spmd_launcher.add_region_requirement(reg_req);
 
-      if(flecsi_ispace.has_sparse_fields){
+      if(flecsi_ispace.has_sparse_fields && sparse_fields){
         spmd_launcher.add_region_requirement(sparse_reg_req);
       }
 
@@ -541,6 +544,7 @@ runtime_driver(
 
         Legion::RegionRequirement sparse_owner_reg_req;
 
+        bool sparse_owner_fields=false;
         if(flecsi_ispace.has_sparse_fields){
           auto& flecsi_sispace = data.sparse_index_space(idx_space);
 
@@ -568,6 +572,7 @@ runtime_driver(
                 field_info->storage_class == ragged) &&
                !utils::hash::is_internal(field_info->key)){
               sparse_owner_reg_req.add_field(field_info->fid);
+              sparse_owner_fields=true;
             }
           }          
         }
@@ -579,7 +584,7 @@ runtime_driver(
 
         spmd_launcher.add_region_requirement(owner_reg_req);
 
-        if(flecsi_ispace.has_sparse_fields){
+        if(flecsi_ispace.has_sparse_fields && sparse_owner_fields){
           spmd_launcher.add_region_requirement(sparse_owner_reg_req);
         }
 
