@@ -24,6 +24,8 @@ ARG TRAVIS_COMMIT
 ARG TRAVIS_OS_NAME
 ARG IGNORE_NOCI
 
+RUN ls -la
+COPY flecsi /builds/onurcaylak/flecsi/flecsi
 USER root
 RUN chown -R flecsi:flecsi /builds/onurcaylak/flecsi/flecsi
 USER flecsi
