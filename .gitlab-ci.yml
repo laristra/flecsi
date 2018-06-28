@@ -34,8 +34,8 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
                 - docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
                 - docker images
-                - docker build -t laristra/flecsi-third-party:ubuntu
-                - CON=$(docker run -d /laristra/flecsi-third-party:ubuntu /bin/bash) 
+                - docker build -t ubuntu
+                - CON=$(docker run -d ubuntu /bin/bash) 
                 - docker cp ${CON}:/home/flecsi /builds/onurcaylak/artifacts/.
 
         artifacts:
