@@ -24,13 +24,13 @@ ARG TRAVIS_COMMIT
 ARG TRAVIS_OS_NAME
 ARG IGNORE_NOCI
 
-RUN ls -la
-COPY flecsi /builds/onurcaylak/flecsi/flecsi
+RUN pwd
+COPY flecsi /home/flecsi/flecsi
 USER root
-RUN chown -R flecsi:flecsi /builds/onurcaylak/flecsi/flecsi
+RUN chown -R flecsi:flecsi /home/flecsi/flecsi /home/flecsi/.ccache /home/flecsi/.sonar
 USER flecsi
 
-WORKDIR /builds/onurcaylak/flecsi/flecsi
+WORKDIR /home/flecsi/flecsi
 RUN mkdir build
 
 WORKDIR build
