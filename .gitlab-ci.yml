@@ -35,7 +35,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
                 - docker images
                 - docker build -t laristra/flecsi-third-party:ubuntu
-                - CON=$(docker run -d /builds/onurcaylak/docker:${DISTRO}_${RUNTIME}${TAG} /bin/bash) 
+                - CON=$(docker run -d /laristra/flecsi-third-party:ubuntu /bin/bash) 
                 - docker cp ${CON}:/home/flecsi /builds/onurcaylak/artifacts/.
 
         artifacts:
