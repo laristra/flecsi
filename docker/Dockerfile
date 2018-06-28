@@ -24,10 +24,10 @@ ARG TRAVIS_COMMIT
 ARG TRAVIS_OS_NAME
 ARG IGNORE_NOCI
 
-RUN pwd
+RUN ../
 COPY flecsi /home/flecsi/flecsi
 USER root
-RUN chown -R flecsi:flecsi /home/flecsi/flecsi /home/flecsi/.ccache /home/flecsi/.sonar
+RUN chown -R flecsi:flecsi /home/flecsi/flecsi
 USER flecsi
 
 WORKDIR /home/flecsi/flecsi
