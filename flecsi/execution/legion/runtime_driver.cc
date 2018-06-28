@@ -552,6 +552,10 @@ runtime_driver(
             runtime->get_logical_subregion_by_color(ctx, sparse_color_lpart,
               ghost_owner);
 
+          runtime->attach_semantic_information(sparse_ghost_owner_lregion,
+            OWNER_COLOR_TAG, (void*)&owner_color,
+            sizeof(LegionRuntime::Arrays::coord_t), is_mutable);
+
           sparse_owner_reg_req = 
             Legion::RegionRequirement(sparse_ghost_owner_lregion, READ_ONLY,
               SIMULTANEOUS, flecsi_sispace.logical_region);
@@ -794,8 +798,7 @@ spmd_task(
    
   for(size_t i = 0; i < num_sparse_index_spaces; ++i){
     const sparse_index_space_info_t& si = sparse_index_spaces[i];
-    context_.set_sparse_index_space_info(si.index_space,
-      sparse_index_spaces[i]);
+    context_.set_sparse_index_space_info(si);
   }
 
   // #2 deserialize field info
@@ -997,7 +1000,6 @@ spmd_task(
       runtime->get_logical_partition(ctx,
         regions[region_index].get_logical_region(), primary_ghost_ip);
     region_index++;
-
     Legion::LogicalRegion primary_lr =
     runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                             PRIMARY_PART);
@@ -1162,6 +1164,12 @@ spmd_task(
       if(sparse_info){
         ghost_owners_lregions[sparse_idx_space].push_back(regions[region_index]
           .get_logical_region());
+
+        runtime->retrieve_semantic_information(regions[region_index]
+            .get_logical_region(), OWNER_COLOR_TAG,
+            owner_color, size, can_fail, wait_until_ready);
+        clog_assert(size == sizeof(LegionRuntime::Arrays::coord_t),
+            "Unable to map gid to lid with Legion semantic tag");
 
         ispace_dmap[sparse_idx_space]
          .global_to_local_color_map[*(LegionRuntime::Arrays::coord_t*)owner_color]
