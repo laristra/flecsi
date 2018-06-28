@@ -284,6 +284,18 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   {
   } // handle
 
+  template<
+    typename T,
+    size_t PERMISSIONS
+  >
+  typename std::enable_if_t<std::is_base_of<topology::structured_mesh_topology_base_t, T>
+    ::value>
+  handle(
+    data_client_handle__<T, PERMISSIONS> & h
+  )
+  {
+    h.delete_storage();
+  } // handle for structured_mesh_topology
 }; // struct finalize_handles_t
 
 } // namespace execution

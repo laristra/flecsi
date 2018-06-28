@@ -164,7 +164,7 @@ public:
       }
 
       //Bounds info
-      /*std::vector<size_t> bnds_info[3][4] =
+      std::vector<size_t> bnds_info[3][4] =
                            {{{{1}}, {{0}}, {{}}, {{}}},
                             {{{1,1}}, {{1,0,0,1}}, {{0,0}}, {{}}},
                             {{{1,1,1}}, {{1,0,1,0,1,1,1,1,0}}, 
@@ -175,8 +175,9 @@ public:
       for (size_t i = 0; i <= meshdim_; ++i)
       {
         if ( i == meshdim_) primary = true;
-        ms_.index_spaces[0][i].init(primary, meshbnds_low_, meshbnds_up_, bnds_info[meshdim_-1][i]);
-      } */
+        base_t::ms_->index_spaces[0][i].init(primary, meshbnds_low_, 
+        meshbnds_up_, bnds_info[meshdim_-1][i]);
+      } 
 
      //create query table once
      qt = new query::QueryTable<MESH_POLICY::num_dimensions, 
@@ -211,7 +212,7 @@ public:
   decltype(auto)
   num_entities() const
   {
-    return ms_.index_spaces[M][D].size();
+    return base_t::ms_->index_spaces[M][D].size();
   } // num_entities
  
  /******************************************************************************
@@ -274,7 +275,7 @@ public:
   >
   auto get_box_id(sm_id_t entity_id)
   { 
-    return ms_.index_spaces[M][D].find_box_id(entity_id);
+    return base_t::ms_->index_spaces[M][D].find_box_id(entity_id);
   }
 
   template<
@@ -284,7 +285,7 @@ public:
   >
   auto get_box_id(E* e)
   {
-    return ms_.index_spaces[M][D].find_box_id(e->id(0)); 
+    return base_t::ms_->index_spaces[M][D].find_box_id(e->id(0)); 
   }
 
  //--------------------------------------------------------------------------//
@@ -306,7 +307,7 @@ public:
   >
   auto get_indices(sm_id_t entity_id) 
   {
-    return ms_.index_spaces[M][D].get_indices_from_offset(entity_id);
+    return base_t::ms_->index_spaces[M][D].get_indices_from_offset(entity_id);
   }
   
   template<
@@ -316,7 +317,7 @@ public:
   >
   auto get_indices(E* e)
   {
-    return ms_.index_spaces[M][D].get_indices_from_offset(e->id(0));
+    return base_t::ms_->index_spaces[M][D].get_indices_from_offset(e->id(0));
   }
   
  //--------------------------------------------------------------------------//
@@ -338,7 +339,7 @@ public:
   >
   auto get_global_offset(size_t box_id, sm_id_array_t &idv) 
   {
-    return ms_.index_spaces[M][D].template get_global_offset_from_indices(box_id, idv);
+    return base_t::ms_->index_spaces[M][D].template get_global_offset_from_indices(box_id, idv);
   }
 
  //--------------------------------------------------------------------------//
@@ -356,7 +357,7 @@ public:
   >
   auto get_local_offset(size_t box_id, sm_id_array_t &idv) 
   {
-    return ms_.index_spaces[M][D].template get_local_offset_from_indices(box_id, idv);
+    return base_t::ms_->index_spaces[M][D].template get_local_offset_from_indices(box_id, idv);
   }
   
 
@@ -385,7 +386,7 @@ public:
   entities()
   {
     using etype = entity_type<D,M>;
-    return ms_.index_spaces[M][D].template iterate<etype>(); 
+    return base_t::ms_->index_spaces[M][D].template iterate<etype>(); 
   }
  // entities
  
@@ -406,7 +407,7 @@ public:
   entities() const
   {
     using etype = entity_type<D,M>;
-    return ms_.index_spaces[M][D].template iterate<etype>();
+    return base_t::ms_->index_spaces[M][D].template iterate<etype>();
   } // entities
 
 
@@ -435,12 +436,12 @@ public:
     size_t FD = E::dimension;
     assert(FD != TD);
     sm_id_t id = e->id(0);
-    size_t BD = ms_.index_spaces[FM][FD].template find_box_id(id);
-    auto indices = ms_.index_spaces[FM][FD].template 
+    size_t BD = base_t::ms_->index_spaces[FM][FD].template find_box_id(id);
+    auto indices = base_t::ms_->index_spaces[FM][FD].template 
                    get_indices_from_offset(id);
 
     using etype = entity_type<TD,TM>;
-    return ms_.index_spaces[TM][TD].template 
+    return base_t::ms_->index_spaces[TM][TD].template 
            traverse<TD,etype>(FD, BD, indices, qt);
   } //entities
 
@@ -468,11 +469,11 @@ public:
     assert(!(xoff == 0) ); 
     size_t FD = E::dimension;
     size_t value = e->id(0);
-    size_t BD = ms_.index_spaces[FM][FD].template find_box_id(value);
-    auto indices = ms_.index_spaces[FM][FD].template
+    size_t BD = base_t::ms_->index_spaces[FM][FD].template find_box_id(value);
+    auto indices = base_t::ms_->index_spaces[FM][FD].template
                    get_indices_from_offset(value);
   
-    if(ms_.index_spaces[FM][FD].template 
+    if(base_t::ms_->index_spaces[FM][FD].template 
        check_index_limits<0>(BD,xoff+indices[0]))
     {
       value += xoff;
@@ -499,16 +500,16 @@ public:
     assert(!((xoff == 0) && (yoff == 0))); 
     size_t FD = E::dimension;
     size_t value = e->id(0);
-    size_t BD = ms_.index_spaces[FM][FD].template find_box_id(value);
-    auto indices = ms_.index_spaces[FM][FD].template
+    size_t BD = base_t::ms_->index_spaces[FM][FD].template find_box_id(value);
+    auto indices = base_t::ms_->index_spaces[FM][FD].template
                    get_indices_from_offset(value);
   
-    if((ms_.index_spaces[FM][FD].template 
+    if((base_t::ms_->index_spaces[FM][FD].template 
        check_index_limits<0>(BD,xoff+indices[0]))&& 
-       (ms_.index_spaces[FM][FD].template 
+       (base_t::ms_->index_spaces[FM][FD].template 
        check_index_limits<1>(BD,yoff+indices[1])))
     {
-      size_t nx = ms_.index_spaces[FM][FD].template 
+      size_t nx = base_t::ms_->index_spaces[FM][FD].template 
                   get_size_in_direction<0>(BD);
       value += xoff + nx*yoff;
     }
@@ -535,20 +536,20 @@ public:
     assert(!((xoff == 0) && (yoff == 0) && (zoff == 0))); 
     size_t FD = E::dimension;
     size_t value = e->id(0);
-    size_t BD = ms_.index_spaces[FM][FD].template find_box_id(value);
-    auto indices = ms_.index_spaces[FM][FD].template
+    size_t BD = base_t::ms_->index_spaces[FM][FD].template find_box_id(value);
+    auto indices = base_t::ms_->index_spaces[FM][FD].template
                    get_indices_from_offset(value);
   
-    if((ms_.index_spaces[FM][FD].template 
+    if((base_t::ms_->index_spaces[FM][FD].template 
        check_index_limits<0>(BD,xoff+indices[0])) && 
-       (ms_.index_spaces[FM][FD].template 
+       (base_t::ms_->index_spaces[FM][FD].template 
        check_index_limits<1>(BD,yoff+indices[1])) &&
-       (ms_.index_spaces[FM][FD].template
+       (base_t::ms_->index_spaces[FM][FD].template
        check_index_limits<2>(BD,zoff+indices[2])))
     {
-      size_t nx = ms_.index_spaces[FM][FD].template 
+      size_t nx = base_t::ms_->index_spaces[FM][FD].template 
                   get_size_in_direction<0>(BD);
-      size_t ny = ms_.index_spaces[FM][FD].template 
+      size_t ny = base_t::ms_->index_spaces[FM][FD].template 
                   get_size_in_direction<1>(BD);
       value += xoff + nx*yoff + nx*ny*zoff;
     }
@@ -572,7 +573,7 @@ private:
     size_t domain=0
   ) const
   {
-    return ms_.index_spaces[domain][dim].size();
+    return base_t::ms_->index_spaces[domain][dim].size();
   } // num_entities_
 
 }; // class structured_mesh_topology__

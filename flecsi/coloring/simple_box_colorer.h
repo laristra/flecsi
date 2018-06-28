@@ -101,6 +101,40 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     return colbox;
   } // color
 
+  
+  coloring_info_t create_aggregate_color_info(box_coloring_info_t<D> &cbox)
+  {
+    coloring_info_t colinfo; 
+ 
+    //#exclusive entities
+    colinfo.exlusive = cbox.exclusive.box.size();
+
+    //#shared entities
+    colinfo.shared = 0; 
+    std::set<size_t> shared_ranks; 
+    for (size_t i = 0; i < cbox.shared.size(); i++)
+    {
+      colinfo.shared += cbox.shared[i].box.size();
+      for (size_t j = 0; j < cbox.shared[i].colors.size(); j++)
+         shared_ranks.insert(cbox.shared[i].colors[j]);
+    }
+    colinfo.shared_users = shared_ranks; 
+
+    //#ghost entities
+    colinfo.ghost = 0; 
+    std::set<size_t> ghost_ranks; 
+    for (size_t i = 0; i < cbox.ghost.size(); i++)
+    {
+      colinfo.ghost += cbox.ghost[i].box.size();
+      for (size_t j = 0; j < cbox.ghost[i].colors.size(); j++)
+         ghost_ranks.insert(cbox.ghost[i].colors[j]);
+    }
+    colinfo.ghost_owners = ghost_ranks;
+
+   return colinfo;  
+  }//create_aggregate_color_info 
+
+private:
   auto create_primary_box(box_t<D> & domain, size_t ncolors[D], size_t idx[D]) {
     box_t<D> pbox;
     for (size_t i = 0; i < D; ++i) {

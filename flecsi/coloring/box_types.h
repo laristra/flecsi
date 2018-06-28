@@ -29,6 +29,15 @@ template<size_t D>
 struct box_t {
   size_t lowerbnd[D];
   size_t upperbnd[D];
+ 
+  size_t size()
+  {
+    size_t count = 1;
+    for (size_t i = 0; i < D; i++)
+     count *= upperbnd[i]-lowerbnd[i]+1;
+    return count;
+  }
+
 }; // class box_t
 
 /*!
