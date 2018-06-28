@@ -9,6 +9,7 @@ stages:
         - deploy
 
 before_script:
+        - mkdir /builds/onurcaylak/artifacts
         - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
         - git fetch --unshallow && git fetch --tags #for versioning
 
@@ -18,10 +19,8 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         variables:
           GLOBAL_CI_VARIABLE: "global_ci_value"
 
-        before_script:
+        #before_script:
         #Config
-                - export CC=gcc
-                - mkdir /builds/onurcaylak/artifacts
 
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
@@ -34,7 +33,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
                 - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
                 - docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
-                - docker build --build-arg LEGION=${LEGION} --build-arg RUNTIME=${RUNTIME} /
+                - docker build -t ${CI_COMMIT_REF_NAME}:${DISTRO}_${RUNTIME}${TAG} ${HOME}/docker/ --build-arg LEGION=${LEGION} --build-arg RUNTIME=${RUNTIME} /
                                --build-arg CXXFLAGS="${WERROR:+-Werror} -Wno-deprecated-declarations"/
                                --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL} /
                                --build-arg CC=${CC} --build-arg CXX=${CXX} /
@@ -45,10 +44,8 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                                --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH} --build-arg TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER} /
                                --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID} /
                                --build-arg TRAVIS_TAG=${TRAVIS_TAG} --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG} /
-                               --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT} /
-                               -t ${CI_COMMIT_REF_NAME}:${DISTRO}_${RUNTIME}${TAG} ${HOME}/docker/ &&
+                               --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT} / &&
                                CON=$(docker run -d ${CI_COMMIT_REF_NAME}:${DISTRO}_${RUNTIME}${TAG} /bin/bash) &&
-                               docker cp ${CON}:/home/flecsi /builds/onurcaylak/artifacts/. &&
                                docker cp ${CON}:/home/flecsi /builds/onurcaylak/artifacts/.
 
         artifacts:
