@@ -20,24 +20,16 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
 
         before_script:
         #Config
-                - export HOME=/home
-                - mkdir -p ${HOME}/.ccache
-                - mkdir -p ${HOME}/.sonar
-                - export CCACHE_BASEDIR=${HOME}
-                - export SONAR_BASEDIR=${HOME}
-                - export CCACHE_DIR=${HOME}/.ccache 
-                - export SONAR_DIR=${HOME}/.sonar 
                 - export CC=gcc
 
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
-                - cd ${CI_PROJECT_DIR}
-                - cp -vr docker ${HOME}/docker
-                - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
-                - cd ../../
-                - cp -r  ${CI_PROJECT_PATH} $HOME/docker
-                - cp -r $HOME/.ccache ${HOME}/docker/ccache
-                - cp -r $HOME/.sonar ${HOME}/docker/sonar
+                - pwd
+                - cd ../
+                - pwd
+                - cp -vr flecsi/docker .
+                - ls -la
+                - sed -i "1s/fedora/${DISTRO}/" docker/Dockerfile
                 - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
                 - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
                 - docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
