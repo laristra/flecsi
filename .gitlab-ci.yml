@@ -48,8 +48,8 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                                --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT} /
                                -t ${CI_COMMIT_REF_NAME}:${DISTRO}_${RUNTIME}${TAG} ${HOME}/docker/ &&
                                CON=$(docker run -d ${CI_COMMIT_REF_NAME}:${DISTRO}_${RUNTIME}${TAG} /bin/bash) &&
-                               docker cp ${CON}:/home/flecsi /build/onurcaylak/artifacts/. &&
-                               docker cp ${CON}:/home/flecsi /build/onurcaylak/artifacts/.
+                               docker cp ${CON}:/home/flecsi /builds/onurcaylak/artifacts/. &&
+                               docker cp ${CON}:/home/flecsi /builds/onurcaylak/artifacts/.
 
         artifacts:
                 expire_in: 1 hour
