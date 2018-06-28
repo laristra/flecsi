@@ -9,7 +9,6 @@ stages:
         - deploy
 
 before_script:
-        - mkdir /builds/onurcaylak/artifacts
         - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
         - git fetch --unshallow && git fetch --tags #for versioning
 
@@ -20,7 +19,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
           GLOBAL_CI_VARIABLE: "global_ci_value"
 
         #before_script:
-        #Config
+        - mkdir /builds/onurcaylak/artifacts
 
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
