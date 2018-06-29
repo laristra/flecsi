@@ -132,8 +132,7 @@ namespace execution {
 
         auto &context = context_t::instance();
         const int my_color = context.color();
-        MPI_Bcast(&a.data(), 1, flecsi::coloring::mpi_typetraits__<T>::type(),
-	0,
+        MPI_Bcast(&a.data(), 1, flecsi::coloring::mpi_typetraits__<T>::type(), 0,
         MPI_COMM_WORLD); 
     } // handle
 
@@ -216,55 +215,8 @@ namespace execution {
 
       MPI_Win_free(&win);
 
-      for (int i = 0; i < h.num_ghost_ * h.max_entries_per_index; i++)
-        clog_rank(warn, 0) << "ghost after: " << ghost_data[i].value << std::endl;
-
-      int send_count = 0;
-      for (auto& shared : index_coloring.shared) {
-        send_count += shared.shared.size();
-      }
-
-      // Send/Recv counts in entry_values.
-      std::vector<MPI_Request> requests(send_count + h.num_ghost_);
-      std::vector<MPI_Status> statuses(send_count + h.num_ghost_);
-
-      std::vector<uint32_t> send_count_buf;
-      for (auto& shared : index_coloring.shared) {
-        for (auto peer : shared.shared) {
-          send_count_buf.push_back(offsets[h.num_exclusive_ + shared.offset].count());
-        }
-      }
-
-      i = 0;
-      for (auto& shared : index_coloring.shared) {
-        for (auto peer : shared.shared) {
-          MPI_Isend(&send_count_buf[i],
-                    1,
-                    flecsi::coloring::mpi_typetraits__<uint32_t>::type(),
-                    peer, shared.id, MPI_COMM_WORLD, &requests[i]);
-          i++;
-        }
-      }
-
-      std::vector<uint32_t> recv_count_buf(h.num_ghost_);
-      i = 0;
-      for (auto& ghost : index_coloring.ghost) {
-        MPI_Status status;
-        MPI_Irecv(&recv_count_buf[i],
-                  1,
-                  flecsi::coloring::mpi_typetraits__<uint32_t>::type(),
-                  ghost.rank, ghost.id, MPI_COMM_WORLD, &requests[i+send_count]);
-        i++;
-      }
-
-      MPI_Waitall(send_count + h.num_ghost_,
-                  requests.data(),
-                  statuses.data());
-
-      for (int i = 0; i < h.num_ghost_; i++) {
-        clog_rank(warn, 0) << recv_count_buf[i] << std::endl;
-        offsets[h.num_exclusive_ + h.num_shared_ + i].set_count(recv_count_buf[i]);
-      }
+      // for (int i = 0; i < h.num_ghost_ * h.max_entries_per_index; i++)
+      //   clog_rank(warn, 0) << "ghost after: " << ghost_data[i].value << std::endl;
     } // handle
 
     template<
