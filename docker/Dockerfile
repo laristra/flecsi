@@ -24,6 +24,11 @@ ARG TRAVIS_COMMIT
 ARG TRAVIS_OS_NAME
 ARG IGNORE_NOCI
 
+ARG CI_COMMIT_REF_NAME
+ARG CI_JOB_ID
+ARG CI_REPOSITORY_URL
+ARG CI_COMMIT_SHA
+
 COPY flecsi /home/flecsi/flecsi
 USER root
 RUN chown -R flecsi:flecsi /home/flecsi/flecsi

@@ -34,8 +34,6 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - docker images
                 - docker build -t laristra/flecsi-third-party:ubuntu /builds/onurcaylak/docker/ 
                         --build-arg LEGION=${LEGION} --build-arg RUNTIME=${RUNTIME} 
-                        --build-arg LEGION=${LEGION} 
-                        --build-arg RUNTIME=${RUNTIME} 
                         --build-arg CXXFLAGS="${WERROR:+-Werror} -Wno-deprecated-declarations"
                         --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
                         --build-arg CC=${CC} --build-arg CXX=${CXX}
