@@ -24,9 +24,6 @@ ARG TRAVIS_COMMIT
 ARG TRAVIS_OS_NAME
 ARG IGNORE_NOCI
 
-USER root
-RUN ../
-RUN ls /
 COPY flecsi /home/flecsi/flecsi
 USER root
 RUN chown -R flecsi:flecsi /home/flecsi/flecsi
