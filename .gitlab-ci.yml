@@ -11,7 +11,6 @@ stages:
 before_script:
         - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
         - git fetch --unshallow && git fetch --tags #for versioning
-        - git submodule update --init --recursive
 
 DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         stage: build
@@ -22,6 +21,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         before_script:
         - export CC=gcc
         - mkdir /builds/onurcaylak/artifacts
+        - git submodule update --init --recursive
 
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
