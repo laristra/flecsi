@@ -8,15 +8,15 @@ stages:
         - test
         - deploy
 
+before_script:
+        - mkdir /builds/onurcaylak/artifacts
+
 DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         stage: build
 
         variables:
           GLOBAL_CI_VARIABLE: "global_ci_value"
           GIT_SUBMODULE_STRATEGY: recursive
-
-        before_script:
-         - mkdir /builds/onurcaylak/artifacts
 
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
@@ -45,10 +45,15 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 paths:
                         - /builds/onurcaylak/artifacts
                                                      
-
 test:osx:
         stage: test
         script: 
                 - ls -la /builds/onurcaylak/artifacts
         dependencies:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+
+        artifacts:
+                expire_in: 1 hour
+                paths:
+                        - /builds/onurcaylak/artifacts
+                                                     
