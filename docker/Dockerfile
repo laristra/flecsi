@@ -33,7 +33,6 @@ WORKDIR /home/flecsi/flecsi
 RUN mkdir build
 
 WORKDIR build
-RUN ccache -z
 RUN cmake \
           -DENABLE_LEGION=$LEGION \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
@@ -54,7 +53,7 @@ RUN if [ ${COVERAGE} ]; then \
       bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; \
       doxy-coverage --threshold 24 doc/doxygen/xml/; \
     fi
-RUN make test ARGS="-V"
+#RUN make test ARGS="-V"
 RUN make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
 RUN cd .. && if [ ${COVERAGE} ]; then \
   if [ ${CC} = clang ]; then \
@@ -63,6 +62,7 @@ RUN cd .. && if [ ${COVERAGE} ]; then \
     $HOME/.local/bin/codecov -F "${CC}"; \
   fi; \
 fi && cd -
+
 USER root
 RUN make install
 USER flecsi
