@@ -49,6 +49,6 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
 test:osx:
         stage: test
         script: 
-                - ls -la /builds/onurcaylak
+                - ls -la /builds/onurcaylak/artifacts
         dependencies:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
