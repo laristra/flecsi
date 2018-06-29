@@ -9,6 +9,8 @@ stages:
         - deploy
 
 before_script:
+        - git submodule sync --recursive
+        - git submodule update --init --recursive
         - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
         - git fetch --unshallow && git fetch --tags #for versioning
 
