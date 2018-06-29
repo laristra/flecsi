@@ -20,7 +20,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
 
         variables:
           GLOBAL_CI_VARIABLE: "global_ci_value"
-          GIT_SUBMODULE_STRATEGY: recursive
+          #GIT_SUBMODULE_STRATEGY: recursive
 
         before_script:
          - git add remote origin https://github.com/onurcaylak/flecsi.git
