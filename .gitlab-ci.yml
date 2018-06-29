@@ -45,3 +45,10 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 paths:
                         - /builds/onurcaylak/artifacts
                                                      
+
+test:osx:
+        stage: test
+        script: 
+                - ls -la /builds/onurcaylak
+        dependencies:
+                - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
