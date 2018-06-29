@@ -24,9 +24,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
 
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
-                - pwd
                 - cd ../
-                - pwd
                 - cp -vr flecsi/docker .
                 - mv -v flecsi docker/.
                 - sed -i "1s/fedora/${DISTRO}/" docker/Dockerfile
