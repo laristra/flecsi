@@ -23,6 +23,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
           #GIT_SUBMODULE_STRATEGY: recursive
 
         before_script:
+         - sudo apt-get install git
          - git add remote origin https://github.com/onurcaylak/flecsi.git
          - git submodule sync --recursive
          - git submodule update --init --recursive
