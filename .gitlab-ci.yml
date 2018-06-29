@@ -17,11 +17,11 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
 
         variables:
           GLOBAL_CI_VARIABLE: "global_ci_value"
+          GIT_SUBMODULE_STRATEGY: recursive
 
         before_script:
         - export CC=gcc
         - mkdir /builds/onurcaylak/artifacts
-        - git submodule update --init --recursive
 
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
