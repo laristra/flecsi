@@ -24,7 +24,6 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
 
         before_script:
          - apk update && apk add git
-         - git add remote origin https://github.com/onurcaylak/flecsi.git
          - git submodule sync --recursive
          - git submodule update --init --recursive
          - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
