@@ -33,7 +33,7 @@ WORKDIR /home/flecsi/flecsi
 RUN mkdir build
 
 WORKDIR build
-RUN ccache -z
+RUN ls  /home/flecsi/flecsi/cinch/cmake
 RUN cmake \
           -DENABLE_LEGION=$LEGION \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
