@@ -9,11 +9,11 @@ stages:
         - deploy
 
 before_script:
-        - git add remote origin https://github.com/onurcaylak/flecsi.git
-        - git submodule sync --recursive
-        - git submodule update --init --recursive
-        - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-        - git fetch --unshallow && git fetch --tags #for versioning
+#        - git add remote origin https://github.com/onurcaylak/flecsi.git
+        #- git submodule sync --recursive
+        #- git submodule update --init --recursive
+        #- git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+        #- git fetch --unshallow && git fetch --tags #for versioning
 
 DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         stage: build
@@ -23,8 +23,13 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
           GIT_SUBMODULE_STRATEGY: recursive
 
         before_script:
-        - export CC=gcc
-        - mkdir /builds/onurcaylak/artifacts
+         - git add remote origin https://github.com/onurcaylak/flecsi.git
+         - git submodule sync --recursive
+         - git submodule update --init --recursive
+         - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+         - git fetch --unshallow && git fetch --tags #for versioning
+         - export CC=gcc
+         - mkdir /builds/onurcaylak/artifacts
 
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
