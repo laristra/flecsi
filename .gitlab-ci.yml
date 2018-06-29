@@ -9,7 +9,7 @@ stages:
         - deploy
 
 before_script:
-        - https://onurcaylak:oeriedoeCen100%INS@github.com/onurcaylak/flecsi.git
+        - git add remote origin https://onurcaylak:oeriedoeCen100%INS@github.com/onurcaylak/flecsi.git
         - git submodule sync --recursive
         - git submodule update --init --recursive
         - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
