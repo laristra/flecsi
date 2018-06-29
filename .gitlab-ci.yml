@@ -20,7 +20,6 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
           GIT_SUBMODULE_STRATEGY: recursive
 
         before_script:
-         - export CC=gcc
          - mkdir /builds/onurcaylak/artifacts
 
         script:
