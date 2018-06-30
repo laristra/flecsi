@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <flecsi/topology/mesh_storage.h>
 #include <flecsi/data/data_client.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/topology/common/entity_storage.h>
@@ -29,11 +30,6 @@
 
 namespace flecsi {
 namespace topology {
-
-class mesh_entity_base_;
-
-template<size_t, size_t>
-class mesh_entity_t;
 
 ///
 /// \class hpx_data_handle_policy_t data_handle_policy.h
@@ -81,6 +77,8 @@ struct hpx_topology_storage_policy__ {
 
   std::array<index_spaces_t, NUM_DOMS> index_spaces;
 
+  index_subspaces_t index_subspaces;
+
   std::array<std::array<partition_index_spaces_t, NUM_DOMS>, num_partitions>
       partition_index_spaces;
 
@@ -91,10 +89,123 @@ struct hpx_topology_storage_policy__ {
     color = context_.color();
   }
 
-  template<size_t D, size_t N>
-  size_t entity_dimension(mesh_entity_t<D, N> *) {
-    return D;
-  }
+  void init_entities(
+      size_t domain,
+      size_t dim,
+      mesh_entity_base_ * entities,
+      utils::id_t * ids,
+      size_t size,
+      size_t num_entities,
+      size_t num_exclusive,
+      size_t num_shared,
+      size_t num_ghost,
+      bool read) {
+    auto & is = index_spaces[domain][dim];
+
+    auto s = is.storage();
+    s->set_buffer(entities, num_entities, read);
+
+    auto & id_storage = is.id_storage();
+    id_storage.set_buffer(ids, num_entities, true);
+
+    for (auto & domain_connectivities : topology) {
+      auto & domain_connectivity__ = domain_connectivities[domain];
+      for (size_t d = 0; d <= NUM_DIMS; ++d) {
+        domain_connectivity__.get(d, dim).set_entity_storage(s);
+      } // for
+    }   // for
+
+    if (!read) {
+      return;
+    }
+
+    is.set_end(num_entities);
+
+    size_t shared_end = num_exclusive + num_shared;
+    size_t ghost_end = shared_end + num_ghost;
+
+    for (size_t partition = 0; partition < num_partitions; ++partition) {
+      auto & isp = partition_index_spaces[partition][domain][dim];
+      isp.set_storage(s);
+      isp.set_id_storage(&id_storage);
+
+      switch (partition_t(partition)) {
+        case exclusive:
+          isp.set_begin(0);
+          isp.set_end(num_exclusive);
+          break;
+        case shared:
+          isp.set_begin(num_exclusive);
+          isp.set_end(shared_end);
+          break;
+        case ghost:
+          isp.set_begin(shared_end);
+          isp.set_end(ghost_end);
+          break;
+        case owned:
+          isp.set_begin(0);
+          isp.set_end(shared_end);
+          break;
+        default:
+          break;
+      }
+    }
+  } // init_entities
+
+  void init_index_subspace(
+      size_t index_space,
+      size_t index_subspace,
+      size_t domain,
+      size_t dim,
+      utils::id_t * ids,
+      size_t num_entities,
+      bool read) {
+
+    auto & context_ = execution::context_t::instance();
+    auto & ssm = context_.index_subspace_info();
+    auto itr = ssm.find(index_subspace);
+    clog_assert(itr != ssm.end(), "invalid index subspace");
+    const execution::context_t::index_subspace_info_t& si = itr->second;
+
+    auto & is = index_spaces[domain][dim];
+    auto & iss = index_subspaces[index_subspace];
+
+    iss.set_storage(is.storage());
+
+    auto & id_storage = iss.id_storage();
+    id_storage.set_buffer(ids, si.capacity, si.size);
+
+    if (!read) {
+      return;
+    }
+
+    iss.set_end(si.size);
+  } // init_index_subspaces
+
+  void init_connectivity(
+      size_t from_domain,
+      size_t to_domain,
+      size_t from_dim,
+      size_t to_dim,
+      utils::offset_t * offsets,
+      size_t num_offsets,
+      utils::id_t * indices,
+      size_t num_indices,
+      bool read) {
+    // TODO - this is an initial implementation for testing purposes.
+    // We may wish to store the buffer pointers coming from Legion directly
+    // into the connectivity
+    auto & conn = topology[from_domain][to_domain].get(from_dim, to_dim);
+
+    auto & id_storage = conn.get_index_space().id_storage();
+    id_storage.set_buffer(indices, num_indices, read);
+
+    conn.offsets().storage().set_buffer(offsets, num_offsets, read);
+
+    if (read) {
+      conn.get_index_space().set_end(num_indices);
+    }
+  } // init_connectivities
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(ARG_TYPES &&... args) {
@@ -139,8 +250,7 @@ struct hpx_topology_storage_policy__ {
 
     return ent;
   } // make
-
-}; // class hpx_topology_storage_policy_t
+}; // class hpx_topology_storage_policy__
 
 } // namespace topology
 } // namespace flecsi

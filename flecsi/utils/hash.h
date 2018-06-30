@@ -84,7 +84,7 @@ template<size_t NAMESPACE, size_t NAME>
 inline constexpr size_t
 field_hash(size_t version) {
   return ((NAMESPACE ^ NAME) << field_hash_version_bits | version) &
-         ~(1ul << 63);
+         ~(1ull << 63);
 } // field_hash
 
 inline size_t
