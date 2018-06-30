@@ -16,6 +16,10 @@
   Documentation for this example can be found in README.md.
  *----------------------------------------------------------------------------*/
 
+#if !defined(ENABLE_GRAPHVIZ)
+#error ENABLE_GRAPHVIZ not defined! This file depends on Graphviz!
+#endif
+
 #include <flecsi/execution/execution.h>
 
 #include "analysis.h"
