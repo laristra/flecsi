@@ -32,7 +32,7 @@ namespace execution {
 //! @tparam
 //----------------------------------------------------------------------------//
 
-template < 
+template <
   size_t DIMENSION,
   size_t ENTITY_DIM,
   typename CLOSURE_SET,
@@ -54,7 +54,7 @@ void color_entity(
 {
   // some compile time constants
   constexpr auto cell_dim = DIMENSION;
-  
+
   // some type aliases
   using entity_info_t = flecsi::coloring::entity_info_t;
 
@@ -63,7 +63,7 @@ void color_entity(
   auto rank = communicator->rank();
 
   // Form the entity closure
-  auto entity_closure = 
+  auto entity_closure =
     flecsi::topology::entity_closure<cell_dim, ENTITY_DIM>(md, closure);
 
   // Assign entity ownership
@@ -75,7 +75,7 @@ void color_entity(
     for(auto i: entity_closure) {
 
       // Get the set of cells that reference this entity.
-      auto referencers = 
+      auto referencers =
         flecsi::topology::entity_referencers<cell_dim, ENTITY_DIM>(md, i);
 
       {
@@ -83,7 +83,7 @@ void color_entity(
         clog_container_one(info, i << " referencers", referencers, clog::space);
       } // guard
 
-      size_t min_rank(std::numeric_limits<size_t>::max());
+      size_t min_rank((std::numeric_limits<size_t>::max)());
       std::set<size_t> shared_entities;
 
       // Iterate the direct referencers to assign entity ownership.
@@ -93,7 +93,7 @@ void color_entity(
         // off-color. If it is, compare it's rank for
         // the ownership logic below.
         if(remote_info_map.find(c) != remote_info_map.end()) {
-          min_rank = std::min(min_rank, remote_info_map.at(c).rank);
+          min_rank = (std::min)(min_rank, remote_info_map.at(c).rank);
           shared_entities.insert(remote_info_map.at(c).rank);
         }
         else {
@@ -101,12 +101,12 @@ void color_entity(
           // it is a local cell.
 
           // Add our rank to compare for ownership.
-          min_rank = std::min(min_rank, size_t(rank));
+          min_rank = (std::min)(min_rank, size_t(rank));
 
           // If the local cell is shared, we need to add all of
           // the ranks that reference it.
-          if(shared_cells_map.find(c) != shared_cells_map.end()) 
-            shared_entities.insert( 
+          if(shared_cells_map.find(c) != shared_cells_map.end())
+            shared_entities.insert(
               shared_cells_map.at(c).shared.begin(),
               shared_cells_map.at(c).shared.end()
             );
@@ -115,8 +115,8 @@ void color_entity(
         // Iterate through the closure intersection map to see if the
         // indirect reference is part of another rank's closure, i.e.,
         // that it is an indirect dependency.
-        for(auto ci: closure_intersection_map) 
-          if(ci.second.find(c) != ci.second.end()) 
+        for(auto ci: closure_intersection_map)
+          if(ci.second.find(c) != ci.second.end())
             shared_entities.insert(ci.first);
       } // for
 
@@ -142,11 +142,11 @@ void color_entity(
       entities.shared.insert(i);
       // Collect all colors with whom we require communication
       // to send shared information.
-      entity_color_info.shared_users = 
+      entity_color_info.shared_users =
         flecsi::utils::set_union(entity_color_info.shared_users, i.shared);
     }
     // otherwise, its exclusive
-    else 
+    else
       entities.exclusive.insert(i);
   } // for
 
@@ -171,9 +171,9 @@ void color_entity(
   {
     clog_tag_guard(coloring_functions);
     clog_container_one(
-      info, 
-      "exclusive entities("<<ENTITY_DIM<<")", 
-      entities.exclusive, 
+      info,
+      "exclusive entities("<<ENTITY_DIM<<")",
+      entities.exclusive,
       clog::newline
     );
     clog_container_one(
@@ -184,7 +184,7 @@ void color_entity(
     );
   } // guard
 
-  
+
   entity_color_info.exclusive = entities.exclusive.size();
   entity_color_info.shared = entities.shared.size();
   entity_color_info.ghost = entities.ghost.size();

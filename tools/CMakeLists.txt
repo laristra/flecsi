@@ -9,6 +9,8 @@
 
 add_executable(flecsi-mg mesh-gen/main.cc)
 
+set_target_properties(flecsi-mg PROPERTIES FOLDER "Tools")
+
 #------------------------------------------------------------------------------#
 # Collect information for FleCSIT
 #------------------------------------------------------------------------------#

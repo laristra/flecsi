@@ -125,7 +125,7 @@ cinch_add_devel_target(devel-dcrs
   LIBRARIES ${COLORING_LIBRARIES}
   POLICY MPI
   THREADS 5
-  FOLDER "Tests/Coloring"
+  FOLDER "Tests/Coloring/Devel"
 )
 
 cinch_add_unit(boxcolor2d
@@ -158,7 +158,7 @@ cinch_add_devel_target(coloring
   LIBRARIES ${COLORING_LIBRARIES}
   POLICY MPI
   THREADS 5
-  FOLDER "Tests/Coloring"
+  FOLDER "Tests/Coloring/Devel"
 )
 
 endif()
