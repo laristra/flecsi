@@ -168,6 +168,7 @@ void color_entity(
     } // for
   } // scope
 
+#if 0
   {
     clog_tag_guard(coloring_functions);
     clog_container_one(
@@ -183,7 +184,7 @@ void color_entity(
       info, "ghost entities("<<ENTITY_DIM<<")" , entities.ghost, clog::newline
     );
   } // guard
-
+#endif
   
   entity_color_info.exclusive = entities.exclusive.size();
   entity_color_info.shared = entities.shared.size();

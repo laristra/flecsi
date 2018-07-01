@@ -214,12 +214,14 @@ void add_colorings(coloring_map_t map) {
   cell_color_info.shared = cells.shared.size();
   cell_color_info.ghost = cells.ghost.size();
 
+#if 0
   {
   clog_tag_guard(coloring_output);
   clog_container_one(info, "exclusive cells ", cells.exclusive, clog::newline);
   clog_container_one(info, "shared cells ", cells.shared, clog::newline);
   clog_container_one(info, "ghost cells ", cells.ghost, clog::newline);
   } // guard
+#endif
 
   // Create a map version for lookups below.
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>
