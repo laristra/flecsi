@@ -16,8 +16,10 @@
 /*! @file */
 
 #include <flecsi/data/accessor.h>
+#include <flecsi/data/data.h>
 #include <flecsi/data/data_constants.h>
 #include <flecsi/data/dense_data_handle.h>
+#include <flecsi/data/global_accessor.h>
 
 /*!
  @file

@@ -3,27 +3,31 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_hpx_data_handle_policy_h
-#define flecsi_data_hpx_data_handle_policy_h
+#pragma once
 
-///
-/// \file
-/// \date Initial file creation: Apr 04, 2017
-///
+#include <cstddef>
+
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Apr 04, 2017
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 
-///
-/// \class hpx_data_handle_policy_t data_handle_policy.h
-/// \brief hpx_data_handle_policy_t provides...
-///
-struct hpx_data_handle_policy_t {}; // class hpx_data_handle_policy_t
+//----------------------------------------------------------------------------//
+
+struct hpx_data_handle_policy_t
+{
+  // +++ The following fields are set from get_handle(), reading
+  // information from the context which is data that is the same
+  // across multiple ranks/colors and should be used ONLY as read-only data
+
+  field_id_t fid;
+  std::size_t index_space;
+  std::size_t data_client_hash;
+}; // class hpx_data_handle_policy_t
 
 } // namespace flecsi
 
-#endif // flecsi_data_hpx_data_handle_policy_h
-
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

@@ -29,6 +29,11 @@ namespace execution {
 // Future concept.
 //----------------------------------------------------------------------------//
 
+/*!
+ Abstract interface type for HPX futures.
+
+ @ingroup hpx-execution
+ */
 template<
     typename R,
     launch_type_t launch = launch_type_t::single>

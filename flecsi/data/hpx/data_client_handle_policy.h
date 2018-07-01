@@ -3,8 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_hpx_data_client_handle_policy_h
-#define flecsi_data_hpx_data_client_handle_policy_h
+#pragma once
 
 #include <cstddef>
 
@@ -13,13 +12,16 @@
 //! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
 
+#include <flecsi/runtime/types.h>
+
 namespace flecsi {
 //----------------------------------------------------------------------------//
-//! FIXME: Description of class
+//! Provides a collection of fields which are populated when traversing the
+//! data client entity information which is then passed to the data client
+//! handle.
 //----------------------------------------------------------------------------//
 struct data_client_handle_entity_t
 {
-  //FIXME check context
   using field_id_t = std::size_t;
 
   data_client_handle_entity_t() : index_space(0), dim(0), domain(0), size(0), fid(0) {}
@@ -36,7 +38,7 @@ struct data_client_handle_entity_t
   field_id_t fid2;
   field_id_t fid3;
   field_id_t id_fid;
-};
+}; // struct data_client_handle_entity_t
 
 //----------------------------------------------------------------------------//
 //! Provides a collection of fields which are populated when, in the case of
@@ -57,30 +59,41 @@ struct data_client_handle_adjacency_t
   field_id_t index_fid;
   field_id_t offset_fid;
   std::size_t * offsets_buf;
-  uint64_t * indices_buf;
+  utils::id_t * indices_buf;
 };
 
 struct data_client_handle_index_subspace_t {
   std::size_t index_space;
   std::size_t index_subspace;
   field_id_t index_fid;
-  uint64_t * indices_buf;
+  utils::id_t * indices_buf;
   std::size_t domain;
   std::size_t dim;
 };
 
-//----------------------------------------------------------------------------//
-//! FIXME: Description of class
-//----------------------------------------------------------------------------//
+struct hpx_data_client_handle_policy_t
+{
+  // FIXME: This needs to be exposed at a higher level
 
-struct hpx_data_client_handle_policy_t {}; // struct data_client_handle_policy_t
-//data_client_handle_index_subspace_t handle_index_subspaces[MAX_INDEX_SUBSPACES];
+  // maximum number of adjacencies to read, this limits the size of the
+  // serialize struct passed to Legion
+  static constexpr size_t MAX_ADJACENCIES = 32;
+
+  // maximum number of handle entities
+  static constexpr size_t MAX_ENTITIES = 6;
+
+  // maximum number of handle index subspaces
+  static constexpr size_t MAX_INDEX_SUBSPACES = 10;
+
+  size_t num_handle_entities;
+  size_t num_handle_adjacencies;
+  size_t num_index_subspaces;
+  data_client_handle_entity_t handle_entities[MAX_ENTITIES];
+  data_client_handle_adjacency_t handle_adjacencies[MAX_ADJACENCIES];
+  data_client_handle_index_subspace_t handle_index_subspaces[MAX_INDEX_SUBSPACES];
+}; // struct hpx_data_client_handle_policy_t
 
 } // namespace flecsi
 
-#endif // flecsi_data_hpx_data_client_handle_policy_h
-
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/
