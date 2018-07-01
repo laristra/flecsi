@@ -1,12 +1,18 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 01, 2016
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+/*! @file */
+
 
 #include <flecsi/execution/hpx/runtime_driver.h>
 #include <flecsi/execution/context.h>
@@ -167,15 +173,14 @@ int hpx_runtime_driver(int argc, char ** argv)
   } // for
 
   // Add additional setup.
-  context_t & context_ = context_t::instance();
-  context_.advance_state();
+  flecsi_context.advance_state();
 
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   specialization_spmd_init(argc, argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
-  context_.advance_state();
+  flecsi_context.advance_state();
 
   // Execute the user driver.
   driver(argc, argv);
@@ -185,8 +190,3 @@ int hpx_runtime_driver(int argc, char ** argv)
 
 } // namespace execution
 } // namespace flecsi
-
-/*~------------------------------------------------------------------------~--*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/

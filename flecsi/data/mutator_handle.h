@@ -480,15 +480,15 @@ public:
   //--------------------------------------------------------------------------//
 
   template<bool ERASE>
-  size_t merge(
-      size_t index,
+  std::size_t merge(
+      std::size_t index,
       entry_value_t * existing,
-      size_t num_existing,
+      std::size_t num_existing,
       entry_value_t * slots,
-      size_t num_slots,
+      std::size_t num_slots,
       entry_value_t * dest) {
 
-    constexpr size_t end = std::numeric_limits<size_t>::max();
+    constexpr std::size_t end = (std::numeric_limits<std::size_t>::max)();
     entry_value_t * existing_end = existing + num_existing;
     entry_value_t * slots_end = slots + num_slots;
 
@@ -497,9 +497,9 @@ public:
     auto p = spare_map_->equal_range(index);
     auto itr = p.first;
 
-    size_t spare_entry = itr != p.second ? itr->second.entry : end;
-    size_t slot_entry = slots < slots_end ? slots->entry : end;
-    size_t existing_entry = existing < existing_end ? existing->entry : end;
+    std::size_t spare_entry = itr != p.second ? itr->second.entry : end;
+    std::size_t slot_entry = slots < slots_end ? slots->entry : end;
+    std::size_t existing_entry = existing < existing_end ? existing->entry : end;
 
     for (;;) {
       if (spare_entry < end && spare_entry <= slot_entry &&
@@ -550,8 +550,8 @@ public:
       ragged_changes_t * changes,
       entry_value_t * cptr,
       entry_value_t * eptr,
-      size_t num_existing) {
-    size_t ri = 0;
+      std::size_t num_existing) {
+    std::size_t ri = 0;
 
     if (changes->insert_values && changes->erase_set) {
       auto iitr = changes->insert_values->begin();
@@ -560,7 +560,7 @@ public:
       auto eitr = changes->erase_set->begin();
       auto eitr_end = changes->erase_set->end();
 
-      for (size_t j = 0; j < num_existing; ++j) {
+      for (std::size_t j = 0; j < num_existing; ++j) {
         if (iitr != iitr_end && iitr->first == j) {
           std::memcpy(&cptr[ri], &iitr->second, sizeof(iitr->second));
           ++ri;
@@ -577,7 +577,7 @@ public:
       auto iitr = changes->insert_values->begin();
       auto iitr_end = changes->insert_values->end();
 
-      for (size_t j = 0; j < num_existing; ++j) {
+      for (std::size_t j = 0; j < num_existing; ++j) {
         if (iitr != iitr_end && iitr->first == j) {
           cptr[ri++].value = iitr->second;
           ++iitr;
@@ -589,7 +589,7 @@ public:
       auto eitr = changes->erase_set->begin();
       auto eitr_end = changes->erase_set->end();
 
-      for (size_t j = 0; j < num_existing; ++j) {
+      for (std::size_t j = 0; j < num_existing; ++j) {
         if (eitr != eitr_end && *eitr == j) {
           ++eitr;
         } else {

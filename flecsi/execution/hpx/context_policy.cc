@@ -1,27 +1,30 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jul 26, 2016
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 
 #if !defined(ENABLE_HPX)
-#error ENABLE_HPX not defined! This file depends on HPX!
+  #error ENABLE_HPX not defined! This file depends on HPX!
 #endif
 
 #include <hpx/hpx.hpp>
 #include <hpx/hpx_init.hpp>
 
+#include <cstddef>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 #include <flecsi/execution/hpx/context_policy.h>
-
-#include <flecsi/data/storage.h>
 
 namespace flecsi {
 namespace execution {
@@ -36,7 +39,7 @@ hpx_context_policy_t::hpx_context_policy_t()
 }
 
 // Return the color for which the context was initialized.
-size_t hpx_context_policy_t::color() const
+std::size_t hpx_context_policy_t::color() const
 {
   return hpx::get_locality_id();
 }
@@ -99,7 +102,3 @@ hpx_context_policy_t::start_hpx(
 } // namespace execution
 } // namespace flecsi
 
-/*~------------------------------------------------------------------------~--*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/

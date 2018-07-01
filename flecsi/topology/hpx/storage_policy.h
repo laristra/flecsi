@@ -1,12 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_topology_hpx_topology_storage_policy_h
-#define flecsi_topology_hpx_topology_storage_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/topology/mesh_storage.h"
+/*! @file */
 
 #include <array>
 #include <cassert>
@@ -22,11 +29,6 @@
 #include <flecsi/topology/mesh_storage.h>
 #include <flecsi/topology/mesh_types.h>
 #include <flecsi/topology/mesh_utils.h>
-
-///
-/// \file
-/// \date Initial file creation: Apr 04, 2017
-///
 
 namespace flecsi {
 namespace topology {
@@ -254,10 +256,3 @@ struct hpx_topology_storage_policy__ {
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_topology_hpx_topology_storage_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

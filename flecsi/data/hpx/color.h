@@ -18,8 +18,8 @@
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
 // Using this approach allows us to have only one storage_class__
-// definintion that can be used by all data policies -> code reuse...
-#define POLICY_NAMESPACE mpi
+// definition that can be used by all data policies -> code reuse...
+#define POLICY_NAMESPACE hpx
 #include <flecsi/data/storage_class.h>
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
@@ -41,7 +41,7 @@ namespace hpx {
 //----------------------------------------------------------------------------//
 
 /*!
- The global_handle__ provide an access to global variables that have
+ The color_handle__ provide an access to color variables that have
  been registered in data model
 
  \tparam T The type of the data variable. If this type is not
@@ -55,7 +55,7 @@ namespace hpx {
  */
 
 template<typename T, size_t PERMISSIONS>
-struct global_handle__ : public global_data_handle__<T, PERMISSIONS> {
+struct color_handle__ : public global_data_handle__<T, PERMISSIONS> {
 
   /*!
     Type definitions.
@@ -67,22 +67,22 @@ struct global_handle__ : public global_data_handle__<T, PERMISSIONS> {
     Constructor.
    */
 
-  global_handle__() {
-    base_t::global = true;
+  color_handle__() {
+    base_t::color = true;
   }
 
   /*!
    Destructor.
    */
 
-  ~global_handle__() {}
+  ~color_handle__() {}
 
   /*
     Copy constructor.
    */
 
   template<size_t P2>
-  global_handle__(const global_handle__<T, P2> & a)
+  color_handle__(const color_handle__<T, P2> & a)
       : base_t(reinterpret_cast<const base_t &>(a)), label_(a.label()),
         size_(a.size()) {
     static_assert(P2 == 0, "passing mapped handle to task args");
@@ -123,7 +123,7 @@ struct global_handle__ : public global_data_handle__<T, PERMISSIONS> {
 private:
   std::string label_ = "";
   size_t size_ = 1;
-}; // struct global_handle__
+}; // struct color_handle__
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -137,14 +137,14 @@ private:
  FIXME: Global storage type.
  */
 template<>
-struct storage_class__<global> {
+struct storage_class__<color> {
 
   /*!
    Type definitions.
    */
 
   template<typename T, size_t PERMISSIONS>
-  using handle_t = global_handle__<T, PERMISSIONS>;
+  using handle_t = color_handle__<T, PERMISSIONS>;
 
   /*!
    Data handles.
@@ -182,7 +182,7 @@ struct storage_class__<global> {
 
     h.combined_data = reinterpret_cast<DATA_TYPE *>(data);
 
-    h.global = true;
+    h.color = true;
     h.state = context.execution_state();
 
     return h;
