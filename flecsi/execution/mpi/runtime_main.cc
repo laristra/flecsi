@@ -48,10 +48,6 @@ int main(int argc, char ** argv) {
   
   // Initialize tags to output all tag groups from CLOG
   std::string tags("all");
-  bool help = false;
-
-  //--------------------------------------------------------------------------//
-  // Use BOOST Program Options
 
 #if defined(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
   options_description desc("Cinch test options");  
@@ -70,23 +66,39 @@ int main(int argc, char ** argv) {
 
   notify(vm);
 
-  // was help requested
-  help = vm.count("help");
-  if(help) {
+  // Gather the unregistered options, if there are any, print a help message
+  // and die nicely.
+  std::vector<std::string> unrecog_options =
+    collect_unrecognized(parsed.options, include_positional);
+
+  if(unrecog_options.size()) {
+    if(rank == 0) {
+      std::cout << std::endl << "Unrecognized options: ";
+      for ( int i=0; i<unrecog_options.size(); ++i ) {
+        std::cout << unrecog_options[i] << " ";
+      }
+      std::cout << std::endl << std::endl << desc << std::endl;
+    } // if
+
+    MPI_Finalize();
+
+    return 1;
+  } // if
+
+  if(vm.count("help")) {
     if(rank == 0) {
       std::cout << desc << std::endl;
     } // if
-    // don't exit, because the user application
-    // may want to print a usage message too
+
+    MPI_Finalize();
+
+    return 1;
   } // if
-
-  
 #endif // FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS
+  
+  int result(0);
 
-  // End BOOST Program Options
-  //--------------------------------------------------------------------------//
-
-  if(tags == "0" && !help) {
+  if(tags == "0") {
     // Output the available tags
     if(rank == 0) {
       std::cout << "Available tags (CLOG):" << std::endl;
@@ -95,24 +107,18 @@ int main(int argc, char ** argv) {
         std::cout << "  " << t.first << std::endl;
       } // for
     } // if
-    // die nicely
-    MPI_Finalize();
-    return 0;
   }
-    
-  // Initialize the cinchlog runtime
-  clog_init(tags);
-   
-   //-------------------------------------------------------------------------//
-   // DONE CLOG INIT
-   //-------------------------------------------------------------------------//
-   
-
-  // Execute the flecsi runtime.
-  auto retval = flecsi::execution::context_t::instance().initialize(argc, argv);
+  else {
+    // Initialize the cinchlog runtime
+    clog_init(tags);
+     
+    // Execute the flecsi runtime.
+    result = flecsi::execution::context_t::instance().initialize(
+      argc, argv);
+  } // if
 
   // Shutdown the MPI runtime
   MPI_Finalize();
 
-  return retval;
+  return result;
 } // main
