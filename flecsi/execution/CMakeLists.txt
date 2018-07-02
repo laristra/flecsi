@@ -461,6 +461,30 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       NOCI
     )
 
+    cinch_add_unit(finite_difference_dense
+    SOURCES
+      test/finite_difference_dense.cc
+      ../supplemental/coloring/add_colorings.cc
+      ${DRIVER_INITIALIZATION}
+      ${RUNTIME_DRIVER}
+    INPUTS
+      test/simple2d-8x8.msh
+      test/simple2d-16x16.msh
+      test/dense_data.blessed
+    LIBRARIES
+      FleCSI
+      ${CINCH_RUNTIME_LIBRARIES}
+      ${COLORING_LIBRARIES}
+    DEFINES
+      -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+      -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+      -DFLECSI_16_16_MESH
+    POLICY ${UNIT_POLICY}
+    THREADS 5
+    NOCI
+  )
+
     cinch_add_unit(global_data
       SOURCES
         test/global_data.cc
@@ -479,7 +503,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       THREADS 2
       NOCI
     )
-    
+
     cinch_add_unit(sparse_data
       SOURCES
         test/sparse_data.cc
@@ -503,7 +527,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       THREADS 2
       NOCI
     )
-    
+
     cinch_add_unit(ragged_data
       SOURCES
         test/ragged_data.cc
