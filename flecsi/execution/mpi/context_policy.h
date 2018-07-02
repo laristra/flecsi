@@ -235,7 +235,7 @@ struct mpi_context_policy_t
    Field metadata is used maintain MPI information and data types for
    MPI windows/one-sided communication to perform ghost copies.
    */
-  struct sparse_field_metadata_t{
+  struct sparse_field_metadata_t {
     MPI_Group shared_users_grp;
     MPI_Group ghost_owners_grp;
 
@@ -248,7 +248,12 @@ struct mpi_context_policy_t
     std::map<int, MPI_Datatype> origin_types;
     std::map<int, MPI_Datatype> target_types;
 
+    MPI_Datatype shared_ghost_type;
     MPI_Win win;
+
+    ~sparse_field_metadata_t() {
+      //MPI_Win_free(&win);
+    }
   };
 
   /*!
@@ -259,7 +264,8 @@ struct mpi_context_policy_t
   template <typename T>
   void register_field_metadata(const field_id_t fid,
                                const coloring_info_t& coloring_info,
-                               const index_coloring_t& index_coloring) {
+                               const index_coloring_t& index_coloring)
+  {
     std::map<int, std::vector<int>> compact_origin_lengs;
     std::map<int, std::vector<int>> compact_origin_disps;
 
@@ -317,11 +323,11 @@ struct mpi_context_policy_t
   {
     sparse_field_metadata_t metadata;
 
-#if 1
     register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
       metadata.compact_origin_lengs, metadata.compact_origin_disps,
       metadata.compact_target_lengs, metadata.compact_target_disps);
 
+#if 0
     // Each shared and ghost cells element is an array of max_entries_per_index
     // of entry_value_t
     MPI_Datatype shared_ghost_type;
@@ -365,7 +371,32 @@ struct mpi_context_policy_t
 //                   entry_value_size, MPI_INFO_NULL, MPI_COMM_WORLD,
 //                   &metadata.win);
 #else
+    // TODO: still too much information get copies to too many places!!!
+    using entry_value_t = typename data::sparse_entry_value__<T>;
+    using offset_t = data::sparse_data_offset_t;
 
+    entry_value_t* entries = reinterpret_cast<entry_value_t*>(sparse_field_data[fid].entries.data());//h.entries;
+    offset_t* offsets = sparse_field_data[fid].offsets.data();
+    auto shared_data = entries + sparse_field_data[fid].exclusive_reserve;
+    auto ghost_data = shared_data +
+      sparse_field_data[fid].num_shared * sparse_field_data[fid].max_entries_per_index;
+   
+    // Get entry_values
+    MPI_Datatype shared_ghost_type;
+    MPI_Type_contiguous(
+      sizeof(entry_value_t),
+      MPI_BYTE, &shared_ghost_type);
+    MPI_Type_commit(&shared_ghost_type);
+
+    metadata.shared_ghost_type = shared_ghost_type;
+
+    MPI_Win win;
+    MPI_Win_create(shared_data,
+                   sizeof(entry_value_t) * sparse_field_data[fid].num_shared * sparse_field_data[fid].max_entries_per_index,
+                   sizeof(entry_value_t),
+                   MPI_INFO_NULL, MPI_COMM_WORLD,
+                   &win);
+    metadata.win = win;
 #endif
     sparse_field_metadata.insert({fid, metadata});
   }

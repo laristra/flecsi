@@ -152,15 +152,11 @@ namespace execution {
       GHOST_PERMISSIONS
       > &a
     ) {
-      auto &h = a.handle;
-
-      using offset_t = typename mutator_handle__<T>::offset_t;
-      using entry_value_t = typename mutator_handle__<T>::entry_value_t;
-      using commit_info_t = typename mutator_handle__<T>::commit_info_t;
-
       // Skip Read Only handles
       if (EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
         return;
+
+      auto &h = a.handle;
 
       auto &context = context_t::instance();
       const int my_color = context.color();
@@ -171,28 +167,21 @@ namespace execution {
       auto &sparse_field_metadata =
         context.registered_sparse_field_metadata().at(h.fid);
 
-      entry_value_t *entries = h.entries;
-      auto offsets = &(h.offsets)[0];
-      auto shared_data = entries + h.exclusive_reserve;
-      auto ghost_data = shared_data + h.num_shared_ * h.max_entries_per_index;
-
-      // Get entry_values
-      MPI_Datatype shared_ghost_type;
-      MPI_Type_contiguous(
-        sizeof(entry_value_t),
-        MPI_BYTE, &shared_ghost_type);
-      MPI_Type_commit(&shared_ghost_type);
-
-      MPI_Win win;
-      MPI_Win_create(shared_data,
-                     sizeof(entry_value_t) * h.num_shared_ * h.max_entries_per_index,
-                     sizeof(entry_value_t),
-                     MPI_INFO_NULL, MPI_COMM_WORLD,
-                     &win);
+      MPI_Win win = sparse_field_metadata.win;
 
       MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
       MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
 
+      MPI_Datatype shared_ghost_type = sparse_field_metadata.shared_ghost_type;
+
+      using entry_value_t = typename mutator_handle__<T>::entry_value_t;
+      
+      entry_value_t *entries = h.entries;
+      auto offsets = &(h.offsets)[0];
+      auto shared_data = entries + h.exclusive_reserve;
+      auto ghost_data = shared_data + h.num_shared_ * h.max_entries_per_index;
+      
+      // TODO: consolidate MPI_Get using the fancy MPI_Datatype trick.
       int i = 0;
       for (auto& ghost : index_coloring.ghost) {
         clog_rank(warn, 0) << "ghost id: " << ghost.id << ", rank: "
@@ -212,8 +201,6 @@ namespace execution {
 
       MPI_Win_complete(win);
       MPI_Win_wait(win);
-
-      MPI_Win_free(&win);
 
       // for (int i = 0; i < h.num_ghost_ * h.max_entries_per_index; i++)
       //   clog_rank(warn, 0) << "ghost after: " << ghost_data[i].value << std::endl;
