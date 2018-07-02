@@ -321,6 +321,7 @@ struct mpi_context_policy_t
   {
     sparse_field_metadata_t metadata;
 
+#if 0
     register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
       metadata.compact_origin_lengs, metadata.compact_origin_disps,
       metadata.compact_target_lengs, metadata.compact_target_disps);
@@ -367,6 +368,9 @@ struct mpi_context_policy_t
 //    MPI_Win_create(shared_data, coloring_info.shared * entry_value_size,
 //                   entry_value_size, MPI_INFO_NULL, MPI_COMM_WORLD,
 //                   &metadata.win);
+#else
+
+#endif
     sparse_field_metadata.insert({fid, metadata});
   }
 
