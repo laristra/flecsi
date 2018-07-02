@@ -62,64 +62,6 @@ flecsi_register_field(
     index_spaces::cells);
 
 //----------------------------------------------------------------------------//
-// Initialize mesh
-//----------------------------------------------------------------------------//
-
-void
-initialize_mesh(mesh<wo> mesh) {
-  auto & context = execution::context_t::instance();
-
-  auto & vertex_map{context.index_map(index_spaces::vertices)};
-  auto & reverse_vertex_map{context.reverse_index_map(index_spaces::vertices)};
-  auto & cell_map{context.index_map(index_spaces::cells)};
-
-  std::vector<vertex_t *> vertices;
-
-#ifdef FLECSI_8_8_MESH
-  const size_t width{8};
-#else
-  const size_t width{16};
-#endif
-
-  for (auto & vm : vertex_map) {
-    const size_t mid{vm.second};
-    const size_t row{mid / (width + 1)};
-    const size_t column{mid % (width + 1)};
-    // printf("vertex %lu: (%lu, %lu)\n", mid, row, column);
-    point_t point({{(double)row, (double)column}});
-    index_t index({{row, column}});
-
-    vertices.push_back(mesh.make<vertex_t>(point, index));
-  } // for
-
-  size_t count{0};
-  for (auto & cm : cell_map) {
-    const size_t mid{cm.second};
-
-    const size_t row{mid / width};
-    const size_t column{mid % width};
-
-    const size_t v0{(column) + (row) * (width + 1)};
-    const size_t v1{(column + 1) + (row) * (width + 1)};
-    const size_t v2{(column + 1) + (row + 1) * (width + 1)};
-    const size_t v3{(column) + (row + 1) * (width + 1)};
-
-    const size_t lv0{reverse_vertex_map[v0]};
-    const size_t lv1{reverse_vertex_map[v1]};
-    const size_t lv2{reverse_vertex_map[v2]};
-    const size_t lv3{reverse_vertex_map[v3]};
-
-    auto c{mesh.make<cell_t>(index_t{{row, column}})};
-    mesh.init_cell<0>(
-        c, {vertices[lv0], vertices[lv1], vertices[lv2], vertices[lv3]});
-  } // for
-
-  mesh.init<0>();
-} // initizlize_mesh
-
-flecsi_register_task(initialize_mesh, flecsi::execution, loc, single);
-
-//----------------------------------------------------------------------------//
 // Init field
 //----------------------------------------------------------------------------//
 
@@ -224,7 +166,7 @@ specialization_tlt_init(int argc, char ** argv) {
 void
 specialization_spmd_init(int argc, char ** argv) {
   auto mh = flecsi_get_client_handle(mesh_t, meshes, mesh1);
-  flecsi_execute_task(initialize_mesh, flecsi::execution, single, mh);
+  flecsi_execute_task(initialize_mesh, flecsi::supplemental, single, mh);
 } // specialization_spmd_init
 
 //----------------------------------------------------------------------------//
