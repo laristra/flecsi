@@ -382,8 +382,8 @@ void add_colorings(coloring_map_t map) {
 
   {
   clog_tag_guard(coloring);
-  clog(info) << cell_color_info << std::endl << std::flush;
-  clog(info) << vertex_color_info << std::endl << std::flush;
+  clog(info) << cell_color_info << std::endl;
+  clog(info) << vertex_color_info << std::endl;
   } // gaurd
 
   // Gather the coloring info from all colors
