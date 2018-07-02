@@ -25,7 +25,7 @@ template<
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS,
     typename DATA_POLICY>
-struct sparse_data_handle_base__ : public DATA_POLICY{
+struct sparse_data_handle_base__ : public DATA_POLICY {
 
   using offset_t = data::sparse_data_offset_t;
   using entry_value_t = data::sparse_entry_value__<T>;

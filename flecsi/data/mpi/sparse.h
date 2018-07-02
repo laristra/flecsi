@@ -178,17 +178,19 @@ struct storage_class__<sparse>
 
     auto &hb = dynamic_cast<sparse_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
 
+    // fill-in sparse_data_handle_policy_t part
     hb.fid = field_info.fid;
+
+    hb.exclusive_reserve = fd.exclusive_reserve;
+    hb.max_entries_per_index = fd.max_entries_per_index;
+
+    // fill-in sparse_data_handle_base__ part
     hb.index_space = field_info.index_space;
     hb.data_client_hash = field_info.data_client_hash;
 
     hb.entries =
       reinterpret_cast<sparse_entry_value__<DATA_TYPE>*>(&fd.entries[0]);
-
     hb.offsets = &fd.offsets[0];
-    hb.max_entries_per_index = fd.max_entries_per_index;
-    hb.reserve = fd.reserve;
-    hb.num_exclusive_entries = fd.num_exclusive_entries;
 
     return h;
   }
@@ -254,9 +256,7 @@ struct storage_class__<sparse>
 
     h.offsets = &fd.offsets;
     h.entries = &fd.entries;
-    h.reserve = &fd.reserve;
     h.exclusive_reserve = fd.exclusive_reserve;
-    h.num_exclusive_entries = &fd.num_exclusive_entries;
     h.num_exclusive_insertions = new size_t(0);
 
     return h;

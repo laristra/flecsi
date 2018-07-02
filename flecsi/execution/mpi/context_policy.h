@@ -74,20 +74,18 @@ struct mpi_context_policy_t
     num_total(num_exclusive + num_shared + num_ghost),
     max_entries_per_index(max_entries_per_index),
     exclusive_reserve(exclusive_reserve),
-    reserve(exclusive_reserve),
-    offsets(num_total),
-    num_exclusive_entries(0){
+    offsets(num_total) {
 
       size_t n = num_total - num_exclusive;
 
       for(size_t i = 0; i < n; ++i){
         offsets[num_exclusive + i].set_offset(
-          reserve + i * max_entries_per_index);
+          exclusive_reserve + i * max_entries_per_index);
       }
 
       size_t entry_value_size = sizeof(size_t) + type_size;
 
-      entries.resize(entry_value_size * (reserve + ((num_shared + num_ghost) *
+      entries.resize(entry_value_size * (exclusive_reserve + ((num_shared + num_ghost) *
         max_entries_per_index)));
     }
 
@@ -101,8 +99,6 @@ struct mpi_context_policy_t
 
     size_t max_entries_per_index;
     size_t exclusive_reserve;
-    size_t reserve;
-    size_t num_exclusive_entries;
 
     std::vector<offset_t> offsets;
     std::vector<uint8_t> entries;
@@ -321,7 +317,7 @@ struct mpi_context_policy_t
   {
     sparse_field_metadata_t metadata;
 
-#if 0
+#if 1
     register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
       metadata.compact_origin_lengs, metadata.compact_origin_disps,
       metadata.compact_target_lengs, metadata.compact_target_disps);
@@ -360,7 +356,7 @@ struct mpi_context_policy_t
     // part changes.
     auto entry_value_size = (sizeof(size_t) + sizeof(T));
     auto data = sparse_field_data[fid].entries.data();
-    auto shared_data = data + sparse_field_data[fid].reserve *
+    auto shared_data = data + sparse_field_data[fid].exclusive_reserve *
                                 sparse_field_data[fid].max_entries_per_index *
                                 entry_value_size;
     MPI_Win_create_dynamic(MPI_INFO_NULL, MPI_COMM_WORLD, &metadata.win);

@@ -76,8 +76,8 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     entry_value_t *entries =
         reinterpret_cast<entry_value_t *>(&(*h.entries)[0]);
     auto offsets = &(*h.offsets)[0];
-    auto shared_data = entries + *h.reserve;//ci.entries[1];
-    auto ghost_data = shared_data + h.num_shared() * h.max_entries_per_index();///ci.entries[2];
+    auto shared_data = entries + h.exclusive_reserve;
+    auto ghost_data = shared_data + h.num_shared() * h.max_entries_per_index();
 
     // Get entry_values
     MPI_Datatype shared_ghost_type;

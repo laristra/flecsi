@@ -173,7 +173,7 @@ namespace execution {
 
       entry_value_t *entries = h.entries;
       auto offsets = &(h.offsets)[0];
-      auto shared_data = entries + h.reserve;
+      auto shared_data = entries + h.exclusive_reserve;
       auto ghost_data = shared_data + h.num_shared_ * h.max_entries_per_index;
 
       // Get entry_values
@@ -234,7 +234,7 @@ namespace execution {
       using entry_value_t = typename mutator_handle__<T>::entry_value_t;
       using commit_info_t = typename mutator_handle__<T>::commit_info_t;
 
-      clog_assert(*h.num_exclusive_insertions <= *h.reserve,
+      clog_assert(*h.num_exclusive_insertions <= h.exclusive_reserve,
                   "sparse exclusive reserve exceed");
 
       delete h.num_exclusive_insertions;
@@ -245,7 +245,7 @@ namespace execution {
       commit_info_t ci;
       ci.offsets = &(*h.offsets)[0];
       ci.entries[0] = entries;
-      ci.entries[1] = entries + *h.reserve;
+      ci.entries[1] = entries + h.exclusive_reserve;
       ci.entries[2] =
         ci.entries[1] + h.num_shared() * h.max_entries_per_index();
 
