@@ -117,36 +117,6 @@ namespace execution {
       > & a
     )
     {
-//      // TODO: move field data allocation here?
-//      auto& context = context_t::instance();
-//      const int my_color = context.color();
-//      auto& my_coloring_info =
-//        context.coloring_info(h.index_space).at(my_color);
-//
-//      auto& sparse_field_metadata =
-//        context.registered_sparse_field_metadata().at(h.fid);
-//
-//     for (auto i = my_coloring_info.exclusive;
-//          i < my_coloring_info.exclusive + my_coloring_info.shared; ++i) {
-//       h()
-//     }
-#if 0
-      MPI_Win win = sparse_field_metadata.win;
-
-      MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
-      MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
-
-      for (auto ghost_owner : my_coloring_info.ghost_owners) {
-        MPI_Get(h.ghost_entries, 1,
-                sparse_field_metadata.origin_types[ghost_owner],
-                ghost_owner, 0, 1,
-                sparse_field_metadata.target_types[ghost_owner],
-                win);
-      }
-
-      MPI_Win_complete(win);
-      MPI_Win_wait(win);
-#endif
     } // handle
 
     template<
