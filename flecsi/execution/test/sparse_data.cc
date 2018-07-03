@@ -28,8 +28,7 @@ template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
 void
-task1(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
-
+init(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
   auto & context = execution::context_t::instance();
   auto rank = context.color();
   auto coloring_info = context.coloring_info(mh.h_.index_space).at(rank);
@@ -39,11 +38,10 @@ task1(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
       mh(i, j) = i * 100 + j + rank * 10000;
     }
   }
-  // mh.dump();
-} // task1
+} // init
 
 void
-task2(
+print(
     client_handle_t<test_mesh_t, ro> mesh,
     sparse_accessor<double, ro, ro, ro> h) {
   auto & context = execution::context_t::instance();
@@ -56,11 +54,10 @@ task2(
       }
     }
   }
-
-} // task2
+} // print
 
 void
-task3(
+modify(
     client_handle_t<test_mesh_t, ro> mesh,
     sparse_accessor<double, rw, rw, rw> h) {
 
@@ -68,34 +65,32 @@ task3(
   auto rank = context.color();
   auto coloring_info = context.coloring_info(h.handle.index_space).at(rank);
 
-  for (auto index : h.indices()) {
-    for (auto entry : h.entries(index)) {
-      h(index, entry) = -h(index, entry);
+  for (auto c : mesh.cells(owned)) {
+    for (auto entry : h.entries(c)) {
+      h(c, entry) = -h(c, entry);
     }
   }
-
-} // task3
+} // modify
 
 void
-task4(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
-
+mutate(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
   auto & context = execution::context_t::instance();
   auto rank = context.color();
   auto coloring_info = context.coloring_info(mh.h_.index_space).at(rank);
 
-  for (size_t i = 0; i < coloring_info.exclusive; ++i) {
+  for (size_t i = 0; i < coloring_info.exclusive + coloring_info.shared; ++i) {
     for (size_t j = 5; j < 7; ++j) {
       mh(i, j) = i * 100 + j + rank * 10000;
     }
   }
-  // mh.dump();
-} // task4
+} // mutate
+
 flecsi_register_data_client(test_mesh_t, meshes, mesh1);
 
-flecsi_register_task_simple(task1, loc, single);
-flecsi_register_task_simple(task2, loc, single);
-flecsi_register_task_simple(task3, loc, single);
-flecsi_register_task_simple(task4, loc, single);
+flecsi_register_task_simple(init, loc, single);
+flecsi_register_task_simple(print, loc, single);
+flecsi_register_task_simple(modify, loc, single);
+flecsi_register_task_simple(mutate, loc, single);
 
 flecsi_register_field(
     test_mesh_t,
@@ -136,7 +131,7 @@ specialization_tlt_init(int argc, char ** argv) {
 
   context_t::sparse_index_space_info_t isi;
   isi.index_space = index_spaces::cells;
-  isi.max_entries_per_index = 5;
+  isi.max_entries_per_index = 10;
   isi.exclusive_reserve = 8192;
   context.set_sparse_index_space_info(isi);
 } // specialization_tlt_init
@@ -154,27 +149,22 @@ specialization_spmd_init(int argc, char ** argv) {
 void
 driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
-  auto mh = flecsi_get_mutator(ch, hydro, pressure, double, sparse, 0, 5);
-
-  auto f0 = flecsi_execute_task_simple(task1, single, ch, mh);
-  f0.wait();
-
+  auto mh = flecsi_get_mutator(ch, hydro, pressure, double, sparse, 0, 10);
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, sparse, 0);
 
-  auto f1 = flecsi_execute_task_simple(task2, single, ch, ph);
-  f1.wait();
+  flecsi_execute_task_simple(init, single, ch, mh);
+  flecsi_execute_task_simple(print, single, ch, ph);
 
-  auto f2 = flecsi_execute_task_simple(task3, single, ch, ph);
-  f2.wait();
+  flecsi_execute_task_simple(modify, single, ch, ph);
+  flecsi_execute_task_simple(print, single, ch, ph);
 
-  auto f3 = flecsi_execute_task_simple(task2, single, ch, ph);
-  f3.wait();
+  flecsi_execute_task_simple(mutate, single, ch, mh);
+  flecsi_execute_task_simple(print, single, ch, ph);
 
   auto & context = execution::context_t::instance();
   if (context.color() == 0) {
     ASSERT_TRUE(CINCH_EQUAL_BLESSED("sparse_data.blessed"));
   }
-
 } // specialization_driver
 
 //----------------------------------------------------------------------------//
