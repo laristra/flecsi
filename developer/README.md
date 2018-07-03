@@ -94,6 +94,12 @@ Git command to remove a remote branch:
 $ git push <remote-name> --delete <branch-name>
 ```
 
+**NOTE:** When renaming a branch, you will likely have to reset the
+upstream:
+```
+$ git branch --set-upstream-to=origin/<new-branch-name>
+```
+
 ## Task: Update CMakeLists
 
 Update CMakeLists.txt files to reflect current header and source
