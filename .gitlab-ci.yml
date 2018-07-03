@@ -20,7 +20,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - mkdir /builds/onurcaylak/flecsi/artifacts
 
         script:
-                - bash script.sh ubuntu legion true #DISTRO RUNTIME DOCKERHUB
+                - sh script.sh ubuntu legion true #DISTRO RUNTIME DOCKERHUB
                  
         artifacts:
                 expire_in: 1 hour
