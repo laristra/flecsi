@@ -9,7 +9,7 @@ stages:
         - deploy
 
 before_script:
-        - mkdir /builds/onurcaylak/artifacts
+        - mkdir /builds/onurcaylak/flecsi/artifacts
 
 DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         stage: build
@@ -38,22 +38,24 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                         --build-arg CXX=${CXX}
                         --build-arg CI=${CI} 
                 - CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
-                - docker cp ${CON}:/home/flecsi /builds/onurcaylak/artifacts/.
+                - docker cp ${CON}:/home/flecsi /builds/onurcaylak/flecsi/artifacts/.
 
         artifacts:
                 expire_in: 1 hour
                 paths:
                         - /builds/onurcaylak/artifacts
                                                      
-test:osx:
+test_ubuntu:
         stage: test
         script: 
-                - ls -la /builds/onurcaylak/artifacts
+                - ls -la /builds/onurcaylak/
+                - ls -la /builds/onurcaylak/flecsi/
+                - ls -la /builds/onurcaylak/flecsi/artifacts
         dependencies:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
 
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - /builds/onurcaylak/artifacts
+                        - /builds/onurcaylak/flecsi/artifacts
                                                      
