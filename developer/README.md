@@ -1,9 +1,98 @@
+![logo](../doc/flecsi.png)
+
+# FleCSI Developer Documentation
+
+# Branch Naming Conventions
+
+The FleCSI *master* branch is the primary development branch for the
+proejct. Commits to master require that continuous integration tests
+pass before they may be merged.
+
+Please use the following naming conventions when creating branches:
+
+* **release**\_*major_minor*<br>
+  The *release* prefix is reserved for supported FleCSI release
+  branches.
+
+* **release\_candidate**\_*major_minor*<br>
+  The *release\_candidate* prefix should be used to identify a branch that is
+  being considered for release.
+
+* **stable**\_*major_minor*<br>
+  A *stable* branch is a development or feature branch that is
+  guarunteed to build and pass the FleCSI continuous integration test
+  suite, but one which incorporates new features or capabilities that
+  are not available in a release branch.
+
+* **feature**\_*branch\_name*<br>
+  A *feature* branch is where new development is done. However, feature
+  branches are required to periodically be merged with the master
+  branch.
+
+* **bug**\_*reference*<br>
+  Bug-fix branches should use the *bug* prefix, and should include
+  either the name of the associated problem branch, or a reference to an
+  issue number.
+
 # FleCSI Developer Chores
 
-This document describes various chores that may be assigned to FleCSI
+This section describes various chores that may be assigned to FleCSI
 developers and how to complete them. For the most part, these chores are
 mundane code maintenance tasks that need to be done from time to time to
 keep the code clean.
+
+## Task: Branch Cleanup
+
+Remove old/unused/merged branches from the repository. In particular,
+remove any branches that fail to comply with our branch naming
+conventions.
+
+**What you have to do:**<br>
+Create a list of branches with the originator's email using:
+```
+$ git for-each-ref --format='%(committerdate) %09 %(authorname) %09 %(refname)' | sort -k5n -k2M -k3n -k4n > branches
+```
+Remove branches that you are sure about, e.g., your own. Contact
+developers who have non-compliant branches. Non-compliant branches must
+either be renamed or removed.
+
+**Tools that help you:**<br>
+
+Git command to rename the branch you are on:
+```
+$ git branch -m new-name
+```
+
+Git command to rename a branch you are not on:
+```
+$ git branch -m old-name new-name
+```
+
+Git command to push changes to origin
+```
+$ git push origin :old-name new-name
+```
+
+Git command to reset upstream for local branch
+```
+$ git push origin -u new-name
+```
+
+Git command to remove local branch:
+```
+$ git branch -d branch
+```
+or,
+```
+$ git branch -D branch
+```
+The *-D* flag is an alias for *--delete --force*, and allows remoaval of
+branches that have not been merged in its upstream branch.
+
+Git command to remove a remote branch:
+```
+$ git push <remote-name> --delete <branch-name>
+```
 
 ## Task: Update CMakeLists
 
