@@ -19,11 +19,9 @@
 
 #include <cinchtest.h>
 
-#include <flecsi/execution/execution.h>
-#include <flecsi/supplemental/coloring/add_colorings.h>
-#include <flecsi/supplemental/mesh/test_mesh_2d.h>
-
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/execution/execution.h>
+#include <flecsi/supplemental/mesh/test_mesh_2d.h>
 
 namespace flecsi {
 namespace execution {
@@ -32,14 +30,7 @@ namespace execution {
 // Type definitions
 //----------------------------------------------------------------------------//
 
-using point_t = flecsi::supplemental::point_t;
-using index_t = flecsi::supplemental::index_t;
-using vertex_t = flecsi::supplemental::vertex_t;
-using cell_t = flecsi::supplemental::cell_t;
 using mesh_t = flecsi::supplemental::test_mesh_2d_t;
-
-using coloring_info_t = flecsi::coloring::coloring_info_t;
-using adjacency_info_t = flecsi::coloring::adjacency_info_t;
 
 template<size_t PS>
 using mesh = data_client_handle__<mesh_t, PS>;
@@ -136,27 +127,7 @@ flecsi_register_task(modify, flecsi::execution, loc, single);
 void
 specialization_tlt_init(int argc, char ** argv) {
   clog(info) << "In specialization top-level-task init" << std::endl;
-
-  coloring_map_t map{index_spaces::vertices, index_spaces::cells};
-  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
-
-  auto & context{execution::context_t::instance()};
-  auto & vinfo{context.coloring_info(index_spaces::vertices)};
-  auto & cinfo{context.coloring_info(index_spaces::cells)};
-
-  adjacency_info_t ai;
-  ai.index_space = index_spaces::cells_to_vertices;
-  ai.from_index_space = index_spaces::cells;
-  ai.to_index_space = index_spaces::vertices;
-  ai.color_sizes.resize(cinfo.size());
-
-  for (auto & itr : cinfo) {
-    size_t color{itr.first};
-    const coloring::coloring_info_t & ci = itr.second;
-    ai.color_sizes[color] = (ci.exclusive + ci.shared + ci.ghost) * 4;
-  } // for
-
-  context.add_adjacency(ai);
+  supplemental::do_test_mesh_2d_coloring();
 } // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
@@ -178,17 +149,12 @@ driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(mesh_t, meshes, mesh1);
   auto ph = flecsi_get_handle(ch, hydro, pressure, size_t, dense, 0);
 
-  auto f0 = flecsi_execute_task(init, flecsi::execution, single, ch, ph);
-  f0.wait();
+  flecsi_execute_task(init, flecsi::execution, single, ch, ph);
+  flecsi_execute_task(print, flecsi::execution, single, ch, ph);
 
-  auto f1 = flecsi_execute_task(print, flecsi::execution, single, ch, ph);
-  f1.wait();
-
-  auto f2 = flecsi_execute_task(modify, flecsi::execution, single, ch, ph);
-  f2.wait();
-
-  auto f3 = flecsi_execute_task(print, flecsi::execution, single, ch, ph);
-  f3.wait();
+  flecsi_execute_task(modify, flecsi::execution, single, ch, ph);
+  auto future = flecsi_execute_task(print, flecsi::execution, single, ch, ph);
+  future.wait(); // wait before comparing results
 
   auto & context = execution::context_t::instance();
   if (context.color() == 0) {
