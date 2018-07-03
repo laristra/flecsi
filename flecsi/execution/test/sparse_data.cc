@@ -11,16 +11,12 @@
 #include <cinchtest.h>
 
 #include <flecsi/execution/execution.h>
-#include <flecsi/supplemental/coloring/add_colorings.h>
 #include <flecsi/supplemental/mesh/test_mesh_2d.h>
 
 clog_register_tag(coloring);
 
 namespace flecsi {
 namespace execution {
-
-using coloring_info_t = flecsi::coloring::coloring_info_t;
-using adjacency_info_t = flecsi::coloring::adjacency_info_t;
 
 using test_mesh_t = flecsi::supplemental::test_mesh_2d_t;
 
@@ -108,32 +104,13 @@ flecsi_register_field(
 void
 specialization_tlt_init(int argc, char ** argv) {
   clog(info) << "In specialization top-level-task init" << std::endl;
-  coloring_map_t map{index_spaces::vertices, index_spaces::cells};
-  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
-
-  auto & context = execution::context_t::instance();
-  auto & cc = context.coloring_info(index_spaces::cells);
-  auto & cv = context.coloring_info(index_spaces::vertices);
-
-  adjacency_info_t ai;
-  ai.index_space = index_spaces::cells_to_vertices;
-  ai.from_index_space = index_spaces::cells;
-  ai.to_index_space = index_spaces::vertices;
-  ai.color_sizes.resize(cc.size());
-
-  for (auto & itr : cc) {
-    size_t color = itr.first;
-    const coloring_info_t & ci = itr.second;
-    ai.color_sizes[color] = (ci.exclusive + ci.shared + ci.ghost) * 4;
-  }
-
-  context.add_adjacency(ai);
+  supplemental::do_test_mesh_2d_coloring();
 
   context_t::sparse_index_space_info_t isi;
   isi.index_space = index_spaces::cells;
   isi.max_entries_per_index = 10;
   isi.exclusive_reserve = 8192;
-  context.set_sparse_index_space_info(isi);
+  context_t::instance().set_sparse_index_space_info(isi);
 } // specialization_tlt_init
 
 void
@@ -159,7 +136,8 @@ driver(int argc, char ** argv) {
   flecsi_execute_task_simple(print, single, ch, ph);
 
   flecsi_execute_task_simple(mutate, single, ch, mh);
-  flecsi_execute_task_simple(print, single, ch, ph);
+  auto future = flecsi_execute_task_simple(print, single, ch, ph);
+  future.wait(); // wait before comparing results
 
   auto & context = execution::context_t::instance();
   if (context.color() == 0) {

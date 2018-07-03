@@ -24,12 +24,7 @@ namespace execution {
 //----------------------------------------------------------------------------//
 
 using point_t = flecsi::supplemental::point_t;
-using vertex_t = flecsi::supplemental::vertex_t;
-using cell_t = flecsi::supplemental::cell_t;
 using mesh_t = flecsi::supplemental::test_mesh_2d_t;
-
-using coloring_info_t = flecsi::coloring::coloring_info_t;
-using adjacency_info_t = flecsi::coloring::adjacency_info_t;
 
 template<size_t PS>
 using mesh = data_client_handle__<mesh_t, PS>;
@@ -50,7 +45,6 @@ flecsi_register_field(
     dense,
     1,
     index_spaces::cells);
-
 
 //----------------------------------------------------------------------------//
 // Initialize pressure
@@ -143,42 +137,14 @@ flecsi_register_task(print_mesh, flecsi::execution, loc, single);
 
 void
 specialization_tlt_init(int argc, char ** argv) {
-
   {
     clog_tag_guard(devel_handle);
     clog(info) << "specialization_tlt_init function" << std::endl;
   } // scope
-
-  coloring_map_t map{index_spaces::vertices, index_spaces::cells};
-
-  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
+  supplemental::do_test_mesh_2d_coloring();
 
   auto & context{execution::context_t::instance()};
-
-  auto & vinfo{context.coloring_info(index_spaces::vertices)};
-  auto & cinfo{context.coloring_info(index_spaces::cells)};
-
-  adjacency_info_t ai;
-  ai.index_space = index_spaces::cells_to_vertices;
-  ai.from_index_space = index_spaces::cells;
-  ai.to_index_space = index_spaces::vertices;
-  ai.color_sizes.resize(cinfo.size());
-
-  for (auto & itr : cinfo) {
-    size_t color{itr.first};
-    const coloring_info_t & ci = itr.second;
-    ai.color_sizes[color] = (ci.exclusive + ci.shared + ci.ghost) * 4;
-  } // for
-
-  {
-    clog_tag_guard(devel_handle);
-    clog(info) << "Adding adjacency info: " << ai << std::endl;
-  } // scope
-
-  context.add_adjacency(ai);
-
   context.add_index_subspace(0, 1024);
-
 } // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
@@ -187,7 +153,6 @@ specialization_tlt_init(int argc, char ** argv) {
 
 void
 specialization_spmd_init(int argc, char ** argv) {
-
   {
     clog_tag_guard(devel_handle);
     clog(info) << "specialization_spmd_init function" << std::endl;
@@ -195,7 +160,6 @@ specialization_spmd_init(int argc, char ** argv) {
 
   auto mh = flecsi_get_client_handle(mesh_t, clients, m);
   flecsi_execute_task(initialize_mesh, flecsi::supplemental, single, mh);
-
 } // specialization_spmd_ini
 
 //----------------------------------------------------------------------------//
