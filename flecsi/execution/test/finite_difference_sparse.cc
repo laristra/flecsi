@@ -14,7 +14,7 @@
 
 ///
 /// \file
-/// \date Initial file creation: Apr 3, 2018
+/// \date Initial file creation: Jul 3, 2018
 ///
 
 #include <cmath>
@@ -25,7 +25,8 @@
 #include <flecsi/execution/execution.h>
 #include <flecsi/supplemental/mesh/test_mesh_2d.h>
 
-#include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/sparse_mutator.h>
 
 static constexpr double pi = 3.14159265358979323846;
 #ifdef FLECSI_8_8_MESH
@@ -60,7 +61,9 @@ template<size_t PS>
 using mesh = data_client_handle__<mesh_t, PS>;
 
 template<size_t EP, size_t SP, size_t GP>
-using field = dense_accessor<double, EP, SP, GP>;
+using field = sparse_accessor<double, EP, SP, GP>;
+
+using sparse_mutator = sparse_mutator<double>;
 
 //----------------------------------------------------------------------------//
 // Variable registration
@@ -68,31 +71,22 @@ using field = dense_accessor<double, EP, SP, GP>;
 
 flecsi_register_data_client(mesh_t, meshes, mesh1);
 
-flecsi_register_field(mesh_t, func, f, double, dense, 1, index_spaces::cells);
-flecsi_register_field(mesh_t, deriv, fx, double, dense, 1, index_spaces::cells);
-flecsi_register_field(mesh_t, deriv, fy, double, dense, 1, index_spaces::cells);
-flecsi_register_field(
-    mesh_t,
-    deriv,
-    fxy,
-    double,
-    dense,
-    1,
-    index_spaces::cells);
+flecsi_register_field(mesh_t, func, f, double, sparse, 1, index_spaces::cells);
+flecsi_register_field(mesh_t, func, g, double, sparse, 1, index_spaces::cells);
 
 //----------------------------------------------------------------------------//
 // Init field
 //----------------------------------------------------------------------------//
 
 void
-init(mesh<ro> mesh, field<rw, rw, ro> f) {
+init(mesh<ro> mesh, sparse_mutator f, size_t field_idx) {
   for (auto c : mesh.cells(owned)) {
     auto idx = c->index();
     // domain is 0..2*pi in both x and y
     double x = (double)idx[1] / (double)(N - 1) * 2.0 * pi;
     double y = (double)idx[0] / (double)(N - 1) * 2.0 * pi;
 
-    f(c) = sin(x) * y + 0.5 * cos(2.0 * y);
+    f(c, field_idx) = sin(x) * y + 0.5 * cos(2.0 * y);
   }
 } // init
 
@@ -103,12 +97,16 @@ flecsi_register_task(init, flecsi::execution, loc, single);
 //----------------------------------------------------------------------------//
 
 void
-check_results(mesh<ro> mesh, field<ro, ro, ro> values, size_t global_target) {
+check_results(
+    mesh<ro> mesh,
+    field<ro, ro, ro> values,
+    size_t field_idx,
+    size_t global_target) {
   auto target = flecsi_get_global_object(global_target, global, vec_2d_t);
   auto rank = context_t::instance().color();
 
   for (auto c : mesh.cells(owned)) {
-    auto v = values(c);
+    auto v = values(c, field_idx);
     size_t i = c->index()[0];
     size_t j = c->index()[1];
     auto t = (*target)[i][j];
@@ -130,7 +128,9 @@ void
 compute_deriv(
     mesh<ro> mesh,
     field<ro, ro, ro> f,
+    size_t f_idx,
     field<wo, wo, ro> deriv,
+    size_t deriv_idx,
     bool div_x) {
   double h = 2.0 * pi / (double)(N - 1);
 
@@ -138,24 +138,44 @@ compute_deriv(
     if (div_x) {
       // central difference in x, backward or forward at boundaries
       if (c->left() == nullptr)
-        deriv(c) = (f(c->right()) - f(c)) / h;
+        deriv(c, deriv_idx) = (f(c->right(), f_idx) - f(c, f_idx)) / h;
       else if (c->right() == nullptr)
-        deriv(c) = (f(c) - f(c->left())) / h;
+        deriv(c, deriv_idx) = (f(c, f_idx) - f(c->left(), f_idx)) / h;
       else
-        deriv(c) = (f(c->right()) - f(c->left())) / (2.0 * h);
+        deriv(c, deriv_idx) =
+            (f(c->right(), f_idx) - f(c->left(), f_idx)) / (2.0 * h);
     } else {
       // central difference in y, backward or forward at boundaries
       if (c->below() == nullptr)
-        deriv(c) = (f(c->above()) - f(c)) / h;
+        deriv(c, deriv_idx) = (f(c->above(), f_idx) - f(c, f_idx)) / h;
       else if (c->above() == nullptr)
-        deriv(c) = (f(c) - f(c->below())) / h;
+        deriv(c, deriv_idx) = (f(c, f_idx) - f(c->below(), f_idx)) / h;
       else
-        deriv(c) = (f(c->above()) - f(c->below())) / (2.0 * h);
+        deriv(c, deriv_idx) =
+            (f(c->above(), f_idx) - f(c->below(), f_idx)) / (2.0 * h);
     }
   }
 } // modify
 
 flecsi_register_task(compute_deriv, flecsi::execution, loc, single);
+
+//----------------------------------------------------------------------------//
+// Copy field
+//----------------------------------------------------------------------------//
+
+void
+copy(
+    mesh<ro> mesh,
+    field<ro, ro, ro> from,
+    size_t from_idx,
+    sparse_mutator to,
+    size_t to_idx) {
+  for (auto c : mesh.cells(owned)) {
+    to(c, to_idx) = from(c, from_idx);
+  }
+} // copy
+
+flecsi_register_task(copy, flecsi::execution, loc, single);
 
 //----------------------------------------------------------------------------//
 // Top-Level Specialization Initialization
@@ -165,6 +185,12 @@ void
 specialization_tlt_init(int argc, char ** argv) {
   clog(info) << "In specialization top-level-task init" << std::endl;
   supplemental::do_test_mesh_2d_coloring();
+
+  context_t::sparse_index_space_info_t isi;
+  isi.index_space = index_spaces::cells;
+  isi.max_entries_per_index = 10;
+  isi.exclusive_reserve = 8192;
+  context_t::instance().set_sparse_index_space_info(isi);
 } // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
@@ -211,10 +237,10 @@ derive(const vec_2d_t & f, vec_2d_t * deriv, bool div_x) {
 void
 driver(int argc, char ** argv) {
   auto mh = flecsi_get_client_handle(mesh_t, meshes, mesh1);
-  auto fh = flecsi_get_handle(mh, func, f, double, dense, 0);
-  auto fxh = flecsi_get_handle(mh, deriv, fx, double, dense, 0);
-  auto fyh = flecsi_get_handle(mh, deriv, fy, double, dense, 0);
-  auto fxyh = flecsi_get_handle(mh, deriv, fxy, double, dense, 0);
+  auto fh = flecsi_get_handle(mh, func, f, double, sparse, 0);
+  auto gh = flecsi_get_handle(mh, func, g, double, sparse, 0);
+  auto fm = flecsi_get_mutator(mh, func, f, double, sparse, 0, 2);
+  auto gm = flecsi_get_mutator(mh, func, g, double, sparse, 0, 2);
 
   // compute expected results and then compare with what FleCSI produces
   vec_2d_t f_target(N, std::vector<double>(N, 0.0));
@@ -242,31 +268,48 @@ driver(int argc, char ** argv) {
   flecsi_initialize_global_object(
       global_fxy_target, global, vec_2d_t, fxy_target);
 
-  flecsi_execute_task(init, flecsi::execution, single, mh, fh);
+  // f[7] will be f
+  flecsi_execute_task(init, flecsi::execution, single, mh, fm, 7);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, fh, global_f_target);
+      check_results, flecsi::execution, single, mh, fh, 7, global_f_target);
 
+  // g[1] will also be f
+  flecsi_execute_task(init, flecsi::execution, single, mh, gm, 1);
   flecsi_execute_task(
-      compute_deriv, flecsi::execution, single, mh, fh, fxh, true);
-  flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, fxh, global_fx_target);
+      check_results, flecsi::execution, single, mh, gh, 1, global_f_target);
 
+  // overwrite g[1] with x derivative of f[7], so it will be fx
   flecsi_execute_task(
-      compute_deriv, flecsi::execution, single, mh, fh, fyh, false);
+      compute_deriv, flecsi::execution, single, mh, fh, 7, gh, 1, true);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, fyh, global_fy_target);
+      check_results, flecsi::execution, single, mh, gh, 1, global_fx_target);
 
+  // initialize g[1111111] with f
+  flecsi_execute_task(init, flecsi::execution, single, mh, gm, 1111111);
   flecsi_execute_task(
-      compute_deriv, flecsi::execution, single, mh, fxh, fxyh, false);
+      check_results, flecsi::execution, single, mh, gh, 1111111,
+      global_f_target);
+
+  // copy g[1] to f[7777777]
+  flecsi_execute_task(copy, flecsi::execution, single, mh, gh, 1, fm, 7777777);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, fxyh, global_fxy_target);
+      check_results, flecsi::execution, single, mh, fh, 7777777,
+      global_fx_target);
+
+  // overwrite g[1111111] with y derivative of f[7777777], so it will be fxy
+  flecsi_execute_task(
+      compute_deriv, flecsi::execution, single, mh, fh, 7777777, gh, 1111111,
+      false);
+  flecsi_execute_task(
+      check_results, flecsi::execution, single, mh, gh, 1111111,
+      global_fxy_target);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//
 // TEST.
 //----------------------------------------------------------------------------//
 
-TEST(finite_difference_dense, testname) {} // TEST
+TEST(finite_difference_sparse, testname) {} // TEST
 
 } // namespace execution
 } // namespace flecsi
