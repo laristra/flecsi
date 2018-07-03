@@ -110,6 +110,11 @@ struct accessor__<
     return itr->value;
   } // operator ()
 
+  template<typename E>
+  T & operator()(E * e, size_t entry) {
+    return this->operator()(e->template id<0>(), entry);
+  } // operator ()
+
   //-------------------------------------------------------------------------//
   //! Return all entries used over all indices.
   //-------------------------------------------------------------------------//

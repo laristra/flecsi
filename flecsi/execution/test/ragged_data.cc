@@ -119,7 +119,7 @@ driver(int argc, char ** argv) {
 // TEST.
 //----------------------------------------------------------------------------//
 
-TEST(sparse_data, testname) {} // TEST
+TEST(ragged_data, testname) {} // TEST
 
 } // namespace execution
 } // namespace flecsi
