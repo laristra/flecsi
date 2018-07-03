@@ -37,7 +37,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                                                     
 
 
-DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true
+DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true:
         stage: build
 
         variables:
