@@ -44,7 +44,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - /builds/onurcaylak/artifacts
+                        - /builds/onurcaylak/flecsi/artifacts
                                                      
 test_ubuntu:
         stage: test
@@ -52,7 +52,7 @@ test_ubuntu:
                 - ls -la /builds/onurcaylak/
                 - ls -la /builds/onurcaylak/flecsi/
                 - ls -la /builds/onurcaylak/flecsi/artifacts
-                - cd /builds/onurcaylak/flecsi/artifacts/build
+                - cd /builds/onurcaylak/flecsi/artifacts/flecsi/build
                 - make test ARGS="-V"
         dependencies:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
