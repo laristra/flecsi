@@ -28,7 +28,7 @@ Please use the following naming conventions when creating branches:
   A *feature* branch is where new development is done. However, master
   should be merged periodically into a feature branch.
 
-* **bug**/*reference*<br>
+* **fix**/*reference*<br>
   Bug-fix branches should use the *bug* prefix, and should include
   a reference number or name, e.g., issue number.
 
