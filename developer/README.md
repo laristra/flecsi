@@ -78,6 +78,17 @@ Git command to reset upstream for local branch
 $ git push origin -u new-name
 ```
 
+Git command to remove local branch:
+```
+$ git branch -d branch
+```
+or,
+```
+$ git branch -D branch
+```
+The *-D* flag is an alias for *--delete --force*, and allows remoaval of
+branches that have not been merged in its upstream branch.
+
 ## Task: Update CMakeLists
 
 Update CMakeLists.txt files to reflect current header and source
