@@ -51,7 +51,7 @@ test_ubuntu:
         script: 
                 - ls -la /builds/onurcaylak/
                 - ls -la /builds/onurcaylak/flecsi/
-                - ls -la /builds/onurcaylak/flecsi/artifacts
+                - ls -la /builds/onurcaylak/flecsi/artifacts 
                 - cd /builds/onurcaylak/flecsi/artifacts/flecsi/build
                 - make test ARGS="-V"
         dependencies:
