@@ -10,15 +10,15 @@ pass before they may be merged.
 
 Please use the following naming conventions when creating branches:
 
-* **release**\_*version*<br>
+* **release**\_*major_minor*<br>
   The *release* prefix is reserved for supported FleCSI release
   branches.
 
-* **release\_candidate**\_*version*<br>
+* **release\_candidate**\_*major_minor*<br>
   The *release\_candidate* prefix should be used to identify a branch that is
   being considered for release.
 
-* **stable**\_*version*<br>
+* **stable**\_*major_minor*<br>
   A *stable* branch is a development or feature branch that is
   guarunteed to build and pass the FleCSI continuous integration test
   suite, but one which incorporates new features or capabilities that
@@ -88,6 +88,11 @@ $ git branch -D branch
 ```
 The *-D* flag is an alias for *--delete --force*, and allows remoaval of
 branches that have not been merged in its upstream branch.
+
+Git command to remove a remote branch:
+```
+$ git push <remote-name> --delete <branch-name>
+```
 
 ## Task: Update CMakeLists
 
