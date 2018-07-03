@@ -8,15 +8,16 @@ stages:
         - test
         - deploy
 
-before_script:
-        - mkdir /builds/onurcaylak/flecsi/artifacts
-
 DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         stage: build
 
         variables:
           GLOBAL_CI_VARIABLE: "global_ci_value"
           GIT_SUBMODULE_STRATEGY: recursive
+
+
+        before_script:
+                - mkdir /builds/onurcaylak/flecsi/artifacts
 
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
