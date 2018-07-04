@@ -66,6 +66,8 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h2>Cinch Logging Utilities (clog)</h2>
+<h3>Quick Start</h3>
+<p>Configure cmake to enable clog: </p><div class="fragment"><div class="line">$ cmake -DENABLE_CLOG=ON -DCLOG_ENABLE_MPI=ON -DCLOG_ENABLE_TAGS=ON path...</div></div><!-- fragment --><p> <b>The options for MPI and tags are useful, but not necessary.</b> Rebuild the project, and then set the std::clog environment variable: </p><div class="fragment"><div class="line">$ export CLOG_ENABLE_STDLOG=1</div></div><!-- fragment --><p> If your executable uses clog calls, they should now produce output when you run.</p>
 <h3>Basic Description</h3>
 <p>Cinch has support for trace, info, warn, error, and fatal log reporting (similar to Google Log). There are two interface styles for logging information using clog: Insertion style, e.g.,</p>
 <div class="fragment"><div class="line"><a class="code" href="group__clog.html#ga70996b1fb9c327c7a7a9b1c4656e22e9">clog</a>(info) &lt;&lt; <span class="stringliteral">&quot;This is some information&quot;</span> &lt;&lt; std::endl;</div></div><!-- fragment --><p>and a method interface, e.g.,</p>
