@@ -60,10 +60,12 @@ namespace execution {
 // FIXME : should we generate theese IDs somewhere?
 enum {
   // Use the first 8 bits for storing the rhsf index
-  MAPPER_FORCE_RANK_MATCH = 0x00001000,
+  MAPPER_FORCE_RANK_MATCH  = 0x00001000,
   MAPPER_COMPACTED_STORAGE = 0x00002000,
-  MAPPER_SUBRANK_LAUNCH = 0x00003000,
-  EXCLUSIVE_LR = 0x00004000,
+  MAPPER_SUBRANK_LAUNCH    = 0x00003000,
+  EXCLUSIVE_LR             = 0x00005000,
+  SPARSE_LR                = 0x00005001,
+  RR                       = 0x00005002, 
 };
 
 /*!

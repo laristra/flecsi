@@ -170,6 +170,19 @@ runtime_driver(
   data.finalize(coloring_info);
 
   //-------------------------------------------------------------------------//
+  // check nuber of fields allocated for srapse data
+  //-------------------------------------------------------------------------//
+
+  for(const field_info_t& field_info : context_.registered_fields()){
+    if (field_info.storage_class==sparse ){
+        auto sparse_idx_space = field_info.index_space ;
+
+//std::cout <<"IRINA DEBUG sparse_idx_space id ="<<sparse_idx_space<<std::endl;
+        context_.increment_sparse_fields(sparse_idx_space);
+      }
+    } 
+
+  //-------------------------------------------------------------------------//
   //  Create Legion reduction 
   //-------------------------------------------------------------------------//
 
@@ -510,8 +523,8 @@ runtime_driver(
       }
 
       spmd_launcher.add_region_requirement(reg_req);
-
-      if(flecsi_ispace.has_sparse_fields && sparse_fields){
+      if(flecsi_ispace.has_sparse_fields && context_.sparse_fields(idx_space)){
+std::cout <<"IRINA DEBUG, idx_space when addinf rr"<<idx_space<<std::endl;
         spmd_launcher.add_region_requirement(sparse_reg_req);
       }
 
@@ -584,7 +597,8 @@ runtime_driver(
 
         spmd_launcher.add_region_requirement(owner_reg_req);
 
-        if(flecsi_ispace.has_sparse_fields && sparse_owner_fields){
+        if(flecsi_ispace.has_sparse_fields && context_.sparse_fields(idx_space)){
+std::cout <<"IRINA DEBUG, idx_space when addinf rr"<<idx_space<<std::endl;
           spmd_launcher.add_region_requirement(sparse_owner_reg_req);
         }
 
@@ -944,7 +958,8 @@ spmd_task(
     }
     else{
       auto sitr = sis_map.find(idx_space);
-      if(sitr != sis_map.end()){
+      if(sitr != sis_map.end() &&
+        (sitr->second.sparse_fields_registered_>0)){
         sparse_info = &sitr->second;
         // TODO: formalize sparse index space offset
         sparse_idx_space = idx_space + 8192;
