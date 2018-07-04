@@ -48,6 +48,8 @@ var searchData=
   ['tuple_5ffunction_2eh',['tuple_function.h',['../tuple__function_8h.html',1,'']]],
   ['tuple_5fhandle_5ft',['tuple_handle_t',['../structflecsi_1_1data_1_1hpx_1_1storage__class_____3_01tuple_01_4_1_1tuple__handle__t.html',1,'flecsi::data::hpx::storage_class__&lt; tuple &gt;::tuple_handle_t'],['../structflecsi_1_1data_1_1legion_1_1storage__class_____3_01tuple_01_4_1_1tuple__handle__t.html',1,'flecsi::data::legion::storage_class__&lt; tuple &gt;::tuple_handle_t']]],
   ['tuple_5ftype_5fconverter_2eh',['tuple_type_converter.h',['../tuple__type__converter_8h.html',1,'']]],
+  ['tuple_5fvisit',['tuple_visit',['../tuple__visit_8h.html#adf95d6f213f65d922af7167520b9c31e',1,'flecsi::utils::tuple_visit(_Tuple &amp;&amp;__t, _Fn &amp;&amp;__f)'],['../tuple__visit_8h.html#a6e29946c74d792440066261589155d33',1,'flecsi::utils::tuple_visit(_Fn &amp;&amp;__f)']]],
+  ['tuple_5fvisit_2eh',['tuple_visit.h',['../tuple__visit_8h.html',1,'']]],
   ['tuple_5fwalker_2eh',['tuple_walker.h',['../tuple__walker_8h.html',1,'']]],
   ['tuple_5fwalker_5f_5f',['tuple_walker__',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5f_5f_3c_20binding_5fwalker_5f_5f_20_3e',['tuple_walker__&lt; binding_walker__ &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
@@ -74,6 +76,6 @@ var searchData=
   ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data_1_1hpx__meta__data__t_1_1type__info__t.html',1,'flecsi::data::hpx_meta_data_t']]],
   ['type_5ftraits_2eh',['type_traits.h',['../type__traits_8h.html',1,'']]],
   ['type_5fwalker_5f_5f',['type_walker__',['../structflecsi_1_1data_1_1hpx__client__registration__wrapper_____3_01flecsi_1_1topology_1_1mesh__t8a708d7515f1d14479b6f4e920313384.html',1,'flecsi::data::hpx_client_registration_wrapper__&lt; flecsi::topology::mesh_topology__&lt; POLICY_TYPE &gt;, NAMESPACE_HASH, NAME_HASH &gt;']]],
-  ['typeify',['typeify',['../structflecsi_1_1utils_1_1typeify.html',1,'flecsi::utils::typeify&lt; T, M &gt;'],['../structflecsi_1_1topology_1_1typeify.html',1,'flecsi::topology::typeify&lt; T, M &gt;']]],
+  ['typeify',['typeify',['../structflecsi_1_1topology_1_1typeify.html',1,'flecsi::topology::typeify&lt; T, M &gt;'],['../structflecsi_1_1utils_1_1typeify.html',1,'flecsi::utils::typeify&lt; T, M &gt;']]],
   ['types_2eh',['types.h',['../runtime_2types_8h.html',1,'(Global Namespace)'],['../topology_2types_8h.html',1,'(Global Namespace)']]]
 ];

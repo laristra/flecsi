@@ -30,5 +30,6 @@ var searchData=
   ['array_5fbuffer_5ftype_5f_5f_3c_20t_20_3e',['array_buffer_type__&lt; T &gt;',['../structflecsi_1_1topology_1_1array__buffer__type____.html',1,'flecsi::topology']]],
   ['array_5fref',['array_ref',['../classflecsi_1_1utils_1_1array__ref.html',1,'flecsi::utils']]],
   ['array_5fref_3c_20t_20_3e',['array_ref&lt; T &gt;',['../classarray__ref_3_01T_01_4.html',1,'']]],
-  ['as_5fconst',['as_const',['../structflecsi_1_1utils_1_1as__const.html',1,'flecsi::utils']]]
+  ['as_5fconst',['as_const',['../structflecsi_1_1utils_1_1as__const.html',1,'flecsi::utils']]],
+  ['auxiliary_5findependent_5f_5f',['auxiliary_independent__',['../structflecsi_1_1coloring_1_1auxiliary__independent____.html',1,'flecsi::coloring']]]
 ];

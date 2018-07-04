@@ -68,5 +68,6 @@ var searchData=
   ['array_5fref_3c_20t_20_3e',['array_ref&lt; T &gt;',['../classarray__ref_3_01T_01_4.html',1,'']]],
   ['as_5fconst',['as_const',['../structflecsi_1_1utils_1_1as__const.html',1,'flecsi::utils']]],
   ['assert_5fclient_5fexists',['assert_client_exists',['../structflecsi_1_1data_1_1storage____.html#adde8cfc00d5106a3d892c69f00769871',1,'flecsi::data::storage__']]],
+  ['auxiliary_5findependent_5f_5f',['auxiliary_independent__',['../structflecsi_1_1coloring_1_1auxiliary__independent____.html',1,'flecsi::coloring']]],
   ['axis',['axis',['../dimensioned__array_8h.html#a95371a68573ff7ee30033e12cea640fb',1,'flecsi::utils']]]
 ];

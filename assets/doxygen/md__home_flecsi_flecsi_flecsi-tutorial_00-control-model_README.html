@@ -66,6 +66,38 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1>Control Model Example</h1>
+<div class="image">
+<img src="tutorial-00-cfg.png" alt="tutorial-00-cfg.png"/>
+<div class="caption">
+Control Flow Graph Example</div></div>
+<p> The FleCSI control model provides a mechanism for specializations to define a set of static control points at which users can register <em>actions</em> that should be executed during a given <em>phase</em> of execution. This example uses a control model that would be sensible for a <em>particle-in-cell (PIC)</em> application. In the above figure, the nodes with a white fill color are control points (phases). The nodes with a light blue fill color are actions. The control model is only concerned with the execution structure of the code, data dependencies and analysis are handled through FleCSI's data model. The order of execution of the phases is set at compile time by the specialization layer, i.e., <em>initialize</em> -&gt; <em>advance</em> -&gt; <em>analyze</em> -&gt; <em>io</em> -&gt; <em>mesh</em> -&gt; <em>finalize</em>. The ordering of actions at each phase is determined by applying a topological sorting algorithm to the directed acyclic graph (DAG) that is implied by the dependencies between actions. These dependencies are specified by the user. This has at least two implications:</p>
+<ol type="1">
+<li>Actions within a phase may not cycle. If the user defines a graph that cycles, a runtime error will be generated.</li>
+<li>Users cannot add phases. This is the purview of the specailization.</li>
+</ol>
+<p>This example attempts to show how the control model mechanism in FleCSI can be used by a specialization to create a high-level user interface for registering actions and specifying dependencies between actions with only local knowledge, i.e., in the simplest case, an action node only needs to know its direct upstream neighbor.</p>
+<p>There are several files in this example:</p>
+<ul>
+<li><em><b>control-model.cc</b></em><br />
+ This is the main program file that combines the various <em>packages</em> into a single application.</li>
+<li><em><b>analysis.h</b></em><br />
+ Analysis actions. This file also demonstrates registering actions under different control points, and outputing the control model visualization.</li>
+<li><em><b>currents.h</b></em><br />
+ Accumulate currents action. This file also demonstrates how to specify an attribute on an action.</li>
+<li><em><b>fields.h</b></em><br />
+ Advance fields action. This file also demonstrates checking an attribute of an upstream action.</li>
+<li><em><b>io.h</b></em><br />
+ I/O action.</li>
+<li><em><b>mesh.h</b></em><br />
+ Mesh actions. This file also demonstrates registering actions under different control points.</li>
+<li><em><b>particles.h</b></em><br />
+ Advance particles action.</li>
+<li><em><b><a class="el" href="special_8h_source.html">special.h</a></b></em><br />
+ Particle special action. This file also demonstrates inserting actions into the control model without affecting an existing control dependency.</li>
+<li><em><b>species.h</b></em><br />
+ Initialize species action.</li>
+</ul>
+<p><b>Note:</b> This example uses a node type and phase map that are defined by the tutorial specialization. The code for the specialization control model configuration is in <em>specialization/control</em>. In particular, the node type defined in <em><a class="el" href="node__type_8h_source.html">node_type.h</a></em> is a policy for the FleCSI Core <em>dag_t</em> type that adds a <code>std::function&lt;int(int, char **)&gt;</code> that is used to define <em>actions</em>, and a <code>std::bitset&lt;8&gt;</code> that is used to define <em>attributes</em>.</p>
 <div class="fragment"></div><!-- fragment --> </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

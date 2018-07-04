@@ -19,6 +19,7 @@ var searchData=
   ['pop_5ffront',['pop_front',['../classflecsi_1_1utils_1_1array__ref.html#a69ec8afeb61c6f26efe16eaa3fe83583',1,'flecsi::utils::array_ref']]],
   ['prepare_5f',['prepare_',['../classflecsi_1_1topology_1_1index__space____.html#a997a5bbd7bfe6ce7935089eaf23f40c4',1,'flecsi::topology::index_space__']]],
   ['primary',['primary',['../structflecsi_1_1coloring_1_1box__coloring__info__t.html#a94ad46970275d15d9d86426f1d6c60bd',1,'flecsi::coloring::box_coloring_info_t']]],
+  ['primary_5findependent_5f_5f',['primary_independent__',['../structflecsi_1_1coloring_1_1primary__independent____.html',1,'flecsi::coloring']]],
   ['print',['print',['../simple__id_8h.html#acbc08cdd32abc7a529b2005c2bb7df42',1,'flecsi::utils::detail']]],
   ['privilege_2eh',['privilege.h',['../privilege_8h.html',1,'']]],
   ['privilege_5fmode',['privilege_mode',['../structflecsi_1_1execution_1_1init__args__t.html#ad9c1f581fd3fba859babe3d749857267',1,'flecsi::execution::init_args_t']]],
