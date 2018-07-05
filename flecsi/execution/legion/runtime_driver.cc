@@ -132,13 +132,11 @@ runtime_driver(
   clog_tag_guard(runtime_driver);
   clog(info) << "Executing specialization top-level-task init" << std::endl;
   }
+  
   // Invoke the specialization top-level task initialization function.
   specialization_tlt_init(args.argc, args.argv);
 
-  context_.advance_state();
-  
-  //dependent_partition_tlt_init(ctx, runtime, context_);
-    
+  context_.advance_state();  
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
 
