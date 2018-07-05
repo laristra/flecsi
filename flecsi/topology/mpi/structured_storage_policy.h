@@ -63,7 +63,7 @@ struct mpi_structured_topology_storage_policy__ {
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();
   }
-
+/*
   void init(
       size_t domain,
       size_t dim,
@@ -126,7 +126,7 @@ struct mpi_structured_topology_storage_policy__ {
       }
     }
   } // init_entities
-
+*/
 };  // class mpi_structured_topology_storage_policy__
 
 } // namespace topology

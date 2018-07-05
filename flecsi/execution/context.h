@@ -50,7 +50,7 @@ namespace execution {
 
 template<class CONTEXT_POLICY>
 struct context__ : public CONTEXT_POLICY {
-  using box_coloring_info_t = flecsi::coloring::box_coloring_info_t;
+  using box_coloring_t = flecsi::coloring::box_coloring_info_t<size_t>;
   using index_coloring_t = flecsi::coloring::index_coloring_t;
   using coloring_info_t = flecsi::coloring::coloring_info_t;
   using set_coloring_info_t = flecsi::coloring::set_coloring_info_t;
@@ -552,7 +552,7 @@ struct context__ : public CONTEXT_POLICY {
 
   void add_box_coloring(
       size_t index_space,
-      box_coloring_info_t & coloring,
+      box_coloring_t & coloring,
       std::unordered_map<size_t, coloring_info_t> & coloring_info) {
     clog_assert(
         box_colorings_.find(index_space) == box_colorings_.end(),
@@ -577,7 +577,7 @@ struct context__ : public CONTEXT_POLICY {
     return it->second;
   } // coloring
 
-   box_coloring_info_t & box_coloring(size_t index_space) {
+   box_coloring_t & box_coloring(size_t index_space) {
     auto it = box_colorings_.find(index_space);
     if (it == box_colorings_.end()) {
       clog(fatal) << "invalid index_space " << index_space << std::endl;
@@ -624,7 +624,7 @@ struct context__ : public CONTEXT_POLICY {
     return colorings_;
   } // colorings
 
-  const std::map<size_t, box_coloring_info_t> & box_coloring_map() const {
+  const std::map<size_t, box_coloring_t> & box_coloring_map() const {
     return box_colorings_;
   } // box_colorings
 
@@ -901,7 +901,7 @@ private:
 
   std::map<size_t, index_coloring_t> colorings_;
 
-  std::map<size_t, box_coloring_info_t> box_colorings_;
+  std::map<size_t, box_coloring_t> box_colorings_;
   //--------------------------------------------------------------------------//
   // key: mesh index space entity id
   //--------------------------------------------------------------------------//

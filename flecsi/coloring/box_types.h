@@ -16,7 +16,6 @@
 #include <iostream>
 #include <vector>
 
-#include <flecsi/coloring/coloring_base.h>
 
 namespace flecsi {
 namespace coloring {
@@ -66,7 +65,7 @@ struct box_info_t {
    Type for collecting aggregate of various colored boxes
  */
 template<size_t D>
-struct box_coloring_info_t : public coloring_base_t 
+struct box_coloring_info_t  
 {
   //! The primary box
   box_info_t<D> primary;
@@ -83,6 +82,9 @@ struct box_coloring_info_t : public coloring_base_t
   //! The aggregate of domain-halo boxes
   std::vector<box_t<D>> domain_halo;
 }; // class box_coloring_info_t
+
+template<size_t D>
+using box_coloring_t = box_coloring_info_t<D>;
 
 } // namespace coloring
 } // namespace flecsi

@@ -20,7 +20,6 @@
 #include <vector>
 
 #include <flecsi/coloring/communicator.h>
-#include <flecsi/coloring/coloring_base.h>
 
 namespace flecsi {
 namespace coloring {
@@ -28,7 +27,7 @@ namespace coloring {
 /*!
   FIXME Add description.
  */
-struct index_coloring_t : public coloring_base_t  
+struct index_coloring_t   
 {
   using entity_info_t = flecsi::coloring::entity_info_t;
 
