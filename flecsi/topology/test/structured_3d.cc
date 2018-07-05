@@ -1,40 +1,27 @@
 #include <iostream>
 #include <cinchtest.h>
 #include "flecsi/topology/structured_mesh_topology.h"
+#include "flecsi/topology/mesh_storage.h"
 
 using namespace std;
 using namespace flecsi;
 using namespace topology;
 
 
-class Vertex : public structured_mesh_entity_t<0, 1>{
+class Vertex : public structured_mesh_entity__<0, 1>{
 public:
-  Vertex(){}
-
-  Vertex(structured_mesh_topology_base_t &){}
 };
 
-class Edge : public structured_mesh_entity_t<1, 1>{
+class Edge : public structured_mesh_entity__<1, 1>{
 public:
-  Edge(){}
-
-  Edge(structured_mesh_topology_base_t &){}
 };
 
-class Face : public structured_mesh_entity_t<2, 1>{
+class Face : public structured_mesh_entity__<2, 1>{
 public:
-
-  Face(){}
-
-  Face(structured_mesh_topology_base_t &){}
 };
 
-class Cell : public structured_mesh_entity_t<3, 1>{
+class Cell : public structured_mesh_entity__<3, 1>{
 public:
-
-  Cell(){}
-
-  Cell(structured_mesh_topology_base_t &){}
 };
 
 
@@ -56,7 +43,7 @@ public:
 constexpr std::array<size_t,TestMesh3dType::num_dimensions> TestMesh3dType::lower_bounds;
 constexpr std::array<size_t,TestMesh3dType::num_dimensions> TestMesh3dType::upper_bounds;
 
-using TestMesh = structured_mesh_topology_t<TestMesh3dType>;
+using TestMesh = structured_mesh_topology__<TestMesh3dType>;
 
 namespace flecsi {
 namespace execution {
@@ -68,8 +55,9 @@ void driver(int argc, char ** argv) {};
 } //execution
 
 TEST(structured, simple){
-
-  auto mesh = new TestMesh; 
+  auto ms = new structured_mesh_storage__<TestMesh3dType::num_dimensions,
+                                        TestMesh3dType::num_domains>();
+  auto mesh = new TestMesh(ms); 
   size_t nv, ne, nf, nc;
 
   auto lbnd = mesh->lower_bounds();
@@ -304,5 +292,6 @@ TEST(structured, simple){
 
   //CINCH_WRITE("structured_3d.blessed");
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("structured_3d.blessed"));
+  delete ms;
   delete mesh;
 } // TEST

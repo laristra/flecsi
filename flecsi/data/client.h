@@ -45,7 +45,7 @@ template<size_t, size_t>
 class mesh_entity__;
 
 template<typename>
-class structured_mesh_topology_t;
+class structured_mesh_topology__;
 } // namespace topology
 
 namespace data {
@@ -600,7 +600,7 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
 //----------------------------------------------------------------------------//
 
 template<typename POLICY_TYPE>
-struct data_client_policy_handler__<topology::structured_mesh_topology_t<POLICY_TYPE>> {
+struct data_client_policy_handler__<topology::structured_mesh_topology__<POLICY_TYPE>> {
 
   struct entity_info_t {
     size_t index_space;

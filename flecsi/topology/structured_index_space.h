@@ -101,7 +101,7 @@ public:
      size_ += box_size_[i];
 
     //debug print
-    /*for (size_t i = 0; i < num_boxes_; i++)
+    for (size_t i = 0; i < num_boxes_; i++)
     {
       std::cout<<"Box-id = "<<i<<std::endl;
       std::cout<<" -- Box-offset = "<<box_offset_[i]<<std::endl;
@@ -117,15 +117,16 @@ public:
         std::cout<<box_upbnds_[i][j]<<", ";
       std::cout<<"}"<<std::endl;
     }
+   std::cout<<"size == "<<size_<<std::endl;
    std::cout<<"Primary == "<<primary<<std::endl;
-   */
+   
   }
    
   //default constructor
   structured_index_space__(){};
 
   //default destructor
-  ~structured_index_space(__){};
+  ~structured_index_space__(){};
 
  /******************************************************************************
  *                              Basic Iterators                                *    
@@ -236,7 +237,7 @@ public:
     
     //Constructor//Destructor
     traversal(
-      structured_index_space<E1, DM1> *is,
+      structured_index_space__<E1, DM1> *is,
       sm_id_t MD1, 
       sm_id_t FD1, 
       sm_id_t ID1, 
@@ -262,7 +263,7 @@ public:
     class iterator_t{
      public:
       iterator_t(
-        structured_index_space<E2,DM2> *is,
+        structured_index_space__<E2,DM2> *is,
         qtable_t *qt2, 
         sm_id_t MD2, 
         sm_id_t FD2, 
@@ -381,7 +382,7 @@ public:
       }
 
      private:
-       structured_index_space<E2,DM2> *is_;
+       structured_index_space__<E2,DM2> *is_;
        qtable_t *qt2_; 
        sm_id_t MD2_, FD2_, ID2_, TD2_;
        sm_id_array_t indices_;
@@ -404,7 +405,7 @@ public:
     };
 
     private: 
-       structured_index_space<E1, DM1> *is_; 
+       structured_index_space__<E1, DM1> *is_; 
        sm_id_t MD1_, FD1_, ID1_, TD1_;
        sm_id_array_t indices_;
        sm_id_t start_, finish_;

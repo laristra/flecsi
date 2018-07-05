@@ -37,7 +37,13 @@ TEST(simple_colorer, simpletest3d)
   cout<<"Rank-"<<rank<<"::Primary-Box:#Halo = " <<col.primary.nhalo<<endl;
   cout<<"Rank-"<<rank<<"::Primary-Box:#DomainHalo = " <<col.primary.nhalo_domain<<endl;
   cout<<"Rank-"<<rank<<"::Primary-Box:Through dim = " <<col.primary.thru_dim<<endl;
-  cout<<"Rank-"<<rank<<"::Primary-Box:On domain boundary = [ "<<col.primary.onbnd<<" ]"<<endl;
+
+  cout<<"Rank-"<<rank<<"::Primary-Box:On domain boundary = [ ";
+  for (size_t i = 0 ; i < 6; i++)
+     cout<<"col.primary.onbnd[i]";
+  cout<<"]"<<std::endl;
+
+  //cout<<"Rank-"<<rank<<"::Primary-Box:On domain boundary = [ "<<col.primary.onbnd<<" ]"<<endl;
 
   cout<<"Rank-"<<rank<<"::Exclusive-Box:LBND  = { "<<col.exclusive.box.lowerbnd[0]<<", "
                                                    <<col.exclusive.box.lowerbnd[1]<<", "

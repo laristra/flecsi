@@ -16,6 +16,7 @@
 #include <cmath>
 
 #include <flecsi/coloring/box_colorer.h>
+#include <flecsi/coloring/coloring_types.h>
 
 #include <type_traits>
 
@@ -40,7 +41,7 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
   ~simple_box_colorer_t() {}
 
   // Coloring algo
-  box_coloring_info_t<D> color(
+  box_coloring_t color(
       size_t grid_size[D],
       size_t nhalo,
       size_t nhalo_domain,
@@ -64,7 +65,7 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     get_indices(ncolors, rank, idx);
 
     // Step 1: Create bounding boxes for domain with and without halo
-    box_t<D> domain;
+    box_t domain(D);
     for (size_t i = 0; i < D; ++i) {
       domain.lowerbnd[i] = nhalo_domain;
       domain.upperbnd[i] = grid_size[i] + nhalo_domain - 1;
@@ -75,18 +76,24 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
 
     // Step 2: Create colored box type and set its primary box
     // info to the one created in step 1.
-    box_coloring_info_t<D> colbox;
+    box_coloring_t colbox;
     colbox.primary.box = pbox;
     colbox.primary.nhalo = nhalo;
     colbox.primary.nhalo_domain = nhalo_domain;
     colbox.primary.thru_dim = thru_dim;
-    colbox.primary.onbnd.reset(0);
+    
+    //Set the onbnd vector to false 
+    //colbox.primary.onbnd.reset(0);
+    for(size_t i = 0; i < 2*D; ++i)
+     colbox.primary.onbnd.push_back(false);
 
     for (size_t i = 0; i < D; ++i) {
       if (pbox.lowerbnd[i] == domain.lowerbnd[i])
-        colbox.primary.onbnd.set(2 * i, 1);
+        colbox.primary.onbnd[2 * i] = true;
+        //colbox.primary.onbnd.set(2 * i, 1);
       if (pbox.upperbnd[i] == domain.upperbnd[i])
-        colbox.primary.onbnd.set(2 * i + 1, 1);
+        colbox.primary.onbnd[2 * i+1] = true;
+        //colbox.primary.onbnd.set(2 * i + 1, 1);
     }
 
     // Step 3: Compute exclusive and shared boxes from primary box info.
@@ -102,12 +109,12 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
   } // color
 
   
-  coloring_info_t create_aggregate_color_info(box_coloring_info_t<D> &cbox)
+  coloring_info_t create_aggregate_color_info(box_coloring_t &cbox)
   {
     coloring_info_t colinfo; 
  
     //#exclusive entities
-    colinfo.exlusive = cbox.exclusive.box.size();
+    colinfo.exclusive = cbox.exclusive.box.size();
 
     //#shared entities
     colinfo.shared = 0; 
@@ -135,8 +142,8 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
   }//create_aggregate_color_info 
 
 private:
-  auto create_primary_box(box_t<D> & domain, size_t ncolors[D], size_t idx[D]) {
-    box_t<D> pbox;
+  auto create_primary_box(box_t & domain, size_t ncolors[D], size_t idx[D]) {
+    box_t pbox(D);
     for (size_t i = 0; i < D; ++i) {
       size_t N = domain.upperbnd[i] - domain.lowerbnd[i] + 1;
       size_t ne = N / ncolors[i];
@@ -153,16 +160,16 @@ private:
 
   template<size_t D_ = D>
   typename std::enable_if<D_ == 2>::type create_exclusive_and_shared_boxes(
-      box_coloring_info_t<D> & colbox,
+      box_coloring_t & colbox,
       size_t ncolors[D],
       size_t idx[D],
       size_t rank) {
-    box_t<D> pbox = colbox.primary.box;
+    box_t pbox = colbox.primary.box;
     size_t hl = colbox.primary.nhalo;
     size_t TD = colbox.primary.thru_dim;
 
     // Compute bounds for exclusive box
-    box_t<D> ebox = pbox;
+    box_t ebox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
       if (!colbox.primary.onbnd[2 * i])
@@ -186,8 +193,8 @@ private:
       IM[i][3] = pbox.upperbnd[i];
     }
 
-    box_t<D> sbox;
-    box_color_t<D> scbox;
+    box_t sbox(D);
+    box_color_t scbox;
     size_t ind[D], idx_new[D], cval;
 
     {
@@ -271,16 +278,16 @@ private:
 
   template<size_t D_ = D>
   typename std::enable_if<D_ == 3>::type create_exclusive_and_shared_boxes(
-      box_coloring_info_t<D> & colbox,
+      box_coloring_t & colbox,
       size_t ncolors[D],
       size_t idx[D],
       size_t rank) {
-    box_t<D> pbox = colbox.primary.box;
+    box_t pbox = colbox.primary.box;
     size_t hl = colbox.primary.nhalo;
     size_t TD = colbox.primary.thru_dim;
 
     // Compute bounds for exclusive box
-    box_t<D> ebox = pbox;
+    box_t ebox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
       if (!colbox.primary.onbnd[2 * i])
@@ -304,8 +311,8 @@ private:
       IM[i][3] = pbox.upperbnd[i];
     }
 
-    box_t<D> sbox;
-    box_color_t<D> scbox;
+    box_t sbox(D);
+    box_color_t scbox;
     size_t ind[D], idx_new[D], cval;
 
     {
@@ -489,15 +496,15 @@ private:
 
   template<size_t D_ = D>
   typename std::enable_if<D_ == 2>::type create_ghost_boxes(
-      box_coloring_info_t<D> & colbox,
+      box_coloring_t & colbox,
       size_t ncolors[D],
       size_t idx[D]) {
-    box_t<D> pbox = colbox.primary.box;
+    box_t pbox = colbox.primary.box;
     size_t hl = colbox.primary.nhalo;
     size_t TD = colbox.primary.thru_dim;
 
     // Compute bounds for exclusive box
-    box_t<D> gbox = pbox;
+    box_t gbox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
       if (!colbox.primary.onbnd[2 * i])
@@ -518,8 +525,8 @@ private:
       IM[i][3] = gbox.upperbnd[i];
     }
 
-    box_t<D> ghbox;
-    box_color_t<D> gcbox;
+    box_t ghbox(D);
+    box_color_t gcbox;
     size_t idx_new[D], cval;
 
     {
@@ -555,15 +562,15 @@ private:
 
   template<size_t D_ = D>
   typename std::enable_if<D_ == 3>::type create_ghost_boxes(
-      box_coloring_info_t<D> & colbox,
+      box_coloring_t & colbox,
       size_t ncolors[D],
       size_t idx[D]) {
-    box_t<D> pbox = colbox.primary.box;
+    box_t pbox = colbox.primary.box;
     size_t hl = colbox.primary.nhalo;
     size_t TD = colbox.primary.thru_dim;
 
     // Compute bounds for exclusive box
-    box_t<D> gbox = pbox;
+    box_t gbox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
       if (!colbox.primary.onbnd[2 * i])
@@ -584,8 +591,8 @@ private:
       IM[i][3] = gbox.upperbnd[i];
     }
 
-    box_t<D> ghbox;
-    box_color_t<D> gcbox;
+    box_t ghbox(D);
+    box_color_t gcbox;
     size_t idx_new[D], cval;
 
     {
@@ -631,12 +638,12 @@ private:
     }
   } // create_ghost_boxes
 
-  void create_domain_halo_boxes(box_coloring_info_t<D> & colbox) {
-    box_t<D> pbox = colbox.primary.box;
+  void create_domain_halo_boxes(box_coloring_t & colbox) {
+    box_t pbox = colbox.primary.box;
     size_t hl = colbox.primary.nhalo_domain;
 
     // Compute bounds for domain with halo
-    box_t<D> dbox = pbox;
+    box_t dbox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
       if (colbox.primary.onbnd[2 * i])
@@ -656,7 +663,7 @@ private:
       IM[i][3] = dbox.upperbnd[i];
     }
 
-    box_t<D> dhbox;
+    box_t dhbox(D);
 
     if (D == 2) {
       for (size_t j = 0; j < 3; ++j)

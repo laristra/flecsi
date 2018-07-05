@@ -41,14 +41,14 @@ struct mpi_structured_topology_storage_policy__ {
   static constexpr size_t num_partitions = 5;
 
   using index_spaces_t = std::array<
-      index_space__<
-          mesh_entity_base_ *,
+          structured_index_space__<
+          structured_mesh_entity_base_ *,
           NUM_DIMS>,
           NUM_DIMS + 1>;
 
   using partition_index_spaces_t = std::array<
-      index_space__<
-          mesh_entity_base_ *,
+          structured_index_space__<
+          structured_mesh_entity_base_ *,
           NUM_DIMS>,
           NUM_DIMS + 1>;
 

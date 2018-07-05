@@ -50,7 +50,7 @@ namespace execution {
 
 template<class CONTEXT_POLICY>
 struct context__ : public CONTEXT_POLICY {
-  using box_coloring_t = flecsi::coloring::box_coloring_info_t<size_t>;
+  using box_coloring_t = flecsi::coloring::box_coloring_t;
   using index_coloring_t = flecsi::coloring::index_coloring_t;
   using coloring_info_t = flecsi::coloring::coloring_info_t;
   using set_coloring_info_t = flecsi::coloring::set_coloring_info_t;

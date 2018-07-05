@@ -96,26 +96,26 @@ class structured_mesh_entity__ : public structured_mesh_entity_base__<
 //----------------------------------------------------------------------------//
 class structured_mesh_topology_base_t {};
 
-template<STORAGE_POLICY>
+template<class STORAGE_TYPE>
 class structured_mesh_topology_base__ : public data::data_client_t,
                                         public structured_mesh_topology_base_t
 {
   public:
 
   // Default constructor
-  structured_mesh_topology_base_t(STORAGE_TYPE *ms = nullptr) : ms_(ms) {}
+  structured_mesh_topology_base__(STORAGE_TYPE * ms = nullptr) : ms_(ms) {}
 
   // Copy constructor
-  structured_mesh_topology_base_t(const structured_mesh_topology_base_t & m) : ms_(m.ms_){}
+  structured_mesh_topology_base__(const structured_mesh_topology_base__ & m) : ms_(m.ms_){}
 
   //Don't allow copy assignment
-  structured_mesh_topology_base_t & operator=(const structured_mesh_topology_base_t &) = delete;
+  structured_mesh_topology_base__ & operator=(const structured_mesh_topology_base__ &) = delete;
 
   /// Allow move operations
-  structured_mesh_topology_base_t(structured_mesh_topology_base_t &&) = default;
+  structured_mesh_topology_base__(structured_mesh_topology_base__ &&) = default;
 
   //! override default move assignement
-  structured_mesh_topology_base_t & operator=(structured_mesh_topology_base_t && o)
+  structured_mesh_topology_base__ & operator=(structured_mesh_topology_base__ && o)
   {
     // call base_t move operator
     data::data_client_t::operator=(std::move(o));
@@ -136,7 +136,7 @@ class structured_mesh_topology_base__ : public data::data_client_t,
 
   void clear_storage()
   {
-    ms_ = nullptrl
+    ms_ = nullptr;
   } //clear_storage
 
   void delete_storage()

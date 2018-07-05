@@ -469,10 +469,10 @@ struct client_registration_wrapper__<
 
 template<typename POLICY_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
 struct client_registration_wrapper__<
-    flecsi::topology::structured_mesh_topology_t<POLICY_TYPE>,
+    flecsi::topology::structured_mesh_topology__<POLICY_TYPE>,
     NAMESPACE_HASH,
     NAME_HASH> {
-  using CLIENT_TYPE = typename flecsi::topology::structured_mesh_topology_t<POLICY_TYPE>;
+  using CLIENT_TYPE = typename flecsi::topology::structured_mesh_topology__<POLICY_TYPE>;
 
   //--------------------------------------------------------------------------//
   //!
