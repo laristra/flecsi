@@ -80,3 +80,7 @@ test_ubuntu:
                 paths:
                         - /builds/onurcaylak/flecsi/artifacts
                                                      
+deploy_docker:
+        stage: deploy
+        script:
+                - docker images
