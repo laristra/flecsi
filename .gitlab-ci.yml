@@ -28,7 +28,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
                 - docker build -t laristra/flecsi-third-party:ubuntu /builds/onurcaylak/docker/ --build-arg LEGION=${LEGION} --build-arg RUNTIME=${RUNTIME} --build-arg CXXFLAGS="${WERROR:+-Werror} -Wno-deprecated-declarations" --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL} --build-arg CC=${CC} --build-arg CXX=${CXX} --build-arg CI=${CI} 
                 - CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
-                - docker cp ${CON}:/home/flecsi /builds/onurcaylak/flecsi/artifacts/."
+                - docker cp ${CON}:/home/flecsi /builds/onurcaylak/flecsi/artifacts/.
                  
         artifacts:
                 expire_in: 1 hour
@@ -57,7 +57,7 @@ DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true:
                 - docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
                 - docker build -t laristra/flecsi-third-party:ubuntu /builds/onurcaylak/docker/ --build-arg LEGION=${LEGION} --build-arg RUNTIME=${RUNTIME} --build-arg CXXFLAGS="${WERROR:+-Werror} -Wno-deprecated-declarations" --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL} --build-arg CC=${CC} --build-arg CXX=${CXX} --build-arg CI=${CI} 
                 - CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
-                - docker cp ${CON}:/home/flecsi /builds/onurcaylak/flecsi/artifacts/."
+                - docker cp ${CON}:/home/flecsi /builds/onurcaylak/flecsi/artifacts/.
                  
         artifacts:
                 expire_in: 1 hour
