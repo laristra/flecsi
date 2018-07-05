@@ -12,11 +12,9 @@ Please use the following naming conventions when creating branches:
 
 * **release**/*major_minor*<br>
   The *release* prefix is reserved for supported FleCSI release
-  branches.
-
-* **release\_candidate**/*major_minor*<br>
-  The *release\_candidate* prefix should be used to identify a branch that is
-  being considered for release.
+  branches. Releases and release candidates will be identified using
+  tags. Patch numbers will be derived using *git describe* from the last
+  tagged version.
 
 * **stable**/*branch\_name*<br>
   A *stable* branch is a development or feature branch that is
@@ -24,9 +22,11 @@ Please use the following naming conventions when creating branches:
   suite, but one which incorporates new features or capabilities that
   are not available in a release branch.
 
-* **feature**/*branch\_name*<br>
+* **feature/username**/*branch\_name* or **feature**/*branch\_name*<br>
   A *feature* branch is where new development is done. However, master
-  should be merged periodically into a feature branch.
+  should be merged periodically into a feature branch. If the branch is
+  to primarily be developed by an individual, it should include the
+  *username* as part of the branch.
 
 * **fix**/*reference*<br>
   Bug-fix branches should use the *bug* prefix, and should include
