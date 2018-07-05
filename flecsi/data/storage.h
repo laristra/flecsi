@@ -66,8 +66,8 @@ struct storage__ : public STORAGE_POLICY {
       size_t client_type_key,
       size_t key,
       const field_registration_function_t & callback) {
-    if (field_registry_.find(client_type_key) != field_registry_.end()) {
-      if (field_registry_[client_type_key].find(key) !=
+    if(field_registry_.find(client_type_key) != field_registry_.end()) {
+      if(field_registry_[client_type_key].find(key) !=
           field_registry_[client_type_key].end()) {
         clog(warn) << "field key already exists" << std::endl;
       } // if

@@ -24,5 +24,6 @@ int accumulate_currents(int argc, char ** argv) {
   return 0;
 } // accumulate_currents
 
-register_action(advance, accumulate_currents, accumulate_currents);
+register_action(advance, accumulate_currents, accumulate_currents,
+  time_advance_half);
 add_dependency(advance, accumulate_currents, advance_particles);

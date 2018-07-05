@@ -123,10 +123,12 @@ struct context__ : public CONTEXT_POLICY {
 
   using tlt_driver_t = std::function<int(int, char **)>;
 
-  bool register_top_level_driver(tlt_driver_t & driver) {
+  bool register_top_level_driver(tlt_driver_t const & driver) {
     tlt_driver_ = driver;
     return true;
   } // register_top_level_driver
+
+  tlt_driver_t const & top_level_driver() const { return tlt_driver_; }
 
   //--------------------------------------------------------------------------//
   // Object interface.

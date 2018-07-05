@@ -13,7 +13,6 @@
                                                                               */
 /*! @file */
 
-
 #include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_MPI)
@@ -39,7 +38,7 @@ int main(int argc, char ** argv) {
   MPI_Init(&argc, &argv);
   
   // get the rank
-  int rank;
+  int rank{0};
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   //--------------------------------------------------------------------------//
@@ -47,10 +46,10 @@ int main(int argc, char ** argv) {
   //--------------------------------------------------------------------------//
   
   // Initialize tags to output all tag groups from CLOG
-  std::string tags("all");
+  std::string tags{"all"};
 
 #if defined(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
-  options_description desc("Cinch test options");  
+  options_description desc("FleCSI runtime options");  
 
   // Add command-line options
   desc.add_options()
@@ -74,14 +73,13 @@ int main(int argc, char ** argv) {
   if(unrecog_options.size()) {
     if(rank == 0) {
       std::cout << std::endl << "Unrecognized options: ";
-      for ( int i=0; i<unrecog_options.size(); ++i ) {
+      for (int i{0}; i<unrecog_options.size(); ++i ) {
         std::cout << unrecog_options[i] << " ";
       }
       std::cout << std::endl << std::endl << desc << std::endl;
     } // if
 
     MPI_Finalize();
-
     return 1;
   } // if
 
@@ -91,12 +89,12 @@ int main(int argc, char ** argv) {
     } // if
 
     MPI_Finalize();
-
     return 1;
   } // if
+
 #endif // FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS
   
-  int result(0);
+  int result{0};
 
   if(tags == "0") {
     // Output the available tags

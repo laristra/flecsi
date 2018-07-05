@@ -62,6 +62,29 @@ clog_register_tag(execution);
 //----------------------------------------------------------------------------//
 
 /*!
+  @def flecsi_register_program
+
+  Register a program. This is currently a place holder for more complex
+  operations that may be required in the future to register a multiphysics
+  program with the runtime. Currently, this interface simply creates a
+  boolean symbol so that an actual translation unit is necessary for
+  compilation.
+
+  @param program The program name.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_program(program)                                       \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  static bool flecsi_program_registered = true;
+
+//----------------------------------------------------------------------------//
+// Top-Level Driver Interface
+//----------------------------------------------------------------------------//
+
+/*!
   @def flecsi_register_top_level_driver
 
   Register the top level driver function.
@@ -73,6 +96,7 @@ clog_register_tag(execution);
 
   @ingroup execution
  */
+
 #define flecsi_register_top_level_driver(driver)                               \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
