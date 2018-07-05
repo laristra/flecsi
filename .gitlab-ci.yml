@@ -84,3 +84,7 @@ deploy_docker:
         stage: deploy
         script:
                 - docker images
+        dependencies:
+                - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+
+       
