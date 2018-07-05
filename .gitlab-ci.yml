@@ -30,7 +30,8 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
                 #- docker cp ${CON}:/home/flecsi /builds/onurcaylak/flecsi/artifacts/.
                 - touch /builds/onurcaylak/flecsi/artifacts/job1
-                 
+                - docker-compose up -d 
+
         artifacts:
                 expire_in: 1 hour
                 paths:
