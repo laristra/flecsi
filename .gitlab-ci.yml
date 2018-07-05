@@ -69,7 +69,7 @@ DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true:
 test_ubuntu:
         stage: test
         script: 
-                - cd /builds/onurcaylak/flecsi/artifacts/flecsi/build
+                - cd /builds/onurcaylak/flecsi/artifacts/
                 #- make test ARGS="-V"
                 - ls -la 
         dependencies:
