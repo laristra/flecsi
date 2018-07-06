@@ -31,7 +31,7 @@ Please use the following naming conventions when creating branches:
   *username* as part of the branch.
 
 * **fix**/*reference*<br>
-  Bug-fix branches should use the *bug* prefix, and should include
+  Bug-fix branches should use the *fix* prefix, and should include
   a reference number or name, e.g., issue number.
 
 # FleCSI Developer Chores
