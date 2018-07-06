@@ -156,20 +156,23 @@ option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" ON)
 set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/FleCSI)
 
 #------------------------------------------------------------------------------#
-# RistraLL
+# Ristra Utils
 #------------------------------------------------------------------------------#
 
-option(ENABLE_RISTRALL "Enable Ristra Low-Level Library Support" OFF)
+set(RISTRA_UTILS_SUBMODULE_DIR ${CMAKE_SOURCE_DIR}/ristra-utils)
+file(GLOB _ristra_utils_contents ${RISTRA_UTILS_SUBMODULE_DIR}/*)
 
-if(ENABLE_RISTRALL)
-  find_package(RistraLL REQUIRED)
-
-  if(RistraLL_FOUND)
-    include_directories(${RistraLL_INCLUDE_DIRS})
-
-    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${RistraLL_INCLUDE_DIRS})
-    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${RistraLL_LIBRARIES})
+if(_ristra_utils_contents)
+  if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    add_subdirectory(${RISTRA_UTILS_SUBMODULE_DIR})
   endif()
+else()
+  find_package(RistraUtils REQUIRED)
+
+  include_directories(${RistraUtils_INCLUDE_DIRS})
+
+  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${RistraUtils_INCLUDE_DIRS})
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${RistraUtils_LIBRARIES})
 endif()
 
 #------------------------------------------------------------------------------#
