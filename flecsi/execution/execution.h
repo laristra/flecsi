@@ -23,7 +23,9 @@
 #include <flecsi/execution/function.h>
 #include <flecsi/execution/kernel.h>
 #include <flecsi/execution/task.h>
-#include <flecsi/utils/common.h>
+
+#include <ristra-utils/utils/const_string.h>
+#include <ristra-utils/utils/macros.h>
 
 clog_register_tag(execution);
 
@@ -126,7 +128,7 @@ clog_register_tag(execution);
   static bool registered_global_object_##nspace##_##index =                    \
       flecsi::execution::context_t::instance()                                 \
           .template register_global_object<                                    \
-              flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}      \
+              ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}      \
                   .hash(),                                                     \
               index, type>();
 
@@ -151,7 +153,7 @@ clog_register_tag(execution);
                                                                                \
   flecsi::execution::context_t::instance()                                     \
       .template set_global_object<                                             \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
+          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
           type>(index, obj);
 
 /*!
@@ -175,7 +177,7 @@ clog_register_tag(execution);
                                                                                \
   flecsi::execution::context_t::instance()                                     \
       .template initialize_global_object<                                      \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
+          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
           type>(index, ##__VA_ARGS__);
 
 /*!
@@ -195,7 +197,7 @@ clog_register_tag(execution);
                                                                                \
   flecsi::execution::context_t::instance()                                     \
       .template get_global_object<                                             \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
+          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
           type>(index);
 
 //----------------------------------------------------------------------------//
@@ -234,7 +236,7 @@ clog_register_tag(execution);
   /* Call the execution policy to register the task delegate */                \
   bool task##_task_registered =                                                \
       flecsi::execution::task_interface_t::register_task<                      \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
+          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
           __flecsi_internal_return_type(task),                                 \
           __flecsi_internal_arguments_type(task), task##_tuple_delegate>(      \
           flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(task)})
@@ -270,7 +272,7 @@ clog_register_tag(execution);
   /* Call the execution policy to register the task delegate */                \
   bool task##_task_registered =                                                \
       flecsi::execution::task_interface_t::register_task<                      \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::task)}    \
+          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::task)}    \
               .hash(),                                                         \
           __flecsi_internal_return_type(task),                                 \
           __flecsi_internal_arguments_type(task), task##_tuple_delegate>(      \
@@ -362,7 +364,7 @@ clog_register_tag(execution);
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_interface_t::execute_task<                           \
       flecsi::execution::launch_type_t::launch,                                \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+      ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       __flecsi_internal_return_type(task),                                     \
       __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
 
@@ -453,7 +455,7 @@ clog_register_tag(execution);
   /* Call the execution policy to register the function delegate */            \
   bool func##_func_registered =                                                \
       flecsi::execution::function_interface_t::register_function<              \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}    \
+          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}    \
               .hash(),                                                         \
           __flecsi_internal_return_type(func),                                 \
           __flecsi_internal_arguments_type(func), func##_tuple_delegate>()
@@ -491,7 +493,7 @@ clog_register_tag(execution);
                                                                                \
   /* Create a function handle instance */                                      \
   nspace::function_handle_##func##_t(                                          \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}        \
+      ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}        \
           .hash())
 
 /*!

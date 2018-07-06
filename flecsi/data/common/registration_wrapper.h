@@ -32,6 +32,8 @@
 #include <flecsi/utils/hash.h>
 #include <flecsi/utils/tuple_walker.h>
 
+#include <ristra-utils/utils/const_string.h>
+
 clog_register_tag(registration);
 
 namespace flecsi {
@@ -124,8 +126,8 @@ struct client_registration_wrapper__<
           typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
       const size_t field_key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_entity_data__").hash(),
-          INDEX_TYPE::value>();
+          ristra::utils::const_string_t(
+            "__flecsi_internal_entity_data__").hash(), INDEX_TYPE::value>();
 
       {
       clog_tag_guard(registration);
@@ -146,8 +148,8 @@ struct client_registration_wrapper__<
           INDEX_TYPE::value>;
 
       const size_t id_key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_entity_id__").hash(),
-          INDEX_TYPE::value>();
+          ristra::utils::const_string_t(
+            "__flecsi_internal_entity_id__").hash(), INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
           type_key, id_key, id_wrapper_t::register_callback);
@@ -198,8 +200,8 @@ struct client_registration_wrapper__<
           typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
       const size_t index_key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_adjacency_index__").hash(),
-          INDEX_TYPE::value>();
+          ristra::utils::const_string_t(
+            "__flecsi_internal_adjacency_index__").hash(), INDEX_TYPE::value>();
       int ispace = INDEX_TYPE::value;
       storage_t::instance().register_field(
           type_key, index_key, index_wrapper_t::register_callback);
@@ -212,8 +214,8 @@ struct client_registration_wrapper__<
       // is unique to an adjacency, so it is registered using the
       // adjacency hash.
       const size_t offset_key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_adjacency_offset__").hash(),
-          INDEX_TYPE::value>();
+        ristra::utils::const_string_t(
+          "__flecsi_internal_adjacency_offset__").hash(), INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
           type_key, offset_key, offset_wrapper_t::register_callback);
@@ -259,8 +261,8 @@ struct client_registration_wrapper__<
           typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
       const size_t index_key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_adjacency_index__").hash(),
-          INDEX_TYPE::value>();
+        ristra::utils::const_string_t(
+          "__flecsi_internal_adjacency_index__").hash(), INDEX_TYPE::value>();
       int ispace = INDEX_TYPE::value;
       storage_t::instance().register_field(
           type_key, index_key, index_wrapper_t::register_callback);
@@ -273,8 +275,9 @@ struct client_registration_wrapper__<
       // is unique to an adjacency, so it is registered using the
       // adjacency hash.
       const size_t offset_key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_adjacency_offset__").hash(),
-          INDEX_TYPE::value>();
+        ristra::utils::const_string_t(
+          "__flecsi_internal_adjacency_offset__").hash(),
+        INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
           type_key, offset_key, offset_wrapper_t::register_callback);
@@ -305,8 +308,8 @@ struct client_registration_wrapper__<
           typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
       const size_t field_key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_index_subspace_index__")
-              .hash(),
+          ristra::utils::const_string_t(
+            "__flecsi_internal_index_subspace_index__").hash(),
           INDEX_SUBSPACE_TYPE::value>();
 
       storage_t::instance().register_field(
@@ -396,23 +399,23 @@ struct client_registration_wrapper__<
           typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
       const size_t field_key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_entity_data__").hash(),
-          INDEX_TYPE::value>();
+          ristra::utils::const_string_t(
+            "__flecsi_internal_entity_data__").hash(), INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
           type_key, field_key, wrapper_t::register_callback);
 
       const size_t active_key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_active_entity_data__")
-              .hash(),
+          ristra::utils::const_string_t(
+            "__flecsi_internal_active_entity_data__").hash(),
           INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
           type_key, active_key, wrapper_t::register_callback);
 
       const size_t migrate_key = utils::hash::client_internal_field_hash<
-          utils::const_string_t("__flecsi_internal_migrate_entity_data__")
-              .hash(),
+          ristra::utils::const_string_t(
+            "__flecsi_internal_migrate_entity_data__").hash(),
           INDEX_TYPE::value>();
 
       storage_t::instance().register_field(

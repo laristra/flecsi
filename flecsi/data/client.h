@@ -28,6 +28,8 @@
 #include <flecsi/topology/mesh_utils.h>
 #include <flecsi/utils/tuple_walker.h>
 
+#include <ristra-utils/utils/const_string.h>
+
 namespace flecsi {
 namespace topology {
 
@@ -332,20 +334,20 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
       ent.size = ei.size;
 
       const field_info_t * fi = context.get_field_info_from_key(
-          h.type_hash,
-          utils::hash::client_internal_field_hash(
-              utils::const_string_t("__flecsi_internal_entity_data__").hash(),
-              ent.index_space));
+        h.type_hash,
+        utils::hash::client_internal_field_hash(
+          ristra::utils::const_string_t(
+            "__flecsi_internal_entity_data__").hash(), ent.index_space));
 
       if (fi) {
         ent.fid = fi->fid;
       }
 
       fi = context.get_field_info_from_key(
-          h.type_hash,
-          utils::hash::client_internal_field_hash(
-              utils::const_string_t("__flecsi_internal_entity_id__").hash(),
-              ent.index_space));
+      h.type_hash,
+      utils::hash::client_internal_field_hash(
+        ristra::utils::const_string_t("__flecsi_internal_entity_id__").hash(),
+        ent.index_space));
 
       if (fi) {
         ent.id_fid = fi->fid;
@@ -392,22 +394,21 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
       adj.to_dim = hi.to_dim;
 
       const field_info_t * fi = context.get_field_info_from_key(
-          h.type_hash,
-          utils::hash::client_internal_field_hash(
-              utils::const_string_t("__flecsi_internal_adjacency_offset__")
-                  .hash(),
-              hi.index_space));
+        h.type_hash,
+        utils::hash::client_internal_field_hash(
+        ristra::utils::const_string_t(
+          "__flecsi_internal_adjacency_offset__").hash(), hi.index_space));
 
       if (fi) {
         adj.offset_fid = fi->fid;
       }
 
       fi = context.get_field_info_from_key(
-          h.type_hash,
-          utils::hash::client_internal_field_hash(
-              utils::const_string_t("__flecsi_internal_adjacency_index__")
-                  .hash(),
-              hi.index_space));
+        h.type_hash,
+        utils::hash::client_internal_field_hash(
+        ristra::utils::const_string_t(
+          "__flecsi_internal_adjacency_index__").hash(),
+        hi.index_space));
 
       if (fi) {
         adj.index_fid = fi->fid;
@@ -452,11 +453,11 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
       iss.dim = si.dim;
 
       const field_info_t * fi = context.get_field_info_from_key(
-          h.type_hash,
-          utils::hash::client_internal_field_hash(
-              utils::const_string_t("__flecsi_internal_index_subspace_index__")
-                  .hash(),
-              si.index_subspace));
+        h.type_hash,
+        utils::hash::client_internal_field_hash(
+          ristra::utils::const_string_t(
+            "__flecsi_internal_index_subspace_index__").hash(),
+          si.index_subspace));
 
       if (fi) {
         iss.index_fid = fi->fid;
@@ -550,32 +551,31 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
       ent.size = ei.size;
 
       const field_info_t * fi = context.get_field_info_from_key(
-          h.type_hash,
-          utils::hash::client_internal_field_hash(
-              utils::const_string_t("__flecsi_internal_entity_data__").hash(),
-              ent.index_space));
+        h.type_hash,
+        utils::hash::client_internal_field_hash(
+          ristra::utils::const_string_t(
+            "__flecsi_internal_entity_data__").hash(), ent.index_space));
 
       if (fi) {
         ent.fid = fi->fid;
       }
 
       fi = context.get_field_info_from_key(
-          h.type_hash,
-          utils::hash::client_internal_field_hash(
-              utils::const_string_t("__flecsi_internal_active_entity_data__")
-                  .hash(),
-              ent.index_space));
+        h.type_hash,
+        utils::hash::client_internal_field_hash(
+          ristra::utils::const_string_t(
+            "__flecsi_internal_active_entity_data__").hash(), ent.index_space));
 
       if (fi) {
         ent.fid2 = fi->fid;
       }
 
       fi = context.get_field_info_from_key(
-          h.type_hash,
-          utils::hash::client_internal_field_hash(
-              utils::const_string_t("__flecsi_internal_migrate_entity_data__")
-                  .hash(),
-              ent.index_space));
+        h.type_hash,
+        utils::hash::client_internal_field_hash(
+          ristra::utils::const_string_t(
+            "__flecsi_internal_migrate_entity_data__").hash(),
+          ent.index_space));
 
       if (fi) {
         ent.fid3 = fi->fid;

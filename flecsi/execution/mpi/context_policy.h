@@ -35,11 +35,12 @@
 #include <flecsi/execution/mpi/future.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
-#include <flecsi/utils/const_string.h>
 #include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/data/common/data_types.h>
+
+#include <ristra-utils/utils/const_string.h>
 
 namespace flecsi {
 namespace execution {

@@ -159,13 +159,10 @@ set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/FleCSI)
 # Ristra Utils
 #------------------------------------------------------------------------------#
 
-set(RISTRA_UTILS_SUBMODULE_DIR ${CMAKE_SOURCE_DIR}/ristra-utils)
-file(GLOB _ristra_utils_contents ${RISTRA_UTILS_SUBMODULE_DIR}/*)
+file(GLOB _ristra_utils_contents ${CMAKE_SOURCE_DIR}/ristra-utils/*)
 
 if(_ristra_utils_contents)
-  if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    add_subdirectory(${RISTRA_UTILS_SUBMODULE_DIR})
-  endif()
+  cinch_add_subproject(ristra-utils)
 else()
   find_package(RistraUtils REQUIRED)
 

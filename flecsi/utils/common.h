@@ -216,10 +216,3 @@ struct function_traits__<const volatile T &&> : public function_traits__<T> {};
 
 } // namespace utils
 } // namespace flecsi
-
-//----------------------------------------------------------------------------//
-// Preprocessor String Utilities
-//----------------------------------------------------------------------------//
-
-#define _UTIL_STRINGIFY(s) #s
-#define EXPAND_AND_STRINGIFY(s) _UTIL_STRINGIFY(s)

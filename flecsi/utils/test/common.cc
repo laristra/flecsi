@@ -169,13 +169,6 @@ TEST(common, all) {
   CINCH_CAPTURE() << std::endl;
 
   // ------------------------
-  // Some preprocessor macros
-  // ------------------------
-
-  CINCH_CAPTURE() << _UTIL_STRINGIFY(hello) << std::endl;
-  CINCH_CAPTURE() << EXPAND_AND_STRINGIFY(hello again) << std::endl;
-
-  // ------------------------
   // Compare
   // ------------------------
 

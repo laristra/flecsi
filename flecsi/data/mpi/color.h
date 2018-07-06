@@ -29,8 +29,9 @@
 #include <flecsi/data/global_data_handle.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/index_space.h>
+
+#include <ristra-utils/utils/const_string.h>
 
 namespace flecsi {
 namespace data {

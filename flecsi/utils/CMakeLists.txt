@@ -23,14 +23,11 @@ set(utils_HEADERS
   bit_buffer.h
   checksum.h
   common.h
-  const_string.h
-  dag.h
   debruijn.h
   dimensioned_array.h
   export_definitions.h
   factory.h
   graphviz.h
-  hash.h
   humble.h
   id.h
   index_space.h
@@ -121,11 +118,6 @@ cinch_add_devel_target(clog
 )
 endif()
 
-cinch_add_unit(const_string
-  SOURCES test/const_string.cc common.cc
-  FOLDER "Tests/Util"
-)
-
 set(factory_blessed_input test/factory.blessed.gnug)
 if(MSVC)
   set(factory_blessed_input test/factory.blessed.msvc)
@@ -163,11 +155,6 @@ if(NOT MSVC)
       "Tests/Util"
   )
 endif()
-
-cinch_add_unit(hash
-  SOURCES test/hash.cc
-  FOLDER "Tests/Util"
-)
 
 cinch_add_unit(humble
   SOURCES test/humble.cc
@@ -239,11 +226,6 @@ cinch_add_unit(tuple_wrapper
 cinch_add_unit(tuple_function
   SOURCES test/tuple_function.cc
   FOLDER "Tests/Util"
-)
-
-cinch_add_unit(dag
-  SOURCES test/dag.cc
-  LIBRARIES ${FLECSI_LIBRARY_DEPENDENCIES}
 )
 
 set(index_space_blessed_input test/index_space.blessed.gnug)

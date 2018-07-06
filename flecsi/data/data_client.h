@@ -15,7 +15,6 @@
 
 /*! @file */
 
-#include <flecsi/utils/common.h>
 #include <flecsi/utils/export_definitions.h>
 
 namespace flecsi {
