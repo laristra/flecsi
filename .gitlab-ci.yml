@@ -1,7 +1,6 @@
-image: laristra/flecsi-third-party:ubuntu_mpich 
 
-services:
-        - docker:dind
+#services:
+        #- docker:dind
 
 stages:
         - build
@@ -9,6 +8,7 @@ stages:
         - deploy
 
 DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
+        image: laristra/flecsi-third-party:ubuntu_mpich 
         stage: build
 
         variables:
