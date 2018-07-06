@@ -33,6 +33,9 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
+// This function takes an independent coloring of the primary entity type and
+// generates a dependency closure for the primary, and independent colorings
+// and dependency closures for the auxilliaries.
 //----------------------------------------------------------------------------//
 
 template<typename COLORING_POLICY>
@@ -315,6 +318,12 @@ using namespace coloring;
 
 struct coloring_policy_t {
 
+  // Note: in this model, the primary determines the support/range of
+  // dependence, e.g., vertex dependencies cannot extend beyond a cell
+  // dependency range. (I think that this is true.)
+
+  // FIXME: change names to be better, i.e., through dimension and
+  // depth are dependent information.
   using primary = primary_independent__<0, 2, 0, 2>;
 
   using auxiliary = std::tuple<

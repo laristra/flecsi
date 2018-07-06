@@ -132,7 +132,10 @@ struct client_registration_wrapper__<
       clog(info) << "registering field for type id: " <<
         flecsi::utils::demangle(
           typeid(typename CLIENT_TYPE::type_identifier_t).name()
-        ) << " index: " << INDEX_TYPE::value << std::endl;
+        ) <<
+        " index: " << INDEX_TYPE::value <<
+        " namespace: " << NAMESPACE_HASH <<
+        " name: " << NAME_HASH << std::endl;
       } // scope
 
       storage_t::instance().register_field(

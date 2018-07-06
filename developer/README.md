@@ -32,6 +32,10 @@ Please use the following naming conventions when creating branches:
   Bug-fix branches should use the *bug* prefix, and should include
   a reference number or name, e.g., issue number.
 
+# Workflow
+
+FIXME
+
 # FleCSI Developer Chores
 
 This section describes various chores that may be assigned to FleCSI
