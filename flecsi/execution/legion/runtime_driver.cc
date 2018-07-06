@@ -177,7 +177,6 @@ runtime_driver(
     if (field_info.storage_class==sparse ){
         auto sparse_idx_space = field_info.index_space ;
 
-//std::cout <<"IRINA DEBUG sparse_idx_space id ="<<sparse_idx_space<<std::endl;
         context_.increment_sparse_fields(sparse_idx_space);
       }
     } 
@@ -524,7 +523,6 @@ runtime_driver(
 
       spmd_launcher.add_region_requirement(reg_req);
       if(flecsi_ispace.has_sparse_fields && context_.sparse_fields(idx_space)){
-std::cout <<"IRINA DEBUG, idx_space when addinf rr"<<idx_space<<std::endl;
         spmd_launcher.add_region_requirement(sparse_reg_req);
       }
 
@@ -598,7 +596,6 @@ std::cout <<"IRINA DEBUG, idx_space when addinf rr"<<idx_space<<std::endl;
         spmd_launcher.add_region_requirement(owner_reg_req);
 
         if(flecsi_ispace.has_sparse_fields && context_.sparse_fields(idx_space)){
-std::cout <<"IRINA DEBUG, idx_space when addinf rr"<<idx_space<<std::endl;
           spmd_launcher.add_region_requirement(sparse_owner_reg_req);
         }
 
