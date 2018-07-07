@@ -33,6 +33,7 @@
 #include <flecsi/utils/tuple_walker.h>
 
 #include <ristra-utils/utils/const_string.h>
+#include <ristra-utils/utils/demangle.h>
 
 clog_register_tag(registration);
 
@@ -132,7 +133,7 @@ struct client_registration_wrapper__<
       {
       clog_tag_guard(registration);
       clog(info) << "registering field for type id: " <<
-        flecsi::utils::demangle(
+        ristra::utils::demangle(
           typeid(typename CLIENT_TYPE::type_identifier_t).name()
         ) <<
         " index: " << INDEX_TYPE::value <<
