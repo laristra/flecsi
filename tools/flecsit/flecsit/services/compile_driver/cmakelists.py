@@ -17,8 +17,10 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED})
 project(${PROJECT})
 
 find_package(FleCSI REQUIRED)
+find_package(RistraUtils REQUIRED)
 
 include_directories($${FLECSI_INCLUDE_DIRS})
+include_directories($${RISTRAUTILS_INCLUDE_DIRS})
 
 ${REQUIRED_PACKAGES}
 
