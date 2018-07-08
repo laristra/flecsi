@@ -37,15 +37,15 @@ void add_box_colorings(coloring_map_t map) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   {
-  clog_tag_guard(coloring);
-  clog(info) << "add_colorings, rank: " << rank << std::endl;
+    clog_tag_guard(coloring);
+    clog(info) << "add_colorings, rank: " << rank << std::endl;
   }
 
   // Define bounds for the box corresponding to cells 
   size_t grid_size[2] = {10,10};
-  size_t ncolors[2]={2,2};
+  size_t ncolors[2]={2,1};
   size_t nhalo = 1;
-  size_t nhalo_domain = 1; 
+  size_t nhalo_domain = 0; 
   size_t thru_dim = 0; 
 
   flecsi::coloring::box_coloring_info_t colored_cells;
