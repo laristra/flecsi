@@ -21,7 +21,6 @@
 #include <flecsi/coloring/dcrs_utils.h>
 #include <flecsi/coloring/parmetis_colorer.h>
 #include <flecsi/coloring/mpi_communicator.h>
-#include <flecsi/utils/tuple_walker.h>
 #include <flecsi/utils/tuple_visit.h>
 
 //#include <flecsi/supplemental/coloring/coloring_functions.h>

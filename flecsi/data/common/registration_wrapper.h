@@ -30,10 +30,10 @@
 #include <flecsi/topology/set_topology.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
-#include <flecsi/utils/tuple_walker.h>
 
 #include <ristra-utils/utils/const_string.h>
 #include <ristra-utils/utils/demangle.h>
+#include <ristra-utils/utils/tuple_walker.h>
 
 clog_register_tag(registration);
 
@@ -100,7 +100,7 @@ struct client_registration_wrapper__<
   //--------------------------------------------------------------------------//
 
   struct entity_walker_t
-      : public flecsi::utils::tuple_walker__<entity_walker_t> {
+      : public ristra::utils::tuple_walker__<entity_walker_t> {
 
     template<typename T, T V>
     T value(topology::typeify<T, V>) {
@@ -160,7 +160,7 @@ struct client_registration_wrapper__<
   }; // struct entity_walker_t
 
   struct connectivity_walker__
-      : public flecsi::utils::tuple_walker__<connectivity_walker__> {
+      : public ristra::utils::tuple_walker__<connectivity_walker__> {
 
     template<typename T, T V>
     T value(topology::typeify<T, V>) {
@@ -225,7 +225,7 @@ struct client_registration_wrapper__<
   }; // struct connectivity_walker__
 
   struct binding_walker__
-      : public flecsi::utils::tuple_walker__<binding_walker__> {
+      : public ristra::utils::tuple_walker__<binding_walker__> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {
@@ -288,7 +288,7 @@ struct client_registration_wrapper__<
   }; // struct binding_walker__
 
   struct index_subspaces_walker__
-      : public flecsi::utils::tuple_walker__<index_subspaces_walker__> {
+      : public ristra::utils::tuple_walker__<index_subspaces_walker__> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {
@@ -376,7 +376,7 @@ struct client_registration_wrapper__<
   //--------------------------------------------------------------------------//
 
   struct entity_walker_t
-      : public flecsi::utils::tuple_walker__<entity_walker_t> {
+      : public ristra::utils::tuple_walker__<entity_walker_t> {
 
     template<typename T, T V>
     T value(topology::typeify<T, V>) {

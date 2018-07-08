@@ -38,7 +38,8 @@
 #include <flecsi/topology/mesh_topology.h>
 #include <flecsi/topology/mesh_types.h>
 #include <flecsi/topology/set_topology.h>
-#include <flecsi/utils/tuple_walker.h>
+
+#include <ristra-utils/utils/tuple_walker.h>
 
 namespace flecsi {
 namespace execution {
@@ -51,7 +52,7 @@ namespace execution {
   @ingroup execution
  */
 
-struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
+struct init_handles_t : public ristra::utils::tuple_walker__<init_handles_t> {
 
   /*!
     Construct an init_handles_t instance.

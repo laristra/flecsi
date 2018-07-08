@@ -26,9 +26,9 @@
 #include <flecsi/topology/global_topology.h>
 #include <flecsi/topology/mesh_types.h>
 #include <flecsi/topology/mesh_utils.h>
-#include <flecsi/utils/tuple_walker.h>
 
 #include <ristra-utils/utils/const_string.h>
+#include <ristra-utils/utils/tuple_walker.h>
 
 namespace flecsi {
 namespace topology {
@@ -142,7 +142,7 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
   }; // struct entity_info_t
 
   struct entity_walker_t
-      : public flecsi::utils::tuple_walker__<entity_walker_t> {
+      : public ristra::utils::tuple_walker__<entity_walker_t> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {
@@ -172,7 +172,7 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
 
   template<typename MESH_TYPE>
   struct connectivity_walker__
-      : public flecsi::utils::tuple_walker__<connectivity_walker__<MESH_TYPE>> {
+      : public ristra::utils::tuple_walker__<connectivity_walker__<MESH_TYPE>> {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
     template<typename TUPLE_ENTRY_TYPE>
@@ -214,7 +214,7 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
 
   template<typename MESH_TYPE>
   struct binding_walker__
-      : public flecsi::utils::tuple_walker__<binding_walker__<MESH_TYPE>> {
+      : public ristra::utils::tuple_walker__<binding_walker__<MESH_TYPE>> {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
     template<typename TUPLE_ENTRY_TYPE>
@@ -256,7 +256,7 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
   }; // struct binding_walker__
 
   template<typename MESH_TYPE>
-  struct index_subspace_walker__ : public flecsi::utils::tuple_walker__<
+  struct index_subspace_walker__ : public ristra::utils::tuple_walker__<
                                        index_subspace_walker__<MESH_TYPE>> {
 
     using entity_types_t = typename MESH_TYPE::entity_types;
@@ -495,7 +495,7 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
   }; // struct entity_info_t
 
   struct entity_walker_t
-      : public flecsi::utils::tuple_walker__<entity_walker_t> {
+      : public ristra::utils::tuple_walker__<entity_walker_t> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {

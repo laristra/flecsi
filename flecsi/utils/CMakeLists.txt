@@ -42,7 +42,6 @@ set(utils_HEADERS
   static_verify.h
   tuple_function.h
   tuple_type_converter.h
-  tuple_walker.h
   tuple_wrapper.h
   tuple_visit.h
   type_traits.h
@@ -256,15 +255,6 @@ cinch_add_unit(tuple_type_converter
     RistraUtils
   INPUTS
     ${tuple_type_converter_blessed_input}
-  FOLDER
-    "Tests/Util"
-)
-
-cinch_add_unit(tuple_walker
-  SOURCES
-    test/tuple_walker.cc
-  INPUTS
-    test/tuple_walker.blessed
   FOLDER
     "Tests/Util"
 )

@@ -45,7 +45,6 @@
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/const_string.h>
-#include <flecsi/utils/tuple_wrapper.h>
 
 namespace flecsi {
 namespace execution {

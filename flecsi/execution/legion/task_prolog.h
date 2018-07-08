@@ -29,6 +29,8 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_field.h>
 
+#include <ristra-utils/utils/tuple_walker.h>
+
 clog_register_tag(prolog);
 
 namespace flecsi {
@@ -42,7 +44,7 @@ namespace execution {
  @ingroup execution
  */
 
-struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
+struct task_prolog_t : public ristra::utils::tuple_walker__<task_prolog_t> {
 
   /*!
    Construct a task_prolog_t instance.

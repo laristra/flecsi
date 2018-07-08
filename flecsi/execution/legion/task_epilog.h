@@ -26,7 +26,7 @@
 
 #include <legion.h>
 
-#include <flecsi/utils/tuple_walker.h>
+#include <ristra-utils/utils/tuple_walker.h>
 
 clog_register_tag(epilog);
 
@@ -41,7 +41,7 @@ namespace execution {
  @ingroup execution
  */
 
-struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
+struct task_epilog_t : public ristra::utils::tuple_walker__<task_epilog_t> {
 
   /*!
    Construct a task_epilog_t instance.
