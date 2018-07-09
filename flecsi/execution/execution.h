@@ -23,6 +23,7 @@
 #include <flecsi/execution/function.h>
 #include <flecsi/execution/kernel.h>
 #include <flecsi/execution/task.h>
+
 #include <flecsi/utils/common.h>
 
 clog_register_tag(execution);
@@ -78,7 +79,7 @@ clog_register_tag(execution);
 #define flecsi_register_program(program)                                       \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  static bool flecsi_program_registered = true;
+  static inline bool flecsi_program_registered = true;
 
 //----------------------------------------------------------------------------//
 // Top-Level Driver Interface
@@ -100,7 +101,7 @@ clog_register_tag(execution);
 #define flecsi_register_top_level_driver(driver)                               \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  static bool registered_top_level_driver_##driver =                           \
+  static inline bool registered_top_level_driver_##driver =                    \
     flecsi::execution::context_t::instance().register_top_level_driver(driver)
 
 //----------------------------------------------------------------------------//
@@ -123,7 +124,7 @@ clog_register_tag(execution);
 #define flecsi_register_global_object(index, nspace, type)                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  static bool registered_global_object_##nspace##_##index =                    \
+  static inline bool registered_global_object_##nspace##_##index =             \
       flecsi::execution::context_t::instance()                                 \
           .template register_global_object<                                    \
               flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}      \
@@ -232,7 +233,7 @@ clog_register_tag(execution);
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
-  bool task##_task_registered =                                                \
+  static inline bool task##_task_registered =                                  \
       flecsi::execution::task_interface_t::register_task<                      \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
           __flecsi_internal_return_type(task),                                 \
@@ -268,7 +269,7 @@ clog_register_tag(execution);
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
-  bool task##_task_registered =                                                \
+  static inline bool task##_task_registered =                                  \
       flecsi::execution::task_interface_t::register_task<                      \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::task)}    \
               .hash(),                                                         \
@@ -451,7 +452,7 @@ clog_register_tag(execution);
       __flecsi_internal_arguments_type(func)>;                                 \
                                                                                \
   /* Call the execution policy to register the function delegate */            \
-  bool func##_func_registered =                                                \
+  static inline bool func##_func_registered =                                  \
       flecsi::execution::function_interface_t::register_function<              \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}    \
               .hash(),                                                         \
