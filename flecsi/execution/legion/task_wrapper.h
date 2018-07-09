@@ -286,15 +286,15 @@ struct task_wrapper__ {
       // [Caliper] Mark this function
       CALI_CXX_MARK_FUNCTION;
 
-      CALI_MARK_BEGIN("FLECSI_Execution init_handles");
+      CALI_MARK_BEGIN("FleCSI_Execution init_handles");
     #endif // ENABLE_CALIPER
 
     init_handles_t init_handles(runtime, context, regions);
     init_handles.walk(task_args);
 
     #ifdef ENABLE_CALIPER
-      CALI_MARK_END("FLECSI_Execution init_handles");
-      CALI_MARK_BEGIN("FLECSI_Execution wrapper.execute");
+      CALI_MARK_END("FleCSI_Execution init_handles");
+      CALI_MARK_BEGIN("FleCSI_Execution wrapper.execute");
     #endif // ENABLE_CALIPER
 
     // Execute the user's task
@@ -303,15 +303,15 @@ struct task_wrapper__ {
     wrapper.execute(std::forward<ARG_TUPLE>(task_args));
 
     #ifdef ENABLE_CALIPER
-      CALI_MARK_END("FLECSI_Execution wrapper.execute");
-      CALI_MARK_BEGIN("FLECSI_Execution finalize_handles");
+      CALI_MARK_END("FleCSI_Execution wrapper.execute");
+      CALI_MARK_BEGIN("FleCSI_Execution finalize_handles");
     #endif // ENABLE_CALIPER
 
     finalize_handles_t finalize_handles;
     finalize_handles.walk(task_args);
 
     #ifdef ENABLE_CALIPER
-      CALI_MARK_END("FLECSI_Execution finalize_handles");
+      CALI_MARK_END("FleCSI_Execution finalize_handles");
     #endif // ENABLE_CALIPER
 
     return wrapper.get();

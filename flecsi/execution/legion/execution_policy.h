@@ -270,7 +270,7 @@ struct legion_execution_policy_t {
             // [Caliper] Mark this function
             CALI_CXX_MARK_FUNCTION;
 
-            CALI_MARK_BEGIN("task_prolog");
+            CALI_MARK_BEGIN("FleCSI_Invocation task_prolog");
           #endif // ENABLE_CALIPER
 
           // Enqueue the prolog.
@@ -280,7 +280,7 @@ struct legion_execution_policy_t {
           task_prolog.launch_copies();
 
 	  #ifdef ENABLE_CALIPER
-            CALI_MARK_END("task_prolog");
+            CALI_MARK_END("FleCSI_Invocation task_prolog");
           #endif // ENABLE_CALIPER
 
           // Enqueue the task.
@@ -290,7 +290,7 @@ struct legion_execution_policy_t {
               legion_runtime->execute_task(legion_context, task_launcher);
 
 	  #ifdef ENABLE_CALIPER
-            CALI_MARK_BEGIN("task_epilog");
+            CALI_MARK_BEGIN("FleCSI_Invocation task_epilog");
           #endif // ENABLE_CALIPER
 
           // Enqueue the epilog.
@@ -298,7 +298,7 @@ struct legion_execution_policy_t {
           task_epilog.walk(task_args);
 
 	  #ifdef ENABLE_CALIPER
-            CALI_MARK_END("task_epilog");
+            CALI_MARK_END("FleCSI_Invocation task_epilog");
           #endif // ENABLE_CALIPER
 
           return legion_future__<RETURN>(future);
