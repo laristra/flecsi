@@ -25,6 +25,7 @@
 #include <flecsi/execution/task.h>
 
 #include <ristra-utils/utils/const_string.h>
+#include <ristra-utils/utils/function_traits.h>
 #include <ristra-utils/utils/macros.h>
 
 clog_register_tag(execution);
@@ -44,7 +45,7 @@ clog_register_tag(execution);
  */
 
 #define __flecsi_internal_return_type(task)                                    \
-  typename flecsi::utils::function_traits__<decltype(task)>::return_type
+  typename ristra::utils::function_traits__<decltype(task)>::return_type
 
 /*!
   @def __flecsi_internal_arguments_type
@@ -57,7 +58,7 @@ clog_register_tag(execution);
  */
 
 #define __flecsi_internal_arguments_type(task)                                 \
-  typename flecsi::utils::function_traits__<decltype(task)>::arguments_type
+  typename ristra::utils::function_traits__<decltype(task)>::arguments_type
 
 //----------------------------------------------------------------------------//
 // Top-Level Driver Interface

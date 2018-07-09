@@ -27,7 +27,6 @@ set(utils_HEADERS
   dimensioned_array.h
   export_definitions.h
   factory.h
-  graphviz.h
   humble.h
   id.h
   index_space.h
@@ -43,7 +42,6 @@ set(utils_HEADERS
   tuple_function.h
   tuple_type_converter.h
   tuple_wrapper.h
-  tuple_visit.h
   type_traits.h
   uint128.h
   utility.h
