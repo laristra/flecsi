@@ -174,7 +174,7 @@ runtime_driver(
   //-------------------------------------------------------------------------//
 
   for(const field_info_t& field_info : context_.registered_fields()){
-    if (field_info.storage_class==sparse ){
+    if(field_info.storage_class==sparse || field_info.storage_class==ragged ){
         auto sparse_idx_space = field_info.index_space ;
 
         context_.increment_sparse_fields(sparse_idx_space);
