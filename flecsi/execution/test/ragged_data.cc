@@ -24,39 +24,63 @@ template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
 
 void
-task1(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
-  rm.resize(1, 5);
+init(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
+  auto rank = execution::context_t::instance().color();
 
-  rm(1, 0) = 100.0;
-  rm(1, 1) = 200.0;
-  rm(1, 4) = 500.0;
-  rm.push_back(1, 700.00);
-
-} // task1
-
-void
-task1b(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
-  rm.insert(1, 4, 300.0);
-  // rm.erase(1, 1);
-  // rm.push_back(1, 800.0);
-} // task1
-
-void
-task2(
-    client_handle_t<test_mesh_t, ro> mesh,
-    ragged_accessor<double, ro, ro, ro> rh) {
-
-  for (size_t i = 0; i < 6; ++i) {
-    std::cout << rh(1, i) << std::endl;
+  for (auto c : mesh.cells(owned)) {
+    rm.resize(c, 3);
+    for (size_t j = 0; j < 3; ++j) {
+      rm(c, j) = c->id() * 100 + j + rank * 10000;
+    }
   }
 
-} // task2
+  for (auto c : mesh.cells(owned)) {
+    rm.push_back(c, c->id() * 100 + 4 + rank * 10000);
+    rm.insert(c, 3, c->id() * 100 + 3 + rank * 10000);
+  }
+} // init
+
+void
+print(
+    client_handle_t<test_mesh_t, ro> mesh,
+    ragged_accessor<double, ro, ro, ro> rh) {
+  for (auto c : mesh.cells()) {
+    auto index = c->id();
+    // FIXME add size member function for ragged_accessor
+    for (size_t e = 0; e < rh.entries(index).size(); ++e) {
+      CINCH_CAPTURE() << index << ":" << e << ": " << rh(index, e) << std::endl;
+    }
+  }
+} // print
+
+void
+modify(
+    client_handle_t<test_mesh_t, ro> mesh,
+    ragged_accessor<double, rw, rw, rw> rh) {
+  for (auto c : mesh.cells(owned)) {
+    // FIXME add size member function for ragged_accessor
+    for (size_t e = 0; e < rh.entries(c).size(); ++e) {
+      rh(c, e) = -rh(c, e);
+    }
+  }
+} // modify
+
+void
+mutate(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
+  auto rank = execution::context_t::instance().color();
+  for (auto c : mesh.cells(owned)) {
+    rm.erase(c, 1);
+    rm.push_back(c, c->id() * 100 + 5 + rank * 10000);
+    rm.insert(c, 1, c->id() * 100 + 1 + rank * 10000);
+  }
+} // mutate
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1);
 
-flecsi_register_task_simple(task1, loc, single);
-flecsi_register_task_simple(task1b, loc, single);
-flecsi_register_task_simple(task2, loc, single);
+flecsi_register_task_simple(init, loc, single);
+flecsi_register_task_simple(print, loc, single);
+flecsi_register_task_simple(modify, loc, single);
+flecsi_register_task_simple(mutate, loc, single);
 
 flecsi_register_field(
     test_mesh_t,
@@ -99,15 +123,15 @@ driver(int argc, char ** argv) {
   auto mh = flecsi_get_mutator(ch, hydro, pressure, double, ragged, 0, 10);
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, ragged, 0);
 
-  printf("task1\n");
-  flecsi_execute_task_simple(task1, single, ch, mh);
-  printf("task2\n");
-  flecsi_execute_task_simple(task2, single, ch, ph);
+  flecsi_execute_task_simple(init, single, ch, mh);
+  flecsi_execute_task_simple(print, single, ch, ph);
 
-  printf("task1b\n");
-  flecsi_execute_task_simple(task1b, single, ch, mh);
-  printf("task2\n");
-  flecsi_execute_task_simple(task2, single, ch, ph);
+  flecsi_execute_task_simple(modify, single, ch, ph);
+  flecsi_execute_task_simple(print, single, ch, ph);
+
+  flecsi_execute_task_simple(mutate, single, ch, mh);
+  auto future = flecsi_execute_task_simple(print, single, ch, ph);
+  future.wait(); // wait before comparing results
 
   auto & context = execution::context_t::instance();
   if (context.color() == 0) {
