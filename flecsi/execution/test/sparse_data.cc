@@ -25,13 +25,11 @@ using client_handle_t = data_client_handle__<DC, PS>;
 
 void
 init(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
-  auto & context = execution::context_t::instance();
-  auto rank = context.color();
-  auto coloring_info = context.coloring_info(mh.h_.index_space).at(rank);
+  auto rank = execution::context_t::instance().color();
 
-  for (size_t i = 0; i < coloring_info.exclusive + coloring_info.shared; ++i) {
+  for (auto c : mesh.cells(owned)) {
     for (size_t j = 0; j < 5; j += 2) {
-      mh(i, j) = i * 100 + j + rank * 10000;
+      mh(c, j) = c->id() * 100 + j + rank * 10000;
     }
   }
 } // init
@@ -56,11 +54,6 @@ void
 modify(
     client_handle_t<test_mesh_t, ro> mesh,
     sparse_accessor<double, rw, rw, rw> h) {
-
-  auto & context = execution::context_t::instance();
-  auto rank = context.color();
-  auto coloring_info = context.coloring_info(h.handle.index_space).at(rank);
-
   for (auto c : mesh.cells(owned)) {
     for (auto entry : h.entries(c)) {
       h(c, entry) = -h(c, entry);
@@ -70,13 +63,11 @@ modify(
 
 void
 mutate(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> mh) {
-  auto & context = execution::context_t::instance();
-  auto rank = context.color();
-  auto coloring_info = context.coloring_info(mh.h_.index_space).at(rank);
+  auto rank = execution::context_t::instance().color();
 
-  for (size_t i = 0; i < coloring_info.exclusive + coloring_info.shared; ++i) {
+  for (auto c : mesh.cells(owned)) {
     for (size_t j = 5; j < 7; ++j) {
-      mh(i, j) = i * 100 + j + rank * 10000;
+      mh(c, j) = c->id() * 100 + j + rank * 10000;
     }
   }
 } // mutate
