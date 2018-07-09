@@ -477,13 +477,13 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
 
 }; // struct data_client_policy_handler__
 
-//----------------------------------------------------------------------------//
-//! The data client policy handler for set topology. This class provides
-//! tuple walkers for extracting information from the entity types
-//! and obtaining information about field IDs in order
-//! to populate fields on the data client handle so that it can be properly
-//! processed when passed to a task.
-//----------------------------------------------------------------------------//
+/*!
+  The data client policy handler for set topology. This class provides
+  tuple walkers for extracting information from the entity types
+  and obtaining information about field IDs in order
+  to populate fields on the data client handle so that it can be properly
+  processed when passed to a task.
+ */
 
 template<typename POLICY_TYPE>
 struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
@@ -589,25 +589,26 @@ struct data_client_policy_handler__<topology::set_topology__<POLICY_TYPE>> {
 
 }; // struct data_client_policy_handler__
 
-//----------------------------------------------------------------------------//
-//! The data_client_interface__ type defines a high-level data client
-//! interface that is implemented by the given data policy.
-//!
-//! @tparam DATA_POLICY The backend runtime policy.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+/*!
+  The data_client_interface__ type defines a high-level data client
+  interface that is implemented by the given data policy.
+
+  @tparam DATA_POLICY The backend runtime policy.
+
+  @ingroup data
+ */
 
 template<typename DATA_POLICY>
 struct data_client_interface__ {
-  //--------------------------------------------------------------------------//
-  //! Register a data client with the FleCSI runtime.
-  //!
-  //! @tparam DATA_CLIENT_TYPE The data client type.
-  //! @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
-  //!                          of attribute names to avoid collisions.
-  //! @tparam NAME_HASH        The attribute name.
-  //--------------------------------------------------------------------------//
+
+  /*!
+    Register a data client with the FleCSI runtime.
+
+    @tparam DATA_CLIENT_TYPE The data client type.
+    @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
+                             of attribute names to avoid collisions.
+    @tparam NAME_HASH        The attribute name.
+   */
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
   static bool register_data_client(std::string const & name) {
