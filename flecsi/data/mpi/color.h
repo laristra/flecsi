@@ -178,7 +178,6 @@ struct storage_class__<color> {
 
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
-    h.data_client_hash = field_info.data_client_hash;
 
     h.combined_data = reinterpret_cast<DATA_TYPE *>(data);
 

@@ -83,11 +83,11 @@ namespace execution {
      > & a
     )
     {
-      auto& h = a.handle;
-
       // Skip Read Only handles
       if (EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
         return;
+
+      auto& h = a.handle;
 
       auto &context = context_t::instance();
       const int my_color = context.color();
@@ -167,20 +167,20 @@ namespace execution {
       auto &sparse_field_metadata =
         context.registered_sparse_field_metadata().at(h.fid);
 
-      MPI_Win win = sparse_field_metadata.win;
-
-      MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
-      MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
-
-      MPI_Datatype shared_ghost_type = sparse_field_metadata.shared_ghost_type;
-
       using entry_value_t = typename mutator_handle__<T>::entry_value_t;
-      
+
       entry_value_t *entries = h.entries;
       auto offsets = &(h.offsets)[0];
       auto shared_data = entries + h.exclusive_reserve;
       auto ghost_data = shared_data + h.num_shared_ * h.max_entries_per_index;
-      
+
+      MPI_Datatype shared_ghost_type = sparse_field_metadata.shared_ghost_type;
+    
+      MPI_Win win = sparse_field_metadata.win;
+
+      MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
+      MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
+  
       // TODO: consolidate MPI_Get using the fancy MPI_Datatype trick.
       int i = 0;
       for (auto& ghost : index_coloring.ghost) {
@@ -201,9 +201,6 @@ namespace execution {
 
       MPI_Win_complete(win);
       MPI_Win_wait(win);
-
-      // for (int i = 0; i < h.num_ghost_ * h.max_entries_per_index; i++)
-      //   clog_rank(warn, 0) << "ghost after: " << ghost_data[i].value << std::endl;
     } // handle
 
     template<

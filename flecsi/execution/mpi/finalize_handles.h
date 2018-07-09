@@ -26,6 +26,50 @@ namespace execution {
 
 struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
   /*!
+    The finalize_handles_t type can be called to walk task args after task
+    execution. This allows us to free memory allocated during the task.
+
+    @ingroup execution
+    */
+
+  template<typename T, size_t PERMISSIONS>
+  typename std::enable_if_t<
+      std::is_base_of<topology::mesh_topology_base_t, T>::value>
+  handle(data_client_handle__<T, PERMISSIONS> & h) {
+    if (PERMISSIONS == wo || PERMISSIONS == rw) {
+      auto & context_ = context_t::instance();
+      auto & ssm = context_.index_subspace_info();
+
+      for (size_t i{0}; i < h.num_index_subspaces; ++i) {
+        data_client_handle_index_subspace_t & iss = h.handle_index_subspaces[i];
+
+        auto itr = ssm.find(iss.index_subspace);
+        clog_assert(itr != ssm.end(), "invalid index subspace");
+        auto & si = itr->second;
+
+        clog_assert(si.size == 0, "index subspace size already set");
+        si.size = h.get_index_subspace_size_(iss.index_subspace);
+      }
+    }
+
+    h.delete_storage();
+  } // handle
+
+  /*!
+    Finalize set topology storage. This inspects index based sizes and
+    writes out appropriate metadata.
+   */
+  template<typename T, size_t PERMISSIONS>
+  typename std::enable_if_t<
+      std::is_base_of<topology::set_topology_base_t, T>::value>
+  handle(data_client_handle__<T, PERMISSIONS> & h) {
+    auto & context_ = context_t::instance();
+
+    auto storage = h.storage();
+    storage->finalize_storage();
+  } // handle
+
+  /*!
   Nothing needs to be done to finalize a dense data handle.
    */
   template<
@@ -135,20 +179,6 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
   } // handle
 
   /*!
-    Finalize set topology storage. This inspects index based sizes and
-    writes out appropriate metadata.
-   */
-  template<typename T, size_t PERMISSIONS>
-  typename std::enable_if_t<
-      std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
-    auto & context_ = context_t::instance();
-
-    auto storage = h.storage();
-    storage->finalize_storage();
-  } // handle
-
-  /*!
    No special handling is currently needed here. No-op.
    */
   template<
@@ -161,36 +191,6 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
               EXCLUSIVE_PERMISSIONS,
               SHARED_PERMISSIONS,
               GHOST_PERMISSIONS> & a) {} // handle
-
-  /*!
-   The finalize_handles_t type can be called to walk task args after task
-   execution. This allows us to free memory allocated during the task.
-
-   @ingroup execution
-   */
-
-  template<typename T, size_t PERMISSIONS>
-  typename std::enable_if_t<
-      std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
-    if (PERMISSIONS == wo || PERMISSIONS == rw) {
-      auto & context_ = context_t::instance();
-      auto & ssm = context_.index_subspace_info();
-
-      for (size_t i{0}; i < h.num_index_subspaces; ++i) {
-        data_client_handle_index_subspace_t & iss = h.handle_index_subspaces[i];
-
-        auto itr = ssm.find(iss.index_subspace);
-        clog_assert(itr != ssm.end(), "invalid index subspace");
-        auto & si = itr->second;
-
-        clog_assert(si.size == 0, "index subspace size already set");
-        si.size = h.get_index_subspace_size_(iss.index_subspace);
-      }
-    }
-
-    h.delete_storage();
-  } // handle
 
   template<typename T>
   void handle(ragged_mutator<T> & m) {

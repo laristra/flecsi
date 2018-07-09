@@ -58,6 +58,7 @@ namespace flecsi {
 
 using FLECSI_RUNTIME_DENSE_DATA_HANDLE_POLICY = mpi_data_handle_policy_t;
 
+// FIXME: why is it using a dense data policy?
 using FLECSI_RUNTIME_GLOBAL_DATA_HANDLE_POLICY = mpi_data_handle_policy_t;
 
 using FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY =

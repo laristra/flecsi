@@ -58,7 +58,7 @@ struct sparse_data_handle_base__ : public DATA_POLICY {
   //--------------------------------------------------------------------------//
   //! Copy constructor.
   //--------------------------------------------------------------------------//
-
+  // TODO: why not just use default copy constructor?
   sparse_data_handle_base__(const sparse_data_handle_base__ & b)
       : DATA_POLICY(b), index_space(b.index_space),
         data_client_hash(b.data_client_hash),

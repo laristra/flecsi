@@ -78,11 +78,19 @@ struct mpi_context_policy_t
 
       size_t n = num_total - num_exclusive;
 
+      // FIXME: what exactly is this thing doing, is it initialize
+      // offset for the exclusive or shared?
+      // TODO: Is offset for shared ever get initialized?
+      // TODO: Do we really need offset? It looks to me that sparse data
+      // is actually a flat map, i.e. an array based hash table of fixed
+      // size. The offset.start can be easily calculated by the cell id. 
       for(size_t i = 0; i < n; ++i){
         offsets[num_exclusive + i].set_offset(
           exclusive_reserve + i * max_entries_per_index);
       }
 
+      // TODO: this calculation disregard alignment requirement,
+      // how to replace this with sizeof(entry_value_t<T>) ?
       size_t entry_value_size = sizeof(size_t) + type_size;
 
       entries.resize(entry_value_size * (exclusive_reserve + ((num_shared + num_ghost) *

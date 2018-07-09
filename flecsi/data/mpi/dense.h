@@ -85,12 +85,10 @@ struct dense_handle_t : public dense_data_handle__<T, EP, SP, GP>
   //--------------------------------------------------------------------------//
   // Constructors.
   //--------------------------------------------------------------------------//
-
-  // FIXME: calling to base class constructor?
   ///
   /// Default constructor.
   ///
-  dense_handle_t() {}
+  dense_handle_t() = default;
 
   template<typename, size_t, size_t, size_t>
   friend class dense_handle_t;
@@ -182,12 +180,12 @@ struct storage_class__<dense>
     }
 
     auto data = registered_field_data[field_info.fid].data();
+
     // populate data member of data_handle_t
     auto &hb = dynamic_cast<dense_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
 
     hb.fid = field_info.fid;
     hb.index_space = field_info.index_space;
-    hb.data_client_hash = field_info.data_client_hash;
 
     hb.exclusive_size = color_info.exclusive;
     hb.combined_data = hb.exclusive_buf = hb.exclusive_data =
