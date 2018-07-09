@@ -40,12 +40,7 @@ if(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
   target_compile_definitions(${TARGET} PRIVATE -DENABLE_BOOST_PROGRAM_OPTIONS)
 endif()
 
-target_link_libraries(${TARGET}
-  FleCSI
-  RistraUtils
-  ${FLECSI_LIBRARIES}
-  ${RISTRA_LIBRARIES
-)
+target_link_libraries(${TARGET} FleCSI RistraUtils ${FLECSI_LIBRARIES})
 
 # make install strips RPATH without this.
 set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
