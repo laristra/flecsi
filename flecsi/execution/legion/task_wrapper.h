@@ -37,6 +37,11 @@
 #include <flecsi/utils/tuple_type_converter.h>
 #include <flecsi/utils/tuple_walker.h>
 
+#if defined(ENABLE_CALIPER)
+  // Caliper include
+  #include <caliper/cali.h>
+#endif // ENABLE_CALIPER
+
 clog_register_tag(wrapper);
 
 namespace flecsi {
@@ -277,16 +282,37 @@ struct task_wrapper__ {
     // Unpack task arguments
     ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
+    #if defined(ENABLE_CALIPER)
+      // [Caliper] Mark this function
+      CALI_CXX_MARK_FUNCTION;
+
+      CALI_MARK_BEGIN("FLECSI_Execution init_handles");
+    #endif // ENABLE_CALIPER
+
     init_handles_t init_handles(runtime, context, regions);
     init_handles.walk(task_args);
+
+    #ifdef ENABLE_CALIPER
+      CALI_MARK_END("FLECSI_Execution init_handles");
+      CALI_MARK_BEGIN("FLECSI_Execution wrapper.execute");
+    #endif // ENABLE_CALIPER
 
     // Execute the user's task
     // return (*DELEGATE)(task_args);
     execution_wrapper__<RETURN, ARG_TUPLE, DELEGATE> wrapper;
     wrapper.execute(std::forward<ARG_TUPLE>(task_args));
 
+    #ifdef ENABLE_CALIPER
+      CALI_MARK_END("FLECSI_Execution wrapper.execute");
+      CALI_MARK_BEGIN("FLECSI_Execution finalize_handles");
+    #endif // ENABLE_CALIPER
+
     finalize_handles_t finalize_handles;
     finalize_handles.walk(task_args);
+
+    #ifdef ENABLE_CALIPER
+      CALI_MARK_END("FLECSI_Execution finalize_handles");
+    #endif // ENABLE_CALIPER
 
     return wrapper.get();
   } // execute_user_task

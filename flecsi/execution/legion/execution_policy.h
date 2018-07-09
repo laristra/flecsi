@@ -39,6 +39,11 @@
 #include <flecsi/execution/legion/task_wrapper.h>
 #include <flecsi/utils/const_string.h>
 
+#if defined(ENABLE_CALIPER)
+  // Caliper include
+  #include <caliper/cali.h>
+#endif // ENABLE_CALIPER
+
 namespace flecsi {
 namespace execution {
 
@@ -261,11 +266,22 @@ struct legion_execution_policy_t {
             task_launcher.add_region_requirement(req);
           }
 
+	  #if defined(ENABLE_CALIPER)
+            // [Caliper] Mark this function
+            CALI_CXX_MARK_FUNCTION;
+
+            CALI_MARK_BEGIN("task_prolog");
+          #endif // ENABLE_CALIPER
+
           // Enqueue the prolog.
           task_prolog_t task_prolog(
               legion_runtime, legion_context, task_launcher);
           task_prolog.walk(task_args);
           task_prolog.launch_copies();
+
+	  #ifdef ENABLE_CALIPER
+            CALI_MARK_END("task_prolog");
+          #endif // ENABLE_CALIPER
 
           // Enqueue the task.
           clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
@@ -273,9 +289,17 @@ struct legion_execution_policy_t {
           auto future =
               legion_runtime->execute_task(legion_context, task_launcher);
 
+	  #ifdef ENABLE_CALIPER
+            CALI_MARK_BEGIN("task_epilog");
+          #endif // ENABLE_CALIPER
+
           // Enqueue the epilog.
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
+
+	  #ifdef ENABLE_CALIPER
+            CALI_MARK_END("task_epilog");
+          #endif // ENABLE_CALIPER
 
           return legion_future__<RETURN>(future);
         } // scope
