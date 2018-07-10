@@ -175,6 +175,24 @@ runtime_driver(
     flecsi_context.add_index_map(is.first, _map);
   } // for
 
+  //Set up maps from structured mesh to index-spaces
+  // bounded by boxes and vice versa. 
+  for (auto is: flecsi_context.box_coloring_map())
+  {
+    std::map<size_t, box_t> bmap; 
+    size_t counter(0);
+
+    bmap[counter++] = is.second.exclusive.box;
+
+    for (auto s: is.second.shared)
+     bmap[counter++] = s.box;
+
+    for (auto g: is.second.ghost)
+     bmap[counter++] = g.box;
+
+    flecsi_context.add_box_map(is.first, bmap); 
+  }
+
   flecsi_context.advance_state();
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)

@@ -550,18 +550,6 @@ struct context__ : public CONTEXT_POLICY {
     coloring_info_[index_space] = coloring_info;
   } // add_coloring
 
-  void add_box_coloring(
-      size_t index_space,
-      box_coloring_t & coloring,
-      std::unordered_map<size_t, coloring_info_t> & coloring_info) {
-    clog_assert(
-        box_colorings_.find(index_space) == box_colorings_.end(),
-        "color index already exists");
-
-    box_colorings_[index_space] = coloring;
-    box_coloring_info_[index_space] = coloring_info;
-  } // add_box_coloring
-
   /*!
     Return the index coloring referenced by key.
 
@@ -577,14 +565,6 @@ struct context__ : public CONTEXT_POLICY {
     return it->second;
   } // coloring
 
-   box_coloring_t & box_coloring(size_t index_space) {
-    auto it = box_colorings_.find(index_space);
-    if (it == box_colorings_.end()) {
-      clog(fatal) << "invalid index_space " << index_space << std::endl;
-    } // if
-
-    return it->second;
-  } // box_coloring
 
   /*!
     Return the index coloring information referenced by key.
@@ -603,15 +583,6 @@ struct context__ : public CONTEXT_POLICY {
     return it->second;
   } // coloring_info
 
-  const std::unordered_map<size_t, coloring_info_t> &
-  box_coloring_info(size_t index_space) {
-    auto it = box_coloring_info_.find(index_space);
-    if (it == box_coloring_info_.end()) {
-      clog(fatal) << "invalid index space " << index_space << std::endl;
-    } // if
-
-    return it->second;
-  } // box_coloring_info
 
   /*!
     Return the coloring map (convenient for iterating through all
@@ -624,9 +595,6 @@ struct context__ : public CONTEXT_POLICY {
     return colorings_;
   } // colorings
 
-  const std::map<size_t, box_coloring_t> & box_coloring_map() const {
-    return box_colorings_;
-  } // box_colorings
 
   /*!
     Return the coloring info map (convenient for iterating through all
@@ -640,10 +608,101 @@ struct context__ : public CONTEXT_POLICY {
     return coloring_info_;
   } // colorings
 
+  //--------------------------------------------------------------------------//
+  // Box color interface and other maps
+  //--------------------------------------------------------------------------//
+  void add_box_coloring(
+      size_t index_space,
+      box_coloring_t & coloring,
+      std::unordered_map<size_t, coloring_info_t> & coloring_info) {
+    clog_assert(
+        box_colorings_.find(index_space) == box_colorings_.end(),
+        "color index already exists");
+
+    box_colorings_[index_space] = coloring;
+    box_coloring_info_[index_space] = coloring_info;
+  } // add_box_coloring
+
+   box_coloring_t & box_coloring(size_t index_space) {
+    auto it = box_colorings_.find(index_space);
+    if (it == box_colorings_.end()) {
+      clog(fatal) << "invalid index_space " << index_space << std::endl;
+    } // if
+
+    return it->second;
+  } // box_coloring
+
+  const std::unordered_map<size_t, coloring_info_t> &
+  box_coloring_info(size_t index_space) {
+    auto it = box_coloring_info_.find(index_space);
+    if (it == box_coloring_info_.end()) {
+      clog(fatal) << "invalid index space " << index_space << std::endl;
+    } // if
+
+    return it->second;
+  } // box_coloring_info
+  
+
+  const std::map<size_t, box_coloring_t> & box_coloring_map() const {
+    return box_colorings_;
+  } // box_colorings
+  
+
   const std::map<size_t, std::unordered_map<size_t, coloring_info_t>> &
   box_coloring_info_map() const {
     return box_coloring_info_;
   } // box_colorings
+
+  void add_box_map(size_t index_space, std::map<size_t, box_t> & box_map) {
+    box_map_[index_space] = box_map;
+
+    for (auto i : index_map) {
+      reverse_box_map_[index_space][i.second] = i.first;
+    } // for
+  } // add_box_map
+
+  /*!
+    Return the index map associated with the given index space.
+
+    @param index_space The map key.
+   */
+
+  auto & box_map(size_t index_space) {
+    auto it = box_map_.find(index_space);
+    clog_assert(it != box_map_.end(), "invalid index space");
+
+    return it->second;
+  } // box_map
+
+  /*!
+    \todo DOCUMENT!
+   */
+
+  const auto & box_map(size_t index_space) const {
+    auto it = box_map_.find(index_space);
+    clog_assert(it != box_map_.end(), "invalid index space");
+
+    return it->second;
+  } // box_map
+
+  auto & reverse_box_map(size_t index_space) {
+    auto it = reverse_box_map_.find(index_space);
+    clog_assert(it != reverse_box_map_.end(), "invalid index space");
+
+    return it->second;
+  } // reverse_box_map
+
+  /*!
+    \todo DOCUMENT!
+   */
+
+  const auto & reverse_box_map(size_t index_space) const {
+    auto it = reverse_box_map_.find(index_space);
+    clog_assert(it != reverse_box_map_.end(), "invalid index space");
+
+    return it->second;
+  } // reverse_box_map
+
 
   /*!
     Add an adjacency/connectivity from one index space to another.
@@ -900,8 +959,6 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, index_coloring_t> colorings_;
-
-  std::map<size_t, box_coloring_t> box_colorings_;
   //--------------------------------------------------------------------------//
   // key: mesh index space entity id
   //--------------------------------------------------------------------------//
@@ -999,7 +1056,6 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, std::unordered_map<size_t, coloring_info_t>> coloring_info_;
-  std::map<size_t, std::unordered_map<size_t, coloring_info_t>> box_coloring_info_;
 
   //--------------------------------------------------------------------------//
   // key: index space
@@ -1019,6 +1075,16 @@ private:
 
   std::map<size_t, set_index_space_info_t> set_index_space_map_;
 
+  //--------------------------------------------------------------------------//
+  // structured mesh maps
+  //--------------------------------------------------------------------------//
+  std::map<size_t, box_coloring_t> box_colorings_;
+  std::map<size_t, std::unordered_map<size_t, coloring_info_t>> box_coloring_info_;
+  std::map<size_t, std::map<size_t, box_t>> box_map_;
+  std::map<size_t, std::map<size_t, box_t>> reverse_box_map_;
+
+  std::map<size_t, std::map<size_t, box_t>> box_map_;
+  std::map<size_t, std::map<size_t, box_t>> reverse_box_map_;
   //--------------------------------------------------------------------------//
   // Execution state
   //--------------------------------------------------------------------------//
