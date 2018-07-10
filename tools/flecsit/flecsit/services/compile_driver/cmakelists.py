@@ -16,6 +16,9 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED})
 
 project(${PROJECT})
 
+set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
+
 find_package(FleCSI REQUIRED)
 find_package(RistraUtils REQUIRED)
 

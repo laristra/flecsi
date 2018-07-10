@@ -126,18 +126,21 @@ struct client_registration_wrapper__<
       const size_t type_key =
           typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
-      const size_t field_key = utils::hash::client_internal_field_hash<
-          ristra::utils::const_string_t(
-            "__flecsi_internal_entity_data__").hash(), INDEX_TYPE::value>();
+      using ristra::utils::const_string_t;
+      const size_t field_key =
+        utils::hash::client_internal_field_hash<
+          const_string_t("__flecsi_internal_entity_data__").hash(),
+          INDEX_TYPE::value
+        >();
 
       {
       clog_tag_guard(registration);
       clog(info) << "registering field for type id: " <<
         ristra::utils::demangle(
           typeid(typename CLIENT_TYPE::type_identifier_t).name()
-        ) <<
-        " index: " << INDEX_TYPE::value <<
-        " namespace: " << NAMESPACE_HASH <<
+        ) << std::endl <<
+        " index: " << INDEX_TYPE::value << std::endl <<
+        " namespace: " << NAMESPACE_HASH << std::endl <<
         " name: " << NAME_HASH << std::endl;
       } // scope
 
@@ -148,9 +151,11 @@ struct client_registration_wrapper__<
           CLIENT_TYPE, flecsi::data::dense, utils::id_t, entity_hash, 0, 1,
           INDEX_TYPE::value>;
 
-      const size_t id_key = utils::hash::client_internal_field_hash<
-          ristra::utils::const_string_t(
-            "__flecsi_internal_entity_id__").hash(), INDEX_TYPE::value>();
+      const size_t id_key =
+        utils::hash::client_internal_field_hash<
+          const_string_t("__flecsi_internal_entity_id__").hash(),
+          INDEX_TYPE::value
+        >();
 
       storage_t::instance().register_field(
           type_key, id_key, id_wrapper_t::register_callback);

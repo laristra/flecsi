@@ -40,6 +40,7 @@ set(CINCH_HEADER_SUFFIXES "\\.h")
 # Set required C++ standard
 #------------------------------------------------------------------------------#
 
+set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
 #------------------------------------------------------------------------------#
