@@ -51,12 +51,12 @@
 //! @ingroup hpx-execution
 //----------------------------------------------------------------------------//
 
-#define __flecsi_internal_register_hpx_task(task, processor, launch)        \
+#define __flecsi_internal_register_hpx_task(task, processor, launch)           \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the execution policy to register the task */                         \
-  static inline bool task ## _task_registered =                                \
-    flecsi::execution::hpx_execution_policy_t::register_hpx_task<        \
+  inline bool task ## _task_registered =                                       \
+    flecsi::execution::hpx_execution_policy_t::register_hpx_task<              \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       typename flecsi::utils::function_traits__<decltype(task)>::return_type,  \
       task                                                                     \

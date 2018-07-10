@@ -81,7 +81,7 @@ clog_register_tag(execution);
 #define flecsi_register_program(program)                                       \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  static inline bool flecsi_program_registered = true;
+  inline bool flecsi_program_registered = true;
 
 //----------------------------------------------------------------------------//
 // Top-Level Driver Interface
@@ -103,7 +103,7 @@ clog_register_tag(execution);
 #define flecsi_register_top_level_driver(driver)                               \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  static inline bool registered_top_level_driver_##driver =                    \
+  inline bool registered_top_level_driver_##driver =                           \
     flecsi::execution::context_t::instance().register_top_level_driver(driver)
 
 //----------------------------------------------------------------------------//
@@ -126,7 +126,7 @@ clog_register_tag(execution);
 #define flecsi_register_global_object(index, nspace, type)                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  static inline bool registered_global_object_##nspace##_##index =             \
+  inline bool registered_global_object_##nspace##_##index =                    \
       flecsi::execution::context_t::instance()                                 \
           .template register_global_object<                                    \
               ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}      \
@@ -235,7 +235,7 @@ clog_register_tag(execution);
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
-  static inline bool task##_task_registered =                                  \
+  inline bool task##_task_registered =                                         \
       flecsi::execution::task_interface_t::register_task<                      \
           ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
           __flecsi_internal_return_type(task),                                 \
@@ -271,7 +271,7 @@ clog_register_tag(execution);
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
-  static inline bool task##_task_registered =                                  \
+  inline bool task##_task_registered =                                         \
       flecsi::execution::task_interface_t::register_task<                      \
           ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::task)}    \
               .hash(),                                                         \
@@ -454,7 +454,7 @@ clog_register_tag(execution);
       __flecsi_internal_arguments_type(func)>;                                 \
                                                                                \
   /* Call the execution policy to register the function delegate */            \
-  static inline bool func##_func_registered =                                  \
+  inline bool func##_func_registered =                                         \
       flecsi::execution::function_interface_t::register_function<              \
           ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}    \
               .hash(),                                                         \
