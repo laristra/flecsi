@@ -180,6 +180,10 @@ void print_task(client_handle_t<test_mesh_t, ro> mesh,
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+  for(auto c: mesh.entities<2, 0>()) {
+    clog(info) << "presure: " << pressure(c) << std::endl;
+  } // for
+
   if(rank == 0){
     CINCH_CAPTURE() << "IN PRINT_TASK" << std::endl;
 
@@ -190,7 +194,6 @@ void print_task(client_handle_t<test_mesh_t, ro> mesh,
         CINCH_CAPTURE() << "vertex id: " << v->template id<0>() << std::endl;
       } // for
 
-      clog(info) << "presure: " << pressure(c) << std::endl;
     } // for
 
     ASSERT_TRUE(CINCH_EQUAL_BLESSED("data_client_handle.blessed"));

@@ -170,6 +170,18 @@ runtime_driver(
   data.finalize(coloring_info);
 
   //-------------------------------------------------------------------------//
+  // check nuber of fields allocated for srapse data
+  //-------------------------------------------------------------------------//
+
+  for(const field_info_t& field_info : context_.registered_fields()){
+    if(field_info.storage_class==sparse || field_info.storage_class==ragged ){
+        auto sparse_idx_space = field_info.index_space ;
+
+        context_.increment_sparse_fields(sparse_idx_space);
+      }
+    } 
+
+  //-------------------------------------------------------------------------//
   //  Create Legion reduction 
   //-------------------------------------------------------------------------//
 
@@ -466,6 +478,8 @@ runtime_driver(
 
       Legion::RegionRequirement sparse_reg_req;
 
+      bool sparse_fields=false;
+
       if(flecsi_ispace.has_sparse_fields){
         auto& flecsi_sispace = data.sparse_index_space(idx_space);
 
@@ -487,6 +501,7 @@ runtime_driver(
               field_info->storage_class == ragged) &&
              !utils::hash::is_internal(field_info->key)){
             sparse_reg_req.add_field(field_info->fid);
+            sparse_fields=true;
           }
         }//for field_info
       }
@@ -507,8 +522,7 @@ runtime_driver(
       }
 
       spmd_launcher.add_region_requirement(reg_req);
-
-      if(flecsi_ispace.has_sparse_fields){
+      if(flecsi_ispace.has_sparse_fields && context_.sparse_fields(idx_space)){
         spmd_launcher.add_region_requirement(sparse_reg_req);
       }
 
@@ -541,6 +555,7 @@ runtime_driver(
 
         Legion::RegionRequirement sparse_owner_reg_req;
 
+        bool sparse_owner_fields=false;
         if(flecsi_ispace.has_sparse_fields){
           auto& flecsi_sispace = data.sparse_index_space(idx_space);
 
@@ -568,6 +583,7 @@ runtime_driver(
                 field_info->storage_class == ragged) &&
                !utils::hash::is_internal(field_info->key)){
               sparse_owner_reg_req.add_field(field_info->fid);
+              sparse_owner_fields=true;
             }
           }          
         }
@@ -579,7 +595,7 @@ runtime_driver(
 
         spmd_launcher.add_region_requirement(owner_reg_req);
 
-        if(flecsi_ispace.has_sparse_fields){
+        if(flecsi_ispace.has_sparse_fields && context_.sparse_fields(idx_space)){
           spmd_launcher.add_region_requirement(sparse_owner_reg_req);
         }
 
@@ -939,7 +955,8 @@ spmd_task(
     }
     else{
       auto sitr = sis_map.find(idx_space);
-      if(sitr != sis_map.end()){
+      if(sitr != sis_map.end() &&
+        (sitr->second.sparse_fields_registered_>0)){
         sparse_info = &sitr->second;
         // TODO: formalize sparse index space offset
         sparse_idx_space = idx_space + 8192;
@@ -1480,6 +1497,15 @@ spmd_task(
     region_index++;
   }
 
+#if defined(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL)
+
+  // Execute control
+  if(context_.top_level_driver()) {
+    context_.top_level_driver()(args.argc, args.argv);
+  } // if
+
+#else
+
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   specialization_spmd_init(args.argc, args.argv);
@@ -1489,6 +1515,8 @@ spmd_task(
 
   // run default or user-defined driver
   driver(args.argc, args.argv);
+
+#endif // FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL
 
   // Cleanup memory
   for(auto ipart: primary_ghost_ips)

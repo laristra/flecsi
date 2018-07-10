@@ -16,9 +16,18 @@
   Documentation for this example can be found in README.md.
  *----------------------------------------------------------------------------*/
 
-#include <iostream>
+#include <flecsi/execution/execution.h>
+#include <flecsi-config.h>
 
-#include <flecsi-tutorial/specialization/control/control.h>
+#if !defined(FLECSI_ENABLE_GRAPHVIZ)
+#error ENABLE_GRAPHVIZ not defined! \
+  This example depends on Graphviz!
+#endif
+
+#if !defined(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL)
+#error FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL not defined! \
+  This example depends on the FleCSI Dynamic Control Model
+#endif
 
 #include "analysis.h"
 #include "currents.h"
@@ -29,21 +38,4 @@
 #include "special.h"
 #include "species.h"
 
-using namespace flecsi::tutorial;
-
-namespace flecsi {
-namespace execution {
-
-void driver(int argc, char ** argv) {
-  auto & control = control_t::instance();
-  control.execute(argc, argv);
-
-#if defined(ENABLE_GRAPHVIZ)
-  flecsi::utils::graphviz_t gv;
-  control.write(gv);
-  gv.write("control-model.gv");
-#endif
-} // driver
-
-} // namespace execution
-} // namespace flecsi
+flecsi_register_program(control-model);

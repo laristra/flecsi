@@ -22,7 +22,13 @@ cinch_minimum_required(1.0)
 # Set the project name
 #------------------------------------------------------------------------------#
 
-project(FleCSI)
+option(ENABLE_CUDA "Enable support for CUDA" OFF)
+
+if(ENABLE_CUDA)
+  project(FleCSI LANGUAGES CXX C CUDA)
+else()
+  project(FleCSI LANGUAGES CXX C)
+endif()
 
 #------------------------------------------------------------------------------#
 # Set header suffix regular expression
@@ -34,14 +40,14 @@ set(CINCH_HEADER_SUFFIXES "\\.h")
 # If a C++14 compiler is available, then set the appropriate flags
 #------------------------------------------------------------------------------#
 
-include(cxx14)
+include(cxx17)
 
-check_for_cxx14_compiler(CXX14_COMPILER)
+check_for_cxx17_compiler(CXX17_COMPILER)
 
-if(CXX14_COMPILER)
-    enable_cxx14()
+if(CXX17_COMPILER)
+    enable_cxx17()
 else()
-    message(FATAL_ERROR "C++14 compatible compiler not found")
+    message(FATAL_ERROR "C++17 compatible compiler not found")
 endif()
 
 #------------------------------------------------------------------------------#
@@ -130,6 +136,12 @@ set(FLECSI_ID_FBITS "4" CACHE STRING
 
 set(FLECSI_COUNTER_TYPE "int32_t" CACHE STRING
   "Select the type that will be used for loop and iterator values")
+
+#------------------------------------------------------------------------------#
+# Control Model
+#------------------------------------------------------------------------------#
+
+option(ENABLE_DYNAMIC_CONTROL_MODEL "Enable the new FleCSI control model" OFF)
 
 #------------------------------------------------------------------------------#
 # Add option for FleCSIT command-line tool.
@@ -395,6 +407,7 @@ set(FLECSI_ENABLE_LEGION ${ENABLE_LEGION})
 set(FLECSI_ENABLE_METIS ENABLE_METIS)
 set(FLECSI_ENABLE_PARMETIS ENABLE_PARMETIS)
 set(FLECSI_ENABLE_GRAPHVIZ ${ENABLE_GRAPHVIZ})
+set(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL ${ENABLE_DYNAMIC_CONTROL_MODEL})
 
 configure_file(${PROJECT_SOURCE_DIR}/config/flecsi-config.h.in
   ${CMAKE_BINARY_DIR}/flecsi-config.h @ONLY)

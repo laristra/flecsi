@@ -78,10 +78,12 @@ void color_entity(
       auto referencers = 
         flecsi::topology::entity_referencers<cell_dim, ENTITY_DIM>(md, i);
 
+#if 0
       {
         clog_tag_guard(coloring_functions);
         clog_container_one(info, i << " referencers", referencers, clog::space);
       } // guard
+#endif
 
       size_t min_rank(std::numeric_limits<size_t>::max());
       std::set<size_t> shared_entities;
@@ -168,6 +170,7 @@ void color_entity(
     } // for
   } // scope
 
+#if 0
   {
     clog_tag_guard(coloring_functions);
     clog_container_one(
@@ -183,7 +186,7 @@ void color_entity(
       info, "ghost entities("<<ENTITY_DIM<<")" , entities.ghost, clog::newline
     );
   } // guard
-
+#endif
   
   entity_color_info.exclusive = entities.exclusive.size();
   entity_color_info.shared = entities.shared.size();

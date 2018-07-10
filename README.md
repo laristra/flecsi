@@ -33,6 +33,11 @@ FleCSI's data model provides a low-buy-in approach that makes it an
 attractive option for many application projects, as developers are
 not locked into particular layouts or data structure representations.
 
+# Developers
+
+If you are doing development of FleCSI, please take some time to read
+the developer [README](developer/README.md).
+
 # Requirements
 
 The primary requirement for building FleCSI is that you have

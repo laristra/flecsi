@@ -24,7 +24,7 @@ achievable by the associated user type.
 
 The user types are:
 
-* **FleCSI Core Developer**<br>  
+* **FleCSI Core Developer**<br>
 These are users who design, implement, and maintain the core FleCSI
 library. Generally, these users are expert C++ developers who have a
 well-developed understanding of the the low-level design of the FleCSI
@@ -32,7 +32,7 @@ software architecture. These users are generally computer scientists
 with expertise in generic programming techniques, data structure design,
 and optimization.
 
-* **FleCSI Specialization Developer**<br>  
+* **FleCSI Specialization Developer**<br>
 These are users who adapt the core FleCSI data structures and runtime
 interfaces to create domain-specific interfaces for application
 developers.  These users are required to understand the components of
@@ -43,7 +43,7 @@ the application area for which they are designing an interface. These
 users are generally computational scientists with expertise in one or
 more numerical methods areas.
 
-* **FleCSI Application Developer**<br>  
+* **FleCSI Application Developer**<br>
 These users are methods developers or physicists who use a particular
 FleCSI specialization layer to develop and maintain application codes.
 These are the FleCSI end-users, who have expertise in designing and

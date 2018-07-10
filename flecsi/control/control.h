@@ -42,10 +42,11 @@ struct control__ : public CONTROL_POLICY {
   using node_t = typename dag_t::node_t;
   using phase_walker_t = phase_walker__<control__<CONTROL_POLICY>>;
 
-  void execute(int argc, char ** argv) {
-    sort_phases();
+  static int execute(int argc, char ** argv) {
+    instance().sort_phases();
     phase_walker_t pw(argc, argv);
     pw.template walk_types<typename CONTROL_POLICY::phases>();
+    return 0;
   } // execute
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
