@@ -432,6 +432,9 @@ struct mpi_context_policy_t
     int my_color;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
 
+// This should only be uncommented for debugging (outputs info
+// during tutorial runs). Consider changing this to use clog
+#if 0
     if (my_color == 0) {
       for (auto ghost_owner : ghost_owners) {
         std::cout << "ghost owner: " << ghost_owner << std::endl;
@@ -457,8 +460,9 @@ struct mpi_context_policy_t
         }
         std::cout << std::endl;
 
-      }
-    }
+      } // for
+    } // if
+#endif
 
     for (auto ghost_owner : ghost_owners) {
       if (origin_disps.size() == 0)
@@ -480,6 +484,7 @@ struct mpi_context_policy_t
       }
     }
 
+#if 0
     if (my_color == 0) {
       for (auto ghost_owner : ghost_owners) {
         std::cout << "ghost owner: " << ghost_owner << std::endl;
@@ -495,6 +500,7 @@ struct mpi_context_policy_t
         std::cout << std::endl;
       }
     }
+#endif
 
     for (auto ghost_owner : ghost_owners) {
       if (target_disps.size() == 0)
@@ -514,6 +520,7 @@ struct mpi_context_policy_t
       }
     }
 
+#if 0
     if (my_color == 0) {
       for (auto ghost_owner : ghost_owners) {
         std::cout << "ghost owner: " << ghost_owner << std::endl;
@@ -530,6 +537,7 @@ struct mpi_context_policy_t
         std::cout << std::endl;
       }
     }
+#endif
   }
 
   std::map<field_id_t, field_metadata_t>&
