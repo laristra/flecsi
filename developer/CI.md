@@ -8,6 +8,7 @@ CI merges development with testing, allowing developers to build code collaborat
 
 Since Docker can integrate with tools like Travis-CI and GitHub, developers can submit code in GitHub, test the code and automatically trigger a build using Travis-CI, and once the image is completed successfully, images can be added to Docker registries. This streamlines the process, saves time on build and set up processes, all while allowing developers to run tests in parallel and automate them so that they can continue to work on other projects while tests are being run.
 
+In our case, instead of Heroku, we have DockerHub.
 ![branchWorkflow](travis-workflow.png)
 
 ## Setup Github with Travis-CI
@@ -16,16 +17,15 @@ Since Docker can integrate with tools like Travis-CI and GitHub, developers can 
 2. Sign in with your GitHub account
 3. Authorize Travis-CI to access your repo
 4. Create a `.travis.yml` file in the root of your desired repo
-    * Travis configurations of your repo
-    * For more info on default settings, go to [Travis Getting Started](https://docs.travis-ci.com/user/getting-started/)
+  * Travis configurations of your repo
+  * For more info on default settings, go to [Travis Getting Started](https://docs.travis-ci.com/user/getting-started/)
 5. Go to your profile on Travis-CI
 6. Enable the approriate repo by flipping on their slider
 7. Travis-CI now listens to your repo code changes!
 
-### Travis-CI Configuration File `.travis.yml`
+## Travis-CI Configuration File `.travis.yml`
 
-Example:
-`
+```
 language: cpp
 
 sudo: required
@@ -65,42 +65,60 @@ after_success:
 
 compiler:
   - gcc
-`
 
-Explaination:
-* `language: cpp` Indicates this is a C++ project
+```
 
-* `sudo: required
+### Explaination:
+
+```
+language: cpp
+``` 
+
+- Indicates this is a C++ project
+
+```
+sudo: required
 
 services:
 - docker
-` Allows the use of `- docker` commands
+``` 
 
-* `env:
+- Allows the use of `- docker` commands
+
+```
+env:
   matrix:
     - DISTRO=ubuntu_mpi BUILD_TYPE=Debug DOCKERHUB=true
     - DISTRO=fedora_mpi BUILD_TYPE=Release DOCKERHUB=true
     - DISTRO=fedora_mpich_mpi BUILD_TYPE=Release DOCKERHUB=true
-` Specifies the different distribution environment and configurations that Travis-CI is going to
-build and run
-    * Options:
-    * `DISTRO` Specifies the distribution environment
-    * `BUILD_TYPE` Debug/Release or any other available build types
-    * `DOCKERHUB` true/false for deploying a container to DockerHub
-    * `SYSTEM_LIBS` ON/OFF for using system libraries
-    * `RUNTIME` legion/mpi/hpx for specifying runtime backend
-    * `WERROR` yes/no for displaying warnings
-    * `IGNORE_NOCI` true/false
-    * `SONARQUBE` ON/OFF
-    * `COVERAGE` ON/OFF
-    * `MPI` ON/OFF
-    * `DOCS` true/false
+``` 
 
-* `before_install:
- - git fetch --unshallow && git fetch --tags #for versioning
-` Allows for versioning
+- Specifies the different distribution environment and configurations that
+Travis-CI is going to build and run 
 
-* `script:
+- Options:
+
+  * `DISTRO` Specifies the distribution environment
+  * `BUILD_TYPE` Debug/Release or any other available build types
+  * `DOCKERHUB` true/false for deploying a container to DockerHub
+  * `SYSTEM_LIBS` ON/OFF for using system libraries
+  * `RUNTIME` legion/mpi/hpx for specifying runtime backend
+  * `WERROR` yes/no for displaying warnings
+  * `IGNORE_NOCI` true/false
+  * `SONARQUBE` ON/OFF
+  * `COVERAGE` ON/OFF
+  * `MPI` ON/OFF
+  * `DOCS` true/false
+
+```
+before_install:
+ - git fetch --unshallow && git fetch --tags 
+```
+ 
+- Allows for versioning
+
+```
+script:
  - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
  - if [[ ${TRAVIS_BRANCH} != stable ]]; then TAG="${TAG}_master"; fi
  - cp -vr docker ${HOME}/docker
@@ -114,45 +132,57 @@ build and run
                 --build-arg TRAVIS_TAG=${TRAVIS_TAG} --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG}
                 --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT}
                 -t ${TRAVIS_REPO_SLUG}:${DISTRO}${TAG} ${HOME}/docker/
-` Commands that Travis-CI executes
-    * Commands:
-    * `- if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
- - if [[ ${TRAVIS_BRANCH} != stable ]]; then TAG="${TAG}_master"; fi`
-   Allows for deployment of different containers from same repo but
+``` 
+
+- Commands:
+  
+  * `- if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi` & `- if [[
+    ${TRAVIS_BRANCH} != stable ]]; then TAG="${TAG}_master"; fi` allows for deployment of different containers from same repo but
 different branches
-    * `sed -i "1s/fedora_serial/${DISTRO}${TAG}/"
-      ${HOME}/docker/Dockerfile` Allows for different distribution
-environments
-    * `- cp -vr docker ${HOME}/docker` & `mv -v ${TRAVIS_REPO_SLUG}
-      $HOME/docker` Allows for the access of files since Docker only has
-access to the files within the folder that it's run
-    * `docker build --build-arg BUILD_TYPE=${BUILD_TYPE}
+  * `sed -i "1s/fedora_serial/${DISTRO}${TAG}/"
+    ${HOME}/docker/Dockerfile` allows for different distribution
+environments before Travis-CI updates its Docker to permit the use of
+variable
+  * `- cp -vr docker ${HOME}/docker` & `mv -v ${TRAVIS_REPO_SLUG}
+    $HOME/docker` allows for the access of files since Docker only has access to the files within the folder that it's run
+
+```
+docker build --build-arg BUILD_TYPE=${BUILD_TYPE}
                 --build-arg CC=${CC} --build-arg CXX=${CXX}
                 --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH} --build-arg TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER}
                 --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
                 --build-arg TRAVIS_TAG=${TRAVIS_TAG} --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG}
                 --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT}
-                -t ${TRAVIS_REPO_SLUG}:${DISTRO}${TAG} ${HOME}/docker/`
-Builds the docker
-        * `--build-arg`: Specifies the environment variables within
+                -t ${TRAVIS_REPO_SLUG}:${DISTRO}${TAG}
+${HOME}/docker/
+```
+
+- Docker building:
+ 
+  * `--build-arg`: Specifies the environment variables within
           Docker
-        * `-t`: Tags the Docker container
-* `after_success:
+  * `-t`: Tags the Docker container
+
+```
+after_success:
   - if [[ ${DOCKERHUB} = true && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_BRANCH} == master && ${CC} = gcc ]]; then
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push "${TRAVIS_REPO_SLUG}:${DISTRO}${TAG}";
-    fi` If everything successfully build and run, by having the
-environment settings of `DOCKERHUB=true`, not a pull request and some
-other variables, Travis-CI will deploy the container to DockerHub
+    fi
+``` 
 
-* `compiler:
+- If everything successfully build and run, by having the environment settings of `DOCKERHUB=true`, not a pull request and some other variables, Travis-CI will deploy the container to DockerHub
+
+```
+compiler:
   - gcc
-` Specifies the compiler
+``` 
+
+- Specifies the compiler
 
 ### Docker Configuration File `docker/Dockerfile`
 
-Example:
-`
+```
 FROM laristra/flecsi:fedora_serial
 
 ARG CC
@@ -191,6 +221,6 @@ USER root
 RUN make install
 
 WORKDIR /home/flecsi
-`
+```
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
