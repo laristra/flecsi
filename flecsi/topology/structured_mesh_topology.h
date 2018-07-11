@@ -38,8 +38,6 @@ namespace verify_structmesh {
 
   FLECSI_MEMBER_CHECKER(num_dimensions);
   FLECSI_MEMBER_CHECKER(num_domains);
-  FLECSI_MEMBER_CHECKER(lower_bounds);
-  FLECSI_MEMBER_CHECKER(upper_bounds);
   FLECSI_MEMBER_CHECKER(entity_types);
 } // namespace verify_structmesh
 
@@ -62,7 +60,6 @@ class structured_mesh_topology__ : public structured_mesh_topology_base__<
   * num_dimensions
   * num_domains
   * entity_types
-  * mesh_bounds 
   */
   // static verification of mesh policy
 
@@ -77,23 +74,6 @@ class structured_mesh_topology__ : public structured_mesh_topology_base__<
   
   static_assert(std::is_convertible<decltype(MESH_TYPE::num_domains),
     size_t>::value, "mesh policy num_domains must be size_t");
-
-  static_assert(verify_structmesh::has_member_lower_bounds<MESH_TYPE>::value,
-                "mesh policy missing lower_bounds array");
-  
-  static_assert(std::is_convertible<decltype(MESH_TYPE::lower_bounds),
-    std::array<size_t,MESH_TYPE::num_dimensions>>::value,
-    "mesh policy lower_bounds is not an array");
-
-  static_assert(verify_structmesh::has_member_upper_bounds<MESH_TYPE>::value,
-                "mesh policy missing upper_bounds array");
-  
-  static_assert(std::is_convertible<decltype(MESH_TYPE::upper_bounds),
-    std::array<size_t,MESH_TYPE::num_dimensions>>::value,
-    "mesh policy upper_bounds is not an array");
-
-  static_assert(MESH_TYPE::lower_bounds.size() == MESH_TYPE::upper_bounds.size(),
-     "mesh bounds have inconsistent sizes");
 
   static_assert(verify_structmesh::has_member_entity_types<MESH_TYPE>::value,
                 "mesh policy missing entity_types tuple");
@@ -140,11 +120,13 @@ public:
   structured_mesh_topology__(const structured_mesh_topology__ & m) : base_t(m.ms_) {}
 
   //! Constructor
-  structured_mesh_topology__(storage_t * ms = nullptr) : base_t(ms)
+  structured_mesh_topology__(sm_id_array_t lower_bnds, 
+                             sm_id_array_t upper_bnds, 
+			     storage_t * ms = nullptr) : base_t(ms)
   {
      if (ms != nullptr)
      {
-       initialize_storage();
+       initialize_storage(lower_bnds, upper_bnds);
      } 
   }
 
@@ -154,14 +136,14 @@ public:
     delete qt;
   }
  
-  void initialize_storage()
+  void initialize_storage(sm_id_array_t lower_bnds, sm_id_array_t upper_bnds)
   {
       meshdim_ = MESH_TYPE::num_dimensions;  
 
       for (size_t i = 0; i < meshdim_; ++i)
       {
-        meshbnds_low_[i] = MESH_TYPE::lower_bounds[i];
-        meshbnds_up_[i]  = MESH_TYPE::upper_bounds[i];
+        meshbnds_low_[i] = lower_bnds[i];
+        meshbnds_up_[i]  = upper_bnds[i];
       }
 
       //Bounds info

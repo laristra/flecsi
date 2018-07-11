@@ -21,16 +21,10 @@ public:
   static constexpr size_t num_dimensions = 1;
   static constexpr size_t num_domains = 1;
 
-  static constexpr std::array<size_t,num_dimensions> lower_bounds = {0};
-  static constexpr std::array<size_t,num_dimensions> upper_bounds = {3};
-
   using entity_types = std::tuple<
   std::tuple<index_space_<0>, domain_<0>, Vertex>,
   std::tuple<index_space_<1>, domain_<0>, Edge>>;
 };
-
-constexpr std::array<size_t,TestMesh1dType::num_dimensions> TestMesh1dType::lower_bounds;
-constexpr std::array<size_t,TestMesh1dType::num_dimensions> TestMesh1dType::upper_bounds;
 
 using TestMesh = structured_mesh_topology__<TestMesh1dType>;
 
@@ -45,9 +39,11 @@ void driver(int argc, char ** argv) {};
 
 TEST(structured, simple){
 
+  std::array<size_t,TestMesh1dType::num_dimensions> lower_bounds = {0};
+  std::array<size_t,TestMesh1dType::num_dimensions> upper_bounds = {0};
   auto mst = new structured_mesh_storage__<TestMesh1dType::num_dimensions, 
                                           TestMesh1dType::num_domains>();
-  auto mesh = new TestMesh(mst); 
+  auto mesh = new TestMesh(lower_bounds, upper_bounds, mst); 
   size_t nv, ne;
 
   auto lbnd = mesh->lower_bounds();

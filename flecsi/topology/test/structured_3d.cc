@@ -30,18 +30,12 @@ public:
   static constexpr size_t num_dimensions = 3;
   static constexpr size_t num_domains = 1;
 
-  static constexpr std::array<size_t,num_dimensions> lower_bounds = {0,0,0};
-  static constexpr std::array<size_t,num_dimensions> upper_bounds = {2,1,1};
-
   using entity_types = std::tuple<
   std::tuple<index_space_<0>, domain_<0>, Vertex>,
   std::tuple<index_space_<1>, domain_<0>, Edge>,
   std::tuple<index_space_<2>, domain_<0>, Face>,
   std::tuple<index_space_<3>, domain_<0>, Cell>>;
 };
-
-constexpr std::array<size_t,TestMesh3dType::num_dimensions> TestMesh3dType::lower_bounds;
-constexpr std::array<size_t,TestMesh3dType::num_dimensions> TestMesh3dType::upper_bounds;
 
 using TestMesh = structured_mesh_topology__<TestMesh3dType>;
 
@@ -55,9 +49,12 @@ void driver(int argc, char ** argv) {};
 } //execution
 
 TEST(structured, simple){
+ std::array<size_t,TestMesh3dType::num_dimensions> lower_bounds{0,0,0};
+ std::array<size_t,TestMesh3dType::num_dimensions> upper_bounds{2,1,1};
+
   auto ms = new structured_mesh_storage__<TestMesh3dType::num_dimensions,
                                         TestMesh3dType::num_domains>();
-  auto mesh = new TestMesh(ms); 
+  auto mesh = new TestMesh(lower_bounds, upper_bounds, ms); 
   size_t nv, ne, nf, nc;
 
   auto lbnd = mesh->lower_bounds();

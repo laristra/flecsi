@@ -404,11 +404,7 @@ namespace execution {
       // h is partially initialized in client.h
       auto storage = h.set_storage(new typename T::storage_t);
 
-      bool _read{ PERMISSIONS == ro || PERMISSIONS == rw };
-
-      if(!_read){
-        h.initialize_storage();
-      }
+      h.initialize_storage();
     } // handle for structured_mesh_topology
 
   }; // struct task_prolog_t
