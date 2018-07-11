@@ -19,9 +19,9 @@ we had to flatten the dependency chain insdie Ristra.
 
 The flatten sequential stack chain:
 
-`flecsi-buildenv`->`flecsi-third-party`->`flecsi`->`libristra`->`flecsi-sp`->`flecsale`
+1. `flecsi-buildenv`->`flecsi-third-party`->`flecsi`->`libristra`->`flecsi-sp`->`flecsale`
 
-`portage-buildenv`->`tangram`->`portage`
+2. `portage-buildenv`->`tangram`->`portage`
 
 For now we have 2 stack chains, but we will be merging the two chains in the future.
 
