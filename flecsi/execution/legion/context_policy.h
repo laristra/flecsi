@@ -44,7 +44,6 @@
 #include <flecsi/execution/legion/runtime_state.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
-#include <flecsi/utils/const_string.h>
 
 namespace flecsi {
 namespace execution {

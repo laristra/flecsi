@@ -29,6 +29,7 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_field.h>
 
+#include <ristra-utils/utils/const_string.h>
 #include <ristra-utils/utils/tuple_walker.h>
 
 clog_register_tag(prolog);
@@ -227,7 +228,7 @@ struct task_prolog_t : public ristra::utils::tuple_walker__<task_prolog_t> {
 
       // TODO - circular dependency including internal_task.h
       auto constexpr key =
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(ghost_copy_task)}
+          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(ghost_copy_task)}
               .hash();
 
       const auto ghost_copy_tid = flecsi_context.task_id<key>();

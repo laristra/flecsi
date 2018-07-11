@@ -37,7 +37,6 @@
 #include <flecsi/execution/legion/task_epilog.h>
 #include <flecsi/execution/legion/task_prolog.h>
 #include <flecsi/execution/legion/task_wrapper.h>
-#include <flecsi/utils/const_string.h>
 
 namespace flecsi {
 namespace execution {

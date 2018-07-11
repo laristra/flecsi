@@ -24,7 +24,7 @@ fi
 
 cmake_mode=cmake
 extra_define=""
-runtime=serial
+runtime=mpi
 
 while [[ $# -gt 0 ]]
 do
@@ -43,6 +43,9 @@ do
 		--ccmake|-c)
 			cmake_mode=ccmake
 		;;
+    legion|mpi|hpx)
+      runtime=$1
+    ;;
 	esac
 
 	shift # next argument
