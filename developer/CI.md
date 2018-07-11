@@ -248,8 +248,10 @@ WORKDIR /home/flecsi
 FROM laristra/flecsi:fedora_serial
 ```
 
-As discussed above, this is how we build up the sequential chain for
-Ristra repo CI testing
+- As discussed above, we need a sequential stack chain
+- This is how we build up the sequential chain for the Ristra repo CI testing
+- For this partiular exmaple, the repo is dependent on `flecsi` and thus
+  it starts from the `flecsi` container
 
 ```
 ARG CC
