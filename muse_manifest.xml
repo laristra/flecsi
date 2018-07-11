@@ -1,4 +1,4 @@
-<manifest alg="2" build="2018.1.0.386" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1531336434737">
+<manifest alg="2" build="2018.1.0.386" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1531336683352">
   <folder name="css">
     <file name="site_global.css" crc="3834109142"/>
     <file name="master_main.css" crc="352287796" ref="documentation:projects:people:download:index"/>
@@ -12,7 +12,7 @@
   <folder name="assets">
     <file name="flecsi-user-guide.pdf" crc="4080023803" seo="true" mt="1530377941000"/>
     <file name="flecsi-developer-guide.pdf" crc="3788488316" seo="true" mt="1530377941000"/>
-    <file name="index.html" crc="4107660354" seo="true" mt="1530377941000"/>
+    <file name="index.html" crc="3806516650" seo="true" mt="1531336434000"/>
   </folder>
   <folder name="scripts">
     <file name="jquery-1.8.3.min.js" crc="209076791" ref="index:people:documentation:download:projects"/>
