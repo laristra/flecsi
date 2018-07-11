@@ -1,4 +1,4 @@
-<manifest alg="2" build="2018.1.0.386" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1531336683352">
+<manifest alg="2" build="2018.1.0.386" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1531336806485">
   <folder name="css">
     <file name="site_global.css" crc="3834109142"/>
     <file name="master_main.css" crc="352287796" ref="documentation:projects:people:download:index"/>
