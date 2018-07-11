@@ -12,21 +12,18 @@ In our case, instead of Heroku, we have DockerHub.
 ![branchWorkflow](travis-workflow.png)
 
 ## Setup Travis-CI for Ristra repo
-In order to have Travis-CI run up-to-date automated testing, we have to
-flatten the dependency chain insdie Ristra. 
+In order to have Travis-CI run up-to-date automated testing, we want to have all repo be building against the latest working version of their dependencies.
+For example, if `flecsi-third-party` just recently got updated, we want `flecsi` to be building from the container that has the recent changes.
+However, to make sure all dependecies are built before the repo itself,
+we had to flatten the dependency chain insdie Ristra. 
 
 The flatten sequential stack chain:
 
-```flow
-env=>start: flecsi-buildenv
-third=>operation: flecsi-third-party
-flecsi=>operation: flecsi
-lib=>operation: libristra
-flecsi-sp=>operation: flecsi-sp
-flecsale=>operation: flecsale
+`flecsi-buildenv`->`flecsi-third-party`->`flecsi`->`libristra`->`flecsi-sp`->`flecsale`
 
-env->third->flecsi->lib->flecsi-sp->flecsale
-```
+`portage-buildenv`->`tangram`->`portage`
+
+For now we have 2 stack chains, but we will be merging the two chains in the future.
 
 ## Setup Github with Travis-CI
 
@@ -272,8 +269,10 @@ ARG TRAVIS_REPO_SLUG
 ARG TRAVIS_COMMIT
 ```
 
-- `ARG` handles the passed in argument variables from `--build-arg` [It is OK for the
-  values to be empty/null, but it is NOT OK to not handle them]
+- `ARG` handles the passed in argument variables from `--build-arg` 
+
+[It is OK for the values to be empty/null, but it is NOT OK to not handle them]
+
 - `ENV` 
 
 ```
