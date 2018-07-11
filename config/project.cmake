@@ -72,7 +72,7 @@ set(ug_pandoc_options
 # Add user guide target
 #------------------------------------------------------------------------------#
 
-cinch_add_doc(user-guide flecsi_ug.py "flecsi;auxiliary"
+cinch_add_doc(flecsi-user-guide flecsi_ug.py "flecsi;auxiliary"
     flecsi-user-guide-${${PROJECT_NAME}_VERSION}.pdf
     PANDOC_OPTIONS ${ug_pandoc_options} IMAGE_GLOB "*.pdf"
 )
@@ -103,7 +103,7 @@ set(dg_image_list "${CMAKE_SOURCE_DIR}/doc/medium-flecsi.png")
 # Add developer guide target
 #------------------------------------------------------------------------------#
 
-cinch_add_doc(developer-guide flecsi_dg.py "flecsi;auxiliary"
+cinch_add_doc(flecsi-developer-guide flecsi_dg.py "flecsi;auxiliary"
     flecsi-developer-guide-${${PROJECT_NAME}_VERSION}.pdf
     PANDOC_OPTIONS ${dg_pandoc_options} IMAGE_GLOB "*.pdf"
     IMAGE_LIST ${dg_image_list}
