@@ -23,6 +23,8 @@
 
 #include <ristra-utils/utils/const_string.h>
 
+#include <flecsi/utils/common.h>
+
 /*!
   @def flecsi_register_data_client
 
