@@ -1,4 +1,4 @@
-<manifest alg="2" build="2018.1.0.386" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1531342465508">
+<manifest alg="2" build="2018.1.0.386" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1531342909698">
   <folder name="css">
     <file name="site_global.css" crc="3834109142"/>
     <file name="master_main.css" crc="336909612" ref="documentation:projects:people:download:index"/>
@@ -32,9 +32,9 @@
     <file name="flecsi.png" crc="142940395" seo="true" ref="index:people:documentation:download:projects">
       <caption webpage="index" alt=""/>
       <caption webpage="documentation" alt=""/>
-      <caption webpage="projects" alt=""/>
-      <caption webpage="people" alt=""/>
       <caption webpage="download" alt=""/>
+      <caption webpage="people" alt=""/>
+      <caption webpage="projects" alt=""/>
     </file>
     <file name="pasted image 229x378.jpg" crc="3793699467" seo="true" ref="index">
       <caption webpage="index" alt=""/>
@@ -42,23 +42,23 @@
     <file name="ecp_logo.png" crc="3889968369" seo="true" ref="index:people:documentation:download:projects">
       <caption webpage="index" alt=""/>
       <caption webpage="documentation" alt=""/>
-      <caption webpage="projects" alt=""/>
-      <caption webpage="people" alt=""/>
       <caption webpage="download" alt=""/>
+      <caption webpage="people" alt=""/>
+      <caption webpage="projects" alt=""/>
     </file>
     <file name="1200px-nnsa_logo.png" crc="63578105" seo="true" ref="index:people:documentation:download:projects">
       <caption webpage="index" alt=""/>
       <caption webpage="documentation" alt=""/>
-      <caption webpage="projects" alt=""/>
-      <caption webpage="people" alt=""/>
       <caption webpage="download" alt=""/>
+      <caption webpage="people" alt=""/>
+      <caption webpage="projects" alt=""/>
     </file>
     <file name="los-alamos-lab-logo-white.png" crc="4105952716" seo="true" ref="index:people:documentation:download:projects">
       <caption webpage="index" alt=""/>
       <caption webpage="documentation" alt=""/>
-      <caption webpage="projects" alt=""/>
-      <caption webpage="people" alt=""/>
       <caption webpage="download" alt=""/>
+      <caption webpage="people" alt=""/>
+      <caption webpage="projects" alt=""/>
     </file>
     <file name="ben-1.jpg" crc="3797761144" seo="true" ref="people">
       <caption webpage="people" alt=""/>
@@ -130,7 +130,7 @@
     </file>
   </folder>
   <file name="index.html" crc="3806516650" seo="true" mt="1531327919811" redirect="true"/>
-  <file name="people.html" crc="303073504" seo="true" mt="1531342373091" redirect="true"/>
+  <file name="people.html" crc="216966945" seo="true" mt="1531342731995" redirect="true"/>
   <file name="documentation.html" crc="280803502" seo="true" mt="1531327919811" redirect="true"/>
   <file name="download.html" crc="191370733" seo="true" mt="1531327919811" redirect="true"/>
   <file name="projects.html" crc="4041302407" seo="true" mt="1531327919811" redirect="true"/>
