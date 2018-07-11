@@ -74,15 +74,12 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="structcinch_1_1log__message__t.html" title="log_message_t provides a base class for implementing formatted logging utilities. ...">log_message_t</a> provides a base class for implementing formatted logging utilities.  
- <a href="structcinch_1_1log__message__t.html#details">More...</a></p>
-
 <p><code>#include &lt;<a class="el" href="cinchlog_8h_source.html">cinchlog.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aabed2628b8d1a98d04cf853cdeeac197"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcinch_1_1log__message__t.html#aabed2628b8d1a98d04cf853cdeeac197">log_message_t</a> (const char *file, int line, P &amp;&amp;predicate)</td></tr>
-<tr class="separator:aabed2628b8d1a98d04cf853cdeeac197"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3c4b52eeeddd57bae7b8a87122a1b7c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcinch_1_1log__message__t.html#aa3c4b52eeeddd57bae7b8a87122a1b7c">log_message_t</a> (const char *file, int line, P &amp;&amp;predicate, bool can_send_to_one=true)</td></tr>
+<tr class="separator:aa3c4b52eeeddd57bae7b8a87122a1b7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83eb3612fe6b237b18fb1d1398dc4eca"><td class="memItemLeft" align="right" valign="top"><a id="a83eb3612fe6b237b18fb1d1398dc4eca"></a>
 virtual std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcinch_1_1log__message__t.html#a83eb3612fe6b237b18fb1d1398dc4eca">stream</a> ()</td></tr>
 <tr class="memdesc:a83eb3612fe6b237b18fb1d1398dc4eca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the output stream. Override this method to add additional. <br /></td></tr>
@@ -99,6 +96,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>line_</b></td></tr>
 <tr class="memitem:a3cc43bfe1988e86e41361ed0c4ab7e44"><td class="memItemLeft" align="right" valign="top"><a id="a3cc43bfe1988e86e41361ed0c4ab7e44"></a>
 P &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>predicate_</b></td></tr>
 <tr class="separator:a3cc43bfe1988e86e41361ed0c4ab7e44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac672cd970f48f39af5d4794e0e58e9a6"><td class="memItemLeft" align="right" valign="top"><a id="ac672cd970f48f39af5d4794e0e58e9a6"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>can_send_to_one_</b></td></tr>
+<tr class="separator:ac672cd970f48f39af5d4794e0e58e9a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70a0182c4f7932caf5c104107f324229"><td class="memItemLeft" align="right" valign="top"><a id="a70a0182c4f7932caf5c104107f324229"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>clean_color_</b></td></tr>
 <tr class="separator:a70a0182c4f7932caf5c104107f324229"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -110,10 +110,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>fatal_</b></td></tr>
 <div class="textblock"><h3>template&lt;typename P&gt;<br />
 struct cinch::log_message_t&lt; P &gt;</h3>
 
-<p><a class="el" href="structcinch_1_1log__message__t.html" title="log_message_t provides a base class for implementing formatted logging utilities. ...">log_message_t</a> provides a base class for implementing formatted logging utilities. </p>
+<p>The <a class="el" href="structcinch_1_1log__message__t.html">log_message_t</a> type provides a base class for implementing formatted logging utilities. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aabed2628b8d1a98d04cf853cdeeac197"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabed2628b8d1a98d04cf853cdeeac197">&#9670;&nbsp;</a></span>log_message_t()</h2>
+<a id="aa3c4b52eeeddd57bae7b8a87122a1b7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3c4b52eeeddd57bae7b8a87122a1b7c">&#9670;&nbsp;</a></span>log_message_t()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -139,7 +139,13 @@ template&lt;typename P &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">P &amp;&amp;&#160;</td>
-          <td class="paramname"><em>predicate</em>&#160;</td>
+          <td class="paramname"><em>predicate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>can_send_to_one</em> = <code>true</code>&#160;</td>
         </tr>
         <tr>
           <td></td>

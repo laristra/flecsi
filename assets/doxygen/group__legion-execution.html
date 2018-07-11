@@ -115,10 +115,15 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:ga1aaa87e16522f40e763e547a3658f667"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>MAPPER_FORCE_RANK_MATCH</b> = 0x00001000, 
+<tr class="memitem:ga1aaa87e16522f40e763e547a3658f667"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <br />
+&#160;&#160;<b>MAPPER_FORCE_RANK_MATCH</b> = 0x00001000, 
 <b>MAPPER_COMPACTED_STORAGE</b> = 0x00002000, 
 <b>MAPPER_SUBRANK_LAUNCH</b> = 0x00003000, 
-<b>EXCLUSIVE_LR</b> = 0x00004000
+<b>EXCLUSIVE_LR</b> = 0x00004000, 
+<br />
+&#160;&#160;<b>SPARSE_RR</b> = 0x11000001, 
+<b>RR</b> = 0x00005002
+<br />
  }</td></tr>
 <tr class="separator:ga1aaa87e16522f40e763e547a3658f667"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadf764cbdea00d65edcd07bb9953ad2b7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>MPI_MAPPER_ID</b> = 1
@@ -236,7 +241,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the execution policy to register the task */</span>                         \</div><div class="line">  bool task##_task_registered =                                                <a class="code" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html#add29e134e1d6a5e3114a46fc4c340e6a">\</a></div><div class="line"><a class="code" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html#add29e134e1d6a5e3114a46fc4c340e6a">      flecsi::execution::legion_execution_policy_t::register_legion_task</a>&lt;      \</div><div class="line">          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \</div><div class="line">          typename <a class="code" href="structflecsi_1_1utils_1_1function__traits____.html">flecsi::utils::function_traits__</a>&lt;decltype(                  \</div><div class="line">              task)&gt;::return_type,                                             \</div><div class="line">          task&gt;(processor, launch, {EXPAND_AND_STRINGIFY(task)})</div><div class="ttc" id="structflecsi_1_1utils_1_1function__traits_____html"><div class="ttname"><a href="structflecsi_1_1utils_1_1function__traits____.html">flecsi::utils::function_traits__</a></div><div class="ttdef"><b>Definition:</b> common.h:162</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the execution policy to register the task */</span>                         \</div><div class="line">  static <span class="keyword">inline</span> <span class="keywordtype">bool</span> task##_task_registered =                                  <a class="code" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html#add29e134e1d6a5e3114a46fc4c340e6a">\</a></div><div class="line"><a class="code" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html#add29e134e1d6a5e3114a46fc4c340e6a">      flecsi::execution::legion_execution_policy_t::register_legion_task</a>&lt;      \</div><div class="line">          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \</div><div class="line">          typename <a class="code" href="structflecsi_1_1utils_1_1function__traits____.html">flecsi::utils::function_traits__</a>&lt;decltype(                  \</div><div class="line">              task)&gt;::return_type,                                             \</div><div class="line">          task&gt;(processor, launch, {EXPAND_AND_STRINGIFY(task)})</div><div class="ttc" id="structflecsi_1_1utils_1_1function__traits_____html"><div class="ttname"><a href="structflecsi_1_1utils_1_1function__traits____.html">flecsi::utils::function_traits__</a></div><div class="ttdef"><b>Definition:</b> common.h:162</div></div>
 <div class="ttc" id="structflecsi_1_1execution_1_1legion__execution__policy__t_html_add29e134e1d6a5e3114a46fc4c340e6a"><div class="ttname"><a href="structflecsi_1_1execution_1_1legion__execution__policy__t.html#add29e134e1d6a5e3114a46fc4c340e6a">flecsi::execution::legion_execution_policy_t::register_legion_task</a></div><div class="ttdeci">static bool register_legion_task(processor_type_t processor, launch_t launch, std::string name)</div><div class="ttdef"><b>Definition:</b> execution_policy.h:107</div></div>
 </div><!-- fragment --><p>This macro registers an internal Legion task.</p>
 <dl class="params"><dt>Parameters</dt><dd>

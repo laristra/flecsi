@@ -14,5 +14,6 @@ var searchData=
   ['tree_5ftopology',['tree_topology',['../classflecsi_1_1topology_1_1tree__topology.html#af34fc2ed970c04e2cb97194c19fe8c98',1,'flecsi::topology::tree_topology::tree_topology()'],['../classflecsi_1_1topology_1_1tree__topology.html#a27300106fcb860f11d0d123138453182',1,'flecsi::topology::tree_topology::tree_topology(const point&lt; element_t, dimension &gt; &amp;start, const point&lt; element_t, dimension &gt; &amp;end)']]],
   ['true_5fstate',['true_state',['../cinchlog_8h.html#aaef7be40551551093f5f77c5b56b26e1',1,'cinch']]],
   ['truncate',['truncate',['../classflecsi_1_1topology_1_1branch__id____.html#aea764a418d0e7acfa276d2f98049843f',1,'flecsi::topology::branch_id__']]],
-  ['try_5facquire',['try_acquire',['../classflecsi_1_1virtual__semaphore.html#aee4ef405c01719c7ec4b92c779e788d5',1,'flecsi::virtual_semaphore']]]
+  ['try_5facquire',['try_acquire',['../classflecsi_1_1virtual__semaphore.html#aee4ef405c01719c7ec4b92c779e788d5',1,'flecsi::virtual_semaphore']]],
+  ['tuple_5fvisit',['tuple_visit',['../tuple__visit_8h.html#adf95d6f213f65d922af7167520b9c31e',1,'flecsi::utils::tuple_visit(_Tuple &amp;&amp;__t, _Fn &amp;&amp;__f)'],['../tuple__visit_8h.html#a6e29946c74d792440066261589155d33',1,'flecsi::utils::tuple_visit(_Fn &amp;&amp;__f)']]]
 ];
