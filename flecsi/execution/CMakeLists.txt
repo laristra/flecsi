@@ -544,7 +544,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
           ${DRIVER_INITIALIZATION}
           ${RUNTIME_DRIVER}
         LIBRARIES
-            FleCSI
+          FleCSI
           ${CINCH_RUNTIME_LIBRARIES}
           ${COLORING_LIBRARIES}
         DEFINES

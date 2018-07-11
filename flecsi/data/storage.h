@@ -24,8 +24,6 @@
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
 
-clog_register_tag(storage);
-
 namespace flecsi {
 namespace data {
 
@@ -74,12 +72,6 @@ struct storage__ : public STORAGE_POLICY {
         clog(warn) << "field key already exists" << std::endl;
       } // if
     } // if
-
-    {
-    clog_tag_guard(storage);
-    clog(info) << "registering type key " << client_type_key <<
-      " with key " << key << std::endl;
-    } // scope
 
     field_registry_[client_type_key][key] =
         std::make_pair(unique_fid_t::instance().next(), callback);
