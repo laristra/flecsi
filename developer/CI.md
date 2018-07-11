@@ -4,14 +4,14 @@
 
 Continuous Integration (CI) is a development practice where developers integrate code into a shared repository frequently, preferably several times a day. Each integration can then be verified by an automated build and automated tests. While automated testing is not strictly part of CI it is typically implied.
 
-CI merges development with testing, allowing developers to build code collaboratively, submit it the master branch, and checked for issues. This allows developers to not only build their code, but also test their code in any environment type and as often as possible to catch bugs early in the applications development lifecycle. 
+CI merges development with testing, allowing developers to build code collaboratively, submit to the master branch, and checked for issues. This allows developers to not only build their code, but also test their code in any environment type and as often as possible to catch bugs early in the applications development lifecycle. 
 
 Since Docker can integrate with tools like Travis-CI and GitHub, developers can submit code in GitHub, test the code and automatically trigger a build using Travis-CI, and once the image is completed successfully, images can be added to Docker registries. This streamlines the process, saves time on build and set up processes, all while allowing developers to run tests in parallel and automate them so that they can continue to work on other projects while tests are being run.
 
-In our case, instead of Heroku, we have DockerHub.
+In our case, instead of *Heroku*, we have *DockerHub*.
 ![branchWorkflow](travis-workflow.png)
 
-## Setup Travis-CI for Ristra repo
+## The Setup for LA Ristra Repo
 In order to have Travis-CI run up-to-date automated testing, we want to have all repo be building against the latest working version of their dependencies.
 For example, if `flecsi-third-party` just recently got updated, we want `flecsi` to be building from the container that has the recent changes.
 However, to make sure all dependecies are built before the repo itself,
@@ -24,6 +24,12 @@ The flatten sequential stack chain:
 2. `portage-buildenv`->`tangram`->`portage`
 
 For now we have 2 stack chains, but we will be merging the two chains in the future.
+
+Each repo will all have a `.travis.yml` and a `docker/Dockerfile` in the root of repo.
+Since, as an example, `libristra` is dependent on `flecsi`, when the
+Travis-CI is triggered for `libristra`, after Travis has finished
+setting up and loading the environment, it will start from the `flecsi`
+Docker container.
 
 ## Setup Github with Travis-CI
 
