@@ -121,6 +121,8 @@ int main(int argc, char ** argv) {
 
 #endif // FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS
 
+  int result{0};
+
   if(tags == "0") {
     // Output the available tags
     if(rank == 0) {
@@ -136,8 +138,7 @@ int main(int argc, char ** argv) {
     clog_init(tags);
      
     // Execute the flecsi runtime.
-    auto retval =
-      flecsi::execution::context_t::instance().initialize(argc, argv);
+    result = flecsi::execution::context_t::instance().initialize(argc, argv);
   } // if
 
 #if defined(FLECSI_ENABLE_MPI)
@@ -147,5 +148,5 @@ int main(int argc, char ** argv) {
 #endif
 #endif // FLECSI_ENABLE_MPI
 
-  return retval;
+  return result;
 } // main
