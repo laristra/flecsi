@@ -60,9 +60,6 @@
       <image:loc>https://laristra.github.io/flecsi/images/oleg.jpg</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1364.jpg</image:loc>
-    </image:image>
-    <image:image>
       <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1385.jpg</image:loc>
     </image:image>
     <image:image>
@@ -88,6 +85,12 @@
     </image:image>
     <image:image>
       <image:loc>https://laristra.github.io/flecsi/images/di160405.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/nick_photo-crop-u1364.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/nick_photo.jpg</image:loc>
     </image:image>
   </url>
   <url>
