@@ -27,6 +27,7 @@ set(utils_HEADERS
   dimensioned_array.h
   export_definitions.h
   factory.h
+  hash.h
   humble.h
   id.h
   index_space.h

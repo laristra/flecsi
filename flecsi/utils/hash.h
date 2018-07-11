@@ -303,21 +303,59 @@ client_adjacency_to_dimension(size_t key) {
         a boolean that distinguishes data client fields from normal
         fields.
 
+  @tparam LABEL       The internal label for the client field.
+  @tparam NAMESPACE   The namespace of the data client instance.
+  @tparam NAME        The name of the data client instance.
   @tparam INDEX_SPACE The index space id of the associated field.
 
   @ingroup utils
  */
 
-template<size_t NAME, size_t INDEX_SPACE>
+template<
+  size_t LABEL,
+  size_t NAMESPACE,
+  size_t NAME,
+  size_t INDEX_SPACE
+>
 inline constexpr size_t
 client_internal_field_hash() {
-  return ((NAME << 8) | INDEX_SPACE) | (1ull << 63);
-} // field_hash__
+  return ((LABEL ^ (NAMESPACE ^ NAME)) << 8 | INDEX_SPACE) | (1ull << 63);
+} // client_internal_field_hash
+
+/*!
+  Create a hash key suitable for registering internal client field data with
+  the low-level field registry.
+
+  \note This hash sets the most significant bit to '1' to be used as
+        a boolean that distinguishes data client fields from normal
+        fields.
+
+  @param label       The internal label for the client field.
+  @param nspace      The namespace of the data client instance.
+  @param name        The name of the data client instance.
+  @param index_space The index space id of the associated field.
+
+  @ingroup utils
+ */
 
 inline size_t
-client_internal_field_hash(size_t name, size_t index_space) {
-  return ((name << 8) | index_space) | (1ull << 63);
-} // field_hash__
+client_internal_field_hash(
+  size_t label,
+  size_t nspace,
+  size_t name,
+  size_t index_space
+)
+{
+  return ((label ^ (nspace ^ name)) << 8 | index_space) | (1ull << 63);
+} // client_internal_field_hash
+
+/*!
+  Return the index space component of an internal client key.
+
+  @param key The internal client key.
+
+  @ingroup utils
+ */
 
 inline constexpr size_t
 client_internal_field_index_space(size_t key) {
