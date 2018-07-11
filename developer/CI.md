@@ -11,6 +11,23 @@ Since Docker can integrate with tools like Travis-CI and GitHub, developers can 
 In our case, instead of Heroku, we have DockerHub.
 ![branchWorkflow](travis-workflow.png)
 
+## Setup Travis-CI for Ristra repo
+In order to have Travis-CI run up-to-date automated testing, we have to
+flatten the dependency chain insdie Ristra. 
+
+The flatten sequential stack chain:
+
+```flow
+env=>start: flecsi-buildenv
+third=>operation: flecsi-third-party
+flecsi=>operation: flecsi
+lib=>operation: libristra
+flecsi-sp=>operation: flecsi-sp
+flecsale=>operation: flecsale
+
+env->third->flecsi->lib->flecsi-sp->flecsale
+```
+
 ## Setup Github with Travis-CI
 
 1. Go to https://travis-ci.org/
@@ -157,6 +174,9 @@ docker build --build-arg BUILD_TYPE=${BUILD_TYPE}
 ${HOME}/docker/
 ```
 
+Instead of pulling the Docker image, we are building
+directly from the `docker/Dockerfile` in the root of repo.
+
 - Docker building:
  
   * `--build-arg`: Specifies the environment variables within
@@ -171,7 +191,9 @@ after_success:
     fi
 ``` 
 
-- If everything successfully build and run, by having the environment settings of `DOCKERHUB=true`, not a pull request and some other variables, Travis-CI will deploy the container to DockerHub
+- If everything successfully build and run and we are on the master branch, 
+by having the username and password, environment settings of
+`DOCKERHUB=true`, `TRAVIS_PULL_REQUEST=false` and the gcc compiler, Travis-CI will deploy the container to DockerHub
 
 ```
 compiler:
@@ -222,5 +244,67 @@ RUN make install
 
 WORKDIR /home/flecsi
 ```
+
+### Explaination:
+
+```
+FROM laristra/flecsi:fedora_serial
+```
+
+As discussed above, this is how we build up the sequential chain for
+Ristra repo CI testing
+
+```
+ARG CC
+ARG CXX
+ARG CXXFLAGS
+ARG BUILD_TYPE
+
+#for coverage
+ENV CI true
+ENV TRAVIS true
+ARG TRAVIS_BRANCH
+ARG TRAVIS_JOB_NUMBER
+ARG TRAVIS_PULL_REQUEST
+ARG TRAVIS_JOB_ID
+ARG TRAVIS_TAG
+ARG TRAVIS_REPO_SLUG
+ARG TRAVIS_COMMIT
+```
+
+- `ARG` handles the passed in argument variables from `--build-arg` [It is OK for the
+  values to be empty/null, but it is NOT OK to not handle them]
+- `ENV` 
+
+```
+COPY libristra/ /home/flecsi/libristra
+USER root
+RUN chown -R flecsi:flecsi /home/flecsi/libristra
+USER flecsi
+```
+
+- Get the files into the home directory and change to flecsi user
+
+```
+WORKDIR /home/flecsi/libristra
+RUN mkdir build
+WORKDIR build
+
+RUN cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          -DENABLE_UNIT_TESTS=ON \
+          ..
+RUN make -j2 || make VERBOSE=1
+RUN make test ARGS="CTEST_OUTPUT_ON_FAILURE=1"
+RUN make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
+
+USER root
+RUN make install
+
+WORKDIR /home/flecsi
+```
+
+- Make the build directory
+- Run `cmake` with the correct settings
+- Run `make`, `make test` and `make install`
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
