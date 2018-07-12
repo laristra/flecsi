@@ -34,13 +34,13 @@ compilers.
 
 # C++17 Library Features (Used by FleCSI)
 
-* **std::optional**
+* **std::optional**<br>
   This type allows more versatile state implementations.
 
-* **std::any**
+* **std::any**<br>
   This type allows us to remove our own implementation.
 
-* **std::invoke**
+* **std::invoke**<br>
   This library call allows us to remove our own implementation.
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
