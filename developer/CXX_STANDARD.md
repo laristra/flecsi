@@ -3,14 +3,14 @@
 # FleCSI C++ Standards Usage
 
 This document is intended to capture design patterns and specific code
-instances in FleCSI that depend on certain C++ language featuers that
+instances in FleCSI that depend on certain C++ language features that
 are only available after a particular standard, i.e., c++14, c++17, or
 c++2x. The goals that we are trying to achieve by documenting these
 features are to serve as requirements for ASC procurements, and in order
 to access our level of risk.
 
 This document will need to be updated  as C++ features are added, and as
-existing featues mature and are ubiquitously available in vendor
+existing features mature and are ubiquitously available in vendor
 compilers.
 
 # Current State
@@ -29,13 +29,14 @@ compilers.
 
 * **if constexpr**<br>
   Using *if constexpr* statements allows us to remove most, if not all,
-  instances of SFINAE. The reulting code is more readable and more
+  instances of SFINAE. The relating code is more readable and more
   clearly expresses intent.
 
 # C++17 Library Features (Used by FleCSI)
 
 * **std::optional**<br>
-  This type allows more versatile state implementations.
+  This type allows more versatile state implementations. The
+  *std::optional* type may or may not hold an object.
 
 * **std::any**<br>
   This type allows us to remove our own implementation.
