@@ -361,11 +361,19 @@ struct legion_execution_policy_t {
           future->add_future_to_single_task_launcher(task_launcher);
         }
 
-        // Enqueue the prolog.
+        // Enqueue the prolog for no-sparse case.
         task_prolog_t task_prolog(
             legion_runtime, legion_context, task_launcher);
+        task_prolog.sparse=false;
         task_prolog.walk(task_args);
         task_prolog.launch_copies();
+
+        // Enqueue the prolog for sparse data
+        task_prolog_t task_prolog_sparse(
+            legion_runtime, legion_context, task_launcher);
+        task_prolog_sparse.sparse=true;
+        task_prolog_sparse.walk(task_args);
+        task_prolog_sparse.launch_copies();
 
         // Enqueue the task.
         clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
