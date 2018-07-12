@@ -37,7 +37,7 @@
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Use const_string_t interface to create the key */                         \
-  flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()
+  ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()
 
 //----------------------------------------------------------------------------//
 //! @def __flecsi_internal_register_hpx_task
