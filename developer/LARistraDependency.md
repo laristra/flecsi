@@ -14,7 +14,7 @@
   different runtime environments using FleCSI's framework
 * ` portage-buildenv`: Portage's build environment using docker for Travis-CI
 * `tangram`: A framework for interface reconstruction in computational physics applications
-* `portage`:
+* `portage`: A framework for general purpose data remapping - between meshes, particles or meshes and particles - in computational physics applications.
 
 # LA Ristra Dependency Graph
 
