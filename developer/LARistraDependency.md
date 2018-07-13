@@ -1,3 +1,5 @@
+![logo](laristrachile.png)
+
 # LA Ristra Repo Summary
 
 * `flecsi-buildenv`: FleCSI's build environment using docker for Travis-CI
