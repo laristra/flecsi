@@ -23,7 +23,6 @@ set(utils_HEADERS
   bit_buffer.h
   checksum.h
   common.h
-  debruijn.h
   dimensioned_array.h
   export_definitions.h
   factory.h
@@ -54,7 +53,6 @@ set(utils_HEADERS
 #------------------------------------------------------------------------------#
 
 set(utils_SOURCES
-  debruijn.cc
 )
 
 #------------------------------------------------------------------------------#
@@ -321,14 +319,6 @@ cinch_add_unit(common
     RistraUtils
   INPUTS
     test/common.blessed.ppc test/common.blessed ${common_blessed_input}
-  FOLDER
-    "Tests/Util"
-)
-
-cinch_add_unit(debruijn
-  SOURCES
-    debruijn.cc
-    test/debruijn.cc
   FOLDER
     "Tests/Util"
 )
