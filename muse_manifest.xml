@@ -1,24 +1,24 @@
-<manifest alg="2" build="2018.1.0.386" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1531342909698">
+<manifest alg="2" build="2018.1.0.386" opt="false" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1531466366814">
   <folder name="css">
-    <file name="site_global.css" crc="3834109142"/>
-    <file name="master_main.css" crc="336909612" ref="documentation:projects:people:download:index"/>
-    <file name="documentation.css" crc="260401391" ref="documentation"/>
-    <file name="projects.css" crc="4269210313" ref="projects"/>
-    <file name="people.css" crc="406981452" ref="people"/>
-    <file name="iefonts_people.css" crc="4040181917" ref="people"/>
+    <file name="site_global.css" crc="3801055710"/>
+    <file name="master_main.css" crc="336909612" ref="index:download:documentation:people:projects"/>
+    <file name="index.css" crc="3963310615" ref="index"/>
     <file name="download.css" crc="4269210313" ref="download"/>
-    <file name="index.css" crc="155517322" ref="index"/>
+    <file name="documentation.css" crc="3961001231" ref="documentation"/>
+    <file name="people.css" crc="147617977" ref="people"/>
+    <file name="iefonts_people.css" crc="4040181917" ref="people"/>
+    <file name="projects.css" crc="4269210313" ref="projects"/>
   </folder>
   <folder name="assets">
-    <file name="flecsi-user-guide.pdf" crc="4080023803" seo="true" mt="1530377941000"/>
-    <file name="flecsi-developer-guide.pdf" crc="3788488316" seo="true" mt="1530377941000"/>
-    <file name="index.html" crc="3806516650" seo="true" mt="1531336434000"/>
+    <file name="flecsi-user-guide.pdf" crc="4080023803" seo="true" mt="1531351094000"/>
+    <file name="flecsi-developer-guide.pdf" crc="3788488316" seo="true" mt="1531351094000"/>
+    <file name="index.html" crc="3806516650" seo="true" mt="1531351094000"/>
   </folder>
   <folder name="scripts">
     <file name="jquery-1.8.3.min.js" crc="209076791" ref="index:people:documentation:download:projects"/>
     <file name="museutils.js" crc="340535759" ref="index:people:documentation:download:projects"/>
     <file name="whatinput.js" crc="86476730" ref="index:people:documentation:download:projects"/>
-    <file name="museconfig.js" crc="310584261" ref="index:people:documentation:download:projects"/>
+    <file name="museconfig.js" crc="4286661555" ref="index:people:documentation:download:projects"/>
     <file name="jquery.watch.js" crc="51536988" ref="index:people:documentation:download:projects"/>
     <file name="jquery.musemenu.js" crc="510910590" ref="index:people:documentation:download:projects"/>
     <file name="html5shiv.js" crc="4241844378" ref="index:people:documentation:download:projects"/>
@@ -31,34 +31,34 @@
   <folder name="images">
     <file name="flecsi.png" crc="142940395" seo="true" ref="index:people:documentation:download:projects">
       <caption webpage="index" alt=""/>
-      <caption webpage="documentation" alt=""/>
-      <caption webpage="download" alt=""/>
       <caption webpage="people" alt=""/>
       <caption webpage="projects" alt=""/>
+      <caption webpage="documentation" alt=""/>
+      <caption webpage="download" alt=""/>
     </file>
     <file name="pasted image 229x378.jpg" crc="3793699467" seo="true" ref="index">
       <caption webpage="index" alt=""/>
     </file>
     <file name="ecp_logo.png" crc="3889968369" seo="true" ref="index:people:documentation:download:projects">
       <caption webpage="index" alt=""/>
-      <caption webpage="documentation" alt=""/>
-      <caption webpage="download" alt=""/>
       <caption webpage="people" alt=""/>
       <caption webpage="projects" alt=""/>
+      <caption webpage="documentation" alt=""/>
+      <caption webpage="download" alt=""/>
     </file>
     <file name="1200px-nnsa_logo.png" crc="63578105" seo="true" ref="index:people:documentation:download:projects">
       <caption webpage="index" alt=""/>
-      <caption webpage="documentation" alt=""/>
-      <caption webpage="download" alt=""/>
       <caption webpage="people" alt=""/>
       <caption webpage="projects" alt=""/>
+      <caption webpage="documentation" alt=""/>
+      <caption webpage="download" alt=""/>
     </file>
     <file name="los-alamos-lab-logo-white.png" crc="4105952716" seo="true" ref="index:people:documentation:download:projects">
       <caption webpage="index" alt=""/>
-      <caption webpage="documentation" alt=""/>
-      <caption webpage="download" alt=""/>
       <caption webpage="people" alt=""/>
       <caption webpage="projects" alt=""/>
+      <caption webpage="documentation" alt=""/>
+      <caption webpage="download" alt=""/>
     </file>
     <file name="ben-1.jpg" crc="3797761144" seo="true" ref="people">
       <caption webpage="people" alt=""/>
@@ -80,20 +80,33 @@
     <file name="person-placeholder-crop-u1012.jpg" crc="414403692" seo="true" ref="people">
       <caption webpage="people" alt=""/>
     </file>
+    <file name="di160405.jpg" crc="476329617" seo="true" ref="people">
+      <caption webpage="people" alt=""/>
+      <caption webpage="people" alt=""/>
+    </file>
     <file name="oleg.jpg" crc="148341115" seo="true" ref="people">
       <caption webpage="people" alt=""/>
+      <caption webpage="people" alt=""/>
+    </file>
+    <file name="nick_photo-crop-u1364.jpg" crc="4220861833" seo="true" ref="people">
       <caption webpage="people" alt=""/>
     </file>
     <file name="person-placeholder-crop-u1385.jpg" crc="414403692" seo="true" ref="people">
       <caption webpage="people" alt=""/>
     </file>
+    <file name="no-more-beer-crop-u1057.jpg" crc="4275359086" seo="true" ref="people">
+      <caption webpage="people" alt=""/>
+    </file>
     <file name="person-placeholder-crop-u1336.jpg" crc="414403692" seo="true" ref="people">
+      <caption webpage="people" alt=""/>
+    </file>
+    <file name="lippuner_340x440_light-crop-u1343.jpg" crc="272334790" seo="true" ref="people">
       <caption webpage="people" alt=""/>
     </file>
     <file name="person-placeholder-crop-u1371.jpg" crc="414403692" seo="true" ref="people">
       <caption webpage="people" alt=""/>
     </file>
-    <file name="person-placeholder-crop-u1392.jpg" crc="414403692" seo="true" ref="people">
+    <file name="tsai-crop-u1392.jpg" crc="10516012" seo="true" ref="people">
       <caption webpage="people" alt=""/>
     </file>
     <file name="person-placeholder.jpg" crc="3927484652" seo="true" ref="people">
@@ -104,34 +117,23 @@
       <caption webpage="people" alt=""/>
       <caption webpage="people" alt=""/>
       <caption webpage="people" alt=""/>
-      <caption webpage="people" alt=""/>
     </file>
-    <file name="lippuner_340x440_light-crop-u1343.jpg" crc="272334790" seo="true" ref="people">
+    <file name="no-more-beer-crop-u1064.jpg" crc="3758262201" seo="true" ref="people">
       <caption webpage="people" alt=""/>
     </file>
     <file name="lippuner_340x440_light.jpg" crc="379072363" seo="true" ref="people">
       <caption webpage="people" alt=""/>
     </file>
-    <file name="di160405.jpg" crc="476329617" seo="true" ref="people">
-      <caption webpage="people" alt=""/>
-      <caption webpage="people" alt=""/>
-    </file>
-    <file name="nick_photo-crop-u1364.jpg" crc="4220861833" seo="true" ref="people">
-      <caption webpage="people" alt=""/>
-    </file>
     <file name="nick_photo.jpg" crc="4271196466" seo="true" ref="people">
       <caption webpage="people" alt=""/>
     </file>
-    <file name="no-more-beer-crop-u1057.jpg" crc="4275359086" seo="true" ref="people">
-      <caption webpage="people" alt=""/>
-    </file>
-    <file name="no-more-beer-crop-u1064.jpg" crc="3758262201" seo="true" ref="people">
+    <file name="tsai143x143.jpg" crc="370862865" seo="true" ref="people">
       <caption webpage="people" alt=""/>
     </file>
   </folder>
-  <file name="index.html" crc="3806516650" seo="true" mt="1531327919811" redirect="true"/>
-  <file name="people.html" crc="216966945" seo="true" mt="1531342731995" redirect="true"/>
-  <file name="documentation.html" crc="280803502" seo="true" mt="1531327919811" redirect="true"/>
-  <file name="download.html" crc="191370733" seo="true" mt="1531327919811" redirect="true"/>
-  <file name="projects.html" crc="4041302407" seo="true" mt="1531327919811" redirect="true"/>
+  <file name="index.html" crc="288099030" seo="true" mt="1531466183327" redirect="true"/>
+  <file name="people.html" crc="4124812307" seo="true" mt="1531466183327" redirect="true"/>
+  <file name="documentation.html" crc="3972072850" seo="true" mt="1531466183327" redirect="true"/>
+  <file name="download.html" crc="349615337" seo="true" mt="1531466183327" redirect="true"/>
+  <file name="projects.html" crc="172668379" seo="true" mt="1531466183327" redirect="true"/>
 </manifest>

@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://laristra.github.io/flecsi/index.html</loc>
-    <lastmod>2018-07-11</lastmod>
+    <lastmod>2018-07-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <image:image>
@@ -23,7 +23,7 @@
   </url>
   <url>
     <loc>https://laristra.github.io/flecsi/people.html</loc>
-    <lastmod>2018-07-11</lastmod>
+    <lastmod>2018-07-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <image:image>
@@ -57,48 +57,51 @@
       <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1012.jpg</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://laristra.github.io/flecsi/images/oleg.jpg</image:loc>
-    </image:image>
-    <image:image>
-      <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1385.jpg</image:loc>
-    </image:image>
-    <image:image>
-      <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1336.jpg</image:loc>
-    </image:image>
-    <image:image>
-      <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1371.jpg</image:loc>
-    </image:image>
-    <image:image>
-      <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1392.jpg</image:loc>
-    </image:image>
-    <image:image>
-      <image:loc>https://laristra.github.io/flecsi/images/person-placeholder.jpg</image:loc>
-    </image:image>
-    <image:image>
-      <image:loc>https://laristra.github.io/flecsi/images/lippuner_340x440_light-crop-u1343.jpg</image:loc>
-    </image:image>
-    <image:image>
-      <image:loc>https://laristra.github.io/flecsi/images/lippuner_340x440_light.jpg</image:loc>
-    </image:image>
-    <image:image>
       <image:loc>https://laristra.github.io/flecsi/images/di160405.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/oleg.jpg</image:loc>
     </image:image>
     <image:image>
       <image:loc>https://laristra.github.io/flecsi/images/nick_photo-crop-u1364.jpg</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://laristra.github.io/flecsi/images/nick_photo.jpg</image:loc>
+      <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1385.jpg</image:loc>
     </image:image>
     <image:image>
       <image:loc>https://laristra.github.io/flecsi/images/no-more-beer-crop-u1057.jpg</image:loc>
     </image:image>
     <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1336.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/lippuner_340x440_light-crop-u1343.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1371.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/tsai-crop-u1392.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/person-placeholder.jpg</image:loc>
+    </image:image>
+    <image:image>
       <image:loc>https://laristra.github.io/flecsi/images/no-more-beer-crop-u1064.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/lippuner_340x440_light.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/nick_photo.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/tsai143x143.jpg</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://laristra.github.io/flecsi/documentation.html</loc>
-    <lastmod>2018-07-11</lastmod>
+    <lastmod>2018-07-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <image:image>
@@ -116,7 +119,7 @@
   </url>
   <url>
     <loc>https://laristra.github.io/flecsi/download.html</loc>
-    <lastmod>2018-07-11</lastmod>
+    <lastmod>2018-07-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <image:image>
@@ -134,7 +137,7 @@
   </url>
   <url>
     <loc>https://laristra.github.io/flecsi/projects.html</loc>
-    <lastmod>2018-07-11</lastmod>
+    <lastmod>2018-07-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <image:image>
@@ -152,13 +155,13 @@
   </url>
   <url>
     <loc>https://laristra.github.io/flecsi/assets/flecsi-user-guide.pdf</loc>
-    <lastmod>2018-06-30</lastmod>
+    <lastmod>2018-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://laristra.github.io/flecsi/assets/flecsi-developer-guide.pdf</loc>
-    <lastmod>2018-06-30</lastmod>
+    <lastmod>2018-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
