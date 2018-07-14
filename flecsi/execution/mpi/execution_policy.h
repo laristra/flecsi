@@ -23,11 +23,11 @@
 
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/execution/mpi/task_wrapper.h>
 #include <flecsi/execution/mpi/task_prolog.h>
 #include <flecsi/execution/mpi/task_epilog.h>
 #include <flecsi/execution/mpi/finalize_handles.h>
 #include <flecsi/execution/mpi/future.h>
+#include <flecsi/execution/mpi/reduction_wrapper.h>
 
 namespace flecsi {
 namespace execution {
@@ -114,12 +114,6 @@ struct mpi_execution_policy_t
   template<typename RETURN, launch_type_t launch>
   using future__ = mpi_future__<RETURN, launch>;
 
-  template<
-    typename FUNCTOR_TYPE
-  >
-  using functor_task_wrapper__ =
-    typename flecsi::execution::functor_task_wrapper__<FUNCTOR_TYPE>;
-
   /*!
    The runtime_state_t type identifies a public type for the high-level
    runtime interface to pass state required by the backend.
@@ -193,7 +187,8 @@ struct mpi_execution_policy_t
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
 
-    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, std::forward<ARG_TUPLE>(task_args));
+    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun,
+      std::forward<ARG_TUPLE>(task_args));
 
     task_epilog_t task_epilog;
     task_epilog.walk(task_args);
@@ -203,6 +198,25 @@ struct mpi_execution_policy_t
 
     return fut;
   } // execute_task
+
+  //--------------------------------------------------------------------------//
+  // Reduction interface.
+  //--------------------------------------------------------------------------//
+
+  /*!
+   MPI backend reduction registration. For documentation on this
+   method please see task__::register_reduction_operation.
+   */
+
+  template<
+    size_t NAME,
+    typename OPERATION>
+  static
+  bool
+  register_reduction_operation()
+  {
+    using wrapper_t = reduction_wrapper__<NAME, OPERATION>;
+  } // register_reduction_operation
 
   //--------------------------------------------------------------------------//
   // Function interface.

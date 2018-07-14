@@ -131,10 +131,11 @@ struct legion_execution_policy_t {
       RETURN (*DELEGATE)(ARG_TUPLE)>
   static bool
   register_task(processor_type_t processor, launch_t launch, std::string name) {
+
     using wrapper_t = task_wrapper__<KEY, RETURN, ARG_TUPLE, DELEGATE>;
 
-    if (!context_t::instance().register_task(
-            KEY, processor, launch, name, wrapper_t::registration_callback)) {
+    if(!context_t::instance().register_task(KEY, processor, launch, name,
+      wrapper_t::registration_callback)) {
       clog(fatal) << "callback registration failed for " << name << std::endl;
     } // if
 
