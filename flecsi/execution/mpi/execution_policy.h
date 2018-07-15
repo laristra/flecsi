@@ -216,6 +216,9 @@ struct mpi_execution_policy_t
   register_reduction_operation()
   {
     using wrapper_t = reduction_wrapper__<NAME, OPERATION>;
+
+    return context_t::instance().register_reduction_operation(NAME,
+      wrapper_t::registration_callback);
   } // register_reduction_operation
 
   //--------------------------------------------------------------------------//

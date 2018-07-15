@@ -21,6 +21,7 @@
 #include <flecsi/data/sparse_accessor.h>
 #include <flecsi/data/sparse_mutator.h>
 #include <flecsi/data/ragged_mutator.h>
+#include <flecsi/utils/mpi_type_traits.h>
 
 namespace flecsi {
 namespace execution {
@@ -144,7 +145,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
       for (auto peer : shared.shared) {
         MPI_Isend(&send_count_buf[i],
                   1,
-                  flecsi::coloring::mpi_typetraits__<uint32_t>::type(),
+                  flecsi::utils::mpi_typetraits__<uint32_t>::type(),
                   peer, 99, MPI_COMM_WORLD, &requests[i]);
         i++;
       }
@@ -156,7 +157,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
       MPI_Status status;
       MPI_Irecv(&recv_count_buf[i],
                 1,
-                flecsi::coloring::mpi_typetraits__<uint32_t>::type(),
+                flecsi::utils::mpi_typetraits__<uint32_t>::type(),
                 ghost.rank, 99, MPI_COMM_WORLD, &recv_requests[i]);
       i++;
     }

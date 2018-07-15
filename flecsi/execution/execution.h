@@ -446,7 +446,7 @@ clog_register_tag(execution);
                                                                                \
   inline bool name##_reduction_operation_registered =                          \
       flecsi::execution::task_interface_t::register_reduction_operation<       \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)},           \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
           operation_type>()
 
 //----------------------------------------------------------------------------//

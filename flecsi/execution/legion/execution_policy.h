@@ -34,6 +34,7 @@
 #include <flecsi/execution/legion/future.h>
 #include <flecsi/execution/legion/init_args.h>
 #include <flecsi/execution/legion/runtime_state.h>
+#include <flecsi/execution/legion/reduction_wrapper.h>
 #include <flecsi/execution/legion/task_epilog.h>
 #include <flecsi/execution/legion/task_prolog.h>
 #include <flecsi/execution/legion/task_wrapper.h>
@@ -428,6 +429,28 @@ struct legion_execution_policy_t {
         context_t::instance().function(handle.get_key()),
         std::forward_as_tuple(args...));
   } // execute_function
+
+  //--------------------------------------------------------------------------//
+  // Reduction interface.
+  //--------------------------------------------------------------------------//
+
+  /*!
+   Legion backend reduction registration. For documentation on this
+   method please see task__::register_reduction_operation.
+   */
+
+  template<
+    size_t NAME,
+    typename OPERATION>
+  static
+  bool
+  register_reduction_operation()
+  {
+    using wrapper_t = reduction_wrapper__<NAME, OPERATION>;
+
+    return context_t::instance().register_reduction_operation(NAME,
+      wrapper_t::registration_callback);
+  } // register_reduction_operation
 
 }; // struct legion_execution_policy_t
 

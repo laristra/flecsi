@@ -24,7 +24,7 @@
 #include <mpi.h>
 
 namespace flecsi {
-namespace coloring {
+namespace utils {
 
 /*!
  Wrapper to convert from C++ types to MPI types.
@@ -60,9 +60,51 @@ struct mpi_typetraits__<size_t> {
 }; // mpi_typetraits__
 
 template<>
+struct mpi_typetraits__<char> {
+  inline static MPI_Datatype type() {
+    return MPI_SIGNED_CHAR;
+  }
+}; // mpi_typetraits__
+
+template<>
+struct mpi_typetraits__<unsigned char> {
+  inline static MPI_Datatype type() {
+    return MPI_UNSIGNED_CHAR;
+  }
+}; // mpi_typetraits__
+
+template<>
+struct mpi_typetraits__<short> {
+  inline static MPI_Datatype type() {
+    return MPI_SHORT;
+  }
+}; // mpi_typetraits__
+
+template<>
+struct mpi_typetraits__<unsigned short> {
+  inline static MPI_Datatype type() {
+    return MPI_UNSIGNED_SHORT;
+  }
+}; // mpi_typetraits__
+
+template<>
 struct mpi_typetraits__<int> {
   inline static MPI_Datatype type() {
     return MPI_INT;
+  }
+}; // mpi_typetraits__
+
+template<>
+struct mpi_typetraits__<unsigned> {
+  inline static MPI_Datatype type() {
+    return MPI_UNSIGNED;
+  }
+}; // mpi_typetraits__
+
+template<>
+struct mpi_typetraits__<long> {
+  inline static MPI_Datatype type() {
+    return MPI_LONG;
   }
 }; // mpi_typetraits__
 
@@ -73,5 +115,19 @@ struct mpi_typetraits__<double> {
   }
 }; // mpi_typetraits__
 
-} // namespace coloring
+template<>
+struct mpi_typetraits__<float> {
+  inline static MPI_Datatype type() {
+    return MPI_FLOAT;
+  }
+}; // mpi_typetraits__
+
+template<>
+struct mpi_typetraits__<long double> {
+  inline static MPI_Datatype type() {
+    return MPI_LONG_DOUBLE;
+  }
+}; // mpi_typetraits__
+
+} // namespace utils
 } // namespace flecsi

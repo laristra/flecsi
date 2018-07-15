@@ -112,9 +112,6 @@ struct task_interface__ {
     typename OPERATION>
   static decltype(auto)
   register_reduction_operation() {
-
-    // FIXME: Add static check of OPERATION type
-
     return EXECUTION_POLICY::template register_reduction_operation<
       NAME, OPERATION>();
   } // register_reduction_operation

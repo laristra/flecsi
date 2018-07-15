@@ -133,6 +133,22 @@ struct context__ : public CONTEXT_POLICY {
   tlt_driver_t const & top_level_driver() const { return tlt_driver_; }
 
   //--------------------------------------------------------------------------//
+  // Reduction interface.
+  //--------------------------------------------------------------------------//
+
+  bool register_reduction_operation(size_t key,
+    const std::function<void()> & callback) {
+    reduction_registry_[key] = callback;
+    return true;
+  } // register_reduction_operation
+
+  std::map<size_t, std::function<void()>> & reduction_registry() {
+    return reduction_registry_;
+  } // reduction_registry
+
+  std::map<size_t, std::function<void()>> reduction_registry_;
+
+  //--------------------------------------------------------------------------//
   // Object interface.
   //--------------------------------------------------------------------------//
 

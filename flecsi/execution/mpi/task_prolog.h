@@ -28,7 +28,6 @@
 #include <flecsi/data/sparse_accessor.h>
 #include <flecsi/data/sparse_mutator.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/coloring/mpi_utils.h>
 
 namespace flecsi {
 namespace execution {

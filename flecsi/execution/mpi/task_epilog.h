@@ -33,7 +33,7 @@
 #include <flecsi/data/data.h>
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/coloring/mpi_utils.h>
+#include <flecsi/utils/mpi_type_traits.h>
 
 namespace flecsi {
 namespace execution {
@@ -132,7 +132,7 @@ namespace execution {
 
         auto &context = context_t::instance();
         const int my_color = context.color();
-        MPI_Bcast(&a.data(), 1, flecsi::coloring::mpi_typetraits__<T>::type(),
+        MPI_Bcast(&a.data(), 1, flecsi::utils::mpi_typetraits__<T>::type(),
 	0,
         MPI_COMM_WORLD); 
     } // handle
@@ -240,7 +240,7 @@ namespace execution {
         for (auto peer : shared.shared) {
           MPI_Isend(&send_count_buf[i],
                     1,
-                    flecsi::coloring::mpi_typetraits__<uint32_t>::type(),
+                    flecsi::utils::mpi_typetraits__<uint32_t>::type(),
                     peer, shared.id, MPI_COMM_WORLD, &requests[i]);
           i++;
         }
@@ -252,7 +252,7 @@ namespace execution {
         MPI_Status status;
         MPI_Irecv(&recv_count_buf[i],
                   1,
-                  flecsi::coloring::mpi_typetraits__<uint32_t>::type(),
+                  flecsi::utils::mpi_typetraits__<uint32_t>::type(),
                   ghost.rank, ghost.id, MPI_COMM_WORLD, &requests[i+send_count]);
         i++;
       }

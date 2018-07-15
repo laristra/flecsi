@@ -597,6 +597,10 @@ struct legion_context_policy_t {
     return legion_future__<T, launch_type_t::single>(global_future);
   }
 
+  std::map<size_t, size_t> reduction_ops() {
+    return reduction_ops_;
+  } // reduction_ops
+
   /*!
     Compute internal field id for from/to index space pair for connectivity.
     @param from_index_space from index space
@@ -628,6 +632,12 @@ private:
   //--------------------------------------------------------------------------//
 
   std::unordered_map<size_t, void *> function_registry_;
+
+  //--------------------------------------------------------------------------//
+  // Reduction operations.
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, size_t> reduction_ops_;
 
   //--------------------------------------------------------------------------//
   // Legion data members.

@@ -17,7 +17,12 @@
 
 #include <cinchlog.h>
 
-clog_register_tag(wrapper);
+#include <type_traits>
+
+#include <flecsi/execution/context.h>
+#include <flecsi/utils/mpi_type_traits.h>
+
+clog_register_tag(reduction_wrapper);
 
 namespace flecsi {
 namespace execution {
@@ -28,30 +33,83 @@ template<
 >
 struct reduction_wrapper__ {
 
+  using rhs_t = typename OPERATION::RHS;
+  using lhs_t = typename OPERATION::LHS;
+
+  // MPI does not have support for mixed-type reductions
+  static_assert(std::is_same_v<lhs_t, rhs_t>, "type mismatch: LHS != RHS");
+
+  /*!
+    Wrapper to convert the type-erased MPI function to the typed C++ method.
+   */
+
+  static void mpi_wrapper(void * in, void * inout, int * len,
+    MPI_Datatype * dptr) {
+
+    lhs_t * lhs = reinterpret_cast<lhs_t *>(inout);
+    rhs_t * rhs = reinterpret_cast<rhs_t *>(in);
+
+    for(size_t i{0}; i<*len; ++i) {
+      OPERATION::apply(lhs[i], rhs[i]);
+    } // for
+  } // mpi_wrapper
+
+  /*!
+    Register the user-defined reduction operator with the runtime.
+   */
+
   static void registration_callback()
   {
     {
+    clog_tag_guard(reduction_wrapper);
     clog(info) << "Executing reduction wrapper callback for " << NAME <<
       std::endl;
     } // scope
 
-    // Based on the Legion model:
-    // OPERATION::LHS
-    // OPERATION::RHS
-    // OPERATION::identity
-    // static void apply(LHS & lhs, RHS rhs)
-    // static void fold(LHS & lhs, RHS rhs) (optional)
+    // Get the runtime context
+    auto & context_ = context_t::instance();
 
-    // MPI needs to commit the data type if it doesn't exist (We may
-    // be able to use type-erasure, i.e., MPI_BYTE)
+    // Get a reference to the operator map
+    auto & reduction_ops = context_.reduction_ops();
+    
+    // Check if operator has already been registered
+    clog_assert(reduction_ops.find(NAME) == reduction_ops.end(),
+      typeid(OPERATION).name() <<
+      " has already been registered with this name");
 
-    // MPI needs to create the operation: MPI_Op_create
-    // arguments: function (pointer to function), int commute (boolean)
-    // op (reference to fill)
+    // Retrieve or create the MPI data type
+    MPI_Datatype datatype;
+    if constexpr(std::is_pod_v<lhs_t> && std::is_pod_v<rhs_t>) {
+      // Get the MPI type
+      datatype = utils::mpi_typetraits__<lhs_t>::type();
+    }
+    else {
+      // Get the datatype map from the context
+      auto & reduction_types = context_.reduction_types();
 
-    // State registration may look something like this:
-    // context_.register_reduction_operation(NAME, mpi_op, mpi_datatype)
+      // Get a hash from the runtime type information
+      size_t typehash = typeid(lhs_t).hash_code();
 
+      // Search for this type...
+      auto dtype = reduction_types.find(typehash);
+
+      if(dtype != reduction_types.end()) {
+        // Use the already-defined type
+        datatype = dtype->second;
+      }
+      else {
+        // Add the MPI type if it doesn't exist
+        constexpr size_t datatype_size = sizeof(typename OPERATION::RHS);
+        MPI_Type_contiguous(datatype_size, MPI_BYTE, &datatype);
+        MPI_Type_commit(&datatype);
+        reduction_types[typehash] = datatype;
+      } // if
+    } // if
+
+    // Create the operator and register it with the runtime
+    MPI_Op mpiop;
+    MPI_Op_create(mpi_wrapper, true, &mpiop);
+    reduction_ops[NAME] = mpiop;
   } // registration_callback
 
 }; // struct reduction_wrapper__
