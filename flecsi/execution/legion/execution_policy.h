@@ -55,6 +55,7 @@ namespace execution {
  */
 
 struct legion_execution_policy_t {
+
   /*!
     The future__ type may be used for explicit synchronization of tasks.
 
@@ -98,20 +99,25 @@ struct legion_execution_policy_t {
    */
 
   template<
-      size_t KEY,
-      typename RETURN,
-      RETURN (*TASK)(
-          const Legion::Task *,
-          const std::vector<Legion::PhysicalRegion> &,
-          Legion::Context,
-          Legion::Runtime *)>
-  static bool register_legion_task(
-      processor_type_t processor,
-      launch_t launch,
-      std::string name) {
+    size_t KEY,
+    typename RETURN,
+    RETURN (*TASK)(
+      const Legion::Task *,
+      const std::vector<Legion::PhysicalRegion> &,
+      Legion::Context,
+      Legion::Runtime *
+    )
+  >
+  static bool
+  register_legion_task(
+    processor_type_t processor,
+    launch_t launch,
+    std::string name
+  )
+  {
     clog(info) << "Registering legion task " << KEY << " " << name << std::endl;
 
-    if (!context_t::instance().register_task(
+    if(!context_t::instance().register_task(
             KEY, processor, launch, name,
             pure_task_wrapper__<RETURN, TASK>::registration_callback)) {
       clog(fatal) << "callback registration failed for " << name << std::endl;
@@ -317,7 +323,9 @@ struct legion_execution_policy_t {
       KEY,
       RETURN,
       ARG_TUPLE,
-      ARGS...> {
+      ARGS...
+    >
+    {
     static decltype(auto) execute(ARG_TUPLE task_args) {
       using namespace Legion;
 

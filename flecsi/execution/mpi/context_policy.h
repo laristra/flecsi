@@ -45,10 +45,9 @@ namespace flecsi {
 namespace execution {
 
 /*!
- The mpi_context_policy_t is the backend runtime context policy for
- MPI.
+  The mpi_context_policy_t is the backend runtime context policy for MPI.
 
- @ingroup mpi-execution
+  @ingroup mpi-execution
  */
 
 struct mpi_context_policy_t
@@ -109,14 +108,14 @@ struct mpi_context_policy_t
   };
 
   /*!
-   FleCSI context initialization. This method initializes the FleCSI
-   runtime using MPI.
+    FleCSI context initialization. This method initializes the FleCSI
+    runtime using MPI.
   
-   @param argc The command-line argument count passed from main.
-   @param argv The command-line argument values passed from main.
+    @param argc The command-line argument count passed from main.
+    @param argv The command-line argument values passed from main.
   
-   @return An integer value with a non-zero error code upon failure,
-           zero otherwise.
+    @return An integer value with a non-zero error code upon failure,
+            zero otherwise.
    */
 
   int
