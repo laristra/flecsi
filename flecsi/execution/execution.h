@@ -125,11 +125,10 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   inline bool registered_global_object_##nspace##_##index =                    \
-      flecsi::execution::context_t::instance()                                 \
-          .template register_global_object<                                    \
-              flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}      \
-                  .hash(),                                                     \
-              index, type>();
+    flecsi::execution::context_t::instance()                                   \
+      .template register_global_object<                                        \
+        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),    \
+        index, type>();
 
 /*!
   @def flecsi_set_global_object
@@ -151,9 +150,9 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi::execution::context_t::instance()                                     \
-      .template set_global_object<                                             \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          type>(index, obj);
+    .template set_global_object<                                               \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      type>(index, obj);
 
 /*!
   @def flecsi_initialize_global_object
@@ -175,9 +174,9 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi::execution::context_t::instance()                                     \
-      .template initialize_global_object<                                      \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          type>(index, ##__VA_ARGS__);
+    .template initialize_global_object<                                        \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      type>(index, ##__VA_ARGS__);
 
 /*!
   @def flecsi_get_global_object
@@ -195,9 +194,9 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi::execution::context_t::instance()                                     \
-      .template get_global_object<                                             \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          type>(index);
+    .template get_global_object<                                               \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      type>(index);
 
 //----------------------------------------------------------------------------//
 // Task Registration Interface
@@ -228,17 +227,17 @@ clog_register_tag(execution);
   /* necessary because we cannot infer the argument type without using */      \
   /* a tuple. */                                                               \
   inline __flecsi_internal_return_type(task)                                   \
-      task##_tuple_delegate(__flecsi_internal_arguments_type(task) args) {     \
+    task##_tuple_delegate(__flecsi_internal_arguments_type(task) args) {       \
     return flecsi::utils::tuple_function(task, args);                          \
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
   inline bool task##_task_registered =                                         \
-      flecsi::execution::task_interface_t::register_task<                      \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
-          __flecsi_internal_return_type(task),                                 \
-          __flecsi_internal_arguments_type(task), task##_tuple_delegate>(      \
-          flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(task)})
+    flecsi::execution::task_interface_t::register_task<                        \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+      __flecsi_internal_return_type(task),                                     \
+      __flecsi_internal_arguments_type(task), task##_tuple_delegate>(          \
+      flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(task)})
 
 /*!
   @def flecsi_register_task
@@ -264,19 +263,18 @@ clog_register_tag(execution);
   /* necessary because we cannot infer the argument type without using */      \
   /* a tuple. */                                                               \
   inline __flecsi_internal_return_type(task)                                   \
-      task##_tuple_delegate(__flecsi_internal_arguments_type(task) args) {     \
+    task##_tuple_delegate(__flecsi_internal_arguments_type(task) args) {       \
     return flecsi::utils::tuple_function(task, args);                          \
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
   inline bool task##_task_registered =                                         \
-      flecsi::execution::task_interface_t::register_task<                      \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::task)}    \
-              .hash(),                                                         \
-          __flecsi_internal_return_type(task),                                 \
-          __flecsi_internal_arguments_type(task), task##_tuple_delegate>(      \
-          flecsi::processor, flecsi::launch,                                   \
-          {EXPAND_AND_STRINGIFY(nspace::task)})
+    flecsi::execution::task_interface_t::register_task<                        \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::task)}        \
+        .hash(),                                                               \
+      __flecsi_internal_return_type(task),                                     \
+      __flecsi_internal_arguments_type(task), task##_tuple_delegate>(          \
+      flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(nspace::task)})
 
 /*!
   @def flecsi_register_mpi_task_simple
@@ -362,10 +360,10 @@ clog_register_tag(execution);
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_interface_t::execute_task<                           \
-      flecsi::execution::launch_type_t::launch,                                \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
-      __flecsi_internal_return_type(task),                                     \
-      __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
+    flecsi::execution::launch_type_t::launch,                                  \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),          \
+    __flecsi_internal_return_type(task),                                       \
+    __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
 
 /*!
   @def flecsi_execute_task
@@ -445,9 +443,9 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   inline bool name##_reduction_operation_registered =                          \
-      flecsi::execution::task_interface_t::register_reduction_operation<       \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-          operation_type>()
+    flecsi::execution::task_interface_t::register_reduction_operation<         \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
+      operation_type>()
 
 //----------------------------------------------------------------------------//
 // Function Interface
@@ -472,21 +470,21 @@ clog_register_tag(execution);
   /* necessary because we cannot infer the argument type without using */      \
   /* a tuple. */                                                               \
   inline __flecsi_internal_return_type(func)                                   \
-      func##_tuple_delegate(__flecsi_internal_arguments_type(func) args) {     \
+    func##_tuple_delegate(__flecsi_internal_arguments_type(func) args) {       \
     return flecsi::utils::tuple_function(func, args);                          \
   } /* delegate func */                                                        \
                                                                                \
-  using function_handle_##func##_t = flecsi::execution::function_handle__<     \
-      __flecsi_internal_return_type(func),                                     \
+  using function_handle_##func##_t =                                           \
+    flecsi::execution::function_handle__<__flecsi_internal_return_type(func),  \
       __flecsi_internal_arguments_type(func)>;                                 \
                                                                                \
   /* Call the execution policy to register the function delegate */            \
   inline bool func##_func_registered =                                         \
-      flecsi::execution::function_interface_t::register_function<              \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}    \
-              .hash(),                                                         \
-          __flecsi_internal_return_type(func),                                 \
-          __flecsi_internal_arguments_type(func), func##_tuple_delegate>()
+    flecsi::execution::function_interface_t::register_function<                \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}        \
+        .hash(),                                                               \
+      __flecsi_internal_return_type(func),                                     \
+      __flecsi_internal_arguments_type(func), func##_tuple_delegate>()
 
 /*!
   @def flecsi_execute_function
@@ -504,7 +502,7 @@ clog_register_tag(execution);
                                                                                \
   /* Call the execution policy to execute the function */                      \
   flecsi::execution::function_interface_t::execute_function(                   \
-      handle, ##__VA_ARGS__)
+    handle, ##__VA_ARGS__)
 
 /*!
   @def flecsi_function_handle
@@ -521,8 +519,7 @@ clog_register_tag(execution);
                                                                                \
   /* Create a function handle instance */                                      \
   nspace::function_handle_##func##_t(                                          \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}        \
-          .hash())
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}.hash())
 
 /*!
   @def flecsi_define_function_type
@@ -540,5 +537,5 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Define a function handle type */                                          \
-  using func = flecsi::execution::function_handle__<                           \
-      return_type, std::tuple<__VA_ARGS__>>
+  using func =                                                                 \
+    flecsi::execution::function_handle__<return_type, std::tuple<__VA_ARGS__>>

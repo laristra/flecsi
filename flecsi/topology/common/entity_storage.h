@@ -25,7 +25,8 @@ namespace topology {
 template<typename T>
 using topology_storage__ = array_buffer__<T>;
 
-class offset_storage_ {
+class offset_storage_
+{
 public:
   using offset_t = utils::offset_t;
 
@@ -71,9 +72,11 @@ private:
 };
 
 template<typename T>
-class identity_storage__ {
+class identity_storage__
+{
 public:
-  class iterator {
+  class iterator
+  {
   public:
     iterator(simple_id i) : i_(i) {}
 

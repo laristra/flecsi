@@ -29,13 +29,13 @@ namespace execution {
 
 template<typename FT, int N, typename T = long long>
 using AccessorRO =
-    Legion::FieldAccessor<READ_ONLY, FT, N, T, Realm::AffineAccessor<FT, N, T>>;
+  Legion::FieldAccessor<READ_ONLY, FT, N, T, Realm::AffineAccessor<FT, N, T>>;
 template<typename FT, int N, typename T = long long>
 using AccessorWO = Legion::
-    FieldAccessor<WRITE_DISCARD, FT, N, T, Realm::AffineAccessor<FT, N, T>>;
+  FieldAccessor<WRITE_DISCARD, FT, N, T, Realm::AffineAccessor<FT, N, T>>;
 template<typename FT, int N, typename T = long long>
-using AccessorRW = Legion::
-    FieldAccessor<READ_WRITE, FT, N, T, Realm::AffineAccessor<FT, N, T>>;
+using AccessorRW =
+  Legion::FieldAccessor<READ_WRITE, FT, N, T, Realm::AffineAccessor<FT, N, T>>;
 
 /*!
   The Legion helper class define a number of convenience methods for handling
@@ -46,34 +46,34 @@ using AccessorRW = Legion::
 class legion_helper {
 public:
   legion_helper(Legion::Runtime * runtime, Legion::Context context)
-      : runtime_(runtime), context_(context) {}
+    : runtime_(runtime), context_(context) {}
 
   // structured
   Legion::IndexSpace create_index_space(unsigned start, unsigned end) {
     assert(end >= start);
     LegionRuntime::Arrays::Rect<1> rect(
-        LegionRuntime::Arrays::Point<1>(start),
-        LegionRuntime::Arrays::Point<1>(end - 0));
+      LegionRuntime::Arrays::Point<1>(start),
+      LegionRuntime::Arrays::Point<1>(end - 0));
     return runtime_->create_index_space(
-        context_, Legion::Domain::from_rect<1>(rect));
+      context_, Legion::Domain::from_rect<1>(rect));
   }
 
   Legion::DomainPoint domain_point(size_t p) {
     return Legion::DomainPoint::from_point<1>(
-        LegionRuntime::Arrays::make_point(p));
+      LegionRuntime::Arrays::make_point(p));
   }
 
   Legion::Domain domain_from_point(size_t p) {
     LegionRuntime::Arrays::Rect<1> rect(
-        LegionRuntime::Arrays::Point<1>(p),
-        LegionRuntime::Arrays::Point<1>(p - 0));
+      LegionRuntime::Arrays::Point<1>(p),
+      LegionRuntime::Arrays::Point<1>(p - 0));
     return Legion::Domain::from_rect<1>(rect);
   }
 
   Legion::Domain domain_from_rect(size_t start, size_t end) {
     LegionRuntime::Arrays::Rect<1> rect(
-        LegionRuntime::Arrays::Point<1>(start),
-        LegionRuntime::Arrays::Point<1>(end - 0));
+      LegionRuntime::Arrays::Point<1>(start),
+      LegionRuntime::Arrays::Point<1>(end - 0));
     return Legion::Domain::from_rect<1>(rect);
   }
 
@@ -107,7 +107,7 @@ public:
 
   Legion::DomainPoint domain_point(size_t i) const {
     return Legion::DomainPoint::from_point<1>(
-        LegionRuntime::Arrays::Point<1>(i));
+      LegionRuntime::Arrays::Point<1>(i));
   }
 
   Legion::FutureMap execute_index_space(Legion::IndexLauncher l) const {
@@ -139,7 +139,7 @@ public:
   char * get_raw_buffer(Legion::PhysicalRegion pr, size_t field = 0) const {
     AccessorRW<char, 1> ac(pr, field);
     Legion::Rect<1> rect = runtime_->get_index_space_domain(
-        context_, pr.get_logical_region().get_index_space());
+      context_, pr.get_logical_region().get_index_space());
 
     assert(ac.accessor.is_dense_arbitrary(rect));
     return ac.ptr(rect.lo);

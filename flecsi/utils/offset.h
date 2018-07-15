@@ -21,7 +21,8 @@ namespace flecsi {
 namespace utils {
 
 template<size_t COUNT_BITS>
-class offset__ {
+class offset__
+{
 public:
   static_assert(COUNT_BITS <= 32, "COUNT_BITS max exceeded");
 
@@ -33,7 +34,7 @@ public:
   offset__(uint64_t start, uint32_t count) : o_(start << COUNT_BITS | count) {}
 
   offset__(const offset__ & prev, uint32_t count)
-      : o_(prev.end() << COUNT_BITS | count) {}
+    : o_(prev.end() << COUNT_BITS | count) {}
 
   uint64_t start() const {
     return o_ >> COUNT_BITS;

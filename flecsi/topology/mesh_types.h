@@ -50,13 +50,15 @@ class mesh_topology_base__;
 //! \tparam N The number of mesh domains.
 //-----------------------------------------------------------------//
 
-class mesh_entity_base_ {
+class mesh_entity_base_
+{
 public:
   using id_t = flecsi::utils::id_t;
 };
 
 template<size_t NUM_DOMAINS>
-class mesh_entity_base__ : public mesh_entity_base_ {
+class mesh_entity_base__ : public mesh_entity_base_
+{
 public:
   ~mesh_entity_base__() {}
 
@@ -131,7 +133,8 @@ private:
 //-----------------------------------------------------------------//
 
 template<size_t DIM, size_t NUM_DOMAINS>
-class mesh_entity__ : public mesh_entity_base__<NUM_DOMAINS> {
+class mesh_entity__ : public mesh_entity_base__<NUM_DOMAINS>
+{
 public:
   static constexpr size_t dimension = DIM;
 
@@ -166,7 +169,8 @@ using entity_vector_t = std::vector<mesh_entity_base__<NUM_DOMAINS> *>;
 //-----------------------------------------------------------------//
 
 template<size_t DOM, class ENTITY_TYPE>
-class domain_entity__ {
+class domain_entity__
+{
 public:
   using id_t = typename ENTITY_TYPE::id_t;
   using item_t = ENTITY_TYPE *;
@@ -248,7 +252,8 @@ private:
 //! \brief connectivity_t provides basic connectivity information in a
 //! compressed storage format.
 //-----------------------------------------------------------------//
-class connectivity_t {
+class connectivity_t
+{
 public:
   using id_t = utils::id_t;
   using offset_t = utils::offset_t;
@@ -297,10 +302,10 @@ public:
 
     size_t n = cv.size();
 
-    for (size_t i = 0; i < n; ++i) {
+    for(size_t i = 0; i < n; ++i) {
       const id_vector_t & iv = cv[i];
 
-      for (id_t id : iv) {
+      for(id_t id : iv) {
         index_space_.batch_push_(id);
       } // for
 
@@ -322,7 +327,7 @@ public:
 
     uint64_t size = 0;
 
-    for (size_t i = 0; i < n; ++i) {
+    for(size_t i = 0; i < n; ++i) {
       uint32_t count = static_cast<std::uint32_t>(num_conns[i]);
       offsets_.add_count(count);
       size += count;
@@ -343,21 +348,21 @@ public:
   //! Debugging method. Dump the raw vectors of the connection.
   //-----------------------------------------------------------------//
   std::ostream & dump(std::ostream & stream) {
-    for (size_t i = 0; i < offsets_.size(); ++i) {
+    for(size_t i = 0; i < offsets_.size(); ++i) {
       offset_t oi = offsets_[i];
-      for (size_t j = 0; j < oi.count(); ++j) {
+      for(size_t j = 0; j < oi.count(); ++j) {
         stream << index_space_(oi.start() + j).entity() << std::endl;
       }
       stream << std::endl;
     }
 
     stream << "=== indices" << std::endl;
-    for (id_t id : index_space_.ids()) {
+    for(id_t id : index_space_.ids()) {
       stream << id.entity() << std::endl;
     } // for
 
     stream << "=== offsets" << std::endl;
-    for (size_t i = 0; i < offsets_.size(); ++i) {
+    for(size_t i = 0; i < offsets_.size(); ++i) {
       offset_t oi = offsets_[i];
       stream << oi.start() << " : " << oi.count() << std::endl;
     } // for
@@ -399,7 +404,7 @@ public:
     assert(index < offsets_.size());
     offset_t o = offsets_[index];
     return utils::make_array_ref(
-        index_space_.id_array() + o.start(), o.count());
+      index_space_.id_array() + o.start(), o.count());
   }
 
   //-----------------------------------------------------------------//
@@ -408,9 +413,8 @@ public:
   void reverse_entities(size_t index) {
     assert(index < offsets_.size());
     offset_t o = offsets_[index];
-    std::reverse(
-        index_space_.index_begin_() + o.start(),
-        index_space_.index_begin_() + o.end());
+    std::reverse(index_space_.index_begin_() + o.start(),
+      index_space_.index_begin_() + o.end());
   }
 
   //-----------------------------------------------------------------//
@@ -422,7 +426,7 @@ public:
     offset_t o = offsets_[index];
     assert(order.size() == o.count());
     utils::reorder(
-        order.begin(), order.end(), index_space_.id_array() + o.start());
+      order.begin(), order.end(), index_space_.id_array() + o.start());
   }
 
   //-----------------------------------------------------------------//
@@ -464,7 +468,7 @@ public:
 
     size_t size = 0;
 
-    for (size_t i = 0; i < n; i++) {
+    for(size_t i = 0; i < n; i++) {
       uint32_t count = conns[i].size();
       offsets_.add_count(count);
       size += count;
@@ -472,11 +476,11 @@ public:
 
     index_space_.begin_push_(size);
 
-    for (size_t i = 0; i < n; ++i) {
+    for(size_t i = 0; i < n; ++i) {
       const id_vector_t & conn = conns[i];
       uint64_t m = conn.size();
 
-      for (size_t j = 0; j < m; ++j) {
+      for(size_t j = 0; j < m; ++j) {
         index_space_.batch_push_(ev[conn[j]]->template global_id<DOM>());
       }
     }
@@ -523,7 +527,7 @@ public:
   } // end_from
 
   index_space__<mesh_entity_base_ *, false, true, false, void, entity_storage_t>
-      index_space_;
+    index_space_;
 
   offset_storage_t offsets_;
 }; // class connectivity_t
@@ -533,7 +537,8 @@ public:
 //! dimensions.
 //-----------------------------------------------------------------//
 template<size_t DIM>
-class domain_connectivity__ {
+class domain_connectivity__
+{
 public:
   using id_t = flecsi::utils::id_t;
 
@@ -583,18 +588,17 @@ public:
   }
 
   template<size_t FROM_DIM, size_t NUM_DOMAINS>
-  id_t *
-  get_entities(mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent, size_t to_dim) {
+  id_t * get_entities(mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent,
+    size_t to_dim) {
     return get<FROM_DIM>(to_dim).get_entities(from_ent->id(from_domain_));
   }
 
   template<size_t FROM_DIM, size_t NUM_DOMAINS>
-  id_t * get_entities(
-      mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent,
-      size_t to_dim,
-      size_t & count) {
+  id_t * get_entities(mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent,
+    size_t to_dim,
+    size_t & count) {
     return get<FROM_DIM>(to_dim).get_entities(
-        from_ent->id(from_domain_), count);
+      from_ent->id(from_domain_), count);
   }
 
   id_t * get_entities(id_t from_id, size_t to_dim) {
@@ -603,13 +607,12 @@ public:
 
   id_t * get_entities(id_t from_id, size_t to_dim, size_t & count) {
     return get(from_id.dimension(), to_dim)
-        .get_entities(from_id.entity(), count);
+      .get_entities(from_id.entity(), count);
   }
 
   template<size_t FROM_DIM, size_t NUM_DOMAINS>
-  auto get_entity_vec(
-      mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent,
-      size_t to_dim) const {
+  auto get_entity_vec(mesh_entity__<FROM_DIM, NUM_DOMAINS> * from_ent,
+    size_t to_dim) const {
     auto & conn = get<FROM_DIM>(to_dim);
     return conn.get_entity_vec(from_ent->id(from_domain_));
   }
@@ -620,9 +623,9 @@ public:
   }
 
   std::ostream & dump(std::ostream & stream) {
-    for (size_t i = 0; i < conns_.size(); ++i) {
+    for(size_t i = 0; i < conns_.size(); ++i) {
       auto & ci = conns_[i];
-      for (size_t j = 0; j < ci.size(); ++j) {
+      for(size_t j = 0; j < ci.size(); ++j) {
         auto & cj = ci[j];
         stream << "------------- " << i << " -> " << j << std::endl;
         cj.dump(stream);
@@ -653,11 +656,14 @@ private:
 //! on type parameterization, e.g: entity types, domains, etc.
 //-----------------------------------------------------------------//
 
-class mesh_topology_base_t {};
+class mesh_topology_base_t
+{
+};
 
 template<class STORAGE_TYPE>
 class mesh_topology_base__ : public data::data_client_t,
-                             public mesh_topology_base_t {
+                             public mesh_topology_base_t
+{
 public:
   using id_t = utils::id_t;
 
@@ -722,20 +728,18 @@ public:
   //-----------------------------------------------------------------//
   //! Get the binding connectivity of specified domains.
   //-----------------------------------------------------------------//
-  virtual const connectivity_t & get_connectivity(
-      size_t from_domain,
-      size_t to_domain,
-      size_t from_dim,
-      size_t to_dim) const = 0;
+  virtual const connectivity_t & get_connectivity(size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
+    size_t to_dim) const = 0;
 
   //-----------------------------------------------------------------//
   //! Get the binding connectivity of specified domains.
   //-----------------------------------------------------------------//
-  virtual connectivity_t & get_connectivity(
-      size_t from_domain,
-      size_t to_domain,
-      size_t from_dim,
-      size_t to_dim) = 0;
+  virtual connectivity_t & get_connectivity(size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
+    size_t to_dim) = 0;
 
   //-----------------------------------------------------------------//
   //! This method should be called to construct and entity rather than
@@ -747,11 +751,10 @@ public:
     return ms_->template make<T, DOM>(std::forward<S>(args)...);
   } // make
 
-  virtual void append_to_index_space_(
-      size_t domain,
-      size_t dimension,
-      std::vector<mesh_entity_base_ *> & ents,
-      std::vector<id_t> & ids) = 0;
+  virtual void append_to_index_space_(size_t domain,
+    size_t dimension,
+    std::vector<mesh_entity_base_ *> & ents,
+    std::vector<id_t> & ids) = 0;
 
 protected:
   STORAGE_TYPE * ms_ = nullptr;
@@ -763,10 +766,9 @@ using entity_type_ = typename find_entity_<MESH_TYPE, DIM, DOM>::type;
 
 template<class STORAGE_TYPE, class MESH_TYPE, size_t NM, size_t DOM, size_t DIM>
 void
-unserialize_dimension_(
-    mesh_topology_base__<STORAGE_TYPE> & mesh,
-    char * buf,
-    uint64_t & pos) {
+unserialize_dimension_(mesh_topology_base__<STORAGE_TYPE> & mesh,
+  char * buf,
+  uint64_t & pos) {
   uint64_t num_entities;
   std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
   pos += sizeof(num_entities);
@@ -782,7 +784,7 @@ unserialize_dimension_(
 
   size_t partition_id = context_.color();
 
-  for (size_t local_id = 0; local_id < num_entities; ++local_id) {
+  for(size_t local_id = 0; local_id < num_entities; ++local_id) {
     id_t global_id = id_t::make<DIM, DOM>(local_id, partition_id);
 
     auto ent = new entity_type_<MESH_TYPE, DIM, DOM>();
@@ -794,87 +796,74 @@ unserialize_dimension_(
   mesh.append_to_index_space_(DOM, DIM, ents, ids);
 }
 
-template<
-    class STORAGE_TYPE,
-    class MESH_TYPE,
-    size_t NUM_DOMAINS,
-    size_t NUM_DIMS,
-    size_t DOM,
-    size_t DIM>
+template<class STORAGE_TYPE,
+  class MESH_TYPE,
+  size_t NUM_DOMAINS,
+  size_t NUM_DIMS,
+  size_t DOM,
+  size_t DIM>
 struct unserialize_dimensions_ {
 
-  static void unserialize(
-      mesh_topology_base__<STORAGE_TYPE> & mesh,
-      char * buf,
-      uint64_t & pos) {
+  static void unserialize(mesh_topology_base__<STORAGE_TYPE> & mesh,
+    char * buf,
+    uint64_t & pos) {
     unserialize_dimension_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, DOM, DIM>(
-        mesh, buf, pos);
-    unserialize_dimensions_<
-        STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS, DOM,
-        DIM + 1>::unserialize(mesh, buf, pos);
+      mesh, buf, pos);
+    unserialize_dimensions_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS, DOM,
+      DIM + 1>::unserialize(mesh, buf, pos);
   }
 };
 
-template<
-    class STORAGE_TYPE,
-    class MESH_TYPE,
-    size_t NUM_DOMAINS,
-    size_t NUM_DIMS,
-    size_t DOM>
-struct unserialize_dimensions_<
-    STORAGE_TYPE,
-    MESH_TYPE,
-    NUM_DOMAINS,
-    NUM_DIMS,
-    DOM,
-    NUM_DIMS> {
+template<class STORAGE_TYPE,
+  class MESH_TYPE,
+  size_t NUM_DOMAINS,
+  size_t NUM_DIMS,
+  size_t DOM>
+struct unserialize_dimensions_<STORAGE_TYPE,
+  MESH_TYPE,
+  NUM_DOMAINS,
+  NUM_DIMS,
+  DOM,
+  NUM_DIMS> {
 
-  static void unserialize(
-      mesh_topology_base__<STORAGE_TYPE> & mesh,
-      char * buf,
-      uint64_t & pos) {
+  static void unserialize(mesh_topology_base__<STORAGE_TYPE> & mesh,
+    char * buf,
+    uint64_t & pos) {
     unserialize_dimension_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, DOM, NUM_DIMS>(
-        mesh, buf, pos);
+      mesh, buf, pos);
   }
 };
 
-template<
-    class STORAGE_TYPE,
-    class MESH_TYPE,
-    size_t NUM_DOMAINS,
-    size_t NUM_DIMS,
-    size_t DOM>
+template<class STORAGE_TYPE,
+  class MESH_TYPE,
+  size_t NUM_DOMAINS,
+  size_t NUM_DIMS,
+  size_t DOM>
 struct unserialize_domains_ {
 
-  static void unserialize(
-      mesh_topology_base__<STORAGE_TYPE> & mesh,
-      char * buf,
-      uint64_t & pos) {
-    unserialize_dimensions_<
-        STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS, DOM,
-        0>::unserialize(mesh, buf, pos);
-    unserialize_domains_<
-        STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS,
-        DOM + 1>::unserialize(mesh, buf, pos);
+  static void unserialize(mesh_topology_base__<STORAGE_TYPE> & mesh,
+    char * buf,
+    uint64_t & pos) {
+    unserialize_dimensions_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS, DOM,
+      0>::unserialize(mesh, buf, pos);
+    unserialize_domains_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS,
+      DOM + 1>::unserialize(mesh, buf, pos);
   }
 };
 
-template<
-    class STORAGE_TYPE,
-    class MESH_TYPE,
-    size_t NUM_DOMAINS,
-    size_t NUM_DIMS>
-struct unserialize_domains_<
-    STORAGE_TYPE,
-    MESH_TYPE,
-    NUM_DOMAINS,
-    NUM_DIMS,
-    NUM_DOMAINS> {
+template<class STORAGE_TYPE,
+  class MESH_TYPE,
+  size_t NUM_DOMAINS,
+  size_t NUM_DIMS>
+struct unserialize_domains_<STORAGE_TYPE,
+  MESH_TYPE,
+  NUM_DOMAINS,
+  NUM_DIMS,
+  NUM_DOMAINS> {
 
-  static void unserialize(
-      mesh_topology_base__<STORAGE_TYPE> & mesh,
-      char * buf,
-      uint64_t & pos) {}
+  static void unserialize(mesh_topology_base__<STORAGE_TYPE> & mesh,
+    char * buf,
+    uint64_t & pos) {}
 };
 
 } // namespace topology

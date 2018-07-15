@@ -51,7 +51,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
    */
 
   task_epilog_t(Legion::Runtime * runtime, Legion::Context & context)
-      : runtime(runtime), context(context) {} // task_epilog_t
+    : runtime(runtime), context(context) {} // task_epilog_t
 
   /*!
    FIXME: Need description
@@ -69,10 +69,10 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
    */
 
   template<
-      typename T,
-      size_t EXCLUSIVE_PERMISSIONS,
-      size_t SHARED_PERMISSIONS,
-      size_t GHOST_PERMISSIONS>
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
   void handle(dense_accessor__<
               T,
               EXCLUSIVE_PERMISSIONS,
@@ -96,10 +96,10 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
         } // scope
 
         *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-            context,
+          context,
 
-            // Phase READ
-            *(h.pbarrier_as_owner_ptr));
+          // Phase READ
+          *(h.pbarrier_as_owner_ptr));
 
         const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
 
@@ -114,11 +114,11 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
           // Phase READ
           h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);
           *(h.ghost_owners_pbarriers_ptrs[owner]) =
-              runtime->advance_phase_barrier(
-                  context,
+            runtime->advance_phase_barrier(
+              context,
 
-                  // Phase READ
-                  *(h.ghost_owners_pbarriers_ptrs)[owner]);
+              // Phase READ
+              *(h.ghost_owners_pbarriers_ptrs)[owner]);
         } // for
         *(h.write_phase_started) = false;
       } // if write phase
@@ -130,22 +130,15 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
     typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    sparse_accessor <
-    T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS
-    > &a
-  )
-  {
+    size_t GHOST_PERMISSIONS>
+  void handle(sparse_accessor<
+              T,
+              EXCLUSIVE_PERMISSIONS,
+              SHARED_PERMISSIONS,
+              GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    bool write_phase{(SHARED_PERMISSIONS == wo) ||
-                     (SHARED_PERMISSIONS == rw)};
+    bool write_phase{(SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw)};
 
     if (write_phase && (*h.write_phase_started)) {
       const int my_color = runtime->find_local_MPI_rank();
@@ -159,10 +152,10 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
       } // scope
 
       *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-          context,
+        context,
 
-          // Phase READ
-          *(h.pbarrier_as_owner_ptr));
+        // Phase READ
+        *(h.pbarrier_as_owner_ptr));
 
       const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
 
@@ -177,11 +170,11 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
         // Phase READ
         h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);
         *(h.ghost_owners_pbarriers_ptrs[owner]) =
-            runtime->advance_phase_barrier(
-                context,
+          runtime->advance_phase_barrier(
+            context,
 
-                // Phase READ
-                *(h.ghost_owners_pbarriers_ptrs)[owner]);
+            // Phase READ
+            *(h.ghost_owners_pbarriers_ptrs)[owner]);
       } // for
       *(h.write_phase_started) = false;
     } // if write phase
@@ -191,32 +184,19 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
     typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    ragged_accessor<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    > & a
-  )
-  {
-    handle(reinterpret_cast<sparse_accessor<
-      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+    size_t GHOST_PERMISSIONS>
+  void handle(ragged_accessor<
+              T,
+              EXCLUSIVE_PERMISSIONS,
+              SHARED_PERMISSIONS,
+              GHOST_PERMISSIONS> & a) {
+    handle(
+      reinterpret_cast<sparse_accessor<
+        T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
   } // handle
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    sparse_mutator<
-    T
-    > &m
-  )
-  {
+  template<typename T>
+  void handle(sparse_mutator<T> & m) {
     auto & h = m.h_;
 
     if ((*h.write_phase_started)) {
@@ -231,10 +211,10 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
       } // scope
 
       *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-          context,
+        context,
 
-          // Phase READ
-          *(h.pbarrier_as_owner_ptr));
+        // Phase READ
+        *(h.pbarrier_as_owner_ptr));
 
       const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
 
@@ -249,27 +229,19 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
         // Phase READ
         h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);
         *(h.ghost_owners_pbarriers_ptrs[owner]) =
-            runtime->advance_phase_barrier(
-                context,
+          runtime->advance_phase_barrier(
+            context,
 
-                // Phase READ
-                *(h.ghost_owners_pbarriers_ptrs)[owner]);
+            // Phase READ
+            *(h.ghost_owners_pbarriers_ptrs)[owner]);
       } // for
       *(h.write_phase_started) = false;
     } // if write phase
   }
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    ragged_mutator<
-      T
-    > & m
-  )
-  {
-    handle(reinterpret_cast<sparse_mutator<T>&>(m));
+  template<typename T>
+  void handle(ragged_mutator<T> & m) {
+    handle(reinterpret_cast<sparse_mutator<T> &>(m));
   }
 
   /*!
@@ -279,9 +251,9 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
    */
 
   template<typename T>
-  static typename std::enable_if_t<
-      !std::is_base_of<dense_accessor_base_t, T>::value>
-  handle(T &) {} // handle
+  static
+    typename std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
+    handle(T &) {} // handle
 
   Legion::Runtime * runtime;
   Legion::Context & context;

@@ -39,7 +39,7 @@ struct legion_dense_data_handle_policy_t {
   legion_dense_data_handle_policy_t() {}
 
   legion_dense_data_handle_policy_t(
-      const legion_dense_data_handle_policy_t & p) = default;
+    const legion_dense_data_handle_policy_t & p) = default;
 
   bool * ghost_is_readable;
   bool * write_phase_started;
@@ -67,8 +67,8 @@ struct legion_dense_data_handle_policy_t {
   Legion::PhaseBarrier * pbarrier_as_owner_ptr;
   std::vector<Legion::PhaseBarrier *> ghost_owners_pbarriers_ptrs;
   const Legion::STL::map<
-      LegionRuntime::Arrays::coord_t,
-      LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
+    LegionRuntime::Arrays::coord_t,
+    LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
 
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions

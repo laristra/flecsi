@@ -76,7 +76,7 @@
 #define declare_reflected(...)                                                 \
                                                                                \
   static const std::size_t num_reflected_ =                                    \
-      BOOST_PP_VARIADIC_SIZE(__VA_ARGS__);                                     \
+    BOOST_PP_VARIADIC_SIZE(__VA_ARGS__);                                       \
                                                                                \
   friend struct reflection;                                                    \
                                                                                \
@@ -86,7 +86,7 @@
                                                                                \
   /* Each invocation of this creates an explicit specialization. */            \
   BOOST_PP_SEQ_FOR_EACH_I(                                                     \
-      reflection_variable, data, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
+    reflection_variable, data, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
 //
 //

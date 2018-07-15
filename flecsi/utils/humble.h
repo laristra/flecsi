@@ -27,11 +27,10 @@ namespace utils {
 
 // Print a diagnostic message, along with source code location
 inline void
-here_func(
-    char const * const filename,
-    char const * const fname,
-    int const line,
-    std::string const & s) {
+here_func(char const * const filename,
+  char const * const fname,
+  int const line,
+  std::string const & s) {
   printf("HERE %s:%s:%d %s\n", fname, filename, line, s.c_str());
 }
 

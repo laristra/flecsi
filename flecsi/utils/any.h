@@ -26,7 +26,8 @@ namespace utils {
 
  @ingroup utils
 */
-class any_t {
+class any_t
+{
 public:
   /*!
     default constructor
@@ -89,7 +90,8 @@ private:
   /*!
     helper class
    */
-  class i_holder_t {
+  class i_holder_t
+  {
   public:
     virtual ~i_holder_t() {}
     virtual i_holder_t * copy() const = 0;
@@ -101,7 +103,8 @@ private:
     helper class
    */
   template<typename T>
-  class holder_t : public i_holder_t {
+  class holder_t : public i_holder_t
+  {
   public:
     holder_t(const T & value) : value_(value) {}
 

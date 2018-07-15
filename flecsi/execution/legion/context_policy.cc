@@ -29,8 +29,8 @@ namespace execution {
 //----------------------------------------------------------------------------//
 
 thread_local std::
-    unordered_map<size_t, std::stack<std::shared_ptr<legion_runtime_state_t>>>
-        state_;
+  unordered_map<size_t, std::stack<std::shared_ptr<legion_runtime_state_t>>>
+    state_;
 
 //----------------------------------------------------------------------------//
 // Implementation of legion_context_policy_t::initialize.
@@ -48,21 +48,21 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
     registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
     registrar.set_inner();
     Runtime::preregister_task_variant<runtime_driver>(
-        registrar, "runtime_driver");
+      registrar, "runtime_driver");
   }
 
   // Register tasks
   for (auto & t : task_registry_) {
     std::get<4>(t.second)(
-        std::get<0>(t.second) /* tid */, std::get<1>(t.second) /* processor */,
-        std::get<2>(t.second) /* launch */, std::get<3>(t.second) /* name */);
+      std::get<0>(t.second) /* tid */, std::get<1>(t.second) /* processor */,
+      std::get<2>(t.second) /* launch */, std::get<3>(t.second) /* name */);
   } // for
 
   // Intialize MPI/Legion interoperability layer.
   handshake_ = Legion::Runtime::create_handshake(
-      true, // MPI has initial control
-      1, // MPI partiticipants
-      1 // Legion participants
+    true, // MPI has initial control
+    1, // MPI partiticipants
+    1 // Legion participants
   );
 
   // Register our mapper
@@ -108,21 +108,21 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
 
 void
 legion_context_policy_t::unset_call_mpi(
-    Legion::Context & ctx,
-    Legion::Runtime * runtime) {
+  Legion::Context & ctx,
+  Legion::Runtime * runtime) {
   {
     clog_tag_guard(context);
     clog(info) << "In unset_call_mpi" << std::endl;
   }
 
   const auto tid =
-      context_t::instance()
-          .task_id<__flecsi_internal_task_key(unset_call_mpi_task)>();
+    context_t::instance()
+      .task_id<__flecsi_internal_task_key(unset_call_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher launcher(
-      tid, Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-      Legion::TaskArgument(NULL, 0), arg_map);
+    tid, Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+    Legion::TaskArgument(NULL, 0), arg_map);
 
   Legion::MustEpochLauncher must_epoch_launcher;
   must_epoch_launcher.add_index_task(launcher);
@@ -135,19 +135,19 @@ legion_context_policy_t::unset_call_mpi_single() {
   auto legion_runtime = Legion::Runtime::get_runtime();
   auto legion_context = Legion::Runtime::get_context();
   LegionRuntime::Arrays::Rect<1> launch_bounds(
-      LegionRuntime::Arrays::Point<1>(0), LegionRuntime::Arrays::Point<1>(1));
+    LegionRuntime::Arrays::Point<1>(0), LegionRuntime::Arrays::Point<1>(1));
 
   const auto tid =
-      context_t::instance()
-          .task_id<__flecsi_internal_task_key(unset_call_mpi_task)>();
+    context_t::instance()
+      .task_id<__flecsi_internal_task_key(unset_call_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
 
   Legion::IndexLauncher task_launcher(
-      tid, Legion::Domain::from_rect<1>(launch_bounds),
-      Legion::TaskArgument(NULL, 0), arg_map);
+    tid, Legion::Domain::from_rect<1>(launch_bounds),
+    Legion::TaskArgument(NULL, 0), arg_map);
   auto future =
-      legion_runtime->execute_index_space(legion_context, task_launcher);
+    legion_runtime->execute_index_space(legion_context, task_launcher);
 
   future.wait_all_results();
   return future;
@@ -159,16 +159,16 @@ legion_context_policy_t::unset_call_mpi_single() {
 
 void
 legion_context_policy_t::handoff_to_mpi(
-    Legion::Context & ctx,
-    Legion::Runtime * runtime) {
+  Legion::Context & ctx,
+  Legion::Runtime * runtime) {
   const auto tid =
-      context_t::instance()
-          .task_id<__flecsi_internal_task_key(handoff_to_mpi_task)>();
+    context_t::instance()
+      .task_id<__flecsi_internal_task_key(handoff_to_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(
-      tid, Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-      Legion::TaskArgument(NULL, 0), arg_map);
+    tid, Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+    Legion::TaskArgument(NULL, 0), arg_map);
 
   Legion::MustEpochLauncher must_epoch_launcher;
   must_epoch_launcher.add_index_task(handoff_to_mpi_launcher);
@@ -183,15 +183,15 @@ legion_context_policy_t::handoff_to_mpi(
 
 Legion::FutureMap
 legion_context_policy_t::wait_on_mpi(
-    Legion::Context & ctx,
-    Legion::Runtime * runtime) {
+  Legion::Context & ctx,
+  Legion::Runtime * runtime) {
   const auto tid = context_t::instance()
-                       .task_id<__flecsi_internal_task_key(wait_on_mpi_task)>();
+                     .task_id<__flecsi_internal_task_key(wait_on_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(
-      tid, Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-      Legion::TaskArgument(NULL, 0), arg_map);
+    tid, Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+    Legion::TaskArgument(NULL, 0), arg_map);
 
   Legion::MustEpochLauncher must_epoch_launcher;
   must_epoch_launcher.add_index_task(wait_on_mpi_launcher);
@@ -208,14 +208,14 @@ legion_context_policy_t::wait_on_mpi(
 
 void
 legion_context_policy_t::connect_with_mpi(
-    Legion::Context & ctx,
-    Legion::Runtime * runtime) {
+  Legion::Context & ctx,
+  Legion::Runtime * runtime) {
   int size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
   LegionRuntime::Arrays::Rect<1> launch_bounds(
-      LegionRuntime::Arrays::Point<1>(0),
-      LegionRuntime::Arrays::Point<1>(size - 1));
+    LegionRuntime::Arrays::Point<1>(0),
+    LegionRuntime::Arrays::Point<1>(size - 1));
 
   context_t::instance().set_all_processes(launch_bounds);
 
@@ -224,13 +224,13 @@ legion_context_policy_t::connect_with_mpi(
   // the mappings between MPI Ranks and Legion address spaces
   // The reverse mapping goes the other way
   const std::map<int, Legion::AddressSpace> & forward_mapping =
-      runtime->find_forward_MPI_mapping();
+    runtime->find_forward_MPI_mapping();
 
   for (std::map<int, Legion::AddressSpace>::const_iterator it =
-           forward_mapping.begin();
+         forward_mapping.begin();
        it != forward_mapping.end(); it++)
     printf(
-        "MPI Rank %d maps to Legion Address Space %d\n", it->first, it->second);
+      "MPI Rank %d maps to Legion Address Space %d\n", it->first, it->second);
 
 } // legion_context_policy_t::connect_with_mpi
 

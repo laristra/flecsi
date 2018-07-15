@@ -80,10 +80,11 @@ struct parmetis_colorer_t : public colorer_t {
     std::vector<real_t> tpwgts(size);
 
     real_t sum = 0.0;
-    for (size_t i(0); i < tpwgts.size(); ++i) {
-      if (i == (tpwgts.size() - 1)) {
+    for(size_t i(0); i < tpwgts.size(); ++i) {
+      if(i == (tpwgts.size() - 1)) {
         tpwgts[i] = 1.0 - sum;
-      } else {
+      }
+      else {
         tpwgts[i] = 1.0 / size;
         sum += tpwgts[i];
       } // if
@@ -120,9 +121,9 @@ struct parmetis_colorer_t : public colorer_t {
     std::vector<idx_t> adjncy = dcrs.indices_as<idx_t>();
 
     // Actual call to ParMETIS.
-    int result = ParMETIS_V3_PartKway(
-        &vtxdist[0], &xadj[0], &adjncy[0], nullptr, nullptr, &wgtflag, &numflag,
-        &ncon, &size, &tpwgts[0], &ubvec, &options, &edgecut, &part[0], &comm);
+    int result = ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0],
+      nullptr, nullptr, &wgtflag, &numflag, &ncon, &size, &tpwgts[0], &ubvec,
+      &options, &edgecut, &part[0], &comm);
 
 #if 0
     std::cout << "rank " << rank << ": ";
@@ -142,13 +143,14 @@ struct parmetis_colorer_t : public colorer_t {
     std::set<size_t> primary;
 
     // Find the indices we need to request.
-    for (size_t r(0); r < size; ++r) {
+    for(size_t r(0); r < size; ++r) {
       std::vector<idx_t> indices;
 
-      for (size_t i(0); i < dcrs.size(); ++i) {
-        if (part[i] == r) {
+      for(size_t i(0); i < dcrs.size(); ++i) {
+        if(part[i] == r) {
           indices.push_back(vtxdist[rank] + i);
-        } else if (part[i] == rank) {
+        }
+        else if(part[i] == rank) {
           // If the index belongs to us, just add it...
           primary.insert(vtxdist[rank] + i);
         } // if
@@ -174,10 +176,9 @@ struct parmetis_colorer_t : public colorer_t {
 
     // Do all-to-all to find out where everything belongs.
     std::vector<idx_t> recv_cnts(size);
-    result = MPI_Alltoall(
-        &send_cnts[0], 1, utils::mpi_typetraits__<idx_t>::type(),
-        &recv_cnts[0], 1, utils::mpi_typetraits__<idx_t>::type(),
-        MPI_COMM_WORLD);
+    result = MPI_Alltoall(&send_cnts[0], 1,
+      utils::mpi_typetraits__<idx_t>::type(), &recv_cnts[0], 1,
+      utils::mpi_typetraits__<idx_t>::type(), MPI_COMM_WORLD);
 
 #if 0
     if(rank == 0) {
@@ -194,24 +195,22 @@ struct parmetis_colorer_t : public colorer_t {
     // Start receive operations (non-blocking).
     std::vector<std::vector<idx_t>> rbuffers(size);
     std::vector<MPI_Request> requests;
-    for (size_t r(0); r < size; ++r) {
-      if (recv_cnts[r]) {
+    for(size_t r(0); r < size; ++r) {
+      if(recv_cnts[r]) {
         rbuffers[r].resize(recv_cnts[r]);
         requests.push_back({});
-        MPI_Irecv(
-            &rbuffers[r][0], recv_cnts[r],
-            utils::mpi_typetraits__<idx_t>::type(), r,
-            0, MPI_COMM_WORLD, &requests[requests.size() - 1]);
+        MPI_Irecv(&rbuffers[r][0], recv_cnts[r],
+          utils::mpi_typetraits__<idx_t>::type(), r, 0, MPI_COMM_WORLD,
+          &requests[requests.size() - 1]);
       } // if
     } // for
 
     // Start send operations (blocking is probably ok here).
-    for (size_t r(0); r < size; ++r) {
-      if (send_cnts[r]) {
+    for(size_t r(0); r < size; ++r) {
+      if(send_cnts[r]) {
         sbuffers[r].resize(send_cnts[r]);
-        MPI_Send(
-            &sbuffers[r][0], send_cnts[r],
-            utils::mpi_typetraits__<idx_t>::type(), r, 0, MPI_COMM_WORLD);
+        MPI_Send(&sbuffers[r][0], send_cnts[r],
+          utils::mpi_typetraits__<idx_t>::type(), r, 0, MPI_COMM_WORLD);
       } // if
     } // for
 
@@ -220,9 +219,9 @@ struct parmetis_colorer_t : public colorer_t {
     MPI_Waitall(requests.size(), &requests[0], &status[0]);
 
     // Add indices to primary
-    for (size_t r(0); r < size; ++r) {
-      if (recv_cnts[r]) {
-        for (auto i : rbuffers[r]) {
+    for(size_t r(0); r < size; ++r) {
+      if(recv_cnts[r]) {
+        for(auto i : rbuffers[r]) {
           primary.insert(i);
         } // for
       } // if
@@ -238,10 +237,9 @@ struct parmetis_colorer_t : public colorer_t {
       } // if
 #endif
 
-    clog_assert(
-        primary.size() > 0,
-        "At least one rank has an empty primary coloring. Please either "
-        "increase the problem size or use fewer ranks");
+    clog_assert(primary.size() > 0,
+      "At least one rank has an empty primary coloring. Please either "
+      "increase the problem size or use fewer ranks");
 
     return primary;
   } // color

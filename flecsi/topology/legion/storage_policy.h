@@ -51,39 +51,38 @@ struct legion_topology_storage_policy_t__ {
   using id_t = utils::id_t;
 
   using index_spaces_t = std::array<
-      index_space__<
-          mesh_entity_base_ *,
-          true,
-          true,
-          true,
-          void,
-          topology_storage__>,
-      NUM_DIMS + 1>;
+    index_space__<
+      mesh_entity_base_ *,
+      true,
+      true,
+      true,
+      void,
+      topology_storage__>,
+    NUM_DIMS + 1>;
 
   using index_subspaces_t = std::array<
-      index_space__<
-          mesh_entity_base_ *,
-          false,
-          true,
-          false,
-          void,
-          topology_storage__>,
-      NUM_INDEX_SUBSPACES>;
+    index_space__<
+      mesh_entity_base_ *,
+      false,
+      true,
+      false,
+      void,
+      topology_storage__>,
+    NUM_INDEX_SUBSPACES>;
 
   using partition_index_spaces_t = std::array<
-      index_space__<
-          mesh_entity_base_ *,
-          false,
-          false,
-          true,
-          void,
-          topology_storage__>,
-      NUM_DIMS + 1>;
+    index_space__<
+      mesh_entity_base_ *,
+      false,
+      false,
+      true,
+      void,
+      topology_storage__>,
+    NUM_DIMS + 1>;
 
   // array of array of domain_connectivity__
-  std::array<
-      std::array<domain_connectivity__<NUM_DIMS>, NUM_DOMAINS>,
-      NUM_DOMAINS>
+  std::
+    array<std::array<domain_connectivity__<NUM_DIMS>, NUM_DOMAINS>, NUM_DOMAINS>
       topology;
 
   std::array<index_spaces_t, NUM_DOMAINS> index_spaces;
@@ -91,7 +90,7 @@ struct legion_topology_storage_policy_t__ {
   index_subspaces_t index_subspaces;
 
   std::array<std::array<partition_index_spaces_t, NUM_DOMAINS>, num_partitions>
-      partition_index_spaces;
+    partition_index_spaces;
 
   size_t color;
 
@@ -101,16 +100,16 @@ struct legion_topology_storage_policy_t__ {
   }
 
   void init_entities(
-      size_t domain,
-      size_t dim,
-      mesh_entity_base_ * entities,
-      utils::id_t * ids,
-      size_t size,
-      size_t num_entities,
-      size_t num_exclusive,
-      size_t num_shared,
-      size_t num_ghost,
-      bool read) {
+    size_t domain,
+    size_t dim,
+    mesh_entity_base_ * entities,
+    utils::id_t * ids,
+    size_t size,
+    size_t num_entities,
+    size_t num_exclusive,
+    size_t num_shared,
+    size_t num_ghost,
+    bool read) {
     auto & is = index_spaces[domain][dim];
 
     auto s = is.storage();
@@ -164,13 +163,13 @@ struct legion_topology_storage_policy_t__ {
   } // init_entities
 
   void init_index_subspace(
-      size_t index_space,
-      size_t index_subspace,
-      size_t domain,
-      size_t dim,
-      utils::id_t * ids,
-      size_t num_entities,
-      bool read) {
+    size_t index_space,
+    size_t index_subspace,
+    size_t domain,
+    size_t dim,
+    utils::id_t * ids,
+    size_t num_entities,
+    bool read) {
 
     auto & context_ = execution::context_t::instance();
     auto & ssm = context_.index_subspace_info();
@@ -194,15 +193,15 @@ struct legion_topology_storage_policy_t__ {
   } // init_index_subspaces
 
   void init_connectivity(
-      size_t from_domain,
-      size_t to_domain,
-      size_t from_dim,
-      size_t to_dim,
-      utils::offset_t * offsets,
-      size_t num_offsets,
-      utils::id_t * indices,
-      size_t num_indices,
-      bool read) {
+    size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
+    size_t to_dim,
+    utils::offset_t * offsets,
+    size_t num_offsets,
+    utils::id_t * indices,
+    size_t num_indices,
+    bool read) {
     // TODO - this is an initial implementation for testing purposes.
     // We may wish to store the buffer pointers coming from Legion directly
     // into the connectivity

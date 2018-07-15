@@ -30,7 +30,8 @@ namespace topology {
 //----------------------------------------------------------------------------//
 
 template<size_t DIMENSION>
-class mesh_definition__ {
+class mesh_definition__
+{
 public:
   using point_t = point__<double, DIMENSION>;
 

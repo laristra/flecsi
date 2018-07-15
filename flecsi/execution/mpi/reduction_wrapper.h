@@ -27,10 +27,7 @@ clog_register_tag(reduction_wrapper);
 namespace flecsi {
 namespace execution {
 
-template<
-  size_t NAME,
-  typename OPERATION
->
+template<size_t NAME, typename OPERATION>
 struct reduction_wrapper__ {
 
   using rhs_t = typename OPERATION::RHS;
@@ -43,13 +40,13 @@ struct reduction_wrapper__ {
     Wrapper to convert the type-erased MPI function to the typed C++ method.
    */
 
-  static void mpi_wrapper(void * in, void * inout, int * len,
-    MPI_Datatype * dptr) {
+  static void
+  mpi_wrapper(void * in, void * inout, int * len, MPI_Datatype * dptr) {
 
     lhs_t * lhs = reinterpret_cast<lhs_t *>(inout);
     rhs_t * rhs = reinterpret_cast<rhs_t *>(in);
 
-    for(size_t i{0}; i<*len; ++i) {
+    for(size_t i{0}; i < *len; ++i) {
       OPERATION::apply(lhs[i], rhs[i]);
     } // for
   } // mpi_wrapper
@@ -58,12 +55,11 @@ struct reduction_wrapper__ {
     Register the user-defined reduction operator with the runtime.
    */
 
-  static void registration_callback()
-  {
+  static void registration_callback() {
     {
-    clog_tag_guard(reduction_wrapper);
-    clog(info) << "Executing reduction wrapper callback for " << NAME <<
-      std::endl;
+      clog_tag_guard(reduction_wrapper);
+      clog(info) << "Executing reduction wrapper callback for " << NAME
+                 << std::endl;
     } // scope
 
     // Get the runtime context
@@ -71,11 +67,11 @@ struct reduction_wrapper__ {
 
     // Get a reference to the operator map
     auto & reduction_ops = context_.reduction_ops();
-    
+
     // Check if operator has already been registered
     clog_assert(reduction_ops.find(NAME) == reduction_ops.end(),
-      typeid(OPERATION).name() <<
-      " has already been registered with this name");
+      typeid(OPERATION).name()
+        << " has already been registered with this name");
 
     // Retrieve or create the MPI data type
     MPI_Datatype datatype;

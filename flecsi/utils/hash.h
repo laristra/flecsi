@@ -126,12 +126,11 @@ bool inline is_internal(size_t key) {
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-template<
-    size_t NAMESPACE,
-    size_t NAME,
-    size_t INDEX,
-    size_t DOMAIN_, // FIXME: Somewhere DOMAIN is being defined
-    size_t DIMENSION>
+template<size_t NAMESPACE,
+  size_t NAME,
+  size_t INDEX,
+  size_t DOMAIN_, // FIXME: Somewhere DOMAIN is being defined
+  size_t DIMENSION>
 inline constexpr size_t
 client_entity_hash() {
   return ((NAMESPACE ^ NAME) << 12) | (INDEX << 4) | (DOMAIN_ << 2) | DIMENSION;
@@ -195,14 +194,13 @@ client_entity_dimension(size_t key) {
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
-template<
-    size_t NAMESPACE,
-    size_t NAME,
-    size_t INDEX,
-    size_t FROM_DOMAIN,
-    size_t TO_DOMAIN,
-    size_t FROM_DIMENSION,
-    size_t TO_DIMENSION>
+template<size_t NAMESPACE,
+  size_t NAME,
+  size_t INDEX,
+  size_t FROM_DOMAIN,
+  size_t TO_DOMAIN,
+  size_t FROM_DIMENSION,
+  size_t TO_DIMENSION>
 inline constexpr size_t
 client_adjacency_hash() {
   return ((NAMESPACE ^ NAME) << 16) | (INDEX << 8) | (FROM_DOMAIN << 6) |
@@ -372,12 +370,10 @@ constexpr T
 string_hash__(U && str, const T h, const std::size_t i, const std::size_t n) {
   // An unstated assumption appears to be that n is the length of str, which is
   // a string type, and that i <= n. Otherwise, we're going to have problems.
-  return i == n
-             ? h
-             : string_hash__(
-                   str,
-                   h ^ static_cast<T>(std::forward<U>(str)[i]) << 8 * (i % 8),
-                   i + 1, n);
+  return i == n ? h
+                : string_hash__(str,
+                    h ^ static_cast<T>(std::forward<U>(str)[i]) << 8 * (i % 8),
+                    i + 1, n);
 } // string_hash__
 
 template<typename T, typename U>

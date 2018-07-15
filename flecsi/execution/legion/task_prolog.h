@@ -52,11 +52,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
    */
 
   task_prolog_t(
-      Legion::Runtime * runtime,
-      Legion::Context & context,
-      Legion::TaskLauncher & launcher)
-      : runtime(runtime), context(context), launcher(launcher) {
-  } // task_prolog_t
+    Legion::Runtime * runtime,
+    Legion::Context & context,
+    Legion::TaskLauncher & launcher)
+    : runtime(runtime), context(context), launcher(launcher) {} // task_prolog_t
 
   /*!
    Walk the data handles for a flecsi task, store info for ghost copies
@@ -75,10 +74,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
    */
 
   template<
-      typename T,
-      size_t EXCLUSIVE_PERMISSIONS,
-      size_t SHARED_PERMISSIONS,
-      size_t GHOST_PERMISSIONS>
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
   void handle(dense_accessor__<
               T,
               EXCLUSIVE_PERMISSIONS,
@@ -112,8 +111,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           h.pbarrier_as_owner_ptr->arrive(1);
 
           // Phase WRITE
-          *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-              context, *(h.pbarrier_as_owner_ptr));
+          *(h.pbarrier_as_owner_ptr) =
+            runtime->advance_phase_barrier(context, *(h.pbarrier_as_owner_ptr));
 
           const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
 
@@ -132,7 +131,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
             local_args.owner = owner;
             args.push_back(local_args);
             futures.push_back(Legion::Future::from_value(
-                runtime, *(h.global_to_local_color_map_ptr)));
+              runtime, *(h.global_to_local_color_map_ptr)));
             barrier_ptrs.push_back(h.ghost_owners_pbarriers_ptrs[owner]);
           } // for owner as user
 
@@ -196,45 +195,42 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       size_t first = *first_itr;
 
       Legion::RegionRequirement rr_shared(
-          owner_subregions[first], READ_ONLY, EXCLUSIVE, owner_regions[first]);
+        owner_subregions[first], READ_ONLY, EXCLUSIVE, owner_regions[first]);
 
       Legion::RegionRequirement rr_ghost(
-          ghost_regions[first], WRITE_DISCARD, EXCLUSIVE, color_regions[first]);
-
+        ghost_regions[first], WRITE_DISCARD, EXCLUSIVE, color_regions[first]);
 
       Legion::RegionRequirement rr_entries_shared;
 
       Legion::RegionRequirement rr_entries_ghost;
 
-      if(sparse){
-        rr_entries_shared =
-          Legion::RegionRequirement(
+      if (sparse) {
+        rr_entries_shared = Legion::RegionRequirement(
           owner_entries_regions[first], READ_ONLY, EXCLUSIVE,
           owner_entries_regions[first]);
 
-        rr_entries_ghost =
-          Legion::RegionRequirement(
+        rr_entries_ghost = Legion::RegionRequirement(
           ghost_entries_regions[first], WRITE_DISCARD, EXCLUSIVE,
-          color_entries_regions[first]);        
+          color_entries_regions[first]);
       }
 
       auto ghost_owner_pos_fid =
-          LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+        LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
       rr_ghost.add_field(ghost_owner_pos_fid);
 
       // TODO - circular dependency including internal_task.h
       auto constexpr key =
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(ghost_copy_task)}
-              .hash();
+        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(ghost_copy_task)}
+          .hash();
 
       const auto ghost_copy_tid = flecsi_context.task_id<key>();
 
       // ndm - diff task
 
       Legion::TaskLauncher ghost_launcher(
-          ghost_copy_tid,
-          Legion::TaskArgument(&args[first], sizeof(args[first])));
+        ghost_copy_tid,
+        Legion::TaskArgument(&args[first], sizeof(args[first])));
 
       ghost_launcher.add_future(futures[first]);
 
@@ -245,7 +241,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
         rr_shared.add_field(fids[owner]);
         rr_ghost.add_field(fids[owner]);
 
-        if(sparse){
+        if (sparse) {
           rr_entries_shared.add_field(fids[owner]);
           rr_entries_ghost.add_field(fids[owner]);
         }
@@ -258,13 +254,13 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
         // Phase WRITE
         *(barrier_ptrs[owner]) =
-            runtime->advance_phase_barrier(context, *(barrier_ptrs[owner]));
+          runtime->advance_phase_barrier(context, *(barrier_ptrs[owner]));
       } // for owner
       // ndm - add rr for sparse shared & ghost
       ghost_launcher.add_region_requirement(rr_shared);
       ghost_launcher.add_region_requirement(rr_ghost);
 
-      if(sparse){
+      if (sparse) {
         ghost_launcher.add_region_requirement(rr_entries_shared);
         ghost_launcher.add_region_requirement(rr_entries_ghost);
       }
@@ -280,18 +276,12 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    sparse_accessor <
-    T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS
-    > &a
-  )
-  {
+    size_t GHOST_PERMISSIONS>
+  void handle(sparse_accessor<
+              T,
+              EXCLUSIVE_PERMISSIONS,
+              SHARED_PERMISSIONS,
+              GHOST_PERMISSIONS> & a) {
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
     auto & h = a.handle;
@@ -321,8 +311,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
         h.pbarrier_as_owner_ptr->arrive(1);
 
         // Phase WRITE
-        *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-            context, *(h.pbarrier_as_owner_ptr));
+        *(h.pbarrier_as_owner_ptr) =
+          runtime->advance_phase_barrier(context, *(h.pbarrier_as_owner_ptr));
 
         const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
 
@@ -342,7 +332,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
           ghost_regions.push_back(h.offsets_ghost_lr);
           ghost_entries_regions.push_back(h.entries_ghost_lr);
-          
+
           color_regions.push_back(h.offsets_color_region);
           color_entries_regions.push_back(h.entries_color_region);
 
@@ -358,7 +348,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           args.push_back(local_args);
 
           futures.push_back(Legion::Future::from_value(
-              runtime, *(h.global_to_local_color_map_ptr)));
+            runtime, *(h.global_to_local_color_map_ptr)));
           barrier_ptrs.push_back(h.ghost_owners_pbarriers_ptrs[owner]);
         } // for owner as user
 
@@ -383,32 +373,19 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    ragged_accessor<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    > & a
-  )
-  {
-    handle(reinterpret_cast<sparse_accessor<
-      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+    size_t GHOST_PERMISSIONS>
+  void handle(ragged_accessor<
+              T,
+              EXCLUSIVE_PERMISSIONS,
+              SHARED_PERMISSIONS,
+              GHOST_PERMISSIONS> & a) {
+    handle(
+      reinterpret_cast<sparse_accessor<
+        T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
   } // handle
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    sparse_mutator<
-    T
-    > &m
-  )
-  {
+  template<typename T>
+  void handle(sparse_mutator<T> & m) {
     auto & h = m.h_;
 
     if ((*h.ghost_is_readable)) {
@@ -423,17 +400,9 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     } // if
   }
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    ragged_mutator<
-      T
-    > & m
-  )
-  {
-    handle(reinterpret_cast<sparse_mutator<T>&>(m));
+  template<typename T>
+  void handle(ragged_mutator<T> & m) {
+    handle(reinterpret_cast<sparse_mutator<T> &>(m));
   }
 
   /*!
@@ -441,9 +410,9 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
    */
 
   template<typename T>
-  static typename std::enable_if_t<
-      !std::is_base_of<dense_accessor_base_t, T>::value>
-  handle(T &) {} // handle
+  static
+    typename std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
+    handle(T &) {} // handle
 
   // member variables
   Legion::Runtime * runtime;
@@ -452,7 +421,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
   std::vector<Legion::LogicalRegion> owner_regions;
   std::vector<Legion::LogicalRegion> owner_subregions;
   std::vector<Legion::LogicalRegion> owner_entries_regions;
-  //std::vector<Legion::LogicalRegion> owner_entries_subregions;
+  // std::vector<Legion::LogicalRegion> owner_entries_subregions;
   std::vector<Legion::LogicalRegion> ghost_regions;
   std::vector<Legion::LogicalRegion> color_regions;
   std::vector<Legion::LogicalRegion> ghost_entries_regions;

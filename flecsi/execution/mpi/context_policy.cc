@@ -24,11 +24,7 @@ namespace execution {
 //----------------------------------------------------------------------------//
 
 int
-mpi_context_policy_t::initialize(
-  int argc,
-  char ** argv
-)
-{
+mpi_context_policy_t::initialize(int argc, char ** argv) {
   //--------------------------------------------------------------------------//
   // Set color state data
   //--------------------------------------------------------------------------//
@@ -85,6 +81,5 @@ mpi_context_policy_t::initialize(
   return 0;
 } // mpi_context_policy_t::initialize
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-

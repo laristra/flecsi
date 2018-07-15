@@ -43,22 +43,20 @@ namespace execution {
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-template<
-    typename ENTITY_TYPE,
-    bool STORAGE,
-    bool OWNED,
-    bool SORTED,
-    typename PREDICATE,
-    typename FUNCTION>
+template<typename ENTITY_TYPE,
+  bool STORAGE,
+  bool OWNED,
+  bool SORTED,
+  typename PREDICATE,
+  typename FUNCTION>
 inline void
 for_each__(
-    flecsi::topology::
-        index_space__<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> &
-            index_space,
-    FUNCTION && function) {
+  flecsi::topology::
+    index_space__<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> & index_space,
+  FUNCTION && function) {
   const size_t end = index_space.end_offset();
 
-  for (size_t i(index_space.begin_offset()); i < end; ++i) {
+  for(size_t i(index_space.begin_offset()); i < end; ++i) {
     function(std::forward<ENTITY_TYPE>(index_space.get_offset(i)));
   } // for
 } // for_each__
@@ -85,24 +83,22 @@ for_each__(
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-template<
-    typename ENTITY_TYPE,
-    bool STORAGE,
-    bool OWNED,
-    bool SORTED,
-    typename PREDICATE,
-    typename FUNCTION,
-    typename REDUCTION>
+template<typename ENTITY_TYPE,
+  bool STORAGE,
+  bool OWNED,
+  bool SORTED,
+  typename PREDICATE,
+  typename FUNCTION,
+  typename REDUCTION>
 inline void
 reduce_each__(
-    flecsi::topology::
-        index_space__<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> &
-            index_space,
-    REDUCTION & reduction,
-    FUNCTION && function) {
+  flecsi::topology::
+    index_space__<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> & index_space,
+  REDUCTION & reduction,
+  FUNCTION && function) {
   size_t end = index_space.end_offset();
 
-  for (size_t i(index_space.begin_offset()); i < end; ++i) {
+  for(size_t i(index_space.begin_offset()); i < end; ++i) {
     function(std::forward<ENTITY_TYPE>(index_space.get_offset(i)), reduction);
   } // for
 } // reduce_each__

@@ -25,7 +25,8 @@ namespace data {
 //! Base type to identify types that allow data registration.
 //----------------------------------------------------------------------------//
 
-class FLECSI_EXPORT data_client_t {
+class FLECSI_EXPORT data_client_t
+{
 public:
   /// Copy constructor (disabled)
   data_client_t(const data_client_t &) = delete;

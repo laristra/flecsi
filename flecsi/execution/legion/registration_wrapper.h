@@ -37,12 +37,12 @@ namespace execution {
  */
 
 template<
-    typename RETURN,
-    RETURN (*TASK)(
-        const Legion::Task *,
-        const std::vector<Legion::PhysicalRegion> &,
-        Legion::Context,
-        Legion::Runtime *)>
+  typename RETURN,
+  RETURN (*TASK)(
+    const Legion::Task *,
+    const std::vector<Legion::PhysicalRegion> &,
+    Legion::Context,
+    Legion::Runtime *)>
 struct registration_wrapper__ {
 
   /*!
@@ -52,10 +52,10 @@ struct registration_wrapper__ {
    */
 
   static void register_task(
-      const Legion::TaskID tid,
-      const Legion::Processor::Kind & processor,
-      const Legion::TaskConfigOptions config_options,
-      std::string & task_name) {
+    const Legion::TaskID tid,
+    const Legion::Processor::Kind & processor,
+    const Legion::TaskConfigOptions config_options,
+    std::string & task_name) {
 
     {
       Legion::TaskVariantRegistrar registrar(tid, task_name.c_str());
@@ -64,7 +64,7 @@ struct registration_wrapper__ {
       registrar.set_inner(config_options.inner);
       registrar.set_idempotent(config_options.idempotent);
       Legion::Runtime::preregister_task_variant<RETURN, TASK>(
-          registrar, task_name.c_str());
+        registrar, task_name.c_str());
     } // scope
 
   } // register_task
@@ -79,17 +79,17 @@ struct registration_wrapper__ {
  */
 
 template<void (*TASK)(
-    const Legion::Task *,
-    const std::vector<Legion::PhysicalRegion> &,
-    Legion::Context,
-    Legion::Runtime *)>
+  const Legion::Task *,
+  const std::vector<Legion::PhysicalRegion> &,
+  Legion::Context,
+  Legion::Runtime *)>
 struct registration_wrapper__<void, TASK> {
 
   static void register_task(
-      const Legion::TaskID tid,
-      const Legion::Processor::Kind & processor,
-      const Legion::TaskConfigOptions config_options,
-      std::string & task_name) {
+    const Legion::TaskID tid,
+    const Legion::Processor::Kind & processor,
+    const Legion::TaskConfigOptions config_options,
+    std::string & task_name) {
 
     {
       Legion::TaskVariantRegistrar registrar(tid, task_name.c_str());
@@ -98,7 +98,7 @@ struct registration_wrapper__<void, TASK> {
       registrar.set_inner(config_options.inner);
       registrar.set_idempotent(config_options.idempotent);
       Legion::Runtime::preregister_task_variant<TASK>(
-          registrar, task_name.c_str());
+        registrar, task_name.c_str());
     } // scope
 
   } // register_task

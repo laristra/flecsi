@@ -30,7 +30,8 @@ namespace utils {
 
   @ingroup utils
  */
-class const_string_t {
+class const_string_t
+{
 public:
   using hash_type_t = std::size_t;
 
@@ -41,7 +42,7 @@ public:
    */
   template<hash_type_t N>
   constexpr const_string_t(const char (&str)[N])
-      : str_(str), size_(N - 1) {} // const_string_t
+    : str_(str), size_(N - 1) {} // const_string_t
 
   //!
   //! Return the string literal for this const_string_t.

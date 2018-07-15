@@ -42,11 +42,10 @@
                                                                                \
   /* Call the storage policy to register the data */                           \
   inline bool client_type##_##nspace##_##name##_data_client_registered =       \
-      flecsi::data::data_client_interface_t::register_data_client<             \
-          client_type,                                                         \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>(   \
-          {EXPAND_AND_STRINGIFY(name)})
+    flecsi::data::data_client_interface_t::register_data_client<client_type,   \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>(       \
+      {EXPAND_AND_STRINGIFY(name)})
 
 /*!
   @def flecsi_register_field
@@ -69,17 +68,17 @@
   @ingroup data
  */
 
-#define flecsi_register_field(client_type, nspace, name, data_type,            \
-  storage_class, versions, ...)                                                \
+#define flecsi_register_field(                                                 \
+  client_type, nspace, name, data_type, storage_class, versions, ...)          \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
   inline bool client_type##_##nspace##_##name##_data_registered =              \
-      flecsi::data::field_interface_t::register_field<                         \
-          client_type, flecsi::data::storage_class, data_type,                 \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-          versions, ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
+    flecsi::data::field_interface_t::register_field<client_type,               \
+      flecsi::data::storage_class, data_type,                                  \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
+      versions, ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
 
 /*!
   @def flecsi_register_global
@@ -105,12 +104,12 @@
                                                                                \
   /* Call the storage policy to register the data */                           \
   inline bool client_type##_##nspace##_##name##_data_registered =              \
-      flecsi::data::field_interface_t::register_field<                         \
-          flecsi::data::global_data_client_t, flecsi::data::global, data_type, \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-          versions, flecsi::execution::internal_index_space::global_is,        \
-          ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
+    flecsi::data::field_interface_t::register_field<                           \
+      flecsi::data::global_data_client_t, flecsi::data::global, data_type,     \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
+      versions, flecsi::execution::internal_index_space::global_is,            \
+      ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
 
 /*!
   @def flecsi_register_color
@@ -135,12 +134,12 @@
                                                                                \
   /* Call the storage policy to register the data */                           \
   inline bool client_type##_##nspace##_##name##_data_registered =              \
-      flecsi::data::field_interface_t::register_field<                         \
-          flecsi::data::color_data_client_t, flecsi::data::color, data_type,   \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-          versions, flecsi::execution::internal_index_space::color_is,         \
-          ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
+    flecsi::data::field_interface_t::register_field<                           \
+      flecsi::data::color_data_client_t, flecsi::data::color, data_type,       \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
+      versions, flecsi::execution::internal_index_space::color_is,             \
+      ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
 
 /*!
   @def flecsi_get_handle
@@ -161,16 +160,16 @@
  */
 
 #define flecsi_get_handle(                                                     \
-    client_handle, nspace, name, data_type, storage_class, version)            \
+  client_handle, nspace, name, data_type, storage_class, version)              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
   flecsi::data::field_interface_t::get_handle<                                 \
-      typename flecsi::data_client_type__<decltype(client_handle)>::type,      \
-      flecsi::data::storage_class, data_type,                                  \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
-      version>(client_handle)
+    typename flecsi::data_client_type__<decltype(client_handle)>::type,        \
+    flecsi::data::storage_class, data_type,                                    \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),          \
+    version>(client_handle)
 
 /*!
   @def flecsi_get_global
@@ -193,9 +192,9 @@
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_handle(                                                           \
-      flecsi_get_client_handle(                                                \
-          flecsi::data::global_data_client_t, global_client, global_client),   \
-      nspace, name, data_type, global, version)
+    flecsi_get_client_handle(                                                  \
+      flecsi::data::global_data_client_t, global_client, global_client),       \
+    nspace, name, data_type, global, version)
 
 /*!
   @def flecsi_get_color
@@ -217,9 +216,9 @@
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_handle(                                                           \
-      flecsi_get_client_handle(                                                \
-          flecsi::data::color_data_client_t, color_client, color_client),      \
-      nspace, name, data_type, color, version)
+    flecsi_get_client_handle(                                                  \
+      flecsi::data::color_data_client_t, color_client, color_client),          \
+    nspace, name, data_type, color, version)
 
 /*!
   @def flecsi_get_client_handle
@@ -237,10 +236,9 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the data client */             \
-  flecsi::data::data_client_interface_t::get_client_handle<                    \
-      client_type,                                                             \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>()
+  flecsi::data::data_client_interface_t::get_client_handle<client_type,        \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>()
 
 /*!
   @def flecsi_get_handles
@@ -264,14 +262,14 @@
  */
 
 #define flecsi_get_handles(                                                    \
-    client, nspace, data_type, storage_class, version, ...)                    \
+  client, nspace, data_type, storage_class, version, ...)                      \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get the handles to the data */                 \
-  flecsi::data::field_interface_t::get_handles<                                \
-      flecsi::data::storage_class, data_type,                                  \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(     \
-      client, version, ##__VA_ARGS__)
+  flecsi::data::field_interface_t::get_handles<flecsi::data::storage_class,    \
+    data_type,                                                                 \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
+    client, version, ##__VA_ARGS__)
 
 /*!
   @def flecsi_get_handles_all
@@ -297,8 +295,8 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get the handles to the data */                 \
-  flecsi::data::field_interface_t::get_handles<                                \
-      flecsi::data::storage_class, data_type>(client, version, ##__VA_ARGS__)
+  flecsi::data::field_interface_t::get_handles<flecsi::data::storage_class,    \
+    data_type>(client, version, ##__VA_ARGS__)
 
 /*!
   @def flecsi_is_at
@@ -405,33 +403,33 @@
  */
 
 #define flecsi_get_mutator(                                                    \
-    client_handle, nspace, name, data_type, storage_class, version, slots)     \
+  client_handle, nspace, name, data_type, storage_class, version, slots)       \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
   flecsi::data::field_interface_t::get_mutator<                                \
-      typename flecsi::data_client_type__<decltype(client_handle)>::type,      \
-      flecsi::data::storage_class, data_type,                                  \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
-      version>(client_handle, slots)
+    typename flecsi::data_client_type__<decltype(client_handle)>::type,        \
+    flecsi::data::storage_class, data_type,                                    \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),          \
+    version>(client_handle, slots)
 
 /*!
  FIXME documentation
 */
 #define flecsi_get_all_handles(                                                \
-    client, storage_class, handles, hashes, namespaces, versions)              \
+  client, storage_class, handles, hashes, namespaces, versions)                \
                                                                                \
   flecsi::data::field_interface_t::get_all_handles<                            \
-      flecsi::data::storage_class>(                                            \
-      client, handles, hashes, namespaces, versions)
+    flecsi::data::storage_class>(                                              \
+    client, handles, hashes, namespaces, versions)
 
 /*!
   FIXME documentation
 */
 #define flecsi_put_all_handles(                                                \
-    client, storage_class, num_handles, handles, hashes, namespaces, versions) \
+  client, storage_class, num_handles, handles, hashes, namespaces, versions)   \
                                                                                \
   flecsi::data::field_interface_t::put_all_handles<                            \
-      flecsi::data::storage_class>(                                            \
-      client, num_handles, handles, hashes, namespaces, versions)
+    flecsi::data::storage_class>(                                              \
+    client, num_handles, handles, hashes, namespaces, versions)

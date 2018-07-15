@@ -35,7 +35,7 @@ template<std::size_t INDEX, typename TUPLE_TYPE, typename CRTP_TYPE>
 struct tuple_walker_helper__ {
 
   static constexpr std::size_t CURRENT =
-      std::tuple_size<TUPLE_TYPE>::value - INDEX;
+    std::tuple_size<TUPLE_TYPE>::value - INDEX;
 
   using HELPER_TYPE = tuple_walker_helper__<INDEX - 1, TUPLE_TYPE, CRTP_TYPE>;
 
@@ -116,8 +116,9 @@ struct tuple_walker__ {
 
   template<typename TUPLE_TYPE>
   void walk(TUPLE_TYPE & t) {
-    using HELPER_TYPE = tuple_walker_helper__<
-        std::tuple_size<TUPLE_TYPE>::value, TUPLE_TYPE, CRTP_TYPE>;
+    using HELPER_TYPE =
+      tuple_walker_helper__<std::tuple_size<TUPLE_TYPE>::value, TUPLE_TYPE,
+        CRTP_TYPE>;
 
     HELPER_TYPE::walk(*static_cast<CRTP_TYPE *>(this), t);
   } // walk
@@ -132,8 +133,9 @@ struct tuple_walker__ {
 
   template<typename TUPLE_TYPE>
   void walk_types() {
-    using HELPER_TYPE = tuple_walker_helper__<
-        std::tuple_size<TUPLE_TYPE>::value, TUPLE_TYPE, CRTP_TYPE>;
+    using HELPER_TYPE =
+      tuple_walker_helper__<std::tuple_size<TUPLE_TYPE>::value, TUPLE_TYPE,
+        CRTP_TYPE>;
 
     HELPER_TYPE::walk_types(*static_cast<CRTP_TYPE *>(this));
   } // walk_type

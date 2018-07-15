@@ -45,14 +45,13 @@ struct function_interface__ {
     @param user_function The user function.
    */
 
-  template<
-      size_t KEY,
-      typename RETURN,
-      typename ARG_TUPLE,
-      RETURN (*FUNCTION)(ARG_TUPLE)>
+  template<size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE)>
   static decltype(auto) register_function() {
-    return EXECUTION_POLICY::template register_function<
-        KEY, RETURN, ARG_TUPLE, FUNCTION>();
+    return EXECUTION_POLICY::template register_function<KEY, RETURN, ARG_TUPLE,
+      FUNCTION>();
   } // register_function
 
   /*!
@@ -69,10 +68,10 @@ struct function_interface__ {
    */
 
   template<typename FUNCTION_HANDLE, typename... ARGS>
-  static decltype(auto)
-  execute_function(FUNCTION_HANDLE & handle, ARGS &&... args) {
+  static decltype(auto) execute_function(FUNCTION_HANDLE & handle,
+    ARGS &&... args) {
     return EXECUTION_POLICY::template execute_function(
-        handle, std::forward<ARGS>(args)...);
+      handle, std::forward<ARGS>(args)...);
   } // execute_function
 
 }; // struct function_interface__
@@ -96,7 +95,7 @@ namespace execution {
  */
 
 using function_interface_t =
-    function_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
+  function_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
 
 } // namespace execution
 } // namespace flecsi

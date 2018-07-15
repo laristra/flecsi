@@ -72,7 +72,7 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
      */
 
   legion_future__(const Legion::Future & legion_future)
-      : legion_future_(legion_future) {}
+    : legion_future_(legion_future) {}
 
   /*!
     Wait on a task result.
@@ -96,11 +96,11 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
   } // get
 
   void defer_dynamic_collective_arrival(
-      Legion::Runtime * runtime,
-      Legion::Context ctx,
-      Legion::DynamicCollective & dc_reduction) {
+    Legion::Runtime * runtime,
+    Legion::Context ctx,
+    Legion::DynamicCollective & dc_reduction) {
     runtime->defer_dynamic_collective_arrival(
-        ctx, dc_reduction, legion_future_);
+      ctx, dc_reduction, legion_future_);
   } // defer_dynamic_collective_arrival
 
   /*!
@@ -162,7 +162,7 @@ struct legion_future__<void, launch_type_t::single> : public future_base_t {
    */
 
   legion_future__(const Legion::Future & legion_future)
-      : legion_future_(legion_future) {}
+    : legion_future_(legion_future) {}
 
   /*!
     Wait on a task result.
@@ -173,9 +173,9 @@ struct legion_future__<void, launch_type_t::single> : public future_base_t {
   } // wait
 
   void defer_dynamic_collective_arrival(
-      Legion::Runtime * runtime,
-      Legion::Context ctx,
-      Legion::DynamicCollective & dc_reduction) {
+    Legion::Runtime * runtime,
+    Legion::Context ctx,
+    Legion::DynamicCollective & dc_reduction) {
     // reduction of a void is still void
   }
 
@@ -213,7 +213,7 @@ struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
    */
 
   legion_future__(const Legion::FutureMap & legion_future)
-      : legion_future_(legion_future) {}
+    : legion_future_(legion_future) {}
 
   /*!
     Wait on a task result.
@@ -234,15 +234,15 @@ struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
   RETURN
   get(size_t index = 0, bool silence_warnings = false) {
     return legion_future_.get_result<RETURN>(
-        Legion::DomainPoint::from_point<1>(
-            LegionRuntime::Arrays::Point<1>(index)),
-        silence_warnings);
+      Legion::DomainPoint::from_point<1>(
+        LegionRuntime::Arrays::Point<1>(index)),
+      silence_warnings);
   } // get
 
   void defer_dynamic_collective_arrival(
-      Legion::Runtime * runtime,
-      Legion::Context ctx,
-      Legion::DynamicCollective & dc_reduction) {
+    Legion::Runtime * runtime,
+    Legion::Context ctx,
+    Legion::DynamicCollective & dc_reduction) {
     // Not sure what reducing a map with other maps would mean
   }
 
@@ -277,7 +277,7 @@ struct legion_future__<void, launch_type_t::index> : public future_base_t {
      */
 
   legion_future__(const Legion::FutureMap & legion_future)
-      : legion_future_(legion_future) {}
+    : legion_future_(legion_future) {}
 
   /*!
     Wait on a task result.

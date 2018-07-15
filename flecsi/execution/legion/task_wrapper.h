@@ -118,12 +118,12 @@ struct execution_wrapper__<void, ARG_TUPLE, DELEGATE> {
  */
 
 template<
-    typename RETURN,
-    RETURN (*TASK)(
-        const Legion::Task *,
-        const std::vector<Legion::PhysicalRegion> &,
-        Legion::Context,
-        Legion::Runtime *)>
+  typename RETURN,
+  RETURN (*TASK)(
+    const Legion::Task *,
+    const std::vector<Legion::PhysicalRegion> &,
+    Legion::Context,
+    Legion::Runtime *)>
 struct pure_task_wrapper__ {
 
   /*!
@@ -142,10 +142,10 @@ struct pure_task_wrapper__ {
    */
 
   static void registration_callback(
-      task_id_t tid,
-      processor_type_t processor,
-      launch_t launch,
-      std::string & task_name) {
+    task_id_t tid,
+    processor_type_t processor,
+    launch_t launch,
+    std::string & task_name) {
     {
       clog_tag_guard(wrapper);
       clog(info) << "Executing PURE registration callback (" << task_name << ")"
@@ -155,7 +155,7 @@ struct pure_task_wrapper__ {
     // Create configuration options using launch information provided
     // by the user.
     Legion::TaskConfigOptions config_options{
-        launch_leaf(launch), launch_inner(launch), launch_idempotent(launch)};
+      launch_leaf(launch), launch_inner(launch), launch_idempotent(launch)};
 
     switch (processor) {
       case processor_type_t::loc: {
@@ -165,7 +165,7 @@ struct pure_task_wrapper__ {
                    << std::endl;
       }
         registration_wrapper__<RETURN, TASK>::register_task(
-            tid, Legion::Processor::LOC_PROC, config_options, task_name);
+          tid, Legion::Processor::LOC_PROC, config_options, task_name);
         break;
       case processor_type_t::toc: {
         clog_tag_guard(wrapper);
@@ -173,7 +173,7 @@ struct pure_task_wrapper__ {
                    << std::endl;
       }
         registration_wrapper__<RETURN, TASK>::register_task(
-            tid, Legion::Processor::TOC_PROC, config_options, task_name);
+          tid, Legion::Processor::TOC_PROC, config_options, task_name);
         break;
       case processor_type_t::mpi:
         clog(fatal) << "MPI type passed to pure legion registration"
@@ -181,8 +181,8 @@ struct pure_task_wrapper__ {
         break;
       default:
         clog(fatal)
-            << "wrong processor type is specified for the task registration"
-            << std::endl;
+          << "wrong processor type is specified for the task registration"
+          << std::endl;
         break;
     } // switch
   } // registration_callback
@@ -202,10 +202,10 @@ struct pure_task_wrapper__ {
  */
 
 template<
-    size_t KEY,
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*DELEGATE)(ARG_TUPLE)>
+  size_t KEY,
+  typename RETURN,
+  typename ARG_TUPLE,
+  RETURN (*DELEGATE)(ARG_TUPLE)>
 struct task_wrapper__ {
 
   /*!
@@ -223,10 +223,10 @@ struct task_wrapper__ {
    */
 
   static void registration_callback(
-      task_id_t tid,
-      processor_type_t processor,
-      launch_t launch,
-      std::string & name) {
+    task_id_t tid,
+    processor_type_t processor,
+    launch_t launch,
+    std::string & name) {
     {
       clog_tag_guard(wrapper);
       clog(info) << "Executing registration callback for " << name << std::endl;
@@ -235,7 +235,7 @@ struct task_wrapper__ {
     // Create configuration options using launch information provided
     // by the user.
     Legion::TaskConfigOptions config_options{
-        launch_leaf(launch), launch_inner(launch), launch_idempotent(launch)};
+      launch_leaf(launch), launch_inner(launch), launch_idempotent(launch)};
 
     switch (processor) {
       case processor_type_t::loc: {
@@ -244,7 +244,7 @@ struct task_wrapper__ {
                    << std::endl;
       }
         registration_wrapper__<RETURN, execute_user_task>::register_task(
-            tid, Legion::Processor::LOC_PROC, config_options, name);
+          tid, Legion::Processor::LOC_PROC, config_options, name);
         break;
       case processor_type_t::toc: {
         clog_tag_guard(wrapper);
@@ -252,7 +252,7 @@ struct task_wrapper__ {
                    << std::endl;
       }
         registration_wrapper__<RETURN, execute_user_task>::register_task(
-            tid, Legion::Processor::TOC_PROC, config_options, name);
+          tid, Legion::Processor::TOC_PROC, config_options, name);
         break;
       case processor_type_t::mpi: {
         clog_tag_guard(wrapper);
@@ -260,12 +260,12 @@ struct task_wrapper__ {
                    << std::endl;
       }
         registration_wrapper__<void, execute_mpi_task>::register_task(
-            tid, Legion::Processor::LOC_PROC, config_options, name);
+          tid, Legion::Processor::LOC_PROC, config_options, name);
         break;
       default:
         clog(fatal)
-            << "wrong processor type is specified for the task registration"
-            << std::endl;
+          << "wrong processor type is specified for the task registration"
+          << std::endl;
         break;
     } // switch
   } // registration_callback
@@ -275,10 +275,10 @@ struct task_wrapper__ {
    */
 
   static RETURN execute_user_task(
-      const Legion::Task * task,
-      const std::vector<Legion::PhysicalRegion> & regions,
-      Legion::Context context,
-      Legion::Runtime * runtime) {
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime) {
     {
       clog_tag_guard(wrapper);
       clog(info) << "In execute_user_task" << std::endl;
@@ -306,10 +306,10 @@ struct task_wrapper__ {
    */
 
   static void execute_mpi_task(
-      const Legion::Task * task,
-      const std::vector<Legion::PhysicalRegion> & regions,
-      Legion::Context context,
-      Legion::Runtime * runtime) {
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime) {
     {
       clog_tag_guard(wrapper);
       clog(info) << "In execute_mpi_task" << std::endl;

@@ -29,8 +29,8 @@
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
-#include <flecsi/utils/dag.h>
 #include <flecsi/utils/const_string.h>
+#include <flecsi/utils/dag.h>
 #include <flecsi/utils/simple_id.h>
 
 clog_register_tag(context);
@@ -66,7 +66,7 @@ struct context__ : public CONTEXT_POLICY {
 
   struct field_info_t {
     size_t data_client_hash;
-    size_t storage_class=0;
+    size_t storage_class = 0;
     size_t size;
     size_t namespace_hash;
     size_t name_hash;
@@ -84,7 +84,7 @@ struct context__ : public CONTEXT_POLICY {
     size_t exclusive_reserve;
     size_t max_entries_per_index;
     // flecsi internal variable, do not set it up
-    size_t sparse_fields_registered_=0; 
+    size_t sparse_fields_registered_ = 0;
   };
 
   struct index_subspace_info_t {
@@ -117,7 +117,7 @@ struct context__ : public CONTEXT_POLICY {
   //--------------------------------------------------------------------------//
 
   using field_info_map_t =
-      std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
+    std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
 
   //--------------------------------------------------------------------------//
   // Top-level driver interface.
@@ -130,7 +130,9 @@ struct context__ : public CONTEXT_POLICY {
     return true;
   } // register_top_level_driver
 
-  tlt_driver_t const & top_level_driver() const { return tlt_driver_; }
+  tlt_driver_t const & top_level_driver() const {
+    return tlt_driver_;
+  }
 
   //--------------------------------------------------------------------------//
   // Reduction interface.
@@ -169,7 +171,7 @@ struct context__ : public CONTEXT_POLICY {
     size_t KEY = NAMESPACE_HASH ^ index;
     assert(global_object_registry_.find(KEY) != global_object_registry_.end());
     std::get<0>(global_object_registry_[KEY]) =
-        reinterpret_cast<uintptr_t>(obj);
+      reinterpret_cast<uintptr_t>(obj);
     return true;
   } // set_global_object
 
@@ -177,8 +179,8 @@ struct context__ : public CONTEXT_POLICY {
   bool initialize_global_object(size_t index, ARGS &&... args) {
     size_t KEY = NAMESPACE_HASH ^ index;
     assert(global_object_registry_.find(KEY) != global_object_registry_.end());
-    std::get<0>(global_object_registry_[KEY]) = reinterpret_cast<uintptr_t>(
-        new OBJECT_TYPE(std::forward<ARGS>(args)...));
+    std::get<0>(global_object_registry_[KEY]) =
+      reinterpret_cast<uintptr_t>(new OBJECT_TYPE(std::forward<ARGS>(args)...));
     return true;
   } // new_global_object
 
@@ -187,7 +189,7 @@ struct context__ : public CONTEXT_POLICY {
     size_t KEY = NAMESPACE_HASH ^ index;
     assert(global_object_registry_.find(KEY) != global_object_registry_.end());
     return reinterpret_cast<OBJECT_TYPE *>(
-        std::get<0>(global_object_registry_[KEY]));
+      std::get<0>(global_object_registry_[KEY]));
   } // get_global_object
 
   //--------------------------------------------------------------------------//
@@ -198,15 +200,13 @@ struct context__ : public CONTEXT_POLICY {
     FIXME: This interface needs to be updated.
    */
 
-  template<
-      size_t KEY,
-      typename RETURN,
-      typename ARG_TUPLE,
-      RETURN (*FUNCTION)(ARG_TUPLE)>
+  template<size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE)>
   bool register_function() {
-    clog_assert(
-        function_registry_.find(KEY) == function_registry_.end(),
-        "function has already been registered");
+    clog_assert(function_registry_.find(KEY) == function_registry_.end(),
+      "function has already been registered");
 
     const std::size_t addr = reinterpret_cast<std::size_t>(FUNCTION);
     clog(info) << "Registering function: " << addr << std::endl;
@@ -261,7 +261,7 @@ struct context__ : public CONTEXT_POLICY {
   void add_index_map(size_t index_space, std::map<size_t, size_t> & index_map) {
     index_map_[index_space] = index_map;
 
-    for (auto i : index_map) {
+    for(auto i : index_map) {
       reverse_index_map_[index_space][i.second] = i.first;
     } // for
   } // add_index_map
@@ -294,8 +294,8 @@ struct context__ : public CONTEXT_POLICY {
     Register set topology index space sizes and other needed metadata.
    */
 
-  void
-  add_set_index_space(size_t index_space, const set_index_space_info_t & info) {
+  void add_set_index_space(size_t index_space,
+    const set_index_space_info_t & info) {
     auto itr = set_index_space_map_.insert({index_space, info});
     clog_assert(itr->second, "set index space exists: " << index_space);
   }
@@ -304,8 +304,8 @@ struct context__ : public CONTEXT_POLICY {
     return set_index_space_map_;
   }
 
-  void set_sparse_index_space_info( const sparse_index_space_info_t & info) {
-    sparse_index_space_info_map_[info.index_space]=info;
+  void set_sparse_index_space_info(const sparse_index_space_info_t & info) {
+    sparse_index_space_info_map_[info.index_space] = info;
   }
 
   /*!
@@ -316,20 +316,18 @@ struct context__ : public CONTEXT_POLICY {
     return sparse_index_space_info_map_;
   }
 
-  void increment_sparse_fields(size_t sparse_idx_space)
-  {
+  void increment_sparse_fields(size_t sparse_idx_space) {
     auto iterator = sparse_index_space_info_map_.find(sparse_idx_space);
-    clog_assert(iterator!=sparse_index_space_info_map_.end(),
-                "sparse data map doesn't have this index space");
-       iterator->second.sparse_fields_registered_++;
+    clog_assert(iterator != sparse_index_space_info_map_.end(),
+      "sparse data map doesn't have this index space");
+    iterator->second.sparse_fields_registered_++;
   }
 
-  bool sparse_fields(size_t sparse_idx_space)
-  {
+  bool sparse_fields(size_t sparse_idx_space) {
     auto iterator = sparse_index_space_info_map_.find(sparse_idx_space);
-    clog_assert(iterator!=sparse_index_space_info_map_.end(),
-                "sparse data map doesn't have this index space");
-    if (iterator->second.sparse_fields_registered_>0)
+    clog_assert(iterator != sparse_index_space_info_map_.end(),
+      "sparse data map doesn't have this index space");
+    if(iterator->second.sparse_fields_registered_ > 0)
       return true;
     else
       return false;
@@ -420,7 +418,7 @@ struct context__ : public CONTEXT_POLICY {
     auto it = reverse_intermediate_map_.find(key);
 
     clog_assert(
-        it != reverse_intermediate_map_.end(), "invalid intermediate mapping");
+      it != reverse_intermediate_map_.end(), "invalid intermediate mapping");
 
     return it->second;
   } // reverse_intermediate_map
@@ -449,26 +447,26 @@ struct context__ : public CONTEXT_POLICY {
   void build_reverse_intermediate_maps(bool reset = false, bool sort = false) {
 
     // clear the map for safety
-    if (reset)
+    if(reset)
       reverse_intermediate_map_.clear();
 
     // now flip all the mappings
-    for (const auto & forward_map : intermediate_map_) {
+    for(const auto & forward_map : intermediate_map_) {
       auto key = forward_map.first;
       auto & reverse_map = reverse_intermediate_map_[key];
       // it will be empty if never set, or reset==true
-      if (reverse_map.empty()) {
+      if(reverse_map.empty()) {
 
         // assume unsorted
-        if (sort) {
-          for (auto & entry : forward_map.second) {
+        if(sort) {
+          for(auto & entry : forward_map.second) {
             std::sort(entry.second.begin(), entry.second.end());
             reverse_map[entry.second] = entry.first;
           }
         }
         // assume sorted
         else {
-          for (const auto & entry : forward_map.second)
+          for(const auto & entry : forward_map.second)
             reverse_map[entry.second] = entry.first;
         }
       }
@@ -486,7 +484,7 @@ struct context__ : public CONTEXT_POLICY {
 
   auto & intermediate_binding_map(size_t from_dimension, size_t from_domain) {
     const auto key =
-        utils::hash::intermediate_hash(from_dimension, from_domain);
+      utils::hash::intermediate_hash(from_dimension, from_domain);
     return intermediate_binding_map_[key];
   } // add_intermediate_binding_map
 
@@ -497,13 +495,13 @@ struct context__ : public CONTEXT_POLICY {
     @param domain    The entity domain.
    */
 
-  auto const &
-  reverse_intermediate_binding_map(size_t dimension, size_t domain) const {
+  auto const & reverse_intermediate_binding_map(size_t dimension,
+    size_t domain) const {
     const auto key = utils::hash::intermediate_hash(dimension, domain);
 
     auto it = reverse_intermediate_binding_map_.find(key);
     clog_assert(
-        it != reverse_intermediate_binding_map_.end(), "invalid index space");
+      it != reverse_intermediate_binding_map_.end(), "invalid index space");
 
     return it->second;
   } // reverse_intermediate_map
@@ -529,31 +527,30 @@ struct context__ : public CONTEXT_POLICY {
     @param reset  If true, clear the map before proceding.
     @param sort  If true, assume the entries are unsorted.
    */
-  void build_reverse_intermediate_binding_maps(
-      bool reset = false,
-      bool sort = false) {
+  void build_reverse_intermediate_binding_maps(bool reset = false,
+    bool sort = false) {
 
     // clear the map for safety
-    if (reset)
+    if(reset)
       reverse_intermediate_binding_map_.clear();
 
     // now flip all the mappings
-    for (const auto & forward_map : intermediate_binding_map_) {
+    for(const auto & forward_map : intermediate_binding_map_) {
       auto key = forward_map.first;
       auto & reverse_map = reverse_intermediate_binding_map_[key];
       // it will be empty if never set, or reset==true
-      if (reverse_map.empty()) {
+      if(reverse_map.empty()) {
 
         // assume unsorted
-        if (sort) {
-          for (auto & entry : forward_map.second) {
+        if(sort) {
+          for(auto & entry : forward_map.second) {
             std::sort(entry.second.begin(), entry.second.end());
             reverse_map[entry.second] = entry.first;
           }
         }
         // assume sorted
         else {
-          for (const auto & entry : forward_map.second)
+          for(const auto & entry : forward_map.second)
             reverse_map[entry.second] = entry.first;
         }
       }
@@ -572,13 +569,11 @@ struct context__ : public CONTEXT_POLICY {
     @param coloring The index coloring information to add.
    */
 
-  void add_coloring(
-      size_t index_space,
-      index_coloring_t & coloring,
-      std::unordered_map<size_t, coloring_info_t> & coloring_info) {
-    clog_assert(
-        colorings_.find(index_space) == colorings_.end(),
-        "color index already exists");
+  void add_coloring(size_t index_space,
+    index_coloring_t & coloring,
+    std::unordered_map<size_t, coloring_info_t> & coloring_info) {
+    clog_assert(colorings_.find(index_space) == colorings_.end(),
+      "color index already exists");
 
     colorings_[index_space] = coloring;
     coloring_info_[index_space] = coloring_info;
@@ -592,7 +587,7 @@ struct context__ : public CONTEXT_POLICY {
 
   index_coloring_t & coloring(size_t index_space) {
     auto it = colorings_.find(index_space);
-    if (it == colorings_.end()) {
+    if(it == colorings_.end()) {
       clog(fatal) << "invalid index_space " << index_space << std::endl;
     } // if
 
@@ -606,10 +601,10 @@ struct context__ : public CONTEXT_POLICY {
                        to be returned.
    */
 
-  const std::unordered_map<size_t, coloring_info_t> &
-  coloring_info(size_t index_space) {
+  const std::unordered_map<size_t, coloring_info_t> & coloring_info(
+    size_t index_space) {
     auto it = coloring_info_.find(index_space);
-    if (it == coloring_info_.end()) {
+    if(it == coloring_info_.end()) {
       clog(fatal) << "invalid index space " << index_space << std::endl;
     } // if
 
@@ -648,12 +643,11 @@ struct context__ : public CONTEXT_POLICY {
 
   void add_adjacency(adjacency_info_t & adjacency_info) {
     clog_assert(
-        adjacency_info_.find(adjacency_info.index_space) ==
-            adjacency_info_.end(),
-        "adjacency exists");
+      adjacency_info_.find(adjacency_info.index_space) == adjacency_info_.end(),
+      "adjacency exists");
 
     adjacency_info_.emplace(
-        adjacency_info.index_space, std::move(adjacency_info));
+      adjacency_info.index_space, std::move(adjacency_info));
   } // add_adjacency
 
   /*!
@@ -734,7 +728,7 @@ struct context__ : public CONTEXT_POLICY {
     field_info_map_[{data_client_hash, index_space}].emplace(fid, field_info);
 
     field_name_map_.insert(
-        {{field_info.data_client_hash, field_info.key}, {index_space, fid}});
+      {{field_info.data_client_hash, field_info.key}, {index_space, fid}});
   } // put_field_info
 
   /*!
@@ -752,9 +746,8 @@ struct context__ : public CONTEXT_POLICY {
     @param namespace_hash namespace/field name hash
    */
 
-  const field_info_t & get_field_info_from_name(
-      size_t data_client_hash,
-      size_t namespace_hash) const {
+  const field_info_t & get_field_info_from_name(size_t data_client_hash,
+    size_t namespace_hash) const {
     auto itr = field_name_map_.find({data_client_hash, namespace_hash});
     clog_assert(itr != field_name_map_.end(), "invalid field");
 
@@ -774,20 +767,20 @@ struct context__ : public CONTEXT_POLICY {
     @param key key hash
    */
 
-  const field_info_t *
-  get_field_info_from_key(size_t data_client_hash, size_t key_hash) const {
+  const field_info_t * get_field_info_from_key(size_t data_client_hash,
+    size_t key_hash) const {
     auto itr = field_name_map_.find({data_client_hash, key_hash});
-    if (itr == field_name_map_.end()) {
+    if(itr == field_name_map_.end()) {
       return nullptr;
     }
 
     auto iitr = field_info_map_.find({data_client_hash, itr->second.first});
-    if (iitr == field_info_map_.end()) {
+    if(iitr == field_info_map_.end()) {
       return nullptr;
     }
 
     auto fitr = iitr->second.find(itr->second.second);
-    if (fitr == iitr->second.end()) {
+    if(fitr == iitr->second.end()) {
       return nullptr;
     }
 
@@ -819,14 +812,13 @@ struct context__ : public CONTEXT_POLICY {
   } // execution_state
 
 private:
-
   // Default constructor
   context__() : CONTEXT_POLICY() {}
 
   // Destructor
   ~context__() {
     // Invoke the cleanup function for each global object
-    for (auto & go : global_object_registry_) {
+    for(auto & go : global_object_registry_) {
       std::get<1>(go.second)(std::get<0>(go.second));
     } // for
   } // ~context_t
@@ -851,7 +843,7 @@ private:
   //--------------------------------------------------------------------------//
 
   using global_object_data_t =
-      std::pair<uintptr_t, std::function<void(uintptr_t)>>;
+    std::pair<uintptr_t, std::function<void(uintptr_t)>>;
 
   std::unordered_map<size_t, global_object_data_t> global_object_registry_;
 
@@ -886,7 +878,7 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
-      field_name_map_;
+    field_name_map_;
 
   //--------------------------------------------------------------------------//
   // key: virtual index space id
@@ -923,12 +915,12 @@ private:
 
   // key: intermediate entity to vertex ids
   std::map<size_t, std::unordered_map<size_t, std::vector<size_t>>>
-      intermediate_map_;
+    intermediate_map_;
 
   struct vector_hash_t {
     size_t operator()(std::vector<size_t> const & v) const {
       size_t h{0};
-      for (auto i : v) {
+      for(auto i : v) {
         h |= i;
       } // for
 
@@ -937,9 +929,8 @@ private:
   }; // struct vector_hash_t
 
   struct vector_equal_t {
-    bool operator()(
-        const std::vector<size_t> & a,
-        const std::vector<size_t> & b) const {
+    bool operator()(const std::vector<size_t> & a,
+      const std::vector<size_t> & b) const {
       // assume sorted for performance
       // std::sort(a.begin(), a.end());
       // std::sort(b.begin(), b.end());
@@ -947,44 +938,38 @@ private:
     } // operator ()
   }; // struct vector_hash_t
 
-  std::map<
-      size_t,
-      std::unordered_map<
-          std::vector<size_t>,
-          size_t,
-          vector_hash_t,
-          vector_equal_t>>
-      reverse_intermediate_map_;
+  std::map<size_t,
+    std::
+      unordered_map<std::vector<size_t>, size_t, vector_hash_t, vector_equal_t>>
+    reverse_intermediate_map_;
 
   //! the packed types used for simple_id_t
   using simple_id_types_t = std::tuple<int, int, size_t>;
 
   //! the simple id type used for comparing ids of different dimensions
-  using simple_id_t = utils::simple_id_t<
-      simple_id_types_t,
-      utils::lexical_comparison<simple_id_types_t>>;
+  using simple_id_t = utils::simple_id_t<simple_id_types_t,
+    utils::lexical_comparison<simple_id_types_t>>;
 
   //! the storage type for arrays of simple_id_t's
   using simple_id_vector_t = std::vector<simple_id_t>;
 
   //! A lexical comparison function for simple_id_t's
   struct simple_id_vector_compare_t {
-    bool operator()(const simple_id_vector_t & a, const simple_id_vector_t & b)
-        const {
+    bool operator()(const simple_id_vector_t & a,
+      const simple_id_vector_t & b) const {
       return std::lexicographical_compare(
-          a.begin(), a.end(), b.begin(), b.end());
+        a.begin(), a.end(), b.begin(), b.end());
     }
   };
 
   //! The forward intermediate binding mapping
   std::map<size_t, std::unordered_map<size_t, simple_id_vector_t>>
-      intermediate_binding_map_;
+    intermediate_binding_map_;
 
   //! the reverse intermediate binding mapping
-  std::map<
-      size_t,
-      std::map<simple_id_vector_t, size_t, simple_id_vector_compare_t>>
-      reverse_intermediate_binding_map_;
+  std::map<size_t,
+    std::map<simple_id_vector_t, size_t, simple_id_vector_compare_t>>
+    reverse_intermediate_binding_map_;
 
   //--------------------------------------------------------------------------//
   // key: virtual index space.

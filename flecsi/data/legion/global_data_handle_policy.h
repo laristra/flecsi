@@ -39,7 +39,7 @@ struct legion_global_data_handle_policy_t {
   legion_global_data_handle_policy_t() {}
 
   legion_global_data_handle_policy_t(
-      const legion_global_data_handle_policy_t & p) = default;
+    const legion_global_data_handle_policy_t & p) = default;
 
   bool * ghost_is_readable;
   bool * write_phase_started;
@@ -60,8 +60,8 @@ struct legion_global_data_handle_policy_t {
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.
   const Legion::STL::map<
-      LegionRuntime::Arrays::coord_t,
-      LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
+    LegionRuntime::Arrays::coord_t,
+    LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
 
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions

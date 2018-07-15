@@ -83,8 +83,8 @@ struct color_handle__ : public global_data_handle__<T, PERMISSIONS> {
 
   template<size_t P2>
   color_handle__(const color_handle__<T, P2> & a)
-      : base_t(reinterpret_cast<const base_t &>(a)), label_(a.label()),
-        size_(a.size()) {
+    : base_t(reinterpret_cast<const base_t &>(a)), label_(a.label()),
+      size_(a.size()) {
     static_assert(P2 == 0, "passing mapped handle to task args");
   }
 
@@ -150,26 +150,24 @@ struct storage_class__<color> {
    Data handles.
    */
 
-  template<
-      typename DATA_CLIENT_TYPE,
-      typename DATA_TYPE,
-      size_t NAMESPACE,
-      size_t NAME,
-      size_t VERSION,
-      size_t PERMISSIONS>
-  static handle_t<DATA_TYPE, 0>
-  get_handle(const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS> &
-                 client_handle) {
+  template<typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION,
+    size_t PERMISSIONS>
+  static handle_t<DATA_TYPE, 0> get_handle(
+    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
     handle_t<DATA_TYPE, 0> h;
     auto & context = execution::context_t::instance();
 
     auto & field_info = context.get_field_info_from_name(
-        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
-        utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
+      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
-    auto& registered_field_data = context.registered_field_data();
+    auto & registered_field_data = context.registered_field_data();
     auto fieldDataIter = registered_field_data.find(field_info.fid);
-    if (fieldDataIter == registered_field_data.end()) {
+    if(fieldDataIter == registered_field_data.end()) {
       // TODO: deal with VERSION
       context.register_field_data(field_info.fid, field_info.size);
     }

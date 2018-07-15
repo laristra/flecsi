@@ -42,12 +42,11 @@ struct dense_data_handle_base_t {};
  @ingroup data
  */
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS,
-    typename DATA_POLICY>
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS,
+  typename DATA_POLICY>
 struct dense_data_handle_base__ : public DATA_POLICY,
                                   public dense_data_handle_base_t {
 
@@ -67,7 +66,7 @@ struct dense_data_handle_base__ : public DATA_POLICY,
    */
 
   dense_data_handle_base__(const dense_data_handle_base__ & b)
-      : DATA_POLICY(b) {
+    : DATA_POLICY(b) {
     exclusive_data = b.exclusive_data;
     shared_data = b.shared_data;
     ghost_data = b.ghost_data;
@@ -133,16 +132,14 @@ namespace flecsi {
  @ingroup data
  */
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-using dense_data_handle__ = dense_data_handle_base__<
-    T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS,
-    FLECSI_RUNTIME_DENSE_DATA_HANDLE_POLICY>;
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+using dense_data_handle__ = dense_data_handle_base__<T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS,
+  FLECSI_RUNTIME_DENSE_DATA_HANDLE_POLICY>;
 
 } // namespace flecsi

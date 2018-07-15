@@ -12,7 +12,6 @@
    All rights reserved.
                                                                               */
 
-
 #if !defined(FLECSI_EXPORT_DEFINITIONS)
 #define FLECSI_EXPORT_DEFINITIONS
 
