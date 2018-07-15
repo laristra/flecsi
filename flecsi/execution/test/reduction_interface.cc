@@ -21,9 +21,15 @@ struct reduction_sum__ {
 
   using LHS = T;
   using RHS = T;
-  static constexpr T identity = 0;
+  static constexpr T identity{};
 
+  template<bool EXCLUSIVE = true>
   static void apply(LHS & lsh, RHS rhs) {
+    lsh += rhs;
+  } // apply
+
+  template<bool EXCLUSIVE = true>
+  static void fold(LHS & lsh, RHS rhs) {
     lsh += rhs;
   } // apply
 
@@ -38,9 +44,15 @@ struct reduction_product__ {
 
   using LHS = T;
   using RHS = T;
-  static T identity;
+  static constexpr T identity{};
 
+  template<bool EXCLUSIVE = true>
   static void apply(LHS & lsh, RHS rhs) {
+    lsh *= rhs;
+  } // apply
+
+  template<bool EXCLUSIVE = true>
+  static void fold(LHS & lsh, RHS rhs) {
     lsh *= rhs;
   } // apply
 
@@ -54,7 +66,10 @@ struct complex_t {
   double real;
   double imag;
 
-  complex_t(double real_ = 0.0, double imag_ = 0.0)
+  constexpr complex_t()
+    : real(0.0), imag(0.0) {}
+
+  complex_t(double real_, double imag_)
     : real(real_), imag(imag_) {}
 
   complex_t & operator *= (complex_t const & c) {

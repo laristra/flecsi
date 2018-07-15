@@ -53,7 +53,7 @@ struct reduction_wrapper__ {
     Legion::Runtime::register_reduction_op<OPERATION>(id);
 
     // Get the map of registered operations
-    auto & reduction_ops = context_t::instance().reduction_ops();
+    auto reduction_ops = context_t::instance().reduction_ops();
 
     clog_assert(reduction_ops.find(NAME) == reduction_ops.end(),
       typeid(OPERATION).name() <<
