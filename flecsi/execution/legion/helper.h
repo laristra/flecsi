@@ -43,7 +43,8 @@ using AccessorRW =
   allocators, getting buffers from accessors, etc. in the cases common to
   FleCSI.
  */
-class legion_helper {
+class legion_helper
+{
 public:
   legion_helper(Legion::Runtime * runtime, Legion::Context context)
     : runtime_(runtime), context_(context) {}
@@ -51,8 +52,7 @@ public:
   // structured
   Legion::IndexSpace create_index_space(unsigned start, unsigned end) {
     assert(end >= start);
-    LegionRuntime::Arrays::Rect<1> rect(
-      LegionRuntime::Arrays::Point<1>(start),
+    LegionRuntime::Arrays::Rect<1> rect(LegionRuntime::Arrays::Point<1>(start),
       LegionRuntime::Arrays::Point<1>(end - 0));
     return runtime_->create_index_space(
       context_, Legion::Domain::from_rect<1>(rect));
@@ -64,15 +64,13 @@ public:
   }
 
   Legion::Domain domain_from_point(size_t p) {
-    LegionRuntime::Arrays::Rect<1> rect(
-      LegionRuntime::Arrays::Point<1>(p),
+    LegionRuntime::Arrays::Rect<1> rect(LegionRuntime::Arrays::Point<1>(p),
       LegionRuntime::Arrays::Point<1>(p - 0));
     return Legion::Domain::from_rect<1>(rect);
   }
 
   Legion::Domain domain_from_rect(size_t start, size_t end) {
-    LegionRuntime::Arrays::Rect<1> rect(
-      LegionRuntime::Arrays::Point<1>(start),
+    LegionRuntime::Arrays::Rect<1> rect(LegionRuntime::Arrays::Point<1>(start),
       LegionRuntime::Arrays::Point<1>(end - 0));
     return Legion::Domain::from_rect<1>(rect);
   }
@@ -90,8 +88,8 @@ public:
     return runtime_->create_field_allocator(context_, fs);
   }
 
-  Legion::LogicalRegion
-  create_logical_region(Legion::IndexSpace is, Legion::FieldSpace fs) const {
+  Legion::LogicalRegion create_logical_region(Legion::IndexSpace is,
+    Legion::FieldSpace fs) const {
     return runtime_->create_logical_region(context_, is, fs);
   }
 

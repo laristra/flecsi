@@ -33,15 +33,13 @@ struct legion_set_topology_storage_policy__ {
 
   static const size_t num_index_spaces = std::tuple_size<entity_types_t>::value;
 
-  using index_spaces_t = std::array<
-    index_space__<
-      set_entity_t *,
-      true,
-      true,
-      true,
-      void,
-      identity_storage__,
-      topology_storage__>,
+  using index_spaces_t = std::array<index_space__<set_entity_t *,
+                                      true,
+                                      true,
+                                      true,
+                                      void,
+                                      identity_storage__,
+                                      topology_storage__>,
     num_index_spaces>;
 
   index_spaces_t index_spaces;
@@ -59,13 +57,11 @@ struct legion_set_topology_storage_policy__ {
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();
 
-    map_set_index_spaces__<
-      std::tuple_size<entity_types_t>::value, entity_types_t,
-      index_space_map_t>::map(index_space_map);
+    map_set_index_spaces__<std::tuple_size<entity_types_t>::value,
+      entity_types_t, index_space_map_t>::map(index_space_map);
   }
 
-  void init_entities(
-    size_t index_space,
+  void init_entities(size_t index_space,
     set_entity_t * entities,
     size_t size,
     size_t num_entities,
@@ -77,7 +73,7 @@ struct legion_set_topology_storage_policy__ {
 
     s->set_buffer(entities, num_entities, read);
 
-    if (!read) {
+    if(!read) {
       return;
     }
 
@@ -93,7 +89,7 @@ struct legion_set_topology_storage_policy__ {
     size_t entity = is.size();
 
     auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
-    auto ent = new (placement_ptr) T(std::forward<S>(args)...);
+    auto ent = new(placement_ptr) T(std::forward<S>(args)...);
     auto storage = is.storage();
     storage->pushed();
     is.pushed();

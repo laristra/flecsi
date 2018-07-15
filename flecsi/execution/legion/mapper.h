@@ -50,7 +50,8 @@ namespace execution {
  @ingroup legion-execution
 */
 
-class mpi_mapper_t : public Legion::Mapping::DefaultMapper {
+class mpi_mapper_t : public Legion::Mapping::DefaultMapper
+{
 public:
   /*!
    Contructor. Derives from the Legion's Default Mapper
@@ -61,12 +62,10 @@ public:
            LOC_PROC and TOC_PROC
    */
 
-  mpi_mapper_t(
-    Legion::Machine machine,
+  mpi_mapper_t(Legion::Machine machine,
     Legion::Runtime * _runtime,
     Legion::Processor local)
-    : Legion::Mapping::DefaultMapper(
-        _runtime->get_mapper_runtime(),
+    : Legion::Mapping::DefaultMapper(_runtime->get_mapper_runtime(),
         machine,
         local,
         "default"),
@@ -76,12 +75,12 @@ public:
 
     legion_machine::ProcessorQuery pq =
       legion_machine::ProcessorQuery(machine).same_address_space_as(local);
-    for (legion_machine::ProcessorQuery::iterator pqi = pq.begin();
-         pqi != pq.end(); ++pqi) {
+    for(legion_machine::ProcessorQuery::iterator pqi = pq.begin();
+        pqi != pq.end(); ++pqi) {
       legion_proc p = *pqi;
-      if (p.kind() == legion_proc::LOC_PROC)
+      if(p.kind() == legion_proc::LOC_PROC)
         local_cpus.push_back(p);
-      else if (p.kind() == legion_proc::TOC_PROC)
+      else if(p.kind() == legion_proc::TOC_PROC)
         local_gpus.push_back(p);
       else
         continue;
@@ -90,12 +89,12 @@ public:
 
       legion_machine::MemoryQuery mq =
         legion_machine::MemoryQuery(machine).has_affinity_to(p);
-      for (legion_machine::MemoryQuery::iterator mqi = mq.begin();
-           mqi != mq.end(); ++mqi) {
+      for(legion_machine::MemoryQuery::iterator mqi = mq.begin();
+          mqi != mq.end(); ++mqi) {
         Realm::Memory m = *mqi;
         mem_map[m.kind()] = m;
 
-        if (m.kind() == Realm::Memory::SYSTEM_MEM)
+        if(m.kind() == Realm::Memory::SYSTEM_MEM)
           local_sysmem = m;
       } // end for
     } // end for
@@ -127,14 +126,13 @@ public:
     @param output Output information about task mapping
    */
 
-  virtual void map_task(
-    const Legion::Mapping::MapperContext ctx,
+  virtual void map_task(const Legion::Mapping::MapperContext ctx,
     const Legion::Task & task,
     const Legion::Mapping::Mapper::MapTaskInput & input,
     Legion::Mapping::Mapper::MapTaskOutput & output) {
     DefaultMapper::map_task(ctx, task, input, output);
 
-    if ((task.tag == MAPPER_COMPACTED_STORAGE) && (task.regions.size() > 0)) {
+    if((task.tag == MAPPER_COMPACTED_STORAGE) && (task.regions.size() > 0)) {
 
       Legion::Memory target_mem =
         DefaultMapper::default_policy_select_target_memory(
@@ -158,16 +156,15 @@ public:
       // FIXME:: add colocation_constraints
       Legion::ColocationConstraint colocation_constraints;
 
-      for (size_t indx = 0; indx < task.regions.size(); indx++) {
+      for(size_t indx = 0; indx < task.regions.size(); indx++) {
 
         Legion::Mapping::PhysicalInstance result;
         std::vector<Legion::LogicalRegion> regions;
         bool created;
 
-        if (task.regions[indx].tag == EXCLUSIVE_LR) {
+        if(task.regions[indx].tag == EXCLUSIVE_LR) {
 
-          clog_assert(
-            (task.regions.size() >= (indx + 2)),
+          clog_assert((task.regions.size() >= (indx + 2)),
             "ERROR:: wrong number of regions passed to the task wirth \
                the  tag = MAPPER_COMPACTED_STORAGE");
 
@@ -175,24 +172,24 @@ public:
           regions.push_back(task.regions[indx + 1].region);
           regions.push_back(task.regions[indx + 2].region);
 
-          if (!runtime->find_or_create_physical_instance(
-                ctx, target_mem, layout_constraints, regions, result, created,
-                true /*acquire*/, GC_NEVER_PRIORITY)) {
+          if(!runtime->find_or_create_physical_instance(ctx, target_mem,
+               layout_constraints, regions, result, created, true /*acquire*/,
+               GC_NEVER_PRIORITY)) {
             clog(fatal) << "ERROR: FLeCSI mapper failed to allocate instance"
                         << std::endl;
           } // end if
 
-          for (size_t j = 0; j < 3; j++)
+          for(size_t j = 0; j < 3; j++)
             output.chosen_instances[indx + j].push_back(result);
 
           indx = indx + 2;
-
-        } else {
+        }
+        else {
 
           regions.push_back(task.regions[indx].region);
-          if (!runtime->find_or_create_physical_instance(
-                ctx, target_mem, layout_constraints, regions, result, created,
-                true /*acquire*/, GC_NEVER_PRIORITY)) {
+          if(!runtime->find_or_create_physical_instance(ctx, target_mem,
+               layout_constraints, regions, result, created, true /*acquire*/,
+               GC_NEVER_PRIORITY)) {
             clog(fatal) << "ERROR: FLeCSI mapper failed to allocate instance"
                         << std::endl;
           } // end if
@@ -206,14 +203,13 @@ public:
 
   } // map_task
 
-  virtual void slice_task(
-    const Legion::Mapping::MapperContext ctx,
+  virtual void slice_task(const Legion::Mapping::MapperContext ctx,
     const Legion::Task & task,
     const Legion::Mapping::Mapper::SliceTaskInput & input,
     Legion::Mapping::Mapper::SliceTaskOutput & output) {
     using legion_proc = Legion::Processor;
     context_t & context_ = context_t::instance();
-    if (task.tag == MAPPER_SUBRANK_LAUNCH) {
+    if(task.tag == MAPPER_SUBRANK_LAUNCH) {
       // expect a 1-D index domain
       assert(input.domain.get_dim() == 1);
       // send the whole domain to our local processor
@@ -223,7 +219,7 @@ public:
       return;
     } // end if MAPPER_SUBRANK_LAUNCH
 
-    if (task.tag == MAPPER_FORCE_RANK_MATCH) {
+    if(task.tag == MAPPER_FORCE_RANK_MATCH) {
       // expect a 1-D index domain - each point goes to the corresponding node
       assert(input.domain.get_dim() == 1);
       LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();
@@ -235,16 +231,16 @@ public:
       Legion::Machine::ProcessorQuery pq =
         Legion::Machine::ProcessorQuery(machine).only_kind(
           Legion::Processor::LOC_PROC);
-      for (Legion::Machine::ProcessorQuery::iterator it = pq.begin();
-           it != pq.end(); ++it) {
+      for(Legion::Machine::ProcessorQuery::iterator it = pq.begin();
+          it != pq.end(); ++it) {
         Legion::Processor p = *it;
         int a = p.address_space();
-        if (targets.count(a) == 0)
+        if(targets.count(a) == 0)
           targets[a] = p;
       }
 
       output.slices.resize(r.volume());
-      for (int a = r.lo[0]; a <= r.hi[0]; a++) {
+      for(int a = r.lo[0]; a <= r.hi[0]; a++) {
         assert(targets.count(a) > 0);
         output.slices[a].domain =
           Legion::Domain::from_rect<1>(LegionRuntime::Arrays::Rect<1>(a, a));
@@ -272,12 +268,11 @@ private:
  */
 
 inline void
-mapper_registration(
-  Legion::Machine machine,
+mapper_registration(Legion::Machine machine,
   Legion::HighLevelRuntime * rt,
   const std::set<Legion::Processor> & local_procs) {
-  for (std::set<Legion::Processor>::const_iterator it = local_procs.begin();
-       it != local_procs.end(); it++) {
+  for(std::set<Legion::Processor>::const_iterator it = local_procs.begin();
+      it != local_procs.end(); it++) {
     mpi_mapper_t * mapper = new mpi_mapper_t(machine, rt, *it);
     rt->replace_default_mapper(mapper, *it);
   }

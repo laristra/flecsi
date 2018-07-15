@@ -152,8 +152,7 @@ struct storage_class__<color> {
   //--------------------------------------------------------------------------//
   // Data handles.
   //--------------------------------------------------------------------------//
-  template<
-    typename DATA_CLIENT_TYPE,
+  template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,

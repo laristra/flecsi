@@ -100,14 +100,13 @@ struct storage_class__<sparse> {
   template<typename T, size_t EP, size_t SP, size_t GP>
   using handle__ = sparse_handle__<T, EP, SP, GP>;
 
-  template<
-    typename DATA_CLIENT_TYPE,
+  template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION>
-  static handle__<DATA_TYPE, 0, 0, 0>
-  get_handle(const data_client_t & data_client) {
+  static handle__<DATA_TYPE, 0, 0, 0> get_handle(
+    const data_client_t & data_client) {
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
 
@@ -125,8 +124,7 @@ struct storage_class__<sparse> {
 
     auto & im = context.sparse_index_space_info_map();
     auto iitr = im.find(index_space);
-    clog_assert(
-      iitr != im.end(),
+    clog_assert(iitr != im.end(),
       "sparse index space info not registered for index space: "
         << index_space);
 
@@ -163,7 +161,7 @@ struct storage_class__<sparse> {
     const size_t _pb_size{
       ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
 
-    for (size_t i = 0; i < _pb_size; i++) {
+    for(size_t i = 0; i < _pb_size; i++) {
       h.ghost_owners_pbarriers_ptrs.push_back(
         &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
     } // for
@@ -186,8 +184,7 @@ struct storage_class__<sparse> {
     return h;
   }
 
-  template<
-    typename DATA_CLIENT_TYPE,
+  template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
@@ -208,8 +205,7 @@ struct storage_class__<sparse> {
 
     auto & im = context.sparse_index_space_info_map();
     auto iitr = im.find(index_space);
-    clog_assert(
-      iitr != im.end(),
+    clog_assert(iitr != im.end(),
       "sparse index space info not registered for index space: "
         << index_space);
 
@@ -243,7 +239,7 @@ struct storage_class__<sparse> {
     const size_t _pb_size{
       ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
 
-    for (size_t i = 0; i < _pb_size; i++) {
+    for(size_t i = 0; i < _pb_size; i++) {
       h.ghost_owners_pbarriers_ptrs.push_back(
         &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
     } // for
@@ -268,27 +264,24 @@ struct storage_class__<ragged> {
   template<typename T, size_t EP, size_t SP, size_t GP>
   using handle__ = sparse_handle__<T, EP, SP, GP>;
 
-  template<
-    typename DATA_CLIENT_TYPE,
+  template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION>
   static auto get_handle(const data_client_t & data_client) {
-    return storage_class__<sparse>::get_handle<
-      DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE, NAME, VERSION>(data_client);
+    return storage_class__<sparse>::get_handle<DATA_CLIENT_TYPE, DATA_TYPE,
+      NAMESPACE, NAME, VERSION>(data_client);
   }
 
-  template<
-    typename DATA_CLIENT_TYPE,
+  template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION>
   static auto get_mutator(const data_client_t & data_client, size_t slots) {
-    return storage_class__<sparse>::get_mutator<
-      DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE, NAME, VERSION>(
-      data_client, slots);
+    return storage_class__<sparse>::get_mutator<DATA_CLIENT_TYPE, DATA_TYPE,
+      NAMESPACE, NAME, VERSION>(data_client, slots);
   }
 }; // struct storage_class_t
 

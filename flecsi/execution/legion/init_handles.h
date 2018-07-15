@@ -60,24 +60,21 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     @param context The Legion task runtime context.
    */
 
-  init_handles_t(
-    Legion::Runtime * runtime,
+  init_handles_t(Legion::Runtime * runtime,
     Legion::Context & context,
     const std::vector<Legion::PhysicalRegion> & regions,
     const std::vector<Legion::Future> & futures)
     : runtime(runtime), context(context), regions(regions), futures(futures),
       region(0), future_id(0) {} // init_handles
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor__<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
+  void handle(dense_accessor__<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
     constexpr size_t num_regions = 3;
@@ -90,19 +87,20 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t sizes[num_regions];
     h.combined_size = 0;
 
-    size_t permissions[] = {EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS,
-                            GHOST_PERMISSIONS};
+    size_t permissions[] = {
+      EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS};
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
-      if (permissions[r] == size_t(reserved)) {
+    for(size_t r = 0; r < num_regions; ++r) {
+      if(permissions[r] == size_t(reserved)) {
         data[r] = nullptr;
         sizes[r] = 0;
         prs[r] = Legion::PhysicalRegion();
 
         clog(error) << "reserved permissions mode used on region " << r
                     << std::endl;
-      } else {
+      }
+      else {
         prs[r] = regions[region + r];
         Legion::LogicalRegion lr = prs[r].get_logical_region();
         Legion::IndexSpace is = lr.get_index_space();
@@ -132,8 +130,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     // aliases the combined buffer for its respective region.
     size_t pos{0};
 
-    for (size_t r{0}; r < num_regions; ++r) {
-      switch (r) {
+    for(size_t r{0}; r < num_regions; ++r) {
+      switch(r) {
         case 0: // Exclusive
           h.exclusive_size = sizes[r];
           h.exclusive_pr = prs[r];
@@ -171,7 +169,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     auto & gis_to_cis = context_.gis_to_cis_map(h.index_space);
 
     size_t indx = 0;
-    for (auto & citr : gis_to_cis) {
+    for(auto & citr : gis_to_cis) {
       size_t c = citr.second;
       assert(c < h.combined_size);
       h.combined_data_sort[indx] = h.combined_data[c];
@@ -205,8 +203,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     } // scope
 
     size_t pos{0};
-    for (size_t r{0}; r < num_regions; ++r) {
-      switch (r) {
+    for(size_t r{0}; r < num_regions; ++r) {
+      switch(r) {
         case 0: // Exclusive
           h.exclusive_size = sizes[r];
           h.exclusive_pr = prs[r];
@@ -257,15 +255,16 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t permissions[] = {PERMISSIONS};
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
-      if (permissions[r] == size_t(reserved)) {
+    for(size_t r = 0; r < num_regions; ++r) {
+      if(permissions[r] == size_t(reserved)) {
         data[r] = nullptr;
         sizes[r] = 0;
         prs[r] = Legion::PhysicalRegion();
 
         clog(error) << "reserved permissions mode used on region " << r
                     << std::endl;
-      } else {
+      }
+      else {
         prs[r] = regions[region + r];
         Legion::LogicalRegion lr = prs[r].get_logical_region();
         Legion::IndexSpace is = lr.get_index_space();
@@ -308,15 +307,16 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t permissions[] = {PERMISSIONS};
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
-      if (permissions[r] == size_t(reserved)) {
+    for(size_t r = 0; r < num_regions; ++r) {
+      if(permissions[r] == size_t(reserved)) {
         data[r] = nullptr;
         sizes[r] = 0;
         prs[r] = Legion::PhysicalRegion();
 
         clog(error) << "reserved permissions mode used on region " << r
                     << std::endl;
-      } else {
+      }
+      else {
         prs[r] = regions[region + r];
         Legion::LogicalRegion lr = prs[r].get_logical_region();
         Legion::IndexSpace is = lr.get_index_space();
@@ -371,7 +371,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     LegionRuntime::Arrays::Rect<2> sr;
     LegionRuntime::Accessor::ByteOffset bo[2];
 
-    for (size_t i{0}; i < h.num_handle_entities; ++i) {
+    for(size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
       region_map[ent.index_space] = region;
@@ -396,9 +396,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
                    .template typeify<utils::id_t>();
       auto ids = ac2.template raw_rect_ptr<2>(dr, sr, bo);
 
-      storage->init_entities(
-        ent.domain, ent.dim, ents, ids, ent.size, num_ents, ent.num_exclusive,
-        ent.num_shared, ent.num_ghost, _read);
+      storage->init_entities(ent.domain, ent.dim, ents, ids, ent.size, num_ents,
+        ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
 
       ++region;
     } // for
@@ -407,7 +406,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     // Mapping adjacency data from Legion and initializing mesh storage.
     //------------------------------------------------------------------------//
 
-    for (size_t i{0}; i < h.num_handle_adjacencies; ++i) {
+    for(size_t i{0}; i < h.num_handle_adjacencies; ++i) {
       data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
 
       Legion::PhysicalRegion pr = regions[region_map[adj.from_index_space]];
@@ -447,14 +446,13 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
       adj.num_indices = num_indices;
 
-      storage->init_connectivity(
-        adj.from_domain, adj.to_domain, adj.from_dim, adj.to_dim, offsets,
-        num_offsets, indices, num_indices, _read);
+      storage->init_connectivity(adj.from_domain, adj.to_domain, adj.from_dim,
+        adj.to_dim, offsets, num_offsets, indices, num_indices, _read);
 
       ++region;
     } // for
 
-    for (size_t i{0}; i < h.num_index_subspaces; ++i) {
+    for(size_t i{0}; i < h.num_index_subspaces; ++i) {
       data_client_handle_index_subspace_t & iss = h.handle_index_subspaces[i];
 
       Legion::PhysicalRegion pr = regions[region];
@@ -473,14 +471,13 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
-      storage->init_index_subspace(
-        iss.index_space, iss.index_subspace, iss.domain, iss.dim, ids,
-        num_indices, _read);
+      storage->init_index_subspace(iss.index_space, iss.index_subspace,
+        iss.domain, iss.dim, ids, num_indices, _read);
 
       ++region;
     }
 
-    if (!_read) {
+    if(!_read) {
       h.initialize_storage();
     }
   }
@@ -499,7 +496,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     bool _read{PERMISSIONS == ro || PERMISSIONS == rw};
 
-    for (size_t i{0}; i < h.num_handle_entities; ++i) {
+    for(size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
       Legion::PhysicalRegion pr = regions[region];
@@ -533,16 +530,14 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     !std::is_base_of<data_client_handle_base_t, T>::value>
   handle(T &) {} // handle
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(sparse_accessor<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
+  void handle(sparse_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
     constexpr size_t num_regions = 3;
@@ -579,7 +574,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t offsets_sizes[num_regions];
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
+    for(size_t r = 0; r < num_regions; ++r) {
       offsets_prs[r] = regions[region + r];
       Legion::LogicalRegion lr = offsets_prs[r].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
@@ -603,7 +598,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     assert(md->initialized);
 
-    for (size_t r{0}; r < num_regions; ++r) {
+    for(size_t r{0}; r < num_regions; ++r) {
       std::memcpy(
         h.offsets + pos, offsets_data[r], offsets_sizes[r] * sizeof(offset_t));
       pos += offsets_sizes[r];
@@ -616,7 +611,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t entries_sizes[num_regions];
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
+    for(size_t r = 0; r < num_regions; ++r) {
       entries_prs[r] = regions[region + r];
       Legion::LogicalRegion lr = entries_prs[r].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
@@ -640,9 +635,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     pos = 0;
 
-    for (size_t r{0}; r < num_regions; ++r) {
-      std::memcpy(
-        entries + pos, entries_data[r],
+    for(size_t r{0}; r < num_regions; ++r) {
+      std::memcpy(entries + pos, entries_data[r],
         entries_sizes[r] * sizeof(entry_value_t));
       pos += entries_sizes[r];
     }
@@ -652,19 +646,16 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     region += num_regions;
   }
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(ragged_accessor<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
-    handle(
-      reinterpret_cast<sparse_accessor<
-        T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
+  void handle(ragged_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
   } // handle
 
   template<typename T>
@@ -698,8 +689,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       h.metadata = md;
       h.reserve = md->reserve;
 
-      h.init(
-        md->num_exclusive, md->num_shared, md->num_ghost,
+      h.init(md->num_exclusive, md->num_shared, md->num_ghost,
         md->max_entries_per_index, h.slots);
     }
 
@@ -710,7 +700,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t offsets_sizes[num_regions];
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
+    for(size_t r = 0; r < num_regions; ++r) {
       offsets_prs[r] = regions[region + r];
       Legion::LogicalRegion lr = offsets_prs[r].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
@@ -733,17 +723,17 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     size_t pos = 0;
 
-    if (md->initialized) {
-      for (size_t r{0}; r < num_regions; ++r) {
-        std::memcpy(
-          h.offsets + pos, offsets_data[r],
+    if(md->initialized) {
+      for(size_t r{0}; r < num_regions; ++r) {
+        std::memcpy(h.offsets + pos, offsets_data[r],
           offsets_sizes[r] * sizeof(offset_t));
         pos += offsets_sizes[r];
       }
-    } else {
+    }
+    else {
       size_t n = md->num_shared + md->num_ghost;
 
-      for (size_t i = 0; i < n; ++i) {
+      for(size_t i = 0; i < n; ++i) {
         h.offsets[md->num_exclusive + i].set_offset(
           h.reserve + i * md->max_entries_per_index);
       }
@@ -756,7 +746,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t entries_sizes[num_regions];
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
+    for(size_t r = 0; r < num_regions; ++r) {
       entries_prs[r] = regions[region + r];
       Legion::LogicalRegion lr = entries_prs[r].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
@@ -778,15 +768,13 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     entry_value_t * entries = new entry_value_t[h.entries_size];
 
-    std::memcpy(
-      entries, entries_data[0],
+    std::memcpy(entries, entries_data[0],
       md->num_exclusive_filled * sizeof(entry_value_t));
 
     pos = entries_sizes[0];
 
-    for (size_t r{1}; r < num_regions; ++r) {
-      std::memcpy(
-        entries + pos, entries_data[r],
+    for(size_t r{1}; r < num_regions; ++r) {
+      std::memcpy(entries + pos, entries_data[r],
         entries_sizes[r] * sizeof(entry_value_t));
       pos += entries_sizes[r];
     }

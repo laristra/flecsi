@@ -56,13 +56,11 @@ namespace legion {
  @ingroup data
 */
 
-template<
-  typename T,
+template<typename T,
   size_t EXCLUSIVE_PERMISSIONS,
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS>
-struct dense_handle_t : public dense_data_handle__<
-                          T,
+struct dense_handle_t : public dense_data_handle__<T,
                           EXCLUSIVE_PERMISSIONS,
                           SHARED_PERMISSIONS,
                           GHOST_PERMISSIONS> {
@@ -70,8 +68,7 @@ struct dense_handle_t : public dense_data_handle__<
    Type definitions.
    */
 
-  using base_t = dense_data_handle__<
-    T,
+  using base_t = dense_data_handle__<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS>;
@@ -93,18 +90,16 @@ struct dense_handle_t : public dense_data_handle__<
     // Unmap physical regions and copy back out ex/sh/gh regions if we
     // have write permissions
 
-    if (base_t::exclusive_data) {
-      if (base_t::exclusive_priv > privilege_t::ro) {
-        std::memcpy(
-          base_t::exclusive_buf, base_t::exclusive_data,
+    if(base_t::exclusive_data) {
+      if(base_t::exclusive_priv > privilege_t::ro) {
+        std::memcpy(base_t::exclusive_buf, base_t::exclusive_data,
           base_t::exclusive_size * sizeof(T));
       }
     }
 
-    if (base_t::shared_data) {
-      if (base_t::shared_priv > privilege_t::ro) {
-        std::memcpy(
-          base_t::shared_buf, base_t::shared_data,
+    if(base_t::shared_data) {
+      if(base_t::shared_priv > privilege_t::ro) {
+        std::memcpy(base_t::shared_buf, base_t::shared_data,
           base_t::shared_size * sizeof(T));
       }
     }
@@ -112,11 +107,11 @@ struct dense_handle_t : public dense_data_handle__<
     // ghost is never mapped with write permissions
 
 #ifndef MAPPER_COMPACTION
-    if (base_t::master && base_t::combined_data) {
+    if(base_t::master && base_t::combined_data) {
       delete[] base_t::combined_data;
     }
 #ifdef COMPACTED_STORAGE_SORT
-    if (base_t::master && base_t::combined_data_sort) {
+    if(base_t::master && base_t::combined_data_sort) {
       delete[] base_t::combined_data_sort;
     }
 #endif
@@ -147,13 +142,11 @@ struct storage_class__<dense> {
     Type definitions.
    */
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  using handle_t = dense_handle_t<
-    T,
+  using handle_t = dense_handle_t<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS>;
@@ -167,15 +160,13 @@ struct storage_class__<dense> {
    */
 
   template<typename T, size_t NAMESPACE, typename Predicate>
-  static decltype(auto) get_handles(
-    const data_client_t & data_client,
+  static decltype(auto) get_handles(const data_client_t & data_client,
     size_t version,
     Predicate && predicate,
     bool sorted) {}
 
   template<typename T, typename Predicate>
-  static decltype(auto) get_handles(
-    const data_client_t & data_client,
+  static decltype(auto) get_handles(const data_client_t & data_client,
     size_t version,
     Predicate && predicate,
     bool sorted) {}
@@ -201,8 +192,7 @@ struct storage_class__<dense> {
     @tparam VERSION          The field version.
     @tparam PERMISSIONS      The data client permissions.
    */
-  template<
-    typename DATA_CLIENT_TYPE,
+  template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
@@ -238,7 +228,7 @@ struct storage_class__<dense> {
     const size_t _pb_size{
       ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
 
-    for (size_t i = 0; i < _pb_size; i++) {
+    for(size_t i = 0; i < _pb_size; i++) {
       h.ghost_owners_pbarriers_ptrs.push_back(
         &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
     } // for

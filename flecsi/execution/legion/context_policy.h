@@ -98,8 +98,7 @@ struct legion_context_policy_t {
     registration map below.
    */
 
-  using task_info_t = std::tuple<
-    task_id_t,
+  using task_info_t = std::tuple<task_id_t,
     processor_type_t,
     launch_t,
     std::string,
@@ -108,8 +107,7 @@ struct legion_context_policy_t {
   struct sparse_field_data_t {
     sparse_field_data_t() {}
 
-    sparse_field_data_t(
-      size_t type_size,
+    sparse_field_data_t(size_t type_size,
       size_t num_exclusive,
       size_t num_shared,
       size_t num_ghost,
@@ -328,8 +326,8 @@ struct legion_context_policy_t {
     @return A future map with the result of the task execution.
    */
 
-  Legion::FutureMap
-  wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
+  Legion::FutureMap wait_on_mpi(Legion::Context & ctx,
+    Legion::Runtime * runtime);
 
   void wait_on_mpi_single() {
     handshake_.legion_wait_on_mpi();
@@ -356,8 +354,7 @@ struct legion_context_policy_t {
     @param callback The registration call back function.
    */
 
-  bool register_task(
-    size_t key,
+  bool register_task(size_t key,
     processor_type_t processor,
     launch_t launch,
     std::string & name,
@@ -365,8 +362,7 @@ struct legion_context_policy_t {
     clog(info) << "Registering task callback " << name << " with key " << key
                << std::endl;
 
-    clog_assert(
-      task_registry_.find(key) == task_registry_.end(),
+    clog_assert(task_registry_.find(key) == task_registry_.end(),
       "task key already exists");
 
     task_registry_[key] = std::make_tuple(
@@ -385,8 +381,7 @@ struct legion_context_policy_t {
   task_info_t & task_info() {
     auto task_entry = task_registry_.find(KEY);
 
-    clog_assert(
-      task_entry != task_registry_.end(),
+    clog_assert(task_entry != task_registry_.end(),
       "task key " << KEY << " does not exist");
 
     return task_entry->second;
@@ -401,8 +396,7 @@ struct legion_context_policy_t {
   task_info_t & task_info(size_t key) {
     auto task_entry = task_registry_.find(key);
 
-    clog_assert(
-      task_entry != task_registry_.end(),
+    clog_assert(task_entry != task_registry_.end(),
       "task key " << key << " does not exist");
 
     return task_entry->second;
@@ -466,9 +460,9 @@ struct legion_context_policy_t {
       ghost_owners_pbarriers;
     std::vector<Legion::LogicalRegion> ghost_owners_lregions;
     std::vector<Legion::LogicalRegion> ghost_owners_subregions;
-    Legion::STL::
-      map<LegionRuntime::Arrays::coord_t, LegionRuntime::Arrays::coord_t>
-        global_to_local_color_map;
+    Legion::STL::map<LegionRuntime::Arrays::coord_t,
+      LegionRuntime::Arrays::coord_t>
+      global_to_local_color_map;
     Legion::LogicalRegion color_region;
     Legion::LogicalRegion primary_lr;
     Legion::LogicalRegion exclusive_lr;

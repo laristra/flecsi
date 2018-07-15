@@ -29,55 +29,46 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
      @ingroup execution
    */
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor__<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {} // handle
+  void handle(dense_accessor__<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {} // handle
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(sparse_accessor<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
+  void handle(sparse_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
     using entry_value_t = typename mutator_handle__<T>::entry_value_t;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
     auto & h = a.handle;
     auto md = static_cast<sparse_field_data_t *>(h.metadata);
 
-    std::memcpy(
-      h.entries_data[0], h.entries,
+    std::memcpy(h.entries_data[0], h.entries,
       md->num_exclusive_filled * sizeof(entry_value_t));
 
-    std::memcpy(
-      h.entries_data[1], h.entries + md->reserve,
+    std::memcpy(h.entries_data[1], h.entries + md->reserve,
       md->num_shared * sizeof(entry_value_t) * md->max_entries_per_index);
   }
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(ragged_accessor<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
-    handle(
-      reinterpret_cast<sparse_accessor<
-        T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
+  void handle(ragged_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
   } // handle
 
   template<typename T>
@@ -104,22 +95,20 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     std::memcpy(
       h.offsets_data[0], h.offsets, h.num_exclusive() * sizeof(offset_t));
 
-    std::memcpy(
-      h.offsets_data[1], h.offsets + h.num_exclusive(),
+    std::memcpy(h.offsets_data[1], h.offsets + h.num_exclusive(),
       h.num_shared() * sizeof(offset_t));
 
-    if (!md->initialized) {
-      std::memcpy(
-        h.offsets_data[2], h.offsets + h.num_exclusive() + h.num_shared(),
+    if(!md->initialized) {
+      std::memcpy(h.offsets_data[2],
+        h.offsets + h.num_exclusive() + h.num_shared(),
         h.num_ghost() * sizeof(offset_t));
     }
 
-    std::memcpy(
-      h.entries_data[0], h.entries,
+    std::memcpy(h.entries_data[0], h.entries,
       md->num_exclusive_filled * sizeof(entry_value_t));
 
-    std::memcpy(
-      h.entries_data[1], h.entries + h.reserve * sizeof(entry_value_t),
+    std::memcpy(h.entries_data[1],
+      h.entries + h.reserve * sizeof(entry_value_t),
       h.num_shared() * sizeof(entry_value_t) * h.max_entries_per_index());
 
     md->initialized = true;
@@ -142,11 +131,11 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
   handle(data_client_handle__<T, PERMISSIONS> & h) {
 
-    if (PERMISSIONS == wo || PERMISSIONS == rw) {
+    if(PERMISSIONS == wo || PERMISSIONS == rw) {
       auto & context_ = context_t::instance();
       auto & ssm = context_.index_subspace_info();
 
-      for (size_t i{0}; i < h.num_index_subspaces; ++i) {
+      for(size_t i{0}; i < h.num_index_subspaces; ++i) {
         data_client_handle_index_subspace_t & iss = h.handle_index_subspaces[i];
 
         auto itr = ssm.find(iss.index_subspace);

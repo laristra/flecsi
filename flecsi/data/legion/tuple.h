@@ -35,8 +35,8 @@ struct storage_class__<tuple> {
   //
   ///
   template<typename T, size_t NS>
-  static tuple_handle_t
-  get_handle(uintptr_t runtime_namespace, const utils::const_string_t & key) {
+  static tuple_handle_t get_handle(uintptr_t runtime_namespace,
+    const utils::const_string_t & key) {
     return {};
   } // get_handle
 

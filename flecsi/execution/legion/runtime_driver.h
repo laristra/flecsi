@@ -60,8 +60,7 @@ void driver(int argc, char ** argv);
  @ingroup legion-execution
  */
 
-void runtime_driver(
-  const Legion::Task * task,
+void runtime_driver(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
   Legion::Runtime * runtime);
@@ -75,8 +74,7 @@ void runtime_driver(
  @ingroup legion-execution
  */
 
-void spmd_task(
-  const Legion::Task * task,
+void spmd_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
   Legion::Runtime * runtime);

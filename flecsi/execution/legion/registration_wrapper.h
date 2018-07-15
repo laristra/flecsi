@@ -36,10 +36,8 @@ namespace execution {
  @ingroup legion-execution
  */
 
-template<
-  typename RETURN,
-  RETURN (*TASK)(
-    const Legion::Task *,
+template<typename RETURN,
+  RETURN (*TASK)(const Legion::Task *,
     const std::vector<Legion::PhysicalRegion> &,
     Legion::Context,
     Legion::Runtime *)>
@@ -51,8 +49,7 @@ struct registration_wrapper__ {
    @tparam ARGS The variadic argument pack.
    */
 
-  static void register_task(
-    const Legion::TaskID tid,
+  static void register_task(const Legion::TaskID tid,
     const Legion::Processor::Kind & processor,
     const Legion::TaskConfigOptions config_options,
     std::string & task_name) {
@@ -78,15 +75,13 @@ struct registration_wrapper__ {
  @ingroup legion-execution
  */
 
-template<void (*TASK)(
-  const Legion::Task *,
+template<void (*TASK)(const Legion::Task *,
   const std::vector<Legion::PhysicalRegion> &,
   Legion::Context,
   Legion::Runtime *)>
 struct registration_wrapper__<void, TASK> {
 
-  static void register_task(
-    const Legion::TaskID tid,
+  static void register_task(const Legion::TaskID tid,
     const Legion::Processor::Kind & processor,
     const Legion::TaskConfigOptions config_options,
     std::string & task_name) {

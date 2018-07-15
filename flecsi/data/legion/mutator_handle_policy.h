@@ -31,8 +31,8 @@ namespace flecsi {
 struct legion_mutator_handle_policy_t {
   legion_mutator_handle_policy_t() {}
 
-  legion_mutator_handle_policy_t(const legion_mutator_handle_policy_t & p) =
-    default;
+  legion_mutator_handle_policy_t(
+    const legion_mutator_handle_policy_t & p) = default;
 
   using offset_t = data::sparse_data_offset_t;
 

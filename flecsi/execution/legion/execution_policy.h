@@ -106,12 +106,11 @@ struct legion_execution_policy_t {
       Legion::Runtime *)>
   static bool register_legion_task(processor_type_t processor,
     launch_t launch,
-    std::string name)
-  {
+    std::string name) {
     clog(info) << "Registering legion task " << KEY << " " << name << std::endl;
 
-    if (!context_t::instance().register_task(KEY, processor, launch, name,
-          pure_task_wrapper__<RETURN, TASK>::registration_callback)) {
+    if(!context_t::instance().register_task(KEY, processor, launch, name,
+         pure_task_wrapper__<RETURN, TASK>::registration_callback)) {
       clog(fatal) << "callback registration failed for " << name << std::endl;
     } // if
 
@@ -123,15 +122,17 @@ struct legion_execution_policy_t {
     method, please see task__::register_task.
    */
 
-  template<size_t KEY, typename RETURN, typename ARG_TUPLE,
+  template<size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool register_task(
-    processor_type_t processor, launch_t launch, std::string name) {
+  static bool
+  register_task(processor_type_t processor, launch_t launch, std::string name) {
 
     using wrapper_t = task_wrapper__<KEY, RETURN, ARG_TUPLE, DELEGATE>;
 
-    if (!context_t::instance().register_task(
-          KEY, processor, launch, name, wrapper_t::registration_callback)) {
+    if(!context_t::instance().register_task(
+         KEY, processor, launch, name, wrapper_t::registration_callback)) {
       clog(fatal) << "callback registration failed for " << name << std::endl;
     } // if
 
@@ -143,8 +144,11 @@ struct legion_execution_policy_t {
     method, please see task__::execute_task.
    */
 
-  template<launch_type_t launch, size_t KEY, typename RETURN,
-    typename ARG_TUPLE, typename... ARGS>
+  template<launch_type_t launch,
+    size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    typename... ARGS>
   struct execute_task_functor {
     static void execute(ARGS &&... args) {
       clog(fatal) << "invalid launch type" << std::endl;
@@ -153,9 +157,11 @@ struct legion_execution_policy_t {
   }; // execute_task_functor
 
   template<size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
-  struct execute_task_functor<launch_type_t::index, KEY, RETURN, ARG_TUPLE,
-    ARGS...>
-  {
+  struct execute_task_functor<launch_type_t::index,
+    KEY,
+    RETURN,
+    ARG_TUPLE,
+    ARGS...> {
 
     static decltype(auto) execute(ARG_TUPLE task_args) {
       using namespace Legion;
@@ -172,13 +178,13 @@ struct legion_execution_policy_t {
       auto legion_context = Legion::Runtime::get_context();
 
       // Handle MPI and Legion invocations separately.
-      if (processor_type == processor_type_t::mpi) {
+      if(processor_type == processor_type_t::mpi) {
         {
           clog_tag_guard(execution);
           clog(info) << "Executing MPI task: " << KEY << std::endl;
         }
 
-        if (context_.execution_state() == SPECIALIZATION_TLT_INIT) {
+        if(context_.execution_state() == SPECIALIZATION_TLT_INIT) {
 
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
@@ -188,10 +194,10 @@ struct legion_execution_policy_t {
             Legion::Domain::from_rect<1>(context_.all_processes()),
             TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
 
-          for (auto & req : init_args.region_reqs) {
+          for(auto & req : init_args.region_reqs) {
             launcher.add_region_requirement(req);
           }
-          for (auto & future : init_args.futures) {
+          for(auto & future : init_args.futures) {
             future->add_future_to_index_task_launcher(launcher);
           }
 
@@ -217,7 +223,8 @@ struct legion_execution_policy_t {
           context_.unset_call_mpi(legion_context, legion_runtime);
 
           return legion_future__<RETURN, launch_type_t::index>(future);
-        } else { // check for execution_state
+        }
+        else { // check for execution_state
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
 
@@ -225,10 +232,10 @@ struct legion_execution_policy_t {
           TaskLauncher task_launcher(context_.task_id<KEY>(),
             TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
-          for (auto & req : init_args.region_reqs) {
+          for(auto & req : init_args.region_reqs) {
             task_launcher.add_region_requirement(req);
           }
-          for (auto & future : init_args.futures) {
+          for(auto & future : init_args.futures) {
             future->add_future_to_single_task_launcher(task_launcher);
           }
 
@@ -240,8 +247,7 @@ struct legion_execution_policy_t {
           task_prolog.walk(task_args);
           task_prolog.launch_copies();
 
-          auto f =
-            legion_runtime->execute_task(legion_context, task_launcher);
+          auto f = legion_runtime->execute_task(legion_context, task_launcher);
 
           // Enqueue the epilog.
           task_epilog_t task_epilog(legion_runtime, legion_context);
@@ -285,8 +291,7 @@ struct legion_execution_policy_t {
 
         Legion::ArgumentMap arg_map;
         Legion::IndexLauncher index_launcher(context_.task_id<KEY>(),
-          launch_domain, TaskArgument(&task_args, sizeof(ARG_TUPLE)),
-          arg_map);
+          launch_domain, TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
 
 #ifdef MAPPER_COMPACTION
         index_launcher.tag = MAPPER_COMPACTED_STORAGE;
@@ -302,9 +307,11 @@ struct legion_execution_policy_t {
   }; // execute_task_functor
 
   template<size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
-  struct execute_task_functor<launch_type_t::single, KEY, RETURN, ARG_TUPLE,
-    ARGS...>
-  {
+  struct execute_task_functor<launch_type_t::single,
+    KEY,
+    RETURN,
+    ARG_TUPLE,
+    ARGS...> {
 
     static decltype(auto) execute(ARG_TUPLE task_args) {
       using namespace Legion;
@@ -322,15 +329,14 @@ struct legion_execution_policy_t {
       auto legion_context = Legion::Runtime::get_context();
 
       // Handle MPI and Legion invocations separately.
-      if (processor_type == processor_type_t::mpi) {
-        clog(fatal)
-          << " mpi task doesn'thave an implementation for the single "
-             "task execution"
-          << std::endl;
-        throw std::runtime_error(
-          " mpi task doesn'thave an implementation for "
-          "the single task execution");
-      } else {
+      if(processor_type == processor_type_t::mpi) {
+        clog(fatal) << " mpi task doesn'thave an implementation for the single "
+                       "task execution"
+                    << std::endl;
+        throw std::runtime_error(" mpi task doesn'thave an implementation for "
+                                 "the single task execution");
+      }
+      else {
         // Initialize the arguments to pass through the runtime.
         init_args_t init_args(legion_runtime, legion_context);
         init_args.walk(task_args);
@@ -338,17 +344,17 @@ struct legion_execution_policy_t {
         clog(info) << "Executing single task: " << KEY << std::endl;
 
         // Create a task launcher, passing the task arguments.
-        TaskLauncher task_launcher(context_.task_id<KEY>(),
-          TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+        TaskLauncher task_launcher(
+          context_.task_id<KEY>(), TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
 #ifdef MAPPER_COMPACTION
         task_launcher.tag = MAPPER_COMPACTED_STORAGE;
 #endif
 
-        for (auto & req : init_args.region_reqs) {
+        for(auto & req : init_args.region_reqs) {
           task_launcher.add_region_requirement(req);
         }
-        for (auto & future : init_args.futures) {
+        for(auto & future : init_args.futures) {
           future->add_future_to_single_task_launcher(task_launcher);
         }
 
@@ -373,9 +379,12 @@ struct legion_execution_policy_t {
     } // execute
   }; // execute_task_functor
 
-  template<launch_type_t launch, size_t KEY, typename RETURN,
-    typename ARG_TUPLE, typename... ARGS>
-  static decltype(auto) execute_task(ARGS && ... args) {
+  template<launch_type_t launch,
+    size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    typename... ARGS>
+  static decltype(auto) execute_task(ARGS &&... args) {
 
     ARG_TUPLE task_args_tmp = std::make_tuple(args...);
 
@@ -392,7 +401,9 @@ struct legion_execution_policy_t {
     method, please see function__::register_function.
    */
 
-  template<size_t KEY, typename RETURN, typename ARG_TUPLE,
+  template<size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
     RETURN (*FUNCTION)(ARG_TUPLE)>
   static bool register_function() {
     return context_t::instance()
@@ -405,8 +416,8 @@ struct legion_execution_policy_t {
    */
 
   template<typename FUNCTION_HANDLE, typename... ARGS>
-  static decltype(auto) execute_function(
-    FUNCTION_HANDLE & handle, ARGS && ... args) {
+  static decltype(auto) execute_function(FUNCTION_HANDLE & handle,
+    ARGS &&... args) {
     return handle(context_t::instance().function(handle.get_key()),
       std::forward_as_tuple(args...));
   } // execute_function
@@ -428,7 +439,7 @@ struct legion_execution_policy_t {
       NAME, wrapper_t::registration_callback);
   } // register_reduction_operation
 
-  }; // struct legion_execution_policy_t
+}; // struct legion_execution_policy_t
 
 } // namespace execution
 } // namespace flecsi

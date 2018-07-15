@@ -117,10 +117,8 @@ struct execution_wrapper__<void, ARG_TUPLE, DELEGATE> {
  @ingroup legion-execution
  */
 
-template<
-  typename RETURN,
-  RETURN (*TASK)(
-    const Legion::Task *,
+template<typename RETURN,
+  RETURN (*TASK)(const Legion::Task *,
     const std::vector<Legion::PhysicalRegion> &,
     Legion::Context,
     Legion::Runtime *)>
@@ -141,8 +139,7 @@ struct pure_task_wrapper__ {
    @param A std::string containing the task name.
    */
 
-  static void registration_callback(
-    task_id_t tid,
+  static void registration_callback(task_id_t tid,
     processor_type_t processor,
     launch_t launch,
     std::string & task_name) {
@@ -157,7 +154,7 @@ struct pure_task_wrapper__ {
     Legion::TaskConfigOptions config_options{
       launch_leaf(launch), launch_inner(launch), launch_idempotent(launch)};
 
-    switch (processor) {
+    switch(processor) {
       case processor_type_t::loc: {
         clog_tag_guard(wrapper);
         clog(info) << "Registering PURE loc task: " << task_name << " "
@@ -201,8 +198,7 @@ struct pure_task_wrapper__ {
  @ingroup legion-execution
  */
 
-template<
-  size_t KEY,
+template<size_t KEY,
   typename RETURN,
   typename ARG_TUPLE,
   RETURN (*DELEGATE)(ARG_TUPLE)>
@@ -222,8 +218,7 @@ struct task_wrapper__ {
    @param name   A std::string containing the task name.
    */
 
-  static void registration_callback(
-    task_id_t tid,
+  static void registration_callback(task_id_t tid,
     processor_type_t processor,
     launch_t launch,
     std::string & name) {
@@ -237,7 +232,7 @@ struct task_wrapper__ {
     Legion::TaskConfigOptions config_options{
       launch_leaf(launch), launch_inner(launch), launch_idempotent(launch)};
 
-    switch (processor) {
+    switch(processor) {
       case processor_type_t::loc: {
         clog_tag_guard(wrapper);
         clog(info) << "Registering loc task: " << name << std::endl
@@ -274,8 +269,7 @@ struct task_wrapper__ {
     Execution wrapper method for user tasks.
    */
 
-  static RETURN execute_user_task(
-    const Legion::Task * task,
+  static RETURN execute_user_task(const Legion::Task * task,
     const std::vector<Legion::PhysicalRegion> & regions,
     Legion::Context context,
     Legion::Runtime * runtime) {
@@ -305,8 +299,7 @@ struct task_wrapper__ {
     Execution wrapper method for MPI tasks.
    */
 
-  static void execute_mpi_task(
-    const Legion::Task * task,
+  static void execute_mpi_task(const Legion::Task * task,
     const std::vector<Legion::PhysicalRegion> & regions,
     Legion::Context context,
     Legion::Runtime * runtime) {

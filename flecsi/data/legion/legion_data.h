@@ -45,7 +45,8 @@ namespace data {
    @ingroup data
  */
 
-class legion_data_t {
+class legion_data_t
+{
 public:
   using coloring_info_t = coloring::coloring_info_t;
 
@@ -124,8 +125,7 @@ public:
     size_t max_conn_size;
   };
 
-  legion_data_t(
-    Legion::Context ctx,
+  legion_data_t(Legion::Context ctx,
     Legion::Runtime * runtime,
     size_t num_colors)
     : ctx_(ctx), runtime_(runtime), h(runtime, ctx), num_colors_(num_colors),
@@ -133,7 +133,7 @@ public:
       color_domain_(Legion::Domain::from_rect<1>(color_bounds_)) {}
 
   ~legion_data_t() {
-    for (auto & itr : index_space_map_) {
+    for(auto & itr : index_space_map_) {
       index_space_t & is = itr.second;
 
       runtime_->destroy_index_partition(ctx_, is.index_partition);
@@ -172,15 +172,13 @@ public:
     Domain dom(Domain::from_rect<1>(bounds));
 
     global_index_space_.index_space = runtime_->create_index_space(ctx_, dom);
-    attach_name(
-      global_index_space_, global_index_space_.index_space,
+    attach_name(global_index_space_, global_index_space_.index_space,
       "global index space");
 
     // Read user + FleCSI registered field spaces
     global_index_space_.field_space = runtime_->create_field_space(ctx_);
 
-    attach_name(
-      global_index_space_, global_index_space_.field_space,
+    attach_name(global_index_space_, global_index_space_.field_space,
       "global field space");
 
     FieldAllocator allocator =
@@ -188,16 +186,15 @@ public:
 
     using field_info_t = context_t::field_info_t;
 
-    for (const field_info_t & fi : context.registered_fields()) {
-      if (fi.storage_class == global) {
+    for(const field_info_t & fi : context.registered_fields()) {
+      if(fi.storage_class == global) {
         allocator.allocate_field(fi.size, fi.fid);
       } // if
     } // for
 
     global_index_space_.logical_region = runtime_->create_logical_region(
       ctx_, global_index_space_.index_space, global_index_space_.field_space);
-    attach_name(
-      global_index_space_, global_index_space_.logical_region,
+    attach_name(global_index_space_, global_index_space_.logical_region,
       "global logical region");
 
   } // init_global_handles
@@ -210,13 +207,14 @@ public:
     using namespace LegionRuntime;
     using namespace Arrays;
 
-    for (auto & idx_space : indexed_coloring_info_map) {
+    for(auto & idx_space : indexed_coloring_info_map) {
       auto itr = sparse_info_map.find(idx_space.first);
       const sparse_index_space_info_t * sparse_info;
 
-      if (has_sparse_fields && itr != sparse_info_map.end()) {
+      if(has_sparse_fields && itr != sparse_info_map.end()) {
         sparse_info = &itr->second;
-      } else {
+      }
+      else {
         sparse_info = nullptr;
       }
 
@@ -233,15 +231,13 @@ public:
 
       color_index_space_.index_space =
         runtime_->create_index_space(ctx_, color_domain_);
-      attach_name(
-        color_index_space_, color_index_space_.index_space,
+      attach_name(color_index_space_, color_index_space_.index_space,
         "color index space");
 
       // Read user + FleCSI registered field spaces
       color_index_space_.field_space = runtime_->create_field_space(ctx_);
 
-      attach_name(
-        color_index_space_, color_index_space_.field_space,
+      attach_name(color_index_space_, color_index_space_.field_space,
         "color field space");
     } // scope
 
@@ -250,8 +246,7 @@ public:
   /*!
     Create a new BLIS index space.
    */
-  void add_index_space(
-    size_t index_space_id,
+  void add_index_space(size_t index_space_id,
     const coloring_info_map_t & coloring_info_map,
     const sparse_index_space_info_t * sparse_info) {
     using namespace std;
@@ -272,7 +267,7 @@ public:
 
     // Determine max size of a color partition
     is.total_num_entities = 0;
-    for (auto color_idx : coloring_info_map) {
+    for(auto color_idx : coloring_info_map) {
       {
         clog_tag_guard(legion_data);
         clog(trace) << "index: " << index_space_id
@@ -280,10 +275,9 @@ public:
                     << std::endl;
       } // scope
 
-      is.total_num_entities = std::max(
-        is.total_num_entities, color_idx.second.exclusive +
-                                 color_idx.second.shared +
-                                 color_idx.second.ghost);
+      is.total_num_entities = std::max(is.total_num_entities,
+        color_idx.second.exclusive + color_idx.second.shared +
+          color_idx.second.ghost);
     } // for color_idx
 
     {
@@ -294,8 +288,7 @@ public:
 
     // Create expanded index space
     LegionRuntime::Arrays::Rect<2> expanded_bounds =
-      LegionRuntime::Arrays::Rect<2>(
-        LegionRuntime::Arrays::Point<2>::ZEROES(),
+      LegionRuntime::Arrays::Rect<2>(LegionRuntime::Arrays::Point<2>::ZEROES(),
         make_point(num_colors_, is.total_num_entities));
 
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
@@ -308,7 +301,7 @@ public:
 
     attach_name(is, is.field_space, "expanded field space");
 
-    if (sparse_info) {
+    if(sparse_info) {
       is.has_sparse_fields = true;
 
       sparse_index_space_t sis;
@@ -317,9 +310,8 @@ public:
 
       sis.max_shared_ghost = 0;
 
-      for (auto color_idx : coloring_info_map) {
-        sis.max_shared_ghost = std::max(
-          sis.max_shared_ghost,
+      for(auto color_idx : coloring_info_map) {
+        sis.max_shared_ghost = std::max(sis.max_shared_ghost,
           color_idx.second.shared + color_idx.second.ghost);
       }
 
@@ -395,8 +387,7 @@ public:
 
     // Create expanded index space
     LegionRuntime::Arrays::Rect<2> expanded_bounds =
-      LegionRuntime::Arrays::Rect<2>(
-        LegionRuntime::Arrays::Point<2>::ZEROES(),
+      LegionRuntime::Arrays::Rect<2>(LegionRuntime::Arrays::Point<2>::ZEROES(),
         make_point(num_colors_, c.max_conn_size));
 
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
@@ -409,8 +400,8 @@ public:
     FieldAllocator allocator =
       runtime_->create_field_allocator(ctx_, c.field_space);
 
-    for (const field_info_t & fi : context.registered_fields()) {
-      if (fi.index_space == c.index_space_id) {
+    for(const field_info_t & fi : context.registered_fields()) {
+      if(fi.index_space == c.index_space_id) {
         allocator.allocate_field(fi.size, fi.fid);
       }
     }
@@ -421,22 +412,19 @@ public:
       runtime_->create_logical_region(ctx_, c.index_space, c.field_space);
     attach_name(c, c.logical_region, "expanded logical region");
 
-    clog_assert(
-      adjacency_info.color_sizes.size() == num_colors_,
+    clog_assert(adjacency_info.color_sizes.size() == num_colors_,
       "mismatch in color sizes");
 
     DomainColoring color_partitioning;
-    for (size_t color = 0; color < num_colors_; ++color) {
-      LegionRuntime::Arrays::Rect<2> subrect(
-        make_point(color, 0),
+    for(size_t color = 0; color < num_colors_; ++color) {
+      LegionRuntime::Arrays::Rect<2> subrect(make_point(color, 0),
         make_point(color, adjacency_info.color_sizes[color] - 1));
 
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
 
-    c.index_partition = runtime_->create_index_partition(
-      ctx_, c.index_space, color_domain_, color_partitioning,
-      true /*disjoint*/);
+    c.index_partition = runtime_->create_index_partition(ctx_, c.index_space,
+      color_domain_, color_partitioning, true /*disjoint*/);
     attach_name(c, c.index_partition, "color partitioning");
 
     adjacency_map_.emplace(adjacency_info.index_space, std::move(c));
@@ -459,8 +447,7 @@ public:
 
     // Create expanded index space
     LegionRuntime::Arrays::Rect<2> expanded_bounds =
-      LegionRuntime::Arrays::Rect<2>(
-        LegionRuntime::Arrays::Point<2>::ZEROES(),
+      LegionRuntime::Arrays::Rect<2>(LegionRuntime::Arrays::Point<2>::ZEROES(),
         make_point(num_colors_, is.capacity));
 
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
@@ -473,10 +460,9 @@ public:
     FieldAllocator allocator =
       runtime_->create_field_allocator(ctx_, is.field_space);
 
-    for (const field_info_t & fi : context.registered_fields()) {
-      if (
-        fi.storage_class == data::subspace &&
-        fi.index_space == is.index_subspace_id) {
+    for(const field_info_t & fi : context.registered_fields()) {
+      if(fi.storage_class == data::subspace &&
+         fi.index_space == is.index_subspace_id) {
         allocator.allocate_field(fi.size, fi.fid);
         is.fid = fi.fid;
       }
@@ -486,16 +472,15 @@ public:
       runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
 
     DomainColoring color_partitioning;
-    for (size_t color = 0; color < num_colors_; ++color) {
+    for(size_t color = 0; color < num_colors_; ++color) {
       LegionRuntime::Arrays::Rect<2> subrect(
         make_point(color, 0), make_point(color, is.capacity - 1));
 
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
 
-    is.index_partition = runtime_->create_index_partition(
-      ctx_, is.index_space, color_domain_, color_partitioning,
-      true /*disjoint*/);
+    is.index_partition = runtime_->create_index_partition(ctx_, is.index_space,
+      color_domain_, color_partitioning, true /*disjoint*/);
 
     index_subspace_map_.emplace(info.index_subspace, std::move(is));
   }
@@ -516,15 +501,16 @@ public:
 
     context_t & context = context_t::instance();
 
-    for (auto & itr : index_space_map_) {
+    for(auto & itr : index_space_map_) {
       index_space_t & is = itr.second;
 
       sparse_index_space_t * sis;
 
       auto sitr = sparse_index_space_map_.find(is.index_space_id);
-      if (sitr != sparse_index_space_map_.end()) {
+      if(sitr != sparse_index_space_map_.end()) {
         sis = &sitr->second;
-      } else {
+      }
+      else {
         sis = nullptr;
       }
 
@@ -543,8 +529,8 @@ public:
 
       using field_info_t = context_t::field_info_t;
 
-      for (const field_info_t & fi : context.registered_fields()) {
-        switch (fi.storage_class) {
+      for(const field_info_t & fi : context.registered_fields()) {
+        switch(fi.storage_class) {
           case global:
           case color:
           case local:
@@ -552,17 +538,18 @@ public:
             break;
           case ragged:
           case sparse:
-            if (fi.index_space == is.index_space_id) {
-              if (utils::hash::is_internal(fi.key)) {
+            if(fi.index_space == is.index_space_id) {
+              if(utils::hash::is_internal(fi.key)) {
                 allocator.allocate_field(fi.size, fi.fid);
-              } else {
+              }
+              else {
                 // this is a sparse offset
                 allocator.allocate_field(sizeof(size_t) * 2, fi.fid);
               }
             }
             break;
           default:
-            if (fi.index_space == is.index_space_id) {
+            if(fi.index_space == is.index_space_id) {
               allocator.allocate_field(fi.size, fi.fid);
             }
             break;
@@ -576,35 +563,32 @@ public:
       // Partition expanded IndexSpace color-wise & create associated
       // PhaseBarriers
       DomainColoring color_partitioning;
-      for (int color = 0; color < num_colors_; color++) {
+      for(int color = 0; color < num_colors_; color++) {
         auto citr = coloring_info_map.find(color);
         clog_assert(citr != coloring_info_map.end(), "invalid color info");
         const coloring_info_t & color_info = citr->second;
 
-        LegionRuntime::Arrays::Rect<2> subrect(
-          make_point(color, 0),
-          make_point(
-            color,
+        LegionRuntime::Arrays::Rect<2> subrect(make_point(color, 0),
+          make_point(color,
             color_info.exclusive + color_info.shared + color_info.ghost - 1));
 
         color_partitioning[color] = Domain::from_rect<2>(subrect);
       }
 
-      is.index_partition = runtime_->create_index_partition(
-        ctx_, is.index_space, color_domain_, color_partitioning,
-        true /*disjoint*/);
+      is.index_partition = runtime_->create_index_partition(ctx_,
+        is.index_space, color_domain_, color_partitioning, true /*disjoint*/);
       attach_name(is, is.index_partition, "color partitioning");
 
-      if (sis) {
+      if(sis) {
         FieldAllocator allocator =
           runtime_->create_field_allocator(ctx_, sis->field_space);
 
-        for (const field_info_t & fi : context.registered_fields()) {
-          switch (fi.storage_class) {
+        for(const field_info_t & fi : context.registered_fields()) {
+          switch(fi.storage_class) {
             case ragged:
             case sparse:
-              if (fi.index_space == is.index_space_id) {
-                if (!utils::hash::is_internal(fi.key)) {
+              if(fi.index_space == is.index_space_id) {
+                if(!utils::hash::is_internal(fi.key)) {
                   allocator.allocate_field(fi.size + sizeof(size_t), fi.fid);
                 }
               }
@@ -621,7 +605,7 @@ public:
 
         DomainColoring color_partitioning;
 
-        for (int color = 0; color < num_colors_; color++) {
+        for(int color = 0; color < num_colors_; color++) {
           auto citr = coloring_info_map.find(color);
           clog_assert(citr != coloring_info_map.end(), "invalid color info");
           const coloring_info_t & color_info = citr->second;
@@ -632,9 +616,9 @@ public:
           color_partitioning[color] = Domain::from_rect<2>(subrect);
         }
 
-        sis->index_partition = runtime_->create_index_partition(
-          ctx_, sis->index_space, color_domain_, color_partitioning,
-          true /*disjoint*/);
+        sis->index_partition =
+          runtime_->create_index_partition(ctx_, sis->index_space,
+            color_domain_, color_partitioning, true /*disjoint*/);
 
         attach_name(*sis, sis->index_partition, "sparse color partitioning");
       }
@@ -647,23 +631,21 @@ public:
 
       using field_info_t = context_t::field_info_t;
 
-      for (const field_info_t & fi : context.registered_fields()) {
-        if (fi.storage_class == color) {
+      for(const field_info_t & fi : context.registered_fields()) {
+        if(fi.storage_class == color) {
           allocator.allocate_field(fi.size, fi.fid);
         } // if
       } // for
       color_index_space_.logical_region = runtime_->create_logical_region(
         ctx_, color_index_space_.index_space, color_index_space_.field_space);
-      attach_name(
-        color_index_space_, color_index_space_.logical_region,
+      attach_name(color_index_space_, color_index_space_.logical_region,
         "color logical region");
 
       LegionRuntime::Arrays::Blockify<1> coloring(1);
       color_index_space_.index_partition = runtime_->create_index_partition(
         ctx_, color_index_space_.index_space, coloring);
 
-      attach_name(
-        color_index_space_, color_index_space_.index_partition,
+      attach_name(color_index_space_, color_index_space_.index_partition,
         "color partitioning");
     } // scope
 
@@ -675,8 +657,8 @@ public:
     return itr->second;
   }
 
-  const sparse_index_space_t &
-  sparse_index_space(size_t sparse_index_space_id) const {
+  const sparse_index_space_t & sparse_index_space(
+    size_t sparse_index_space_id) const {
     auto itr = sparse_index_space_map_.find(sparse_index_space_id);
     clog_assert(
       itr != sparse_index_space_map_.end(), "invalid sparse index space");
@@ -737,22 +719,20 @@ public:
 
     sparse_metadata_.index_space =
       runtime_->create_index_space(ctx_, expanded_dom);
-    attach_name(
-      sparse_metadata_, sparse_metadata_.index_space,
+    attach_name(sparse_metadata_, sparse_metadata_.index_space,
       "expanded sparse metadata index space");
 
     // Read user + FleCSI registered field spaces
     sparse_metadata_.field_space = runtime_->create_field_space(ctx_);
 
-    attach_name(
-      sparse_metadata_, sparse_metadata_.field_space,
+    attach_name(sparse_metadata_, sparse_metadata_.field_space,
       "expanded sparse metadata field space");
 
     FieldAllocator allocator =
       runtime_->create_field_allocator(ctx_, sparse_metadata_.field_space);
 
-    for (const context_t::field_info_t & fi : context.registered_fields()) {
-      if (fi.storage_class == sparse || fi.storage_class == ragged) {
+    for(const context_t::field_info_t & fi : context.registered_fields()) {
+      if(fi.storage_class == sparse || fi.storage_class == ragged) {
         allocator.allocate_field(
           sizeof(context_t::sparse_field_data_t), fi.fid);
       } // if
@@ -761,24 +741,22 @@ public:
     sparse_metadata_.logical_region = runtime_->create_logical_region(
       ctx_, sparse_metadata_.index_space, sparse_metadata_.field_space);
 
-    attach_name(
-      sparse_metadata_, sparse_metadata_.logical_region,
+    attach_name(sparse_metadata_, sparse_metadata_.logical_region,
       "expanded sparse metadata logical region");
 
     DomainColoring color_partitioning;
-    for (int color = 0; color < num_colors_; color++) {
+    for(int color = 0; color < num_colors_; color++) {
       LegionRuntime::Arrays::Rect<2> subrect(
         make_point(color, 0), make_point(color, 1));
 
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
 
-    sparse_metadata_.index_partition = runtime_->create_index_partition(
-      ctx_, sparse_metadata_.index_space, color_domain_, color_partitioning,
-      true /*disjoint*/);
+    sparse_metadata_.index_partition =
+      runtime_->create_index_partition(ctx_, sparse_metadata_.index_space,
+        color_domain_, color_partitioning, true /*disjoint*/);
 
-    attach_name(
-      sparse_metadata_, sparse_metadata_.index_partition,
+    attach_name(sparse_metadata_, sparse_metadata_.index_partition,
       "sparse metadata color partitioning");
   }
 

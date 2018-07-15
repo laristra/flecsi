@@ -51,8 +51,7 @@ struct reduction_wrapper__ {
     // Get the map of registered operations
     auto reduction_ops = context_t::instance().reduction_ops();
 
-    clog_assert(
-      reduction_ops.find(NAME) == reduction_ops.end(),
+    clog_assert(reduction_ops.find(NAME) == reduction_ops.end(),
       typeid(OPERATION).name()
         << " has already been registered with this name");
 

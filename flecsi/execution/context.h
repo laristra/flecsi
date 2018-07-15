@@ -79,6 +79,7 @@ struct context__ : public CONTEXT_POLICY {
   /*!
     Gathers info about sparse index spaces.
    */
+
   struct sparse_index_space_info_t {
     size_t index_space;
     size_t exclusive_reserve;
@@ -96,10 +97,13 @@ struct context__ : public CONTEXT_POLICY {
   /*!
     Structure needed to initialize a set topology.
    */
+
   struct set_index_space_info_t {
+
     /*!
       Gathers info about set topology index spaces per color.
      */
+
     struct color_info_t {
       size_t main_capacity;
       size_t active_migrate_capacity;
