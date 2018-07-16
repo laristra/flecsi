@@ -23,7 +23,7 @@
   </url>
   <url>
     <loc>https://laristra.github.io/flecsi/people.html</loc>
-    <lastmod>2018-07-15</lastmod>
+    <lastmod>2018-07-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <image:image>
@@ -46,9 +46,6 @@
     </image:image>
     <image:image>
       <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1350.jpg</image:loc>
-    </image:image>
-    <image:image>
-      <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1357.jpg</image:loc>
     </image:image>
     <image:image>
       <image:loc>https://laristra.github.io/flecsi/images/person-placeholder-crop-u1378.jpg</image:loc>
@@ -97,6 +94,9 @@
     </image:image>
     <image:image>
       <image:loc>https://laristra.github.io/flecsi/images/tsai143x143.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://laristra.github.io/flecsi/images/cy3f0003w-r.jpg</image:loc>
     </image:image>
   </url>
   <url>
