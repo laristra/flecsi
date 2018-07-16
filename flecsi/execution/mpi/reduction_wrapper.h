@@ -73,13 +73,8 @@ struct reduction_wrapper__ {
       typeid(OPERATION).name()
         << " has already been registered with this name");
 
-    // Retrieve or create the MPI data type
-    MPI_Datatype datatype;
-    if constexpr(std::is_pod_v<lhs_t> && std::is_pod_v<rhs_t>) {
-      // Get the MPI type
-      datatype = utils::mpi_typetraits__<lhs_t>::type();
-    }
-    else {
+    // Create the MPI data type if it isn't P.O.D.
+    if constexpr(!std::is_pod_v<lhs_t>) {
       // Get the datatype map from the context
       auto & reduction_types = context_.reduction_types();
 
@@ -89,12 +84,9 @@ struct reduction_wrapper__ {
       // Search for this type...
       auto dtype = reduction_types.find(typehash);
 
-      if(dtype != reduction_types.end()) {
-        // Use the already-defined type
-        datatype = dtype->second;
-      }
-      else {
+      if(dtype == reduction_types.end()) {
         // Add the MPI type if it doesn't exist
+        MPI_Datatype datatype;
         constexpr size_t datatype_size = sizeof(typename OPERATION::RHS);
         MPI_Type_contiguous(datatype_size, MPI_BYTE, &datatype);
         MPI_Type_commit(&datatype);

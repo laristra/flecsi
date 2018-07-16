@@ -384,7 +384,7 @@ struct legion_execution_policy_t {
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(ARGS &&... args) {
+  static decltype(auto) execute_task(ARGS && ... args) {
 
     ARG_TUPLE task_args_tmp = std::make_tuple(args...);
 

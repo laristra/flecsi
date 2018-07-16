@@ -46,7 +46,7 @@ struct executor__ {
     mpi_future__<RETURN> fut;
     fut.set(user_fun(std::forward<A>(targs)));
     return fut;
-  } // execute_task
+  } // execute
 }; // struct executor__
 
 /*!
