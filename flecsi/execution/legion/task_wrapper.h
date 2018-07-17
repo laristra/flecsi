@@ -64,9 +64,9 @@ struct execution_wrapper__ {
   } // execute
 
   /*!
-   Recover the return value. This is similar to a future, but with
-   immediate execution. This function is suitable for returning from
-   the task wrapper types below to handle void vs. non-void return types.
+    Recover the return value. This is similar to a future, but with
+    immediate execution. This function is suitable for returning from
+    the task wrapper types below to handle void vs. non-void return types.
    */
 
   RETURN
@@ -75,6 +75,7 @@ struct execution_wrapper__ {
   } // get
 
 private:
+
   RETURN value_;
 
 }; // struct execution_wrapper__
@@ -92,7 +93,7 @@ template<typename ARG_TUPLE, void (*DELEGATE)(ARG_TUPLE)>
 struct execution_wrapper__<void, ARG_TUPLE, DELEGATE> {
 
   /*!
-   Execute the delegate function. No value is stored for void.
+    Execute the delegate function. No value is stored for void.
    */
 
   void execute(ARG_TUPLE && args) {
@@ -100,8 +101,8 @@ struct execution_wrapper__<void, ARG_TUPLE, DELEGATE> {
   } // execute
 
   /*!
-   This function is suitable for returning from the task wrapper
-   types below to handle void return types.
+    This function is suitable for returning from the task wrapper
+    types below to handle void return types.
    */
 
   void get() {}
@@ -109,12 +110,12 @@ struct execution_wrapper__<void, ARG_TUPLE, DELEGATE> {
 }; // struct execution_wrapper__
 
 /*!
- Pure Legion task wrapper.
+  Pure Legion task wrapper.
 
- @tparam RETURN The return type of the task.
- @tparam TASK   The legion task.
+  @tparam RETURN The return type of the task.
+  @tparam TASK   The legion task.
 
- @ingroup legion-execution
+  @ingroup legion-execution
  */
 
 template<typename RETURN,
