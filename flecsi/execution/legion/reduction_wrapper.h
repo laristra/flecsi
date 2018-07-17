@@ -42,18 +42,18 @@ struct reduction_wrapper__ {
    */
 
   static void registration_callback() {
-    // Offset by 1 because 0 is reserved
-    const size_t id = oid_t::instance().next() + 1;
-
-    // Register the operation with the Legion runtime
-    Legion::Runtime::register_reduction_op<OPERATION>(id);
-
     // Get the map of registered operations
     auto reduction_ops = context_t::instance().reduction_ops();
 
     clog_assert(reduction_ops.find(NAME) == reduction_ops.end(),
       typeid(OPERATION).name()
         << " has already been registered with this name");
+
+    // Offset by 1 because 0 is reserved
+    const size_t id = oid_t::instance().next() + 1;
+
+    // Register the operation with the Legion runtime
+    Legion::Runtime::register_reduction_op<OPERATION>(id);
 
     // Save the id for invocation
     reduction_ops[NAME] = id;
