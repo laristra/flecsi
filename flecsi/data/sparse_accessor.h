@@ -19,6 +19,7 @@
 
 #include <cinchlog.h>
 
+#include <flecsi/data/accessor.h>
 #include <flecsi/data/sparse_data_handle.h>
 #include <flecsi/topology/index_space.h>
 
@@ -85,8 +86,7 @@ struct accessor__<
   //! Copy constructor.
   //-------------------------------------------------------------------------//
 
-  accessor__(const accessor__ & a)
-      : handle(a.handle) {}
+  accessor__(const accessor__ & a) : handle(a.handle) {}
 
   accessor__(const sparse_data_handle__<T, 0, 0, 0> & h)
       : handle(reinterpret_cast<const handle_t &>(h)) {}
@@ -108,6 +108,11 @@ struct accessor__<
     assert(itr != end && "sparse accessor: unmapped entry");
 
     return itr->value;
+  } // operator ()
+
+  template<typename E>
+  T & operator()(E * e, size_t entry) {
+    return this->operator()(e->template id<0>(), entry);
   } // operator ()
 
   //-------------------------------------------------------------------------//
@@ -216,7 +221,6 @@ struct accessor__<
     }
   }
 
-  
   //-------------------------------------------------------------------------//
   //! Return the maximum possible entries
   //-------------------------------------------------------------------------//

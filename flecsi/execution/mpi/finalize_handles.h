@@ -105,23 +105,15 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     auto shared_data = entries + h.exclusive_reserve;
     auto ghost_data = shared_data + h.num_shared() * h.max_entries_per_index();
 
-    MPI_Datatype shared_ghost_type = sparse_field_metadata.shared_ghost_type;
-
     MPI_Win win = sparse_field_metadata.win;
 
     MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
     MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
 
-    int i = 0;
-    for (auto & ghost : index_coloring.ghost) {
-      clog_rank(warn, 0) << "ghost id: " << ghost.id << ", rank: " << ghost.rank
-                         << ", offset: " << ghost.offset << std::endl;
-      MPI_Get(
-          &ghost_data[i * h.max_entries_per_index()], h.max_entries_per_index(),
-          shared_ghost_type, ghost.rank,
-          ghost.offset * h.max_entries_per_index(), h.max_entries_per_index(),
-          shared_ghost_type, win);
-      i++;
+    for (auto ghost_owner : my_coloring_info.ghost_owners) {
+      MPI_Get(ghost_data, 1, sparse_field_metadata.origin_types[ghost_owner],
+              ghost_owner, 0, 1, sparse_field_metadata.target_types[ghost_owner],
+              win);
     }
 
     MPI_Win_complete(win);
@@ -146,7 +138,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
       }
     }
 
-    i = 0;
+    int i = 0;
     for (auto & shared : index_coloring.shared) {
       for (auto peer : shared.shared) {
         MPI_Isend(

@@ -335,13 +335,15 @@ struct mpi_context_policy_t
       metadata.compact_origin_lengs, metadata.compact_origin_disps,
       metadata.compact_target_lengs, metadata.compact_target_disps);
 
-#if 0
+    using entry_value_t = typename data::sparse_entry_value__<T>;
+
     // Each shared and ghost cells element is an array of max_entries_per_index
     // of entry_value_t
     MPI_Datatype shared_ghost_type;
-    MPI_Type_contiguous(sizeof(data::sparse_entry_value__<T>) * 5,
+    MPI_Type_contiguous(sizeof(entry_value_t) * sparse_field_data[fid].max_entries_per_index,
                         MPI_BYTE, &shared_ghost_type);
     MPI_Type_commit(&shared_ghost_type);
+
     for (auto ghost_owner : coloring_info.ghost_owners) {
       MPI_Datatype origin_type;
       MPI_Datatype target_type;
@@ -349,7 +351,6 @@ struct mpi_context_policy_t
       MPI_Type_indexed(metadata.compact_origin_lengs[ghost_owner].size(),
                        metadata.compact_origin_lengs[ghost_owner].data(),
                        metadata.compact_origin_disps[ghost_owner].data(),
-                       //flecsi::coloring::mpi_typetraits__<T>::type(),
                        shared_ghost_type,
                        &origin_type);
       MPI_Type_commit(&origin_type);
@@ -358,7 +359,6 @@ struct mpi_context_policy_t
       MPI_Type_indexed(metadata.compact_target_lengs[ghost_owner].size(),
                        metadata.compact_target_lengs[ghost_owner].data(),
                        metadata.compact_target_disps[ghost_owner].data(),
-                       //flecsi::coloring::mpi_typetraits__<T>::type(),
                        shared_ghost_type,
                        &target_type);
       MPI_Type_commit(&target_type);
@@ -369,43 +369,17 @@ struct mpi_context_policy_t
     // be updated in the tuple walker when the number of entries in exclusive
     // part changes.
     auto entry_value_size = (sizeof(size_t) + sizeof(T));
-    auto data = sparse_field_data[fid].entries.data();
-    auto shared_data = data + sparse_field_data[fid].exclusive_reserve *
-                                sparse_field_data[fid].max_entries_per_index *
-                                entry_value_size;
-    MPI_Win_create_dynamic(MPI_INFO_NULL, MPI_COMM_WORLD, &metadata.win);
-
-//    MPI_Win_create(shared_data, coloring_info.shared * entry_value_size,
-//                   entry_value_size, MPI_INFO_NULL, MPI_COMM_WORLD,
-//                   &metadata.win);
-#else
-    // TODO: still too much information get copies to too many places!!!
-    using entry_value_t = typename data::sparse_entry_value__<T>;
-    using offset_t = data::sparse_data_offset_t;
-
-    entry_value_t* entries = reinterpret_cast<entry_value_t*>(sparse_field_data[fid].entries.data());//h.entries;
-    offset_t* offsets = sparse_field_data[fid].offsets.data();
+    entry_value_t* entries = reinterpret_cast<entry_value_t*>(sparse_field_data[fid].entries.data());
     auto shared_data = entries + sparse_field_data[fid].exclusive_reserve;
-    auto ghost_data = shared_data +
-      sparse_field_data[fid].num_shared * sparse_field_data[fid].max_entries_per_index;
-   
-    // Get entry_values
-    MPI_Datatype shared_ghost_type;
-    MPI_Type_contiguous(
-      sizeof(entry_value_t),
-      MPI_BYTE, &shared_ghost_type);
-    MPI_Type_commit(&shared_ghost_type);
+    // MPI_Win_create_dynamic(MPI_INFO_NULL, MPI_COMM_WORLD, &metadata.win);
 
-    metadata.shared_ghost_type = shared_ghost_type;
-
-    MPI_Win win;
     MPI_Win_create(shared_data,
+                   //coloring_info.shared * entry_value_size,
                    sizeof(entry_value_t) * sparse_field_data[fid].num_shared * sparse_field_data[fid].max_entries_per_index,
-                   sizeof(entry_value_t),
+                   entry_value_size,
                    MPI_INFO_NULL, MPI_COMM_WORLD,
-                   &win);
-    metadata.win = win;
-#endif
+                   &metadata.win);
+
     sparse_field_metadata.insert({fid, metadata});
   }
 

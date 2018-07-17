@@ -170,33 +170,18 @@ namespace execution {
       using entry_value_t = typename mutator_handle__<T>::entry_value_t;
 
       entry_value_t *entries = h.entries;
-      auto offsets = &(h.offsets)[0];
       auto shared_data = entries + h.exclusive_reserve;
       auto ghost_data = shared_data + h.num_shared_ * h.max_entries_per_index;
 
-      MPI_Datatype shared_ghost_type = sparse_field_metadata.shared_ghost_type;
-    
       MPI_Win win = sparse_field_metadata.win;
 
       MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
       MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
   
-      // TODO: consolidate MPI_Get using the fancy MPI_Datatype trick.
-      int i = 0;
-      for (auto& ghost : index_coloring.ghost) {
-        clog_rank(warn, 0) << "ghost id: " << ghost.id << ", rank: "
-                           << ghost.rank
-                           << ", offset: " << ghost.offset
-                           << std::endl;
-        MPI_Get(&ghost_data[i*h.max_entries_per_index],
-                h.max_entries_per_index,
-                shared_ghost_type,
-                ghost.rank,
-                ghost.offset*h.max_entries_per_index,
-                h.max_entries_per_index,
-                shared_ghost_type,
+      for (auto ghost_owner : my_coloring_info.ghost_owners) {
+        MPI_Get(ghost_data, 1, sparse_field_metadata.origin_types[ghost_owner],
+                ghost_owner, 0, 1, sparse_field_metadata.target_types[ghost_owner],
                 win);
-        i++;
       }
 
       MPI_Win_complete(win);
@@ -221,7 +206,11 @@ namespace execution {
       clog_assert(*h.num_exclusive_insertions <= h.exclusive_reserve,
                   "sparse exclusive reserve exceed");
 
-      delete h.num_exclusive_insertions;
+      // delete h.num_exclusive_insertions;
+      // FIXME do we need this instead of the above (above leads to segfaults when
+      // the mutator is used more than once)
+      // *h.num_exclusive_insertions = 0;
+      //delete h.num_exclusive_insertions;
 
       entry_value_t *entries =
         reinterpret_cast<entry_value_t *>(&(*h.entries)[0]);
