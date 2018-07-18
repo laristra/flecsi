@@ -18,7 +18,4 @@
 
 # LA Ristra Dependency Graph
 
-1. `flecsi-buildenv`->`flecsi-third-party`->`flecsi`->`libristra`->`flecsi-sp`->`flecsale`
-
-2. `portage-buildenv`->`tangram`->`portage`
-
+![graph](ristraDependencyGraph.png)
