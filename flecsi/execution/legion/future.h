@@ -37,10 +37,10 @@ namespace execution {
 
 struct future_base_t {
 public:
-  virtual void add_future_to_single_task_launcher(
+  virtual void add_to_single_task_launcher(
     Legion::TaskLauncher & launcher) const = 0;
 
-  virtual void add_future_to_index_task_launcher(
+  virtual void add_to_index_task_launcher(
     Legion::IndexLauncher & launcher) const = 0;
 };
 
@@ -105,12 +105,12 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
   /*!
     Add Legion Future to the task launcher
    */
-  void add_future_to_single_task_launcher(
+  void add_to_single_task_launcher(
     Legion::TaskLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
-  void add_future_to_index_task_launcher(
+  void add_to_index_task_launcher(
     Legion::IndexLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
@@ -180,12 +180,12 @@ struct legion_future__<void, launch_type_t::single> : public future_base_t {
   /*!
     Add Legion Future to the task launcher
    */
-  void add_future_to_single_task_launcher(
+  void add_to_single_task_launcher(
     Legion::TaskLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
-  void add_future_to_index_task_launcher(
+  void add_to_index_task_launcher(
     Legion::IndexLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
@@ -246,12 +246,12 @@ struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
   /*!
     Add Legion Future to the task launcher
    */
-  void add_future_to_single_task_launcher(
+  void add_to_single_task_launcher(
     Legion::TaskLauncher & launcher) const {
     assert(false && "you can't pass future from index task to any task");
   }
 
-  void add_future_to_index_task_launcher(
+  void add_to_index_task_launcher(
     Legion::IndexLauncher & launcher) const {
     assert(false && "you can't pass future handle from index task to any task");
   }
@@ -287,12 +287,12 @@ struct legion_future__<void, launch_type_t::index> : public future_base_t {
   /*!
     Add Legion Future to the task launcher
    */
-  void add_future_to_single_task_launcher(
+  void add_to_single_task_launcher(
     Legion::TaskLauncher & launcher) const {
     assert(false && "you can't pass future from index task to any task");
   }
 
-  void add_future_to_index_task_launcher(
+  void add_to_index_task_launcher(
     Legion::IndexLauncher & launcher) const {
     assert(false && "you can't pass future handle from index task to any task");
   }

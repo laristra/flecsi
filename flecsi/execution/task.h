@@ -78,22 +78,25 @@ struct task_interface__ {
   /*!
     Execute a task.
 
-    @tparam RETURN The return type of the task.
+    @tparam LAUNCH    The launch mode for this task execution.
+    @tparam TASK      The task hash key.
+    @tparam REDUCTION The reduction operation hash key.
+    @tparam RETURN    The return type of the task.
     @tparam ARG_TUPLE A std::tuple of the user task argument types.
-    @tparam ARGS The task arguments.
+    @tparam ARGS      The task arguments.
 
-    @param launch The launch mode for this task execution.
     @param args   The arguments to pass to the user task during execution.
    */
 
-  template<launch_type_t launch,
-    size_t KEY,
+  template<launch_type_t LAUNCH,
+    size_t TASK,
+    size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
-    typename... ARGS>
+    typename ... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
-    return EXECUTION_POLICY::template execute_task<launch, KEY, RETURN,
-      ARG_TUPLE>(std::forward<ARGS>(args)...);
+    return EXECUTION_POLICY::template execute_task<LAUNCH, TASK,
+      REDUCTION, RETURN, ARG_TUPLE>(std::forward<ARGS>(args)...);
   } // execute_task
 
   /*!

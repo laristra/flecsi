@@ -129,10 +129,13 @@ legion_context_policy_t::unset_call_mpi(Legion::Context & ctx,
   fm.wait_all_results(true);
 } // legion_context_policy_t::unset_call_mpi
 
+//----------------------------------------------------------------------------//
+// Implementation of legion_context_policy_t::unset_call_mpi_index.
+//----------------------------------------------------------------------------//
+
 Legion::FutureMap
-legion_context_policy_t::unset_call_mpi_single() {
-  auto legion_runtime = Legion::Runtime::get_runtime();
-  auto legion_context = Legion::Runtime::get_context();
+legion_context_policy_t::unset_call_mpi_index(Legion::Context & ctx,
+  Legion::Runtime * runtime) {
   LegionRuntime::Arrays::Rect<1> launch_bounds(
     LegionRuntime::Arrays::Point<1>(0), LegionRuntime::Arrays::Point<1>(1));
 
@@ -145,8 +148,7 @@ legion_context_policy_t::unset_call_mpi_single() {
   Legion::IndexLauncher task_launcher(tid,
     Legion::Domain::from_rect<1>(launch_bounds), Legion::TaskArgument(NULL, 0),
     arg_map);
-  auto future =
-    legion_runtime->execute_index_space(legion_context, task_launcher);
+  auto future = runtime->execute_index_space(ctx, task_launcher);
 
   future.wait_all_results();
   return future;
