@@ -172,27 +172,25 @@ public:
           regions.push_back(task.regions[indx + 1].region);
           regions.push_back(task.regions[indx + 2].region);
 
-          if(!runtime->find_or_create_physical_instance(ctx, target_mem,
-               layout_constraints, regions, result, created, true /*acquire*/,
-               GC_NEVER_PRIORITY)) {
-            clog(fatal) << "ERROR: FLeCSI mapper failed to allocate instance"
-                        << std::endl;
-          } // end if
+          clog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
+                        layout_constraints, regions, result, created,
+                        true /*acquire*/, GC_NEVER_PRIORITY),
+            "FLeCSI mapper failed to allocate instance");
 
-          for(size_t j = 0; j < 3; j++)
+          for(size_t j = 0; j < 3; j++) {
             output.chosen_instances[indx + j].push_back(result);
+          } // for
 
           indx = indx + 2;
         }
         else {
 
           regions.push_back(task.regions[indx].region);
-          if(!runtime->find_or_create_physical_instance(ctx, target_mem,
-               layout_constraints, regions, result, created, true /*acquire*/,
-               GC_NEVER_PRIORITY)) {
-            clog(fatal) << "ERROR: FLeCSI mapper failed to allocate instance"
-                        << std::endl;
-          } // end if
+
+          clog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
+                        layout_constraints, regions, result, created,
+                        true /*acquire*/, GC_NEVER_PRIORITY),
+            "FLeCSI mapper failed to allocate instance");
 
           output.chosen_instances[indx].push_back(result);
 

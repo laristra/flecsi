@@ -107,13 +107,15 @@ struct legion_execution_policy_t {
   static bool register_legion_task(processor_type_t processor,
     launch_t launch,
     std::string name) {
-    clog(info) << "Registering legion task " << TASK << " " <<
-      name << std::endl;
+    clog(info) << "Registering legion task " << TASK << " " << name
+               << std::endl;
 
-    if(!context_t::instance().register_task(TASK, processor, launch, name,
-         pure_task_wrapper__<RETURN, DELEGATE>::registration_callback)) {
-      clog(fatal) << "callback registration failed for " << name << std::endl;
-    } // if
+    using wrapper_t = pure_task_wrapper__<RETURN, DELEGATE>;
+
+    const bool success = context_t::instance().register_task(
+      TASK, processor, launch, name, wrapper_t::registration_callback);
+
+    clog_assert(success, "callback registration failed for " << name);
 
     return true;
   } // register_legion_task
@@ -132,10 +134,10 @@ struct legion_execution_policy_t {
 
     using wrapper_t = task_wrapper__<TASK, RETURN, ARG_TUPLE, DELEGATE>;
 
-    if(!context_t::instance().register_task(
-         TASK, processor, launch, name, wrapper_t::registration_callback)) {
-      clog(fatal) << "callback registration failed for " << name << std::endl;
-    } // if
+    const bool success = context_t::instance().register_task(
+      TASK, processor, launch, name, wrapper_t::registration_callback);
+
+    clog_assert(success, "callback registration failed for " << name);
 
     return true;
   } // register_task
@@ -150,8 +152,8 @@ struct legion_execution_policy_t {
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
-    typename ... ARGS>
-  static decltype(auto) execute_task(ARGS && ... args) {
+    typename... ARGS>
+  static decltype(auto) execute_task(ARGS &&... args) {
 
     using namespace Legion;
 
@@ -191,8 +193,7 @@ struct legion_execution_policy_t {
 
       switch(processor_type) {
 
-        case processor_type_t::loc:
-          {
+        case processor_type_t::loc: {
           clog(info) << "Executing single task: " << TASK << std::endl;
 
           // Execute a tuple walker that initializes the handle arguments
@@ -236,19 +237,19 @@ struct legion_execution_policy_t {
 
           // Return a legion future
           return legion_future__<RETURN, launch_type_t::single>(future);
-          } // scope
+        } // scope
 
         case processor_type_t::toc:
-          clog(fatal) << "Invalid processor type (toc is un-implemented)" <<
-            std::endl;
+          clog_fatal("Invalid processor type (toc is un-implemented)");
 
         case processor_type_t::mpi:
-          clog(fatal) << "Invalid launch type!" << std::endl <<
-            "Legion backend does not support 'single' launch" <<
-            " for MPI tasks" << std::endl;
+          clog_fatal("Invalid launch type!"
+                     << std::endl
+                     << "Legion backend does not support 'single' launch"
+                     << " for MPI tasks");
 
         default:
-          clog(fatal) << "Unknown processor type" << std::endl;
+          clog_fatal("Unknown processor type: " << processor_type);
       } // switch
     }
 
@@ -260,8 +261,7 @@ struct legion_execution_policy_t {
 
       switch(processor_type) {
 
-        case processor_type_t::loc:
-          {
+        case processor_type_t::loc: {
           clog(info) << "Executing index task: " << TASK << std::endl;
 
           // Execute a tuple walker that initializes the handle arguments
@@ -283,14 +283,13 @@ struct legion_execution_policy_t {
           launcher.tag = MAPPER_COMPACTED_STORAGE;
 #endif
           // Enqueue the task.
-          auto future = legion_runtime->execute_index_space(legion_context,
-            launcher);
+          auto future =
+            legion_runtime->execute_index_space(legion_context, launcher);
 
           return legion_future__<RETURN, launch_type_t::index>(future);
-          } // scope
+        } // scope
 
-        case processor_type_t::mpi:
-          {
+        case processor_type_t::mpi: {
           clog(info) << "Executing MPI task: " << TASK << std::endl;
 
           // Execute a tuple walker that initializes the handle arguments
@@ -320,8 +319,8 @@ struct legion_execution_policy_t {
             must_epoch_launcher.add_index_task(launcher);
 
             // Launch the MPI task
-            auto future = legion_runtime->execute_must_epoch(legion_context,
-              must_epoch_launcher);
+            auto future = legion_runtime->execute_must_epoch(
+              legion_context, must_epoch_launcher);
 
             // Force synchronization
             future.wait_all_results(true);
@@ -379,15 +378,15 @@ struct legion_execution_policy_t {
             context_.wait_on_mpi();
 
             // Get a future to the task that swaps the runtime states
-            auto future = context_.unset_call_mpi_index(legion_context,
-              legion_runtime);
+            auto future =
+              context_.unset_call_mpi_index(legion_context, legion_runtime);
 
             return legion_future__<RETURN, launch_type_t::index>(future);
           } // if
-          } // scope
+        } // scope
 
         default:
-          clog(fatal) << "Unknown processor type" << std::endl;
+          clog_fatal("Unknown processor type: " << processor_type);
       } // switch
     } // if constexpr
   } // execute_task

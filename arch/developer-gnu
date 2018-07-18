@@ -43,6 +43,9 @@ do
 		--ccmake|-c)
 			cmake_mode=ccmake
 		;;
+    legion|hpx)
+      runtime=$1
+    ;;
 	esac
 
 	shift # next argument

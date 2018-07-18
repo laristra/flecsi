@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <flecsi-config.h>
+#include <cinchlog.h>
 
 #if !defined(FLECSI_ENABLE_GRAPHVIZ)
 #error FLECSI_ENABLE_GRAPHVIZ not defined! This file depends on Graphviz!
@@ -256,9 +257,7 @@ public:
   void write(const char * name) {
     FILE * file = fopen(name, "w");
 
-    if(name == nullptr) {
-      // clog(fatal) << "Failed opening " << name;
-    } // if
+    clog_assert(name != nullptr, "failed opening: " << name);
 
     agwrite(graph_, file);
     fclose(file);

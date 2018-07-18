@@ -75,7 +75,6 @@ struct execution_wrapper__ {
   } // get
 
 private:
-
   RETURN value_;
 
 }; // struct execution_wrapper__
@@ -135,13 +134,13 @@ struct pure_task_wrapper__ {
    Registration callback function for pure Legion tasks.
 
    @param tid The task id to assign to the task.
-   @param processor A valid Legion processor type.
+   @param processor_type A valid Legion processor type.
    @param launch A \ref launch_t with the launch parameters.
    @param A std::string containing the task name.
    */
 
   static void registration_callback(task_id_t tid,
-    processor_type_t processor,
+    processor_type_t processor_type,
     launch_t launch,
     std::string & task_name) {
     {
@@ -155,7 +154,7 @@ struct pure_task_wrapper__ {
     Legion::TaskConfigOptions config_options{
       launch_leaf(launch), launch_inner(launch), launch_idempotent(launch)};
 
-    switch(processor) {
+    switch(processor_type) {
       case processor_type_t::loc: {
         clog_tag_guard(wrapper);
         clog(info) << "Registering PURE loc task: " << task_name << " "
@@ -174,13 +173,10 @@ struct pure_task_wrapper__ {
           tid, Legion::Processor::TOC_PROC, config_options, task_name);
         break;
       case processor_type_t::mpi:
-        clog(fatal) << "MPI type passed to pure legion registration"
-                    << std::endl;
+        clog_fatal("MPI type passed to pure legion registration");
         break;
       default:
-        clog(fatal)
-          << "wrong processor type is specified for the task registration"
-          << std::endl;
+        clog_fatal("invalid processor type" << processor_type);
         break;
     } // switch
   } // registration_callback
@@ -220,7 +216,7 @@ struct task_wrapper__ {
    */
 
   static void registration_callback(task_id_t tid,
-    processor_type_t processor,
+    processor_type_t processor_type,
     launch_t launch,
     std::string & name) {
     {
@@ -233,7 +229,7 @@ struct task_wrapper__ {
     Legion::TaskConfigOptions config_options{
       launch_leaf(launch), launch_inner(launch), launch_idempotent(launch)};
 
-    switch(processor) {
+    switch(processor_type) {
       case processor_type_t::loc: {
         clog_tag_guard(wrapper);
         clog(info) << "Registering loc task: " << name << std::endl
@@ -259,9 +255,7 @@ struct task_wrapper__ {
           tid, Legion::Processor::LOC_PROC, config_options, name);
         break;
       default:
-        clog(fatal)
-          << "wrong processor type is specified for the task registration"
-          << std::endl;
+        clog_fatal("invalid processor type" << processor_type);
         break;
     } // switch
   } // registration_callback

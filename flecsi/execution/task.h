@@ -93,10 +93,10 @@ struct task_interface__ {
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
-    typename ... ARGS>
+    typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
-    return EXECUTION_POLICY::template execute_task<LAUNCH, TASK,
-      REDUCTION, RETURN, ARG_TUPLE>(std::forward<ARGS>(args)...);
+    return EXECUTION_POLICY::template execute_task<LAUNCH, TASK, REDUCTION,
+      RETURN, ARG_TUPLE>(std::forward<ARGS>(args)...);
   } // execute_task
 
   /*!
