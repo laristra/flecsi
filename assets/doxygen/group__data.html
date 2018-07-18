@@ -144,10 +144,10 @@ Macros</h2></td></tr>
 <tr class="separator:gaaa855ccd1c709526c76247bce774ff64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga94367ffbedff524f08ddef3a27df2b36"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga94367ffbedff524f08ddef3a27df2b36">flecsi_register_field</a>(client_type,  nspace,  name,  data_type,  storage_class,  versions, ...)</td></tr>
 <tr class="separator:ga94367ffbedff524f08ddef3a27df2b36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2122fc2a0f3dc705a6c6da72a1db513d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga2122fc2a0f3dc705a6c6da72a1db513d">flecsi_register_global</a>(nspace,  name,  data_type,  versions, ...)</td></tr>
-<tr class="separator:ga2122fc2a0f3dc705a6c6da72a1db513d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1c9f54d9b214a39f3b11c777dd743e32"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga1c9f54d9b214a39f3b11c777dd743e32">flecsi_register_color</a>(nspace,  name,  data_type,  versions, ...)</td></tr>
-<tr class="separator:ga1c9f54d9b214a39f3b11c777dd743e32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7a93057192cb77748dbddeba3ba9d255"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga7a93057192cb77748dbddeba3ba9d255">flecsi_register_global</a>(nspace,  name,  data_type,  versions)</td></tr>
+<tr class="separator:ga7a93057192cb77748dbddeba3ba9d255"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7ba25daaf19d577aec595eb77247d8bd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga7ba25daaf19d577aec595eb77247d8bd">flecsi_register_color</a>(nspace,  name,  data_type,  versions)</td></tr>
+<tr class="separator:ga7ba25daaf19d577aec595eb77247d8bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa8a47aa981f998c81433eece3206e5f0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#gaa8a47aa981f998c81433eece3206e5f0">flecsi_get_handle</a>( client_handle,  nspace,  name,  data_type,  storage_class,  version)</td></tr>
 <tr class="separator:gaa8a47aa981f998c81433eece3206e5f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae3fe6b51edd61dd0717e9f1c5a364635"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#gae3fe6b51edd61dd0717e9f1c5a364635">flecsi_get_global</a>(nspace,  name,  data_type,  version)</td></tr>
@@ -712,8 +712,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga1c9f54d9b214a39f3b11c777dd743e32"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga1c9f54d9b214a39f3b11c777dd743e32">&#9670;&nbsp;</a></span>flecsi_register_color</h2>
+<a id="ga7ba25daaf19d577aec595eb77247d8bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7ba25daaf19d577aec595eb77247d8bd">&#9670;&nbsp;</a></span>flecsi_register_color</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -740,13 +740,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname">versions, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
+          <td class="paramname">versions&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -755,7 +749,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  static <span class="keyword">inline</span> <span class="keywordtype">bool</span> client_type##_##nspace##_##name##_data_registered =       <a class="code" href="group__data.html#ga171757e2b3f34c74747d15e6adde43e9">\</a></div><div class="line"><a class="code" href="group__data.html#ga171757e2b3f34c74747d15e6adde43e9">      flecsi::data::field_interface_t::register_field</a>&lt;                         \</div><div class="line">          flecsi::data::color_data_client_t, flecsi::data::color, data_type,   \</div><div class="line">          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \</div><div class="line">          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \</div><div class="line">          versions, flecsi::execution::internal_index_space::color_is,         \</div><div class="line"><span class="preprocessor">          ##__VA_ARGS__&gt;({EXPAND_AND_STRINGIFY(name)})</span></div><div class="ttc" id="group__data_html_ga171757e2b3f34c74747d15e6adde43e9"><div class="ttname"><a href="group__data.html#ga171757e2b3f34c74747d15e6adde43e9">flecsi::data::field_interface__::register_field</a></div><div class="ttdeci">static bool register_field(std::string const &amp;name)</div><div class="ttdef"><b>Definition:</b> field.h:71</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  static <span class="keyword">inline</span> <span class="keywordtype">bool</span> client_type##_##nspace##_##name##_data_registered =       <a class="code" href="group__data.html#ga171757e2b3f34c74747d15e6adde43e9">\</a></div><div class="line"><a class="code" href="group__data.html#ga171757e2b3f34c74747d15e6adde43e9">      flecsi::data::field_interface_t::register_field</a>&lt;                         \</div><div class="line">          flecsi::data::color_data_client_t, flecsi::data::color, data_type,   \</div><div class="line">          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \</div><div class="line">          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \</div><div class="line">          versions, flecsi::execution::internal_index_space::color_is&gt;         \</div><div class="line">             ({EXPAND_AND_STRINGIFY(name)})</div><div class="ttc" id="group__data_html_ga171757e2b3f34c74747d15e6adde43e9"><div class="ttname"><a href="group__data.html#ga171757e2b3f34c74747d15e6adde43e9">flecsi::data::field_interface__::register_field</a></div><div class="ttdeci">static bool register_field(std::string const &amp;name)</div><div class="ttdef"><b>Definition:</b> field.h:71</div></div>
 </div><!-- fragment --><p>This macro registers color field data. This call does not necessarily cause memory to be allocated. Its primary function is to describe the field data to the runtime. Memory allocation will likely be deferred.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -884,8 +878,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga2122fc2a0f3dc705a6c6da72a1db513d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga2122fc2a0f3dc705a6c6da72a1db513d">&#9670;&nbsp;</a></span>flecsi_register_global</h2>
+<a id="ga7a93057192cb77748dbddeba3ba9d255"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7a93057192cb77748dbddeba3ba9d255">&#9670;&nbsp;</a></span>flecsi_register_global</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -912,13 +906,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname">versions, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
+          <td class="paramname">versions&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -927,7 +915,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  static <span class="keyword">inline</span> <span class="keywordtype">bool</span> client_type##_##nspace##_##name##_data_registered =       <a class="code" href="group__data.html#ga171757e2b3f34c74747d15e6adde43e9">\</a></div><div class="line"><a class="code" href="group__data.html#ga171757e2b3f34c74747d15e6adde43e9">      flecsi::data::field_interface_t::register_field</a>&lt;                         \</div><div class="line">          flecsi::data::global_data_client_t, flecsi::data::global, data_type, \</div><div class="line">          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \</div><div class="line">          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \</div><div class="line">          versions, flecsi::execution::internal_index_space::global_is,        \</div><div class="line"><span class="preprocessor">          ##__VA_ARGS__&gt;({EXPAND_AND_STRINGIFY(name)})</span></div><div class="ttc" id="group__data_html_ga171757e2b3f34c74747d15e6adde43e9"><div class="ttname"><a href="group__data.html#ga171757e2b3f34c74747d15e6adde43e9">flecsi::data::field_interface__::register_field</a></div><div class="ttdeci">static bool register_field(std::string const &amp;name)</div><div class="ttdef"><b>Definition:</b> field.h:71</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  static <span class="keyword">inline</span> <span class="keywordtype">bool</span> client_type##_##nspace##_##name##_data_registered =       <a class="code" href="group__data.html#ga171757e2b3f34c74747d15e6adde43e9">\</a></div><div class="line"><a class="code" href="group__data.html#ga171757e2b3f34c74747d15e6adde43e9">      flecsi::data::field_interface_t::register_field</a>&lt;                         \</div><div class="line">          flecsi::data::global_data_client_t, flecsi::data::global, data_type, \</div><div class="line">          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \</div><div class="line">          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \</div><div class="line">          versions, flecsi::execution::internal_index_space::global_is&gt;        \</div><div class="line">             ({EXPAND_AND_STRINGIFY(name)})</div><div class="ttc" id="group__data_html_ga171757e2b3f34c74747d15e6adde43e9"><div class="ttname"><a href="group__data.html#ga171757e2b3f34c74747d15e6adde43e9">flecsi::data::field_interface__::register_field</a></div><div class="ttdeci">static bool register_field(std::string const &amp;name)</div><div class="ttdef"><b>Definition:</b> field.h:71</div></div>
 </div><!-- fragment --><p>This macro registers global field data. This call does not necessarily cause memory to be allocated. Its primary function is to describe the field data to the runtime. Memory allocation will likely be deferred.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
