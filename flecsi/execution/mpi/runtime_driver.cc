@@ -18,6 +18,7 @@
 #include <cstdint>
 
 #include <flecsi/data/data.h>
+#include <flecsi/coloring/box_types.h>
 
 clog_register_tag(runtime_driver);
 
@@ -176,7 +177,8 @@ runtime_driver(
   } // for
 
   //Set up maps from structured mesh to index-spaces
-  // bounded by boxes and vice versa. 
+  // bounded by boxes and vice versa.
+  using box_t = flecsi::coloring::box_t; 
   for (auto is: flecsi_context.box_coloring_map())
   {
     std::map<size_t, box_t> bmap; 

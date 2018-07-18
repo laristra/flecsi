@@ -50,6 +50,7 @@ namespace execution {
 
 template<class CONTEXT_POLICY>
 struct context__ : public CONTEXT_POLICY {
+  using box_t = flecsi::coloring::box_t;
   using box_coloring_t = flecsi::coloring::box_coloring_t;
   using index_coloring_t = flecsi::coloring::index_coloring_t;
   using coloring_info_t = flecsi::coloring::coloring_info_t;
@@ -656,8 +657,9 @@ struct context__ : public CONTEXT_POLICY {
   void add_box_map(size_t index_space, std::map<size_t, box_t> & box_map) {
     box_map_[index_space] = box_map;
 
-    for (auto i : index_map) {
-      reverse_box_map_[index_space][i.second] = i.first;
+    for (auto i : box_map) {
+      // TO BE FIXED: Add operators and hashing for the box_t type
+      //reverse_box_map_[index_space][i.second] = i.first;
     } // for
   } // add_box_map
 
@@ -1081,10 +1083,9 @@ private:
   std::map<size_t, box_coloring_t> box_colorings_;
   std::map<size_t, std::unordered_map<size_t, coloring_info_t>> box_coloring_info_;
   std::map<size_t, std::map<size_t, box_t>> box_map_;
-  std::map<size_t, std::map<size_t, box_t>> reverse_box_map_;
-
-  std::map<size_t, std::map<size_t, box_t>> box_map_;
-  std::map<size_t, std::map<size_t, box_t>> reverse_box_map_;
+  std::map<size_t, std::map<box_t, size_t>> reverse_box_map_;//The inner map should 
+  //be unordered map
+  
   //--------------------------------------------------------------------------//
   // Execution state
   //--------------------------------------------------------------------------//
