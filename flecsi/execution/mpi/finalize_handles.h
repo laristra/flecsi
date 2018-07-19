@@ -118,8 +118,8 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 
     MPI_Win_free(&win);
 
-    for (int i = 0; i < h.num_ghost() * h.max_entries_per_index(); i++)
-      clog_rank(warn, 0) << "ghost after: " << ghost_data[i].value << std::endl;
+    //for (int i = 0; i < h.num_ghost() * h.max_entries_per_index(); i++)
+    //  clog_rank(warn, 0) << "ghost after: " << ghost_data[i].value << std::endl;
 
     int send_count = 0;
     for (auto& shared : index_coloring.shared) {
@@ -233,6 +233,23 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     data_client_handle__<T, PERMISSIONS> & h
   )
   {
+    if(PERMISSIONS == wo || PERMISSIONS == rw){
+      auto & context_ = context_t::instance();
+      auto & ssm = context_.index_subspace_info();
+
+      for (size_t i{0}; i < h.num_index_subspaces; ++i) {
+        data_client_handle_index_subspace_t & iss = 
+          h.handle_index_subspaces[i];
+
+        auto itr = ssm.find(iss.index_subspace);
+        clog_assert(itr != ssm.end(), "invalid index subspace");
+        auto & si = itr->second;
+
+        clog_assert(si.size == 0, "index subspace size already set");
+        si.size = h.get_index_subspace_size_(iss.index_subspace);
+      }
+    }
+
     h.delete_storage();
   } // handle
 

@@ -46,4 +46,13 @@ using task_id_t = size_t;
 
 } // namespace flecsi
 
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+namespace flecsi {
+
+using field_id_t = size_t;
+using task_id_t = size_t;
+
+} // namespace flecsi
+
 #endif // FLECSI_RUNTIME_MODEL

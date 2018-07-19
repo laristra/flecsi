@@ -1,10 +1,5 @@
 3.14
 321
-int
-double
-std::vector<int, std::allocator<int> >
-std::vector<double, std::allocator<double> >
-char
 123
 4.5
 

@@ -50,4 +50,17 @@ using FLECSI_RUNTIME_DATA_POLICY = mpi_data_policy_t;
 } // namespace data
 } // namespace flecsi
 
+// HPX Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include <flecsi/data/hpx/data_policy.h>
+
+namespace flecsi {
+namespace data {
+
+using FLECSI_RUNTIME_DATA_POLICY = hpx_data_policy_t;
+
+} // namespace data
+} // namespace flecsi
+
 #endif // FLECSI_RUNTIME_MODEL

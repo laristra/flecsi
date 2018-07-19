@@ -21,6 +21,7 @@
 #include "mpi.h"
 #include <flecsi/data/data.h>
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/global_accessor.h>
 #include <flecsi/data/ragged_accessor.h>
 #include <flecsi/data/ragged_mutator.h>
 #include <flecsi/data/sparse_accessor.h>
@@ -36,7 +37,7 @@ namespace execution {
    The task_prolog_t type can be called to walk the task args after the
    task launcher is created, but before the task has run. This allows
    synchronization dependencies to be added to the execution flow.
-  
+
    @ingroup execution
    */
 
@@ -51,7 +52,7 @@ namespace execution {
 
     /*!
      FIXME: Need a description.
-    
+
      @tparam T                     The data type referenced by the handle.
      @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
                                    indices of the index partition.
@@ -59,7 +60,7 @@ namespace execution {
                                    indices of the index partition.
      @tparam GHOST_PERMISSIONS     The permissions required on the ghost
                                    indices of the index partition.
-    
+
      @param runtime The Legion task runtime.
      */
 
@@ -80,6 +81,24 @@ namespace execution {
     )
     {
       // TODO: move field data allocation here?
+    } // handle
+
+    template<
+      typename T,
+      size_t PERMISSIONS
+    >
+    void
+    handle(
+     global_accessor__<
+       T,
+       PERMISSIONS
+     > & a
+    )
+    {
+      if (a.handle.state >= SPECIALIZATION_SPMD_INIT) {
+        clog_assert(PERMISSIONS == size_t(ro), "you are not allowed "
+           "to modify global data in specialization_spmd_init or driver");
+      }
     } // handle
 
     template<
@@ -247,7 +266,7 @@ namespace execution {
           execution::context_t::instance().register_field_data(adj.index_fid,
                                                                size);
         }
-        adj.indices_buf = reinterpret_cast<size_t *>(registered_field_data[adj.index_fid].data());
+        adj.indices_buf = reinterpret_cast<id_t *>(registered_field_data[adj.index_fid].data());
 
         storage->init_connectivity(adj.from_domain, adj.to_domain,
                                    adj.from_dim, adj.to_dim,
@@ -257,12 +276,40 @@ namespace execution {
                                    adj.num_indices,
                                    _read);
       }
+      
+      for(size_t i{0}; i<h.num_index_subspaces; ++i) {
+        // get subspace info
+        auto & iss = h.handle_index_subspaces[i];
+				auto iss_info = (context_.index_subspace_info()).at(iss.index_subspace);
+        // the num indices is the capacity ( 
+				auto num_indices = iss_info.capacity;
+        // register the field
+        auto& registered_field_data = context_.registered_field_data();
+        auto fieldDataIter = registered_field_data.find(iss.index_fid);
+        if (fieldDataIter == registered_field_data.end()) {
+          auto size = sizeof(utils::id_t) * num_indices;
+          execution::context_t::instance().register_field_data(
+						iss.index_fid, size);
+        }
+        // assign the storage to the buffer
+        iss.indices_buf =
+          reinterpret_cast<id_t *>(registered_field_data[iss.index_fid].data());
+      	// now initialize the index subspace
+        storage->init_index_subspace(
+        	iss.index_space,
+        	iss.index_subspace,
+        	iss.domain,
+        	iss.dim,
+        	reinterpret_cast<utils::id_t *>(iss.indices_buf),
+       		num_indices,
+        	_read); 
+      }
 
       if(!_read){
         h.initialize_storage();
       }
     } // handle
-   
+
     /*!
       This method registers entity data fields as needed and initializes set
       topology index spaces and buffers from the raw MPI buffers. If we are
@@ -282,6 +329,8 @@ namespace execution {
     {
       auto& context_ = context_t::instance();
 
+      auto& ism = context_.set_index_space_map();
+
       // h is partially initialized in client.h
       auto storage = h.set_storage(new typename T::storage_t);
 
@@ -289,29 +338,43 @@ namespace execution {
 
       int color = context_.color();
 
-      auto& im = context_.local_index_space_data_map();
-
       for(size_t i{0}; i<h.num_handle_entities; ++i) {
         data_client_handle_entity_t & ent = h.handle_entities[i];
 
-        auto itr = im.find(ent.index_space);
-        clog_assert(itr != im.end(),
-          "invalid local index space: " << ent.index_space);
-        const context_t::local_index_space_data_t& isd = itr->second;
+        auto iitr = ism.find(ent.index_space);
+        clog_assert(iitr != ism.end(), "invalid index space:" << ent.index_space);
+
+        auto citr = iitr->second.color_info_map.find(color);
+        clog_assert(citr != iitr->second.color_info_map.end(),
+                    "invalid color:" << color);
+        auto& color_info = citr->second;
 
         // see if the field data is registered for this entity field.
         auto& registered_field_data = context_.registered_field_data();
         auto fieldDataIter = registered_field_data.find(ent.fid);
         if (fieldDataIter == registered_field_data.end()) {
-          size_t size = ent.size * isd.capacity;
+          size_t size = ent.size * color_info.main_capacity;
           context_.register_field_data(ent.fid, size);
+
+          size = ent.size * color_info.active_migrate_capacity;
+          context_.register_field_data(ent.fid2, size);
+          context_.register_field_data(ent.fid3, size);
         }
 
         auto ents =
           reinterpret_cast<topology::set_entity_t*>(
           registered_field_data[ent.fid].data());
 
-        storage->init_entities(ent.index_space, ents, ent.size, isd.size, _read);
+        auto active_ents =
+          reinterpret_cast<topology::set_entity_t*>(
+          registered_field_data[ent.fid2].data());
+
+        auto migrate_ents =
+          reinterpret_cast<topology::set_entity_t*>(
+          registered_field_data[ent.fid3].data());
+
+        storage->init_entities(ent.index_space, ent.index_space2, ents, 0,
+          active_ents, 0, migrate_ents, 0, ent.size, _read);
       }
     }
 

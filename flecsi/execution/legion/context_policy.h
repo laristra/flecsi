@@ -60,10 +60,12 @@ namespace execution {
 // FIXME : should we generate theese IDs somewhere?
 enum {
   // Use the first 8 bits for storing the rhsf index
-  MAPPER_FORCE_RANK_MATCH = 0x00001000,
+  MAPPER_FORCE_RANK_MATCH  = 0x00001000,
   MAPPER_COMPACTED_STORAGE = 0x00002000,
-  MAPPER_SUBRANK_LAUNCH = 0x00003000,
-  EXCLUSIVE_LR = 0x00004000,
+  MAPPER_SUBRANK_LAUNCH    = 0x00003000,
+  EXCLUSIVE_LR             = 0x00004000,
+  SPARSE_RR                = 0x11000001,
+  RR                       = 0x00005002, 
 };
 
 /*!
@@ -103,6 +105,41 @@ struct legion_context_policy_t {
       std::string,
       registration_function_t>;
 
+  struct sparse_field_data_t
+  {
+    sparse_field_data_t(){}
+
+    sparse_field_data_t(
+      size_t type_size,
+      size_t num_exclusive,
+      size_t num_shared,
+      size_t num_ghost,
+      size_t max_entries_per_index,
+      size_t exclusive_reserve
+    )
+    : type_size(type_size),
+    num_exclusive(num_exclusive),
+    num_shared(num_shared),
+    num_ghost(num_ghost),
+    num_total(num_exclusive + num_shared + num_ghost),
+    max_entries_per_index(max_entries_per_index),
+    reserve(exclusive_reserve),
+    num_exclusive_filled(0){}
+
+    size_t type_size;
+
+    // total # of exclusive, shared, ghost entries
+    size_t num_exclusive = 0;
+    size_t num_shared = 0;
+    size_t num_ghost = 0;
+    size_t num_total = 0;
+
+    size_t max_entries_per_index;
+    size_t reserve;
+    size_t num_exclusive_filled = 0;
+    bool initialized = false;
+  };
+
   //--------------------------------------------------------------------------//
   // Runtime state.
   //--------------------------------------------------------------------------//
@@ -110,10 +147,10 @@ struct legion_context_policy_t {
   /*!
     FleCSI context initialization. This method initializes the FleCSI
     runtime using Legion.
-  
+
     @param argc The command-line argument count passed from main.
     @param argv The command-line argument values passed from main.
-  
+
     @return An integer value with a non-zero error code upon failure,
            zero otherwise.
    */
@@ -143,7 +180,7 @@ struct legion_context_policy_t {
   /*!
     Set the MPI runtime state. When the state is changed to active,
     the handshake interface will begin executing the current MPI task.
-  
+
     @return A boolean indicating the current MPI runtime state.
    */
 
@@ -248,72 +285,64 @@ struct legion_context_policy_t {
     handshake_.legion_wait_on_mpi();
   } // wait_on_legion
 
-  template <typename LAUNCHERTYPE>
-  void add_wait_handshake(LAUNCHERTYPE &l)
-  {
+  template<typename LAUNCHERTYPE>
+  void add_wait_handshake(LAUNCHERTYPE & l) {
     l.add_wait_handshake(handshake_);
   }
 
-  template <typename LAUNCHERTYPE>
-  void add_arrival_handshake(LAUNCHERTYPE &l)
-  {
+  template<typename LAUNCHERTYPE>
+  void add_arrival_handshake(LAUNCHERTYPE & l) {
     l.add_arrival_handshake(handshake_);
   }
 
-  void advance_handshake()
-  {
+  void advance_handshake() {
     handshake_.advance_legion_handshake();
   }
 
-  /*!  
+  /*!
     Unset the MPI active state to pass execution back to
     the Legion runtime.
-  
+
     @param ctx The Legion runtime context.
     @param runtime The Legion task runtime pointer.
    */
 
   void unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
-  void unset_call_mpi_single()
-  {
-    mpi_active_=false;
-  }
+  Legion::FutureMap unset_call_mpi_single();
 
   /*!
     Switch execution to the MPI runtime.
-  
+
     @param ctx The Legion runtime context.
     @param runtime The Legion task runtime pointer.
    */
 
   void handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
-  void handoff_to_mpi_single()
-  {
+  void handoff_to_mpi_single() {
     handshake_.legion_handoff_to_mpi();
   }
 
   /*!
     Wait on the MPI runtime to finish the current task execution.
-  
+
     @param ctx The Legion runtime context.
     @param runtime The Legion task runtime pointer.
-  
+
     @return A future map with the result of the task execution.
    */
 
   Legion::FutureMap
   wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
-  void wait_on_mpi_single()
-  {
+  void wait_on_mpi_single() {
     handshake_.legion_wait_on_mpi();
   }
 
   /*!
     Connect with the MPI runtime.
-  
+
     @param ctx The Legion runtime context.
     @param runtime The Legion task runtime pointer.
    */
@@ -326,7 +355,7 @@ struct legion_context_policy_t {
 
   /*!
     Register a task with the runtime.
-  
+
     @param key       The task hash key.
     @param name      The task name string.
     @param callback The registration call back function.
@@ -353,7 +382,7 @@ struct legion_context_policy_t {
 
   /*!
     Return the task registration tuple.
-   
+
     @param key The task hash key.
    */
 
@@ -370,7 +399,7 @@ struct legion_context_policy_t {
 
   /*!
     Return the task registration tuple.
-  
+
     @param key The task hash key.
    */
 
@@ -386,7 +415,7 @@ struct legion_context_policy_t {
 
     /*!
       FIXME
-    
+
       @param key The task hash key.
      */
 
@@ -399,10 +428,10 @@ struct legion_context_policy_t {
     }                                                                          \
     return std::get<index>(task_info<KEY>());                                  \
   }
-  
+
     /*!
       FIXME
-    
+
       @param key The task hash key.
      */
 
@@ -417,7 +446,7 @@ struct legion_context_policy_t {
 
   /*!
     FIXME
-  
+
     @param key The task hash key.
    */
 
@@ -456,13 +485,17 @@ struct legion_context_policy_t {
     Legion::LogicalRegion region;
   };
 
-  /*!
-    Collects Legion data associated with a local FleCSI index space.
-   */
-
-  struct local_index_space_data_t {
-    Legion::LogicalRegion region;
+  struct sparse_metadata_t{
+    Legion::LogicalRegion color_region;
   };
+
+  void set_sparse_metadata(const sparse_metadata_t& sparse_metadata){
+    sparse_metadata_ = sparse_metadata;
+  }
+
+  const sparse_metadata_t& sparse_metadata(){
+    return sparse_metadata_;    
+  }
 
   /*!
     Get the index space data map.
@@ -470,14 +503,6 @@ struct legion_context_policy_t {
 
   auto & index_space_data_map() {
     return index_space_data_map_;
-  }
-
-  /*!
-    Get the local index space data map.
-   */
-
-  auto & local_index_space_data_map() {
-    return local_index_space_data_map_;
   }
 
   /*!
@@ -490,7 +515,7 @@ struct legion_context_policy_t {
 
   /*!
     Set DynamicCollective for <double> max reduction
-  
+
     @param max_reduction Legion DynamicCollective for <double> max reduction
    */
 
@@ -511,8 +536,8 @@ struct legion_context_policy_t {
     @param task future
    */
 
-  template<typename T>
-  auto reduce_max(legion_future__<T> & local_future) {
+  template<typename T, launch_type_t launch>
+  auto reduce_max(legion_future__<T, launch> & local_future) {
     Legion::DynamicCollective & max_reduction = max_reduction_;
 
     auto legion_runtime = Legion::Runtime::get_runtime();
@@ -527,14 +552,12 @@ struct legion_context_policy_t {
     auto global_future = legion_runtime->get_dynamic_collective_result(
         legion_context, max_reduction);
 
-    auto global_max_ = global_future.get_result<double>();
-
-    return global_max_;
+    return legion_future__<T, launch_type_t::single>(global_future);
   }
 
   /*!
     Set DynamicCollective for <double> in reduction
-  
+
     @param min_reduction Legion DynamicCollective for <double> max reduction
    */
 
@@ -555,8 +578,8 @@ struct legion_context_policy_t {
     @param task future
    */
 
-  template<typename T>
-  auto reduce_min(legion_future__<T> & local_future) {
+  template<typename T, launch_type_t launch>
+  auto reduce_min(legion_future__<T, launch> & local_future) {
     Legion::DynamicCollective & min_reduction = min_reduction_;
 
     auto legion_runtime = Legion::Runtime::get_runtime();
@@ -571,9 +594,7 @@ struct legion_context_policy_t {
     auto global_future = legion_runtime->get_dynamic_collective_result(
         legion_context, min_reduction);
 
-    auto global_min_ = global_future.get_result<double>();
-
-    return global_min_;
+    return legion_future__<T, launch_type_t::single>(global_future);
   }
 
   /*!
@@ -627,8 +648,8 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
-  std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
+  sparse_metadata_t sparse_metadata_;
   Legion::DynamicCollective max_reduction_;
   Legion::DynamicCollective min_reduction_;
 

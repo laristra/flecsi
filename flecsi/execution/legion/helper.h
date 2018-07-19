@@ -21,18 +21,21 @@
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
-#include <legion/arrays.h>
 #include <legion.h>
+#include <legion/arrays.h>
 
 namespace flecsi {
 namespace execution {
 
 template<typename FT, int N, typename T = long long>
-using AccessorRO = Legion::FieldAccessor<READ_ONLY,FT,N,T,Realm::AffineAccessor<FT,N,T> >;
+using AccessorRO =
+    Legion::FieldAccessor<READ_ONLY, FT, N, T, Realm::AffineAccessor<FT, N, T>>;
 template<typename FT, int N, typename T = long long>
-using AccessorWO = Legion::FieldAccessor<WRITE_DISCARD,FT,N,T,Realm::AffineAccessor<FT,N,T> >;
+using AccessorWO = Legion::
+    FieldAccessor<WRITE_DISCARD, FT, N, T, Realm::AffineAccessor<FT, N, T>>;
 template<typename FT, int N, typename T = long long>
-using AccessorRW = Legion::FieldAccessor<READ_WRITE,FT,N,T,Realm::AffineAccessor<FT,N,T> >;
+using AccessorRW = Legion::
+    FieldAccessor<READ_WRITE, FT, N, T, Realm::AffineAccessor<FT, N, T>>;
 
 /*!
   The Legion helper class define a number of convenience methods for handling
@@ -111,7 +114,6 @@ public:
     return runtime_->execute_index_space(context_, l);
   }
 
-
   Legion::Domain get_domain(Legion::PhysicalRegion pr) const {
     Legion::LogicalRegion lr = pr.get_logical_region();
     Legion::IndexSpace is = lr.get_index_space();
@@ -131,17 +133,17 @@ public:
     buf = ac.template raw_rect_ptr<1>(r, sr, bo);
   }
 
-   /*!
-    Get a raw (byte) buffer from a physical region and field ID.
-   */
-   char* get_raw_buffer(Legion::PhysicalRegion pr, size_t field = 0) const{
-      AccessorRW<char, 1> ac(pr, field);
-      Legion::Rect<1> rect = runtime_->get_index_space_domain(context_,
-                  pr.get_logical_region().get_index_space());
-      
-      assert(ac.accessor.is_dense_arbitrary(rect));
-      return ac.ptr(rect.lo);
-    }
+  /*!
+   Get a raw (byte) buffer from a physical region and field ID.
+  */
+  char * get_raw_buffer(Legion::PhysicalRegion pr, size_t field = 0) const {
+    AccessorRW<char, 1> ac(pr, field);
+    Legion::Rect<1> rect = runtime_->get_index_space_domain(
+        context_, pr.get_logical_region().get_index_space());
+
+    assert(ac.accessor.is_dense_arbitrary(rect));
+    return ac.ptr(rect.lo);
+  }
 
   /*!
     Unmap a physical region.

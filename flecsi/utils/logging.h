@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <cinchlog.h>
 
 namespace flecsi {

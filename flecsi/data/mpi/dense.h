@@ -163,7 +163,8 @@ struct storage_class__<dense>
       utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
     // get color_info for this field.
-    auto& color_info = (context.coloring_info(field_info.index_space)).at(context.color());
+    auto& color_info =
+      (context.coloring_info(field_info.index_space)).at(context.color());
     auto &index_coloring = context.coloring(field_info.index_space);
 
     auto& registered_field_data = context.registered_field_data();

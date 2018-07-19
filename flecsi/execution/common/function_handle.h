@@ -50,7 +50,7 @@ struct function_handle__ {
     return user_function(std::forward<ARG_TUPLE>(args));
   } // operator ()
 
-  function_handle__ & operator = (const function_handle__ & fh) {
+  function_handle__ & operator=(const function_handle__ & fh) {
     this->key_ = fh.key_;
     return *this;
   } // operator =
@@ -73,7 +73,6 @@ struct function_handle__ {
   } // key
 
 private:
-
   size_t key_;
 
 }; // class function_handle__

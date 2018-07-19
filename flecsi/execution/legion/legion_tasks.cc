@@ -36,8 +36,7 @@ namespace execution {
 
 __flecsi_internal_register_legion_task(
     spmd_task,
-    processor_type_t::loc,
-    index | inner);
+    processor_type_t::loc, index);
 
 /*!
   Register task to handoff to the MPI runtime.

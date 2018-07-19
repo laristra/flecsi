@@ -23,20 +23,21 @@
 namespace flecsi {
 namespace topology {
 
-///
-/// Find the neighbors of the given entity id.
-///
-/// \tparam from_dim The topological dimension of the entity for which
-///                  the neighbor information is being requested.
-/// \tparam to_dim The topological dimension to search for neighbors.
-/// \tparam thru_dim The topological dimension through which the neighbor
-///                  connection exists.
-///
-/// \param md The mesh definition containing the topological connectivity
-///           information.
-/// \param entity_id The id of the entity in from_dim for which the neighbors
-///           are to be found.
-///
+/*!
+  Find the neighbors of the given entity id.
+
+  @tparam from_dim The topological dimension of the entity for which
+                   the neighbor information is being requested.
+  @tparam to_dim The topological dimension to search for neighbors.
+  @tparam thru_dim The topological dimension through which the neighbor
+                   connection exists.
+
+  @param md The mesh definition containing the topological connectivity
+            information.
+  @param entity_id The id of the entity in from_dim for which the neighbors
+            are to be found.
+ */
+
 template<size_t from_dim, size_t to_dim, size_t thru_dim, size_t D>
 std::set<size_t>
 entity_neighbors(const mesh_definition__<D> & md, size_t entity_id) {
@@ -70,21 +71,22 @@ entity_neighbors(const mesh_definition__<D> & md, size_t entity_id) {
   return neighbors;
 } // entity_neighbors
 
-///
-/// Return the dependency closure of the given set.
-///
-/// \tparam from_dim The topological dimension of the entity for which
-///                  the neighbor information is being requested.
-/// \tparam to_dim The topological dimension to search for neighbors.
-/// \tparam thru_dim The topological dimension through which the neighbor
-///                  connection exists.
-///
-/// \param md The mesh definition containing the topological connectivity
-///           information.
-/// \param indices The entity indeces of the initial set.
-/// \param intersections The number of intersections that constitute a
-///                      neighboring entity.
-///
+/*!
+  Return the dependency closure of the given set.
+
+  @tparam from_dim The topological dimension of the entity for which
+                   the neighbor information is being requested.
+  @tparam to_dim   The topological dimension to search for neighbors.
+  @tparam thru_dim The topological dimension through which the neighbor
+                   connection exists.
+
+  @param md            The mesh definition containing the topological
+                       connectivity information.
+  @param indices       The entity indices of the initial set.
+  @param intersections The number of intersections that constitute a
+                       neighboring entity.
+ */
+
 template<
     size_t from_dim,
     size_t to_dim,
@@ -94,26 +96,23 @@ template<
     typename = std::enable_if_t<utils::is_iterative_container_v<U>>>
 std::set<size_t>
 entity_neighbors(const mesh_definition__<D> & md, U && indices) {
+  clog_assert(from_dim == to_dim, "from_dim does not equal to to_dim");
+
   // Closure should include the initial set
   std::set<size_t> closure(
       std::forward<U>(indices).begin(), std::forward<U>(indices).end());
 
-#if 1
   using entityid = size_t;
   using vertexid = size_t;
 
   // essentially vertex to cell and cell to cell through vertices
   // connectivity.
-  // FIXME: use vertex2entities connectivity from mesh_definition rather than
-  // building our own.
   std::map<vertexid, std::vector<entityid>> vertex2entities;
   std::map<entityid, std::vector<entityid>> entity_neighbors;
 
   // build global entity to entity through # of shared vertices connectivity
   for (size_t cell(0); cell < md.num_entities(from_dim); ++cell) {
     std::map<entityid, size_t> cell_counts;
-    // FIXME: change to "to_dim"?
-    // FIXME: Is the algorithm correct when from_dim != to_dim?
     for (auto vertex : md.entities(from_dim, 0, cell)) {
       // build vertex to cell connectivity, O(n_cells * n_polygon_sides)
       // of insert().
@@ -144,28 +143,20 @@ entity_neighbors(const mesh_definition__<D> & md, U && indices) {
     }
   }
 
-#else
-  // Iterate over the entity indices and add all neighbors
-  for (auto i : indices) {
-    auto ncurr = entity_neighbors<from_dim, to_dim, thru_dim>(md, i);
-
-    closure = flecsi::utils::set_union(ncurr, closure);
-  } // for
-#endif
-
   return closure;
 } // entity_closure
 
-///
-/// Return the cells that reference the given vertex id.
-///
-/// \tparam by_dim The topological dimension of the entities that
-///                reference the vertex.
-///
-/// \param md The mesh definition containing the topological connectivity
-///           information.
-/// \param id The id of the vertex.
-///
+/*!
+  Return the cells that reference the given vertex id.
+
+  @tparam by_dim The topological dimension of the entities that
+                 reference the vertex.
+
+  @param md The mesh definition containing the topological connectivity
+            information.
+  @param id The id of the vertex.
+ */
+
 template<size_t from_dim, size_t to_dim, size_t D>
 std::set<size_t>
 entity_referencers(const mesh_definition__<D> & md, size_t id) {
@@ -185,19 +176,20 @@ entity_referencers(const mesh_definition__<D> & md, size_t id) {
   } // for
 
   return referencers;
-} // vertex_referencers
+} // entity_referencers
 
-///
-/// Return the union of all vertices that are referenced by at least
-/// one of the entities in the given set of indices.
-///
-/// \tparam by_dim The topological dimension of the entities that
-///                reference the vertex.
-///
-/// \param md The mesh definition containing the topological connectivity
-///           information.
-/// \param indices The entity indeces.
-///
+/*!
+  Return the union of all vertices that are referenced by at least
+  one of the entities in the given set of indices.
+
+  @tparam by_dim The topological dimension of the entities that
+                 reference the vertex.
+
+  @param md      The mesh definition containing the topological
+                 connectivity information.
+  @param indices The entity indeces.
+ */
+
 template<size_t from_dim, size_t to_dim, size_t D, typename U>
 std::set<size_t>
 entity_closure(const mesh_definition__<D> & md, U && indices) {
@@ -211,7 +203,7 @@ entity_closure(const mesh_definition__<D> & md, U && indices) {
   } // for
 
   return closure;
-} // vertex_closure
+} // entity_closure
 
 } // namespace topology
 } // namespace flecsi

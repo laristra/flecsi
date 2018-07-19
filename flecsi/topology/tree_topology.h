@@ -1823,7 +1823,8 @@ public:
 
   static constexpr size_t num_children = branch_int_t(1) << dimension;
 
-  tree_branch__() : action_(action::none), parent_(nullptr), children_(nullptr) {}
+  tree_branch__()
+      : action_(action::none), parent_(nullptr), children_(nullptr) {}
 
   branch_id_t id() const {
     return id_;

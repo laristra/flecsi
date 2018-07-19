@@ -21,7 +21,7 @@
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
-//! The mutator_base_t type provides an empty base type for 
+//! The mutator_base_t type provides an empty base type for
 //! compile-time
 //! identification of data handle objects.
 //!
@@ -46,17 +46,9 @@ struct sparse_mutator_base_t {};
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-template<
-  typename T
->
-struct mutator__<
-  data::sparse,
-  T
-> :
-public mutator__<
-  data::base,
-  T
->, public sparse_mutator_base_t {
+template<typename T>
+struct mutator__<data::sparse, T> : public mutator__<data::base, T>,
+                                    public sparse_mutator_base_t {
   using handle_t = mutator_handle__<T>;
   using offset_t = typename handle_t::offset_t;
   using entry_value_t = typename handle_t::entry_value_t;
@@ -66,59 +58,51 @@ public mutator__<
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  mutator__(
-    const mutator_handle__<T>& h
-  )
-  : h_(h)
-  {
+  mutator__(const mutator_handle__<T> & h) : h_(h) {}
 
-  }
-
-  T &
-  operator () (
-    size_t index,
-    size_t entry
-  )
-  {
+  T & operator()(size_t index, size_t entry) {
     assert(h_.offsets_ && "uninitialized mutator");
     assert(index < h_.num_entries_);
 
-    offset_t& offset = h_.offsets_[index]; 
+    offset_t & offset = h_.offsets_[index];
 
     size_t n = offset.count();
-
-    if(n >= h_.num_slots_) {
-      if(index < h_.num_exclusive_){
-        (*h_.num_exclusive_insertions)++;
-      }
-      
-      return h_.spare_map_->emplace(index,
-        entry_value_t(entry))->second.value;
-    } // if
 
     entry_value_t * start = h_.entries_ + index * h_.num_slots_;
     entry_value_t * end = start + n;
 
-    entry_value_t * itr =
-      std::lower_bound(start, end, entry_value_t(entry),
-        [](const entry_value_t & e1, const entry_value_t & e2) -> bool{
+    entry_value_t * itr = std::lower_bound(
+        start, end, entry_value_t(entry),
+        [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
           return e1.entry < e2.entry;
         });
 
     // if we are attempting to create an entry that already exists
-    // just over-write the value and exit.  
-    if ( itr != end && itr->entry == entry) {
+    // just over-write the value and exit.
+    if (itr != end && itr->entry == entry) {
       return itr->value;
     }
+    
+    // if we neet to add the entry, but we've exceeded the number of available
+    // slots, dump it into the extra storage
+    if (n >= h_.num_slots_) {
+      if (index < h_.num_exclusive_) {
+        (*h_.num_exclusive_insertions)++;
+      }
 
-    while(end != itr) {
+      return h_.spare_map_->emplace(index, entry_value_t(entry))->second.value;
+    } // if
+
+
+    // otherwise, add the value normally
+    while (end != itr) {
       *(end) = *(end - 1);
       --end;
     } // while
 
     itr->entry = entry;
 
-    if(index < h_.num_exclusive_){
+    if (index < h_.num_exclusive_) {
       (*h_.num_exclusive_insertions)++;
     }
 
@@ -127,9 +111,9 @@ public mutator__<
     return itr->value;
   } // operator ()
 
-  void dump(){
-    for(size_t p = 0; p < 3; ++p){
-      switch(p){
+  void dump() {
+    for (size_t p = 0; p < 3; ++p) {
+      switch (p) {
         case 0:
           std::cout << "exclusive: " << std::endl;
           break;
@@ -146,49 +130,41 @@ public mutator__<
       size_t start = h_.pi_.start[p];
       size_t end = h_.pi_.end[p];
 
-      for(size_t i = start; i < end; ++i){
-        const offset_t& offset = h_.offsets_[i];
+      for (size_t i = start; i < end; ++i) {
+        const offset_t & offset = h_.offsets_[i];
         std::cout << "  index: " << i << std::endl;
-        for(size_t j = 0; j < offset.count(); ++j){
-          std::cout << "    " << h_.entries_[i * h_.num_slots_ + j].entry << 
-            " = " << h_.entries_[i * h_.num_slots_ + j].value << std::endl;
+        for (size_t j = 0; j < offset.count(); ++j) {
+          std::cout << "    " << h_.entries_[i * h_.num_slots_ + j].entry
+                    << " = " << h_.entries_[i * h_.num_slots_ + j].value
+                    << std::endl;
         }
 
         auto p = h_.spare_map_->equal_range(i);
         auto itr = p.first;
-        while(itr != p.second){
-          std::cout << "    +" << itr->second.entry << " = " << 
-            itr->second.value << std::endl;
+        while (itr != p.second) {
+          std::cout << "    +" << itr->second.entry << " = "
+                    << itr->second.value << std::endl;
           ++itr;
         }
-      }      
+      }
     }
   }
 
-  void
-  erase(
-    size_t index,
-    size_t entry
-  )
-  {
-    if(!h_.erase_set_){
+  void erase(size_t index, size_t entry) {
+    if (!h_.erase_set_) {
       h_.erase_set_ = new erase_set_t;
     }
 
     h_.erase_set_->emplace(std::make_pair(index, entry));
   }
 
-  handle_t h_;  
+  handle_t h_;
 };
 
-template<
-  typename T
->
+template<typename T>
 using sparse_mutator__ = mutator__<data::sparse, T>;
 
-template<
-  typename T
->
+template<typename T>
 using sparse_mutator = sparse_mutator__<T>;
 
 } // namespace flecsi

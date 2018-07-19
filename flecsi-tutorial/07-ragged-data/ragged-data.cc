@@ -12,6 +12,10 @@
    All rights reserved.
                                                                               */
 
+/*----------------------------------------------------------------------------*
+  Documentation for this example can be found in README.md.
+ *----------------------------------------------------------------------------*/
+
 #include <cstdlib>
 #include <iostream>
 
@@ -22,10 +26,15 @@
 using namespace flecsi;
 using namespace flecsi::tutorial;
 
-flecsi_register_data_client(mesh_t, clients, mesh);
+// Field registration is as usual (but specifying the 'ragged'
+// storage class).
+
 flecsi_register_field(mesh_t, hydro, densities, double, ragged, 1, cells);
 
 namespace hydro {
+
+// This task takes a mesh and a ragged mutator and randomly populates
+// field entries into the ragged field structure.
 
 void initialize_materials(mesh<ro> mesh, ragged_field_mutator d) {
 
@@ -35,12 +44,14 @@ void initialize_materials(mesh<ro> mesh, ragged_field_mutator d) {
     d.resize(c, random);
 
     for(size_t i{0}; i<random; ++i) {
-      d(c,i) = i;
+      d(c, i) = i;
     } // for
   } // for
 } // initialize_pressure
 
 flecsi_register_task(initialize_materials, hydro, loc, single);
+
+// This task prints the non-zero entries of the ragged field.
 
 void print_materials(mesh<ro> mesh, ragged_field<ro> d) {
   for(auto c: mesh.cells()) {
@@ -63,12 +74,16 @@ void driver(int argc, char ** argv) {
   auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
 
   {
+  // Get a mutator to modify the ragged structure of the data.
+
   auto d = flecsi_get_mutator(m, hydro, densities, double, ragged, 0, 5);
 
   flecsi_execute_task(initialize_materials, hydro, single, m, d);
   } // scope
 
   {
+  // Get a handle to modify only the values of the data.
+
   auto d = flecsi_get_handle(m, hydro, densities, double, ragged, 0);
 
   flecsi_execute_task(print_materials, hydro, single, m, d);

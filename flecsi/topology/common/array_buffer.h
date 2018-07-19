@@ -161,6 +161,12 @@ public:
     size_ = initialized ? capacity_ : 0;
   }
 
+  void set_buffer(item_t buf, size_t capacity, size_t size) {
+    buf_ = buf;
+    capacity_ = capacity;
+    size_ = size;
+  }
+
   item_t buffer() {
     return buf_;
   }

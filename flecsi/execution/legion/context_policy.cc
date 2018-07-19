@@ -13,11 +13,10 @@
                                                                               */
 /*! @file */
 
-
 #include <iostream>
 
-#include <flecsi/execution/legion/context_policy.h>
 #include <flecsi/data/storage.h>
+#include <flecsi/execution/legion/context_policy.h>
 #include <flecsi/execution/legion/legion_tasks.h>
 #include <flecsi/execution/legion/mapper.h>
 
@@ -89,7 +88,7 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
 
   while (mpi_active_) {
     invoke_mpi_task();
-    mpi_active_=false;
+    mpi_active_ = false;
     handoff_to_legion();
     wait_on_legion();
   }
@@ -110,7 +109,7 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
 void
 legion_context_policy_t::unset_call_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime) {
+    Legion::Runtime * runtime) {
   {
     clog_tag_guard(context);
     clog(info) << "In unset_call_mpi" << std::endl;
@@ -131,6 +130,29 @@ legion_context_policy_t::unset_call_mpi(
   fm.wait_all_results(true);
 } // legion_context_policy_t::unset_call_mpi
 
+Legion::FutureMap
+legion_context_policy_t::unset_call_mpi_single() {
+  auto legion_runtime = Legion::Runtime::get_runtime();
+  auto legion_context = Legion::Runtime::get_context();
+  LegionRuntime::Arrays::Rect<1> launch_bounds(
+      LegionRuntime::Arrays::Point<1>(0), LegionRuntime::Arrays::Point<1>(1));
+
+  const auto tid =
+      context_t::instance()
+          .task_id<__flecsi_internal_task_key(unset_call_mpi_task)>();
+
+  Legion::ArgumentMap arg_map;
+
+  Legion::IndexLauncher task_launcher(
+      tid, Legion::Domain::from_rect<1>(launch_bounds),
+      Legion::TaskArgument(NULL, 0), arg_map);
+  auto future =
+      legion_runtime->execute_index_space(legion_context, task_launcher);
+
+  future.wait_all_results();
+  return future;
+}
+
 //----------------------------------------------------------------------------//
 // Implementation of legion_context_policy_t::handoff_to_mpi.
 //----------------------------------------------------------------------------//
@@ -138,7 +160,7 @@ legion_context_policy_t::unset_call_mpi(
 void
 legion_context_policy_t::handoff_to_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime) {
+    Legion::Runtime * runtime) {
   const auto tid =
       context_t::instance()
           .task_id<__flecsi_internal_task_key(handoff_to_mpi_task)>();
@@ -162,7 +184,7 @@ legion_context_policy_t::handoff_to_mpi(
 Legion::FutureMap
 legion_context_policy_t::wait_on_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime) {
+    Legion::Runtime * runtime) {
   const auto tid = context_t::instance()
                        .task_id<__flecsi_internal_task_key(wait_on_mpi_task)>();
 
@@ -187,7 +209,7 @@ legion_context_policy_t::wait_on_mpi(
 void
 legion_context_policy_t::connect_with_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime) {
+    Legion::Runtime * runtime) {
   int size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 

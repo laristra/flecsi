@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_LEGION)
@@ -40,7 +39,7 @@ struct legion_global_data_handle_policy_t {
   legion_global_data_handle_policy_t() {}
 
   legion_global_data_handle_policy_t(
-	const legion_global_data_handle_policy_t & p) = default;
+      const legion_global_data_handle_policy_t & p) = default;
 
   bool * ghost_is_readable;
   bool * write_phase_started;
@@ -74,4 +73,3 @@ struct legion_global_data_handle_policy_t {
 }; // class legion_global_data_handle_policy_t
 
 } // namespace flecsi
-

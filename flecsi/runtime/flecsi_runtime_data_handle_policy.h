@@ -35,10 +35,10 @@
 namespace flecsi {
 
 using FLECSI_RUNTIME_DENSE_DATA_HANDLE_POLICY =
-		legion_dense_data_handle_policy_t;
+    legion_dense_data_handle_policy_t;
 
 using FLECSI_RUNTIME_GLOBAL_DATA_HANDLE_POLICY =
-                legion_global_data_handle_policy_t;
+    legion_global_data_handle_policy_t;
 
 using FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY =
     legion_sparse_data_handle_policy_t;
@@ -58,13 +58,33 @@ namespace flecsi {
 
 using FLECSI_RUNTIME_DENSE_DATA_HANDLE_POLICY = mpi_data_handle_policy_t;
 
-using FLECSI_RUNTIME_GLOBAL_DATA_HANDLE_POLICY =
-	mpi_data_handle_policy_t;
+using FLECSI_RUNTIME_GLOBAL_DATA_HANDLE_POLICY = mpi_data_handle_policy_t;
 
 using FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY =
     mpi_sparse_data_handle_policy_t;
 
 using FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY = mpi_mutator_handle_policy_t;
+
+} // namespace flecsi
+
+// HPX Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include <flecsi/data/hpx/data_handle_policy.h>
+#include <flecsi/data/hpx/mutator_handle_policy.h>
+#include <flecsi/data/hpx/sparse_data_handle_policy.h>
+
+namespace flecsi {
+
+using FLECSI_RUNTIME_DENSE_DATA_HANDLE_POLICY = hpx_data_handle_policy_t;
+
+using FLECSI_RUNTIME_GLOBAL_DATA_HANDLE_POLICY = hpx_data_handle_policy_t;
+
+using FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY =
+    hpx_sparse_data_handle_policy_t;
+
+using FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY = hpx_mutator_handle_policy_t;
+;
 
 } // namespace flecsi
 

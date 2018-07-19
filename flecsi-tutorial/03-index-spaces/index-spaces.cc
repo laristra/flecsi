@@ -12,6 +12,10 @@
    All rights reserved.
                                                                               */
 
+/*----------------------------------------------------------------------------*
+  Documentation for this example can be found in README.md.
+ *----------------------------------------------------------------------------*/
+
 #include <iostream>
 
 #include<flecsi-tutorial/specialization/mesh/mesh.h>
@@ -21,19 +25,18 @@
 using namespace flecsi;
 using namespace flecsi::tutorial;
 
-/*----------------------------------------------------------------------------*
-
- *----------------------------------------------------------------------------*/
-
-flecsi_register_data_client(mesh_t, clients, mesh);
-
-namespace hydro {
+namespace example {
 
 void simple(mesh<ro> mesh) {
+
+  // Iterate over the vertices index space
 
   for(auto v: mesh.vertices()) {
     v->print("Hello World! I'm a vertex!");
   } // for
+
+  // Iterate over the cells index space, and then over
+  // the vertices index space.
 
   for(auto c: mesh.cells(owned)) {
     c->print("Hello World! I am a cell!");
@@ -41,16 +44,15 @@ void simple(mesh<ro> mesh) {
     for(auto v: mesh.vertices(c)) {
       v->print("I'm a vertex!");
     } // for
-
   } // for
 
 } // simple
 
 // Task registration is as usual...
 
-flecsi_register_task(simple, hydro, loc, single);
+flecsi_register_task(simple, example, loc, single);
 
-} // namespace hydro
+} // namespace example
 
 namespace flecsi {
 namespace execution {
@@ -63,7 +65,7 @@ void driver(int argc, char ** argv) {
 
   // Task execution is as usual...
 
-  flecsi_execute_task(simple, hydro, single, m);
+  flecsi_execute_task(simple, example, single, m);
 
 } // driver
 

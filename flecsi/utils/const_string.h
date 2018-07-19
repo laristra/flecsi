@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include "hash.h"
 
 #include <cstring>
@@ -28,7 +27,7 @@ namespace utils {
 /*!
   \class const_string const_string.h
   \brief const_string provides compile-time string constants and hashing...
-  
+
   @ingroup utils
  */
 class const_string_t {
@@ -37,7 +36,7 @@ public:
 
   /*!
     Construct a constexpr string.
-   
+
     @param str A string literal.
    */
   template<hash_type_t N>

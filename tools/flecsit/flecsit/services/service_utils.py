@@ -62,7 +62,7 @@ def add_command_line_compiler_options(parser):
     parser.add_argument('-D', '--define', action='append',
         help='Specify a preprocessor define. This argument may be given' +
              ' multiple times. Arguments may be of the form' +
-             ' -DDEFINE, -I DEFINE, or' +
+             ' -DDEFINE, -D DEFINE, or' +
              ' --define DEFINE. Defines may' +
              ' also be specified by setting the FLECSIT_DEFINES' +
              ' environment variable. If FLECSIT_DEFINES is set,' +
@@ -82,38 +82,56 @@ def add_command_line_compiler_options(parser):
              ' command line arguements.'
     )
 
+    parser.add_argument('-p', '--package', action='append',
+        help='Specify a CMake package dependency. This argument may be given' +
+             ' multiple times. Arguments must be of the form' +
+             ' -ppackage, -p package, ' +
+             ' or --package package. Packages may' +
+             ' also be specified by setting the FLECSIT_PACKAGES' +
+             ' environment variable. If FLECSIT_PACKAGES is set,' +
+             ' it will override any packages passed as' +
+             ' command line arguements.'
+    )
+
 # add_compiler_options
 
 #------------------------------------------------------------------------------#
 # Generate a compile string from config information and user arguements.
 #------------------------------------------------------------------------------#
 
-def generate_compiler_options(config, paths, environment, option):
+def generate_compiler_options(config, entries, environment, option):
 
     """
     General function to process compiler flags for include, ldflags,
-    and libraries.
+    libraries, and packages.
     """
+
+    opts = {}
+
+    # Add entries from cmake config
+    if config:
+        opts.update(dict(s.split("=") for s in config.split(' ') if "=" in s))
+        opts.update(dict([s, ""] for s in config.split(' ') if not "=" in s))
+
+    # Add command-line entries
+    if entries:
+        opts.update(dict(s.split("=") for s in entries if "=" in s))
+        opts.update(dict([s, ""] for s in entries if not "=" in s))
+
+    # Add environment variable entries
+    envflags = os.getenv(environment)
+
+    if envflags is not None:
+        opts.update(dict(s.split("=") for s in envflags.split(':') if "=" in s))
+        opts.update(dict([s, ""] for s in envflags.split(':') if not "=" in s))
 
     options = ""
 
-    # Add paths from cmake config
-    if config:
-        for path in config.split(' ') or []:
-            options += option + path + ' '
-
-    # Read the environment variable
-    envflags = os.getenv(environment)
-
-    # If the environment variable is set, use it. Otherwise,
-    # use the command-line options passed by the user.
-    if envflags is not None:
-        for flag in envflags.split(':') or []:
-            options += option + flag + ' '
-    else:
-        if paths:
-            for path in paths or []:
-                options += option + path + ' '
+    for k,v in opts.items():
+        if v is "":
+            options += option + k + ' '
+        else:
+            options += option + k + '=' + v + ' '
 
     return options.strip()
 

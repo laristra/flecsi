@@ -123,21 +123,28 @@ void task1(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
   rm(1, 0) = 100.0;
   rm(1, 1) = 200.0;
   rm(1, 4) = 500.0;
-  
+  rm.push_back(1, 700.00);
+
+} // task1
+
+void task1b(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
+  rm.insert(1, 4, 300.0);
+  rm.erase(1, 1);
 } // task1
 
 void task2(client_handle_t<test_mesh_t, ro> mesh,
            ragged_accessor<double, ro, ro, ro> rh) {
-  
-  std::cout << rh(1, 0) << std::endl;
-  std::cout << rh(1, 1) << std::endl;
-  std::cout << rh(1, 4) << std::endl;
+
+  for(size_t i = 0; i < 6; ++i){
+    std::cout << rh(1, i) << std::endl;
+  }
 
 } // task2
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
 
 flecsi_register_task_simple(task1, loc, single);
+flecsi_register_task_simple(task1b, loc, single);
 flecsi_register_task_simple(task2, loc, single);
 
 flecsi_register_field(test_mesh_t, hydro, pressure, double, ragged, 1, 0);
@@ -176,9 +183,10 @@ void specialization_tlt_init(int argc, char ** argv) {
   context.add_adjacency(ai);
 
   execution::context_t::sparse_index_space_info_t isi;
+  isi.index_space = 0;
   isi.max_entries_per_index = 5;
-  isi.reserve_chunk = 8192;
-  context.set_sparse_index_space_info(0, isi);
+  isi.exclusive_reserve = 8192;
+  context.set_sparse_index_space_info(isi);
 } // specialization_tlt_init
 
 void specialization_spmd_init(int argc, char ** argv) {
@@ -193,7 +201,16 @@ void driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   auto mh = flecsi_get_mutator(ch, hydro, pressure, double, ragged, 0, 5);
 
-  flecsi_execute_task_simple(task1, single, ch, mh);
+  auto f1 = flecsi_execute_task_simple(task1, single, ch, mh);
+  f1.wait();
+
+/*
+  auto ch2 = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
+  auto mh2 = flecsi_get_mutator(ch2, hydro, pressure, double, ragged, 0, 5);
+  
+  auto f2 = flecsi_execute_task_simple(task1b, single, ch2, mh2);
+  f2.wait();
+*/
 
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, ragged, 0);
 

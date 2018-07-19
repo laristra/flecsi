@@ -36,16 +36,12 @@ do
 			echo "  -h, --help     Show this message and exit."
 			echo "  -c, --ccmake   Enable curses mode."
 			echo ""
-			echo "Runtimes: serial, legion, mpi."
-			echo "(default runtime is serial)."
+			echo "Runtimes: legion, mpi."
+			echo "(default runtime is mpi)."
 			exit
 		;;
 		--ccmake|-c)
 			cmake_mode=ccmake
-		;;
-		legion|mpi)
-			runtime=$1
-			extra_define="-DENABLE_MPI=ON -DENABLE_COLORING=ON"
 		;;
 	esac
 
@@ -62,6 +58,11 @@ $cmake_mode \
   -DCMAKE_C_COMPILER=clang \
   -DCMAKE_C_FLAGS="-fcolor-diagnostics" \
   -DFLECSI_RUNTIME_MODEL=$runtime $extra_define \
+  -DENABLE_BOOST_PROGRAM_OPTIONS=ON \
+  -DENABLE_CLOG=ON \
+  -DCLOG_ENABLE_TAGS=ON \
+  -DENABLE_=ON \
+  -DENABLE_DEVEL_TARGETS=ON \
   -DENABLE_UNIT_TESTS=ON \
   -DENABLE_JENKINS_OUTPUT=ON \
   -DENABLE_FLECSIT=ON \

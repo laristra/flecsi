@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <cstdint>
 #include <functional>
 #include <limits>
@@ -45,6 +44,19 @@ namespace flecsi {
 namespace utils {
 
 //----------------------------------------------------------------------------//
+// Typeification.
+//----------------------------------------------------------------------------//
+
+template<typename T, T M>
+struct typeify {
+  using TYPE = T;
+  static constexpr T value = M;
+};
+
+template<typename T, T M>
+constexpr T typeify<T, M>::value;
+
+//----------------------------------------------------------------------------//
 // Entity id type.
 //----------------------------------------------------------------------------//
 
@@ -64,7 +76,7 @@ using offset_t = offset__<16>;
 using counter_t = FLECSI_COUNTER_TYPE;
 
 //----------------------------------------------------------------------------//
-// FIXME: Is this actually used anywhere?
+// Square
 //----------------------------------------------------------------------------//
 
 //! P.O.D.
@@ -74,9 +86,9 @@ square(const T & a) {
   return a * a;
 }
 
-/*!
-  C++ demangler
- */
+//----------------------------------------------------------------------------//
+// C++ demangler
+//----------------------------------------------------------------------------//
 
 std::string demangle(const char * const name);
 
@@ -84,19 +96,24 @@ template<class T>
 inline std::string
 type() {
   return demangle(typeid(T).name());
-} // type
+}
 
-  //----------------------------------------------------------------------------//
-  // Unique Identifier Utilities
-  //----------------------------------------------------------------------------//
+inline std::string
+type(const std::type_info & type_info) {
+  return demangle(type_info.name());
+}
 
-  //----------------------------------------------------------------------------//
-  // This value is used by the Legion runtime backend to automatically
-  // assign task and field ids. The current maximum value that is allowed
-  // in legion_config.h is 1<<20.
-  //
-  // We are reserving 4096 places for internal use.
-  //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// Unique Identifier Utilities
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
+// This value is used by the Legion runtime backend to automatically
+// assign task and field ids. The current maximum value that is allowed
+// in legion_config.h is 1<<20.
+//
+// We are reserving 4096 places for internal use.
+//----------------------------------------------------------------------------//
 
 #if !defined(FLECSI_GENERATED_ID_MAX)
   // 1044480 = (1<<20) - 4096
@@ -106,7 +123,7 @@ type() {
 //! Generate unique ids
 template<
     typename T,
-    std::size_t MAXIMUM = std::numeric_limits<std::size_t>::max()>
+    std::size_t MAXIMUM = (std::numeric_limits<std::size_t>::max)()>
 struct unique_id_t {
   static unique_id_t & instance() {
     static unique_id_t u;

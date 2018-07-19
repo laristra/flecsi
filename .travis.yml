@@ -13,8 +13,9 @@ env:
     - DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes
     - DISTRO=ubuntu_mpich RUNTIME=mpi DOCKERHUB=true
     - DISTRO=ubuntu_mpich RUNTIME=mpi WERROR=yes
-    - DISTRO=ubuntu COVERAGE=ON RUNTIME=legion SONARQUBE=ON
-    - DISTRO=ubuntu COVERAGE=ON RUNTIME=mpi    SONARQUBE=ON
+#    - DISTRO=ubuntu COVERAGE=ON RUNTIME=legion SONARQUBE=ON
+#    - DISTRO=ubuntu COVERAGE=ON RUNTIME=mpi    SONARQUBE=ON
+#    - DISTRO=ubuntu COVERAGE=ON RUNTIME=hpx    SONARQUBE=ON
 
     - DISTRO=fedora RUNTIME=legion    DOCKERHUB=true
     - DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
@@ -22,14 +23,17 @@ env:
     - DISTRO=fedora RUNTIME=mpi    DOCKERHUB=true
     - DISTRO=fedora RUNTIME=mpi    IGNORE_NOCI=true
     - DISTRO=fedora RUNTIME=mpi    WERROR=yes
+    - DISTRO=fedora RUNTIME=hpx    DOCKERHUB=true
+    - DISTRO=fedora RUNTIME=hpx    WERROR=yes
     - DISTRO=fedora_mpich RUNTIME=legion DOCKERHUB=true
     - DISTRO=fedora_mpich RUNTIME=legion IGNORE_NOCI=true
     - DISTRO=fedora_mpich RUNTIME=legion WERROR=yes
     - DISTRO=fedora_mpich RUNTIME=mpi DOCKERHUB=true
     - DISTRO=fedora_mpich RUNTIME=mpi IGNORE_NOCI=true
     - DISTRO=fedora_mpich RUNTIME=mpi WERROR=yes
-    - DISTRO=fedora RUNTIME=legion COVERAGE=ON
-    - DISTRO=fedora RUNTIME=mpi    COVERAGE=ON
+#    - DISTRO=fedora RUNTIME=legion COVERAGE=ON
+#    - DISTRO=fedora RUNTIME=mpi    COVERAGE=ON
+#    - DISTRO=fedora RUNTIME=hpx    COVERAGE=ON
 
 matrix:
   allow_failures:
@@ -49,8 +53,19 @@ matrix:
       env: DISTRO=ubuntu_mpich RUNTIME=mpi WERROR=yes
     - compiler: clang
       env: DISTRO=fedora RUNTIME=mpi WERROR=yes
+    - compiler: clang
+      env: DISTRO=ubuntu COVERAGE=ON RUNTIME=hpx    SONARQUBE=ON
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=hpx    DOCKERHUB=true
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=hpx    IGNORE_NOCI=true
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=hpx    WERROR=yes
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=hpx    COVERAGE=ON
 
 before_install:
+ - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
  - git fetch --unshallow && git fetch --tags #for versioning
 
 script:
@@ -61,7 +76,8 @@ script:
   - cp -r $HOME/.ccache ${HOME}/docker/ccache
   - cp -r $HOME/.sonar ${HOME}/docker/sonar
   - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
-  - if [[ ${TRAVIS_BRANCH} != stable ]]; then TAG="${TAG}_${TRAVIS_BRANCH}"; fi
+  - if [[ ${TRAVIS_BRANCH} != stable ]]; then TAG="${TAG}_${TRAVIS_BRANCH//\//_}"; fi
+  - travis_retry timeout 540 docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
   - docker build 
                 --build-arg LEGION=${LEGION} 
                 --build-arg RUNTIME=${RUNTIME} 
@@ -100,7 +116,7 @@ after_success:
       mv doc/*.pdf assets;
       rm -rf doc;
       git add --all assets/doxygen assets/*.pdf;
-      if [[ ${TRAVIS_BRANCH} = stable && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
+      if [[ ${TRAVIS_BRANCH} = master && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
         git config --global user.name "Automatic Deployment (Travis CI)";
         git config --global user.email "flecsi-commit@lanl.gov";
         git commit -m "Documentation Update";

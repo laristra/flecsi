@@ -41,7 +41,7 @@ public:
 
   void add_end(size_t end) {
     assert(end > start_);
-    add_count(end - start_);
+    add_count(static_cast<uint32_t>(end - start_));
   }
 
   std::pair<size_t, size_t> range(size_t i) const {

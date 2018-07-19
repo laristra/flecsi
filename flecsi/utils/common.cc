@@ -14,11 +14,8 @@
 
 /*! @file */
 
-
 #include <flecsi/utils/common.h>
-
 #include <memory>
-
 #ifdef __GNUG__
 #include <cxxabi.h>
 #endif
@@ -26,27 +23,18 @@
 namespace flecsi {
 namespace utils {
 
-#ifdef __GNUG__
-
 std::string
 demangle(const char * const name) {
+#ifdef __GNUG__
   int status = -4;
-
   std::unique_ptr<char, void (*)(void *)> res{
       abi::__cxa_demangle(name, NULL, NULL, &status), std::free};
-
-  return (status == 0) ? res.get() : name;
-} // demangle
-
-#else
-
-// does nothing if not g++
-std::string
-demangle(const char * const name) {
+  if (status == 0)
+    return res.get();
+#endif
+  // does nothing if not __GNUG__, or if abi::__cxa_demangle failed
   return name;
 } // demangle
-
-#endif
 
 } // namespace utils
 } // namespace flecsi

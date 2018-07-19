@@ -38,12 +38,14 @@ struct global_data_handle_base_t {};
  @ingroup data
  */
 
-template<
-    typename T,
-    size_t PERMISSIONS,
-    typename DATA_POLICY>
+template<typename T, size_t PERMISSIONS, typename DATA_POLICY>
 struct global_data_handle_base__ : public DATA_POLICY,
-		public global_data_handle_base_t {
+                                   public global_data_handle_base_t {
+
+  /*!
+    Capture the underlying data type.
+   */
+  using value_type = T;
 
   /*!
    Default constructor.
@@ -56,7 +58,7 @@ struct global_data_handle_base__ : public DATA_POLICY,
    */
 
   global_data_handle_base__(const global_data_handle_base__ & b)
-	: DATA_POLICY(b) {
+      : DATA_POLICY(b) {
     combined_data = b.combined_data;
 #ifdef COMPACTED_STORAGE_SORT
     combined_data_sort = b.combined_data_sort;
@@ -100,9 +102,7 @@ namespace flecsi {
  @ingroup data
  */
 
-template<
-    typename T,
-    size_t PERMISSIONS>
+template<typename T, size_t PERMISSIONS>
 using global_data_handle__ = global_data_handle_base__<
     T,
     PERMISSIONS,

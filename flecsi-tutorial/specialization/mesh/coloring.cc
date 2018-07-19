@@ -24,8 +24,8 @@
 #include <flecsi/coloring/mpi_communicator.h>
 #include <flecsi/supplemental/coloring/coloring_functions.h>
 #include <flecsi/supplemental/coloring/tikz.h>
-#include <specialization/mesh/coloring.h>
-#include <specialization/mesh/inputs.h>
+#include <flecsi-tutorial/specialization/mesh/coloring.h>
+#include <flecsi-tutorial/specialization/mesh/inputs.h>
 
 clog_register_tag(coloring);
 clog_register_tag(coloring_output);
@@ -68,20 +68,24 @@ void add_colorings(coloring_map_t map) {
   // Create the primary coloring.
   cells.primary = colorer->color(dcrs);
 
+#if 0
   {
   clog_tag_guard(coloring);
   clog_container_one(info, "primary coloring", cells.primary, clog::space);
   } // guard
+#endif
 
   // Compute the dependency closure of the primary cell coloring
   // through vertex intersections (specified by last argument "0").
   // To specify edge or face intersections, use 1 (edges) or 2 (faces).
   auto closure = flecsi::topology::entity_neighbors<2,2,0>(sd, cells.primary);
 
+#if 0
   {
   clog_tag_guard(coloring);
   clog_container_one(info, "closure", closure, clog::space);
   } // guard
+#endif
 
   // Subtracting out the initial set leaves just the nearest
   // neighbors. This is similar to the image of the adjacency
@@ -89,10 +93,12 @@ void add_colorings(coloring_map_t map) {
   auto nearest_neighbors =
     flecsi::utils::set_difference(closure, cells.primary);
 
+#if 0
   {
   clog_tag_guard(coloring);
   clog_container_one(info, "nearest neighbors", nearest_neighbors, clog::space);
   } // guard
+#endif
 
   // Create a communicator instance to get neighbor information.
   auto communicator = std::make_shared<flecsi::coloring::mpi_communicator_t>();
@@ -103,6 +109,7 @@ void add_colorings(coloring_map_t map) {
   auto closure_intersection_map =
     communicator->get_intersection_info(nearest_neighbors);
 
+#if 0
   {
   clog_tag_guard(coloring);
 
@@ -111,6 +118,7 @@ void add_colorings(coloring_map_t map) {
       "closure intersection color " << ci.first << ":", ci.second, clog::space);
   } // for
   } // guard
+#endif
 
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
@@ -119,32 +127,38 @@ void add_colorings(coloring_map_t map) {
   auto nearest_neighbor_closure =
     flecsi::topology::entity_neighbors<2,2,0>(sd, nearest_neighbors);
 
+#if 0
   {
   clog_tag_guard(coloring);
   clog_container_one(info, "nearest neighbor closure",
     nearest_neighbor_closure, clog::space);
   } // guard
+#endif
 
   // Subtracting out the closure leaves just the
   // next nearest neighbors.
   auto next_nearest_neighbors =
     flecsi::utils::set_difference(nearest_neighbor_closure, closure);
 
+#if 0
   {
   clog_tag_guard(coloring);
   clog_container_one(info, "next nearest neighbor", next_nearest_neighbors,
     clog::space);
   } // guard
+#endif
 
   // The union of the nearest and next-nearest neighbors gives us all
   // of the cells that might reference a vertex that we need.
   auto all_neighbors = flecsi::utils::set_union(nearest_neighbors,
     next_nearest_neighbors);
 
+#if 0
   {
   clog_tag_guard(coloring);
   clog_container_one(info, "all neighbors", all_neighbors, clog::space);
   } // guard
+#endif
 
   // Get the rank and offset information for our nearest neighbor
   // dependencies. This also gives information about the ranks
@@ -212,12 +226,14 @@ void add_colorings(coloring_map_t map) {
   cell_color_info.shared = cells.shared.size();
   cell_color_info.ghost = cells.ghost.size();
 
+#if 0
   {
   clog_tag_guard(coloring_output);
   clog_container_one(info, "exclusive cells ", cells.exclusive, clog::newline);
   clog_container_one(info, "shared cells ", cells.shared, clog::newline);
   clog_container_one(info, "ghost cells ", cells.ghost, clog::newline);
   } // guard
+#endif
 
   // Create a map version for lookups below.
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>
@@ -336,6 +352,7 @@ void add_colorings(coloring_map_t map) {
   } // for
   } // scope
 
+#if 0
   {
   clog_tag_guard(coloring_output);
   clog_container_one(info, "exclusive vertices ", vertices.exclusive,
@@ -343,6 +360,7 @@ void add_colorings(coloring_map_t map) {
   clog_container_one(info, "shared vertices ", vertices.shared, clog::newline);
   clog_container_one(info, "ghost vertices ", vertices.ghost, clog::newline);
   } // guard
+#endif
 
 #if 0
   coloring::coloring_info_t cell_color_info{ cells.exclusive.size(),
@@ -364,8 +382,8 @@ void add_colorings(coloring_map_t map) {
 
   {
   clog_tag_guard(coloring);
-  clog(info) << cell_color_info << std::endl << std::flush;
-  clog(info) << vertex_color_info << std::endl << std::flush;
+  clog(info) << cell_color_info << std::endl;
+  clog(info) << vertex_color_info << std::endl;
   } // gaurd
 
   // Gather the coloring info from all colors

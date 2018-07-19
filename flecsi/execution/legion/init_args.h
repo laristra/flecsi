@@ -28,6 +28,10 @@
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/ragged_accessor.h>
+#include <flecsi/data/sparse_mutator.h>
+#include <flecsi/data/ragged_mutator.h>
 #include <flecsi/data/global_accessor.h>
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/topology/mesh_types.h>
@@ -50,17 +54,16 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
 
   /*!
     Construct an init_args_t instance.
-  
+
     @param runtime The Legion task runtime.
     @param context The Legion task runtime context.
    */
-
   init_args_t(Legion::Runtime * runtime, Legion::Context & context)
       : runtime(runtime), context(context) {} // init_args
 
   /*!
     Convert the template privileges to proper Legion privileges.
-   
+
     @param mode privilege
    */
 
@@ -98,72 +101,59 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
               GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-      clog_assert(
-          h.state > SPECIALIZATION_TLT_INIT,
-          "accessing  data "
-          "handle from specialization_tlt_init is not supported");
+    clog_assert(
+        h.state > SPECIALIZATION_TLT_INIT,
+        "accessing  data "
+        "handle from specialization_tlt_init is not supported");
 
-      Legion::MappingTagID tag = EXCLUSIVE_LR;
+    Legion::MappingTagID tag = EXCLUSIVE_LR;
 
-      Legion::RegionRequirement ex_rr(
-          h.exclusive_lr, privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE,
-          h.color_region, tag);
-      ex_rr.add_field(h.fid);
-      region_reqs.push_back(ex_rr);
+    Legion::RegionRequirement ex_rr(
+        h.exclusive_lr, privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE,
+        h.color_region, tag);
+    ex_rr.add_field(h.fid);
+    region_reqs.push_back(ex_rr);
 
-      Legion::RegionRequirement sh_rr(
-          h.shared_lr, privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE,
-          h.color_region);
-      sh_rr.add_field(h.fid);
-      region_reqs.push_back(sh_rr);
+    Legion::RegionRequirement sh_rr(
+        h.shared_lr, privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE,
+        h.color_region);
+    sh_rr.add_field(h.fid);
+    region_reqs.push_back(sh_rr);
 
-      Legion::RegionRequirement gh_rr(
-          h.ghost_lr, privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE,
-          h.color_region);
-      gh_rr.add_field(h.fid);
-      region_reqs.push_back(gh_rr);
- }//handle
+    Legion::RegionRequirement gh_rr(
+        h.ghost_lr, privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE,
+        h.color_region);
+    gh_rr.add_field(h.fid);
+    region_reqs.push_back(gh_rr);
+  } // handle
 
-template<
-      typename T,
-      size_t PERMISSIONS>
-  void handle(global_accessor__<
-              T,
-              PERMISSIONS> & a)
-  {
+  template<typename T, size_t PERMISSIONS>
+  void handle(global_accessor__<T, PERMISSIONS> & a) {
     auto & h = a.handle;
 
-      if (h.state < SPECIALIZATION_SPMD_INIT) {
-        Legion::RegionRequirement rr(
-            h.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
-            h.color_region);
-        rr.add_field(h.fid);
-        region_reqs.push_back(rr);
-      } else {
-        clog_assert(
-            PERMISSIONS == size_t(ro), "you are not allowed  \
-            to modify global data in specialization_spmd_init or driver");
-        Legion::RegionRequirement rr(
-            h.color_region, READ_ONLY, EXCLUSIVE, h.color_region);
-        rr.add_field(h.fid);
-        region_reqs.push_back(rr);
-      } // if
+    if (h.state < SPECIALIZATION_SPMD_INIT) {
+      Legion::RegionRequirement rr(
+          h.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
+          h.color_region);
+      rr.add_field(h.fid);
+      region_reqs.push_back(rr);
+    } else {
+      clog_assert(PERMISSIONS == size_t(ro), "you are not allowed "
+            "to modify global data in specialization_spmd_init or driver");
+      Legion::RegionRequirement rr(h.color_region, READ_ONLY, EXCLUSIVE,
+                                   h.color_region);
+      rr.add_field(h.fid);
+      region_reqs.push_back(rr);
+    } // if
   }
 
-  template<
-      typename T,
-      size_t PERMISSIONS>
-  void handle(color_accessor__<
-              T,
-              PERMISSIONS> & a)
-  {
+  template<typename T, size_t PERMISSIONS>
+  void handle(color_accessor__<T, PERMISSIONS> & a) {
     auto & h = a.handle;
-    clog_assert(
-        h.state > SPECIALIZATION_TLT_INIT, "accessing color data    \
+    clog_assert(h.state > SPECIALIZATION_TLT_INIT, "accessing color data    \
          handle from specialization_tlt_init is not supported");
     Legion::RegionRequirement rr(
-         h.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE,
-         h.color_region);
+        h.color_region, privilege_mode(PERMISSIONS), EXCLUSIVE, h.color_region);
     rr.add_field(h.fid);
     region_reqs.push_back(rr);
   } // handle
@@ -176,7 +166,6 @@ template<
   typename std::enable_if_t<
       std::is_base_of<topology::mesh_topology_base_t, T>::value>
   handle(data_client_handle__<T, PERMISSIONS> & h) {
-    auto & context_ = context_t::instance();
 
     std::unordered_map<size_t, size_t> region_map;
 
@@ -231,7 +220,180 @@ template<
 
       region_reqs.push_back(adj_rr);
     }
+
+    for (size_t i{0}; i < h.num_index_subspaces; ++i) {
+      data_client_handle_index_subspace_t & iss = h.handle_index_subspaces[i];
+
+      Legion::RegionRequirement iss_rr(
+          iss.region, privilege_mode(PERMISSIONS), EXCLUSIVE, iss.region);
+
+      iss_rr.add_field(iss.index_fid);
+
+      region_reqs.push_back(iss_rr);
+    }
+
   } // handle
+
+  ///
+  // Initialize arguments for future handle
+  ///
+  template<typename T, launch_type_t launch>
+  void handle(legion_future__<T, launch> & h) {
+    futures.push_back(std::make_shared<legion_future__<T, launch>>(h));
+  }
+
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    sparse_accessor <
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS
+    > &a
+  )
+  {
+    auto & h = a.handle;
+
+    Legion::MappingTagID tag = EXCLUSIVE_LR;
+
+    Legion::RegionRequirement md_rr(
+        h.metadata_color_region, READ_WRITE, EXCLUSIVE,
+        h.metadata_color_region);
+    md_rr.add_field(h.fid);
+    region_reqs.push_back(md_rr);
+
+    Legion::RegionRequirement ex_rr(
+        h.offsets_exclusive_lr, privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE,
+        h.offsets_color_region, tag);
+    ex_rr.add_field(h.fid);
+    region_reqs.push_back(ex_rr);
+
+    Legion::RegionRequirement sh_rr(
+        h.offsets_shared_lr, privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE,
+        h.offsets_color_region);
+    sh_rr.add_field(h.fid);
+    region_reqs.push_back(sh_rr);
+
+    Legion::RegionRequirement gh_rr(
+        h.offsets_ghost_lr, privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE,
+        h.offsets_color_region);
+    gh_rr.add_field(h.fid);
+    region_reqs.push_back(gh_rr);
+
+    Legion::RegionRequirement ex_rr2(
+        h.entries_exclusive_lr, privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE,
+        h.entries_color_region, tag);
+    ex_rr2.add_field(h.fid);
+    region_reqs.push_back(ex_rr2);
+
+    Legion::RegionRequirement sh_rr2(
+        h.entries_shared_lr, privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE,
+        h.entries_color_region);
+    sh_rr2.add_field(h.fid);
+    region_reqs.push_back(sh_rr2);
+
+    Legion::RegionRequirement gh_rr2(
+        h.entries_ghost_lr, privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE,
+        h.entries_color_region);
+    gh_rr2.add_field(h.fid);
+    region_reqs.push_back(gh_rr2);
+  }
+
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    ragged_accessor<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    > & a
+  )
+  {
+    handle(reinterpret_cast<sparse_accessor<
+      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+  } // handle
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    sparse_mutator<
+    T
+    > &m
+  )
+  {
+    auto & h = m.h_;
+
+    Legion::MappingTagID tag = EXCLUSIVE_LR;
+
+    Legion::RegionRequirement md_rr(
+        h.metadata_color_region, READ_WRITE, EXCLUSIVE,
+        h.metadata_color_region);
+    md_rr.add_field(h.fid);
+    region_reqs.push_back(md_rr);
+
+    Legion::RegionRequirement ex_rr(
+        h.offsets_exclusive_lr, READ_WRITE, EXCLUSIVE,
+        h.offsets_color_region, tag);
+    ex_rr.add_field(h.fid);
+    region_reqs.push_back(ex_rr);
+
+    Legion::RegionRequirement sh_rr(
+        h.offsets_shared_lr, READ_WRITE, EXCLUSIVE,
+        h.offsets_color_region);
+    sh_rr.add_field(h.fid);
+    region_reqs.push_back(sh_rr);
+
+    Legion::RegionRequirement gh_rr(
+        h.offsets_ghost_lr, READ_WRITE, EXCLUSIVE,
+        h.offsets_color_region);
+    gh_rr.add_field(h.fid);
+    region_reqs.push_back(gh_rr);
+
+    Legion::RegionRequirement ex_rr2(
+        h.entries_exclusive_lr, READ_WRITE, EXCLUSIVE,
+        h.entries_color_region, tag);
+    ex_rr2.add_field(h.fid);
+    region_reqs.push_back(ex_rr2);
+
+    Legion::RegionRequirement sh_rr2(
+        h.entries_shared_lr, READ_WRITE, EXCLUSIVE,
+        h.entries_color_region);
+    sh_rr2.add_field(h.fid);
+    region_reqs.push_back(sh_rr2);
+
+    Legion::RegionRequirement gh_rr2(
+        h.entries_ghost_lr, READ_WRITE, EXCLUSIVE,
+        h.entries_color_region);
+    gh_rr2.add_field(h.fid);
+    region_reqs.push_back(gh_rr2);
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    ragged_mutator<
+      T
+    > & m
+  )
+  {
+    handle(reinterpret_cast<sparse_mutator<T>&>(m));
+  }
 
   /*!
     FIXME
@@ -241,7 +403,6 @@ template<
   typename std::enable_if_t<
       std::is_base_of<topology::set_topology_base_t, T>::value>
   handle(data_client_handle__<T, PERMISSIONS> & h) {
-    auto & context_ = context_t::instance();
 
     for (size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
@@ -267,6 +428,7 @@ template<
   Legion::Runtime * runtime;
   Legion::Context & context;
   std::vector<Legion::RegionRequirement> region_reqs;
+  std::vector<std::shared_ptr<future_base_t>> futures;
 
 }; // struct init_args_t
 

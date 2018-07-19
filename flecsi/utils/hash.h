@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <cstddef>
 #include <utility>
 
@@ -61,7 +60,7 @@ template<size_t NAMESPACE, size_t NAME>
 inline constexpr size_t
 client_hash() {
   return NAMESPACE ^ NAME;
-} // field_hash__
+} // client_hash
 
 ////////////////////////////////////////////////////////////////////////////////
 // Field data hash interface.
@@ -90,7 +89,7 @@ field_hash(size_t version) {
 
 inline size_t
 field_hash(size_t nspace, size_t name, size_t version) {
-  return ((nspace ^ name) << field_hash_version_bits | version) & ~(1ul << 63);
+  return ((nspace ^ name) << field_hash_version_bits | version) & ~(1ull << 63);
 } // field_hash
 
 inline constexpr size_t
@@ -107,7 +106,7 @@ field_hash_version(size_t key) {
 //----------------------------------------------------------------------------//
 
 bool inline is_internal(size_t key) {
-  return key & (1ul << 63);
+  return key & (1ull << 63);
 } // is_internal
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -210,6 +209,28 @@ client_adjacency_hash() {
          (TO_DOMAIN << 4) | (FROM_DIMENSION << 2) | TO_DIMENSION;
 } // client_adjacency_hash
 
+////////////////////////////////////////////////////////////////////////////////
+// Client index subspace hash interface.
+////////////////////////////////////////////////////////////////////////////////
+
+//----------------------------------------------------------------------------//
+//! Create a hash key suitable for registering client index subspaces with
+//! the low-level field registry.
+//!
+//! @tparam NAMESPACE      A namespace identifier.
+//! @tparam NAME           A name identifier.
+//! @tparam INDEX          The associated index space.
+//! @tparam INDEX_SUBSPACE The associated index subspace.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+template<size_t NAMESPACE, size_t NAME, size_t INDEX, size_t INDEX_SUBSPACE>
+inline constexpr size_t
+client_index_subspace_hash() {
+  return ((NAMESPACE ^ NAME) << 16) | (INDEX << 8) | INDEX_SUBSPACE;
+} // client_adjacency_hash
+
 //----------------------------------------------------------------------------//
 //! Recover the index space from a key to a client entity.
 //!
@@ -295,12 +316,12 @@ client_adjacency_to_dimension(size_t key) {
 template<size_t NAME, size_t INDEX_SPACE>
 inline constexpr size_t
 client_internal_field_hash() {
-  return ((NAME << 8) | INDEX_SPACE) | (1ul << 63);
+  return ((NAME << 8) | INDEX_SPACE) | (1ull << 63);
 } // field_hash__
 
 inline size_t
 client_internal_field_hash(size_t name, size_t index_space) {
-  return ((name << 8) | index_space) | (1ul << 63);
+  return ((name << 8) | index_space) | (1ull << 63);
 } // field_hash__
 
 inline constexpr size_t

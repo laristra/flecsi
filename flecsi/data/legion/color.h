@@ -115,7 +115,7 @@ struct color_handle__ : public global_data_handle__<T, PERMISSIONS> {
 
   /*!
    \brief Test to see if this handle is empty
-  
+
    \return true if registered.
    */
 

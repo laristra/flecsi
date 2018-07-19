@@ -67,7 +67,7 @@ struct execution_wrapper__ {
   void execute(ARG_TUPLE && args) {
     value_ = (*DELEGATE)(std::forward<ARG_TUPLE>(args));
   } // execute
-  
+
   /*!
    Recover the return value. This is similar to a future, but with
    immediate execution. This function is suitable for returning from
@@ -130,7 +130,7 @@ template<
         Legion::Context,
         Legion::Runtime *)>
 struct pure_task_wrapper__ {
-  
+
   /*!
     The task_id_t type is a unique identifier for Legion tasks.
    */
@@ -139,7 +139,7 @@ struct pure_task_wrapper__ {
 
   /*!
    Registration callback function for pure Legion tasks.
-  
+
    @param tid The task id to assign to the task.
    @param processor A valid Legion processor type.
    @param launch A \ref launch_t with the launch parameters.
@@ -184,6 +184,11 @@ struct pure_task_wrapper__ {
         clog(fatal) << "MPI type passed to pure legion registration"
                     << std::endl;
         break;
+      default:
+        clog(fatal)
+            << "wrong processor type is specified for the task registration"
+            << std::endl;
+        break;
     } // switch
   } // registration_callback
 
@@ -213,10 +218,10 @@ struct task_wrapper__ {
    */
 
   using task_id_t = Legion::TaskID;
-  
+
   /*!
    Registration callback function for user tasks.
-  
+
    @param tid    The task id to assign to the task.
    @param launch A \ref launch_t with the launch parameters.
    @param name   A std::string containing the task name.
@@ -262,6 +267,11 @@ struct task_wrapper__ {
         registration_wrapper__<void, execute_mpi_task>::register_task(
             tid, Legion::Processor::LOC_PROC, config_options, name);
         break;
+      default:
+        clog(fatal)
+            << "wrong processor type is specified for the task registration"
+            << std::endl;
+        break;
     } // switch
   } // registration_callback
 
@@ -289,7 +299,7 @@ struct task_wrapper__ {
       CALI_MARK_BEGIN("FleCSI_Execution init_handles");
     #endif // ENABLE_CALIPER
 
-    init_handles_t init_handles(runtime, context, regions);
+    init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(task_args);
 
     #ifdef ENABLE_CALIPER
@@ -334,7 +344,7 @@ struct task_wrapper__ {
     // Unpack task arguments.
     ARG_TUPLE & mpi_task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
-    init_handles_t init_handles(runtime, context, regions);
+    init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(mpi_task_args);
 
     // Create bound function to pass to MPI runtime.

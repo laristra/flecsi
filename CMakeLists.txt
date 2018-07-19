@@ -35,6 +35,9 @@ elseif(EXISTS ${CMAKE_SOURCE_DIR}/cinch)
     set(CINCH_SOURCE_DIR ${CMAKE_SOURCE_DIR}/cinch)
 endif()
 
+# enable project folder support (useful for VS, XCode, etc.)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 include(${CINCH_SOURCE_DIR}/cmake/ProjectLists.txt)
 
 #------------------------------------------------------------------------------#

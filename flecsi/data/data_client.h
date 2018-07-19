@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/export_definitions.h>
 
 namespace flecsi {
 namespace data {
@@ -24,7 +25,7 @@ namespace data {
 //! Base type to identify types that allow data registration.
 //----------------------------------------------------------------------------//
 
-class data_client_t {
+class FLECSI_EXPORT data_client_t {
 public:
   /// Copy constructor (disabled)
   data_client_t(const data_client_t &) = delete;
@@ -33,26 +34,24 @@ public:
   data_client_t & operator=(const data_client_t &) = delete;
 
   /// Allow move construction
-  data_client_t(data_client_t && dc);
+  data_client_t(data_client_t && dc) {}
 
   /// Allow move assignment
-  data_client_t & operator=(data_client_t && dc);
+  data_client_t & operator=(data_client_t && dc) {
+    return *this;
+  }
 
   //--------------------------------------------------------------------------//
   //! Return a unique runtime identifier for namespace access to the
   //! data manager.
   //--------------------------------------------------------------------------//
 
-  uintptr_t runtime_id() const {
-    return (reinterpret_cast<uintptr_t>(this) << 4) ^ id_;
-  } // runtime_id
-
   virtual ~data_client_t() {
     reset();
   }
 
 protected:
-  void reset();
+  void reset() {}
 
   //--------------------------------------------------------------------------//
   //! Define a dummy type so that we get our own counter below.
@@ -70,10 +69,7 @@ protected:
   //!       be overridden by derived types.
   //--------------------------------------------------------------------------//
 
-  data_client_t() : id_(utils::unique_id_t<id_t>::instance().next()) {}
-
-private:
-  size_t id_;
+  data_client_t() {}
 
 }; // class data_client_t
 

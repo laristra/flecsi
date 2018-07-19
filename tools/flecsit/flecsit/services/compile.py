@@ -15,7 +15,7 @@ from flecsit.services.compile_driver.execute import *
 # Documentation handler.
 #------------------------------------------------------------------------------#
 
-class FleCSIT_Analysis(Service):
+class FleCSIT_Compile(Service):
 
     #--------------------------------------------------------------------------#
     # Initialization.
@@ -31,12 +31,17 @@ class FleCSIT_Analysis(Service):
             help='Service for compiling user driver files.'
         )
 
-        # Add general compiler options -I, -L, and -l
+        # Add general compiler options -I, -L, -l, and -p
         add_command_line_compiler_options(self.parser)
 
         # Add verbose flag
         self.parser.add_argument('-v', '--verbose', action='store_true',
             help='Turn on verbose output.'
+        )
+
+        # Add debug flag
+        self.parser.add_argument('-d', '--debug', action='store_true',
+            help='Turn on debug output (temporaries not deleted).'
         )
 
         # Add verbose flag
@@ -83,13 +88,16 @@ class FleCSIT_Analysis(Service):
         includes = generate_compiler_options(config['includes'],
             args.include, 'FLECSIT_INCLUDES', '-I')
         defines = generate_compiler_options(config['defines'],
-            args.include, 'FLECSIT_DEFINES', '-D')
+            args.define, 'FLECSIT_DEFINES', '-D')
         libraries = generate_compiler_options(config['libraries'],
             args.library, 'FLECSIT_LIBRARIES', '')
+        packages = generate_compiler_options(config['packages'],
+            args.package, 'FLECSIT_PACKAGES', '')
 
         build['includes'] = includes
         build['defines'] = defines
         build['libraries'] = libraries
+        build['packages'] = packages
 
         # Runtime main
         main = os.getenv('FLECSIT_RUNTIME_MAIN')
@@ -103,7 +111,7 @@ class FleCSIT_Analysis(Service):
         build['main'] = main
 
         # Execute build
-        execute(args.verbose, build)
+        execute(args.verbose, args.debug, build)
 
     # main
 
@@ -112,10 +120,10 @@ class FleCSIT_Analysis(Service):
     #--------------------------------------------------------------------------#
 
     class Factory:
-        def create(self, subparsers): return FleCSIT_Analysis(subparsers)
+        def create(self, subparsers): return FleCSIT_Compile(subparsers)
     # class Factory
 
-# class FleCSIT_Analysis
+# class FleCSIT_Compile
 
 #------------------------------------------------------------------------------#
 # Formatting options for emacs and vim.

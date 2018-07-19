@@ -15,8 +15,6 @@
 
 /*! @file */
 
-
-
 //
 // Attribution:
 // This logic is an adaptation of Paul Fultz's response on Stack Overflow

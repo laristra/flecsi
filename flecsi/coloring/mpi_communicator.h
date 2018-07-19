@@ -74,14 +74,14 @@ public:
 
   /*!
    Reduces info_indices from all MPI ranks
-  
+
    @param request_indices  std::set of shared, ghost etc
    @param max_request_indices Maximum # of indices per rank
    @param colors Number of MPI ranks
-  
+
    @return std::vector vith the infirmation for the info_indices from all
            MPI ranks
-  
+
    @ingroup coloring
    */
 
@@ -122,11 +122,11 @@ public:
    Rerturn a set containing the entity_info_t information for each
    member of the input set request_indices (from other ranks) and
    the information for the local indices in primary.
-  
+
    @param FIXME
-  
+
    @return FIXME
-  
+
    @ingroup coloring
   */
 
@@ -246,11 +246,11 @@ public:
 
   /*!
    Rerturn FIXME
-  
+
    @param request_indices FIXME...
                           information.
    @return A std::unordered_map<size_t, std::set<size_t>> FIXME ...
-  
+
    @ingroup coloring
   */
 
@@ -337,12 +337,12 @@ public:
 
   /*!
    Rerturn a map containing the reduced index information for each color.
-  
+
    @param local_indices The indices of the calling color.
-  
+
    @return A std::unordered_map<size_t, std::set<size_t>> containing the
            indices of each rank for the given index space.
-  
+
    @ingroup coloring
    */
 
@@ -380,13 +380,13 @@ public:
   /*!
    Return a set containing the entity_info_t information for each
    member of the input set request_indices (from other ranks).
-  
+
    @param entity_info FIXME...
    @param request_indices A set of entity ids for which to return
                           information.
    @return A std::vector<std::set<size_t>> containing the offset
            information for the requested indices.
-  
+
    @ingroup coloring
    */
 
@@ -497,16 +497,16 @@ public:
     return remote;
   } // get_entity_info
 
-/*!
-   Rerturn a map containing the coloring index and the number of indices
-   for the given index set.
-  
-   @param size Size on current MPI rank
-  
-   @return indices_map
-  
-   @ingroup coloring
- */
+  /*!
+     Rerturn a map containing the coloring index and the number of indices
+     for the given index set.
+
+     @param size Size on current MPI rank
+
+     @return indices_map
+
+     @ingroup coloring
+   */
 
   std::vector<size_t> gather_sizes(const size_t & size) override {
     int colors;
@@ -527,11 +527,11 @@ public:
 
   /*!
    exchange coloring info between all MPI ranks
-  
+
    @param request_indices Shared_users or Ghost_owners
    @param function  Lambda function, that specify where do we want to
                      insert values
-  
+
    @ingroup coloring
    */
 
@@ -569,9 +569,9 @@ public:
 
   /*!
    gets coloring info between all MPI ranks
-  
+
    @param coloring_info Coloring info for one particular rank
-  
+
    @ingroup coloring
    */
 
@@ -614,11 +614,11 @@ public:
 
   /*!
    Find maximum size for the "requested_indicies" - MPI reduction
-  
+
    @param request_indices request_indices for local MPI rank
-  
+
    @return max_request_indices Maximum size for the "requested_indicies"
-  
+
    @ingroup coloring
    */
 

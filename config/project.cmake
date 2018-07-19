@@ -22,7 +22,13 @@ cinch_minimum_required(1.0)
 # Set the project name
 #------------------------------------------------------------------------------#
 
-project(FleCSI)
+option(ENABLE_CUDA "Enable support for CUDA" OFF)
+
+if(ENABLE_CUDA)
+  project(FleCSI LANGUAGES CXX C CUDA)
+else()
+  project(FleCSI LANGUAGES CXX C)
+endif()
 
 #------------------------------------------------------------------------------#
 # Set header suffix regular expression
@@ -34,14 +40,14 @@ set(CINCH_HEADER_SUFFIXES "\\.h")
 # If a C++14 compiler is available, then set the appropriate flags
 #------------------------------------------------------------------------------#
 
-include(cxx14)
+include(cxx17)
 
-check_for_cxx14_compiler(CXX14_COMPILER)
+check_for_cxx17_compiler(CXX17_COMPILER)
 
-if(CXX14_COMPILER)
-    enable_cxx14()
+if(CXX17_COMPILER)
+    enable_cxx17()
 else()
-    message(FATAL_ERROR "C++14 compatible compiler not found")
+    message(FATAL_ERROR "C++17 compatible compiler not found")
 endif()
 
 #------------------------------------------------------------------------------#
@@ -60,18 +66,19 @@ set(FLECSI_LIBRARY_DEPENDENCIES)
 set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 
 #------------------------------------------------------------------------------#
-# Boost
-#
-# Note that this find package only sets the header information. To find
-# library dependencies, add COMPONENTS and specify the ones that you need.
+# Add options for runtime selection
 #------------------------------------------------------------------------------#
 
-find_package(Boost 1.58.0 REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
+set(FLECSI_RUNTIME_MODELS legion mpi hpx)
 
-# FIXME: This should be optional
-#set(FLECSI_INCLUDE_DEPENDENCIES ${Boost_INCLUDE_DIRS})
-#set(FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
+if(NOT FLECSI_RUNTIME_MODEL)
+  list(GET FLECSI_RUNTIME_MODELS 0 FLECSI_RUNTIME_MODEL)
+endif()
+
+set(FLECSI_RUNTIME_MODEL "${FLECSI_RUNTIME_MODEL}" CACHE STRING
+  "Select the runtime model")
+set_property(CACHE FLECSI_RUNTIME_MODEL
+  PROPERTY STRINGS ${FLECSI_RUNTIME_MODELS})
 
 #------------------------------------------------------------------------------#
 # cinch_load_extras will try and find legion and mpi. If we want to
@@ -85,32 +92,33 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
   set(ENABLE_LEGION ON CACHE BOOL "Enable Legion" FORCE)
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+  set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
+  set(ENABLE_HPX ON CACHE BOOL "Enable HPX" FORCE)
 endif()
 
 mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
 
 #------------------------------------------------------------------------------#
-# Add options for design by contract
-#------------------------------------------------------------------------------#
-
-set(FLECSI_DBC_ACTIONS throw notify nothing)
-
-if(NOT FLECSI_DBC_ACTION)
-  list(GET FLECSI_DBC_ACTIONS 0 FLECSI_DBC_ACTION)
-endif()
-
-set(FLECSI_DBC_ACTION "${FLECSI_DBC_ACTION}" CACHE STRING
-  "Select the design by contract action")
-set_property(CACHE FLECSI_DBC_ACTION PROPERTY STRINGS ${FLECSI_DBC_ACTIONS})
-
-set(FLECSI_DBC_REQUIRE ON CACHE BOOL
-  "Enable DBC Pre/Post Condition Assertions")
-
-#------------------------------------------------------------------------------#
 # Load the cinch extras
 #------------------------------------------------------------------------------#
 
-cinch_load_extras(MPI LEGION)
+# After we load the cinch options, we need to capture the configuration
+# state for the particular Cinch build configuration and set variables that
+# are local to this project. FleCSI should never directly use the raw
+# options, e.g., ENABLE_OPTION should be captured as FLECSI_ENABLE_OPTION
+# and used as such in the code. This will handle collisions between nested
+# projects that use Cinch.
+
+cinch_load_extras(MPI LEGION HPX)
+
+get_cmake_property(_variableNames VARIABLES)
+string (REGEX MATCHALL "(^|;)ENABLE_[A-Za-z0-9_]*"
+  _matchedVars "${_variableNames}")
+
+foreach(_variableName ${_matchedVars})
+  set(FLECSI_${_variableName} ${${_variableName}})
+endforeach()
 
 #------------------------------------------------------------------------------#
 # Add option for setting id bits
@@ -130,6 +138,12 @@ set(FLECSI_COUNTER_TYPE "int32_t" CACHE STRING
   "Select the type that will be used for loop and iterator values")
 
 #------------------------------------------------------------------------------#
+# Control Model
+#------------------------------------------------------------------------------#
+
+option(ENABLE_DYNAMIC_CONTROL_MODEL "Enable the new FleCSI control model" OFF)
+
+#------------------------------------------------------------------------------#
 # Add option for FleCSIT command-line tool.
 #------------------------------------------------------------------------------#
 
@@ -142,49 +156,38 @@ option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" ON)
 set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/FleCSI)
 
 #------------------------------------------------------------------------------#
-# Add options for runtime selection
+# RistraLL
 #------------------------------------------------------------------------------#
 
-set(FLECSI_RUNTIME_MODELS legion mpi)
+option(ENABLE_RISTRALL "Enable Ristra Low-Level Library Support" OFF)
 
-if(NOT FLECSI_RUNTIME_MODEL)
-  list(GET FLECSI_RUNTIME_MODELS 0 FLECSI_RUNTIME_MODEL)
+if(ENABLE_RISTRALL)
+  find_package(RistraLL REQUIRED)
+
+  if(RistraLL_FOUND)
+    include_directories(${RistraLL_INCLUDE_DIRS})
+
+    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${RistraLL_INCLUDE_DIRS})
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${RistraLL_LIBRARIES})
+  endif()
 endif()
 
-set(FLECSI_RUNTIME_MODEL "${FLECSI_RUNTIME_MODEL}" CACHE STRING
-  "Select the runtime model")
-set_property(CACHE FLECSI_RUNTIME_MODEL
-  PROPERTY STRINGS ${FLECSI_RUNTIME_MODELS})
-
 #------------------------------------------------------------------------------#
-# Add options for design by contract
+# Graphviz
 #------------------------------------------------------------------------------#
 
-set(FLECSI_DBC_ACTIONS throw notify nothing)
+option(ENABLE_GRAPHVIZ "Enable Graphviz Support" OFF)
 
-if(NOT FLECSI_DBC_ACTION)
-  list(GET FLECSI_DBC_ACTIONS 0 FLECSI_DBC_ACTION)
-endif()
+if(ENABLE_GRAPHVIZ)
+  find_package(Graphviz REQUIRED)
 
-set(FLECSI_DBC_ACTION "${FLECSI_DBC_ACTION}" CACHE STRING
-  "Select the design by contract action")
-set_property(CACHE FLECSI_DBC_ACTION PROPERTY STRINGS ${FLECSI_DBC_ACTIONS})
+  if(GRAPHVIZ_FOUND)
+    include_directories(${GRAPHVIZ_INCLUDE_DIRS})
+    add_definitions(-DENABLE_GRAPHVIZ)
 
-set(FLECSI_DBC_REQUIRE ON CACHE BOOL
-  "Enable DBC Pre/Post Condition Assertions")
-
-#------------------------------------------------------------------------------#
-# DBC
-#------------------------------------------------------------------------------#
-
-if(FLECSI_DBC_ACTION STREQUAL "throw")
-  add_definitions(-DFLECSI_DBC_THROW)
-elseif(FLECSI_DBC_ACTION STREQUAL "notify")
-  add_definitions(-DFLECSI_DBC_NOTIFY)
-endif()
-
-if(FLECSI_DBC_REQUIRE)
-  add_definitions(-DFLECSI_REQUIRE_ON)
+    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${GRAPHVIZ_INCLUDE_DIR})
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${GRAPHVIZ_LIBRARIES})
+  endif()
 endif()
 
 #------------------------------------------------------------------------------#
@@ -202,6 +205,32 @@ if(ENABLE_OPENSSL)
 
     list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${OPENSSL_INCLUDE_DIR})
     list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${OPENSSL_LIBRARIES})
+  endif()
+endif()
+
+#------------------------------------------------------------------------------#
+# Caliper
+#------------------------------------------------------------------------------#
+
+if(ENABLE_CALIPER)
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Caliper_LIBRARIES})
+endif()
+
+#------------------------------------------------------------------------------#
+# Boost Program Options
+#------------------------------------------------------------------------------#
+
+if(ENABLE_BOOST_PROGRAM_OPTIONS)
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
+endif()
+
+#------------------------------------------------------------------------------#
+# Pthreads
+#------------------------------------------------------------------------------#
+
+if(ENABLE_CLOG)
+  if(CLOG_ENABLE_MPI)
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${CMAKE_THREAD_LIBS_INIT})
   endif()
 endif()
 
@@ -230,11 +259,11 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   if(NOT MPI_${MPI_LANGUAGE}_FOUND)
     message (FATAL_ERROR "MPI is required for the legion runtime model")
   endif()
- 
+
   if(NOT Legion_FOUND)
     message (FATAL_ERROR "Legion is required for the legion runtime model")
   endif()
- 
+
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/legion)
 
   set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${Legion_LIBRARIES}
@@ -250,11 +279,13 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   if(ENABLE_MAPPER_COMPACTION)
     add_definitions(-DMAPPER_COMPACTION)
+    set (MAPPER_COMPACTION TRUE)
   else()
     option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" ON)
 
     if(COMPACTED_STORAGE_SORT)
       add_definitions(-DCOMPACTED_STORAGE_SORT)
+      set(COMPACTED_STORAGE_SORT TRUE)
     endif()
   endif()
 
@@ -271,12 +302,26 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  if(NOT HPX_FOUND)
+    message (FATAL_ERROR "HPX is required for the HPX runtime model")
+  endif()
+
+  if(NOT MPI_${MPI_LANGUAGE}_FOUND)
+    message (FATAL_ERROR "MPI is required for the hpx runtime model")
+  endif()
+
+   set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
+
+  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/hpx)
+
 #
 # Default
 #
 else()
 
-  message(FATAL_ERROR "Unrecognized runtime selection")  
+  message(FATAL_ERROR "Unrecognized runtime selection")
 
 endif()
 
@@ -294,34 +339,27 @@ if(ENABLE_MPI)
   find_package(ParMETIS 4.0)
 endif()
 
-option(ENABLE_COLORING
-  "Enable partitioning (uses metis/parmetis or scotch)." OFF)
+set(COLORING_LIBRARIES)
 
-if(ENABLE_COLORING)
+if(METIS_FOUND)
+  list(APPEND COLORING_LIBRARIES ${METIS_LIBRARIES})
+  include_directories(${METIS_INCLUDE_DIRS})
+  set(ENABLE_METIS TRUE)
 
-  set(COLORING_LIBRARIES)
+  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${METIS_INCLUDE_DIRS})
+endif()
 
-  if(METIS_FOUND)
-    list(APPEND COLORING_LIBRARIES ${METIS_LIBRARIES})
-    include_directories(${METIS_INCLUDE_DIRS})
-    set(ENABLE_METIS TRUE)
+if(PARMETIS_FOUND)
+  list(APPEND COLORING_LIBRARIES ${PARMETIS_LIBRARIES})
+  include_directories(${PARMETIS_INCLUDE_DIRS})
+  set(ENABLE_PARMETIS TRUE)
 
-    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${METIS_INCLUDE_DIRS})
-  endif()
+  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${PARMETIS_INCLUDE_DIRS})
+endif()
 
-  if(PARMETIS_FOUND)
-    list(APPEND COLORING_LIBRARIES ${PARMETIS_LIBRARIES})
-    include_directories(${PARMETIS_INCLUDE_DIRS})
-    set(ENABLE_PARMETIS TRUE)
-
-    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${PARMETIS_INCLUDE_DIRS})
-  endif()
-
-  if(NOT COLORING_LIBRARIES)
-    MESSAGE(FATAL_ERROR
-      "You need parmetis to enable partitioning" )
-  endif()
-
+if(NOT COLORING_LIBRARIES)
+  MESSAGE(FATAL_ERROR
+    "You need parmetis to enable partitioning" )
 endif()
 
 list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${COLORING_LIBRARIES})
@@ -366,10 +404,10 @@ message(STATUS "${CINCH_Yellow}Set id_t bits to allow:\n"
 
 set(FLECSI_ENABLE_MPI ${ENABLE_MPI})
 set(FLECSI_ENABLE_LEGION ${ENABLE_LEGION})
-set(FLECSI_ENABLE_COLORING ENABLE_COLORING)
 set(FLECSI_ENABLE_METIS ENABLE_METIS)
 set(FLECSI_ENABLE_PARMETIS ENABLE_PARMETIS)
-set(FLECSI_ENABLE_BOOST_PREPROCESSOR ENABLE_BOOST_PREPROCESSOR)
+set(FLECSI_ENABLE_GRAPHVIZ ${ENABLE_GRAPHVIZ})
+set(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL ${ENABLE_DYNAMIC_CONTROL_MODEL})
 
 configure_file(${PROJECT_SOURCE_DIR}/config/flecsi-config.h.in
   ${CMAKE_BINARY_DIR}/flecsi-config.h @ONLY)
@@ -385,13 +423,34 @@ install(
 # Add library targets
 #------------------------------------------------------------------------------#
 
-cinch_add_library_target(FleCSI flecsi)
-cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
+cinch_add_library_target(FleCSI flecsi EXPORT_TARGET FleCSITargets)
+
+set_target_properties(FleCSI PROPERTIES FOLDER "Core")
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+  option(ENABLE_FLECSI_TUTORIAL
+    "Enable library support for the FleCSI tutorial" OFF)
+else()
+  option(ENABLE_FLECSI_TUTORIAL
+    "Enable library support for the FleCSI tutorial" ON)
+endif()
+
+if(ENABLE_FLECSI_TUTORIAL)
+  option(ENABLE_FLECSI_TUTORIAL_VTK "Enable VTK output for tutorial examples"
+    OFF)
+
+  set(FLECSI_TUTORIAL_ENABLE_VTK)
+
+  if(ENABLE_FLECSI_TUTORIAL_VTK)
+    set(FLECSI_TUTORIAL_ENABLE_VTK ":ENABLE_VTK")
+  endif()
+
+  cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
+endif()
 
 #------------------------------------------------------------------------------#
 # Install Tutorial inputs
 #------------------------------------------------------------------------------#
-message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 
 install(
   FILES ${PROJECT_SOURCE_DIR}/flecsi-tutorial/specialization/inputs/simple2d-16x16.msh
@@ -407,6 +466,11 @@ if(FLECSI_RUNTIME_LIBRARIES OR COLORING_LIBRARIES)
   )
 endif()
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  hpx_setup_target(FleCSI NONAMEPREFIX)
+
+endif()
 #------------------------------------------------------------------------------#
 # Set application directory
 #------------------------------------------------------------------------------#
@@ -441,22 +505,23 @@ endforeach()
 set(FLECSI_LIBRARY_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR})
 set(FLECSI_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include
   ${FLECSI_EXTERNAL_INCLUDE_DIRS})
+
 set(FLECSI_CMAKE_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/cmake/FleCSI)
 set(FLECSI_RUNTIME_MAIN ${FLECSI_SHARE_DIR}/runtime/runtime_main.cc)
 set(FLECSI_RUNTIME_DRIVER ${FLECSI_SHARE_DIR}/runtime/runtime_driver.cc)
 
 #------------------------------------------------------------------------------#
-# Extract all project options so they can be exported to the ProjectConfig.cmake
-# file.
+# Extract all project options so they can be exported to the
+# ProjectConfig.cmake file.
 #------------------------------------------------------------------------------#
 
 get_cmake_property(_variableNames VARIABLES)
-string (REGEX MATCHALL "(^|;)FLECSI_[A-Za-z0-9_]*" _matchedVars "${_variableNames}")
-foreach (_variableName ${_matchedVars})
-  set( FLECSI_CONFIG_CODE
-    "${FLECSI_CONFIG_CODE}
-set(${_variableName} \"${${_variableName}}\")"
-  )
+string (REGEX MATCHALL "(^|;)FLECSI_[A-Za-z0-9_]*"
+  _matchedVars "${_variableNames}")
+
+foreach(_variableName ${_matchedVars})
+  set(FLECSI_CONFIG_CODE
+    "${FLECSI_CONFIG_CODE}\nset(${_variableName} \"${${_variableName}}\")")
 endforeach()
 
 #------------------------------------------------------------------------------#
@@ -467,6 +532,7 @@ export(
   TARGETS FleCSI
   FILE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSITargets.cmake
 )
+
 export(PACKAGE FleCSI)
 
 #------------------------------------------------------------------------------#

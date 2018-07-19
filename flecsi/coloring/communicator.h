@@ -86,7 +86,7 @@ public:
 
   /*!
    Get the 1-to-1 intersection between all colorings of the given set.
-  
+
    \return A map with an entry for each non-empty intersection containing
            the intersection between the calling color and an
            intersecting color.
@@ -97,7 +97,7 @@ public:
 
   /*!
    Return a map of the reduced index information across all colors.
-  
+
    @param local_indices The indices of the calling color.
    */
 
@@ -121,7 +121,7 @@ public:
   /*!
    Return size across all colors.
    */
-  
+
   virtual std::vector<size_t> gather_sizes(const size_t & size) = 0;
 
   virtual std::unordered_map<size_t, coloring_info_t>

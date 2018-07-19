@@ -48,4 +48,16 @@ using FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY =
 
 } // namespace flecsi
 
+// HPX Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include <flecsi/data/hpx/data_client_handle_policy.h>
+
+namespace flecsi {
+
+using FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY =
+    hpx_data_client_handle_policy_t;
+
+} // namespace flecsi
+
 #endif // FLECSI_RUNTIME_MODEL

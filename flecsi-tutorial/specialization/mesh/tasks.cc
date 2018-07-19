@@ -14,7 +14,7 @@
 
 #include<flecsi/execution/execution.h>
 
-#include<specialization/mesh/tasks.h>
+#include<flecsi-tutorial/specialization/mesh/tasks.h>
 
 namespace flecsi {
 namespace tutorial {

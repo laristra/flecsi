@@ -74,13 +74,23 @@ void initialize_mesh(mesh<wo> m) {
   const size_t width { 8 };
   const double dt { 1.0/width };
 
+  auto& iss = m.get_index_subspace<0>();
+
+  size_t k = 0;
+
   for(auto & vm: vertex_map) {
     const size_t mid { vm.second };
     const size_t row { mid/(width+1) };
     const size_t column { mid%(width+1) };
 
     point_t p { column*dt, row*dt };
-    vertices.push_back(m.make<vertex_t>(p));
+    auto v = m.make<vertex_t>(p);
+
+    if(k++ % 4 == 0){
+      iss.push_back(v->global_id<0>());
+    }
+
+    vertices.push_back(v);
   } // for
 
   size_t count{0};
@@ -138,6 +148,10 @@ void update_pressure(mesh<ro> m, field<rw, rw, ro> p) {
   for(auto c: m.cells(owned)) {
     p(c) = 2.0*p(c);
   } // for
+
+  for(auto v: m.subentities<0>()) {
+    std::cout << "subentity id: " << v->id() << std::endl;
+  }
 
 } // initialize_pressure
 
@@ -266,7 +280,7 @@ void driver(int argc, char ** argv) {
 } // namespace execution
 } // namespace flecsi
 
-DEVEL(devel_handle) {}
+DEVEL(index_subspaces) {}
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options for vim.

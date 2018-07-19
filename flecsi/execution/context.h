@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <functional>
 #include <map>
 #include <unordered_map>
 
@@ -26,8 +27,11 @@
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/execution/common/execution_state.h>
+#include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
+#include <flecsi/utils/dag.h>
 #include <flecsi/utils/const_string.h>
+#include <flecsi/utils/simple_id.h>
 
 clog_register_tag(context);
 
@@ -62,7 +66,7 @@ struct context__ : public CONTEXT_POLICY {
 
   struct field_info_t {
     size_t data_client_hash;
-    size_t storage_class;
+    size_t storage_class=0;
     size_t size;
     size_t namespace_hash;
     size_t name_hash;
@@ -73,43 +77,38 @@ struct context__ : public CONTEXT_POLICY {
   }; // struct field_info_t
 
   /*!
-    Gathers info about local index spaces.
-   */
-  struct local_index_space_t {
-    size_t index_space;
-    size_t capacity;
-  };
-
-  /*!
     Gathers info about sparse index spaces.
    */
   struct sparse_index_space_info_t {
     size_t index_space;
-    size_t reserve_chunk;
+    size_t exclusive_reserve;
     size_t max_entries_per_index;
-  };
-
-  /*!
-    Gathers info about set topology index spaces.
-   */
-  struct set_topology_index_space_t{
-    size_t main_capacity;
-    size_t active_migration_capacity;
+    // flecsi internal variable, do not set it up
+    size_t sparse_fields_registered_=0; 
   };
 
   struct index_subspace_info_t {
     size_t index_subspace;
     size_t capacity;
+    size_t size = 0;
   };
 
   /*!
     Structure needed to initialize a set topology.
    */
-  struct set_topology_info_t{
-    using index_space_map_t =
-      std::unordered_map<size_t, set_topology_index_space_t>;
+  struct set_index_space_info_t {
+    /*!
+      Gathers info about set topology index spaces per color.
+     */
+    struct color_info_t {
+      size_t main_capacity;
+      size_t active_migrate_capacity;
+    };
 
-    index_space_map_t index_space_map;
+    // key = color
+    using color_info_map_t = std::unordered_map<size_t, color_info_t>;
+
+    color_info_map_t color_info_map;
   };
 
   //--------------------------------------------------------------------------//
@@ -121,36 +120,58 @@ struct context__ : public CONTEXT_POLICY {
       std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
 
   //--------------------------------------------------------------------------//
+  // Top-level driver interface.
+  //--------------------------------------------------------------------------//
+
+  using tlt_driver_t = std::function<int(int, char **)>;
+
+  bool register_top_level_driver(tlt_driver_t const & driver) {
+    tlt_driver_ = driver;
+    return true;
+  } // register_top_level_driver
+
+  tlt_driver_t const & top_level_driver() const { return tlt_driver_; }
+
+  //--------------------------------------------------------------------------//
   // Object interface.
   //--------------------------------------------------------------------------//
 
-  template<
-    size_t NAMESPACE_HASH,
-    size_t INDEX,
-    typename OBJECT_TYPE>
+  template<size_t NAMESPACE_HASH, size_t INDEX, typename OBJECT_TYPE>
   bool register_global_object() {
     size_t KEY = NAMESPACE_HASH ^ INDEX;
-    global_object_registry_[KEY] = {};
+
+    using wrapper_t = global_object_wrapper__<OBJECT_TYPE>;
+
+    std::get<0>(global_object_registry_[KEY]) = {};
+    std::get<1>(global_object_registry_[KEY]) = &wrapper_t::cleanup;
+
     return true;
   } // register_global_object
 
-  template<
-    size_t NAMESPACE_HASH,
-    typename OBJECT_TYPE>
+  template<size_t NAMESPACE_HASH, typename OBJECT_TYPE>
   bool set_global_object(size_t index, OBJECT_TYPE * obj) {
     size_t KEY = NAMESPACE_HASH ^ index;
     assert(global_object_registry_.find(KEY) != global_object_registry_.end());
-    global_object_registry_[KEY] = reinterpret_cast<uintptr_t>(obj);
+    std::get<0>(global_object_registry_[KEY]) =
+        reinterpret_cast<uintptr_t>(obj);
     return true;
   } // set_global_object
 
-  template<
-    size_t NAMESPACE_HASH,
-    typename OBJECT_TYPE>
+  template<size_t NAMESPACE_HASH, typename OBJECT_TYPE, typename... ARGS>
+  bool initialize_global_object(size_t index, ARGS &&... args) {
+    size_t KEY = NAMESPACE_HASH ^ index;
+    assert(global_object_registry_.find(KEY) != global_object_registry_.end());
+    std::get<0>(global_object_registry_[KEY]) = reinterpret_cast<uintptr_t>(
+        new OBJECT_TYPE(std::forward<ARGS>(args)...));
+    return true;
+  } // new_global_object
+
+  template<size_t NAMESPACE_HASH, typename OBJECT_TYPE>
   OBJECT_TYPE * get_global_object(size_t index) {
     size_t KEY = NAMESPACE_HASH ^ index;
     assert(global_object_registry_.find(KEY) != global_object_registry_.end());
-    return reinterpret_cast<OBJECT_TYPE *>(global_object_registry_[KEY]);
+    return reinterpret_cast<OBJECT_TYPE *>(
+        std::get<0>(global_object_registry_[KEY]));
   } // get_global_object
 
   //--------------------------------------------------------------------------//
@@ -168,8 +189,8 @@ struct context__ : public CONTEXT_POLICY {
       RETURN (*FUNCTION)(ARG_TUPLE)>
   bool register_function() {
     clog_assert(
-      function_registry_.find(KEY) == function_registry_.end(),
-      "function has already been registered");
+        function_registry_.find(KEY) == function_registry_.end(),
+        "function has already been registered");
 
     const std::size_t addr = reinterpret_cast<std::size_t>(FUNCTION);
     clog(info) << "Registering function: " << addr << std::endl;
@@ -236,11 +257,10 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   auto & index_map(size_t index_space) {
-    clog_assert(
-        index_map_.find(index_space) != index_map_.end(),
-        "invalid index space");
+    auto it = index_map_.find(index_space);
+    clog_assert(it != index_map_.end(), "invalid index space");
 
-    return index_map_[index_space];
+    return it->second;
   } // index_map
 
   /*!
@@ -248,48 +268,28 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   const auto & index_map(size_t index_space) const {
-    clog_assert(
-        index_map_.find(index_space) != index_map_.end(),
-        "invalid index space");
+    auto it = index_map_.find(index_space);
+    clog_assert(it != index_map_.end(), "invalid index space");
 
-    return index_map_.at(index_space);
+    return it->second;
   } // index_map
-
-  /*!
-    Add a local index space of specified. The index space is local
-    to a color. This method is called from specialization_spmd_init().
-   */
-  void add_local_index_space(size_t index_space, size_t capacity) {
-    clog_assert(
-        coloring_info_.find(index_space) == coloring_info_.end(),
-        "non-local index space exists");
-    local_index_space_t is;
-    is.capacity = capacity;
-    local_index_space_map_.emplace(index_space, std::move(is));
-  }
-
-  /*!
-    Return the map of local index space info.
-   */
-
-  const auto & local_index_space_map() const {
-    return local_index_space_map_;
-  }
 
   /*!
     Register set topology index space sizes and other needed metadata.
    */
 
   void
-  add_set_topology(const set_topology_info_t & info)
-  {
-
+  add_set_index_space(size_t index_space, const set_index_space_info_t & info) {
+    auto itr = set_index_space_map_.insert({index_space, info});
+    clog_assert(itr->second, "set index space exists: " << index_space);
   }
 
-  void set_sparse_index_space_info(
-      size_t index_space,
-      const sparse_index_space_info_t & info) {
-    sparse_index_space_info_map_.emplace(index_space, info);
+  const auto & set_index_space_map() const {
+    return set_index_space_map_;
+  }
+
+  void set_sparse_index_space_info( const sparse_index_space_info_t & info) {
+    sparse_index_space_info_map_[info.index_space]=info;
   }
 
   /*!
@@ -298,6 +298,25 @@ struct context__ : public CONTEXT_POLICY {
 
   const auto & sparse_index_space_info_map() const {
     return sparse_index_space_info_map_;
+  }
+
+  void increment_sparse_fields(size_t sparse_idx_space)
+  {
+    auto iterator = sparse_index_space_info_map_.find(sparse_idx_space);
+    clog_assert(iterator!=sparse_index_space_info_map_.end(),
+                "sparse data map doesn't have this index space");
+       iterator->second.sparse_fields_registered_++;
+  }
+
+  bool sparse_fields(size_t sparse_idx_space)
+  {
+    auto iterator = sparse_index_space_info_map_.find(sparse_idx_space);
+    clog_assert(iterator!=sparse_index_space_info_map_.end(),
+                "sparse data map doesn't have this index space");
+    if (iterator->second.sparse_fields_registered_>0)
+      return true;
+    else
+      return false;
   }
 
   const auto & cis_to_gis_map(size_t index_space) const {
@@ -335,11 +354,10 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   auto & reverse_index_map(size_t index_space) {
-    clog_assert(
-        reverse_index_map_.find(index_space) != reverse_index_map_.end(),
-        "invalid index space");
+    auto it = reverse_index_map_.find(index_space);
+    clog_assert(it != reverse_index_map_.end(), "invalid index space");
 
-    return reverse_index_map_[index_space];
+    return it->second;
   } // reverse_index_map
 
   /*!
@@ -347,68 +365,188 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   const auto & reverse_index_map(size_t index_space) const {
-    clog_assert(
-        reverse_index_map_.find(index_space) != reverse_index_map_.end(),
-        "invalid index space");
+    auto it = reverse_index_map_.find(index_space);
+    clog_assert(it != reverse_index_map_.end(), "invalid index space");
 
-    return reverse_index_map_.at(index_space);
+    return it->second;
   } // reverse_index_map
 
+  //--------------------------------------------------------------------------//
+  // Intermediate mapping interface.
+  //--------------------------------------------------------------------------//
+
   /*!
-    Add an intermediate map. This map can be used to go between mesh and
+    Return a reference to the intermediate mapping.
+    This map can be used to go between mesh and
     locally compacted index spaces for intermediate entities.
 
     @param dimension        The entity dimension.
     @param domain           The entity domain.
-    @param intermediate_map The map to add.
+    @return The map to add.
    */
 
-  void add_intermediate_map(
-      size_t dimension,
-      size_t domain,
-      std::unordered_map<size_t, std::vector<size_t>> & intermediate_map) {
-    const size_t key = utils::hash::intermediate_hash(dimension, domain);
-    intermediate_map_[key] = intermediate_map;
+  auto & intermediate_map(size_t dimension, size_t domain) {
 
-    for (auto i : intermediate_map) {
-      reverse_intermediate_map_[key][i.second] = i.first;
-    } // for
-  } // add_intermediate_map
-
-  /*!
-    Return the intermediate map associated with the given dimension and
-    domain.
-
-    @param dimension The entity dimension.
-    @param domain    The entity domain.
-   */
-
-  auto const & intermediate_map(size_t dimension, size_t domain) const {
-    const size_t key = utils::hash::intermediate_hash(dimension, domain);
-
-    clog_assert(
-        intermediate_map_.find(key) != intermediate_map_.end(),
-        "invalid index space");
-
-    return intermediate_map_.at(key);
+    const auto key = utils::hash::intermediate_hash(dimension, domain);
+    return intermediate_map_[key];
   } // intermediate_map
 
   /*!
-    Return the index map associated with the given index space.
+    Return a const reference to the reverse intermediate mapping.
 
     @param dimension The entity dimension.
     @param domain    The entity domain.
    */
 
   auto const & reverse_intermediate_map(size_t dimension, size_t domain) const {
-    const size_t key = utils::hash::intermediate_hash(dimension, domain);
+    const auto key = utils::hash::intermediate_hash(dimension, domain);
+
+    auto it = reverse_intermediate_map_.find(key);
 
     clog_assert(
-        reverse_intermediate_map_.find(key) != reverse_intermediate_map_.end(),
-        "invalid index space");
+        it != reverse_intermediate_map_.end(), "invalid intermediate mapping");
 
-    return reverse_intermediate_map_.at(key);
+    return it->second;
   } // reverse_intermediate_map
+
+  /*!
+    Return a modifyable reference to the reverse intermediate mapping.
+
+    This lets the user create the reverse intermediate mapping themselves.
+    Or they can build it by calling build_reverse_intermediate_map.
+
+    @param dimension The entity dimension.
+    @param domain    The entity domain.
+   */
+
+  auto & reverse_intermediate_map(size_t dimension, size_t domain) {
+    const auto key = utils::hash::intermediate_hash(dimension, domain);
+    return reverse_intermediate_map_[key];
+  } // reverse_intermediate_map
+
+  /*!
+    A utility to automatically flip the intermediate maps.
+
+    @param reset  If true, clear the map before proceding.
+    @param sort  If true, assume the entries are unsorted.
+   */
+  void build_reverse_intermediate_maps(bool reset = false, bool sort = false) {
+
+    // clear the map for safety
+    if (reset)
+      reverse_intermediate_map_.clear();
+
+    // now flip all the mappings
+    for (const auto & forward_map : intermediate_map_) {
+      auto key = forward_map.first;
+      auto & reverse_map = reverse_intermediate_map_[key];
+      // it will be empty if never set, or reset==true
+      if (reverse_map.empty()) {
+
+        // assume unsorted
+        if (sort) {
+          for (auto & entry : forward_map.second) {
+            std::sort(entry.second.begin(), entry.second.end());
+            reverse_map[entry.second] = entry.first;
+          }
+        }
+        // assume sorted
+        else {
+          for (const auto & entry : forward_map.second)
+            reverse_map[entry.second] = entry.first;
+        }
+      }
+    }
+  }
+
+  /*!
+    Add an intermediate binding map. This map can be used to go between mesh and
+    locally compacted index spaces for intermediate entities.
+
+    @param dimension        The entity dimension.
+    @param domain           The entity domain.
+    @return A reference to the map.
+   */
+
+  auto & intermediate_binding_map(size_t from_dimension, size_t from_domain) {
+    const auto key =
+        utils::hash::intermediate_hash(from_dimension, from_domain);
+    return intermediate_binding_map_[key];
+  } // add_intermediate_binding_map
+
+  /*!
+    Return a const reference to the reverse intermediate mapping.
+
+    @param dimension The entity dimension.
+    @param domain    The entity domain.
+   */
+
+  auto const &
+  reverse_intermediate_binding_map(size_t dimension, size_t domain) const {
+    const auto key = utils::hash::intermediate_hash(dimension, domain);
+
+    auto it = reverse_intermediate_binding_map_.find(key);
+    clog_assert(
+        it != reverse_intermediate_binding_map_.end(), "invalid index space");
+
+    return it->second;
+  } // reverse_intermediate_map
+
+  /*!
+    Return a modifyable reference to the reverse intermediate mapping.
+
+    This lets the user create the reverse intermediate mapping themselves.
+    Or they can build it by calling build_reverse_intermediate_map.
+
+    @param dimension The entity dimension.
+    @param domain    The entity domain.
+   */
+
+  auto & reverse_intermediate_binding_map(size_t dimension, size_t domain) {
+    const auto key = utils::hash::intermediate_hash(dimension, domain);
+    return reverse_intermediate_binding_map_[key];
+  } // reverse_intermediate_map
+
+  /*!
+    A utility to automatically flip the intermediate maps.
+
+    @param reset  If true, clear the map before proceding.
+    @param sort  If true, assume the entries are unsorted.
+   */
+  void build_reverse_intermediate_binding_maps(
+      bool reset = false,
+      bool sort = false) {
+
+    // clear the map for safety
+    if (reset)
+      reverse_intermediate_binding_map_.clear();
+
+    // now flip all the mappings
+    for (const auto & forward_map : intermediate_binding_map_) {
+      auto key = forward_map.first;
+      auto & reverse_map = reverse_intermediate_binding_map_[key];
+      // it will be empty if never set, or reset==true
+      if (reverse_map.empty()) {
+
+        // assume unsorted
+        if (sort) {
+          for (auto & entry : forward_map.second) {
+            std::sort(entry.second.begin(), entry.second.end());
+            reverse_map[entry.second] = entry.first;
+          }
+        }
+        // assume sorted
+        else {
+          for (const auto & entry : forward_map.second)
+            reverse_map[entry.second] = entry.first;
+        }
+      }
+    }
+  }
+
+  //--------------------------------------------------------------------------//
+  // Coloring interface.
+  //--------------------------------------------------------------------------//
 
   /*!
     Add an index coloring.
@@ -437,11 +575,12 @@ struct context__ : public CONTEXT_POLICY {
    */
 
   index_coloring_t & coloring(size_t index_space) {
-    if (colorings_.find(index_space) == colorings_.end()) {
+    auto it = colorings_.find(index_space);
+    if (it == colorings_.end()) {
       clog(fatal) << "invalid index_space " << index_space << std::endl;
     } // if
 
-    return colorings_[index_space];
+    return it->second;
   } // coloring
 
   /*!
@@ -453,11 +592,12 @@ struct context__ : public CONTEXT_POLICY {
 
   const std::unordered_map<size_t, coloring_info_t> &
   coloring_info(size_t index_space) {
-    if (coloring_info_.find(index_space) == coloring_info_.end()) {
+    auto it = coloring_info_.find(index_space);
+    if (it == coloring_info_.end()) {
       clog(fatal) << "invalid index space " << index_space << std::endl;
     } // if
 
-    return coloring_info_[index_space];
+    return it->second;
   } // coloring_info
 
   /*!
@@ -510,12 +650,7 @@ struct context__ : public CONTEXT_POLICY {
     return adjacency_info_;
   } // adjacencies
 
-  void
-  add_index_subspace(
-    size_t index_subspace,
-    size_t capacity
-  )
-  {
+  void add_index_subspace(size_t index_subspace, size_t capacity) {
     index_subspace_info_t info;
     info.index_subspace = index_subspace;
     info.capacity = capacity;
@@ -523,16 +658,11 @@ struct context__ : public CONTEXT_POLICY {
     index_subspace_map_.emplace(index_subspace, std::move(info));
   }
 
-  void
-  add_index_subspace(
-    const index_subspace_info_t & info
-  )
-  {
+  void add_index_subspace(const index_subspace_info_t & info) {
     index_subspace_map_.emplace(info.index_subspace, info);
   }
 
-  const std::map<size_t, index_subspace_info_t>&
-  index_subspace_info() const {
+  std::map<size_t, index_subspace_info_t> & index_subspace_info() {
     return index_subspace_map_;
   }
 
@@ -673,11 +803,17 @@ struct context__ : public CONTEXT_POLICY {
   } // execution_state
 
 private:
+
   // Default constructor
   context__() : CONTEXT_POLICY() {}
 
   // Destructor
-  ~context__() {}
+  ~context__() {
+    // Invoke the cleanup function for each global object
+    for (auto & go : global_object_registry_) {
+      std::get<1>(go.second)(std::get<0>(go.second));
+    } // for
+  } // ~context_t
 
   //--------------------------------------------------------------------------//
   // We don't need any of these
@@ -689,10 +825,19 @@ private:
   context__ & operator=(context__ &&) = delete;
 
   //--------------------------------------------------------------------------//
+  // Top-level driver.
+  //--------------------------------------------------------------------------//
+
+  tlt_driver_t tlt_driver_ = {};
+
+  //--------------------------------------------------------------------------//
   // Object data members.
   //--------------------------------------------------------------------------//
 
-  std::unordered_map<size_t, uintptr_t> global_object_registry_;
+  using global_object_data_t =
+      std::pair<uintptr_t, std::function<void(uintptr_t)>>;
+
+  std::unordered_map<size_t, global_object_data_t> global_object_registry_;
 
   //--------------------------------------------------------------------------//
   // Function data members.
@@ -745,12 +890,6 @@ private:
   // key: index space
   //--------------------------------------------------------------------------//
 
-  std::map<size_t, local_index_space_t> local_index_space_map_;
-
-  //--------------------------------------------------------------------------//
-  // key: index space
-  //--------------------------------------------------------------------------//
-
   std::map<size_t, sparse_index_space_info_t> sparse_index_space_info_map_;
 
 #if 0
@@ -761,6 +900,10 @@ private:
   // key: mesh index space entity id
   std::map<size_t, std::map<size_t, size_t>> cis_to_gis_map_;
   std::map<size_t, std::map<size_t, size_t>> gis_to_cis_map_;
+
+  //--------------------------------------------------------------------------//
+  // Data members for ntermediate mapping
+  //--------------------------------------------------------------------------//
 
   // key: intermediate entity to vertex ids
   std::map<size_t, std::unordered_map<size_t, std::vector<size_t>>>
@@ -778,9 +921,12 @@ private:
   }; // struct vector_hash_t
 
   struct vector_equal_t {
-    bool operator()(std::vector<size_t> a, std::vector<size_t> b) const {
-      std::sort(a.begin(), a.end());
-      std::sort(b.begin(), b.end());
+    bool operator()(
+        const std::vector<size_t> & a,
+        const std::vector<size_t> & b) const {
+      // assume sorted for performance
+      // std::sort(a.begin(), a.end());
+      // std::sort(b.begin(), b.end());
       return (a == b);
     } // operator ()
   }; // struct vector_hash_t
@@ -793,6 +939,36 @@ private:
           vector_hash_t,
           vector_equal_t>>
       reverse_intermediate_map_;
+
+  //! the packed types used for simple_id_t
+  using simple_id_types_t = std::tuple<int, int, size_t>;
+
+  //! the simple id type used for comparing ids of different dimensions
+  using simple_id_t = utils::simple_id_t<
+      simple_id_types_t,
+      utils::lexical_comparison<simple_id_types_t>>;
+
+  //! the storage type for arrays of simple_id_t's
+  using simple_id_vector_t = std::vector<simple_id_t>;
+
+  //! A lexical comparison function for simple_id_t's
+  struct simple_id_vector_compare_t {
+    bool operator()(const simple_id_vector_t & a, const simple_id_vector_t & b)
+        const {
+      return std::lexicographical_compare(
+          a.begin(), a.end(), b.begin(), b.end());
+    }
+  };
+
+  //! The forward intermediate binding mapping
+  std::map<size_t, std::unordered_map<size_t, simple_id_vector_t>>
+      intermediate_binding_map_;
+
+  //! the reverse intermediate binding mapping
+  std::map<
+      size_t,
+      std::map<simple_id_vector_t, size_t, simple_id_vector_compare_t>>
+      reverse_intermediate_binding_map_;
 
   //--------------------------------------------------------------------------//
   // key: virtual index space.
@@ -812,6 +988,12 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, index_subspace_info_t> index_subspace_map_;
+
+  //--------------------------------------------------------------------------//
+  // key: set index space
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, set_index_space_info_t> set_index_space_map_;
 
   //--------------------------------------------------------------------------//
   // Execution state

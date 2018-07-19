@@ -5,17 +5,10 @@
 
 // includes: flecsi
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/test/print_type.h>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
-
-// prtype: print boost-demangled type
-template<class T>
-inline void
-prtype(void) {
-  CINCH_CAPTURE() << boost::core::demangle(typeid(T).name()) << std::endl;
-}
 
 // =============================================================================
 // For testing flecsi::utils::function_traits__
@@ -52,9 +45,9 @@ TEST(common, all) {
   CINCH_CAPTURE() << std::endl;
 
   // types
-  prtype<flecsi::utils::id_t>();
-  prtype<FLECSI_COUNTER_TYPE>();
-  prtype<flecsi::utils::counter_t>();
+  print_type<flecsi::utils::id_t>();
+  print_type<FLECSI_COUNTER_TYPE>();
+  print_type<flecsi::utils::counter_t>();
   CINCH_CAPTURE() << std::endl;
 
   // square
@@ -112,36 +105,36 @@ TEST(common, all) {
   using flecsi::utils::function_traits__;
 
   // general
-  prtype<function_traits__<MyClass>::return_type>();
-  prtype<function_traits__<MyClass>::arguments_type>();
+  print_type<function_traits__<MyClass>::return_type>();
+  print_type<function_traits__<MyClass>::arguments_type>();
   CINCH_CAPTURE() << std::endl;
 
   // f(...)
   // &f(...)
-  prtype<function_traits__<decltype(MyFun)>::return_type>();
-  prtype<function_traits__<decltype(MyFun)>::arguments_type>();
-  prtype<function_traits__<decltype(&MyFun)>::return_type>();
-  prtype<function_traits__<decltype(&MyFun)>::arguments_type>();
+  print_type<function_traits__<decltype(MyFun)>::return_type>();
+  print_type<function_traits__<decltype(MyFun)>::arguments_type>();
+  print_type<function_traits__<decltype(&MyFun)>::return_type>();
+  print_type<function_traits__<decltype(&MyFun)>::arguments_type>();
   CINCH_CAPTURE() << std::endl;
 
   // &Class::f(...) [const] [volatile]
-  prtype<function_traits__<decltype(&MyClass::mem)>::return_type>();
-  prtype<function_traits__<decltype(&MyClass::mem)>::arguments_type>();
-  prtype<function_traits__<decltype(&MyClass::mem)>::owner_type>();
-  prtype<function_traits__<decltype(&MyClass::memc)>::return_type>();
-  prtype<function_traits__<decltype(&MyClass::memc)>::arguments_type>();
-  prtype<function_traits__<decltype(&MyClass::memc)>::owner_type>();
-  prtype<function_traits__<decltype(&MyClass::memv)>::return_type>();
-  prtype<function_traits__<decltype(&MyClass::memv)>::arguments_type>();
-  prtype<function_traits__<decltype(&MyClass::memv)>::owner_type>();
-  prtype<function_traits__<decltype(&MyClass::memcv)>::return_type>();
-  prtype<function_traits__<decltype(&MyClass::memcv)>::arguments_type>();
-  prtype<function_traits__<decltype(&MyClass::memcv)>::owner_type>();
+  print_type<function_traits__<decltype(&MyClass::mem)>::return_type>();
+  print_type<function_traits__<decltype(&MyClass::mem)>::arguments_type>();
+  print_type<function_traits__<decltype(&MyClass::mem)>::owner_type>();
+  print_type<function_traits__<decltype(&MyClass::memc)>::return_type>();
+  print_type<function_traits__<decltype(&MyClass::memc)>::arguments_type>();
+  print_type<function_traits__<decltype(&MyClass::memc)>::owner_type>();
+  print_type<function_traits__<decltype(&MyClass::memv)>::return_type>();
+  print_type<function_traits__<decltype(&MyClass::memv)>::arguments_type>();
+  print_type<function_traits__<decltype(&MyClass::memv)>::owner_type>();
+  print_type<function_traits__<decltype(&MyClass::memcv)>::return_type>();
+  print_type<function_traits__<decltype(&MyClass::memcv)>::arguments_type>();
+  print_type<function_traits__<decltype(&MyClass::memcv)>::owner_type>();
   CINCH_CAPTURE() << std::endl;
 
   // std::function<f(...)>
-  prtype<function_traits__<std::function<decltype(MyFun)>>::return_type>();
-  prtype<function_traits__<std::function<decltype(MyFun)>>::arguments_type>();
+  print_type<function_traits__<std::function<decltype(MyFun)>>::return_type>();
+  print_type<function_traits__<std::function<decltype(MyFun)>>::arguments_type>();
   CINCH_CAPTURE() << std::endl;
 
   // [const] [volatile] T &[&]
@@ -157,22 +150,22 @@ TEST(common, all) {
   volatile MyClass && Frrv = MyClass{};
   const volatile MyClass && Frrcv = MyClass{};
 
-  prtype<function_traits__<decltype(Flr)>::return_type>();
-  prtype<function_traits__<decltype(Flr)>::arguments_type>();
-  prtype<function_traits__<decltype(Flrc)>::return_type>();
-  prtype<function_traits__<decltype(Flrc)>::arguments_type>();
-  prtype<function_traits__<decltype(Flrv)>::return_type>();
-  prtype<function_traits__<decltype(Flrv)>::arguments_type>();
-  prtype<function_traits__<decltype(Flrcv)>::return_type>();
-  prtype<function_traits__<decltype(Flrcv)>::arguments_type>();
-  prtype<function_traits__<decltype(Frr)>::return_type>();
-  prtype<function_traits__<decltype(Frr)>::arguments_type>();
-  prtype<function_traits__<decltype(Frrc)>::return_type>();
-  prtype<function_traits__<decltype(Frrc)>::arguments_type>();
-  prtype<function_traits__<decltype(Frrv)>::return_type>();
-  prtype<function_traits__<decltype(Frrv)>::arguments_type>();
-  prtype<function_traits__<decltype(Frrcv)>::return_type>();
-  prtype<function_traits__<decltype(Frrcv)>::arguments_type>();
+  print_type<function_traits__<decltype(Flr)>::return_type>();
+  print_type<function_traits__<decltype(Flr)>::arguments_type>();
+  print_type<function_traits__<decltype(Flrc)>::return_type>();
+  print_type<function_traits__<decltype(Flrc)>::arguments_type>();
+  print_type<function_traits__<decltype(Flrv)>::return_type>();
+  print_type<function_traits__<decltype(Flrv)>::arguments_type>();
+  print_type<function_traits__<decltype(Flrcv)>::return_type>();
+  print_type<function_traits__<decltype(Flrcv)>::arguments_type>();
+  print_type<function_traits__<decltype(Frr)>::return_type>();
+  print_type<function_traits__<decltype(Frr)>::arguments_type>();
+  print_type<function_traits__<decltype(Frrc)>::return_type>();
+  print_type<function_traits__<decltype(Frrc)>::arguments_type>();
+  print_type<function_traits__<decltype(Frrv)>::return_type>();
+  print_type<function_traits__<decltype(Frrv)>::arguments_type>();
+  print_type<function_traits__<decltype(Frrcv)>::return_type>();
+  print_type<function_traits__<decltype(Frrcv)>::arguments_type>();
   CINCH_CAPTURE() << std::endl;
 
   // ------------------------
@@ -186,8 +179,17 @@ TEST(common, all) {
   // Compare
   // ------------------------
 
+#ifdef __GNUG__
+  #ifdef __PPC64__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.ppc"));
+  #else
+    EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.gnug"));
+  #endif
+#elif defined(_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.msvc"));
+#else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed"));
-
+#endif
 } // TEST
 
 /*~-------------------------------------------------------------------------~-*

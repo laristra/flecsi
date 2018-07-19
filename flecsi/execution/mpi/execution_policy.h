@@ -107,12 +107,12 @@ struct mpi_execution_policy_t
 {
   /*!
    The future__ type may be used for explicit synchronization of tasks.
-  
+
    @tparam RETURN The return type of the task.
    */
 
-  template<typename RETURN>
-  using future__ = mpi_future__<RETURN>;
+  template<typename RETURN, launch_type_t launch>
+  using future__ = mpi_future__<RETURN, launch>;
 
   template<
     typename FUNCTOR_TYPE
@@ -123,14 +123,14 @@ struct mpi_execution_policy_t
   /*!
    The runtime_state_t type identifies a public type for the high-level
    runtime interface to pass state required by the backend.
-   */ 
+   */
 
   struct runtime_state_t {};
   //using runtime_state_t = mpi_runtime_state_t;
 
   /*!
    Return the runtime state of the calling FleCSI task.
-  
+
    @param task The calling task.
    */
 
@@ -145,7 +145,7 @@ struct mpi_execution_policy_t
   //--------------------------------------------------------------------------//
 
   /*!
-   Legion backend task registration. For documentation on this
+   MPI backend task registration. For documentation on this
    method please see task__::register_task.
    */
 
@@ -173,6 +173,7 @@ struct mpi_execution_policy_t
    */
 
   template<
+    launch_type_t launch,
     size_t KEY,
     typename RETURN,
     typename ARG_TUPLE,
@@ -181,7 +182,6 @@ struct mpi_execution_policy_t
   static
   decltype(auto)
   execute_task(
-    launch_type_t launch,
     ARGS && ... args
   )
   {

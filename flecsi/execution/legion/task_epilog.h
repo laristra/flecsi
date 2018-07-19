@@ -45,7 +45,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
 
   /*!
    Construct a task_epilog_t instance.
-  
+
    @param runtime The Legion task runtime.
    @param context The Legion task runtime context.
    */
@@ -55,7 +55,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
 
   /*!
    FIXME: Need description
-  
+
    @tparam T                     The data type referenced by the handle.
    @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
                                  indices of the index partition.
@@ -63,7 +63,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
                                  indices of the index partition.
    @tparam GHOST_PERMISSIONS     The permissions required on the ghost
                                  indices of the index partition.
-  
+
    @param runtime The Legion task runtime.
    @param context The Legion task runtime context.
    */
@@ -125,6 +125,152 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
 
     } // if global and color
   } // handle
+
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    sparse_accessor <
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS
+    > &a
+  )
+  {
+    auto & h = a.handle;
+
+    bool write_phase{(SHARED_PERMISSIONS == wo) ||
+                     (SHARED_PERMISSIONS == rw)};
+
+    if (write_phase && (*h.write_phase_started)) {
+      const int my_color = runtime->find_local_MPI_rank();
+
+      {
+        clog(trace) << "rank " << my_color << " WRITE PHASE EPILOGUE"
+                    << std::endl;
+
+        clog(trace) << "rank " << my_color << " advances "
+                    << *(h.pbarrier_as_owner_ptr) << std::endl;
+      } // scope
+
+      *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
+          context,
+
+          // Phase READ
+          *(h.pbarrier_as_owner_ptr));
+
+      const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
+
+      // As user
+      for (size_t owner = 0; owner < _pbp_size; owner++) {
+        {
+          clog_tag_guard(epilog);
+          clog(trace) << "rank " << my_color << " arrives & advances "
+                      << *(h.ghost_owners_pbarriers_ptrs[owner]) << std::endl;
+        } // scope
+
+        // Phase READ
+        h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);
+        *(h.ghost_owners_pbarriers_ptrs[owner]) =
+            runtime->advance_phase_barrier(
+                context,
+
+                // Phase READ
+                *(h.ghost_owners_pbarriers_ptrs)[owner]);
+      } // for
+      *(h.write_phase_started) = false;
+    } // if write phase
+  }
+
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    ragged_accessor<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    > & a
+  )
+  {
+    handle(reinterpret_cast<sparse_accessor<
+      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+  } // handle
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    sparse_mutator<
+    T
+    > &m
+  )
+  {
+    auto & h = m.h_;
+
+    if ((*h.write_phase_started)) {
+      const int my_color = runtime->find_local_MPI_rank();
+
+      {
+        clog(trace) << "rank " << my_color << " WRITE PHASE EPILOGUE"
+                    << std::endl;
+
+        clog(trace) << "rank " << my_color << " advances "
+                    << *(h.pbarrier_as_owner_ptr) << std::endl;
+      } // scope
+
+      *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
+          context,
+
+          // Phase READ
+          *(h.pbarrier_as_owner_ptr));
+
+      const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
+
+      // As user
+      for (size_t owner = 0; owner < _pbp_size; owner++) {
+        {
+          clog_tag_guard(epilog);
+          clog(trace) << "rank " << my_color << " arrives & advances "
+                      << *(h.ghost_owners_pbarriers_ptrs[owner]) << std::endl;
+        } // scope
+
+        // Phase READ
+        h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);
+        *(h.ghost_owners_pbarriers_ptrs[owner]) =
+            runtime->advance_phase_barrier(
+                context,
+
+                // Phase READ
+                *(h.ghost_owners_pbarriers_ptrs)[owner]);
+      } // for
+      *(h.write_phase_started) = false;
+    } // if write phase
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    ragged_mutator<
+      T
+    > & m
+  )
+  {
+    handle(reinterpret_cast<sparse_mutator<T>&>(m));
+  }
 
   /*!
    This method is a no-op and is called when the task argument does not match

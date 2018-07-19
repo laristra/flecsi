@@ -104,16 +104,6 @@ runtime_driver(
   clog(info) << "In MPI runtime driver" << std::endl;
   }
 
-#if defined(FLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
-  {
-  clog_tag_guard(runtime_driver);
-  clog(info) << "Executing specialization tlt task" << std::endl;
-  }
-
-  // Execute the specialization driver.
-  specialization_tlt_init(argc, argv);
-#endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-
   //--------------------------------------------------------------------------//
   // Invoke callbacks for entries in the client registry.
   //
@@ -149,6 +139,16 @@ runtime_driver(
     flecsi_context.put_field_info(fi);
   }
 
+#if defined(FLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "Executing specialization tlt task" << std::endl;
+  }
+
+  // Execute the specialization driver.
+  specialization_tlt_init(argc, argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+
   remap_shared_entities();
 
   // Setup maps from mesh to compacted (local) index space and vice versa
@@ -175,31 +175,30 @@ runtime_driver(
     flecsi_context.add_index_map(is.first, _map);
   } // for
 
+#if defined(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL)
+
+  // Execute control
+  if(flecsi_context.top_level_driver()) {
+    flecsi_context.top_level_driver()(argc, argv);
+  }
+
+#else
+
   flecsi_context.advance_state();
+
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   specialization_spmd_init(argc, argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
-  auto& local_index_space_map = flecsi_context.local_index_space_map();
-  for(auto& itr : local_index_space_map){
-    size_t index_space = itr.first;
-
-    context_t::local_index_space_data_t lis;
-    lis.size = 0;
-    lis.capacity = itr.second.capacity; 
-    
-    auto& lism = flecsi_context.local_index_space_data_map();
-
-    lism.emplace(index_space, std::move(lis));
-  }
-  
   flecsi_context.advance_state();
 
   // Execute the user driver.
   driver(argc, argv);
 
+#endif // FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL
+
 } // runtime_driver
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi

@@ -49,7 +49,12 @@ template<
     size_t GHOST_PERMISSIONS,
     typename DATA_POLICY>
 struct dense_data_handle_base__ : public DATA_POLICY,
-		public dense_data_handle_base_t {
+                                  public dense_data_handle_base_t {
+
+  /*!
+    Capture the underlying data type.
+   */
+  using value_type = T;
 
   /*!
    Default constructor.
@@ -62,7 +67,7 @@ struct dense_data_handle_base__ : public DATA_POLICY,
    */
 
   dense_data_handle_base__(const dense_data_handle_base__ & b)
-	: DATA_POLICY(b) {
+      : DATA_POLICY(b) {
     exclusive_data = b.exclusive_data;
     shared_data = b.shared_data;
     ghost_data = b.ghost_data;

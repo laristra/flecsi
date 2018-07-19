@@ -107,10 +107,21 @@ runtime_driver(
   data.init_global_handles();
 
   size_t number_of_global_fields = 0;
+  size_t number_of_sparse_fields = 0;
+
   for(const field_info_t& field_info : context_.registered_fields()){
     context_.put_field_info(field_info);
-    if (field_info.storage_class == global)
-      number_of_global_fields++;
+    switch(field_info.storage_class){
+      case global:
+        number_of_global_fields++;
+        break;
+      case ragged:
+      case sparse:
+        number_of_sparse_fields++;
+        break;
+      default:
+        break;
+    }
   }
 
   if (number_of_global_fields > 0)
@@ -121,6 +132,10 @@ runtime_driver(
 
     ispace_dmap[global_index_space].color_region =
         data.global_index_space().logical_region;
+  }
+
+  if(number_of_sparse_fields > 0){
+    data.init_sparse_metadata();
   }
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
@@ -141,7 +156,8 @@ runtime_driver(
 
   auto coloring_info = context_.coloring_info_map();
 
-  data.init_from_coloring_info_map(coloring_info);
+  data.init_from_coloring_info_map(coloring_info,
+    context_.sparse_index_space_info_map(), number_of_sparse_fields > 0);
 
   for(auto& itr : context_.adjacency_info()){
     data.add_adjacency(itr.second);
@@ -152,6 +168,18 @@ runtime_driver(
   }
 
   data.finalize(coloring_info);
+
+  //-------------------------------------------------------------------------//
+  // check nuber of fields allocated for srapse data
+  //-------------------------------------------------------------------------//
+
+  for(const field_info_t& field_info : context_.registered_fields()){
+    if(field_info.storage_class==sparse || field_info.storage_class==ragged ){
+        auto sparse_idx_space = field_info.index_space ;
+
+        context_.increment_sparse_fields(sparse_idx_space);
+      }
+    } 
 
   //-------------------------------------------------------------------------//
   //  Create Legion reduction 
@@ -182,8 +210,6 @@ runtime_driver(
       data.color_domain(), Legion::TaskArgument(nullptr, 0),
       Legion::ArgumentMap());
   
-  pos_compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     auto& flecsi_ispace = data.index_space(idx_space);
@@ -208,7 +234,7 @@ runtime_driver(
   //-------------------------------------------------------------------------//
 
   // map of index space to the field_ids that are mapped to this index space
-  std::map<size_t, std::vector<field_id_t>> fields_map;
+  std::map<size_t, std::vector<const field_info_t*>> fields_map;
 
   //total number of Phase Barriers 
   size_t num_phase_barriers =0;
@@ -225,11 +251,12 @@ runtime_driver(
         case color:
           number_of_color_fields++;
           break;
+        case subspace:
         case local:
           break;
         default:
           if(field_info.index_space == idx_space){
-            fields_map[idx_space].push_back(field_info.fid);
+            fields_map[idx_space].push_back(&field_info);
             num_phase_barriers++;
           } // if
           break;          
@@ -243,7 +270,6 @@ runtime_driver(
     } // scope
   } // for
 
-
   // the key is index_space id, internal map key if field id 
   std::map<size_t, std::map<field_id_t, std::vector<Legion::PhaseBarrier>>>
       phase_barriers_map;
@@ -251,12 +277,12 @@ runtime_driver(
   //fill the map
   for(auto idx_space : coloring_info){
     std::map<field_id_t , std::vector<Legion::PhaseBarrier>> inner;
-    for (const field_id_t& field_id : fields_map[idx_space.first]){
+    for (const field_info_t* field_info : fields_map[idx_space.first]){
       for(int color = 0; color < num_colors; color++){
         const flecsi::coloring::coloring_info_t& color_info = 
           idx_space.second[color];
 
-        inner[field_id].push_back(runtime->create_phase_barrier(ctx,
+        inner[field_info->fid].push_back(runtime->create_phase_barrier(ctx,
              1 + color_info.shared_users.size()));
       }//color
     }//field_info
@@ -296,14 +322,14 @@ runtime_driver(
       flecsi::coloring::coloring_info_t color_info =
           coloring_info[idx_space][color];
 
-      for (const field_id_t& field_id : fields_map[idx_space]){
+      for (const field_info_t* field_info : fields_map[idx_space]){
         pbarriers_as_owner.push_back(
-          phase_barriers_map[idx_space][field_id][color]);
+          phase_barriers_map[idx_space][field_info->fid][color]);
       
         {
         clog_tag_guard(runtime_driver);
         clog(trace) << " Color " << color << " idx_space " << idx_space 
-        << ", fid = " << field_id<<
+        << ", fid = " << field_info->fid<<
           " has " << color_info.ghost_owners.size() << 
           " ghost owners" << std::endl;
         } // scope
@@ -314,8 +340,8 @@ runtime_driver(
           clog(trace) << owner << std::endl;
           } // scope
 
-          owners_pbarriers[idx_space][field_id].push_back(
-            phase_barriers_map[idx_space][field_id][owner]);
+          owners_pbarriers[idx_space][field_info->fid].push_back(
+            phase_barriers_map[idx_space][field_info->fid][owner]);
        
         }
       
@@ -325,7 +351,7 @@ runtime_driver(
     } // for idx_space
 
     size_t num_idx_spaces = context_.coloring_map().size();
-   
+
     //-----------------------------------------------------------------------//
     // data serialization:
     //-----------------------------------------------------------------------//
@@ -335,7 +361,25 @@ runtime_driver(
     args_serializers[color].serialize(&num_phase_barriers, sizeof(size_t));
     args_serializers[color].serialize(&number_of_global_fields, sizeof(size_t));
     args_serializers[color].serialize(&number_of_color_fields, sizeof(size_t));
-   
+    args_serializers[color].serialize(&number_of_sparse_fields, sizeof(size_t));
+
+    // #1b serialize sparse index spaces info
+
+    using sparse_index_space_info_t = context_t::sparse_index_space_info_t;
+    
+    std::vector<sparse_index_space_info_t> sparse_index_spaces_vec;
+    
+    for(auto& itr : context_.sparse_index_space_info_map()){
+      sparse_index_spaces_vec.push_back(itr.second);
+    }
+
+    size_t num_sparse_index_spaces = sparse_index_spaces_vec.size();
+
+    args_serializers[color].serialize(&num_sparse_index_spaces, 
+      sizeof(size_t));
+    
+    args_serializers[color].serialize(&sparse_index_spaces_vec[0],
+      num_sparse_index_spaces * sizeof(sparse_index_space_info_t));
 
     // #2 serialize field info
     size_t num_fields = context_.registered_fields().size();
@@ -355,8 +399,8 @@ runtime_driver(
     std::vector <Legion::PhaseBarrier> owners_pbarriers_buf;
     for(auto is: context_.coloring_map()) {
       size_t idx_space = is.first;
-      for (const field_id_t& field_id : fields_map[idx_space])
-        for(auto pb:owners_pbarriers[idx_space][field_id])
+      for (const field_info_t* field_info : fields_map[idx_space])
+        for(auto pb:owners_pbarriers[idx_space][field_info->fid])
            owners_pbarriers_buf.push_back(pb);
     }//for
   
@@ -432,9 +476,40 @@ runtime_driver(
 
       reg_req.add_field(ghost_owner_pos_fid);
 
-      for (const field_id_t& field_id : fields_map[idx_space]){
-          reg_req.add_field(field_id);
-      }//for field_info
+      Legion::RegionRequirement sparse_reg_req;
+
+      bool sparse_fields=false;
+
+      if(flecsi_ispace.has_sparse_fields){
+        auto& flecsi_sispace = data.sparse_index_space(idx_space);
+
+        Legion::LogicalPartition sparse_color_lpart =
+          runtime->get_logical_partition(ctx,
+            flecsi_sispace.logical_region, flecsi_sispace.index_partition);
+        
+        Legion::LogicalRegion sparse_color_lregion =
+          runtime->get_logical_subregion_by_color(ctx, sparse_color_lpart,
+          color);
+
+        sparse_reg_req = Legion::RegionRequirement(sparse_color_lregion,
+          READ_WRITE, SIMULTANEOUS, flecsi_sispace.logical_region);
+
+        for (const field_info_t* field_info : fields_map[idx_space]){
+          reg_req.add_field(field_info->fid);
+
+          if((field_info->storage_class == sparse ||
+              field_info->storage_class == ragged) &&
+             !utils::hash::is_internal(field_info->key)){
+            sparse_reg_req.add_field(field_info->fid);
+            sparse_fields=true;
+          }
+        }//for field_info
+      }
+      else{
+        for (const field_info_t* field_info : fields_map[idx_space]){
+          reg_req.add_field(field_info->fid);
+        }//for field_info        
+      }
 
       for(auto& itr : context_.adjacency_info()){
         if(itr.first == idx_space){
@@ -447,6 +522,9 @@ runtime_driver(
       }
 
       spmd_launcher.add_region_requirement(reg_req);
+      if(flecsi_ispace.has_sparse_fields && context_.sparse_fields(idx_space)){
+        spmd_launcher.add_region_requirement(sparse_reg_req);
+      }
 
       flecsi::coloring::coloring_info_t color_info = 
         coloring_info[idx_space][color];
@@ -472,10 +550,54 @@ runtime_driver(
           SIMULTANEOUS, flecsi_ispace.logical_region);
         owner_reg_req.add_flags(NO_ACCESS_FLAG);
         owner_reg_req.add_field(ghost_owner_pos_fid);
-        for (const field_id_t& field_id : fields_map[idx_space]){
-          owner_reg_req.add_field(field_id);
+
+        auto& flecsi_ispace = data.index_space(idx_space);
+
+        Legion::RegionRequirement sparse_owner_reg_req;
+
+        bool sparse_owner_fields=false;
+        if(flecsi_ispace.has_sparse_fields){
+          auto& flecsi_sispace = data.sparse_index_space(idx_space);
+
+          Legion::LogicalPartition sparse_color_lpart =
+            runtime->get_logical_partition(ctx,
+              flecsi_sispace.logical_region, flecsi_sispace.index_partition);
+
+          Legion::LogicalRegion sparse_ghost_owner_lregion =
+            runtime->get_logical_subregion_by_color(ctx, sparse_color_lpart,
+              ghost_owner);
+
+          runtime->attach_semantic_information(sparse_ghost_owner_lregion,
+            OWNER_COLOR_TAG, (void*)&owner_color,
+            sizeof(LegionRuntime::Arrays::coord_t), is_mutable);
+
+          sparse_owner_reg_req = 
+            Legion::RegionRequirement(sparse_ghost_owner_lregion, READ_ONLY,
+              SIMULTANEOUS, flecsi_sispace.logical_region);
+          
+          sparse_owner_reg_req.add_flags(NO_ACCESS_FLAG);
+
+          for (const field_info_t* field_info : fields_map[idx_space]){
+            owner_reg_req.add_field(field_info->fid);
+            if((field_info->storage_class == sparse ||
+                field_info->storage_class == ragged) &&
+               !utils::hash::is_internal(field_info->key)){
+              sparse_owner_reg_req.add_field(field_info->fid);
+              sparse_owner_fields=true;
+            }
+          }          
         }
+        else{
+          for (const field_info_t* field_info : fields_map[idx_space]){
+            owner_reg_req.add_field(field_info->fid);
+          }          
+        }
+
         spmd_launcher.add_region_requirement(owner_reg_req);
+
+        if(flecsi_ispace.has_sparse_fields && context_.sparse_fields(idx_space)){
+          spmd_launcher.add_region_requirement(sparse_owner_reg_req);
+        }
 
       }// for ghost_owner
 
@@ -496,7 +618,8 @@ runtime_driver(
           adjacency.logical_region);
 
       for(const field_info_t& fi : context_.registered_fields()){
-        if(fi.index_space == adjacency_idx_space){
+        if(fi.storage_class != data::subspace &&
+           fi.index_space == adjacency_idx_space){
           reg_req.add_field(fi.fid);
         }
       }
@@ -507,15 +630,25 @@ runtime_driver(
     for(auto& itr : data.index_subspace_map()){
       const data::legion_data_t::index_subspace_t& info = itr.second;
 
+      Legion::LogicalPartition color_lpart =
+        runtime->get_logical_partition(ctx,
+          info.logical_region, info.index_partition);
+      
+      Legion::LogicalRegion color_lregion =
+        runtime->get_logical_subregion_by_color(ctx, color_lpart, color);
+
       Legion::RegionRequirement
-        reg_req(info.logical_region, READ_WRITE, SIMULTANEOUS,
+        reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
           info.logical_region);
-        reg_req.add_field(info.fid);
+      
+      reg_req.add_field(info.fid);
+
+      spmd_launcher.add_region_requirement(reg_req);
     }
 
     auto global_ispace = data.global_index_space();
     Legion::RegionRequirement global_reg_req(global_ispace.logical_region,
-          READ_ONLY, SIMULTANEOUS, global_ispace.logical_region);
+          READ_ONLY, EXCLUSIVE, global_ispace.logical_region);
 
     global_reg_req.add_flags(NO_ACCESS_FLAG);
     for(const field_info_t& field_info : context_.registered_fields()){
@@ -545,8 +678,31 @@ runtime_driver(
        }//if
      }//for
 
-     if (number_of_color_fields>0)
-       spmd_launcher.add_region_requirement(color_reg_req);
+    if (number_of_color_fields>0)
+      spmd_launcher.add_region_requirement(color_reg_req);
+
+    if(number_of_sparse_fields > 0){
+      auto& sparse_metadata = data.sparse_metadata();
+
+      Legion::LogicalPartition color_lpart =
+        runtime->get_logical_partition(ctx,
+          sparse_metadata.logical_region, sparse_metadata.index_partition);
+      
+      Legion::LogicalRegion color_lregion =
+        runtime->get_logical_subregion_by_color(ctx, color_lpart, color);
+
+      Legion::RegionRequirement
+        reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
+          sparse_metadata.logical_region);
+
+      for (const field_info_t & fi : context_.registered_fields()) {
+        if (fi.storage_class == sparse || fi.storage_class == ragged) {
+          reg_req.add_field(fi.fid);
+        } // if
+      } // for
+
+      spmd_launcher.add_region_requirement(reg_req);  
+    }
 
     Legion::DomainPoint point(color);
     must_epoch_launcher.add_single_task(point, spmd_launcher);
@@ -608,6 +764,7 @@ spmd_task(
   context_.advance_state();
 
   auto& ispace_dmap = context_.index_space_data_map();
+  auto& sis_map = context_.sparse_index_space_info_map();
 
   auto ghost_owner_pos_fid = 
     Legion::FieldID(internal_field::ghost_owner_pos);
@@ -625,12 +782,15 @@ spmd_task(
   size_t num_phase_barriers;
   size_t number_of_global_fields;
   size_t number_of_color_fields;
+  size_t number_of_sparse_fields;
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
   args_deserializer.deserialize(&num_phase_barriers, sizeof(size_t));
   args_deserializer.deserialize(&number_of_global_fields, sizeof(size_t));
   args_deserializer.deserialize(&number_of_color_fields, sizeof(size_t));
+  args_deserializer.deserialize(&number_of_sparse_fields, sizeof(size_t));
 
   {
+
   size_t total_num_idx_spaces = num_idx_spaces;
   if (number_of_global_fields>0) total_num_idx_spaces++;
   if (number_of_color_fields>0) total_num_idx_spaces++;
@@ -640,6 +800,22 @@ spmd_task(
   clog_assert(task->regions.size() >= (total_num_idx_spaces),
       "fewer regions than data handles");
   }//scope
+
+  // #1b deserialize sparse index spaces
+  size_t num_sparse_index_spaces;
+  args_deserializer.deserialize(&num_sparse_index_spaces, sizeof(size_t));
+   
+  using sparse_index_space_info_t = context_t::sparse_index_space_info_t;
+  sparse_index_space_info_t* sparse_index_spaces =
+     new sparse_index_space_info_t[num_sparse_index_spaces]; 
+     
+  args_deserializer.deserialize((void*)sparse_index_spaces,
+    sizeof(sparse_index_space_info_t) * num_sparse_index_spaces);
+   
+  for(size_t i = 0; i < num_sparse_index_spaces; ++i){
+    const sparse_index_space_info_t& si = sparse_index_spaces[i];
+    context_.set_sparse_index_space_info(si);
+  }
 
   // #2 deserialize field info
   size_t num_fields;
@@ -669,16 +845,22 @@ spmd_task(
   }
 
  // map of index space to the field_ids that are mapped to this index space
-  std::map<size_t, std::vector<field_id_t>> fields_map;
+  std::map<size_t, std::vector<const field_info_t*>> fields_map;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
+
     for(const field_info_t& field_info : context_.registered_fields()){
-      if((field_info.storage_class != global) &&
-        (field_info.storage_class != color)){
-        if(field_info.index_space == idx_space){
-          fields_map[idx_space].push_back(field_info.fid);
-        }
-      }//if
+      switch(field_info.storage_class){
+        case global:
+        case subspace:
+        case color:
+          break;
+        default:
+          if(field_info.index_space == idx_space){
+            fields_map[idx_space].push_back(&field_info);
+          }
+          break;
+      }
     }//for
   }//end for is
 
@@ -700,15 +882,18 @@ spmd_task(
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
       * num_idx_spaces);
 
+  auto& sparse_info_map = context_.sparse_index_space_info_map();
+
   // fille index_space_data_map with pbarriers_as_owner
   size_t indx = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-    for (const field_id_t& field_id : fields_map[idx_space]){
-      ispace_dmap[idx_space].pbarriers_as_owner[field_id] =
+
+    for (const field_info_t* field_info : fields_map[idx_space]){
+      ispace_dmap[idx_space].pbarriers_as_owner[field_info->fid] =
         pbarriers_as_owner[indx];
-      ispace_dmap[idx_space].ghost_is_readable[field_id] = true;
-      ispace_dmap[idx_space].write_phase_started[field_id] = false;
+      ispace_dmap[idx_space].ghost_is_readable[field_info->fid] = true;
+      ispace_dmap[idx_space].write_phase_started[field_info->fid] = false;
       indx++;
     }//end field_info
   }//end for idx_space
@@ -728,12 +913,13 @@ spmd_task(
   size_t consec_indx = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
+
     size_t n = num_owners[consec_indx];
-    for (const field_id_t& field_id : fields_map[idx_space]){
-       ispace_dmap[idx_space].ghost_owners_pbarriers[field_id].resize(n);
+    for (const field_info_t* field_info : fields_map[idx_space]){
+       ispace_dmap[idx_space].ghost_owners_pbarriers[field_info->fid].resize(n);
 
        for(size_t owner = 0; owner < n; ++owner){
-         ispace_dmap[idx_space].ghost_owners_pbarriers[field_id][owner] =
+         ispace_dmap[idx_space].ghost_owners_pbarriers[field_info->fid][owner] =
             ghost_owners_pbarriers[indx];
          indx++;
          {
@@ -760,9 +946,25 @@ spmd_task(
   size_t consecutive_index = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-    
-    ispace_dmap[idx_space].color_region = regions[region_index]
-                                                  .get_logical_region();
+    size_t sparse_idx_space;
+
+    const sparse_index_space_info_t* sparse_info;
+
+    if(number_of_sparse_fields == 0){
+      sparse_info = nullptr;
+    }
+    else{
+      auto sitr = sis_map.find(idx_space);
+      if(sitr != sis_map.end() &&
+        (sitr->second.sparse_fields_registered_>0)){
+        sparse_info = &sitr->second;
+        // TODO: formalize sparse index space offset
+        sparse_idx_space = idx_space + 8192;
+      }
+      else{
+        sparse_info = nullptr;
+      }      
+    }
 
     const std::unordered_map<size_t, flecsi::coloring::coloring_info_t>
       coloring_info_map = context_.coloring_info(idx_space);
@@ -780,8 +982,12 @@ spmd_task(
         " ghost " << coloring_info.ghost << std::endl;
     } // scope
 
+    ispace_dmap[idx_space].color_region =
+      regions[region_index].get_logical_region();
+
     Legion::IndexSpace color_ispace = 
       regions[region_index].get_logical_region().get_index_space();
+
     LegionRuntime::Arrays::Rect<1> color_bounds_1D(0,1);
     Legion::Domain color_domain_1D
     = Legion::Domain::from_rect<1>(color_bounds_1D);
@@ -811,7 +1017,6 @@ spmd_task(
       runtime->get_logical_partition(ctx,
         regions[region_index].get_logical_region(), primary_ghost_ip);
     region_index++;
-
     Legion::LogicalRegion primary_lr =
     runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                             PRIMARY_PART);
@@ -853,8 +1058,95 @@ spmd_task(
     ispace_dmap[idx_space].shared_lr = 
     runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, SHARED_PART);
 
+    if(sparse_info){
+      ispace_dmap[sparse_idx_space].color_region =
+        regions[region_index].get_logical_region();
+
+      Legion::IndexSpace color_ispace = 
+        regions[region_index].get_logical_region().get_index_space();
+
+      size_t shared_size = 
+        coloring_info.shared * sparse_info->max_entries_per_index;
+
+      size_t ghost_size = 
+        coloring_info.ghost * sparse_info->max_entries_per_index;
+
+      Legion::DomainColoring primary_ghost_coloring;
+      LegionRuntime::Arrays::Rect<2>
+      primary_rect(LegionRuntime::Arrays::make_point(my_color, 0),
+          LegionRuntime::Arrays::make_point(my_color, sparse_info->exclusive_reserve + shared_size - 1));
+      
+      primary_ghost_coloring[PRIMARY_PART]
+                             = Legion::Domain::from_rect<2>(primary_rect);
+      
+      LegionRuntime::Arrays::Rect<2> ghost_rect(
+          LegionRuntime::Arrays::make_point(my_color, sparse_info->exclusive_reserve + shared_size),
+          LegionRuntime::Arrays::make_point(my_color, sparse_info->exclusive_reserve + shared_size + ghost_size - 1));
+      
+      primary_ghost_coloring[GHOST_PART]
+                             = Legion::Domain::from_rect<2>(ghost_rect);
+
+      Legion::IndexPartition primary_ghost_ip =
+        runtime->create_index_partition(ctx, color_ispace, color_domain_1D,
+        primary_ghost_coloring, true /*disjoint*/);
+
+      primary_ghost_ips[sparse_idx_space] = primary_ghost_ip;
+
+      Legion::LogicalPartition primary_ghost_lp =
+        runtime->get_logical_partition(ctx,
+          regions[region_index].get_logical_region(), primary_ghost_ip);
+      region_index++;
+
+      Legion::LogicalRegion primary_lr =
+      runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
+                                              PRIMARY_PART);
+
+      ispace_dmap[sparse_idx_space].primary_lr = primary_lr;
+
+      ispace_dmap[sparse_idx_space].ghost_lr = 
+        runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
+                                                GHOST_PART);
+
+      Legion::DomainColoring excl_shared_coloring;
+      LegionRuntime::Arrays::Rect<2> exclusive_rect(
+          LegionRuntime::Arrays::make_point(my_color, 0),
+          LegionRuntime::Arrays::make_point(my_color,
+            sparse_info->exclusive_reserve - 1));
+      excl_shared_coloring[EXCLUSIVE_PART]
+                           = Legion::Domain::from_rect<2>(exclusive_rect);
+      LegionRuntime::Arrays::Rect<2> shared_rect(
+          LegionRuntime::Arrays::make_point(my_color,
+          sparse_info->exclusive_reserve),
+          LegionRuntime::Arrays::make_point(my_color,
+            sparse_info->exclusive_reserve + shared_size - 1));
+      excl_shared_coloring[SHARED_PART]
+                           = Legion::Domain::from_rect<2>(shared_rect);
+
+      Legion::IndexPartition excl_shared_ip = runtime->create_index_partition(ctx,
+          primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring,
+          true /*disjoint*/);
+
+      exclusive_shared_ips[sparse_idx_space] = excl_shared_ip;
+
+      Legion::LogicalPartition excl_shared_lp
+        = runtime->get_logical_partition(ctx, primary_lr, excl_shared_ip);
+
+      ispace_dmap[sparse_idx_space].exclusive_lr = 
+      runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, 
+                                              EXCLUSIVE_PART);
+
+      ispace_dmap[sparse_idx_space].shared_lr = 
+      runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, SHARED_PART);      
+    }
+
     // Add neighbors regions to context_
     ghost_owners_subregions[idx_space].resize(num_owners[consecutive_index]);
+
+    if(sparse_info){
+      ghost_owners_subregions[sparse_idx_space].
+        resize(num_owners[consecutive_index]);
+    }
+
     for(size_t owner = 0; owner < num_owners[consecutive_index]; owner++) {
       ghost_owners_lregions[idx_space].push_back(regions[region_index]
         .get_logical_region());
@@ -885,11 +1177,34 @@ spmd_task(
       region_index++;
       clog_assert(region_index <= regions.size(),
           "SPMD attempted to access more regions than passed");
+
+      if(sparse_info){
+        ghost_owners_lregions[sparse_idx_space].push_back(regions[region_index]
+          .get_logical_region());
+
+        runtime->retrieve_semantic_information(regions[region_index]
+            .get_logical_region(), OWNER_COLOR_TAG,
+            owner_color, size, can_fail, wait_until_ready);
+        clog_assert(size == sizeof(LegionRuntime::Arrays::coord_t),
+            "Unable to map gid to lid with Legion semantic tag");
+
+        ispace_dmap[sparse_idx_space]
+         .global_to_local_color_map[*(LegionRuntime::Arrays::coord_t*)owner_color]
+         = owner;
+
+        region_index++;
+        clog_assert(region_index <= regions.size(),
+            "SPMD attempted to access more regions than passed");        
+      }
     } // for owner
 
     ispace_dmap[idx_space].ghost_owners_lregions
       = ghost_owners_lregions[idx_space];
 
+    if(sparse_info){
+      ispace_dmap[sparse_idx_space].ghost_owners_lregions
+        = ghost_owners_lregions[sparse_idx_space];
+    }
 
     // Fix ghost reference/pointer to point to compacted position of
     // shared that it needs
@@ -1110,10 +1425,11 @@ spmd_task(
 
   auto& isubspace_dmap = context_.index_subspace_data_map();
 
+  size_t subspace_index = region_index+num_index_subspaces-1;
   for(auto& itr : context_.index_subspace_info()) {
     isubspace_dmap[itr.first].region = 
-      regions[region_index].get_logical_region();
-
+      regions[subspace_index].get_logical_region();
+    subspace_index--;
     region_index++;
   }
 
@@ -1138,6 +1454,58 @@ spmd_task(
       regions[region_index].get_logical_region();  
   }//end if
 
+  if(number_of_sparse_fields > 0){
+    context_t::sparse_metadata_t md;
+    md.color_region = regions[region_index].get_logical_region();
+    context_.set_sparse_metadata(md);
+
+    Legion::PhysicalRegion pr = regions[region_index];
+    Legion::LogicalRegion lr = pr.get_logical_region();
+    Legion::IndexSpace is = lr.get_index_space();
+
+    for(const field_info_t& fi : context_.registered_fields()){
+      if(fi.storage_class != data::sparse && fi.storage_class != data::ragged){
+        continue;
+      }
+
+      size_t idx_space = fi.index_space;
+
+      auto si = sis_map.find(idx_space);
+
+      using sparse_field_data_t = context_t::sparse_field_data_t;
+      using coloring_info_t = context_t::coloring_info_t;
+
+      const auto& cim = context_.coloring_info(idx_space);
+      auto citr = cim.find(my_color);
+      const coloring_info_t& ci = citr->second;
+
+      auto ac = pr.get_field_accessor(fi.fid).
+        template typeify<sparse_field_data_t>();
+
+      Legion::Domain domain = runtime->get_index_space_domain(ctx, is);
+
+      LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> sr;
+      LegionRuntime::Accessor::ByteOffset bo[2];
+      sparse_field_data_t* metadata = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      *metadata = sparse_field_data_t(fi.size, ci.exclusive,
+        ci.shared,
+        ci.ghost,
+        si->second.max_entries_per_index, si->second.exclusive_reserve);
+    }
+
+    region_index++;
+  }
+
+#if defined(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL)
+
+  // Execute control
+  if(context_.top_level_driver()) {
+    context_.top_level_driver()(args.argc, args.argv);
+  } // if
+
+#else
+
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   specialization_spmd_init(args.argc, args.argv);
@@ -1145,23 +1513,10 @@ spmd_task(
 
   context_.advance_state();
 
-  auto& local_index_space_map = context_.local_index_space_map();
-  for(auto& itr : local_index_space_map){
-    size_t index_space = itr.first;
-
-    legion_data_t::local_index_space_t lis = 
-      legion_data_t::create_local_index_space(
-      ctx, runtime, index_space, itr.second);
-    
-    auto& lism = context_.local_index_space_data_map();
-
-    context_t::local_index_space_data_t lis_data;
-    lis_data.region = lis.logical_region;
-    lism.emplace(index_space, std::move(lis_data));
-  }
-
   // run default or user-defined driver
   driver(args.argc, args.argv);
+
+#endif // FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL
 
   // Cleanup memory
   for(auto ipart: primary_ghost_ips)
@@ -1173,6 +1528,8 @@ spmd_task(
   delete [] pbarriers_as_owner;
   delete [] adjacencies;
   delete [] index_subspaces;
+  delete [] sparse_index_spaces;
+
 //  delete [] idx_spaces;
 
 } // spmd_task

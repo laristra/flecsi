@@ -77,7 +77,7 @@ struct field_interface__ {
         DATA_CLIENT_TYPE, STORAGE_CLASS, DATA_TYPE, NAMESPACE_HASH, NAME_HASH,
         VERSIONS, INDEX_SPACE>;
 
-    const size_t client_key =
+    const size_t client_type_key =
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
 
     for (size_t version(0); version < VERSIONS; ++version) {
@@ -85,7 +85,7 @@ struct field_interface__ {
           utils::hash::field_hash<NAMESPACE_HASH, NAME_HASH>(version);
 
       if (!storage_t::instance().register_field(
-              client_key, key, wrapper_t::register_callback)) {
+              client_type_key, key, wrapper_t::register_callback)) {
         return false;
       } // if
     } // for
@@ -174,7 +174,7 @@ struct field_interface__ {
     return storage_class_t::template get_mutator<
         DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE_HASH, NAME_HASH, VERSION>(
         client_handle, slots);
-  } // get_handle
+  } // get_mutator
 
   //--------------------------------------------------------------------------//
   //! Return all handles of the given storage type, data type, and

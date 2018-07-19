@@ -15,6 +15,9 @@
 
 /*! @file */
 
+#if defined(_MSC_VER)
+#include "uint128.h"
+#endif
 
 #include <cassert>
 #include <climits>
@@ -120,7 +123,7 @@ public:
 
   std::size_t global_id() const {
     constexpr std::size_t unmask = ~((std::size_t(1) << EBITS) - 1);
-    return (local_id() & unmask) | global_;
+    return static_cast<std::size_t>((local_id() & unmask) | global_);
   }
 
   void set_global(const std::size_t global) {

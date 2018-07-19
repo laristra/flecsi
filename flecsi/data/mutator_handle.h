@@ -19,8 +19,10 @@
 #include <cstring>
 #include <limits>
 #include <map>
+#include <memory>
 #include <set>
 #include <unordered_map>
+#include <vector>
 
 #include <flecsi/data/common/data_types.h>
 
@@ -68,7 +70,8 @@ public:
       size_t num_slots)
       : num_entries_(num_exclusive + num_shared + num_ghost),
         num_exclusive_(num_exclusive),
-        max_entries_per_index_(max_entries_per_index), num_slots_(num_slots) {
+        max_entries_per_index_(max_entries_per_index),
+        num_slots_(num_slots) {
     pi_.count[0] = num_exclusive;
     pi_.count[1] = num_shared;
     pi_.count[2] = num_ghost;
@@ -83,9 +86,42 @@ public:
     pi_.end[2] = pi_.end[1] + num_ghost;
   }
 
+  mutator_handle_base__(
+      size_t max_entries_per_index,
+      size_t num_slots)
+      : max_entries_per_index_(max_entries_per_index),
+        num_slots_(num_slots) {
+  }
+
   mutator_handle_base__(const mutator_handle_base__ & b) = default;
 
   ~mutator_handle_base__() {}
+
+  void init(
+    size_t num_exclusive,
+    size_t num_shared,
+    size_t num_ghost,
+    size_t max_entries_per_index,
+    size_t num_slots
+    ){
+    num_entries_ = num_exclusive + num_shared + num_ghost;
+    num_exclusive_ = num_exclusive;
+
+    pi_.count[0] = num_exclusive;
+    pi_.count[1] = num_shared;
+    pi_.count[2] = num_ghost;
+
+    pi_.start[0] = 0;
+    pi_.end[0] = num_exclusive;
+
+    pi_.start[1] = num_exclusive;
+    pi_.end[1] = num_exclusive + num_shared;
+
+    pi_.start[2] = pi_.end[1];
+    pi_.end[2] = pi_.end[1] + num_ghost;
+
+    init();
+  }
 
   void init() {
     offsets_ = new offset_t[num_entries_];
@@ -93,20 +129,20 @@ public:
     spare_map_ = new spare_map_t;
   }
 
-  void commit(commit_info_t * ci) {
+  size_t commit(commit_info_t * ci) {
     if (erase_set_) {
-      commit_<true>(ci);
+      return commit_<true>(ci);
     } else {
-      if (size_map_) {
-        raggedCommit_(ci);
+      if (ragged_changes_map_) {
+        return raggedCommit_(ci);
       } else {
-        commit_<false>(ci);
+        return commit_<false>(ci);
       }
     }
   } // operator ()
 
   template<bool ERASE>
-  void commit_(commit_info_t * ci) {
+  size_t commit_(commit_info_t * ci) {
     assert(offsets_ && "uninitialized mutator");
     ci_ = *ci;
 
@@ -144,8 +180,10 @@ public:
       }
     }
 
+    size_t num_exclusive_filled = cptr - cbuf;
+
     assert(cptr - cbuf <= num_exclusive_entries);
-    std::memcpy(entries, cbuf, sizeof(entry_value_t) * (cptr - cbuf));
+    std::memcpy(entries, cbuf, sizeof(entry_value_t) * num_exclusive_filled);
     delete[] cbuf;
 
     size_t start = num_exclusive_;
@@ -190,9 +228,11 @@ public:
       delete erase_set_;
       erase_set_ = nullptr;
     }
+
+    return num_exclusive_filled;
   }
 
-  void raggedCommit_(commit_info_t * ci) {
+  size_t raggedCommit_(commit_info_t * ci) {
     assert(offsets_ && "uninitialized mutator");
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
@@ -200,9 +240,9 @@ public:
     entry_value_t * entries = ci->entries[0];
     offset_t * offsets = ci->offsets;
 
-    for (auto & itr : *size_map_) {
+    for (auto & itr : *ragged_changes_map_) {
       num_exclusive_entries +=
-          int64_t(itr.second) - int64_t(offsets[itr.first].count());
+          int64_t(itr.second.size) - int64_t(offsets[itr.first].count());
     }
 
     entry_value_t * cbuf = new entry_value_t[num_exclusive_entries];
@@ -221,8 +261,16 @@ public:
       size_t num_existing = coi.count();
       size_t used_slots = oi.count();
 
-      for (size_t j = 0; j < num_existing; ++j) {
-        cptr[j] = eptr[j];
+      auto citr = ragged_changes_map_->find(index);
+
+      ragged_changes_t * changes;
+
+      if (citr != ragged_changes_map_->end()) {
+        changes = &citr->second;
+        apply_raggged_changes(changes, cptr, eptr, num_existing);
+      } else {
+        changes = nullptr;
+        std::memcpy(cptr, eptr, sizeof(entry_value_t) * num_existing);
       }
 
       for (size_t j = 0; j < used_slots; ++j) {
@@ -243,10 +291,18 @@ public:
 
       coi.set_offset(offset);
 
-      auto sitr = size_map_->find(index);
+      if (changes) {
+        size_t resize = changes->size;
 
-      if (sitr != size_map_->end()) {
-        size_t resize = sitr->second;
+        if (changes->push_values) {
+          std::vector<T> & values = *changes->push_values;
+          size_t ri = resize - values.size();
+          for (auto & vi : values) {
+            cptr[ri].entry = ri;
+            cptr[ri++].value = vi;
+          }
+        }
+
         coi.set_count(resize);
         offset += resize;
         cptr += resize;
@@ -258,7 +314,9 @@ public:
       eptr += num_existing;
     }
 
-    std::memcpy(entries, cbuf, sizeof(entry_value_t) * (cptr - cbuf));
+    size_t num_exclusive_filled = cptr - cbuf;
+
+    std::memcpy(entries, cbuf, sizeof(entry_value_t) * num_exclusive_filled);
     delete[] cbuf;
 
     size_t start = num_exclusive_;
@@ -278,8 +336,16 @@ public:
 
       size_t used_slots = oi.count();
 
-      for (size_t j = 0; j < num_existing; ++j) {
-        cbuf[j] = eptr[j];
+      auto citr = ragged_changes_map_->find(index);
+
+      ragged_changes_t * changes;
+
+      if (citr != ragged_changes_map_->end()) {
+        changes = &citr->second;
+        apply_raggged_changes(changes, cbuf, eptr, num_existing);
+      } else {
+        changes = nullptr;
+        std::memcpy(cbuf, eptr, sizeof(entry_value_t) * num_existing);
       }
 
       for (size_t j = 0; j < used_slots; ++j) {
@@ -300,10 +366,22 @@ public:
 
       size_t size;
 
-      auto sitr = size_map_->find(index);
+      if (changes) {
+        size = changes->size;
 
-      if (sitr != size_map_->end()) {
-        size = sitr->second;
+        assert(
+            size <= max_entries_per_index_ &&
+            "ragged data: exceeded max_entries_per_index in shared/ghost");
+
+        if (changes->push_values) {
+          std::vector<T> & values = *changes->push_values;
+          size_t ri = size - values.size();
+          for (auto & vi : values) {
+            cptr[ri].entry = ri;
+            cptr[ri++].value = vi;
+          }
+        }
+
         coi.set_count(size);
       } else {
         size = num_existing;
@@ -323,8 +401,10 @@ public:
     delete spare_map_;
     spare_map_ = nullptr;
 
-    delete size_map_;
-    size_map_ = nullptr;
+    delete ragged_changes_map_;
+    ragged_changes_map_ = nullptr;
+
+    return num_exclusive_filled;
   }
 
   size_t num_exclusive() const {
@@ -343,6 +423,10 @@ public:
     return max_entries_per_index_;
   }
 
+  size_t number_exclusive_entries() const{
+    return ci_.entries[1] - ci_.entries[0];
+  }
+
   commit_info_t & commit_info() {
     return ci_;
   }
@@ -351,9 +435,31 @@ public:
     return ci_;
   }
 
+  struct ragged_changes_t {
+    ragged_changes_t(size_t size) : size(size) {}
+
+    size_t size;
+    std::unique_ptr<std::set<size_t>> erase_set = nullptr;
+    std::unique_ptr<std::vector<T>> push_values = nullptr;
+    std::unique_ptr<std::map<size_t, T>> insert_values = nullptr;
+
+    void init_erase_set() {
+      erase_set = std::unique_ptr<std::set<size_t>>(new std::set<size_t>);
+    }
+
+    void init_push_values() {
+      push_values = std::unique_ptr<std::vector<T>>(new std::vector<T>);
+    }
+
+    void init_insert_values() {
+      insert_values =
+          std::unique_ptr<std::map<size_t, T>>(new std::map<size_t, T>);
+    }
+  };
+
   using spare_map_t = std::multimap<size_t, entry_value_t>;
   using erase_set_t = std::set<std::pair<size_t, size_t>>;
-  using size_map_t = std::unordered_map<size_t, size_t>;
+  using ragged_changes_map_t = std::unordered_map<size_t, ragged_changes_t>;
 
   partition_info_t pi_;
   size_t num_exclusive_;
@@ -364,7 +470,7 @@ public:
   entry_value_t * entries_ = nullptr;
   spare_map_t * spare_map_ = nullptr;
   erase_set_t * erase_set_ = nullptr;
-  size_map_t * size_map_ = nullptr;
+  ragged_changes_map_t * ragged_changes_map_ = nullptr;
   commit_info_t ci_;
 
   //--------------------------------------------------------------------------//
@@ -438,6 +544,63 @@ public:
     }
 
     return dest - dest_start;
+  }
+
+  void apply_raggged_changes(
+      ragged_changes_t * changes,
+      entry_value_t * cptr,
+      entry_value_t * eptr,
+      size_t num_existing) {
+    size_t ri = 0;
+
+    if (changes->insert_values && changes->erase_set) {
+      auto iitr = changes->insert_values->begin();
+      auto iitr_end = changes->insert_values->end();
+
+      auto eitr = changes->erase_set->begin();
+      auto eitr_end = changes->erase_set->end();
+
+      for (size_t j = 0; j < num_existing; ++j) {
+        if (iitr != iitr_end && iitr->first == j) {
+          std::memcpy(&cptr[ri], &iitr->second, sizeof(iitr->second));
+          ++ri;
+          ++iitr;
+        }
+
+        if (eitr != eitr_end && *eitr == j) {
+          ++eitr;
+        } else {
+          cptr[ri++] = eptr[j];
+        }
+      }
+    } else if (changes->insert_values) {
+      auto iitr = changes->insert_values->begin();
+      auto iitr_end = changes->insert_values->end();
+
+      for (size_t j = 0; j < num_existing; ++j) {
+        if (iitr != iitr_end && iitr->first == j) {
+          cptr[ri++].value = iitr->second;
+          ++iitr;
+        }
+
+        cptr[ri++] = eptr[j];
+      }
+    } else if (changes->erase_set) {
+      auto eitr = changes->erase_set->begin();
+      auto eitr_end = changes->erase_set->end();
+
+      for (size_t j = 0; j < num_existing; ++j) {
+        if (eitr != eitr_end && *eitr == j) {
+          ++eitr;
+        } else {
+          cptr[ri++] = eptr[j];
+        }
+      }
+    } else {
+      for (size_t j = 0; j < num_existing; ++j) {
+        cptr[ri++] = eptr[j];
+      }
+    }
   }
 };
 

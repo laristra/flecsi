@@ -41,18 +41,35 @@ struct legion_sparse_data_handle_policy_t {
   // across multiple ranks/colors and should be used ONLY as read-only data
 
   field_id_t fid;
-  field_id_t id_fid;
   size_t index_space;
   size_t data_client_hash;
 
+  size_t reserve;
+  size_t max_entries_per_index;
+
   // These depend on color but are only used in specifying
   // the region requirements
-  Legion::LogicalRegion color_region;
-  Legion::LogicalRegion exclusive_lr;
-  Legion::LogicalRegion shared_lr;
-  Legion::LogicalRegion ghost_lr;
-  std::vector<Legion::LogicalRegion> ghost_owners_lregions;
-  std::vector<Legion::LogicalRegion> ghost_owners_subregions;
+  Legion::LogicalRegion offsets_color_region;
+  Legion::LogicalRegion offsets_exclusive_lr;
+  Legion::LogicalRegion offsets_shared_lr;
+  Legion::LogicalRegion offsets_ghost_lr;
+
+  Legion::LogicalRegion entries_color_region;
+  Legion::LogicalRegion entries_exclusive_lr;
+  Legion::LogicalRegion entries_shared_lr;
+  Legion::LogicalRegion entries_ghost_lr;
+
+  Legion::LogicalRegion metadata_color_region;
+
+  Legion::Context context;
+  Legion::Runtime * runtime;
+
+  Legion::PhysicalRegion metadata_pr;
+
+  std::vector<Legion::LogicalRegion> ghost_owners_offsets_lregions;
+  std::vector<Legion::LogicalRegion> ghost_owners_offsets_subregions;
+
+  std::vector<Legion::LogicalRegion> ghost_owners_entries_lregions;
 
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.
@@ -65,14 +82,16 @@ struct legion_sparse_data_handle_policy_t {
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions
 
-  Legion::Context context;
-  Legion::Runtime * runtime;
-  Legion::PhysicalRegion exclusive_pr;
-  Legion::PhysicalRegion shared_pr;
-  Legion::PhysicalRegion ghost_pr;
   size_t exclusive_priv;
   size_t shared_priv;
   size_t ghost_priv;
+
+  void* metadata;
+
+  size_t offsets_size = 0;
+  size_t entries_size = 0;
+
+  void* entries_data[3];
 }; // class legion_sparse_data_handle_policy_t
 
 } // namespace flecsi

@@ -72,14 +72,13 @@ void specialization_tlt_init(int argc, char ** argv) {
 
 void specialization_spmd_init(int argc, char ** argv) {
   auto& context = execution::context_t::instance();
-  context.add_local_index_space(0, 512);
 }
 
 void driver(int argc, char ** argv) {
   auto sh = flecsi_get_client_handle(set_t, sets, set1);
 
-  flecsi_execute_task_simple(task1, single, sh);
-  flecsi_execute_task_simple(task2, single, sh);
+  //flecsi_execute_task_simple(task1, single, sh);
+//  flecsi_execute_task_simple(task2, single, sh);
 }
 
 } // namespace execution

@@ -5,19 +5,14 @@
 
 // includes: flecsi
 #include <flecsi/utils/index_space.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/test/print_type.h>
 
 // includes: C++
 #include <iostream>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
-
-// print_type
-inline void
-print_type(const char * const name) {
-  CINCH_CAPTURE() << boost::core::demangle(name) << std::endl;
-}
 
 // =============================================================================
 // Test various aspects of flecsi::utils::index_space
@@ -25,7 +20,7 @@ print_type(const char * const name) {
 
 TEST(index_space, all) {
   // iterator_t
-  print_type(typeid(flecsi::utils::index_space_t::iterator_t).name());
+  print_type<flecsi::utils::index_space_t::iterator_t>();
   CINCH_CAPTURE() << std::endl;
 
   // default constructor
@@ -60,7 +55,13 @@ TEST(index_space, all) {
     CINCH_CAPTURE() << *iter << std::endl;
 
   // compare
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("index_space.blessed.gnug"));
+#elif defined(_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("index_space.blessed.msvc"));
+#else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("index_space.blessed"));
+#endif
 
 } // TEST
 

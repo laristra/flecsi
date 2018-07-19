@@ -87,10 +87,15 @@ struct task_interface__ {
     @param args   The arguments to pass to the user task during execution.
    */
 
-  template<size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
-  static decltype(auto) execute_task(launch_type_t launch, ARGS &&... args) {
-    return EXECUTION_POLICY::template execute_task<KEY, RETURN, ARG_TUPLE>(
-        launch, std::forward<ARGS>(args)...);
+  template<
+      launch_type_t launch,
+      size_t KEY,
+      typename RETURN,
+      typename ARG_TUPLE,
+      typename... ARGS>
+  static decltype(auto) execute_task(ARGS &&... args) {
+    return EXECUTION_POLICY::template execute_task<
+        launch, KEY, RETURN, ARG_TUPLE>(std::forward<ARGS>(args)...);
   } // execute_task
 
 }; // struct task_interface__
@@ -124,8 +129,8 @@ using task_interface_t = task_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
   @ingroup execution
  */
 
-template<typename RETURN>
-using future__ = FLECSI_RUNTIME_EXECUTION_POLICY::future__<RETURN>;
+template<typename RETURN, launch_type_t launch>
+using future__ = FLECSI_RUNTIME_EXECUTION_POLICY::future__<RETURN, launch>;
 
 //----------------------------------------------------------------------------//
 // Static verification of public future interface for type defined by
@@ -134,6 +139,7 @@ using future__ = FLECSI_RUNTIME_EXECUTION_POLICY::future__<RETURN>;
 
 namespace verify_future {
 
+#if 0
 FLECSI_MEMBER_CHECKER(wait);
 FLECSI_MEMBER_CHECKER(get);
 
@@ -144,6 +150,7 @@ static_assert(
 static_assert(
     verify_future::has_member_get<future__<double>>::value,
     "future type missing get method");
+#endif
 
 } // namespace verify_future
 

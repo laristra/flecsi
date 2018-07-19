@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <algorithm>
 
 namespace flecsi {

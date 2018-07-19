@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <tuple>
 
 namespace flecsi {

@@ -25,6 +25,7 @@ struct data_client_handle_entity_t
   data_client_handle_entity_t() : index_space(0), dim(0), domain(0), size(0), fid(0) {}
 
   size_t index_space;
+  size_t index_space2;
   size_t dim;
   size_t domain;
   size_t size;
@@ -32,6 +33,8 @@ struct data_client_handle_entity_t
   size_t num_shared;
   size_t num_ghost;
   field_id_t fid;
+  field_id_t fid2;
+  field_id_t fid3;
   field_id_t id_fid;
 }; // struct data_client_handle_entity_t
 
@@ -54,14 +57,16 @@ struct data_client_handle_adjacency_t
   field_id_t index_fid;
   field_id_t offset_fid;
   size_t * offsets_buf;
-  uint64_t * indices_buf;
+  id_t * indices_buf;
 };
 
 struct data_client_handle_index_subspace_t {
   size_t index_space;
   size_t index_subspace;
   field_id_t index_fid;
-  uint64_t * indices_buf;
+  id_t * indices_buf;
+  size_t domain;
+  size_t dim;
 };
 
 struct mpi_data_client_handle_policy_t
@@ -70,10 +75,10 @@ struct mpi_data_client_handle_policy_t
 
   // maximum number of adjacencies to read, this limits the size of the
   // serialize struct passed to Legion
-  static constexpr size_t MAX_ADJACENCIES = 20;
+  static constexpr size_t MAX_ADJACENCIES = 32;
 
   // maximum number of handle entities
-  static constexpr size_t MAX_ENTITIES = 5;
+  static constexpr size_t MAX_ENTITIES = 6;
 
   // maximum number of handle index subspaces
   static constexpr size_t MAX_INDEX_SUBSPACES = 10;

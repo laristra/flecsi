@@ -33,6 +33,13 @@ endif()
 set(FLECSIT_TUTORIAL_INCLUDES ${CMAKE_INSTALL_PREFIX}/include)
 set(FLECSIT_TUTORIAL_LIBRARIES
   ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/libFleCSI-Tut.${LIB_SUFFIX})
+
+set(FLECSIT_TUTORIAL_PACKAGES "\"\"")
+
+if(ENABLE_FLECSI_TUTORIAL_VTK)
+    set(FLECSIT_TUTORIAL_PACKAGES VTK)
+endif()
+
 set(FLECSIT_FLECSI_LIBRARY
   ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/libFleCSI.${LIB_SUFFIX})
 
@@ -83,7 +90,9 @@ endforeach()
 
 string(STRIP "${FLECSIT_LIBRARIES}" FLECSIT_LIBRARIES)
 
-list(REMOVE_DUPLICATES FLECSI_LD_DEPENDS_LIST)
+if(FLECSI_LD_DEPENDS_LIST)
+  list(REMOVE_DUPLICATES FLECSI_LD_DEPENDS_LIST)
+endif()
 
 #------------------------------------------------------------------------------#
 # Process the list of path dependencies for environment module LD_LIBARRY_PATH
@@ -117,24 +126,28 @@ if(ENABLE_FLECSIT)
     # FleCSIT dependencies
     #--------------------------------------------------------------------------#
 
-	find_package(PythonInterp 2.7 REQUIRED)
+    find_package(PythonInterp 2.7 REQUIRED)
 
-	execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(${PYTHON_VERSION_MAJOR} LESS 3)
+      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    else()
+      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print(cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}'))" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    endif()
 
-	install(DIRECTORY ${CMAKE_SOURCE_DIR}/tools/flecsit/flecsit
-		DESTINATION ${PYTHON_INSTDIR}
-		FILES_MATCHING PATTERN "*.py")
+    install(DIRECTORY ${CMAKE_SOURCE_DIR}/tools/flecsit/flecsit
+        DESTINATION ${PYTHON_INSTDIR}
+        FILES_MATCHING PATTERN "*.py")
 
     configure_file(${PROJECT_SOURCE_DIR}/tools/flecsit/bin/flecsit.in
-		${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
+      ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
 
-	install(PROGRAMS ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit
-		DESTINATION bin
-		PERMISSIONS
-			OWNER_READ OWNER_WRITE OWNER_EXECUTE
-			GROUP_READ GROUP_EXECUTE
-			WORLD_READ WORLD_EXECUTE
-	)
+    install(PROGRAMS ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit
+        DESTINATION bin
+        PERMISSIONS
+            OWNER_READ OWNER_WRITE OWNER_EXECUTE
+            GROUP_READ GROUP_EXECUTE
+            WORLD_READ WORLD_EXECUTE
+    )
 
     set(FLECSI_PYTHON_PATH_MODULE
         "prepend-path PYTHONPATH ${PYTHON_INSTDIR}"
@@ -143,7 +156,7 @@ if(ENABLE_FLECSIT)
         "export PYTHONPATH=\${PYTHONPATH}:${PYTHON_INSTDIR}"
     )
     set(FLECSI_PYTHON_PATH_CSH
-        "setenv PYTHONPATH $PYTHONPATH:${PYTHON_INSTDIR}"
+        "setenv PYTHONPATH \${PYTHONPATH}:${PYTHON_INSTDIR}"
     )
 
 endif()
@@ -163,6 +176,8 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_main.cc
 add_custom_target(runtime_main ALL
   DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_main.cc)
 
+set_target_properties(runtime_main PROPERTIES FOLDER "Dependencies")
+
 add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_driver.cc
   COMMAND ${CMAKE_COMMAND} -E copy
     ${_runtime_path}/runtime_driver.cc
@@ -172,6 +187,8 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_driver.cc
 
 add_custom_target(runtime_driver ALL
   DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_driver.cc)
+
+set_target_properties(runtime_driver PROPERTIES FOLDER "Dependencies")
 
 # Install the auxiliary files
 install(FILES ${_runtime_path}/runtime_main.cc

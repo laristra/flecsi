@@ -51,9 +51,9 @@ struct index_coloring_t {
 
   /*!
    Equality operator.
-  
+
    \param ip The index_coloring_t to compare with \e this.
-  
+
    \return True if \e ip is equivalent to \e this, false otherwise.
    */
   bool operator==(const index_coloring_t & ip) const {

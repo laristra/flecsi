@@ -18,19 +18,19 @@ struct foo {
 
   // operator(), 1 argument
   template<class A>
-  decltype(auto) operator()(const A & a) const {
+  auto operator()(const A & a) const -> decltype(a + 10) {
     return a + 10;
   }
 
   // operator(), 2 arguments
   template<class A, class B>
-  decltype(auto) operator()(const A & a, const B & b) const {
+  auto operator()(const A & a, const B & b) const -> decltype(a + b) {
     return a + b;
   }
 
   // operator(), 3 arguments
   template<class A, class B, class C>
-  decltype(auto) operator()(const A & a, const B & b, const C & c) const {
+  auto operator()(const A & a, const B & b, const C & c) const -> decltype(a + b + c) {
     return a + b + c;
   }
 };

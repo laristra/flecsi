@@ -5,16 +5,10 @@
 
 // includes: flecsi
 #include <flecsi/utils/tuple_wrapper.h>
+#include <flecsi/utils/common.h>
 
 // includes: other
-#include "boost/core/demangle.hpp"
 #include <cinchtest.h>
-
-// print_type
-inline std::string
-typestr(const char * const name) {
-  return boost::core::demangle(name);
-}
 
 // =============================================================================
 // Test various constructs in tuple_wrapper.h
@@ -34,12 +28,12 @@ TEST(tuple_wrapper, all) {
   flecsi::utils::tuple_wrapper_<float, char, int> e(1.0f, 'x', 2);
 
   // tuple_wrapper_::tuple_t
+#ifdef __GNUG__
   EXPECT_EQ(
-      typestr(
-          typeid(
-              typename flecsi::utils::tuple_wrapper_<float, char, int>::tuple_t)
-              .name()),
-      "std::tuple<float, char, int>");
+     (flecsi::utils::
+      type<typename flecsi::utils::tuple_wrapper_<float,char,int>::tuple_t>()),
+     "std::tuple<float, char, int>");
+#endif
 
   // tuple_wrapper_::get
   EXPECT_EQ(c.get<0>(), 'c');

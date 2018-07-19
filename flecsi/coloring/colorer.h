@@ -32,10 +32,10 @@ struct colorer_t {
    This method takes a distributed, compressed-row-storage representation
    of a graph and returns the indepdentent coloring on a per
    execution instance basis, e.g., for each rank or task.
-  
+
    @param dcrs A distributed, compressed-row-storage representation
                of the graph to color.
-  
+
    @return The set of indices that belong to the current execution
            instance.
    */

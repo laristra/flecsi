@@ -19,12 +19,12 @@ TEST(simple_colorer, simpletest3d)
   size_t grid_size[3] = {10,10,10};
   size_t ncolors[3]={2,2,1};
   size_t nhalo = 1;
-  size_t nhalo_domain = 1; 
+  size_t nhalo_domain = 1;
   size_t thru_dim = 0;
 
   flecsi::coloring::simple_box_colorer_t<3> sbc;
   auto col = sbc.color(grid_size, nhalo, nhalo_domain, thru_dim, ncolors);
-  if (rank == 26){ 
+  if (rank == 26){
   cout<<"Rank-"<<rank<<"::Primary Box:LBND  = { "<<col.primary.box.lowerbnd[0]<<", "
                                                  <<col.primary.box.lowerbnd[1]<<", "
                                                  <<col.primary.box.lowerbnd[2]<<" } "<<endl;
@@ -47,7 +47,7 @@ TEST(simple_colorer, simpletest3d)
                                                    <<col.exclusive.box.upperbnd[1]<<", "
                                                    <<col.exclusive.box.upperbnd[2]<<" } "<<endl;
   cout<<"Rank-"<<rank<<"::Exclusive-Box:colors = "<<col.exclusive.colors[0]<<endl;
-  
+
   for (auto s: col.shared)
   {
     cout<<"Rank-"<<rank<<"::Shared-Boxes:LBND  = { "<<s.box.lowerbnd[0]<<", "
@@ -88,7 +88,7 @@ TEST(simple_colorer, simpletest3d)
 
     cout<<"Rank-"<<rank<<"::DomainHalo-Boxes:UBND  = { "<<d.upperbnd[0]<<", "
                                                         <<d.upperbnd[1]<<", "
-                                                        <<d.upperbnd[2]<<" } "<<endl;                                 
+                                                        <<d.upperbnd[2]<<" } "<<endl;
   }
  }
 }

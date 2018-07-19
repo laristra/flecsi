@@ -85,7 +85,7 @@ struct accessor__<
   /*!
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \param index The index of the data variable to return.
    */
 
@@ -105,7 +105,7 @@ struct accessor__<
   /*!
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \param index The index of the data variable to return.
    */
 
@@ -152,7 +152,7 @@ struct accessor__<
   /*!
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \param index The index of the data variable to return.
    */
   const T & exclusive(size_t index) const {
@@ -163,7 +163,7 @@ struct accessor__<
   /*!
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \param index The index of the data variable to return.
    */
   T & exclusive(size_t index) {
@@ -174,7 +174,7 @@ struct accessor__<
   /*!
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \param index The index of the data variable to return.
    */
   const T & shared(size_t index) const {
@@ -185,7 +185,7 @@ struct accessor__<
   /*!
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \param index The index of the data variable to return.
   */
   T & shared(size_t index) {
@@ -196,7 +196,7 @@ struct accessor__<
   /*
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \param index The index of the data variable to return.
   */
   const T & ghost(size_t index) const {
@@ -207,7 +207,7 @@ struct accessor__<
   /*
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \param index The index of the data variable to return.
   */
   T & ghost(size_t index) {
@@ -218,9 +218,9 @@ struct accessor__<
   /*!
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \tparam E A complex index type.
-  
+
    This version of the operator is provided to support use with
    \e flecsi mesh entity types \ref mesh_entity_base_t.
    */
@@ -232,9 +232,9 @@ struct accessor__<
   /*!
    \brief Provide logical array-based access to the data for this
           data variable.  This is the const operator version.
-  
+
    \tparam E A complex index type.
-  
+
    This version of the operator is provided to support use with
    \e flecsi mesh entity types \ref mesh_entity_base__.
    */

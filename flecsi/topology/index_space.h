@@ -91,8 +91,14 @@ public:
   //! ID storage type
   using id_storage_t = ID_STORAGE_TYPE<id_t>;
 
+  template<typename T_, typename... Ts>
+  using id_storage_type_arg = ID_STORAGE_TYPE<T_>;
+
   //! Storage type
   using storage_t = STORAGE_TYPE<T>;
+
+  template<typename T_, typename... Ts>
+  using storage_type_arg = STORAGE_TYPE<T_>;
 
   //! item, e.g. entity type
   using item_t = typename std::remove_pointer<T>::type;
@@ -232,10 +238,52 @@ public:
     }
 
     //-----------------------------------------------------------------//
+    //! Less than operator
+    //-----------------------------------------------------------------//
+    bool operator<(const iterator_base_ & itr) const {
+      return index_ < itr.index_;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Less than equal operator
+    //-----------------------------------------------------------------//
+    bool operator<=(const iterator_base_ & itr) const {
+      return index_ <= itr.index_;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Greater than operator
+    //-----------------------------------------------------------------//
+    bool operator>(const iterator_base_ & itr) const {
+      return index_ > itr.index_;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Greater than equal operator
+    //-----------------------------------------------------------------//
+    bool operator>=(const iterator_base_ & itr) const {
+      return index_ >= itr.index_;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Difference
+    //-----------------------------------------------------------------//
+    size_t operator-(const iterator_base_ & itr) const {
+      return index_ - itr.index_;
+    }
+
+    //-----------------------------------------------------------------//
     //! Helper method. Get item at index
     //-----------------------------------------------------------------//
     auto get_(size_t index) {
       return static_cast<cast_t>((*s_)[(*items_)[index].index_space_index()]);
+    }
+
+    //-----------------------------------------------------------------//
+    //! Get item at index
+    //-----------------------------------------------------------------//
+    auto operator[](size_t index) const {
+      return get_(index);
     }
 
   protected:
@@ -292,6 +340,84 @@ public:
     }
 
     //-----------------------------------------------------------------//
+    //! Decrement operator
+    //-----------------------------------------------------------------//
+    iterator_ & operator--() {
+      --B::index_;
+      return *this;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Post-increment operator
+    //-----------------------------------------------------------------//
+    iterator_ operator++(int) {
+      iterator_ itr(*this);
+      B::index_++;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Post-decrement operator
+    //-----------------------------------------------------------------//
+    iterator_ operator--(int) {
+      iterator_ itr(*this);
+      B::index_--;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Plus offset operator
+    //-----------------------------------------------------------------//
+    iterator_ operator+(size_t offset) const {
+      iterator_ itr(*this);
+      itr.B::index_ += offset;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Plus offset operator
+    //-----------------------------------------------------------------//
+    friend iterator_ operator+(size_t offset, const iterator_ & itr) {
+      iterator_ itr2(itr);
+      itr2.B::index_ += offset;
+      return itr2;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Minus offset operator
+    //-----------------------------------------------------------------//
+    iterator_ operator-(size_t offset) const {
+      iterator_ itr(*this);
+      itr.B::index_ -= offset;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Minus offset operator
+    //-----------------------------------------------------------------//
+    friend iterator_ operator-(size_t offset, const iterator_ & itr) {
+      iterator_ itr2(itr);
+      itr2.B::index_ = offset - itr.B::index_;
+      return itr2;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Plus assignment offset operator
+    //-----------------------------------------------------------------//
+    iterator_ & operator+=(size_t offset) {
+      B::index_ += offset;
+      return *this;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Minus assignment offset operator
+    //-----------------------------------------------------------------//
+    iterator_ & operator-=(size_t offset) {
+      B::index_ -= offset;
+      return *this;
+    }
+
+    //-----------------------------------------------------------------//
     //! Dereference operator
     //-----------------------------------------------------------------//
     S & operator*() {
@@ -319,6 +445,13 @@ public:
       }
 
       assert(false && "end of range");
+    }
+
+    friend void swap(iterator_ & a, iterator_ & b) {
+      std::swap(a.B::items_, b.B::items_);
+      std::swap(a.B::index_, b.B::index_);
+      std::swap(a.B::end_, b.B::end_);
+      std::swap(a.B::s_, b.B::s_);
     }
   };
 
@@ -370,6 +503,84 @@ public:
     }
 
     //-----------------------------------------------------------------//
+    //! Decrement operator
+    //-----------------------------------------------------------------//
+    iterator_ & operator--() {
+      --B::index_;
+      return *this;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Post-increment operator
+    //-----------------------------------------------------------------//
+    iterator_ operator++(int) {
+      iterator_ itr(*this);
+      B::index_++;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Post-decrement operator
+    //-----------------------------------------------------------------//
+    iterator_ operator--(int) {
+      iterator_ itr(*this);
+      B::index_--;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Plus offset operator
+    //-----------------------------------------------------------------//
+    iterator_ operator+(size_t offset) const {
+      iterator_ itr(*this);
+      itr.B::index_ += offset;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Plus offset operator
+    //-----------------------------------------------------------------//
+    friend iterator_ operator+(size_t offset, const iterator_ & itr) {
+      iterator_ itr2(itr);
+      itr2.B::index_ += offset;
+      return itr2;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Minus offset operator
+    //-----------------------------------------------------------------//
+    iterator_ operator-(size_t offset) const {
+      iterator_ itr(*this);
+      itr.B::index_ -= offset;
+      return itr;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Minus offset operator
+    //-----------------------------------------------------------------//
+    friend iterator_ operator-(size_t offset, const iterator_ & itr) {
+      iterator_ itr2(itr);
+      itr2.B::index_ = offset - itr.B::index_;
+      return itr2;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Plus assignment offset operator
+    //-----------------------------------------------------------------//
+    iterator_ & operator+=(size_t offset) {
+      B::index_ += offset;
+      return *this;
+    }
+
+    //-----------------------------------------------------------------//
+    //! Minus assignment offset operator
+    //-----------------------------------------------------------------//
+    iterator_ & operator-=(size_t offset) {
+      B::index_ -= offset;
+      return *this;
+    }
+
+    //-----------------------------------------------------------------//
     //! Dereference operator
     //-----------------------------------------------------------------//
     S operator*() {
@@ -381,6 +592,13 @@ public:
     //-----------------------------------------------------------------//
     S * operator->() {
       return &B::get_(B::index_);
+    }
+
+    friend void swap(iterator_ & a, iterator_ & b) {
+      std::swap(a.B::items_, b.B::items_);
+      std::swap(a.B::index_, b.B::index_);
+      std::swap(a.B::end_, b.B::end_);
+      std::swap(a.B::s_, b.B::s_);
     }
   };
 
@@ -554,8 +772,9 @@ public:
       bool OWNED2 = OWNED,
       bool SORTED2 = SORTED,
       class F2 = F,
-      template<typename, typename...> class ID_STORAGE_TYPE2 = ID_STORAGE_TYPE,
-      template<typename, typename...> class STORAGE_TYPE2 = STORAGE_TYPE>
+      template<typename, typename...>
+      class ID_STORAGE_TYPE2 = id_storage_type_arg,
+      template<typename, typename...> class STORAGE_TYPE2 = storage_type_arg>
   auto & cast() {
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
@@ -576,8 +795,9 @@ public:
       bool OWNED2 = OWNED,
       bool SORTED2 = SORTED,
       class F2 = F,
-      template<typename, typename...> class ID_STORAGE_TYPE2 = ID_STORAGE_TYPE,
-      template<typename, typename...> class STORAGE_TYPE2 = STORAGE_TYPE>
+      template<typename, typename...>
+      class ID_STORAGE_TYPE2 = id_storage_type_arg,
+      template<typename, typename...> class STORAGE_TYPE2 = storage_type_arg>
   auto & cast() const {
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
@@ -953,7 +1173,7 @@ public:
   //-----------------------------------------------------------------//
   template<typename Predicate>
   auto filter(Predicate && f) const {
-    index_space__<T, false, true, false> is;
+    index_space__<T, false, true, false, void, std::vector, STORAGE_TYPE> is;
     is.set_master(*this);
 
     for (auto item : *this) {
@@ -981,7 +1201,7 @@ public:
   //-----------------------------------------------------------------//
   template<class S>
   auto map(map_function<S> f) const {
-    index_space__<S, false, true, false> is;
+    index_space__<S, false, true, false, void, std::vector, STORAGE_TYPE> is;
     is.set_master(*this);
 
     is.begin_push_(v_->size());
@@ -1314,7 +1534,7 @@ public:
   }
 
   //-----------------------------------------------------------------//
-  //! Append another index space’s entities to the index space.
+  //! Append another index space's entities to the index space.
   //! If the index space does not have storage then only the indices
   //! are appended. It will create a copy of its aliased indices if
   //! OWNED is false.

@@ -17,9 +17,9 @@
 #include <flecsi-config.h>
 
 #include <flecsi/execution/context.h>
-#include <specialization/mesh/inputs.h>
-#include <specialization/mesh/mesh.h>
-#include <specialization/mesh/policy.h>
+#include <flecsi-tutorial/specialization/mesh/inputs.h>
+#include <flecsi-tutorial/specialization/mesh/mesh.h>
+#include <flecsi-tutorial/specialization/mesh/policy.h>
 
 namespace flecsi {
 namespace tutorial {

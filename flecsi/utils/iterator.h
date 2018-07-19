@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 #include <cstring> // for std::size_t
 
 namespace flecsi {

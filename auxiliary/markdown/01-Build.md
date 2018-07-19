@@ -1,8 +1,7 @@
 # FleCSI: Build
 <!--
-  The above header ("FleCSI: Build") is required for Doxygen to
-  correctly name the auto-generated page. It is ignored in the FleCSI
-  guide documentation.
+  The above header is required for Doxygen to correctly name the
+  auto-generated page. It is ignored in the FleCSI guide documentation.
 -->
 
 <!-- CINCHDOC DOCUMENT(user-guide | developer-guide) SECTION(build) -->
@@ -22,31 +21,34 @@ that can be taken to tailor FleCSI to a given system and architecture.
 The following list of requirements provides a complete set of build
 options, but is not necessary for a particular build:
 
-* **C++14 compliant compiler**<br>  
+* **C++14 compliant compiler**<br>
   At the current time, FleCSI has been tested with GNU, Clang, and Intel
   C++ compilers.
 
-* **MPI**<br>  
+* **MPI**<br>
   If Legion support is enabled, the MPI implementation must have support
   for *MPI_THREAD_MULTIPLE*.
 
-* **Legion**<br>  
+* **Legion**<br>
   We are currently using the most up-to-date version of the master
   branch.
 
-* **GASNet**<br>  
+* **GASNet**<br>
   GASNet is only required if Legion support is enabled.
 
-* **Pandoc**<br>  
+* **Pandoc**<br>
   Pandoc is only required to build the FleCSI guide documentation.
   Pandoc is a format conversion tool. More information is available
   at [http://pandoc.org](http://pandoc.org).
 
-* **Doxygen**<br>  
+* **Doxygen**<br>
   Doxygen is only required to build the interface documentation.
 
-* **CMake**<br>  
+* **CMake**<br>
   We currently require CMake version 2.8 or greater.
+
+* **Python**<br>
+  We currently require Python 2.7 or greater.
 
 ## FleCSI Third Party Libraries Project
 
@@ -118,15 +120,15 @@ that will be used by the FleCSI programming model abstraction to invoke
 tasks and kernels. There are currently two supported distributed-memory
 runtimes, a serial runtime, and one supported node-level runtime:
 
-* **Distributed-Memory**<br>  
+* **Distributed-Memory**<br>
   Legion or MPI
 
-* **Serial [supported thorugh MPI runtime]**<br>  
+* **Serial [supported thorugh MPI runtime]**<br>
   **The serial build is no longer supported.** Users wishing to emulate
   this build mode should select the MPI runtime and run executables with
   a single-rank.
 
-* **Node-Level**<br>  
+* **Node-Level**<br>
   OpenMP
 
 Example configuration: **MPI**
@@ -161,18 +163,18 @@ $ make install
 The following set of options are available to control how FleCSI is
 built.
 
-* **BUILD_SHARED_LIBS [default: ON]**<br>  
+* **BUILD_SHARED_LIBS [default: ON]**<br>
   Build shared library objects (as opposed to static).
 
-* **CMAKE_BUILD_TYPE [default: Debug]**<br>  
+* **CMAKE_BUILD_TYPE [default: Debug]**<br>
   Specify the build type (configuration) statically for this build tree.
   Possible choices are *Debug*, *Release*, *RelWithDebInfo*, and
   *MinSizeRel*.
 
-* **CMAKE_INSTALL_PREFIX [default: /usr/local]**<br>  
+* **CMAKE_INSTALL_PREFIX [default: /usr/local]**<br>
   Specify the installation path to use when *make install* is invoked.
 
-* **CXX_CONFORMANCE_STANDARD [default: c++14]**<br>  
+* **CXX_CONFORMANCE_STANDARD [default: c++14]**<br>
   Specify to which C++ standard a compiler must conform. This is a
   developer option used to identify whether or not the selected C++
   compiler will be able to compile FleCSI, and which (if any) tests it
@@ -180,13 +182,13 @@ built.
   identify features that are required by FleCSI that are not
   standards-compliant in the vendor's compiler.
 
-* **ENABLE_BOOST_PREPROCESSOR [default: ON]**<br>  
+* **ENABLE_BOOST_PREPROCESSOR [default: ON]**<br>
   Boost.Preprocessor is a header-only Boost library that provides
   enhanced pre-processor options and manipulation, which are not
   supported by the standard C preprocessor. Currently, FleCSI uses the
   preprocessor to implement type reflection.
 
-* **ENABLE_BOOST_PROGRAM_OPTIONS [default: OFF]**<br>  
+* **ENABLE_BOOST_PROGRAM_OPTIONS [default: OFF]**<br>
   Boost.Program\_options provides support for handling command-line
   options to a program. When this build option is enabled, CMake will
   attempt to locate a valid installation of the program options library,
@@ -194,29 +196,29 @@ built.
   particular, if Cinch's clog extensions are enabled, the *--tags*
   command-line option will be available to select output tags.
 
-* **ENABLE_CINCH_DEVELOPMENT [default: OFF]**<br>  
+* **ENABLE_CINCH_DEVELOPMENT [default: OFF]**<br>
   If this option is enabled, extra information will be generated to help
   debug different Cinch behaviors. Currenlty, this only affects the
   generation of documentation: when enabled, the resulting PDF
   documentation will be annotated with the original locations of the
   content. **FIXME: We should consider renaming this option**
 
-* **ENABLE_CINCH_VERBOSE [default: OFF]**<br>  
+* **ENABLE_CINCH_VERBOSE [default: OFF]**<br>
   If this option is enabled, extra information will be output during the
   CMake configuration and build that may be helpful in debugging Cinch.
 
-* **ENABLE_CLOG [default: OFF]**<br>  
+* **ENABLE_CLOG [default: OFF]**<br>
   Enable Cinch Logging (clog). The Cinch logging interface provides
   methods for generating and controlling output from a running
   application.
 
-* **CLOG_COLOR_OUTPUT [default: ON]**<br>  
+* **CLOG_COLOR_OUTPUT [default: ON]**<br>
   Enable colorization of clog output.
 
-* **CLOG_DEBUG [default: OFF]**<br>  
+* **CLOG_DEBUG [default: OFF]**<br>
   Enable verbose debugging output for clog.
 
-* **CLOG_ENABLE_EXTERNAL [default: OFF]**<br>  
+* **CLOG_ENABLE_EXTERNAL [default: OFF]**<br>
   The Cinch clog facility is a runtime. As such, some of the features
   provided by clog require initialization. Because of the C++ mechanism
   used by clog to implement parts of its interface, it is possible to
@@ -226,7 +228,7 @@ built.
   controlled by the clog tagging feature. This option allows the user to
   enable this type of output, which can be quite verbose.
 
-* **CLOG_ENABLE_TAGS [default: OFF]**<br>  
+* **CLOG_ENABLE_TAGS [default: OFF]**<br>
   Enable the tag feature for clog. If enabled, users can selectively
   control clog output by specifying active tags on the command line:
 ```
@@ -235,7 +237,7 @@ $ ./executable --tags=tag1,tag2
   Invoking the *--tags* flag with no arguments will list the available
   tags. **This option requries that ENABLE_BOOST_PROGRAM_OPTIONS be ON.**
 
-* **CLOG_STRIP_LEVEL [default: 0]**<br>  
+* **CLOG_STRIP_LEVEL [default: 0]**<br>
   Strip levels are another mechanism to allow the user to control the
   amount of output that is generated by clog. In general, the higher the
   stip level, the fewer the number of clog messages that will be output.
@@ -247,32 +249,32 @@ $ ./executable --tags=tag1,tag2
   are designated *fatal* will generate a runtime error and will invoke
   std::exit.**
 
-* **ENABLE_COLORING [default: OFF]**<br>  
+* **ENABLE_COLORING [default: OFF]**<br>
   This option controls whether or not various library dependencies and
   code sections are active that are required for graph partitioning
   (coloring) and distributed-memory parallelism. In general, if you have
   selected a runtime mode that requires this option, it will
   automatically be enabled.
 
-* **ENABLE_COLOR_UNIT_TESTS [default: OFF]**<br>  
+* **ENABLE_COLOR_UNIT_TESTS [default: OFF]**<br>
   Enable coloraization of unit test output.
 
-* **ENABLE_COVERAGE_BUILD [default: OFF]**<br>  
+* **ENABLE_COVERAGE_BUILD [default: OFF]**<br>
   Enable build mode to determine the code coverage of the current set of
   unit tests. This is useful for continuous integration (CI) test analysis.
 
-* **ENABLE_DEVEL_TARGETS [default: OFF]**<br>  
+* **ENABLE_DEVEL_TARGETS [default: OFF]**<br>
   Development targets allow developers to add small programs to the
   FleCSI source code for testing code while it is being developed. These
   programs are not intended to be used as unit tests, and may be added
   or removed as the code evolves.
 
-* **ENABLE_DOCUMENTATION [default: OFF]**<br>  
+* **ENABLE_DOCUMENTATION [default: OFF]**<br>
   This option controls whether or not the FleCSI user and developer
   guide documentation is built. If enabled, CMake will generate these
   guides as PDFs in the *doc* subdirectory of the build.
 
-* **ENABLE_DOXYGEN [default: OFF]**<br>  
+* **ENABLE_DOXYGEN [default: OFF]**<br>
   If enabled, CMake will verify that a suitable *doxygen* binary is
   available on the system, and will add a target for generating
   Doxygen-style interface documentation from the FleCSI source code.
@@ -281,17 +283,17 @@ $ ./executable --tags=tag1,tag2
 $ make doxygen
 ```
 
-* **ENABLE_DOXYGEN_WARN [default: OFF]**<br>  
+* **ENABLE_DOXYGEN_WARN [default: OFF]**<br>
   Normal Doxygen output produces many pages worth of warnings. These are
   distracting and overly verbose. As such, they are disabled by default.
   This options allows the user to turn them back on.
 
-* **ENABLE_EXODUS [default: OFF]**<br>  
+* **ENABLE_EXODUS [default: OFF]**<br>
   If enabled, CMake will verify that a suitable Exodus library is
   available on the system, and will enable Exodus functionality in the
   FleCSI I/O interface.
 
-* **ENABLE_FLECSIT [default: OFF]**<br>  
+* **ENABLE_FLECSIT [default: OFF]**<br>
   FleCSIT is a command-line utility that simplifies experimental
   development using FleCSI. This can be thought of as a *sandbox* mode,
   where the user can write code that utilizes a particular FleCSI
@@ -299,42 +301,42 @@ $ make doxygen
   overhead of a full production code project. This option simply enables
   creation of the FleCSIT executable.
 
-* **ENABLE_JENKINS_OUTPUT [default: OFF]**<br>  
+* **ENABLE_JENKINS_OUTPUT [default: OFF]**<br>
   If this options is on, extra meta data will be output during unit test
   invocation that may be used by the Jenkins CI system.
 
-* **ENABLE_MPI_CXX_BINDINGS [default: OFF]**<br>  
+* **ENABLE_MPI_CXX_BINDINGS [default: OFF]**<br>
   This option is a fall-back for codes that actually require the MPI C++
   bindings. **This interface is deprecated and should only be used if it
   is impossible to get rid of the dependency.**
 
-* **ENABLE_OPENMP [default: OFF]**<br>  
+* **ENABLE_OPENMP [default: OFF]**<br>
   Enable OpenMP support. If enabled, the appropriate flags will be
   passed to the C++ compiler to enable language support for OpenMP
   pragmas.
 
-* **ENABLE_OPENSSL [default: OFF]**<br>  
+* **ENABLE_OPENSSL [default: OFF]**<br>
   If enabled, CMake will verify that a suitable OpenSSL library is
   available on the system, and will enable the FleCSI checksum
   interface.
 
-* **ENABLE_UNIT_TESTS [default: OFF]**<br>  
+* **ENABLE_UNIT_TESTS [default: OFF]**<br>
   Enable FleCSI unit tests. If enabled, the unit test suite can be run
   by invoking:
 ```
 $ make test
 ```
 
-* **FLECSI_COUNTER_TYPE [default: int32_t]**<br>  
+* **FLECSI_COUNTER_TYPE [default: int32_t]**<br>
   Specify the C++ type to use for the FleCSI counter interface.
 
-* **FLECSI_DBC_ACTION [default: throw]**<br>  
+* **FLECSI_DBC_ACTION [default: throw]**<br>
   Select the design-by-contract action.
 
-* **FLECSI_DBC_REQUIRE [default: ON]**<br>  
+* **FLECSI_DBC_REQUIRE [default: ON]**<br>
   Enable DBC pre/post condition assertions.
 
-* **FLECSI_ID_FBITS [default: 4]**<br>  
+* **FLECSI_ID_FBITS [default: 4]**<br>
   Specify the number of bits to be used to represent id flags. This
   option affects the number of entities that can be represented on a
   FleCSI mesh type. The number of bits used to represent entities is
@@ -342,7 +344,7 @@ $ make test
   are 38 bits available to represent entities, i.e., up to 274877906944
   entities can be resolved.
 
-* **FLECSI_ID_PBITS [default: 20]**<br>  
+* **FLECSI_ID_PBITS [default: 20]**<br>
   Specify the number of bits to be used to represent partition ids. This
   option affects the number of entities that can be represented on a
   FleCSI mesh type. The number of bits used to represent entities is
@@ -350,11 +352,11 @@ $ make test
   are 38 bits available to represent entities, i.e., up to 274877906944
   entities can be resolved.
 
-* **FLECSI_RUNTIME_MODEL [default: mpi]**<br>  
+* **FLECSI_RUNTIME_MODEL [default: mpi]**<br>
   Specify the low-level runtime model. Currently, *legion* and *mpi* are
   the only valid options.
 
-* **VERSION_CREATION [default: git describe]**<br>  
+* **VERSION_CREATION [default: git describe]**<br>
   This options allows the user to either directly specify a version by
   entering it here, or to let the build system provide a version using
   git describe.
