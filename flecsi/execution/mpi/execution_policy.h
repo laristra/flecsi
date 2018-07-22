@@ -73,34 +73,35 @@ struct executor__<void, ARG_TUPLE> {
 //----------------------------------------------------------------------------//
 
 /*!
- The mpi_execution_policy_t is the backend runtime execution policy
- for MPI.
+  The mpi_execution_policy_t is the backend runtime execution policy
+  for MPI.
 
- @ingroup mpi-execution
+  @ingroup mpi-execution
  */
 
 struct mpi_execution_policy_t {
-  /*!
-   The future__ type may be used for explicit synchronization of tasks.
 
-   @tparam RETURN The return type of the task.
+  /*!
+    The future__ type may be used for explicit synchronization of tasks.
+
+    @tparam RETURN The return type of the task.
    */
 
   template<typename RETURN, launch_type_t launch>
   using future__ = mpi_future__<RETURN, launch>;
 
   /*!
-   The runtime_state_t type identifies a public type for the high-level
-   runtime interface to pass state required by the backend.
+    The runtime_state_t type identifies a public type for the high-level
+    runtime interface to pass state required by the backend.
    */
 
   struct runtime_state_t {};
   // using runtime_state_t = mpi_runtime_state_t;
 
   /*!
-   Return the runtime state of the calling FleCSI task.
+    Return the runtime state of the calling FleCSI task.
 
-   @param task The calling task.
+    @param task The calling task.
    */
 
   static runtime_state_t & runtime_state(void * task);
@@ -110,32 +111,35 @@ struct mpi_execution_policy_t {
   //--------------------------------------------------------------------------//
 
   /*!
-   MPI backend task registration. For documentation on this
-   method please see task__::register_task.
+    MPI backend task registration. For documentation on this
+    method please see task__::register_task.
    */
 
-  template<size_t KEY,
+  template<size_t TASK,
     typename RETURN,
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
   static bool
   register_task(processor_type_t processor, launch_t launch, std::string name) {
     return context_t::instance()
-      .template register_function<KEY, RETURN, ARG_TUPLE, DELEGATE>();
+      .template register_function<TASK, RETURN, ARG_TUPLE, DELEGATE>();
   } // register_task
 
   /*!
-   MPI backend task execution. For documentation on this method,
-   please see task__::execute_task.
+    MPI backend task execution. For documentation on this method,
+    please see task__::execute_task.
    */
 
   template<launch_type_t launch,
-    size_t KEY,
+    size_t TASK,
+    size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
-    auto fun = context_t::instance().function(KEY);
+
+    auto fun = context_t::instance().function(TASK);
+
     // Make a tuple from the task arguments.
     ARG_TUPLE task_args = std::make_tuple(args...);
 
@@ -160,8 +164,8 @@ struct mpi_execution_policy_t {
   //--------------------------------------------------------------------------//
 
   /*!
-   MPI backend reduction registration. For documentation on this
-   method please see task__::register_reduction_operation.
+    MPI backend reduction registration. For documentation on this
+    method please see task__::register_reduction_operation.
    */
 
   template<size_t NAME, typename OPERATION>
@@ -181,13 +185,13 @@ struct mpi_execution_policy_t {
     method, please see function__::register_function.
    */
 
-  template<size_t KEY,
+  template<size_t FUNCTION,
     typename RETURN,
     typename ARG_TUPLE,
-    RETURN (*FUNCTION)(ARG_TUPLE)>
+    RETURN (*DELEGATE)(ARG_TUPLE)>
   static bool register_function() {
     return context_t::instance()
-      .template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
+      .template register_function<FUNCTION, RETURN, ARG_TUPLE, DELEGATE>();
   } // register_function
 
   /*!
@@ -195,9 +199,8 @@ struct mpi_execution_policy_t {
     method, please see function__::execute_function.
    */
 
-  template<typename FUNCTION_HANDLE, typename... ARGS>
-  static decltype(auto) execute_function(FUNCTION_HANDLE & handle,
-    ARGS &&... args) {
+  template<typename HANDLE, typename... ARGS>
+  static decltype(auto) execute_function(HANDLE & handle, ARGS &&... args) {
     return handle(context_t::instance().function(handle.get_key()),
       std::forward_as_tuple(args...));
   } // execute_function
