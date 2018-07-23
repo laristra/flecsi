@@ -28,6 +28,7 @@
 #include <flecsi/execution/internal_index_space.h>
 #include <flecsi/execution/legion/helper.h>
 #include <flecsi/execution/legion/legion_tasks.h>
+#include <flecsi/utils/offset.h>
 
 clog_register_tag(legion_data);
 
@@ -559,7 +560,7 @@ public:
               }
               else{
                 // this is a sparse offset
-                allocator.allocate_field(sizeof(size_t) * 2, fi.fid);
+                allocator.allocate_field(sizeof(utils::offset_t), fi.fid);
               }
             }
             break;
