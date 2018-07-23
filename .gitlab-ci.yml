@@ -86,7 +86,7 @@ deploy_docker:
                 - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
                 - docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
                 - CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
-                - docker cp /builds/onurcaylak/flecsi/build ${CON}:/home/flecsi/.
+                #- docker cp /builds/onurcaylak/flecsi/build ${CON}:/home/flecsi/.
        dependencies:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
 
