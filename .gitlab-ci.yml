@@ -31,7 +31,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
                 #- make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
                 - cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
-                - su 
+                - s u 
                 #- make install
                 #- docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
                 #- docker build -t laristra/flecsi-third-party:ubuntu /builds/onurcaylak/docker/ --build-arg LEGION=${LEGION} --build-arg RUNTIME=${RUNTIME} --build-arg CXXFLAGS="${WERROR:+-Werror} -Wno-deprecated-declarations" --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL} --build-arg CC=${CC} --build-arg CXX=${CXX} --build-arg CI=${CI} 
