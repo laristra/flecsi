@@ -45,8 +45,7 @@ test_ubuntu:
                         - /builds/onurcaylak/flecsi/build
                                                      
 deploy_docker:
-        image: laristra/flecsi-third-party:ubuntu 
-        #image: docker:latest
+        image: docker:latest
         stage: deploy
         services:
                 - docker:dind
@@ -57,8 +56,8 @@ deploy_docker:
                 - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
                 - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
                 - docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
-                #- CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
-                ##- docker cp /builds/onurcaylak/flecsi/build ${CON}:/home/flecsi/.
+                - CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
+                - docker cp /builds/onurcaylak/flecsi/build ${CON}:/home/flecsi/.
         dependencies:
                 - test_ubuntu
 
