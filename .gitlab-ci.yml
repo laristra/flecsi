@@ -60,6 +60,5 @@ deploy_docker:
                 - CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
                 #- docker cp /builds/onurcaylak/flecsi/build ${CON}:/home/flecsi/.
        dependencies:
-                - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
-
+                - test_ubuntu
        
