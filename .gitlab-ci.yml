@@ -3,6 +3,9 @@ stages:
         - test
         - deploy
 
+services:
+        - docker:dind
+ 
 DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         image: laristra/flecsi-third-party:ubuntu 
         stage: build
