@@ -58,10 +58,10 @@ deploy_docker:
                 - docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
                 #- CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
                 ##- docker cp /builds/onurcaylak/flecsi/build ${CON}:/home/flecsi/.
-       #dependencies:
-                #- test_ubuntu 
-       #artifacts:
-                #expire_in: 1 hour
-                #paths:
-                        #- /builds/onurcaylak/flecsi/build
-                 
+        dependencies:
+                - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+
+        artifacts:
+                expire_in: 1 hour
+                paths:
+                        - /builds/onurcaylak/flecsi/build
