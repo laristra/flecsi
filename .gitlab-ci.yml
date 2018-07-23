@@ -20,7 +20,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - mkdir /builds/onurcaylak/flecsi/artifacts
 
         script:
-                #- DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+                - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
                 #- cd ../ && cp -vr flecsi/docker . && cp -vr flecsi docker/.
                 #- sed -i "1s/fedora/${DISTRO}/" docker/Dockerfile
                 #- if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
