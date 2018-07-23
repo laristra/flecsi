@@ -1,6 +1,3 @@
-#services:
-        #- docker:dind
-
 stages:
         - build
         - test
@@ -78,6 +75,9 @@ test_ubuntu:
 deploy_docker:
         image: docker:latest
         stage: deploy
+        #services:
+                - docker:dind
+
         script:
                 - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
                 #- cd ../ && cp -vr flecsi/docker . && cp -vr flecsi docker/.
