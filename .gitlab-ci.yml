@@ -26,27 +26,26 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 paths:
                         - /builds/onurcaylak/flecsi/build
 
-#test_ubuntu:
-        #image: laristra/flecsi-third-party:ubuntu 
-        #stage: test
-        #script: 
-                #- cd /builds/onurcaylak/flecsi/build/
-                #- make test ARGS="-V"
-                #- ls -la 
-        #dependencies:
-                #- DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+test_ubuntu:
+        image: laristra/flecsi-third-party:ubuntu 
+        stage: test
+        script: 
+                - cd /builds/onurcaylak/flecsi/build/
+                - make test ARGS="-V"
+                - ls -la 
+        dependencies:
+                - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
 
-        #artifacts:
-                #expire_in: 1 hour
-                #paths:
-                        #- /builds/onurcaylak/flecsi/build
+        artifacts:
+                expire_in: 1 hour
+                paths:
+                        - /builds/onurcaylak/flecsi/build
                                                      
 #deploy_docker:
         #image: docker:latest
         #stage: deploy
         #services:
                 #- docker:dind
-
         #script:
                 #- DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
                 ##- cd ../ && cp -vr flecsi/docker . && cp -vr flecsi docker/.
