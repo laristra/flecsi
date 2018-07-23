@@ -15,7 +15,6 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
           GLOBAL_CI_VARIABLE: "global_ci_value"
           GIT_SUBMODULE_STRATEGY: recursive
 
-
         before_script:
                 - mkdir /builds/onurcaylak/flecsi/artifacts
 
@@ -28,11 +27,11 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - mkdir /builds/onurcaylak/flecsi/build
                 - cd build
                 - cmake -DENABLE_LEGION=$LEGION -DFLECSI_RUNTIME_MODEL=$RUNTIME ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) -DENABLE_UNIT_TESTS=ON -DENABLE_PARMETIS=ON -DENABLE_COLORING=ON -DENABLE_DOXYGEN=ON -DENABLE_DOCUMENTATION=ON  ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
-                - make doxygen
+                #- make doxygen
                 - if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
                 #- make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
                 - cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
-                - sudo -i
+                - su 
                 #- make install
                 #- docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
                 #- docker build -t laristra/flecsi-third-party:ubuntu /builds/onurcaylak/docker/ --build-arg LEGION=${LEGION} --build-arg RUNTIME=${RUNTIME} --build-arg CXXFLAGS="${WERROR:+-Werror} -Wno-deprecated-declarations" --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL} --build-arg CC=${CC} --build-arg CXX=${CXX} --build-arg CI=${CI} 
