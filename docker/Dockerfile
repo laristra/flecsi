@@ -38,6 +38,7 @@ WORKDIR /home/flecsi/flecsi
 RUN cp /home/flecsi/build /home/flecsi/flecsi/
 
 WORKDIR build
+RUN pwd
 #RUN cmake \
           #-DENABLE_LEGION=$LEGION \
           #-DFLECSI_RUNTIME_MODEL=$RUNTIME \
@@ -69,6 +70,6 @@ WORKDIR build
 #fi && cd -
 
 USER root
-RUN make install
+#RUN make install
 USER flecsi
 WORKDIR /home/flecsi
