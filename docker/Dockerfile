@@ -37,6 +37,7 @@ USER flecsi
 RUN pwd
 RUN ls -la
 WORKDIR /home/flecsi/flecsi
+RUN ls -la
 #RUN cp /home/flecsi/build /home/flecsi/flecsi/
 
 WORKDIR build
