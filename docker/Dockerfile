@@ -34,8 +34,10 @@ USER root
 RUN chown -R flecsi:flecsi /home/flecsi/flecsi
 USER flecsi
 
+RUN pwd
+RUN ls -la
 WORKDIR /home/flecsi/flecsi
-RUN cp /home/flecsi/build /home/flecsi/flecsi/
+#RUN cp /home/flecsi/build /home/flecsi/flecsi/
 
 WORKDIR build
 RUN pwd
