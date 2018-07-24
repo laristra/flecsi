@@ -122,11 +122,12 @@ Travis-CI is going to build and run
   * `SYSTEM_LIBS` ON/OFF for using system libraries
   * `RUNTIME` legion/mpi/hpx for specifying runtime backend
   * `WERROR` yes/no for displaying warnings
-  * `IGNORE_NOCI` true/false
-  * `SONARQUBE` ON/OFF
-  * `COVERAGE` ON/OFF
-  * `MPI` ON/OFF
-  * `DOCS` true/false
+  * `IGNORE_NOCI` true/false for still building all tests on Travis-CI
+    even if NOCI is true for some tests
+  * `SONARQUBE` ON/OFF for producing inspection files on code qualities
+  * `COVERAGE` ON/OFF for producing code coverage analysis files
+  * `MPI` ON/OFF for using MPI (We could just always set this to ON)
+  * `DOCS` true/false for producing documentation
 
 ```
 before_install:
@@ -279,7 +280,7 @@ ARG TRAVIS_COMMIT
 
 [It is OK for the values to be empty/null, but it is NOT OK to not handle them]
 
-- `ENV` 
+- `ENV` sets the environment vairalbe within the Docker
 
 ```
 COPY libristra/ /home/flecsi/libristra
