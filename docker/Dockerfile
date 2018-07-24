@@ -70,6 +70,6 @@ RUN pwd
 #fi && cd -
 
 USER root
-#RUN make install
+RUN make install
 USER flecsi
 WORKDIR /home/flecsi
