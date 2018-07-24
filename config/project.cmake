@@ -420,6 +420,16 @@ install(
 )
 
 #------------------------------------------------------------------------------#
+# Add Apple-specific flag for shared library
+#------------------------------------------------------------------------------#
+
+if(APPLE)
+  message(STATUS "Adding Apple-specific shared lib flag")
+  set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS
+    "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -undefined dynamic_lookup")
+endif()
+
+#------------------------------------------------------------------------------#
 # Add library targets
 #------------------------------------------------------------------------------#
 
