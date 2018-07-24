@@ -56,6 +56,8 @@ deploy_docker:
                 - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
                 - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
                 - docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
+                - pwd
+                - ls -la
                 - docker build -t laristra/flecsi-third-party:ubuntu /builds/onurcaylak/docker/ 
                 #- CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
         dependencies:
