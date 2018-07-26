@@ -212,8 +212,22 @@ endif()
 # Caliper
 #------------------------------------------------------------------------------#
 
+find_package(Caliper QUIET)
+
+option(ENABLE_CALIPER "Enable Caliper Support" ${Caliper_FOUND})
+
+if(ENABLE_CALIPER AND NOT Caliper_FOUND)
+  message(FATAL_ERROR "Caliper requested, but not found")
+endif()
+
 if(ENABLE_CALIPER)
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Caliper_LIBRARIES})
+  message(STATUS "Found Caliper: ${Caliper_INCLUDE_DIRS}")
+  include_directories(${Caliper_INCLUDE_DIRS})
+  add_definitions(-DHAVE_CALIPER)
+  list( APPEND FLECSI_LIBRARY_DEPENDENCIES ${Caliper_LIBRARIES} )
+  if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+    list( APPEND FLECSI_LIBRARY_DEPENDENCIES ${Caliper_MPI_LIBRARIES} )
+  endif()
 endif()
 
 #------------------------------------------------------------------------------#
