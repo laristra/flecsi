@@ -35,6 +35,7 @@ namespace execution {
 /*!
   Executor interface.
  */
+
 template<typename RETURN, typename ARG_TUPLE>
 struct executor__ {
   /*!
@@ -52,6 +53,7 @@ struct executor__ {
 /*!
  FIXME documentation
  */
+
 template<typename ARG_TUPLE>
 struct executor__<void, ARG_TUPLE> {
   /*!

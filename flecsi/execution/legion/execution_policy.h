@@ -173,13 +173,6 @@ struct legion_execution_policy_t {
     auto legion_runtime = Legion::Runtime::get_runtime();
     auto legion_context = Legion::Runtime::get_context();
 
-    //------------------------------------------------------------------------//
-    // Lambda function definitions
-    //
-    // These define simple sets of operations that can be composed for the
-    // different cases below.
-    //------------------------------------------------------------------------//
-
     // Execute a tuple walker that applies the task epilog operations
     // on the mapped handles
     task_epilog_t task_epilog(legion_runtime, legion_context);

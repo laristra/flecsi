@@ -15,6 +15,8 @@
 
 /*! @file */
 
+#include <type_traits>
+
 namespace flecsi {
 namespace utils {
 

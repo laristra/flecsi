@@ -43,72 +43,6 @@ namespace flecsi {
 namespace execution {
 
 /*!
- Wrapper to handle returns from user task execution.
-
- @tparam RETURN    The return type of the user task.
- @tparam ARG_TUPLE A std::tuple of the user task arguments.
- @tparam DELEGATE  The delegate function that invokes the user task.
-
- @ingroup legion-execution
- */
-
-template<typename RETURN, typename ARG_TUPLE, RETURN (*DELEGATE)(ARG_TUPLE)>
-struct execution_wrapper__ {
-
-  /*!
-   Execute the delegate function, storing the return value.
-   */
-
-  void execute(ARG_TUPLE && args) {
-    value_ = (*DELEGATE)(std::forward<ARG_TUPLE>(args));
-  } // execute
-
-  /*!
-    Recover the return value. This is similar to a future, but with
-    immediate execution. This function is suitable for returning from
-    the task wrapper types below to handle void vs. non-void return types.
-   */
-
-  RETURN
-  get() {
-    return value_;
-  } // get
-
-private:
-  RETURN value_;
-
-}; // struct execution_wrapper__
-
-/*!
- Wrapper to handle void returns from user task execution.
-
- @tparam ARG_TUPLE A std::tuple of the user task arguments.
- @tparam DELEGATE  The delegate function that invokes the user task.
-
- @ingroup legion-execution
- */
-
-template<typename ARG_TUPLE, void (*DELEGATE)(ARG_TUPLE)>
-struct execution_wrapper__<void, ARG_TUPLE, DELEGATE> {
-
-  /*!
-    Execute the delegate function. No value is stored for void.
-   */
-
-  void execute(ARG_TUPLE && args) {
-    (*DELEGATE)(std::forward<ARG_TUPLE>(args));
-  } // execute
-
-  /*!
-    This function is suitable for returning from the task wrapper
-    types below to handle void return types.
-   */
-
-  void get() {}
-
-}; // struct execution_wrapper__
-
-/*!
   Pure Legion task wrapper.
 
   @tparam RETURN The return type of the task.
@@ -210,9 +144,10 @@ struct task_wrapper__ {
   /*!
    Registration callback function for user tasks.
 
-   @param tid    The task id to assign to the task.
-   @param launch A \ref launch_t with the launch parameters.
-   @param name   A std::string containing the task name.
+   @param tid            The task id to assign to the task.
+   @param processor_type A \ref processor_type_t with the processor type.
+   @param launch         A \ref launch_t with the launch parameters.
+   @param name           A std::string containing the task name.
    */
 
   static void registration_callback(task_id_t tid,
@@ -224,40 +159,36 @@ struct task_wrapper__ {
       clog(info) << "Executing registration callback for " << name << std::endl;
     }
 
-    // Create configuration options using launch information provided
-    // by the user.
-    Legion::TaskConfigOptions config_options{
-      launch_leaf(launch), launch_inner(launch), launch_idempotent(launch)};
+    Legion::TaskVariantRegistrar registrar(tid, name.c_str());
+    Legion::Processor::Kind kind = processor_type == processor_type_t::toc ?
+      Legion::Processor::TOC_PROC : Legion::Processor::LOC_PROC;
+    registrar.add_constraint(Legion::ProcessorConstraint(kind));
+    registrar.set_leaf(launch_leaf(launch));
+    registrar.set_inner(launch_inner(launch));
+    registrar.set_idempotent(launch_idempotent(launch));
 
-    switch(processor_type) {
-      case processor_type_t::loc: {
-        clog_tag_guard(wrapper);
-        clog(info) << "Registering loc task: " << name << std::endl
-                   << std::endl;
+    /*
+      This section of conditionals is necessary because there is still
+      a distinction between void and non-void task registration with
+      Legion, and we still have to use different execution tasks for
+      normal and MPI tasks. MPI tasks are required to have void returns,
+      so there is no mpi case for non-void tasks.
+     */
+
+    if constexpr(std::is_same_v<RETURN, void>) {
+      if(processor_type == processor_type_t::mpi) {
+        Legion::Runtime::preregister_task_variant<execute_mpi_task>(
+          registrar, name.c_str());
       }
-        registration_wrapper__<RETURN, execute_user_task>::register_task(
-          tid, Legion::Processor::LOC_PROC, config_options, name);
-        break;
-      case processor_type_t::toc: {
-        clog_tag_guard(wrapper);
-        clog(info) << "Registering toc task: " << name << std::endl
-                   << std::endl;
-      }
-        registration_wrapper__<RETURN, execute_user_task>::register_task(
-          tid, Legion::Processor::TOC_PROC, config_options, name);
-        break;
-      case processor_type_t::mpi: {
-        clog_tag_guard(wrapper);
-        clog(info) << "Registering MPI task: " << name << std::endl
-                   << std::endl;
-      }
-        registration_wrapper__<void, execute_mpi_task>::register_task(
-          tid, Legion::Processor::LOC_PROC, config_options, name);
-        break;
-      default:
-        clog_fatal("invalid processor type" << processor_type);
-        break;
-    } // switch
+      else {
+        Legion::Runtime::preregister_task_variant<execute_user_task>(
+          registrar, name.c_str());
+      } // if
+    }
+    else {
+      Legion::Runtime::preregister_task_variant<RETURN, execute_user_task>(
+        registrar, name.c_str());
+    } // if
   } // registration_callback
 
   /*!
@@ -279,15 +210,20 @@ struct task_wrapper__ {
     init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(task_args);
 
-    // Execute the user's task
-    // return (*DELEGATE)(task_args);
-    execution_wrapper__<RETURN, ARG_TUPLE, DELEGATE> wrapper;
-    wrapper.execute(std::forward<ARG_TUPLE>(task_args));
+    if constexpr(std::is_same_v<RETURN, void>) {
+      (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
-    finalize_handles_t finalize_handles;
-    finalize_handles.walk(task_args);
+      finalize_handles_t finalize_handles;
+      finalize_handles.walk(task_args);
+    }
+    else {
+      RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
-    return wrapper.get();
+      finalize_handles_t finalize_handles;
+      finalize_handles.walk(task_args);
+
+      return result;
+    } // if
   } // execute_user_task
 
   /*!
