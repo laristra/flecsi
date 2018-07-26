@@ -214,7 +214,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
         rr_entries_ghost =
           Legion::RegionRequirement(
-          ghost_entries_regions[first], WRITE_DISCARD, EXCLUSIVE,
+          color_entries_regions[first], WRITE_DISCARD, EXCLUSIVE,
           color_entries_regions[first]);        
       }
 
