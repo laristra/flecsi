@@ -223,7 +223,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                         - /builds/onurcaylak/flecsi/build
 
 test_ubuntu:
-        image: laristra/flecsi-third-party:ubuntu 
+        image: laristra/flecsi-third-party:ubuntu_openmpi
         stage: test
         script: 
                 - cd /builds/onurcaylak/flecsi/build/
