@@ -31,7 +31,7 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 paths:
                         - /builds/onurcaylak/flecsi/build
 
-test_ubuntu:
+test ubuntu/legion:
         image: laristra/flecsi-third-party:ubuntu 
         stage: test
         script: 
