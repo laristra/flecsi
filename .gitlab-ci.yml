@@ -199,7 +199,7 @@ test ubuntu_mpich/mpi:
 
 #5--------------------------------------------------------------------------
 
-DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
+DISTRO=ubuntu_openmpi RUNTIME=legion DOCKERHUB=true:
         image: laristra/flecsi-third-party:ubuntu_openmpi 
         stage: build
 
