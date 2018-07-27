@@ -96,7 +96,7 @@ DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true:
                 paths:
                         - /builds/onurcaylak/flecsi/build
 
-test_ubuntu:
+test ubuntu_mpich/legion:
         image: laristra/flecsi-third-party:ubuntu 
         stage: test
         script: 
@@ -138,7 +138,7 @@ DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true:
                 paths:
                         - /builds/onurcaylak/flecsi/build
 
-test_ubuntu:
+test ubuntu/mpi:
         image: laristra/flecsi-third-party:ubuntu 
         stage: test
         script: 
@@ -180,7 +180,7 @@ DISTRO=ubuntu_mpich RUNTIME=mpi DOCKERHUB=true:
                 paths:
                         - /builds/onurcaylak/flecsi/build
 
-test_ubuntu:
+test ubuntu_mpich/mpi:
         image: laristra/flecsi-third-party:ubuntu_mpich 
         stage: test
         script: 
