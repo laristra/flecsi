@@ -5,7 +5,9 @@ stages:
 
 services:
         - docker:dind
- 
+          
+#1--------------------------------------------------------------------------
+
 DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
         image: laristra/flecsi-third-party:ubuntu 
         stage: build
@@ -43,7 +45,7 @@ test_ubuntu:
                 expire_in: 1 hour
                 paths:
                         - /builds/onurcaylak/flecsi/build
-                                                     
+
 deploy_docker:
         image: docker:latest
         stage: deploy
@@ -59,12 +61,222 @@ deploy_docker:
                 - docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
                 - pwd
                 - ls -la
-                - docker build -t laristra/flecsi-third-party:ubuntu /docker/builds/onurcaylak/docker/ 
+                #- docker build -t laristra/flecsi-third-party:ubuntu /docker/builds/onurcaylak/docker/ 
                 #- CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
         dependencies:
                 - test_ubuntu
+        artifacts:
+                expire_in: 1 hour
+                paths:
+                        - /builds/onurcaylak/flecsi/build
+#1--------------------------------------------------------------------------
+
+#2--------------------------------------------------------------------------
+
+DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true:
+        image: laristra/flecsi-third-party:ubuntu_mpich 
+        stage: build
+
+        variables:
+          GLOBAL_CI_VARIABLE: "global_ci_value"
+          GIT_SUBMODULE_STRATEGY: recursive
+
+        script:
+                - DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true
+                - mkdir /builds/onurcaylak/flecsi/build
+                - cd build
+                - cmake -DENABLE_LEGION=$LEGION -DFLECSI_RUNTIME_MODEL=$RUNTIME ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) -DENABLE_UNIT_TESTS=ON -DENABLE_PARMETIS=ON -DENABLE_COLORING=ON -DENABLE_DOXYGEN=ON -DENABLE_DOCUMENTATION=ON  ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} "${WERROR:+-Werror} -Wno-deprecated-declarations"  ..
+                - make doxygen
+                - if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
+                - make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
+                - cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
+                #- touch /builds/onurcaylak/flecsi/build/job007
+        artifacts:
+                expire_in: 1 hour
+                paths:
+                        - /builds/onurcaylak/flecsi/build
+
+test_ubuntu:
+        image: laristra/flecsi-third-party:ubuntu 
+        stage: test
+        script: 
+                - cd /builds/onurcaylak/flecsi/build/
+                - make test ARGS="-V"
+                - ls -la 
+        dependencies:
+                - DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true
 
         artifacts:
                 expire_in: 1 hour
                 paths:
                         - /builds/onurcaylak/flecsi/build
+
+#2--------------------------------------------------------------------------
+
+#3--------------------------------------------------------------------------
+
+DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true:
+        image: laristra/flecsi-third-party:ubuntu 
+        stage: build
+
+        variables:
+          GLOBAL_CI_VARIABLE: "global_ci_value"
+          GIT_SUBMODULE_STRATEGY: recursive
+
+        script:
+                - DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true
+                - mkdir /builds/onurcaylak/flecsi/build
+                - cd build
+                - cmake -DENABLE_LEGION=$LEGION -DFLECSI_RUNTIME_MODEL=$RUNTIME ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) -DENABLE_UNIT_TESTS=ON -DENABLE_PARMETIS=ON -DENABLE_COLORING=ON -DENABLE_DOXYGEN=ON -DENABLE_DOCUMENTATION=ON  ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} "${WERROR:+-Werror} -Wno-deprecated-declarations"  ..
+                - make doxygen
+                - if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
+                - make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
+                - cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
+                #- touch /builds/onurcaylak/flecsi/build/job007
+        artifacts:
+                expire_in: 1 hour
+                paths:
+                        - /builds/onurcaylak/flecsi/build
+
+test_ubuntu:
+        image: laristra/flecsi-third-party:ubuntu 
+        stage: test
+        script: 
+                - cd /builds/onurcaylak/flecsi/build/
+                - make test ARGS="-V"
+                - ls -la 
+        dependencies:
+                - DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true
+
+        artifacts:
+                expire_in: 1 hour
+                paths:
+                        - /builds/onurcaylak/flecsi/build
+
+#3--------------------------------------------------------------------------
+
+#4--------------------------------------------------------------------------
+
+DISTRO=ubuntu_mpich RUNTIME=mpi DOCKERHUB=true:
+        image: laristra/flecsi-third-party:ubuntu 
+        stage: build
+
+        variables:
+          GLOBAL_CI_VARIABLE: "global_ci_value"
+          GIT_SUBMODULE_STRATEGY: recursive
+
+        script:
+                - DISTRO=ubuntu_mpich RUNTIME=mpi DOCKERHUB=true
+                - mkdir /builds/onurcaylak/flecsi/build
+                - cd build
+                - cmake -DENABLE_LEGION=$LEGION -DFLECSI_RUNTIME_MODEL=$RUNTIME ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) -DENABLE_UNIT_TESTS=ON -DENABLE_PARMETIS=ON -DENABLE_COLORING=ON -DENABLE_DOXYGEN=ON -DENABLE_DOCUMENTATION=ON  ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} "${WERROR:+-Werror} -Wno-deprecated-declarations"  ..
+                - make doxygen
+                - if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
+                - make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
+                - cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
+                #- touch /builds/onurcaylak/flecsi/build/job007
+        artifacts:
+                expire_in: 1 hour
+                paths:
+                        - /builds/onurcaylak/flecsi/build
+
+test_ubuntu:
+        image: laristra/flecsi-third-party:ubuntu_mpich 
+        stage: test
+        script: 
+                - cd /builds/onurcaylak/flecsi/build/
+                - make test ARGS="-V"
+                - ls -la 
+        dependencies:
+                - DISTRO=ubuntu_mpich RUNTIME=mpi DOCKERHUB=true
+
+        artifacts:
+                expire_in: 1 hour
+                paths:
+                        - /builds/onurcaylak/flecsi/build
+
+#4--------------------------------------------------------------------------
+
+##5--------------------------------------------------------------------------
+
+#DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
+        #image: laristra/flecsi-third-party:ubuntu 
+        #stage: build
+
+        #variables:
+          #GLOBAL_CI_VARIABLE: "global_ci_value"
+          #GIT_SUBMODULE_STRATEGY: recursive
+
+        #script:
+                #- DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+                #- mkdir /builds/onurcaylak/flecsi/build
+                #- cd build
+                #- cmake -DENABLE_LEGION=$LEGION -DFLECSI_RUNTIME_MODEL=$RUNTIME ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) -DENABLE_UNIT_TESTS=ON -DENABLE_PARMETIS=ON -DENABLE_COLORING=ON -DENABLE_DOXYGEN=ON -DENABLE_DOCUMENTATION=ON  ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} "${WERROR:+-Werror} -Wno-deprecated-declarations"  ..
+                #- make doxygen
+                #- if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
+                #- make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
+                #- cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
+                ##- touch /builds/onurcaylak/flecsi/build/job007
+        #artifacts:
+                #expire_in: 1 hour
+                #paths:
+                        #- /builds/onurcaylak/flecsi/build
+
+#test_ubuntu:
+        #image: laristra/flecsi-third-party:ubuntu 
+        #stage: test
+        #script: 
+                #- cd /builds/onurcaylak/flecsi/build/
+                #- make test ARGS="-V"
+                #- ls -la 
+        #dependencies:
+                #- DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+
+        #artifacts:
+                #expire_in: 1 hour
+                #paths:
+                        #- /builds/onurcaylak/flecsi/build
+
+##5--------------------------------------------------------------------------
+
+##6--------------------------------------------------------------------------
+
+#DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
+        #image: laristra/flecsi-third-party:ubuntu 
+        #stage: build
+
+        #variables:
+          #GLOBAL_CI_VARIABLE: "global_ci_value"
+          #GIT_SUBMODULE_STRATEGY: recursive
+
+        #script:
+                #- DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+                #- mkdir /builds/onurcaylak/flecsi/build
+                #- cd build
+                #- cmake -DENABLE_LEGION=$LEGION -DFLECSI_RUNTIME_MODEL=$RUNTIME ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) -DENABLE_UNIT_TESTS=ON -DENABLE_PARMETIS=ON -DENABLE_COLORING=ON -DENABLE_DOXYGEN=ON -DENABLE_DOCUMENTATION=ON  ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} "${WERROR:+-Werror} -Wno-deprecated-declarations"  ..
+                #- make doxygen
+                #- if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
+                #- make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
+                #- cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
+                ##- touch /builds/onurcaylak/flecsi/build/job007
+        #artifacts:
+                #expire_in: 1 hour
+                #paths:
+                        #- /builds/onurcaylak/flecsi/build
+
+#test_ubuntu:
+        #image: laristra/flecsi-third-party:ubuntu 
+        #stage: test
+        #script: 
+                #- cd /builds/onurcaylak/flecsi/build/
+                #- make test ARGS="-V"
+                #- ls -la 
+        #dependencies:
+                #- DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+
+        #artifacts:
+                #expire_in: 1 hour
+                #paths:
+                        #- /builds/onurcaylak/flecsi/build
+
+##6--------------------------------------------------------------------------
