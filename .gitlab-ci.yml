@@ -25,7 +25,6 @@ DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
                 - if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
                 - make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
                 - cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
-                #- touch /builds/onurcaylak/flecsi/build/job007
         artifacts:
                 expire_in: 1 hour
                 paths:
@@ -90,7 +89,6 @@ DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true:
                 - if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
                 - make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
                 - cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
-                #- touch /builds/onurcaylak/flecsi/build/job007
         artifacts:
                 expire_in: 1 hour
                 paths:
@@ -132,7 +130,6 @@ DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true:
                 - if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
                 - make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
                 - cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
-                #- touch /builds/onurcaylak/flecsi/build/job007
         artifacts:
                 expire_in: 1 hour
                 paths:
@@ -174,7 +171,6 @@ DISTRO=ubuntu_mpich RUNTIME=mpi DOCKERHUB=true:
                 - if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
                 - make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
                 - cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
-                #- touch /builds/onurcaylak/flecsi/build/job007
         artifacts:
                 expire_in: 1 hour
                 paths:
