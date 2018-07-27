@@ -84,6 +84,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
               EXCLUSIVE_PERMISSIONS,
               SHARED_PERMISSIONS,
               GHOST_PERMISSIONS> & a) {
+    if(sparse){
+      return;
+    }
+
     auto & h = a.handle;
 
     if (!h.global && !h.color) {
@@ -292,6 +296,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     > &a
   )
   {
+    if(!sparse){
+      return;
+    }
+
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
     auto & h = a.handle;
@@ -409,6 +417,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     > &m
   )
   {
+    if(!sparse){
+      return;
+    }
+    
     auto & h = m.h_;
 
     if ((*h.ghost_is_readable)) {
@@ -471,6 +483,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
   std::vector<Legion::PhaseBarrier *> barrier_ptrs;
   size_t reserve;
   size_t max_entries_per_index;
+  bool sparse = false;
 
 }; // struct task_prolog_t
 
