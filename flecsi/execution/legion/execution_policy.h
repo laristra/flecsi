@@ -250,7 +250,7 @@ struct legion_execution_policy_t {
 
           task_launcher.tag = MAPPER_SUBRANK_LAUNCH;
 
-	  #if defined(ENABLE_CALIPER)
+          #if defined(ENABLE_CALIPER)
             // [Caliper] Mark this function
             CALI_CXX_MARK_FUNCTION;
 
@@ -260,19 +260,28 @@ struct legion_execution_policy_t {
           // Enqueue the prolog.
           task_prolog_t task_prolog(
               legion_runtime, legion_context, task_launcher);
+          task_prolog.sparse = false;
           task_prolog.walk(task_args);
           task_prolog.launch_copies();
 
-	  #ifdef ENABLE_CALIPER
+          #ifdef ENABLE_CALIPER
             CALI_MARK_END("FleCSI_Invocation task_prolog");
+            CALI_MARK_BEGIN("FleCSI_Invocation task_prolog_sparse");
           #endif // ENABLE_CALIPER
 
-          // Enqueue the task.
-          clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
-                      << legion_runtime->find_local_MPI_rank() << std::endl;
+          task_prolog_t task_prolog_sparse(
+              legion_runtime, legion_context, task_launcher);
+          task_prolog_sparse.sparse = true;
+          task_prolog_sparse.walk(task_args);
+          task_prolog_sparse.launch_copies();
+
+          #ifdef ENABLE_CALIPER
+            CALI_MARK_END("FleCSI_Invocation task_prolog_sparse");
+          #endif // ENABLE_CALIPER
+
           auto f = legion_runtime->execute_task(legion_context, task_launcher);
 
-	  #ifdef ENABLE_CALIPER
+          #ifdef ENABLE_CALIPER
             CALI_MARK_BEGIN("FleCSI_Invocation task_epilog");
           #endif // ENABLE_CALIPER
 
@@ -280,7 +289,7 @@ struct legion_execution_policy_t {
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
 
-	  #ifdef ENABLE_CALIPER
+          #ifdef ENABLE_CALIPER
             CALI_MARK_END("FleCSI_Invocation task_epilog");
           #endif // ENABLE_CALIPER
 
@@ -391,9 +400,16 @@ struct legion_execution_policy_t {
         // Enqueue the prolog.
         task_prolog_t task_prolog(
             legion_runtime, legion_context, task_launcher);
+        task_prolog.sparse = false;
         task_prolog.walk(task_args);
         task_prolog.launch_copies();
 
+        task_prolog_t task_prolog_sparse(
+            legion_runtime, legion_context, task_launcher);
+        task_prolog_sparse.sparse = true;
+        task_prolog_sparse.walk(task_args);
+        task_prolog_sparse.launch_copies();
+        
         // Enqueue the task.
         clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
                     << legion_runtime->find_local_MPI_rank() << std::endl;
