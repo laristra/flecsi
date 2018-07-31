@@ -100,7 +100,7 @@
   @ingroup data
  */
 
-#define flecsi_register_global(nspace, name, data_type, versions, ...)         \
+#define flecsi_register_global(nspace, name, data_type, versions)              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
@@ -109,8 +109,8 @@
           flecsi::data::global_data_client_t, flecsi::data::global, data_type, \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-          versions, flecsi::execution::internal_index_space::global_is,        \
-          ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
+          versions, flecsi::execution::internal_index_space::global_is>        \
+             ({EXPAND_AND_STRINGIFY(name)})
 
 /*!
   @def flecsi_register_color
@@ -130,7 +130,7 @@
   @ingroup data
  */
 
-#define flecsi_register_color(nspace, name, data_type, versions, ...)          \
+#define flecsi_register_color(nspace, name, data_type, versions)               \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
@@ -139,8 +139,8 @@
           flecsi::data::color_data_client_t, flecsi::data::color, data_type,   \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-          versions, flecsi::execution::internal_index_space::color_is,         \
-          ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
+          versions, flecsi::execution::internal_index_space::color_is>         \
+             ({EXPAND_AND_STRINGIFY(name)})
 
 /*!
   @def flecsi_get_handle

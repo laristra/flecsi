@@ -249,8 +249,15 @@ struct legion_execution_policy_t {
           // Enqueue the prolog.
           task_prolog_t task_prolog(
               legion_runtime, legion_context, task_launcher);
+          task_prolog.sparse = false;
           task_prolog.walk(task_args);
           task_prolog.launch_copies();
+
+          task_prolog_t task_prolog_sparse(
+              legion_runtime, legion_context, task_launcher);
+          task_prolog_sparse.sparse = true;
+          task_prolog_sparse.walk(task_args);
+          task_prolog_sparse.launch_copies();
 
           auto f = legion_runtime->execute_task(legion_context, task_launcher);
 
@@ -365,9 +372,16 @@ struct legion_execution_policy_t {
         // Enqueue the prolog.
         task_prolog_t task_prolog(
             legion_runtime, legion_context, task_launcher);
+        task_prolog.sparse = false;
         task_prolog.walk(task_args);
         task_prolog.launch_copies();
 
+        task_prolog_t task_prolog_sparse(
+            legion_runtime, legion_context, task_launcher);
+        task_prolog_sparse.sparse = true;
+        task_prolog_sparse.walk(task_args);
+        task_prolog_sparse.launch_copies();
+        
         // Enqueue the task.
         clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
                     << legion_runtime->find_local_MPI_rank() << std::endl;
