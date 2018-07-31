@@ -216,6 +216,7 @@ struct mpi_execution_policy_t
   register_reduction_operation()
   {
     using wrapper_t = reduction_wrapper__<NAME, OPERATION>;
+    return true;
   } // register_reduction_operation
 
   //--------------------------------------------------------------------------//
