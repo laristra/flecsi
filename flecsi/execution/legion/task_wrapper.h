@@ -76,43 +76,42 @@ struct pure_task_wrapper__ {
   static void registration_callback(task_id_t tid,
     processor_type_t processor_type,
     launch_t launch,
-    std::string & task_name) {
+    std::string & name) {
     {
       clog_tag_guard(wrapper);
-      clog(info) << "Executing PURE registration callback (" << task_name << ")"
-                 << std::endl;
+      clog(info) << "Executing PURE registration callback for " <<
+        name << std::endl;
     }
 
-    // Create configuration options using launch information provided
-    // by the user.
-    Legion::TaskConfigOptions config_options{
-      launch_leaf(launch), launch_inner(launch), launch_idempotent(launch)};
+    Legion::TaskVariantRegistrar registrar(tid, name.c_str());
+    Legion::Processor::Kind kind = processor_type == processor_type_t::toc ?
+      Legion::Processor::TOC_PROC : Legion::Processor::LOC_PROC;
+    registrar.add_constraint(Legion::ProcessorConstraint(kind));
+    registrar.set_leaf(launch_leaf(launch));
+    registrar.set_inner(launch_inner(launch));
+    registrar.set_idempotent(launch_idempotent(launch));
 
-    switch(processor_type) {
-      case processor_type_t::loc: {
-        clog_tag_guard(wrapper);
-        clog(info) << "Registering PURE loc task: " << task_name << " "
-                   << launch << std::endl
-                   << std::endl;
+    /*
+      This section of conditionals is necessary because there is still
+      a distinction between void and non-void task registration with
+      Legion, and we still have to use different execution tasks for
+      normal and MPI tasks. MPI tasks are required to have void returns,
+      so there is no mpi case for non-void tasks.
+     */
+
+    if constexpr(std::is_same_v<RETURN, void>) {
+      if(processor_type == processor_type_t::mpi) {
+        clog_fatal("MPI type passed to pure task registration");
       }
-        registration_wrapper__<RETURN, TASK>::register_task(
-          tid, Legion::Processor::LOC_PROC, config_options, task_name);
-        break;
-      case processor_type_t::toc: {
-        clog_tag_guard(wrapper);
-        clog(info) << "Registering PURE toc task: " << task_name << std::endl
-                   << std::endl;
-      }
-        registration_wrapper__<RETURN, TASK>::register_task(
-          tid, Legion::Processor::TOC_PROC, config_options, task_name);
-        break;
-      case processor_type_t::mpi:
-        clog_fatal("MPI type passed to pure legion registration");
-        break;
-      default:
-        clog_fatal("invalid processor type" << processor_type);
-        break;
-    } // switch
+      else {
+        Legion::Runtime::preregister_task_variant<TASK>(registrar,
+          name.c_str());
+      } // if
+    }
+    else {
+      Legion::Runtime::preregister_task_variant<RETURN, TASK>(registrar,
+        name.c_str());
+    } // if
   } // registration_callback
 
 }; // struct pure_task_wrapper__
