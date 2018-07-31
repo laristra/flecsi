@@ -102,9 +102,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>can_send_to_one_</b><
 <tr class="memitem:a70a0182c4f7932caf5c104107f324229"><td class="memItemLeft" align="right" valign="top"><a id="a70a0182c4f7932caf5c104107f324229"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>clean_color_</b></td></tr>
 <tr class="separator:a70a0182c4f7932caf5c104107f324229"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac620aeaa2182c991e030b9d0cfb3adbd"><td class="memItemLeft" align="right" valign="top"><a id="ac620aeaa2182c991e030b9d0cfb3adbd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fatal_</b></td></tr>
-<tr class="separator:ac620aeaa2182c991e030b9d0cfb3adbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename P&gt;<br />
@@ -160,7 +157,6 @@ template&lt;typename P &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Constructor.</p>
-<p>This method initializes the <em>fatal_</em> data member to false. Derived classes wishing to force exit should set this to true in their override of the stream method.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">P</td><td>Predicate function type.</td></tr>
@@ -172,6 +168,7 @@ template&lt;typename P &gt; </div>
     <tr><td class="paramname">file</td><td>The current file (where the log message was created). In general, this will always use the <b>FILE</b> parameter from the calling macro. </td></tr>
     <tr><td class="paramname">line</td><td>The current line (where the log message was called). In general, this will always use the <b>LINE</b> parameter from the calling macro. </td></tr>
     <tr><td class="paramname">predicate</td><td>The predicate function to determine whether or not the calling runtime should produce output. </td></tr>
+    <tr><td class="paramname">can_send_to_one</td><td>A boolean indicating whether the calling scope can route messages through one rank. </td></tr>
   </table>
   </dd>
 </dl>

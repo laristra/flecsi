@@ -3,7 +3,7 @@ var searchData=
   ['task_2eh',['task.h',['../task_8h.html',1,'']]],
   ['task_5fepilog_2eh',['task_epilog.h',['../legion_2task__epilog_8h.html',1,'(Global Namespace)'],['../mpi_2task__epilog_8h.html',1,'(Global Namespace)']]],
   ['task_5fprolog_2eh',['task_prolog.h',['../legion_2task__prolog_8h.html',1,'(Global Namespace)'],['../mpi_2task__prolog_8h.html',1,'(Global Namespace)']]],
-  ['task_5fwrapper_2eh',['task_wrapper.h',['../legion_2task__wrapper_8h.html',1,'(Global Namespace)'],['../mpi_2task__wrapper_8h.html',1,'(Global Namespace)']]],
+  ['task_5fwrapper_2eh',['task_wrapper.h',['../legion_2task__wrapper_8h.html',1,'']]],
   ['test_5fmesh_5f2d_2eh',['test_mesh_2d.h',['../test__mesh__2d_8h.html',1,'']]],
   ['thread_5fpool_2eh',['thread_pool.h',['../thread__pool_8h.html',1,'']]],
   ['tikz_2eh',['tikz.h',['../tikz_8h.html',1,'']]],

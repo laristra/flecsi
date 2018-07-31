@@ -323,9 +323,6 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a05ec23b0070fe6da1f4e9ffa904f89c4"><td class="memItemLeft" align="right" valign="top"><a id="a05ec23b0070fe6da1f4e9ffa904f89c4"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::demangle</b> (const char *name)</td></tr>
-<tr class="separator:a05ec23b0070fe6da1f4e9ffa904f89c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa114cb5dcd0f7a06ebf67607360b44a0"><td class="memItemLeft" align="right" valign="top"><a id="aa114cb5dcd0f7a06ebf67607360b44a0"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::timestamp</b> (bool underscores=false)</td></tr>
 <tr class="separator:aa114cb5dcd0f7a06ebf67607360b44a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -350,9 +347,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::flush_packets<
 <tr class="memitem:a586810a67c0c3c2909adacbfb4735530"><td class="memItemLeft" align="right" valign="top"><a id="a586810a67c0c3c2909adacbfb4735530"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>cinch::severity_message_t</b> (error, decltype(cinch::true_state), { std::ostream &amp;stream=std::cerr;{ stream&lt;&lt; OUTPUT_RED(&quot;[E&quot;)&lt;&lt; OUTPUT_LTGRAY(message_stamp);stream&lt;&lt; OUTPUT_DKGRAY(mpi_stamp);stream&lt;&lt; OUTPUT_RED(&quot;] &quot;)&lt;&lt; COLOR_LTRED;} clean_color_=true;return stream;})</td></tr>
 <tr class="separator:a586810a67c0c3c2909adacbfb4735530"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c5e6f1d7b2e2ad9f69277099b887b7a"><td class="memItemLeft" align="right" valign="top"><a id="a4c5e6f1d7b2e2ad9f69277099b887b7a"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::severity_message_t</b> (fatal, decltype(cinch::true_state), { std::ostream &amp;stream=std::cerr;{ stream&lt;&lt; OUTPUT_RED(&quot;[F&quot;&lt;&lt; message_stamp&lt;&lt; &quot;] &quot;)&lt;&lt; COLOR_LTRED;} clean_color_=true;fatal_=true;return stream;})</td></tr>
-<tr class="separator:a4c5e6f1d7b2e2ad9f69277099b887b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaeabe93215950903486560045fe45ff83"><td class="memTemplParams" colspan="2">template&lt;size_t RANK&gt; </td></tr>
 <tr class="memitem:gaeabe93215950903486560045fe45ff83"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__clog.html#gaeabe93215950903486560045fe45ff83">cinch::is_static_rank</a> ()</td></tr>
 <tr class="separator:gaeabe93215950903486560045fe45ff83"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -375,8 +369,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>cinch::flush_packets<
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">size_t</span> name ## _clog_tag_id =                                         <a class="code" href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">\</a></div><div class="line"><a class="code" href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">  cinch::clog_t::instance</a>().<a class="code" href="classcinch_1_1clog__t.html#a7905f42d4a850c4de9b5e365a95d6a01">register_tag</a>(_clog_stringify(name))</div><div class="ttc" id="classcinch_1_1clog__t_html_ac88c470d589819992083e8b09d069da6"><div class="ttname"><a href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">cinch::clog_t::instance</a></div><div class="ttdeci">static clog_t &amp; instance()</div><div class="ttdef"><b>Definition:</b> cinchlog.h:705</div></div>
-<div class="ttc" id="classcinch_1_1clog__t_html_a7905f42d4a850c4de9b5e365a95d6a01"><div class="ttname"><a href="classcinch_1_1clog__t.html#a7905f42d4a850c4de9b5e365a95d6a01">cinch::clog_t::register_tag</a></div><div class="ttdeci">size_t register_tag(const char *tag)</div><div class="ttdef"><b>Definition:</b> cinchlog.h:838</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">size_t</span> name ## _clog_tag_id =                                         <a class="code" href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">\</a></div><div class="line"><a class="code" href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">  cinch::clog_t::instance</a>().<a class="code" href="classcinch_1_1clog__t.html#a7905f42d4a850c4de9b5e365a95d6a01">register_tag</a>(_clog_stringify(name))</div><div class="ttc" id="classcinch_1_1clog__t_html_ac88c470d589819992083e8b09d069da6"><div class="ttname"><a href="classcinch_1_1clog__t.html#ac88c470d589819992083e8b09d069da6">cinch::clog_t::instance</a></div><div class="ttdeci">static clog_t &amp; instance()</div><div class="ttdef"><b>Definition:</b> cinchlog.h:752</div></div>
+<div class="ttc" id="classcinch_1_1clog__t_html_a7905f42d4a850c4de9b5e365a95d6a01"><div class="ttname"><a href="classcinch_1_1clog__t.html#a7905f42d4a850c4de9b5e365a95d6a01">cinch::clog_t::register_tag</a></div><div class="ttdeci">size_t register_tag(const char *tag)</div><div class="ttdef"><b>Definition:</b> cinchlog.h:885</div></div>
 </div><!-- fragment -->
 </div>
 </div>

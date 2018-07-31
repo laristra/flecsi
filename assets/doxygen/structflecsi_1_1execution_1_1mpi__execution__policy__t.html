@@ -87,10 +87,6 @@ Public Types</h2></td></tr>
 <tr class="memitem:aa8d8cfe26b6758dbdc82590620b3e2d4"><td class="memTemplParams" colspan="2">template&lt;typename RETURN , launch_type_t launch&gt; </td></tr>
 <tr class="memitem:aa8d8cfe26b6758dbdc82590620b3e2d4"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html#aa8d8cfe26b6758dbdc82590620b3e2d4">future__</a> = <a class="el" href="structflecsi_1_1execution_1_1mpi__future____.html">mpi_future__</a>&lt; RETURN, launch &gt;</td></tr>
 <tr class="separator:aa8d8cfe26b6758dbdc82590620b3e2d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5796c39335f1f2caa648aaf37edef8bc"><td class="memTemplParams" colspan="2"><a id="a5796c39335f1f2caa648aaf37edef8bc"></a>
-template&lt;typename FUNCTOR_TYPE &gt; </td></tr>
-<tr class="memitem:a5796c39335f1f2caa648aaf37edef8bc"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>functor_task_wrapper__</b> = typename <a class="el" href="structflecsi_1_1execution_1_1functor__task__wrapper____.html">flecsi::execution::functor_task_wrapper__</a>&lt; FUNCTOR_TYPE &gt;</td></tr>
-<tr class="separator:a5796c39335f1f2caa648aaf37edef8bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -102,6 +98,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ae037dafacc28764372a16156c1f0d418"><td class="memTemplParams" colspan="2">template&lt;launch_type_t launch, size_t KEY, typename RETURN , typename ARG_TUPLE , typename ... ARGS&gt; </td></tr>
 <tr class="memitem:ae037dafacc28764372a16156c1f0d418"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html#ae037dafacc28764372a16156c1f0d418">execute_task</a> (ARGS &amp;&amp;... args)</td></tr>
 <tr class="separator:ae037dafacc28764372a16156c1f0d418"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27b3f46c873a032f240f6705b6489b27"><td class="memTemplParams" colspan="2">template&lt;size_t NAME, typename OPERATION &gt; </td></tr>
+<tr class="memitem:a27b3f46c873a032f240f6705b6489b27"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html#a27b3f46c873a032f240f6705b6489b27">register_reduction_operation</a> ()</td></tr>
+<tr class="separator:a27b3f46c873a032f240f6705b6489b27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6a1ef26c752c90b35ae44808745a8b5"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) FUNCTION&gt; </td></tr>
 <tr class="memitem:ab6a1ef26c752c90b35ae44808745a8b5"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__execution__policy__t.html#ab6a1ef26c752c90b35ae44808745a8b5">register_function</a> ()</td></tr>
 <tr class="separator:ab6a1ef26c752c90b35ae44808745a8b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -229,6 +228,34 @@ template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUP
 </table>
 </div><div class="memdoc">
 <p>MPI backend function registration. For documentation on this method, please see function__::register_function. </p>
+
+</div>
+</div>
+<a id="a27b3f46c873a032f240f6705b6489b27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27b3f46c873a032f240f6705b6489b27">&#9670;&nbsp;</a></span>register_reduction_operation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t NAME, typename OPERATION &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool flecsi::execution::mpi_execution_policy_t::register_reduction_operation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>MPI backend reduction registration. For documentation on this method please see task__::register_reduction_operation. </p>
 
 </div>
 </div>

@@ -2,6 +2,7 @@ var searchData=
 [
   ['ragged_5faccessor_2eh',['ragged_accessor.h',['../ragged__accessor_8h.html',1,'']]],
   ['ragged_5fmutator_2eh',['ragged_mutator.h',['../ragged__mutator_8h.html',1,'']]],
+  ['reduction_5fwrapper_2eh',['reduction_wrapper.h',['../reduction__wrapper_8h.html',1,'']]],
   ['reflection_2eh',['reflection.h',['../reflection_8h.html',1,'']]],
   ['registration_5fwrapper_2eh',['registration_wrapper.h',['../data_2common_2registration__wrapper_8h.html',1,'(Global Namespace)'],['../data_2hpx_2registration__wrapper_8h.html',1,'(Global Namespace)'],['../execution_2legion_2registration__wrapper_8h.html',1,'(Global Namespace)']]],
   ['reorder_2eh',['reorder.h',['../reorder_8h.html',1,'']]],

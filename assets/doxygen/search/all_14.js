@@ -13,7 +13,7 @@ var searchData=
   ['task_5finterface_5ft',['task_interface_t',['../group__execution.html#ga2622acb72ce8b600fbc4585708c7ce66',1,'flecsi::execution']]],
   ['task_5fprolog_2eh',['task_prolog.h',['../legion_2task__prolog_8h.html',1,'(Global Namespace)'],['../mpi_2task__prolog_8h.html',1,'(Global Namespace)']]],
   ['task_5fprolog_5ft',['task_prolog_t',['../structflecsi_1_1execution_1_1task__prolog__t.html',1,'flecsi::execution::task_prolog_t'],['../structflecsi_1_1execution_1_1task__prolog__t.html#ad0c5993a25a1d1ef1b1ec5aee8f1e823',1,'flecsi::execution::task_prolog_t::task_prolog_t(Legion::Runtime *runtime, Legion::Context &amp;context, Legion::TaskLauncher &amp;launcher)'],['../structflecsi_1_1execution_1_1task__prolog__t.html#a52864485971130fca0ab45c296883fbf',1,'flecsi::execution::task_prolog_t::task_prolog_t()=default']]],
-  ['task_5fwrapper_2eh',['task_wrapper.h',['../legion_2task__wrapper_8h.html',1,'(Global Namespace)'],['../mpi_2task__wrapper_8h.html',1,'(Global Namespace)']]],
+  ['task_5fwrapper_2eh',['task_wrapper.h',['../legion_2task__wrapper_8h.html',1,'']]],
   ['task_5fwrapper_5f_5f',['task_wrapper__',['../structflecsi_1_1execution_1_1task__wrapper____.html',1,'flecsi::execution']]],
   ['tee_5fbuffer_5ft',['tee_buffer_t',['../classcinch_1_1tee__buffer__t.html',1,'cinch']]],
   ['tee_5fstream_5ft',['tee_stream_t',['../structcinch_1_1tee__stream__t.html',1,'cinch']]],
