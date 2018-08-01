@@ -16,7 +16,9 @@ clog_register_tag(reduction_interface);
 // Generic sum reduction type.
 //----------------------------------------------------------------------------//
 
-template<typename T>
+template<typename T> T reduction_init_zero__() { return T{0}; }
+
+template<typename T, T (*INITIAL)() = reduction_init_zero__>
 struct reduction_sum__ {
 
   using LHS = T;
@@ -33,13 +35,17 @@ struct reduction_sum__ {
     lsh += rhs;
   } // apply
 
+  static T initial() {
+    return INITIAL();
+  } // initial
+
 }; // struct reduction_sum__
 
 //----------------------------------------------------------------------------//
 // Generic product reduction type.
 //----------------------------------------------------------------------------//
 
-template<typename T>
+template<typename T, T (*INITIAL)() = reduction_init_zero__>
 struct reduction_product__ {
 
   using LHS = T;
@@ -56,6 +62,10 @@ struct reduction_product__ {
     lsh *= rhs;
   } // apply
 
+  static T initial() {
+    return INITIAL();
+  } // initial
+
 }; // reduction_product__
 
 //----------------------------------------------------------------------------//
@@ -71,6 +81,9 @@ struct complex_t {
 
   complex_t(double real_, double imag_)
     : real(real_), imag(imag_) {}
+
+  complex_t(double value_)
+    : complex_t(value_, value_) {}
 
   complex_t & operator *= (complex_t const & c) {
     complex_t tmp{ this->real*c.real - this->imag*c.imag,

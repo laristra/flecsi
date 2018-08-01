@@ -587,9 +587,9 @@ struct legion_context_policy_t {
     return legion_future__<T, launch_type_t::single>(global_future);
   }
 
-  std::map<size_t, size_t> reduction_ops() {
+  auto & reduction_operations() {
     return reduction_ops_;
-  } // reduction_ops
+  } // reduction_operations
 
   /*!
     Compute internal field id for from/to index space pair for connectivity.
@@ -607,6 +607,7 @@ struct legion_context_policy_t {
   }
 
 private:
+
   size_t color_ = 0;
   size_t colors_ = 0;
 
@@ -627,7 +628,13 @@ private:
   // Reduction operations.
   //--------------------------------------------------------------------------//
 
-  std::map<size_t, size_t> reduction_ops_;
+  struct reduction_data_t {
+    size_t id;
+    std::vector<std::byte> initial;
+    Legion::DynamicCollective collective;
+  }; // struct reduction_data_t
+
+  std::map<size_t, reduction_data_t> reduction_ops_;
 
   //--------------------------------------------------------------------------//
   // Legion data members.

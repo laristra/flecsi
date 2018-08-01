@@ -279,7 +279,12 @@ struct legion_execution_policy_t {
           auto future =
             legion_runtime->execute_index_space(legion_context, launcher);
 
-          return legion_future__<RETURN, launch_type_t::index>(future);
+          if constexpr(REDUCTION>0) {
+
+          }
+          else {
+            return legion_future__<RETURN, launch_type_t::index>(future);
+          } // if
         } // scope
 
         case processor_type_t::mpi: {
@@ -381,6 +386,7 @@ struct legion_execution_policy_t {
         default:
           clog_fatal("Unknown processor type: " << processor_type);
       } // switch
+
     } // if constexpr
   } // execute_task
 

@@ -54,6 +54,14 @@ runtime_driver(
   clog(info) << "In Legion runtime driver" << std::endl;
   }
 
+  int num_colors;
+  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
+
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "MPI num_colors is " << num_colors << std::endl;
+  }
+
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
@@ -95,12 +103,23 @@ runtime_driver(
     } // for
   } // for
 
-  int num_colors;
-  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
-  {
-  clog_tag_guard(runtime_driver);
-  clog(info) << "MPI num_colors is " << num_colors << std::endl;
-  }
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for reduction operations
+  //--------------------------------------------------------------------------//
+
+  auto & reduction_registry = context_.reduction_registry();
+
+  for(auto & ro: reduction_registry) {
+    ro.second();
+  } // for
+
+  auto & reduction_ops = context_.reduction_operations();
+  for(auto & ro: reduction_ops) {
+    ro.second.collective = runtime->create_dynamic_collective(ctx, num_colors,
+      ro.second.id, ro.second.initial.data(), ro.second.initial.size());
+  } // for
+
+  //--------------------------------------------------------------------------//
 
   data::legion_data_t data(ctx, runtime, num_colors);
   

@@ -42,8 +42,9 @@ struct reduction_wrapper__ {
    */
 
   static void registration_callback() {
+
     // Get the map of registered operations
-    auto reduction_ops = context_t::instance().reduction_ops();
+    auto & reduction_ops = context_t::instance().reduction_operations();
 
     clog_assert(reduction_ops.find(NAME) == reduction_ops.end(),
       typeid(OPERATION).name()
@@ -56,7 +57,15 @@ struct reduction_wrapper__ {
     Legion::Runtime::register_reduction_op<OPERATION>(id);
 
     // Save the id for invocation
-    reduction_ops[NAME] = id;
+    reduction_ops[NAME].id = id;
+
+    // Save the initial value for registering the collective
+    // with the Legion runtime
+    size_t bytes = sizeof(rhs_t);
+    reduction_ops[NAME].initial.resize(bytes);
+    rhs_t initial_value = OPERATION::initial();
+    std::memcpy(reduction_ops[NAME].initial.data(), &initial_value, bytes);
+
   } // registration_callback
 
 }; // struct reduction_wrapper__
