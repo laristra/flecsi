@@ -27,15 +27,15 @@ clog_register_tag(reduction_wrapper);
 namespace flecsi {
 namespace execution {
 
+struct reduction_wrapper_unique__ {};
+
 template<size_t NAME, typename OPERATION>
 struct reduction_wrapper__ {
 
   using rhs_t = typename OPERATION::RHS;
   using lhs_t = typename OPERATION::LHS;
 
-  struct unique {};
-
-  using oid_t = flecsi::utils::unique_id_t<unique>;
+  using oid_t = flecsi::utils::unique_id_t<reduction_wrapper_unique__>;
 
   /*!
     Register the user-defined reduction operator with the runtime.
@@ -50,8 +50,9 @@ struct reduction_wrapper__ {
       typeid(OPERATION).name()
         << " has already been registered with this name");
 
-    // Offset by 1 because 0 is reserved
-    const size_t id = oid_t::instance().next() + 1;
+    clog(info) << "registering reduction operation " << NAME << std::endl;
+
+    const size_t id = oid_t::instance().next();
 
     // Register the operation with the Legion runtime
     Legion::Runtime::register_reduction_op<OPERATION>(id);

@@ -68,6 +68,12 @@ enum {
   RR = 0x00005002,
 };
 
+struct reduction_data_t {
+  size_t id;
+  std::vector<std::byte> initial;
+  Legion::DynamicCollective collective;
+}; // struct reduction_data_t
+
 /*!
   The legion_context_policy_t is the backend runtime context policy for
   Legion.
@@ -627,12 +633,6 @@ private:
   //--------------------------------------------------------------------------//
   // Reduction operations.
   //--------------------------------------------------------------------------//
-
-  struct reduction_data_t {
-    size_t id;
-    std::vector<std::byte> initial;
-    Legion::DynamicCollective collective;
-  }; // struct reduction_data_t
 
   std::map<size_t, reduction_data_t> reduction_ops_;
 

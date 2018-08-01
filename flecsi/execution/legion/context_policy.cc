@@ -77,6 +77,13 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
 
   Legion::Runtime::configure_MPI_interoperability(rank);
 
+  // Register reduction operations
+  auto & reduction_registry = context_t::instance().reduction_registry();
+
+  for(auto & ro: reduction_registry) {
+    ro.second();
+  } // for
+
   Runtime::register_reduction_op<MaxReductionOp>(MaxReductionOp::redop_id);
   Runtime::register_reduction_op<MinReductionOp>(MinReductionOp::redop_id);
 

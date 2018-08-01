@@ -341,11 +341,23 @@ clog_register_tag(execution);
                                                                                \
   flecsi::execution::context_t::instance().colors()
 
+#define __flecsi_internal_execute_task(task, launch, operation, ...)           \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* Execute the user task */                                                  \
+  /* WARNING: This macro returns a future. Don't add terminations! */          \
+  flecsi::execution::task_interface_t::execute_task<                           \
+    flecsi::execution::launch_type_t::launch,                                  \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),          \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(operation)}.hash(),     \
+    __flecsi_internal_return_type(task),                                       \
+    __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
+
 /*!
   @def flecsi_execute_task_simple
 
   This macro executes a simple user task, i.e., one that is not scoped in
-  a namespace.
+  a namespace. Use of this interface is discouraged.
 
   @param task   The user task to execute.
   @param launch The launch mode for the task.
@@ -357,13 +369,7 @@ clog_register_tag(execution);
 #define flecsi_execute_task_simple(task, launch, ...)                          \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  /* Execute the user task */                                                  \
-  /* WARNING: This macro returns a future. Don't add terminations! */          \
-  flecsi::execution::task_interface_t::execute_task<                           \
-    flecsi::execution::launch_type_t::launch,                                  \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(), 0,       \
-    __flecsi_internal_return_type(task),                                       \
-    __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
+  __flecsi_internal_execute_task(task, launch, 0, ##__VA_ARGS__)
 
 /*!
   @def flecsi_execute_task
@@ -382,13 +388,13 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Execute the user task */                                                  \
-  flecsi_execute_task_simple(nspace::task, launch, ##__VA_ARGS__)
+  __flecsi_internal_execute_task(nspace::task, launch, 0, ##__VA_ARGS__)
 
 /*!
   @def flecsi_execute_mpi_task_simple
 
   This macro executes a simple MPI task, i.e., one that is not scoped
-  in a namespace.
+  in a namespace. Use of this interface is discouraged.
 
   @param task The MPI task to execute.
   @param ...  The arguments to pass to the MPI task during execution.
@@ -427,25 +433,44 @@ clog_register_tag(execution);
 
   This macro registers a custom reduction rule with the runtime.
 
-  @param name           The name of the custom reduction. Subsequent
-                        calls to reduction tasks can use this name.
-  @param operation_type A type that defines static methods \em apply
-                        and \em fold. The \em apply method will be used
-                        by the runtime for \em exclusive operations, i.e.,
-                        the elements are accessed sequentially. The \em fold
-                        method is for \em non-exclusive access. The \em fold
-                        method is optional.
+  @param operation The name of the custom reduction. Subsequent
+                   calls to reduction tasks can use this name.
+  @param type      A type that defines static methods \em apply
+                   and \em fold. The \em apply method will be used
+                   by the runtime for \em exclusive operations, i.e.,
+                   the elements are accessed sequentially. The \em fold
+                   method is for \em non-exclusive access.
 
   @ingroup execution
  */
 
-#define flecsi_register_reduction_operation(name, operation_type)              \
+#define flecsi_register_reduction_operation(operation, type)                   \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  inline bool name##_reduction_operation_registered =                          \
+  inline bool operation##_reduction_operation_registered =                     \
     flecsi::execution::task_interface_t::register_reduction_operation<         \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
-      operation_type>()
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(operation)}.hash(),   \
+      type>()
+
+/*!
+  @def flecsi_execute_reduction_task
+
+  This macro executes a reduction task.
+
+  @param task      The user task to execute.
+  @param nspace    The enclosing namespace of the task.
+  @param launch    The launch mode for the task.
+  @param operation The reduction operation.
+  @param ...       The arguments to pass to the user task during execution.
+
+  @ingroup execution
+ */
+
+#define flecsi_execute_reduction_task(task, nspace, launch, operation, ...)    \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  __flecsi_internal_execute_task(nspace::task, launch, operation,              \
+    ##__VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Function Interface

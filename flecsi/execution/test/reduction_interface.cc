@@ -111,11 +111,18 @@ flecsi_register_field(mesh_t, data, values, double, dense, 1,
   index_spaces::cells);
 
 //----------------------------------------------------------------------------//
-// Initialize pressure
+// Initialize values
 //----------------------------------------------------------------------------//
 
-void initialize_values(mesh<ro> m, field<rw, rw, ro> v) {
-} // initialize_pressure
+size_t initialize_values(mesh<ro> m, field<rw, rw, ro> v) {
+  size_t sum{0};
+
+  for(auto c: m.cells(owned)) {
+    ++sum;
+  } // for
+
+  return sum;
+} // initialize_values
 
 flecsi_register_task(initialize_values, flecsi::execution, loc, single);
 
@@ -124,7 +131,7 @@ flecsi_register_task(initialize_values, flecsi::execution, loc, single);
 //----------------------------------------------------------------------------//
 
 void print_values(mesh<ro> m, field<ro, ro, ro> v) {
-} // print_mesh
+} // print_values
 
 flecsi_register_task(print_values, flecsi::execution, loc, single);
 
@@ -133,6 +140,14 @@ flecsi_register_task(print_values, flecsi::execution, loc, single);
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
+
+  auto mh = flecsi_get_client_handle(mesh_t, clients, m);
+  auto vh = flecsi_get_handle(mh, data, values, double, dense, 0);
+
+  auto f = flecsi_execute_reduction_task(initialize_values, flecsi::execution,
+    single, sum, mh, vh);
+
+  std::cout << "reduction: " << f.get() << std::endl;
 } // driver
 
 } // namespace execution
