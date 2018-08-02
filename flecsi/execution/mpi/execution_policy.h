@@ -158,6 +158,14 @@ struct mpi_execution_policy_t {
     finalize_handles_t finalize_handles;
     finalize_handles.walk(task_args);
 
+    constexpr size_t ZERO =
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
+
+    if constexpr(REDUCTION != ZERO) {
+    }
+    else {
+    } // if
+
     return fut;
   } // execute_task
 
