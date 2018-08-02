@@ -21,6 +21,7 @@
 #include <sstream>
 #include <typeinfo>
 
+#include <flecsi/utils/export_definitions.h>
 #include <flecsi/utils/id.h>
 #include <flecsi/utils/offset.h>
 
@@ -90,7 +91,7 @@ square(const T & a) {
 // C++ demangler
 //----------------------------------------------------------------------------//
 
-std::string demangle(const char * const name);
+FLECSI_EXPORT std::string demangle(const char * const name);
 
 template<class T>
 inline std::string

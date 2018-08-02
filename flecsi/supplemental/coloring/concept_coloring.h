@@ -216,7 +216,7 @@ void generic_coloring(
       auto referencers =
         entity_referencers<primary_dimension, dimension>(md, i);
 
-      size_t min_rank(std::numeric_limits<size_t>::max());
+      size_t min_rank((std::numeric_limits<size_t>::max)());
       std::set<size_t> shared_entities;
 
       // Iterate the direct referencers to assign entity ownership
@@ -226,7 +226,7 @@ void generic_coloring(
         // off-color. If it is, compare it's rank for
         // the ownership logic below.
         if(remote_info_map.find(c) != remote_info_map.end()) {
-          min_rank = std::min(min_rank, remote_info_map.at(c).rank);
+          min_rank = (std::min)(min_rank, remote_info_map.at(c).rank);
           shared_entities.insert(remote_info_map.at(c).rank);
         }
         else {
@@ -234,7 +234,7 @@ void generic_coloring(
           // it is a local primary.
 
           // Add our rank to compare for ownership.
-          min_rank = std::min(min_rank, size_t(rank));
+          min_rank = (std::min)(min_rank, size_t(rank));
 
           // If the local primary is shared, we need to add all of
           // the ranks that reference it.
