@@ -26,13 +26,13 @@ struct reduction_sum__ {
   static constexpr T identity{};
 
   template<bool EXCLUSIVE = true>
-  static void apply(LHS & lsh, RHS rhs) {
-    lsh += rhs;
+  static void apply(LHS & lhs, RHS rhs) {
+    lhs += rhs;
   } // apply
 
   template<bool EXCLUSIVE = true>
-  static void fold(LHS & lsh, RHS rhs) {
-    lsh += rhs;
+  static void fold(LHS & lhs, RHS rhs) {
+    lhs += rhs;
   } // apply
 
   static T initial() {
@@ -53,13 +53,13 @@ struct reduction_product__ {
   static constexpr T identity{};
 
   template<bool EXCLUSIVE = true>
-  static void apply(LHS & lsh, RHS rhs) {
-    lsh *= rhs;
+  static void apply(LHS & lhs, RHS rhs) {
+    lhs *= rhs;
   } // apply
 
   template<bool EXCLUSIVE = true>
-  static void fold(LHS & lsh, RHS rhs) {
-    lsh *= rhs;
+  static void fold(LHS & lhs, RHS rhs) {
+    lhs *= rhs;
   } // apply
 
   static T initial() {
@@ -120,6 +120,8 @@ size_t initialize_values(mesh<ro> m, field<rw, rw, ro> v) {
   for(auto c: m.cells(owned)) {
     ++sum;
   } // for
+
+  std::cout << "returning sum: " << sum << std::endl;
 
   return sum;
 } // initialize_values
