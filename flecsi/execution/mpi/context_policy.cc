@@ -36,6 +36,7 @@ mpi_context_policy_t::initialize(int argc, char ** argv) {
   // Add pre-defined MPI ops to reduction map
   //--------------------------------------------------------------------------//
 
+#if 0
   // MPI_MAX
   reduction_ops_[flecsi::utils::const_string_t{"max"}.hash()] = MPI_MAX;
 
@@ -71,6 +72,7 @@ mpi_context_policy_t::initialize(int argc, char ** argv) {
 
   // MPI_MINLOC
   reduction_ops_[flecsi::utils::const_string_t{"minloc"}.hash()] = MPI_MINLOC;
+#endif
 
   //--------------------------------------------------------------------------//
   // Invoke the runtime driver

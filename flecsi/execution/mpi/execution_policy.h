@@ -42,11 +42,11 @@ struct executor__ {
    FIXME documentation
    */
   template<typename T, typename A>
-  static decltype(auto) execute(T fun, A && targs) {
-    auto user_fun = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(fun));
-    mpi_future__<RETURN> fut;
-    fut.set(user_fun(std::forward<A>(targs)));
-    return fut;
+  static decltype(auto) execute(T function, A && targs) {
+    auto user_fun = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(function));
+    mpi_future__<RETURN> future;
+    future.set(user_fun(std::forward<A>(targs)));
+    return future;
   } // execute
 }; // struct executor__
 
@@ -60,13 +60,13 @@ struct executor__<void, ARG_TUPLE> {
    FIXME documentation
    */
   template<typename T, typename A>
-  static decltype(auto) execute(T fun, A && targs) {
-    auto user_fun = (reinterpret_cast<void (*)(ARG_TUPLE)>(fun));
+  static decltype(auto) execute(T function, A && targs) {
+    auto user_fun = (reinterpret_cast<void (*)(ARG_TUPLE)>(function));
 
-    mpi_future__<void> fut;
+    mpi_future__<void> future;
     user_fun(std::forward<A>(targs));
 
-    return fut;
+    return future;
   } // execute_task
 }; // struct executor__
 
@@ -142,7 +142,7 @@ struct mpi_execution_policy_t {
 
     context_t & context_ = context_t::instance();
 
-    auto fun = context_.function(TASK);
+    auto function = context_.function(TASK);
 
     // Make a tuple from the task arguments.
     ARG_TUPLE task_args = std::make_tuple(args...);
@@ -151,8 +151,8 @@ struct mpi_execution_policy_t {
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
 
-    auto fut = executor__<RETURN, ARG_TUPLE>::execute(
-      fun, std::forward<ARG_TUPLE>(task_args));
+    auto future = executor__<RETURN, ARG_TUPLE>::execute(
+      function, std::forward<ARG_TUPLE>(task_args));
 
     task_epilog_t task_epilog;
     task_epilog.walk(task_args);
@@ -165,25 +165,39 @@ struct mpi_execution_policy_t {
 
     if constexpr(REDUCTION != ZERO) {
       
-      auto reduction_type = context_.reduction_types().find(REDUCTION);
+      MPI_Datatype datatype;
+
+      if constexpr(!std::is_pod_v<RETURN>) {
+
+        size_t typehash = typeid(RETURN).hash_code();
+        auto reduction_type = context_.reduction_types().find(typehash);
+
+        clog_assert(reduction_type != context_.reduction_types().end(),
+          "invalid reduction operation");
+
+        datatype = reduction_type;
+      }
+      else {
+        datatype = flecsi::utils::mpi_typetraits__<RETURN>::type();
+      } // if
+
       auto reduction_op = context_.reduction_operations().find(REDUCTION);
 
-      clog_assert(reduction_op != context_.reduction_operations().end() &&
-        reduction_type != context_.reduction_types().end(),
+      clog_assert(reduction_op != context_.reduction_operations().end(),
         "invalid reduction operation");
 
-      const RETURN sendbuf = fut.get();
+      const RETURN sendbuf = future.get();
       RETURN recvbuf;
 
-      MPI_Allreduce(&sendbuf, &recvbuf, 1, reduction_type->second,
-        reduction_op->second, MPI_COMM_WORLD);
+      MPI_Allreduce(&sendbuf, &recvbuf, 1, datatype, reduction_op->second,
+        MPI_COMM_WORLD);
 
       mpi_future__<RETURN> gfuture;
       gfuture.set(recvbuf);
       return gfuture;
     }
     else {
-      return fut;
+      return future;
     } // if
   } // execute_task
 
