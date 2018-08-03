@@ -94,6 +94,10 @@ struct complex_t {
 
 }; // struct complex_t
 
+//----------------------------------------------------------------------------//
+// Register reduction operations.
+//----------------------------------------------------------------------------//
+
 using sum_double = reduction_sum__<double>;
 using prod_complex = reduction_product__<complex_t>;
 
@@ -107,35 +111,67 @@ namespace execution {
 // Variable registration
 //----------------------------------------------------------------------------//
 
-flecsi_register_field(mesh_t, data, values, double, dense, 1,
+template<
+  size_t EP,
+  size_t SP,
+  size_t GP
+>
+using complex_field = dense_accessor<complex_t, EP, SP, GP>;
+
+flecsi_register_field(mesh_t, data, double_values, double, dense, 1,
+  index_spaces::cells);
+flecsi_register_field(mesh_t, data, values, complex_t, dense, 1,
   index_spaces::cells);
 
 //----------------------------------------------------------------------------//
-// Initialize values
+// Double
 //----------------------------------------------------------------------------//
 
-size_t initialize_values(mesh<ro> m, field<rw, rw, ro> v) {
-  size_t sum{0};
+void double_init(mesh<ro> m, field<rw, rw, ro> v) {
+  for(auto c: m.cells(owned)) {
+    v(c) = 1.0;
+  } // for
+} // double_init
+
+flecsi_register_task(double_init, flecsi::execution, loc, single);
+
+double double_task(mesh<ro> m, field<rw, rw, ro> v) {
+  double sum{ 0.0 };
 
   for(auto c: m.cells(owned)) {
-    ++sum;
+    sum += v(c);
   } // for
 
   std::cout << "returning sum: " << sum << std::endl;
 
   return sum;
-} // initialize_values
+} // double_task
 
-flecsi_register_task(initialize_values, flecsi::execution, loc, single);
+flecsi_register_task(double_task, flecsi::execution, loc, single);
 
 //----------------------------------------------------------------------------//
-// Print task
+// Complex
 //----------------------------------------------------------------------------//
 
-void print_values(mesh<ro> m, field<ro, ro, ro> v) {
-} // print_values
+void complex_init(mesh<ro> m, complex_field<rw, rw, ro> v) {
+  for(auto c: m.cells(owned)) {
+    v(c) = { 1.0, 1.0 };
+  } // for
+} // complex_init
 
-flecsi_register_task(print_values, flecsi::execution, loc, single);
+flecsi_register_task(complex_init, flecsi::execution, loc, single);
+
+double complex_task(mesh<ro> m, complex_field<rw, rw, ro> v) {
+  complex_t prod{ 1.0, 1.0 };
+
+  for(auto c: m.cells(owned)) {
+    prod *= v(c);
+  } // for
+
+  return 0.0;
+} // complex_task
+
+flecsi_register_task(complex_task, flecsi::execution, loc, single);
 
 //----------------------------------------------------------------------------//
 // User driver.
@@ -144,9 +180,11 @@ flecsi_register_task(print_values, flecsi::execution, loc, single);
 void driver(int argc, char ** argv) {
 
   auto mh = flecsi_get_client_handle(mesh_t, clients, m);
-  auto vh = flecsi_get_handle(mh, data, values, double, dense, 0);
+  auto vh = flecsi_get_handle(mh, data, double_values, double, dense, 0);
 
-  auto f = flecsi_execute_reduction_task(initialize_values, flecsi::execution,
+  flecsi_execute_task(double_init, flecsi::execution, single, mh, vh);
+
+  auto f = flecsi_execute_reduction_task(double_task, flecsi::execution,
     single, sum, mh, vh);
 
   std::cout << "reduction: " << f.get() << std::endl;

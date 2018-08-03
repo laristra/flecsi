@@ -66,7 +66,7 @@ struct reduction_wrapper__ {
     auto & context_ = context_t::instance();
 
     // Get a reference to the operator map
-    auto & reduction_ops = context_.reduction_ops();
+    auto & reduction_ops = context_.reduction_operations();
 
     // Check if operator has already been registered
     clog_assert(reduction_ops.find(NAME) == reduction_ops.end(),

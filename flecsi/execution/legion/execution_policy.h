@@ -231,6 +231,7 @@ struct legion_execution_policy_t {
           std::cerr << "REDUCTION: " << REDUCTION << std::endl;
           constexpr size_t ZERO =
             flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
+
           if constexpr(REDUCTION != ZERO) {
 
             clog(info) << "executing reduction logic for " <<

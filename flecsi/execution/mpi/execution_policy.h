@@ -140,7 +140,9 @@ struct mpi_execution_policy_t {
     typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
 
-    auto fun = context_t::instance().function(TASK);
+    context_t & context_ = context_t::instance();
+
+    auto fun = context_.function(TASK);
 
     // Make a tuple from the task arguments.
     ARG_TUPLE task_args = std::make_tuple(args...);
@@ -162,11 +164,27 @@ struct mpi_execution_policy_t {
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
 
     if constexpr(REDUCTION != ZERO) {
+      
+      auto reduction_type = context_.reduction_types().find(REDUCTION);
+      auto reduction_op = context_.reduction_operations().find(REDUCTION);
+
+      clog_assert(reduction_op != context_.reduction_operations().end() &&
+        reduction_type != context_.reduction_types().end(),
+        "invalid reduction operation");
+
+      const RETURN sendbuf = fut.get();
+      RETURN recvbuf;
+
+      MPI_Allreduce(&sendbuf, &recvbuf, 1, reduction_type->second,
+        reduction_op->second, MPI_COMM_WORLD);
+
+      mpi_future__<RETURN> gfuture;
+      gfuture.set(recvbuf);
+      return gfuture;
     }
     else {
+      return fut;
     } // if
-
-    return fut;
   } // execute_task
 
   //--------------------------------------------------------------------------//

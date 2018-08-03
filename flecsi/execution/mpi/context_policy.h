@@ -624,7 +624,7 @@ struct mpi_context_policy_t {
     return reduction_types_;
   } // reduction_types
 
-  std::map<size_t, MPI_Op> & reduction_ops() {
+  std::map<size_t, MPI_Op> & reduction_operations() {
     return reduction_ops_;
   } // reduction_types
 
