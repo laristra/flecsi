@@ -37,18 +37,11 @@ endif()
 set(CINCH_HEADER_SUFFIXES "\\.h")
 
 #------------------------------------------------------------------------------#
-# If a C++14 compiler is available, then set the appropriate flags
+# Set required C++ standard
 #------------------------------------------------------------------------------#
 
-include(cxx17)
-
-check_for_cxx17_compiler(CXX17_COMPILER)
-
-if(CXX17_COMPILER)
-    enable_cxx17()
-else()
-    message(FATAL_ERROR "C++17 compatible compiler not found")
-endif()
+set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
 
 #------------------------------------------------------------------------------#
 # This variable is used to collect library and include dependencies for
