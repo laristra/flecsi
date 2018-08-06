@@ -163,8 +163,8 @@ deploy_docker:
                 #- cd flecsi
                 #- ls 
                 #- cd build
-                #- CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
-                #- docker cp flecsi/build ${CON}:/home/flecsi/build
+                - CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
+                - docker cp /docker/builds ${CON}:/home/builds
                 - docker build -t laristra/flecsi-third-party:ubuntu /docker/ 
         dependencies:
                 - test ubuntu/mpi
@@ -212,6 +212,6 @@ test ubuntu_mpich/mpi:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - /docker
+                        - /builds/onurcaylak/flecsi/build
 
 #4--------------------------------------------------------------------------

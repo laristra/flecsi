@@ -29,10 +29,10 @@ ARG CI_JOB_ID
 ARG CI_REPOSITORY_URL
 ARG CI_COMMIT_SHA
 
-RUN ls /
-#RUN mkdir /builds/onurcaylak
-#COPY flecsi /builds/onurcaylak/flecsi
 USER root
+RUN ls /
+#RUN mkdir /builds
+COPY builds /builds
 
 RUN pwd
 RUN ls -la
@@ -40,6 +40,7 @@ WORKDIR /builds/onurcaylak/flecsi/build
 RUN ls -la
 
 RUN pwd
+RUN cd /builds/onurcaylak/flecsi/build
 RUN make install
 USER flecsi
 COPY /builds/onurcaylak/flecsi /home/flecsi
