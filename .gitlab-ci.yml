@@ -124,7 +124,7 @@ test ubuntu/mpi:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - /builds/onurcaylak/flecsi/build
+                        - /builds/onurcaylak/flecsi
 
 
 deploy_docker:
@@ -134,7 +134,7 @@ deploy_docker:
                 - docker:dind
         script:
                 - DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true
-                - cd / && mkdir /docker && cp -r /builds /docker/. && cd /docker/builds/onurcaylak/
+                - mkdir /docker && cp -r /builds /docker/. && cd /docker/builds/onurcaylak/
                 - cp -v flecsi/docker/Dockerfile /docker
                 - sed -i "1s/fedora/${DISTRO}/" /docker/Dockerfile
                 - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
@@ -171,7 +171,7 @@ deploy_docker:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - /builds/onurcaylak/flecsi/build
+                        - /builds/onurcaylak/flecsi
 
 #3--------------------------------------------------------------------------
 
