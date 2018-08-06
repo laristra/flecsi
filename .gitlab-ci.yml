@@ -64,6 +64,12 @@ deploy_docker:
                 - ls -la
                 - cd build
                 - ls -la
+                - cd ../../docker
+                - ls -la
+                - cd flecsi
+                - ls -la 
+                - cd build
+                - ls -la
                 #- docker build -t laristra/flecsi-third-party:ubuntu /docker/builds/onurcaylak/docker/ 
                 #- CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
         dependencies:
