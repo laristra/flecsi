@@ -140,6 +140,7 @@ deploy_docker:
                 - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
                 - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
                 - docker pull $(sed -n '1s/FROM //p' /docker/Dockerfile)
+                - ls -la /builds/
                 - pwd
                 - ls -la
                 #- cd flecsi
