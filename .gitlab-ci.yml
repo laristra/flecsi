@@ -212,6 +212,6 @@ test ubuntu_mpich/mpi:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - /builds/onurcaylak/flecsi/build
+                        - /docker
 
 #4--------------------------------------------------------------------------

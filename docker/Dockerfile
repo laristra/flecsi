@@ -29,7 +29,7 @@ ARG CI_JOB_ID
 ARG CI_REPOSITORY_URL
 ARG CI_COMMIT_SHA
 
-#RUN mkdir /builds
+RUN ls /
 #RUN mkdir /builds/onurcaylak
 #COPY flecsi /builds/onurcaylak/flecsi
 USER root
