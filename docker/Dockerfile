@@ -31,6 +31,7 @@ ARG CI_COMMIT_SHA
 
 USER root
 RUN ls /
+RUN cd /home
 #RUN mkdir /builds
 COPY builds /builds
 
@@ -42,6 +43,7 @@ RUN ls -la
 RUN pwd
 RUN cd /builds/onurcaylak/flecsi/build
 RUN make install
-USER flecsi
 COPY /builds/onurcaylak/flecsi /home/flecsi
+RUN rm -rf /builds
+USER flecsi
 WORKDIR /home/flecsi
