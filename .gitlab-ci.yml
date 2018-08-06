@@ -8,87 +8,42 @@ services:
           
 #1--------------------------------------------------------------------------
 
-DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
-        image: laristra/flecsi-third-party:ubuntu 
-        stage: build
+#DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true:
+        #image: laristra/flecsi-third-party:ubuntu 
+        #stage: build
 
-        variables:
-          GLOBAL_CI_VARIABLE: "global_ci_value"
-          GIT_SUBMODULE_STRATEGY: recursive
+        #variables:
+          #GLOBAL_CI_VARIABLE: "global_ci_value"
+          #GIT_SUBMODULE_STRATEGY: recursive
 
-        script:
-                - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
-                - mkdir /builds/onurcaylak/flecsi/build
-                - cd build
-                - cmake -DENABLE_LEGION=$LEGION -DFLECSI_RUNTIME_MODEL=$RUNTIME ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) -DENABLE_UNIT_TESTS=ON -DENABLE_PARMETIS=ON -DENABLE_COLORING=ON -DENABLE_DOXYGEN=ON -DENABLE_DOCUMENTATION=OFF  ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} "${WERROR:+-Werror} -Wno-deprecated-declarations"  ..
-                - make doxygen
-                - if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
-                - make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
-                - cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
-        artifacts:
-                expire_in: 1 hour
-                paths:
-                        - /builds/onurcaylak/flecsi/build
+        #script:
+                #- DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+                #- mkdir /builds/onurcaylak/flecsi/build
+                #- cd build
+                #- cmake -DENABLE_LEGION=$LEGION -DFLECSI_RUNTIME_MODEL=$RUNTIME ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) -DENABLE_UNIT_TESTS=ON -DENABLE_PARMETIS=ON -DENABLE_COLORING=ON -DENABLE_DOXYGEN=ON -DENABLE_DOCUMENTATION=OFF  ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} "${WERROR:+-Werror} -Wno-deprecated-declarations"  ..
+                #- make doxygen
+                #- if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
+                #- make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
+                #- cd .. && if [ ${COVERAGE} ]; then if [ ${CC} = clang ]; then $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; else $HOME/.local/bin/codecov -F "${CC}"; fi; fi && cd -
+        #artifacts:
+                #expire_in: 1 hour
+                #paths:
+                        #- /builds/onurcaylak/flecsi/build
 
-test ubuntu/legion:
-        image: laristra/flecsi-third-party:ubuntu 
-        stage: test
-        script: 
-                - cd /builds/onurcaylak/flecsi/build/
-                - make test ARGS="-V"
-                - ls -la 
-        dependencies:
-                - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
+#test ubuntu/legion:
+        #image: laristra/flecsi-third-party:ubuntu 
+        #stage: test
+        #script: 
+                #- cd /builds/onurcaylak/flecsi/build/
+                #- make test ARGS="-V"
+                #- ls -la 
+        #dependencies:
+                #- DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
 
-        artifacts:
-                expire_in: 1 hour
-                paths:
-                        - /builds/onurcaylak/flecsi/build
-
-deploy_docker:
-        image: docker:latest
-        stage: deploy
-        services:
-                - docker:dind
-        script:
-                - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
-                - cd / && mkdir docker && cp -r /builds docker/ && cd docker/builds/onurcaylak/
-                #- cp -vr flecsi/docker . && cp -vr flecsi docker/.
-                - sed -i "1s/fedora/${DISTRO}/" docker/Dockerfile
-                - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
-                - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
-                - docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
-                - pwd
-                - ls -la
-                - cd flecsi
-                - ls -la
-                - cd build
-                - ls -la
-                - cd ../../docker
-                - ls -la
-                - cd flecsi
-                - ls -la 
-                - cd build
-                - ls -la
-                - cd ../..
-                - pwd
-                - ls -la /
-                - cd /docker
-                - ls -la
-                - cd builds/onurcaylak
-                - ls -la
-                - cd flecsi
-                - ls 
-                - cd build
-                #- CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
-                #- docker cp flecsi/build ${CON}:/home/flecsi/build
-                - docker build -t laristra/flecsi-third-party:ubuntu /docker/ 
-        dependencies:
-                - test ubuntu/legion
-        artifacts:
-                expire_in: 1 hour
-                paths:
-                        - /builds/onurcaylak/flecsi/build
+        #artifacts:
+                #expire_in: 1 hour
+                #paths:
+                        #- /builds/onurcaylak/flecsi/build
 #1--------------------------------------------------------------------------
 
 #2--------------------------------------------------------------------------
@@ -166,6 +121,52 @@ test ubuntu/mpi:
         dependencies:
                 - DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true
 
+        artifacts:
+                expire_in: 1 hour
+                paths:
+                        - /builds/onurcaylak/flecsi/build
+
+
+deploy_docker:
+        image: docker:latest
+        stage: deploy
+        services:
+                - docker:dind
+        script:
+                - DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true
+                - cd / && mkdir docker && cp -r /builds docker/ && cd docker/builds/onurcaylak/
+                #- cp -vr flecsi/docker . && cp -vr flecsi docker/.
+                - sed -i "1s/fedora/${DISTRO}/" docker/Dockerfile
+                - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
+                - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
+                - docker pull $(sed -n '1s/FROM //p' docker/Dockerfile)
+                - pwd
+                - ls -la
+                - cd flecsi
+                - ls -la
+                - cd build
+                - ls -la
+                - cd ../../docker
+                - ls -la
+                - cd flecsi
+                - ls -la 
+                - cd build
+                - ls -la
+                - cd ../..
+                - pwd
+                - ls -la /
+                - cd /docker
+                - ls -la
+                - cd builds/onurcaylak
+                - ls -la
+                - cd flecsi
+                - ls 
+                - cd build
+                #- CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
+                #- docker cp flecsi/build ${CON}:/home/flecsi/build
+                - docker build -t laristra/flecsi-third-party:ubuntu /docker/ 
+        dependencies:
+                - test ubuntu/mpi
         artifacts:
                 expire_in: 1 hour
                 paths:
