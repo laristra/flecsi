@@ -29,21 +29,18 @@ ARG CI_JOB_ID
 ARG CI_REPOSITORY_URL
 ARG CI_COMMIT_SHA
 
-COPY flecsi /home/flecsi/flecsi
+#RUN mkdir /builds
+#RUN mkdir /builds/onurcaylak
+#COPY flecsi /builds/onurcaylak/flecsi
 USER root
-RUN chown -R flecsi:flecsi /home/flecsi/flecsi
-USER flecsi
 
 RUN pwd
 RUN ls -la
-WORKDIR /home/flecsi/flecsi
+WORKDIR /builds/onurcaylak/flecsi/build
 RUN ls -la
-#RUN cp /home/flecsi/build /home/flecsi/flecsi/
 
-WORKDIR build
 RUN pwd
-RUN ls -la
-USER root
 RUN make install
 USER flecsi
+COPY /builds/onurcaylak/flecsi /home/flecsi
 WORKDIR /home/flecsi
