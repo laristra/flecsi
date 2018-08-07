@@ -1,46 +1,10 @@
 FROM laristra/flecsi-third-party:fedora
 
-ARG MINIMAL
-ARG LEGION
-ARG RUNTIME
-ARG COVERAGE
-ARG SONARQUBE
-ARG SONARQUBE_TOKEN
-ARG SONARQUBE_GITHUB_TOKEN
-ARG CC
-ARG CXX
-ARG CXXFLAGS
-
-#for coverage
-ARG CI
-ARG TRAVIS
-ARG TRAVIS_BRANCH
-ARG TRAVIS_JOB_NUMBER
-ARG TRAVIS_PULL_REQUEST
-ARG TRAVIS_JOB_ID
-ARG TRAVIS_TAG
-ARG TRAVIS_REPO_SLUG
-ARG TRAVIS_COMMIT
-ARG TRAVIS_OS_NAME
-ARG IGNORE_NOCI
-
-ARG CI_COMMIT_REF_NAME
-ARG CI_JOB_ID
-ARG CI_REPOSITORY_URL
-ARG CI_COMMIT_SHA
-
 USER root
-RUN ls /
 RUN cd /home
-#RUN mkdir /builds
 COPY builds /builds
 
-RUN pwd
-RUN ls -la
 WORKDIR /builds/onurcaylak/flecsi/build
-RUN ls -la
-
-RUN pwd
 RUN cd /builds/onurcaylak/flecsi/build
 RUN make install
 COPY /builds/onurcaylak/flecsi /home/flecsi
