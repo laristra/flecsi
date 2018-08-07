@@ -114,6 +114,14 @@ struct task_interface__ {
       OPERATION>();
   } // register_reduction_operation
 
+  template<size_t OPERATION_HASH,
+    size_t DATA_HASH,
+    typename TYPE>
+  static decltype(auto) new_register_reduction_operation() {
+    return EXECUTION_POLICY::template new_register_reduction_operation<
+      OPERATION_HASH, DATA_HASH, TYPE>();
+  } // register_reduction_operation
+
 }; // struct task_interface__
 
 template<typename TYPE>

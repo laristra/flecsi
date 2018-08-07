@@ -458,6 +458,11 @@ struct legion_execution_policy_t {
       NAME, wrapper_t::registration_callback);
   } // register_reduction_operation
 
+  template<size_t OPERATION_HASH, size_t DATA_HASH, typename TYPE>
+  static bool new_register_reduction_operation() {
+    return true;
+  } // register_reduction_operation
+
 }; // struct legion_execution_policy_t
 
 } // namespace execution

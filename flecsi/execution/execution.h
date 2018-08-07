@@ -33,6 +33,19 @@ clog_register_tag(execution);
 //----------------------------------------------------------------------------//
 
 /*!
+  @def __flecsi_internal_hash
+
+  This macro returns the hash of constant string version of the given name.
+
+  @param name The string to hash.
+
+  @ingroup execution
+ */
+
+#define __flecsi_internal_hash(name)                                           \
+  flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
+
+/*!
   @def __flecsi_internal_return_type
 
   This macro returns the inferred return type for a user task.
@@ -127,8 +140,10 @@ clog_register_tag(execution);
   inline bool registered_global_object_##nspace##_##index =                    \
     flecsi::execution::context_t::instance()                                   \
       .template register_global_object<                                        \
-        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),    \
-        index, type>();
+        __flecsi_internal_hash(nspace),                                        \
+        index,                                                                 \
+        type                                                                   \
+      >();
 
 /*!
   @def flecsi_set_global_object
@@ -151,8 +166,9 @@ clog_register_tag(execution);
                                                                                \
   flecsi::execution::context_t::instance()                                     \
     .template set_global_object<                                               \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
-      type>(index, obj);
+      __flecsi_internal_hash(nspace),                                          \
+      type                                                                     \
+    >(index, obj);
 
 /*!
   @def flecsi_initialize_global_object
@@ -175,8 +191,9 @@ clog_register_tag(execution);
                                                                                \
   flecsi::execution::context_t::instance()                                     \
     .template initialize_global_object<                                        \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
-      type>(index, ##__VA_ARGS__);
+      __flecsi_internal_hash(nspace),                                          \
+      type                                                                     \
+    >(index, ##__VA_ARGS__);
 
 /*!
   @def flecsi_get_global_object
@@ -195,8 +212,9 @@ clog_register_tag(execution);
                                                                                \
   flecsi::execution::context_t::instance()                                     \
     .template get_global_object<                                               \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
-      type>(index);
+      __flecsi_internal_hash(nspace),                                          \
+      type                                                                     \
+      >(index);
 
 //----------------------------------------------------------------------------//
 // Task Registration Interface
@@ -234,10 +252,11 @@ clog_register_tag(execution);
   /* Call the execution policy to register the task delegate */                \
   inline bool task##_task_registered =                                         \
     flecsi::execution::task_interface_t::register_task<                        \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+      __flecsi_internal_hash(task),                                            \
       __flecsi_internal_return_type(task),                                     \
-      __flecsi_internal_arguments_type(task), task##_tuple_delegate>(          \
-      flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(task)})
+      __flecsi_internal_arguments_type(task),                                  \
+      task##_tuple_delegate                                                    \
+    >(flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(task)})
 
 /*!
   @def flecsi_register_task
@@ -270,11 +289,11 @@ clog_register_tag(execution);
   /* Call the execution policy to register the task delegate */                \
   inline bool task##_task_registered =                                         \
     flecsi::execution::task_interface_t::register_task<                        \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::task)}        \
-        .hash(),                                                               \
+      __flecsi_internal_hash(nspace::task),                                    \
       __flecsi_internal_return_type(task),                                     \
-      __flecsi_internal_arguments_type(task), task##_tuple_delegate>(          \
-      flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(nspace::task)})
+      __flecsi_internal_arguments_type(task),                                  \
+      task##_tuple_delegate                                                    \
+    >(flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(nspace::task)})
 
 /*!
   @def flecsi_register_mpi_task_simple
@@ -348,8 +367,8 @@ clog_register_tag(execution);
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_interface_t::execute_task<                           \
     flecsi::execution::launch_type_t::launch,                                  \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),          \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(operation)}.hash(),     \
+    __flecsi_internal_hash(task),                                              \
+    __flecsi_internal_hash(operation),                                         \
     __flecsi_internal_return_type(task),                                       \
     __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
 
@@ -449,8 +468,19 @@ clog_register_tag(execution);
                                                                                \
   inline bool operation##_reduction_operation_registered =                     \
     flecsi::execution::task_interface_t::register_reduction_operation<         \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(operation)}.hash(),   \
-      type>()
+      __flecsi_internal_hash(operation),                                       \
+      type                                                                     \
+    >()
+
+#define new_flecsi_register_reduction_operation(type, datatype)                \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  inline bool operation##_##datatype_reduction_operation_registered =          \
+    flecsi::execution::task_interface_t::new_register_reduction_operation<     \
+      __flecsi_internal_hash(type),                                            \
+      __flecsi_internal_hash(datatype),                                        \
+      type<datatype>                                                           \
+    >()
 
 /*!
   @def flecsi_execute_reduction_task
@@ -506,10 +536,11 @@ clog_register_tag(execution);
   /* Call the execution policy to register the function delegate */            \
   inline bool func##_func_registered =                                         \
     flecsi::execution::function_interface_t::register_function<                \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}        \
-        .hash(),                                                               \
+      __flecsi_internal_hash(nspace::func),                                    \
       __flecsi_internal_return_type(func),                                     \
-      __flecsi_internal_arguments_type(func), func##_tuple_delegate>()
+      __flecsi_internal_arguments_type(func),                                  \
+      func##_tuple_delegate                                                    \
+    >()
 
 /*!
   @def flecsi_execute_function
@@ -543,8 +574,7 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Create a function handle instance */                                      \
-  nspace::function_handle_##func##_t(                                          \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}.hash())
+  nspace::function_handle_##func##_t(__flecsi_internal_hash(nspace::func))
 
 /*!
   @def flecsi_define_function_type
