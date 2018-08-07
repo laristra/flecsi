@@ -64,12 +64,12 @@ TEST:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
-                DEPENDENCY: "BUILD"
+                JOB_DEPENDENCY: "BUILD"
                 ARTIFACTS_PATH: ${CI_PROJECT_DIR}
         image:  laristra/flecsi-third-party:${DISTRO} 
         stage:  test
         dependencies:
-                - "${DEPENDENCY}"
+                - ${$JOB_DEPENDENCY}
         artifacts:
                 expire_in: 1 hour
                 paths:
