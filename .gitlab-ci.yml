@@ -63,10 +63,11 @@ TEST:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
+                DEPENDENCY: "BUILD"
         image:  laristra/flecsi-third-party:${DISTRO} 
         stage:  test
         dependencies:
-                - BUILD
+                - ${DEPENDENCY}
         artifacts:
                 expire_in: 1 hour
                 paths:
@@ -80,12 +81,13 @@ DEPLOY:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
+                DEPENDENCY: "TEST"
         image: docker:latest
         stage: deploy
         services:
                 - docker:dind
         dependencies:
-                - TEST
+                - ${DEPENDENCY}
         artifacts:
                 expire_in: 1 hour
                 paths:
