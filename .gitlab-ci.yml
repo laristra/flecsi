@@ -69,7 +69,7 @@ TEST:
         image:  laristra/flecsi-third-party:${DISTRO} 
         stage:  test
         dependencies:
-                - ${DEPENDENCY}
+                - "${DEPENDENCY}"
         artifacts:
                 expire_in: 1 hour
                 paths:
