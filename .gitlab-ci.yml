@@ -8,14 +8,12 @@ DISTRO=ubuntu RUNTIME=mpi:
 
         script:
                 - DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true
-                - echo "CI_COMMIT_REF_NAME:" 
-                - echo ${CI_COMMIT_REF_NAME}
-                - echo "CI_JOB_ID"
-                - echo ${CI_JOB_ID}
-                - echo "CI_REPOSITORY_URL"
-                - echo ${CI_REPOSITORY_URL}
-                - echo "CI_COMMIT_SHA"
-                - echo ${CI_COMMIT_SHA}
+                - echo ${CI_COMMIT_REF_NAME}    #
+                - echo ${CI_JOB_ID}              #
+                - echo ${CI_REPOSITORY_URL}      #
+                - echo ${CI_COMMIT_SHA}          #
+                - echo ${CI_COMMIT_REF_SLUG}
+                - echo ${CI_COMMIT_TAG}
                 - mkdir /builds/onurcaylak/flecsi/build
                 - cd build
                 - cmake -DENABLE_LEGION=$LEGION -DFLECSI_RUNTIME_MODEL=$RUNTIME ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) -DENABLE_UNIT_TESTS=ON -DENABLE_PARMETIS=ON -DENABLE_COLORING=ON -DENABLE_DOXYGEN=ON -DENABLE_DOCUMENTATION=OFF  ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} "${WERROR:+-Werror} -Wno-deprecated-declarations"  ..
@@ -62,6 +60,8 @@ deploy_docker:
                 - CON=$(docker run -d laristra/flecsi-third-party:ubuntu /bin/bash) 
                 - docker cp /docker/builds ${CON}:/home/builds
                 - docker build -t laristra/flecsi-third-party:ubuntu /docker/ 
+                - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+                - docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}
         dependencies:
                 - test ubuntu/mpi
         artifacts:
