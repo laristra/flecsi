@@ -10,8 +10,8 @@ BUILD:
         image: laristra/flecsi-third-party:ubuntu 
         stage: build
         variables:
-          GLOBAL_CI_VARIABLE: "global_ci_value"
-          GIT_SUBMODULE_STRATEGY: recursive
+                  GLOBAL_CI_VARIABLE: "global_ci_value"
+                  GIT_SUBMODULE_STRATEGY: recursive
         script:
                 - DISTRO=ubuntu
                 - RUNTIME=mpi
@@ -58,7 +58,7 @@ TEST:
         image: laristra/flecsi-third-party:ubuntu 
         stage: test
         variables:
-          GLOBAL_CI_VARIABLE: "global_ci_value"
+                GLOBAL_CI_VARIABLE: "global_ci_value"
         script: 
                 - cd ${CI_PROJECT_DIR}/build/
                 - make test ARGS="-V"
@@ -73,7 +73,7 @@ DEPLOY:
         image: docker:latest
         stage: deploy
         variables:
-          GLOBAL_CI_VARIABLE: "global_ci_value"
+                GLOBAL_CI_VARIABLE: "global_ci_value"
         services:
                 - docker:dind
         script:
