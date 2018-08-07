@@ -214,9 +214,19 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
+          {
           task_prolog_t task_prolog(legion_runtime, legion_context, launcher);
+          task_prolog.sparse = false;
           task_prolog.walk(task_args);
           task_prolog.launch_copies();
+          } // scope
+
+          {
+          task_prolog_t task_prolog(legion_runtime, legion_context, launcher);
+          task_prolog.sparse = true;
+          task_prolog.walk(task_args);
+          task_prolog.launch_copies();
+          } // scope
 
           // Enqueue the task.
           clog(trace) << "Execute flecsi/legion task " << TASK << " on rank "
@@ -375,9 +385,19 @@ struct legion_execution_policy_t {
 
             // Execute a tuple walker that applies the task prolog
             // operations on the mapped handles
+            {
             task_prolog_t task_prolog(legion_runtime, legion_context, launcher);
+            task_prolog.sparse = false;
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
+            } // scope
+
+            {
+            task_prolog_t task_prolog(legion_runtime, legion_context, launcher);
+            task_prolog.sparse = true;
+            task_prolog.walk(task_args);
+            task_prolog.launch_copies();
+            } // scope
 
             // Launch the MPI task
             auto f = legion_runtime->execute_task(legion_context, launcher);
