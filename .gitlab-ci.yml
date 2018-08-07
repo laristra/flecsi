@@ -99,7 +99,10 @@ DEPLOY:
                 - docker pull $(sed -n '1s/FROM //p' /docker/Dockerfile)
                 - CON=$(docker run -d laristra/flecsi-third-party:${DISTRO} /bin/bash) 
                 - docker cp /docker/builds ${CON}:/home/builds
-                - docker build -t laristra/flecsi-third-party:${DISTRO} /docker/ 
+                - |
+                        docker build \
+                               --build-arg CI_PROJECT_DIR=${CI_PROJECT_DIR} \
+                               }-t laristra/flecsi-third-party:${DISTRO} /docker/ 
                 - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
                 - docker push "${CI_COMMIT_REF_SLUG}:${DISTRO}_${RUNTIME}${TAG}
         dependencies:
