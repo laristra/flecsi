@@ -12,12 +12,13 @@ BUILD:
                   GIT_SUBMODULE_STRATEGY: recursive
                   DISTRO: "ubuntu"
                   RUNTIME: "mpi"
+                  ARTIFACTS_PATH: ${CI_PROJECT_DIR}
         image:    laristra/flecsi-third-party:${DISTRO} 
         stage:    build
         artifacts:
                   expire_in: 1 hour
                   paths:
-                        - ${CI_PROJECT_DIR}
+                        - ${ARTIFACTS_PATH}
         script:
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
@@ -64,6 +65,7 @@ TEST:
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
                 DEPENDENCY: "BUILD"
+                ARTIFACTS_PATH: ${CI_PROJECT_DIR}
         image:  laristra/flecsi-third-party:${DISTRO} 
         stage:  test
         dependencies:
@@ -71,7 +73,7 @@ TEST:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - ${CI_PROJECT_DIR}
+                        - ${ARTIFACTS_PATH}
         script: 
                 - cd ${CI_PROJECT_DIR}/build/
                 - make test ARGS="-V"
@@ -82,6 +84,7 @@ DEPLOY:
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
                 DEPENDENCY: "TEST"
+                ARTIFACTS_PATH: ${CI_PROJECT_DIR}
         image: docker:latest
         stage: deploy
         services:
@@ -91,7 +94,7 @@ DEPLOY:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - ${CI_PROJECT_DIR}
+                        - ${ARTIFACTS_PATH}
         script:
                 - mkdir /docker
                 - cp -r /builds /docker/. 
