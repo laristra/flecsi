@@ -1,10 +1,10 @@
 stages:
-      - build
-      - test
-      - deploy
+                - build
+                - test
+                - deploy
 
 services:
-        - docker:dind
+                - docker:dind
 
 BUILD:
         variables:
@@ -12,8 +12,12 @@ BUILD:
                   GIT_SUBMODULE_STRATEGY: recursive
                   DISTRO: "ubuntu"
                   RUNTIME: "mpi"
-        image: laristra/flecsi-third-party:${DISTRO} 
-        stage: build
+        image:    laristra/flecsi-third-party:${DISTRO} 
+        stage:    build
+        artifacts:
+                  expire_in: 1 hour
+                  paths:
+                        - ${CI_PROJECT_DIR}
         script:
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
@@ -53,28 +57,23 @@ BUILD:
                              else $HOME/.local/bin/codecov -F "${CC}"; 
                              fi; 
                         fi
-        artifacts:
-                expire_in: 1 hour
-                paths:
-                        - ${CI_PROJECT_DIR}
 
 TEST:
         variables:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
-        image: laristra/flecsi-third-party:${DISTRO} 
-        stage: test
-        script: 
-                - cd ${CI_PROJECT_DIR}/build/
-                - make test ARGS="-V"
+        image:  laristra/flecsi-third-party:${DISTRO} 
+        stage:  test
         dependencies:
                 - BUILD
         artifacts:
                 expire_in: 1 hour
                 paths:
                         - ${CI_PROJECT_DIR}
-
+        script: 
+                - cd ${CI_PROJECT_DIR}/build/
+                - make test ARGS="-V"
 DEPLOY:
         variables:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
@@ -84,6 +83,12 @@ DEPLOY:
         stage: deploy
         services:
                 - docker:dind
+        dependencies:
+                - TEST
+        artifacts:
+                expire_in: 1 hour
+                paths:
+                        - ${CI_PROJECT_DIR}
         script:
                 - mkdir /docker
                 - cp -r /builds /docker/. 
@@ -107,10 +112,3 @@ DEPLOY:
                                -t laristra/flecsi-third-party:${DISTRO} /docker/ 
                 - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
                 - docker push "${CI_COMMIT_REF_SLUG}:${DISTRO}_${RUNTIME}${TAG}
-        dependencies:
-                - TEST
-        artifacts:
-                expire_in: 1 hour
-                paths:
-                        - ${CI_PROJECT_DIR}
-
