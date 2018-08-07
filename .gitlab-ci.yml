@@ -16,7 +16,16 @@ DISTRO=ubuntu RUNTIME=mpi:
                 - echo ${CI_COMMIT_TAG}
                 - mkdir /builds/onurcaylak/flecsi/build
                 - cd build
-                - cmake -DENABLE_LEGION=$LEGION -DFLECSI_RUNTIME_MODEL=$RUNTIME ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) -DENABLE_UNIT_TESTS=ON -DENABLE_PARMETIS=ON -DENABLE_COLORING=ON -DENABLE_DOXYGEN=ON -DENABLE_DOCUMENTATION=OFF  ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} "${WERROR:+-Werror} -Wno-deprecated-declarations"  ..
+                - | 
+                        cmake   -DENABLE_LEGION=$LEGION 
+                                -DFLECSI_RUNTIME_MODEL=$RUNTIME ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON}
+                                -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) 
+                                -DENABLE_UNIT_TESTS=ON 
+                                -DENABLE_PARMETIS=ON 
+                                -DENABLE_COLORING=ON 
+                                -DENABLE_DOXYGEN=ON 
+                                -DENABLE_DOCUMENTATION=OFF ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} 
+                                ..
                 - make doxygen
                 - if [ ${COVERAGE} ]; then python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; wget -O codecov.sh https://codecov.io/bash; bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; doxy-coverage --threshold 24 doc/doxygen/xml/; fi
                 - make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
