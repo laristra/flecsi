@@ -1,4 +1,12 @@
-DISTRO=ubuntu RUNTIME=mpi:
+stages:
+      - build
+      - test
+      - deploy
+
+services:
+        - docker:dind
+
+BUILD:
         image: laristra/flecsi-third-party:ubuntu 
         stage: build
 
@@ -8,8 +16,7 @@ DISTRO=ubuntu RUNTIME=mpi:
 
         script:
                 - DISTRO=ubuntu RUNTIME=mpi
-                - echo ${CI_PROJECT_DIR}
-                - mkdir /builds/onurcaylak/flecsi/build
+                - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
                 - | 
                         cmake   -DENABLE_LEGION=$LEGION \
@@ -45,35 +52,33 @@ DISTRO=ubuntu RUNTIME=mpi:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - /builds/onurcaylak/flecsi
+                        - ${CI_PROJECT_DIR}
 
-test ubuntu/mpi:
+TEST:
         image: laristra/flecsi-third-party:ubuntu 
         stage: test
         script: 
-                - cd /builds/onurcaylak/flecsi/build/
+                - cd ${CI_PROJECT_DIR}/build/
                 - make test ARGS="-V"
-                - ls -la 
         dependencies:
-                - DISTRO=ubuntu RUNTIME=mpi
-
+                - BUILD
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - /builds/onurcaylak/flecsi
+                        - ${CI_PROJECT_DIR}
 
 
-deploy_docker:
+DEPLOY:
         image: docker:latest
         stage: deploy
         services:
                 - docker:dind
         script:
-                - DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true
+                - DISTRO=ubuntu RUNTIME=mpi
                 - mkdir /docker
                 - cp -r /builds /docker/. 
-                - cd /docker/builds/onurcaylak/
-                - cp -v flecsi/docker/Dockerfile /docker
+                - cd /docker${CI_PROJECT_DIR}
+                - cp -v docker/Dockerfile /docker
                 - sed -i "1s/fedora/${DISTRO}/" /docker/Dockerfile
                 - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
                 - if [[ ${CI_COMMIT_REF_NAME} != stable ]]; then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; fi
@@ -84,9 +89,9 @@ deploy_docker:
                 - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
                 - docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}
         dependencies:
-                - test ubuntu/mpi
+                - TEST
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - /builds/onurcaylak/flecsi
+                        - ${CI_PROJECT_DIR}
 
