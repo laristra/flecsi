@@ -7,14 +7,14 @@ services:
         - docker:dind
 
 BUILD:
-        image: laristra/flecsi-third-party:ubuntu 
+        image: laristra/flecsi-third-party:${DISTRO} 
         stage: build
         variables:
                   GLOBAL_CI_VARIABLE: "global_ci_value"
                   GIT_SUBMODULE_STRATEGY: recursive
+                  DISTRO: "ubuntu"
+                  RUNTIME: "mpi"
         script:
-                - DISTRO=ubuntu
-                - RUNTIME=mpi
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
                 - | 
