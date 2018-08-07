@@ -14,7 +14,6 @@ BUILD:
                   GIT_SUBMODULE_STRATEGY: recursive
                   DISTRO: "ubuntu"
                   RUNTIME: "mpi"
-                  ARTIFACTS_EXPIRE_IN: "1 hour"
         script:
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
@@ -55,7 +54,7 @@ BUILD:
                              fi; 
                         fi
         artifacts:
-                expire_in: ${ARTIFACTS_EXPIRE_IN}
+                expire_in: 1 hour
                 paths:
                         - ${CI_PROJECT_DIR}
 
