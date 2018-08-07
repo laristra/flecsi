@@ -74,6 +74,7 @@ TEST:
         script: 
                 - cd ${CI_PROJECT_DIR}/build/
                 - make test ARGS="-V"
+
 DEPLOY:
         variables:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
