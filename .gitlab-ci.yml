@@ -109,7 +109,7 @@ DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - /builds/onurcaylak/flecsi/build
+                        - /builds/onurcaylak/flecsi
 
 test ubuntu/mpi:
         image: laristra/flecsi-third-party:ubuntu 
