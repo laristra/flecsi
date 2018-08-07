@@ -115,10 +115,10 @@ struct legion_execution_policy_t {
       std::string name) {
     clog(info) << "Registering legion task " << KEY << " " << name << std::endl;
 
-    using wrapper_t = pure_task_wrapper__<RETURN, DELEGATE>;
+    using wrapper_t = pure_task_wrapper__<RETURN, TASK>;
 
     const bool success = context_t::instance().register_task(
-      TASK, processor, launch, name, wrapper_t::registration_callback);
+      KEY, processor, launch, name, wrapper_t::registration_callback);
 
     clog_assert(success, "callback registration failed for " << name);
 
@@ -138,10 +138,10 @@ struct legion_execution_policy_t {
   static bool
   register_task(processor_type_t processor, launch_t launch, std::string name) {
 
-    using wrapper_t = task_wrapper__<TASK, RETURN, ARG_TUPLE, DELEGATE>;
+    using wrapper_t = task_wrapper__<KEY, RETURN, ARG_TUPLE, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
-      TASK, processor, launch, name, wrapper_t::registration_callback);
+      KEY, processor, launch, name, wrapper_t::registration_callback);
 
     clog_assert(success, "callback registration failed for " << name);
 
@@ -368,7 +368,7 @@ struct legion_execution_policy_t {
 
       // Handle MPI and Legion invocations separately.
       if (processor_type == processor_type_t::mpi) {
-        clog_fatal(" mpi task doesn't have an implementation for the single task execution" << std::endl);
+        clog_fatal(" mpi task doesn't have an implementation for the single task execution");
       } else {
         // Initialize the arguments to pass through the runtime.
         init_args_t init_args(legion_runtime, legion_context);
