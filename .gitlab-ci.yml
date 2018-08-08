@@ -19,7 +19,8 @@ NAME_JOB1:
                         - ${ARTIFACTS_PATH}
                         - ${ARTIFACTS_USR_LOCAL}
         services: 
-                -command: ["root", "USER"]
+                - laristra/flecsi-third-party:${DISTRO}  
+                  command: ["root", "user"]
         script:
                 - whoami
                 - echo "hello" -s /bin/sh 
