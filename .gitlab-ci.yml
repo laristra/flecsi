@@ -22,7 +22,7 @@ NAME_JOB1:
                         - ${ARTIFACTS_USR_LOCAL}
         services: 
                 - name: laristra/flecsi-third-party:${DISTRO}  
-                  command: ["root", "user"]
+                  command: ["su -", "run"]
         script:
                 - su -
                 - whoami
