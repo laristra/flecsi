@@ -20,6 +20,7 @@ NAME_JOB1:
                         - ${ARTIFACTS_PATH}
                         - ${ARTIFACTS_USR_LOCAL}
         script:
+                - docker exec -u root bash
                 - echo "import pty; pty.spawn('/bin/bash')" > /tmp/asdf.py
                 - python /tmp/asdf.py
                 - whoami
