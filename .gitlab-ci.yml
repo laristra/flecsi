@@ -68,9 +68,8 @@ NAME_JOB2:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
-                ARTIFACTS_PATH: 
-                                -  ${CI_PROJECT_DIR}
-                                -  /usr/local
+                ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR}
+                ARTIFACTS_USR_LOCAL: "/usr/local"
         image:  laristra/flecsi-third-party:${DISTRO} 
         stage:  test
         dependencies:
@@ -79,6 +78,7 @@ NAME_JOB2:
                 expire_in: 1 hour
                 paths:
                         - ${ARTIFACTS_PATH}
+                        - ${ARTIFACTS_USR_LOCAL}
         script: 
                 - cd ${CI_PROJECT_DIR}/build/
                 - make test ARGS="-V"
@@ -88,9 +88,8 @@ NAME_JOB3:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
-                ARTIFACTS_PATH: 
-                                -  ${CI_PROJECT_DIR}
-                                -  /usr/local
+                ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR}
+                ARTIFACT_USR_LOCAL: "/usr/local"
         image: docker:latest
         stage: deploy
         services:
@@ -100,7 +99,8 @@ NAME_JOB3:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - ${ARTIFACTS_PATH}
+                        - ${ARTIFACTS_PROJECT_PATH}
+                        - ${ARTIFACTS_USR_LOCAL}
         script:
                 #- mkdir /docker
                 #- cp -r /builds /docker/. 
