@@ -13,7 +13,6 @@ NAME_JOB1:
                   ARTIFACTS_USR_LOCAL:  "/usr/local"
         image:    
                   name: laristra/flecsi-third-party:${DISTRO} 
-                  entrypoint: ["/bin/sh", "-c", "su -"]
         stage:    build
         artifacts:
                   expire_in: 1 hour
@@ -21,6 +20,7 @@ NAME_JOB1:
                         - ${ARTIFACTS_PATH}
                         - ${ARTIFACTS_USR_LOCAL}
         script:
+                - chown -R flecsi:flecsi /usr 
                 - whoami
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
