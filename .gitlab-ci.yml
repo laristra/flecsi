@@ -11,7 +11,9 @@ NAME_JOB1:
                   RUNTIME: "mpi"
                   ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
                   ARTIFACTS_USR_LOCAL:  "/usr/local"
-        image:    laristra/flecsi-third-party:${DISTRO} 
+        image:    
+                 name: laristra/flecsi-third-party:${DISTRO} 
+                 entrypoint: ["/bin/sh", "-c"]
         stage:    build
         artifacts:
                   expire_in: 1 hour
@@ -22,8 +24,9 @@ NAME_JOB1:
                 - name: laristra/flecsi-third-party:${DISTRO}  
                   command: ["root", "user"]
         script:
+                - su -
                 - whoami
-                - echo "hello" -s /bin/sh 
+                - sh -c echo "hello" -s /bin/sh 
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
                 - | 
