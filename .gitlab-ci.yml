@@ -19,6 +19,7 @@ NAME_JOB1:
                         - ${ARTIFACTS_PATH}
                         - ${ARTIFACTS_USR_LOCAL}
         script:
+                - whoami
                 - /usr/bin/sudo echo "hello"
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
