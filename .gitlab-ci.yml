@@ -12,7 +12,7 @@ NAME_JOB1:
                   ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
                   ARTIFACTS_USR_LOCAL:  "/usr/local"
         image:    
-                  name: laristra/flecsi-third-party:${DISTRO} 
+                  name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
         stage:    build
         artifacts:
                   expire_in: 1 hour
@@ -69,7 +69,7 @@ NAME_JOB2:
                 RUNTIME: "mpi"
                 ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
                 ARTIFACTS_USR_LOCAL: "/usr/local"
-        image:  laristra/flecsi-third-party:${DISTRO} 
+        image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
         stage:  test
         dependencies:
                 - NAME_JOB1 
@@ -89,7 +89,7 @@ NAME_JOB3:
                 RUNTIME: "mpi"
                 ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
                 ARTIFACT_USR_LOCAL: "/usr/local"
-        image: docker:latest
+        image: docker:latest #user: root
         stage: deploy
         services:
                 - docker:dind
