@@ -6,13 +6,15 @@ stages:
 services:
                 - docker:dind
 
-BUILD:
+NAME_JOB1:
         variables:
                   GLOBAL_CI_VARIABLE: "global_ci_value"
                   GIT_SUBMODULE_STRATEGY: recursive
                   DISTRO: "ubuntu"
                   RUNTIME: "mpi"
-                  ARTIFACTS_PATH: ${CI_PROJECT_DIR}
+                  ARTIFACTS_PATH: 
+                                -  ${CI_PROJECT_DIR}
+                                -  /usr/local
         image:    laristra/flecsi-third-party:${DISTRO} 
         stage:    build
         artifacts:
@@ -59,16 +61,18 @@ BUILD:
                              fi; 
                         fi
 
-TEST:
+NAME_JOB2:
         variables:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
-                ARTIFACTS_PATH: ${CI_PROJECT_DIR}
+                ARTIFACTS_PATH: 
+                                -  ${CI_PROJECT_DIR}
+                                -  /usr/local
         image:  laristra/flecsi-third-party:${DISTRO} 
         stage:  test
         dependencies:
-                - BUILD 
+                - NAME_JOB1 
         artifacts:
                 expire_in: 1 hour
                 paths:
@@ -77,28 +81,30 @@ TEST:
                 - cd ${CI_PROJECT_DIR}/build/
                 - make test ARGS="-V"
 
-DEPLOY:
+NAME_JOB3:
         variables:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
-                ARTIFACTS_PATH: ${CI_PROJECT_DIR}
+                ARTIFACTS_PATH: 
+                                -  ${CI_PROJECT_DIR}
+                                -  /usr/local
         image: docker:latest
         stage: deploy
         services:
                 - docker:dind
         dependencies:
-                - TEST
+                - NAME_JOB2
         artifacts:
                 expire_in: 1 hour
                 paths:
                         - ${ARTIFACTS_PATH}
         script:
-                - mkdir /docker
-                - cp -r /builds /docker/. 
-                - cd /docker${CI_PROJECT_DIR}
-                - cp -v docker/Dockerfile /docker
-                - sed -i "1s/fedora/${DISTRO}/" /docker/Dockerfile
+                #- mkdir /docker
+                #- cp -r /builds /docker/. 
+                #- cd /docker${CI_PROJECT_DIR}
+                #- cp -v docker/Dockerfile /docker
+                - sed -i "1s/fedora/${DISTRO}/" ${CI_PROJECT_DIR}/docker/Dockerfile
                 - |
                         if [[ ${CC} != gcc ]]; 
                         then TAG="_${CC}"; 
@@ -109,10 +115,11 @@ DEPLOY:
                         fi
                 - docker pull $(sed -n '1s/FROM //p' /docker/Dockerfile)
                 - CON=$(docker run -d laristra/flecsi-third-party:${DISTRO} /bin/bash) 
-                - docker cp /docker/builds ${CON}:/home/builds
-                - |
-                        docker build \
-                               --build-arg CI_PROJECT_DIR=${CI_PROJECT_DIR} \
-                               -t laristra/flecsi-third-party:${DISTRO} /docker/ 
+                - docker cp ${CI_PROJECT_DIR}/builds ${CON}:/home/flecsi/builds
+                - docker cp /usr/local ${CON}:/usr/local
+                #- |
+                        #docker build \
+                               #--build-arg CI_PROJECT_DIR=${CI_PROJECT_DIR} \
+                               #-t laristra/flecsi-third-party:${DISTRO} /docker/ 
                 #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
                 #- docker push "${CI_COMMIT_REF_SLUG}:${DISTRO}_${RUNTIME}${TAG}
