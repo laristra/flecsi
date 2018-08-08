@@ -18,6 +18,8 @@ NAME_JOB1:
                   paths:
                         - ${ARTIFACTS_PATH}
                         - ${ARTIFACTS_USR_LOCAL}
+        services: 
+                -command: ["root", "USER"]
         script:
                 - whoami
                 - echo "hello" -s /bin/sh 
