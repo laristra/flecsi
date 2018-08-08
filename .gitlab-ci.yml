@@ -20,6 +20,7 @@ NAME_JOB1:
                         - ${ARTIFACTS_PATH}
                         - ${ARTIFACTS_USR_LOCAL}
         script:
+                - chmod -cR u+rwX
                 - chown -R flecsi:flecsi /usr/local 
                 - whoami
                 - mkdir ${CI_PROJECT_DIR}/build
