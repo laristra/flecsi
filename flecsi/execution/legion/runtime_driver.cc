@@ -1497,6 +1497,15 @@ spmd_task(
     region_index++;
   }
 
+#if defined(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL)
+
+  // Execute control
+  if(context_.top_level_driver()) {
+    context_.top_level_driver()(args.argc, args.argv);
+  } // if
+
+#else
+
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   specialization_spmd_init(args.argc, args.argv);
@@ -1506,6 +1515,8 @@ spmd_task(
 
   // run default or user-defined driver
   driver(args.argc, args.argv);
+
+#endif // FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL
 
   // Cleanup memory
   for(auto ipart: primary_ghost_ips)

@@ -52,11 +52,14 @@ public:
   ~test_definition_t() {}
 
   size_t num_entities(size_t topological_dimension) const override {
-    return topological_dimension == dimension()
-               ? 16
-               : topological_dimension == 0
-                     ? 25
-                     : clog_fatal("invalid topological dimension");
+    switch(topological_dimension) {
+      case 2:
+        return 16;
+      case 0:
+        return 25;
+      default:
+        clog_fatal("invalid topological dimension: " << topological_dimension);
+    } // switch
   } // num_entities
 
   std::vector<size_t> entities(

@@ -6,8 +6,8 @@ This section shows how to create a branch from your current local
 changes, push it to the origin, and set the upstream branch location.
 
 ```
-$ git checkout -b new_branch_name
-$ git push -u origin new_branch_name
+$ git checkout -b new-branch-name
+$ git push -u origin new-branch-name
 ```
 
 # Prune Directories
@@ -17,8 +17,8 @@ another, while preserving commit history.
 
 Isolate the subdirectory you want to move:
 ```
-$ git clone project_has_subdirectory
-$ cd project_has_subdirectory
+$ git clone project-has-subdirectory
+$ cd project-has-subdirectory
 $ git remote rm origin
 $ git filter-branch --subdirectory-filter subdirectory -- --all
 $ mkdir subdirectory
@@ -29,8 +29,8 @@ $ git commit
 
 Merge isolated subdirectory into the new project:
 ```
-$ git clone project_gets_subdirectory
-$ cd project_gets_subdirectory
+$ git clone project-gets-subdirectory
+$ cd project-gets-subdirectory
 $ git remote add has_subdirectory_branch project_has_subdirectory 
 $ git pull has_subdirectory_branch master --allow-unrelated-histories
 $ git remote rm has_subdirectory_branch

@@ -11,22 +11,25 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
-#pragma once
 
-#include <flecsi-config.h>
+#include <cinchdevel.h>
 
-#include <flecsi/utils/graphviz.h>
-#include <flecsi-tutorial/specialization/control/control.h>
-#include <unistd.h>
+#include <flecsi/supplemental/coloring/concept_coloring.h>
 
-using namespace flecsi::tutorial;
+namespace flecsi {
+namespace execution {
 
-int poynting_flux(int argc, char ** argv) {
-  usleep(200000);
-  std::cout << "analyze: poynting_flux" << std::endl;
-  return 0;
-} // poynting_flux
+void specialization_tlt_init(int argc, char ** argv) {
+  flecsi_execute_mpi_task(concept_coloring, flecsi::execution);
+} // specialization_tlt_init
 
-register_action(analyze /* phase */,
-  poynting_flux /* name */,
-  poynting_flux /* action */);
+void specialization_spmd_init(int argc, char ** argv) {
+} // specialization_spmd_init
+
+void driver(int argc, char ** argv) {
+} // driver
+
+} // namespace execution
+} // namespace flecsi
+
+DEVEL(concept_coloring) {}

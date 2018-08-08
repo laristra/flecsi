@@ -125,10 +125,12 @@ struct context__ : public CONTEXT_POLICY {
 
   using tlt_driver_t = std::function<int(int, char **)>;
 
-  bool register_top_level_driver(tlt_driver_t & driver) {
+  bool register_top_level_driver(tlt_driver_t const & driver) {
     tlt_driver_ = driver;
     return true;
   } // register_top_level_driver
+
+  tlt_driver_t const & top_level_driver() const { return tlt_driver_; }
 
   //--------------------------------------------------------------------------//
   // Object interface.
@@ -574,10 +576,7 @@ struct context__ : public CONTEXT_POLICY {
 
   index_coloring_t & coloring(size_t index_space) {
     auto it = colorings_.find(index_space);
-    if (it == colorings_.end()) {
-      clog(fatal) << "invalid index_space " << index_space << std::endl;
-    } // if
-
+    clog_assert(it != colorings_.end(), "invalid index space: " << index_space);
     return it->second;
   } // coloring
 
@@ -591,10 +590,8 @@ struct context__ : public CONTEXT_POLICY {
   const std::unordered_map<size_t, coloring_info_t> &
   coloring_info(size_t index_space) {
     auto it = coloring_info_.find(index_space);
-    if (it == coloring_info_.end()) {
-      clog(fatal) << "invalid index space " << index_space << std::endl;
-    } // if
-
+    clog_assert(
+      it != coloring_info_.end(), "invalid index space: " << index_space);
     return it->second;
   } // coloring_info
 

@@ -11,5 +11,6 @@ set(control_HEADERS
 )
 
 set(control_SOURCES
+  control.cc
   PARENT_SCOPE
 )

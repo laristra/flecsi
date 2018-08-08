@@ -11,23 +11,16 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
-#pragma once
 
-/*! @file */
-
-
-
-clog_register_tag(wrapper);
+#include <flecsi/execution/context.h>
+#include <flecsi-tutorial/specialization/control/control.h>
 
 namespace flecsi {
-namespace execution {
+namespace tutorial {
 
-template<
-  typename FUNCTOR_TYPE
->
-struct functor_task_wrapper__
-{
-};
+static const bool specialization_control_registered =
+  flecsi::execution::context_t::instance().register_top_level_driver(
+    control_t::execute);
 
-}
-}
+} // namespace tutorial
+} // namespace flecsi
