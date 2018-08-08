@@ -3,9 +3,6 @@ stages:
                 - test
                 - deploy
 
-services:
-                - docker:dind
-
 NAME_JOB1:
         variables:
                   GLOBAL_CI_VARIABLE: "global_ci_value"
