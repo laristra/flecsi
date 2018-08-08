@@ -13,6 +13,7 @@ NAME_JOB1:
                   ARTIFACTS_USR_LOCAL:  "/usr/local"
         image:    
                   name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
+                  entrypoint: ["/bin/sh", "-c"]
         stage:    build
         artifacts:
                   expire_in: 1 hour
