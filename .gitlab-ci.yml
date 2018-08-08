@@ -20,7 +20,7 @@ NAME_JOB1:
                         - ${ARTIFACTS_USR_LOCAL}
         script:
                 - whoami
-                - /usr/bin/sudo echo "hello"
+                - su -c echo "hello" -s /bin/sh 
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
                 - | 
