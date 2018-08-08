@@ -12,15 +12,15 @@ NAME_JOB1:
                   GIT_SUBMODULE_STRATEGY: recursive
                   DISTRO: "ubuntu"
                   RUNTIME: "mpi"
-                  ARTIFACTS_PATH: 
-                                -  ${CI_PROJECT_DIR}
-                                -  /usr/local
+                  ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR}
+                  ARTIFACTS_USR_LOCAL:  "/usr/local"
         image:    laristra/flecsi-third-party:${DISTRO} 
         stage:    build
         artifacts:
                   expire_in: 1 hour
                   paths:
                         - ${ARTIFACTS_PATH}
+                        - ${ARTIFACTS_USR_LOCAL}
         script:
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
