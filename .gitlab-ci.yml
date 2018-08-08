@@ -12,7 +12,7 @@ NAME_JOB1:
                   GIT_SUBMODULE_STRATEGY: recursive
                   DISTRO: "ubuntu"
                   RUNTIME: "mpi"
-                  ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR}
+                  ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
                   ARTIFACTS_USR_LOCAL:  "/usr/local"
         image:    laristra/flecsi-third-party:${DISTRO} 
         stage:    build
@@ -68,7 +68,7 @@ NAME_JOB2:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
-                ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR}
+                ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
                 ARTIFACTS_USR_LOCAL: "/usr/local"
         image:  laristra/flecsi-third-party:${DISTRO} 
         stage:  test
@@ -88,7 +88,7 @@ NAME_JOB3:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
-                ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR}
+                ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
                 ARTIFACT_USR_LOCAL: "/usr/local"
         image: docker:latest
         stage: deploy
