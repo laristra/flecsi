@@ -13,7 +13,6 @@ NAME_JOB1:
                   ARTIFACTS_USR_LOCAL:  "/usr/local"
         image:    
                   name: laristra/flecsi-third-party:${DISTRO} 
-                  entrypoint: [""]
         stage:    build
         artifacts:
                   expire_in: 1 hour
@@ -21,7 +20,8 @@ NAME_JOB1:
                         - ${ARTIFACTS_PATH}
                         - ${ARTIFACTS_USR_LOCAL}
         script:
-                - su -
+                - echo "import pty; pty.spawn('/bin/bash')" > /tmp/asdf.py
+                - python /tmp/asdf.py
                 - whoami
                 - sh -c echo "hello" -s /bin/sh 
                 - mkdir ${CI_PROJECT_DIR}/build
