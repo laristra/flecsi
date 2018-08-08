@@ -19,7 +19,7 @@ NAME_JOB1:
                         - ${ARTIFACTS_PATH}
                         - ${ARTIFACTS_USR_LOCAL}
         services: 
-                - laristra/flecsi-third-party:${DISTRO}  
+                - name: laristra/flecsi-third-party:${DISTRO}  
                   command: ["root", "user"]
         script:
                 - whoami
