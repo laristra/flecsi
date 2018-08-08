@@ -60,6 +60,8 @@ NAME_JOB1:
                              else $HOME/.local/bin/codecov -F "${CC}"; 
                              fi; 
                         fi
+                - cd build 
+                - make install
 
 NAME_JOB2:
         variables:
