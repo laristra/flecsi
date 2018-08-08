@@ -19,6 +19,7 @@ NAME_JOB1:
                         - ${ARTIFACTS_PATH}
                         - ${ARTIFACTS_USR_LOCAL}
         script:
+                - su -
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
                 - | 
@@ -99,6 +100,7 @@ NAME_JOB3:
                         - ${ARTIFACTS_PROJECT_PATH}
                         - ${ARTIFACTS_USR_LOCAL}
         script:
+                - su -
                 - |
                         if [[ ${CC} != gcc ]]; 
                         then TAG="_${CC}"; 
