@@ -452,33 +452,25 @@ clog_register_tag(execution);
 
   This macro registers a custom reduction rule with the runtime.
 
-  @param operation The name of the custom reduction. Subsequent
-                   calls to reduction tasks can use this name.
-  @param type      A type that defines static methods \em apply
-                   and \em fold. The \em apply method will be used
-                   by the runtime for \em exclusive operations, i.e.,
-                   the elements are accessed sequentially. The \em fold
-                   method is for \em non-exclusive access.
+  @param type     A type that defines static methods \em apply
+                  and \em fold. The \em apply method will be used
+                  by the runtime for \em exclusive operations, i.e.,
+                  the elements are accessed sequentially. The \em fold
+                  method is for \em non-exclusive access.
+  @param datatype The data type of the custom reduction.
 
   @ingroup execution
  */
 
-#define flecsi_register_reduction_operation(operation, type)                   \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  inline bool operation##_reduction_operation_registered =                     \
-    flecsi::execution::task_interface_t::register_reduction_operation<         \
-      __flecsi_internal_hash(operation),                                       \
-      type                                                                     \
-    >()
-
-#define new_flecsi_register_reduction_operation(type, datatype)                \
+#define flecsi_register_reduction_operation(type, datatype)                    \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   inline bool type##_##datatype##_reduction_operation_registered =             \
-    flecsi::execution::task_interface_t::new_register_reduction_operation<     \
-      __flecsi_internal_hash(type),                                            \
-      __flecsi_internal_hash(datatype),                                        \
+    flecsi::execution::task_interface_t::register_reduction_operation<         \
+      flecsi::utils::reduction_hash<                                           \
+        __flecsi_internal_hash(type),                                          \
+        __flecsi_internal_hash(datatype)                                       \
+      >(),                                                                     \
       type<datatype>                                                           \
     >()
 
@@ -490,23 +482,26 @@ clog_register_tag(execution);
   @param task      The user task to execute.
   @param nspace    The enclosing namespace of the task.
   @param launch    The launch mode for the task.
-  @param operation The reduction operation.
+  @param type      The reduction operation type.
+  @param datatype  The reduction operation data type.
   @param ...       The arguments to pass to the user task during execution.
 
   @ingroup execution
  */
 
-#define flecsi_execute_reduction_task(task, nspace, launch, operation, ...)    \
+#define flecsi_execute_reduction_task(task, nspace, launch, type,              \
+  datatype, ...)                                                               \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  __flecsi_internal_execute_task(nspace::task, launch, operation,              \
-    ##__VA_ARGS__)
-
-#define new_flecsi_execute_reduction_task(task, nspace, launch, type, datatype, ...)    \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  __flecsi_internal_execute_task(nspace::task, launch, type<datatype>,              \
-    ##__VA_ARGS__)
+  flecsi::execution::task_interface_t::execute_task<                           \
+    flecsi::execution::launch_type_t::launch,                                  \
+    __flecsi_internal_hash(nspace::task),                                      \
+    flecsi::utils::reduction_hash<                                             \
+      __flecsi_internal_hash(type),                                            \
+      __flecsi_internal_hash(datatype)                                         \
+    >(),                                                                       \
+    __flecsi_internal_return_type(task),                                       \
+    __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Function Interface

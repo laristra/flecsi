@@ -36,7 +36,7 @@
 #include <flecsi/utils/tuple_type_converter.h>
 #include <flecsi/utils/tuple_walker.h>
 
-clog_register_tag(wrapper);
+clog_register_tag(task_wrapper);
 
 namespace flecsi {
 namespace execution {
@@ -77,9 +77,8 @@ struct pure_task_wrapper__ {
     launch_t launch,
     std::string & name) {
     {
-      clog_tag_guard(wrapper);
-      clog(info) << "Executing PURE registration callback for " <<
-        name << std::endl;
+      clog_tag_guard(task_wrapper);
+      clog(info) << "registering pure Legion task " << name << std::endl;
     }
 
     Legion::TaskVariantRegistrar registrar(tid, name.c_str());
@@ -153,8 +152,8 @@ struct task_wrapper__ {
     launch_t launch,
     std::string & name) {
     {
-      clog_tag_guard(wrapper);
-      clog(info) << "Executing registration callback for " << name << std::endl;
+      clog_tag_guard(task_wrapper);
+      clog(info) << "registering task " << name << std::endl;
     }
 
     Legion::TaskVariantRegistrar registrar(tid, name.c_str());
@@ -198,7 +197,7 @@ struct task_wrapper__ {
     Legion::Context context,
     Legion::Runtime * runtime) {
     {
-      clog_tag_guard(wrapper);
+      clog_tag_guard(task_wrapper);
       clog(info) << "In execute_user_task" << std::endl;
     }
 
@@ -233,7 +232,7 @@ struct task_wrapper__ {
     Legion::Context context,
     Legion::Runtime * runtime) {
     {
-      clog_tag_guard(wrapper);
+      clog_tag_guard(task_wrapper);
       clog(info) << "In execute_mpi_task" << std::endl;
     }
 

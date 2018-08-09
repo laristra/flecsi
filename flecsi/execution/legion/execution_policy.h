@@ -238,7 +238,6 @@ struct legion_execution_policy_t {
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
 
-          std::cerr << "REDUCTION: " << REDUCTION << std::endl;
           constexpr size_t ZERO =
             flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
 
@@ -470,17 +469,13 @@ struct legion_execution_policy_t {
    method please see task__::register_reduction_operation.
    */
 
-  template<size_t NAME, typename OPERATION>
+  template<size_t HASH, typename TYPE>
   static bool register_reduction_operation() {
-    using wrapper_t = reduction_wrapper__<NAME, OPERATION>;
+
+    using wrapper_t = reduction_wrapper__<HASH, TYPE>;
 
     return context_t::instance().register_reduction_operation(
-      NAME, wrapper_t::registration_callback);
-  } // register_reduction_operation
-
-  template<size_t OPERATION_HASH, size_t DATA_HASH, typename TYPE>
-  static bool new_register_reduction_operation() {
-    return true;
+      HASH, wrapper_t::registration_callback);
   } // register_reduction_operation
 
 }; // struct legion_execution_policy_t

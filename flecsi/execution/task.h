@@ -102,24 +102,15 @@ struct task_interface__ {
   /*!
     Register a custom reduction operation.
 
-    @tparam NAME      A hash key identifying the operation.
-    @tparam OPERATION The user-defined operation type. The interface
-                      for this type is prescribed and is statically
-                      checked at this level.
+    @tparam HASH A hash key identifying the operation.
+    @tparam TYPE The user-defined operation type. The interface
+                 for this type is prescribed.
    */
 
-  template<size_t NAME, typename OPERATION>
+  template<size_t HASH, typename TYPE>
   static decltype(auto) register_reduction_operation() {
-    return EXECUTION_POLICY::template register_reduction_operation<NAME,
-      OPERATION>();
-  } // register_reduction_operation
-
-  template<size_t OPERATION_HASH,
-    size_t DATA_HASH,
-    typename TYPE>
-  static decltype(auto) new_register_reduction_operation() {
-    return EXECUTION_POLICY::template new_register_reduction_operation<
-      OPERATION_HASH, DATA_HASH, TYPE>();
+    return EXECUTION_POLICY::template register_reduction_operation<
+      HASH, TYPE>();
   } // register_reduction_operation
 
 }; // struct task_interface__

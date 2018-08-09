@@ -10,6 +10,15 @@ namespace flecsi {
 namespace execution {
 namespace reduction {
 
+#define __flecsi_register_operation_types(operation)                           \
+  flecsi_register_reduction_operation(operation, int);                         \
+  flecsi_register_reduction_operation(operation, long);                        \
+  flecsi_register_reduction_operation(operation, short);                       \
+  flecsi_register_reduction_operation(operation, unsigned);                    \
+  flecsi_register_reduction_operation(operation, size_t);                      \
+  flecsi_register_reduction_operation(operation, float);                       \
+  flecsi_register_reduction_operation(operation, double);
+
 //----------------------------------------------------------------------------//
 // Min
 //----------------------------------------------------------------------------//
@@ -44,6 +53,7 @@ struct min {
     }
     else {
     } // if constexpr
+
   } // fold
 
   static T initial() {
@@ -52,9 +62,7 @@ struct min {
 
 }; // struct min
 
-new_flecsi_register_reduction_operation(min, size_t);
-new_flecsi_register_reduction_operation(min, float);
-new_flecsi_register_reduction_operation(min, double);
+__flecsi_register_operation_types(min);
 
 //----------------------------------------------------------------------------//
 // Max
@@ -90,6 +98,7 @@ struct max {
     }
     else {
     } // if constexpr
+
   } // fold
 
   static T initial() {
@@ -97,6 +106,8 @@ struct max {
   } // initial
 
 }; // struct max
+
+__flecsi_register_operation_types(max);
 
 //----------------------------------------------------------------------------//
 // Sum
@@ -132,6 +143,7 @@ struct sum {
     }
     else {
     } // if constexpr
+
   } // fold
 
   static T initial() {
@@ -139,6 +151,8 @@ struct sum {
   } // initial
 
 }; // struct sum
+
+__flecsi_register_operation_types(sum);
 
 /*!
   Product reduction type.
@@ -174,6 +188,7 @@ struct product {
     }
     else {
     } // if constexpr
+
   } // fold
 
   static T initial() {
@@ -181,6 +196,8 @@ struct product {
   } // initial
 
 }; // struct product
+
+__flecsi_register_operation_types(product);
 
 } // namespace reduction
 } // namespace execution

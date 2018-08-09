@@ -27,11 +27,11 @@ clog_register_tag(reduction_wrapper);
 namespace flecsi {
 namespace execution {
 
-template<size_t NAME, typename OPERATION>
+template<size_t HASH, typename TYPE>
 struct reduction_wrapper__ {
 
-  using rhs_t = typename OPERATION::RHS;
-  using lhs_t = typename OPERATION::LHS;
+  using rhs_t = typename TYPE::RHS;
+  using lhs_t = typename TYPE::LHS;
 
   // MPI does not have support for mixed-type reductions
   static_assert(std::is_same_v<lhs_t, rhs_t>, "type mismatch: LHS != RHS");
@@ -47,7 +47,7 @@ struct reduction_wrapper__ {
     rhs_t * rhs = reinterpret_cast<rhs_t *>(in);
 
     for(size_t i{0}; i < *len; ++i) {
-      OPERATION::apply(lhs[i], rhs[i]);
+      TYPE::apply(lhs[i], rhs[i]);
     } // for
   } // mpi_wrapper
 
@@ -58,7 +58,7 @@ struct reduction_wrapper__ {
   static void registration_callback() {
     {
       clog_tag_guard(reduction_wrapper);
-      clog(info) << "Executing reduction wrapper callback for " << NAME
+      clog(info) << "Executing reduction wrapper callback for " << HASH
                  << std::endl;
     } // scope
 
@@ -69,8 +69,8 @@ struct reduction_wrapper__ {
     auto & reduction_ops = context_.reduction_operations();
 
     // Check if operator has already been registered
-    clog_assert(reduction_ops.find(NAME) == reduction_ops.end(),
-      typeid(OPERATION).name()
+    clog_assert(reduction_ops.find(HASH) == reduction_ops.end(),
+      typeid(TYPE).name()
         << " has already been registered with this name");
 
     // Create the MPI data type if it isn't P.O.D.
@@ -87,7 +87,7 @@ struct reduction_wrapper__ {
       if(dtype == reduction_types.end()) {
         // Add the MPI type if it doesn't exist
         MPI_Datatype datatype;
-        constexpr size_t datatype_size = sizeof(typename OPERATION::RHS);
+        constexpr size_t datatype_size = sizeof(typename TYPE::RHS);
         MPI_Type_contiguous(datatype_size, MPI_BYTE, &datatype);
         MPI_Type_commit(&datatype);
         reduction_types[typehash] = datatype;
@@ -97,7 +97,7 @@ struct reduction_wrapper__ {
     // Create the operator and register it with the runtime
     MPI_Op mpiop;
     MPI_Op_create(mpi_wrapper, true, &mpiop);
-    reduction_ops[NAME] = mpiop;
+    reduction_ops[HASH] = mpiop;
   } // registration_callback
 
 }; // struct reduction_wrapper__
