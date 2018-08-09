@@ -89,15 +89,17 @@ struct new_reduction_wrapper__ {
 
   static void registration_callback() {
 
-#if 0
+    constexpr size_t hash =
+      flecsi::utils::reduction_hash<OPERATION_HASH, DATA_HASH>();
+
     // Get the map of registered operations
     auto & reduction_ops = context_t::instance().reduction_operations();
 
-    clog_assert(reduction_ops.find(NAME) == reduction_ops.end(),
+    clog_assert(reduction_ops.find(hash) == reduction_ops.end(),
       typeid(TYPE).name()
         << " has already been registered with this name");
 
-    clog(info) << "registering reduction operation " << NAME << std::endl;
+    clog(info) << "registering reduction operation " << hash << std::endl;
 
     const size_t id = oid_t::instance().next();
 
@@ -105,15 +107,14 @@ struct new_reduction_wrapper__ {
     Legion::Runtime::register_reduction_op<TYPE>(id);
 
     // Save the id for invocation
-    reduction_ops[NAME].id = id;
+    reduction_ops[hash].id = id;
 
     // Save the initial value for registering the collective
     // with the Legion runtime
     size_t bytes = sizeof(rhs_t);
-    reduction_ops[NAME].initial.resize(bytes);
+    reduction_ops[hash].initial.resize(bytes);
     rhs_t initial_value = TYPE::initial();
-    std::memcpy(reduction_ops[NAME].initial.data(), &initial_value, bytes);
-#endif
+    std::memcpy(reduction_ops[hash].initial.data(), &initial_value, bytes);
 
   } // registration_callback
 

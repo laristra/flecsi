@@ -6,12 +6,13 @@
 #include <cinchdevel.h>
 
 #include <flecsi/execution/context.h>
-#include <flecsi/execution/execution.h>
+#include <flecsi/execution/reduction.h>
 
 #include <flecsi/execution/test/harness.h>
 
 clog_register_tag(reduction_interface);
 
+#if 0
 //----------------------------------------------------------------------------//
 // Generic sum reduction type.
 //----------------------------------------------------------------------------//
@@ -103,6 +104,7 @@ using prod_complex = reduction_product__<complex_t>;
 
 flecsi_register_reduction_operation(sum, sum_double);
 flecsi_register_reduction_operation(product, prod_complex);
+#endif
 
 namespace flecsi {
 namespace execution {
@@ -111,16 +113,18 @@ namespace execution {
 // Variable registration
 //----------------------------------------------------------------------------//
 
+#if 0
 template<
   size_t EP,
   size_t SP,
   size_t GP
 >
 using complex_field = dense_accessor<complex_t, EP, SP, GP>;
+flecsi_register_field(mesh_t, data, values, complex_t, dense, 1,
+  index_spaces::cells);
+#endif
 
 flecsi_register_field(mesh_t, data, double_values, double, dense, 1,
-  index_spaces::cells);
-flecsi_register_field(mesh_t, data, values, complex_t, dense, 1,
   index_spaces::cells);
 
 //----------------------------------------------------------------------------//
@@ -149,6 +153,7 @@ double double_task(mesh<ro> m, field<rw, rw, ro> v) {
 
 flecsi_register_task(double_task, flecsi::execution, loc, single);
 
+#if 0
 //----------------------------------------------------------------------------//
 // Complex
 //----------------------------------------------------------------------------//
@@ -172,6 +177,7 @@ double complex_task(mesh<ro> m, complex_field<rw, rw, ro> v) {
 } // complex_task
 
 flecsi_register_task(complex_task, flecsi::execution, loc, single);
+#endif
 
 //----------------------------------------------------------------------------//
 // User driver.
@@ -184,10 +190,12 @@ void driver(int argc, char ** argv) {
 
   flecsi_execute_task(double_init, flecsi::execution, single, mh, vh);
 
+#if 0
   auto f = flecsi_execute_reduction_task(double_task, flecsi::execution,
     single, sum, mh, vh);
 
   std::cout << "reduction: " << f.get() << std::endl;
+#endif
 } // driver
 
 } // namespace execution

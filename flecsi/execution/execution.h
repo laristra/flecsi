@@ -475,7 +475,7 @@ clog_register_tag(execution);
 #define new_flecsi_register_reduction_operation(type, datatype)                \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  inline bool operation##_##datatype_reduction_operation_registered =          \
+  inline bool type##_##datatype##_reduction_operation_registered =             \
     flecsi::execution::task_interface_t::new_register_reduction_operation<     \
       __flecsi_internal_hash(type),                                            \
       __flecsi_internal_hash(datatype),                                        \
@@ -500,6 +500,12 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   __flecsi_internal_execute_task(nspace::task, launch, operation,              \
+    ##__VA_ARGS__)
+
+#define new_flecsi_execute_reduction_task(task, nspace, launch, type, datatype, ...)    \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  __flecsi_internal_execute_task(nspace::task, launch, type<datatype>,              \
     ##__VA_ARGS__)
 
 //----------------------------------------------------------------------------//
