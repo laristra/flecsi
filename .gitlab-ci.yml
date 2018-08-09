@@ -61,7 +61,7 @@ NAME_JOB1:
                              fi; 
                         fi
                 - cd build 
-                - make install
+                - sudo make install
 
 NAME_JOB2:
         variables:
