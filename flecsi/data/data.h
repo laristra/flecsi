@@ -110,8 +110,8 @@
   inline bool client_type##_##nspace##_##name##_data_registered =              \
       flecsi::data::field_interface_t::register_field<                         \
           flecsi::data::global_data_client_t, flecsi::data::global, data_type, \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
+          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
+          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
           versions, flecsi::execution::internal_index_space::global_is>        \
              ({EXPAND_AND_STRINGIFY(name)})
 
@@ -140,8 +140,8 @@
   inline bool client_type##_##nspace##_##name##_data_registered =              \
       flecsi::data::field_interface_t::register_field<                         \
           flecsi::data::color_data_client_t, flecsi::data::color, data_type,   \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
+          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
+          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
           versions, flecsi::execution::internal_index_space::color_is>         \
              ({EXPAND_AND_STRINGIFY(name)})
 
