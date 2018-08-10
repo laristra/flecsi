@@ -530,11 +530,11 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   hpx_setup_target(FleCSI NONAMEPREFIX)
 
 endif()
+
 #------------------------------------------------------------------------------#
 # Set application directory
 #------------------------------------------------------------------------------#
 
-cinch_add_application_directory("examples/lax_wendroff")
 cinch_add_application_directory("tools")
 
 #------------------------------------------------------------------------------#

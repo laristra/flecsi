@@ -423,6 +423,35 @@ clog_register_tag(execution);
   flecsi_execute_task(task, nspace, index, ##__VA_ARGS__)
 
 //----------------------------------------------------------------------------//
+// Reduction Interface
+//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_register_reduction_operation
+
+  This macro registers a custom reduction rule with the runtime.
+
+  @param name           The name of the custom reduction. Subsequent
+                        calls to reduction tasks can use this name.
+  @param operation_type A type that defines static methods \em apply
+                        and \em fold. The \em apply method will be used
+                        by the runtime for \em exclusive operations, i.e.,
+                        the elements are accessed sequentially. The \em fold
+                        method is for \em non-exclusive access. The \em fold
+                        method is optional.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_reduction_operation(name, operation_type)              \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  inline bool name##_reduction_operation_registered =                          \
+      flecsi::execution::task_interface_t::register_reduction_operation<       \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)},           \
+          operation_type>()
+
+//----------------------------------------------------------------------------//
 // Function Interface
 //----------------------------------------------------------------------------//
 

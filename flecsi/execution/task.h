@@ -98,7 +98,49 @@ struct task_interface__ {
         launch, KEY, RETURN, ARG_TUPLE>(std::forward<ARGS>(args)...);
   } // execute_task
 
+  /*!
+    Register a custom reduction operation.
+
+    @tparam NAME      A hash key identifying the operation.
+    @tparam OPERATION The user-defined operation type. The interface
+                      for this type is prescribed and is statically
+                      checked at this level.
+   */
+
+  template<
+    size_t NAME,
+    typename OPERATION>
+  static decltype(auto)
+  register_reduction_operation() {
+
+    // FIXME: Add static check of OPERATION type
+
+    return EXECUTION_POLICY::template register_reduction_operation<
+      NAME, OPERATION>();
+  } // register_reduction_operation
+
 }; // struct task_interface__
+
+template<typename TYPE>
+struct reduce_sum {
+  TYPE apply(TYPE & lhs, TYPE rhs) {
+    return lhs += rhs;
+  } // apply
+}; // struct reduce_sum
+
+template<typename TYPE>
+struct reduce_min {
+  TYPE apply(TYPE & lhs, TYPE rhs) {
+    return lhs < rhs ? lhs : rhs;
+  } // apply
+}; // struct reduce_min
+
+template<typename TYPE>
+struct reduce_max {
+  TYPE apply(TYPE & lhs, TYPE rhs) {
+    return lhs > rhs ? lhs : rhs;
+  } // apply
+}; // struct reduce_max
 
 } // namespace execution
 } // namespace flecsi

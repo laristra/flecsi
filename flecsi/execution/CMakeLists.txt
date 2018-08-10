@@ -81,10 +81,10 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     mpi/execution_policy.h
     mpi/finalize_handles.h
     mpi/future.h
+    mpi/reduction_wrapper.h
     mpi/runtime_driver.h
     mpi/task_epilog.h
     mpi/task_prolog.h
-    mpi/task_wrapper.h
   )
 
   set(execution_SOURCES
