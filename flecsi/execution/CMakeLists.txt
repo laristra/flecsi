@@ -258,6 +258,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         test/simple2d-16x16.msh
       LIBRARIES
         FleCSI
+        RistraUtils
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES

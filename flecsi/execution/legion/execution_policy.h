@@ -28,7 +28,7 @@
 
 #include <legion.h>
 
-#include <ristra/utils/const_string.h>
+#include <ristra-utils/utils/const_string.h>
 
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>

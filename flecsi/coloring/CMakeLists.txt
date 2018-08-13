@@ -25,8 +25,6 @@ set(coloring_HEADERS
   crs.h
   index_coloring.h
   dcrs_utils.h
-  mpi_communicator.h
-  parmetis_colorer.h
   box_types.h
   box_colorer.h
   simple_box_colorer.h
@@ -70,6 +68,7 @@ if(ENABLE_MPI)
     ${coloring_HEADERS}
     dcrs_utils.h
     mpi_communicator.h
+    mpi_utils.h
   )
 endif()
 

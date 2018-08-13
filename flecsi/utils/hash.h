@@ -393,6 +393,16 @@ intermediate_hash(size_t dimension, size_t domain) {
   return (dimension << 32) ^ domain;
 } // intermediate_hash
 
+////////////////////////////////////////////////////////////////////////////////
+// Reduction hash interface.
+////////////////////////////////////////////////////////////////////////////////
+
+template<size_t OPERATOR_HASH, size_t DATA_HASH>
+inline constexpr size_t
+reduction_hash() {
+  return (OPERATOR_HASH << 32) ^ DATA_HASH;
+} // reduction_hash
+
 } // namespace hash
 } // namespace utils
 } // namespace flecsi

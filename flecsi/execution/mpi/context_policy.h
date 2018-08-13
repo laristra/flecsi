@@ -101,7 +101,7 @@ struct mpi_context_policy_t {
 
     std::vector<offset_t> offsets;
     std::vector<uint8_t> entries;
-  };
+  }; // sparse_field_data_t
 
   /*!
     FleCSI context initialization. This method initializes the FleCSI
@@ -406,16 +406,11 @@ struct mpi_context_policy_t {
     int my_color;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
 
-<<<<<<< HEAD
-    if(my_color == 0) {
-      for(auto ghost_owner : ghost_owners) {
-=======
 // This should only be uncommented for debugging (outputs info
 // during tutorial runs). Consider changing this to use clog
 #if 0
     if (my_color == 0) {
       for (auto ghost_owner : ghost_owners) {
->>>>>>> feature/bergen/ristra-utils
         std::cout << "ghost owner: " << ghost_owner << std::endl;
         std::cout << "\torigin length: ";
         for(auto len : origin_lens[ghost_owner]) {
@@ -438,15 +433,9 @@ struct mpi_context_policy_t {
           std::cout << len << " ";
         }
         std::cout << std::endl;
-<<<<<<< HEAD
-      }
-    }
-=======
-
       } // for
     } // if
 #endif
->>>>>>> feature/bergen/ristra-utils
 
     for(auto ghost_owner : ghost_owners) {
       if(origin_disps.size() == 0)
@@ -470,14 +459,9 @@ struct mpi_context_policy_t {
       }
     }
 
-<<<<<<< HEAD
-    if(my_color == 0) {
-      for(auto ghost_owner : ghost_owners) {
-=======
 #if 0
     if (my_color == 0) {
       for (auto ghost_owner : ghost_owners) {
->>>>>>> feature/bergen/ristra-utils
         std::cout << "ghost owner: " << ghost_owner << std::endl;
         std::cout << "source compacted length: ";
         for(auto len : compact_origin_lengs[ghost_owner]) {
@@ -489,8 +473,8 @@ struct mpi_context_policy_t {
           std::cout << disp << " ";
         }
         std::cout << std::endl;
-      }
-    }
+      } // for
+    } // if
 #endif
 
     for(auto ghost_owner : ghost_owners) {
@@ -515,14 +499,9 @@ struct mpi_context_policy_t {
       }
     }
 
-<<<<<<< HEAD
-    if(my_color == 0) {
-      for(auto ghost_owner : ghost_owners) {
-=======
 #if 0
     if (my_color == 0) {
       for (auto ghost_owner : ghost_owners) {
->>>>>>> feature/bergen/ristra-utils
         std::cout << "ghost owner: " << ghost_owner << std::endl;
 
         std::cout << "compacted target length: ";
@@ -535,10 +514,10 @@ struct mpi_context_policy_t {
           std::cout << disp << " ";
         }
         std::cout << std::endl;
-      }
-    }
+      } // for
+    } // if
 #endif
-  }
+  } // register_field_metadata_
 
   std::map<field_id_t, field_metadata_t> & registered_field_metadata() {
     return field_metadata;

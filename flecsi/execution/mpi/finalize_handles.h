@@ -26,7 +26,6 @@
 #include <flecsi/topology/mesh_topology.h>
 #include <flecsi/topology/set_topology.h>
 #include <flecsi/utils/mpi_type_traits.h>
-#include <flecsi/utils/tuple_walker.h>
 
 #include <ristra-utils/utils/tuple_walker.h>
 

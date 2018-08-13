@@ -469,7 +469,7 @@ clog_register_tag(execution);
                                                                                \
   inline bool type##_##datatype##_reduction_operation_registered =             \
     flecsi::execution::task_interface_t::register_reduction_operation<         \
-      flecsi::utils::reduction_hash<                                           \
+      flecsi::utils::hash::reduction_hash<                                     \
         __flecsi_internal_hash(type),                                          \
         __flecsi_internal_hash(datatype)                                       \
       >(),                                                                     \
@@ -498,7 +498,7 @@ clog_register_tag(execution);
   flecsi::execution::task_interface_t::execute_task<                           \
     flecsi::execution::launch_type_t::launch,                                  \
     __flecsi_internal_hash(nspace::task),                                      \
-    flecsi::utils::reduction_hash<                                             \
+    flecsi::utils::hash::reduction_hash<                                       \
       __flecsi_internal_hash(type),                                            \
       __flecsi_internal_hash(datatype)                                         \
     >(),                                                                       \
