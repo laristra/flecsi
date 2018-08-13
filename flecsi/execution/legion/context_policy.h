@@ -508,88 +508,8 @@ struct legion_context_policy_t {
   }
 
   /*!
-    Set DynamicCollective for <double> max reduction
-
-    @param max_reduction Legion DynamicCollective for <double> max reduction
+    Return the map of registered reduction operations.
    */
-
-  void set_max_reduction(Legion::DynamicCollective & max_reduction) {
-    max_reduction_ = max_reduction;
-  }
-
-  /*!
-    Get DynamicCollective for <double> max reduction
-   */
-
-  auto & max_reduction() {
-    return max_reduction_;
-  }
-
-  /*!
-    Perform reduction of the maximum value
-    @param task future
-   */
-
-  template<typename T, launch_type_t launch>
-  auto reduce_max(legion_future__<T, launch> & local_future) {
-    Legion::DynamicCollective & max_reduction = max_reduction_;
-
-    auto legion_runtime = Legion::Runtime::get_runtime();
-    auto legion_context = Legion::Runtime::get_context();
-
-    local_future.defer_dynamic_collective_arrival(
-      legion_runtime, legion_context, max_reduction);
-
-    max_reduction =
-      legion_runtime->advance_dynamic_collective(legion_context, max_reduction);
-
-    auto global_future = legion_runtime->get_dynamic_collective_result(
-      legion_context, max_reduction);
-
-    return legion_future__<T, launch_type_t::single>(global_future);
-  }
-
-  /*!
-    Set DynamicCollective for <double> in reduction
-
-    @param min_reduction Legion DynamicCollective for <double> max reduction
-   */
-
-  void set_min_reduction(Legion::DynamicCollective & min_reduction) {
-    min_reduction_ = min_reduction;
-  }
-
-  /*!
-    Get DynamicCollective for <double> max reduction
-   */
-
-  auto & min_reduction() {
-    return min_reduction_;
-  }
-
-  /*!
-    Perform reduction of the minimum value
-    @param task future
-   */
-
-  template<typename T, launch_type_t launch>
-  auto reduce_min(legion_future__<T, launch> & local_future) {
-    Legion::DynamicCollective & min_reduction = min_reduction_;
-
-    auto legion_runtime = Legion::Runtime::get_runtime();
-    auto legion_context = Legion::Runtime::get_context();
-
-    local_future.defer_dynamic_collective_arrival(
-      legion_runtime, legion_context, min_reduction);
-
-    min_reduction =
-      legion_runtime->advance_dynamic_collective(legion_context, min_reduction);
-
-    auto global_future = legion_runtime->get_dynamic_collective_result(
-      legion_context, min_reduction);
-
-    return legion_future__<T, launch_type_t::single>(global_future);
-  }
 
   auto & reduction_operations() {
     return reduction_ops_;
@@ -655,8 +575,6 @@ private:
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
   sparse_metadata_t sparse_metadata_;
-  Legion::DynamicCollective max_reduction_;
-  Legion::DynamicCollective min_reduction_;
 
 }; // class legion_context_policy_t
 

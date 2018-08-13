@@ -542,6 +542,7 @@ struct mpi_context_policy_t {
    (start + length) and entry id / value pairs and associated metadata about
    this field.
    */
+
   void register_sparse_field_data(field_id_t fid,
     size_t type_size,
     const coloring_info_t & coloring_info,
@@ -563,76 +564,6 @@ struct mpi_context_policy_t {
     return sparse_field_metadata;
   };
 
-  /*!
-    return <double> max reduction
-   */
-
-  auto & max_reduction() {
-    return max_reduction_;
-  }
-
-  /*!
-   Set max_reduction
-
-   @param double max_reduction
-   */
-
-  void set_max_reduction(double max_reduction) {
-    max_reduction_ = max_reduction;
-  }
-
-  /*!
-   Perform reduction for the maximum value type <double>
-
-   @param
-   */
-
-  template<typename T>
-  auto reduce_max(mpi_future__<T> & local_future) {
-    T global_max_;
-    auto local_max_ = local_future.get();
-    MPI_Allreduce(&local_max_, &global_max_, 1,
-      flecsi::utils::mpi_typetraits__<T>::type(), MPI_MAX, MPI_COMM_WORLD);
-    mpi_future__<T> fut;
-    fut.set(global_max_);
-    return fut;
-  }
-
-  /*!
-    return <double> min reduction
-   */
-
-  auto & min_reduction() {
-    return min_reduction_;
-  }
-
-  /*!
-   Set min_reduction
-
-   @param double min_reduction
-   */
-
-  void set_min_reduction(double min_reduction) {
-    min_reduction_ = min_reduction;
-  }
-
-  /*!
-   Perform reduction for the minimum value type <double>
-
-   @param
-   */
-
-  template<typename T>
-  auto reduce_min(mpi_future__<T> & local_future) {
-    T global_min_;
-    auto local_min_ = local_future.get();
-    MPI_Allreduce(&local_min_, &global_min_, 1,
-      flecsi::utils::mpi_typetraits__<T>::type(), MPI_MIN, MPI_COMM_WORLD);
-    mpi_future__<T> fut;
-    fut.set(global_min_);
-    return fut;
-  }
-
   std::map<size_t, MPI_Datatype> & reduction_types() {
     return reduction_types_;
   } // reduction_types
@@ -644,6 +575,7 @@ struct mpi_context_policy_t {
   int rank;
 
 private:
+
   int color_ = 0;
   int colors_ = 0;
 
@@ -669,9 +601,6 @@ private:
 
   std::map<field_id_t, sparse_field_data_t> sparse_field_data;
   std::map<field_id_t, sparse_field_metadata_t> sparse_field_metadata;
-
-  double min_reduction_;
-  double max_reduction_;
 
   std::map<size_t, MPI_Datatype> reduction_types_;
   std::map<size_t, MPI_Op> reduction_ops_;
