@@ -280,6 +280,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         test/simple2d-16x16.msh
       LIBRARIES
         FleCSI
+        RistraUtils
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -322,6 +323,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         test/simple2d-16x16.msh
       LIBRARIES
         FleCSI
+        RistraUtils
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -365,6 +367,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         test/simple2d-16x16.msh
       LIBRARIES
         FleCSI
+        RistraUtils
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -386,6 +389,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         test/simple2d-16x16.msh
       LIBRARIES
         FleCSI
+        RistraUtils
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -407,6 +411,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         test/simple2d-16x16.msh
       LIBRARIES
         FleCSI
+        RistraUtils
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -427,6 +432,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         test/simple2d-16x16.msh
       LIBRARIES
         FleCSI
+        RistraUtils
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -448,6 +454,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         test/data_client_handle.blessed
       LIBRARIES
         FleCSI
+        RistraUtils
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -472,6 +479,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         test/dense_data.blessed
       LIBRARIES
         FleCSI
+        RistraUtils
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -515,6 +523,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         test/sparse_data.blessed
       LIBRARIES
         FleCSI
+        RistraUtils
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -538,6 +547,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         test/simple2d-16x16.msh
       LIBRARIES
         FleCSI
+        RistraUtils
         ${CINCH_RUNTIME_LIBRARIES}
         ${COLORING_LIBRARIES}
       DEFINES
@@ -557,7 +567,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
           ${DRIVER_INITIALIZATION}
           ${RUNTIME_DRIVER}
         LIBRARIES
-            FleCSI
+          FleCSI
           ${CINCH_RUNTIME_LIBRARIES}
           ${COLORING_LIBRARIES}
         DEFINES
@@ -639,6 +649,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
           test/simple2d-16x16.msh
         LIBRARIES
           FleCSI
+          RistraUtils
           ${CINCH_RUNTIME_LIBRARIES}
           ${COLORING_LIBRARIES}
         DEFINES

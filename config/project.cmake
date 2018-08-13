@@ -31,6 +31,12 @@ else()
 endif()
 
 #------------------------------------------------------------------------------#
+# Automatic version creation.
+#------------------------------------------------------------------------------#
+
+include(version)
+
+#------------------------------------------------------------------------------#
 # Set header suffix regular expression
 #------------------------------------------------------------------------------#
 
@@ -44,8 +50,68 @@ set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
 #------------------------------------------------------------------------------#
-# This variable is used to collect library and include dependencies for
-# the FleCSIConfig file below.
+# Create user guide header with version information
+#------------------------------------------------------------------------------#
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/flecsi_ug_header.tex.in
+    ${CMAKE_BINARY_DIR}/doc/flecsi_ug_header.tex)
+
+#------------------------------------------------------------------------------#
+# Pandoc options for user guide
+#------------------------------------------------------------------------------#
+
+set(ug_pandoc_options
+    "--toc"
+    "--include-in-header=${CMAKE_SOURCE_DIR}/cinch/tex/addtolength.tex"
+    "--include-in-header=${CMAKE_BINARY_DIR}/doc/flecsi_ug_header.tex"
+    "--include-in-header=${CMAKE_CURRENT_SOURCE_DIR}/doc/flecsi_ug_title.tex"
+    "--include-before-body=${CMAKE_SOURCE_DIR}/cinch/tex/firstpageempty.tex"
+)
+
+#------------------------------------------------------------------------------#
+# Add user guide target
+#------------------------------------------------------------------------------#
+
+cinch_add_doc(flecsi-user-guide flecsi_ug.py "flecsi;auxiliary"
+    flecsi-user-guide-${${PROJECT_NAME}_VERSION}.pdf
+    PANDOC_OPTIONS ${ug_pandoc_options} IMAGE_GLOB "*.pdf"
+)
+
+#------------------------------------------------------------------------------#
+# Create developer guide header with version information
+#------------------------------------------------------------------------------#
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/flecsi_dg_header.tex.in
+    ${CMAKE_BINARY_DIR}/doc/flecsi_dg_header.tex
+)
+
+#------------------------------------------------------------------------------#
+# Pandoc options for developer guide
+#------------------------------------------------------------------------------#
+
+set(dg_pandoc_options
+    "--toc"
+    "--include-in-header=${CMAKE_SOURCE_DIR}/cinch/tex/addtolength.tex"
+    "--include-in-header=${CMAKE_BINARY_DIR}/doc/flecsi_dg_header.tex"
+    "--include-before-body=${CMAKE_CURRENT_SOURCE_DIR}/doc/flecsi_dg_title.tex"
+    "--include-before-body=${CMAKE_SOURCE_DIR}/cinch/tex/firstpageempty.tex"
+)
+
+set(dg_image_list "${CMAKE_SOURCE_DIR}/doc/medium-flecsi.png")
+
+#------------------------------------------------------------------------------#
+# Add developer guide target
+#------------------------------------------------------------------------------#
+
+cinch_add_doc(flecsi-developer-guide flecsi_dg.py "flecsi;auxiliary"
+    flecsi-developer-guide-${${PROJECT_NAME}_VERSION}.pdf
+    PANDOC_OPTIONS ${dg_pandoc_options} IMAGE_GLOB "*.pdf"
+    IMAGE_LIST ${dg_image_list}
+)
+
+#------------------------------------------------------------------------------#
+# These variables are used to collect library and include dependencies
+# for the FleCSIConfig file below.
 #------------------------------------------------------------------------------#
 
 set(FLECSI_INCLUDE_DEPENDENCIES)
@@ -149,20 +215,20 @@ option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" ON)
 set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/FleCSI)
 
 #------------------------------------------------------------------------------#
-# RistraLL
+# Ristra Utils
 #------------------------------------------------------------------------------#
 
-option(ENABLE_RISTRALL "Enable Ristra Low-Level Library Support" OFF)
+file(GLOB _ristra_utils_contents ${CMAKE_SOURCE_DIR}/ristra-utils/*)
 
-if(ENABLE_RISTRALL)
-  find_package(RistraLL REQUIRED)
+if(_ristra_utils_contents)
+  cinch_add_subproject(ristra-utils)
+else()
+  find_package(RistraUtils REQUIRED)
 
-  if(RistraLL_FOUND)
-    include_directories(${RistraLL_INCLUDE_DIRS})
+  include_directories(${RistraUtils_INCLUDE_DIRS})
 
-    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${RistraLL_INCLUDE_DIRS})
-    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${RistraLL_LIBRARIES})
-  endif()
+  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${RistraUtils_INCLUDE_DIRS})
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${RistraUtils_LIBRARIES})
 endif()
 
 #------------------------------------------------------------------------------#
@@ -464,14 +530,11 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   hpx_setup_target(FleCSI NONAMEPREFIX)
 
 endif()
+
 #------------------------------------------------------------------------------#
 # Set application directory
 #------------------------------------------------------------------------------#
 
-cinch_add_application_directory("examples")
-cinch_add_application_directory("examples/00_simple_drivers")
-cinch_add_application_directory("examples/lax_wendroff")
-cinch_add_application_directory("examples/02_tasks_and_drivers")
 cinch_add_application_directory("tools")
 
 #------------------------------------------------------------------------------#

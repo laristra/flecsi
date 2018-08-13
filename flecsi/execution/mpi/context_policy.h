@@ -37,8 +37,13 @@
 #include <flecsi/execution/mpi/runtime_driver.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/mpi_type_traits.h>
+#include <flecsi/coloring/mpi_utils.h>
+#include <flecsi/coloring/coloring_types.h>
+#include <flecsi/coloring/index_coloring.h>
+#include <flecsi/data/common/data_types.h>
+
+#include <ristra-utils/utils/const_string.h>
 
 namespace flecsi {
 namespace execution {
@@ -401,8 +406,16 @@ struct mpi_context_policy_t {
     int my_color;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
 
+<<<<<<< HEAD
     if(my_color == 0) {
       for(auto ghost_owner : ghost_owners) {
+=======
+// This should only be uncommented for debugging (outputs info
+// during tutorial runs). Consider changing this to use clog
+#if 0
+    if (my_color == 0) {
+      for (auto ghost_owner : ghost_owners) {
+>>>>>>> feature/bergen/ristra-utils
         std::cout << "ghost owner: " << ghost_owner << std::endl;
         std::cout << "\torigin length: ";
         for(auto len : origin_lens[ghost_owner]) {
@@ -425,8 +438,15 @@ struct mpi_context_policy_t {
           std::cout << len << " ";
         }
         std::cout << std::endl;
+<<<<<<< HEAD
       }
     }
+=======
+
+      } // for
+    } // if
+#endif
+>>>>>>> feature/bergen/ristra-utils
 
     for(auto ghost_owner : ghost_owners) {
       if(origin_disps.size() == 0)
@@ -450,8 +470,14 @@ struct mpi_context_policy_t {
       }
     }
 
+<<<<<<< HEAD
     if(my_color == 0) {
       for(auto ghost_owner : ghost_owners) {
+=======
+#if 0
+    if (my_color == 0) {
+      for (auto ghost_owner : ghost_owners) {
+>>>>>>> feature/bergen/ristra-utils
         std::cout << "ghost owner: " << ghost_owner << std::endl;
         std::cout << "source compacted length: ";
         for(auto len : compact_origin_lengs[ghost_owner]) {
@@ -465,6 +491,7 @@ struct mpi_context_policy_t {
         std::cout << std::endl;
       }
     }
+#endif
 
     for(auto ghost_owner : ghost_owners) {
       if(target_disps.size() == 0)
@@ -488,8 +515,14 @@ struct mpi_context_policy_t {
       }
     }
 
+<<<<<<< HEAD
     if(my_color == 0) {
       for(auto ghost_owner : ghost_owners) {
+=======
+#if 0
+    if (my_color == 0) {
+      for (auto ghost_owner : ghost_owners) {
+>>>>>>> feature/bergen/ristra-utils
         std::cout << "ghost owner: " << ghost_owner << std::endl;
 
         std::cout << "compacted target length: ";
@@ -504,6 +537,7 @@ struct mpi_context_policy_t {
         std::cout << std::endl;
       }
     }
+#endif
   }
 
   std::map<field_id_t, field_metadata_t> & registered_field_metadata() {

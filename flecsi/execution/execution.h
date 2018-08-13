@@ -24,7 +24,9 @@
 #include <flecsi/execution/kernel.h>
 #include <flecsi/execution/task.h>
 
-#include <flecsi/utils/common.h>
+#include <ristra-utils/utils/const_string.h>
+#include <ristra-utils/utils/function_traits.h>
+#include <ristra-utils/utils/macros.h>
 
 clog_register_tag(execution);
 
@@ -43,7 +45,7 @@ clog_register_tag(execution);
  */
 
 #define __flecsi_internal_hash(name)                                           \
-  flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
+  ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
 
 /*!
   @def __flecsi_internal_return_type
@@ -56,7 +58,7 @@ clog_register_tag(execution);
  */
 
 #define __flecsi_internal_return_type(task)                                    \
-  typename flecsi::utils::function_traits__<decltype(task)>::return_type
+  typename ristra::utils::function_traits__<decltype(task)>::return_type
 
 /*!
   @def __flecsi_internal_arguments_type
@@ -69,7 +71,7 @@ clog_register_tag(execution);
  */
 
 #define __flecsi_internal_arguments_type(task)                                 \
-  typename flecsi::utils::function_traits__<decltype(task)>::arguments_type
+  typename ristra::utils::function_traits__<decltype(task)>::arguments_type
 
 //----------------------------------------------------------------------------//
 // Top-Level Driver Interface
@@ -92,7 +94,7 @@ clog_register_tag(execution);
 #define flecsi_register_program(program)                                       \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  bool flecsi_program_registered = true;
+  inline bool flecsi_program_registered = true;
 
 //----------------------------------------------------------------------------//
 // Top-Level Driver Interface
@@ -114,7 +116,7 @@ clog_register_tag(execution);
 #define flecsi_register_top_level_driver(driver)                               \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  bool registered_top_level_driver_##driver =                                  \
+  inline bool registered_top_level_driver_##driver =                           \
     flecsi::execution::context_t::instance().register_top_level_driver(driver)
 
 //----------------------------------------------------------------------------//

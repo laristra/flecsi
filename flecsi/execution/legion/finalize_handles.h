@@ -15,6 +15,8 @@
 
 /*! @file */
 
+#include <ristra-utils/utils/tuple_walker.h>
+
 namespace flecsi {
 namespace execution {
 
@@ -22,7 +24,9 @@ namespace execution {
   FIXME
   @ingroup execution
  */
-struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
+
+struct finalize_handles_t :
+  public ristra::utils::tuple_walker__<finalize_handles_t> {
 
   /*!
     FIXME

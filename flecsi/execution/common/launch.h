@@ -17,7 +17,7 @@
 
 #include <bitset>
 
-#include <flecsi/utils/debruijn.h>
+#include <ristra-utils/utils/debruijn.h>
 
 namespace flecsi {
 
@@ -76,7 +76,7 @@ enum class launch_type_t : size_t {
 
 inline launch_type_t
 mask_to_type(launch_mask_t m) {
-  return static_cast<launch_type_t>(utils::debruijn32_t::index(m));
+  return static_cast<launch_type_t>(ristra::utils::debruijn32_t::index(m));
 } // mask_to_type
 
 /*!

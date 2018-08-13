@@ -1,3 +1,6 @@
 [submodule "cinch"]
 	path = cinch
 	url = ../../laristra/cinch.git
+[submodule "ristra-utils"]
+	path = ristra-utils
+	url = ../../laristra/ristra-utils.git

@@ -28,10 +28,14 @@
 #include <flecsi/utils/mpi_type_traits.h>
 #include <flecsi/utils/tuple_walker.h>
 
+#include <ristra-utils/utils/tuple_walker.h>
+
 namespace flecsi {
 namespace execution {
 
-struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
+struct finalize_handles_t
+  : public ristra::utils::tuple_walker__<finalize_handles_t>
+{
   /*!
   Nothing needs to be done to finalize a dense data handle.
    */

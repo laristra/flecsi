@@ -22,43 +22,43 @@
 namespace flecsi {
 namespace data {
 
-//----------------------------------------------------------------------------//
-//! The field_interface__ type provides a high-level field interface that
-//! is implemented by the given data policy.
-//!
-//! @tparam DATA_POLICY The backend data policy.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
+/*!
+  The field_interface__ type provides a high-level field interface that
+  is implemented by the given data policy.
+
+  @tparam DATA_POLICY The backend data policy.
+
+  @ingroup data
+ */
 
 template<typename DATA_POLICY>
 struct field_interface__ {
 
-  //--------------------------------------------------------------------------//
-  //! Register a field with the FleCSI runtime. This method should be thought
-  //! of as registering a field attribute on the given data client type.
-  //! All instances of the client type will have this attribute. However,
-  //! this does not mean that each data client instance will have an
-  //! an instance of the attribute. Attribute instances will be created
-  //! only when they are actually mapped into a task.
-  //!
-  //! @tparam DATA_CLIENT_TYPE The data client type on which the data
-  //!                          attribute should be registered.
-  //! @tparam STORAGE_CLASS    The storage type for the data attribute.
-  //! @tparam DATA_TYPE        The data type, e.g., double. This may be
-  //!                          P.O.D. or a user-defined type that is
-  //!                          trivially-copyable.
-  //! @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
-  //!                          of attribute names to avoid collisions.
-  //! @tparam NAME_HASH        The attribute name.
-  //! @tparam INDEX_SPACE      The index space identifier.
-  //! @tparam VERSIONS         The number of versions that shall be associated
-  //!                          with this attribute.
-  //!
-  //! @param name The string version of the field name.
-  //!
-  //! @ingroup data
-  //--------------------------------------------------------------------------//
+  /*!
+    Register a field with the FleCSI runtime. This method should be thought
+    of as registering a field attribute on the given data client type.
+    All instances of the client type will have this attribute. However,
+    this does not mean that each data client instance will have an
+    an instance of the attribute. Attribute instances will be created
+    only when they are actually mapped into a task.
+
+    @tparam DATA_CLIENT_TYPE The data client type on which the data
+                             attribute should be registered.
+    @tparam STORAGE_CLASS    The storage type for the data attribute.
+    @tparam DATA_TYPE        The data type, e.g., double. This may be
+                             P.O.D. or a user-defined type that is
+                             trivially-copyable.
+    @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
+                             of attribute names to avoid collisions.
+    @tparam NAME_HASH        The attribute name.
+    @tparam INDEX_SPACE      The index space identifier.
+    @tparam VERSIONS         The number of versions that shall be associated
+                             with this attribute.
+    
+    @param name The string version of the field name.
+
+    @ingroup data
+   */
 
   template<typename DATA_CLIENT_TYPE,
     size_t STORAGE_CLASS,
@@ -91,23 +91,23 @@ struct field_interface__ {
     return true;
   } // register_field
 
-  //--------------------------------------------------------------------------//
-  //! Return the handle associated with the given parameters and data client.
-  //!
-  //! @tparam DATA_CLIENT_TYPE The data client type on which the data
-  //!                          attribute should be registered.
-  //! @tparam STORAGE_CLASS    The storage type for the data attribute.
-  //! @tparam DATA_TYPE        The data type, e.g., double. This may be
-  //!                          P.O.D. or a user-defined type that is
-  //!                          trivially-copyable.
-  //! @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
-  //!                          of attribute names to avoid collisions.
-  //! @tparam NAME_HASH        The attribute name.
-  //! @tparam INDEX_SPACE      The index space identifier.
-  //! @tparam VERSION          The data version.
-  //!
-  //! @ingroup data
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the handle associated with the given parameters and data client.
+
+    @tparam DATA_CLIENT_TYPE The data client type on which the data
+                             attribute should be registered.
+    @tparam STORAGE_CLASS    The storage type for the data attribute.
+    @tparam DATA_TYPE        The data type, e.g., double. This may be
+                             P.O.D. or a user-defined type that is
+                             trivially-copyable.
+    @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
+                             of attribute names to avoid collisions.
+    @tparam NAME_HASH        The attribute name.
+    @tparam INDEX_SPACE      The index space identifier.
+    @tparam VERSION          The data version.
+
+    @ingroup data
+   */
 
   template<typename DATA_CLIENT_TYPE,
     size_t STORAGE_CLASS,
@@ -128,24 +128,23 @@ struct field_interface__ {
       NAMESPACE_HASH, NAME_HASH, VERSION>(client_handle);
   } // get_handle
 
-  //--------------------------------------------------------------------------//
-  //! Return the mutator associated with the given parameters and data client.
-  //!
-  //! @tparam DATA_CLIENT_TYPE The data client type on which the data
-  //!                          attribute should be registered.
-  //! @tparam STORAGE_CLASS    The storage type for the data attribute.
-  //! @tparam DATA_TYPE        The data type, e.g., double. This may be
-  //!                          P.O.D. or a user-defined type that is
-  //!                          trivially-copyable.
-  //! @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
-  //!                          of attribute names to avoid collisions.
-  //! @tparam NAME_HASH        The attribute name.
-  //! @tparam INDEX_SPACE      The index space identifier.
-  //! @tparam VERSION          The data version.
-  //!
-  //! @ingroup data
-  //! @ingroup slots
-  //--------------------------------------------------------------------------//
+  /*!
+    Return the mutator associated with the given parameters and data client.
+
+    @tparam DATA_CLIENT_TYPE The data client type on which the data
+                             attribute should be registered.
+    @tparam STORAGE_CLASS    The storage type for the data attribute.
+    @tparam DATA_TYPE        The data type, e.g., double. This may be
+                             P.O.D. or a user-defined type that is
+                             trivially-copyable.
+    @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
+                             of attribute names to avoid collisions.
+    @tparam NAME_HASH        The attribute name.
+    @tparam INDEX_SPACE      The index space identifier.
+    @tparam VERSION          The data version.
+
+    @ingroup data
+   */
 
   template<typename DATA_CLIENT_TYPE,
     size_t STORAGE_CLASS,
@@ -167,26 +166,26 @@ struct field_interface__ {
       NAMESPACE_HASH, NAME_HASH, VERSION>(client_handle, slots);
   } // get_mutator
 
-  //--------------------------------------------------------------------------//
-  //! Return all handles of the given storage type, data type, and
-  //! namespace that satisfy a predicate function.
-  //!
-  //! @tparam STORAGE_CLASS  The storage type for the data attribute.
-  //! @tparam DATA_TYPE      The data type, e.g., double. This may be
-  //!                        P.O.D. or a user-defined type that is
-  //!                        trivially-copyable.
-  //! @tparam NAMESPACE_HASH The namespace key. Namespaces allow separation
-  //!                        of attribute names to avoid collisions.
-  //! @tparam PREDICATE      The data version.
-  //!
-  //! @param client    The data client instance.
-  //! @param version   The data version to return.
-  //! @param predicate An instance of the predicate function that will be
-  //!                  used to select the individual data elements.
-  //! @param sorted    Put the return data into sorted order.
-  //!
-  //! @ingroup data
-  //--------------------------------------------------------------------------//
+  /*!
+    Return all handles of the given storage type, data type, and
+    namespace that satisfy a predicate function.
+
+    @tparam STORAGE_CLASS  The storage type for the data attribute.
+    @tparam DATA_TYPE      The data type, e.g., double. This may be
+                           P.O.D. or a user-defined type that is
+                           trivially-copyable.
+    @tparam NAMESPACE_HASH The namespace key. Namespaces allow separation
+                           of attribute names to avoid collisions.
+    @tparam PREDICATE      The data version.
+
+    @param client    The data client instance.
+    @param version   The data version to return.
+    @param predicate An instance of the predicate function that will be
+                     used to select the individual data elements.
+    @param sorted    Put the return data into sorted order.
+
+    @ingroup data
+   */
 
   template<size_t STORAGE_CLASS,
     typename DATA_TYPE,
@@ -201,23 +200,23 @@ struct field_interface__ {
       client, version, std::forward<PREDICATE>(predicate), sorted);
   } // get_handles
 
-  //--------------------------------------------------------------------------//
-  //! Return all handles of the given storage type, and data type that
-  //! satisfy a predicate function.
-  //!
-  //! @tparam STORAGE_CLASS The storage type for the data attribute.
-  //! @tparam DATA_TYPE     The data type, e.g., double. This may be P.O.D.
-  //!                       or a user-defined type that is trivially-copyable.
-  //! @tparam PREDICATE     The data version.
-  //!
-  //! @param client    The data client instance.
-  //! @param version   The data version to return.
-  //! @param predicate An instance of the predicate function that will be
-  //!                  used to select the individual data elements.
-  //! @param sorted    Put the return data into sorted order.
-  //!
-  //! @ingroup data
-  //--------------------------------------------------------------------------//
+  /*!
+    Return all handles of the given storage type, and data type that
+    satisfy a predicate function.
+
+    @tparam STORAGE_CLASS The storage type for the data attribute.
+    @tparam DATA_TYPE     The data type, e.g., double. This may be P.O.D.
+                          or a user-defined type that is trivially-copyable.
+    @tparam PREDICATE     The data version.
+
+    @param client    The data client instance.
+    @param version   The data version to return.
+    @param predicate An instance of the predicate function that will be
+                     used to select the individual data elements.
+    @param sorted    Put the return data into sorted order.
+
+    @ingroup data
+   */
 
   template<size_t STORAGE_CLASS, typename DATA_TYPE, typename PREDICATE>
   static decltype(auto) get_handles(const data_client_t & client,

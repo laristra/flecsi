@@ -15,8 +15,6 @@
 
 /*! @file */
 
-#include <flecsi/utils/const_string.h>
-
 namespace flecsi {
 namespace execution {
 

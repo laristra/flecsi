@@ -23,14 +23,15 @@
 
 #include <cinchlog.h>
 
+#include <ristra-utils/utils/const_string.h>
+
 #include <flecsi/coloring/adjacency_types.h>
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
-#include <flecsi/utils/const_string.h>
-#include <flecsi/utils/dag.h>
+#include <flecsi/utils/hash.h>
 #include <flecsi/utils/simple_id.h>
 
 clog_register_tag(context);
