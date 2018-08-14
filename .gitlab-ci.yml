@@ -16,7 +16,7 @@ NAME_JOB1:
         artifacts:
                   expire_in: 1 hour
                   paths:
-                        - ${ARTIFACTS_PATH}
+                        - ${ARTIFACTS_PROJECT_PATH}
         script:
                 - whoami
                 - mkdir ${CI_PROJECT_DIR}/build
@@ -74,7 +74,7 @@ NAME_JOB2:
         artifacts:
                 expire_in: 1 hour
                 paths:
-                        - ${ARTIFACTS_PATH}
+                        - ${ARTIFACTS_PROJECT_PATH}
         script: 
                 - cd ${CI_PROJECT_DIR}/build/
                 - make test ARGS="-V"
