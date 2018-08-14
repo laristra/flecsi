@@ -96,7 +96,6 @@ NAME_JOB3:
                 paths:
                         - ${ARTIFACTS_PROJECT_PATH}
         script:
-                - sudo cp -r ${CI_PROJECT_DIR}/local /usr/local
                 - |
                         if [[ ${CC} != gcc ]]; 
                         then TAG="_${CC}"; 
@@ -109,6 +108,6 @@ NAME_JOB3:
                 - CON=$(docker run -d laristra/flecsi-third-party:${DISTRO} /bin/bash) 
                 - docker cp ${CI_PROJECT_DIR} ${CON}:/ 
                 - docker cp ${CI_PROJECT_DIR}/build ${CON}:/home/flecsi/build
-                - docker cp /usr/local ${CON}:/usr/local
+                - docker cp ${CI_PROJECT_DIR}/local ${CON}:/usr/local
                 #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
                 #- docker push "${CI_COMMIT_REF_SLUG}:${DISTRO}_${RUNTIME}${TAG}
