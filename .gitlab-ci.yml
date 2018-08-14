@@ -12,7 +12,6 @@ NAME_JOB1:
                   ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
         image:    
                   name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
-                  entrypoint: [""]
         stage:    build
         artifacts:
                   expire_in: 1 hour
