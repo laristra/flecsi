@@ -106,6 +106,7 @@ NAME_JOB3:
                         fi
                 - docker pull laristra/flecsi-third-party:${DISTRO} 
                 - CON=$(docker run -d laristra/flecsi-third-party:${DISTRO} /bin/bash) 
+                - docker cp /builds ${CON}:/.
                 - docker cp ${CI_PROJECT_DIR}/local ${CON}:/usr/local
                 - rm -r ${CI_PROJECT_DIR}/local
                 - docker cp ${CI_PROJECT_DIR} ${CON}:/home/flecsi
