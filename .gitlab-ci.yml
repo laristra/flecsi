@@ -10,7 +10,6 @@ NAME_JOB1:
                   DISTRO: "ubuntu"
                   RUNTIME: "mpi"
                   ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
-                  ARTIFACTS_USR_LOCAL:  "/usr/local"
         image:    
                   name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
                   entrypoint: [""]
@@ -19,7 +18,6 @@ NAME_JOB1:
                   expire_in: 1 hour
                   paths:
                         - ${ARTIFACTS_PATH}
-                        - ${ARTIFACTS_USR_LOCAL}
         script:
                 - whoami
                 - mkdir ${CI_PROJECT_DIR}/build
@@ -62,6 +60,7 @@ NAME_JOB1:
                         fi
                 - cd build 
                 - sudo make install 
+                - cp -r /usr/local ${CI_PROJECT_DIR}
 
 NAME_JOB2:
         variables:
@@ -69,7 +68,6 @@ NAME_JOB2:
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
                 ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
-                ARTIFACTS_USR_LOCAL: "/usr/local"
         image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
         stage:  test
         dependencies:
@@ -78,7 +76,6 @@ NAME_JOB2:
                 expire_in: 1 hour
                 paths:
                         - ${ARTIFACTS_PATH}
-                        - ${ARTIFACTS_USR_LOCAL}
         script: 
                 - cd ${CI_PROJECT_DIR}/build/
                 - make test ARGS="-V"
@@ -102,6 +99,7 @@ NAME_JOB3:
                         - ${ARTIFACTS_PROJECT_PATH}
                         - ${ARTIFACTS_USR_LOCAL}
         script:
+                - sudo cp -r ${CI_PROJECT_DIR}/local /usr/local
                 - |
                         if [[ ${CC} != gcc ]]; 
                         then TAG="_${CC}"; 
