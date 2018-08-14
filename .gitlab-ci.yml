@@ -85,7 +85,6 @@ NAME_JOB3:
                 DISTRO: "ubuntu"
                 RUNTIME: "mpi"
                 ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
-                ARTIFACT_USR_LOCAL: "/usr/local"
         image: docker:latest #user: root
         stage: deploy
         services:
@@ -96,7 +95,6 @@ NAME_JOB3:
                 expire_in: 1 hour
                 paths:
                         - ${ARTIFACTS_PROJECT_PATH}
-                        - ${ARTIFACTS_USR_LOCAL}
         script:
                 - sudo cp -r ${CI_PROJECT_DIR}/local /usr/local
                 - |
