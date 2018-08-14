@@ -1,14 +1,3 @@
-/*~--------------------------------------------------------------------------~*
- *~--------------------------------------------------------------------------~*/
-
-#ifndef flecsi_topology_tree_topology_h
-#define flecsi_topology_tree_topology_h
-
-//-----------------------------------------------------------------//
-//! \file tree_topology.h
-//! \date Initial file creation: Apr 5, 2016
-//-----------------------------------------------------------------//
-
 /*
     @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
    /@@/////  /@@          @@////@@ @@////// /@@
@@ -73,13 +62,13 @@ namespace flecsi {
 namespace topology {
 
 template<typename T, size_t D>
-struct tree_geometry {};
+struct tree_geometry__ {};
 
 //-----------------------------------------------------------------//
 //! \brief 1d geometry class for computing intersections and distances.
 //-----------------------------------------------------------------//
 template<typename T>
-struct tree_geometry<T, 1> {
+struct tree_geometry__<T, 1> {
   using point_t = point<T, 1>;
   using element_t = T;
 
@@ -204,7 +193,7 @@ struct tree_geometry<T, 1> {
 //! \brief 2d geometry class for computing intersections and distances.
 //-----------------------------------------------------------------//
 template<typename T>
-struct tree_geometry<T, 2> {
+struct tree_geometry__<T, 2> {
   using point_t = point<T, 2>;
   using element_t = T;
 
@@ -349,7 +338,7 @@ struct tree_geometry<T, 2> {
 //! \brief 1d geometry class for computing intersections and distances.
 //-----------------------------------------------------------------//
 template<typename T>
-struct tree_geometry<T, 3> {
+struct tree_geometry__<T, 3> {
   using point_t = point<T, 3>;
   using element_t = T;
 
@@ -502,7 +491,7 @@ struct tree_geometry<T, 3> {
   parameterized on arbitrary dimension D and integer type T.
  */
 template<typename T, size_t D>
-class branch_id {
+class branch_id__ {
 public:
   using int_t = T;
 
@@ -512,7 +501,7 @@ public:
 
   static constexpr size_t max_depth = (bits - 1) / dimension;
 
-  branch_id() : id_(0) {}
+  branch_id__() : id_(0) {}
 
   //-----------------------------------------------------------------//
   //! Construct a branch id from an array of dimensions and range for each
@@ -520,7 +509,7 @@ public:
   //! for the branch id.
   //-----------------------------------------------------------------//
   template<typename S>
-  branch_id(
+  branch_id__(
       const std::array<point<S, dimension>, 2> & range,
       const point<S, dimension> & p,
       size_t depth)
@@ -543,20 +532,20 @@ public:
     }
   }
 
-  constexpr branch_id(const branch_id & bid) : id_(bid.id_) {}
+  constexpr branch_id__(const branch_id__ & bid) : id_(bid.id_) {}
 
   //-----------------------------------------------------------------//
   //! Get the root branch id (depth 0).
   //-----------------------------------------------------------------//
-  static constexpr branch_id root() {
-    return branch_id(int_t(1) << (bits - 1) % dimension);
+  static constexpr branch_id__ root() {
+    return branch_id__(int_t(1) << (bits - 1) % dimension);
   }
 
   //-----------------------------------------------------------------//
   //! Get the null branch id.
   //-----------------------------------------------------------------//
-  static constexpr branch_id null() {
-    return branch_id(0);
+  static constexpr branch_id__ null() {
+    return branch_id__(0);
   }
 
   //-----------------------------------------------------------------//
@@ -580,16 +569,16 @@ public:
     return d;
   }
 
-  branch_id & operator=(const branch_id & bid) {
+  branch_id__ & operator=(const branch_id__ & bid) {
     id_ = bid.id_;
     return *this;
   }
 
-  constexpr bool operator==(const branch_id & bid) const {
+  constexpr bool operator==(const branch_id__ & bid) const {
     return id_ == bid.id_;
   }
 
-  constexpr bool operator!=(const branch_id & bid) const {
+  constexpr bool operator!=(const branch_id__ & bid) const {
     return id_ != bid.id_;
   }
 
@@ -622,8 +611,8 @@ public:
   //-----------------------------------------------------------------//
   //! Return the parent of this branch id (depth - 1)
   //-----------------------------------------------------------------//
-  constexpr branch_id parent() const {
-    return branch_id(id_ >> dimension);
+  constexpr branch_id__ parent() const {
+    return branch_id__(id_ >> dimension);
   }
 
   //-----------------------------------------------------------------//
@@ -674,7 +663,7 @@ public:
     id_ = value;
   }
 
-  bool operator<(const branch_id & bid) const {
+  bool operator<(const branch_id__ & bid) const {
     return id_ < bid.id_;
   }
 
@@ -714,7 +703,7 @@ public:
 private:
   int_t id_;
 
-  constexpr branch_id(int_t id) : id_(id) {}
+  constexpr branch_id__(int_t id) : id_(id) {}
 };
 
 //-----------------------------------------------------------------//
@@ -752,14 +741,14 @@ private:
 
 template<typename T, size_t D>
 std::ostream &
-operator<<(std::ostream & ostr, const branch_id<T, D> & id) {
+operator<<(std::ostream & ostr, const branch_id__<T, D> & id) {
   id.output_(ostr);
   return ostr;
 }
 
 template<typename T, size_t D>
 struct branch_id_hasher__ {
-  size_t operator()(const branch_id<T, D> & k) const {
+  size_t operator()(const branch_id__<T, D> & k) const {
     return std::hash<T>()(k.value_());
   }
 };
@@ -789,7 +778,7 @@ public:
 
   using branch_int_t = typename Policy::branch_int_t;
 
-  using branch_id_t = branch_id<branch_int_t, dimension>;
+  using branch_id_t = branch_id__<branch_int_t, dimension>;
 
   using branch_id_vector_t = std::vector<branch_id_t>;
 
@@ -805,7 +794,7 @@ public:
 
   using entity_id_vector_t = std::vector<entity_id_t>;
 
-  using geometry_t = tree_geometry<element_t, dimension>;
+  using geometry_t = tree_geometry__<element_t, dimension>;
 
   using entity_space_t = index_space__<entity_t *, true, true, false>;
 
@@ -2437,7 +2426,7 @@ class tree_entity {
 public:
   using id_t = entity_id_t;
 
-  using branch_id_t = branch_id<T, D>;
+  using branch_id_t = branch_id__<T, D>;
   
 protected:
   enum locality {LOCAL=0,NONLOCAL=1,SHARED=2,EXCL=3,GHOST=4}; 
@@ -2502,13 +2491,13 @@ protected:
 //! Tree branch base class.
 //-----------------------------------------------------------------//
 template<typename T, size_t D, typename E>
-class tree_branch {
+class tree_branch__ {
 public:
   using branch_int_t = T;
 
   static const size_t dimension = D;
 
-  using branch_id_t = branch_id<T, D>;
+  using branch_id_t = branch_id__<T, D>;
 
   using id_t = branch_id_t;
 
@@ -2517,7 +2506,7 @@ public:
   using point_t = point<E,D>;
   using element_t = E;
 
-  tree_branch() : action_(action::none), parent_(nullptr), children_(nullptr),
+  tree_branch__() : action_(action::none), parent_(nullptr), children_(nullptr),
                   coordinates_(point_t{}) {}
                   //radius_(element_t(0))
 
@@ -2546,7 +2535,7 @@ public:
     action_ = action::none;
   }
 
-  tree_branch * parent() const {
+  tree_branch__ * parent() const {
     return parent_;
   }
 
@@ -2672,8 +2661,8 @@ protected:
 
   action action_;
 
-  tree_branch * parent_;
-  tree_branch * children_;
+  tree_branch__ * parent_;
+  tree_branch__ * children_;
 
   branch_id_t id_;
 
