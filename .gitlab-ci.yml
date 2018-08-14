@@ -18,7 +18,6 @@ NAME_JOB1:
                   paths:
                         - ${ARTIFACTS_PROJECT_PATH}
         script:
-                - whoami
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
                 - | 
