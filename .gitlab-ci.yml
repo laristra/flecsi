@@ -59,7 +59,7 @@ NAME_JOB1:
                         fi
                 - cd build 
                 - sudo make install 
-                - cp -r /usr/local ${CI_PROJECT_DIR}
+                - cp -r /usr/local ${CI_PROJECT_DIR}/.
 
 NAME_JOB2:
         variables:
