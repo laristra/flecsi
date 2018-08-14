@@ -73,7 +73,7 @@ var searchData=
   ['coloring_5finfo_5fmap',['coloring_info_map',['../structflecsi_1_1execution_1_1context____.html#afffd0d1bb7fb679fca38a6332f45ae1e',1,'flecsi::execution::context__']]],
   ['coloring_5finfo_5ft',['coloring_info_t',['../structflecsi_1_1coloring_1_1coloring__info__t.html',1,'flecsi::coloring']]],
   ['coloring_5fmap',['coloring_map',['../structflecsi_1_1execution_1_1context____.html#a06323557faa8cb44873e7b492fb6c331',1,'flecsi::execution::context__']]],
-  ['coloring_5fmap_5ft',['coloring_map_t',['../structflecsi_1_1tutorial_1_1coloring__map__t.html',1,'flecsi::tutorial::coloring_map_t'],['../structflecsi_1_1execution_1_1coloring__map__t.html',1,'flecsi::execution::coloring_map_t']]],
+  ['coloring_5fmap_5ft',['coloring_map_t',['../structflecsi_1_1tutorial_1_1coloring__map__t.html',1,'flecsi::tutorial::coloring_map_t'],['../structflecsi_1_1supplemental_1_1coloring__map__t.html',1,'flecsi::supplemental::coloring_map_t']]],
   ['coloring_5fpolicy_5ft',['coloring_policy_t',['../structflecsi_1_1execution_1_1coloring__policy__t.html',1,'flecsi::execution']]],
   ['coloring_5ftypes_2eh',['coloring_types.h',['../coloring__types_8h.html',1,'']]],
   ['colors',['colors',['../structflecsi_1_1execution_1_1context____.html#a24c421334a17d694f7842139c7c27c06',1,'flecsi::execution::context__::colors()'],['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a75dfaf2e514b87654265d2ca3f8e8e57',1,'flecsi::execution::legion_context_policy_t::colors()'],['../structflecsi_1_1execution_1_1mpi__context__policy__t.html#a9be765f5a694742cdae8136d3afdb677',1,'flecsi::execution::mpi_context_policy_t::colors()']]],
