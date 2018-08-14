@@ -807,11 +807,11 @@ public:
 
   using geometry_t = tree_geometry<element_t, dimension>;
 
-  using entity_space_t = index_space<entity_t *, true, true, false>;
+  using entity_space_t = index_space__<entity_t *, true, true, false>;
 
-  using branch_space_t = index_space<branch_t *, true, true, false>;
+  using branch_space_t = index_space__<branch_t *, true, true, false>;
 
-  using subentity_space_t = index_space<entity_t *, false, true, false>;
+  using subentity_space_t = index_space__<entity_t *, false, true, false>;
 
   struct filter_valid {
     bool operator()(entity_t * ent) const {
