@@ -107,7 +107,8 @@ NAME_JOB3:
                 - docker pull laristra/flecsi-third-party:${DISTRO} 
                 - CON=$(docker run -d laristra/flecsi-third-party:${DISTRO} /bin/bash) 
                 - docker cp ${CI_PROJECT_DIR} ${CON}:/ 
-                - docker cp ${CI_PROJECT_DIR}/build ${CON}:/home/flecsi/build
                 - docker cp ${CI_PROJECT_DIR}/local ${CON}:/usr/local
+                - rm -rv ${CI_PROJECTS_DIR}/local
+                - docker cp ${CI_PROJECT_DIR} ${CON}:/home/flecsi
                 #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
                 #- docker push "${CI_COMMIT_REF_SLUG}:${DISTRO}_${RUNTIME}${TAG}
