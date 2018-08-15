@@ -17,3 +17,23 @@
 ***
 - Make macro interface self-contained -> users don't need to use the
   flecsi namespace.
+
+- Add new permissions:
+  na - no access / not applicable
+  ro - read only
+  wo - write only
+  rw - read write
+
+  Also fix behavior in task mappings
+
+- Add index sub-spaces
+  all
+  exclusive
+  shared
+  ghost
+  owned
+
+- Determine whether or not ghost copies are per variable
+
+NOTE: Currently, we cannot accommodate communication latency hiding because
+we do not have an implementation of the na permissions.

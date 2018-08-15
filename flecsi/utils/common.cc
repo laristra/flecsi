@@ -1,50 +1,43 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//!
-//! \file
-//! \authors bergen
-//! \date Initial file creation: Aug 01, 2016
-//!
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 
-#include "flecsi/utils/common.h"
+/*! @file */
 
-#include <cstdlib>
+#include <flecsi/utils/common.h>
 #include <memory>
-
 #ifdef __GNUG__
-	#include <cxxabi.h>
+#include <cxxabi.h>
 #endif
 
 namespace flecsi {
 namespace utils {
 
+std::string
+demangle(const char * const name) {
 #ifdef __GNUG__
-
-std::string demangle(const char * const name) {
-	int status = -4;
-
-	std::unique_ptr<char, void(*)(void*)> res {
-		abi::__cxa_demangle(name, NULL, NULL, &status), std::free };
-
-	return (status==0) ? res.get() : name ;
-} // demangle
-
-#else
-
-// does nothing if not g++
-std::string demangle(const char * const name) {
-	return name;
-} // demangle
-
+  int status = -4;
+  std::unique_ptr<char, void (*)(void *)> res{
+      abi::__cxa_demangle(name, NULL, NULL, &status), std::free};
+  if (status == 0)
+    return res.get();
 #endif
+  // does nothing if not __GNUG__, or if abi::__cxa_demangle failed
+  return name;
+} // demangle
 
 } // namespace utils
 } // namespace flecsi
 
 /*~------------------------------------------------------------------------~--*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~------------------------------------------------------------------------~--*/

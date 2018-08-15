@@ -1,12 +1,21 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_mesh_storage_h
-#define flecsi_mesh_storage_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/runtime/flecsi_runtime_topology_policy.h"
+/*! @file */
+
+#include <flecsi/runtime/flecsi_runtime_topology_policy.h>
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -16,16 +25,13 @@
 namespace flecsi {
 namespace topology {
 
-template <size_t ND, size_t NM>
-class mesh_storage_t : public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<ND, NM>
-{};
+// Define the runtime model specific mesh storage policy
+
+template<size_t NUM_DIMS, size_t NUM_DOMS, size_t NUM_INDEX_SUBSPACES>
+class mesh_storage__ : public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<
+                           NUM_DIMS,
+                           NUM_DOMS,
+                           NUM_INDEX_SUBSPACES> {};
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_mesh_storage_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

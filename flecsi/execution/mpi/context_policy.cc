@@ -1,16 +1,20 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jul 26, 2016
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 
-#include "flecsi/execution/mpi/context_policy.h"
+/*! @file */
 
-#include "flecsi/data/storage.h"
+#include <flecsi/execution/mpi/context_policy.h>
 
 namespace flecsi {
 namespace execution {
@@ -25,7 +29,8 @@ mpi_context_policy_t::initialize(
   char ** argv
 )
 {
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(MPI_COMM_WORLD, &color_);
+  MPI_Comm_size(MPI_COMM_WORLD, &colors_);
 
   runtime_driver(argc, argv);
 
@@ -35,7 +40,3 @@ mpi_context_policy_t::initialize(
 } // namespace execution 
 } // namespace flecsi
 
-/*~------------------------------------------------------------------------~--*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/

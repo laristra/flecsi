@@ -1,4 +1,4 @@
-#~----------------------------------------------------------------------------~#
+#------------------------------------------------------------------------------#
 #  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
 # /@@/////  /@@          @@////@@ @@////// /@@
 # /@@       /@@  @@@@@  @@    // /@@       /@@
@@ -6,11 +6,11 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
-#~----------------------------------------------------------------------------~#
+#------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
 # Add header files. Note that these will be "exported" to the parent
@@ -24,6 +24,13 @@ set(coloring_HEADERS
   communicator.h
   crs.h
   index_coloring.h
+  dcrs_utils.h
+  mpi_communicator.h
+  mpi_utils.h
+  parmetis_colorer.h
+  box_types.h
+  box_colorer.h
+  simple_box_colorer.h
 )
 
 #------------------------------------------------------------------------------#
@@ -47,6 +54,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(UNIT_POLICY MPI)
   set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  set(UNIT_POLICY HPX)
+  set(RUNTIME_DRIVER ../execution/hpx/runtime_driver.cc)
 
 endif()
 
@@ -97,9 +109,12 @@ cinch_add_unit(dcrs
   INPUTS
     test/simple2d-8x8.msh
     test/simple2d-16x16.msh
-  LIBRARIES ${COLORING_LIBRARIES}
+  LIBRARIES
+    ${CINCH_RUNTIME_LIBRARIES}
+    ${COLORING_LIBRARIES}
   POLICY MPI
   THREADS 5
+  FOLDER "Tests/Coloring"
 )
 
 cinch_add_devel_target(devel-dcrs
@@ -110,11 +125,28 @@ cinch_add_devel_target(devel-dcrs
   LIBRARIES ${COLORING_LIBRARIES}
   POLICY MPI
   THREADS 5
+  FOLDER "Tests/Coloring"
 )
 
+cinch_add_unit(boxcolor2d
+  SOURCES test/test_simple_box_colorer_2d.cc
+  INPUTS
+  LIBRARIES ${COLORING_LIBRARIES}
+  POLICY MPI
+  THREADS 4
+  FOLDER "Tests/Coloring"
+)
+cinch_add_unit(boxcolor3d
+  SOURCES test/test_simple_box_colorer_3d.cc
+  INPUTS
+  LIBRARIES ${COLORING_LIBRARIES}
+  POLICY MPI
+  THREADS 4
+  FOLDER "Tests/Coloring"
+)
 # Both of these tests depend on ParMETIS.
 # This could change if we add more colorer types.
-if(ENABLE_COLORING AND ENABLE_PARMETIS)
+if(ENABLE_PARMETIS)
 
 cinch_add_devel_target(coloring
   SOURCES test/coloring.cc
@@ -126,25 +158,7 @@ cinch_add_devel_target(coloring
   LIBRARIES ${COLORING_LIBRARIES}
   POLICY MPI
   THREADS 5
+  FOLDER "Tests/Coloring"
 )
 
-  if (ENABLE_EXODUS)  
-    cinch_add_devel_target(color-exodus
-      SOURCES test/color-exodus.cc
-      INPUTS
-        test/exodus2d-mixed.exo
-        test/exodus3d-hex.exo
-      LIBRARIES
-        ${COLORING_LIBRARIES}
-        ${EXODUSII_LIBRARIES}
-      POLICY MPI
-      THREADS 5
-    )
-  endif()
-
 endif()
-
-#----------------------------------------------------------------------------~-#
-# Formatting options for vim.
-# vim: set tabstop=2 shiftwidth=2 expandtab :
-#----------------------------------------------------------------------------~-#

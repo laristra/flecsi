@@ -8,6 +8,7 @@
 #------------------------------------------------------------------------------#
 #  add_definitions(-DFLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER)
   add_definitions(-DFLECSI_ENABLE_SPECIALIZATION_DRIVER)
+  add_definitions(-DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
 
 #------------------------------------------------------------------------------#
 # Add source files for example application.
@@ -22,6 +23,8 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     list(APPEND simple_drivers_src ${exec_path}/legion/runtime_driver.cc )
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     list(APPEND simple_drivers_src ${exec_path}/mpi/runtime_driver.cc )
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+    list(APPEND simple_drivers_src ${exec_path}/hpx/runtime_driver.cc )
 else()
   message(FATAL_ERROR "Unrecognized runtime selection: ${FLECSI_RUNTIME_MODEL}")
 endif()
@@ -36,7 +39,11 @@ add_executable(simple_drivers ${simple_drivers_src})
 # Add link dependencies.
 #------------------------------------------------------------------------------#
 
-target_link_libraries(simple_drivers flecsi ${FLECSI_RUNTIME_LIBRARIES})
+target_link_libraries(simple_drivers FleCSI ${FLECSI_RUNTIME_LIBRARIES})
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+  hpx_setup_target(simple_drivers FOLDER "Examples")
+endif()
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options for vim.

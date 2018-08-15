@@ -1,36 +1,34 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_handle_test_h
-#define flecsi_data_handle_test_h
+#pragma once
 
 #define DH1 1
 #undef flecsi_execution_legion_task_wrapper_h
-#include "flecsi/execution/legion/task_wrapper.h"
+#include <flecsi/execution/legion/task_wrapper.h>
 
 #include <iostream>
 #include <vector>
 
-#include "flecsi/utils/common.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/execution.h"
-#include "flecsi/data/data.h"
-#include "flecsi/data/data_client.h"
-#include "flecsi/data/legion/data_policy.h"
-#include "flecsi/execution/legion/helper.h"
-#include "flecsi/execution/task_ids.h"
+#include <flecsi/utils/common.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/execution.h>
+#include <flecsi/data/data.h>
+#include <flecsi/data/data_client.h>
+#include <flecsi/data/legion/data_policy.h>
+#include <flecsi/execution/legion/helper.h>
+#include <flecsi/execution/task_ids.h>
 
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
            << ": " << #X << " = " << (X) << std::endl
 
-///
-// \file data-handle.h
-// \authors nickm
-// \date Initial file creation: Jan 25, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Jan 25, 2017
+//----------------------------------------------------------------------------//
+
+
 
 using namespace std;
 using namespace flecsi;
@@ -245,9 +243,5 @@ specialization_tlt_init(
 
 //#undef DH1
 
-#endif // flecsi_data_handle_test_h
-
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+*~-------------------------------------------------------------------------~-*/

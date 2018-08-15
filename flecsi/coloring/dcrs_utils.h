@@ -1,156 +1,140 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_coloring_dcrs_utils_h
-#define flecsi_coloring_dcrs_utils_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#if !defined(ENABLE_MPI)
-  #error ENABLE_MPI not defined! This file depends on MPI!
+/*! @file */
+
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_MPI)
+#error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
 #include <mpi.h>
 
-#include "flecsi/topology/mesh_definition.h"
-#include "flecsi/topology/closure_utils.h"
-#include "flecsi/coloring/crs.h"
+#include <map>
 
-///
-/// \file
-/// \date Initial file creation: Nov 24, 2016
-///
+#include <flecsi/coloring/crs.h>
+#include <flecsi/topology/closure_utils.h>
+#include <flecsi/topology/mesh_definition.h>
 
 namespace flecsi {
 namespace coloring {
 
 clog_register_tag(dcrs_utils);
 
-inline
-std::set<size_t>
-naive_coloring(
-  topology::mesh_definition__<2> & md
-)
-{
+/*!
+ Create a naive coloring suitable for calling a distributed-memory
+ coloring tool, e.g., ParMETIS.
+
+ @tparam DIMENSION      The entity dimension for which to create a naive
+                        coloring.
+ @tparam MESH_DIMENSION The dimension of the mesh definition.
+ */
+
+template<size_t DIMENSION, size_t MESH_DIMENSION>
+inline std::set<size_t>
+naive_coloring(topology::mesh_definition__<MESH_DIMENSION> & md) {
   std::set<size_t> indices;
 
   {
-  clog_tag_guard(dcrs_utils);
+    clog_tag_guard(dcrs_utils);
 
-	int size;
-	int rank;
+    int size;
+    int rank;
 
-	MPI_Comm_size(MPI_COMM_WORLD, &size);
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+    //--------------------------------------------------------------------------//
+    // Create a naive initial distribution of the indices
+    //--------------------------------------------------------------------------//
 
-  //--------------------------------------------------------------------------//
-  // Create a naive initial distribution of the indices
-  //--------------------------------------------------------------------------//
+    size_t quot = md.num_entities(DIMENSION) / size;
+    size_t rem = md.num_entities(DIMENSION) % size;
 
-	size_t quot = md.num_entities(2)/size;
-	size_t rem = md.num_entities(2)%size;
+    clog_one(info) << "quot: " << quot << " rem: " << rem << std::endl;
 
-  clog_one(info) << "quot: " << quot << " rem: " << rem << std::endl;
+    // Each rank gets the average number of indices, with higher ranks
+    // getting an additional index for non-zero remainders.
+    size_t init_indices = quot + ((rank >= (size - rem)) ? 1 : 0);
 
-  // Each rank gets the average number of indices, with higher ranks
-  // getting an additional index for non-zero remainders.
-	size_t init_indices = quot + ((rank >= (size - rem)) ? 1 : 0);
+    size_t offset(0);
+    for (size_t r(0); r < rank; ++r) {
+      offset += quot + ((r >= (size - rem)) ? 1 : 0);
+    } // for
 
-  size_t offset(0);
-	for(size_t r(0); r<rank; ++r) {
-		offset += quot + ((r >= (size - rem)) ? 1 : 0);
-	} // for
+    clog_one(info) << "offset: " << offset << std::endl;
 
-  clog_one(info) << "offset: " << offset << std::endl;
-
-  for(size_t i(0); i<init_indices; ++i) {
-    indices.insert(offset+i);
-  clog_one(info) << "inserting: " << offset+i << std::endl;
-  } // for
+    for (size_t i(0); i < init_indices; ++i) {
+      indices.insert(offset + i);
+      clog_one(info) << "inserting: " << offset + i << std::endl;
+    } // for
   } // guard
 
   return indices;
 } // naive_coloring
 
-#if 0
+/*!
+ Create distributed CRS representation of the graph defined by entities
+ of FROM_DIMENSION to TO_DIMENSION through THRU_DIMENSION. The return
+ object will be populated with a naive partitioning suitable for use
+ with coloring tools, e.g., ParMETIS.
+
+ @tparam FROM_DIMENSION The topological dimension of the entity for which
+                        the partitioning is requested.
+ @tparam TO_DIMENSION   The topological dimension to search for neighbors.
+ @tparam THRU_DIMENSION The topological dimension through which the neighbor
+                        connection exists.
+
+ @param md The mesh definition.
+
+ @ingroup coloring
+ */
 template<
-  size_t FD,
-  size_t TD
->
-dcrs_t
-make_dcrs(
-  topology::mesh_definition__<2> & md,
-  std::set<size_t> indices
-)
-{
-}
+    std::size_t DIMENSION,
+    std::size_t FROM_DIMENSION = DIMENSION,
+    std::size_t TO_DIMENSION = DIMENSION,
+    std::size_t THRU_DIMENSION = DIMENSION - 1>
+inline dcrs_t
+make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
+  int size;
+  int rank;
 
-template<
-  size_t DIMENSION,
-  size_t THRU
->
-dcrs_t
-make_dcrs(
-  topology::mesh_definition__<2> & md,
-  std::set<size_t> indices
-)
-{
-  // Start to initialize the return object.
-	dcrs_t dcrs;
-	dcrs.distribution.push_back(0);
-} // make_dcrs
-
-#endif
-
-/// Create an initial naive partitioning
-///
-/// \tparam FROM_DIM The topological dimension of the entity for which
-///                  the partitioning is requested.
-/// \tparam TO_DIM The topological dimension to search for neighbors.
-/// \tparam THRU_DIM The topological dimension through which the neighbor
-///                  connection exists.
-///
-/// \param md The mesh definition.
-///
-template< 
-  std::size_t D, 
-  std::size_t FROM_DIM=D, 
-  std::size_t TO_DIM=D, 
-  std::size_t THRU_DIM = D-1
->
-inline
-dcrs_t
-make_dcrs(
-  const typename topology::mesh_definition__<D> & md
-)
-{
-	int size;
-	int rank;
-
-	MPI_Comm_size(MPI_COMM_WORLD, &size);
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   //--------------------------------------------------------------------------//
   // Create a naive initial distribution of the indices
   //--------------------------------------------------------------------------//
 
-	size_t quot = md.num_entities(FROM_DIM)/size;
-	size_t rem = md.num_entities(FROM_DIM)%size;
+  size_t quot = md.num_entities(FROM_DIMENSION) / size;
+  size_t rem = md.num_entities(FROM_DIMENSION) % size;
 
   // Each rank gets the average number of indices, with higher ranks
   // getting an additional index for non-zero remainders.
-	size_t init_indices = quot + ((rank >= (size - rem)) ? 1 : 0);
+  size_t init_indices = quot + ((rank >= (size - rem)) ? 1 : 0);
 
   // Start to initialize the return object.
-	dcrs_t dcrs;
-	dcrs.distribution.push_back(0);
+  dcrs_t dcrs;
+  dcrs.distribution.push_back(0);
 
   // Set the distributions for each rank. This happens on all ranks.
-	for(size_t r(0); r<size; ++r) {
-		const size_t indices = quot + ((r >= (size - rem)) ? 1 : 0);
-		dcrs.distribution.push_back(dcrs.distribution[r] + indices);
-	} // for
+  for (size_t r(0); r < size; ++r) {
+    const size_t indices = quot + ((r >= (size - rem)) ? 1 : 0);
+    dcrs.distribution.push_back(dcrs.distribution[r] + indices);
+  } // for
 
   //--------------------------------------------------------------------------//
   // Create the cell-to-cell graph.
@@ -161,44 +145,54 @@ make_dcrs(
 
   // Add the graph adjacencies by getting the neighbors of each
   // cell index
-  for(size_t i(0); i<init_indices; ++i) {
+  using cellid = size_t;
+  using vertexid = size_t;
 
-    // Get the neighboring cells of the current cell index (i) using
-    // a matching criteria of "md.dimension()" vertices. The dimension
-    // argument will pick neighbors that are adjacent across facets, e.g.,
-    // across edges in two dimension, or across faces in three dimensions.
-    auto neighbors =
-      topology::entity_neighbors<FROM_DIM,TO_DIM,THRU_DIM>(
-        md, 
-        dcrs.distribution[rank] + i
-      );
+  // essentially vertex to cell and cell to cell through vertices
+  // connectivity.
+  std::map<vertexid, std::vector<cellid>> vertex2cells;
+  std::map<cellid, std::vector<cellid>> cell2cells;
 
-#if 0
-      if(rank == 1) {
-        std::cout << "neighbors: ";
-        for(auto i: neighbors) {
-          std::cout << i << " ";
-        } // for
-        std::cout << std::endl;
-      } // if
-#endif
+  // build global cell to cell through # of shared vertices connectivity
+  for (size_t cell(0); cell < md.num_entities(FROM_DIMENSION); ++cell) {
+    std::map<cellid, size_t> cell_counts;
 
-      for(auto n: neighbors) {
-        dcrs.indices.push_back(n);
-      } // for
+    for (auto vertex : md.entities(FROM_DIMENSION, 0, cell)) {
+      // build vertex to cell connectivity, O(n_cells * n_polygon_sides)
+      // of insert().
+      vertex2cells[vertex].push_back(cell);
 
-      dcrs.offsets.push_back(dcrs.offsets[i] + neighbors.size());
-  } // for
+      // Count the number of times this cell shares a common vertex with
+      // some other cell. O(n_cells * n_polygon_sides * vertex to cells degrees)
+      for (auto other : vertex2cells[vertex]) {
+        if (other != cell)
+          cell_counts[other] += 1;
+      }
+    }
+
+    for (auto count : cell_counts) {
+      if (count.second > THRU_DIMENSION) {
+        // append cell to cell through "dimension" connectivity, we need to
+        // add both directions
+        cell2cells[cell].push_back(count.first);
+        cell2cells[count.first].push_back(cell);
+      }
+    }
+  }
+
+  // turn subset of cell 2 cell connectivity to dcrs
+  for (size_t i(0); i < init_indices; ++i) {
+    auto cell = dcrs.distribution[rank] + i;
+
+    for (auto n : cell2cells[cell]) {
+      dcrs.indices.push_back(n);
+    } // for
+
+    dcrs.offsets.push_back(dcrs.offsets[i] + cell2cells[cell].size());
+  }
 
   return dcrs;
 } // make_dcrs
 
 } // namespace coloring
 } // namespace flecsi
-
-#endif // flecsi_coloring_dcrs_utils_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

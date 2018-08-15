@@ -5,8 +5,7 @@
 
 #include <cinchdevel.h>
 
-DEVEL(clog) {
-} // DEVEL
+DEVEL(clog) {} // DEVEL
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options for vim.

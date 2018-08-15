@@ -1,4 +1,4 @@
-<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Introduction) -->
+<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(introduction) -->
 
 \pagebreak
 
@@ -48,30 +48,34 @@ space utilization and fast traversal.
 
 --------------------------------------------------------------------------------
 
-<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Code Structure) -->
+<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(code-structure) -->
 
-# Name Spaces
+# Code Structure
+
+![\label{code-structure}](code-structure.pdf)
+
+## Name Spaces
 
 FleCSI uses several different namespaces:
 
-* **data**  
+* **data**<br>  
   Data model types.
 
-* **execution**  
+* **execution**<br>  
   Execution model types.
 
-* **io**  
-  I/O types.
-
-* **topology**  
+* **topology**<br>  
   Topology types.
 
-* **utils**  
+* **io**<br>  
+  I/O types.
+
+* **utils**<br>  
   Utilities.
 
 --------------------------------------------------------------------------------
 
-<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Code Structure) -->
+<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(unit-tests) -->
 
 # Unit Tests
 

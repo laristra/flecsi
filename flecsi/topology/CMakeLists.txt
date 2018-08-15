@@ -1,4 +1,4 @@
-#~----------------------------------------------------------------------------~#
+#------------------------------------------------------------------------------#
 #  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
 # /@@/////  /@@          @@////@@ @@////// /@@
 # /@@       /@@  @@@@@  @@    // /@@       /@@
@@ -6,11 +6,11 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
-#~----------------------------------------------------------------------------~#
+#------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
 # Add header files. Note that these will be "exported" to the parent
@@ -19,16 +19,26 @@
 
 set(topology_HEADERS
   closure_utils.h
+  color_topology.h
+  common/array_buffer.h
+  common/entity_storage.h
+  entity_storage.h
   index_space.h
-  mesh.h
   mesh_definition.h
+  mesh.h
   mesh_storage.h
   mesh_topology.h
+  global_topology.h
   mesh_types.h
   mesh_utils.h
+  partition.h
+  set_storage.h
+  set_topology.h
+  set_types.h
+  set_utils.h
+  structured_mesh_topology.h
   tree_topology.h
-  mesh_storage.h
-  entity_storage.h
+  types.h
 )
 
 #------------------------------------------------------------------------------#
@@ -38,36 +48,35 @@ set(topology_HEADERS
 # runtime specific and can be configured for whichever runtime is active.
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-
-  set(UNIT_POLICY SERIAL)
-  set(RUNTIME_DRIVER ../execution/serial/runtime_driver.cc)
-  set(topology_HEADERS
-    ${topology_HEADERS}
-    serial/entity_storage.h
-    serial/storage_policy.h
-    )
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(UNIT_POLICY LEGION)
   set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
   set(topology_HEADERS
     ${topology_HEADERS}
-    legion/array_buffer.h
-    legion/entity_storage.h
+    legion/set_storage_policy.h
     legion/storage_policy.h
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(topology_HEADERS
     ${topology_HEADERS}
-    mpi/entity_storage.h
+    mpi/set_storage_policy.h
     mpi/storage_policy.h
     )
 
   set(UNIT_POLICY MPI)
   set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  set(topology_HEADERS
+    ${topology_HEADERS}
+    hpx/storage_policy.h
+    )
+
+  set(UNIT_POLICY HPX)
+  set(RUNTIME_DRIVER ../execution/hpx/runtime_driver.cc)
 
 endif()
 
@@ -101,16 +110,20 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
    INPUTS
      test/traversal.blessed
    LIBRARIES
-     flecsi
+     FleCSI
+   FOLDER
+     "Tests/Topology"
   )
-  
+
   cinch_add_unit(bindings
    SOURCES
      test/bindings.cc
    INPUTS
      test/bindings.blessed
    LIBRARIES
-     flecsi
+     FleCSI
+   FOLDER
+     "Tests/Topology"
   )
 
 endif()
@@ -120,6 +133,8 @@ cinch_add_unit(dual
     test/dual.cc
   INPUTS
     test/dual.blessed
+  FOLDER
+    "Tests/Topology"
 )
 
 #------------------------------------------------------------------------------#
@@ -133,28 +148,28 @@ cinch_add_unit(dual
 #  INPUTS
 #    test/tree.blessed
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #)
 
 #cinch_add_unit(tree1d
 #  SOURCES
 #    test/tree1d.cc
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #)
 
 #cinch_add_unit(tree3d
 #  SOURCES
 #    test/tree3d.cc
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #)
 
 #cinch_add_unit(gravity
 #  SOURCES
 #    test/gravity.cc test/pseudo_random.h
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #)
 
 # FIXME: Broken by refactor
@@ -163,14 +178,25 @@ cinch_add_unit(dual
 #    test/gravity-state.cc
 #    test/pseudo_random.h
 #  LIBRARIES
-#    flecsi
+#    FleCSI
 #    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
 cinch_add_unit(structured
   SOURCES
     test/structured.cc
+  FOLDER
+    "Tests/Topology"
 )
+
+#------------------------------------------------------------------------------#
+# Set unit tests.
+#------------------------------------------------------------------------------#
+
+# cinch_add_unit(set_topology
+#   SOURCES
+#     test/set_topology.cc
+# )
 
 #------------------------------------------------------------------------------#
 # Misc. unit tests.
@@ -179,6 +205,8 @@ cinch_add_unit(structured
 cinch_add_unit(closure
   SOURCES
     test/closure.cc
+  FOLDER
+    "Tests/Topology"
 )
 
 cinch_add_unit(devel-closure
@@ -186,6 +214,8 @@ cinch_add_unit(devel-closure
     test/devel-closure.cc
   POLICY
     SERIAL_DEVEL
+  FOLDER
+    "Tests/Topology"
 )
 
 # FIXME: Check this with refactor
@@ -194,7 +224,3 @@ cinch_add_unit(devel-closure
 #    test/index-space.cc test/pseudo_random.h
 #)
 
-#~---------------------------------------------------------------------------~-#
-# Formatting options
-# vim: set tabstop=2 shiftwidth=2 expandtab :
-#~---------------------------------------------------------------------------~-#

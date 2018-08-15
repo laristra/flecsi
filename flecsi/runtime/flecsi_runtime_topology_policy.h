@@ -1,17 +1,21 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_runtime_topology_policy_h
-#define flecsi_runtime_topology_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-// @file
-// @date Initial file creation: Jun 19, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
-#include <flecsi.h>
+#include <flecsi-config.h>
 
 //----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
@@ -20,48 +24,59 @@
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
 //----------------------------------------------------------------------------//
 
-// Serial Policy
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
-
-  #include "flecsi/topology/serial/storage_policy.h"
-
-  namespace flecsi {
-  template <size_t ND, size_t NM>
-  using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY = 
-    topology::serial_topology_storage_policy_t<ND, NM>;
-
-  }
-
 // Legion, MPI+Legion Policy
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include "flecsi/topology/legion/storage_policy.h"
+#include <flecsi/topology/legion/storage_policy.h>
 
-  namespace flecsi {
+namespace flecsi {
 
-  template <size_t ND, size_t NM>
-  using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY = 
-    topology::legion_topology_storage_policy_t<ND, NM>;
+template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
+using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
+    topology::legion_topology_storage_policy_t__<
+        NUM_DIMS,
+        NUM_DOMAINS,
+        NUM_INDEX_SUBSPACES>;
 
-  }
+} // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/topology/mpi/storage_policy.h"
+#include <flecsi/topology/mpi/storage_policy.h>
 
-  namespace flecsi {
-  template <size_t ND, size_t NM>
-  using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY = 
-    topology::mpi_topology_storage_policy_t<ND, NM>;
+namespace flecsi {
 
-  }
+template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
+using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY = topology::
+    mpi_topology_storage_policy__<NUM_DIMS, NUM_DOMAINS, NUM_INDEX_SUBSPACES>;
+
+} // namespace flecsi
+
+// HPX Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include "flecsi/topology/hpx/storage_policy.h"
+
+namespace flecsi {
+
+template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
+using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY = topology::
+    hpx_topology_storage_policy__<NUM_DIMS, NUM_DOMAINS, NUM_INDEX_SUBSPACES>;
+
+} // namespace flecsi
+
+// HPX Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include "flecsi/topology/hpx/storage_policy.h"
+
+namespace flecsi {
+
+template<size_t ND, size_t NM>
+using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
+    topology::hpx_topology_storage_policy__<ND, NM>;
+
+} // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
-
-#endif // flecsi_runtime_topology_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

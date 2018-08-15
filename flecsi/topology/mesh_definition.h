@@ -1,20 +1,24 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_topology_mesh_definition_h
-#define flecsi_topology_mesh_definition_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Nov 17, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <set>
 #include <vector>
 
-#include "flecsi/geometry/point.h"
+#include <flecsi/geometry/point.h>
 
 namespace flecsi {
 namespace topology {
@@ -25,12 +29,10 @@ namespace topology {
 //! @ingroup mesh-topology
 //----------------------------------------------------------------------------//
 
-template<size_t D>
-class mesh_definition__
-{
+template<size_t DIMENSION>
+class mesh_definition__ {
 public:
-
-  using point_t = point<double, D>;
+  using point_t = point__<double, DIMENSION>;
 
   /// Default constructor
   mesh_definition__() {}
@@ -39,20 +41,16 @@ public:
   mesh_definition__(const mesh_definition__ &) = delete;
 
   /// Assignment operator (disabled)
-  mesh_definition__ & operator = (const mesh_definition__ &) = delete;
+  mesh_definition__ & operator=(const mesh_definition__ &) = delete;
 
   /// Destructor
   virtual ~mesh_definition__() {}
-  
+
   ///
   /// Return the dimension of the mesh.
   ///
-  static 
-  constexpr
-  size_t
-  dimension()
-  {
-    return D;
+  static constexpr size_t dimension() {
+    return DIMENSION;
   } // dimension
 
   //--------------------------------------------------------------------------//
@@ -64,43 +62,37 @@ public:
   virtual size_t num_entities(size_t dimension) const = 0;
 
   //--------------------------------------------------------------------------//
-  //! Abstract interface to get the entities of entities
+  //! Abstract interface to get the entities of dimension \em to that define
+  //! the entity of dimension \em from with the given identifier \em id.
+  //!
+  //! @param from_dimension The dimension of the entity for which the
+  //!                       definition is being requested.
+  //! @param to_dimension   The dimension of the entities of the definition.
+  //! @param id             The id of the entity for which the definition is
+  //!                       being requested.
   //--------------------------------------------------------------------------//
 
   virtual std::vector<size_t>
-    entities(size_t from_dim, size_t to_dim, size_t from_entity_id) 
-    const = 0;
-
+  entities(size_t from_dimension, size_t to_dimension, size_t id) const = 0;
 
   //--------------------------------------------------------------------------//
-  //! Abstract interface to get the number of entities.
+  //! Abstract interface to get the entities of dimension \em to that define
+  //! the entity of dimension \em from with the given identifier \em id.
+  //!
+  //! @param from_dimension The dimension of the entity for which the
+  //!                       definition is being requested.
+  //! @param to_dimension   The dimension of the entities of the definition.
+  //! @param id             The id of the entity for which the definition is
+  //!                       being requested.
   //--------------------------------------------------------------------------//
 
-  /// Return the set of vertices of a particular entity.
-  /// \param [in] dimension  The entity dimension to query.
-  /// \param [in] entity_id  The id of the entity in question.
-  /// \remark This version returns a set.
-  virtual std::set<size_t> 
-  entities_set(size_t from_dim, size_t to_dim, size_t entity_id) 
-  const
-  {
-    auto vvec = entities(from_dim, to_dim, entity_id);
+  virtual std::set<size_t>
+  entities_set(size_t from_dimension, size_t to_dimension, size_t id) const {
+    auto vvec = entities(from_dimension, to_dimension, id);
     return std::set<size_t>(vvec.begin(), vvec.end());
-  }
-
-
-  virtual point_t vertex(size_t vertex_id) const = 0;
-
-private:
+  } // entities_set
 
 }; // class mesh_definition__
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_topology_mesh_definition_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

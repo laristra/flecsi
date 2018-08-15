@@ -4,9 +4,11 @@
  *~--------------------------------------------------------------------------~*/
 
 #include <iostream>
-#include <flecsi.h>
-#if ENABLE_MPI
-#include <mpi.h>
+
+#include <flecsi-config.h>
+
+#if defined(ENABLE_MPI)
+  #include <mpi.h>
 #endif
 
 #include "flecsi/execution/context.h"
@@ -24,8 +26,8 @@ void
 specialization_tlt_init(
   int argc,
   char ** argv
-) 
-{ 
+)
+{
   std::cout<<"inside Specialization Driver"<<std::endl;
 }//specialization_driver
 
@@ -43,8 +45,8 @@ driver(
 
 int main(int argc, char ** argv) {
 
+#if defined(ENABLE_MPI)
   int provided;
-#if ENABLE_MPI
   MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
   // If you fail this assertion, then your version of MPI
   // does not support calls from multiple threads and you
@@ -60,7 +62,6 @@ int main(int argc, char ** argv) {
 
   return retval;
 } // main
-
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

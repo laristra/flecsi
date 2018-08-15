@@ -1,0 +1,84 @@
+/*----------------------------------------------------------------------------*
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
+ *----------------------------------------------------------------------------*/
+
+#pragma once
+
+//----------------------------------------------------------------------------//
+// Runtime models
+//----------------------------------------------------------------------------//
+
+#define FLECSI_RUNTIME_MODEL_legion 1
+#define FLECSI_RUNTIME_MODEL_mpi 2
+#define FLECSI_RUNTIME_MODEL_hpx 3
+#cmakedefine FLECSI_RUNTIME_MODEL FLECSI_RUNTIME_MODEL_@FLECSI_RUNTIME_MODEL@
+
+//----------------------------------------------------------------------------//
+// External runtimes
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_MPI
+#cmakedefine FLECSI_ENABLE_LEGION
+
+//----------------------------------------------------------------------------//
+// Enable Legion thread-local storage interface
+//----------------------------------------------------------------------------//
+
+#if defined(FLECSI_ENABLE_LEGION)
+  #if !defined(LEGION_USE_CMAKE)
+    #define LEGION_USE_CMAKE
+  #endif
+  #if !defined(REALM_USE_CMAKE)
+    #define REALM_USE_CMAKE
+  #endif
+  #define ENABLE_LEGION_TLS
+
+  #if !defined(MAPPER_COMPACTION)
+    #cmakedefine MAPPER_COMPACTION
+  #endif
+  #if !defined(COMPACTED_STORAGE_SORT)
+    #cmakedefine COMPACTED_STORAGE_SORT
+  #endif
+
+#endif
+
+//----------------------------------------------------------------------------//
+// Process id bits
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ID_PBITS @FLECSI_ID_PBITS@
+#cmakedefine FLECSI_ID_EBITS @FLECSI_ID_EBITS@
+#cmakedefine FLECSI_ID_FBITS @FLECSI_ID_FBITS@
+#cmakedefine FLECSI_ID_GBITS @FLECSI_ID_GBITS@
+
+//----------------------------------------------------------------------------//
+// Counter type
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_COUNTER_TYPE @FLECSI_COUNTER_TYPE@
+
+//----------------------------------------------------------------------------//
+// Boost.Preprocessor
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_BOOST_PREPROCESSOR
+
+//----------------------------------------------------------------------------//
+// Boost.ProgramOptions
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS
+
+//----------------------------------------------------------------------------//
+// Enable coloring
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_METIS
+#cmakedefine FLECSI_ENABLE_PARMETIS
+
+//----------------------------------------------------------------------------//
+// Enable Graphviz
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_GRAPHVIZ

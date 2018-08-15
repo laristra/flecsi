@@ -5,36 +5,31 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/topology/structured_mesh_topology.h"
-
-template<size_t> struct domain_ {};
+template<size_t>
+struct domain_ {};
 template<size_t D, size_t NM>
 struct structured_mesh_entity_t {};
 
-struct structured_vertex_t : public structured_mesh_entity_t<0,2> {
+struct structured_vertex_t : public structured_mesh_entity_t<0, 2> {
 }; // structured_vertex_t
 
-struct structured_cell_t : public structured_mesh_entity_t<2,2> {
+struct structured_cell_t : public structured_mesh_entity_t<2, 2> {
 }; // structured_cell_t
 
-struct structured_corner_t : public structured_mesh_entity_t<1,2> {
+struct structured_corner_t : public structured_mesh_entity_t<1, 2> {
 }; // structured_corner_t
 
 struct structured_mesh_type_t {
   static constexpr size_t num_dimensions = 2;
   static constexpr size_t num_domains = 2;
 
-
-
   using entity_types = std::tuple<
-    std::pair<domain_<0>, structured_vertex_t>,
-    std::pair<domain_<0>, structured_cell_t>,
-    std::pair<domain_<1>, structured_corner_t>
-  >;
+      std::pair<domain_<0>, structured_vertex_t>,
+      std::pair<domain_<0>, structured_cell_t>,
+      std::pair<domain_<1>, structured_corner_t>>;
 }; // struct structured_mesh_type_t
 
-TEST(structured, testname) {
-} // TEST
+TEST(structured, testname) {} // TEST
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros

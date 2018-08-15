@@ -12,97 +12,151 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_point_h
-#define flecsi_point_h
+#pragma once
+
+//----------------------------------------------------------------------------//
+//! @file
+//! \date Initial file creation: Sep 23, 2015
+//----------------------------------------------------------------------------//
 
 #include <array>
 #include <cmath>
 
-#include "flecsi/utils/dimensioned_array.h"
-#include "flecsi/utils/common.h"
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/dimensioned_array.h>
 
-/*!
- * \file point.h
- * \authors bergen
- * \date Initial file creation: Sep 23, 2015
- */
+namespace flecsi {
 
-namespace flecsi
-{
-/*!
-  \class point point.h
-  \brief point defines an interface for storing and manipulating
-  coordinate data associated with a geometric domain.
+//----------------------------------------------------------------------------//
+//! The point__ type defines an interface for storing and manipulating
+//! coordinate data. The point__ type is implemented using \ref
+//! dimensioned_array__.
+//!
+//! @tparam TYPE      The type to use to represent coordinate values.
+//! @tparam DIMENSION The dimension of the point.
+//!
+//! @ingroup geometry
+//----------------------------------------------------------------------------//
 
-  The point type is implemented using \ref dimensioned_array.  Look there
-  for more information on the point interface.
- */
-template <typename T, size_t D>
-using point = utils::dimensioned_array<T, D, 1>;
+template<typename TYPE, size_t DIMENSION>
+using point__ = utils::dimensioned_array__<TYPE, DIMENSION, 1>;
 
-template <typename T, size_t D>
-point<T, D> operator*(const T val, const point<T, D> & p)
-{
-  point<T, D> tmp(p);
-  for (size_t d(0); d < D; ++d) {
+//----------------------------------------------------------------------------//
+//! Multiplication operator.
+//!
+//! @tparam TYPE      The type to use to represent coordinate values.
+//! @tparam DIMENSION The dimension of the point.
+//!
+//! @ingroup geometry
+//----------------------------------------------------------------------------//
+
+template<typename TYPE, size_t DIMENSION>
+point__<TYPE, DIMENSION>
+operator*(TYPE const val, point__<TYPE, DIMENSION> const & p) {
+  point__<TYPE, DIMENSION> tmp(p);
+  for (size_t d(0); d < DIMENSION; ++d) {
     tmp[d] *= val;
   } // for
 
   return tmp;
 } // operator *
 
-/*!
-  \function distance
- */
-template <typename T, size_t D>
-T distance(const point<T, D> & a, const point<T, D> & b)
-{
-  T sum(0);
-  for (size_t d(0); d < D; ++d) {
+//----------------------------------------------------------------------------//
+//! Return the distance between the given points.
+//!
+//! @tparam TYPE      The type to use to represent coordinate values.
+//! @tparam DIMENSION The dimension of the point.
+//!
+//! @param a The first point.
+//! @param b The second point.
+//!
+//! @ingroup geometry
+//----------------------------------------------------------------------------//
+
+template<typename TYPE, size_t DIMENSION>
+TYPE
+distance(
+    point__<TYPE, DIMENSION> const & a,
+    point__<TYPE, DIMENSION> const & b) {
+  TYPE sum(0);
+  for (size_t d(0); d < DIMENSION; ++d) {
     sum += utils::square(a[d] - b[d]);
   } // for
 
   return std::sqrt(sum);
 } // distance
 
-/*!
-  \function midpoint
- */
-template <typename T, size_t D>
-point<T, D> midpoint(const point<T, D> & a, const point<T, D> & b)
-{
-  return point<T, D>((a + b) / 2.0);
-} // distance
+//----------------------------------------------------------------------------//
+//! Return the midpoint between two points.
+//!
+//! @tparam TYPE      The type to use to represent coordinate values.
+//! @tparam DIMENSION The dimension of the point.
+//!
+//! @param a The first point.
+//! @param b The second point.
+//!
+//! @ingroup geometry
+//----------------------------------------------------------------------------//
 
-/*!
-  Compute the centroid of a list of points.
+template<typename TYPE, size_t DIMENSION>
+point__<TYPE, DIMENSION>
+midpoint(
+    point__<TYPE, DIMENSION> const & a,
+    point__<TYPE, DIMENSION> const & b) {
+  return point__<TYPE, DIMENSION>((a + b) / 2.0);
+} // midpoint
 
-  \param[in] cell The cell to return the centroid for.
-  \return a point_t that is the centroid.
-*/
-template <template <typename...> class LIST, typename T, size_t D>
-auto centroid(const LIST<point<T, D>> & vert_list)
-{
-  point<T, D> tmp(0.0);
-  for (auto v : vert_list)
-    tmp += v;
-  tmp /= vert_list.size();
+//----------------------------------------------------------------------------//
+//! Return the centroid of the given set of points.
+//!
+//! @tparam TYPE      The type to use to represent coordinate values.
+//! @tparam DIMENSION The dimension of the point.
+//!
+//! @param points The points for which to find the centroid.
+//!
+//! @ingroup geometry
+//----------------------------------------------------------------------------//
+
+template<template<typename...> class CONTAINER, typename TYPE, size_t DIMENSION>
+auto
+centroid(CONTAINER<point__<TYPE, DIMENSION>> const & points) {
+  point__<TYPE, DIMENSION> tmp(0.0);
+
+  for (auto p : points) {
+    tmp += p;
+  } // for
+
+  tmp /= points.size();
+
   return tmp;
-}
+} // centroid
 
-template <typename T, size_t D>
-auto centroid(std::initializer_list<point<T, D>> vert_list)
-{
-  point<T, D> tmp(0.0);
-  for (auto v : vert_list)
-    tmp += v;
-  tmp /= vert_list.size();
+//----------------------------------------------------------------------------//
+//! Return the centroid of the given set of points.
+//!
+//! @tparam TYPE      The type to use to represent coordinate values.
+//! @tparam DIMENSION The dimension of the point.
+//!
+//! @param points The points for which to find the centroid.
+//!
+//! @ingroup geometry
+//----------------------------------------------------------------------------//
+
+template<typename TYPE, size_t DIMENSION>
+auto
+centroid(std::initializer_list<point__<TYPE, DIMENSION>> points) {
+  point__<TYPE, DIMENSION> tmp(0.0);
+
+  for (auto p : points) {
+    tmp += p;
+  } // for
+
+  tmp /= points.size();
+
   return tmp;
-}
+} // centroid
 
 } // namespace flecsi
-
-#endif // flecsi_point_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

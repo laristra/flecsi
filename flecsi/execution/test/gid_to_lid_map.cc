@@ -11,16 +11,20 @@
 #include <cinchlog.h>
 #include <cinchtest.h>
 
-#include "flecsi/execution/execution.h"
-#include "flecsi/data/data.h"
-#include "flecsi/supplemental/coloring/add_colorings.h"
+#include <flecsi/execution/execution.h>
+#include <flecsi/data/data.h>
+#include <flecsi/supplemental/coloring/add_colorings.h>
 
 #define INDEX_ID 0
 #define VERSIONS 1
 
 clog_register_tag(gid_to_lid);
 
-class client_type : public flecsi::data::data_client_t{};
+class client_type : public flecsi::data::data_client_t
+{
+public:
+  using type_identifier_t = flecsi::data::data_client_t;
+};
 
 flecsi_register_field(client_type, name_space, cell_ID, size_t, dense,
     INDEX_ID, VERSIONS);
@@ -35,7 +39,10 @@ namespace execution {
 void specialization_tlt_init(int argc, char ** argv) {
   clog(trace) << "In specialization top-level-task init" << std::endl;
 
-  flecsi_execute_mpi_task(add_colorings, 0);
+  coloring_map_t map;
+  map.vertices = 1;
+  map.cells = 0;
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
 
 } // specialization_tlt_init
 
@@ -83,7 +90,6 @@ void driver(int argc, char ** argv) {
     entity_itr != entries.end(); ++entity_itr) {
     flecsi::coloring::entity_info_t entity = *entity_itr;
     gid_to_lid_map[lid++] = entity.id;
-std::cout <<"IRINADEBUG"<< entity.id<<std::endl;
   }
 
   std::map<size_t, size_t> index_map = context_.index_map(INDEX_ID);

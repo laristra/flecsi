@@ -41,9 +41,9 @@ RUN cmake \
           -DENABLE_LEGION=$LEGION \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
+	  -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && \
+                     echo OFF || echo ON) \
           -DENABLE_UNIT_TESTS=ON \
-          -DCLOG_STRIP_LEVEL=3 \
-          -DCLOG_DEBUG=OFF \
           -DENABLE_PARMETIS=ON \
           -DENABLE_COLORING=ON \
           -DENABLE_DOXYGEN=ON \
@@ -68,7 +68,7 @@ RUN cd .. && if [ ${COVERAGE} ]; then \
     $HOME/.local/bin/codecov -F "${CC}"; \
   fi; \
 fi && cd -
-RUN cd .. && if [ ${SONARQUBE} ]; then \
+RUN cd .. && if [ ${SONARQUBE} ] && [ -n "${SONARQUBE_GITHUB_TOKEN}" ] && [ -n "${SONARQUBE_TOKEN}" ]; then \
   sonar-scanner \
     -Dsonar.projectKey=${TRAVIS_REPO_SLUG##*/} \
     -Dsonar.projectName=${TRAVIS_REPO_SLUG#*/} \
@@ -82,7 +82,7 @@ RUN cd .. && if [ ${SONARQUBE} ]; then \
     -Dsonar.exclusions=build/CMakeFiles/**,cinch/**,build/doc/doxygen/**,build/include/**,flecsi/*/test/* \
     -Dsonar.cfamily.build-wrapper-output=build/bw-output \
     -Dsonar.cfamily.gcov.reportsPath=. \
-    -Dsonar.host.url=https://sonarqube.com \
+    -Dsonar.host.url=https://sonarcloud.io \
     -Dsonar.organization=${TRAVIS_REPO_SLUG%%/*} \
     $([ ${TRAVIS_PULL_REQUEST} != false ] && echo \
        -Dsonar.analysis.mode=preview \

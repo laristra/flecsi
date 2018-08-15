@@ -1,4 +1,4 @@
-#include <iostream>
+
 #include <cinchtest.h>
 
 /*
@@ -246,7 +246,7 @@ TEST(mesh_topology, dual) {
   for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
     CINCH_CAPTURE() << "------- cell id: " << c->id() << endl;
     for(TestDualMesh::CellIterator s(*dualMesh, c->getSides());
-	 	!s.isend(); ++s){
+                !s.isend(); ++s){
       CINCH_CAPTURE() << "--------- side id: " << s->id() << endl;
     }
   }
@@ -256,7 +256,7 @@ TEST(mesh_topology, dual) {
   for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
     CINCH_CAPTURE() << "------- cell id: " << c->id() << endl;
     for(TestDualMesh::CellIterator s(*dualMesh, c->getSides());
-	 	!s.isend(); ++s){
+                !s.isend(); ++s){
       CINCH_CAPTURE() << "--------- side id: " << s->id() << endl;
       for(TestDualMesh::VertexIterator sv(s);
           !sv.isend(); ++sv){

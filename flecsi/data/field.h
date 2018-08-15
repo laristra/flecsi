@@ -1,31 +1,38 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_data_field_h
-#define flecsi_data_field_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jun 21, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
-#include "flecsi/data/common/registration_wrapper.h"
-#include "flecsi/data/storage.h"
+#include <flecsi/data/common/registration_wrapper.h>
+#include <flecsi/data/storage.h>
+#include <flecsi/utils/hash.h>
 
 namespace flecsi {
 namespace data {
 
 //----------------------------------------------------------------------------//
-//! FIXME: Description of class
+//! The field_interface__ type provides a high-level field interface that
+//! is implemented by the given data policy.
+//!
+//! @tparam DATA_POLICY The backend data policy.
+//!
+//! @ingroup data
 //----------------------------------------------------------------------------//
 
-template<
-  typename DATA_POLICY
->
-struct field_data__
-{
+template<typename DATA_POLICY>
+struct field_interface__ {
 
   //--------------------------------------------------------------------------//
   //! Register a field with the FleCSI runtime. This method should be thought
@@ -37,7 +44,7 @@ struct field_data__
   //!
   //! @tparam DATA_CLIENT_TYPE The data client type on which the data
   //!                          attribute should be registered.
-  //! @tparam STORAGE_TYPE     The storage type for the data attribute.
+  //! @tparam STORAGE_CLASS    The storage type for the data attribute.
   //! @tparam DATA_TYPE        The data type, e.g., double. This may be
   //!                          P.O.D. or a user-defined type that is
   //!                          trivially-copyable.
@@ -54,36 +61,31 @@ struct field_data__
   //--------------------------------------------------------------------------//
 
   template<
-    typename DATA_CLIENT_TYPE,
-    size_t STORAGE_TYPE,
-    typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH,
-    size_t VERSIONS,
-    size_t INDEX_SPACE = 0
-  >
-  static
-  bool
-  register_field(
-    std::string const & name
-  )
-  {
+      typename DATA_CLIENT_TYPE,
+      size_t STORAGE_CLASS,
+      typename DATA_TYPE,
+      size_t NAMESPACE_HASH,
+      size_t NAME_HASH,
+      size_t VERSIONS,
+      size_t INDEX_SPACE = 0>
+  static bool register_field(std::string const & name) {
+    static_assert(
+        VERSIONS <= utils::hash::field_max_versions,
+        "max field versions exceeded");
+
     using wrapper_t = field_registration_wrapper__<
-      DATA_CLIENT_TYPE,
-      STORAGE_TYPE,
-      DATA_TYPE,
-      NAMESPACE_HASH,
-      NAME_HASH,
-      VERSIONS,
-      INDEX_SPACE
-    >;
+        DATA_CLIENT_TYPE, STORAGE_CLASS, DATA_TYPE, NAMESPACE_HASH, NAME_HASH,
+        VERSIONS, INDEX_SPACE>;
 
-    const size_t client_key = typeid(DATA_CLIENT_TYPE).hash_code();
-    const size_t key = NAMESPACE_HASH ^ NAME_HASH;
+    const size_t client_type_key =
+        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
 
-    for(size_t i(0); i<VERSIONS; ++i) {
-      if(!storage_t::instance().register_field(client_key, key,
-        wrapper_t::register_callback)) {
+    for (size_t version(0); version < VERSIONS; ++version) {
+      const size_t key =
+          utils::hash::field_hash<NAMESPACE_HASH, NAME_HASH>(version);
+
+      if (!storage_t::instance().register_field(
+              client_type_key, key, wrapper_t::register_callback)) {
         return false;
       } // if
     } // for
@@ -96,7 +98,7 @@ struct field_data__
   //!
   //! @tparam DATA_CLIENT_TYPE The data client type on which the data
   //!                          attribute should be registered.
-  //! @tparam STORAGE_TYPE     The storage type for the data attribute.
+  //! @tparam STORAGE_CLASS    The storage type for the data attribute.
   //! @tparam DATA_TYPE        The data type, e.g., double. This may be
   //!                          P.O.D. or a user-defined type that is
   //!                          trivially-copyable.
@@ -110,38 +112,75 @@ struct field_data__
   //--------------------------------------------------------------------------//
 
   template<
-    typename DATA_CLIENT_TYPE,
-    size_t STORAGE_TYPE,
-    typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH,
-    size_t VERSION = 0,
-    size_t PERMISSIONS
-  >
-  static
-  decltype(auto)
-  get_handle(
-    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle
-  )
-  {
-    using storage_type_t =
-      typename DATA_POLICY::template storage_type__<STORAGE_TYPE>;
+      typename DATA_CLIENT_TYPE,
+      size_t STORAGE_CLASS,
+      typename DATA_TYPE,
+      size_t NAMESPACE_HASH,
+      size_t NAME_HASH,
+      size_t VERSION = 0,
+      size_t PERMISSIONS>
+  static decltype(auto)
+  get_handle(const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS> &
+                 client_handle) {
+    static_assert(
+        VERSION < utils::hash::field_max_versions,
+        "max field version exceeded");
 
-    return storage_type_t::template get_handle<
-      DATA_CLIENT_TYPE,
-      DATA_TYPE,
-      NAMESPACE_HASH,
-      NAME_HASH,
-      VERSION
-    >
-    (client_handle);
+    using storage_class_t =
+        typename DATA_POLICY::template storage_class__<STORAGE_CLASS>;
+
+    return storage_class_t::template get_handle<
+        DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE_HASH, NAME_HASH, VERSION>(
+        client_handle);
   } // get_handle
+
+  //--------------------------------------------------------------------------//
+  //! Return the mutator associated with the given parameters and data client.
+  //!
+  //! @tparam DATA_CLIENT_TYPE The data client type on which the data
+  //!                          attribute should be registered.
+  //! @tparam STORAGE_CLASS    The storage type for the data attribute.
+  //! @tparam DATA_TYPE        The data type, e.g., double. This may be
+  //!                          P.O.D. or a user-defined type that is
+  //!                          trivially-copyable.
+  //! @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
+  //!                          of attribute names to avoid collisions.
+  //! @tparam NAME_HASH        The attribute name.
+  //! @tparam INDEX_SPACE      The index space identifier.
+  //! @tparam VERSION          The data version.
+  //!
+  //! @ingroup data
+  //! @ingroup slots
+  //--------------------------------------------------------------------------//
+
+  template<
+      typename DATA_CLIENT_TYPE,
+      size_t STORAGE_CLASS,
+      typename DATA_TYPE,
+      size_t NAMESPACE_HASH,
+      size_t NAME_HASH,
+      size_t VERSION = 0,
+      size_t PERMISSIONS>
+  static decltype(auto) get_mutator(
+      const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle,
+      size_t slots) {
+    static_assert(
+        VERSION < utils::hash::field_max_versions,
+        "max field version exceeded");
+
+    using storage_class_t =
+        typename DATA_POLICY::template storage_class__<STORAGE_CLASS>;
+
+    return storage_class_t::template get_mutator<
+        DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE_HASH, NAME_HASH, VERSION>(
+        client_handle, slots);
+  } // get_mutator
 
   //--------------------------------------------------------------------------//
   //! Return all handles of the given storage type, data type, and
   //! namespace that satisfy a predicate function.
   //!
-  //! @tparam STORAGE_TYPE   The storage type for the data attribute.
+  //! @tparam STORAGE_CLASS  The storage type for the data attribute.
   //! @tparam DATA_TYPE      The data type, e.g., double. This may be
   //!                        P.O.D. or a user-defined type that is
   //!                        trivially-copyable.
@@ -159,37 +198,28 @@ struct field_data__
   //--------------------------------------------------------------------------//
 
   template<
-    size_t STORAGE_TYPE,
-    typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    typename PREDICATE
-  >
-  static
-  decltype(auto)
-  get_handles(
-    const data_client_t & client,
-    size_t version,
-    PREDICATE && predicate,
-    bool sorted = true
-  )
-  {
+      size_t STORAGE_CLASS,
+      typename DATA_TYPE,
+      size_t NAMESPACE_HASH,
+      typename PREDICATE>
+  static decltype(auto) get_handles(
+      const data_client_t & client,
+      size_t version,
+      PREDICATE && predicate,
+      bool sorted = true) {
     return DATA_POLICY::template get_handles<
-      STORAGE_TYPE,
-      DATA_TYPE,
-      NAMESPACE_HASH,
-      PREDICATE
-    >
-    (client, version, std::forward<PREDICATE>(predicate), sorted);
+        STORAGE_CLASS, DATA_TYPE, NAMESPACE_HASH, PREDICATE>(
+        client, version, std::forward<PREDICATE>(predicate), sorted);
   } // get_handles
 
   //--------------------------------------------------------------------------//
   //! Return all handles of the given storage type, and data type that
   //! satisfy a predicate function.
   //!
-  //! @tparam STORAGE_TYPE The storage type for the data attribute.
-  //! @tparam DATA_TYPE    The data type, e.g., double. This may be P.O.D.
-  //!                      or a user-defined type that is trivially-copyable.
-  //! @tparam PREDICATE    The data version.
+  //! @tparam STORAGE_CLASS The storage type for the data attribute.
+  //! @tparam DATA_TYPE     The data type, e.g., double. This may be P.O.D.
+  //!                       or a user-defined type that is trivially-copyable.
+  //! @tparam PREDICATE     The data version.
   //!
   //! @param client    The data client instance.
   //! @param version   The data version to return.
@@ -200,29 +230,18 @@ struct field_data__
   //! @ingroup data
   //--------------------------------------------------------------------------//
 
-  template<
-    size_t STORAGE_TYPE,
-    typename DATA_TYPE,
-    typename PREDICATE
-  >
-  static
-  decltype(auto)
-  get_handles(
-    const data_client_t & client,
-    size_t version,
-    PREDICATE && predicate,
-    bool sorted = true
-  )
-  {
+  template<size_t STORAGE_CLASS, typename DATA_TYPE, typename PREDICATE>
+  static decltype(auto) get_handles(
+      const data_client_t & client,
+      size_t version,
+      PREDICATE && predicate,
+      bool sorted = true) {
     return DATA_POLICY::template get_handles<
-      STORAGE_TYPE,
-      DATA_TYPE,
-      PREDICATE
-    >
-    (client, version, std::forward<PREDICATE>(predicate), sorted);
+        STORAGE_CLASS, DATA_TYPE, PREDICATE>(
+        client, version, std::forward<PREDICATE>(predicate), sorted);
   } // get_handles
 
-}; // struct field_data__
+}; // struct field_interface__
 
 } // namespace data
 } // namespace flecsi
@@ -231,19 +250,12 @@ struct field_data__
 // This include file defines the FLECSI_RUNTIME_DATA_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include "flecsi/runtime/flecsi_runtime_data_policy.h"
+#include <flecsi/runtime/flecsi_runtime_data_policy.h>
 
 namespace flecsi {
 namespace data {
 
-using field_data_t = field_data__<FLECSI_RUNTIME_DATA_POLICY>;
+using field_interface_t = field_interface__<FLECSI_RUNTIME_DATA_POLICY>;
 
 } // namespace data
 } // namespace flecsi
-
-#endif // flecsi_data_field_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

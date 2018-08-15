@@ -3,9 +3,10 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-#include "flecsi/execution/legion/mapper.h"
-#include "flecsi/execution/legion/internal_task.h"
-#include "cinchtest.h"
+#include <cinchtest.h>
+
+#include <flecsi/execution/legion/mapper.h>
+#include <flecsi/execution/legion/internal_task.h>
 
 ///
 /// \file
@@ -25,6 +26,28 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
+// Define a Legion task to register.
+void fill_task(const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime)
+{
+    PhysicalRegion input_region=regions[0];
+    RegionAccessor<AccessorType::Generic, double> acc =
+      input_region.get_field_accessor(FID_VAL).typeify<double>();
+    Legion::Domain domain = runtime->get_index_space_domain(context,
+            input_region.get_logical_region().get_index_space());
+    LegionRuntime::Arrays::Rect<1> rect = domain.get_rect<1>();
+    int count=0;
+    for (LegionRuntime::Arrays::GenericPointInRectIterator<1> pir(rect); pir; pir++){
+      count++;
+      acc.write(DomainPoint::from_point<1>(pir.p), count);
+    }
+}
+// Register the task. The task id is automatically generated.
+__flecsi_internal_register_legion_task(fill_task,
+  processor_type_t::loc, single|leaf);
+
 // Define a Legion task to register.
 int internal_task_example_1(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
@@ -46,7 +69,7 @@ int internal_task_example_1(const Legion::Task * task,
   IndexSpace parent_is = runtime->get_parent_index_space(parent_ip); 
 
   Domain parent_dom = runtime->get_index_space_domain(context, parent_is);
-  Rect<1> parent_rect = parent_dom.get_rect<1>();
+  LegionRuntime::Arrays::Rect<1> parent_rect = parent_dom.get_rect<1>();
 
   //we get an accessor to the exclusive LR because it points to the
   //first element in the compacted physical instanse
@@ -82,25 +105,20 @@ int internal_task_example_1(const Legion::Task * task,
 
 // Register the task. The task id is automatically generated.
 __flecsi_internal_register_legion_task(internal_task_example_1,
-  processor_type_t::loc, single);
+  processor_type_t::loc, single|leaf);
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
 
-#if defined(ENABLE_LEGION_TLS)
   auto runtime = Legion::Runtime::get_runtime();
   auto context = Legion::Runtime::get_context();  
-#else
-  context_t & context_ = context_t::instance();
-  size_t task_key = utils::const_string_t{"driver"}.hash();
-  auto runtime = context_.runtime(task_key);
-  auto context = context_.context(task_key);
-#endif
  
   int num_elmts = 20;
   int num_ghost=4;
 
-  Rect<1> elem_rect(Point<1>(0),Point<1>(num_elmts+num_ghost-1));
+  LegionRuntime::Arrays::Rect<1> elem_rect(
+      LegionRuntime::Arrays::Point<1>(0),
+      LegionRuntime::Arrays::Point<1>(num_elmts+num_ghost-1));
   IndexSpace is = runtime->create_index_space(context ,
                           Domain::from_rect<1>(elem_rect));
   FieldSpace fs = runtime->create_field_space(context );
@@ -114,23 +132,19 @@ void driver(int argc, char ** argv) {
   LogicalRegion stencil_lr = runtime->create_logical_region(context , is, fs);
 
   //Fill out LR with numbers:
-  {
-    RegionRequirement req(stencil_lr, READ_WRITE, EXCLUSIVE, stencil_lr);
-    req.add_field(FID_VAL);
-    InlineLauncher input_launcher(req);
-    PhysicalRegion input_region=runtime->map_region(context, input_launcher);
-    input_region.wait_until_valid();
-    RegionAccessor<AccessorType::Generic, double> acc =
-      input_region.get_field_accessor(FID_VAL).typeify<double>();
-    int count=0;
-    for (GenericPointInRectIterator<1> pir(elem_rect); pir; pir++){
-      count++;
-      acc.write(DomainPoint::from_point<1>(pir.p), count);
-    }
-    runtime->unmap_region(context, input_region);
-  }//scope
+  auto key_0 = __flecsi_internal_task_key(fill_task);
+  Legion::TaskLauncher task_launcher(
+    context_t::instance().task_id(key_0),
+    Legion::TaskArgument(nullptr, 0));
 
-  Rect<1> color_bounds(Point<1>(0),Point<1>(1-1));
+  task_launcher.add_region_requirement(
+      Legion::RegionRequirement(stencil_lr, READ_WRITE, EXCLUSIVE, stencil_lr)
+      .add_field(FID_VAL));
+  runtime->execute_task(context, task_launcher);
+
+
+  LegionRuntime::Arrays::Rect<1> color_bounds(
+      LegionRuntime::Arrays::Point<1>(0),LegionRuntime::Arrays::Point<1>(1-1));
   Domain color_domain = Domain::from_rect<1>(color_bounds);
 
 
@@ -143,9 +157,15 @@ void driver(int argc, char ** argv) {
     // for both partitions for each color.
     for (int color = 0; color < 1; color++)
     {
-      Rect<1> subrect1(Point<1>(0),Point<1>(num_elmts-num_ghost-1));
-      Rect<1> subrect2(Point<1>(num_elmts-num_ghost),Point<1>(num_elmts-1));
-      Rect<1> subrect3(Point<1>(num_elmts),Point<1>(num_elmts+num_ghost-1));
+      LegionRuntime::Arrays::Rect<1> subrect1(
+        LegionRuntime::Arrays::Point<1>(0),
+        LegionRuntime::Arrays::Point<1>(num_elmts-num_ghost-1));
+      LegionRuntime::Arrays::Rect<1> subrect2(
+        LegionRuntime::Arrays::Point<1>(num_elmts-num_ghost),
+        LegionRuntime::Arrays::Point<1>(num_elmts-1));
+      LegionRuntime::Arrays::Rect<1> subrect3(
+        LegionRuntime::Arrays::Point<1>(num_elmts),
+        LegionRuntime::Arrays::Point<1>(num_elmts+num_ghost-1));
       ex_coloring[color] = Domain::from_rect<1>(subrect1);
       sh_coloring[color] = Domain::from_rect<1>(subrect2);
       gh_coloring[color] = Domain::from_rect<1>(subrect3);

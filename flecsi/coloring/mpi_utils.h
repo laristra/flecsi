@@ -1,86 +1,77 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_coloring_mpi_utils_h
-#define flecsi_coloring_mpi_utils_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#if !defined(ENABLE_MPI)
-  #error ENABLE_MPI not defined! This file depends on MPI!
+/*! @file */
+
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_MPI)
+#error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
 #include <mpi.h>
 
-///
-/// \file
-/// \date Initial file creation: Nov 23, 2016
-///
-
 namespace flecsi {
 namespace coloring {
 
-template<typename T> struct mpi_typetraits {};
+/*!
+ Wrapper to convert from C++ types to MPI types.
 
-//template<>
-//struct mpi_typetraits<idx_t>
-//{
-//  inline static
-//  MPI_Datatype
-//  type()
-//  {
-//    if(sizeof(idx_t) == 8) {
-//      return MPI_UNSIGNED_LONG_LONG;
-//    }
-//    else {
-//      return MPI_UNSIGNED;
-//    } // if
-//  }
-//}; // mpi_typetraits
+ @tparam TYPE The C++ P.O.D. type, e.g., double.
+
+ @ingroup coloring
+ */
+
+template<typename TYPE>
+struct mpi_typetraits__ {
+
+  inline static MPI_Datatype type() {
+    static MPI_Datatype data_type = MPI_DATATYPE_NULL;
+
+    if (data_type == MPI_DATATYPE_NULL) {
+      MPI_Type_contiguous(sizeof(TYPE), MPI_BYTE, &data_type);
+      MPI_Type_commit(&data_type);
+    }
+    return data_type;
+  }
+};
 
 template<>
-struct mpi_typetraits<size_t>
-{
-  inline static
-  MPI_Datatype
-  type()
-  {
-    if(sizeof(size_t) == 8) {
+struct mpi_typetraits__<size_t> {
+  inline static MPI_Datatype type() {
+    if (sizeof(size_t) == 8) {
       return MPI_UNSIGNED_LONG_LONG;
-    }
-    else {
+    } else {
       return MPI_UNSIGNED;
     } // if
   }
-}; // mpi_typetraits
+}; // mpi_typetraits__
 
 template<>
-struct mpi_typetraits<int>
-{
-  inline static
-  MPI_Datatype
-  type()
-  {
+struct mpi_typetraits__<int> {
+  inline static MPI_Datatype type() {
     return MPI_INT;
   }
-}; // mpi_typetraits
+}; // mpi_typetraits__
 
 template<>
-struct mpi_typetraits<double>
-{
-  inline static
-  MPI_Datatype
-  type()
-  {
+struct mpi_typetraits__<double> {
+  inline static MPI_Datatype type() {
     return MPI_DOUBLE;
   }
-}; // mpi_typetraits
+}; // mpi_typetraits__
+
 } // namespace coloring
 } // namespace flecsi
-
-#endif // flecsi_coloring_mpi_utils_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

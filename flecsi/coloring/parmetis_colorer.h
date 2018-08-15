@@ -1,64 +1,69 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_coloring_parmetis_colorer_h
-#define flecsi_coloring_parmetis_colorer_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/coloring/colorer.h"
+/*! @file */
 
 #include <set>
 
-#if !defined(ENABLE_MPI)
-  #error ENABLE_MPI not defined! This file depends on MPI!
+#include <cinchlog.h>
+
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_PARMETIS)
+#error FLECSI_ENABLE_PARMETIS not defined! This file depends on ParMETIS!
 #endif
 
-#if !defined(ENABLE_PARMETIS)
-  #error ENABLE_PARMETIS not defined! This file depends on ParMETIS!
-#endif
-
-#include <mpi.h>
 #include <parmetis.h>
 
-#include "flecsi/coloring/mpi_utils.h"
-
-///
-/// \file
-/// \date Initial file creation: Nov 24, 2016
-///
+#include <flecsi/coloring/colorer.h>
+#include <flecsi/coloring/mpi_utils.h>
 
 namespace flecsi {
 namespace coloring {
 
-///
-/// \class colorer_t parmetis_colorer.h
-/// \brief colorer_t provides a ParMETIS implementation of the
-///        colorer_t interface.
-///
-struct parmetis_colorer_t
-  : public colorer_t
-{
-  /// Default constructor
+/*!
+  The colorer_t type provides a ParMETIS implementation of the
+  colorer_t interface.
+ */
+
+struct parmetis_colorer_t : public colorer_t {
+  /*!
+   Default constructor
+   */
   parmetis_colorer_t() {}
 
-  /// Copy constructor (disabled)
+  /*!
+   Copy constructor (disabled)
+   */
   parmetis_colorer_t(const parmetis_colorer_t &) = delete;
 
-  /// Assignment operator (disabled)
-  parmetis_colorer_t & operator = (const parmetis_colorer_t &) = delete;
+  /*!
+   Assignment operator (disabled)
+   */
+  parmetis_colorer_t & operator=(const parmetis_colorer_t &) = delete;
 
-  /// Destructor
+  /*!
+    Destructor
+   */
   ~parmetis_colorer_t() {}
 
-  ///
-  /// Implementation of color method. See \ref colorer_t::color.
-  ///
-  std::set<size_t>
-  color(
-    const dcrs_t & dcrs
-  ) override
-  {
+  /*!
+   Implementation of color method. See \ref colorer_t::color.
+   */
+
+  std::set<size_t> color(const dcrs_t & dcrs) override {
     int size;
     int rank;
 
@@ -75,12 +80,11 @@ struct parmetis_colorer_t
     std::vector<real_t> tpwgts(size);
 
     real_t sum = 0.0;
-    for(size_t i(0); i<tpwgts.size(); ++i) {
-      if(i == (tpwgts.size()-1)) {
+    for (size_t i(0); i < tpwgts.size(); ++i) {
+      if (i == (tpwgts.size() - 1)) {
         tpwgts[i] = 1.0 - sum;
-      }
-      else {
-        tpwgts[i] = 1.0/size;
+      } else {
+        tpwgts[i] = 1.0 / size;
         sum += tpwgts[i];
       } // if
 
@@ -107,8 +111,8 @@ struct parmetis_colorer_t
     } // if
 #endif
 
-//    std::set<size_t> ret;
-//    return ret;
+    //    std::set<size_t> ret;
+    //    return ret;
 
     // Get the dCRS information using ParMETIS types.
     std::vector<idx_t> vtxdist = dcrs.distribution_as<idx_t>();
@@ -116,9 +120,9 @@ struct parmetis_colorer_t
     std::vector<idx_t> adjncy = dcrs.indices_as<idx_t>();
 
     // Actual call to ParMETIS.
-    int result = ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0],
-      &adjncy[0], nullptr, nullptr, &wgtflag, &numflag, &ncon, &size,
-      &tpwgts[0], &ubvec, &options, &edgecut, &part[0], &comm);
+    int result = ParMETIS_V3_PartKway(
+        &vtxdist[0], &xadj[0], &adjncy[0], nullptr, nullptr, &wgtflag, &numflag,
+        &ncon, &size, &tpwgts[0], &ubvec, &options, &edgecut, &part[0], &comm);
 
 #if 0
     std::cout << "rank " << rank << ": ";
@@ -138,14 +142,13 @@ struct parmetis_colorer_t
     std::set<size_t> primary;
 
     // Find the indices we need to request.
-    for(size_t r(0); r<size; ++r) {
+    for (size_t r(0); r < size; ++r) {
       std::vector<idx_t> indices;
 
-      for(size_t i(0); i<dcrs.size(); ++i) {
-        if(part[i] == r) {
+      for (size_t i(0); i < dcrs.size(); ++i) {
+        if (part[i] == r) {
           indices.push_back(vtxdist[rank] + i);
-        }
-        else if(part[i] == rank) {
+        } else if (part[i] == rank) {
           // If the index belongs to us, just add it...
           primary.insert(vtxdist[rank] + i);
         } // if
@@ -171,8 +174,9 @@ struct parmetis_colorer_t
 
     // Do all-to-all to find out where everything belongs.
     std::vector<idx_t> recv_cnts(size);
-    result = MPI_Alltoall(&send_cnts[0], 1, mpi_typetraits<idx_t>::type(),
-      &recv_cnts[0], 1, mpi_typetraits<idx_t>::type(), MPI_COMM_WORLD);
+    result = MPI_Alltoall(
+        &send_cnts[0], 1, mpi_typetraits__<idx_t>::type(), &recv_cnts[0], 1,
+        mpi_typetraits__<idx_t>::type(), MPI_COMM_WORLD);
 
 #if 0
     if(rank == 0) {
@@ -189,22 +193,23 @@ struct parmetis_colorer_t
     // Start receive operations (non-blocking).
     std::vector<std::vector<idx_t>> rbuffers(size);
     std::vector<MPI_Request> requests;
-    for(size_t r(0); r<size; ++r) {
-      if(recv_cnts[r]) {
+    for (size_t r(0); r < size; ++r) {
+      if (recv_cnts[r]) {
         rbuffers[r].resize(recv_cnts[r]);
         requests.push_back({});
-        MPI_Irecv(&rbuffers[r][0], recv_cnts[r], mpi_typetraits<idx_t>::type(),
-          r, 0, MPI_COMM_WORLD, &requests[requests.size()-1]);
+        MPI_Irecv(
+            &rbuffers[r][0], recv_cnts[r], mpi_typetraits__<idx_t>::type(), r,
+            0, MPI_COMM_WORLD, &requests[requests.size() - 1]);
       } // if
     } // for
 
     // Start send operations (blocking is probably ok here).
-    for(size_t r(0); r<size; ++r) {
-      if(send_cnts[r]) {
+    for (size_t r(0); r < size; ++r) {
+      if (send_cnts[r]) {
         sbuffers[r].resize(send_cnts[r]);
-        MPI_Send(&sbuffers[r][0], send_cnts[r],
-          mpi_typetraits<idx_t>::type(),
-          r, 0, MPI_COMM_WORLD);
+        MPI_Send(
+            &sbuffers[r][0], send_cnts[r], mpi_typetraits__<idx_t>::type(), r,
+            0, MPI_COMM_WORLD);
       } // if
     } // for
 
@@ -213,15 +218,15 @@ struct parmetis_colorer_t
     MPI_Waitall(requests.size(), &requests[0], &status[0]);
 
     // Add indices to primary
-    for(size_t r(0); r<size; ++r) {
-      if(recv_cnts[r]) {
-        for(auto i: rbuffers[r]) {
+    for (size_t r(0); r < size; ++r) {
+      if (recv_cnts[r]) {
+        for (auto i : rbuffers[r]) {
           primary.insert(i);
         } // for
       } // if
     } // for
 
-  #if 0
+#if 0
       if(rank == 0) {
         std::cout << "rank " << rank << " primary coloring:" << std::endl;
         for(auto i: primary) {
@@ -229,7 +234,12 @@ struct parmetis_colorer_t
         } // for
         std::cout << std::endl;
       } // if
-  #endif
+#endif
+
+    clog_assert(
+        primary.size() > 0,
+        "At least one rank has an empty primary coloring. Please either "
+        "increase the problem size or use fewer ranks");
 
     return primary;
   } // color
@@ -238,10 +248,3 @@ struct parmetis_colorer_t
 
 } // namespace coloring
 } // namespace flecsi
-
-#endif // flecsi_coloring_parmetis_colorer_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

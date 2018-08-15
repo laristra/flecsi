@@ -5,7 +5,7 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/execution/common/launch.h"
+#include <flecsi/execution/common/launch.h>
 
 using namespace flecsi::execution;
 using namespace flecsi;

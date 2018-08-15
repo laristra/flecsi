@@ -1,24 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_mpi_execution_policy_h
-#define flecsi_execution_mpi_execution_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Nov 15, 2015
-//----------------------------------------------------------------------------//
+/*! @file */
 
 #include <functional>
 #include <memory>
@@ -26,73 +21,28 @@
 #include <future>
 #include <cinchlog.h>
 
-#include "flecsi/execution/common/processor.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/mpi/task_wrapper.h"
-#include "flecsi/execution/mpi/task_prolog.h"
-
-//#include "flecsi/utils/const_string.h"
-//#include "flecsi/utils/tuple_walker.h"
-//#include "flecsi/data/data_handle.h"
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/mpi/task_wrapper.h>
+#include <flecsi/execution/mpi/task_prolog.h>
+#include <flecsi/execution/mpi/task_epilog.h>
+#include <flecsi/execution/mpi/finalize_handles.h>
+#include <flecsi/execution/mpi/future.h>
 
 namespace flecsi {
 namespace execution {
 
-///
-/// implementation of the future_t for mpi runtime
-///
-template<
-  typename R
->
-struct mpi_future__
-{
-  using result_t = R;
-
-  ///
-  /// wait() method
-  ///
-  void wait() {}
-
-  ///
-  /// get() mothod
-  ///
-  const result_t & get(size_t index = 0) const { return result_; }
-
-//private:
-
-  ///
-  /// set method
-  ///
-  void set(const result_t & result) { result_ = result; }
-
-  result_t result_;
-
-}; // struct mpi_future__
-
-///
-///
-///
-template<>
-struct mpi_future__<void>
-{
-  ///
-  ///
-  ///
-  void wait() {}
-
-}; // struct mpi_future__
-
-///
-/// Executor interface.
-///
+/*!
+  Executor interface.
+ */
 template<
   typename RETURN,
   typename ARG_TUPLE>
 struct executor__
 {
-  ///
-  ///
-  ///
+  /*!
+   FIXME documentation
+   */
   template<
     typename T,
     typename A
@@ -106,19 +56,22 @@ struct executor__
   {
     auto user_fun = (reinterpret_cast<RETURN(*)(ARG_TUPLE)>(fun));
     mpi_future__<RETURN> fut;
-    fut.set(user_fun(targs));
+    fut.set(user_fun(std::forward<A>(targs)));
     return fut;
   } // execute_task
 }; // struct executor__
 
+/*!
+ FIXME documentation
+ */
 template<
   typename ARG_TUPLE
 >
 struct executor__<void, ARG_TUPLE>
 {
-  ///
-  ///
-  ///
+  /*!
+   FIXME documentation
+   */
   template<
     typename T,
     typename A
@@ -133,7 +86,7 @@ struct executor__<void, ARG_TUPLE>
     auto user_fun = (reinterpret_cast<void(*)(ARG_TUPLE)>(fun));
 
     mpi_future__<void> fut;
-    user_fun(targs);
+    user_fun(std::forward<A>(targs));
 
     return fut;
   } // execute_task
@@ -143,23 +96,23 @@ struct executor__<void, ARG_TUPLE>
 // Execution policy.
 //----------------------------------------------------------------------------//
 
-//----------------------------------------------------------------------------//
-//! The mpi_execution_policy_t is the backend runtime execution policy
-//! for MPI.
-//!
-//! @ingroup mpi-execution
-//----------------------------------------------------------------------------//
+/*!
+ The mpi_execution_policy_t is the backend runtime execution policy
+ for MPI.
+
+ @ingroup mpi-execution
+ */
 
 struct mpi_execution_policy_t
 {
-  //--------------------------------------------------------------------------//
-  //! The future__ type may be used for explicit synchronization of tasks.
-  //!
-  //! @tparam RETURN The return type of the task.
-  //--------------------------------------------------------------------------//
+  /*!
+   The future__ type may be used for explicit synchronization of tasks.
 
-  template<typename RETURN>
-  using future__ = mpi_future__<RETURN>;
+   @tparam RETURN The return type of the task.
+   */
+
+  template<typename RETURN, launch_type_t launch>
+  using future__ = mpi_future__<RETURN, launch>;
 
   template<
     typename FUNCTOR_TYPE
@@ -167,18 +120,19 @@ struct mpi_execution_policy_t
   using functor_task_wrapper__ =
     typename flecsi::execution::functor_task_wrapper__<FUNCTOR_TYPE>;
 
-  //--------------------------------------------------------------------------//
-  //! The runtime_state_t type identifies a public type for the high-level
-  //! runtime interface to pass state required by the backend.
-  //--------------------------------------------------------------------------//
+  /*!
+   The runtime_state_t type identifies a public type for the high-level
+   runtime interface to pass state required by the backend.
+   */
+
   struct runtime_state_t {};
   //using runtime_state_t = mpi_runtime_state_t;
 
-  //--------------------------------------------------------------------------//
-  //! Return the runtime state of the calling FleCSI task.
-  //!
-  //! @param task The calling task.
-  //--------------------------------------------------------------------------//
+  /*!
+   Return the runtime state of the calling FleCSI task.
+
+   @param task The calling task.
+   */
 
   static
   runtime_state_t &
@@ -190,10 +144,10 @@ struct mpi_execution_policy_t
   // Task interface.
   //--------------------------------------------------------------------------//
 
-  //--------------------------------------------------------------------------//
-  //! Legion backend task registration. For documentation on this
-  //! method please see task__::register_task.
-  //--------------------------------------------------------------------------//
+  /*!
+   MPI backend task registration. For documentation on this
+   method please see task__::register_task.
+   */
 
   template<
     size_t KEY,
@@ -210,15 +164,16 @@ struct mpi_execution_policy_t
   )
   {
     return context_t::instance().template register_function<
-      RETURN, ARG_TUPLE, DELEGATE, KEY>();
+      KEY, RETURN, ARG_TUPLE, DELEGATE>();
   } // register_task
 
-  //--------------------------------------------------------------------------//
-  //! MPI backend task execution. For documentation on this method,
-  //! please see task__::execute_task.
-  //--------------------------------------------------------------------------//
+  /*!
+   MPI backend task execution. For documentation on this method,
+   please see task__::execute_task.
+   */
 
   template<
+    launch_type_t launch,
     size_t KEY,
     typename RETURN,
     typename ARG_TUPLE,
@@ -227,8 +182,6 @@ struct mpi_execution_policy_t
   static
   decltype(auto)
   execute_task(
-    launch_type_t launch,
-    size_t parent,
     ARGS && ... args
   )
   {
@@ -240,9 +193,14 @@ struct mpi_execution_policy_t
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
 
-    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, std::forward_as_tuple(args ...));
+    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, std::forward<ARG_TUPLE>(task_args));
 
-    // TODO: Do we nee to run taks_epilog ??
+    task_epilog_t task_epilog;
+    task_epilog.walk(task_args);
+
+    finalize_handles_t finalize_handles;
+    finalize_handles.walk(task_args);
+
     return fut;
   } // execute_task
 
@@ -250,29 +208,28 @@ struct mpi_execution_policy_t
   // Function interface.
   //--------------------------------------------------------------------------//
 
-  //--------------------------------------------------------------------------//
-  //! MPI backend function registration. For documentation on this
-  //! method, please see function__::register_function.
-  //--------------------------------------------------------------------------//
+  /*!
+    MPI backend function registration. For documentation on this
+    method, please see function__::register_function.
+   */
 
   template<
+    size_t KEY,
     typename RETURN,
     typename ARG_TUPLE,
-    RETURN (*FUNCTION)(ARG_TUPLE),
-    size_t KEY
-  >
+    RETURN (*FUNCTION)(ARG_TUPLE)>
   static
   bool
   register_function()
   {
     return context_t::instance().template register_function<
-      RETURN, ARG_TUPLE, FUNCTION, KEY>();
+      KEY, RETURN, ARG_TUPLE, FUNCTION>();
   } // register_function
 
-  //--------------------------------------------------------------------------//
-  //! MPI backend function execution. For documentation on this
-  //! method, please see function__::execute_function.
-  //--------------------------------------------------------------------------//
+  /*!
+    MPI backend function execution. For documentation on this
+    method, please see function__::execute_function.
+   */
 
   template<
     typename FUNCTION_HANDLE,
@@ -285,18 +242,11 @@ struct mpi_execution_policy_t
     ARGS && ... args
   )
   {
-    return handle(context_t::instance().function(handle.key()),
+    return handle(context_t::instance().function(handle.get_key()),
       std::forward_as_tuple(args ...));
   } // execute_function
 
 }; // struct mpi_execution_policy_t
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_mpi_execution_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

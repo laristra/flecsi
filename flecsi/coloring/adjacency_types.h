@@ -1,23 +1,27 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_coloring_adjacency_types_h
-#define flecsi_coloring_adjacency_types_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jun 13, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
 namespace flecsi {
 namespace coloring {
 
-//----------------------------------------------------------------------------//
-//! Type for passing adjacency information from the specialization to the
-//! FleCSI runtime.
-//----------------------------------------------------------------------------//
+/*!
+ Type for passing adjacency information from the specialization to the
+ FleCSI runtime.
+ */
 
 struct adjacency_info_t {
 
@@ -35,12 +39,21 @@ struct adjacency_info_t {
 
 }; // struct adjacency_info_t
 
+inline std::ostream &
+operator<<(std::ostream & stream, const adjacency_info_t & ai) {
+  stream << std::endl
+         << "index space: " << ai.index_space
+         << " from index space: " << ai.from_index_space
+         << " to index space: " << ai.to_index_space;
+
+  stream << " color sizes [ ";
+  for (auto i : ai.color_sizes) {
+    stream << i << " ";
+  } // for
+  stream << "]";
+
+  return stream;
+} // operator <<
+
 } // namespace coloring
 } // namespace flecsi
-
-#endif // flecsi_coloring_adjacency_types_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

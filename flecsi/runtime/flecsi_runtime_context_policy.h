@@ -1,17 +1,21 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_runtime_context_policy_h
-#define flecsi_runtime_context_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 01, 2016
-//----------------------------------------------------------------------------//
+/*! @file */
 
-#include <flecsi.h>
+#include <flecsi-config.h>
 
 //----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
@@ -20,50 +24,43 @@
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
 //----------------------------------------------------------------------------//
 
-// Serial Policy
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
-
-  #include "flecsi/execution/serial/context_policy.h"
-
-  namespace flecsi {
-  namespace execution {
-
-  using FLECSI_RUNTIME_CONTEXT_POLICY = serial_context_policy_t;
-
-  }
-  }
-
 // Legion Policy
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include "flecsi/execution/legion/context_policy.h"
+#include <flecsi/execution/legion/context_policy.h>
 
-  namespace flecsi {
-  namespace execution {
+namespace flecsi {
+namespace execution {
 
-  using FLECSI_RUNTIME_CONTEXT_POLICY = legion_context_policy_t;
+using FLECSI_RUNTIME_CONTEXT_POLICY = legion_context_policy_t;
 
-  }
-  }
+} // namespace execution
+} // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/execution/mpi/context_policy.h"
+#include <flecsi/execution/mpi/context_policy.h>
 
-  namespace flecsi {
-  namespace execution {
+namespace flecsi {
+namespace execution {
 
-  using FLECSI_RUNTIME_CONTEXT_POLICY = mpi_context_policy_t;
+using FLECSI_RUNTIME_CONTEXT_POLICY = mpi_context_policy_t;
 
-  }
-  }
+} // namespace execution
+} // namespace flecsi
+
+// HPX Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include <flecsi/execution/hpx/context_policy.h>
+
+namespace flecsi {
+namespace execution {
+
+using FLECSI_RUNTIME_CONTEXT_POLICY = hpx_context_policy_t;
+
+} // namespace execution
+} // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
-
-#endif // flecsi_runtime_context_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

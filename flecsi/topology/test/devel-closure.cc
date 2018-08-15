@@ -10,9 +10,9 @@ clog_register_tag(output);
 DEVEL(graph) {
 
   {
-  clog_tag_guard(output);
+    clog_tag_guard(output);
 
-  clog(info) << "Hello World!" << std::endl;
+    clog(info) << "Hello World!" << std::endl;
   } // guard
 
 } // DEVEL

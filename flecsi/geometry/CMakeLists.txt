@@ -1,4 +1,4 @@
-#~----------------------------------------------------------------------------~#
+#------------------------------------------------------------------------------#
 #  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
 # /@@/////  /@@          @@////@@ @@////// /@@
 # /@@       /@@  @@@@@  @@    // /@@       /@@
@@ -6,11 +6,11 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
-#~----------------------------------------------------------------------------~#
+#------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
 # Add header files. Note that these will be "exported" to the parent
@@ -44,6 +44,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(UNIT_POLICY LEGION)
   set(RUNTIME_DRIVER mpi/runtime_driver.cc)
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  set(UNIT_POLICY HPX)
+  set(RUNTIME_DRIVER hpx/runtime_driver.cc)
+
 endif()
 
 #------------------------------------------------------------------------------#
@@ -69,12 +74,9 @@ set(geometry_SOURCES
 #------------------------------------------------------------------------------#
 
 cinch_add_unit(point
-  SOURCES test/point.cc)
+  SOURCES test/point.cc
+  FOLDER "Tests/Geometry")
 
 cinch_add_unit(space_vector
-  SOURCES test/space_vector.cc)
-
-#~---------------------------------------------------------------------------~-#
-# Formatting options
-# vim: set tabstop=2 shiftwidth=2 expandtab :
-#~---------------------------------------------------------------------------~-#
+  SOURCES test/space_vector.cc
+  FOLDER "Tests/Geometry")

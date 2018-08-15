@@ -1,15 +1,19 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_topology_mesh_h
-#define flecsi_topology_mesh_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jul 18, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_number_dimensions
@@ -64,10 +68,8 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   std::tuple<                                                                  \
-    flecsi::topology::index_space_<index>,                                     \
-    flecsi::topology::domain_<domain>,                                         \
-    type                                                                       \
-    >
+      flecsi::topology::index_space_<index>,                                   \
+      flecsi::topology::domain_<domain>, type>
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_entity_types
@@ -96,11 +98,8 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   std::tuple<                                                                  \
-    flecsi::topology::index_space_<index>,                                     \
-    flecsi::topology::domain_<domain>,                                         \
-    from_type,                                                                 \
-    to_type                                                                    \
-  >
+      flecsi::topology::index_space_<index>,                                   \
+      flecsi::topology::domain_<domain>, from_type, to_type>
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_bindings
@@ -129,16 +128,6 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   std::tuple<                                                                  \
-    flecsi::topology::index_space_<index>,                                     \
-    flecsi::topology::domain_<from_domain>,                                    \
-    flecsi::topology::domain_<to_domain>,                                      \
-    from_type,                                                                 \
-    to_type                                                                    \
-  >
-
-#endif // flecsi_topology_mesh_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+      flecsi::topology::index_space_<index>,                                   \
+      flecsi::topology::domain_<from_domain>,                                  \
+      flecsi::topology::domain_<to_domain>, from_type, to_type>

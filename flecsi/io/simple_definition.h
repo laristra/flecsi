@@ -3,16 +3,15 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_io_simple_definition_h
-#define flecsi_io_simple_definition_h
+#pragma once
 
-#include "flecsi/topology/mesh_definition.h"
+#include <flecsi/topology/mesh_definition.h>
 
 #include <fstream>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
-#include "flecsi/utils/logging.h"
+#include <flecsi/utils/logging.h>
 
 ///
 /// \file
@@ -27,19 +26,13 @@ namespace io {
 /// \brief simple_definition_t provides a very basic implementation of
 ///        the mesh_definition_t interface.
 ///
-class simple_definition_t
-  : public topology::mesh_definition__<2>
-{
+class simple_definition_t : public topology::mesh_definition__<2> {
 public:
-
   /// Default constructor
-  simple_definition_t(
-    const char * filename
-  )
-  {
+  simple_definition_t(const char * filename) {
     file_.open(filename, std::ifstream::in);
 
-    if(file_.good()) {
+    if (file_.good()) {
       std::string line;
       std::getline(file_, line);
       std::istringstream iss(line);
@@ -50,22 +43,21 @@ public:
       // Get the offset to the beginning of the vertices
       vertex_start_ = file_.tellg();
 
-      for(size_t i(0); i<num_vertices_; ++i) {
+      for (size_t i(0); i < num_vertices_; ++i) {
         std::getline(file_, line);
       } // for
 
       cell_start_ = file_.tellg();
-    }
-    else {
+    } else {
       clog_fatal("failed opening " << filename);
-    }// if
+    } // if
   } // simple_definition_t
 
   /// Copy constructor (disabled)
   simple_definition_t(const simple_definition_t &) = delete;
 
   /// Assignment operator (disabled)
-  simple_definition_t & operator = (const simple_definition_t &) = delete;
+  simple_definition_t & operator=(const simple_definition_t &) = delete;
 
   /// Destructor
   ~simple_definition_t() {}
@@ -73,12 +65,7 @@ public:
   ///
   ///
   ///
-  size_t
-  num_entities(
-    size_t dimension
-  )
-  const override
-  {
+  size_t num_entities(size_t dimension) const override {
     return dimension == 0 ? num_vertices_ : num_cells_;
   } // num_entities
 
@@ -86,16 +73,9 @@ public:
   /// \param [in] dimension  the entity dimension to query.
   /// \param [in] entity_id  the id of the entity in question.
   std::vector<size_t>
-  entities( 
-    size_t from_dim,
-		size_t to_dim,
-    size_t entity_id
-  )
-  const 
-  override
-  {
-    clog_assert(from_dim == 2, "invalid dimension " << dimension);
-    clog_assert(to_dim == 0, "invalid dimension " << dimension);
+  entities(size_t from_dim, size_t to_dim, size_t entity_id) const override {
+    clog_assert(from_dim == 2, "invalid dimension " << from_dim);
+    clog_assert(to_dim == 0, "invalid dimension " << to_dim);
 
     std::string line;
     std::vector<size_t> ids;
@@ -105,7 +85,7 @@ public:
     file_.seekg(cell_start_);
 
     // Walk to the line with the requested id.
-    for(size_t l(0); l<entity_id; ++l) {
+    for (size_t l(0); l < entity_id; ++l) {
       std::getline(file_, line);
     } // for
 
@@ -127,12 +107,7 @@ public:
   ///
   ///
   ///
-  point_t
-  vertex(
-    size_t vertex_id
-  )
-  const override
-  {
+  point_t vertex(size_t vertex_id) const {
     std::string line;
     point_t v;
 
@@ -140,7 +115,7 @@ public:
     file_.seekg(vertex_start_);
 
     // Walk to the line with the requested id.
-    for(size_t l(0); l<vertex_id; ++l) {
+    for (size_t l(0); l < vertex_id; ++l) {
       std::getline(file_, line);
     } // for
 
@@ -155,7 +130,6 @@ public:
   } // vertex
 
 private:
-
   mutable std::ifstream file_;
 
   size_t num_vertices_;
@@ -168,8 +142,6 @@ private:
 
 } // namespace io
 } // namespace flecsi
-
-#endif // flecsi_io_simple_definition_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

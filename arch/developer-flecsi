@@ -1,0 +1,78 @@
+#! /usr/bin/env bash
+#~----------------------------------------------------------------------------~#
+# placeholder
+#~----------------------------------------------------------------------------~#
+
+#------------------------------------------------------------------------------#
+# Get the path to the project from which this script was called
+#------------------------------------------------------------------------------#
+
+cinch_dir="$(dirname "$(cd "$(dirname "$0")"; pwd)")"
+
+#------------------------------------------------------------------------------#
+# Check required environment variables
+#------------------------------------------------------------------------------#
+
+if [ -z "${CMAKE_PREFIX_PATH}" ] ; then
+  echo "You must set CMAKE_PREFIX_PATH in your environment"
+  exit 1
+fi
+
+#------------------------------------------------------------------------------#
+# Check command-line arguments
+#------------------------------------------------------------------------------#
+
+cmake_mode=cmake
+extra_define=""
+runtime=serial
+
+while [[ $# -gt 0 ]]
+do
+
+	case $1 in
+		--help|-h)
+			command=`echo $0 | sed 's,.*\/,,g'`
+			echo "Usage: $command [options] runtime"
+			echo "  -h, --help     Show this message and exit."
+			echo "  -c, --ccmake   Enable curses mode."
+			echo ""
+			echo "Runtimes: legion, mpi."
+			echo "(default runtime is mpi)."
+			exit
+		;;
+		--ccmake|-c)
+			cmake_mode=ccmake
+		;;
+	esac
+
+	shift # next argument
+done
+
+#------------------------------------------------------------------------------#
+# Call CMake command
+#------------------------------------------------------------------------------#
+
+$cmake_mode \
+  -DCMAKE_CXX_COMPILER=flecsi-clang++ \
+  -DCMAKE_CXX_FLAGS="-fcolor-diagnostics" \
+  -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_C_FLAGS="-fcolor-diagnostics" \
+  -DFLECSI_RUNTIME_MODEL=$runtime $extra_define \
+  -DENABLE_BOOST_PROGRAM_OPTIONS=ON \
+  -DENABLE_CLOG=ON \
+  -DCLOG_ENABLE_TAGS=ON \
+  -DENABLE_=ON \
+  -DENABLE_DEVEL_TARGETS=ON \
+  -DENABLE_UNIT_TESTS=ON \
+  -DENABLE_JENKINS_OUTPUT=ON \
+  -DENABLE_FLECSIT=ON \
+  -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
+  $cinch_dir
+
+#------------------------------------------------------------------------------#
+# vim: syntax=sh
+#------------------------------------------------------------------------------#
+
+#~---------------------------------------------------------------------------~-#
+# placeholder
+#~---------------------------------------------------------------------------~-#

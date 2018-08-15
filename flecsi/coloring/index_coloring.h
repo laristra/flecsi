@@ -1,31 +1,33 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_coloring_index_coloring_h
-#define flecsi_coloring_index_coloring_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
+
+/*! @file */
 
 #include <cassert>
 #include <unordered_map>
 #include <vector>
 
-#include "flecsi/coloring/communicator.h"
-
-///
-/// \file
-/// \date Initial file creation: Aug 17, 2016
-///
+#include <flecsi/coloring/communicator.h>
 
 namespace flecsi {
 namespace coloring {
 
-///
-/// \class index_coloring_t index_coloring.h
-/// \brief index_coloring_t provides...
-///
-struct index_coloring_t
-{
+/*!
+  FIXME Add description.
+ */
+struct index_coloring_t {
   using entity_info_t = flecsi::coloring::entity_info_t;
 
   //------------------------------------------------------------------------//
@@ -36,7 +38,7 @@ struct index_coloring_t
   std::set<size_t> primary;
 
   // Set of entity_info_t type of the exclusive coloring
-  std::set<entity_info_t > exclusive;
+  std::set<entity_info_t> exclusive;
 
   // Set of entity_info_t type of the shared coloring
   std::set<entity_info_t> shared;
@@ -47,33 +49,20 @@ struct index_coloring_t
   // Rank id to number of entities
   std::unordered_map<size_t, size_t> entities_per_rank;
 
-  ///
-  /// Equality operator.
-  ///
-  /// \param ip The index_coloring_t to compare with \e this.
-  ///
-  /// \return True if \e ip is equivalent to \e this, false otherwise.
-  ///
-  bool
-  operator == (
-    const index_coloring_t & ip
-  ) const
-  {
+  /*!
+   Equality operator.
+
+   \param ip The index_coloring_t to compare with \e this.
+
+   \return True if \e ip is equivalent to \e this, false otherwise.
+   */
+  bool operator==(const index_coloring_t & ip) const {
     return (
-      this->primary == ip.primary &&
-      this->exclusive == ip.exclusive &&
-      this->shared ==  ip.shared &&
-      this->ghost == ip.ghost);
+        this->primary == ip.primary && this->exclusive == ip.exclusive &&
+        this->shared == ip.shared && this->ghost == ip.ghost);
   } // operator ==
 
 }; // struct index_coloring_t
 
 } // namespace coloring
 } // namespace flecsi
-
-#endif // flecsi_coloring_index_coloring_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

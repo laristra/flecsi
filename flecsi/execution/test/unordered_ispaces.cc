@@ -12,60 +12,53 @@
 #include <cinchlog.h>
 #include <cinchtest.h>
 
-#include "flecsi/execution/execution.h"
-#include "flecsi/data/data.h"
-#include "flecsi/io/simple_definition.h"
-#include "flecsi/coloring/dcrs_utils.h"
-#include "flecsi/coloring/parmetis_colorer.h"
-#include "flecsi/coloring/mpi_communicator.h"
-#include "flecsi/supplemental/mesh/empty_mesh_2d.h"
+#include <flecsi/execution/execution.h>
+#include <flecsi/io/simple_definition.h>
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/coloring/parmetis_colorer.h>
+#include <flecsi/coloring/mpi_communicator.h>
+#include <flecsi/supplemental/mesh/empty_mesh_2d.h>
+#include <flecsi/data/dense_accessor.h>
 
 #define CELL_ID 0
 #define VERT_ID 2   // Ensure it's OK if user does non-sequential
 #define VERSIONS 1
+#define VERT_VERSIONS 3
 
 using namespace flecsi;
 using namespace supplemental;
 
 clog_register_tag(ghost_access);
-
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-flecsi::data::mpi::dense_handle_t<T, EP, SP, GP>;
-#endif
+  
+flecsi_register_data_client(empty_mesh_t, meshes, mesh1);
 
 void check_entities_task(
-        handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> cell_ID,
-        handle_t<double, flecsi::dro, flecsi::dro, flecsi::dro> test,
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
+        dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
         int my_color, size_t cycle, size_t index_id);
 
-flecsi_register_task(check_entities_task, loc, single);
+flecsi_register_task_simple(check_entities_task, loc, single);
 
 void set_primary_entities_task(
-        handle_t<size_t, flecsi::drw, flecsi::drw, flecsi::dno> cell_ID,
-        handle_t<double, flecsi::drw, flecsi::drw, flecsi::dno> test,
+        dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
+        dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
         int my_color, size_t cycle, size_t index_id);
-flecsi_register_task(set_primary_entities_task, loc, single);
+flecsi_register_task_simple(set_primary_entities_task, loc, single);
 
 flecsi_register_field(empty_mesh_t, name_space, cell_ID, size_t, dense,
     VERSIONS, CELL_ID);
 flecsi_register_field(empty_mesh_t, name_space, test, double, dense,
     VERSIONS, CELL_ID);
 flecsi_register_field(empty_mesh_t, name_space, vert_ID, size_t, dense,
-    VERSIONS, VERT_ID);
+    VERT_VERSIONS, VERT_ID);
 flecsi_register_field(empty_mesh_t, name_space, vert_test, double, dense,
-    VERSIONS, VERT_ID);
+    VERT_VERSIONS, VERT_ID);
 
 namespace flecsi {
 namespace execution {
 
 void add_colorings(int dummy);
-flecsi_register_mpi_task(add_colorings);
+flecsi_register_mpi_task(add_colorings, flecsi::execution);
 
 //----------------------------------------------------------------------------//
 // Specialization driver.
@@ -73,7 +66,7 @@ flecsi_register_mpi_task(add_colorings);
 
 void specialization_tlt_init(int argc, char ** argv) {
 
-  flecsi_execute_mpi_task(add_colorings, 0);
+  flecsi_execute_mpi_task(add_colorings, flecsi::execution, 0);
 
 } // specialization_tlt_init
 
@@ -104,15 +97,15 @@ void driver(int argc, char ** argv) {
       VERT_ID);
 
   for(size_t cycle=0; cycle<3; cycle++) {
-    flecsi_execute_task(set_primary_entities_task, single, handle, test_handle,
-            my_color, cycle, CELL_ID);
-    flecsi_execute_task(check_entities_task, single, handle, test_handle,
-            my_color, cycle, CELL_ID);
+    flecsi_execute_task_simple(set_primary_entities_task, single, handle,
+      test_handle, my_color, cycle, CELL_ID);
+    flecsi_execute_task_simple(check_entities_task, single, handle,
+      test_handle, my_color, cycle, CELL_ID);
 
-    flecsi_execute_task(set_primary_entities_task, single, vert_handle, vtest_handle,
-            my_color, cycle, VERT_ID);
-    flecsi_execute_task(check_entities_task, single, vert_handle, vtest_handle,
-            my_color, cycle, VERT_ID);
+    flecsi_execute_task_simple(set_primary_entities_task, single,
+      vert_handle, vtest_handle, my_color, cycle, VERT_ID);
+    flecsi_execute_task_simple(check_entities_task, single, vert_handle,
+      vtest_handle, my_color, cycle, VERT_ID);
   }
 } // driver
 
@@ -520,8 +513,8 @@ void add_colorings(int dummy) {
 //----------------------------------------------------------------------------//
 
 void set_primary_entities_task(
-        handle_t<size_t, flecsi::drw, flecsi::drw, flecsi::dno> cell_ID,
-        handle_t<double, flecsi::drw, flecsi::drw, flecsi::dno> test,
+        dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
+        dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
         int my_color, size_t cycle, size_t index_id) {
 
   clog(trace) << "Rank " << my_color << " WRITING " << std::endl;
@@ -538,17 +531,18 @@ void set_primary_entities_task(
     flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
     clog(trace) << "Rank " << my_color << " exclusive " <<  exclusive.id <<
         std::endl;
-    cell_ID(index) = exclusive.id + cycle;
-    test(index) = double(exclusive.id + cycle);
+    cell_ID.exclusive(index) = exclusive.id + cycle;
+    test.exclusive(index) = double(exclusive.id + cycle);
     index++;
   } // exclusive_itr
 
+  index=0;
   for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
       index_coloring->second.shared.end(); ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
     clog(trace) << "Rank " << my_color << " shared " <<  shared.id << std::endl;
-    cell_ID(index) = shared.id + cycle;
-    test(index) = double(shared.id + cycle);
+    cell_ID.shared(index) = shared.id + cycle;
+    test.shared(index) = double(shared.id + cycle);
     index++;
   } // shared_itr
 
@@ -561,8 +555,8 @@ void set_primary_entities_task(
 } // set_primary_entities_task
 
 void check_entities_task(
-        handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> cell_ID,
-        handle_t<double, flecsi::dro, flecsi::dro, flecsi::dro> test,
+        dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
+        dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
         int my_color, size_t cycle, size_t index_id) {
   clog(trace) << "Rank " << my_color << " READING " << std::endl;
 

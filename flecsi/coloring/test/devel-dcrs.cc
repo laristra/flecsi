@@ -4,10 +4,9 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchdevel.h>
-#include <mpi.h>
 
-#include "flecsi/io/simple_definition.h"
-#include "flecsi/coloring/dcrs_utils.h"
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/io/simple_definition.h>
 
 clog_register_tag(dcrs);
 
@@ -15,11 +14,11 @@ DEVEL(dcrs) {
   clog_set_output_rank(0);
 
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  std::set<size_t> naive = flecsi::coloring::naive_coloring(sd);
+  std::set<size_t> naive = flecsi::coloring::naive_coloring<2, 2>(sd);
 
   {
-  clog_tag_guard(dcrs);
-  clog_container_one(info, "naive coloring", naive, clog::space);
+    clog_tag_guard(dcrs);
+    clog_container_one(info, "naive coloring", naive, clog::space);
   } // guard
 
 } // DEVEL

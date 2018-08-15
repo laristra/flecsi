@@ -1,22 +1,27 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_utils_debruijn_h
-#define flecsi_utils_debruijn_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//!
-//! \file
-//! \date Initial file creation: Apr 09, 2017
-//!
+/*! @file */
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace flecsi {
 namespace utils {
 
+//----------------------------------------------------------------------------//
 //!
 //! \class debruijn_t debruijn.h
 //! \brief debruijn_t provides a mechanism for doing lookups of the set
@@ -29,6 +34,8 @@ namespace utils {
 //! \note This implementation is based on the example given in
 //!       http://supertech.csail.mit.edu/papers/debruijn.pdf
 //!
+//----------------------------------------------------------------------------//
+
 class debruijn32_t {
 
   // de Bruijn sequence
@@ -39,39 +46,33 @@ class debruijn32_t {
   // Lookup table. Note that this depends on the specific de Bruijn
   // sequence that is being used.
   static constexpr uint32_t index_[32] = {
-    0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
-    31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
-  };
+      0,  1,  28, 2,  29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4,  8,
+      31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6,  11, 5,  10, 9};
 
 public:
-
-  //!
+  //--------------------------------------------------------------------------//
   //! Return the index of the right-most set bit in the given bit field.
   //!
   //! \note Successive bits can be found by subtracting the indexed bit.
-  //!
-  static
-  constexpr
-  uint32_t
-  index(
-    const uint32_t b
-  )
-  {
-    // 1. &  Two's-complement to isolate the right-most set bit
-    // 2. *  Shift and truncate the sequence by the isolated bit index
-    // 3. >> Shift off all but the high log_2(32) bits to get the lookup index
-    // 4. [] return the index from the lookup table
+  //--------------------------------------------------------------------------//
+
+  static constexpr uint32_t index(const uint32_t b) {
+  // 1. &  Two's-complement to isolate the right-most set bit
+  // 2. *  Shift and truncate the sequence by the isolated bit index
+  // 3. >> Shift off all but the high log_2(32) bits to get the lookup index
+  // 4. [] return the index from the lookup table
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4146) // unary minus operator applied to unsigned
+                                // type, result still unsigned
+#endif
     return index_[(b & -b) * seq_ >> 27];
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
   } // index
 
 }; // debruijn32_t
 
 } // namespace utils
 } // namespace flecsi
-
-#endif // flecsi_utils_debruijn_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

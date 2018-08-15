@@ -1,63 +1,49 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_topology_structured_mesh_topology_h
-#define flecsi_topology_structured_mesh_topology_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-///
-// \file structured_mesh_topology.h
-// \authors bergen
-// \date Initial file creation: Jan 13, 2017
-///
+/*! @file */
 
 namespace flecsi {
 namespace topology {
 
 ///
-// \class structured_mesh_topology_t structured_mesh_topology.h
-// \brief structured_mesh_topology_t provides...
+// \class structured_mesh_topology__ structured_mesh_topology.h
+// \brief structured_mesh_topology__ provides...
 ///
-template<
-  typename MT
->
-class structured_mesh_topology_t
-{
+template<typename MT>
+class structured_mesh_topology__ {
 public:
-
   /// Default constructor
-  structured_mesh_topology_t() {}
+  structured_mesh_topology__() {}
 
   /// Copy constructor (disabled)
-  structured_mesh_topology_t(const structured_mesh_topology_t &) = delete;
+  structured_mesh_topology__(const structured_mesh_topology__ &) = delete;
 
   /// Assignment operator (disabled)
-  structured_mesh_topology_t & operator = (const structured_mesh_topology_t &)
-    = delete;
+  structured_mesh_topology__ &
+  operator=(const structured_mesh_topology__ &) = delete;
 
   /// Destructor
-   ~structured_mesh_topology_t() {}
+  ~structured_mesh_topology__() {}
 
-  size_t
-  num_entities(
-    size_t dim,
-    size_t domain = 0
-  )
-  {
+  size_t num_entities(size_t dim, size_t domain = 0) {
     return MT::num_entities(dim, domain);
   } // num_entities
 
 private:
-
-}; // class structured_mesh_topology_t
+}; // class structured_mesh_topology__
 
 } // namespace topology
 } // namespace flecsi
-
-#endif // flecsi_topology_structured_mesh_topology_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

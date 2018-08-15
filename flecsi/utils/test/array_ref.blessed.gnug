@@ -1,0 +1,71 @@
+
+double
+double const*
+double
+double
+double const*
+double const*
+std::reverse_iterator<double const*>
+std::reverse_iterator<double const*>
+unsigned long
+long
+
+abcdefghi
+
+abcdefghi
+bcdefghi
+cdefghi
+hi
+i
+
+
+
+ab
+bcde
+cde
+hi
+i
+
+
+
+abcdefghi
+abcdefghi
+ihgfedcba
+ihgfedcba
+0
+true
+3
+false
+
+3.14
+2.18
+2.72
+
+3.14
+2.18
+2.72
+
+Caught an (intentionally generated!) test exception
+3.14
+2.72
+
+2
+6
+
+7
+7
+
+4.56
+4.56
+
+1
+5
+
+1
+5
+
+1
+1
+
+10
+20

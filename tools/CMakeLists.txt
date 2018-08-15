@@ -20,17 +20,46 @@ get_directory_property(_defines DIRECTORY ${CMAKE_SOURCE_DIR}
 get_directory_property(_includes DIRECTORY ${CMAKE_SOURCE_DIR}
   INCLUDE_DIRECTORIES)
 
+#------------------------------------------------------------------------------#
+# These are used to set environment variables for the tutorial.
+#------------------------------------------------------------------------------#
+
+set(LIB_SUFFIX "a")
+
+if(BUILD_SHARED_LIBS)
+  set(LIB_SUFFIX "so")
+endif()
+
+set(FLECSIT_TUTORIAL_INCLUDES ${CMAKE_INSTALL_PREFIX}/include)
+set(FLECSIT_TUTORIAL_LIBRARIES
+  ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/libFleCSI-Tut.${LIB_SUFFIX})
+
+set(FLECSIT_TUTORIAL_PACKAGES "\"\"")
+
+if(ENABLE_FLECSI_TUTORIAL_VTK)
+    set(FLECSIT_TUTORIAL_PACKAGES VTK)
+endif()
+
+set(FLECSIT_FLECSI_LIBRARY
+  ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/libFleCSI.${LIB_SUFFIX})
+
+#------------------------------------------------------------------------------#
 # Create string of compiler definitions for script
+#------------------------------------------------------------------------------#
+
 list(REMOVE_DUPLICATES _defines)
 set(FLECSIT_COMPILE_DEFINES)
 foreach(def ${_defines})
   set(FLECSIT_COMPILE_DEFINES
-    "${FLECSIT_COMPILE_DEFINES} -D${def}")
+    "${FLECSIT_COMPILE_DEFINES} ${def}")
 endforeach()
 
 string(STRIP "${FLECSIT_COMPILE_DEFINES}" FLECSIT_COMPILE_DEFINES)
 
+#------------------------------------------------------------------------------#
 # Create string of include directories for script
+#------------------------------------------------------------------------------#
+
 list(REMOVE_DUPLICATES _includes)
 set(FLECSIT_INCLUDES)
 foreach(inc ${_includes})
@@ -40,25 +69,46 @@ endforeach()
 
 string(STRIP "${FLECSIT_INCLUDES}" FLECSIT_INCLUDES)
 
+#------------------------------------------------------------------------------#
 # Create string of runtime link libraries for script
 # Create list of link directories for LD_LIBRARY_PATH hint
+#------------------------------------------------------------------------------#
+
 set(FLECSIT_LIBRARIES)
 set(FLECSIT_LDFLAGS)
-foreach(lib ${FLECSI_RUNTIME_LIBRARIES})
+set(FLECSI_LD_DEPENDS_LIST)
+foreach(lib ${FLECSI_LIBRARY_DEPENDENCIES})
   # Runtime link libraries
   set(FLECSIT_LIBRARIES
     "${FLECSIT_LIBRARIES} ${lib}")
 
   # LD_LIBRARY_PATH hint
   get_filename_component(_path ${lib} DIRECTORY)
-  list(APPEND FLECSIT_LDFLAGS ${_path})
+  set(FLECSIT_LDFLAGS "${FLECSIT_LDFLAGS} -L${_path}")
+  list(APPEND FLECSI_LD_DEPENDS_LIST ${_path})
 endforeach()
 
-string(STRIP "${FLECSI_RUNTIME_LIBRARIES}" FLECSI_RUNTIME_LIBRARIES)
+string(STRIP "${FLECSIT_LIBRARIES}" FLECSIT_LIBRARIES)
+
+if(FLECSI_LD_DEPENDS_LIST)
+  list(REMOVE_DUPLICATES FLECSI_LD_DEPENDS_LIST)
+endif()
+
+#------------------------------------------------------------------------------#
+# Process the list of path dependencies for environment module LD_LIBARRY_PATH
+#------------------------------------------------------------------------------#
+
+set(FLECSI_LD_DEPENDS)
+foreach(lib ${FLECSI_LD_DEPENDS_LIST})
+  if(NOT FLECSI_LD_DEPENDS)
+    set(FLECSI_LD_DEPENDS "${lib}")
+  else()
+    set(FLECSI_LD_DEPENDS "${FLECSI_LD_DEPENDS}:${lib}")
+  endif()
+endforeach()
 
 # Append local build and remove duplicates
-list(APPEND FLECSIT_LDFLAGS ${CMAKE_BINARY_DIR}/lib)
-list(REMOVE_DUPLICATES FLECSIT_LDFLAGS)
+set(FLECSIT_LDFLAGS "${FLECSIT_LDFLAGS} -L${CMAKE_BINARY_DIR}/lib")
 
 string(STRIP "${FLECSIT_LDFLAGS}" FLECSIT_LDFLAGS)
 
@@ -73,67 +123,31 @@ set(FLECSI_PYTHON_PATH_CSH)
 if(ENABLE_FLECSIT)
 
     #--------------------------------------------------------------------------#
-    # Blender tool
-    #--------------------------------------------------------------------------#
-
-    find_package(LLVM 3.7 REQUIRED)
-
-    find_package(Clang
-      REQUIRED
-      COMPONENTS
-        FrontendTool
-        Frontend
-        Driver
-        Serialization
-        CodeGen
-        Parse
-        Sema
-        RewriteFrontend
-        Rewrite
-        StaticAnalyzerFrontend
-        StaticAnalyzerCheckers
-        StaticAnalyzerCore
-        ToolingCore
-        Tooling
-        ARCMigrate
-        Analysis
-        Edit
-        AST
-        ASTMatchers
-        Lex
-        Basic
-        BitReader
-    )
-
-    EXECUTE_PROCESS(COMMAND ${LLVM_CONFIG} --libdir
-        OUTPUT_VARIABLE LLVM_LIB_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-    set(CLANG_HEADER_PATH ${LLVM_LIB_DIR}/clang/${CLANG_VERSION}/include)
-
-    add_subdirectory(blender)
-
-    #--------------------------------------------------------------------------#
     # FleCSIT dependencies
     #--------------------------------------------------------------------------#
 
-	find_package(PythonInterp 2.7 REQUIRED)
+    find_package(PythonInterp 2.7 REQUIRED)
 
-	execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(${PYTHON_VERSION_MAJOR} LESS 3)
+      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    else()
+      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print(cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}'))" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    endif()
 
-	install(DIRECTORY ${CMAKE_SOURCE_DIR}/tools/flecsit/flecsit
-		DESTINATION ${PYTHON_INSTDIR}
-		FILES_MATCHING PATTERN "*.py")
+    install(DIRECTORY ${CMAKE_SOURCE_DIR}/tools/flecsit/flecsit
+        DESTINATION ${PYTHON_INSTDIR}
+        FILES_MATCHING PATTERN "*.py")
 
-	configure_file(${CMAKE_SOURCE_DIR}/tools/flecsit/bin/flecsit.in
-		${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
+    configure_file(${PROJECT_SOURCE_DIR}/tools/flecsit/bin/flecsit.in
+      ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
 
-	install(PROGRAMS ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit
-		DESTINATION bin
-		PERMISSIONS
-			OWNER_READ OWNER_WRITE OWNER_EXECUTE
-			GROUP_READ GROUP_EXECUTE
-			WORLD_READ WORLD_EXECUTE
-	)
+    install(PROGRAMS ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit
+        DESTINATION bin
+        PERMISSIONS
+            OWNER_READ OWNER_WRITE OWNER_EXECUTE
+            GROUP_READ GROUP_EXECUTE
+            WORLD_READ WORLD_EXECUTE
+    )
 
     set(FLECSI_PYTHON_PATH_MODULE
         "prepend-path PYTHONPATH ${PYTHON_INSTDIR}"
@@ -142,7 +156,7 @@ if(ENABLE_FLECSIT)
         "export PYTHONPATH=\${PYTHONPATH}:${PYTHON_INSTDIR}"
     )
     set(FLECSI_PYTHON_PATH_CSH
-        "setenv PYTHONPATH $PYTHONPATH:${PYTHON_INSTDIR}"
+        "setenv PYTHONPATH \${PYTHONPATH}:${PYTHON_INSTDIR}"
     )
 
 endif()
@@ -162,6 +176,8 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_main.cc
 add_custom_target(runtime_main ALL
   DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_main.cc)
 
+set_target_properties(runtime_main PROPERTIES FOLDER "Dependencies")
+
 add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_driver.cc
   COMMAND ${CMAKE_COMMAND} -E copy
     ${_runtime_path}/runtime_driver.cc
@@ -172,11 +188,13 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_driver.cc
 add_custom_target(runtime_driver ALL
   DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_driver.cc)
 
+set_target_properties(runtime_driver PROPERTIES FOLDER "Dependencies")
+
 # Install the auxiliary files
 install(FILES ${_runtime_path}/runtime_main.cc
-  DESTINATION share/flecsi/runtime)
+  DESTINATION ${FLECSI_SHARE_DIR}/runtime)
 install(FILES ${_runtime_path}/runtime_driver.cc
-  DESTINATION share/flecsi/runtime)
+  DESTINATION ${FLECSI_SHARE_DIR}/runtime)
 
 #------------------------------------------------------------------------------#
 # FleCSI environment module
@@ -189,17 +207,21 @@ install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi
   DESTINATION bin
   )
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-tutorial.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-tutorial @ONLY)
+
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-tutorial
+  DESTINATION bin
+  )
+
 #------------------------------------------------------------------------------#
 # Helper shell environment setup
 #------------------------------------------------------------------------------#
 
+# Bash
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.sh.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh @ONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.csh.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh @ONLY)
 
-
-# Install shell helpers
 install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh
   DESTINATION bin
   RENAME flecsi.sh
@@ -209,9 +231,41 @@ install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh
     WORLD_READ
 )
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-tutorial.sh.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-tutorial-install.sh @ONLY)
+
+install(
+  FILES
+    ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-tutorial-install.sh
+  DESTINATION bin
+  RENAME flecsi-tutorial.sh
+  PERMISSIONS
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+)
+
+# Csh
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.csh.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh @ONLY)
+
 install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh
   DESTINATION bin
   RENAME flecsi.csh
+  PERMISSIONS
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-tutorial.csh.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-tutorial-install.csh @ONLY)
+
+install(
+  FILES
+    ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-tutorial-install.csh
+  DESTINATION bin
+  RENAME flecsi-tutorial.csh
   PERMISSIONS
     OWNER_READ OWNER_WRITE
     GROUP_READ

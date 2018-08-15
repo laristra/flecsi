@@ -6,14 +6,14 @@
 #include <cinchtest.h>
 #include <mpi.h>
 
-#include "flecsi/io/simple_definition.h"
-#include "flecsi/coloring/dcrs_utils.h"
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/io/simple_definition.h>
 
 const size_t output_rank(0);
 
 TEST(dcrs, naive_coloring) {
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  auto naive = flecsi::coloring::naive_coloring(sd);
+  auto naive = flecsi::coloring::naive_coloring<2, 2>(sd);
 
   clog_set_output_rank(0);
 
@@ -28,14 +28,14 @@ TEST(dcrs, simple2d_8x8) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  if(rank == 0) {
+  if (rank == 0) {
     // Note: These assume that this test is run with 5 ranks.
-    const std::vector<size_t> offsets =
-      { 0, 2, 5, 8, 11, 14, 17, 20, 22, 25, 29, 33, 37 };
+    const std::vector<size_t> offsets = {0,  2,  5,  8,  11, 14, 17,
+                                         20, 22, 25, 29, 33, 37};
 
-    const std::vector<size_t> indices =
-      { 1, 8, 0, 2, 9, 1, 3, 10, 2, 4, 11, 3, 5, 12, 4, 6, 13, 5, 7, 14, 6,
-        15, 0, 9, 16, 1, 8, 10, 17, 2, 9, 11, 18, 3, 10, 12, 19 };
+    const std::vector<size_t> indices = {
+        1,  8, 0,  2, 9, 1,  3, 10, 2,  4,  11, 3, 5,  12, 4, 6,  13, 5, 7,
+        14, 6, 15, 0, 9, 16, 1, 8,  10, 17, 2,  9, 11, 18, 3, 10, 12, 19};
 
     CINCH_ASSERT(EQ, dcrs.offsets, offsets);
     CINCH_ASSERT(EQ, dcrs.indices, indices);

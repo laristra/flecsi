@@ -1,27 +1,28 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: May 23, 2017
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 
 #include <cinchlog.h>
 #include <mpi.h>
 
-#include "flecsi/execution/execution.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/io/simple_definition.h"
-#include "flecsi/coloring/coloring_types.h"
-#include "flecsi/coloring/communicator.h"
-#include "flecsi/coloring/dcrs_utils.h"
-#include "flecsi/coloring/parmetis_colorer.h"
-#include "flecsi/coloring/mpi_communicator.h"
-#include "flecsi/supplemental/coloring/tikz.h"
-#include "flecsi/topology/closure_utils.h"
-#include "flecsi/utils/set_utils.h"
+#include <flecsi/execution/execution.h>
+#include <flecsi/io/simple_definition.h>
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/coloring/parmetis_colorer.h>
+#include <flecsi/coloring/mpi_communicator.h>
+#include <flecsi/supplemental/coloring/add_colorings.h>
+#include <flecsi/supplemental/coloring/coloring_functions.h>
+#include <flecsi/supplemental/coloring/tikz.h>
 
 clog_register_tag(coloring);
 clog_register_tag(coloring_output);
@@ -29,9 +30,9 @@ clog_register_tag(coloring_output);
 namespace flecsi {
 namespace execution {
 
-void add_colorings(int dummy) {
+void add_colorings(coloring_map_t map) {
 
-  clog_set_output_rank(1);
+  clog_set_output_rank(0);
 
   // Get the context instance.
   context_t & context_ = context_t::instance();
@@ -232,6 +233,7 @@ void add_colorings(int dummy) {
   //--------------------------------------------------------------------------//
   //--------------------------------------------------------------------------//
 
+#if 0
   // Form the vertex closure
   auto vertex_closure = flecsi::topology::entity_closure<2,0>(sd, closure);
 
@@ -354,6 +356,13 @@ void add_colorings(int dummy) {
   vertex_color_info.exclusive = vertices.exclusive.size();
   vertex_color_info.shared = vertices.shared.size();
   vertex_color_info.ghost = vertices.ghost.size();
+#endif
+
+  flecsi::coloring::index_coloring_t vertices;
+  coloring::coloring_info_t vertex_color_info;
+
+  color_entity<2, 0>(sd, communicator.get(), closure, remote_info_map,
+    shared_cells_map, closure_intersection_map, vertices, vertex_color_info);
 
   {
   clog_tag_guard(coloring);
@@ -376,11 +385,11 @@ void add_colorings(int dummy) {
   clog(info) << "vertex coloring info color " << ci.first
     << ci.second << std::endl;
   } // for
-  }
+  } // scope
 
   // Add colorings to the context.
-  context_.add_coloring(0, cells, cell_coloring_info);
-  context_.add_coloring(1, vertices, vertex_coloring_info);
+  context_.add_coloring(map.cells, cells, cell_coloring_info);
+  context_.add_coloring(map.vertices, vertices, vertex_coloring_info);
 
 #if 0
   context_.add_index_space(0, cells, cell_coloring_info);
@@ -436,12 +445,7 @@ void add_colorings(int dummy) {
 
 } // add_colorings
 
-flecsi_register_mpi_task(add_colorings);
+flecsi_register_mpi_task(add_colorings, flecsi::execution);
 
 } // namespace execution
 } // namespace flecsi
-
-/*~------------------------------------------------------------------------~--*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/

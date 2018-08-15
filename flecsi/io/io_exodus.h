@@ -12,10 +12,9 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_io_exodus_h
-#define flecsi_io_exodus_h
+#pragma once
 
-#include "flecsi/io/io_base.h"
+#include <flecsi/io/io_base.h>
 
 /*!
  * \file io_exodus.h
@@ -33,7 +32,7 @@ namespace io {
 
   \tparam mesh_t Mesh to template io_base_t on.
  */
-template <typename mesh_t>
+template<typename mesh_t>
 struct io_exodus_t : public io_base_t<mesh_t> {
   //! Default constructor
   io_exodus_t() {}
@@ -70,16 +69,14 @@ struct io_exodus_t : public io_base_t<mesh_t> {
 
   \return Pointer to io_base_t base class of io_exodus_t.
  */
-template <typename mesh_t>
-io_base_t<mesh_t> * create_io_exodus()
-{
+template<typename mesh_t>
+io_base_t<mesh_t> *
+create_io_exodus() {
   return new io_exodus_t<mesh_t>;
 } // create_io_exodus
 
 } // namespace io
 } // namespace flecsi
-
-#endif // flecsi_io_exodus_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

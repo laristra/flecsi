@@ -1,23 +1,27 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_empty_mesh_h
-#define flecsi_execution_empty_mesh_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: May 10, 2017
-//----------------------------------------------------------------------------//
+/*! @file */
 
-#include "flecsi/topology/mesh.h"
-#include "flecsi/topology/mesh_topology.h"
+#include <flecsi/topology/mesh.h>
+#include <flecsi/topology/mesh_topology.h>
 
 namespace flecsi {
 namespace supplemental {
 
-  class vertex : public topology::mesh_entity_t<0, 1>{
+  class vertex : public topology::mesh_entity__<0, 1>{
   public:
     template<size_t M>
     uint64_t precedence() const { return 0; }
@@ -25,14 +29,14 @@ namespace supplemental {
 
   };
 
-  class cell : public topology::mesh_entity_t<2, 1>{
+  class cell : public topology::mesh_entity__<2, 1>{
   public:
 
     using id_t = flecsi::utils::id_t;
 
     std::vector<size_t>
     create_entities(id_t cell_id, size_t dim,
-                    topology::domain_connectivity<2> & c, id_t * e){
+                    topology::domain_connectivity__<2> & c, id_t * e){
       return {2, 2, 2, 2};
     }
 
@@ -53,8 +57,8 @@ namespace supplemental {
     using bindings = std::tuple<>;
 
     template<size_t M, size_t D, typename ST>
-    static topology::mesh_entity_base_t<num_domains>*
-    create_entity(topology::mesh_topology_base_t<ST>* mesh,
+    static topology::mesh_entity_base__<num_domains>*
+    create_entity(topology::mesh_topology_base__<ST>* mesh,
                   size_t num_vertices){
       switch(M){
         case 0:{
@@ -70,14 +74,7 @@ namespace supplemental {
     }
   };
 
-  using empty_mesh_t = topology::mesh_topology_t<empty_mesh_types_t>;
-  using empty_mesh_2d_t = topology::mesh_topology_t<empty_mesh_types_t>;
+  using empty_mesh_t = topology::mesh_topology__<empty_mesh_types_t>;
+  using empty_mesh_2d_t = topology::mesh_topology__<empty_mesh_types_t>;
 } // namespace supplemental
 } // namespace flecsi
-
-#endif // flecsi_execution_empty_mesh_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

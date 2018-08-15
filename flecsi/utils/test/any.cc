@@ -14,21 +14,19 @@
 
 // system includes
 #include <cinchtest.h>
-#include <array>
 
 // user includes
-#include "flecsi/utils/any.h"
-#include "flecsi/coloring/index_coloring.h"
+#include <flecsi/coloring/index_coloring.h>
+#include <flecsi/utils/any.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/test/print_type.h>
 
-// boost includes
-#include "boost/core/demangle.hpp"
+#include <array>
 
-using flecsi::utils::any_t;
 using flecsi::coloring::index_coloring_t;
+using flecsi::utils::any_t;
 using std::cout;
 using std::endl;
-
-
 
 //=============================================================================
 //! \brief Test the "zip-like" iterator.
@@ -37,14 +35,13 @@ using std::endl;
 //!
 //! some temporary class
 //!
-class temp_class_t
-{
+class temp_class_t {
   int value;
-public:
-  temp_class_t(int value) : value(value){}
 
-  void show()
-  {
+public:
+  temp_class_t(int value) : value(value) {}
+
+  void show() {
     cout << "Hoge : " << value << endl;
   }
 };
@@ -54,182 +51,175 @@ public:
 //!
 TEST(any, simple) {
 
-   using storage_t = std::vector<any_t>;
-   using storage_iter = storage_t::const_iterator;
-   storage_t storage;
+  using storage_t = std::vector<any_t>;
+  using storage_iter = storage_t::const_iterator;
+  storage_t storage;
 
-   double A;
-   std::array<int,5> B;
-   index_coloring_t ip;
+  double A;
+  std::array<int, 5> B;
+  index_coloring_t ip;
 
-   A=3.14;
-   B[0]=1;
-   B[1]=2;
+  A = 3.14;
+  B[0] = 1;
+  B[1] = 2;
 
-   storage.push_back(any_t(A));
-   storage.push_back(any_t(B));
-   storage.push_back(any_t(ip));
+  storage.push_back(any_t(A));
+  storage.push_back(any_t(B));
+  storage.push_back(any_t(ip));
 
-   int count =0;
-   for (storage_iter i=storage.begin(); i!=storage.end(); ++i)
-   {
-      if (typeid(double) == i->get_type())
-         assert(count == 0);
+  int count = 0;
+  for (storage_iter i = storage.begin(); i != storage.end(); ++i) {
+    if (typeid(double) == i->get_type())
+      assert(count == 0);
     count++;
-   }
+  }
 
-   double Ad= storage[0];
-   std::cout <<"storage[0] = "<< Ad<<std::endl;
+  double Ad = storage[0];
+  std::cout << "storage[0] = " << Ad << std::endl;
 
-   any_t val;
+  any_t val;
 
-   val = 10;
-   int i = val;
-   cout << i << endl;
+  val = 10;
+  int i = val;
+  cout << i << endl;
 
-   val = 3.14;
-   cout << flecsi::utils::any_cast<double>(val) << endl;
+  val = 3.14;
+  cout << flecsi::utils::any_cast<double>(val) << endl;
 
-   val = temp_class_t(123);
-   temp_class_t h = val;
-   h.show();
+  val = temp_class_t(123);
+  temp_class_t h = val;
+  h.show();
 
-   val = std::string("Hello World!");
-   cout << flecsi::utils::any_cast<std::string>(val) << endl;
+  val = std::string("Hello World!");
+  cout << flecsi::utils::any_cast<std::string>(val) << endl;
 
-//  std::shared_ptr<any_t> original_ptr = std::make_shared<any_t>(ip);
+  //  std::shared_ptr<any_t> original_ptr = std::make_shared<any_t>(ip);
 
-  //void* void_ptr = reinterpret_cast<void*>(&A);
+  // void* void_ptr = reinterpret_cast<void*>(&A);
 
-  //any_t* new_ptr = reinterpret_cast<any_t*>(void_ptr);
+  // any_t* new_ptr = reinterpret_cast<any_t*>(void_ptr);
 
-    //assert(typeid(new_ptr->type())==typeid(index_coloring_t));
-  //double* a=flecsi::utils::any_cast<double>(new_ptr);
+  // assert(typeid(new_ptr->type())==typeid(index_coloring_t));
+  // double* a=flecsi::utils::any_cast<double>(new_ptr);
 
-  ASSERT_EQ( 3, storage.size() )  << "iterator count mismatch";
+  ASSERT_EQ(3, storage.size()) << "iterator count mismatch";
 
 } // TEST
-
-
 
 //=============================================================================
 //! \brief Exercise everything in the any_t class, and any_cast() as well
 //=============================================================================
 
-// print_type
-inline void print_type(const char *const name)
-{
-   CINCH_CAPTURE() << boost::core::demangle(name) << std::endl;
-}
-
 // some_class
 template<class T>
-class some_class
-{
-   T value;
+class some_class {
+  T value;
+
 public:
-   inline explicit some_class(const T &value) : value(value) { }
-   inline void print(void) const
-   {
-      CINCH_CAPTURE() << "value == " << value << std::endl;
-   }
+  inline explicit some_class(const T & value) : value(value) {}
+  inline void print(void) const {
+    CINCH_CAPTURE() << "value == " << value << std::endl;
+  }
 };
 
-
-
 // TEST
-TEST(any, all)
-{
-   // test: default constructor
-   const flecsi::utils::any_t a;
-   EXPECT_EQ(a.get_type(), typeid(void));  // via nullptr
+TEST(any, all) {
+  // test: default constructor
+  const flecsi::utils::any_t a;
+  EXPECT_EQ(a.get_type(), typeid(void)); // via nullptr
 
-   // test: constructor from T
-   const flecsi::utils::any_t b = 3.14;
-   EXPECT_EQ(b.get_type(), typeid(double));
+  // test: constructor from T
+  const flecsi::utils::any_t b = 3.14;
+  EXPECT_EQ(b.get_type(), typeid(double));
 
-   // test: destructor
-   const flecsi::utils::any_t *const c = new flecsi::utils::any_t(4321);
-   EXPECT_EQ(c->get_type(), typeid(int));
-   delete c;
+  // test: destructor
+  const flecsi::utils::any_t * const c = new flecsi::utils::any_t(4321);
+  EXPECT_EQ(c->get_type(), typeid(int));
+  delete c;
 
-   // test: copy constructor
-   const flecsi::utils::any_t a2 = a;
-   const flecsi::utils::any_t b2 = b;
-   EXPECT_EQ(a2.get_type(), typeid(void));
-   EXPECT_EQ(b2.get_type(), typeid(double));
+  // test: copy constructor
+  const flecsi::utils::any_t a2 = a;
+  const flecsi::utils::any_t b2 = b;
+  EXPECT_EQ(a2.get_type(), typeid(void));
+  EXPECT_EQ(b2.get_type(), typeid(double));
 
-   // test: copy assignment
-   flecsi::utils::any_t d, e;
-   d = a;  EXPECT_EQ(d.get_type(), typeid(void));
-   d = b;  EXPECT_EQ(d.get_type(), typeid(double));
-   e = d = flecsi::utils::any_t(321);  // string 'em together
-   EXPECT_EQ(d.get_type(), typeid(int));
-   EXPECT_EQ(e.get_type(), typeid(int));
+  // test: copy assignment
+  flecsi::utils::any_t d, e;
+  d = a;
+  EXPECT_EQ(d.get_type(), typeid(void));
+  d = b;
+  EXPECT_EQ(d.get_type(), typeid(double));
+  e = d = flecsi::utils::any_t(321); // string 'em together
+  EXPECT_EQ(d.get_type(), typeid(int));
+  EXPECT_EQ(e.get_type(), typeid(int));
 
-   // test: cast to T
-   CINCH_CAPTURE() << double(b) << std::endl;
-   CINCH_CAPTURE() << int   (e) << std::endl;
-   //CINCH_CAPTURE() << char(e) << std::endl;  // wrong; would be a bad cast!
+  // test: cast to T
+  CINCH_CAPTURE() << double(b) << std::endl;
+  CINCH_CAPTURE() << int(e) << std::endl;
+  // CINCH_CAPTURE() << char(e) << std::endl;  // wrong; would be a bad cast!
 
-   // test: get_type()
-   const flecsi::utils::any_t f = 1;
-   const flecsi::utils::any_t g = 1.0;
-   const flecsi::utils::any_t h = std::vector<int>{};
-   const flecsi::utils::any_t i = std::vector<double>{};
-   const flecsi::utils::any_t j = 'x';
-   print_type(f.get_type().name());
-   print_type(g.get_type().name());
-   print_type(h.get_type().name());
-   print_type(i.get_type().name());
-   print_type(j.get_type().name());
+  // test: get_type()
+  const flecsi::utils::any_t f = 1;
+  const flecsi::utils::any_t g = 1.0;
+  const flecsi::utils::any_t h = std::vector<int>{};
+  const flecsi::utils::any_t i = std::vector<double>{};
+  const flecsi::utils::any_t j = 'x';
+  print_type(f.get_type().name());
+  print_type(g.get_type().name());
+  print_type(h.get_type().name());
+  print_type(i.get_type().name());
+  print_type(j.get_type().name());
 
-   // test: any_cast()
-   const flecsi::utils::any_t anyint = 123;
-   const flecsi::utils::any_t anydbl = 4.5;
-   CINCH_CAPTURE() << flecsi::utils::any_cast<int   >(anyint) << std::endl;
-   CINCH_CAPTURE() << flecsi::utils::any_cast<double>(anydbl) << std::endl;
-   CINCH_CAPTURE() << std::endl;
+  // test: any_cast()
+  const flecsi::utils::any_t anyint = 123;
+  const flecsi::utils::any_t anydbl = 4.5;
+  CINCH_CAPTURE() << flecsi::utils::any_cast<int>(anyint) << std::endl;
+  CINCH_CAPTURE() << flecsi::utils::any_cast<double>(anydbl) << std::endl;
+  CINCH_CAPTURE() << std::endl;
 
-   // ------------------------
-   // Some more-complex tests
-   // ------------------------
+  // ------------------------
+  // Some more-complex tests
+  // ------------------------
 
-   // fill vector<any_t> with any_t values from various types
-   std::vector<flecsi::utils::any_t> vec;
-   vec.push_back(flecsi::utils::any_t(1234));
-   vec.push_back(flecsi::utils::any_t(5.67));
-   vec.push_back(flecsi::utils::any_t(some_class<int>(8)));
-   vec.push_back(flecsi::utils::any_t(some_class<double>(9.01)));
-   vec.push_back(flecsi::utils::any_t(std::string("abc")));
+  // fill vector<any_t> with any_t values from various types
+  std::vector<flecsi::utils::any_t> vec;
+  vec.push_back(flecsi::utils::any_t(1234));
+  vec.push_back(flecsi::utils::any_t(5.67));
+  vec.push_back(flecsi::utils::any_t(some_class<int>(8)));
+  vec.push_back(flecsi::utils::any_t(some_class<double>(9.01)));
+  vec.push_back(flecsi::utils::any_t(std::string("abc")));
 
-   // ensure that the types are as expected
-   EXPECT_EQ(vec[0].get_type(), typeid(int   ));
-   EXPECT_EQ(vec[1].get_type(), typeid(double));
-   EXPECT_EQ(vec[2].get_type(), typeid(some_class<int   >));
-   EXPECT_EQ(vec[3].get_type(), typeid(some_class<double>));
-   EXPECT_EQ(vec[4].get_type(), typeid(std::string));
+  // ensure that the types are as expected
+  EXPECT_EQ(vec[0].get_type(), typeid(int));
+  EXPECT_EQ(vec[1].get_type(), typeid(double));
+  EXPECT_EQ(vec[2].get_type(), typeid(some_class<int>));
+  EXPECT_EQ(vec[3].get_type(), typeid(some_class<double>));
+  EXPECT_EQ(vec[4].get_type(), typeid(std::string));
 
-   // print the wrapped values, via the any_t conversion operator
-   CINCH_CAPTURE() << int   (vec[0]) << std::endl;
-   CINCH_CAPTURE() << double(vec[1]) << std::endl;
-   vec[2].operator some_class<int   >().print();
-   vec[3].operator some_class<double>().print();
-   CINCH_CAPTURE() << vec[4].operator std::string() << std::endl;
+  // print the wrapped values, via the any_t conversion operator
+  CINCH_CAPTURE() << int(vec[0]) << std::endl;
+  CINCH_CAPTURE() << double(vec[1]) << std::endl;
+  vec[2].operator some_class<int>().print();
+  vec[3].operator some_class<double>().print();
+  CINCH_CAPTURE() << vec[4].operator std::string() << std::endl;
 
-   // print the wrapped values, via any_cast
-   CINCH_CAPTURE() << flecsi::utils::any_cast<int   >(vec[0]) << std::endl;
-   CINCH_CAPTURE() << flecsi::utils::any_cast<double>(vec[1]) << std::endl;
-   flecsi::utils::any_cast<some_class<int   >>(vec[2]).print();
-   flecsi::utils::any_cast<some_class<double>>(vec[3]).print();
-   CINCH_CAPTURE() << flecsi::utils::any_cast<std::string>(vec[4]) << std::endl;
+  // print the wrapped values, via any_cast
+  CINCH_CAPTURE() << flecsi::utils::any_cast<int>(vec[0]) << std::endl;
+  CINCH_CAPTURE() << flecsi::utils::any_cast<double>(vec[1]) << std::endl;
+  flecsi::utils::any_cast<some_class<int>>(vec[2]).print();
+  flecsi::utils::any_cast<some_class<double>>(vec[3]).print();
+  CINCH_CAPTURE() << flecsi::utils::any_cast<std::string>(vec[4]) << std::endl;
 
-   // compare
-   EXPECT_TRUE(CINCH_EQUAL_BLESSED("any.blessed"));
+  // compare
+#ifdef __GNUG__
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("any.blessed.gnug"));
+#elif (_MSC_VER)
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("any.blessed.msvc"));
+#else
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("any.blessed"));
+#endif
 
 } // TEST
-
-
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
