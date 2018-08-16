@@ -433,6 +433,10 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
           reinterpret_cast<uint8_t *>(acc_ghost_entries.template raw_rect_ptr<2>(
               ghost_rect2, ghost_sub_rect2, byte_offset3));
 
+      size_t size = field_info.size + sizeof(size_t);
+
+      size_t chunk = size * args.max_entries_per_index;
+
       for (size_t ghost_pt = 0; ghost_pt < position_max; ghost_pt++) {
         LegionRuntime::Arrays::Point<2> ghost_ref = position_ref_data[ghost_pt];
 
@@ -453,14 +457,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 
           ghost_copy_ptr->set_count(owner_copy_ptr->count());
 
-          size_t chunk = (field_info.size + sizeof(size_t)) * 
-            args.max_entries_per_index;
-
-          size_t shared_offset = 
-            args.reserve * (field_info.size + sizeof(size_t));
- 
-          std::memcpy(ghost_entries + ghost_offset * chunk,
-            shared_entries + shared_offset + owner_offset * chunk,
+          std::memcpy(ghost_entries + ghost_copy_ptr->start() * size,
+            shared_entries + owner_copy_ptr->start() * size,
             chunk);
         } // if
       } // for ghost_pt

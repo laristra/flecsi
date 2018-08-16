@@ -19,8 +19,10 @@
 #include <cstring>
 #include <limits>
 #include <map>
+#include <memory>
 #include <set>
 #include <unordered_map>
+#include <vector>
 
 #include <flecsi/data/common/data_types.h>
 
@@ -436,35 +438,22 @@ public:
   struct ragged_changes_t {
     ragged_changes_t(size_t size) : size(size) {}
 
-    ~ragged_changes_t() {
-      if (erase_set) {
-        delete erase_set;
-      }
-
-      if (push_values) {
-        delete push_values;
-      }
-
-      if (insert_values) {
-        delete insert_values;
-      }
-    }
-
     size_t size;
-    std::set<size_t> * erase_set = nullptr;
-    std::vector<T> * push_values = nullptr;
-    std::map<size_t, T> * insert_values = nullptr;
+    std::unique_ptr<std::set<size_t>> erase_set = nullptr;
+    std::unique_ptr<std::vector<T>> push_values = nullptr;
+    std::unique_ptr<std::map<size_t, T>> insert_values = nullptr;
 
     void init_erase_set() {
-      erase_set = new std::set<size_t>;
+      erase_set = std::unique_ptr<std::set<size_t>>(new std::set<size_t>);
     }
 
     void init_push_values() {
-      push_values = new std::vector<T>;
+      push_values = std::unique_ptr<std::vector<T>>(new std::vector<T>);
     }
 
     void init_insert_values() {
-      insert_values = new std::map<size_t, T>;
+      insert_values =
+          std::unique_ptr<std::map<size_t, T>>(new std::map<size_t, T>);
     }
   };
 

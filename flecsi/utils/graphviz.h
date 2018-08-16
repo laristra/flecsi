@@ -261,7 +261,7 @@ public:
 		FILE * file = fopen(name, "w");
 
 		if(name == nullptr) {
-			//clog(fatal) << "Failed opening " << name;
+			//clog_fatal("Failed opening " << name);
 		} // if
 
 		agwrite(graph_, file);

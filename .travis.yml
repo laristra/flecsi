@@ -13,9 +13,9 @@ env:
     - DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes
     - DISTRO=ubuntu_mpich RUNTIME=mpi DOCKERHUB=true
     - DISTRO=ubuntu_mpich RUNTIME=mpi WERROR=yes
-    - DISTRO=ubuntu COVERAGE=ON RUNTIME=legion SONARQUBE=ON
-    - DISTRO=ubuntu COVERAGE=ON RUNTIME=mpi    SONARQUBE=ON
-    - DISTRO=ubuntu COVERAGE=ON RUNTIME=hpx    SONARQUBE=ON
+#    - DISTRO=ubuntu COVERAGE=ON RUNTIME=legion SONARQUBE=ON
+#    - DISTRO=ubuntu COVERAGE=ON RUNTIME=mpi    SONARQUBE=ON
+#    - DISTRO=ubuntu COVERAGE=ON RUNTIME=hpx    SONARQUBE=ON
 
     - DISTRO=fedora RUNTIME=legion    DOCKERHUB=true
     - DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
@@ -31,9 +31,9 @@ env:
     - DISTRO=fedora_mpich RUNTIME=mpi DOCKERHUB=true
     - DISTRO=fedora_mpich RUNTIME=mpi IGNORE_NOCI=true
     - DISTRO=fedora_mpich RUNTIME=mpi WERROR=yes
-    - DISTRO=fedora RUNTIME=legion COVERAGE=ON
-    - DISTRO=fedora RUNTIME=mpi    COVERAGE=ON
-    - DISTRO=fedora RUNTIME=hpx    COVERAGE=ON
+#    - DISTRO=fedora RUNTIME=legion COVERAGE=ON
+#    - DISTRO=fedora RUNTIME=mpi    COVERAGE=ON
+#    - DISTRO=fedora RUNTIME=hpx    COVERAGE=ON
 
 matrix:
   allow_failures:
