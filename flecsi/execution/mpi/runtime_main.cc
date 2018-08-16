@@ -79,8 +79,8 @@ int main(int argc, char ** argv) {
       std::cout << std::endl << std::endl << desc << std::endl;
     } // if
 
-    MPI_Finalize();
-    return 1;
+    //MPI_Finalize();
+    //return 1;
   } // if
 
   if(vm.count("help")) {
