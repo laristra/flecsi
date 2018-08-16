@@ -134,6 +134,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
             local_args.data_client_hash = h.data_client_hash;
             local_args.index_space = h.index_space;
             local_args.owner = owner;
+            local_args.sparse = false;
             args.push_back(local_args);
             futures.push_back(Legion::Future::from_value(
                 runtime, *(h.global_to_local_color_map_ptr)));
@@ -194,7 +195,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
     // launch copy task per group of owners with same owner_region
     for (size_t group{0}; group < owner_groups.size(); group++) {
-      bool sparse = is_sparse_group[group];
+      bool is_sparse = is_sparse_group[group];
 
       auto first_itr = owner_groups[group].begin();
       size_t first = *first_itr;
@@ -210,7 +211,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
       Legion::RegionRequirement rr_entries_ghost;
 
-      if(sparse){
+      if(is_sparse){
         rr_entries_shared =
           Legion::RegionRequirement(
           owner_entries_regions[first], READ_ONLY, EXCLUSIVE,
@@ -249,7 +250,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
         rr_shared.add_field(fids[owner]);
         rr_ghost.add_field(fids[owner]);
 
-        if(sparse && fids[owner]){
+        if(is_sparse && fids[owner]){
           rr_entries_shared.add_field(fids[owner]);
           rr_entries_ghost.add_field(fids[owner]);
         }
@@ -268,7 +269,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       ghost_launcher.add_region_requirement(rr_shared);
       ghost_launcher.add_region_requirement(rr_ghost);
 
-      if(sparse){
+      if(is_sparse){
        ghost_launcher.add_region_requirement(rr_entries_shared);
         ghost_launcher.add_region_requirement(rr_entries_ghost);
       }

@@ -557,6 +557,15 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 
+    //information about phase barriers can be shared between sparse mutator 
+    //and sparse accessor so we need to load this information from the context
+    {
+      auto& context = execution::context_t::instance();
+      auto & ism = context.index_space_data_map();
+      h.pbarrier_as_owner_ptr = &(ism[h.index_space].pbarriers_as_owner[h.fid]);
+      h.ghost_is_readable = &(ism[h.index_space].ghost_is_readable[h.fid]);
+      h.write_phase_started = &(ism[h.index_space].write_phase_started[h.fid]);
+    }
     sparse_field_data_t* md;
 
     {
@@ -687,6 +696,16 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
   )
   {
     auto & h = m.h_;
+
+    //information about phase barriers can be shared between sparse mutator 
+    //and sparse accessor so we need to load this information from the context 
+    {
+      auto& context = execution::context_t::instance();
+      auto & ism = context.index_space_data_map();
+      h.pbarrier_as_owner_ptr = &(ism[h.index_space].pbarriers_as_owner[h.fid]);
+      h.ghost_is_readable = &(ism[h.index_space].ghost_is_readable[h.fid]);
+      h.write_phase_started = &(ism[h.index_space].write_phase_started[h.fid]);
+    }
 
     constexpr size_t num_regions = 3;
 

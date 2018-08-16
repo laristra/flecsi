@@ -69,6 +69,15 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
                 h.entries + md->reserve,
                 md->num_shared * sizeof(entry_value_t) * 
                 md->max_entries_per_index);
+
+
+    //information about phase barriers can be shared between sparse mutator 
+    //and sparse accessor so we need to store this information to the context
+    auto& context = execution::context_t::instance();
+    auto & ism = context.index_space_data_map();
+    ism[h.index_space].pbarriers_as_owner[h.fid] = *h.pbarrier_as_owner_ptr;
+    ism[h.index_space].ghost_is_readable[h.fid] = *h.ghost_is_readable;
+    ism[h.index_space].write_phase_started[h.fid] = *h.write_phase_started;
   }
 
   template<
@@ -143,6 +152,14 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
                 h.max_entries_per_index());
 
     md->initialized = true;
+
+    //information about phase barriers can be shared between sparse mutator 
+    //and sparse accessor so we need to store this information to the context
+    auto& context = execution::context_t::instance();
+    auto & ism = context.index_space_data_map();
+    ism[h.index_space].pbarriers_as_owner[h.fid] = *h.pbarrier_as_owner_ptr;
+    ism[h.index_space].ghost_is_readable[h.fid] = *h.ghost_is_readable;
+    ism[h.index_space].write_phase_started[h.fid] = *h.write_phase_started;
   }
 
   template<
