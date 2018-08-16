@@ -92,6 +92,14 @@ void driver(int argc, char ** argv) {
     flecsi_execute_task_simple(read_task, single, handle1, my_color, cycle);
 
     flecsi_execute_task_simple(read_task, single, handle2, my_color, cycle);
+
+    flecsi_execute_task_simple(read_task, single, handle1, my_color, cycle);
+
+    flecsi_execute_task_simple(read_task, single, handle2, my_color, cycle);
+
+    flecsi_execute_task_simple(read_task, single, handle1, my_color, cycle);
+
+    flecsi_execute_task_simple(read_task, single, handle2, my_color, cycle);
   }
 
   // Permutation test
