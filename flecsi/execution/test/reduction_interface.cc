@@ -7,13 +7,26 @@
 
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/reduction.h>
-
-#include <flecsi/execution/test/harness.h>
+#include <flecsi/supplemental/coloring/add_colorings.h>
+#include <flecsi/supplemental/mesh/test_mesh_2d.h>
 
 clog_register_tag(reduction_interface);
 
 namespace flecsi {
 namespace execution {
+
+//----------------------------------------------------------------------------//
+// Type definitions
+//----------------------------------------------------------------------------//
+
+using point_t = flecsi::supplemental::point_t;
+using mesh_t = flecsi::supplemental::test_mesh_2d_t;
+
+template<size_t PS>
+using mesh = data_client_handle__<mesh_t, PS>;
+
+template<size_t EP, size_t SP, size_t GP>
+using field = dense_accessor<double, EP, SP, GP>;
 
 //----------------------------------------------------------------------------//
 // Variable registration
@@ -45,6 +58,35 @@ double double_task(mesh<ro> m, field<rw, rw, ro> v) {
 } // double_task
 
 flecsi_register_task(double_task, flecsi::execution, loc, single);
+
+//----------------------------------------------------------------------------//
+// Top-Level Specialization Initialization
+//----------------------------------------------------------------------------//
+
+void
+specialization_tlt_init(int argc, char ** argv) {
+  {
+    clog_tag_guard(devel_handle);
+    clog(info) << "specialization_tlt_init function" << std::endl;
+  } // scope
+
+  supplemental::do_test_mesh_2d_coloring();
+} // specialization_tlt_init
+
+//----------------------------------------------------------------------------//
+// SPMD Specialization Initialization
+//----------------------------------------------------------------------------//
+
+void
+specialization_spmd_init(int argc, char ** argv) {
+  {
+    clog_tag_guard(devel_handle);
+    clog(info) << "specialization_spmd_init function" << std::endl;
+  } // scope
+
+  auto mh = flecsi_get_client_handle(mesh_t, clients, m);
+  flecsi_execute_task(initialize_mesh, flecsi::supplemental, single, mh);
+} // specialization_spmd_ini
 
 //----------------------------------------------------------------------------//
 // User driver.
