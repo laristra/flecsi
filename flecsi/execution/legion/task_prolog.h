@@ -422,8 +422,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     }
     
     auto & h = m.h_;
-
-    if ((*h.ghost_is_readable)) {
+//FIXME should we add logic for ghost copy here?
       // Phase WRITE
       launcher.add_wait_barrier(*(h.pbarrier_as_owner_ptr));
 
@@ -432,7 +431,6 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
       *(h.ghost_is_readable) = false;
       *(h.write_phase_started) = true;
-    } // if
   }
 
   template<
