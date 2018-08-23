@@ -106,7 +106,7 @@ NAME_JOB4:
         services:
                 - docker:dind
         dependencies:
-                - NAME_JOB3
+                - NAME_JOB2
         artifacts:
                 expire_in: 1 hour
                 paths:
