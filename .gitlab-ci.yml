@@ -84,7 +84,7 @@ NAME_JOB2:
 NAME_JOB3:
         variables:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
-                DISTRO: "fedora"
+                DISTRO: "ubuntu"
                 RUNTIME: "mpi"
         image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
         stage:  format
