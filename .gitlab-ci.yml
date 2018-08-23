@@ -7,7 +7,7 @@ stages:
 NAME_JOB1:
         variables:
                   GLOBAL_CI_VARIABLE: "global_ci_value"
-                  GIT_SUBMODULE_STRATEGY: normal
+                  GIT_SUBMODULE_STRATEGY: none
                   DISTRO: "ubuntu"
                   RUNTIME: "mpi"
                   ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
@@ -19,6 +19,7 @@ NAME_JOB1:
                   paths:
                         - ${ARTIFACTS_PROJECT_PATH}
         script:
+                - git submodule init
                 - git config submodule.cinch.url https://github.com/laristra/cinch.git
                 - git submodule update --init --recursive
                 - mkdir ${CI_PROJECT_DIR}/build
