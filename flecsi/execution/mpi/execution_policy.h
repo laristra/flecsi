@@ -175,7 +175,7 @@ struct mpi_execution_policy_t {
         clog_assert(reduction_type != context_.reduction_types().end(),
           "invalid reduction operation");
 
-        datatype = reduction_type;
+        datatype = reduction_type->second;
       }
       else {
         datatype = flecsi::utils::mpi_typetraits__<RETURN>::type();
