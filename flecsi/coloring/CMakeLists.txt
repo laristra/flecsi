@@ -112,7 +112,7 @@ cinch_add_unit(dcrs
   LIBRARIES
     ${CINCH_RUNTIME_LIBRARIES}
     ${COLORING_LIBRARIES}
-  POLICY ${UNIT_POLICY}
+  POLICY MPI
   THREADS 5
   FOLDER "Tests/Coloring"
 )

@@ -473,10 +473,6 @@ endif()
 # Set application directory
 #------------------------------------------------------------------------------#
 
-cinch_add_application_directory("examples")
-cinch_add_application_directory("examples/00_simple_drivers")
-cinch_add_application_directory("examples/lax_wendroff")
-cinch_add_application_directory("examples/02_tasks_and_drivers")
 cinch_add_application_directory("tools")
 
 #------------------------------------------------------------------------------#

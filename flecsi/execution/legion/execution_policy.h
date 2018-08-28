@@ -110,11 +110,12 @@ struct legion_execution_policy_t {
       std::string name) {
     clog(info) << "Registering legion task " << KEY << " " << name << std::endl;
 
-    if (!context_t::instance().register_task(
-            KEY, processor, launch, name,
-            pure_task_wrapper__<RETURN, TASK>::registration_callback)) {
-      clog(fatal) << "callback registration failed for " << name << std::endl;
-    } // if
+    using wrapper_t = pure_task_wrapper__<RETURN, TASK>;
+
+    const bool success = context_t::instance().register_task(
+      KEY, processor, launch, name, wrapper_t::registration_callback);
+
+    clog_assert(success, "callback registration failed for " << name);
 
     return true;
   } // register_legion_task
@@ -134,10 +135,10 @@ struct legion_execution_policy_t {
 
     using wrapper_t = task_wrapper__<KEY, RETURN, ARG_TUPLE, DELEGATE>;
 
-    if(!context_t::instance().register_task(KEY, processor, launch, name,
-      wrapper_t::registration_callback)) {
-      clog(fatal) << "callback registration failed for " << name << std::endl;
-    } // if
+    const bool success = context_t::instance().register_task(
+      KEY, processor, launch, name, wrapper_t::registration_callback);
+
+    clog_assert(success, "callback registration failed for " << name);
 
     return true;
   } // register_task
@@ -155,8 +156,7 @@ struct legion_execution_policy_t {
       typename... ARGS>
   struct execute_task_functor {
     static void execute(ARGS &&... args) {
-      clog(fatal) << "invalid launch type" << std::endl;
-      throw std::runtime_error("invalid launch type");
+      clog_fatal("invalid launch type" << std::endl);
     }
   };
 
@@ -278,10 +278,8 @@ struct legion_execution_policy_t {
           return legion_future__<RETURN, launch_type_t::index>(future);
         } // if check for execution state
       } else {
-        //        clog(fatal) << " loc task doesn'thave an implementation for
-        //        the index task execution" <<std::endl;
-        //        throw std::runtime_error(" loc task doesn'thave an
-        //        implementation for the index task execution");
+        //        clog_fatal(" loc task doesn'thave an implementation for
+        //        the index task execution" <<std::endl);
         // Initialize the arguments to pass through the runtime.
         init_args_t init_args(legion_runtime, legion_context);
         init_args.walk(task_args);
@@ -341,11 +339,7 @@ struct legion_execution_policy_t {
 
       // Handle MPI and Legion invocations separately.
       if (processor_type == processor_type_t::mpi) {
-        clog(fatal) << " mpi task doesn'thave an implementation for the single "
-                       "task execution"
-                    << std::endl;
-        throw std::runtime_error(" mpi task doesn'thave an implementation for "
-                                 "the single task execution");
+        clog_fatal(" mpi task doesn't have an implementation for the single task execution");
       } else {
         // Initialize the arguments to pass through the runtime.
         init_args_t init_args(legion_runtime, legion_context);
