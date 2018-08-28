@@ -1,12 +1,13 @@
 stages:
                 - build
                 - test
+                - format
                 - deploy
 
 NAME_JOB1:
         variables:
                   GLOBAL_CI_VARIABLE: "global_ci_value"
-                  GIT_SUBMODULE_STRATEGY: recursive
+                  GIT_SUBMODULE_STRATEGY: none
                   DISTRO: "ubuntu"
                   RUNTIME: "mpi"
                   ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
@@ -18,6 +19,9 @@ NAME_JOB1:
                   paths:
                         - ${ARTIFACTS_PROJECT_PATH}
         script:
+                - git submodule init
+                - git config submodule.cinch.url https://github.com/laristra/cinch.git
+                - git submodule update --init --recursive
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
                 - | 
@@ -79,6 +83,19 @@ NAME_JOB2:
                 - make test ARGS="-V"
 
 NAME_JOB3:
+        variables:
+                GLOBAL_CI_VARIABLE: "global_ci_value"
+                DISTRO: "ubuntu"
+                RUNTIME: "mpi"
+        image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
+        stage:  format
+        dependencies:
+                - NAME_JOB2
+        script:
+                - cd ${CI_PROJECT_DIR}/build/
+                - make format-FleCSI && git diff #--exit-code
+
+NAME_JOB4:
         variables:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
