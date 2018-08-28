@@ -21,6 +21,7 @@ NAME_JOB1:
         script:
                 - git submodule init
                 - git config submodule.cinch.url https://github.com/laristra/cinch.git
+                - git config submodule.ristra-utils.url https://github.com/laristra/ristra-utils
                 - git submodule update --init --recursive
                 - mkdir ${CI_PROJECT_DIR}/build
                 - cd build
