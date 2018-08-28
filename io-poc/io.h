@@ -6,7 +6,10 @@
 
 #include <mpi.h>
 
+#if defined(RISTRA_UTILS_ENABLE_GRAPHVIZ)
 #include <ristra-utils/utils/graphviz.h>
+#endif
+
 #include <io-poc/control/control.h>
 #include <unistd.h>
 
@@ -24,7 +27,7 @@ register_action(io /* phase */,
 
 int output_final(int argc, char ** argv) {
 
-#if defined(FLECSI_ENABLE_GRAPHVIZ)
+#if defined(RISTRA_UTILS_ENABLE_GRAPHVIZ)
   usleep(200000);
   std::cout << "finalize: output_final" << std::endl;
 
