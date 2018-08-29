@@ -273,6 +273,18 @@ namespace legion {
             &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
       } // for
 
+      h.ghost_owners_offsets_lregions =
+        ism[index_space].ghost_owners_lregions;
+
+      h.ghost_owners_offsets_subregions =
+        ism[index_space].ghost_owners_subregions;
+
+      h.ghost_owners_entries_lregions =
+        ism[index_space + sparse_offset].ghost_owners_lregions;
+
+      h.global_to_local_color_map_ptr =
+          &ism[index_space].global_to_local_color_map;
+
       h.fid = field_info.fid;
       h.index_space = index_space;
       h.data_client_hash = field_info.data_client_hash;
