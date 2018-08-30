@@ -4,7 +4,7 @@ stages:
                 - format
                 - deploy
 
-NAME_JOB1:
+build_ubuntu_mpi:
         variables:
                   GLOBAL_CI_VARIABLE: "global_ci_value"
                   GIT_SUBMODULE_STRATEGY: none
@@ -64,7 +64,7 @@ NAME_JOB1:
                 - sudo make install 
                 - cp -r /usr/local ${CI_PROJECT_DIR}/.
 
-NAME_JOB2:
+test_ubuntu_mpi:
         variables:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
@@ -73,7 +73,7 @@ NAME_JOB2:
         image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
         stage:  test
         dependencies:
-                - NAME_JOB1 
+                - build_ubuntu_mpi 
         artifacts:
                 expire_in: 1 hour
                 paths:
@@ -82,7 +82,7 @@ NAME_JOB2:
                 - cd ${CI_PROJECT_DIR}/build/
                 - make test ARGS="-V"
 
-NAME_JOB3:
+format_ubuntu_mpi:
         variables:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
@@ -90,12 +90,12 @@ NAME_JOB3:
         image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
         stage:  format
         dependencies:
-                - NAME_JOB2
+                - test_ubuntu_mpi
         script:
                 - cd ${CI_PROJECT_DIR}/build/
                 - make format-FleCSI && git diff #--exit-code
 
-NAME_JOB4:
+deploy_ubuntu_mpi:
         variables:
                 GLOBAL_CI_VARIABLE: "global_ci_value"
                 DISTRO: "ubuntu"
@@ -106,7 +106,7 @@ NAME_JOB4:
         services:
                 - docker:dind
         dependencies:
-                - NAME_JOB2
+                - test_ubuntu_mpi
         artifacts:
                 expire_in: 1 hour
                 paths:
