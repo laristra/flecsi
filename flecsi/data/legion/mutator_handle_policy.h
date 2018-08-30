@@ -59,6 +59,12 @@ struct legion_mutator_handle_policy_t {
 
   Legion::LogicalRegion metadata_color_region;
 
+  std::vector<Legion::LogicalRegion> ghost_owners_offsets_lregions;
+  std::vector<Legion::LogicalRegion> ghost_owners_offsets_subregions;
+
+  std::vector<Legion::LogicalRegion> ghost_owners_entries_lregions;
+
+
   Legion::Context context;
   Legion::Runtime * runtime;
 
@@ -70,6 +76,10 @@ struct legion_mutator_handle_policy_t {
   // Some pointers are necessary for updates to live between walks.
   Legion::PhaseBarrier * pbarrier_as_owner_ptr;
   std::vector<Legion::PhaseBarrier *> ghost_owners_pbarriers_ptrs;
+
+  const Legion::STL::map<
+      LegionRuntime::Arrays::coord_t,
+      LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
 
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions
