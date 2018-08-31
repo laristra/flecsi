@@ -162,6 +162,8 @@ mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
 # Load the cinch extras
 #------------------------------------------------------------------------------#
 
+cinch_load_extras(MPI LEGION HPX)
+
 # After we load the cinch options, we need to capture the configuration
 # state for the particular Cinch build configuration and set variables that
 # are local to this project. FleCSI should never directly use the raw
@@ -169,10 +171,18 @@ mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
 # and used as such in the code. This will handle collisions between nested
 # projects that use Cinch.
 
-cinch_load_extras(MPI LEGION HPX)
-
+# ENABLE options from Cinch
 get_cmake_property(_variableNames VARIABLES)
 string (REGEX MATCHALL "(^|;)ENABLE_[A-Za-z0-9_]*"
+  _matchedVars "${_variableNames}")
+
+foreach(_variableName ${_matchedVars})
+  set(FLECSI_${_variableName} ${${_variableName}})
+endforeach()
+
+# CLOG options from Cinch
+get_cmake_property(_variableNames VARIABLES)
+string (REGEX MATCHALL "(^|;)CLOG_[A-Za-z0-9_]*"
   _matchedVars "${_variableNames}")
 
 foreach(_variableName ${_matchedVars})
