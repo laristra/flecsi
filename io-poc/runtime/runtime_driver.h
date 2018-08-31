@@ -34,8 +34,9 @@ inline bool output_MPI(int argc, char ** argv) {
 
 inline runtime_handler_t handler{ initialize_MPI, finalize_MPI, output_MPI };
 
-ristra_append_runtime_handler(handler);
+inline bool specialization_handler_appended =
+  ristra::control::runtime_t::instance().append_runtime_handler(handler);
 
-static const bool specialization_control_registered =
+inline bool specialization_control_registered =
   ristra::control::runtime_t::instance().register_driver(
     io_poc::control_t::execute);
