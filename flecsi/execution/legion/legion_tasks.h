@@ -130,13 +130,6 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
         generic_type, LegionRuntime::Arrays::Point<2>>>
         owners_refs_accs;
     std::vector<LegionRuntime::Arrays::Rect<2>> owners_rects;
-<<<<<<< HEAD
-    for(size_t owner_idx = 0; owner_idx < owner_map.size(); owner_idx++) {
-      owners_refs_accs.push_back(regions[1+owner_idx].get_field_accessor(
-        ghost_owner_pos_fid).typeify<LegionRuntime::Arrays::Point<2>>());
-      Legion::Domain owner_domain = runtime->get_index_space_domain(ctx,
-          regions[1+owner_idx].get_logical_region().get_index_space());
-=======
     for (int owner_idx = 0; owner_idx < owner_map.size(); owner_idx++) {
       owners_refs_accs.push_back(
           regions[1 + owner_idx]
@@ -144,7 +137,6 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
               .typeify<LegionRuntime::Arrays::Point<2>>());
       Legion::Domain owner_domain = runtime->get_index_space_domain(
           ctx, regions[1 + owner_idx].get_logical_region().get_index_space());
->>>>>>> master
       owners_rects.push_back(owner_domain.get_rect<2>());
     }
 
