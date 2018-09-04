@@ -61,7 +61,7 @@ var searchData=
   ['interrupt',['interrupt',['../classflecsi_1_1virtual__semaphore.html#a087bcc0f653bd3633d773bd1810887c0',1,'flecsi::virtual_semaphore']]],
   ['intersects',['intersects',['../structflecsi_1_1topology_1_1tree__geometry_____3_01T_00_012_01_4.html#a80e203fc50f68fcdf792efb8a3246433',1,'flecsi::topology::tree_geometry__&lt; T, 2 &gt;::intersects()'],['../structflecsi_1_1topology_1_1tree__geometry_____3_01T_00_013_01_4.html#a3d85292659086612691bf319a2a738f6',1,'flecsi::topology::tree_geometry__&lt; T, 3 &gt;::intersects()'],['../set__intersection_8h.html#aeb863e05af74a91c902e950d264c518e',1,'flecsi::utils::intersects()']]],
   ['invoke_5fmpi_5ftask',['invoke_mpi_task',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#aea0844c45d70f9b92a240dff4a9c9390',1,'flecsi::execution::legion_context_policy_t']]],
-  ['io_2eh',['io.h',['../io_2io_8h.html',1,'']]],
+  ['io_2eh',['io.h',['../io_8h.html',1,'']]],
   ['io_5fbase_2eh',['io_base.h',['../io__base_8h.html',1,'']]],
   ['io_5fbase_5ft',['io_base_t',['../classflecsi_1_1io_1_1io__base__t.html',1,'flecsi::io::io_base_t&lt; mesh_t &gt;'],['../classflecsi_1_1io_1_1io__base__t.html#a7e923dd0e4c568bf7015efde6cca6679',1,'flecsi::io::io_base_t::io_base_t()']]],
   ['io_5fexodus_2eh',['io_exodus.h',['../io__exodus_8h.html',1,'']]],

@@ -2,7 +2,7 @@ var searchData=
 [
   ['rank',['rank',['../classflecsi_1_1coloring_1_1communicator__t.html#a068322248415c364cea607097f66c03b',1,'flecsi::coloring::communicator_t::rank()'],['../classflecsi_1_1coloring_1_1mpi__communicator__t.html#a6d32250c51d818a37ad9ebbe2d81f11a',1,'flecsi::coloring::mpi_communicator_t::rank()']]],
   ['read',['read',['../classflecsi_1_1io_1_1io__base__t.html#a6089769ac24dbac023a8013932a04355',1,'flecsi::io::io_base_t::read()'],['../structflecsi_1_1io_1_1io__exodus__t.html#aba827d3b3faff6236a45e877cf5bbef8',1,'flecsi::io::io_exodus_t::read()']]],
-  ['read_5fmesh',['read_mesh',['../io_2io_8h.html#a36e4d527361a4a3789f5699b06a68713',1,'flecsi::io']]],
+  ['read_5fmesh',['read_mesh',['../io_8h.html#a36e4d527361a4a3789f5699b06a68713',1,'flecsi::io']]],
   ['reduce',['reduce',['../classflecsi_1_1topology_1_1index__space____.html#aa2cf6c62f3b9da9ee29fe895fcf65897',1,'flecsi::topology::index_space__']]],
   ['reduce_5feach_5f_5f',['reduce_each__',['../group__execution.html#ga930631ec09e0cc8c8b82f214fed1d0aa',1,'flecsi::execution']]],
   ['reduce_5fmax',['reduce_max',['../structflecsi_1_1execution_1_1hpx__context__policy__t.html#aef2990d4c5727ae5998268393ef62e54',1,'flecsi::execution::hpx_context_policy_t::reduce_max()'],['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a5d11cdea9667f751fb45998aeb08515b',1,'flecsi::execution::legion_context_policy_t::reduce_max()'],['../structflecsi_1_1execution_1_1mpi__context__policy__t.html#a7b6103af482cc8ecb44c8fb7a849f2be',1,'flecsi::execution::mpi_context_policy_t::reduce_max()']]],

@@ -8,7 +8,7 @@ var searchData=
   ['range_5fproxy_5f_5f',['range_proxy__',['../classflecsi_1_1utils_1_1bit__buffer_____1_1range__proxy____.html',1,'flecsi::utils::bit_buffer__']]],
   ['rank',['rank',['../classflecsi_1_1coloring_1_1communicator__t.html#a068322248415c364cea607097f66c03b',1,'flecsi::coloring::communicator_t::rank()'],['../classflecsi_1_1coloring_1_1mpi__communicator__t.html#a6d32250c51d818a37ad9ebbe2d81f11a',1,'flecsi::coloring::mpi_communicator_t::rank()']]],
   ['read',['read',['../classflecsi_1_1io_1_1io__base__t.html#a6089769ac24dbac023a8013932a04355',1,'flecsi::io::io_base_t::read()'],['../structflecsi_1_1io_1_1io__exodus__t.html#aba827d3b3faff6236a45e877cf5bbef8',1,'flecsi::io::io_exodus_t::read()']]],
-  ['read_5fmesh',['read_mesh',['../io_2io_8h.html#a36e4d527361a4a3789f5699b06a68713',1,'flecsi::io']]],
+  ['read_5fmesh',['read_mesh',['../io_8h.html#a36e4d527361a4a3789f5699b06a68713',1,'flecsi::io']]],
   ['reduce',['reduce',['../classflecsi_1_1topology_1_1index__space____.html#aa2cf6c62f3b9da9ee29fe895fcf65897',1,'flecsi::topology::index_space__']]],
   ['reduce_5feach_5f_5f',['reduce_each__',['../group__execution.html#ga930631ec09e0cc8c8b82f214fed1d0aa',1,'flecsi::execution']]],
   ['reduce_5ffunction',['reduce_function',['../classflecsi_1_1topology_1_1index__space____.html#afe07cd7bf722250efd784f8a0a5d266c',1,'flecsi::topology::index_space__']]],
