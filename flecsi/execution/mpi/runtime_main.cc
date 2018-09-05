@@ -65,24 +65,6 @@ int main(int argc, char ** argv) {
 
   notify(vm);
 
-  // Gather the unregistered options, if there are any, print a help message
-  // and die nicely.
-  std::vector<std::string> unrecog_options =
-    collect_unrecognized(parsed.options, include_positional);
-
-  if(unrecog_options.size()) {
-    if(rank == 0) {
-      std::cout << std::endl << "Unrecognized options: ";
-      for (int i{0}; i<unrecog_options.size(); ++i ) {
-        std::cout << unrecog_options[i] << " ";
-      }
-      std::cout << std::endl << std::endl << desc << std::endl;
-    } // if
-
-//    MPI_Finalize();
-//    return 1;
-  } // if
-
   if(vm.count("help")) {
     if(rank == 0) {
       std::cout << desc << std::endl;
