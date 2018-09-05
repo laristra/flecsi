@@ -55,11 +55,9 @@ struct legion_sparse_data_handle_policy_t {
   Legion::LogicalPartition entries_shared_lp;
   Legion::LogicalPartition entries_ghost_lp;
 
-   Legion::LogicalRegion offsets_entire_region;                                                                                                                                                                                                      
-    Legion::LogicalPartition offsets_color_parition;                                                                                                                                                                                                  
-    Legion::LogicalPartition offsets_exclusive_lp;                                                                                                                                                                                                    
-    Legion::LogicalPartition offsets_shared_lp;                                                                                                                                                                                                       
-    Legion::LogicalPartition offsets_ghost_lp
+  Legion::LogicalRegion offsets_entire_region;                                    Legion::LogicalPartition offsets_color_partition;                               Legion::LogicalPartition offsets_exclusive_lp;                     
+  Legion::LogicalPartition offsets_shared_lp;                            
+  Legion::LogicalPartition offsets_ghost_lp
 
   Legion::LogicalRegion metadata_color_region;
 
