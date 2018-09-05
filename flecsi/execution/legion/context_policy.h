@@ -60,10 +60,12 @@ namespace execution {
 // FIXME : should we generate theese IDs somewhere?
 enum {
   // Use the first 8 bits for storing the rhsf index
-  MAPPER_FORCE_RANK_MATCH = 0x00001000,
+  MAPPER_FORCE_RANK_MATCH  = 0x00001000,
   MAPPER_COMPACTED_STORAGE = 0x00002000,
-  MAPPER_SUBRANK_LAUNCH = 0x00003000,
-  EXCLUSIVE_LR = 0x00004000,
+  MAPPER_SUBRANK_LAUNCH    = 0x00003000,
+  EXCLUSIVE_LR             = 0x00004000,
+  SPARSE_RR                = 0x11000001,
+  RR                       = 0x00005002, 
 };
 
 /*!
@@ -102,6 +104,41 @@ struct legion_context_policy_t {
       launch_t,
       std::string,
       registration_function_t>;
+
+  struct sparse_field_data_t
+  {
+    sparse_field_data_t(){}
+
+    sparse_field_data_t(
+      size_t type_size,
+      size_t num_exclusive,
+      size_t num_shared,
+      size_t num_ghost,
+      size_t max_entries_per_index,
+      size_t exclusive_reserve
+    )
+    : type_size(type_size),
+    num_exclusive(num_exclusive),
+    num_shared(num_shared),
+    num_ghost(num_ghost),
+    num_total(num_exclusive + num_shared + num_ghost),
+    max_entries_per_index(max_entries_per_index),
+    reserve(exclusive_reserve),
+    num_exclusive_filled(0){}
+
+    size_t type_size;
+
+    // total # of exclusive, shared, ghost entries
+    size_t num_exclusive = 0;
+    size_t num_shared = 0;
+    size_t num_ghost = 0;
+    size_t num_total = 0;
+
+    size_t max_entries_per_index;
+    size_t reserve;
+    size_t num_exclusive_filled = 0;
+    bool initialized = false;
+  };
 
   //--------------------------------------------------------------------------//
   // Runtime state.
@@ -453,6 +490,18 @@ struct legion_context_policy_t {
     Legion::LogicalRegion region;
   };
 
+  struct sparse_metadata_t{
+    Legion::LogicalRegion color_region;
+  };
+
+  void set_sparse_metadata(const sparse_metadata_t& sparse_metadata){
+    sparse_metadata_ = sparse_metadata;
+  }
+
+  const sparse_metadata_t& sparse_metadata(){
+    return sparse_metadata_;    
+  }
+
   /*!
     Get the index space data map.
    */
@@ -547,6 +596,7 @@ private:
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
+  sparse_metadata_t sparse_metadata_;
 
 }; // class legion_context_policy_t
 

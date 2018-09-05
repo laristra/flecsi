@@ -62,7 +62,11 @@ def execute(verbose, debug, build):
     # Setup compiler and flags
     cxx_compiler = '-DCMAKE_CXX_COMPILER=' + build['compiler']
     cxx_flags = '-DCMAKE_CXX_FLAGS=' + build['flags']
-    cxx_debug_flags = '-DCMAKE_CXX_FLAGS_DEBUG=' + build['debug_flags']
+
+    if debug:
+        cxx_debug_flags = '-DCMAKE_BUILD_TYPE=Debug'
+    else:
+        cxx_debug_flags = '-DCMAKE_BUILD_TYPE=Release'
 
     # Echo the subprocess call
     if verbose:

@@ -105,11 +105,12 @@ struct legion_execution_policy_t {
                                    std::string name) {
     clog(info) << "Registering legion task " << KEY << " " << name << std::endl;
 
-    if (!context_t::instance().register_task(
-            KEY, processor, launch, name,
-            pure_task_wrapper__<RETURN, TASK>::registration_callback)) {
-      clog(fatal) << "callback registration failed for " << name << std::endl;
-    } // if
+    using wrapper_t = pure_task_wrapper__<RETURN, TASK>;
+
+    const bool success = context_t::instance().register_task(
+      KEY, processor, launch, name, wrapper_t::registration_callback);
+
+    clog_assert(success, "callback registration failed for " << name);
 
     return true;
   } // register_legion_task
@@ -119,16 +120,20 @@ struct legion_execution_policy_t {
     method, please see task__::register_task.
    */
 
-  template <size_t KEY, typename RETURN, typename ARG_TUPLE,
-            RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool register_task(processor_type_t processor, launch_t launch,
-                            std::string name) {
+  template<
+      size_t KEY,
+      typename RETURN,
+      typename ARG_TUPLE,
+      RETURN (*DELEGATE)(ARG_TUPLE)>
+  static bool
+  register_task(processor_type_t processor, launch_t launch, std::string name) {
+
     using wrapper_t = task_wrapper__<KEY, RETURN, ARG_TUPLE, DELEGATE>;
 
-    if (!context_t::instance().register_task(
-            KEY, processor, launch, name, wrapper_t::registration_callback)) {
-      clog(fatal) << "callback registration failed for " << name << std::endl;
-    } // if
+    const bool success = context_t::instance().register_task(
+      KEY, processor, launch, name, wrapper_t::registration_callback);
+
+    clog_assert(success, "callback registration failed for " << name);
 
     return true;
   } // register_task
@@ -142,8 +147,7 @@ struct legion_execution_policy_t {
      size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
   struct execute_task__ {
     static void execute(ARGS &&... args) {
-      clog(fatal) << "invalid launch type" << std::endl;
-      throw std::runtime_error("invalid launch type");
+      clog_fatal("invalid launch type" << std::endl);
     }
   };
 
@@ -298,6 +302,7 @@ struct legion_execution_policy_t {
           throw std::runtime_error(" loc index task can't be executed from"
                 "  another task");
 
+<<<<<<< HEAD
         }//end if
 #endif
         LegionRuntime::Arrays::Rect<1> launch_bounds(0,context_.colors()-1);
@@ -308,6 +313,28 @@ struct legion_execution_policy_t {
               TaskArgument(&task_args, sizeof(ARG_TUPLE)), Legion::ArgumentMap());
 
       //    index_task_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+=======
+          // Enqueue the prolog.
+          task_prolog_t task_prolog(
+              legion_runtime, legion_context, task_launcher);
+          task_prolog.sparse = false;
+          task_prolog.walk(task_args);
+          task_prolog.launch_copies();
+
+          task_prolog_t task_prolog_sparse(
+              legion_runtime, legion_context, task_launcher);
+          task_prolog_sparse.sparse = true;
+          task_prolog_sparse.walk(task_args);
+          task_prolog_sparse.launch_copies();
+
+          auto f = legion_runtime->execute_task(legion_context, task_launcher);
+
+          // Enqueue the epilog.
+          task_epilog_t task_epilog(legion_runtime, legion_context);
+          task_epilog.walk(task_args);
+
+          f.wait();
+>>>>>>> origin/master
 
 #ifdef MAPPER_COMPACTION
           index_task_launcher.tag = MAPPER_COMPACTED_STORAGE;
@@ -326,9 +353,20 @@ struct legion_execution_policy_t {
           task_prolog.walk(task_args);
           task_prolog.launch_copies();
 
+<<<<<<< HEAD
           // Enqueue the task.
           clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
                       << legion_runtime->find_local_MPI_rank() << std::endl;
+=======
+          return legion_future__<RETURN, launch_type_t::index>(future);
+        } // if check for execution state
+      } else {
+        //        clog_fatal(" loc task doesn'thave an implementation for
+        //        the index task execution" <<std::endl);
+        // Initialize the arguments to pass through the runtime.
+        init_args_t init_args(legion_runtime, legion_context);
+        init_args.walk(task_args);
+>>>>>>> origin/master
 
           Legion::FutureMap future_map;
 
@@ -382,6 +420,7 @@ struct legion_execution_policy_t {
 
       // Handle MPI and Legion invocations separately.
       if (processor_type == processor_type_t::mpi) {
+<<<<<<< HEAD
 
 //FIXME
 #if 0        
@@ -427,6 +466,9 @@ struct legion_execution_policy_t {
           return legion_future__<RETURN, launch_type_t::single>(f);
         }//check for the execution state
 #endif
+=======
+        clog_fatal(" mpi task doesn't have an implementation for the single task execution");
+>>>>>>> origin/master
       } else {
         // Initialize the arguments to pass through the runtime.
         init_args_t init_args(legion_runtime, legion_context);
@@ -454,11 +496,23 @@ struct legion_execution_policy_t {
         LegionRuntime::Arrays::Rect<1> launch_bounds(0,1);
         Domain launch_domain = Domain::from_rect<1>(launch_bounds);
         // Enqueue the prolog.
+<<<<<<< HEAD
         task_prolog_t task_prolog(legion_runtime, legion_context,
                                   launch_domain);
+=======
+        task_prolog_t task_prolog(
+            legion_runtime, legion_context, task_launcher);
+        task_prolog.sparse = false;
+>>>>>>> origin/master
         task_prolog.walk(task_args);
         task_prolog.launch_copies();
 
+        task_prolog_t task_prolog_sparse(
+            legion_runtime, legion_context, task_launcher);
+        task_prolog_sparse.sparse = true;
+        task_prolog_sparse.walk(task_args);
+        task_prolog_sparse.launch_copies();
+        
         // Enqueue the task.
         clog(trace) << "Execute flecsi/legion task " << KEY << " on rank "
                     << legion_runtime->find_local_MPI_rank() << std::endl;

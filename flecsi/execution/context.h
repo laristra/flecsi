@@ -29,6 +29,7 @@
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
+#include <flecsi/utils/dag.h>
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/simple_id.h>
 
@@ -65,7 +66,7 @@ struct context__ : public CONTEXT_POLICY {
 
   struct field_info_t {
     size_t data_client_hash;
-    size_t storage_class;
+    size_t storage_class=0;
     size_t size;
     size_t namespace_hash;
     size_t name_hash;
@@ -80,9 +81,10 @@ struct context__ : public CONTEXT_POLICY {
    */
   struct sparse_index_space_info_t {
     size_t index_space;
-    size_t reserve_chunk;
+    size_t exclusive_reserve;
     size_t max_entries_per_index;
-    size_t max_exclusive_entries;
+    // flecsi internal variable, do not set it up
+    size_t sparse_fields_registered_=0; 
   };
 
   struct index_subspace_info_t {
@@ -116,6 +118,19 @@ struct context__ : public CONTEXT_POLICY {
 
   using field_info_map_t =
       std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
+
+  //--------------------------------------------------------------------------//
+  // Top-level driver interface.
+  //--------------------------------------------------------------------------//
+
+  using tlt_driver_t = std::function<int(int, char **)>;
+
+  bool register_top_level_driver(tlt_driver_t const & driver) {
+    tlt_driver_ = driver;
+    return true;
+  } // register_top_level_driver
+
+  tlt_driver_t const & top_level_driver() const { return tlt_driver_; }
 
   //--------------------------------------------------------------------------//
   // Object interface.
@@ -273,10 +288,8 @@ struct context__ : public CONTEXT_POLICY {
     return set_index_space_map_;
   }
 
-  void set_sparse_index_space_info(
-      size_t index_space,
-      const sparse_index_space_info_t & info) {
-    sparse_index_space_info_map_.emplace(index_space, info);
+  void set_sparse_index_space_info( const sparse_index_space_info_t & info) {
+    sparse_index_space_info_map_[info.index_space]=info;
   }
 
   /*!
@@ -285,6 +298,25 @@ struct context__ : public CONTEXT_POLICY {
 
   const auto & sparse_index_space_info_map() const {
     return sparse_index_space_info_map_;
+  }
+
+  void increment_sparse_fields(size_t sparse_idx_space)
+  {
+    auto iterator = sparse_index_space_info_map_.find(sparse_idx_space);
+    clog_assert(iterator!=sparse_index_space_info_map_.end(),
+                "sparse data map doesn't have this index space");
+       iterator->second.sparse_fields_registered_++;
+  }
+
+  bool sparse_fields(size_t sparse_idx_space)
+  {
+    auto iterator = sparse_index_space_info_map_.find(sparse_idx_space);
+    clog_assert(iterator!=sparse_index_space_info_map_.end(),
+                "sparse data map doesn't have this index space");
+    if (iterator->second.sparse_fields_registered_>0)
+      return true;
+    else
+      return false;
   }
 
   const auto & cis_to_gis_map(size_t index_space) const {
@@ -544,10 +576,7 @@ struct context__ : public CONTEXT_POLICY {
 
   index_coloring_t & coloring(size_t index_space) {
     auto it = colorings_.find(index_space);
-    if (it == colorings_.end()) {
-      clog(fatal) << "invalid index_space " << index_space << std::endl;
-    } // if
-
+    clog_assert(it != colorings_.end(), "invalid index space: " << index_space);
     return it->second;
   } // coloring
 
@@ -561,10 +590,8 @@ struct context__ : public CONTEXT_POLICY {
   const std::unordered_map<size_t, coloring_info_t> &
   coloring_info(size_t index_space) {
     auto it = coloring_info_.find(index_space);
-    if (it == coloring_info_.end()) {
-      clog(fatal) << "invalid index space " << index_space << std::endl;
-    } // if
-
+    clog_assert(
+      it != coloring_info_.end(), "invalid index space: " << index_space);
     return it->second;
   } // coloring_info
 
@@ -771,6 +798,7 @@ struct context__ : public CONTEXT_POLICY {
   } // execution_state
 
 private:
+
   // Default constructor
   context__() : CONTEXT_POLICY() {}
 
@@ -790,6 +818,12 @@ private:
   context__ & operator=(const context__ &) = delete;
   context__(context__ &&) = delete;
   context__ & operator=(context__ &&) = delete;
+
+  //--------------------------------------------------------------------------//
+  // Top-level driver.
+  //--------------------------------------------------------------------------//
+
+  tlt_driver_t tlt_driver_ = {};
 
   //--------------------------------------------------------------------------//
   // Object data members.
@@ -903,10 +937,12 @@ private:
 
   //! the packed types used for simple_id_t
   using simple_id_types_t = std::tuple<int, int, size_t>;
+
   //! the simple id type used for comparing ids of different dimensions
   using simple_id_t = utils::simple_id_t<
       simple_id_types_t,
       utils::lexical_comparison<simple_id_types_t>>;
+
   //! the storage type for arrays of simple_id_t's
   using simple_id_vector_t = std::vector<simple_id_t>;
 

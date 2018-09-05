@@ -62,7 +62,7 @@ def add_command_line_compiler_options(parser):
     parser.add_argument('-D', '--define', action='append',
         help='Specify a preprocessor define. This argument may be given' +
              ' multiple times. Arguments may be of the form' +
-             ' -DDEFINE, -I DEFINE, or' +
+             ' -DDEFINE, -D DEFINE, or' +
              ' --define DEFINE. Defines may' +
              ' also be specified by setting the FLECSIT_DEFINES' +
              ' environment variable. If FLECSIT_DEFINES is set,' +
@@ -106,25 +106,32 @@ def generate_compiler_options(config, entries, environment, option):
     libraries, and packages.
     """
 
-    options = ""
+    opts = {}
 
     # Add entries from cmake config
     if config:
-        for entry in config.split(' ') or []:
-            options += option + entry + ' '
+        opts.update(dict(s.split("=") for s in config.split(' ') if "=" in s))
+        opts.update(dict([s, ""] for s in config.split(' ') if not "=" in s))
 
-    # Read the environment variable
+    # Add command-line entries
+    if entries:
+        opts.update(dict(s.split("=") for s in entries if "=" in s))
+        opts.update(dict([s, ""] for s in entries if not "=" in s))
+
+    # Add environment variable entries
     envflags = os.getenv(environment)
 
-    # If the environment variable is set, use it. Otherwise,
-    # use the command-line options passed by the user.
     if envflags is not None:
-        for flag in envflags.split(':') or []:
-            options += option + flag + ' '
-    else:
-        if entries:
-            for entry in entries or []:
-                options += option + entry + ' '
+        opts.update(dict(s.split("=") for s in envflags.split(':') if "=" in s))
+        opts.update(dict([s, ""] for s in envflags.split(':') if not "=" in s))
+
+    options = ""
+
+    for k,v in opts.items():
+        if v is "":
+            options += option + k + ' '
+        else:
+            options += option + k + '=' + v + ' '
 
     return options.strip()
 

@@ -23,6 +23,7 @@
 #include <flecsi/execution/function.h>
 #include <flecsi/execution/kernel.h>
 #include <flecsi/execution/task.h>
+
 #include <flecsi/utils/common.h>
 
 clog_register_tag(execution);
@@ -60,6 +61,52 @@ clog_register_tag(execution);
   typename flecsi::utils::function_traits__<decltype(task)>::arguments_type
 
 //----------------------------------------------------------------------------//
+// Top-Level Driver Interface
+//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_register_program
+
+  Register a program. This is currently a place holder for more complex
+  operations that may be required in the future to register a multiphysics
+  program with the runtime. Currently, this interface simply creates a
+  boolean symbol so that an actual translation unit is necessary for
+  compilation.
+
+  @param program The program name.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_program(program)                                       \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  bool flecsi_program_registered = true;
+
+//----------------------------------------------------------------------------//
+// Top-Level Driver Interface
+//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_register_top_level_driver
+
+  Register the top level driver function.
+
+  @param driver A std::function<int(int, char **)> that shall be invoked by
+                the FLeCSI runtime after initialization. Normally, this
+                function should be the \em execute method of a
+                flecsi::control::control__<control_policy_t> instance.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_top_level_driver(driver)                               \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  bool registered_top_level_driver_##driver =                                  \
+    flecsi::execution::context_t::instance().register_top_level_driver(driver)
+
+//----------------------------------------------------------------------------//
 // Object Registration Interface
 //----------------------------------------------------------------------------//
 
@@ -79,7 +126,7 @@ clog_register_tag(execution);
 #define flecsi_register_global_object(index, nspace, type)                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  static bool registered_global_object_##nspace##_##index =                    \
+  inline bool registered_global_object_##nspace##_##index =                    \
       flecsi::execution::context_t::instance()                                 \
           .template register_global_object<                                    \
               flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}      \
@@ -188,7 +235,7 @@ clog_register_tag(execution);
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
-  bool task##_task_registered =                                                \
+  inline bool task##_task_registered =                                         \
       flecsi::execution::task_interface_t::register_task<                      \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
           __flecsi_internal_return_type(task),                                 \
@@ -224,7 +271,7 @@ clog_register_tag(execution);
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
-  bool task##_task_registered =                                                \
+  inline bool task##_task_registered =                                         \
       flecsi::execution::task_interface_t::register_task<                      \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::task)}    \
               .hash(),                                                         \
@@ -408,6 +455,35 @@ clog_register_tag(execution);
   flecsi_execute_task(task, nspace, index, ##__VA_ARGS__)
 
 //----------------------------------------------------------------------------//
+// Reduction Interface
+//----------------------------------------------------------------------------//
+
+/*!
+  @def flecsi_register_reduction_operation
+
+  This macro registers a custom reduction rule with the runtime.
+
+  @param name           The name of the custom reduction. Subsequent
+                        calls to reduction tasks can use this name.
+  @param operation_type A type that defines static methods \em apply
+                        and \em fold. The \em apply method will be used
+                        by the runtime for \em exclusive operations, i.e.,
+                        the elements are accessed sequentially. The \em fold
+                        method is for \em non-exclusive access. The \em fold
+                        method is optional.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_reduction_operation(name, operation_type)              \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  inline bool name##_reduction_operation_registered =                          \
+      flecsi::execution::task_interface_t::register_reduction_operation<       \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)},           \
+          operation_type>()
+
+//----------------------------------------------------------------------------//
 // Function Interface
 //----------------------------------------------------------------------------//
 
@@ -439,7 +515,7 @@ clog_register_tag(execution);
       __flecsi_internal_arguments_type(func)>;                                 \
                                                                                \
   /* Call the execution policy to register the function delegate */            \
-  bool func##_func_registered =                                                \
+  inline bool func##_func_registered =                                         \
       flecsi::execution::function_interface_t::register_function<              \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}    \
               .hash(),                                                         \
