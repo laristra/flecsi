@@ -134,9 +134,9 @@ runtime_driver(
         data.global_index_space().logical_region;
   }
 
-  if(number_of_sparse_fields > 0){
-    data.init_sparse_metadata();
-  }
+//  if(number_of_sparse_fields > 0){
+//    data.init_sparse_metadata();
+//  }
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
@@ -821,15 +821,10 @@ setup_rank_context_task(
   //FIXME fix the logic for sparse metadata below 
 
   if(number_of_sparse_fields > 0){
-    context_t::sparse_metadata_t md;
+    context_t::sparse_field_data_t md;
 
     //FIXME THIS NEEDS TO BE FIXED for SPARSE
-    md.color_partition = regions[region_index].get_logical_region();
-    context_.set_sparse_metadata(md); 
       
-    Legion::PhysicalRegion pr = regions[region_index];
-    Legion::LogicalRegion lr = pr.get_logical_region();
-    Legion::IndexSpace is = lr.get_index_space();
 
     for(const field_info_t& fi : context_.registered_fields()){
       if(fi.storage_class != data::sparse && fi.storage_class != data::ragged){
@@ -847,19 +842,12 @@ setup_rank_context_task(
       auto citr = cim.find(my_color);
       const coloring_info_t& ci = citr->second;
       
-      auto ac = pr.get_field_accessor(fi.fid).
-        template typeify<sparse_field_data_t>();
-            
-      Legion::Domain domain = runtime->get_index_space_domain(ctx, is);
-
-      LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
-      LegionRuntime::Arrays::Rect<2> sr;
-      LegionRuntime::Accessor::ByteOffset bo[2];
-      sparse_field_data_t* metadata = ac.template raw_rect_ptr<2>(dr, sr, bo);
-      *metadata = sparse_field_data_t(fi.size, ci.exclusive,
+      md = sparse_field_data_t(fi.size, ci.exclusive,
         ci.shared,
         ci.ghost,
         si->second.max_entries_per_index, si->second.exclusive_reserve);
+
+      context_.set_sparse_metadata(md);
     }
 
   } 
