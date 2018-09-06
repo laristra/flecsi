@@ -56,7 +56,6 @@ struct QuerySequence
 template<size_t MD, size_t MAXFD, size_t MAXIN, size_t MAXTD>
 struct QueryTable
 {
-//  QuerySequence<MD> entry[MAXFD][MAXIN][MAXTD];
 }; 
 
 template<>
