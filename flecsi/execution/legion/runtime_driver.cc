@@ -323,6 +323,42 @@ runtime_driver(
     args_serializers[color].serialize(
       &context_.registered_fields()[0], num_fields * sizeof(field_info_t));
 
+    // #7 serialize adjacency info
+    using adjacency_triple_t = context_t::adjacency_triple_t;
+
+    std::vector<adjacency_triple_t> adjacencies_vec;
+
+    for(auto& itr : context_.adjacency_info()){
+      const coloring::adjacency_info_t& ai = itr.second;
+      auto t = std::make_tuple(ai.index_space, ai.from_index_space,
+        ai.to_index_space);
+      adjacencies_vec.push_back(t);
+    }//for
+
+    size_t num_adjacencies = adjacencies_vec.size();
+
+    args_serializers[color].serialize(&num_adjacencies, sizeof(size_t));
+    args_serializers[color].serialize(&adjacencies_vec[0], num_adjacencies
+      * sizeof(adjacency_triple_t));
+
+    // #8 serialize index subspaces info
+
+    using index_subspace_info_t = context_t::index_subspace_info_t;
+
+    std::vector<index_subspace_info_t> index_subspaces_vec;
+
+    for(auto& itr : context_.index_subspace_info()){
+      const index_subspace_info_t& ii = itr.second;
+      index_subspaces_vec.push_back(ii);
+    }//for
+
+    size_t num_index_subspaces = index_subspaces_vec.size();
+
+    args_serializers[color].serialize(&num_index_subspaces, sizeof(size_t));
+    args_serializers[color].serialize(&index_subspaces_vec[0],
+      num_index_subspaces * sizeof(index_subspace_info_t));
+
+
    //-----------------------------------------------------------------------//
    // add setup_rank_context_launcher to must_epoch
    //-----------------------------------------------------------------------//
@@ -364,68 +400,22 @@ runtime_driver(
 
     ispace_dmap[idx_space].color_partition = runtime->get_logical_partition(
         ctx, flecsi_ispace.logical_region, flecsi_ispace.color_partition);
-
-
-    if(number_of_sparse_fields > 0){
-    context_t::sparse_metadata_t md;
-
-    //FIXME THIS NEEDS TO BE FIXED for SPARSE
-    md.color_partition = regions[region_index].get_logical_region();
-    context_.set_sparse_metadata(md);
-
-    Legion::PhysicalRegion pr = regions[region_index];
-    Legion::LogicalRegion lr = pr.get_logical_region();
-    Legion::IndexSpace is = lr.get_index_space();
-
-    for(const field_info_t& fi : context_.registered_fields()){
-      if(fi.storage_class != data::sparse && fi.storage_class != data::ragged){
-        continue;
-      }
-
-      size_t idx_space = fi.index_space;
-
-      auto si = sis_map.find(idx_space);
-
-      using sparse_field_data_t = context_t::sparse_field_data_t;
-      using coloring_info_t = context_t::coloring_info_t;
-
-      const auto& cim = context_.coloring_info(idx_space);
-      auto citr = cim.find(my_color);
-      const coloring_info_t& ci = citr->second;
-
-      auto ac = pr.get_field_accessor(fi.fid).
-        template typeify<sparse_field_data_t>();
-
-      Legion::Domain domain = runtime->get_index_space_domain(ctx, is);
-
-      LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
-      LegionRuntime::Arrays::Rect<2> sr;
-      LegionRuntime::Accessor::ByteOffset bo[2];
-      sparse_field_data_t* metadata = ac.template raw_rect_ptr<2>(dr, sr, bo);
-      *metadata = sparse_field_data_t(fi.size, ci.exclusive,
-        ci.shared,
-        ci.ghost,
-        si->second.max_entries_per_index, si->second.exclusive_reserve);
-    }
-
-  } 
-
     runtime->attach_name(ispace_dmap[idx_space].color_partition, "color logical partition");
+
     ispace_dmap[idx_space].primary_lp = runtime->get_logical_partition(
         ctx, primary_lr, flecsi_ispace.primary_partition);
-
     runtime->attach_name(ispace_dmap[idx_space].primary_lp, "primary logical partition");
+
     ispace_dmap[idx_space].exclusive_lp = runtime->get_logical_partition(
         ctx, primary_lr, flecsi_ispace.exclusive_partition);
-
     runtime->attach_name(ispace_dmap[idx_space].exclusive_lp, "exclusive logical partition");
+
     ispace_dmap[idx_space].shared_lp = runtime->get_logical_partition(
         ctx, primary_lr, flecsi_ispace.shared_partition);
-
     runtime->attach_name(ispace_dmap[idx_space].shared_lp, "shared logical partition");
+
     ispace_dmap[idx_space].ghost_lp = runtime->get_logical_partition(
         ctx, ghost_lr, flecsi_ispace.ghost_partition);
-
     runtime->attach_name(ispace_dmap[idx_space].ghost_lp, "ghost logical partition");
 
     // Now that ghosts point to post-compacted shared positions, we can
@@ -562,8 +552,57 @@ setup_rank_context_task(
     for(size_t i = 0; i < num_fields; ++i){
       field_info_t& fi = field_info_buf[i];
       context_.put_field_info(fi);
+      context_.register_field_info(fi);
     }//end for i
   }//if
+
+  // #7 deserialize adjacency info
+  size_t num_adjacencies;
+  args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
+
+  using adjacency_triple_t = context_t::adjacency_triple_t;
+  adjacency_triple_t* adjacencies =
+     new adjacency_triple_t [num_adjacencies];
+
+  args_deserializer.deserialize((void*)adjacencies,
+    sizeof(adjacency_triple_t) * num_adjacencies);
+
+  for(size_t i = 0; i < num_adjacencies; ++i){
+    context_.add_adjacency_triple(adjacencies[i]);
+  }
+
+//  for(auto& itr : context_.adjacencies()) {
+//    ispace_dmap[itr.first].color_region =
+//      regions[region_index].get_logical_region();
+
+//    region_index++;
+//  }
+
+  // #8 deserialize index subspaces
+  size_t num_index_subspaces;
+  args_deserializer.deserialize(&num_index_subspaces, sizeof(size_t));
+
+  using index_subspace_info_t = context_t::index_subspace_info_t;
+  index_subspace_info_t* index_subspaces =
+     new index_subspace_info_t[num_index_subspaces];
+
+  args_deserializer.deserialize((void*)index_subspaces,
+    sizeof(index_subspace_info_t) * num_index_subspaces);
+
+  for(size_t i = 0; i < num_index_subspaces; ++i){
+    context_.add_index_subspace(index_subspaces[i]);
+  }
+
+//  auto& isubspace_dmap = context_.index_subspace_data_map();
+
+//  size_t subspace_index = region_index+num_index_subspaces-1;
+//  for(auto& itr : context_.index_subspace_info()) {
+//    isubspace_dmap[itr.first].region =
+//      regions[subspace_index].get_logical_region();
+//    subspace_index--;
+//    region_index++;
+//  }
+
 
   // Setup maps from mesh to compacted (local) index space and vice versa
   //
@@ -588,6 +627,54 @@ setup_rank_context_task(
 
     context_.add_index_map(is.first, _map);
   } // for coloring_map
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Reordering cis_to_gis and gis_to_cis maps
+  //////////////////////////////////////////////////////////////////////////////
+
+  for(auto is: context_.coloring_map()) {
+    size_t index_space = is.first;
+
+    auto& _cis_to_gis = context_.cis_to_gis_map(index_space);
+    auto& _gis_to_cis = context_.gis_to_cis_map(index_space);
+
+    auto & _color_map = context_.coloring_info(index_space);
+
+    std::vector<size_t> _rank_offsets(context_.colors()+1, 0);
+
+    size_t offset = 0;
+
+    for(size_t c{0}; c<context_.colors(); ++c) {
+      auto & _color_info = _color_map.at(c);
+      _rank_offsets[c] = offset;
+      offset += (_color_info.exclusive + _color_info.shared);
+    } // for
+
+    size_t cid{0};
+    for(auto entity: is.second.exclusive) {
+      size_t gid = _rank_offsets[entity.rank] + entity.offset;
+      _cis_to_gis[cid] = gid;
+      _gis_to_cis[gid] = cid;
+      ++cid;
+    } // for
+
+    for(auto entity: is.second.shared) {
+      size_t gid = _rank_offsets[entity.rank] + entity.offset;
+      _cis_to_gis[cid] = gid;
+      _gis_to_cis[gid] = cid;
+      ++cid;
+    } // for
+
+    for(auto entity: is.second.ghost) {
+      size_t gid = _rank_offsets[entity.rank] + entity.offset;
+      _cis_to_gis[cid] = gid;
+      _gis_to_cis[gid] = cid;
+      ++cid;
+    } // for
+
+  } // for
+
 
 
   //FIXME fix the logic for sparse metadata below 
