@@ -389,6 +389,26 @@ runtime_driver(
     size_t idx_space = is.first;
     auto& flecsi_ispace = data.index_space(idx_space);
 
+    size_t sparse_idx_space;
+
+    const sparse_index_space_info_t* sparse_info;
+
+    if(number_of_sparse_fields == 0){
+      sparse_info = nullptr;
+    }
+    else{
+      auto sitr = sis_map.find(idx_space);
+      if(sitr != sis_map.end() &&
+        (sitr->second.sparse_fields_registered_>0)){
+        sparse_info = &sitr->second;
+        // TODO: formalize sparse index space offset
+        sparse_idx_space = idx_space + 8192;
+      }
+      else{
+        sparse_info = nullptr;
+      }
+    }
+
     Legion::LogicalPartition access_lp =runtime->get_logical_partition(ctx,
         flecsi_ispace.logical_region, flecsi_ispace.access_partition);
     Legion::LogicalRegion primary_lr = runtime->get_logical_subregion_by_color(
@@ -434,7 +454,11 @@ runtime_driver(
 
     runtime->attach_name(ispace_dmap[idx_space].ghost_owners_lp,
         "ghost owners logical partition");
-  } // idx_space
+    if(sparse_info){
+      ispace_dmap[sparse_idx_space].entire_region = flecsi_ispace.logical_region;
+      //FIXME add logic for sparse
+    }
+//  } // idx_space
 
   // initialize read/write flags for task_prolog
   for(auto is: context_.coloring_map()) {
@@ -442,8 +466,13 @@ runtime_driver(
     for (const field_info_t* field_info : fields_map[idx_space]){
       ispace_dmap[idx_space].ghost_is_readable[field_info->fid] = true;
       ispace_dmap[idx_space].write_phase_started[field_info->fid] = false;
+
+      if(sparse_info){
+        ispace_dmap[sparse_idx_space].ghost_is_readable[field_info->fid] = true;
+        ispace_dmap[sparse_idx_space].write_phase_started[field_info->fid] = false;
+      }
     }//end field_info
-  }//end for idx_space
+//  }//end for idx_space
 
   for (size_t idx : data.adjacencies()) {
     auto& adjacency = data.adjacency(idx);
@@ -730,6 +759,11 @@ setup_rank_context_task(
     lism.emplace(index_space, std::move(lis_data));
   }
 #endif
+
+  delete [] field_info_buf;
+  delete [] adjacencies;
+  delete [] index_subspaces;
+  delete [] sparse_index_spaces;
 
 } // setup_rank_context_task
 
