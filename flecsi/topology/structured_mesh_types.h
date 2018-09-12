@@ -51,30 +51,31 @@ class structured_mesh_entity_base__ : public structured_mesh_entity_base_
   template<size_t M>
   size_t id() const
   {
-    return id_[M];
+    return global_id_[M];
   }
 
   size_t id(size_t domain) const
   {
-    return id_[domain];
+    return global_id_[domain];
   }
 
   template<size_t M>
   void set_id(const size_t &id)
   {
-    id_[M] = id;
+    global_id_[M] = id;
   }
 
   void set_id(const size_t &id, size_t domain)
   {
-    id_[domain] = id;
+    global_id_[domain] = id;
   }
+
 
   template <class MESH_POLICY>
   friend class structured_mesh_topology__;
 
  private:
-  std::array<sm_id_t,NUM_DOMAINS> id_;
+  std::array<sm_id_t,NUM_DOMAINS> global_id_;
 }; // class structured_mesh_entity_base__
 
 

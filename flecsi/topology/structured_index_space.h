@@ -62,7 +62,8 @@ public:
  //! @param mubnds  The lower/upper bounds of the dependent index-space 
  //--------------------------------------------------------------------------//
 
-  void init(bool primary, 
+  void init(bool primary,
+            const sm_id_t primary_dim,  
             const sm_id_array_t &global_lbnds, 
             const sm_id_array_t &global_ubnds, 
             const sm_id_array_t &global_strides, 
@@ -77,6 +78,7 @@ public:
 
     offset_ = 0;
     primary_ = primary;
+    primary_dim_ = primary_dim; 
     num_boxes_ = bnds.size()/DM;
     sm_id_array_t global_low, global_up, global_str;
     sm_id_array_t local_low, local_up;
@@ -105,6 +107,7 @@ public:
       lbox_size_.push_back(cnt);
       lbox_lowbnds_.push_back(local_low);
       lbox_upbnds_.push_back(local_up);
+      gbox_size_.push_back(cnt);
       gbox_lowbnds_.push_back(global_low);
       gbox_upbnds_.push_back(global_up);
       gbox_strides_.push_back(global_str);
@@ -112,14 +115,14 @@ public:
 
     size_ = 0;
     for (size_t i = 0; i < num_boxes_; i++)
-     size_ += box_size_[i];
+     size_ += lbox_size_[i];
 
     //debug print
     for (size_t i = 0; i < num_boxes_; i++)
     {
-      std::cout<<"Box-id = "<<i<<std::endl;
-      std::cout<<" -- Box-offset = "<<box_offset_[i]<<std::endl;
-      std::cout<<" -- Box-size   = "<<box_size_[i]<<std::endl;
+      std::cout<<"lBox-id = "<<i<<std::endl;
+      std::cout<<" -- lBox-offset = "<<lbox_offset_[i]<<std::endl;
+      std::cout<<" -- lBox-size   = "<<lbox_size_[i]<<std::endl;
 
       std::cout<<" ----lBox-lower-bnds = { ";
       for (size_t j = 0 ; j < DM; j++)
@@ -129,6 +132,27 @@ public:
       std::cout<<" ----lBox-upper-bnds = { ";
       for (size_t j = 0 ; j < DM; j++)
         std::cout<<lbox_upbnds_[i][j]<<", ";
+      std::cout<<"}"<<std::endl;
+    }
+
+    for (size_t i = 0; i < num_boxes_; i++)
+    {
+      std::cout<<"gBox-id = "<<i<<std::endl;
+      std::cout<<" -- gBox-size   = "<<gbox_size_[i]<<std::endl;
+
+      std::cout<<" ----gBox-lower-bnds = { ";
+      for (size_t j = 0 ; j < DM; j++)
+        std::cout<<gbox_lowbnds_[i][j]<<", ";
+      std::cout<<"}"<<std::endl;
+    
+      std::cout<<" ----gBox-upper-bnds = { ";
+      for (size_t j = 0 ; j < DM; j++)
+        std::cout<<gbox_upbnds_[i][j]<<", ";
+      std::cout<<"}"<<std::endl;
+
+      std::cout<<" ----gBox-strides = { ";
+      for (size_t j = 0 ; j < DM; j++)
+        std::cout<<gbox_strides_[i][j]<<", ";
       std::cout<<"}"<<std::endl;
     }
    std::cout<<"size == "<<size_<<std::endl;
@@ -1098,9 +1122,11 @@ public:
  
  private:
    bool primary_;                      // primary_ is set to true only for the IS of 
-                                       // highest-dimensional entity. The primary IS
+                                       // primary_dim_ dimensional entity. The primary IS
                                        // can contain only one box.
 
+   bool primary_dim_;                  
+ 
   //! Local representation                                      
    sm_id_t offset_;                    // starting offset for the entire IS
    sm_id_t size_;                      // size of the entire IS
