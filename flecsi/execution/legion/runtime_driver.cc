@@ -185,6 +185,7 @@ runtime_driver(
   //-------------------------------------------------------------------------//
   //  Create Legion reduction 
   //-------------------------------------------------------------------------//
+  //FIXME add logic for reduction
 
   //-------------------------------------------------------------------------//
   // Excute Legion task to maps between pre-compacted and compacted
@@ -260,7 +261,7 @@ runtime_driver(
     for(const field_info_t& field_info : context_.registered_fields()){
       switch(field_info.storage_class){
         case global:
-          number_of_global_fields++;
+          //number_of_global_fields++;
           break;
         case color:
           number_of_color_fields++;
@@ -731,51 +732,6 @@ setup_rank_context_task(
 #endif
 
 } // setup_rank_context_task
-
-//FIXME do we need these somewhere? 
-#if 0
-  for(auto is: context_.coloring_map()) {
-    size_t index_space = is.first;
-
-    auto& _cis_to_gis = context_.cis_to_gis_map(index_space);
-    auto& _gis_to_cis = context_.gis_to_cis_map(index_space);
-
-    auto & _color_map = context_.coloring_info(index_space);
-
-    std::vector<size_t> _rank_offsets(context_.colors()+1, 0);
-
-    size_t offset = 0;
-
-    for(size_t c{0}; c<context_.colors(); ++c) {
-      auto & _color_info = _color_map.at(c);
-      _rank_offsets[c] = offset;
-      offset += (_color_info.exclusive + _color_info.shared);
-    } // for
-
-    size_t cid{0};
-    for(auto entity: is.second.exclusive) {
-      size_t gid = _rank_offsets[entity.rank] + entity.offset;
-      _cis_to_gis[cid] = gid;
-      _gis_to_cis[gid] = cid;
-      ++cid;
-    } // for
-
-    for(auto entity: is.second.shared) {
-      size_t gid = _rank_offsets[entity.rank] + entity.offset;
-      _cis_to_gis[cid] = gid;
-      _gis_to_cis[gid] = cid;
-      ++cid;
-    } // for
-
-    for(auto entity: is.second.ghost) {
-      size_t gid = _rank_offsets[entity.rank] + entity.offset;
-      _cis_to_gis[cid] = gid;
-      _gis_to_cis[gid] = cid;
-      ++cid;
-    } // for
-
-  } // for
-#endif
 
 
 } // namespace execution 
