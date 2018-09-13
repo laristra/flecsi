@@ -246,6 +246,9 @@ struct legion_execution_policy_t {
       init_args_t init_args(legion_runtime, legion_context);
       init_args.walk(task_args);
 
+       LegionRuntime::Arrays::Rect<1> launch_bounds(0,context_.colors()-1);
+       Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+
       // Handle MPI and Legion invocations separately.
       if (processor_type == processor_type_t::mpi) {
         {
@@ -321,8 +324,8 @@ struct legion_execution_policy_t {
 
         }//end if
 #endif
-        LegionRuntime::Arrays::Rect<1> launch_bounds(0,context_.colors()-1);
-        Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+//        LegionRuntime::Arrays::Rect<1> launch_bounds(0,context_.colors()-1);
+//        Domain launch_domain = Domain::from_rect<1>(launch_bounds);
         // Create a task launcher, passing the task arguments.
           IndexTaskLauncher index_task_launcher(
               context_.task_id<KEY>(), launch_domain,
@@ -355,7 +358,7 @@ struct legion_execution_policy_t {
 
           index_task_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
-           future_map = legion_runtime->execute_index_space(
+          auto future_map = legion_runtime->execute_index_space(
             legion_context, index_task_launcher);
 
           // Enqueue the epilog.
@@ -363,7 +366,7 @@ struct legion_execution_policy_t {
           task_epilog.walk(task_args);
 
 
-          return legion_future__<RETURN, launch_type_t::index>(future);
+          return legion_future__<RETURN, launch_type_t::index>(future_map);
          
       } // if
     }

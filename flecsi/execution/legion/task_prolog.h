@@ -111,7 +111,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           // As user
 
           ghost_owners_partitions.push_back(h.ghost_owners_lp);
-          owner_subregion_partitions.push_back(h.ghost_owners_subregion_lp);
+//          owner_subregion_partitions.push_back(h.ghost_owners_subregion_lp);
           ghost_partitions.push_back(h.ghost_lp);
           entire_regions.push_back(h.entire_region);
           fids.push_back(h.fid);
@@ -186,13 +186,13 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       if(sparse){
         rr_entries_shared =
           Legion::RegionRequirement(
-          owner_entries_partitions[first], READ_ONLY, EXCLUSIVE,
-          owner_entries_partitions[first]);
+          ghost_owner_entries_partitions[first], 0, READ_ONLY, EXCLUSIVE,
+          entries_regions[first]);
 
         rr_entries_ghost =
           Legion::RegionRequirement(
-          color_entries_regions[first], WRITE_DISCARD, EXCLUSIVE,
-          color_entries_regions[first]);        
+          ghost_entries_partitions[first], 0,  WRITE_DISCARD, EXCLUSIVE,
+          entries_regions[first]);        
       }
 
       auto ghost_owner_pos_fid =
@@ -220,14 +220,18 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
         rr_owners.add_field(fids[handle]);
         rr_ghost.add_field(fids[handle]);
+
+         if(sparse){
+          rr_entries_shared.add_field(fids[handle]);
+          rr_entries_ghost.add_field(fids[handle]);
+         }
+
       }
 
       ghost_launcher.add_region_requirement(rr_owners);
       ghost_launcher.add_region_requirement(rr_ghost);
 
       if(sparse){
-          rr_entries_shared.add_field(fids[handle]);
-          rr_entries_ghost.add_field(fids[handle]);
           ghost_launcher.add_region_requirement(rr_entries_shared);
           ghost_launcher.add_region_requirement(rr_entries_ghost);
         }
@@ -244,8 +248,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS
   >
-  void
-  handle(
+  void handle(
     sparse_accessor <
     T,
     EXCLUSIVE_PERMISSIONS,
@@ -273,28 +276,27 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
     if (read_phase) {
       if (!*(h.ghost_is_readable)) {
-        {
           clog_tag_guard(prolog);
           clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
                       << std::endl;
 
           // offsets
-          ghost_owners_partitions.push_back(h.ghost_owners_offsets_lp]);
-          owner_subregion_partitions.push_back(
-			h.ghost_owners_offsets_subregion_lp);
+          ghost_owners_partitions.push_back(h.ghost_owners_offsets_lp);
+//          owner_subregion_partitions.push_back(
+//			h.ghost_owners_offsets_subregion_lp);
 
-          owner_entries_partitions.push_back(
+          ghost_owner_entries_partitions.push_back(
             h.ghost_owners_entries_lp);
-          /*
-          owner_entries_subregions.push_back(
-            h.ghost_owners_entries_subregions[owner]);
-            */
+          
+          entries_regions.push_back(
+            h.entries_entire_region);
+            
 
           ghost_partitions.push_back(h.offsets_ghost_lp);
           ghost_entries_partitions.push_back(h.entries_ghost_lp);
           
-          color_partitions.push_back(h.offsets_color_lp);
-          color_entries_partitions.push_back(h.entries_color_lp);
+ //         color_partitions.push_back(h.offsets_color_lp);
+//          color_entries_partitions.push_back(h.entries_color_lp);
 
           fids.push_back(h.fid);
 
@@ -370,22 +372,22 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
                       << std::endl;
 
           // offsets
-          ghost_owners_partitions.push_back(h.ghost_owners_offsets_lp]);
-          owner_subregion_partitions.push_back(
-                        h.ghost_owners_offsets_subregion_lp);
+          ghost_owners_partitions.push_back(h.ghost_owners_offsets_lp);
+//          owner_subregion_partitions.push_back(
+//                      h.ghost_owners_offsets_subregion_lp);
 
-          owner_entries_partitions.push_back(
+          ghost_owner_entries_partitions.push_back(
             h.ghost_owners_entries_lp);
-          /*
-          owner_entries_subregions.push_back(
-            h.ghost_owners_entries_subregions[owner]);
-            */
+
+          entries_regions.push_back(
+            h.entries_entire_region);
+
 
           ghost_partitions.push_back(h.offsets_ghost_lp);
           ghost_entries_partitions.push_back(h.entries_ghost_lp);
 
-          color_partitions.push_back(h.offsets_color_lp);
-          color_entries_partitions.push_back(h.entries_color_lp);
+ //         color_partitions.push_back(h.offsets_color_lp);
+//          color_entries_partitions.push_back(h.entries_color_lp);
 
           fids.push_back(h.fid);
 
@@ -440,11 +442,12 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
   std::vector<Legion::LogicalPartition> ghost_owners_partitions;
   std::vector<Legion::LogicalPartition> ghost_partitions;
   std::vector<Legion::LogicalRegion> entire_regions;
-  std::vector<Legion::LogicalPartition> owner_subregion_partitions;
-  std::vector<Legion::LogicalPartition> owner_entries_partitions;
+  std::vector<Legion::LogicalRegion> entries_regions;
+//  std::vector<Legion::LogicalPartition> owner_subregion_partitions;
+  std::vector<Legion::LogicalPartition> ghost_owner_entries_partitions;
   std::vector<Legion::LogicalPartition> ghost_entries_partitions;
-  std::vector<Legion::LogicalPartition> color_entries_partitions;
-  Legion::TaskLauncher & launcher;
+  std::vector<Legion::LogicalPartition> entries_partitions;
+  //Legion::TaskLauncher & launcher;
 
   std::vector<Legion::FieldID> fids;
   struct ghost_copy_args {

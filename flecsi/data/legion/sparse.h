@@ -156,44 +156,44 @@ namespace legion {
       h.reserve = exclusive_reserve;
       h.max_entries_per_index = max_entries_per_index;
 
-      h.offsets_color_region = ism[index_space].color_region;
-      h.offsets_exclusive_lr = ism[index_space].exclusive_lr;
-      h.offsets_shared_lr = ism[index_space].shared_lr;
-      h.offsets_ghost_lr = ism[index_space].ghost_lr;
+      h.offsets_entire_region = ism[index_space].entire_region;
+      h.offsets_exclusive_lp = ism[index_space].exclusive_lp;
+      h.offsets_shared_lp = ism[index_space].shared_lp;
+      h.offsets_ghost_lp = ism[index_space].ghost_lp;
 
       // TODO: formalize sparse offset
       constexpr size_t sparse_offset = 8192;
 
-      h.entries_color_region = ism[index_space + sparse_offset].color_region;
-      h.entries_exclusive_lr = ism[index_space + sparse_offset].exclusive_lr;
-      h.entries_shared_lr = ism[index_space + sparse_offset].shared_lr;
-      h.entries_ghost_lr = ism[index_space + sparse_offset].ghost_lr;
+      h.entries_entire_region = ism[index_space + sparse_offset].entire_region;
+      h.entries_exclusive_lp = ism[index_space + sparse_offset].exclusive_lp;
+      h.entries_shared_lp = ism[index_space + sparse_offset].shared_lp;
+      h.entries_ghost_lp = ism[index_space + sparse_offset].ghost_lp;
 
-      h.metadata_color_region = context.sparse_metadata().color_region;
+      //h.metadata_entire_region = context.sparse_metadata().entire_region;
 
-      h.pbarrier_as_owner_ptr =
-          &ism[index_space].pbarriers_as_owner[field_info.fid];
+//      h.pbarrier_as_owner_ptr =
+//          &ism[index_space].pbarriers_as_owner[field_info.fid];
       h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
       h.write_phase_started =
           &(ism[index_space].write_phase_started[field_info.fid]);
-      h.ghost_owners_pbarriers_ptrs.resize(0);
+//      h.ghost_owners_pbarriers_ptrs.resize(0);
 
-      const size_t _pb_size{
-          ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
+//      const size_t _pb_size{
+//          ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
 
-      for (size_t i = 0; i < _pb_size; i++) {
-        h.ghost_owners_pbarriers_ptrs.push_back(
-            &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
-      } // for
+//      for (size_t i = 0; i < _pb_size; i++) {
+//        h.ghost_owners_pbarriers_ptrs.push_back(
+//            &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
+//      } // for
 
-      h.ghost_owners_offsets_lregions = 
-        ism[index_space].ghost_owners_lregions;
+      h.ghost_owners_offsets_lp = 
+        ism[index_space].ghost_owners_lp;
       
-      h.ghost_owners_offsets_subregions = 
-        ism[index_space].ghost_owners_subregions;
+      h.ghost_owners_offsets_lp = 
+        ism[index_space].ghost_owners_lp;
 
-      h.ghost_owners_entries_lregions = 
-        ism[index_space + sparse_offset].ghost_owners_lregions;
+      h.ghost_owners_entries_lp = 
+        ism[index_space + sparse_offset].ghost_owners_lp;
       
       h.global_to_local_color_map_ptr =
           &ism[index_space].global_to_local_color_map;
@@ -243,44 +243,34 @@ namespace legion {
 
       mutator_handle__<DATA_TYPE> h(max_entries_per_index, slots);
 
-      h.offsets_color_region = ism[index_space].color_region;
-      h.offsets_exclusive_lr = ism[index_space].exclusive_lr;
-      h.offsets_shared_lr = ism[index_space].shared_lr;
-      h.offsets_ghost_lr = ism[index_space].ghost_lr;
+      h.offsets_entire_region = ism[index_space].entire_region;
+      h.offsets_exclusive_lp = ism[index_space].exclusive_lp;
+      h.offsets_shared_lp = ism[index_space].shared_lp;
+      h.offsets_ghost_lp = ism[index_space].ghost_lp;
 
       // TODO: formalize sparse offset
       constexpr size_t sparse_offset = 8192;
 
-      h.entries_color_region = ism[index_space + sparse_offset].color_region;
-      h.entries_exclusive_lr = ism[index_space + sparse_offset].exclusive_lr;
-      h.entries_shared_lr = ism[index_space + sparse_offset].shared_lr;
-      h.entries_ghost_lr = ism[index_space + sparse_offset].ghost_lr;
+      h.entries_entire_region = ism[index_space + sparse_offset].entire_region;
+      h.entries_exclusive_lp = ism[index_space + sparse_offset].exclusive_lp;
+      h.entries_shared_lp = ism[index_space + sparse_offset].shared_lp;
+      h.entries_ghost_lp = ism[index_space + sparse_offset].ghost_lp;
 
-      h.metadata_color_region = context.sparse_metadata().color_region;
+      //h.metadata_entire_region = context.sparse_metadata().entire_region;
       
-      h.pbarrier_as_owner_ptr =
-          &ism[index_space].pbarriers_as_owner[field_info.fid];
       h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
       h.write_phase_started =
           &(ism[index_space].write_phase_started[field_info.fid]);
-      h.ghost_owners_pbarriers_ptrs.resize(0);
 
-      const size_t _pb_size{
-          ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
 
-      for (size_t i = 0; i < _pb_size; i++) {
-        h.ghost_owners_pbarriers_ptrs.push_back(
-            &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
-      } // for
+      h.ghost_owners_offsets_lp =
+        ism[index_space].ghost_owners_lp;
 
-      h.ghost_owners_offsets_lregions =
-        ism[index_space].ghost_owners_lregions;
+//      h.ghost_owners_offsets_subregions =
+//        ism[index_space].ghost_owners_subregions;
 
-      h.ghost_owners_offsets_subregions =
-        ism[index_space].ghost_owners_subregions;
-
-      h.ghost_owners_entries_lregions =
-        ism[index_space + sparse_offset].ghost_owners_lregions;
+      h.ghost_owners_entries_lp =
+        ism[index_space + sparse_offset].ghost_owners_lp;
 
       h.global_to_local_color_map_ptr =
           &ism[index_space].global_to_local_color_map;
