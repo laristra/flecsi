@@ -27,6 +27,7 @@ using namespace supplemental;
 
 clog_register_tag(barrier_per_field);
 
+void read_task(
     dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
     const int my_color,
     const size_t cycle);

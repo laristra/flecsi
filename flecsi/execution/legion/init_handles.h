@@ -555,7 +555,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 
-    sparse_field_data_t* md;
+    /*sparse_field_data_t* md;
 
     {
       Legion::PhysicalRegion pr = regions[region];
@@ -577,6 +577,11 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     }
 
     ++region;
+*/
+    context_t & context_ = context_t::instance();
+    auto &md = context_.sparse_metadata();
+     h.metadata = md;
+     h.init(md.num_exclusive, md.num_shared, md.num_ghost);
 
     Legion::PhysicalRegion offsets_prs[num_regions];
     offset_t * offsets_data[num_regions];
@@ -606,7 +611,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     size_t pos = 0;
 
-    assert(md->initialized);
+    assert(md.initialized);
 
     for (size_t r{0}; r < num_regions; ++r) {
       std::memcpy(h.offsets + pos, offsets_data[r],
@@ -692,7 +697,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 
-    sparse_field_data_t* md;
+ /*   sparse_field_data_t* md;
 
     {
       Legion::PhysicalRegion pr = regions[region];
@@ -717,7 +722,11 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     }
 
     ++region;
-
+*/
+    context_t & context_ = context_t::instance();
+    auto &md = context_.sparse_metadata();
+     h.metadata=md;
+     h.init(md.num_exclusive, md.num_shared, md.num_ghost);
     Legion::PhysicalRegion offsets_prs[num_regions];
     offset_t * offsets_data[num_regions];
     size_t offsets_sizes[num_regions];
@@ -746,7 +755,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     size_t pos = 0;
 
-    if(md->initialized){
+    if(md.initialized){
       for (size_t r{0}; r < num_regions; ++r) {
         std::memcpy(h.offsets + pos, offsets_data[r],
                     offsets_sizes[r] * sizeof(offset_t));
@@ -754,11 +763,11 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       }  
     }
     else{
-      size_t n = md->num_shared + md->num_ghost;
+      size_t n = md.num_shared + md.num_ghost;
 
       for(size_t i = 0; i < n; ++i){
-        h.offsets[md->num_exclusive + i].set_offset(
-          h.reserve + i * md->max_entries_per_index);
+        h.offsets[md.num_exclusive + i].set_offset(
+          h.reserve + i * md.max_entries_per_index);
       }
     }
 
@@ -790,7 +799,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     entry_value_t* entries = new entry_value_t[h.entries_size];
 
     std::memcpy(entries, entries_data[0],
-                md->num_exclusive_filled * sizeof(entry_value_t));
+                md.num_exclusive_filled * sizeof(entry_value_t));
 
     pos = entries_sizes[0];
 

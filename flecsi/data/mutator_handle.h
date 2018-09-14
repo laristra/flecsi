@@ -98,11 +98,11 @@ public:
   ~mutator_handle_base__() {}
 
   void init(
-    size_t num_exclusive,
-    size_t num_shared,
-    size_t num_ghost,
-    size_t max_entries_per_index,
-    size_t num_slots
+    const size_t &num_exclusive,
+    const size_t &num_shared,
+    const size_t &num_ghost
+//    const size_t &max_entries_per_index,
+//    const size_t &num_slots
     ){
     num_entries_ = num_exclusive + num_shared + num_ghost;
     num_exclusive_ = num_exclusive;

@@ -396,7 +396,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           local_args.index_space = h.index_space;
           local_args.sparse = true;
           local_args.reserve = h.reserve;
-          local_args.max_entries_per_index = h.max_entries_per_index;
+          local_args.max_entries_per_index = h.max_entries_per_index();
           args.push_back(local_args);
 
           //FIXME futures

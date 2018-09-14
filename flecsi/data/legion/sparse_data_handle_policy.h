@@ -12,6 +12,7 @@
 #include <legion.h>
 
 #include <flecsi/runtime/types.h>
+#include <flecsi/execution/context.h>
 
 //----------------------------------------------------------------------------//
 /// @file
@@ -61,12 +62,15 @@ struct legion_sparse_data_handle_policy_t {
   Legion::LogicalPartition offsets_ghost_lp;
   Legion::LogicalPartition offsets_ghost_owners_lp;
 
-  Legion::LogicalRegion metadata_color_region;
+  Legion::LogicalPartition ghost_owners_offsets_lp;
+  Legion::LogicalPartition ghost_owners_entries_lp;
+
+ // Legion::LogicalRegion metadata_color_region;
 
   Legion::Context context;
   Legion::Runtime * runtime;
 
-  Legion::PhysicalRegion metadata_pr;
+ // Legion::PhysicalRegion metadata_pr;
 
 
   // Tuple-walk copies data_handle then discards updates at the end.
@@ -81,8 +85,8 @@ struct legion_sparse_data_handle_policy_t {
   size_t exclusive_priv;
   size_t shared_priv;
   size_t ghost_priv;
-
-  void* metadata;
+ 
+  flecsi::execution::context_t::sparse_field_data_t metadata;
 
   size_t offsets_size = 0;
   size_t entries_size = 0;

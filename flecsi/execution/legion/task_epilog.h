@@ -123,41 +123,10 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
                      (SHARED_PERMISSIONS == rw)};
 
     if (write_phase && (*h.write_phase_started)) {
-      const int my_color = runtime->find_local_MPI_rank();
 
-      {
-        clog(trace) << "rank " << my_color << " WRITE PHASE EPILOGUE"
+        clog(trace) << " WRITE PHASE EPILOGUE"
                     << std::endl;
 
-        clog(trace) << "rank " << my_color << " advances "
-                    << *(h.pbarrier_as_owner_ptr) << std::endl;
-      } // scope
-
-      *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-          context,
-
-          // Phase READ
-          *(h.pbarrier_as_owner_ptr));
-
-      const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
-
-      // As user
-      for (size_t owner = 0; owner < _pbp_size; owner++) {
-        {
-          clog_tag_guard(epilog);
-          clog(trace) << "rank " << my_color << " arrives & advances "
-                      << *(h.ghost_owners_pbarriers_ptrs[owner]) << std::endl;
-        } // scope
-
-        // Phase READ
-        h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);
-        *(h.ghost_owners_pbarriers_ptrs[owner]) =
-            runtime->advance_phase_barrier(
-                context,
-
-                // Phase READ
-                *(h.ghost_owners_pbarriers_ptrs)[owner]);
-      } // for
       *(h.write_phase_started) = false;
     } // if write phase
   }
@@ -194,42 +163,8 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
   {
     auto & h = m.h_;
 
-    if ((*h.write_phase_started)) {
-      const int my_color = runtime->find_local_MPI_rank();
-
-      {
-        clog(trace) << "rank " << my_color << " WRITE PHASE EPILOGUE"
-                    << std::endl;
-
-        clog(trace) << "rank " << my_color << " advances "
-                    << *(h.pbarrier_as_owner_ptr) << std::endl;
-      } // scope
-
-      *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-          context,
-
-          // Phase READ
-          *(h.pbarrier_as_owner_ptr));
-
-      const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
-
-      // As user
-      for (size_t owner = 0; owner < _pbp_size; owner++) {
-        {
-          clog_tag_guard(epilog);
-          clog(trace) << "rank " << my_color << " arrives & advances "
-                      << *(h.ghost_owners_pbarriers_ptrs[owner]) << std::endl;
-        } // scope
-
-        // Phase READ
-        h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);
-        *(h.ghost_owners_pbarriers_ptrs[owner]) =
-            runtime->advance_phase_barrier(
-                context,
-
-                // Phase READ
-                *(h.ghost_owners_pbarriers_ptrs)[owner]);
-      } // for
+    if ((*h.write_phase_started)){ 
+        clog(trace) << " WRITE PHASE EPILOGUE"<<std::endl;
       *(h.write_phase_started) = false;
     } // if write phase
   }
