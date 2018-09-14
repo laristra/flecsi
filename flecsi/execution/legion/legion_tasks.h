@@ -364,7 +364,106 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
          position_ref_acc.read(ghost_ptr);
       auto owner_ptr = Legion::DomainPoint::from_point<2>(owner_location);
       // TOFIX TODO FIXME: hack until gather copies are implemented in Legion
-     
+
+
+      switch (field_info.size) {
+      case 1:
+        {
+          auto owner_acc = regions[0].get_field_accessor(fid).typeify<uint8_t>();
+          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<uint8_t>();
+          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
+
+          if(args.sparse){
+            auto owner_acc_entries =
+              regions[2].get_field_accessor(fid).typeify<uint8_t>();
+            auto ghost_acc_entries =
+              regions[3].get_field_accessor(fid).typeify<uint8_t>();
+            ghost_acc_entries.write(ghost_ptr,
+		owner_acc_entries.read(owner_ptr));
+          }
+        }
+          break;
+      case 2:
+      {
+          auto owner_acc = regions[0].get_field_accessor(fid).typeify<uint16_t>();
+          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<uint16_t>();
+          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
+
+          if(args.sparse){
+            auto owner_acc_entries =
+              regions[2].get_field_accessor(fid).typeify<uint16_t>();
+            auto ghost_acc_entries =
+              regions[3].get_field_accessor(fid).typeify<uint16_t>();
+            ghost_acc_entries.write(ghost_ptr,
+                owner_acc_entries.read(owner_ptr));
+          }
+
+      }
+          break;
+      case 4:
+      {
+          auto owner_acc = regions[0].get_field_accessor(fid).typeify<uint32_t>();
+          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<uint32_t>();
+          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
+         // std::cout << " read4 " << owner_acc.read(owner_ptr) << std::endl;
+
+          if(args.sparse){
+            auto owner_acc_entries =
+              regions[2].get_field_accessor(fid).typeify<uint32_t>();
+            auto ghost_acc_entries =
+              regions[3].get_field_accessor(fid).typeify<uint32_t>();
+            ghost_acc_entries.write(ghost_ptr,
+                owner_acc_entries.read(owner_ptr));
+          }
+      }
+          break;
+      case 8:
+      {
+          auto owner_acc = regions[0].get_field_accessor(fid).typeify<size_t>();
+          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<size_t>();
+          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
+
+          if(args.sparse){
+            auto owner_acc_entries =
+              regions[2].get_field_accessor(fid).typeify<size_t>();
+            auto ghost_acc_entries =
+              regions[3].get_field_accessor(fid).typeify<size_t>();
+            ghost_acc_entries.write(ghost_ptr,
+                owner_acc_entries.read(owner_ptr));
+          }
+
+
+          auto rloc = owner_ptr.point_data;
+          auto gloc = ghost_ptr.point_data;
+         // std::cout << " read8 " << owner_acc.read(owner_ptr) <<
+         //     " from " << rloc[0] << "," << rloc[1] <<
+         //     " to " << gloc[0] << "'" << gloc[1] << std::endl;
+      }
+          break;
+      case 12:
+      {
+          auto owner_acc = regions[0].get_field_accessor(fid).typeify<long double>();
+          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<long double>();
+          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
+
+          if(args.sparse){
+            auto owner_acc_entries =
+              regions[2].get_field_accessor(fid).typeify<long double>();
+            auto ghost_acc_entries =
+              regions[3].get_field_accessor(fid).typeify<long double>();
+            ghost_acc_entries.write(ghost_ptr,
+                owner_acc_entries.read(owner_ptr));
+          }
+
+          //std::cout << " read12 " << owner_acc.read(owner_ptr) << std::endl;
+      }
+          break;
+      default:
+          clog_assert(false, "ghost_copy hack does not support data type.");
+          break;
+      } 
+
+/*     
       if(!args.sparse){ 
 
         const Legion::FieldAccessor<READ_ONLY,char,1,
@@ -398,7 +497,7 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
         ghost_acc_entries[ghost_ptr] = owner_acc_entries[owner_ptr];
 
         } // if
-
+*/
     } // for ghost_domain
   } // for fid
 
