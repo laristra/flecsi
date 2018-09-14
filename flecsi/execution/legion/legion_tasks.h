@@ -315,7 +315,6 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   struct args_t {
     size_t data_client_hash;
     size_t index_space;
-    size_t owner;
     bool sparse;
     size_t reserve;
     size_t max_entries_per_index;

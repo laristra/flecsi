@@ -118,6 +118,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           ghost_copy_args local_args;
           local_args.data_client_hash = h.data_client_hash;
           local_args.index_space = h.index_space;
+          local_args.sparse = false;
           args.push_back(local_args);
           //FIXME add ogic for futures
           //futures.push_back(Legion::Future::from_value(
@@ -170,7 +171,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
     // launch copy task per group of handles with same ghost_owners_partition
     for (size_t group{0}; group < handle_groups.size(); group++) {
-      bool sparse = is_sparse_group[group];
+      bool is_sparse = is_sparse_group[group];
       auto first_itr = handle_groups[group].begin();
       size_t first = *first_itr;
 
@@ -183,7 +184,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
       Legion::RegionRequirement rr_entries_ghost;
 
-      if(sparse){
+      if(is_sparse){
         rr_entries_shared =
           Legion::RegionRequirement(
           ghost_owner_entries_partitions[first], 0, READ_ONLY, EXCLUSIVE,
@@ -221,7 +222,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
         rr_owners.add_field(fids[handle]);
         rr_ghost.add_field(fids[handle]);
 
-         if(sparse){
+         if(is_sparse){
           rr_entries_shared.add_field(fids[handle]);
           rr_entries_ghost.add_field(fids[handle]);
          }
@@ -231,7 +232,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       ghost_launcher.add_region_requirement(rr_owners);
       ghost_launcher.add_region_requirement(rr_ghost);
 
-      if(sparse){
+      if(is_sparse){
           ghost_launcher.add_region_requirement(rr_entries_shared);
           ghost_launcher.add_region_requirement(rr_entries_ghost);
         }
@@ -357,7 +358,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     if(!sparse){
       return;
     }
-  
+ 
     auto & h = m.h_;
 
     using sparse_field_data_t = context_t::sparse_field_data_t;
