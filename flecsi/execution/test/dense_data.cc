@@ -71,7 +71,7 @@ init(mesh<ro> mesh, field<rw, rw, ro> h) {
   }
 } // init
 
-flecsi_register_task(init, flecsi::execution, loc, single);
+flecsi_register_task(init, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Print field
@@ -101,7 +101,7 @@ print(mesh<ro> mesh, field<ro, ro, ro> h) {
   }
 } // print
 
-flecsi_register_task(print, flecsi::execution, loc, single);
+flecsi_register_task(print, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Modify field
@@ -118,7 +118,7 @@ modify(mesh<ro> mesh, field<rw, rw, ro> h) {
 
 } // modify
 
-flecsi_register_task(modify, flecsi::execution, loc, single);
+flecsi_register_task(modify, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Top-Level Specialization Initialization
@@ -137,7 +137,7 @@ specialization_tlt_init(int argc, char ** argv) {
 void
 specialization_spmd_init(int argc, char ** argv) {
   auto mh = flecsi_get_client_handle(mesh_t, meshes, mesh1);
-  flecsi_execute_task(initialize_mesh, flecsi::supplemental, single, mh);
+  flecsi_execute_task(initialize_mesh, flecsi::supplemental, index, mh);
 } // specialization_spmd_init
 
 //----------------------------------------------------------------------------//
@@ -149,11 +149,11 @@ driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(mesh_t, meshes, mesh1);
   auto ph = flecsi_get_handle(ch, hydro, pressure, size_t, dense, 0);
 
-  flecsi_execute_task(init, flecsi::execution, single, ch, ph);
-  flecsi_execute_task(print, flecsi::execution, single, ch, ph);
+  flecsi_execute_task(init, flecsi::execution, index, ch, ph);
+  flecsi_execute_task(print, flecsi::execution, index, ch, ph);
 
-  flecsi_execute_task(modify, flecsi::execution, single, ch, ph);
-  auto future = flecsi_execute_task(print, flecsi::execution, single, ch, ph);
+  flecsi_execute_task(modify, flecsi::execution, index, ch, ph);
+  auto future = flecsi_execute_task(print, flecsi::execution, index, ch, ph);
   future.wait(); // wait before comparing results
 
   auto & context = execution::context_t::instance();

@@ -112,8 +112,8 @@ driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, dense, 0);
 
-  flecsi_execute_task_simple(fill_task, single, ch, ph);
-  auto future = flecsi_execute_task_simple(print_task, single, ch, ph);
+  flecsi_execute_task_simple(fill_task, index, ch, ph);
+  auto future = flecsi_execute_task_simple(print_task, index, ch, ph);
   future.wait(); // wait before comparing results
 
   auto & context = execution::context_t::instance();
