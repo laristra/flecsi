@@ -30,14 +30,12 @@ flecsi_register_data_client(empty_mesh_t, meshes, mesh1);
 void check_all_cells_task(
     dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
     dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
-    int my_color,
     size_t cycle);
 flecsi_register_task_simple(check_all_cells_task, loc, index | leaf);
 
 void set_primary_cells_task(
     dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
     dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
-    int my_color,
     size_t cycle);
 flecsi_register_task_simple(set_primary_cells_task, loc, index | leaf);
 
@@ -102,10 +100,10 @@ driver(int argc, char ** argv) {
 
   for (size_t cycle = 0; cycle < 3; cycle++) {
     flecsi_execute_task_simple(
-        set_primary_cells_task, index, handle, test_handle, my_color, cycle);
+        set_primary_cells_task, index, handle, test_handle, cycle);
 
     flecsi_execute_task_simple(
-        check_all_cells_task, index, handle, test_handle, my_color, cycle);
+        check_all_cells_task, index, handle, test_handle, cycle);
   }
 
 } // driver
@@ -119,6 +117,13 @@ set_primary_cells_task(
     dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
     size_t cycle) {
 
+  #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion                                                                                                                                                                                     
+    auto runtime = Legion::Runtime::get_runtime();                                                                                                               
+    const int my_color = runtime->find_local_MPI_rank();                                                                                                         
+  #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi                                                                                                                                                                                      
+    int my_color;                                                                                                                                                
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_color);                                                                                                                    
+  #endif
 
   flecsi::execution::context_t & context_ =
       flecsi::execution::context_t::instance();

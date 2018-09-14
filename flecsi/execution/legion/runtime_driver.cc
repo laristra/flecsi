@@ -52,7 +52,7 @@ runtime_driver(
   {
   clog_tag_guard(runtime_driver);
   clog(info) << "In Legion runtime driver" << std::endl;
-  }
+  }//scope
 
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
@@ -132,17 +132,17 @@ runtime_driver(
 
     ispace_dmap[global_index_space].entire_region =
         data.global_index_space().logical_region;
-  }
+  }//if
 
   if(number_of_sparse_fields > 0){
     data.init_sparse_metadata();
-  }
+  }//if
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
   clog_tag_guard(runtime_driver);
   clog(info) << "Executing specialization top-level-task init" << std::endl;
-  }
+  }//scope
 
   // Invoke the specialization top-level task initialization function.
   specialization_tlt_init(args.argc, args.argv);
@@ -271,12 +271,11 @@ runtime_driver(
           break;
         default:
             fields_map[idx_space].push_back(&field_info);
-          } // if
           break;
       }
     } // for
 
-  //} // for
+  } // for
 
 
   //--------------------------------------------------------------------------//
@@ -291,6 +290,8 @@ runtime_driver(
   const auto setup_rank_context_id =
     context_.task_id<__flecsi_internal_task_key(setup_rank_context_task)>();
 
+   using sparse_index_space_info_t = context_t::sparse_index_space_info_t;
+
   // Add colors to must_epoch_launcher
   for(size_t color(0); color<num_colors; ++color) {
 
@@ -299,11 +300,10 @@ runtime_driver(
     //-----------------------------------------------------------------------//
     // data serialization:
     //-----------------------------------------------------------------------//
-
+    // #1a 
+    args_serializers[color].serialize(&number_of_sparse_fields, sizeof(size_t));
     // #1 serialize sparse index spaces info
 
-    using sparse_index_space_info_t = context_t::sparse_index_space_info_t;
-    
     std::vector<sparse_index_space_info_t> sparse_index_spaces_vec;
     
     for(auto& itr : context_.sparse_index_space_info_map()){
@@ -381,6 +381,7 @@ runtime_driver(
   // Add additional setup.
 
   auto& ispace_dmap = context_.index_space_data_map();
+  auto& sis_map = context_.sparse_index_space_info_map();
 
   Legion::Logger log_runtime("runtime");
 
@@ -406,8 +407,8 @@ runtime_driver(
       }
       else{
         sparse_info = nullptr;
-      }
-    }
+      }//if
+    }//if
 
     Legion::LogicalPartition access_lp =runtime->get_logical_partition(ctx,
         flecsi_ispace.logical_region, flecsi_ispace.access_partition);
@@ -461,8 +462,8 @@ runtime_driver(
 //  } // idx_space
 
   // initialize read/write flags for task_prolog
-  for(auto is: context_.coloring_map()) {
-    size_t idx_space = is.first;
+//  for(auto is: context_.coloring_map()) {
+//    size_t idx_space = is.first;
     for (const field_info_t* field_info : fields_map[idx_space]){
       ispace_dmap[idx_space].ghost_is_readable[field_info->fid] = true;
       ispace_dmap[idx_space].write_phase_started[field_info->fid] = false;
@@ -472,7 +473,7 @@ runtime_driver(
         ispace_dmap[sparse_idx_space].write_phase_started[field_info->fid] = false;
       }
     }//end field_info
-//  }//end for idx_space
+  }//end for idx_space
 
   for (size_t idx : data.adjacencies()) {
     auto& adjacency = data.adjacency(idx);
@@ -494,7 +495,7 @@ runtime_driver(
     auto global_ispace = data.global_index_space();
 
     ispace_dmap[global_index_space].entire_region = global_ispace.logical_region;
-  }
+  }//if
 
   auto color_ispace = data.color_index_space();
 
@@ -507,7 +508,7 @@ runtime_driver(
     ispace_dmap[color_index_space].color_partition =
         runtime->get_logical_partition(ctx, color_ispace.logical_region,
             color_ispace.color_partition);
-  }
+  }//if
 
   context_.advance_state();
   // run default or user-defined driver
@@ -544,11 +545,17 @@ setup_rank_context_task(
   clog_assert(task->arglen > 0, "setup_rank_context_task called without arguments");
 
 
+   auto& ispace_dmap = context_.index_space_data_map();
+  auto& sis_map = context_.sparse_index_space_info_map();
+
   //---------------------------------------------------------------------//
   // Deserialize task arguments
   // --------------------------------------------------------------------//
 
   Legion::Deserializer args_deserializer(task->args, task->arglen);
+  //1a
+  size_t number_of_sparse_fields;
+  args_deserializer.deserialize(&number_of_sparse_fields, sizeof(size_t));
 
    // #1b deserialize sparse index spaces
   size_t num_sparse_index_spaces;
@@ -737,9 +744,9 @@ setup_rank_context_task(
         si->second.max_entries_per_index, si->second.exclusive_reserve);
 
       context_.set_sparse_metadata(md);
-    }
+    }//for
 
-  } 
+  }//if 
 
   // FIXME: local_index_space is now problematic in control replication
   // It made sense in SPMD, but now each IndexLaunch starts from a clean slate.

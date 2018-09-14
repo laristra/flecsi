@@ -91,6 +91,8 @@ flecsi_register_task_simple(hello, loc, index);
 //----------------------------------------------------------------------------//
 
 void
+specialization_tlt_init(int argc, char ** argv) {
+  clog(info) << "In specialization top-level-task init" << std::endl;
   supplemental::do_test_mesh_2d_coloring();
 } // specialization_tlt_init
 
