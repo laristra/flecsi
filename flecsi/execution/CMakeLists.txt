@@ -387,7 +387,7 @@ cinch_add_unit(future_handle
         "Tests/Execution"
     )
 
-  if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
     cinch_add_unit(ghost_access
       SOURCES
         test/ghost_access_drivers.cc
@@ -485,29 +485,29 @@ cinch_add_unit(future_handle
     )
 
     cinch_add_unit(finite_difference_dense
-    SOURCES
-      test/finite_difference_dense.cc
-      ../supplemental/coloring/add_colorings.cc
-      ${DRIVER_INITIALIZATION}
-      ${RUNTIME_DRIVER}
-    INPUTS
-      test/simple2d-8x8.msh
-      test/simple2d-16x16.msh
-    LIBRARIES
-      FleCSI
-      ${CINCH_RUNTIME_LIBRARIES}
-      ${COLORING_LIBRARIES}
-    DEFINES
-      -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-      -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-      -DFLECSI_16_16_MESH
-    POLICY ${UNIT_POLICY}
-    THREADS 5
-    NOCI
-    FOLDER
-      "Tests/Execution"
-  )
+      SOURCES
+        test/finite_difference_dense.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+      LIBRARIES
+        FleCSI
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        -DFLECSI_16_16_MESH
+      POLICY ${UNIT_POLICY}
+      THREADS 5
+      NOCI
+      FOLDER
+        "Tests/Execution"
+    )
 
     cinch_add_unit(global_data
       SOURCES
