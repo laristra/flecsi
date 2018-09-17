@@ -358,147 +358,35 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     clog_assert(fitr != iitr->second.end(), "invalid fid");
     const context_t::field_info_t & field_info = fitr->second;
 
+    const Legion::FieldAccessor<READ_ONLY, char, 2,
+        Legion::coord_t, Realm::AffineAccessor< char, 2, Legion::coord_t> >
+        owner_acc(regions[0], fid, field_info.size);
+    const Legion::FieldAccessor<READ_WRITE, char, 2,
+        Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
+        ghost_acc(regions[1], fid, field_info.size);
+
     for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
       auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
       LegionRuntime::Arrays::Point<2> owner_location =
          position_ref_acc.read(ghost_ptr);
       auto owner_ptr = Legion::DomainPoint::from_point<2>(owner_location);
-      // TOFIX TODO FIXME: hack until gather copies are implemented in Legion
 
+     char *ptr_ghost_acc = (char*)(ghost_acc.ptr(ghost_ptr));
+     char *ptr_owner_acc = (char*)(owner_acc.ptr(owner_ptr));
+     memcpy(ptr_ghost_acc, ptr_owner_acc, field_info.size);
 
-      switch (field_info.size) {
-      case 1:
-        {
-          auto owner_acc = regions[0].get_field_accessor(fid).typeify<uint8_t>();
-          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<uint8_t>();
-          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
-
-          if(args.sparse){
-            auto owner_acc_entries =
-              regions[2].get_field_accessor(fid).typeify<uint8_t>();
-            auto ghost_acc_entries =
-              regions[3].get_field_accessor(fid).typeify<uint8_t>();
-            ghost_acc_entries.write(ghost_ptr,
-		owner_acc_entries.read(owner_ptr));
-          }
-        }
-          break;
-      case 2:
-      {
-          auto owner_acc = regions[0].get_field_accessor(fid).typeify<uint16_t>();
-          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<uint16_t>();
-          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
-
-          if(args.sparse){
-            auto owner_acc_entries =
-              regions[2].get_field_accessor(fid).typeify<uint16_t>();
-            auto ghost_acc_entries =
-              regions[3].get_field_accessor(fid).typeify<uint16_t>();
-            ghost_acc_entries.write(ghost_ptr,
-                owner_acc_entries.read(owner_ptr));
-          }
-
-      }
-          break;
-      case 4:
-      {
-          auto owner_acc = regions[0].get_field_accessor(fid).typeify<uint32_t>();
-          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<uint32_t>();
-          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
-         // std::cout << " read4 " << owner_acc.read(owner_ptr) << std::endl;
-
-          if(args.sparse){
-            auto owner_acc_entries =
-              regions[2].get_field_accessor(fid).typeify<uint32_t>();
-            auto ghost_acc_entries =
-              regions[3].get_field_accessor(fid).typeify<uint32_t>();
-            ghost_acc_entries.write(ghost_ptr,
-                owner_acc_entries.read(owner_ptr));
-          }
-      }
-          break;
-      case 8:
-      {
-          auto owner_acc = regions[0].get_field_accessor(fid).typeify<size_t>();
-          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<size_t>();
-          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
-
-          if(args.sparse){
-            auto owner_acc_entries =
-              regions[2].get_field_accessor(fid).typeify<size_t>();
-            auto ghost_acc_entries =
-              regions[3].get_field_accessor(fid).typeify<size_t>();
-            ghost_acc_entries.write(ghost_ptr,
-                owner_acc_entries.read(owner_ptr));
-          }
-
-
-          auto rloc = owner_ptr.point_data;
-          auto gloc = ghost_ptr.point_data;
-         // std::cout << " read8 " << owner_acc.read(owner_ptr) <<
-         //     " from " << rloc[0] << "," << rloc[1] <<
-         //     " to " << gloc[0] << "'" << gloc[1] << std::endl;
-      }
-          break;
-      case 12:
-      {
-          auto owner_acc = regions[0].get_field_accessor(fid).typeify<long double>();
-          auto ghost_acc = regions[1].get_field_accessor(fid).typeify<long double>();
-          ghost_acc.write(ghost_ptr, owner_acc.read(owner_ptr));
-
-          if(args.sparse){
-            auto owner_acc_entries =
-              regions[2].get_field_accessor(fid).typeify<long double>();
-            auto ghost_acc_entries =
-              regions[3].get_field_accessor(fid).typeify<long double>();
-            ghost_acc_entries.write(ghost_ptr,
-                owner_acc_entries.read(owner_ptr));
-          }
-
-          //std::cout << " read12 " << owner_acc.read(owner_ptr) << std::endl;
-      }
-          break;
-      default:
-          clog_assert(false, "ghost_copy hack does not support data type.");
-          break;
-      } 
-
-/*     
-      if(!args.sparse){ 
-
-        const Legion::FieldAccessor<READ_ONLY,char,1,
-  	  Legion::coord_t, Realm::AffineAccessor<char,1,Legion::coord_t> >
-          owner_acc(regions[0], fid, field_info.size);
-        const Legion::FieldAccessor<READ_WRITE,char,1,
-	  Legion::coord_t, Realm::AffineAccessor<char,1,Legion::coord_t> >
-	  ghost_acc(regions[1], fid, field_info.size);    
-
-        ghost_acc[ghost_ptr] = owner_acc[owner_ptr];
-
-      }else {//if(args.sparse
-
-        const Legion::FieldAccessor<READ_ONLY,char,1,
-          Legion::coord_t, Realm::AffineAccessor<char,1,Legion::coord_t> >
-          owner_acc_offsets(regions[0], fid, field_info.size);
-        const Legion::FieldAccessor<READ_WRITE,char,1,
-          Legion::coord_t, Realm::AffineAccessor<char,1,Legion::coord_t> >
-          ghost_acc_offsets(regions[1], fid, field_info.size);
-
-
-        const Legion::FieldAccessor<READ_ONLY,char,1,
-          Legion::coord_t, Realm::AffineAccessor<char,1,Legion::coord_t> >
-          owner_acc_entries(regions[2], fid, field_info.size);
-        const Legion::FieldAccessor<READ_WRITE,char,1,
-          Legion::coord_t, Realm::AffineAccessor<char,1,Legion::coord_t> >
-          ghost_acc_entries(regions[3], fid, field_info.size);
-
-        ghost_acc_offsets[ghost_ptr] = owner_acc_offsets[owner_ptr];
-        //IRINA FIME : do we use the same ghost_ptr here?
-        ghost_acc_entries[ghost_ptr] = owner_acc_entries[owner_ptr];
-
-        } // if
-*/
-    } // for ghost_domain
+     if (args.sparse){
+      const Legion::FieldAccessor<READ_ONLY, char, 2,
+        Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
+        owner_acc_entries(regions[2], fid, field_info.size);
+      const Legion::FieldAccessor<READ_WRITE, char, 2,
+        Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
+        ghost_acc_entries(regions[3], fid, field_info.size);
+      char *ptr_ghost_acc_entries = (char*)(ghost_acc_entries.ptr(ghost_ptr));
+      char *ptr_owner_acc_entries = (char*)(owner_acc_entries.ptr(owner_ptr));
+      memcpy(ptr_ghost_acc_entries, ptr_owner_acc_entries, field_info.size);
+    } // if
+   } // for ghost_domain
   } // for fid
 
 } // ghost_copy_task
