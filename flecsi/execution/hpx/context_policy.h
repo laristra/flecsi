@@ -27,8 +27,8 @@
 #include <cinchlog.h>
 #include <flecsi-config.h>
 
-#if !defined(ENABLE_HPX)
-  #error ENABLE_HPX not defined! This file depends on HPX!
+#if !defined(FLECSI_ENABLE_HPX)
+  #error FLECSI_ENABLE_HPX not defined! This file depends on HPX!
 #endif
 
 #include <flecsi/coloring/coloring_types.h>
