@@ -282,8 +282,8 @@ initialize_mesh(data_client_handle__<test_mesh_2d_t, wo> mesh) {
     const size_t row{mid / (width + 1)};
     const size_t column{mid % (width + 1)};
     // printf("vertex %lu: (%lu, %lu)\n", mid, row, column);
-    point_t point({{(double)row, (double)column}});
-    index_t index({{row, column}});
+    point_t point = {(double)row, (double)column};
+    index_t index = {row, column};
 
     vertices.push_back(mesh.make<vertex_t>(point, index));
   } // for
