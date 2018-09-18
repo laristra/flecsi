@@ -247,8 +247,7 @@ public:
           if (!runtime->find_or_create_physical_instance(
                   ctx, target_mem, layout_constraints, regions, result, created,
                   true /*acquire*/, GC_NEVER_PRIORITY)) {
-            clog(fatal) << "ERROR: FLeCSI mapper failed to allocate instance"
-                        << std::endl;
+            clog_fatal("ERROR: FLeCSI mapper failed to allocate instance" << std::endl);
           } // end if
 
           for (size_t j = 0; j < 3; j++)
@@ -262,8 +261,7 @@ public:
           if (!runtime->find_or_create_physical_instance(
                   ctx, target_mem, layout_constraints, regions, result, created,
                   true /*acquire*/, GC_NEVER_PRIORITY)) {
-            clog(fatal) << "ERROR: FLeCSI mapper failed to allocate instance"
-                        << std::endl;
+            clog_fatal("ERROR: FLeCSI mapper failed to allocate instance" << std::endl);
           } // end if
 
           output.chosen_instances[indx].push_back(result);

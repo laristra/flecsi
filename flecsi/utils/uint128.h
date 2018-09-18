@@ -1,13 +1,21 @@
-//   Copyright: Copyright (C) 2005, Jan Ringos, http://Tringi.Mx-3.cz
-//   Version: 1.1
-//
-//  Copyright (c) 2014 Hartmut Kaiser
-//
-//  Distributed under the Boost Software License, Version 1.0. (See accompanying
-//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef UTIL_INTEGER_UINT128_HPP
-#define UTIL_INTEGER_UINT128_HPP
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
+
+/*! @file */
+
+
 
 #if !defined(__clang__)
 #include <algorithm>
@@ -465,4 +473,3 @@ namespace utils {
 typedef flecsi::utils::uint128 __uint128_t;
 #endif
 
-#endif

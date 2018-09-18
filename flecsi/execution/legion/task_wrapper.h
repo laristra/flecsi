@@ -177,13 +177,10 @@ struct pure_task_wrapper__ {
             tid, Legion::Processor::TOC_PROC, config_options, task_name);
         break;
       case processor_type_t::mpi:
-        clog(fatal) << "MPI type passed to pure legion registration"
-                    << std::endl;
+        clog_fatal("MPI type passed to pure legion registration");
         break;
       default:
-        clog(fatal)
-            << "wrong processor type is specified for the task registration"
-            << std::endl;
+        clog_fatal("wrong processor type is specified for the task registration");
         break;
     } // switch
   } // registration_callback
@@ -264,9 +261,7 @@ struct task_wrapper__ {
             tid, Legion::Processor::LOC_PROC, config_options, name);
         break;
       default:
-        clog(fatal)
-            << "wrong processor type is specified for the task registration"
-            << std::endl;
+        clog_fatal("wrong processor type is specified for the task registration");
         break;
     } // switch
   } // registration_callback

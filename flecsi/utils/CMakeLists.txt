@@ -20,13 +20,16 @@
 set(utils_HEADERS
   any.h
   array_ref.h
+  bit_buffer.h
   checksum.h
   common.h
   const_string.h
+  dag.h
   debruijn.h
   dimensioned_array.h
   export_definitions.h
   factory.h
+  graphviz.h
   hash.h
   humble.h
   id.h
@@ -44,7 +47,9 @@ set(utils_HEADERS
   tuple_type_converter.h
   tuple_walker.h
   tuple_wrapper.h
+  tuple_visit.h
   type_traits.h
+  uint128.h
   utility.h
 )
 
@@ -108,12 +113,13 @@ set(utils_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
-
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 cinch_add_devel_target(clog
   SOURCES
     test/clog.cc
   POLICY ${UNIT_POLICY}
 )
+endif()
 
 cinch_add_unit(const_string
   SOURCES test/const_string.cc common.cc
@@ -235,6 +241,11 @@ cinch_add_unit(tuple_function
   FOLDER "Tests/Util"
 )
 
+cinch_add_unit(dag
+  SOURCES test/dag.cc
+  LIBRARIES ${FLECSI_LIBRARY_DEPENDENCIES}
+)
+
 set(index_space_blessed_input test/index_space.blessed.gnug)
 if(MSVC)
   set(index_space_blessed_input test/index_space.blessed.msvc)
@@ -262,7 +273,7 @@ endif()
 cinch_add_unit(common
   SOURCES common.cc
           test/common.cc
-  INPUTS  test/common.blessed ${common_blessed_input}
+  INPUTS  test/common.blessed.ppc test/common.blessed ${common_blessed_input}
   FOLDER "Tests/Util"
 )
 

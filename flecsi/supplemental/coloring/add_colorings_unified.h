@@ -13,7 +13,7 @@
 namespace flecsi {
 namespace execution {
 
-void add_colorings_unified(coloring_map_t &map); 
+void add_colorings_unified(flecsi::supplemental::coloring_map_t &map); 
   
 } // namespace execution
 } // namespace flecsi

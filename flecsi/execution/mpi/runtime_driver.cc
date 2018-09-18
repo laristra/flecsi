@@ -175,7 +175,17 @@ runtime_driver(
     flecsi_context.add_index_map(is.first, _map);
   } // for
 
+#if defined(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL)
+
+  // Execute control
+  if(flecsi_context.top_level_driver()) {
+    flecsi_context.top_level_driver()(argc, argv);
+  }
+
+#else
+
   flecsi_context.advance_state();
+
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   specialization_spmd_init(argc, argv);
@@ -185,6 +195,8 @@ runtime_driver(
 
   // Execute the user driver.
   driver(argc, argv);
+
+#endif // FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL
 
 } // runtime_driver
 

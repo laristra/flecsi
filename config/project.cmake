@@ -22,7 +22,13 @@ cinch_minimum_required(1.0)
 # Set the project name
 #------------------------------------------------------------------------------#
 
-project(FleCSI)
+option(ENABLE_CUDA "Enable support for CUDA" OFF)
+
+if(ENABLE_CUDA)
+  project(FleCSI LANGUAGES CXX C CUDA)
+else()
+  project(FleCSI LANGUAGES CXX C)
+endif()
 
 #------------------------------------------------------------------------------#
 # Set header suffix regular expression
@@ -31,18 +37,11 @@ project(FleCSI)
 set(CINCH_HEADER_SUFFIXES "\\.h")
 
 #------------------------------------------------------------------------------#
-# If a C++14 compiler is available, then set the appropriate flags
+# Set required C++ standard
 #------------------------------------------------------------------------------#
 
-include(cxx14)
-
-check_for_cxx14_compiler(CXX14_COMPILER)
-
-if(CXX14_COMPILER)
-    enable_cxx14()
-else()
-    message(FATAL_ERROR "C++14 compatible compiler not found")
-endif()
+set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
 
 #------------------------------------------------------------------------------#
 # This variable is used to collect library and include dependencies for
@@ -132,6 +131,12 @@ set(FLECSI_COUNTER_TYPE "int32_t" CACHE STRING
   "Select the type that will be used for loop and iterator values")
 
 #------------------------------------------------------------------------------#
+# Control Model
+#------------------------------------------------------------------------------#
+
+option(ENABLE_DYNAMIC_CONTROL_MODEL "Enable the new FleCSI control model" OFF)
+
+#------------------------------------------------------------------------------#
 # Add option for FleCSIT command-line tool.
 #------------------------------------------------------------------------------#
 
@@ -157,6 +162,24 @@ if(ENABLE_RISTRALL)
 
     list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${RistraLL_INCLUDE_DIRS})
     list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${RistraLL_LIBRARIES})
+  endif()
+endif()
+
+#------------------------------------------------------------------------------#
+# Graphviz
+#------------------------------------------------------------------------------#
+
+option(ENABLE_GRAPHVIZ "Enable Graphviz Support" OFF)
+
+if(ENABLE_GRAPHVIZ)
+  find_package(Graphviz REQUIRED)
+
+  if(GRAPHVIZ_FOUND)
+    include_directories(${GRAPHVIZ_INCLUDE_DIRS})
+    add_definitions(-DENABLE_GRAPHVIZ)
+
+    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${GRAPHVIZ_INCLUDE_DIR})
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${GRAPHVIZ_LIBRARIES})
   endif()
 endif()
 
@@ -195,7 +218,7 @@ if(ENABLE_BOOST_PROGRAM_OPTIONS)
 endif()
 
 #------------------------------------------------------------------------------#
-#
+# Pthreads
 #------------------------------------------------------------------------------#
 
 if(ENABLE_CLOG)
@@ -249,11 +272,13 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   if(ENABLE_MAPPER_COMPACTION)
     add_definitions(-DMAPPER_COMPACTION)
+    set (MAPPER_COMPACTION TRUE)
   else()
     option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" ON)
 
     if(COMPACTED_STORAGE_SORT)
       add_definitions(-DCOMPACTED_STORAGE_SORT)
+      set(COMPACTED_STORAGE_SORT TRUE)
     endif()
   endif()
 
@@ -374,6 +399,8 @@ set(FLECSI_ENABLE_MPI ${ENABLE_MPI})
 set(FLECSI_ENABLE_LEGION ${ENABLE_LEGION})
 set(FLECSI_ENABLE_METIS ENABLE_METIS)
 set(FLECSI_ENABLE_PARMETIS ENABLE_PARMETIS)
+set(FLECSI_ENABLE_GRAPHVIZ ${ENABLE_GRAPHVIZ})
+set(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL ${ENABLE_DYNAMIC_CONTROL_MODEL})
 
 configure_file(${PROJECT_SOURCE_DIR}/config/flecsi-config.h.in
   ${CMAKE_BINARY_DIR}/flecsi-config.h @ONLY)
@@ -441,10 +468,6 @@ endif()
 # Set application directory
 #------------------------------------------------------------------------------#
 
-cinch_add_application_directory("examples")
-cinch_add_application_directory("examples/00_simple_drivers")
-cinch_add_application_directory("examples/lax_wendroff")
-cinch_add_application_directory("examples/02_tasks_and_drivers")
 cinch_add_application_directory("tools")
 
 #------------------------------------------------------------------------------#

@@ -84,6 +84,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
               EXCLUSIVE_PERMISSIONS,
               SHARED_PERMISSIONS,
               GHOST_PERMISSIONS> & a) {
+    if(sparse){
+      return;
+    }
+
     auto & h = a.handle;
 
     if (!h.global && !h.color) {
@@ -107,13 +111,17 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           // As user
 
           ghost_owners_partitions.push_back(h.ghost_owners_lp);
+//          owner_subregion_partitions.push_back(h.ghost_owners_subregion_lp);
           ghost_partitions.push_back(h.ghost_lp);
           entire_regions.push_back(h.entire_region);
           fids.push_back(h.fid);
           ghost_copy_args local_args;
           local_args.data_client_hash = h.data_client_hash;
           local_args.index_space = h.index_space;
+          local_args.sparse = false;
           args.push_back(local_args);
+          //FIXME add ogic for futures
+          //futures.push_back(Legion::Future::from_value(
 
           *(h.ghost_is_readable) = true;
 
@@ -142,6 +150,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
     // group by ghost_owners_partition
     std::vector<std::set<size_t>> handle_groups;
+    std::vector<bool> is_sparse_group;
     for (size_t handle{0}; handle < ghost_owners_partitions.size(); handle++) {
       bool found_group = false;
       for (size_t group{0}; group < handle_groups.size(); group++) {
@@ -156,11 +165,13 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
         std::set<size_t> new_group;
         new_group.insert(handle);
         handle_groups.push_back(new_group);
+        is_sparse_group.push_back(args[handle].sparse);
       }
     }  // for handle
 
     // launch copy task per group of handles with same ghost_owners_partition
     for (size_t group{0}; group < handle_groups.size(); group++) {
+      bool is_sparse = is_sparse_group[group];
       auto first_itr = handle_groups[group].begin();
       size_t first = *first_itr;
 
@@ -168,6 +179,22 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           0/*projection ID*/, READ_ONLY, EXCLUSIVE, entire_regions[first]);
       Legion::RegionRequirement rr_ghost(ghost_partitions[first],
           0/*projection ID*/, WRITE_DISCARD, EXCLUSIVE, entire_regions[first]);
+
+      Legion::RegionRequirement rr_entries_shared;
+
+      Legion::RegionRequirement rr_entries_ghost;
+
+      if(is_sparse){
+        rr_entries_shared =
+          Legion::RegionRequirement(
+          ghost_owner_entries_partitions[first], 0, READ_ONLY, EXCLUSIVE,
+          entries_regions[first]);
+
+        rr_entries_ghost =
+          Legion::RegionRequirement(
+          ghost_entries_partitions[first], 0,  WRITE_DISCARD, EXCLUSIVE,
+          entries_regions[first]);        
+      }
 
       auto ghost_owner_pos_fid =
           LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
@@ -181,6 +208,9 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
       const auto ghost_copy_tid = flecsi_context.task_id<key>();
 
+      //FIXME futures:
+      //ghost_launcher.add_future(futures[first]);
+
       Legion::IndexLauncher ghost_launcher(ghost_copy_tid, color_domain,
           Legion::TaskArgument(&args[first], sizeof(args[first])),
           Legion::ArgumentMap());
@@ -191,10 +221,22 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
         rr_owners.add_field(fids[handle]);
         rr_ghost.add_field(fids[handle]);
+
+         if(is_sparse){
+          rr_entries_shared.add_field(fids[handle]);
+          rr_entries_ghost.add_field(fids[handle]);
+         }
+
       }
 
       ghost_launcher.add_region_requirement(rr_owners);
       ghost_launcher.add_region_requirement(rr_ghost);
+
+      if(is_sparse){
+          ghost_launcher.add_region_requirement(rr_entries_shared);
+          ghost_launcher.add_region_requirement(rr_entries_ghost);
+        }
+
       ghost_launcher.tag = MAPPER_FORCE_RANK_MATCH;
       runtime->execute_index_space(context, ghost_launcher);
     } // for group
@@ -207,8 +249,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS
   >
-  void
-  handle(
+  void handle(
     sparse_accessor <
     T,
     EXCLUSIVE_PERMISSIONS,
@@ -217,8 +258,92 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     > &a
   )
   {
-    // TODO: implement
+    if(!sparse){
+      return;
+    }
+
+    using sparse_field_data_t = context_t::sparse_field_data_t;
+
+    auto & h = a.handle;
+
+    auto & flecsi_context = context_t::instance();
+
+    bool read_phase = false;
+    bool write_phase = false;
+    const int my_color = runtime->find_local_MPI_rank();
+
+    read_phase = GHOST_PERMISSIONS != reserved;
+    write_phase = (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw);
+
+    if (read_phase) {
+      if (!*(h.ghost_is_readable)) {
+          clog_tag_guard(prolog);
+          clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
+                      << std::endl;
+
+          // offsets
+          ghost_owners_partitions.push_back(h.ghost_owners_offsets_lp);
+//          owner_subregion_partitions.push_back(
+//			h.ghost_owners_offsets_subregion_lp);
+
+          ghost_owner_entries_partitions.push_back(
+            h.ghost_owners_entries_lp);
+          
+          entries_regions.push_back(
+            h.entries_entire_region);
+            
+
+          ghost_partitions.push_back(h.offsets_ghost_lp);
+          ghost_entries_partitions.push_back(h.entries_ghost_lp);
+          
+ //         color_partitions.push_back(h.offsets_color_lp);
+//          color_entries_partitions.push_back(h.entries_color_lp);
+
+          fids.push_back(h.fid);
+
+          ghost_copy_args local_args;
+          local_args.data_client_hash = h.data_client_hash;
+          local_args.index_space = h.index_space;
+          local_args.sparse = true;
+          local_args.reserve = h.reserve;
+          local_args.max_entries_per_index = h.max_entries_per_index;
+          args.push_back(local_args);
+
+          //FIXME futures
+          //futures.push_back(Legion::Future::from_value(
+          //    runtime, *(h.global_to_local_color_map_ptr)));
+ 
+          *(h.ghost_is_readable) = true;
+
+      } // !ghost_is_readable
+    } // read_phase
+
+    if (write_phase && (*h.ghost_is_readable)) {
+
+      *(h.ghost_is_readable) = false;
+      *(h.write_phase_started) = true;
+    } // if
   }
+
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    ragged_accessor<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    > & a
+  )
+  {
+    handle(reinterpret_cast<sparse_accessor<
+      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+  } // handle
 
   template<
     typename T
@@ -230,7 +355,76 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     > &m
   )
   {
-    // TODO: implement
+    if(!sparse){
+      return;
+    }
+ 
+    auto & h = m.h_;
+
+    using sparse_field_data_t = context_t::sparse_field_data_t;
+
+    auto & flecsi_context = context_t::instance();
+    const int my_color = runtime->find_local_MPI_rank();
+
+    //read 
+    if (!*(h.ghost_is_readable)) {
+          clog_tag_guard(prolog);
+          clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
+                      << std::endl;
+
+          // offsets
+          ghost_owners_partitions.push_back(h.ghost_owners_offsets_lp);
+//          owner_subregion_partitions.push_back(
+//                      h.ghost_owners_offsets_subregion_lp);
+
+          ghost_owner_entries_partitions.push_back(
+            h.ghost_owners_entries_lp);
+
+          entries_regions.push_back(
+            h.entries_entire_region);
+
+
+          ghost_partitions.push_back(h.offsets_ghost_lp);
+          ghost_entries_partitions.push_back(h.entries_ghost_lp);
+
+ //         color_partitions.push_back(h.offsets_color_lp);
+//          color_entries_partitions.push_back(h.entries_color_lp);
+
+          fids.push_back(h.fid);
+
+          ghost_copy_args local_args;
+          local_args.data_client_hash = h.data_client_hash;
+          local_args.index_space = h.index_space;
+          local_args.sparse = true;
+          local_args.reserve = h.reserve;
+          local_args.max_entries_per_index = h.max_entries_per_index();
+          args.push_back(local_args);
+
+          //FIXME futures
+          //futures.push_back(Legion::Future::from_value(
+          //    runtime, *(h.global_to_local_color_map_ptr)));
+
+          *(h.ghost_is_readable) = true;
+    } 
+
+      //write
+      if(*(h.ghost_is_readable) ){
+        *(h.ghost_is_readable) = false;
+        *(h.write_phase_started) = true;
+       }
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    ragged_mutator<
+      T
+    > & m
+  )
+  {
+    handle(reinterpret_cast<sparse_mutator<T>&>(m));
   }
 
   /*!
@@ -249,12 +443,27 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
   std::vector<Legion::LogicalPartition> ghost_owners_partitions;
   std::vector<Legion::LogicalPartition> ghost_partitions;
   std::vector<Legion::LogicalRegion> entire_regions;
+  std::vector<Legion::LogicalRegion> entries_regions;
+//  std::vector<Legion::LogicalPartition> owner_subregion_partitions;
+  std::vector<Legion::LogicalPartition> ghost_owner_entries_partitions;
+  std::vector<Legion::LogicalPartition> ghost_entries_partitions;
+  std::vector<Legion::LogicalPartition> entries_partitions;
+  //Legion::TaskLauncher & launcher;
+
   std::vector<Legion::FieldID> fids;
   struct ghost_copy_args {
     size_t data_client_hash;
     size_t index_space;
+    bool sparse = false;
+    size_t reserve;
+    size_t max_entries_per_index;
   };
+
   std::vector<struct ghost_copy_args> args;
+  std::vector<Legion::Future> futures;
+  size_t reserve;
+  size_t max_entries_per_index;
+  bool sparse = false;
 
 }; // struct task_prolog_t
 

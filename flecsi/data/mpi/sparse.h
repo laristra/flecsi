@@ -161,11 +161,11 @@ struct storage_class__<sparse>
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
       const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-      const size_t reserve_chunk = iitr->second.reserve_chunk;
+      const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
       // TODO: deal with VERSION
       context.register_sparse_field_data(field_info.fid, field_info.size,
-        color_info, max_entries_per_index, reserve_chunk);
+        color_info, max_entries_per_index, exclusive_reserve);
 
       context.register_sparse_field_metadata<DATA_TYPE>(
         field_info.fid, color_info, index_coloring);
@@ -232,14 +232,12 @@ struct storage_class__<sparse>
         "sparse index space info not registered for index space: " <<
         field_info.index_space);
 
-      // TODO: these parameters need to be passed in field
-      // registration, or defined elsewhere
       const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-      const size_t reserve_chunk = iitr->second.reserve_chunk;
+      const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
       // TODO: deal with VERSION
       context.register_sparse_field_data(field_info.fid, field_info.size,
-        color_info, max_entries_per_index, reserve_chunk);
+        color_info, max_entries_per_index, exclusive_reserve);
 
       context.register_sparse_field_metadata<DATA_TYPE>(
         field_info.fid, color_info, index_coloring);
@@ -257,7 +255,7 @@ struct storage_class__<sparse>
     h.offsets = &fd.offsets;
     h.entries = &fd.entries;
     h.reserve = &fd.reserve;
-    h.reserve_chunk = fd.reserve_chunk;
+    h.exclusive_reserve = fd.exclusive_reserve;
     h.num_exclusive_entries = &fd.num_exclusive_entries;
     h.num_exclusive_insertions = new size_t(0);
 

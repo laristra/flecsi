@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <flecsi-config.h>
 
 namespace flecsi {
 namespace execution {

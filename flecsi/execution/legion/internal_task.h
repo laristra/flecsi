@@ -66,7 +66,7 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the execution policy to register the task */                         \
-  bool task##_task_registered =                                                \
+  static inline bool task##_task_registered =                                  \
       flecsi::execution::legion_execution_policy_t::register_legion_task<      \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
           typename flecsi::utils::function_traits__<decltype(                  \
