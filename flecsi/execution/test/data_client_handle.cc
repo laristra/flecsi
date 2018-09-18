@@ -14,9 +14,6 @@
 #include <cinchtest.h>
 
 #include <flecsi/data/dense_accessor.h>
-#include <flecsi/supplemental/coloring/add_colorings_dependent_partition.h>
-#include <flecsi/supplemental/coloring/add_colorings_unified.h>
-
 #include <flecsi/execution/execution.h>
 #include <flecsi/supplemental/mesh/test_mesh_2d.h>
 
@@ -96,7 +93,8 @@ flecsi_register_task_simple(hello, loc, index);
 void
 specialization_tlt_init(int argc, char ** argv) {
   clog(info) << "In specialization top-level-task init" << std::endl;
-  supplemental::do_test_mesh_2d_coloring();
+  //supplemental::do_test_mesh_2d_coloring();
+  supplemental::do_test_mesh_2d_coloring_dp();
 } // specialization_tlt_init
 
 void

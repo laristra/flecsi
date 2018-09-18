@@ -11,10 +11,12 @@
 
 
 namespace flecsi {
-namespace execution {
+namespace supplemental {
+
+using namespace execution;
 
 void
-add_colorings_unified(flecsi::supplemental::coloring_map_t& map)    
+add_colorings_unified(coloring_map_t& map)    
 {
   printf("start DP\n");
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");

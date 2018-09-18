@@ -233,7 +233,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       SOURCES
         test/execution_structure.cc
         ../supplemental/coloring/add_colorings.cc
-        ../supplemental/coloring/add_colorings_dependent_partition.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -255,7 +255,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       SOURCES
         test/devel_handle.cc
         ../supplemental/coloring/add_colorings.cc
-        ../supplemental/coloring/add_colorings_dependent_partition.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -298,6 +298,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       SOURCES
         test/index_subspaces.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -341,7 +342,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       SOURCES
         test/data_handle_task.cc
         ../supplemental/coloring/add_colorings.cc
-        ../supplemental/coloring/add_colorings_dependent_partition.cc
         ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
@@ -364,7 +364,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       SOURCES
         test/handle_accessor.cc
         ../supplemental/coloring/add_colorings.cc
-        ../supplemental/coloring/add_colorings_dependent_partition.cc
         ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
@@ -387,7 +386,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       SOURCES
         test/ghost_access_drivers.cc
         ../supplemental/coloring/add_colorings.cc
-        ../supplemental/coloring/add_colorings_dependent_partition.cc
         ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
@@ -430,7 +428,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       SOURCES
         test/data_client_handle.cc
         ../supplemental/coloring/add_colorings.cc
-        ../supplemental/coloring/add_colorings_dependent_partition.cc
         ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
@@ -456,6 +453,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       SOURCES
         test/dense_data.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -480,6 +478,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     SOURCES
       test/finite_difference_dense.cc
       ../supplemental/coloring/add_colorings.cc
+      ../supplemental/coloring/add_colorings_unified.cc
       ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
     INPUTS
@@ -522,6 +521,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       SOURCES
         test/sparse_data.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -546,6 +546,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       SOURCES
         test/finite_difference_sparse.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -569,6 +570,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       SOURCES
         test/ragged_data.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
@@ -670,7 +672,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         SOURCES
           test/legion/read_waits_on_write.cc
           ../supplemental/coloring/add_colorings.cc
-          ../supplemental/coloring/add_colorings_dependent_partition.cc
           ../supplemental/coloring/add_colorings_unified.cc
           ${DRIVER_INITIALIZATION}
           ${RUNTIME_DRIVER}
@@ -693,7 +694,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         SOURCES
           test/gid_to_lid_map.cc
           ../supplemental/coloring/add_colorings.cc
-          ../supplemental/coloring/add_colorings_dependent_partition.cc
           ../supplemental/coloring/add_colorings_unified.cc
           ${DRIVER_INITIALIZATION}
           ${RUNTIME_DRIVER}

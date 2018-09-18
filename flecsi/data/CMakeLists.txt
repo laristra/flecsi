@@ -235,6 +235,7 @@ if(ENABLE_PARMETIS)
   cinch_add_unit(client_registration
     SOURCES
       test/client_registration.cc
+      ../supplemental/coloring/add_colorings_unified.cc
       ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
     DEFINES

@@ -11,9 +11,9 @@
 #include <flecsi/supplemental/coloring/add_colorings.h>
 
 namespace flecsi {
-namespace execution {
+namespace supplemental {
 
-void add_colorings_unified(flecsi::supplemental::coloring_map_t &map); 
+void add_colorings_unified(coloring_map_t &map); 
   
 } // namespace execution
 } // namespace flecsi
