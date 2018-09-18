@@ -55,9 +55,9 @@ task2(
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1);
 
-flecsi_register_task_simple(task1, loc, single);
-flecsi_register_task_simple(task1b, loc, single);
-flecsi_register_task_simple(task2, loc, single);
+flecsi_register_task_simple(task1, loc, index);
+flecsi_register_task_simple(task1b, loc, index);
+flecsi_register_task_simple(task2, loc, index);
 
 flecsi_register_field(
     test_mesh_t,
@@ -87,7 +87,7 @@ specialization_tlt_init(int argc, char ** argv) {
 void
 specialization_spmd_init(int argc, char ** argv) {
   auto mh = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
-  flecsi_execute_task(initialize_mesh, flecsi::supplemental, single, mh);
+  flecsi_execute_task(initialize_mesh, flecsi::supplemental, index, mh);
 } // specialization_spmd_init
 
 //----------------------------------------------------------------------------//
@@ -99,7 +99,7 @@ driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   auto mh = flecsi_get_mutator(ch, hydro, pressure, double, ragged, 0, 5);
 
-  auto f1 = flecsi_execute_task_simple(task1, single, ch, mh);
+  auto f1 = flecsi_execute_task_simple(task1, index, ch, mh);
   f1.wait();
 
   /*
@@ -112,7 +112,7 @@ driver(int argc, char ** argv) {
 
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, ragged, 0);
 
-  flecsi_execute_task_simple(task2, single, ch, ph);
+  flecsi_execute_task_simple(task2, index, ch, ph);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//

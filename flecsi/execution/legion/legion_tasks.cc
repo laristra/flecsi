@@ -127,7 +127,7 @@ __flecsi_internal_register_legion_task(
 __flecsi_internal_register_legion_task(
     ghost_copy_task,
     processor_type_t::loc,
-    single | leaf);
+    index | leaf);
 
 /*!
   Register owners_subregions task.
@@ -142,7 +142,7 @@ __flecsi_internal_register_legion_task(
 __flecsi_internal_register_legion_task(
     owners_subregions_task,
     processor_type_t::loc,
-    single | leaf);
+    index| leaf);
 
 const double MaxReductionOp::identity = std::numeric_limits<double>::min();
 
