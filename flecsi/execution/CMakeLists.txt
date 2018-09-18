@@ -651,9 +651,9 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
     if(ENABLE_PARMETIS)
 
-      cinch_add_unit(barrier_per_field
+      cinch_add_unit(read_waits_on_write
         SOURCES
-          test/legion/barrier_per_field_drivers.cc
+          test/legion/read_waits_on_write.cc
           ../supplemental/coloring/add_colorings.cc
           ${DRIVER_INITIALIZATION}
           ${RUNTIME_DRIVER}

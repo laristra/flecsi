@@ -25,7 +25,7 @@
 using namespace flecsi;
 using namespace supplemental;
 
-clog_register_tag(barrier_per_field);
+clog_register_tag(read_waits_on_write);
 
 void read_task(
     dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
@@ -204,7 +204,7 @@ read_task(
 
 } // read_task
 
-TEST(barrier_per_field, testname) {} // TEST
+TEST(read_waits_on_write, testname) {} // TEST
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options for vim.
