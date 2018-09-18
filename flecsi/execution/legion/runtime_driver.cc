@@ -510,7 +510,20 @@ runtime_driver(
             color_ispace.color_partition);
   }//if
 
+#if defined FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
   context_.advance_state();
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "Executing specialization spmd init" << std::endl;
+  }//scope
+
+  // Invoke the specialization top-level task initialization function.
+   specialization_spmd_init(args.argc, args.argv);
+  //
+  //     context_.advance_state();
+#endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+
+ // context_.advance_state();
   // run default or user-defined driver
   driver(args.argc, args.argv);
 
