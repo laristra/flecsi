@@ -81,13 +81,6 @@ specialization_tlt_init(int argc, char ** argv) {
 
 void
 driver(int argc, char ** argv) {
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-  auto runtime = Legion::Runtime::get_runtime();
-  const int my_color = runtime->find_local_MPI_rank();
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
-  int my_color;
-  MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
-#endif
 
   clog(trace) << " in driver" << std::endl;
 
@@ -116,14 +109,6 @@ set_primary_cells_task(
     dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
     dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
     size_t cycle) {
-
-  #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion                                                                                                                                                                                     
-    auto runtime = Legion::Runtime::get_runtime();                                                                                                               
-    const int my_color = runtime->find_local_MPI_rank();                                                                                                         
-  #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi                                                                                                                                                                                      
-    int my_color;                                                                                                                                                
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_color);                                                                                                                    
-  #endif
 
   flecsi::execution::context_t & context_ =
       flecsi::execution::context_t::instance();
@@ -162,14 +147,6 @@ check_all_cells_task(
     dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
     dense_accessor<double, flecsi::ro, flecsi::ro, flecsi::ro> test,
     size_t cycle) {
-    #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion                                                                                                                                                                                     
-    auto runtime = Legion::Runtime::get_runtime();                                                                                                                                                                                            
-    const int my_color = runtime->find_local_MPI_rank();                                                                                                                                                                                      
-  #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi                                                                                                                                                                                      
-    int my_color;                                                                                                                                                                                                                             
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_color);                                                                                                                                                                                                 
-  #endif            
-
 
   flecsi::execution::context_t & context_ =
       flecsi::execution::context_t::instance();
