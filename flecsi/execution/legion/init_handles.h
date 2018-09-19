@@ -367,7 +367,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     LegionRuntime::Arrays::Rect<2> dr;
     LegionRuntime::Arrays::Rect<2> sr;
-    LegionRuntime::Accessor::ByteOffset bo[2];
+    LegionRuntime::Accessor::ByteOffset bo[2]; 
 
     for (size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
@@ -393,6 +393,12 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
                      .get_field_accessor(ent.id_fid)
                      .template typeify<utils::id_t>();
       auto ids = ac2.template raw_rect_ptr<2>(dr, sr, bo);
+
+      //calculating exclusive, shared and ghost sizes fro the entity
+      auto coloring = context_.coloring(ent.index_space);
+      ent.num_exclusive = coloring.exclusive.size();
+      ent.num_shared = coloring.shared.size();
+      ent.num_ghost = coloring.ghost.size();  
 
       storage->init_entities(
           ent.domain, ent.dim, ents, ids, ent.size, num_ents, ent.num_exclusive,
