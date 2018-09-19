@@ -455,8 +455,38 @@ runtime_driver(
 
     runtime->attach_name(ispace_dmap[idx_space].ghost_owners_lp,
         "ghost owners logical partition");
+
     if(sparse_info){
-      ispace_dmap[sparse_idx_space].entire_region = flecsi_ispace.logical_region;
+     auto& flecsi_sis = data.sparse_index_space(idx_space);
+
+      ispace_dmap[sparse_idx_space].entire_region = flecsi_sis.logical_region;
+
+      Legion::LogicalPartition sis_access_lp =
+	runtime->get_logical_partition(ctx,
+        flecsi_sis.logical_region, flecsi_sis.access_partition);
+    Legion::LogicalRegion sis_primary_lr =
+	runtime->get_logical_subregion_by_color(
+        ctx, sis_access_lp, PRIMARY_ACCESS);
+    Legion::LogicalRegion sis_ghost_lr =
+	runtime->get_logical_subregion_by_color(
+        ctx, sis_access_lp, GHOST_ACCESS);
+
+    ispace_dmap[sparse_idx_space].primary_lp = runtime->get_logical_partition(
+        ctx, sis_primary_lr, flecsi_sis.primary_partition);
+    runtime->attach_name(ispace_dmap[sparse_idx_space].primary_lp, "primary logical partition");
+
+    ispace_dmap[sparse_idx_space].exclusive_lp = runtime->get_logical_partition(
+        ctx, sis_primary_lr, flecsi_sis.exclusive_partition);
+    runtime->attach_name(ispace_dmap[sparse_idx_space].exclusive_lp, "exclusive logical partition");
+
+    ispace_dmap[sparse_idx_space].shared_lp = runtime->get_logical_partition(
+        ctx, sis_primary_lr, flecsi_sis.shared_partition);
+    runtime->attach_name(ispace_dmap[sparse_idx_space].shared_lp, "shared logical partition");
+
+    ispace_dmap[sparse_idx_space].ghost_lp = runtime->get_logical_partition(
+        ctx, sis_ghost_lr, flecsi_sis.ghost_partition);
+    runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_lp, "ghost logical partition");
+
       //FIXME add logic for sparse
     }
 //  } // idx_space
