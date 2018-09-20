@@ -490,7 +490,6 @@ runtime_driver(
         ctx, sis_ghost_lr, flecsi_sis.ghost_partition);
     runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_lp, "ghost logical partition");
 
-      //FIXME add logic for sparse
     }
 //  } // idx_space
 
@@ -544,7 +543,6 @@ runtime_driver(
   }//if
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-  context_.advance_state();
   {
   clog_tag_guard(runtime_driver);
   clog(info) << "Executing specialization spmd init" << std::endl;
@@ -553,10 +551,9 @@ runtime_driver(
   // Invoke the specialization top-level task initialization function.
    specialization_spmd_init(args.argc, args.argv);
   //
-  //     context_.advance_state();
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
- // context_.advance_state();
+  context_.advance_state();
   // run default or user-defined driver
   driver(args.argc, args.argv);
 
@@ -760,13 +757,9 @@ setup_rank_context_task(
 
 
 
-  //FIXME fix the logic for sparse metadata below 
 
   if(number_of_sparse_fields > 0){
     context_t::sparse_field_data_t md;
-
-    //FIXME THIS NEEDS TO BE FIXED for SPARSE
-      
 
     for(const field_info_t& fi : context_.registered_fields()){
       if(fi.storage_class != data::sparse && fi.storage_class != data::ragged){
