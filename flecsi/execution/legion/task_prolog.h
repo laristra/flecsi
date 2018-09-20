@@ -120,8 +120,6 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           local_args.index_space = h.index_space;
           local_args.sparse = false;
           args.push_back(local_args);
-          //FIXME add ogic for futures
-          //futures.push_back(Legion::Future::from_value(
 
           *(h.ghost_is_readable) = true;
 
@@ -207,9 +205,6 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
               .hash();
 
       const auto ghost_copy_tid = flecsi_context.task_id<key>();
-
-      //FIXME futures:
-      //ghost_launcher.add_future(futures[first]);
 
       Legion::IndexLauncher ghost_launcher(ghost_copy_tid, color_domain,
           Legion::TaskArgument(&args[first], sizeof(args[first])),
@@ -309,10 +304,6 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           local_args.max_entries_per_index = h.max_entries_per_index;
           args.push_back(local_args);
 
-          //FIXME futures
-          //futures.push_back(Legion::Future::from_value(
-          //    runtime, *(h.global_to_local_color_map_ptr)));
- 
           *(h.ghost_is_readable) = true;
 
       } // !ghost_is_readable
@@ -399,10 +390,6 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           local_args.reserve = h.reserve;
           local_args.max_entries_per_index = h.max_entries_per_index();
           args.push_back(local_args);
-
-          //FIXME futures
-          //futures.push_back(Legion::Future::from_value(
-          //    runtime, *(h.global_to_local_color_map_ptr)));
 
           *(h.ghost_is_readable) = true;
     } 
