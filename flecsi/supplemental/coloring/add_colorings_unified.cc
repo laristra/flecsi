@@ -18,9 +18,13 @@ using namespace execution;
 void
 add_colorings_unified(coloring_map_t& map)    
 {
-  printf("start DP\n");
+#ifdef FLECSI_8_8_MESH
+  printf("start DP 8*8\n");
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  
+#else
+  printf("start DP 16*16\n");
+  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+#endif
   int num_cells = sd.num_entities(1);
   int num_vertices = sd.num_entities(0);
   
