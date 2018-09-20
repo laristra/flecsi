@@ -296,7 +296,7 @@ public:
       } // scope
 
       if (my_rank == 0) {
-        printf("color %d, E: %d, S: %d, G: %d\n", color_idx.first, color_idx.second.exclusive, color_idx.second.shared, color_idx.second.ghost);
+        printf("index %d, color %d, E: %d, S: %d, G: %d\n", index_space_id, color_idx.first, color_idx.second.exclusive, color_idx.second.shared, color_idx.second.ghost);
       }
       is.total_num_entities = std::max(
           is.total_num_entities, color_idx.second.exclusive +
