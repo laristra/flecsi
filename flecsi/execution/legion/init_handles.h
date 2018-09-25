@@ -587,6 +587,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     context_t & context_ = context_t::instance();
     auto &md = context_.sparse_metadata();
      h.metadata = md;
+     h.reserve=md.reserve;
      h.init(md.num_exclusive, md.num_shared, md.num_ghost);
 
     Legion::PhysicalRegion offsets_prs[num_regions];
@@ -732,6 +733,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     context_t & context_ = context_t::instance();
     auto &md = context_.sparse_metadata();
      h.metadata=md;
+     h.reserve=md.reserve;
      h.init(md.num_exclusive, md.num_shared, md.num_ghost);
     Legion::PhysicalRegion offsets_prs[num_regions];
     offset_t * offsets_data[num_regions];
