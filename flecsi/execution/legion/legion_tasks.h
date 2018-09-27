@@ -347,47 +347,64 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   Legion::Domain ghost_domain = runtime->get_index_space_domain(
       ctx, regions[1].get_logical_region().get_index_space());
 
-
+  if (!args.sparse){
   // For each field, copy data from shared to ghost
-  for (auto fid : task->regions[0].privilege_fields) {
-    // Look up field info in context
-    auto iitr = context.field_info_map().find(
-        {args.data_client_hash, args.index_space});
-    clog_assert(iitr != context.field_info_map().end(), "invalid index space");
-    auto fitr = iitr->second.find(fid);
-    clog_assert(fitr != iitr->second.end(), "invalid fid");
-    const context_t::field_info_t & field_info = fitr->second;
+		for (auto fid : task->regions[0].privilege_fields) {
+			// Look up field info in context
+			auto iitr = context.field_info_map().find(
+					{args.data_client_hash, args.index_space});
+			clog_assert(iitr != context.field_info_map().end(), "invalid index space");
+			auto fitr = iitr->second.find(fid);
+			clog_assert(fitr != iitr->second.end(), "invalid fid");
+			const context_t::field_info_t & field_info = fitr->second;
 
-    const Legion::FieldAccessor<READ_ONLY, char, 2,
-        Legion::coord_t, Realm::AffineAccessor< char, 2, Legion::coord_t> >
-        owner_acc(regions[0], fid, field_info.size);
-    const Legion::FieldAccessor<READ_WRITE, char, 2,
-        Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
-        ghost_acc(regions[1], fid, field_info.size);
+			const Legion::FieldAccessor<READ_ONLY, char, 2,
+					Legion::coord_t, Realm::AffineAccessor< char, 2, Legion::coord_t> >
+					owner_acc(regions[0], fid, field_info.size);
+			const Legion::FieldAccessor<READ_WRITE, char, 2,
+					Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
+					ghost_acc(regions[1], fid, field_info.size);
 
-    for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
-      auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
-      LegionRuntime::Arrays::Point<2> owner_location =
-         position_ref_acc.read(ghost_ptr);
-      auto owner_ptr = Legion::DomainPoint::from_point<2>(owner_location);
+			for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
+				auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
+				LegionRuntime::Arrays::Point<2> owner_location =
+					 position_ref_acc.read(ghost_ptr);
+				auto owner_ptr = Legion::DomainPoint::from_point<2>(owner_location);
 
-     char *ptr_ghost_acc = (char*)(ghost_acc.ptr(ghost_ptr));
-     char *ptr_owner_acc = (char*)(owner_acc.ptr(owner_ptr));
-     memcpy(ptr_ghost_acc, ptr_owner_acc, field_info.size);
+			 char *ptr_ghost_acc = (char*)(ghost_acc.ptr(ghost_ptr));
+			 char *ptr_owner_acc = (char*)(owner_acc.ptr(owner_ptr));
+			 memcpy(ptr_ghost_acc, ptr_owner_acc, field_info.size);
+		 } // for ghost_domain
+		} // for fid
+  }else {//sparse
 
-     if (args.sparse){
+    for (auto fid : task->regions[0].privilege_fields) {
+
+      // Look up field info in context
+      auto iitr = context.field_info_map().find(
+          {args.data_client_hash, args.index_space});
+      clog_assert(iitr != context.field_info_map().end(), "invalid index space");
+      auto fitr = iitr->second.find(fid);
+      clog_assert(fitr != iitr->second.end(), "invalid fid");
+      const context_t::field_info_t & field_info = fitr->second;
       const Legion::FieldAccessor<READ_ONLY, char, 2,
-        Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
-        owner_acc_entries(regions[2], fid, field_info.size);
+          Legion::coord_t, Realm::AffineAccessor< char, 2, Legion::coord_t> >
+          owner_offset_acc(regions[0], fid, field_info.size);
       const Legion::FieldAccessor<READ_WRITE, char, 2,
-        Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
-        ghost_acc_entries(regions[3], fid, field_info.size);
-      char *ptr_ghost_acc_entries = (char*)(ghost_acc_entries.ptr(ghost_ptr));
-      char *ptr_owner_acc_entries = (char*)(owner_acc_entries.ptr(owner_ptr));
-      memcpy(ptr_ghost_acc_entries, ptr_owner_acc_entries, field_info.size);
-    } // if
-   } // for ghost_domain
-  } // for fid
+          Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
+          ghost_offset_acc(regions[1], fid, field_info.size);
+      const Legion::FieldAccessor<READ_ONLY, char, 2,
+          Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
+          owner_entries_acc(regions[2], fid, field_info.size +sizeof(size_t));
+      const Legion::FieldAccessor<READ_WRITE, char, 2,
+          Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
+          ghost_entries_acc(regions[3], fid, field_info.size + sizeof(size_t));
+//      char *ptr_ghost_entries_acc = (char*)(ghost_entries_acc.ptr(ghost_ptr));
+  //    char *ptr_owner_entries_acc = (char*)(owner_entries_acc.ptr(owner_ptr));
+       // memcpy(ptr_ghost_acc_entries, ptr_owner_acc_entries, field_info.size);
+
+    }//for
+  }
 
 } // ghost_copy_task
 

@@ -194,11 +194,14 @@ namespace legion {
 
       h.ghost_owners_entries_lp = 
         ism[index_space + sparse_offset].ghost_owners_lp;
+
+      h.entries_color_parition = ism[index_space + sparse_offset].primary_lp;
       
       h.global_to_local_color_map_ptr =
           &ism[index_space].global_to_local_color_map;
 
       h.fid = field_info.fid;
+
       h.index_space = index_space;
       h.data_client_hash = field_info.data_client_hash;
 

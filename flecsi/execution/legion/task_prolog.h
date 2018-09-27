@@ -185,7 +185,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       if(is_sparse){
         rr_entries_shared =
           Legion::RegionRequirement(
-          ghost_owner_entries_partitions[first], 0, READ_ONLY, EXCLUSIVE,
+          ghost_owner_entries_partitions[first], 0, READ_ONLY, SIMULTANEOUS,
           entries_regions[first]);
 
         rr_entries_ghost =
@@ -218,6 +218,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
         rr_ghost.add_field(fids[handle]);
 
          if(is_sparse){
+std::cout <<"IRINA DEBUG task_prolog fid ="<<fids[handle]<<std::endl;
+
           rr_entries_shared.add_field(fids[handle]);
           rr_entries_ghost.add_field(fids[handle]);
          }
@@ -282,10 +284,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 //			h.ghost_owners_offsets_subregion_lp);
 
           ghost_owner_entries_partitions.push_back(
-            h.ghost_owners_entries_lp);
-          
-          entries_regions.push_back(
-            h.entries_entire_region);
+            h.entries_shared_lp);
+         
+          entire_regions.push_back(h.offsets_entire_region); 
+          entries_regions.push_back(h.entries_entire_region);
             
 
           ghost_partitions.push_back(h.offsets_ghost_lp);
@@ -369,10 +371,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 //                      h.ghost_owners_offsets_subregion_lp);
 
           ghost_owner_entries_partitions.push_back(
-            h.ghost_owners_entries_lp);
-
-          entries_regions.push_back(
-            h.entries_entire_region);
+            h.entries_shared_lp);
+         
+          entire_regions.push_back(h.offsets_entire_region);
+          entries_regions.push_back(h.entries_entire_region);
 
 
           ghost_partitions.push_back(h.offsets_ghost_lp);
