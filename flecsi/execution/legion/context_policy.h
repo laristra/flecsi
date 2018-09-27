@@ -498,7 +498,7 @@ struct legion_context_policy_t {
     sparse_metadata_ = sparse_metadata;
   }
 
-  const sparse_field_data_t& sparse_metadata(){
+  sparse_field_data_t& sparse_metadata(){
     return sparse_metadata_;    
   }
 
