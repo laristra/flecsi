@@ -378,7 +378,40 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 		} // for fid
   }else {//sparse
 
+
+     Legion::Domain owner_entries_domain = runtime->get_index_space_domain(
+      ctx, regions[2].get_logical_region().get_index_space());
+
+     LegionRuntime::Arrays::Rect<2> ent_rect = owner_entries_domain.get_rect<2>();
+
+std::cout <<"IRINA DEBUG,my_color= "<<my_color<<" owner domain lo"<<ent_rect.lo[0]<<", "<<
+ent_rect.lo[1]<<", hi :"<<ent_rect.hi[0]<<", "<<
+ent_rect.hi[1]<<std::endl;
+
+ Legion::Domain ghost_entries_domain = runtime->get_index_space_domain(
+      ctx, regions[3].get_logical_region().get_index_space());
+
+ LegionRuntime::Arrays::Rect<2> ghost_ent_rect =
+	ghost_entries_domain.get_rect<2>();
+std::cout <<"IRINA DEBUG,my_color= "<<my_color<<" ghost domain lo"<<ghost_ent_rect.lo[0]<<", "<<
+ghost_ent_rect.lo[1]<<", hi :"<<ghost_ent_rect.hi[0]<<", "<<
+ghost_ent_rect.hi[1]<<std::endl;
+
+
+    //LegionRuntime::Arrays::Rect<2> ghost_rect = ghost_domain.get_rect<2>(); 
+    //size_t num_ghosts=ghost_rect.hi[1]-ghost_rect.lo[1];
+    
+
+//std::cout <<"IRINA DEBUG sizes = "<<(ghost_rect.hi[1]-ghost_rect.lo[1])<<
+//", =?"<<(owner_rect.hi[1]-owner_rect.lo[1]) <<std::endl;   
+
+    const int my_color = runtime->find_local_MPI_rank();
+
     for (auto fid : task->regions[0].privilege_fields) {
+     
+      std::vector<LegionRuntime::Arrays::Point<2>> ghost_points;
+      std::vector<LegionRuntime::Arrays::Point<2>> shared_points;
+      std::vector<size_t> owners_rank;
 
       // Look up field info in context
       auto iitr = context.field_info_map().find(
@@ -399,10 +432,59 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
       const Legion::FieldAccessor<READ_WRITE, char, 2,
           Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
           ghost_entries_acc(regions[3], fid, field_info.size + sizeof(size_t));
-//      char *ptr_ghost_entries_acc = (char*)(ghost_entries_acc.ptr(ghost_ptr));
-  //    char *ptr_owner_entries_acc = (char*)(owner_entries_acc.ptr(owner_ptr));
-       // memcpy(ptr_ghost_acc_entries, ptr_owner_acc_entries, field_info.size);
 
+      
+
+      for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
+        auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
+        //auto start_and_count_location= ghost_offset_acc.read(ghost_ptr);
+        offset_t * start_and_count_location = reinterpret_cast <offset_t*>(
+					ghost_offset_acc.ptr(ghost_ptr));
+        LegionRuntime::Arrays::Point<2> owner_location =
+           position_ref_acc.read(ghost_ptr); 
+        LegionRuntime::Arrays::Point<2> point=
+					LegionRuntime::Arrays::make_point(my_color,
+						start_and_count_location->start());
+        ghost_points.push_back(point);
+        owners_rank.push_back(owner_location[0]);
+
+std::cout<<"IRINA DEBUG, ghost, my_color = "<<my_color<<"point = "<<
+        point<<std::endl;
+//std::cout<<"IRINA DEBUG, ghost offset and count = "<<start_and_count_location->start()<<" , "<<start_and_count_location->count()<<std::endl;
+
+//        std::cout<<"IRINA DEBUG, owner rank = "<<owner_location[0]<<std::endl;
+
+      }
+     
+      size_t count =0;
+      for (Legion::Domain::DomainPointIterator itr(owner_domain); itr; itr++) {
+        auto owner_offset_ptr = Legion::DomainPoint::from_point<2>(itr.p);
+        const offset_t * start_and_count_location =
+					reinterpret_cast <const offset_t*>(
+						owner_offset_acc.ptr(owner_offset_ptr));
+        LegionRuntime::Arrays::Point<2> point=
+          LegionRuntime::Arrays::make_point(owners_rank[count],
+					start_and_count_location->start());
+        shared_points.push_back(point);
+        count++;
+        std::cout<<"IRINA DEBUG, owner, my color = "<<my_color<<"point = "<<
+        point<<std::endl;
+//",  offset and count = "<<start_and_count_location->start()<<" , "<<start_and_count_location->count()<<std::endl;
+      }
+
+      clog_assert (ghost_points.size()==shared_points.size(),
+       "# of ghsot pointers to send != # of shared");
+ 
+       for (size_t i=0; i<ghost_points.size(); i++) {
+         auto ghost_ptr = Legion::DomainPoint::from_point<2>(ghost_points[0]);
+         auto shared_ptr = Legion::DomainPoint::from_point<2>(shared_points[0]);
+         char *ptr_ghost_acc = (char*)(ghost_entries_acc.ptr(ghost_ptr));
+         char *ptr_shared_acc = (char*)(owner_entries_acc.ptr(shared_ptr));
+         memcpy(ptr_ghost_acc, ptr_shared_acc, (field_info.size+sizeof(size_t)));
+       }
+
+std::cout<<"IRINA DEBUG for fields"<<std::endl;
+       
     }//for
   }
 

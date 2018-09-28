@@ -284,7 +284,8 @@ std::cout <<"IRINA DEBUG task_prolog fid ="<<fids[handle]<<std::endl;
 //			h.ghost_owners_offsets_subregion_lp);
 
           ghost_owner_entries_partitions.push_back(
-            h.entries_shared_lp);
+             h.ghost_owners_entries_lp);
+//h.entries_shared_lp);
          
           entire_regions.push_back(h.offsets_entire_region); 
           entries_regions.push_back(h.entries_entire_region);
