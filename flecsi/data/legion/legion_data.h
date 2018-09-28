@@ -787,7 +787,7 @@ public:
             make_point(
                 color, sis->exclusive_reserve + shared_size + ghost_size - 1));
             sis_ghost_partitioning[color] = Domain::from_rect<2>(ghost_rect);
-            access_partitioning[GHOST_ACCESS].insert(
+            sis_access_partitioning[GHOST_ACCESS].insert(
               Domain::from_rect<2>(ghost_rect));
          }
 
@@ -799,7 +799,7 @@ public:
           LegionRuntime::Arrays::Rect<1> sis_access_bounds(PRIMARY_ACCESS,
             GHOST_ACCESS);
           Legion::Domain sis_access_domain(
-		Legion::Domain::from_rect<1>(sis_access_bounds));
+						Legion::Domain::from_rect<1>(sis_access_bounds));
 
           sis->access_partition = runtime_->create_index_partition(
             ctx_, sis->index_space, sis_access_domain, sis_access_partitioning,
@@ -811,12 +811,13 @@ public:
              sis->access_partition);
 
          LogicalRegion sis_primary_region =
-		runtime_->get_logical_subregion_by_color(ctx_,
+						runtime_->get_logical_subregion_by_color(ctx_,
                 sis_access_lp, PRIMARY_ACCESS);
 
          IndexSpace sis_ghost_is =
-		runtime_->get_logical_subregion_by_color(ctx_,
+						runtime_->get_logical_subregion_by_color(ctx_,
                 sis_access_lp, GHOST_ACCESS).get_index_space();
+
          sis->ghost_partition = runtime_->create_index_partition(ctx_,
           sis_ghost_is, color_domain_, sis_ghost_partitioning,
           true /*disjoint*/);
