@@ -165,7 +165,8 @@ struct legion_context_policy_t {
   // without a setter.
 
   size_t color() const {
-    return color_;
+    auto runtime = Legion::Runtime::get_runtime();
+    return runtime->find_local_MPI_rank();
   } // color
 
   void set_color(size_t color) {
