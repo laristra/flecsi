@@ -140,8 +140,6 @@ cinch_add_unit(launch
     test/launch.cc
   POLICY
     SERIAL
-  FOLDER
-    "Tests/Execution"
 )
 
 cinch_add_unit(simple_function
@@ -156,8 +154,6 @@ cinch_add_unit(simple_function
   LIBRARIES
     FleCSI
   NOCI
-  FOLDER
-    "Tests/Execution"
   )
 
 #
@@ -177,8 +173,6 @@ cinch_add_unit(simple_task
     FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
   NOCI
-  FOLDER
-    "Tests/Execution"
   )
 
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")

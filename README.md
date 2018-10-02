@@ -49,7 +49,7 @@ You'll need the following tools in order to build FleCSI:
 
    * Boost >= 1.56
    * CMake >= 3.0
-   * GCC >= 6.1.1
+   * GCC >= 7.1
 
 Install tools in the customary manner for your machine, e.g. by using
 *apt-get* on a Ubuntu system, or *dnf* for Fedora.
@@ -101,6 +101,7 @@ Alternatively, you can run *ccmake* in place of *cmake*, and use
 Finally:
 ```
 $ make
+$ make install
 ```
 builds and installs the FleCSI third-party libraries in the prefix
 that you specified.

@@ -128,15 +128,11 @@ cinch_add_unit(factory
   INPUTS
     test/factory.blessed
     ${factory_blessed_input}
-  FOLDER
-    "Tests/Util"
 )
 
 cinch_add_unit(reorder
   SOURCES
     test/reorder.cc
-  FOLDER
-    "Tests/Util"
 )
 
 set(any_blessed_input test/any.blessed.gnug)
@@ -152,8 +148,6 @@ cinch_add_unit(any
     RistraUtils
   INPUTS
     test/any.blessed ${any_blessed_input}
-  FOLDER
-    "Tests/Util"
 )
 
 if(NOT MSVC)
@@ -163,16 +157,12 @@ if(NOT MSVC)
     test/reflection.cc
   POLICY
     SERIAL_DEVEL
-  FOLDER
-    "Tests/Util"
   )
 endif()
 
 cinch_add_unit(humble
   SOURCES
     test/humble.cc
-  FOLDER
-    "Tests/Util"
 )
 
 set(iterator_blessed_input test/iterator.blessed.gnug)
@@ -189,22 +179,16 @@ cinch_add_unit(utils_iterator
   INPUTS
     test/iterator.blessed
     ${iterator_blessed_input}
-  FOLDER
-    "Tests/Util"
 )
 
 cinch_add_unit(logging
   SOURCES
     test/logging.cc
-  FOLDER
-    "Tests/Util"
 )
 
 cinch_add_unit(set_intersection
   SOURCES
     test/set_intersection.cc
-  FOLDER
-    "Tests/Util"
 )
 
 cinch_add_unit(set_utils
@@ -212,8 +196,6 @@ cinch_add_unit(set_utils
     test/set_utils.cc
   INPUTS
     test/set_utils.blessed
-  FOLDER
-    "Tests/Util"
 )
 
 cinch_add_unit(simple_id
@@ -224,8 +206,6 @@ cinch_add_unit(simple_id
 cinch_add_unit(static_verify
   SOURCES
     test/static_verify.cc
-  FOLDER
-    "Tests/Util"
 )
 
 cinch_add_unit(test_utility
@@ -235,8 +215,6 @@ cinch_add_unit(test_utility
     RistraUtils
   INPUTS
     test/utility.blessed.gnug
-  FOLDER
-    "Tests/Util"
 )
 
 set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.gnug)
@@ -252,8 +230,6 @@ cinch_add_unit(tuple_type_converter
     RistraUtils
   INPUTS
     ${tuple_type_converter_blessed_input}
-  FOLDER
-    "Tests/Util"
 )
 
 cinch_add_unit(tuple_wrapper
@@ -261,15 +237,11 @@ cinch_add_unit(tuple_wrapper
     test/tuple_wrapper.cc
   LIBRARIES
     RistraUtils
-  FOLDER
-    "Tests/Util"
 )
 
 cinch_add_unit(tuple_function
   SOURCES
     test/tuple_function.cc
-  FOLDER
-    "Tests/Util"
 )
 
 set(index_space_blessed_input test/index_space.blessed.gnug)
@@ -285,8 +257,6 @@ cinch_add_unit(index_space
     RistraUtils
   INPUTS
     test/index_space.blessed ${index_space_blessed_input}
-  FOLDER
-    "Tests/Util"
 )
 
 set(array_ref_blessed_input test/array_ref.blessed.gnug)
@@ -302,8 +272,6 @@ cinch_add_unit(array_ref
     RistraUtils
   INPUTS
     test/array_ref.blessed ${array_ref_blessed_input}
-  FOLDER
-    "Tests/Util"
 )
 
 set(common_blessed_input test/common.blessed.gnug)
@@ -319,8 +287,6 @@ cinch_add_unit(common
     RistraUtils
   INPUTS
     test/common.blessed.ppc test/common.blessed ${common_blessed_input}
-  FOLDER
-    "Tests/Util"
 )
 
 set(id_blessed_input test/id.blessed.gnug)
@@ -336,8 +302,6 @@ cinch_add_unit(id
     RistraUtils
   INPUTS
     test/id.blessed ${id_blessed_input}
-  FOLDER
-    "Tests/Util"
 )
 
 if(ENABLE_OPENSSL)
@@ -346,7 +310,5 @@ if(ENABLE_OPENSSL)
       test/checksum.cc
     LIBRARIES
       ${OPENSSL_LIBRARIES}
-    FOLDER
-      "Tests/Util"
   )
 endif()
