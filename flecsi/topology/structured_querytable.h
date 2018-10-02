@@ -24,14 +24,14 @@ namespace query{
 //! @ingroup
 //----------------------------------------------------------------------------//
 
-template<size_t MD>
+template<size_t MESH_DIMENSION>
 struct QueryUnit
 {
-  size_t                        box_id;
-  size_t                        numchk;
-  std::array<size_t, MD>           dir;
-  std::array<size_t, MD>       bnd_chk;
-  std::array<std::intmax_t, MD> offset;
+  size_t box_id;
+  size_t numchk;
+  std::array<size_t, MESH_DIMENSION> dir;
+  std::array<size_t, MESH_DIMENSION> bnd_chk;
+  std::array<std::intmax_t, MESH_DIMENSION> offset;
 };
 
 //----------------------------------------------------------------------------//
@@ -40,10 +40,10 @@ struct QueryUnit
 //! @ingroup
 //----------------------------------------------------------------------------//
 
-template<size_t MD>
+template<size_t MESH_DIMENSION>
 struct QuerySequence
 {
-  std::vector<QueryUnit<MD>> adjacencies;
+  std::vector<QueryUnit<MESH_DIMENSION>> adjacencies;
   size_t size(){return adjacencies.size();};
 };
 
@@ -53,15 +53,16 @@ struct QuerySequence
 //! @ingroup
 //----------------------------------------------------------------------------//
 
-template<size_t MD, size_t MAXFD, size_t MAXIN, size_t MAXTD>
+template<size_t MESH_DIMENSION, size_t MAXFD, size_t MAXIN, size_t MAXTD>
 struct QueryTable
 {
+   // QueryTable(){};
 }; 
 
 template<>
 struct QueryTable<1,2,1,2>
 {
-  QueryTable(){
+  void create_table(){
     size_t FD = 2, IN = 1, TD = 2;
 
     for (size_t i=0; i<FD; i++)
@@ -90,7 +91,7 @@ struct QueryTable<1,2,1,2>
 template<>
 struct QueryTable<2,3,2,3> 
 {
-  QueryTable(){
+  void create_table(){
     size_t FD = 3, IN = 2, TD = 3;
 
     for (size_t i=0; i<FD; i++)
@@ -148,7 +149,7 @@ struct QueryTable<2,3,2,3>
 template<>
 struct QueryTable<3,4,3,4>
 {
-  QueryTable(){
+  void create_table(){
     size_t FD = 4, IN = 3, TD = 4;
 
     for (size_t i=0; i<FD; i++)

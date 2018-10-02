@@ -75,13 +75,13 @@ TEST(structured, simple){
   for (auto vertex: mesh->entities<0>()){
    CINCH_CAPTURE() << "---- vertex id: " << vertex.id(0) << endl; 
    
-   CINCH_CAPTURE() << "  -- indices "<< endl; 
-   for (auto idv : mesh->get_indices<0>(vertex.id(0)))
+   CINCH_CAPTURE() << "  -- global indices "<< endl; 
+   for (auto idv : mesh->get_global_box_indices_from_global_offset<0>(vertex.id(0)))
     CINCH_CAPTURE() << "  ---- " <<idv << endl; 
    
-   auto bid = mesh->get_box_id<0>(vertex.id(0));
-   auto id = mesh->get_indices<0>(vertex.id(0));
-   auto offset = mesh->get_global_offset<0>(bid, id); 
+   auto bid = mesh->get_global_box_indices_from_global_offset<0>(vertex.id(0));
+   auto id = mesh->get_glob<0>(vertex.id(0));
+   auto offset = mesh->get_global_offset_from_global_box_indices<0>(bid, id); 
    CINCH_CAPTURE() << "  ---- offset " <<offset<< endl; 
    ASSERT_EQ(vertex.id(0),offset); 
  
@@ -117,13 +117,13 @@ TEST(structured, simple){
   for (auto edge: mesh->entities<1>()){
    CINCH_CAPTURE() << "---- edge id: " << edge.id(0) << endl; 
    
-   CINCH_CAPTURE() << "  -- indices "<< endl; 
-   for (auto idv : mesh->get_indices<1>(edge.id(0)))
+   CINCH_CAPTURE() << "  -- global indices "<< endl; 
+   for (auto idv : mesh->get_global_box_indices_from_global_offset<1>(edge.id(0)))
     CINCH_CAPTURE() << "  ---- " <<idv << endl; 
    
-   auto bid = mesh->get_box_id<1>(edge.id(0));
-   auto id = mesh->get_indices<1>(edge.id(0));
-   auto offset = mesh->get_global_offset<1>(bid, id); 
+   auto bid = mesh->get_box_id_from_global_offset<1>(edge.id(0));
+   auto id = mesh->get_global_box_indices_from_global_offset<1>(edge.id(0));
+   auto offset = mesh->get_global_offset_from_global_box_indices<1>(bid, id); 
    CINCH_CAPTURE() << "  ---- offset " <<offset<< endl; 
    ASSERT_EQ(edge.id(0),offset); 
  
@@ -159,13 +159,13 @@ TEST(structured, simple){
   for (auto face: mesh->entities<2>()){
    CINCH_CAPTURE() << "---- face id: " << face.id(0) << endl; 
    
-   CINCH_CAPTURE() << "  -- indices "<< endl; 
-   for (auto idv : mesh->get_indices<2>(face.id(0)))
+   CINCH_CAPTURE() << "  -- global indices "<< endl; 
+   for (auto idv : mesh->get_global_box_indices_from_global_offset<2>(face.id(0)))
     CINCH_CAPTURE() << "  ---- " <<idv << endl; 
    
-   auto bid = mesh->get_box_id<2>(face.id(0));
-   auto id = mesh->get_indices<2>(face.id(0));
-   auto offset = mesh->get_global_offset<2>(bid, id); 
+   auto bid = mesh->get_box_id_from_global_offset<2>(face.id(0));
+   auto id = mesh->get_global_box_indices_from_global_offset<2>(face.id(0));
+   auto offset = mesh->get_global_offset_from_global_box_indices<2>(bid, id); 
    CINCH_CAPTURE() << "  ---- offset " <<offset<< endl; 
    ASSERT_EQ(face.id(0),offset); 
  

@@ -192,10 +192,10 @@ public:
       } 
 
      //create query table once
-     qt = new query::QueryTable<MESH_TYPE::num_dimensions, 
-                                MESH_TYPE::num_dimensions+1,
-                                MESH_TYPE::num_dimensions, 
-                                MESH_TYPE::num_dimensions+1>(); 
+     //qt = new query::QueryTable<MESH_TYPE::num_dimensions, 
+     //                           MESH_TYPE::num_dimensions+1,
+     //                           MESH_TYPE::num_dimensions, 
+     //                           MESH_TYPE::num_dimensions+1>(); 
     
   }
  
@@ -867,7 +867,7 @@ public:
   {
     return base_t::ms_->index_spaces[domain][dim].size();
   } // num_entities
-
+ 
   template<
     size_t D,
     size_t M = 0
@@ -895,7 +895,7 @@ public:
   entities()
   {
     using etype = entity_type<D,M>;
-    return base_t::ms_->index_spaces[M][D].template iterate<etype>(); 
+    return base_t::ms_->index_spaces[M][D].template iterate_all<etype>(); 
   } // entities
  
   template<
@@ -906,7 +906,7 @@ public:
   entities() const
   {
     using etype = entity_type<D,M>;
-    return base_t::ms_->index_spaces[M][D].template iterate<etype>();
+    return base_t::ms_->index_spaces[M][D].template iterate_all<etype>();
   } // entities
 
  //--------------------------------------------------------------------------//
@@ -922,19 +922,25 @@ public:
  //! @param domain The domain of the entity for which the total number is 
  //!               requested.
  //--------------------------------------------------------------------------//
-  template<size_t TD, size_t FM , size_t TM = FM,  class E>
+  template<size_t TO_DIM, 
+           size_t FROM_DOMAIN , 
+           size_t TO_DOMAIN = FROM_DOMAIN,  
+           class E>
   auto entities(E* e)
   {
-    size_t FD = E::dimension;
-    assert(FD != TD);
+    size_t FROM_DIM = E::dimension;
+    assert(FROM_DIM != TO_DIM);
     sm_id_t id = e->id(0);
-    size_t BD = base_t::ms_->index_spaces[FM][FD].template find_box_id(id);
-    auto indices = base_t::ms_->index_spaces[FM][FD].template 
-                   get_indices_from_offset(id);
 
-    using etype = entity_type<TD,TM>;
-    return base_t::ms_->index_spaces[TM][TD].template 
-           traverse<TD,etype>(FD, BD, indices, qt);
+    size_t box_id = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
+                    find_box_id_from_global_offset(id);
+    auto indices = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
+                   local_box_indices_from_global_offset(id);
+
+    using etype = entity_type<TO_DIM,TO_DOMAIN>;
+    return base_t::ms_->index_spaces[TO_DOMAIN][TO_DIM].template 
+           iterate_local_adjacency<TO_DIM,etype>(FROM_DIM, box_id, indices);
+           //iterate_local_adjacency<TO_DIM,etype>(FROM_DIM, BD, indices, qt);
   } //entities
 
  //--------------------------------------------------------------------------//
@@ -952,19 +958,25 @@ public:
   class E>
   auto stencil_entity(E* e)
   {
-    assert(!(xoff == 0) ); 
+    if (xoff == 0) 
+      return e->id(0);
+
     size_t FD = E::dimension;
-    size_t value = e->id(0);
-    size_t BD = base_t::ms_->index_spaces[FM][FD].template find_box_id(value);
+    size_t global_offset = e->id(0); 
+    size_t box_id = base_t::ms_->index_spaces[FM][FD].template 
+                    find_box_id_from_global_offset(global_offset);
     auto indices = base_t::ms_->index_spaces[FM][FD].template
-                   get_indices_from_offset(value);
+                   get_local_box_indices_from_global_offset(global_offset);
+    auto local_offset = base_t::ms_->index_spaces[FM][FD].template
+                        get_local_offset_from_local_box_indices(box_id, indices);                
   
     if(base_t::ms_->index_spaces[FM][FD].template 
-       check_index_limits<0>(BD,xoff+indices[0]))
+       check_local_index_limits<0>(box_id,xoff+indices[0]))
     {
-      value += xoff;
+      local_offset += xoff;
     }
-    return value; 
+    return base_t::ms_->index_spaces[FM][FD].template 
+           get_global_offset_from_local_offset(local_offset);
   } //stencil_entity 
 
  //--------------------------------------------------------------------------//
@@ -983,23 +995,30 @@ public:
   class E>
   auto stencil_entity(E* e)
   {
-    assert(!((xoff == 0) && (yoff == 0))); 
+    if ((xoff == 0) && (yoff == 0))
+      return e->id(0);
+
     size_t FD = E::dimension;
-    size_t value = e->id(0);
-    size_t BD = base_t::ms_->index_spaces[FM][FD].template find_box_id(value);
+    size_t global_offset = e->id(0);
+    size_t box_id = base_t::ms_->index_spaces[FM][FD].template 
+                    find_box_id_from_global_offset(global_offset);
     auto indices = base_t::ms_->index_spaces[FM][FD].template
-                   get_indices_from_offset(value);
+                   get_local_box_indices_from_global_offset(global_offset);
+    auto local_offset = base_t::ms_->index_spaces[FM][FD].template
+                        get_local_offset_from_local_box_indices(box_id, indices); 
   
     if((base_t::ms_->index_spaces[FM][FD].template 
-       check_index_limits<0>(BD,xoff+indices[0]))&& 
+       check_local_index_limits<0>(box_id,xoff+indices[0]))&& 
        (base_t::ms_->index_spaces[FM][FD].template 
-       check_index_limits<1>(BD,yoff+indices[1])))
+       check_local_index_limits<1>(box_id,yoff+indices[1])))
     {
       size_t nx = base_t::ms_->index_spaces[FM][FD].template 
-                  get_size_in_direction<0>(BD);
-      value += xoff + nx*yoff;
+                  get_local_size_in_direction<0>(box_id);
+      local_offset += xoff + nx*yoff;
     }
-    return value; 
+
+    return base_t::ms_->index_spaces[FM][FD].template 
+           get_global_offset_from_local_offset(local_offset); 
   } //stencil_entity
 
  //--------------------------------------------------------------------------//
@@ -1019,27 +1038,33 @@ public:
   class E>
   auto stencil_entity(E* e)
   {
-    assert(!((xoff == 0) && (yoff == 0) && (zoff == 0))); 
+    if ((xoff == 0) && (yoff == 0) && (zoff == 0))
+        return e->id(0);
+
     size_t FD = E::dimension;
-    size_t value = e->id(0);
-    size_t BD = base_t::ms_->index_spaces[FM][FD].template find_box_id(value);
+    size_t box_id = base_t::ms_->index_spaces[FM][FD].template 
+                    find_box_id_from_global_offset(global_offset);
     auto indices = base_t::ms_->index_spaces[FM][FD].template
-                   get_indices_from_offset(value);
-  
+                   get_local_box_indices_from_global_offset(global_offset);
+    auto local_offset = base_t::ms_->index_spaces[FM][FD].template
+                        get_local_offset_from_local_box_indices(box_id, indices); 
+
     if((base_t::ms_->index_spaces[FM][FD].template 
-       check_index_limits<0>(BD,xoff+indices[0])) && 
+       check_local_index_limits<0>(box_id,xoff+indices[0])) && 
        (base_t::ms_->index_spaces[FM][FD].template 
-       check_index_limits<1>(BD,yoff+indices[1])) &&
+       check_local_index_limits<1>(box_id,yoff+indices[1])) &&
        (base_t::ms_->index_spaces[FM][FD].template
-       check_index_limits<2>(BD,zoff+indices[2])))
+       check_local_index_limits<2>(box_id,zoff+indices[2])))
     {
       size_t nx = base_t::ms_->index_spaces[FM][FD].template 
-                  get_size_in_direction<0>(BD);
+                  get_local_size_in_direction<0>(box_id);
       size_t ny = base_t::ms_->index_spaces[FM][FD].template 
-                  get_size_in_direction<1>(BD);
-      value += xoff + nx*yoff + nx*ny*zoff;
+                  get_local_size_in_direction<1>(box_id);
+      local_offset += xoff + nx*yoff + nx*ny*zoff;
     }
-    return value; 
+
+    return base_t::ms_->index_spaces[FM][FD].template 
+           get_global_offset_from_local_offset(local_offset);  
   } //stencil_entity 
 
 private:
@@ -1055,8 +1080,8 @@ private:
 
 
   //Helper struct for traversal routines 
-  query::QueryTable<MESH_TYPE::num_dimensions, MESH_TYPE::num_dimensions+1, 
-                    MESH_TYPE::num_dimensions, MESH_TYPE::num_dimensions+1>  *qt; 
+  //query::QueryTable<MESH_TYPE::num_dimensions, MESH_TYPE::num_dimensions+1, 
+  //                  MESH_TYPE::num_dimensions, MESH_TYPE::num_dimensions+1>  *qt; 
 
 
 }; // class structured_mesh_topology__

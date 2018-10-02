@@ -26,17 +26,21 @@ namespace topology {
 //!
 //! @ingroup
 //! @param E  The entity type of the index space
-//! @param DM num_dimensions 
+//! @param MESH_DIMENSION num_dimensions 
 //----------------------------------------------------------------------------//
-template<class E, size_t DM>
+template<class ENTITY, size_t MESH_DIMENSION>
 class structured_index_space__{
 public:
-  using sm_id_t            = typename std::remove_pointer<E>::type::sm_id_t;
-  using sm_id_array_t      = std::array<sm_id_t, DM>; 
-  using sm_id_array_2d_t   = std::vector<std::array<sm_id_t, DM>>; 
+  using sm_id_t            = typename std::remove_pointer<ENTITY>::type::sm_id_t;
+  using sm_id_array_t      = std::array<sm_id_t, MESH_DIMENSION>; 
+  using sm_id_array_2d_t   = std::vector<std::array<sm_id_t, MESH_DIMENSION>>; 
   using sm_id_vector_t     = std::vector<sm_id_t>;
   using sm_id_vector_2d_t  = std::vector<std::vector<sm_id_t>>;
-  using qtable_t           = typename query::QueryTable<DM,DM+1,DM,DM+1>;
+  using qtable_t           = typename query::QueryTable<
+                             MESH_DIMENSION,
+                             MESH_DIMENSION+1,
+                             MESH_DIMENSION,
+                             MESH_DIMENSION+1>;
 
  /******************************************************************************
  *               Constructors/Destructors/Initializations                      *    
@@ -74,12 +78,12 @@ public:
 
     // Check that the primary IS doesn't have multiple boxes
     if (primary) 
-      assert (bnds.size()==DM);
+      assert (bnds.size()==MESH_DIMENSION);
 
     offset_ = 0;
     primary_ = primary;
     primary_dim_ = primary_dim; 
-    num_boxes_ = bnds.size()/DM;
+    num_boxes_ = bnds.size()/MESH_DIMENSION;
     sm_id_array_t global_low, global_up, global_str;
     sm_id_array_t local_low, local_up;
 
@@ -91,7 +95,7 @@ public:
       local_low.clear();
       local_up.clear();
 
-      for (size_t j = 0; j < DM; j++)
+      for (size_t j = 0; j < MESH_DIMENSION; j++)
       {
          cnt *= global_ubnds[j] + bnds[num_boxes_*i+j] - global_lbnds[j]+1;
 
@@ -103,10 +107,13 @@ public:
          local_up[j]  = global_ubnds[j]+bnds[num_boxes_*i+j]-global_lbnds[j];
       }
 
+      //set up local box bnds
       lbox_offset_.push_back(0);
       lbox_size_.push_back(cnt);
       lbox_lowbnds_.push_back(local_low);
       lbox_upbnds_.push_back(local_up);
+
+      //set up global box bnds 
       gbox_size_.push_back(cnt);
       gbox_lowbnds_.push_back(global_low);
       gbox_upbnds_.push_back(global_up);
@@ -117,6 +124,9 @@ public:
     for (size_t i = 0; i < num_boxes_; i++)
      size_ += lbox_size_[i];
 
+    //Create the tables for local traversal
+    qtable_.template create_table(); 
+
     //debug print
     for (size_t i = 0; i < num_boxes_; i++)
     {
@@ -125,12 +135,12 @@ public:
       std::cout<<" -- lBox-size   = "<<lbox_size_[i]<<std::endl;
 
       std::cout<<" ----lBox-lower-bnds = { ";
-      for (size_t j = 0 ; j < DM; j++)
+      for (size_t j = 0 ; j < MESH_DIMENSION; j++)
         std::cout<<lbox_lowbnds_[i][j]<<", ";
       std::cout<<"}"<<std::endl;
     
       std::cout<<" ----lBox-upper-bnds = { ";
-      for (size_t j = 0 ; j < DM; j++)
+      for (size_t j = 0 ; j < MESH_DIMENSION; j++)
         std::cout<<lbox_upbnds_[i][j]<<", ";
       std::cout<<"}"<<std::endl;
     }
@@ -141,17 +151,17 @@ public:
       std::cout<<" -- gBox-size   = "<<gbox_size_[i]<<std::endl;
 
       std::cout<<" ----gBox-lower-bnds = { ";
-      for (size_t j = 0 ; j < DM; j++)
+      for (size_t j = 0 ; j < MESH_DIMENSION; j++)
         std::cout<<gbox_lowbnds_[i][j]<<", ";
       std::cout<<"}"<<std::endl;
     
       std::cout<<" ----gBox-upper-bnds = { ";
-      for (size_t j = 0 ; j < DM; j++)
+      for (size_t j = 0 ; j < MESH_DIMENSION; j++)
         std::cout<<gbox_upbnds_[i][j]<<", ";
       std::cout<<"}"<<std::endl;
 
       std::cout<<" ----gBox-strides = { ";
-      for (size_t j = 0 ; j < DM; j++)
+      for (size_t j = 0 ; j < MESH_DIMENSION; j++)
         std::cout<<gbox_strides_[i][j]<<", ";
       std::cout<<"}"<<std::endl;
     }
@@ -170,46 +180,58 @@ public:
  *                              Basic Iterators                                *    
  * ****************************************************************************/ 
  //--------------------------------------------------------------------------//
- //! Abstract interface to get the entities of dimension \em to that define
- //! the entity of dimension \em from with the given identifier \em id.
- //!
- //! @param from_dimension The dimension of the entity for which the
- //!                       definition is being requested.
- //! @param to_dimension   The dimension of the entities of the definition.
- //! @param id             The id of the entity for which the definition is
- //!                       being requested.
+ //! Interface to iterate over all the entities. 
  //--------------------------------------------------------------------------//
 
- template<typename S=E>
- auto iterate()
+ template<typename S=E, size_t D = MESH_DIMENSION>
+ auto iterate_all()
  { 
-   return iterator_whole_t<S>(offset_, size_);
+   return range_iterator_<S,D>(this, offset_, offset_+size_);
  }
 
- template< typename S = E>
- class iterator_whole_t
+ //--------------------------------------------------------------------------//
+ //! Interface to iterate over a range of entities. 
+ //! @param begin The starting offset. 
+ //! @param end   The ending offset. 
+ //--------------------------------------------------------------------------//
+ template<typename S=E, size_t D = MESH_DIMENSION>
+ auto iterate_range(size_t begin, size_t end)
+ { 
+   return range_iterator_<S,D>(this, begin, end);
+ }
+
+ //--------------------------------------------------------------------------//
+ //! Iterable container 
+ //--------------------------------------------------------------------------//
+ template< typename S = E, size_t D = MESH_DIMENSION>
+ class range_iterator_
  {
     public:
-     iterator_whole_t(sm_id_t start, sm_id_t sz):start_{start}, sz_{sz}{};
-     ~iterator_whole_t(){};
+     range_iterator_(structured_index_space__<S,D> *is,
+      sm_id_t start, sm_id_t sz): is_{is}, start_{start}, end_{end}{};
+     ~range_iterator_(){};
 
       class iterator_t{
         public:
-          iterator_t (sm_id_t offset):current{offset}
+          iterator_(structured_index_space__<S,D> *is, sm_id_t offset):
+          is_{is}, current{offset}
           {
-            current_ent.set_id(current,0); //set to global id corresponding 
-                                           //to current and similarly
-                                           //set the right id during increment
-                                           //operation. 
-
+            //obtain global offset/id corresponding to local offset
+            auto gid = is_->global_offset_from_local_offset(current);
+            //set global offset as id
+            current_ent.set_id(gid,0);  
           };
     
           ~iterator_t(){};
 
           iterator_t& operator++()
           {
+            //increment current local id
             ++current;
-            current_ent.set_id(current,0);
+
+            //obtain and set global offset/id corresponding to local offset
+            auto gid = is_->global_offset_from_local_offset(current);
+            current_ent.set_id(gid,0);
             return *this;
           }
 
@@ -229,6 +251,7 @@ public:
           }
 
        private:
+        structured_index_space__<S,D> *is_;
         sm_id_t current;
         S current_ent;
      };
@@ -244,8 +267,10 @@ public:
     }; 
  
    private:
+    structured_index_space__<S,D> *is_;
     sm_id_t start_;
-    sm_id_t sz_; 
+    sm_id_t end_; 
+    //sm_id_t sz_; 
  };
   
 
@@ -263,18 +288,21 @@ public:
  //!                       being requested.
  //--------------------------------------------------------------------------//
 
-  template <size_t TD, class S>
-  auto traverse(size_t FD, size_t ID, sm_id_array_t &indices, qtable_t *qt)
+  template <size_t TO_DIM, class ETYPE>
+  auto iterate_local_adjacency(size_t FROM_DIM, 
+    size_t local_box_id, sm_id_array_t &local_indices)
   {
-    return traversal<TD, S>(this, DM, FD, ID, indices, qt);
+    return local_adjacency_iterator<TO_DIM, ETYPE>
+           (this, MESH_DIMENSION, FROM_DIM, 
+           local_box_id, local_indices, &qtable_);
   }
 
-  template<size_t TD1, class S1, class E1=E, size_t DM1 = DM>
-  class traversal{
+  template<size_t TD1, class S1, class E1=E, size_t DM1 = MESH_DIMENSION>
+  class local_adjacency_iterator{
     public:
     
     //Constructor//Destructor
-    traversal(
+    local_adjacency_iterator(
       structured_index_space__<E1, DM1> *is,
       sm_id_t MD1, 
       sm_id_t FD1, 
@@ -294,7 +322,7 @@ public:
       finish_ = nq;
     };
 
-    ~traversal(){};
+    ~local_adjacency_iterator(){};
  
     //Iterator
     template<class S2 = S1, class E2 = E1, size_t DM2 = DM1>
@@ -412,7 +440,7 @@ public:
         for (sm_id_t i = 0; i < MD2_; i++)
           adj[i] = indices_[i]+offset[i];     
 
-        return is_->get_global_offset_from_indices(bid,adj);
+        return is_->global_offset_from_local_box_indices(bid,adj);
       }
 
      private:
@@ -521,13 +549,13 @@ public:
     sm_id_array_t id;
     size_t factor, value;
     sm_id_t rem = global_box_offset;
-    for (size_t i=0; i< DM; ++i)
+    for (size_t i=0; i< MESH_DIMENSION; ++i)
     {
       factor = 1; 
-      for (size_t j=0; j< DM-i-1; ++j)
+      for (size_t j=0; j< MESH_DIMENSION-i-1; ++j)
        factor *= gbox_strides_[global_box_id][j] + 1; 
       value = rem/factor;
-      id[DM-i-1] = value;
+      id[MESH_DIMENSION-i-1] = value;
       rem -= value*factor;
     }
  
@@ -546,12 +574,12 @@ public:
     size_t value =0;
     size_t factor;
 
-    for (size_t i = 0; i < DM; ++i)
+    for (size_t i = 0; i < MESH_DIMENSION; ++i)
     {
       factor = 1;
-      for (size_t j=0; j< DM-i-1; ++j)
+      for (size_t j=0; j< MESH_DIMENSION-i-1; ++j)
         factor *= gbox_strides_[global_box_id][j]+1;
-      value += global_box_indices[DM-i-1]*factor;
+      value += global_box_indices[MESH_DIMENSION-i-1]*factor;
     }
 
     return value;
@@ -644,13 +672,13 @@ public:
     sm_id_array_t id;
     size_t factor, value;
 
-    for (size_t i=0; i< DM; ++i)
+    for (size_t i=0; i< MESH_DIMENSION; ++i)
     {
       factor = 1; 
-      for (size_t j=0; j< DM-i-1; ++j)
+      for (size_t j=0; j< MESH_DIMENSION-i-1; ++j)
        factor *= lbox_upbnds_[local_box_id][j]-lbox_lowbnds_[local_box_id][j] + 1; 
       value = rem/factor;
-      id[DM-i-1] = value;
+      id[MESH_DIMENSION-i-1] = value;
       rem -= value*factor;
     }
  
@@ -669,12 +697,12 @@ public:
     size_t value =0;
     size_t factor;
 
-    for (size_t i = 0; i < DM; ++i)
+    for (size_t i = 0; i < MESH_DIMENSION; ++i)
     {
       factor = 1;
-      for (size_t j=0; j< DM-i-1; ++j)
+      for (size_t j=0; j< MESH_DIMENSION-i-1; ++j)
         factor *= lbox_upbnds_[local_box_id][j]-lbox_lowbnds_[local_box_id][j]+1;
-      value += local_box_indices[DM-i-1]*factor;
+      value += local_box_indices[MESH_DIMENSION-i-1]*factor;
     }
 
     return value;
@@ -718,7 +746,7 @@ public:
        const sm_id_array_t& local_box_indices)
   {
     sm_id_array_t id; 
-    for (size_t i=0; i <DM; ++i)
+    for (size_t i=0; i <MESH_DIMENSION; ++i)
       id[i] = local_box_indices[i] + gbox_lowbnds_[local_box_id][i];
    return id; 
 
@@ -734,7 +762,7 @@ public:
        const sm_id_array_t& global_box_indices)
   {
     sm_id_array_t id; 
-    for (size_t i=0; i <DM; ++i)
+    for (size_t i=0; i <MESH_DIMENSION; ++i)
       id[i] = global_box_indices[i] - gbox_lowbnds_[global_box_id][i];
    return id; 
   }//local_box_indices_from_global_box_indices
@@ -1029,16 +1057,16 @@ public:
  //! Return the size along a direction of box B
  //--------------------------------------------------------------------------//
   template<size_t B, size_t D>
-  auto get_size_in_direction()
+  auto get_local_size_in_direction()
   {
-    assert(D>=0 && D < DM);
+    assert(D>=0 && D < MESH_DIMENSION);
     return (lbox_upbnds_[B][D] - lbox_lowbnds_[B][D]+1);
   }
 
   template<size_t D>
-  auto get_size_in_direction(size_t B)
+  auto get_local_size_in_direction(size_t B)
   {
-    assert(D>=0 && D < DM);
+    assert(D>=0 && D < MESH_DIMENSION);
     return (lbox_upbnds_[B][D] - lbox_lowbnds_[B][D]+1);
   }
 
@@ -1047,13 +1075,13 @@ public:
  //!
  //--------------------------------------------------------------------------// 
   template<size_t B, size_t D>
-  bool check_index_limits(size_t index)
+  bool check_local_index_limits(size_t index)
   {
     return (index >= lbox_lowbnds_[B][D] && index <= lbox_upbnds_[B][D]);
   }
 
   template<size_t D>
-  bool check_index_limits(size_t B, size_t index)
+  bool check_local_index_limits(size_t B, size_t index)
   {
     return (index >= lbox_lowbnds_[B][D] && index <= lbox_upbnds_[B][D]);
   }
@@ -1142,6 +1170,10 @@ public:
    sm_id_array_2d_t gbox_lowbnds_;     // lower bounds of each global box 
    sm_id_array_2d_t gbox_upbnds_;      // upper bounds of each global box
    sm_id_array_2d_t gbox_strides_;     // strides along each direction of the global box
+
+  //Helper struct for traversal routines 
+   qtable_t qtable_; 
+
 
 };
 } // namespace topology
