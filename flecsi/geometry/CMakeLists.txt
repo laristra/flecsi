@@ -74,9 +74,7 @@ set(geometry_SOURCES
 #------------------------------------------------------------------------------#
 
 cinch_add_unit(point
-  SOURCES test/point.cc
-  FOLDER "Tests/Geometry")
+  SOURCES test/point.cc)
 
 cinch_add_unit(space_vector
-  SOURCES test/space_vector.cc
-  FOLDER "Tests/Geometry")
+  SOURCES test/space_vector.cc)
