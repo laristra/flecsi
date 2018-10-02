@@ -183,10 +183,10 @@ public:
  //! Interface to iterate over all the entities. 
  //--------------------------------------------------------------------------//
 
- template<typename S=E, size_t D = MESH_DIMENSION>
+ template<typename S = ENTITY, size_t D = MESH_DIMENSION>
  auto iterate_all()
  { 
-   return range_iterator_<S,D>(this, offset_, offset_+size_);
+   return range_iterator_t<S,D>(this, offset_, offset_+size_);
  }
 
  //--------------------------------------------------------------------------//
@@ -194,26 +194,26 @@ public:
  //! @param begin The starting offset. 
  //! @param end   The ending offset. 
  //--------------------------------------------------------------------------//
- template<typename S=E, size_t D = MESH_DIMENSION>
+ template<typename S = ENTITY, size_t D = MESH_DIMENSION>
  auto iterate_range(size_t begin, size_t end)
  { 
-   return range_iterator_<S,D>(this, begin, end);
+   return range_iterator_t<S,D>(this, begin, end);
  }
 
  //--------------------------------------------------------------------------//
  //! Iterable container 
  //--------------------------------------------------------------------------//
- template< typename S = E, size_t D = MESH_DIMENSION>
- class range_iterator_
+ template< typename E1,  size_t D1>
+ class range_iterator_t
  {
     public:
-     range_iterator_(structured_index_space__<S,D> *is,
-      sm_id_t start, sm_id_t sz): is_{is}, start_{start}, end_{end}{};
-     ~range_iterator_(){};
+     range_iterator_t(structured_index_space__<E1,D1> *is,
+      sm_id_t start, sm_id_t end): is_{is}, start_{start}, end_{end}{};
+     ~range_iterator_t(){};
 
       class iterator_t{
         public:
-          iterator_(structured_index_space__<S,D> *is, sm_id_t offset):
+          iterator_t(structured_index_space__<E1,D1> *is, sm_id_t offset):
           is_{is}, current{offset}
           {
             //obtain global offset/id corresponding to local offset
@@ -245,15 +245,15 @@ public:
            return (this->current == rhs.current);
           } 
 
-          S& operator*()
+          E1& operator*()
           {
            return current_ent;
           }
 
        private:
-        structured_index_space__<S,D> *is_;
+        structured_index_space__<E1,D1> *is_;
         sm_id_t current;
-        S current_ent;
+        E1 current_ent;
      };
     
     auto begin()
@@ -263,14 +263,13 @@ public:
 
     auto end()
     {
-      return iterator_t(start_+sz_);
+      return iterator_t(end_);
     }; 
  
    private:
-    structured_index_space__<S,D> *is_;
+    structured_index_space__<E1,D1> *is_;
     sm_id_t start_;
     sm_id_t end_; 
-    //sm_id_t sz_; 
  };
   
 
@@ -297,7 +296,7 @@ public:
            local_box_id, local_indices, &qtable_);
   }
 
-  template<size_t TD1, class S1, class E1=E, size_t DM1 = MESH_DIMENSION>
+  template<size_t TD1, class S1, class E1 = ENTITY, size_t DM1 = MESH_DIMENSION>
   class local_adjacency_iterator{
     public:
     
@@ -531,7 +530,6 @@ public:
     size_t value = global_box_offset;
     for (size_t i=0; i<global_box_id; ++i)
       value += gbox_size_[i];
-    }
 
     return value;
   }//global_offset_from_global_box_offset
@@ -598,7 +596,6 @@ public:
     return global_box_indices_from_global_box_offset(box_id, offset);
   }//global_box_indices_from_global_offset
 
-  }//global_box_indices_from_global_offset
 
    //--------------------------------------------------------------------------//
  //! Return the global offset given a global box id and indices w.r.t to
@@ -1012,7 +1009,7 @@ public:
     size_t bid = 0, low = 0, up = gbox_size_[0];
     for (size_t i = 0; i < num_boxes_; i++)
     {
-      if (offset >= low && offset < up)
+      if (global_offset >= low && global_offset < up)
       {
         bid = i;
         break;
@@ -1040,7 +1037,7 @@ public:
     size_t bid = 0, low = 0, up = lbox_size_[0];
     for (size_t i = 0; i < num_boxes_; i++)
     {
-      if (offset >= low && offset < up)
+      if (local_offset >= low && local_offset < up)
       {
         bid = i;
         break;

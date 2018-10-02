@@ -37,17 +37,19 @@ void driver(int argc, char ** argv) {};
 } //flecsi
 } //execution
 
-TEST(structured, simple){
+TEST(structured, 1Dprimecell){
 
   std::array<size_t,TestMesh1dType::num_dimensions> lower_bounds = {0};
   std::array<size_t,TestMesh1dType::num_dimensions> upper_bounds = {2};
+  std::array<size_t,TestMesh1dType::num_dimensions> strides = {3};
+  size_t primary_dim = 1; 
   auto mst = new structured_mesh_storage__<TestMesh1dType::num_dimensions, 
                                           TestMesh1dType::num_domains>();
-  auto mesh = new TestMesh(lower_bounds, upper_bounds, mst); 
+  auto mesh = new TestMesh(lower_bounds, upper_bounds, strides, primary_dim,  mst); 
   size_t nv, ne;
 
-  auto lbnd = mesh->lower_bounds();
-  auto ubnd = mesh->upper_bounds();
+  auto lbnd = mesh->primary_lower_bounds();
+  auto ubnd = mesh->primary_upper_bounds();
 
   CINCH_CAPTURE() << "1D Logically structured mesh with bounds: [" 
                   <<lbnd[0]<<"] - ["<<ubnd[0]<<"] \n"<< endl;
