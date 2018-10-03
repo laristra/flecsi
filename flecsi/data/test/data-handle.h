@@ -18,7 +18,7 @@
 #include <flecsi/execution/legion/helper.h>
 #include <flecsi/execution/task_ids.h>
 
-#include <ristra-utils/utils/macros.h>
+#include <flecsi/utils/macros.h>
 
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \

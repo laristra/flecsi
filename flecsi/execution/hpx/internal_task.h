@@ -16,7 +16,7 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/execution.h>
 
-#include <ristra-utils/utils/const_string.h>
+#include <flecsi/utils/const_string.h>
 
 //----------------------------------------------------------------------------//
 //! @def __flecsi_internal_task_key
@@ -37,7 +37,7 @@
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Use const_string_t interface to create the key */                         \
-  ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()
+  flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()
 
 //----------------------------------------------------------------------------//
 //! @def __flecsi_internal_register_hpx_task
@@ -57,8 +57,8 @@
                                                                                \
   /* Call the execution policy to register the task */                         \
   inline bool task ## _task_registered =                                       \
-    ristra::execution::hpx_execution_policy_t::register_hpx_task<              \
-      ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+    flecsi::execution::hpx_execution_policy_t::register_hpx_task<              \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       typename flecsi::utils::function_traits__<decltype(task)>::return_type,  \
       task                                                                     \
     >                                                                          \

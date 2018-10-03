@@ -16,13 +16,13 @@
 
 #include <cinchtest.h>
 
-#include <ristra-utils/utils/demangle.h>
+#include <flecsi/utils/demangle.h>
 
 // print_type(name)
 inline void print_type(const char *const name)
 {
    #ifdef __GNUG__
-      CINCH_CAPTURE() << ristra::utils::demangle(name) << std::endl;
+      CINCH_CAPTURE() << flecsi::utils::demangle(name) << std::endl;
    #else
       // Skip name printing; is unpredictable in this case
    #endif

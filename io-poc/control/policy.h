@@ -2,8 +2,8 @@
 
 #include <tuple>
 
-#include <ristra-utils/control/control.h>
-#include <ristra-utils/utils/typeify.h>
+#include <flecsi/control/control.h>
+#include <flecsi/utils/typeify.h>
 
 #include <io-poc/control/node_type.h>
 
@@ -38,7 +38,7 @@ enum action_attributes_t : size_t {
 
 struct control_policy_t {
 
-  using control_t = ristra::control::control__<control_policy_t>;
+  using control_t = flecsi::control::control__<control_policy_t>;
 
   using node_t = io_poc::node_t;
 
@@ -46,9 +46,9 @@ struct control_policy_t {
     return control_t::instance().step()++ < 5;
   } // evolve
 
-  #define phase(name) ristra::control::phase_<name>
+  #define phase(name) flecsi::control::phase_<name>
 
-  using evolve = ristra::control::cycle__<
+  using evolve = flecsi::control::cycle__<
     evolve_control, // stopping predicate
     phase(advance),
     phase(analyze),

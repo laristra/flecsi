@@ -19,9 +19,9 @@
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/field.h>
 #include <flecsi/data/internal_client.h>
-#include <ristra-utils/utils/macros.h>
+#include <flecsi/utils/macros.h>
 
-#include <ristra-utils/utils/const_string.h>
+#include <flecsi/utils/const_string.h>
 
 #include <flecsi/utils/common.h>
 
@@ -47,8 +47,8 @@
   inline bool client_type##_##nspace##_##name##_data_client_registered =       \
       flecsi::data::data_client_interface_t::register_data_client<             \
           client_type,                                                         \
-          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>(   \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>(   \
           {EXPAND_AND_STRINGIFY(name)})
 
 /*!
@@ -80,8 +80,8 @@
   inline bool client_type##_##nspace##_##name##_data_registered =              \
       flecsi::data::field_interface_t::register_field<                         \
           client_type, flecsi::data::storage_class, data_type,                 \
-          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
           versions, ##__VA_ARGS__>({EXPAND_AND_STRINGIFY(name)})
 
 /*!
@@ -110,8 +110,8 @@
   inline bool client_type##_##nspace##_##name##_data_registered =              \
       flecsi::data::field_interface_t::register_field<                         \
           flecsi::data::global_data_client_t, flecsi::data::global, data_type, \
-          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
           versions, flecsi::execution::internal_index_space::global_is>        \
              ({EXPAND_AND_STRINGIFY(name)})
 
@@ -140,8 +140,8 @@
   inline bool client_type##_##nspace##_##name##_data_registered =              \
       flecsi::data::field_interface_t::register_field<                         \
           flecsi::data::color_data_client_t, flecsi::data::color, data_type,   \
-          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
-          ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),  \
+          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
           versions, flecsi::execution::internal_index_space::color_is>         \
              ({EXPAND_AND_STRINGIFY(name)})
 
@@ -171,8 +171,8 @@
   flecsi::data::field_interface_t::get_handle<                                 \
       typename flecsi::data_client_type__<decltype(client_handle)>::type,      \
       flecsi::data::storage_class, data_type,                                  \
-      ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
-      ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
       version>(client_handle)
 
 /*!
@@ -242,8 +242,8 @@
   /* Call the storage policy to get a handle to the data client */             \
   flecsi::data::data_client_interface_t::get_client_handle<                    \
       client_type,                                                             \
-      ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
-      ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>()
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>()
 
 /*!
   @def flecsi_get_handles
@@ -273,7 +273,7 @@
   /* Call the storage policy to get the handles to the data */                 \
   flecsi::data::field_interface_t::get_handles<                                \
       flecsi::data::storage_class, data_type,                                  \
-      ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(     \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(     \
       client, version, ##__VA_ARGS__)
 
 /*!
@@ -415,8 +415,8 @@
   flecsi::data::field_interface_t::get_mutator<                                \
       typename flecsi::data_client_type__<decltype(client_handle)>::type,      \
       flecsi::data::storage_class, data_type,                                  \
-      ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
-      ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
       version>(client_handle, slots)
 
 /*!

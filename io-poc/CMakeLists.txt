@@ -5,7 +5,7 @@
 
 add_executable(io-poc
   io-poc.cc
-  ${CMAKE_SOURCE_DIR}/ristra-utils/ristra-utils/control/runtime_main.cc
+  ${CMAKE_SOURCE_DIR}/flecsi/control/runtime_main.cc
 )
 
 include_directories(${CMAKE_SOURCE_DIR})
@@ -14,5 +14,4 @@ target_link_libraries(io-poc
   ${CINCH_RUNTIME_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
   ${FLECSI_LIBRARY_DEPENDENCIES}
-  RistraUtils
 )

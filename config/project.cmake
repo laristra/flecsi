@@ -225,23 +225,6 @@ option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" ON)
 set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/FleCSI)
 
 #------------------------------------------------------------------------------#
-# Ristra Utils
-#------------------------------------------------------------------------------#
-
-file(GLOB _ristra_utils_contents ${CMAKE_SOURCE_DIR}/ristra-utils/*)
-
-if(_ristra_utils_contents)
-  cinch_add_subproject(ristra-utils)
-else()
-  find_package(RistraUtils REQUIRED)
-
-  include_directories(${RistraUtils_INCLUDE_DIRS})
-
-  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${RistraUtils_INCLUDE_DIRS})
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${RistraUtils_LIBRARIES})
-endif()
-
-#------------------------------------------------------------------------------#
 # Graphviz
 #------------------------------------------------------------------------------#
 

@@ -31,9 +31,9 @@
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
 
-#include <ristra-utils/utils/const_string.h>
-#include <ristra-utils/utils/demangle.h>
-#include <ristra-utils/utils/tuple_walker.h>
+#include <flecsi/utils/const_string.h>
+#include <flecsi/utils/demangle.h>
+#include <flecsi/utils/tuple_walker.h>
 
 clog_register_tag(registration);
 
@@ -99,7 +99,7 @@ struct client_registration_wrapper__<
   //--------------------------------------------------------------------------//
 
   struct entity_walker_t
-      : public ristra::utils::tuple_walker__<entity_walker_t> {
+      : public flecsi::utils::tuple_walker__<entity_walker_t> {
 
     template<typename T, T V>
     T value(topology::typeify<T, V>) {
@@ -124,7 +124,7 @@ struct client_registration_wrapper__<
       const size_t type_key =
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
-      using ristra::utils::const_string_t;
+      using flecsi::utils::const_string_t;
       const size_t field_key =
         utils::hash::client_internal_field_hash<
           const_string_t("__flecsi_internal_entity_data__").hash(),
@@ -134,7 +134,7 @@ struct client_registration_wrapper__<
       {
       clog_tag_guard(registration);
       clog(info) << "registering field for type id: " <<
-        ristra::utils::demangle(
+        flecsi::utils::demangle(
           typeid(typename CLIENT_TYPE::type_identifier_t).name()
         ) << std::endl <<
         " index: " << INDEX_TYPE::value << std::endl <<
@@ -166,7 +166,7 @@ struct client_registration_wrapper__<
   }; // struct entity_walker_t
 
   struct connectivity_walker__
-      : public ristra::utils::tuple_walker__<connectivity_walker__> {
+      : public flecsi::utils::tuple_walker__<connectivity_walker__> {
 
     template<typename T, T V>
     T value(topology::typeify<T, V>) {
@@ -207,7 +207,7 @@ struct client_registration_wrapper__<
       const size_t type_key =
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
-      using ristra::utils::const_string_t;
+      using flecsi::utils::const_string_t;
       const size_t index_key =
         utils::hash::client_internal_field_hash<
           const_string_t("__flecsi_internal_adjacency_index__").hash(),
@@ -241,7 +241,7 @@ struct client_registration_wrapper__<
   }; // struct connectivity_walker__
 
   struct binding_walker__
-      : public ristra::utils::tuple_walker__<binding_walker__> {
+      : public flecsi::utils::tuple_walker__<binding_walker__> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {
@@ -277,7 +277,7 @@ struct client_registration_wrapper__<
       const size_t type_key =
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
-      using ristra::utils::const_string_t;
+      using flecsi::utils::const_string_t;
       const size_t index_key =
         utils::hash::client_internal_field_hash<
           const_string_t("__flecsi_internal_adjacency_index__").hash(),
@@ -312,7 +312,7 @@ struct client_registration_wrapper__<
   }; // struct binding_walker__
 
   struct index_subspaces_walker__
-      : public ristra::utils::tuple_walker__<index_subspaces_walker__> {
+      : public flecsi::utils::tuple_walker__<index_subspaces_walker__> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {
@@ -331,7 +331,7 @@ struct client_registration_wrapper__<
       const size_t type_key =
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
-      using ristra::utils::const_string_t;
+      using flecsi::utils::const_string_t;
       const size_t field_key =
         utils::hash::client_internal_field_hash<
           const_string_t("__flecsi_internal_index_subspace_index__").hash(),
@@ -403,7 +403,7 @@ struct client_registration_wrapper__<
   //--------------------------------------------------------------------------//
 
   struct entity_walker_t
-      : public ristra::utils::tuple_walker__<entity_walker_t> {
+      : public flecsi::utils::tuple_walker__<entity_walker_t> {
 
     template<typename T, T V>
     T value(topology::typeify<T, V>) {
@@ -426,7 +426,7 @@ struct client_registration_wrapper__<
       const size_t type_key =
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
-      using ristra::utils::const_string_t;
+      using flecsi::utils::const_string_t;
       const size_t field_key = utils::hash::client_internal_field_hash<
           const_string_t("__flecsi_internal_entity_data__").hash(),
           NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value

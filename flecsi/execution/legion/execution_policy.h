@@ -28,7 +28,7 @@
 
 #include <legion.h>
 
-#include <ristra-utils/utils/const_string.h>
+#include <flecsi/utils/const_string.h>
 
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
@@ -240,7 +240,7 @@ struct legion_execution_policy_t {
           task_epilog.walk(task_args);
 
           constexpr size_t ZERO =
-            ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
+            flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
 
           if constexpr(REDUCTION != ZERO) {
 

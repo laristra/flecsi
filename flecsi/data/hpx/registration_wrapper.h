@@ -16,7 +16,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/topology/mesh_topology.h"
 
-#include "ristra-utils/utils/tuple_walker.h"
+#include "flecsi/utils/tuple_walker.h"
 
 namespace flecsi {
 namespace data {
@@ -67,7 +67,7 @@ struct hpx_client_registration_wrapper__<
 
   template<typename TUPLE_ENTRY_TYPE>
   struct type_walker__
-      : public ristra::utils::tuple_walker__<type_walker__<TUPLE_ENTRY_TYPE>> {
+      : public flecsi::utils::tuple_walker__<type_walker__<TUPLE_ENTRY_TYPE>> {
     void handle(TUPLE_ENTRY_TYPE const & entry) {
       std::cout << "adding with domain: " << std::get<1>(entry) << std::endl;
     } // handle

@@ -7,7 +7,7 @@
 #include <mpi.h>
 
 #if defined(RISTRA_UTILS_ENABLE_GRAPHVIZ)
-#include <ristra-utils/utils/graphviz.h>
+#include <flecsi/utils/graphviz.h>
 #endif
 
 #include <io-poc/control/control.h>
@@ -36,7 +36,7 @@ int output_final(int argc, char ** argv) {
 
   if(rank == 0) {
     auto & control = control_t::instance();
-    ristra::utils::graphviz_t gv;
+    flecsi::utils::graphviz_t gv;
     control.write(gv);
     gv.write("control.gv");
   } // if
