@@ -76,12 +76,13 @@ TEST(structured3dtime, simple){
   
   std::array<size_t,TestMesh3dType::num_dimensions> lower_bounds{0,0,0};
   std::array<size_t,TestMesh3dType::num_dimensions> upper_bounds{639,639,639};
-
+  std::array<size_t,TestMesh3dType::num_dimensions> strides{640,640,640};
+  size_t primary_dim = 3; 
   time_start = wtime();
 
   auto ms = new structured_mesh_storage__<TestMesh3dType::num_dimensions,
                                         TestMesh3dType::num_domains>();
-  auto mesh = new TestMesh(lower_bounds, upper_bounds, ms);
+  auto mesh = new TestMesh(lower_bounds, upper_bounds, strides, primary_dim, ms);
 
 
   sp->meshgen = wtime() - time_start;

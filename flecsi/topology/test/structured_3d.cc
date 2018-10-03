@@ -49,16 +49,17 @@ void driver(int argc, char ** argv) {};
 } //execution
 
 TEST(structured, simple){
- std::array<size_t,TestMesh3dType::num_dimensions> lower_bounds{0,0,0};
- std::array<size_t,TestMesh3dType::num_dimensions> upper_bounds{2,1,1};
-
+  std::array<size_t,TestMesh3dType::num_dimensions> lower_bounds{0,0,0};
+  std::array<size_t,TestMesh3dType::num_dimensions> upper_bounds{2,1,1};
+  std::array<size_t,TestMesh3dType::num_dimensions> strides{3,2,2};
+  size_t primary_dim = 3;
   auto ms = new structured_mesh_storage__<TestMesh3dType::num_dimensions,
                                         TestMesh3dType::num_domains>();
-  auto mesh = new TestMesh(lower_bounds, upper_bounds, ms); 
+  auto mesh = new TestMesh(lower_bounds, upper_bounds, strides, primary_dim, ms); 
   size_t nv, ne, nf, nc;
 
-  auto lbnd = mesh->lower_bounds();
-  auto ubnd = mesh->upper_bounds();
+  auto lbnd = mesh->primary_lower_bounds();
+  auto ubnd = mesh->primary_upper_bounds();
 
   CINCH_CAPTURE() << "3D Logically structured mesh with bounds: [" 
                   <<lbnd[0]<<", "<<lbnd[1]<<", "<<lbnd[2]<<"] - ["

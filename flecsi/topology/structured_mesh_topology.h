@@ -312,7 +312,7 @@ public:
   template<size_t DIM, size_t DOM = 0 >
   auto get_global_box_indices_from_global_offset(const sm_id_t& global_offset)
   { 
-    return base_t::ms_->index_spaces[DOM][DIM].global_box_offset_from_global_offset(global_offset);
+    return base_t::ms_->index_spaces[DOM][DIM].global_box_indices_from_global_offset(global_offset);
   }//get_global_box_indices_from_global_offset
 
   //--------------------------------------------------------------------------//
@@ -322,7 +322,7 @@ public:
   template<size_t DIM, size_t DOM, class E>
   auto get_global_box_indices_from_global_offset(E* e)
   {
-    return base_t::ms_->index_spaces[DOM][DIM].global_box_offset_from_global_offset(e->id(0)); 
+    return base_t::ms_->index_spaces[DOM][DIM].global_box_indices_from_global_offset(e->id(0)); 
   }//get_global_box_indices_from_global_offset
 
 //--------------------------------------------------------------------------//
@@ -804,9 +804,9 @@ public:
     assert(FROM_DIM != TO_DIM);
     sm_id_t id = e->id(0);
 
-    size_t box_id = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
+    size_t box_id = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM]. 
                     find_box_id_from_global_offset(id);
-    auto indices = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
+    auto indices = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM]. 
                    local_box_indices_from_global_offset(id);
 
     using etype = entity_type<TO_DIM,TO_DOMAIN>;
@@ -835,20 +835,20 @@ public:
 
     size_t FROM_DIM = E::dimension;
     size_t global_offset = e->id(0); 
-    size_t box_id = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
+    size_t box_id = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM]. 
                     find_box_id_from_global_offset(global_offset);
-    auto indices = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template
-                   get_local_box_indices_from_global_offset(global_offset);
-    auto local_offset = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template
-                        get_local_offset_from_local_box_indices(box_id, indices);                
+    auto indices = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
+                   local_box_indices_from_global_offset(global_offset);
+    auto local_offset = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
+                        local_offset_from_local_box_indices(box_id, indices);                
   
     if(base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
        check_local_index_limits<0>(box_id,xoff+indices[0]))
     {
       local_offset += xoff;
     }
-    return base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
-           get_global_offset_from_local_offset(local_offset);
+    return base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
+           global_offset_from_local_offset(local_offset);
   } //stencil_entity 
 
  //--------------------------------------------------------------------------//
@@ -872,12 +872,12 @@ public:
 
     size_t FROM_DIM = E::dimension;
     size_t global_offset = e->id(0);
-    size_t box_id = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
+    size_t box_id = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
                     find_box_id_from_global_offset(global_offset);
-    auto indices = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template
-                   get_local_box_indices_from_global_offset(global_offset);
-    auto local_offset = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template
-                        get_local_offset_from_local_box_indices(box_id, indices); 
+    auto indices = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
+                   local_box_indices_from_global_offset(global_offset);
+    auto local_offset = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
+                        local_offset_from_local_box_indices(box_id, indices); 
   
     if((base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
        check_local_index_limits<0>(box_id,xoff+indices[0]))&& 
@@ -889,8 +889,8 @@ public:
       local_offset += xoff + nx*yoff;
     }
 
-    return base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
-           get_global_offset_from_local_offset(local_offset); 
+    return base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
+           global_offset_from_local_offset(local_offset); 
   } //stencil_entity
 
  //--------------------------------------------------------------------------//
@@ -915,12 +915,12 @@ public:
 
     size_t FROM_DIM = E::dimension;
     size_t global_offset = e->id(0);
-    size_t box_id = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
+    size_t box_id = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
                     find_box_id_from_global_offset(global_offset);
-    auto indices = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template
-                   get_local_box_indices_from_global_offset(global_offset);
-    auto local_offset = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template
-                        get_local_offset_from_local_box_indices(box_id, indices); 
+    auto indices = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
+                   local_box_indices_from_global_offset(global_offset);
+    auto local_offset = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
+                        local_offset_from_local_box_indices(box_id, indices); 
 
     if((base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
        check_local_index_limits<0>(box_id,xoff+indices[0])) && 
@@ -936,8 +936,8 @@ public:
       local_offset += xoff + nx*yoff + nx*ny*zoff;
     }
 
-    return base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
-           get_global_offset_from_local_offset(local_offset);  
+    return base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
+           global_offset_from_local_offset(local_offset);  
   } //stencil_entity 
 
 private:

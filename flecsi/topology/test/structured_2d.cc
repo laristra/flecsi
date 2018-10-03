@@ -47,16 +47,18 @@ void driver(int argc, char ** argv) {};
 TEST(structured, simple){
   std::array<size_t, TestMesh2dType::num_dimensions> lower_bounds = {0,0};
   std::array<size_t, TestMesh2dType::num_dimensions> upper_bounds = {2,1};
+  std::array<size_t, TestMesh2dType::num_dimensions> strides = {3,2};
+  size_t primary_dim = 2; 
   
   auto ms = new structured_mesh_storage__<TestMesh2dType::num_dimensions,
                                           TestMesh2dType::num_domains>();
   
 
-  auto mesh = new TestMesh(lower_bounds, upper_bounds, ms); 
+  auto mesh = new TestMesh(lower_bounds, upper_bounds, strides, primary_dim, ms); 
   size_t nv, ne, nf;
 
-  auto lbnd = mesh->lower_bounds();
-  auto ubnd = mesh->upper_bounds();
+  auto lbnd = mesh->primary_lower_bounds();
+  auto ubnd = mesh->primary_upper_bounds();
 
   CINCH_CAPTURE() << "2D Logically structured mesh with bounds: [" <<lbnd[0]<<
   ", "<<lbnd[1]<<"] - ["<<ubnd[0]<<", "<<ubnd[1]<<"] \n"<< endl;
@@ -79,8 +81,8 @@ TEST(structured, simple){
    for (auto idv : mesh->get_global_box_indices_from_global_offset<0>(vertex.id(0)))
     CINCH_CAPTURE() << "  ---- " <<idv << endl; 
    
-   auto bid = mesh->get_global_box_indices_from_global_offset<0>(vertex.id(0));
-   auto id = mesh->get_glob<0>(vertex.id(0));
+   auto bid = mesh->get_box_id_from_global_offset<0>(vertex.id(0));
+   auto id = mesh->get_global_box_indices_from_global_offset<0>(vertex.id(0));
    auto offset = mesh->get_global_offset_from_global_box_indices<0>(bid, id); 
    CINCH_CAPTURE() << "  ---- offset " <<offset<< endl; 
    ASSERT_EQ(vertex.id(0),offset); 

@@ -90,10 +90,10 @@ public:
     for (size_t i = 0; i < num_boxes_; i++)
     {
       size_t cnt = 1;
-      global_low.clear();
-      global_up.clear();
-      local_low.clear();
-      local_up.clear();
+      std::fill(global_low.begin(), global_low.end(), 0);;
+      std::fill(global_up.begin(), global_up.end(), 0);;
+      std::fill(local_low.begin(), local_low.end(), 0);;
+      std::fill(local_up.begin(), local_up.end(), 0);;
 
       for (size_t j = 0; j < MESH_DIMENSION; j++)
       {
@@ -183,10 +183,10 @@ public:
  //! Interface to iterate over all the entities. 
  //--------------------------------------------------------------------------//
 
- template<typename S = ENTITY, size_t D = MESH_DIMENSION>
+ template<class S>
  auto iterate_all()
  { 
-   return range_iterator_t<S,D>(this, offset_, offset_+size_);
+   return range_iterator_t<S>(this, offset_, offset_+size_);
  }
 
  //--------------------------------------------------------------------------//
@@ -194,26 +194,27 @@ public:
  //! @param begin The starting offset. 
  //! @param end   The ending offset. 
  //--------------------------------------------------------------------------//
- template<typename S = ENTITY, size_t D = MESH_DIMENSION>
+ template<class S>
  auto iterate_range(size_t begin, size_t end)
  { 
-   return range_iterator_t<S,D>(this, begin, end);
+   return range_iterator_t<S>(this, begin, end);
  }
 
  //--------------------------------------------------------------------------//
  //! Iterable container 
  //--------------------------------------------------------------------------//
- template< typename E1,  size_t D1>
+ template< class S1, class E1 = ENTITY,  size_t D1 = MESH_DIMENSION>
  class range_iterator_t
  {
     public:
      range_iterator_t(structured_index_space__<E1,D1> *is,
       sm_id_t start, sm_id_t end): is_{is}, start_{start}, end_{end}{};
      ~range_iterator_t(){};
-
+  
+      template <class S2 = S1, class E2 = E1, size_t D2 = D1> 
       class iterator_t{
         public:
-          iterator_t(structured_index_space__<E1,D1> *is, sm_id_t offset):
+          iterator_t(structured_index_space__<E2,D2> *is, sm_id_t offset):
           is_{is}, current{offset}
           {
             //obtain global offset/id corresponding to local offset
@@ -245,25 +246,25 @@ public:
            return (this->current == rhs.current);
           } 
 
-          E1& operator*()
+          S2& operator*()
           {
            return current_ent;
           }
 
        private:
-        structured_index_space__<E1,D1> *is_;
+        structured_index_space__<E2,D2> *is_;
         sm_id_t current;
-        E1 current_ent;
+        S2 current_ent;
      };
     
     auto begin()
     {
-      return iterator_t(start_);
+      return iterator_t<S1,E1,D1>(is_, start_);
     };
 
     auto end()
     {
-      return iterator_t(end_);
+      return iterator_t<S1,E1,D1>(is_, end_);
     }; 
  
    private:
@@ -423,9 +424,9 @@ public:
         for (sm_id_t i = 0; i < nchk; i++)
         {
           if (chk_bnd[i])
-            valid = valid && (indices_[dir[i]] <= (is_->max(bid, dir[i])));
+            valid = valid && (indices_[dir[i]] <= (is_->lmax(bid, dir[i])));
           else 
-            valid = valid && (indices_[dir[i]] >= (is_->min(bid, dir[i]))+1);  
+            valid = valid && (indices_[dir[i]] >= (is_->lmin(bid, dir[i]))+1);  
         }
    
         return valid;
@@ -591,11 +592,17 @@ public:
    auto global_box_indices_from_global_offset(const sm_id_t& global_offset)
   {
     sm_id_t box_id = 0, offset; 
-    sm_id_array_t gid;
     global_box_offset_from_global_offset(global_offset, box_id, offset);
     return global_box_indices_from_global_box_offset(box_id, offset);
   }//global_box_indices_from_global_offset
 
+   void global_box_indices_from_global_offset(const sm_id_t& global_offset,
+   sm_id_t& box_id, sm_id_array_t &indices)
+  {
+    sm_id_t offset; 
+    global_box_offset_from_global_offset(global_offset, box_id, offset);
+    indices = global_box_indices_from_global_box_offset(box_id, offset);
+  }//global_box_indices_from_global_offset
 
    //--------------------------------------------------------------------------//
  //! Return the global offset given a global box id and indices w.r.t to
@@ -714,7 +721,15 @@ public:
     sm_id_t box_id = 0, offset; 
     local_box_offset_from_local_offset(local_offset, box_id, offset);
     return local_box_indices_from_local_box_offset(box_id, offset);
-  }//local_box_indices_from_global_offset
+  }//local_box_indices_from_local_offset
+
+   auto local_box_indices_from_local_offset(const sm_id_t& local_offset,
+   sm_id_t &box_id, sm_id_array_t &indices)
+  {
+    sm_id_t offset; 
+    local_box_offset_from_local_offset(local_offset, box_id, offset);
+    indices = local_box_indices_from_local_box_offset(box_id, offset);
+  }//local_box_indices_from_local_offset
 
    //--------------------------------------------------------------------------//
  //! Return the local offset given a local box id and indices w.r.t to
@@ -1028,10 +1043,6 @@ public:
  //!
  //! @param local_offset   local offset of the entity
  //--------------------------------------------------------------------------//
-  template<
-    size_t D,
-    size_t M = 0
-  >
   auto find_box_id_from_local_offset(sm_id_t local_offset)
   {
     size_t bid = 0, low = 0, up = lbox_size_[0];
