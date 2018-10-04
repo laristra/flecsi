@@ -412,6 +412,7 @@ ghost_ent_rect.hi[1]<<std::endl;
       std::vector<LegionRuntime::Arrays::Point<2>> ghost_points;
       std::vector<LegionRuntime::Arrays::Point<2>> shared_points;
       std::vector<size_t> owners_rank;
+      std::vector<size_t> counts;
 
       // Look up field info in context
       auto iitr = context.field_info_map().find(
@@ -442,17 +443,20 @@ ghost_ent_rect.hi[1]<<std::endl;
 					ghost_offset_acc.ptr(ghost_ptr));
         LegionRuntime::Arrays::Point<2> owner_location =
            position_ref_acc.read(ghost_ptr); 
+        //size_t size = field_info.size + sizeof(size_t);
         LegionRuntime::Arrays::Point<2> point=
 					LegionRuntime::Arrays::make_point(my_color,
 						start_and_count_location->start());
         ghost_points.push_back(point);
         owners_rank.push_back(owner_location[0]);
+  //      counts.push_back(start_and_count_location->count());
 
 std::cout<<"IRINA DEBUG, ghost, my_color = "<<my_color<<"point = "<<
         point<<std::endl;
 //std::cout<<"IRINA DEBUG, ghost offset and count = "<<start_and_count_location->start()<<" , "<<start_and_count_location->count()<<std::endl;
 
-//        std::cout<<"IRINA DEBUG, owner rank = "<<owner_location[0]<<std::endl;
+        std::cout<<"IRINA DEBUG, owner rank = "<<owner_location[0]<<
+", " <<owner_location[1]<<std::endl;
 
       }
      
@@ -462,13 +466,16 @@ std::cout<<"IRINA DEBUG, ghost, my_color = "<<my_color<<"point = "<<
         const offset_t * start_and_count_location =
 					reinterpret_cast <const offset_t*>(
 						owner_offset_acc.ptr(owner_offset_ptr));
+        //size_t size = field_info.size + sizeof(size_t);
         LegionRuntime::Arrays::Point<2> point=
           LegionRuntime::Arrays::make_point(owners_rank[count],
 					start_and_count_location->start());
         shared_points.push_back(point);
+        counts.push_back(start_and_count_location->count());
         count++;
         std::cout<<"IRINA DEBUG, owner, my color = "<<my_color<<"point = "<<
-        point<<std::endl;
+        point<<" , "<<start_and_count_location->start()<<std::endl;
+       
 //",  offset and count = "<<start_and_count_location->start()<<" , "<<start_and_count_location->count()<<std::endl;
       }
 
@@ -476,14 +483,29 @@ std::cout<<"IRINA DEBUG, ghost, my_color = "<<my_color<<"point = "<<
        "# of ghsot pointers to send != # of shared");
  
        for (size_t i=0; i<ghost_points.size(); i++) {
-         auto ghost_ptr = Legion::DomainPoint::from_point<2>(ghost_points[0]);
-         auto shared_ptr = Legion::DomainPoint::from_point<2>(shared_points[0]);
+         auto ghost_ptr = Legion::DomainPoint::from_point<2>(ghost_points[i]);
+         auto shared_ptr = Legion::DomainPoint::from_point<2>(shared_points[i]);
          char *ptr_ghost_acc = (char*)(ghost_entries_acc.ptr(ghost_ptr));
          char *ptr_shared_acc = (char*)(owner_entries_acc.ptr(shared_ptr));
-         memcpy(ptr_ghost_acc, ptr_shared_acc, (field_info.size+sizeof(size_t)));
+         size_t copy_size = (field_info.size+sizeof(size_t))*counts[i];
+          size_t size = field_info.size + sizeof(size_t);
+         size_t chunk = size * args.max_entries_per_index;
+         //size_t copy_size = field_info.size*counts[i];
+         memcpy(ptr_ghost_acc, ptr_shared_acc,chunk);
+         //memcpy(ptr_ghost_acc, ptr_shared_acc, (field_info.size+sizeof(size_t)));
+         //memcpy(ptr_ghost_acc, ptr_shared_acc, copy_size);
        }
 
-std::cout<<"IRINA DEBUG for fields"<<std::endl;
+       count =0;
+       for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
+         auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
+         offset_t * start_and_count_location = reinterpret_cast <offset_t*>(
+             ghost_offset_acc.ptr(ghost_ptr));
+         start_and_count_location->set_count(counts[count]);
+         count++;
+        }
+
+//std::cout<<"IRINA DEBUG for fields"<<std::endl;
        
     }//for
   }
