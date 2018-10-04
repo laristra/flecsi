@@ -71,7 +71,7 @@ public:
             const sm_id_array_t &global_lbnds, 
             const sm_id_array_t &global_ubnds, 
             const sm_id_array_t &global_strides, 
-            sm_id_vector_t &bnds)
+            const std::vector<int> &bnds)
   {
     // Check the array sizes for lower and upper bound are equal 
     assert(global_lbnds.size() == global_ubnds.size());
@@ -229,7 +229,7 @@ public:
           {
             //increment current local id
             ++current;
-
+            
             //obtain and set global offset/id corresponding to local offset
             auto gid = is_->global_offset_from_local_offset(current);
             current_ent.set_id(gid,0);
@@ -552,7 +552,7 @@ public:
     {
       factor = 1; 
       for (size_t j=0; j< MESH_DIMENSION-i-1; ++j)
-       factor *= gbox_strides_[global_box_id][j] + 1; 
+       factor *= gbox_strides_[global_box_id][j]; 
       value = rem/factor;
       id[MESH_DIMENSION-i-1] = value;
       rem -= value*factor;
@@ -577,7 +577,7 @@ public:
     {
       factor = 1;
       for (size_t j=0; j< MESH_DIMENSION-i-1; ++j)
-        factor *= gbox_strides_[global_box_id][j]+1;
+        factor *= gbox_strides_[global_box_id][j];
       value += global_box_indices[MESH_DIMENSION-i-1]*factor;
     }
 

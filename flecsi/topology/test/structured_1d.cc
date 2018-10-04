@@ -43,11 +43,12 @@ TEST(structured, 1Dprimecell){
   std::array<size_t,TestMesh1dType::num_dimensions> upper_bounds = {2};
   std::array<size_t,TestMesh1dType::num_dimensions> strides = {3};
   size_t primary_dim = 1; 
+  
   auto mst = new structured_mesh_storage__<TestMesh1dType::num_dimensions, 
                                           TestMesh1dType::num_domains>();
   auto mesh = new TestMesh(lower_bounds, upper_bounds, strides, primary_dim,  mst); 
+  
   size_t nv, ne;
-
   auto lbnd = mesh->primary_lower_bounds();
   auto ubnd = mesh->primary_upper_bounds();
 
@@ -66,7 +67,7 @@ TEST(structured, 1Dprimecell){
   for (auto vertex: mesh->entities<0>()){
    CINCH_CAPTURE() << "---- vertex id: " << vertex.id(0) << endl; 
    
-   CINCH_CAPTURE() << "  -- global indices "<< endl; 
+   CINCH_CAPTURE() << "  -- indices "<< endl; 
    for (auto idv : mesh->get_global_box_indices_from_global_offset<0>(vertex.id(0)))
     CINCH_CAPTURE() << "  ---- " <<idv << endl; 
    
@@ -97,7 +98,7 @@ TEST(structured, 1Dprimecell){
   for (auto edge: mesh->entities<1>()){
    CINCH_CAPTURE() << "---- edge id: " << edge.id(0) << endl; 
    
-   CINCH_CAPTURE() << "  -- global indices "<< endl; 
+   CINCH_CAPTURE() << "  -- indices "<< endl; 
    for (auto idv : mesh->get_global_box_indices_from_global_offset<1>(edge.id(0)))
     CINCH_CAPTURE() << "  ---- " <<idv << endl; 
    

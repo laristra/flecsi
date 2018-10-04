@@ -77,7 +77,7 @@ TEST(structured, simple){
   for (auto vertex: mesh->entities<0>()){
    CINCH_CAPTURE() << "---- vertex id: " << vertex.id(0) << endl; 
    
-   CINCH_CAPTURE() << "  -- global indices "<< endl; 
+   CINCH_CAPTURE() << "  -- indices "<< endl; 
    for (auto idv : mesh->get_global_box_indices_from_global_offset<0>(vertex.id(0)))
     CINCH_CAPTURE() << "  ---- " <<idv << endl; 
    
@@ -96,7 +96,7 @@ TEST(structured, simple){
                    <<mesh->stencil_entity<-1, 0, 0>(&vertex) << endl; 
    CINCH_CAPTURE() << "  -- stencil [0 -1] " 
                    <<mesh->stencil_entity< 0,-1, 0>(&vertex) << endl;
-
+   
    //V-->E
    CINCH_CAPTURE() << "  -- query V-->E "<< endl; 
    for (auto edge : mesh->entities<1,0>(&vertex))
@@ -119,7 +119,7 @@ TEST(structured, simple){
   for (auto edge: mesh->entities<1>()){
    CINCH_CAPTURE() << "---- edge id: " << edge.id(0) << endl; 
    
-   CINCH_CAPTURE() << "  -- global indices "<< endl; 
+   CINCH_CAPTURE() << "  -- indices "<< endl; 
    for (auto idv : mesh->get_global_box_indices_from_global_offset<1>(edge.id(0)))
     CINCH_CAPTURE() << "  ---- " <<idv << endl; 
    
@@ -161,7 +161,7 @@ TEST(structured, simple){
   for (auto face: mesh->entities<2>()){
    CINCH_CAPTURE() << "---- face id: " << face.id(0) << endl; 
    
-   CINCH_CAPTURE() << "  -- global indices "<< endl; 
+   CINCH_CAPTURE() << "  -- indices "<< endl; 
    for (auto idv : mesh->get_global_box_indices_from_global_offset<2>(face.id(0)))
     CINCH_CAPTURE() << "  ---- " <<idv << endl; 
    
@@ -200,6 +200,7 @@ TEST(structured, simple){
 
   //CINCH_WRITE("structured_2d.blessed");
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("structured_2d.blessed"));
+  
   delete ms;
   delete mesh;
 } // TEST

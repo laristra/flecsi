@@ -168,17 +168,17 @@ public:
       }
 
       //bounds info for cells/verts
-      std::vector<size_t> bnds_info[2][3][4] = {
+      std::vector<int> bnds_info[2][3][4] = {
                            //cells
                            {{{{1}}, {{0}}, {{}}, {{}}},
                             {{{1,1}}, {{1,0,0,1}}, {{0,0}}, {{}}},
                             {{{1,1,1}}, {{1,0,1,0,1,1,1,1,0}}, 
                             {{1,0,0,0,1,0,0,0,1}}, {{0,0,0}}}}, 
                            //verts
-                           {{{{0}}, {{1}}, {{}}, {{}}},
-                            {{{0,0}}, {{0,1,1,0}}, {{1,1}}, {{}}},
-                            {{{0,0,0}}, {{0,1,0,1,0,0,0,0,1}}, 
-                            {{0,1,1,1,0,1,1,1,0}}, {{1,1,1}}}}, 
+                           {{{{0}}, {{-1}}, {{}}, {{}}},
+                            {{{0,0}}, {{0,-1,-1,0}}, {{-1,-1}}, {{}}},
+                            {{{0,0,0}}, {{0,-1,0,-1,0,0,0,0,-1}}, 
+                            {{0,-1,-1,-1,0,-1,-1,-1,0}}, {{-1,-1,-1}}}}, 
                           };
 
       bool primary = false;
@@ -830,8 +830,10 @@ public:
   class E>
   auto stencil_entity(E* e)
   {
-    if (xoff == 0) 
-      return e->id(0);
+    //This assertion check is needed to distinguish between the case where the 
+    //stencil is the zero vector from the case when the stencil results in an 
+    //out of bound entity in which case the id returned is the origin.  
+    assert (!(xoff == 0)); 
 
     size_t FROM_DIM = E::dimension;
     size_t global_offset = e->id(0); 
@@ -867,8 +869,10 @@ public:
   class E>
   auto stencil_entity(E* e)
   {
-    if ((xoff == 0) && (yoff == 0))
-      return e->id(0);
+    //This assertion check is needed to distinguish between the case where the 
+    //stencil is the zero vector from the case when the stencil results in an 
+    //out of bound entity in which case the id returned is the origin.  
+    assert(!((xoff == 0) && (yoff == 0)));
 
     size_t FROM_DIM = E::dimension;
     size_t global_offset = e->id(0);
@@ -878,7 +882,17 @@ public:
                    local_box_indices_from_global_offset(global_offset);
     auto local_offset = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
                         local_offset_from_local_box_indices(box_id, indices); 
-  
+ 
+   //DBG
+   /*
+   std::cout<<"global_offset = "<<global_offset<<std::endl;
+   std::cout<<" ----box_id = "<<box_id<<std::endl;
+   std::cout<<" ----indices = {";
+   for (size_t i = 0; i < MESH_TYPE::num_dimensions; i++)
+  	 std::cout<<indices[i]<<", ";
+   std::cout<<"}"<<std::endl; 
+   std::cout<<" ----local_offset = "<<local_offset<<std::endl;
+   */ 
     if((base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
        check_local_index_limits<0>(box_id,xoff+indices[0]))&& 
        (base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
@@ -889,8 +903,14 @@ public:
       local_offset += xoff + nx*yoff;
     }
 
-    return base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
+   //std::cout<<" ----local_offset = "<<local_offset<<std::endl;
+   sm_id_t newval =  base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
            global_offset_from_local_offset(local_offset); 
+    
+   //std::cout<<" ----global_offset = "<<newval<<std::endl;
+   return newval;
+   //return base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
+   //        global_offset_from_local_offset(local_offset); 
   } //stencil_entity
 
  //--------------------------------------------------------------------------//
@@ -910,8 +930,10 @@ public:
   class E>
   auto stencil_entity(E* e)
   {
-    if ((xoff == 0) && (yoff == 0) && (zoff == 0))
-        return e->id(0);
+    //This assertion check is needed to distinguish between the case where the 
+    //stencil is the zero vector from the case when the stencil results in an 
+    //out of bound entity in which case the id returned is the origin.  
+    assert (!((xoff == 0) && (yoff == 0) && (zoff == 0)));
 
     size_t FROM_DIM = E::dimension;
     size_t global_offset = e->id(0);
