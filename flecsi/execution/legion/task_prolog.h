@@ -420,19 +420,85 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     if(!sparse){
       return;
     }
-    
+  
     auto & h = m.h_;
 
-    if ((*h.ghost_is_readable)) {
-      // Phase WRITE
-      launcher.add_wait_barrier(*(h.pbarrier_as_owner_ptr));
+    using sparse_field_data_t = context_t::sparse_field_data_t;
 
-      // Phase READ
-      launcher.add_arrival_barrier(*(h.pbarrier_as_owner_ptr));
+    auto & flecsi_context = context_t::instance();
+    const int my_color = runtime->find_local_MPI_rank();
 
-      *(h.ghost_is_readable) = false;
-      *(h.write_phase_started) = true;
-    } // if
+    //read 
+    if (!*(h.ghost_is_readable)) {
+        {
+          clog_tag_guard(prolog);
+          clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
+                      << std::endl;
+
+          // As owner
+          clog(trace) << "rank " << my_color << " arrives & advances "
+                      << *(h.pbarrier_as_owner_ptr) << std::endl;
+        } // scope
+
+        // Phase WRITE
+        h.pbarrier_as_owner_ptr->arrive(1);
+
+        // Phase WRITE
+        *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
+            context, *(h.pbarrier_as_owner_ptr));
+
+        const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
+
+        // As user
+        for (size_t owner{0}; owner < _pbp_size; owner++) {
+
+          // offsets
+          owner_regions.push_back(h.ghost_owners_offsets_lregions[owner]);
+          owner_subregions.push_back(h.ghost_owners_offsets_subregions[owner]);
+
+          owner_entries_regions.push_back(
+            h.ghost_owners_entries_lregions[owner]);
+          /*
+          owner_entries_subregions.push_back(
+            h.ghost_owners_entries_subregions[owner]);
+            */
+
+          ghost_regions.push_back(h.offsets_ghost_lr);
+          ghost_entries_regions.push_back(h.entries_ghost_lr);
+
+          color_regions.push_back(h.offsets_color_region);
+          color_entries_regions.push_back(h.entries_color_region);
+
+          fids.push_back(h.fid);
+
+          ghost_copy_args local_args;
+          local_args.data_client_hash = h.data_client_hash;
+          local_args.index_space = h.index_space;
+          local_args.owner = owner;
+          local_args.sparse = true;
+          local_args.reserve = h.reserve;
+          local_args.max_entries_per_index = h.max_entries_per_index();
+          args.push_back(local_args);
+
+          futures.push_back(Legion::Future::from_value(
+              runtime, *(h.global_to_local_color_map_ptr)));
+          barrier_ptrs.push_back(h.ghost_owners_pbarriers_ptrs[owner]);
+        } // for owner as user
+
+        *(h.ghost_is_readable) = true;
+     } 
+
+      //write
+      if(*(h.ghost_is_readable) ){
+        // Phase WRITE
+        launcher.add_wait_barrier(*(h.pbarrier_as_owner_ptr));
+
+        // Phase READ
+        launcher.add_arrival_barrier(*(h.pbarrier_as_owner_ptr));
+
+        *(h.ghost_is_readable) = false;
+        *(h.write_phase_started) = true;
+       }
   }
 
   template<

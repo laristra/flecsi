@@ -77,7 +77,6 @@ set(io_SOURCES
 cinch_add_unit(simple_definition
   SOURCES test/simple_definition.cc
   INPUTS test/simple2d-8x8.msh test/simple2d-4x4.msh
-  FOLDER "Tests/IO"
 )
 
 set(io_HEADERS
@@ -88,7 +87,6 @@ set(io_HEADERS
 
 cinch_add_unit(io
   SOURCES test/io.cc
-  FOLDER "Tests/IO"
 )
 
 set(io_SOURCES
