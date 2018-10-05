@@ -71,7 +71,7 @@ struct legion_mutator_handle_policy_t {
 
 //  Legion::PhysicalRegion metadata_pr;
 
-  flecsi::execution::context_t::sparse_field_data_t metadata;
+  flecsi::execution::context_t::sparse_field_data_t *metadata;
 
   const Legion::STL::map<
       LegionRuntime::Arrays::coord_t,

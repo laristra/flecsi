@@ -490,6 +490,13 @@ runtime_driver(
         ctx, sis_ghost_lr, flecsi_sis.ghost_partition);
     runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_lp, "ghost logical partition");
 
+
+    ispace_dmap[sparse_idx_space].ghost_owners_lp =
+				runtime->get_logical_partition(
+        ctx, flecsi_sis.logical_region, flecsi_sis.all_shared_partition);
+//    runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_owners_lp,
+//		"ghost owners logical partition");
+
     }
 //  } // idx_space
 

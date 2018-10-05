@@ -84,7 +84,7 @@ struct legion_sparse_data_handle_policy_t {
   size_t shared_priv;
   size_t ghost_priv;
  
-  flecsi::execution::context_t::sparse_field_data_t metadata;
+  flecsi::execution::context_t::sparse_field_data_t * metadata;
 
   size_t offsets_size = 0;
   size_t entries_size = 0;

@@ -73,15 +73,15 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
     auto & h = a.handle;
-    auto md = h.metadata;
+    //auto md = h.metadata;
     
     std::memcpy(h.entries_data[0], h.entries,
-                md.num_exclusive_filled * sizeof(entry_value_t));
+                h.metadata->num_exclusive_filled * sizeof(entry_value_t));
 
     std::memcpy(h.entries_data[1],
-                h.entries + md.reserve,
-                md.num_shared * sizeof(entry_value_t) * 
-                md.max_entries_per_index);
+                h.entries + h.metadata->reserve,
+                h.metadata->num_shared * sizeof(entry_value_t) * 
+                h.metadata->max_entries_per_index);
   }
 
   template<
@@ -131,9 +131,9 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     ci.entries[2] =
       ci.entries[1] + h.num_shared() * h.max_entries_per_index();
 
-    auto md = h.metadata;
+ //   sparse_field_data_t *md = &h.metadata;
 
-    md.num_exclusive_filled = h.commit(&ci);
+    h.metadata->num_exclusive_filled = h.commit(&ci);
 
     std::memcpy(h.offsets_data[0], h.offsets,
                 h.num_exclusive() * sizeof(offset_t));
@@ -141,21 +141,21 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     std::memcpy(h.offsets_data[1], h.offsets + h.num_exclusive(),
                 h.num_shared() * sizeof(offset_t));
 
-    if(!md.initialized){
+    if(!h.metadata->initialized){
       std::memcpy(h.offsets_data[2],
                   h.offsets + h.num_exclusive() + h.num_shared(),
                   h.num_ghost() * sizeof(offset_t));      
     }
 
     std::memcpy(h.entries_data[0], h.entries,
-                md.num_exclusive_filled * sizeof(entry_value_t));
+                h.metadata->num_exclusive_filled * sizeof(entry_value_t));
     
     std::memcpy(h.entries_data[1],
                 h.entries + h.reserve * sizeof(entry_value_t),
                 h.num_shared() * sizeof(entry_value_t) * 
                 h.max_entries_per_index());
 
-    md.initialized = true;
+    h.metadata->initialized = true;
   }
 
   template<
