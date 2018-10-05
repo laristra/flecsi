@@ -89,7 +89,7 @@ public:
 
     for (size_t i = 0; i < num_boxes_; i++)
     {
-      size_t cnt = 1;
+      size_t global_count = 1, local_count = 1;
       std::fill(global_low.begin(), global_low.end(), 0);;
       std::fill(global_up.begin(), global_up.end(), 0);;
       std::fill(local_low.begin(), local_low.end(), 0);;
@@ -97,24 +97,24 @@ public:
 
       for (size_t j = 0; j < MESH_DIMENSION; j++)
       {
-         cnt *= global_ubnds[j] + bnds[num_boxes_*i+j] - global_lbnds[j]+1;
-
          global_low[j] = global_lbnds[j];
          global_up[j]  = global_ubnds[j]+bnds[num_boxes_*i+j];
          global_str[j] = global_strides[j]+bnds[num_boxes_*i+j];
-      
+         global_count *= global_str[j];
+
+         local_count *= global_ubnds[j] + bnds[num_boxes_*i+j] - global_lbnds[j]+1;
          local_low[j] = 0;
          local_up[j]  = global_ubnds[j]+bnds[num_boxes_*i+j]-global_lbnds[j];
       }
 
       //set up local box bnds
       lbox_offset_.push_back(0);
-      lbox_size_.push_back(cnt);
+      lbox_size_.push_back(local_count);
       lbox_lowbnds_.push_back(local_low);
       lbox_upbnds_.push_back(local_up);
 
       //set up global box bnds 
-      gbox_size_.push_back(cnt);
+      gbox_size_.push_back(global_count);
       gbox_lowbnds_.push_back(global_low);
       gbox_upbnds_.push_back(global_up);
       gbox_strides_.push_back(global_str);

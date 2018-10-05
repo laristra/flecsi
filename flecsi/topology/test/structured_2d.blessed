@@ -1,593 +1,1081 @@
-2D Logically structured mesh with bounds: [0, 0] - [2, 1] 
+2D Logically structured mesh with bounds: [3, 3] - [5, 6] 
 
-NV = 12
-NE = 17
-NF = 6
+NV = 20
+NE = 31
+NF = 12
 
 ------Vertices------
----- vertex id: 0
-  -- indices 
-  ---- 0
-  ---- 0
-  ---- offset 0
-  -- stencil [1 0] 1
-  -- stencil [0 1] 4
-  -- stencil [-1 0] 0
-  -- stencil [0 -1] 0
-  -- query V-->E 
-  ---- 8
-  ---- 0
-  -- query V-->F 
-  ---- 0
-
----- vertex id: 1
-  -- indices 
-  ---- 1
-  ---- 0
-  ---- offset 1
-  -- stencil [1 0] 2
-  -- stencil [0 1] 5
-  -- stencil [-1 0] 0
-  -- stencil [0 -1] 1
-  -- query V-->E 
-  ---- 9
-  ---- 1
-  ---- 8
-  -- query V-->F 
-  ---- 1
-  ---- 0
-
----- vertex id: 2
-  -- indices 
-  ---- 2
-  ---- 0
-  ---- offset 2
-  -- stencil [1 0] 3
-  -- stencil [0 1] 6
-  -- stencil [-1 0] 1
-  -- stencil [0 -1] 2
-  -- query V-->E 
-  ---- 10
-  ---- 2
-  ---- 9
-  -- query V-->F 
-  ---- 2
-  ---- 1
-
----- vertex id: 3
+---- vertex id: 30
   -- indices 
   ---- 3
-  ---- 0
-  ---- offset 3
-  -- stencil [1 0] 3
-  -- stencil [0 1] 7
-  -- stencil [-1 0] 2
-  -- stencil [0 -1] 3
-  -- query V-->E 
   ---- 3
-  ---- 10
-  -- query V-->F 
-  ---- 2
-
----- vertex id: 4
-  -- indices 
-  ---- 0
-  ---- 1
-  ---- offset 4
-  -- stencil [1 0] 5
-  -- stencil [0 1] 8
-  -- stencil [-1 0] 4
-  -- stencil [0 -1] 0
+  ---- offset 30
+  -- stencil [1 0] 31
+  -- stencil [0 1] 39
+  -- stencil [-1 0] 30
+  -- stencil [0 -1] 30
   -- query V-->E 
-  ---- 11
+  ---- 99
+  ---- 30
+  -- query V-->F 
+  ---- 27
+
+---- vertex id: 31
+  -- indices 
   ---- 4
-  ---- 0
-  -- query V-->F 
   ---- 3
-  ---- 0
-
----- vertex id: 5
-  -- indices 
-  ---- 1
-  ---- 1
-  ---- offset 5
-  -- stencil [1 0] 6
-  -- stencil [0 1] 9
-  -- stencil [-1 0] 4
-  -- stencil [0 -1] 1
+  ---- offset 31
+  -- stencil [1 0] 32
+  -- stencil [0 1] 40
+  -- stencil [-1 0] 30
+  -- stencil [0 -1] 31
   -- query V-->E 
-  ---- 12
+  ---- 100
+  ---- 31
+  ---- 99
+  -- query V-->F 
+  ---- 28
+  ---- 27
+
+---- vertex id: 32
+  -- indices 
   ---- 5
-  ---- 11
-  ---- 1
-  -- query V-->F 
-  ---- 4
   ---- 3
-  ---- 0
-  ---- 1
-
----- vertex id: 6
-  -- indices 
-  ---- 2
-  ---- 1
-  ---- offset 6
-  -- stencil [1 0] 7
-  -- stencil [0 1] 10
-  -- stencil [-1 0] 5
-  -- stencil [0 -1] 2
+  ---- offset 32
+  -- stencil [1 0] 33
+  -- stencil [0 1] 41
+  -- stencil [-1 0] 31
+  -- stencil [0 -1] 32
   -- query V-->E 
-  ---- 13
+  ---- 101
+  ---- 32
+  ---- 100
+  -- query V-->F 
+  ---- 29
+  ---- 28
+
+---- vertex id: 33
+  -- indices 
   ---- 6
-  ---- 12
-  ---- 2
-  -- query V-->F 
-  ---- 5
-  ---- 4
-  ---- 1
-  ---- 2
-
----- vertex id: 7
-  -- indices 
   ---- 3
-  ---- 1
-  ---- offset 7
-  -- stencil [1 0] 7
-  -- stencil [0 1] 11
-  -- stencil [-1 0] 6
-  -- stencil [0 -1] 3
+  ---- offset 33
+  -- stencil [1 0] 33
+  -- stencil [0 1] 42
+  -- stencil [-1 0] 32
+  -- stencil [0 -1] 33
   -- query V-->E 
-  ---- 7
-  ---- 13
-  ---- 3
+  ---- 33
+  ---- 101
   -- query V-->F 
-  ---- 5
-  ---- 2
+  ---- 29
 
----- vertex id: 8
+---- vertex id: 39
   -- indices 
-  ---- 0
-  ---- 2
-  ---- offset 8
-  -- stencil [1 0] 9
-  -- stencil [0 1] 8
-  -- stencil [-1 0] 8
-  -- stencil [0 -1] 4
-  -- query V-->E 
-  ---- 14
-  ---- 4
-  -- query V-->F 
-  ---- 3
-
----- vertex id: 9
-  -- indices 
-  ---- 1
-  ---- 2
-  ---- offset 9
-  -- stencil [1 0] 10
-  -- stencil [0 1] 9
-  -- stencil [-1 0] 8
-  -- stencil [0 -1] 5
-  -- query V-->E 
-  ---- 15
-  ---- 14
-  ---- 5
-  -- query V-->F 
   ---- 3
   ---- 4
-
----- vertex id: 10
-  -- indices 
-  ---- 2
-  ---- 2
-  ---- offset 10
-  -- stencil [1 0] 11
-  -- stencil [0 1] 10
-  -- stencil [-1 0] 9
-  -- stencil [0 -1] 6
+  ---- offset 39
+  -- stencil [1 0] 40
+  -- stencil [0 1] 48
+  -- stencil [-1 0] 39
+  -- stencil [0 -1] 30
   -- query V-->E 
-  ---- 16
-  ---- 15
+  ---- 107
+  ---- 39
+  ---- 30
+  -- query V-->F 
+  ---- 35
+  ---- 27
+
+---- vertex id: 40
+  -- indices 
+  ---- 4
+  ---- 4
+  ---- offset 40
+  -- stencil [1 0] 41
+  -- stencil [0 1] 49
+  -- stencil [-1 0] 39
+  -- stencil [0 -1] 31
+  -- query V-->E 
+  ---- 108
+  ---- 40
+  ---- 107
+  ---- 31
+  -- query V-->F 
+  ---- 36
+  ---- 35
+  ---- 27
+  ---- 28
+
+---- vertex id: 41
+  -- indices 
+  ---- 5
+  ---- 4
+  ---- offset 41
+  -- stencil [1 0] 42
+  -- stencil [0 1] 50
+  -- stencil [-1 0] 40
+  -- stencil [0 -1] 32
+  -- query V-->E 
+  ---- 109
+  ---- 41
+  ---- 108
+  ---- 32
+  -- query V-->F 
+  ---- 37
+  ---- 36
+  ---- 28
+  ---- 29
+
+---- vertex id: 42
+  -- indices 
   ---- 6
-  -- query V-->F 
   ---- 4
-  ---- 5
+  ---- offset 42
+  -- stencil [1 0] 42
+  -- stencil [0 1] 51
+  -- stencil [-1 0] 41
+  -- stencil [0 -1] 33
+  -- query V-->E 
+  ---- 42
+  ---- 109
+  ---- 33
+  -- query V-->F 
+  ---- 37
+  ---- 29
 
----- vertex id: 11
+---- vertex id: 48
   -- indices 
   ---- 3
-  ---- 2
-  ---- offset 11
-  -- stencil [1 0] 11
-  -- stencil [0 1] 11
-  -- stencil [-1 0] 10
-  -- stencil [0 -1] 7
-  -- query V-->E 
-  ---- 16
-  ---- 7
-  -- query V-->F 
   ---- 5
+  ---- offset 48
+  -- stencil [1 0] 49
+  -- stencil [0 1] 57
+  -- stencil [-1 0] 48
+  -- stencil [0 -1] 39
+  -- query V-->E 
+  ---- 115
+  ---- 48
+  ---- 39
+  -- query V-->F 
+  ---- 43
+  ---- 35
+
+---- vertex id: 49
+  -- indices 
+  ---- 4
+  ---- 5
+  ---- offset 49
+  -- stencil [1 0] 50
+  -- stencil [0 1] 58
+  -- stencil [-1 0] 48
+  -- stencil [0 -1] 40
+  -- query V-->E 
+  ---- 116
+  ---- 49
+  ---- 115
+  ---- 40
+  -- query V-->F 
+  ---- 44
+  ---- 43
+  ---- 35
+  ---- 36
+
+---- vertex id: 50
+  -- indices 
+  ---- 5
+  ---- 5
+  ---- offset 50
+  -- stencil [1 0] 51
+  -- stencil [0 1] 59
+  -- stencil [-1 0] 49
+  -- stencil [0 -1] 41
+  -- query V-->E 
+  ---- 117
+  ---- 50
+  ---- 116
+  ---- 41
+  -- query V-->F 
+  ---- 45
+  ---- 44
+  ---- 36
+  ---- 37
+
+---- vertex id: 51
+  -- indices 
+  ---- 6
+  ---- 5
+  ---- offset 51
+  -- stencil [1 0] 51
+  -- stencil [0 1] 60
+  -- stencil [-1 0] 50
+  -- stencil [0 -1] 42
+  -- query V-->E 
+  ---- 51
+  ---- 117
+  ---- 42
+  -- query V-->F 
+  ---- 45
+  ---- 37
+
+---- vertex id: 57
+  -- indices 
+  ---- 3
+  ---- 6
+  ---- offset 57
+  -- stencil [1 0] 58
+  -- stencil [0 1] 66
+  -- stencil [-1 0] 57
+  -- stencil [0 -1] 48
+  -- query V-->E 
+  ---- 123
+  ---- 57
+  ---- 48
+  -- query V-->F 
+  ---- 51
+  ---- 43
+
+---- vertex id: 58
+  -- indices 
+  ---- 4
+  ---- 6
+  ---- offset 58
+  -- stencil [1 0] 59
+  -- stencil [0 1] 67
+  -- stencil [-1 0] 57
+  -- stencil [0 -1] 49
+  -- query V-->E 
+  ---- 124
+  ---- 58
+  ---- 123
+  ---- 49
+  -- query V-->F 
+  ---- 52
+  ---- 51
+  ---- 43
+  ---- 44
+
+---- vertex id: 59
+  -- indices 
+  ---- 5
+  ---- 6
+  ---- offset 59
+  -- stencil [1 0] 60
+  -- stencil [0 1] 68
+  -- stencil [-1 0] 58
+  -- stencil [0 -1] 50
+  -- query V-->E 
+  ---- 125
+  ---- 59
+  ---- 124
+  ---- 50
+  -- query V-->F 
+  ---- 53
+  ---- 52
+  ---- 44
+  ---- 45
+
+---- vertex id: 60
+  -- indices 
+  ---- 6
+  ---- 6
+  ---- offset 60
+  -- stencil [1 0] 60
+  -- stencil [0 1] 69
+  -- stencil [-1 0] 59
+  -- stencil [0 -1] 51
+  -- query V-->E 
+  ---- 60
+  ---- 125
+  ---- 51
+  -- query V-->F 
+  ---- 53
+  ---- 45
+
+---- vertex id: 66
+  -- indices 
+  ---- 3
+  ---- 7
+  ---- offset 66
+  -- stencil [1 0] 67
+  -- stencil [0 1] 66
+  -- stencil [-1 0] 66
+  -- stencil [0 -1] 57
+  -- query V-->E 
+  ---- 131
+  ---- 57
+  -- query V-->F 
+  ---- 51
+
+---- vertex id: 67
+  -- indices 
+  ---- 4
+  ---- 7
+  ---- offset 67
+  -- stencil [1 0] 68
+  -- stencil [0 1] 67
+  -- stencil [-1 0] 66
+  -- stencil [0 -1] 58
+  -- query V-->E 
+  ---- 132
+  ---- 131
+  ---- 58
+  -- query V-->F 
+  ---- 51
+  ---- 52
+
+---- vertex id: 68
+  -- indices 
+  ---- 5
+  ---- 7
+  ---- offset 68
+  -- stencil [1 0] 69
+  -- stencil [0 1] 68
+  -- stencil [-1 0] 67
+  -- stencil [0 -1] 59
+  -- query V-->E 
+  ---- 133
+  ---- 132
+  ---- 59
+  -- query V-->F 
+  ---- 52
+  ---- 53
+
+---- vertex id: 69
+  -- indices 
+  ---- 6
+  ---- 7
+  ---- offset 69
+  -- stencil [1 0] 69
+  -- stencil [0 1] 69
+  -- stencil [-1 0] 68
+  -- stencil [0 -1] 60
+  -- query V-->E 
+  ---- 133
+  ---- 60
+  -- query V-->F 
+  ---- 53
 
 ------Edges------
----- edge id: 0
-  -- indices 
-  ---- 0
-  ---- 0
-  ---- offset 0
-  -- stencil [1 0] 1
-  -- stencil [0 1] 4
-  -- stencil [-1 0] 0
-  -- stencil [0 -1] 0
-  -- query E-->V 
-  ---- 0
-  ---- 4
-  -- query E-->F 
-  ---- 0
-
----- edge id: 1
-  -- indices 
-  ---- 1
-  ---- 0
-  ---- offset 1
-  -- stencil [1 0] 2
-  -- stencil [0 1] 5
-  -- stencil [-1 0] 0
-  -- stencil [0 -1] 1
-  -- query E-->V 
-  ---- 1
-  ---- 5
-  -- query E-->F 
-  ---- 1
-  ---- 0
-
----- edge id: 2
-  -- indices 
-  ---- 2
-  ---- 0
-  ---- offset 2
-  -- stencil [1 0] 3
-  -- stencil [0 1] 6
-  -- stencil [-1 0] 1
-  -- stencil [0 -1] 2
-  -- query E-->V 
-  ---- 2
-  ---- 6
-  -- query E-->F 
-  ---- 2
-  ---- 1
-
----- edge id: 3
+---- edge id: 30
   -- indices 
   ---- 3
-  ---- 0
-  ---- offset 3
-  -- stencil [1 0] 3
-  -- stencil [0 1] 7
-  -- stencil [-1 0] 2
-  -- stencil [0 -1] 3
+  ---- 3
+  ---- offset 30
+  -- stencil [1 0] 31
+  -- stencil [0 1] 39
+  -- stencil [-1 0] 30
+  -- stencil [0 -1] 30
   -- query E-->V 
+  ---- 30
+  ---- 39
+  -- query E-->F 
+  ---- 27
+
+---- edge id: 31
+  -- indices 
+  ---- 4
+  ---- 3
+  ---- offset 31
+  -- stencil [1 0] 32
+  -- stencil [0 1] 40
+  -- stencil [-1 0] 30
+  -- stencil [0 -1] 31
+  -- query E-->V 
+  ---- 31
+  ---- 40
+  -- query E-->F 
+  ---- 28
+  ---- 27
+
+---- edge id: 32
+  -- indices 
+  ---- 5
+  ---- 3
+  ---- offset 32
+  -- stencil [1 0] 33
+  -- stencil [0 1] 41
+  -- stencil [-1 0] 31
+  -- stencil [0 -1] 32
+  -- query E-->V 
+  ---- 32
+  ---- 41
+  -- query E-->F 
+  ---- 29
+  ---- 28
+
+---- edge id: 33
+  -- indices 
+  ---- 6
+  ---- 3
+  ---- offset 33
+  -- stencil [1 0] 33
+  -- stencil [0 1] 42
+  -- stencil [-1 0] 32
+  -- stencil [0 -1] 33
+  -- query E-->V 
+  ---- 33
+  ---- 42
+  -- query E-->F 
+  ---- 29
+
+---- edge id: 39
+  -- indices 
+  ---- 3
+  ---- 4
+  ---- offset 39
+  -- stencil [1 0] 40
+  -- stencil [0 1] 48
+  -- stencil [-1 0] 39
+  -- stencil [0 -1] 30
+  -- query E-->V 
+  ---- 39
+  ---- 48
+  -- query E-->F 
+  ---- 35
+
+---- edge id: 40
+  -- indices 
+  ---- 4
+  ---- 4
+  ---- offset 40
+  -- stencil [1 0] 41
+  -- stencil [0 1] 49
+  -- stencil [-1 0] 39
+  -- stencil [0 -1] 31
+  -- query E-->V 
+  ---- 40
+  ---- 49
+  -- query E-->F 
+  ---- 36
+  ---- 35
+
+---- edge id: 41
+  -- indices 
+  ---- 5
+  ---- 4
+  ---- offset 41
+  -- stencil [1 0] 42
+  -- stencil [0 1] 50
+  -- stencil [-1 0] 40
+  -- stencil [0 -1] 32
+  -- query E-->V 
+  ---- 41
+  ---- 50
+  -- query E-->F 
+  ---- 37
+  ---- 36
+
+---- edge id: 42
+  -- indices 
+  ---- 6
+  ---- 4
+  ---- offset 42
+  -- stencil [1 0] 42
+  -- stencil [0 1] 51
+  -- stencil [-1 0] 41
+  -- stencil [0 -1] 33
+  -- query E-->V 
+  ---- 42
+  ---- 51
+  -- query E-->F 
+  ---- 37
+
+---- edge id: 48
+  -- indices 
+  ---- 3
+  ---- 5
+  ---- offset 48
+  -- stencil [1 0] 49
+  -- stencil [0 1] 57
+  -- stencil [-1 0] 48
+  -- stencil [0 -1] 39
+  -- query E-->V 
+  ---- 48
+  ---- 57
+  -- query E-->F 
+  ---- 43
+
+---- edge id: 49
+  -- indices 
+  ---- 4
+  ---- 5
+  ---- offset 49
+  -- stencil [1 0] 50
+  -- stencil [0 1] 58
+  -- stencil [-1 0] 48
+  -- stencil [0 -1] 40
+  -- query E-->V 
+  ---- 49
+  ---- 58
+  -- query E-->F 
+  ---- 44
+  ---- 43
+
+---- edge id: 50
+  -- indices 
+  ---- 5
+  ---- 5
+  ---- offset 50
+  -- stencil [1 0] 51
+  -- stencil [0 1] 59
+  -- stencil [-1 0] 49
+  -- stencil [0 -1] 41
+  -- query E-->V 
+  ---- 50
+  ---- 59
+  -- query E-->F 
+  ---- 45
+  ---- 44
+
+---- edge id: 51
+  -- indices 
+  ---- 6
+  ---- 5
+  ---- offset 51
+  -- stencil [1 0] 51
+  -- stencil [0 1] 60
+  -- stencil [-1 0] 50
+  -- stencil [0 -1] 42
+  -- query E-->V 
+  ---- 51
+  ---- 60
+  -- query E-->F 
+  ---- 45
+
+---- edge id: 57
+  -- indices 
+  ---- 3
+  ---- 6
+  ---- offset 57
+  -- stencil [1 0] 58
+  -- stencil [0 1] 57
+  -- stencil [-1 0] 57
+  -- stencil [0 -1] 48
+  -- query E-->V 
+  ---- 57
+  ---- 66
+  -- query E-->F 
+  ---- 51
+
+---- edge id: 58
+  -- indices 
+  ---- 4
+  ---- 6
+  ---- offset 58
+  -- stencil [1 0] 59
+  -- stencil [0 1] 58
+  -- stencil [-1 0] 57
+  -- stencil [0 -1] 49
+  -- query E-->V 
+  ---- 58
+  ---- 67
+  -- query E-->F 
+  ---- 52
+  ---- 51
+
+---- edge id: 59
+  -- indices 
+  ---- 5
+  ---- 6
+  ---- offset 59
+  -- stencil [1 0] 60
+  -- stencil [0 1] 59
+  -- stencil [-1 0] 58
+  -- stencil [0 -1] 50
+  -- query E-->V 
+  ---- 59
+  ---- 68
+  -- query E-->F 
+  ---- 53
+  ---- 52
+
+---- edge id: 60
+  -- indices 
+  ---- 6
+  ---- 6
+  ---- offset 60
+  -- stencil [1 0] 60
+  -- stencil [0 1] 60
+  -- stencil [-1 0] 59
+  -- stencil [0 -1] 51
+  -- query E-->V 
+  ---- 60
+  ---- 69
+  -- query E-->F 
+  ---- 53
+
+---- edge id: 99
+  -- indices 
+  ---- 3
+  ---- 3
+  ---- offset 99
+  -- stencil [1 0] 100
+  -- stencil [0 1] 107
+  -- stencil [-1 0] 99
+  -- stencil [0 -1] 99
+  -- query E-->V 
+  ---- 30
+  ---- 31
+  -- query E-->F 
+  ---- 27
+
+---- edge id: 100
+  -- indices 
+  ---- 4
+  ---- 3
+  ---- offset 100
+  -- stencil [1 0] 101
+  -- stencil [0 1] 108
+  -- stencil [-1 0] 99
+  -- stencil [0 -1] 100
+  -- query E-->V 
+  ---- 31
+  ---- 32
+  -- query E-->F 
+  ---- 28
+
+---- edge id: 101
+  -- indices 
+  ---- 5
+  ---- 3
+  ---- offset 101
+  -- stencil [1 0] 101
+  -- stencil [0 1] 109
+  -- stencil [-1 0] 100
+  -- stencil [0 -1] 101
+  -- query E-->V 
+  ---- 32
+  ---- 33
+  -- query E-->F 
+  ---- 29
+
+---- edge id: 107
+  -- indices 
+  ---- 3
+  ---- 4
+  ---- offset 107
+  -- stencil [1 0] 108
+  -- stencil [0 1] 115
+  -- stencil [-1 0] 107
+  -- stencil [0 -1] 99
+  -- query E-->V 
+  ---- 39
+  ---- 40
+  -- query E-->F 
+  ---- 35
+  ---- 27
+
+---- edge id: 108
+  -- indices 
+  ---- 4
+  ---- 4
+  ---- offset 108
+  -- stencil [1 0] 109
+  -- stencil [0 1] 116
+  -- stencil [-1 0] 107
+  -- stencil [0 -1] 100
+  -- query E-->V 
+  ---- 40
+  ---- 41
+  -- query E-->F 
+  ---- 36
+  ---- 28
+
+---- edge id: 109
+  -- indices 
+  ---- 5
+  ---- 4
+  ---- offset 109
+  -- stencil [1 0] 109
+  -- stencil [0 1] 117
+  -- stencil [-1 0] 108
+  -- stencil [0 -1] 101
+  -- query E-->V 
+  ---- 41
+  ---- 42
+  -- query E-->F 
+  ---- 37
+  ---- 29
+
+---- edge id: 115
+  -- indices 
+  ---- 3
+  ---- 5
+  ---- offset 115
+  -- stencil [1 0] 116
+  -- stencil [0 1] 123
+  -- stencil [-1 0] 115
+  -- stencil [0 -1] 107
+  -- query E-->V 
+  ---- 48
+  ---- 49
+  -- query E-->F 
+  ---- 43
+  ---- 35
+
+---- edge id: 116
+  -- indices 
+  ---- 4
+  ---- 5
+  ---- offset 116
+  -- stencil [1 0] 117
+  -- stencil [0 1] 124
+  -- stencil [-1 0] 115
+  -- stencil [0 -1] 108
+  -- query E-->V 
+  ---- 49
+  ---- 50
+  -- query E-->F 
+  ---- 44
+  ---- 36
+
+---- edge id: 117
+  -- indices 
+  ---- 5
+  ---- 5
+  ---- offset 117
+  -- stencil [1 0] 117
+  -- stencil [0 1] 125
+  -- stencil [-1 0] 116
+  -- stencil [0 -1] 109
+  -- query E-->V 
+  ---- 50
+  ---- 51
+  -- query E-->F 
+  ---- 45
+  ---- 37
+
+---- edge id: 123
+  -- indices 
+  ---- 3
+  ---- 6
+  ---- offset 123
+  -- stencil [1 0] 124
+  -- stencil [0 1] 131
+  -- stencil [-1 0] 123
+  -- stencil [0 -1] 115
+  -- query E-->V 
+  ---- 57
+  ---- 58
+  -- query E-->F 
+  ---- 51
+  ---- 43
+
+---- edge id: 124
+  -- indices 
+  ---- 4
+  ---- 6
+  ---- offset 124
+  -- stencil [1 0] 125
+  -- stencil [0 1] 132
+  -- stencil [-1 0] 123
+  -- stencil [0 -1] 116
+  -- query E-->V 
+  ---- 58
+  ---- 59
+  -- query E-->F 
+  ---- 52
+  ---- 44
+
+---- edge id: 125
+  -- indices 
+  ---- 5
+  ---- 6
+  ---- offset 125
+  -- stencil [1 0] 125
+  -- stencil [0 1] 133
+  -- stencil [-1 0] 124
+  -- stencil [0 -1] 117
+  -- query E-->V 
+  ---- 59
+  ---- 60
+  -- query E-->F 
+  ---- 53
+  ---- 45
+
+---- edge id: 131
+  -- indices 
   ---- 3
   ---- 7
-  -- query E-->F 
-  ---- 2
-
----- edge id: 4
-  -- indices 
-  ---- 0
-  ---- 1
-  ---- offset 4
-  -- stencil [1 0] 5
-  -- stencil [0 1] 4
-  -- stencil [-1 0] 4
-  -- stencil [0 -1] 0
+  ---- offset 131
+  -- stencil [1 0] 132
+  -- stencil [0 1] 131
+  -- stencil [-1 0] 131
+  -- stencil [0 -1] 123
   -- query E-->V 
+  ---- 66
+  ---- 67
+  -- query E-->F 
+  ---- 51
+
+---- edge id: 132
+  -- indices 
   ---- 4
-  ---- 8
-  -- query E-->F 
-  ---- 3
-
----- edge id: 5
-  -- indices 
-  ---- 1
-  ---- 1
-  ---- offset 5
-  -- stencil [1 0] 6
-  -- stencil [0 1] 5
-  -- stencil [-1 0] 4
-  -- stencil [0 -1] 1
-  -- query E-->V 
-  ---- 5
-  ---- 9
-  -- query E-->F 
-  ---- 4
-  ---- 3
-
----- edge id: 6
-  -- indices 
-  ---- 2
-  ---- 1
-  ---- offset 6
-  -- stencil [1 0] 7
-  -- stencil [0 1] 6
-  -- stencil [-1 0] 5
-  -- stencil [0 -1] 2
-  -- query E-->V 
-  ---- 6
-  ---- 10
-  -- query E-->F 
-  ---- 5
-  ---- 4
-
----- edge id: 7
-  -- indices 
-  ---- 3
-  ---- 1
-  ---- offset 7
-  -- stencil [1 0] 7
-  -- stencil [0 1] 7
-  -- stencil [-1 0] 6
-  -- stencil [0 -1] 3
-  -- query E-->V 
   ---- 7
-  ---- 11
+  ---- offset 132
+  -- stencil [1 0] 133
+  -- stencil [0 1] 132
+  -- stencil [-1 0] 131
+  -- stencil [0 -1] 124
+  -- query E-->V 
+  ---- 67
+  ---- 68
   -- query E-->F 
+  ---- 52
+
+---- edge id: 133
+  -- indices 
   ---- 5
-
----- edge id: 8
-  -- indices 
-  ---- 0
-  ---- 0
-  ---- offset 8
-  -- stencil [1 0] 9
-  -- stencil [0 1] 11
-  -- stencil [-1 0] 8
-  -- stencil [0 -1] 8
-  -- query E-->V 
-  ---- 0
-  ---- 1
-  -- query E-->F 
-  ---- 0
-
----- edge id: 9
-  -- indices 
-  ---- 1
-  ---- 0
-  ---- offset 9
-  -- stencil [1 0] 10
-  -- stencil [0 1] 12
-  -- stencil [-1 0] 8
-  -- stencil [0 -1] 9
-  -- query E-->V 
-  ---- 1
-  ---- 2
-  -- query E-->F 
-  ---- 1
-
----- edge id: 10
-  -- indices 
-  ---- 2
-  ---- 0
-  ---- offset 10
-  -- stencil [1 0] 10
-  -- stencil [0 1] 13
-  -- stencil [-1 0] 9
-  -- stencil [0 -1] 10
-  -- query E-->V 
-  ---- 2
-  ---- 3
-  -- query E-->F 
-  ---- 2
-
----- edge id: 11
-  -- indices 
-  ---- 0
-  ---- 1
-  ---- offset 11
-  -- stencil [1 0] 12
-  -- stencil [0 1] 14
-  -- stencil [-1 0] 11
-  -- stencil [0 -1] 8
-  -- query E-->V 
-  ---- 4
-  ---- 5
-  -- query E-->F 
-  ---- 3
-  ---- 0
-
----- edge id: 12
-  -- indices 
-  ---- 1
-  ---- 1
-  ---- offset 12
-  -- stencil [1 0] 13
-  -- stencil [0 1] 15
-  -- stencil [-1 0] 11
-  -- stencil [0 -1] 9
-  -- query E-->V 
-  ---- 5
-  ---- 6
-  -- query E-->F 
-  ---- 4
-  ---- 1
-
----- edge id: 13
-  -- indices 
-  ---- 2
-  ---- 1
-  ---- offset 13
-  -- stencil [1 0] 13
-  -- stencil [0 1] 16
-  -- stencil [-1 0] 12
-  -- stencil [0 -1] 10
-  -- query E-->V 
-  ---- 6
   ---- 7
-  -- query E-->F 
-  ---- 5
-  ---- 2
-
----- edge id: 14
-  -- indices 
-  ---- 0
-  ---- 2
-  ---- offset 14
-  -- stencil [1 0] 15
-  -- stencil [0 1] 14
-  -- stencil [-1 0] 14
-  -- stencil [0 -1] 11
+  ---- offset 133
+  -- stencil [1 0] 133
+  -- stencil [0 1] 133
+  -- stencil [-1 0] 132
+  -- stencil [0 -1] 125
   -- query E-->V 
-  ---- 8
-  ---- 9
+  ---- 68
+  ---- 69
   -- query E-->F 
-  ---- 3
-
----- edge id: 15
-  -- indices 
-  ---- 1
-  ---- 2
-  ---- offset 15
-  -- stencil [1 0] 16
-  -- stencil [0 1] 15
-  -- stencil [-1 0] 14
-  -- stencil [0 -1] 12
-  -- query E-->V 
-  ---- 9
-  ---- 10
-  -- query E-->F 
-  ---- 4
-
----- edge id: 16
-  -- indices 
-  ---- 2
-  ---- 2
-  ---- offset 16
-  -- stencil [1 0] 16
-  -- stencil [0 1] 16
-  -- stencil [-1 0] 15
-  -- stencil [0 -1] 13
-  -- query E-->V 
-  ---- 10
-  ---- 11
-  -- query E-->F 
-  ---- 5
+  ---- 53
 
 ------Faces------
----- face id: 0
+---- face id: 27
   -- indices 
-  ---- 0
-  ---- 0
-  ---- offset 0
-  -- stencil [1 0] 1
-  -- stencil [0 1] 3
-  -- stencil [-1 0] 0
-  -- stencil [0 -1] 0
-  -- query F-->V 
-  ---- 0
-  ---- 1
-  ---- 5
-  ---- 4
-  -- query F-->E 
-  ---- 8
-  ---- 1
-  ---- 11
-  ---- 0
-
----- face id: 1
-  -- indices 
-  ---- 1
-  ---- 0
-  ---- offset 1
-  -- stencil [1 0] 2
-  -- stencil [0 1] 4
-  -- stencil [-1 0] 0
-  -- stencil [0 -1] 1
-  -- query F-->V 
-  ---- 1
-  ---- 2
-  ---- 6
-  ---- 5
-  -- query F-->E 
-  ---- 9
-  ---- 2
-  ---- 12
-  ---- 1
-
----- face id: 2
-  -- indices 
-  ---- 2
-  ---- 0
-  ---- offset 2
-  -- stencil [1 0] 2
-  -- stencil [0 1] 5
-  -- stencil [-1 0] 1
-  -- stencil [0 -1] 2
-  -- query F-->V 
-  ---- 2
   ---- 3
-  ---- 7
-  ---- 6
-  -- query F-->E 
-  ---- 10
   ---- 3
-  ---- 13
-  ---- 2
-
----- face id: 3
-  -- indices 
-  ---- 0
-  ---- 1
-  ---- offset 3
-  -- stencil [1 0] 4
-  -- stencil [0 1] 3
-  -- stencil [-1 0] 3
-  -- stencil [0 -1] 0
+  ---- offset 27
+  -- stencil [1 0] 28
+  -- stencil [0 1] 35
+  -- stencil [-1 0] 27
+  -- stencil [0 -1] 27
   -- query F-->V 
+  ---- 30
+  ---- 31
+  ---- 40
+  ---- 39
+  -- query F-->E 
+  ---- 99
+  ---- 31
+  ---- 107
+  ---- 30
+
+---- face id: 28
+  -- indices 
+  ---- 4
+  ---- 3
+  ---- offset 28
+  -- stencil [1 0] 29
+  -- stencil [0 1] 36
+  -- stencil [-1 0] 27
+  -- stencil [0 -1] 28
+  -- query F-->V 
+  ---- 31
+  ---- 32
+  ---- 41
+  ---- 40
+  -- query F-->E 
+  ---- 100
+  ---- 32
+  ---- 108
+  ---- 31
+
+---- face id: 29
+  -- indices 
+  ---- 5
+  ---- 3
+  ---- offset 29
+  -- stencil [1 0] 29
+  -- stencil [0 1] 37
+  -- stencil [-1 0] 28
+  -- stencil [0 -1] 29
+  -- query F-->V 
+  ---- 32
+  ---- 33
+  ---- 42
+  ---- 41
+  -- query F-->E 
+  ---- 101
+  ---- 33
+  ---- 109
+  ---- 32
+
+---- face id: 35
+  -- indices 
+  ---- 3
+  ---- 4
+  ---- offset 35
+  -- stencil [1 0] 36
+  -- stencil [0 1] 43
+  -- stencil [-1 0] 35
+  -- stencil [0 -1] 27
+  -- query F-->V 
+  ---- 39
+  ---- 40
+  ---- 49
+  ---- 48
+  -- query F-->E 
+  ---- 107
+  ---- 40
+  ---- 115
+  ---- 39
+
+---- face id: 36
+  -- indices 
+  ---- 4
+  ---- 4
+  ---- offset 36
+  -- stencil [1 0] 37
+  -- stencil [0 1] 44
+  -- stencil [-1 0] 35
+  -- stencil [0 -1] 28
+  -- query F-->V 
+  ---- 40
+  ---- 41
+  ---- 50
+  ---- 49
+  -- query F-->E 
+  ---- 108
+  ---- 41
+  ---- 116
+  ---- 40
+
+---- face id: 37
+  -- indices 
+  ---- 5
+  ---- 4
+  ---- offset 37
+  -- stencil [1 0] 37
+  -- stencil [0 1] 45
+  -- stencil [-1 0] 36
+  -- stencil [0 -1] 29
+  -- query F-->V 
+  ---- 41
+  ---- 42
+  ---- 51
+  ---- 50
+  -- query F-->E 
+  ---- 109
+  ---- 42
+  ---- 117
+  ---- 41
+
+---- face id: 43
+  -- indices 
+  ---- 3
+  ---- 5
+  ---- offset 43
+  -- stencil [1 0] 44
+  -- stencil [0 1] 51
+  -- stencil [-1 0] 43
+  -- stencil [0 -1] 35
+  -- query F-->V 
+  ---- 48
+  ---- 49
+  ---- 58
+  ---- 57
+  -- query F-->E 
+  ---- 115
+  ---- 49
+  ---- 123
+  ---- 48
+
+---- face id: 44
+  -- indices 
   ---- 4
   ---- 5
-  ---- 9
-  ---- 8
+  ---- offset 44
+  -- stencil [1 0] 45
+  -- stencil [0 1] 52
+  -- stencil [-1 0] 43
+  -- stencil [0 -1] 36
+  -- query F-->V 
+  ---- 49
+  ---- 50
+  ---- 59
+  ---- 58
   -- query F-->E 
-  ---- 11
+  ---- 116
+  ---- 50
+  ---- 124
+  ---- 49
+
+---- face id: 45
+  -- indices 
   ---- 5
-  ---- 14
+  ---- 5
+  ---- offset 45
+  -- stencil [1 0] 45
+  -- stencil [0 1] 53
+  -- stencil [-1 0] 44
+  -- stencil [0 -1] 37
+  -- query F-->V 
+  ---- 50
+  ---- 51
+  ---- 60
+  ---- 59
+  -- query F-->E 
+  ---- 117
+  ---- 51
+  ---- 125
+  ---- 50
+
+---- face id: 51
+  -- indices 
+  ---- 3
+  ---- 6
+  ---- offset 51
+  -- stencil [1 0] 52
+  -- stencil [0 1] 51
+  -- stencil [-1 0] 51
+  -- stencil [0 -1] 43
+  -- query F-->V 
+  ---- 57
+  ---- 58
+  ---- 67
+  ---- 66
+  -- query F-->E 
+  ---- 123
+  ---- 58
+  ---- 131
+  ---- 57
+
+---- face id: 52
+  -- indices 
   ---- 4
-
----- face id: 4
-  -- indices 
-  ---- 1
-  ---- 1
-  ---- offset 4
-  -- stencil [1 0] 5
-  -- stencil [0 1] 4
-  -- stencil [-1 0] 3
-  -- stencil [0 -1] 1
+  ---- 6
+  ---- offset 52
+  -- stencil [1 0] 53
+  -- stencil [0 1] 52
+  -- stencil [-1 0] 51
+  -- stencil [0 -1] 44
   -- query F-->V 
+  ---- 58
+  ---- 59
+  ---- 68
+  ---- 67
+  -- query F-->E 
+  ---- 124
+  ---- 59
+  ---- 132
+  ---- 58
+
+---- face id: 53
+  -- indices 
   ---- 5
   ---- 6
-  ---- 10
-  ---- 9
-  -- query F-->E 
-  ---- 12
-  ---- 6
-  ---- 15
-  ---- 5
-
----- face id: 5
-  -- indices 
-  ---- 2
-  ---- 1
-  ---- offset 5
-  -- stencil [1 0] 5
-  -- stencil [0 1] 5
-  -- stencil [-1 0] 4
-  -- stencil [0 -1] 2
+  ---- offset 53
+  -- stencil [1 0] 53
+  -- stencil [0 1] 53
+  -- stencil [-1 0] 52
+  -- stencil [0 -1] 45
   -- query F-->V 
-  ---- 6
-  ---- 7
-  ---- 11
-  ---- 10
+  ---- 59
+  ---- 60
+  ---- 69
+  ---- 68
   -- query F-->E 
-  ---- 13
-  ---- 7
-  ---- 16
-  ---- 6
+  ---- 125
+  ---- 60
+  ---- 133
+  ---- 59
 

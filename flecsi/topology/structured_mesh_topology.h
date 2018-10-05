@@ -181,10 +181,14 @@ public:
                             {{0,-1,-1,-1,0,-1,-1,-1,0}}, {{-1,-1,-1}}}}, 
                           };
 
-      bool primary = false;
+      bool primary;
       for (size_t i = 0; i <= meshdim_; ++i)
       {
-        if ( i == primary_dim_) primary = true;
+        if ( i != primary_dim_)
+             primary = false;
+        else 
+             primary = true; 
+    
         base_t::ms_->index_spaces[0][i].init(primary, primary_dim_,  
         globalbnds_low_, globalbnds_up_, global_strides_, 
         (primary_dim_ == 0) ? bnds_info[1][meshdim_-1][i]: 
@@ -832,7 +836,7 @@ public:
   {
     //This assertion check is needed to distinguish between the case where the 
     //stencil is the zero vector from the case when the stencil results in an 
-    //out of bound entity in which case the id returned is the origin.  
+    //out of bound entity in which case the id returned is that of the origin.  
     assert (!(xoff == 0)); 
 
     size_t FROM_DIM = E::dimension;
@@ -871,7 +875,7 @@ public:
   {
     //This assertion check is needed to distinguish between the case where the 
     //stencil is the zero vector from the case when the stencil results in an 
-    //out of bound entity in which case the id returned is the origin.  
+    //out of bound entity in which case the id returned is that of the origin.  
     assert(!((xoff == 0) && (yoff == 0)));
 
     size_t FROM_DIM = E::dimension;
@@ -883,16 +887,6 @@ public:
     auto local_offset = base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
                         local_offset_from_local_box_indices(box_id, indices); 
  
-   //DBG
-   /*
-   std::cout<<"global_offset = "<<global_offset<<std::endl;
-   std::cout<<" ----box_id = "<<box_id<<std::endl;
-   std::cout<<" ----indices = {";
-   for (size_t i = 0; i < MESH_TYPE::num_dimensions; i++)
-  	 std::cout<<indices[i]<<", ";
-   std::cout<<"}"<<std::endl; 
-   std::cout<<" ----local_offset = "<<local_offset<<std::endl;
-   */ 
     if((base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
        check_local_index_limits<0>(box_id,xoff+indices[0]))&& 
        (base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].template 
@@ -903,14 +897,8 @@ public:
       local_offset += xoff + nx*yoff;
     }
 
-   //std::cout<<" ----local_offset = "<<local_offset<<std::endl;
-   sm_id_t newval =  base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
+   return base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
            global_offset_from_local_offset(local_offset); 
-    
-   //std::cout<<" ----global_offset = "<<newval<<std::endl;
-   return newval;
-   //return base_t::ms_->index_spaces[FROM_DOMAIN][FROM_DIM].
-   //        global_offset_from_local_offset(local_offset); 
   } //stencil_entity
 
  //--------------------------------------------------------------------------//
@@ -932,7 +920,7 @@ public:
   {
     //This assertion check is needed to distinguish between the case where the 
     //stencil is the zero vector from the case when the stencil results in an 
-    //out of bound entity in which case the id returned is the origin.  
+    //out of bound entity in which case the id returned is that of the origin.  
     assert (!((xoff == 0) && (yoff == 0) && (zoff == 0)));
 
     size_t FROM_DIM = E::dimension;

@@ -39,8 +39,8 @@ void driver(int argc, char ** argv) {};
 
 TEST(structured, 1Dprimecell){
 
-  std::array<size_t,TestMesh1dType::num_dimensions> lower_bounds = {0};
-  std::array<size_t,TestMesh1dType::num_dimensions> upper_bounds = {2};
+  std::array<size_t,TestMesh1dType::num_dimensions> lower_bounds = {2};
+  std::array<size_t,TestMesh1dType::num_dimensions> upper_bounds = {4};
   std::array<size_t,TestMesh1dType::num_dimensions> strides = {3};
   size_t primary_dim = 1; 
   
@@ -124,8 +124,8 @@ TEST(structured, 1Dprimecell){
    CINCH_CAPTURE()<<endl;
   }
 
-  CINCH_WRITE("structured_1d.blessed");
-//  ASSERT_TRUE(CINCH_EQUAL_BLESSED("structured_1d.blessed"));
+  //CINCH_WRITE("structured_1d.blessed");
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("structured_1d.blessed"));
   delete mst;
   delete mesh;
 } // TEST

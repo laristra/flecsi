@@ -49,9 +49,9 @@ void driver(int argc, char ** argv) {};
 } //execution
 
 TEST(structured, simple){
-  std::array<size_t,TestMesh3dType::num_dimensions> lower_bounds{0,0,0};
+  std::array<size_t,TestMesh3dType::num_dimensions> lower_bounds{1,1,1};
   std::array<size_t,TestMesh3dType::num_dimensions> upper_bounds{2,1,1};
-  std::array<size_t,TestMesh3dType::num_dimensions> strides{3,2,2};
+  std::array<size_t,TestMesh3dType::num_dimensions> strides{4,3,3};
   size_t primary_dim = 3;
   auto ms = new structured_mesh_storage__<TestMesh3dType::num_dimensions,
                                         TestMesh3dType::num_domains>();
