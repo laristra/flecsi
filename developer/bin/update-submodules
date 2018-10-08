@@ -20,9 +20,9 @@ if [ "$local_hash" != "$remote_hash" ] ; then
 fi
 
 # Make sure that the user does not have any uncommitted changes
-modfied=`git status | grep modified`
+modified=`git status | grep modified`
 
-if [ ! -z "${modified// }" ] ; then
+if [ -n "${modified// }" ] ; then
   echo "ERROR: You have uncommitted changes in your local repository!!!"
   echo "You can only run this script on a clean devel branch"
   exit 1
@@ -32,9 +32,9 @@ fi
 git submodule update --remote
 
 # Only add and commit if something actually changed
-modfied=`git status | grep modified`
+modified=`git status | grep modified`
 
-if [ ! -z "${modified// }" ] ; then
+if [ -n "${modified// }" ] ; then
   git add -u
   git commit -m "Updating submodules [update-submodules script]"
   git push
