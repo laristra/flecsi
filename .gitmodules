@@ -1,4 +1,4 @@
 [submodule "cinch"]
 	path = cinch
 	url = ../../laristra/cinch.git
-  branch = devel
+	branch = devel
