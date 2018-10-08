@@ -1,0 +1,43 @@
+#! /usr/bin/env bash
+
+# Make sure that the user is on the devel branch
+branch=`git branch | grep \* | cut -d ' ' -f2`
+
+if [ "$branch" != "devel" ] ; then
+  echo "ERROR: You must be on the devel branch to run this script!!!"
+  echo "Try: git checkout devel"
+  exit 1
+fi
+
+# Make sure that the user is on the latest FleCSI devel branch
+local_hash=`git rev-parse devel`
+remote_hash=`git rev-parse origin/devel`
+
+if [ "$local_hash" != "$remote_hash" ] ; then
+  echo "ERROR: You're local devel branch is not up-to-date with the remote!!!"
+  echo "Try: git pull"
+  exit 1
+fi
+
+# Make sure that the user does not have any uncommitted changes
+modfied=`git status | grep modified`
+
+if [ ! -z "${modified// }" ] ; then
+  echo "ERROR: You have uncommitted changes in your local repository!!!"
+  echo "You can only run this script on a clean devel branch"
+  exit 1
+fi
+
+# Pull in the latest HEAD for all submodules that track a branch
+git submodule update --remote
+
+# Only add and commit if something actually changed
+modfied=`git status | grep modified`
+
+if [ ! -z "${modified// }" ] ; then
+  git add -u
+  git commit -m "Updating submodules [update-submodules script]"
+  git push
+else
+  echo "Everything up-to-date"
+fi

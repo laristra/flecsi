@@ -53,9 +53,16 @@ even when a particular branch is specified in the *.gitmodules* file
 branch.) To update cinch to the HEAD of the devel branch, execute the
 following:
 ```
+$ developer/bin/update-submodules
+```
+This script will update all submodules that are set to track specific
+branches (Currently, this is just the cinch submodule.) The script
+executes something similar to:
+```
 $ git submodule update --remote
 $ git add cinch
 $ git commit -m "Updating cinch submodule"
+$ git push
 ```
 
 ## Task: Branch Cleanup
