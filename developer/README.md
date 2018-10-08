@@ -41,6 +41,23 @@ developers and how to complete them. For the most part, these chores are
 mundane code maintenance tasks that need to be done from time to time to
 keep the code clean.
 
+## Task: Update Submodules
+
+**Note: This task only applies to the devel branch of FleCSI. Make sure
+that you are on the *devel* branch before performing this task.**
+
+Update the cinch submodule. The cinch submodule points to the devel
+branch of cinch. However, git does not automatically update submodules
+even when a particular branch is specified in the *.gitmodules* file
+(The submodule still points to a specific hash, and not the HEAD of the
+branch.) To update cinch to the HEAD of the devel branch, execute the
+following:
+```
+$ git submodule update --remote
+$ git add cinch
+$ git commit -m "Updating cinch submodule"
+```
+
 ## Task: Branch Cleanup
 
 Remove old/unused/merged branches from the repository. In particular,
