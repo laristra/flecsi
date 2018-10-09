@@ -763,7 +763,31 @@ setup_rank_context_task(
   } // for
 
 
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
+  // Get the input arguments from the Legion runtime
+  const Legion::InputArgs & args =
+    Legion::Runtime::get_input_args();
+
+/*
+  //adding information for the global and color handles to the ispace_map
+  if (number_of_global_fields>0){
+
+    size_t global_index_space =
+      execution::internal_index_space::global_is;
+
+    ispace_dmap[global_index_space].color_region =
+        regions[region_index].get_logical_region();
+
+    region_index++;
+  }//end if
+
+  if(number_of_color_fields>0){
+
+    size_t color_index_space =
+      execution::internal_index_space::color_is;
+*/
 
   if(number_of_sparse_fields > 0){
     context_t::sparse_field_data_t md;
