@@ -760,6 +760,85 @@ setup_rank_context_task(
   } // for
 
 
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  // Get the input arguments from the Legion runtime
+  const Legion::InputArgs & args =
+    Legion::Runtime::get_input_args();
+
+  // #6 deserialize reduction
+  Legion::DynamicCollective max_reduction;
+  args_deserializer.deserialize((void*)&max_reduction,
+    sizeof(Legion::DynamicCollective));
+  context_.set_max_reduction(max_reduction);
+  
+  Legion::DynamicCollective min_reduction;
+  args_deserializer.deserialize((void*)&min_reduction,
+    sizeof(Legion::DynamicCollective));
+  context_.set_min_reduction(min_reduction);
+
+  // #7 deserialize adjacency info
+  size_t num_adjacencies;
+  args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
+   
+  using adjacency_triple_t = context_t::adjacency_triple_t;
+  adjacency_triple_t* adjacencies =
+     new adjacency_triple_t [num_adjacencies]; 
+     
+  args_deserializer.deserialize((void*)adjacencies,
+    sizeof(adjacency_triple_t) * num_adjacencies);
+   
+  for(size_t i = 0; i < num_adjacencies; ++i){
+    context_.add_adjacency_triple(adjacencies[i]);
+  }
+
+  for(auto& itr : context_.adjacencies()) {
+    ispace_dmap[itr.first].color_region = 
+      regions[region_index].get_logical_region();
+
+    region_index++;
+  }
+
+  // #8 deserialize index subspaces
+  size_t num_index_subspaces;
+  args_deserializer.deserialize(&num_index_subspaces, sizeof(size_t));
+   
+  using index_subspace_info_t = context_t::index_subspace_info_t;
+  index_subspace_info_t* index_subspaces =
+     new index_subspace_info_t[num_index_subspaces]; 
+     
+  args_deserializer.deserialize((void*)index_subspaces,
+    sizeof(index_subspace_info_t) * num_index_subspaces);
+   
+  for(size_t i = 0; i < num_index_subspaces; ++i){
+    context_.add_index_subspace(index_subspaces[i]);
+  }
+
+  auto& isubspace_dmap = context_.index_subspace_data_map();
+
+  for(auto& itr : context_.index_subspace_info()) {
+    isubspace_dmap[itr.first].region = 
+      regions[region_index].get_logical_region();
+    region_index++;
+  }
+
+  //adding information for the global and color handles to the ispace_map
+  if (number_of_global_fields>0){
+
+    size_t global_index_space =
+      execution::internal_index_space::global_is;
+
+    ispace_dmap[global_index_space].color_region =
+        regions[region_index].get_logical_region();
+
+    region_index++;
+  }//end if
+
+  if(number_of_color_fields>0){
+
+    size_t color_index_space =
+      execution::internal_index_space::color_is;
 
 
   if(number_of_sparse_fields > 0){
