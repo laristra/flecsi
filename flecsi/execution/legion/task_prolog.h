@@ -176,7 +176,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       Legion::RegionRequirement rr_owners(ghost_owners_partitions[first],
           0/*projection ID*/, READ_ONLY, EXCLUSIVE, entire_regions[first]);
       Legion::RegionRequirement rr_ghost(ghost_partitions[first],
-          0/*projection ID*/, WRITE_DISCARD, EXCLUSIVE, entire_regions[first]);
+          0/*projection ID*/, READ_WRITE, EXCLUSIVE, entire_regions[first]);
 
       Legion::RegionRequirement rr_entries_shared;
 
@@ -190,7 +190,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
         rr_entries_ghost =
           Legion::RegionRequirement(
-          ghost_entries_partitions[first], 0,  WRITE_DISCARD, EXCLUSIVE,
+          ghost_entries_partitions[first], 0,  READ_WRITE, EXCLUSIVE,
           entries_regions[first]);        
       }
 
