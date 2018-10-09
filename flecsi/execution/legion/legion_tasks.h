@@ -411,7 +411,7 @@ ghost_ent_rect.hi[1]<<std::endl;
      
       std::vector<LegionRuntime::Arrays::Point<2>> ghost_points;
       std::vector<LegionRuntime::Arrays::Point<2>> shared_points;
-      std::vector<size_t> owners_rank;
+      std::vector<LegionRuntime::Arrays::Point<2>> owners_points;
       std::vector<size_t> counts;
 
       // Look up field info in context
@@ -437,18 +437,18 @@ ghost_ent_rect.hi[1]<<std::endl;
       
 
       for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
-        auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
+        //auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
         //auto start_and_count_location= ghost_offset_acc.read(ghost_ptr);
         offset_t * start_and_count_location = reinterpret_cast <offset_t*>(
-					ghost_offset_acc.ptr(ghost_ptr));
+					ghost_offset_acc.ptr(itr.p));
         LegionRuntime::Arrays::Point<2> owner_location =
-           position_ref_acc.read(ghost_ptr); 
+           position_ref_acc.read(itr.p); 
         //size_t size = field_info.size + sizeof(size_t);
         LegionRuntime::Arrays::Point<2> point=
 					LegionRuntime::Arrays::make_point(my_color,
 						start_and_count_location->start());
         ghost_points.push_back(point);
-        owners_rank.push_back(owner_location[0]);
+        owners_points.push_back(owner_location);
   //      counts.push_back(start_and_count_location->count());
 
 std::cout<<"IRINA DEBUG, ghost, my_color = "<<my_color<<"point = "<<
@@ -465,10 +465,11 @@ std::cout<<"IRINA DEBUG, ghost, my_color = "<<my_color<<"point = "<<
         auto owner_offset_ptr = Legion::DomainPoint::from_point<2>(itr.p);
         const offset_t * start_and_count_location =
 					reinterpret_cast <const offset_t*>(
-						owner_offset_acc.ptr(owner_offset_ptr));
+						owner_offset_acc.ptr(
+							Legion::DomainPoint::from_point<2>(owners_points[count])));
         //size_t size = field_info.size + sizeof(size_t);
         LegionRuntime::Arrays::Point<2> point=
-          LegionRuntime::Arrays::make_point(owners_rank[count],
+          LegionRuntime::Arrays::make_point(owners_points[count][0],
 					start_and_count_location->start());
         shared_points.push_back(point);
         counts.push_back(start_and_count_location->count());
