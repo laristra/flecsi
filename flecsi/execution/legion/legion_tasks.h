@@ -366,15 +366,16 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 					ghost_acc(regions[1], fid, field_info.size);
 
 			for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
-				auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
-				LegionRuntime::Arrays::Point<2> owner_location =
+				//auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
+				auto &ghost_ptr = itr.p;
+        LegionRuntime::Arrays::Point<2> owner_location =
 					 position_ref_acc.read(ghost_ptr);
 				auto owner_ptr = Legion::DomainPoint::from_point<2>(owner_location);
 
-			 char *ptr_ghost_acc = (char*)(ghost_acc.ptr(ghost_ptr));
-			 char *ptr_owner_acc = (char*)(owner_acc.ptr(owner_ptr));
-			 memcpy(ptr_ghost_acc, ptr_owner_acc, field_info.size);
-		 } // for ghost_domain
+			  char *ptr_ghost_acc = (char*)(ghost_acc.ptr(ghost_ptr));
+			  char *ptr_owner_acc = (char*)(owner_acc.ptr(owner_ptr));
+			  memcpy(ptr_ghost_acc, ptr_owner_acc, field_info.size);
+		  } // for ghost_domain
 		} // for fid
   }else {//sparse
 
