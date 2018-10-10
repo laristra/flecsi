@@ -116,7 +116,7 @@ flecsi_register_task_simple(global_data_handle_dump, loc, index);
 flecsi_register_task_simple(color_data_handle_dump, loc, index);
 flecsi_register_task_simple(exclusive_writer, loc, index);
 flecsi_register_task_simple(exclusive_reader, loc, index);
-flecsi_register_task_simple(global_writer, loc, index);
+flecsi_register_task_simple(global_writer, loc, single);
 flecsi_register_task_simple(global_reader, loc, index);
 flecsi_register_task_simple(color_writer, loc, index);
 flecsi_register_task_simple(color_reader, loc, index);
@@ -165,11 +165,11 @@ specialization_tlt_init(int argc, char ** argv) {
 
   auto global_handle = flecsi_get_global(ns, velocity, double, 0);
   flecsi_execute_task_simple(global_data_handle_dump, index, global_handle);
-  flecsi_execute_task_simple(global_writer, index, global_handle);
+  flecsi_execute_task_simple(global_writer, single, global_handle);
   flecsi_execute_task_simple(global_reader, index, global_handle);
   flecsi_execute_task(mpi_task,, index, 10, global_handle);
   auto global_handle2 = flecsi_get_global(ns, time, double, 0);
-  flecsi_execute_task_simple(global_writer, index, global_handle2);
+  flecsi_execute_task_simple(global_writer, single, global_handle2);
   flecsi_execute_task(mpi_task, , index, 11, global_handle2);
 } // specialization_tlt_init
 
