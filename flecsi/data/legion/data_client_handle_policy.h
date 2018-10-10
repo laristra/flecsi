@@ -70,7 +70,8 @@ struct data_client_handle_index_subspace_t {
   size_t index_space;
   size_t index_subspace;
   field_id_t index_fid;
-  Legion::LogicalRegion region;
+  Legion::LogicalRegion logical_region;
+  Legion::LogicalPartition logical_partition;
   size_t domain;
   size_t dim;
 };

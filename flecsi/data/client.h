@@ -469,7 +469,8 @@ struct data_client_policy_handler__<topology::mesh_topology__<POLICY_TYPE>> {
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = issm.find(si.index_subspace);
       clog_assert(ritr != issm.end(), "invalid index subspace");
-      iss.region = ritr->second.region;
+      iss.logical_region = ritr->second.logical_region;
+      iss.logical_partition = ritr->second.logical_partition;
 #endif
 
       ++handle_index;

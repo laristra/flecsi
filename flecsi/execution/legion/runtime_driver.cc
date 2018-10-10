@@ -521,6 +521,20 @@ runtime_driver(
 
   }
 
+  // add subspace info to context
+
+  auto& isubspace_dmap = context_.index_subspace_data_map();
+  auto& data_subspace_map = data.index_subspace_map();
+
+  for(auto& itr : context_.index_subspace_info()) {
+    size_t index = itr.first;
+    isubspace_dmap[index].logical_region =
+        data_subspace_map.at(index).logical_region;
+    isubspace_dmap[index].logical_partition =
+        runtime->get_logical_partition(ctx,
+            isubspace_dmap[index].logical_region, data_subspace_map.at(index).index_partition);
+  }
+
   //adding information for the global and color handles to the ispace_map
 
    if (number_of_global_fields>0){
@@ -676,16 +690,6 @@ setup_rank_context_task(
   for(size_t i = 0; i < num_index_subspaces; ++i){
     context_.add_index_subspace(index_subspaces[i]);
   }
-
-//  auto& isubspace_dmap = context_.index_subspace_data_map();
-
-//  size_t subspace_index = region_index+num_index_subspaces-1;
-//  for(auto& itr : context_.index_subspace_info()) {
-//    isubspace_dmap[itr.first].region =
-//      regions[subspace_index].get_logical_region();
-//    subspace_index--;
-//    region_index++;
-//  }
 
 
   // Setup maps from mesh to compacted (local) index space and vice versa

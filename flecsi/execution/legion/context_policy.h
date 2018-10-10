@@ -488,7 +488,8 @@ struct legion_context_policy_t {
   };
 
   struct index_subspace_data_t {
-    Legion::LogicalRegion region;
+    Legion::LogicalRegion logical_region;
+    Legion::LogicalPartition logical_partition;
   };
 
   struct sparse_metadata_t{
