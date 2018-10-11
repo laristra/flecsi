@@ -106,6 +106,7 @@ public:
     Legion::FieldSpace field_space;
     Legion::LogicalRegion logical_region;
     Legion::IndexPartition index_partition;
+    Legion::LogicalPartition logical_partition;
   };
 
   /*!
@@ -1019,6 +1020,9 @@ public:
     attach_name(sparse_metadata_, sparse_metadata_.index_partition,
                 "sparse metadata color partitioning");
 
+    sparse_metadata_.logical_partition = runtime_->get_logical_partition(ctx_,
+			sparse_metadata_.logical_region, sparse_metadata_.index_partition);
+  
   }
 
   const sparse_metadata_t& sparse_metadata(){
