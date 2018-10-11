@@ -46,7 +46,7 @@ void hello_world() {
   std::cout << "Hello world from rank " << rank << std::endl;
 }
 
-flecsi_register_task_simple(set_global_int, loc, index);
+flecsi_register_task_simple(set_global_int, loc, single);
 flecsi_register_task_simple(check_global_int, loc, index);
 flecsi_register_task_simple(hello_world, loc, index);
 
@@ -65,13 +65,13 @@ void specialization_tlt_init(int argc, char ** argv) {
   auto gh1 = flecsi_get_global(global, int2, int, 0);
 
   // rank 0
-  flecsi_execute_task_simple(set_global_int, index, gh0, 42);
+  flecsi_execute_task_simple(set_global_int, single, gh0, 42);
 
-  // rank 1
+  // all ranks
    flecsi_execute_task_simple(hello_world, index);
 
   // rank 0
-   flecsi_execute_task_simple(set_global_int, index, gh1, 2042);
+   flecsi_execute_task_simple(set_global_int, single, gh1, 2042);
 
    flecsi_execute_task_simple(check_global_int, index, gh0, 42);
    flecsi_execute_task_simple(check_global_int, index, gh1, 2042);
