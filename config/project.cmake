@@ -90,6 +90,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
   set(ENABLE_HPX ON CACHE BOOL "Enable HPX" FORCE)
+  set(ENABLE_BOOST ON CACHE BOOL "Enable Boost" FORCE)
   set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
 endif()
 
@@ -533,7 +534,6 @@ export(PACKAGE FleCSI)
 #------------------------------------------------------------------------------#
 # CMake config file: This should be the last thing to happen.
 #------------------------------------------------------------------------------#
-
 configure_file(${PROJECT_SOURCE_DIR}/config/FleCSIConfig.cmake.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSIConfig.cmake @ONLY)
 
