@@ -140,8 +140,6 @@ cinch_add_unit(launch
     test/launch.cc
   POLICY
     SERIAL
-  FOLDER
-    "Tests/Execution"
 )
 
 cinch_add_unit(simple_function
@@ -156,9 +154,7 @@ cinch_add_unit(simple_function
   LIBRARIES
     FleCSI
   NOCI
-  FOLDER
-    "Tests/Execution"
-  )
+)
 
 #
 # Test global reduction
@@ -177,9 +173,7 @@ cinch_add_unit(reduction
     FleCSI
   THREADS 2
   NOCI
-  FOLDER
-    "Tests/Execution"
-  )
+)
 
 #
 # Test basic task calling capability using the register_task
@@ -198,9 +192,7 @@ cinch_add_unit(simple_task
     FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
   NOCI
-  FOLDER
-    "Tests/Execution"
-  )
+)
 
 #
 # Test basic task to test future_handle

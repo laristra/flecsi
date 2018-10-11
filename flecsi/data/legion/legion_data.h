@@ -706,7 +706,7 @@ public:
     return adjacency_map_;
   }
 
-  const std::unordered_map<size_t, index_subspace_t> &
+  const std::map<size_t, index_subspace_t> &
   index_subspace_map() const {
     return index_subspace_map_;
   }
@@ -811,7 +811,7 @@ private:
   std::unordered_map<size_t, adjacency_t> adjacency_map_;
 
   // key: index space
-  std::unordered_map<size_t, index_subspace_t> index_subspace_map_;
+  std::map<size_t, index_subspace_t> index_subspace_map_;
 
   std::set<size_t> adjacencies_;
 

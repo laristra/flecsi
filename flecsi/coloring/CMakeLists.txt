@@ -114,7 +114,6 @@ cinch_add_unit(dcrs
     ${COLORING_LIBRARIES}
   POLICY MPI
   THREADS 5
-  FOLDER "Tests/Coloring"
 )
 
 cinch_add_devel_target(devel-dcrs
@@ -125,7 +124,6 @@ cinch_add_devel_target(devel-dcrs
   LIBRARIES ${COLORING_LIBRARIES}
   POLICY ${UNIT_POLICY}
   THREADS 5
-  FOLDER "Tests/Coloring/Devel"
 )
 
 cinch_add_unit(boxcolor2d
@@ -134,7 +132,6 @@ cinch_add_unit(boxcolor2d
   LIBRARIES ${COLORING_LIBRARIES}
   POLICY MPI
   THREADS 4
-  FOLDER "Tests/Coloring"
 )
 cinch_add_unit(boxcolor3d
   SOURCES test/test_simple_box_colorer_3d.cc
@@ -142,7 +139,6 @@ cinch_add_unit(boxcolor3d
   LIBRARIES ${COLORING_LIBRARIES}
   POLICY MPI
   THREADS 4
-  FOLDER "Tests/Coloring"
 )
 # Both of these tests depend on ParMETIS.
 # This could change if we add more colorer types.
@@ -158,7 +154,6 @@ cinch_add_devel_target(coloring
   LIBRARIES ${COLORING_LIBRARIES}
   POLICY ${UNIT_POLICY}
   THREADS 5
-  FOLDER "Tests/Coloring/Devel"
 )
 
 endif()
