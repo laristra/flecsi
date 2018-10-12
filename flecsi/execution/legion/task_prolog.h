@@ -190,7 +190,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
         rr_entries_ghost =
           Legion::RegionRequirement(
-          ghost_entries_partitions[first], 0,  READ_WRITE, EXCLUSIVE,
+          ghost_entries_partitions[first], 0,  READ_WRITE, SIMULTANEOUS,
           entries_regions[first]);        
       }
 
@@ -218,8 +218,6 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
         rr_ghost.add_field(fids[handle]);
 
          if(is_sparse){
-std::cout <<"IRINA DEBUG task_prolog fid ="<<fids[handle]<<std::endl;
-
           rr_entries_shared.add_field(fids[handle]);
           rr_entries_ghost.add_field(fids[handle]);
          }

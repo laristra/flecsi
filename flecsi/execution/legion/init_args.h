@@ -255,11 +255,11 @@ template<
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
 
-//    Legion::RegionRequirement md_rr(
-//        h.metadata_color_region, READ_WRITE, EXCLUSIVE,
-//        h.metadata_color_region);
-//    md_rr.add_field(h.fid);
-//    region_reqs.push_back(md_rr);
+    Legion::RegionRequirement md_rr(
+        h.metadata_lp, 0, READ_WRITE, EXCLUSIVE,
+        h.metadata_entire_region);
+    md_rr.add_field(h.fid);
+    region_reqs.push_back(md_rr);
 
     Legion::RegionRequirement ex_rr(
         h.offsets_exclusive_lp, 0, privilege_mode(EXCLUSIVE_PERMISSIONS),
@@ -334,11 +334,11 @@ template<
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
 
-//    Legion::RegionRequirement md_rr(
-//        h.metadata_color_region, READ_WRITE, EXCLUSIVE,
-//        h.metadata_color_region);
-//    md_rr.add_field(h.fid);
-//    region_reqs.push_back(md_rr);
+    Legion::RegionRequirement md_rr(
+        h.metadata_lp,0, READ_WRITE, EXCLUSIVE,
+        h.metadata_entire_region);
+    md_rr.add_field(h.fid);
+    region_reqs.push_back(md_rr);
 
     Legion::RegionRequirement ex_rr(
         h.offsets_exclusive_lp, 0, READ_WRITE, EXCLUSIVE,

@@ -58,7 +58,10 @@ struct legion_mutator_handle_policy_t {
   Legion::LogicalPartition offsets_shared_lp;
   Legion::LogicalPartition offsets_ghost_lp;
 
-//  Legion::LogicalRegion metadata_entire_region;
+  Legion::LogicalRegion metadata_entire_region;
+  Legion::LogicalPartition metadata_lp;
+ 
+  void * metadata; 
 
   Legion::LogicalPartition ghost_owners_offsets_lp;
 //  std::vector<Legion::LogicalRegion> ghost_owners_offsets_subregions;
@@ -68,10 +71,6 @@ struct legion_mutator_handle_policy_t {
 
   Legion::Context context;
   Legion::Runtime * runtime;
-
-//  Legion::PhysicalRegion metadata_pr;
-
-  flecsi::execution::context_t::sparse_field_data_t *metadata;
 
   const Legion::STL::map<
       LegionRuntime::Arrays::coord_t,

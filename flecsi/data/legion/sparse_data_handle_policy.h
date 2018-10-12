@@ -63,12 +63,13 @@ struct legion_sparse_data_handle_policy_t {
   Legion::LogicalPartition ghost_owners_offsets_lp;
   Legion::LogicalPartition ghost_owners_entries_lp;
 
- // Legion::LogicalRegion metadata_color_region;
+  Legion::LogicalRegion metadata_entire_region;
+  Legion::LogicalPartition metadata_lp;
+
+  void * metadata;
 
   Legion::Context context;
   Legion::Runtime * runtime;
-
- // Legion::PhysicalRegion metadata_pr;
 
 
   // Tuple-walk copies data_handle then discards updates at the end.
@@ -84,8 +85,6 @@ struct legion_sparse_data_handle_policy_t {
   size_t shared_priv;
   size_t ghost_priv;
  
-  flecsi::execution::context_t::sparse_field_data_t * metadata;
-
   size_t offsets_size = 0;
   size_t entries_size = 0;
 

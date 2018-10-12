@@ -136,6 +136,11 @@ runtime_driver(
 
   if(number_of_sparse_fields > 0){
     data.init_sparse_metadata();
+    auto& sparse_metadata = data.sparse_metadata();
+    context_t::sparse_metadata_t md;
+    md.entire_region = sparse_metadata.logical_region;
+    md.color_partition = sparse_metadata.logical_partition;  
+    context_.set_sparse_metadata(md);
   }//if
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
@@ -368,6 +373,26 @@ runtime_driver(
         Legion::TaskArgument(args_serializers[color].get_buffer(),
                              args_serializers[color].get_used_bytes()));
     setup_rank_context_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+    if(number_of_sparse_fields > 0){
+      auto& sparse_metadata = data.sparse_metadata();
+      Legion::LogicalRegion color_lregion =
+        runtime->get_logical_subregion_by_color(ctx,
+          sparse_metadata.logical_partition, color);
+
+      Legion::RegionRequirement
+        reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
+          sparse_metadata.logical_region);
+
+      for (const field_info_t & fi : context_.registered_fields()) {
+        if (fi.storage_class == sparse || fi.storage_class == ragged) {
+          reg_req.add_field(fi.fid);
+        } // if
+      } // for
+
+      setup_rank_context_launcher.add_region_requirement(reg_req);
+
+    }//end if sparse
 
     Legion::DomainPoint point(color);
     must_epoch_launcher.add_single_task(point, setup_rank_context_launcher);
@@ -605,10 +630,11 @@ setup_rank_context_task(
 
   clog_assert(task->arglen > 0, "setup_rank_context_task called without arguments");
 
-
-   auto& ispace_dmap = context_.index_space_data_map();
+ 
+  auto& ispace_dmap = context_.index_space_data_map();
   auto& sis_map = context_.sparse_index_space_info_map();
 
+  size_t region_index;
   //---------------------------------------------------------------------//
   // Deserialize task arguments
   // --------------------------------------------------------------------//
@@ -790,8 +816,13 @@ setup_rank_context_task(
       execution::internal_index_space::color_is;
 */
 
+
   if(number_of_sparse_fields > 0){
     context_t::sparse_field_data_t md;
+
+    Legion::PhysicalRegion pr = regions[region_index];
+    Legion::LogicalRegion lr = pr.get_logical_region();
+    Legion::IndexSpace is = lr.get_index_space();
 
     for(const field_info_t& fi : context_.registered_fields()){
       if(fi.storage_class != data::sparse && fi.storage_class != data::ragged){
@@ -808,14 +839,35 @@ setup_rank_context_task(
       const auto& cim = context_.coloring_info(idx_space);
       auto citr = cim.find(my_color);
       const coloring_info_t& ci = citr->second;
-      
-      md = sparse_field_data_t(fi.size, ci.exclusive,
+
+     //Metadata LR is the first and only region passed to this task
+     Legion::PhysicalRegion pr = regions[region_index];
+     Legion::LogicalRegion lr = pr.get_logical_region();
+     Legion::IndexSpace is = lr.get_index_space();
+
+     auto ac = pr.get_field_accessor(fi.fid).
+        template typeify<sparse_field_data_t>();
+
+      Legion::Domain domain = runtime->get_index_space_domain(ctx, is);
+
+      LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> sr;
+      LegionRuntime::Accessor::ByteOffset bo[2];
+      sparse_field_data_t* metadata = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      *metadata = sparse_field_data_t(fi.size, ci.exclusive,
         ci.shared,
         ci.ghost,
         si->second.max_entries_per_index, si->second.exclusive_reserve);
 
-      context_.set_sparse_metadata(md);
+      
+/*      md = sparse_field_data_t(fi.size, ci.exclusive,
+        ci.shared,
+        ci.ghost,
+        si->second.max_entries_per_index, si->second.exclusive_reserve);
+*/
+//      context_.set_sparse_metadata(md);
     }//for
+    region_index++;
 
   }//if 
 

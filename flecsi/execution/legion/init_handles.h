@@ -561,7 +561,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 
-    /*sparse_field_data_t* md;
+    sparse_field_data_t* md;
 
     {
       Legion::PhysicalRegion pr = regions[region];
@@ -579,17 +579,19 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       LegionRuntime::Accessor::ByteOffset bo[2];
       md = ac.template raw_rect_ptr<2>(dr, sr, bo);
       h.metadata = md;
+      h.reserve= md->reserve;
+
       h.init(md->num_exclusive, md->num_shared, md->num_ghost);
     }
 
     ++region;
-*/
+
     context_t & context_ = context_t::instance();
    // auto &md = context_.sparse_metadata();
-     h.metadata =& context_.sparse_metadata();;
-     h.reserve= h.metadata->reserve;
-     h.init( h.metadata->num_exclusive, h.metadata->num_shared,
-			 h.metadata->num_ghost);
+//     h.metadata =& context_.sparse_metadata();;
+//     h.reserve= h.metadata->reserve;
+//     h.init( h.metadata->num_exclusive, h.metadata->num_shared,
+//			 h.metadata->num_ghost);
 
     Legion::PhysicalRegion offsets_prs[num_regions];
     offset_t * offsets_data[num_regions];
@@ -619,7 +621,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     size_t pos = 0;
 
-    assert( h.metadata->initialized);
+    assert( md->initialized);
 
     for (size_t r{0}; r < num_regions; ++r) {
       std::memcpy(h.offsets + pos, offsets_data[r],
@@ -705,7 +707,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 
- /*   sparse_field_data_t* md;
+    sparse_field_data_t* md;
 
     {
       Legion::PhysicalRegion pr = regions[region];
@@ -726,18 +728,18 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       h.metadata = md;
       h.reserve = md->reserve;
 
-      h.init(md->num_exclusive, md->num_shared, md->num_ghost, md->max_entries_per_index, h.slots);
+      h.init(md->num_exclusive, md->num_shared, md->num_ghost);//, md->max_entries_per_index, h.slots);
     }
 
     ++region;
-*/
+
     context_t & context_ = context_t::instance();
    // auto &md = context_.sparse_metadata();
-     h.metadata=&context_.sparse_metadata();
+//     h.metadata=&context_.sparse_metadata();
     // auto md = h.metadata;
-     h.reserve=h.metadata->reserve;
-     h.init(h.metadata->num_exclusive, h.metadata->num_shared,
-			h.metadata->num_ghost);
+//     h.reserve=h.metadata->reserve;
+//     h.init(h.metadata->num_exclusive, h.metadata->num_shared,
+//			h.metadata->num_ghost);
     Legion::PhysicalRegion offsets_prs[num_regions];
     offset_t * offsets_data[num_regions];
     size_t offsets_sizes[num_regions];
@@ -766,7 +768,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     size_t pos = 0;
 
-    if(h.metadata->initialized){
+    if(md->initialized){
       for (size_t r{0}; r < num_regions; ++r) {
         std::memcpy(h.offsets + pos, offsets_data[r],
                     offsets_sizes[r] * sizeof(offset_t));
@@ -774,11 +776,11 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       }  
     }
     else{
-      size_t n = h.metadata->num_shared + h.metadata->num_ghost;
+      size_t n = md->num_shared + md->num_ghost;
 
       for(size_t i = 0; i < n; ++i){
-        h.offsets[h.metadata->num_exclusive + i].set_offset(
-          h.reserve + i * h.metadata->max_entries_per_index);
+        h.offsets[md->num_exclusive + i].set_offset(
+          h.reserve + i * md->max_entries_per_index);
       }
     }
 
@@ -810,7 +812,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     entry_value_t* entries = new entry_value_t[h.entries_size];
 
     std::memcpy(entries, entries_data[0],
-        h.metadata->num_exclusive_filled * sizeof(entry_value_t));
+        md->num_exclusive_filled * sizeof(entry_value_t));
 
     pos = entries_sizes[0];
 
