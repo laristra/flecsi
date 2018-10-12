@@ -740,6 +740,19 @@ public:
 
         const sparse_index_space_info_t* sparse_info;
 
+        size_t max_shared =0;
+
+        for (int color = 0; color < num_colors_; color++) {
+          auto citr = coloring_info_map.find(color);
+          clog_assert(citr != coloring_info_map.end(), "invalid color info");
+          const coloring_info_t & coloring_info = citr->second;
+
+          size_t shared_size =
+             coloring_info.shared * sis->max_entries_per_index;
+
+          max_shared = std::max(shared_size, max_shared);
+        }
+
         for (int color = 0; color < num_colors_; color++) {
           auto citr = coloring_info_map.find(color);
           clog_assert(citr != coloring_info_map.end(), "invalid color info");
@@ -764,7 +777,7 @@ public:
                 color, sis->exclusive_reserve + shared_size - 1));
             
              sis_primary_partitioning[color] = Domain::from_rect<2>(
-		primary_rect);
+							primary_rect);
              sis_access_partitioning[PRIMARY_ACCESS].insert(
                Domain::from_rect<2>(primary_rect));
 
@@ -773,7 +786,7 @@ public:
             make_point(
                 color, sis->exclusive_reserve - 1));
             sis_exclusive_partitioning[color] =
-		Domain::from_rect<2>(exclusive_rect);
+							Domain::from_rect<2>(exclusive_rect);
             sis_owner_partitioning[EXCLUSIVE_OWNER].insert(
             Domain::from_rect<2>(exclusive_rect));
 
@@ -796,7 +809,7 @@ public:
              LegionRuntime::Arrays::Rect<2> all_shared_rect(
               make_point(0, sis->exclusive_reserve),
               make_point(
-                num_colors_, sis->exclusive_reserve + shared_size - 1));
+                num_colors_, sis->exclusive_reserve + max_shared- 1));
             sis_all_shared_partitioning[color] =
 							Domain::from_rect<2>(all_shared_rect);
 
@@ -872,7 +885,6 @@ public:
           true /*disjoint*/);
         attach_name(*sis, sis->shared_partition, "shared partitioning");
 
-//IRINA FIXME
         IndexSpace sis_all_shared_is =
           runtime_->get_logical_subregion_by_color(ctx_,
             sis_owner_lp, SHARED_OWNER).get_index_space();
