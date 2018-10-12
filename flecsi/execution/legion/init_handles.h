@@ -581,11 +581,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       h.metadata = md;
       h.reserve= md->reserve;
 
-std::cout <<"IRINA DEBUG metadata in sparse_accessor"<< md->num_exclusive<<", "<<
-md->num_shared<<", "<<md->num_ghost<<", "<<md->max_entries_per_index<<
-", "<<md->reserve<<std::endl;
-
-
       h.init(md->num_exclusive, md->num_shared, md->num_ghost);
     }
 
@@ -733,10 +728,6 @@ md->num_shared<<", "<<md->num_ghost<<", "<<md->max_entries_per_index<<
       h.metadata = md;
       h.reserve = md->reserve;
 
-std::cout <<"IRINA DEBUG metadata"<< md->num_exclusive<<", "<<
-md->num_shared<<", "<<md->num_ghost<<", "<<md->max_entries_per_index<<
-", "<<md->reserve<<std::endl;
-
       h.init(md->num_exclusive, md->num_shared, md->num_ghost);//, md->max_entries_per_index, h.slots);
     }
 
@@ -785,7 +776,6 @@ md->num_shared<<", "<<md->num_ghost<<", "<<md->max_entries_per_index<<
       }  
     }
     else{
-std::cout <<"METADATA is not initialized"<<std::endl;
       size_t n = md->num_shared + md->num_ghost;
 
       for(size_t i = 0; i < n; ++i){
