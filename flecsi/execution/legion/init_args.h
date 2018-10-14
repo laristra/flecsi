@@ -216,8 +216,8 @@ template<
     for (size_t i{0}; i < h.num_index_subspaces; ++i) {
       data_client_handle_index_subspace_t &iss = h.handle_index_subspaces[i];
 
-      Legion::RegionRequirement iss_rr(iss.region, privilege_mode(PERMISSIONS),
-                                       EXCLUSIVE, iss.region);
+      Legion::RegionRequirement iss_rr(iss.logical_partition, 0 /*PROJECTION*/, privilege_mode(PERMISSIONS),
+                                       EXCLUSIVE, iss.logical_region);
 
       iss_rr.add_field(iss.index_fid);
 
@@ -255,11 +255,11 @@ template<
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
 
-//    Legion::RegionRequirement md_rr(
-//        h.metadata_color_region, READ_WRITE, EXCLUSIVE,
-//        h.metadata_color_region);
-//    md_rr.add_field(h.fid);
-//    region_reqs.push_back(md_rr);
+    Legion::RegionRequirement md_rr(
+        h.metadata_lp, 0, READ_WRITE, EXCLUSIVE,
+        h.metadata_entire_region);
+    md_rr.add_field(h.fid);
+    region_reqs.push_back(md_rr);
 
     Legion::RegionRequirement ex_rr(
         h.offsets_exclusive_lp, 0, privilege_mode(EXCLUSIVE_PERMISSIONS),
@@ -334,11 +334,11 @@ template<
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
 
-//    Legion::RegionRequirement md_rr(
-//        h.metadata_color_region, READ_WRITE, EXCLUSIVE,
-//        h.metadata_color_region);
-//    md_rr.add_field(h.fid);
-//    region_reqs.push_back(md_rr);
+    Legion::RegionRequirement md_rr(
+        h.metadata_lp,0, READ_WRITE, EXCLUSIVE,
+        h.metadata_entire_region);
+    md_rr.add_field(h.fid);
+    region_reqs.push_back(md_rr);
 
     Legion::RegionRequirement ex_rr(
         h.offsets_exclusive_lp, 0, READ_WRITE, EXCLUSIVE,

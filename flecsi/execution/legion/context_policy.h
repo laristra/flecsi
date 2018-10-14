@@ -488,18 +488,21 @@ struct legion_context_policy_t {
   };
 
   struct index_subspace_data_t {
-    Legion::LogicalRegion region;
+    Legion::LogicalRegion logical_region;
+    Legion::LogicalPartition logical_partition;
   };
 
   struct sparse_metadata_t{
-    Legion::LogicalRegion color_region;
+    Legion::LogicalPartition color_partition;
+    Legion::LogicalRegion entire_region;
+   
   };
 
-  void set_sparse_metadata(const sparse_field_data_t& sparse_metadata){
+  void set_sparse_metadata(const sparse_metadata_t& sparse_metadata){
     sparse_metadata_ = sparse_metadata;
   }
 
-  sparse_field_data_t& sparse_metadata(){
+  sparse_metadata_t& sparse_metadata(){
     return sparse_metadata_;    
   }
 
@@ -597,7 +600,7 @@ private:
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
-  sparse_field_data_t sparse_metadata_;
+  sparse_metadata_t sparse_metadata_;
 
 }; // class legion_context_policy_t
 

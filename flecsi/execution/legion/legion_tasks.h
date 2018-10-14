@@ -429,33 +429,6 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 		} // for fid
   }else {//sparse
 
-
-     Legion::Domain owner_entries_domain = runtime->get_index_space_domain(
-      ctx, regions[2].get_logical_region().get_index_space());
-
-     LegionRuntime::Arrays::Rect<2> ent_rect = owner_entries_domain.get_rect<2>();
-
-std::cout <<"IRINA DEBUG,my_color= "<<my_color<<" owner domain lo"<<ent_rect.lo[0]<<", "<<
-ent_rect.lo[1]<<", hi :"<<ent_rect.hi[0]<<", "<<
-ent_rect.hi[1]<<std::endl;
-
- Legion::Domain ghost_entries_domain = runtime->get_index_space_domain(
-      ctx, regions[3].get_logical_region().get_index_space());
-
- LegionRuntime::Arrays::Rect<2> ghost_ent_rect =
-	ghost_entries_domain.get_rect<2>();
-std::cout <<"IRINA DEBUG,my_color= "<<my_color<<" ghost domain lo"<<ghost_ent_rect.lo[0]<<", "<<
-ghost_ent_rect.lo[1]<<", hi :"<<ghost_ent_rect.hi[0]<<", "<<
-ghost_ent_rect.hi[1]<<std::endl;
-
-
-    //LegionRuntime::Arrays::Rect<2> ghost_rect = ghost_domain.get_rect<2>(); 
-    //size_t num_ghosts=ghost_rect.hi[1]-ghost_rect.lo[1];
-    
-
-//std::cout <<"IRINA DEBUG sizes = "<<(ghost_rect.hi[1]-ghost_rect.lo[1])<<
-//", =?"<<(owner_rect.hi[1]-owner_rect.lo[1]) <<std::endl;   
-
     const int my_color = runtime->find_local_MPI_rank();
 
     for (auto fid : task->regions[0].privilege_fields) {
@@ -504,9 +477,6 @@ ghost_ent_rect.hi[1]<<std::endl;
         LegionRuntime::Arrays::Point<2> owner_point=
           LegionRuntime::Arrays::make_point(owner_location[0],
           owner_start_and_count_location->start());
-
-std::cout<<"IRINA DEBUG, my_color = "<<my_color<<", ghost point = "<<
-        ghost_point<<", owner point ="<<owner_point <<std::endl;
 
         auto ghost_ptr = Legion::DomainPoint::from_point<2>(ghost_point);
         auto shared_ptr = Legion::DomainPoint::from_point<2>(owner_point);

@@ -169,7 +169,8 @@ namespace legion {
       h.entries_shared_lp = ism[index_space + sparse_offset].shared_lp;
       h.entries_ghost_lp = ism[index_space + sparse_offset].ghost_lp;
 
-      //h.metadata_entire_region = context.sparse_metadata().entire_region;
+      h.metadata_entire_region = context.sparse_metadata().entire_region;
+      h.metadata_lp = context.sparse_metadata().color_partition;
 
 //      h.pbarrier_as_owner_ptr =
 //          &ism[index_space].pbarriers_as_owner[field_info.fid];
@@ -259,8 +260,9 @@ namespace legion {
       h.entries_shared_lp = ism[index_space + sparse_offset].shared_lp;
       h.entries_ghost_lp = ism[index_space + sparse_offset].ghost_lp;
 
-      //h.metadata_entire_region = context.sparse_metadata().entire_region;
-      
+      h.metadata_entire_region = context.sparse_metadata().entire_region;
+      h.metadata_lp = context.sparse_metadata().color_partition;     
+ 
       h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
       h.write_phase_started =
           &(ism[index_space].write_phase_started[field_info.fid]);
