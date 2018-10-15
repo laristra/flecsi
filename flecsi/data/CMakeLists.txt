@@ -245,7 +245,7 @@ if(ENABLE_PARMETIS)
     POLICY ${UNIT_POLICY}
     THREADS 2
     NOCI
-    )
+  )
 
 endif()
 

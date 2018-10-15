@@ -1,13 +1,26 @@
 #------------------------------------------------------------------------------#
-# Copyright (c) 2014 Los Alamos National Security, LLC
-# All rights reserved.
+#  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+# /@@/////  /@@          @@////@@ @@////// /@@
+# /@@       /@@  @@@@@  @@    // /@@       /@@
+# /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+# /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+# /@@       /@@/@@//// //@@    @@       /@@/@@
+# /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+# //       ///  //////   //////  ////////  //
+#
+# Copyright (c) 2016 Los Alamos National Laboratory, LLC
+# All rights reserved
+#------------------------------------------------------------------------------#
+
+#------------------------------------------------------------------------------#
+# Add header files. Note that these will be "exported" to the parent
+# scope below.
 #------------------------------------------------------------------------------#
 
 set(utils_HEADERS
   array_ref.h
   bit_buffer.h
   checksum.h
-  common.h
   const_string.h
   dag.h
   debruijn.h
@@ -32,7 +45,6 @@ set(utils_HEADERS
   set_utils.h
   simple_id.h
   static_verify.h
-  test/print_type.h
   tuple_function.h
   tuple_type_converter.h
   tuple_visit.h
@@ -42,7 +54,6 @@ set(utils_HEADERS
   typeify.h
   uint128.h
   utility.h
-  PARENT_SCOPE
 )
 
 #------------------------------------------------------------------------------#
@@ -53,7 +64,6 @@ set(utils_HEADERS
 set(utils_SOURCES
   debruijn.cc
   demangle.cc
-  PARENT_SCOPE
 )
 
 #------------------------------------------------------------------------------#
@@ -84,6 +94,24 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   set(RUNTIME_DRIVER ../execution/hpx/runtime_driver.cc)
 
 endif()
+
+#------------------------------------------------------------------------------#
+# Export header list to parent scope.
+#------------------------------------------------------------------------------#
+
+set(utils_HEADERS
+  ${utils_HEADERS}
+  PARENT_SCOPE
+)
+
+#------------------------------------------------------------------------------#
+# Export source list to parent scope.
+#------------------------------------------------------------------------------#
+
+set(utils_SOURCES
+  ${utils_SOURCES}
+  PARENT_SCOPE
+)
 
 #------------------------------------------------------------------------------#
 # Unit tests.

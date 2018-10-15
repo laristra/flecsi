@@ -154,12 +154,13 @@ cinch_add_unit(simple_function
   LIBRARIES
     FleCSI
   NOCI
-  )
+)
 
 #
 # Test basic task calling capability using the register_task
 # interface.
 #
+
 cinch_add_unit(simple_task
   SOURCES
     test/simple_task.cc
@@ -173,7 +174,7 @@ cinch_add_unit(simple_task
     FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
   NOCI
-  )
+)
 
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 #

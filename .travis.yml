@@ -129,6 +129,11 @@ after_success:
       fi;
     fi
 
+branches:
+  only:
+  - master
+  -  /^stable\/.*$/
+
 cache:
   ccache: true
   directories:
