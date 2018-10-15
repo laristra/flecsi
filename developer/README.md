@@ -23,6 +23,9 @@ Please use the following naming conventions when creating branches:
   are not available in a release branch. This label should not be used
   for a branch that is intended to become a release candidate (Use
   *release* instead.)
+  FIXME: Add idea that a stable branch uses "branch" submodules to track
+  changes in its dependencies (always up-to-date, as opposed to the
+  static model used for actual releases)
 
 * **feature/username**/*branch\_name* or **feature**/*branch\_name*<br>
   A *feature* branch is where new development is done. However, master
