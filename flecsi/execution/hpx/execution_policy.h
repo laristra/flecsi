@@ -34,7 +34,7 @@
 #include <flecsi/utils/export_definitions.h>
 #include <flecsi/utils/tuple_function.h>
 
-#include <ristra-utils/utils/const_string.h>
+#include <flecsi/utils/const_string.h>
 
 //#include "flecsi/execution/task.h"
 

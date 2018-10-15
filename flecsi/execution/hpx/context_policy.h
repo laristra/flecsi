@@ -37,7 +37,7 @@
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/export_definitions.h>
 
-#include <ristra-utils/utils/const_string.h>
+#include <flecsi/utils/const_string.h>
 
 ///
 /// \file hpx/execution_policy.h

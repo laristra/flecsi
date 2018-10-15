@@ -1,7 +1,7 @@
 #pragma once
 
 #include <flecsi-config.h>
-#include <ristra-utils-config.h>
+#include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_MPI)
 #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
@@ -9,11 +9,11 @@
 
 #include <mpi.h>
 
-#include <ristra-utils/control/runtime.h>
+#include <flecsi/control/runtime.h>
 
 #include <io-poc/control/control.h>
 
-using namespace ristra::control;
+using namespace flecsi::control;
 
 inline int initialize_MPI(int argc, char ** argv) {
   MPI_Init(&argc, &argv);
@@ -35,8 +35,8 @@ inline bool output_MPI(int argc, char ** argv) {
 inline runtime_handler_t handler{ initialize_MPI, finalize_MPI, output_MPI };
 
 inline bool specialization_handler_appended =
-  ristra::control::runtime_t::instance().append_runtime_handler(handler);
+  flecsi::control::runtime_t::instance().append_runtime_handler(handler);
 
 inline bool specialization_control_registered =
-  ristra::control::runtime_t::instance().register_driver(
+  flecsi::control::runtime_t::instance().register_driver(
     io_poc::control_t::execute);

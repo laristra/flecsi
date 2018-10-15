@@ -161,7 +161,7 @@ struct mpi_execution_policy_t {
     finalize_handles.walk(task_args);
 
     constexpr size_t ZERO =
-      ristra::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
 
     if constexpr(REDUCTION != ZERO) {
       

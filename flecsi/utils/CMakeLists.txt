@@ -1,37 +1,30 @@
 #------------------------------------------------------------------------------#
-#  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
-# /@@/////  /@@          @@////@@ @@////// /@@
-# /@@       /@@  @@@@@  @@    // /@@       /@@
-# /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
-# /@@////   /@@/@@@@@@@/@@       ////////@@/@@
-# /@@       /@@/@@//// //@@    @@       /@@/@@
-# /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  //
-#
-# Copyright (c) 2016 Los Alamos National Laboratory, LLC
-# All rights reserved
-#------------------------------------------------------------------------------#
-
-#------------------------------------------------------------------------------#
-# Add header files. Note that these will be "exported" to the parent
-# scope below.
+# Copyright (c) 2014 Los Alamos National Security, LLC
+# All rights reserved.
 #------------------------------------------------------------------------------#
 
 set(utils_HEADERS
-  any.h
   array_ref.h
   bit_buffer.h
   checksum.h
   common.h
+  const_string.h
+  dag.h
+  debruijn.h
+  demangle.h
   dimensioned_array.h
   export_definitions.h
   factory.h
+  function_traits.h
+  graphviz.h
   hash.h
   humble.h
   id.h
   index_space.h
   iterator.h
   logging.h
+  macros.h
+  mpi_type_traits.h
   offset.h
   reflection.h
   reorder.h
@@ -39,12 +32,17 @@ set(utils_HEADERS
   set_utils.h
   simple_id.h
   static_verify.h
+  test/print_type.h
   tuple_function.h
   tuple_type_converter.h
+  tuple_visit.h
+  tuple_walker.h
   tuple_wrapper.h
   type_traits.h
+  typeify.h
   uint128.h
   utility.h
+  PARENT_SCOPE
 )
 
 #------------------------------------------------------------------------------#
@@ -53,10 +51,13 @@ set(utils_HEADERS
 #------------------------------------------------------------------------------#
 
 set(utils_SOURCES
+  debruijn.cc
+  demangle.cc
+  PARENT_SCOPE
 )
 
 #------------------------------------------------------------------------------#
-# Runtime-specific files.
+# Runtime-specific files for unit tests.
 #
 # UNIT_POLICY and RUNTIME_DRIVER are set for unit tests that are not
 # runtime specific and can be configured for whichever runtime is active.
@@ -85,24 +86,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 endif()
 
 #------------------------------------------------------------------------------#
-# Export header list to parent scope.
-#------------------------------------------------------------------------------#
-
-set(utils_HEADERS
-  ${utils_HEADERS}
-  PARENT_SCOPE
-)
-
-#------------------------------------------------------------------------------#
-# Export source list to parent scope.
-#------------------------------------------------------------------------------#
-
-set(utils_SOURCES
-  ${utils_SOURCES}
-  PARENT_SCOPE
-)
-
-#------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
 
@@ -122,9 +105,8 @@ endif()
 
 cinch_add_unit(factory
   SOURCES
+    demangle.cc
     test/factory.cc
-  LIBRARIES
-    RistraUtils
   INPUTS
     test/factory.blessed
     ${factory_blessed_input}
@@ -133,21 +115,6 @@ cinch_add_unit(factory
 cinch_add_unit(reorder
   SOURCES
     test/reorder.cc
-)
-
-set(any_blessed_input test/any.blessed.gnug)
-
-if(MSVC)
-  set(any_blessed_input test/any.blessed.msvc)
-endif()
-
-cinch_add_unit(any
-  SOURCES
-    test/any.cc
-  LIBRARIES
-    RistraUtils
-  INPUTS
-    test/any.blessed ${any_blessed_input}
 )
 
 if(NOT MSVC)
@@ -173,9 +140,8 @@ endif()
 
 cinch_add_unit(utils_iterator
   SOURCES
+    demangle.cc
     test/iterator.cc
-  LIBRARIES
-    RistraUtils
   INPUTS
     test/iterator.blessed
     ${iterator_blessed_input}
@@ -210,9 +176,8 @@ cinch_add_unit(static_verify
 
 cinch_add_unit(test_utility
   SOURCES
+    demangle.cc
     test/utility.cc
-  LIBRARIES
-    RistraUtils
   INPUTS
     test/utility.blessed.gnug
 )
@@ -225,18 +190,16 @@ endif()
 
 cinch_add_unit(tuple_type_converter
   SOURCES
+    demangle.cc
     test/tuple_type_converter.cc
-  LIBRARIES
-    RistraUtils
   INPUTS
     ${tuple_type_converter_blessed_input}
 )
 
 cinch_add_unit(tuple_wrapper
   SOURCES
+    demangle.cc
     test/tuple_wrapper.cc
-  LIBRARIES
-    RistraUtils
 )
 
 cinch_add_unit(tuple_function
@@ -252,9 +215,8 @@ endif()
 
 cinch_add_unit(index_space
   SOURCES
+    demangle.cc
     test/index_space.cc
-  LIBRARIES
-    RistraUtils
   INPUTS
     test/index_space.blessed ${index_space_blessed_input}
 )
@@ -267,9 +229,8 @@ endif()
 
 cinch_add_unit(array_ref
   SOURCES
+    demangle.cc
     test/array_ref.cc
-  LIBRARIES
-    RistraUtils
   INPUTS
     test/array_ref.blessed ${array_ref_blessed_input}
 )
@@ -282,9 +243,8 @@ endif()
 
 cinch_add_unit(common
   SOURCES
+    demangle.cc
     test/common.cc
-  LIBRARIES
-    RistraUtils
   INPUTS
     test/common.blessed.ppc test/common.blessed ${common_blessed_input}
 )
@@ -297,9 +257,8 @@ endif()
 
 cinch_add_unit(id
   SOURCES
+    demangle.cc
     test/id.cc
-  LIBRARIES
-    RistraUtils
   INPUTS
     test/id.blessed ${id_blessed_input}
 )
@@ -312,3 +271,16 @@ if(ENABLE_OPENSSL)
       ${OPENSSL_LIBRARIES}
   )
 endif()
+
+cinch_add_unit(debruijn
+  SOURCES
+    debruijn.cc
+    test/debruijn.cc
+)
+
+cinch_add_unit(tuple_walker
+  SOURCES
+    test/tuple_walker.cc
+  INPUTS
+    test/tuple_walker.blessed
+)
