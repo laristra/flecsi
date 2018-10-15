@@ -306,6 +306,7 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
  */
 
 __flecsi_internal_legion_task(ghost_copy_task, void) {
+
   using offset_t = data::sparse_data_offset_t;
 
   const int my_color = runtime->find_local_MPI_rank();
@@ -397,10 +398,10 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
       const context_t::field_info_t & field_info = fitr->second;
       const Legion::FieldAccessor<READ_ONLY, char, 2,
           Legion::coord_t, Realm::AffineAccessor< char, 2, Legion::coord_t> >
-          owner_offset_acc(regions[0], fid, field_info.size);
+          owner_offset_acc(regions[0], fid, sizeof(offset_t));
       const Legion::FieldAccessor<READ_WRITE, char, 2,
           Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
-          ghost_offset_acc(regions[1], fid, field_info.size);
+          ghost_offset_acc(regions[1], fid, sizeof(offset_t));
       const Legion::FieldAccessor<READ_ONLY, char, 2,
           Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
           owner_entries_acc(regions[2], fid, field_info.size +sizeof(size_t));
