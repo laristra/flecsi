@@ -1,6 +1,7 @@
 var searchData=
 [
   ['basic_5fstring_3c_20t_2c_20traits_2c_20allocator_20_3e',['basic_string&lt; T, traits, Allocator &gt;',['../classflecsi_1_1utils_1_1array__ref.html#aed25f8c12b7951099548a7bac73b571c',1,'flecsi::utils::array_ref']]],
+  ['offset_5f_5f',['offset__',['../classflecsi_1_1utils_1_1offset____.html#afb316afa85a5a8ad9123b34590b569a9',1,'flecsi::utils::offset__::offset__(uint64_t start, uint32_t count)'],['../classflecsi_1_1utils_1_1offset____.html#a8b2d8231d5a67d0a3cb2c60c8ab3bd0e',1,'flecsi::utils::offset__::offset__(const offset__ &amp;prev, uint32_t count)']]],
   ['operator_20_26',['operator &amp;',['../classflecsi_1_1topology_1_1index__space____.html#af0d57eb58603ca46a0b979fd31236d12',1,'flecsi::topology::index_space__']]],
   ['operator_20_26_3d',['operator &amp;=',['../classflecsi_1_1topology_1_1index__space____.html#a64e99946997a48567f113ec77173cc0e',1,'flecsi::topology::index_space__']]],
   ['operator_20bool',['operator bool',['../structflecsi_1_1data_1_1legion_1_1color__handle____.html#ae3e92de71d5b341bbb9ea8b3f80adf83',1,'flecsi::data::legion::color_handle__::operator bool()'],['../structflecsi_1_1data_1_1legion_1_1global__handle____.html#a1253bb59eeb130cfb00b3aa543dd4072',1,'flecsi::data::legion::global_handle__::operator bool()'],['../structflecsi_1_1data_1_1mpi_1_1color__handle____.html#a55bdc24b45b1c87aa43844af9db998e6',1,'flecsi::data::mpi::color_handle__::operator bool()'],['../structflecsi_1_1data_1_1mpi_1_1global__handle____.html#accdc6500a5c8873a321642dc074a4dce',1,'flecsi::data::mpi::global_handle__::operator bool()']]],

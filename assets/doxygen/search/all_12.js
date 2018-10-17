@@ -5,6 +5,7 @@ var searchData=
   ['ragged_5fchanges_5ft',['ragged_changes_t',['../structflecsi_1_1mutator__handle__base_____1_1ragged__changes__t.html',1,'flecsi::mutator_handle_base__']]],
   ['ragged_5fmutator_2eh',['ragged_mutator.h',['../ragged__mutator_8h.html',1,'']]],
   ['ragged_5fmutator_5fbase_5ft',['ragged_mutator_base_t',['../structflecsi_1_1ragged__mutator__base__t.html',1,'flecsi']]],
+  ['range',['range',['../classflecsi_1_1utils_1_1offset____.html#aa8c7dd4ff91aaf5b2f96b915180c5c8d',1,'flecsi::utils::offset__']]],
   ['range_5fproxy_5f_5f',['range_proxy__',['../classflecsi_1_1utils_1_1bit__buffer_____1_1range__proxy____.html',1,'flecsi::utils::bit_buffer__']]],
   ['rank',['rank',['../classflecsi_1_1coloring_1_1communicator__t.html#a068322248415c364cea607097f66c03b',1,'flecsi::coloring::communicator_t::rank()'],['../classflecsi_1_1coloring_1_1mpi__communicator__t.html#a6d32250c51d818a37ad9ebbe2d81f11a',1,'flecsi::coloring::mpi_communicator_t::rank()']]],
   ['read',['read',['../classflecsi_1_1io_1_1io__base__t.html#a6089769ac24dbac023a8013932a04355',1,'flecsi::io::io_base_t::read()'],['../structflecsi_1_1io_1_1io__exodus__t.html#aba827d3b3faff6236a45e877cf5bbef8',1,'flecsi::io::io_exodus_t::read()']]],

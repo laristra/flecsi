@@ -39,6 +39,7 @@ var searchData=
   ['connectivity_5ft',['connectivity_t',['../classflecsi_1_1topology_1_1connectivity__t.html#a24ff9719c5baf555f1cd2a273911a887',1,'flecsi::topology::connectivity_t']]],
   ['const_5fstring_5ft',['const_string_t',['../classflecsi_1_1utils_1_1const__string__t.html#aa2b53a012ffd3247e9588fe7588c0474',1,'flecsi::utils::const_string_t']]],
   ['coordinates',['coordinates',['../classflecsi_1_1topology_1_1branch__id____.html#ab83671b548c39e2a866a3cfe925ccc89',1,'flecsi::topology::branch_id__']]],
+  ['count',['count',['../classflecsi_1_1utils_1_1offset____.html#a0ef8b338b19750a21b6723d14cb56bd7',1,'flecsi::utils::offset__']]],
   ['create',['create',['../classflecsi_1_1utils_1_1Factory__.html#ac847a0eb8464871fb1908fd4e3ef2de5',1,'flecsi::utils::Factory_']]],
   ['create_5fio_5fexodus',['create_io_exodus',['../io__exodus_8h.html#a7183498d8d9ff025925a555df0c108a1',1,'flecsi::io']]],
   ['cross_5fmagnitude',['cross_magnitude',['../space__vector_8h.html#ae00aa0fd0011d23e53e2cd5d5c06b638',1,'flecsi::cross_magnitude(const space_vector&lt; T, 1 &gt; &amp;a, const space_vector&lt; T, 1 &gt; &amp;b)'],['../space__vector_8h.html#a8c33ed916021542824dcd39b641043e1',1,'flecsi::cross_magnitude(const space_vector&lt; T, 2 &gt; &amp;a, const space_vector&lt; T, 2 &gt; &amp;b)'],['../space__vector_8h.html#a8e86d3d804972fbb935e736f8ad5ee68',1,'flecsi::cross_magnitude(const space_vector&lt; T, 3 &gt; &amp;a, const space_vector&lt; T, 3 &gt; &amp;b)']]]

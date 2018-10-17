@@ -110,6 +110,8 @@ var searchData=
   ['convert_5ftuple_5ftype_3c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_20_3e',['convert_tuple_type&lt; std::tuple&lt; Args... &gt; &gt;',['../structflecsi_1_1utils_1_1convert__tuple__type_3_01std_1_1tuple_3_01Args_8_8_8_01_4_01_4.html',1,'flecsi::utils']]],
   ['convert_5ftuple_5ftype_5f',['convert_tuple_type_',['../structflecsi_1_1utils_1_1convert__tuple__type__.html',1,'flecsi::utils']]],
   ['coordinates',['coordinates',['../classflecsi_1_1topology_1_1branch__id____.html#ab83671b548c39e2a866a3cfe925ccc89',1,'flecsi::topology::branch_id__']]],
+  ['count',['count',['../classflecsi_1_1utils_1_1offset____.html#a0ef8b338b19750a21b6723d14cb56bd7',1,'flecsi::utils::offset__']]],
+  ['count_5fmask',['count_mask',['../classflecsi_1_1utils_1_1offset____.html#aa6f2d30f1a16a1ad5b22b7dabe319ed2',1,'flecsi::utils::offset__']]],
   ['create',['create',['../classflecsi_1_1utils_1_1Factory__.html#ac847a0eb8464871fb1908fd4e3ef2de5',1,'flecsi::utils::Factory_']]],
   ['create_5fio_5fexodus',['create_io_exodus',['../io__exodus_8h.html#a7183498d8d9ff025925a555df0c108a1',1,'flecsi::io']]],
   ['createhandler',['createHandler',['../classflecsi_1_1utils_1_1Factory__.html#a2ca43df3132ecbe78aff799b03834a65',1,'flecsi::utils::Factory_']]],

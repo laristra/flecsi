@@ -2,7 +2,7 @@ var searchData=
 [
   ['basic_5fstring_3c_20t_2c_20traits_2c_20allocator_20_3e',['basic_string&lt; T, traits, Allocator &gt;',['../classflecsi_1_1utils_1_1array__ref.html#aed25f8c12b7951099548a7bac73b571c',1,'flecsi::utils::array_ref']]],
   ['offset_2eh',['offset.h',['../offset_8h.html',1,'']]],
-  ['offset_5f_5f',['offset__',['../classflecsi_1_1utils_1_1offset____.html',1,'flecsi::utils']]],
+  ['offset_5f_5f',['offset__',['../classflecsi_1_1utils_1_1offset____.html',1,'flecsi::utils::offset__&lt; COUNT_BITS &gt;'],['../classflecsi_1_1utils_1_1offset____.html#afb316afa85a5a8ad9123b34590b569a9',1,'flecsi::utils::offset__::offset__(uint64_t start, uint32_t count)'],['../classflecsi_1_1utils_1_1offset____.html#a8b2d8231d5a67d0a3cb2c60c8ab3bd0e',1,'flecsi::utils::offset__::offset__(const offset__ &amp;prev, uint32_t count)']]],
   ['offset_5fstorage_5f',['offset_storage_',['../classflecsi_1_1topology_1_1offset__storage__.html',1,'flecsi::topology']]],
   ['operator_20_26',['operator &amp;',['../classflecsi_1_1topology_1_1index__space____.html#af0d57eb58603ca46a0b979fd31236d12',1,'flecsi::topology::index_space__']]],
   ['operator_20_26_3d',['operator &amp;=',['../classflecsi_1_1topology_1_1index__space____.html#a64e99946997a48567f113ec77173cc0e',1,'flecsi::topology::index_space__']]],
