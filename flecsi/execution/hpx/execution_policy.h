@@ -31,9 +31,11 @@
 #include <flecsi/execution/hpx/future.h>
 #include <flecsi/execution/hpx/runtime_driver.h>
 #include <flecsi/execution/hpx/task_wrapper.h>
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/export_definitions.h>
 #include <flecsi/utils/tuple_function.h>
+
+#include <flecsi/utils/const_string.h>
+
 //#include "flecsi/execution/task.h"
 
 ///
@@ -136,16 +138,19 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   /// \param user_task_handle
   /// \param args
   ///
-  template<launch_type_t launch,size_t KEY, typename RETURN,
+  template<launch_type_t launch, size_t TASK,
+    size_t REDUCTION, typename RETURN,
     typename ARG_TUPLE, typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
     context_t & context_ = context_t::instance();
 
     // Get the function and processor type.
-    auto fun = context_.function(KEY);
+    auto fun = context_.function(TASK);
 
     //     auto processor_type = context_.processor_type<KEY>();
     //     if (launch == processor_type_t::mpi)
+
+    //FIXME add logic for reduction
 
     return executor__<RETURN, ARG_TUPLE>::execute(
         context_t::instance().get_default_executor(),

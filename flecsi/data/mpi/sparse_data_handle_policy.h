@@ -12,8 +12,7 @@ namespace flecsi {
 
 //----------------------------------------------------------------------------//
 
-struct mpi_sparse_data_handle_policy_t
-{
+struct mpi_sparse_data_handle_policy_t {
   // +++ The following fields are set from get_handle(), reading
   // information from the context which is data that is the same
   // across multiple ranks/colors and should be used ONLY as read-only data
@@ -30,4 +29,4 @@ struct mpi_sparse_data_handle_policy_t
 } // namespace flecsi
 
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

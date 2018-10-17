@@ -21,7 +21,7 @@
 #include <flecsi/coloring/dcrs_utils.h>
 #include <flecsi/coloring/parmetis_colorer.h>
 #include <flecsi/coloring/mpi_communicator.h>
-#include <flecsi/utils/tuple_walker.h>
+
 #include <flecsi/utils/tuple_visit.h>
 
 //#include <flecsi/supplemental/coloring/coloring_functions.h>
@@ -310,7 +310,7 @@ void generic_coloring(
   // End lambda
   //--------------------------------------------------------------------------//
 
-  tuple_visit<typename COLORING_POLICY::auxiliary>(color_entity);
+  flecsi::utils::tuple_visit<typename COLORING_POLICY::auxiliary>(color_entity);
 
 } // generic_coloring
 

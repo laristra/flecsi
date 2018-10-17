@@ -54,6 +54,14 @@ runtime_driver(
   clog(info) << "In Legion runtime driver" << std::endl;
   }
 
+  int num_colors;
+  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
+
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "MPI num_colors is " << num_colors << std::endl;
+  }
+
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
@@ -95,12 +103,17 @@ runtime_driver(
     } // for
   } // for
 
-  int num_colors;
-  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
-  {
-  clog_tag_guard(runtime_driver);
-  clog(info) << "MPI num_colors is " << num_colors << std::endl;
-  }
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for reduction operations
+  //--------------------------------------------------------------------------//
+
+  auto & reduction_ops = context_.reduction_operations();
+  for(auto & ro: reduction_ops) {
+    ro.second.collective = runtime->create_dynamic_collective(ctx, num_colors,
+      ro.second.id, ro.second.initial.data(), ro.second.initial.size());
+  } // for
+
+  //--------------------------------------------------------------------------//
 
   data::legion_data_t data(ctx, runtime, num_colors);
   
@@ -170,30 +183,16 @@ runtime_driver(
   data.finalize(coloring_info);
 
   //-------------------------------------------------------------------------//
-  // check nuber of fields allocated for srapse data
+  // check nuber of fields allocated for sparse data
   //-------------------------------------------------------------------------//
 
-  for(const field_info_t& field_info : context_.registered_fields()){
-    if(field_info.storage_class==sparse || field_info.storage_class==ragged ){
+  for(const field_info_t& field_info : context_.registered_fields()) {
+    if(field_info.storage_class==sparse || field_info.storage_class==ragged ) {
         auto sparse_idx_space = field_info.index_space ;
 
         context_.increment_sparse_fields(sparse_idx_space);
-      }
-    } 
-
-  //-------------------------------------------------------------------------//
-  //  Create Legion reduction 
-  //-------------------------------------------------------------------------//
-
-  double min = std::numeric_limits<double>::min();
-  Legion::DynamicCollective max_reduction =
-  runtime->create_dynamic_collective(ctx, num_colors, MaxReductionOp::redop_id,
-             &min, sizeof(min));
-
-  double max = std::numeric_limits<double>::max();
-  Legion::DynamicCollective min_reduction =
-  runtime->create_dynamic_collective(ctx, num_colors, MinReductionOp::redop_id,
-             &max, sizeof(max));
+    } // if
+  } /// for 
 
   //-------------------------------------------------------------------------//
   // Excute Legion task to maps between pre-compacted and compacted
@@ -409,11 +408,10 @@ runtime_driver(
     args_serializers[color].serialize(&owners_pbarriers_buf[0],
       num_owners_pbarriers * sizeof(Legion::PhaseBarrier));
 
-    // #6 serialize reduction
-    args_serializers[color].serialize(&max_reduction,
-        sizeof(Legion::DynamicCollective));
-    args_serializers[color].serialize(&min_reduction,
-        sizeof(Legion::DynamicCollective));
+    // #6 serialize reductions
+    for(auto & ro: reduction_ops) {
+      args_serializers[color].serialize(&ro.second, sizeof(reduction_data_t));
+    } // for
 
     // #7 serialize adjacency info
     using adjacency_triple_t = context_t::adjacency_triple_t;
@@ -717,8 +715,10 @@ runtime_driver(
   // Finish up Legion runtime and fall back out to MPI.
   // ----------------------------------------------------------------------//
 
-  runtime->destroy_dynamic_collective(ctx, max_reduction);
-  runtime->destroy_dynamic_collective(ctx, min_reduction);
+  // Destroy the collectives that were created for reduction operations.
+  for(auto & ro: reduction_ops) {
+    runtime->destroy_dynamic_collective(ctx, ro.second.collective);
+  } // for
 
   for(auto& itr_idx : phase_barriers_map) {
     const size_t idx = itr_idx.first;
@@ -1367,7 +1367,6 @@ spmd_task(
 
   } // for
 
-
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
@@ -1376,15 +1375,11 @@ spmd_task(
     Legion::Runtime::get_input_args();
 
   // #6 deserialize reduction
-  Legion::DynamicCollective max_reduction;
-  args_deserializer.deserialize((void*)&max_reduction,
-    sizeof(Legion::DynamicCollective));
-  context_.set_max_reduction(max_reduction);
-  
-  Legion::DynamicCollective min_reduction;
-  args_deserializer.deserialize((void*)&min_reduction,
-    sizeof(Legion::DynamicCollective));
-  context_.set_min_reduction(min_reduction);
+  auto & reduction_ops = context_.reduction_operations();
+  for(auto & ro: reduction_ops) {
+    args_deserializer.deserialize(reinterpret_cast<void *>(&ro.second),
+      sizeof(reduction_data_t));
+  } // for
 
   // #7 deserialize adjacency info
   size_t num_adjacencies;

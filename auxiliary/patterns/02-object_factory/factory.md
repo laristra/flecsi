@@ -140,7 +140,7 @@ create_gif_io_handler(
 } // create_gif_io_handler
 
 // 3. Register the handler callback function with the object factory.
-bool gif_io_handler_registered =
+inline bool gif_io_handler_registered =
   factory_t::instance().register_handler("gif", create_gif_io_handler);
 ```
 Notice that the logic used to register a new handler can be called from
@@ -149,5 +149,9 @@ code because there is no single place where all of the handlers must be
 known. The factory keeps track of this for us with its *registry_* map.
 Now, if the developer wants to add a new type, they must only define the
 type, deriving from the base *base_io_handler_t* type, and register it.
+One caveat is that the source or header file that uses the factory can
+only see factory entries who's header is included in that file or its
+dependencies. However, this can often be handled by globing or as a
+build configuration step.
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->

@@ -24,7 +24,8 @@ namespace topology {
 // Color topology.
 //----------------------------------------------------------------------------//
 
-class color_topology_base__ : public data::data_client_t {
+class color_topology_base__ : public data::data_client_t
+{
 public:
   using id_t = utils::id_t;
 };
@@ -34,7 +35,8 @@ public:
 
  @ingroup color-topology
  */
-class color_topology__ : public color_topology_base__ {
+class color_topology__ : public color_topology_base__
+{
 
 public:
   using type_identifier_t = color_topology__;

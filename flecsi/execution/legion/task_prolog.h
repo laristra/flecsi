@@ -29,6 +29,9 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_field.h>
 
+#include <flecsi/utils/const_string.h>
+#include <flecsi/utils/tuple_walker.h>
+
 clog_register_tag(prolog);
 
 namespace flecsi {
@@ -42,7 +45,7 @@ namespace execution {
  @ingroup execution
  */
 
-struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
+struct task_prolog_t : public flecsi::utils::tuple_walker__<task_prolog_t> {
 
   /*!
    Construct a task_prolog_t instance.
@@ -51,12 +54,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
    @param context The Legion task runtime context.
    */
 
-  task_prolog_t(
-      Legion::Runtime * runtime,
-      Legion::Context & context,
-      Legion::TaskLauncher & launcher)
-      : runtime(runtime), context(context), launcher(launcher) {
-  } // task_prolog_t
+  task_prolog_t(Legion::Runtime * runtime,
+    Legion::Context & context,
+    Legion::TaskLauncher & launcher)
+    : runtime(runtime), context(context), launcher(launcher) {} // task_prolog_t
 
   /*!
    Walk the data handles for a flecsi task, store info for ghost copies
@@ -90,7 +91,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
     auto & h = a.handle;
 
-    if (!h.global && !h.color) {
+    if(!h.global && !h.color) {
       auto & flecsi_context = context_t::instance();
 
       bool read_phase = false;
@@ -100,8 +101,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       read_phase = GHOST_PERMISSIONS != reserved;
       write_phase = (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw);
 
-      if (read_phase) {
-        if (!*(h.ghost_is_readable)) {
+      if(read_phase) {
+        if(!*(h.ghost_is_readable)) {
           {
             clog_tag_guard(prolog);
             clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
@@ -116,13 +117,13 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           h.pbarrier_as_owner_ptr->arrive(1);
 
           // Phase WRITE
-          *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-              context, *(h.pbarrier_as_owner_ptr));
+          *(h.pbarrier_as_owner_ptr) =
+            runtime->advance_phase_barrier(context, *(h.pbarrier_as_owner_ptr));
 
           const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
 
           // As user
-          for (size_t owner{0}; owner < _pbp_size; owner++) {
+          for(size_t owner{0}; owner < _pbp_size; owner++) {
             owner_regions.push_back(h.ghost_owners_lregions[owner]);
             // ndm - need sparse
             owner_subregions.push_back(h.ghost_owners_subregions[owner]);
@@ -136,7 +137,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
             local_args.owner = owner;
             args.push_back(local_args);
             futures.push_back(Legion::Future::from_value(
-                runtime, *(h.global_to_local_color_map_ptr)));
+              runtime, *(h.global_to_local_color_map_ptr)));
             barrier_ptrs.push_back(h.ghost_owners_pbarriers_ptrs[owner]);
           } // for owner as user
 
@@ -145,7 +146,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
         } // !ghost_is_readable
       } // read_phase
 
-      if (write_phase && (*h.ghost_is_readable)) {
+      if(write_phase && (*h.ghost_is_readable)) {
         // Phase WRITE
         launcher.add_wait_barrier(*(h.pbarrier_as_owner_ptr));
 
@@ -173,17 +174,17 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     // group owners by owner_regions
     std::vector<std::set<size_t>> owner_groups;
     std::vector<bool> is_sparse_group;
-    for (size_t owner{0}; owner < owner_regions.size(); owner++) {
+    for(size_t owner{0}; owner < owner_regions.size(); owner++) {
       bool found_group = false;
-      for (size_t group{0}; group < owner_groups.size(); group++) {
+      for(size_t group{0}; group < owner_groups.size(); group++) {
         auto first = owner_groups[group].begin();
-        if (owner_regions[owner] == owner_regions[*first]) {
+        if(owner_regions[owner] == owner_regions[*first]) {
           owner_groups[group].insert(owner);
           found_group = true;
           continue;
         }
       } // for group
-      if (!found_group) {
+      if(!found_group) {
         std::set<size_t> new_group;
         new_group.insert(owner);
         owner_groups.push_back(new_group);
@@ -193,28 +194,26 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     } // for owner
 
     // launch copy task per group of owners with same owner_region
-    for (size_t group{0}; group < owner_groups.size(); group++) {
+    for(size_t group{0}; group < owner_groups.size(); group++) {
       bool sparse = is_sparse_group[group];
 
       auto first_itr = owner_groups[group].begin();
       size_t first = *first_itr;
 
       Legion::RegionRequirement rr_shared(
-          owner_subregions[first], READ_ONLY, EXCLUSIVE, owner_regions[first]);
+        owner_subregions[first], READ_ONLY, EXCLUSIVE, owner_regions[first]);
 
       Legion::RegionRequirement rr_ghost(
-          ghost_regions[first], WRITE_DISCARD, EXCLUSIVE, color_regions[first]);
-
+        ghost_regions[first], WRITE_DISCARD, EXCLUSIVE, color_regions[first]);
 
       Legion::RegionRequirement rr_entries_shared;
 
       Legion::RegionRequirement rr_entries_ghost;
 
-      if(sparse){
+      if(sparse) {
         rr_entries_shared =
-          Legion::RegionRequirement(
-          owner_entries_regions[first], READ_ONLY, EXCLUSIVE,
-          owner_entries_regions[first]);
+          Legion::RegionRequirement(owner_entries_regions[first], READ_ONLY,
+            EXCLUSIVE, owner_entries_regions[first]);
 
         rr_entries_ghost =
           Legion::RegionRequirement(
@@ -223,7 +222,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       }
 
       auto ghost_owner_pos_fid =
-          LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+        LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
       rr_ghost.add_field(ghost_owner_pos_fid);
 
@@ -236,20 +235,19 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
       // ndm - diff task
 
-      Legion::TaskLauncher ghost_launcher(
-          ghost_copy_tid,
-          Legion::TaskArgument(&args[first], sizeof(args[first])));
+      Legion::TaskLauncher ghost_launcher(ghost_copy_tid,
+        Legion::TaskArgument(&args[first], sizeof(args[first])));
 
       ghost_launcher.add_future(futures[first]);
 
-      for (auto owner_itr = owner_groups[group].begin();
-           owner_itr != owner_groups[group].end(); owner_itr++) {
+      for(auto owner_itr = owner_groups[group].begin();
+          owner_itr != owner_groups[group].end(); owner_itr++) {
         size_t owner = *owner_itr;
 
         rr_shared.add_field(fids[owner]);
         rr_ghost.add_field(fids[owner]);
 
-        if(sparse){
+        if(sparse) {
           rr_entries_shared.add_field(fids[owner]);
           rr_entries_ghost.add_field(fids[owner]);
         }
@@ -262,13 +260,13 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
         // Phase WRITE
         *(barrier_ptrs[owner]) =
-            runtime->advance_phase_barrier(context, *(barrier_ptrs[owner]));
+          runtime->advance_phase_barrier(context, *(barrier_ptrs[owner]));
       } // for owner
       // ndm - add rr for sparse shared & ghost
       ghost_launcher.add_region_requirement(rr_shared);
       ghost_launcher.add_region_requirement(rr_ghost);
 
-      if(sparse){
+      if(sparse) {
         ghost_launcher.add_region_requirement(rr_entries_shared);
         ghost_launcher.add_region_requirement(rr_entries_ghost);
       }
@@ -280,16 +278,11 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
   } // launch copies
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    sparse_accessor <
-    T,
+    size_t GHOST_PERMISSIONS>
+  void handle(sparse_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS
@@ -313,8 +306,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     read_phase = GHOST_PERMISSIONS != reserved;
     write_phase = (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw);
 
-    if (read_phase) {
-      if (!*(h.ghost_is_readable)) {
+    if(read_phase) {
+      if(!*(h.ghost_is_readable)) {
         {
           clog_tag_guard(prolog);
           clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
@@ -329,13 +322,13 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
         h.pbarrier_as_owner_ptr->arrive(1);
 
         // Phase WRITE
-        *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-            context, *(h.pbarrier_as_owner_ptr));
+        *(h.pbarrier_as_owner_ptr) =
+          runtime->advance_phase_barrier(context, *(h.pbarrier_as_owner_ptr));
 
         const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
 
         // As user
-        for (size_t owner{0}; owner < _pbp_size; owner++) {
+        for(size_t owner{0}; owner < _pbp_size; owner++) {
 
           // offsets
           owner_regions.push_back(h.ghost_owners_offsets_lregions[owner]);
@@ -350,7 +343,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
           ghost_regions.push_back(h.offsets_ghost_lr);
           ghost_entries_regions.push_back(h.entries_ghost_lr);
-          
+
           color_regions.push_back(h.offsets_color_region);
           color_entries_regions.push_back(h.entries_color_region);
 
@@ -366,7 +359,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           args.push_back(local_args);
 
           futures.push_back(Legion::Future::from_value(
-              runtime, *(h.global_to_local_color_map_ptr)));
+            runtime, *(h.global_to_local_color_map_ptr)));
           barrier_ptrs.push_back(h.ghost_owners_pbarriers_ptrs[owner]);
         } // for owner as user
 
@@ -375,7 +368,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       } // !ghost_is_readable
     } // read_phase
 
-    if (write_phase && (*h.ghost_is_readable)) {
+    if(write_phase && (*h.ghost_is_readable)) {
       // Phase WRITE
       launcher.add_wait_barrier(*(h.pbarrier_as_owner_ptr));
 
@@ -387,24 +380,16 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     } // if
   }
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    ragged_accessor<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    > & a
-  )
-  {
-    handle(reinterpret_cast<sparse_accessor<
-      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+    size_t GHOST_PERMISSIONS>
+  void handle(ragged_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
   } // handle
 
   template<
@@ -501,17 +486,9 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
        }
   }
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    ragged_mutator<
-      T
-    > & m
-  )
-  {
-    handle(reinterpret_cast<sparse_mutator<T>&>(m));
+  template<typename T>
+  void handle(ragged_mutator<T> & m) {
+    handle(reinterpret_cast<sparse_mutator<T> &>(m));
   }
 
   /*!
@@ -519,9 +496,9 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
    */
 
   template<typename T>
-  static typename std::enable_if_t<
-      !std::is_base_of<dense_accessor_base_t, T>::value>
-  handle(T &) {} // handle
+  static
+    typename std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
+    handle(T &) {} // handle
 
   // member variables
   Legion::Runtime * runtime;
@@ -530,7 +507,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
   std::vector<Legion::LogicalRegion> owner_regions;
   std::vector<Legion::LogicalRegion> owner_subregions;
   std::vector<Legion::LogicalRegion> owner_entries_regions;
-  //std::vector<Legion::LogicalRegion> owner_entries_subregions;
+  // std::vector<Legion::LogicalRegion> owner_entries_subregions;
   std::vector<Legion::LogicalRegion> ghost_regions;
   std::vector<Legion::LogicalRegion> color_regions;
   std::vector<Legion::LogicalRegion> ghost_entries_regions;

@@ -11,33 +11,30 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
+#pragma once
 
 /*! @file */
-
-#include <flecsi/utils/common.h>
-#include <memory>
-#ifdef __GNUG__
-#include <cxxabi.h>
-#endif
 
 namespace flecsi {
 namespace utils {
 
-std::string
-demangle(const char * const name) {
-#ifdef __GNUG__
-  int status = -4;
-  std::unique_ptr<char, void (*)(void *)> res{
-      abi::__cxa_demangle(name, NULL, NULL, &status), std::free};
-  if (status == 0)
-    return res.get();
-#endif
-  // does nothing if not __GNUG__, or if abi::__cxa_demangle failed
-  return name;
-} // demangle
+/*!
+  Create a C++ type from a non-type value, e.g., an integer literal.
+
+  @tparam T The literal type.
+  @tparam M The literal value.
+
+  @ingroup utils
+ */
+
+template<typename T, T M>
+struct typeify__ {
+  using TYPE = T;
+  static constexpr T value = M;
+};
+
+template<typename T, T M>
+constexpr T typeify__<T, M>::value;
 
 } // namespace utils
 } // namespace flecsi
-
-/*~------------------------------------------------------------------------~--*
- *~------------------------------------------------------------------------~--*/

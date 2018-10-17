@@ -46,7 +46,7 @@ struct crs_t {
 
   define_as(offsets) define_as(indices)
 
-      size_t size() const {
+    size_t size() const {
     return offsets.size() - 1;
   } // size
 
@@ -59,13 +59,13 @@ struct crs_t {
 inline std::ostream &
 operator<<(std::ostream & stream, const crs_t & crs) {
   stream << "offsets: ";
-  for (auto i : crs.offsets) {
+  for(auto i : crs.offsets) {
     stream << i << " ";
   } // for
   stream << std::endl;
 
   stream << "indices: ";
-  for (auto i : crs.indices) {
+  for(auto i : crs.indices) {
     stream << i << " ";
   } // for
 
@@ -96,7 +96,7 @@ operator<<(std::ostream & stream, const dcrs_t & dcrs) {
   stream << static_cast<const crs_t &>(dcrs) << std::endl;
 
   stream << "distribution: ";
-  for (auto i : dcrs.distribution) {
+  for(auto i : dcrs.distribution) {
     stream << i << " ";
   } // for
 
@@ -105,5 +105,5 @@ operator<<(std::ostream & stream, const dcrs_t & dcrs) {
 
 #undef define_as
 
-} // coloring
+} // namespace coloring
 } // namespace flecsi

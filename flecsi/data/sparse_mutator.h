@@ -71,38 +71,36 @@ struct mutator__<data::sparse, T> : public mutator__<data::base, T>,
     entry_value_t * start = h_.entries_ + index * h_.num_slots_;
     entry_value_t * end = start + n;
 
-    entry_value_t * itr = std::lower_bound(
-        start, end, entry_value_t(entry),
-        [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
-          return e1.entry < e2.entry;
-        });
+    entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
+      [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
+        return e1.entry < e2.entry;
+      });
 
     // if we are attempting to create an entry that already exists
     // just over-write the value and exit.
-    if (itr != end && itr->entry == entry) {
+    if(itr != end && itr->entry == entry) {
       return itr->value;
     }
-    
+
     // if we neet to add the entry, but we've exceeded the number of available
     // slots, dump it into the extra storage
-    if (n >= h_.num_slots_) {
-      if (index < h_.num_exclusive_) {
+    if(n >= h_.num_slots_) {
+      if(index < h_.num_exclusive_) {
         (*h_.num_exclusive_insertions)++;
       }
 
       return h_.spare_map_->emplace(index, entry_value_t(entry))->second.value;
     } // if
 
-
     // otherwise, add the value normally
-    while (end != itr) {
+    while(end != itr) {
       *(end) = *(end - 1);
       --end;
     } // while
 
     itr->entry = entry;
 
-    if (index < h_.num_exclusive_) {
+    if(index < h_.num_exclusive_) {
       (*h_.num_exclusive_insertions)++;
     }
 
@@ -112,8 +110,8 @@ struct mutator__<data::sparse, T> : public mutator__<data::base, T>,
   } // operator ()
 
   void dump() {
-    for (size_t p = 0; p < 3; ++p) {
-      switch (p) {
+    for(size_t p = 0; p < 3; ++p) {
+      switch(p) {
         case 0:
           std::cout << "exclusive: " << std::endl;
           break;
@@ -130,10 +128,10 @@ struct mutator__<data::sparse, T> : public mutator__<data::base, T>,
       size_t start = h_.pi_.start[p];
       size_t end = h_.pi_.end[p];
 
-      for (size_t i = start; i < end; ++i) {
+      for(size_t i = start; i < end; ++i) {
         const offset_t & offset = h_.offsets_[i];
         std::cout << "  index: " << i << std::endl;
-        for (size_t j = 0; j < offset.count(); ++j) {
+        for(size_t j = 0; j < offset.count(); ++j) {
           std::cout << "    " << h_.entries_[i * h_.num_slots_ + j].entry
                     << " = " << h_.entries_[i * h_.num_slots_ + j].value
                     << std::endl;
@@ -141,7 +139,7 @@ struct mutator__<data::sparse, T> : public mutator__<data::base, T>,
 
         auto p = h_.spare_map_->equal_range(i);
         auto itr = p.first;
-        while (itr != p.second) {
+        while(itr != p.second) {
           std::cout << "    +" << itr->second.entry << " = "
                     << itr->second.value << std::endl;
           ++itr;
@@ -151,7 +149,7 @@ struct mutator__<data::sparse, T> : public mutator__<data::base, T>,
   }
 
   void erase(size_t index, size_t entry) {
-    if (!h_.erase_set_) {
+    if(!h_.erase_set_) {
       h_.erase_set_ = new erase_set_t;
     }
 

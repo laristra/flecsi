@@ -50,13 +50,13 @@ struct global_accessor_base_t {};
 
 template<typename T, size_t PERMISSIONS>
 struct accessor__<data::global, T, PERMISSIONS, 0, 0>
-    : public accessor__<data::base, T, PERMISSIONS, 0, 0>,
-      global_accessor_base_t {
+  : public accessor__<data::base, T, PERMISSIONS, 0, 0>,
+    global_accessor_base_t {
 
   using handle_t = global_data_handle__<T, PERMISSIONS>;
 
   accessor__(const global_data_handle__<T, 0> & h)
-      : handle(reinterpret_cast<const handle_t &>(h)) {}
+    : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   operator T &() {
     return data();
@@ -122,12 +122,12 @@ struct accessor__<data::global, T, PERMISSIONS, 0, 0>
 
 template<typename T, size_t PERMISSIONS>
 struct accessor__<data::color, T, PERMISSIONS, 0, 0>
-    : public accessor__<data::base, T, PERMISSIONS, 0, 0> {
+  : public accessor__<data::base, T, PERMISSIONS, 0, 0> {
 
   using handle_t = global_data_handle__<T, PERMISSIONS>;
 
   accessor__(const global_data_handle__<T, 0> & h)
-      : handle(reinterpret_cast<const handle_t &>(h)) {}
+    : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   operator T &() {
     return data();

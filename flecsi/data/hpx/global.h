@@ -26,7 +26,6 @@
 
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/global_data_handle.h"
-#include "flecsi/utils/const_string.h"
 
 #include <algorithm>
 

@@ -51,10 +51,10 @@ using point__ = utils::dimensioned_array__<TYPE, DIMENSION, 1>;
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
-point__<TYPE, DIMENSION>
-operator*(TYPE const val, point__<TYPE, DIMENSION> const & p) {
+point__<TYPE, DIMENSION> operator*(TYPE const val,
+  point__<TYPE, DIMENSION> const & p) {
   point__<TYPE, DIMENSION> tmp(p);
-  for (size_t d(0); d < DIMENSION; ++d) {
+  for(size_t d(0); d < DIMENSION; ++d) {
     tmp[d] *= val;
   } // for
 
@@ -75,11 +75,10 @@ operator*(TYPE const val, point__<TYPE, DIMENSION> const & p) {
 
 template<typename TYPE, size_t DIMENSION>
 TYPE
-distance(
-    point__<TYPE, DIMENSION> const & a,
-    point__<TYPE, DIMENSION> const & b) {
+distance(point__<TYPE, DIMENSION> const & a,
+  point__<TYPE, DIMENSION> const & b) {
   TYPE sum(0);
-  for (size_t d(0); d < DIMENSION; ++d) {
+  for(size_t d(0); d < DIMENSION; ++d) {
     sum += utils::square(a[d] - b[d]);
   } // for
 
@@ -100,9 +99,8 @@ distance(
 
 template<typename TYPE, size_t DIMENSION>
 point__<TYPE, DIMENSION>
-midpoint(
-    point__<TYPE, DIMENSION> const & a,
-    point__<TYPE, DIMENSION> const & b) {
+midpoint(point__<TYPE, DIMENSION> const & a,
+  point__<TYPE, DIMENSION> const & b) {
   return point__<TYPE, DIMENSION>((a + b) / 2.0);
 } // midpoint
 
@@ -122,7 +120,7 @@ auto
 centroid(CONTAINER<point__<TYPE, DIMENSION>> const & points) {
   point__<TYPE, DIMENSION> tmp(0.0);
 
-  for (auto p : points) {
+  for(auto p : points) {
     tmp += p;
   } // for
 
@@ -147,7 +145,7 @@ auto
 centroid(std::initializer_list<point__<TYPE, DIMENSION>> points) {
   point__<TYPE, DIMENSION> tmp(0.0);
 
-  for (auto p : points) {
+  for(auto p : points) {
     tmp += p;
   } // for
 

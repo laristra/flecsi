@@ -68,7 +68,8 @@ struct array_buf_ref_get__<T, false> {
 };
 
 template<typename T>
-class array_buffer__ {
+class array_buffer__
+{
 public:
   using item_t = typename array_buffer_type__<T>::type;
 
@@ -82,22 +83,22 @@ public:
 
   ref_t operator[](size_t index) {
     return array_buf_ref_get__<item_t, std::is_pointer<ref_t>::value>::get(
-        buf_, index);
+      buf_, index);
   }
 
   const ref_t operator[](size_t index) const {
-    return array_buf_ref_get__<
-        const item_t, std::is_pointer<ref_t>::value>::get(buf_, index);
+    return array_buf_ref_get__<const item_t,
+      std::is_pointer<ref_t>::value>::get(buf_, index);
   }
 
   ref_t back() {
     return array_buf_ref_get__<item_t, std::is_pointer<ref_t>::value>::get(
-        buf_, size_ - 1);
+      buf_, size_ - 1);
   }
 
   const ref_t back() const {
     return array_buf_ref_get__<item_t, std::is_pointer<ref_t>::value>::get(
-        buf_, size_ - 1);
+      buf_, size_ - 1);
   }
 
   size_t size() const {

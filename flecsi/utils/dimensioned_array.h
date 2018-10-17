@@ -29,8 +29,8 @@ struct and_ : std::true_type {};
 
 template<typename CONDITION, typename... CONDITIONS>
 struct and_<CONDITION, CONDITIONS...>
-    : std::conditional<CONDITION::value, and_<CONDITIONS...>, std::false_type>::
-          type {}; // struct and_
+  : std::conditional<CONDITION::value, and_<CONDITIONS...>, std::false_type>::
+      type {}; // struct and_
 
 template<typename TARGET, typename... TARGETS>
 using are_type__ = and_<std::is_same<TARGETS, TARGET>...>;
@@ -55,7 +55,8 @@ enum class axis : size_t { x = 0, y = 1, z = 2 };
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION, size_t NAMESPACE>
-class dimensioned_array__ {
+class dimensioned_array__
+{
 public:
   //! Default constructor.
   dimensioned_array__() = default;
@@ -76,11 +77,9 @@ public:
   //! Variadic constructor.
   //--------------------------------------------------------------------------//
 
-  template<
-      typename... ARGS,
-      typename = typename std::enable_if<
-          sizeof...(ARGS) == DIMENSION &&
-          are_type__<TYPE, ARGS...>::value>::type>
+  template<typename... ARGS,
+    typename = typename std::enable_if<sizeof...(ARGS) == DIMENSION &&
+                                       are_type__<TYPE, ARGS...>::value>::type>
   dimensioned_array__(ARGS... args) {
     data_ = {args...};
   } // dimensioned_array__
@@ -126,7 +125,7 @@ public:
   //--------------------------------------------------------------------------//
 
   dimensioned_array__ & operator=(dimensioned_array__ const & rhs) {
-    if (this != &rhs) {
+    if(this != &rhs) {
       data_ = rhs.data_;
     } // if
 
@@ -138,21 +137,21 @@ public:
   //--------------------------------------------------------------------------//
 
   dimensioned_array__ & operator=(const TYPE & val) {
-    for (size_t i = 0; i < DIMENSION; i++) {
+    for(size_t i = 0; i < DIMENSION; i++) {
       data_[i] = val;
     } // for
 
     return *this;
   } // operator =
 
-    //--------------------------------------------------------------------------//
-    // Macro to avoid code replication.
-    //--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
+  // Macro to avoid code replication.
+  //--------------------------------------------------------------------------//
 
 #define define_operator(op)                                                    \
   dimensioned_array__ & operator op(dimensioned_array__ const & rhs) {         \
-    if (this != &rhs) {                                                        \
-      for (size_t i{0}; i < DIMENSION; i++) {                                  \
+    if(this != &rhs) {                                                         \
+      for(size_t i{0}; i < DIMENSION; i++) {                                   \
         data_[i] op rhs[i];                                                    \
       } /* for */                                                              \
     } /* if */                                                                 \
@@ -160,13 +159,13 @@ public:
     return *this;                                                              \
   }
 
-    //--------------------------------------------------------------------------//
-    // Macro to avoid code replication.
-    //--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
+  // Macro to avoid code replication.
+  //--------------------------------------------------------------------------//
 
 #define define_operator_type(op)                                               \
   dimensioned_array__ & operator op(TYPE val) {                                \
-    for (size_t i{0}; i < DIMENSION; i++) {                                    \
+    for(size_t i{0}; i < DIMENSION; i++) {                                     \
       data_[i] op val;                                                         \
     } /* for */                                                                \
                                                                                \
@@ -249,9 +248,8 @@ private:
 
 template<typename TYPE, size_t DIMENSION, size_t NAMESPACE>
 dimensioned_array__<TYPE, DIMENSION, NAMESPACE>
-operator+(
-    const dimensioned_array__<TYPE, DIMENSION, NAMESPACE> & lhs,
-    const dimensioned_array__<TYPE, DIMENSION, NAMESPACE> & rhs) {
+operator+(const dimensioned_array__<TYPE, DIMENSION, NAMESPACE> & lhs,
+  const dimensioned_array__<TYPE, DIMENSION, NAMESPACE> & rhs) {
   dimensioned_array__<TYPE, DIMENSION, NAMESPACE> tmp(lhs);
   tmp += rhs;
   return tmp;
@@ -270,9 +268,8 @@ operator+(
 
 template<typename TYPE, size_t DIMENSION, size_t NAMESPACE>
 dimensioned_array__<TYPE, DIMENSION, NAMESPACE>
-operator-(
-    const dimensioned_array__<TYPE, DIMENSION, NAMESPACE> & lhs,
-    const dimensioned_array__<TYPE, DIMENSION, NAMESPACE> & rhs) {
+operator-(const dimensioned_array__<TYPE, DIMENSION, NAMESPACE> & lhs,
+  const dimensioned_array__<TYPE, DIMENSION, NAMESPACE> & rhs) {
   dimensioned_array__<TYPE, DIMENSION, NAMESPACE> tmp(lhs);
   tmp -= rhs;
   return tmp;
@@ -294,12 +291,11 @@ operator-(
 
 template<typename TYPE, size_t DIMENSION, size_t NAMESPACE>
 std::ostream &
-operator<<(
-    std::ostream & stream,
-    dimensioned_array__<TYPE, DIMENSION, NAMESPACE> const & a) {
+operator<<(std::ostream & stream,
+  dimensioned_array__<TYPE, DIMENSION, NAMESPACE> const & a) {
   stream << "[";
 
-  for (size_t i = 0; i < DIMENSION; i++) {
+  for(size_t i = 0; i < DIMENSION; i++) {
     stream << " " << a[i];
   } // for
 

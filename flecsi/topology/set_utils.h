@@ -49,8 +49,8 @@ struct find_set_entity__ {
 
     // Check match for index space or recurse if not matched.
     return INDEX_SPACE::value == FIND_INDEX_SPACE
-               ? I
-               : find_set_entity__<I - 1, TUPLE_TYPE, FIND_INDEX_SPACE>::find();
+             ? I
+             : find_set_entity__<I - 1, TUPLE_TYPE, FIND_INDEX_SPACE>::find();
   }
 
 }; // find_set_entity__
@@ -86,12 +86,11 @@ struct find_set_entity_ {
   using entity_types = typename SET_TYPES::entity_types;
 
   using element = typename std::tuple_element<
-      find_set_entity__<
-          std::tuple_size<entity_types>::value,
-          entity_types,
-          FIND_INDEX_SPACE>::find() -
-          1,
-      entity_types>::type;
+    find_set_entity__<std::tuple_size<entity_types>::value,
+      entity_types,
+      FIND_INDEX_SPACE>::find() -
+      1,
+    entity_types>::type;
 
   //-----------------------------------------------------------------//
   //! Define the type returned by searching the tuple for matching
@@ -108,8 +107,8 @@ struct find_set_index_space__ {
     using ELEMENT_ENTITY = typename std::tuple_element<1, TUPLE_ELEMENT>::type;
 
     return std::is_same<ELEMENT_ENTITY, ENTITY>::value
-               ? INDEX_SPACE::value
-               : find_set_index_space__<INDEX - 1, TUPLE, ENTITY>::find();
+             ? INDEX_SPACE::value
+             : find_set_index_space__<INDEX - 1, TUPLE, ENTITY>::find();
   }
 };
 

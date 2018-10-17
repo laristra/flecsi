@@ -51,13 +51,13 @@ operator<<(std::ostream & stream, const coloring_info_t & ci) {
          << " ghost: " << ci.ghost;
 
   stream << " users [ ";
-  for (auto i : ci.shared_users) {
+  for(auto i : ci.shared_users) {
     stream << i << " ";
   } // for
   stream << "]";
 
   stream << " owners [ ";
-  for (auto i : ci.ghost_owners) {
+  for(auto i : ci.ghost_owners) {
     stream << i << " ";
   } // for
   stream << "]" << std::endl;
@@ -85,12 +85,11 @@ struct entity_info_t {
    \param shared_ The list of ranks that share this entity.
    */
 
-  entity_info_t(
-      size_t id_ = 0,
-      size_t rank_ = 0,
-      size_t offset_ = 0,
-      std::set<size_t> shared_ = {})
-      : id(id_), rank(rank_), offset(offset_), shared(shared_) {}
+  entity_info_t(size_t id_ = 0,
+    size_t rank_ = 0,
+    size_t offset_ = 0,
+    std::set<size_t> shared_ = {})
+    : id(id_), rank(rank_), offset(offset_), shared(shared_) {}
 
   /*!
    Comparison operator for container insertion. This sorts by the
@@ -115,7 +114,7 @@ struct entity_info_t {
 inline std::ostream &
 operator<<(std::ostream & stream, const entity_info_t & e) {
   stream << e.id << " " << e.rank << " " << e.offset << " [ ";
-  for (auto i : e.shared) {
+  for(auto i : e.shared) {
     stream << i << " ";
   } // for
   stream << "]";

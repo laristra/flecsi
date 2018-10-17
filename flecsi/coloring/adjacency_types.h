@@ -47,7 +47,7 @@ operator<<(std::ostream & stream, const adjacency_info_t & ai) {
          << " to index space: " << ai.to_index_space;
 
   stream << " color sizes [ ";
-  for (auto i : ai.color_sizes) {
+  for(auto i : ai.color_sizes) {
     stream << i << " ";
   } // for
   stream << "]";

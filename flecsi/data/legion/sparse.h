@@ -21,7 +21,6 @@
 #include <flecsi/data/mutator_handle.h>
 #include <flecsi/data/sparse_data_handle.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/index_space.h>
 
 //----------------------------------------------------------------------------//
@@ -33,329 +32,257 @@ namespace flecsi {
 namespace data {
 namespace legion {
 
-  //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
-  // Helper type definitions.
-  //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+// Helper type definitions.
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 
-  //----------------------------------------------------------------------------//
-  // Sparse handle.
-  //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// Sparse handle.
+//----------------------------------------------------------------------------//
 
-  //----------------------------------------------------------------------------//
-  // Sparse accessor.
-  //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// Sparse accessor.
+//----------------------------------------------------------------------------//
 
-  ///
-  /// \brief Sparse_accessor_t provides logically array-based access to data
-  ///        variables that have been registered in the data model.
-  ///
-  /// \tparam T The type of the data variable. If this type is not
-  ///           consistent with the type used to register the data, bad things
-  ///           can happen. However, it can be useful to reinterpret the type,
-  ///           e.g., when writing raw bytes. This class is part of the
-  ///           low-level \e flecsi interface, so it is assumed that you
-  ///           know what you are doing...
-  ///
-  template<
-    typename T,
-    size_t EP,
-    size_t SP,
-    size_t GP
-  >
-  struct sparse_handle__ : public sparse_data_handle__<T, EP, SP, GP>
-  {
-    //--------------------------------------------------------------------------//
-    // Type definitions.
-    //--------------------------------------------------------------------------//
+///
+/// \brief Sparse_accessor_t provides logically array-based access to data
+///        variables that have been registered in the data model.
+///
+/// \tparam T The type of the data variable. If this type is not
+///           consistent with the type used to register the data, bad things
+///           can happen. However, it can be useful to reinterpret the type,
+///           e.g., when writing raw bytes. This class is part of the
+///           low-level \e flecsi interface, so it is assumed that you
+///           know what you are doing...
+///
+template<typename T, size_t EP, size_t SP, size_t GP>
+struct sparse_handle__ : public sparse_data_handle__<T, EP, SP, GP> {
+  //--------------------------------------------------------------------------//
+  // Type definitions.
+  //--------------------------------------------------------------------------//
 
-    using base = sparse_data_handle__<T, EP, SP, GP>;
+  using base = sparse_data_handle__<T, EP, SP, GP>;
 
-    //--------------------------------------------------------------------------//
-    // Constructors.
-    //--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
+  // Constructors.
+  //--------------------------------------------------------------------------//
 
-    sparse_handle__(){}
+  sparse_handle__() {}
 
-    template<typename, size_t, size_t, size_t>
-    friend class sparse_handle__;
-  }; // struct sparse_handle__
+  template<typename, size_t, size_t, size_t>
+  friend class sparse_handle__;
+}; // struct sparse_handle__
 
-  //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
-  // Main type definition.
-  //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+// Main type definition.
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 
-  //----------------------------------------------------------------------------//
-  // Sparse storage type.
-  //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// Sparse storage type.
+//----------------------------------------------------------------------------//
 
-  /*!
-    Sparse storage type. Sparse data is partitioned into exclusive, shared,
-    ghost entries. It allows entries to be allocated sparsely per index.
-    Within an index, entries are stored in sorted order. A sparse accessor
-    can read and modify existing entries, but cannot allocate new entries.
-    The mutator is used for this purpose. A sparse data handle is passed to a
-    task which is then transformed to an accesor, likewise for a mutator.
-    A mutator commits its data in its temporary buffers in the task epilog.
-   */
-  template<>
-  struct storage_class__<sparse>
-  {
-    //--------------------------------------------------------------------------//
-    // Type definitions.
-    //--------------------------------------------------------------------------//
+/*!
+  Sparse storage type. Sparse data is partitioned into exclusive, shared,
+  ghost entries. It allows entries to be allocated sparsely per index.
+  Within an index, entries are stored in sorted order. A sparse accessor
+  can read and modify existing entries, but cannot allocate new entries.
+  The mutator is used for this purpose. A sparse data handle is passed to a
+  task which is then transformed to an accesor, likewise for a mutator.
+  A mutator commits its data in its temporary buffers in the task epilog.
+ */
+template<>
+struct storage_class__<sparse> {
+  //--------------------------------------------------------------------------//
+  // Type definitions.
+  //--------------------------------------------------------------------------//
 
-    template<
-      typename T,
-      size_t EP,
-      size_t SP,
-      size_t GP
-    >
-    using handle__ = sparse_handle__<T, EP, SP, GP>;
+  template<typename T, size_t EP, size_t SP, size_t GP>
+  using handle__ = sparse_handle__<T, EP, SP, GP>;
 
-    template<
-      typename DATA_CLIENT_TYPE,
-      typename DATA_TYPE,
-      size_t NAMESPACE,
-      size_t NAME,
-      size_t VERSION
-    >
-    static
-    handle__<DATA_TYPE, 0, 0, 0>
-    get_handle(
-      const data_client_t & data_client
-    )
-    {
-      static_assert(
-          VERSION < utils::hash::field_max_versions,
-          "max field version exceeded");
+  template<typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION>
+  static handle__<DATA_TYPE, 0, 0, 0> get_handle(
+    const data_client_t & data_client) {
+    static_assert(
+      VERSION < utils::hash::field_max_versions, "max field version exceeded");
 
-      auto& context = execution::context_t::instance();
+    auto & context = execution::context_t::instance();
 
-      using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
+    using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
 
-      // get field_info for this data handle
-      auto& field_info =
-        context.get_field_info_from_name(
-          typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
-        utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
+    // get field_info for this data handle
+    auto & field_info = context.get_field_info_from_name(
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
+      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
-      size_t index_space = field_info.index_space;
-      auto & ism = context.index_space_data_map();
+    size_t index_space = field_info.index_space;
+    auto & ism = context.index_space_data_map();
 
-      auto& im = context.sparse_index_space_info_map();
-      auto iitr = im.find(index_space);
-      clog_assert(iitr != im.end(),
-        "sparse index space info not registered for index space: " <<
-        index_space);
+    auto & im = context.sparse_index_space_info_map();
+    auto iitr = im.find(index_space);
+    clog_assert(iitr != im.end(),
+      "sparse index space info not registered for index space: "
+        << index_space);
 
-      const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-      const size_t exclusive_reserve = iitr->second.exclusive_reserve;
+    const size_t max_entries_per_index = iitr->second.max_entries_per_index;
+    const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
-      handle__<DATA_TYPE, 0, 0, 0> h;
+    handle__<DATA_TYPE, 0, 0, 0> h;
 
-      h.reserve = exclusive_reserve;
-      h.max_entries_per_index = max_entries_per_index;
+    h.reserve = exclusive_reserve;
+    h.max_entries_per_index = max_entries_per_index;
 
-      h.offsets_color_region = ism[index_space].color_region;
-      h.offsets_exclusive_lr = ism[index_space].exclusive_lr;
-      h.offsets_shared_lr = ism[index_space].shared_lr;
-      h.offsets_ghost_lr = ism[index_space].ghost_lr;
+    h.offsets_color_region = ism[index_space].color_region;
+    h.offsets_exclusive_lr = ism[index_space].exclusive_lr;
+    h.offsets_shared_lr = ism[index_space].shared_lr;
+    h.offsets_ghost_lr = ism[index_space].ghost_lr;
 
-      // TODO: formalize sparse offset
-      constexpr size_t sparse_offset = 8192;
+    // TODO: formalize sparse offset
+    constexpr size_t sparse_offset = 8192;
 
-      h.entries_color_region = ism[index_space + sparse_offset].color_region;
-      h.entries_exclusive_lr = ism[index_space + sparse_offset].exclusive_lr;
-      h.entries_shared_lr = ism[index_space + sparse_offset].shared_lr;
-      h.entries_ghost_lr = ism[index_space + sparse_offset].ghost_lr;
+    h.entries_color_region = ism[index_space + sparse_offset].color_region;
+    h.entries_exclusive_lr = ism[index_space + sparse_offset].exclusive_lr;
+    h.entries_shared_lr = ism[index_space + sparse_offset].shared_lr;
+    h.entries_ghost_lr = ism[index_space + sparse_offset].ghost_lr;
 
-      h.metadata_color_region = context.sparse_metadata().color_region;
+    h.metadata_color_region = context.sparse_metadata().color_region;
 
-      h.pbarrier_as_owner_ptr =
-          &ism[index_space].pbarriers_as_owner[field_info.fid];
-      h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
-      h.write_phase_started =
-          &(ism[index_space].write_phase_started[field_info.fid]);
-      h.ghost_owners_pbarriers_ptrs.resize(0);
+    h.pbarrier_as_owner_ptr =
+      &ism[index_space].pbarriers_as_owner[field_info.fid];
+    h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
+    h.write_phase_started =
+      &(ism[index_space].write_phase_started[field_info.fid]);
+    h.ghost_owners_pbarriers_ptrs.resize(0);
 
-      const size_t _pb_size{
-          ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
+    const size_t _pb_size{
+      ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
 
-      for (size_t i = 0; i < _pb_size; i++) {
-        h.ghost_owners_pbarriers_ptrs.push_back(
-            &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
-      } // for
+    for(size_t i = 0; i < _pb_size; i++) {
+      h.ghost_owners_pbarriers_ptrs.push_back(
+        &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
+    } // for
 
-      h.ghost_owners_offsets_lregions = 
-        ism[index_space].ghost_owners_lregions;
-      
-      h.ghost_owners_offsets_subregions = 
-        ism[index_space].ghost_owners_subregions;
+    h.ghost_owners_offsets_lregions = ism[index_space].ghost_owners_lregions;
 
-      h.ghost_owners_entries_lregions = 
-        ism[index_space + sparse_offset].ghost_owners_lregions;
-      
-      h.global_to_local_color_map_ptr =
-          &ism[index_space].global_to_local_color_map;
+    h.ghost_owners_offsets_subregions =
+      ism[index_space].ghost_owners_subregions;
 
-      h.fid = field_info.fid;
-      h.index_space = index_space;
-      h.data_client_hash = field_info.data_client_hash;
+    h.ghost_owners_entries_lregions =
+      ism[index_space + sparse_offset].ghost_owners_lregions;
 
-      return h;
-    }
+    h.global_to_local_color_map_ptr =
+      &ism[index_space].global_to_local_color_map;
 
-    template<
-      typename DATA_CLIENT_TYPE,
-      typename DATA_TYPE,
-      size_t NAMESPACE,
-      size_t NAME,
-      size_t VERSION
-    >
-    static
-    mutator_handle__<DATA_TYPE>
-    get_mutator(
-      const data_client_t & data_client,
-      size_t slots
-    )
-    {
-      auto& context = execution::context_t::instance();
+    h.fid = field_info.fid;
+    h.index_space = index_space;
+    h.data_client_hash = field_info.data_client_hash;
 
-      using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
+    return h;
+  }
 
-      // get field_info for this data handle
-      auto& field_info =
-        context.get_field_info_from_name(
-          typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
-        utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
+  template<typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION>
+  static mutator_handle__<DATA_TYPE>
+  get_mutator(const data_client_t & data_client, size_t slots) {
+    auto & context = execution::context_t::instance();
 
-      size_t index_space = field_info.index_space;
-      auto & ism = context.index_space_data_map();
+    using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
 
-      auto& im = context.sparse_index_space_info_map();
-      auto iitr = im.find(index_space);
-      clog_assert(iitr != im.end(),
-        "sparse index space info not registered for index space: " <<
-        index_space);
+    // get field_info for this data handle
+    auto & field_info = context.get_field_info_from_name(
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
+      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
-      const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-      const size_t exclusive_reserve = iitr->second.exclusive_reserve;
+    size_t index_space = field_info.index_space;
+    auto & ism = context.index_space_data_map();
 
-      mutator_handle__<DATA_TYPE> h(max_entries_per_index, slots);
+    auto & im = context.sparse_index_space_info_map();
+    auto iitr = im.find(index_space);
+    clog_assert(iitr != im.end(),
+      "sparse index space info not registered for index space: "
+        << index_space);
 
-      h.offsets_color_region = ism[index_space].color_region;
-      h.offsets_exclusive_lr = ism[index_space].exclusive_lr;
-      h.offsets_shared_lr = ism[index_space].shared_lr;
-      h.offsets_ghost_lr = ism[index_space].ghost_lr;
+    const size_t max_entries_per_index = iitr->second.max_entries_per_index;
+    const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
-      // TODO: formalize sparse offset
-      constexpr size_t sparse_offset = 8192;
+    mutator_handle__<DATA_TYPE> h(max_entries_per_index, slots);
 
-      h.entries_color_region = ism[index_space + sparse_offset].color_region;
-      h.entries_exclusive_lr = ism[index_space + sparse_offset].exclusive_lr;
-      h.entries_shared_lr = ism[index_space + sparse_offset].shared_lr;
-      h.entries_ghost_lr = ism[index_space + sparse_offset].ghost_lr;
+    h.offsets_color_region = ism[index_space].color_region;
+    h.offsets_exclusive_lr = ism[index_space].exclusive_lr;
+    h.offsets_shared_lr = ism[index_space].shared_lr;
+    h.offsets_ghost_lr = ism[index_space].ghost_lr;
 
-      h.metadata_color_region = context.sparse_metadata().color_region;
-      
-      h.pbarrier_as_owner_ptr =
-          &ism[index_space].pbarriers_as_owner[field_info.fid];
-      h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
-      h.write_phase_started =
-          &(ism[index_space].write_phase_started[field_info.fid]);
-      h.ghost_owners_pbarriers_ptrs.resize(0);
+    // TODO: formalize sparse offset
+    constexpr size_t sparse_offset = 8192;
 
-      const size_t _pb_size{
-          ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
+    h.entries_color_region = ism[index_space + sparse_offset].color_region;
+    h.entries_exclusive_lr = ism[index_space + sparse_offset].exclusive_lr;
+    h.entries_shared_lr = ism[index_space + sparse_offset].shared_lr;
+    h.entries_ghost_lr = ism[index_space + sparse_offset].ghost_lr;
 
-      for (size_t i = 0; i < _pb_size; i++) {
-        h.ghost_owners_pbarriers_ptrs.push_back(
-            &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
-      } // for
+    h.metadata_color_region = context.sparse_metadata().color_region;
 
-      h.ghost_owners_offsets_lregions =
-        ism[index_space].ghost_owners_lregions;
+    h.pbarrier_as_owner_ptr =
+      &ism[index_space].pbarriers_as_owner[field_info.fid];
+    h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
+    h.write_phase_started =
+      &(ism[index_space].write_phase_started[field_info.fid]);
+    h.ghost_owners_pbarriers_ptrs.resize(0);
 
-      h.ghost_owners_offsets_subregions =
-        ism[index_space].ghost_owners_subregions;
+    const size_t _pb_size{
+      ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
 
-      h.ghost_owners_entries_lregions =
-        ism[index_space + sparse_offset].ghost_owners_lregions;
+    for(size_t i = 0; i < _pb_size; i++) {
+      h.ghost_owners_pbarriers_ptrs.push_back(
+        &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
+    } // for
 
-      h.global_to_local_color_map_ptr =
-          &ism[index_space].global_to_local_color_map;
+    h.fid = field_info.fid;
+    h.index_space = index_space;
+    h.data_client_hash = field_info.data_client_hash;
+    h.slots = slots;
+    h.num_exclusive_insertions = new size_t(0);
 
-      h.fid = field_info.fid;
-      h.index_space = index_space;
-      h.data_client_hash = field_info.data_client_hash;
-      h.slots = slots;
-      h.num_exclusive_insertions = new size_t(0);
+    return h;
+  }
 
-      return h;
-    }
+}; // struct storage_class_t
 
-  }; // struct storage_class_t
+template<>
+struct storage_class__<ragged> {
+  //--------------------------------------------------------------------------//
+  // Type definitions.
+  //--------------------------------------------------------------------------//
 
-  template<>
-  struct storage_class__<ragged>
-  {
-    //--------------------------------------------------------------------------//
-    // Type definitions.
-    //--------------------------------------------------------------------------//
+  template<typename T, size_t EP, size_t SP, size_t GP>
+  using handle__ = sparse_handle__<T, EP, SP, GP>;
 
-    template<
-      typename T,
-      size_t EP,
-      size_t SP,
-      size_t GP
-    >
-    using handle__ = sparse_handle__<T, EP, SP, GP>;
+  template<typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION>
+  static auto get_handle(const data_client_t & data_client) {
+    return storage_class__<sparse>::get_handle<DATA_CLIENT_TYPE, DATA_TYPE,
+      NAMESPACE, NAME, VERSION>(data_client);
+  }
 
-    template<
-      typename DATA_CLIENT_TYPE,
-      typename DATA_TYPE,
-      size_t NAMESPACE,
-      size_t NAME,
-      size_t VERSION
-    >
-    static
-    auto
-    get_handle(
-      const data_client_t & data_client
-    )
-    {
-      return storage_class__<sparse>::get_handle<
-        DATA_CLIENT_TYPE,
-        DATA_TYPE,
-        NAMESPACE,
-        NAME,
-        VERSION
-      >(data_client);
-    }
-
-    template<
-      typename DATA_CLIENT_TYPE,
-      typename DATA_TYPE,
-      size_t NAMESPACE,
-      size_t NAME,
-      size_t VERSION
-    >
-    static
-    auto
-    get_mutator(
-      const data_client_t & data_client,
-      size_t slots
-    )
-    {
-      return storage_class__<sparse>::get_mutator<
-        DATA_CLIENT_TYPE,
-        DATA_TYPE,
-        NAMESPACE,
-        NAME,
-        VERSION
-    >(data_client, slots);
-    }
-  }; // struct storage_class_t
+  template<typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION>
+  static auto get_mutator(const data_client_t & data_client, size_t slots) {
+    return storage_class__<sparse>::get_mutator<DATA_CLIENT_TYPE, DATA_TYPE,
+      NAMESPACE, NAME, VERSION>(data_client, slots);
+  }
+}; // struct storage_class_t
 
 } // namespace legion
 } // namespace data

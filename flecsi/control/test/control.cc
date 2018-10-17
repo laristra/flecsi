@@ -1,7 +1,16 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 
 #include <bitset>
 #include <tuple>
@@ -9,6 +18,7 @@
 #include <cinchtest.h>
 #include <flecsi/control/control.h>
 #include <flecsi/control/phase_walker.h>
+#include <flecsi/utils/macros.h>
 
 /*----------------------------------------------------------------------------*
  * Define simulation phases. This is considered part of the specializeation.

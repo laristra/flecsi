@@ -20,25 +20,26 @@ public:
 
 private:
 
-  class placeholder
+  struct placeholder
   {
-  public:
-
     virtual ~placeholder() {}
 
     virtual const std::type_info &
     type_info() const = 0;
 
-    virtual placeholder *clone() const = 0;
+    virtual placeholder * clone() const = 0;
 
-  }; // placeholder
+  }; // struct placeholder
 
+  // This is the main 'trick': We generate a type that derives from the
+  // placeholder that wraps the user type. This type is used internally
+  // to store the instances of the user types. This could be done
+  // externally by defining a common base type. However, this approach is
+  // automatic and more convenient...
   template<typename value_type>
-  class holder : public placeholder
+  struct holder : public placeholder
   {
-  public:
-
-    holder(const value_type &value) : held(value) {}
+    holder(const value_type & value) : held(value) {}
 
     virtual const std::type_info & type_info() const {
       return typeid(value_type);
@@ -49,11 +50,98 @@ private:
     } // clone
 
     const value_type held;
-  };
+  }; // struct holder
 
-  placeholder *content;
+  placeholder * content;
 
 }; // class any
+```
+
+Using this basic definition, we can add inward conversion interface from
+arbitrary types:
+
+```
+class any
+{
+public:
+
+  // Copy constructor from another any instance.
+  any(const any & other)
+  : content(other.content ? other.content->clone() : 0)
+  {
+  }
+
+  // Copy constructor from another instance of the same type.
+  template<typename value_type>
+  any(const value_type & value)
+  : content(new holder<value_type>(value)) {}
+
+  // Swap the contents
+  any &swap(any & rhs)
+  {
+    std::swap(content, rhs.content);
+    return *this;
+  } // swap
+
+  // Assignment to another any instance.
+  any &operator=(const any & rhs)
+  {
+    return swap(any(rhs));
+  } // operator =
+
+  // Assignment to another instance of the same type.
+  template<typename value_type>
+  any &operator=(const value_type & rhs)
+  {
+    return swap(any(rhs));
+  }
+}; // class any
+```
+
+Recovering the typed value can be handled like:
+
+```
+class any
+{
+public:
+
+  // Conversion to void *.
+  operator const void *() const
+  {
+    return content;
+  } // operator const void *
+
+  // Conversion back to stored type.
+  template<typename value_type>
+  bool copy_to(value_type &value) const
+  {
+    const value_type * copyable =
+    to_ptr<value_type>();
+    if(copyable)
+    value = * copyable;
+    return copyable;
+  } // copy_to
+
+  // Conversion to pointer to stored type.
+  template<typename value_type>
+  const value_type * to_ptr() const
+  {
+    return type_info() == typeid(value_type)
+      ? &static_cast<
+        holder<value_type> *>(content)->held
+      : 0;
+  } // to_ptr
+
+}; // class any
+
+// Convenience cast function.
+template<typename value_type>
+value_type any_cast(const any &operand)
+{
+  const value_type * result =
+  operand.to_ptr<value_type>();
+  return result ? * result : throw std::bad_cast();
+}
 ```
 
 Working off of this model, FleCSI uses a simpler, less-explicit form of

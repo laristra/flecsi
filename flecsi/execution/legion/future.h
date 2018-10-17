@@ -37,11 +37,11 @@ namespace execution {
 
 struct future_base_t {
 public:
-  virtual void
-  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const = 0;
+  virtual void add_to_single_task_launcher(
+    Legion::TaskLauncher & launcher) const = 0;
 
-  virtual void
-  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const = 0;
+  virtual void add_to_index_task_launcher(
+    Legion::IndexLauncher & launcher) const = 0;
 };
 
 /*!
@@ -72,7 +72,7 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
      */
 
   legion_future__(const Legion::Future & legion_future)
-      : legion_future_(legion_future) {}
+    : legion_future_(legion_future) {}
 
   /*!
     Wait on a task result.
@@ -95,24 +95,21 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
     return legion_future_.template get_result<RETURN>(silence_warnings);
   } // get
 
-  void defer_dynamic_collective_arrival(
-      Legion::Runtime * runtime,
-      Legion::Context ctx,
-      Legion::DynamicCollective & dc_reduction) {
+  void defer_dynamic_collective_arrival(Legion::Runtime * runtime,
+    Legion::Context ctx,
+    Legion::DynamicCollective & dc_reduction) {
     runtime->defer_dynamic_collective_arrival(
-        ctx, dc_reduction, legion_future_);
+      ctx, dc_reduction, legion_future_);
   } // defer_dynamic_collective_arrival
 
   /*!
     Add Legion Future to the task launcher
    */
-  void
-  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
+  void add_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
-  void
-  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
+  void add_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
@@ -133,8 +130,8 @@ struct legion_future__<RETURN, launch_type_t::single> : public future_base_t {
     return data_;
   }
 
-  friend std::ostream &
-  operator<<(std::ostream & stream, const legion_future__ & f) {
+  friend std::ostream & operator<<(std::ostream & stream,
+    const legion_future__ & f) {
     stream << f.data_;
     return stream;
   } // switch
@@ -162,7 +159,7 @@ struct legion_future__<void, launch_type_t::single> : public future_base_t {
    */
 
   legion_future__(const Legion::Future & legion_future)
-      : legion_future_(legion_future) {}
+    : legion_future_(legion_future) {}
 
   /*!
     Wait on a task result.
@@ -172,23 +169,20 @@ struct legion_future__<void, launch_type_t::single> : public future_base_t {
     legion_future_.get_void_result(silence_warnings);
   } // wait
 
-  void defer_dynamic_collective_arrival(
-      Legion::Runtime * runtime,
-      Legion::Context ctx,
-      Legion::DynamicCollective & dc_reduction) {
+  void defer_dynamic_collective_arrival(Legion::Runtime * runtime,
+    Legion::Context ctx,
+    Legion::DynamicCollective & dc_reduction) {
     // reduction of a void is still void
   }
 
   /*!
     Add Legion Future to the task launcher
    */
-  void
-  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
+  void add_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
-  void
-  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
+  void add_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
     launcher.add_future(legion_future_);
   }
 
@@ -213,7 +207,7 @@ struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
    */
 
   legion_future__(const Legion::FutureMap & legion_future)
-      : legion_future_(legion_future) {}
+    : legion_future_(legion_future) {}
 
   /*!
     Wait on a task result.
@@ -234,28 +228,25 @@ struct legion_future__<RETURN, launch_type_t::index> : public future_base_t {
   RETURN
   get(size_t index = 0, bool silence_warnings = false) {
     return legion_future_.get_result<RETURN>(
-        Legion::DomainPoint::from_point<1>(
-            LegionRuntime::Arrays::Point<1>(index)),
-        silence_warnings);
+      Legion::DomainPoint::from_point<1>(
+        LegionRuntime::Arrays::Point<1>(index)),
+      silence_warnings);
   } // get
 
-  void defer_dynamic_collective_arrival(
-      Legion::Runtime * runtime,
-      Legion::Context ctx,
-      Legion::DynamicCollective & dc_reduction) {
+  void defer_dynamic_collective_arrival(Legion::Runtime * runtime,
+    Legion::Context ctx,
+    Legion::DynamicCollective & dc_reduction) {
     // Not sure what reducing a map with other maps would mean
   }
 
   /*!
     Add Legion Future to the task launcher
    */
-  void
-  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
+  void add_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
     assert(false && "you can't pass future from index task to any task");
   }
 
-  void
-  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
+  void add_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
     assert(false && "you can't pass future handle from index task to any task");
   }
 
@@ -277,7 +268,7 @@ struct legion_future__<void, launch_type_t::index> : public future_base_t {
      */
 
   legion_future__(const Legion::FutureMap & legion_future)
-      : legion_future_(legion_future) {}
+    : legion_future_(legion_future) {}
 
   /*!
     Wait on a task result.
@@ -290,13 +281,11 @@ struct legion_future__<void, launch_type_t::index> : public future_base_t {
   /*!
     Add Legion Future to the task launcher
    */
-  void
-  add_future_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
+  void add_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
     assert(false && "you can't pass future from index task to any task");
   }
 
-  void
-  add_future_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
+  void add_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
     assert(false && "you can't pass future handle from index task to any task");
   }
 

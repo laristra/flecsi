@@ -51,36 +51,31 @@ struct dense_accessor_base_t {};
  @ingroup data
  */
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-struct accessor__<
-    data::dense,
-    T,
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+struct accessor__<data::dense,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS> : public accessor__<data::base,
+                         T,
+                         EXCLUSIVE_PERMISSIONS,
+                         SHARED_PERMISSIONS,
+                         GHOST_PERMISSIONS>,
+                       public dense_accessor_base_t {
+  using handle_t = dense_data_handle__<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>
-    : public accessor__<
-          data::base,
-          T,
-          EXCLUSIVE_PERMISSIONS,
-          SHARED_PERMISSIONS,
-          GHOST_PERMISSIONS>,
-      public dense_accessor_base_t {
-  using handle_t = dense_data_handle__<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS>;
+    GHOST_PERMISSIONS>;
 
   /*!
    Copy constructor.
    */
 
   accessor__(const dense_data_handle__<T, 0, 0, 0> & h)
-      : handle(reinterpret_cast<const handle_t &>(h)) {}
+    : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   /*!
    \brief Provide logical array-based access to the data for this
@@ -246,27 +241,23 @@ struct accessor__<
   handle_t handle;
 };
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-using dense_accessor__ = accessor__<
-    data::dense,
-    T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>;
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+using dense_accessor__ = accessor__<data::dense,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS>;
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-using dense_accessor = dense_accessor__<
-    T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>;
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+using dense_accessor = dense_accessor__<T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS>;
 
 } // namespace flecsi

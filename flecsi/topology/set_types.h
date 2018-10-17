@@ -22,7 +22,8 @@
 namespace flecsi {
 namespace topology {
 
-class set_entity_t {
+class set_entity_t
+{
 public:
   using id_t = simple_id;
 
@@ -31,11 +32,14 @@ public:
   }
 };
 
-class set_topology_base_t {};
+class set_topology_base_t
+{
+};
 
 template<class STORAGE_TYPE>
 class set_topology_base__ : public data::data_client_t,
-                            public set_topology_base_t {
+                            public set_topology_base_t
+{
 public:
   // Default constructor
   set_topology_base__(STORAGE_TYPE * ss = nullptr) : ss_(ss) {}

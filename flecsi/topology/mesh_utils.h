@@ -58,8 +58,8 @@ struct find_entity__ {
     // Check match for domain and dimension and return
     // index if matched or recurse if not matched.
     return D1::value == DOM && T1::dimension == DIM
-               ? I
-               : find_entity__<I - 1, T, DIM, DOM>::find();
+             ? I
+             : find_entity__<I - 1, T, DIM, DOM>::find();
   }
 
 }; // find_entity__
@@ -94,13 +94,12 @@ struct find_entity_ {
   using entity_types = typename MESH_TYPE::entity_types;
 
   using pair_ = typename std::tuple_element<
-      find_entity__<
-          std::tuple_size<entity_types>::value,
-          entity_types,
-          DIM,
-          DOM>::find() -
-          1,
-      entity_types>::type;
+    find_entity__<std::tuple_size<entity_types>::value,
+      entity_types,
+      DIM,
+      DOM>::find() -
+      1,
+    entity_types>::type;
 
   //-----------------------------------------------------------------//
   //! Define the type returned by searching the tuple for matching
@@ -135,8 +134,8 @@ struct find_index_space__ {
     // Check match for domain and dimension and return
     // index if matched or recurse if not matched.
     return std::is_same<ELEMENT_ENTITY, ENTITY>::value
-               ? INDEX_SPACE::value
-               : find_index_space__<INDEX - 1, TUPLE, ENTITY>::find();
+             ? INDEX_SPACE::value
+             : find_index_space__<INDEX - 1, TUPLE, ENTITY>::find();
   }
 
 }; // find_index_space__
@@ -186,9 +185,9 @@ struct find_index_space_from_dimension__ {
 
     // Check match for dimension and return if matched, recurse otherwise.
     return (DIM == ELEMENT_ENTITY::dimension && DOM == ENTITY_DOMAIN::value)
-               ? INDEX_SPACE::value
-               : find_index_space_from_dimension__<
-                     INDEX - 1, TUPLE, DIM, DOM>::find();
+             ? INDEX_SPACE::value
+             : find_index_space_from_dimension__<INDEX - 1, TUPLE, DIM,
+                 DOM>::find();
   } // find
 
 }; // find_index_space_from_dimension__
@@ -231,8 +230,8 @@ struct find_index_space_from_id__ {
 
     // Check match for ID and return if matched, recurse otherwise.
     return ID == INDEX_SPACE::value
-               ? INDEX - 1
-               : find_index_space_from_id__<INDEX - 1, TUPLE, ID>::find();
+             ? INDEX - 1
+             : find_index_space_from_id__<INDEX - 1, TUPLE, ID>::find();
   } // find
 
 }; // find_index_space_from_id__
@@ -277,8 +276,8 @@ struct find_index_subspace_from_id__ {
 
     // Check match for ID and return if matched, recurse otherwise.
     return ID == INDEX_SUBSPACE::value
-               ? INDEX - 1
-               : find_index_subspace_from_id__<INDEX - 1, TUPLE, ID>::find();
+             ? INDEX - 1
+             : find_index_subspace_from_id__<INDEX - 1, TUPLE, ID>::find();
   } // find
 
 }; // find_index_subspace_from_id__
@@ -311,31 +310,29 @@ struct find_index_subspace_from_id__<0, TUPLE, ID> {
 //! @{
 namespace detail {
 
-template<
-    size_t I,
-    typename MESH_TYPE,
-    size_t DOM,
-    typename Array,
-    std::enable_if_t<(I == MESH_TYPE::num_dimensions)> * = nullptr>
+template<size_t I,
+  typename MESH_TYPE,
+  size_t DOM,
+  typename Array,
+  std::enable_if_t<(I == MESH_TYPE::num_dimensions)> * = nullptr>
 void
 find_all_index_spaces_in_domain__(Array && index_spaces) {
   std::forward<Array>(index_spaces)[I] = find_index_space_from_dimension__<
-      std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types, I, DOM>::find();
+    std::tuple_size<typename MESH_TYPE::entity_types>::value,
+    typename MESH_TYPE::entity_types, I, DOM>::find();
 }
 
-template<
-    size_t I,
-    typename MESH_TYPE,
-    size_t DOM,
-    typename Array,
-    typename = std::enable_if_t<
-        (I<MESH_TYPE::num_dimensions && MESH_TYPE::num_dimensions> 0)>>
+template<size_t I,
+  typename MESH_TYPE,
+  size_t DOM,
+  typename Array,
+  typename = std::enable_if_t<(
+    I<MESH_TYPE::num_dimensions && MESH_TYPE::num_dimensions> 0)>>
 void
 find_all_index_spaces_in_domain__(Array && index_spaces) {
   std::forward<Array>(index_spaces)[I] = find_index_space_from_dimension__<
-      std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types, I, DOM>::find();
+    std::tuple_size<typename MESH_TYPE::entity_types>::value,
+    typename MESH_TYPE::entity_types, I, DOM>::find();
   find_all_index_spaces_in_domain__<I + 1, MESH_TYPE, DOM>(index_spaces);
 }
 
@@ -378,9 +375,9 @@ struct compute_connectivity__ {
     using T1 = typename std::tuple_element<2, T>::type;
     using T2 = typename std::tuple_element<3, T>::type;
 
-    if (D1::value == FIND_DOM) {
-      mesh.template compute_connectivity<
-          FIND_DOM, T1::dimension, T2::dimension>();
+    if(D1::value == FIND_DOM) {
+      mesh.template compute_connectivity<FIND_DOM, T1::dimension,
+        T2::dimension>();
     }
 
     return compute_connectivity__<FIND_DOM, I - 1, TS>::compute(mesh);
@@ -440,9 +437,9 @@ struct compute_bindings__ {
     using T1 = typename std::tuple_element<3, T>::type;
     using T2 = typename std::tuple_element<4, T>::type;
 
-    if (M1::value == FIND_DOM) {
-      mesh.template compute_bindings<
-          M1::value, M2::value, T1::dimension, T2::dimension>();
+    if(M1::value == FIND_DOM) {
+      mesh.template compute_bindings<M1::value, M2::value, T1::dimension,
+        T2::dimension>();
     } // if
 
     return compute_bindings__<FIND_DOM, I - 1, TS>::compute(mesh);
@@ -471,7 +468,8 @@ struct compute_bindings__<FIND_DOM, 0, TS> {
 }; // struct compute_bindings__
 
 template<typename T>
-class mesh_graph_partition__ {
+class mesh_graph_partition__
+{
 public:
   using int_t = T;
 
@@ -494,9 +492,8 @@ struct index_subspaces_tuple__<MESH_TYPE, false> {
 
 template<typename MESH_TYPE>
 struct get_index_subspaces__ {
-  using type = typename index_subspaces_tuple__<
-      MESH_TYPE,
-      has_member_index_subspaces<MESH_TYPE>::value>::type;
+  using type = typename index_subspaces_tuple__<MESH_TYPE,
+    has_member_index_subspaces<MESH_TYPE>::value>::type;
 };
 
 template<typename MESH_TYPE>
