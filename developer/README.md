@@ -7,8 +7,9 @@
 FleCSI uses [semantic versioning](https://semver.org), and follows the
 conventions established by the Cinch project. A full description of
 versioning and branch management is
-[here](../cinch/developer/VERSIONING.md) **(If you are creating or
-managing branches, make sure that you read the Cinch documentation!)**
+[here](https://github.com/laristra/cinch/blob/master/developer/VERSIONING.md)
+**(If you are creating or managing branches, make sure that you read the
+Cinch documentation!)**
 
 # FleCSI Developer Chores
 
