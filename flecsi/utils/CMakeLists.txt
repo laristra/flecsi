@@ -47,6 +47,7 @@ set(utils_HEADERS
   tuple_type_converter.h
   tuple_walker.h
   tuple_wrapper.h
+  tuple_visit.h
   type_traits.h
   uint128.h
   utility.h
@@ -112,16 +113,16 @@ set(utils_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
-
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 cinch_add_devel_target(clog
   SOURCES
     test/clog.cc
   POLICY ${UNIT_POLICY}
 )
+endif()
 
 cinch_add_unit(const_string
   SOURCES test/const_string.cc common.cc
-  FOLDER "Tests/Util"
 )
 
 set(factory_blessed_input test/factory.blessed.gnug)
@@ -131,12 +132,10 @@ endif()
 cinch_add_unit(factory
   SOURCES test/factory.cc common.cc
   INPUTS  test/factory.blessed ${factory_blessed_input}
-  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(reorder
   SOURCES test/reorder.cc
-  FOLDER "Tests/Util"
 )
 
 set(any_blessed_input test/any.blessed.gnug)
@@ -147,7 +146,6 @@ cinch_add_unit(any
   SOURCES test/any.cc common.cc
   SOURCES test/any.cc
   INPUTS  test/any.blessed ${any_blessed_input}
-  FOLDER "Tests/Util"
 )
 
 if(NOT MSVC)
@@ -157,19 +155,15 @@ if(NOT MSVC)
     test/reflection.cc
   POLICY
     SERIAL_DEVEL
-    FOLDER
-      "Tests/Util"
   )
 endif()
 
 cinch_add_unit(hash
   SOURCES test/hash.cc
-  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(humble
   SOURCES test/humble.cc
-  FOLDER "Tests/Util"
 )
 
 set(iterator_blessed_input test/iterator.blessed.gnug)
@@ -179,23 +173,19 @@ endif()
 cinch_add_unit(utils_iterator
   SOURCES test/iterator.cc common.cc
   INPUTS  test/iterator.blessed ${iterator_blessed_input}
-  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(logging
   SOURCES test/logging.cc
-  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(set_intersection
   SOURCES test/set_intersection.cc
-  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(set_utils
   SOURCES test/set_utils.cc
   INPUTS  test/set_utils.blessed
-  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(simple_id
@@ -204,13 +194,11 @@ cinch_add_unit(simple_id
 
 cinch_add_unit(static_verify
   SOURCES test/static_verify.cc
-  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(test_utility
   SOURCES test/utility.cc common.cc
   INPUTS  test/utility.blessed.gnug
-  FOLDER "Tests/Util"
 )
 
 set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.gnug)
@@ -220,23 +208,19 @@ endif()
 cinch_add_unit(tuple_type_converter
   SOURCES test/tuple_type_converter.cc common.cc
   INPUTS  ${tuple_type_converter_blessed_input}
-  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(tuple_walker
   SOURCES test/tuple_walker.cc
   INPUTS  test/tuple_walker.blessed
-  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(tuple_wrapper
   SOURCES test/tuple_wrapper.cc common.cc
-  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(tuple_function
   SOURCES test/tuple_function.cc
-  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(dag
@@ -251,7 +235,6 @@ endif()
 cinch_add_unit(index_space
   SOURCES test/index_space.cc common.cc
   INPUTS  test/index_space.blessed ${index_space_blessed_input}
-  FOLDER "Tests/Util"
 )
 
 set(array_ref_blessed_input test/array_ref.blessed.gnug)
@@ -261,7 +244,6 @@ endif()
 cinch_add_unit(array_ref
   SOURCES test/array_ref.cc common.cc
   INPUTS  test/array_ref.blessed ${array_ref_blessed_input}
-  FOLDER "Tests/Util"
 )
 
 set(common_blessed_input test/common.blessed.gnug)
@@ -272,13 +254,11 @@ cinch_add_unit(common
   SOURCES common.cc
           test/common.cc
   INPUTS  test/common.blessed.ppc test/common.blessed ${common_blessed_input}
-  FOLDER "Tests/Util"
 )
 
 cinch_add_unit(debruijn
   SOURCES debruijn.cc
           test/debruijn.cc
-  FOLDER "Tests/Util"
 )
 
 set(id_blessed_input test/id.blessed.gnug)
@@ -288,7 +268,6 @@ endif()
 cinch_add_unit(id
   SOURCES test/id.cc common.cc
   INPUTS  test/id.blessed ${id_blessed_input}
-  FOLDER "Tests/Util"
 )
 
 if(ENABLE_OPENSSL)
@@ -297,7 +276,5 @@ if(ENABLE_OPENSSL)
       test/checksum.cc
     LIBRARIES
       ${OPENSSL_LIBRARIES}
-    FOLDER
-      "Tests/Util"
   )
 endif()

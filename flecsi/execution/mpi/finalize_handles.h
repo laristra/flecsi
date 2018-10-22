@@ -118,8 +118,8 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
 
     MPI_Win_free(&win);
 
-    for (int i = 0; i < h.num_ghost() * h.max_entries_per_index(); i++)
-      clog_rank(warn, 0) << "ghost after: " << ghost_data[i].value << std::endl;
+    //for (int i = 0; i < h.num_ghost() * h.max_entries_per_index(); i++)
+    //  clog_rank(warn, 0) << "ghost after: " << ghost_data[i].value << std::endl;
 
     int send_count = 0;
     for (auto& shared : index_coloring.shared) {

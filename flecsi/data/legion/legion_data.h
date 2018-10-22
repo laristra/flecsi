@@ -28,6 +28,7 @@
 #include <flecsi/execution/internal_index_space.h>
 #include <flecsi/execution/legion/helper.h>
 #include <flecsi/execution/legion/legion_tasks.h>
+#include <flecsi/utils/offset.h>
 
 clog_register_tag(legion_data);
 
@@ -74,7 +75,7 @@ public:
     Legion::LogicalRegion logical_region;
     Legion::IndexPartition index_partition;
     size_t total_num_entities;
-    bool sparse = false;
+    bool has_sparse_fields = false;
   };
 
   struct sparse_index_space_t{
@@ -83,10 +84,17 @@ public:
     Legion::FieldSpace field_space;
     Legion::LogicalRegion logical_region;
     Legion::IndexPartition index_partition;
-    size_t max_exclusive_entries;
+    size_t exclusive_reserve;
     size_t max_entries_per_index;
     size_t max_shared_ghost;
     size_t color_size;
+  };
+
+  struct sparse_metadata_t {
+    Legion::IndexSpace index_space;
+    Legion::FieldSpace field_space;
+    Legion::LogicalRegion logical_region;
+    Legion::IndexPartition index_partition;
   };
 
   /*!
@@ -197,7 +205,8 @@ public:
 
   void init_from_coloring_info_map(
       const indexed_coloring_info_map_t & indexed_coloring_info_map,
-      const sparse_index_space_info_map_t& sparse_info_map) {
+      const sparse_index_space_info_map_t& sparse_info_map,
+      bool has_sparse_fields) {
     using namespace Legion;
     using namespace LegionRuntime;
     using namespace Arrays;
@@ -206,7 +215,7 @@ public:
       auto itr = sparse_info_map.find(idx_space.first);
       const sparse_index_space_info_t* sparse_info;
       
-      if(itr != sparse_info_map.end()){
+      if(has_sparse_fields && itr != sparse_info_map.end()){
         sparse_info = &itr->second;
       }
       else{
@@ -302,7 +311,7 @@ public:
     attach_name(is, is.field_space, "expanded field space");
 
     if(sparse_info){
-      is.sparse = true;
+      is.has_sparse_fields = true;
 
       sparse_index_space_t sis;
       // TODO: need to formalize this index space offset scheme
@@ -315,11 +324,11 @@ public:
             sis.max_shared_ghost, color_idx.second.shared + color_idx.second.ghost);
       }
 
-      sis.max_exclusive_entries = sparse_info->max_exclusive_entries;
+      sis.exclusive_reserve = sparse_info->exclusive_reserve;
       sis.max_entries_per_index = sparse_info->max_entries_per_index;
 
       sis.color_size = 
-        sis.max_exclusive_entries + 
+        sis.exclusive_reserve + 
         sis.max_shared_ghost * sis.max_entries_per_index;
 
       // Create expanded index space
@@ -543,10 +552,15 @@ public:
           case local:
           case subspace:
             break;
+          case ragged:
           case sparse:
             if (fi.index_space == is.index_space_id) {
               if(utils::hash::is_internal(fi.key)){
                 allocator.allocate_field(fi.size, fi.fid);
+              }
+              else{
+                // this is a sparse offset
+                allocator.allocate_field(sizeof(utils::offset_t), fi.fid);
               }
             }
             break;
@@ -590,10 +604,11 @@ public:
 
         for (const field_info_t & fi : context.registered_fields()) {
           switch (fi.storage_class) {
+            case ragged:
             case sparse:
               if (fi.index_space == is.index_space_id) {
                 if(!utils::hash::is_internal(fi.key)){
-                  allocator.allocate_field(fi.size, fi.fid);
+                  allocator.allocate_field(fi.size + sizeof(size_t), fi.fid);
                 }
               }
               break;
@@ -691,7 +706,7 @@ public:
     return adjacency_map_;
   }
 
-  const std::unordered_map<size_t, index_subspace_t> &
+  const std::map<size_t, index_subspace_t> &
   index_subspace_map() const {
     return index_subspace_map_;
   }
@@ -702,6 +717,71 @@ public:
 
   index_space_t color_index_space() {
     return color_index_space_;
+  }
+
+  void init_sparse_metadata(){
+    using namespace std;
+
+    using namespace Legion;
+    using namespace LegionRuntime;
+    using namespace Arrays;
+
+    using namespace execution;
+    
+    context_t & context = context_t::instance();
+    
+    LegionRuntime::Arrays::Rect<2> expanded_bounds =
+        LegionRuntime::Arrays::Rect<2>(
+            LegionRuntime::Arrays::Point<2>::ZEROES(),
+            make_point(num_colors_, 1));
+
+    Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
+
+    sparse_metadata_.index_space = runtime_->create_index_space(ctx_, expanded_dom);
+    attach_name(sparse_metadata_, sparse_metadata_.index_space,
+                "expanded sparse metadata index space");
+
+    // Read user + FleCSI registered field spaces
+    sparse_metadata_.field_space = runtime_->create_field_space(ctx_);
+
+    attach_name(sparse_metadata_, sparse_metadata_.field_space,
+                "expanded sparse metadata field space");
+
+    FieldAllocator allocator =
+        runtime_->create_field_allocator(ctx_, sparse_metadata_.field_space);
+
+    for (const context_t::field_info_t & fi : context.registered_fields()) {
+      if (fi.storage_class == sparse || fi.storage_class == ragged) {
+        allocator.allocate_field(sizeof(context_t::sparse_field_data_t), fi.fid);
+      } // if
+    } // for
+
+    sparse_metadata_.logical_region =
+        runtime_->create_logical_region(ctx_, sparse_metadata_.index_space, sparse_metadata_.field_space);
+    
+    attach_name(sparse_metadata_, sparse_metadata_.logical_region,
+                "expanded sparse metadata logical region");
+
+    DomainColoring color_partitioning;
+    for (int color = 0; color < num_colors_; color++) {
+      LegionRuntime::Arrays::Rect<2> subrect(
+          make_point(color, 0),
+          make_point(color, 1));
+
+      color_partitioning[color] = Domain::from_rect<2>(subrect);
+    }
+
+    sparse_metadata_.index_partition = runtime_->create_index_partition(
+        ctx_, sparse_metadata_.index_space, color_domain_, color_partitioning,
+        true /*disjoint*/);
+
+    attach_name(sparse_metadata_, sparse_metadata_.index_partition,
+                "sparse metadata color partitioning");
+
+  }
+
+  const sparse_metadata_t& sparse_metadata(){
+     return sparse_metadata_;
   }
 
 private:
@@ -725,11 +805,13 @@ private:
   // key: index space
   std::unordered_map<size_t, sparse_index_space_t> sparse_index_space_map_;
 
+  sparse_metadata_t sparse_metadata_;
+
   // key: index space
   std::unordered_map<size_t, adjacency_t> adjacency_map_;
 
   // key: index space
-  std::unordered_map<size_t, index_subspace_t> index_subspace_map_;
+  std::map<size_t, index_subspace_t> index_subspace_map_;
 
   std::set<size_t> adjacencies_;
 
@@ -757,6 +839,12 @@ private:
     sstr << label << " " << c.from_index_space_id << "->"
          << c.to_index_space_id;
     runtime_->attach_name(x, sstr.str().c_str());
+  }
+
+  template<class T>
+  void attach_name(const sparse_metadata_t&, T & x, const char * label) {
+    std::stringstream sstr;
+    runtime_->attach_name(x, label);
   }
 
 }; // struct legion_data_t

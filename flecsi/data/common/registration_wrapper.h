@@ -128,6 +128,17 @@ struct client_registration_wrapper__<
           utils::const_string_t("__flecsi_internal_entity_data__").hash(),
           INDEX_TYPE::value>();
 
+      {
+      clog_tag_guard(registration);
+      clog(info) << "registering field for type id: " <<
+        flecsi::utils::demangle(
+          typeid(typename CLIENT_TYPE::type_identifier_t).name()
+        ) <<
+        " index: " << INDEX_TYPE::value <<
+        " namespace: " << NAMESPACE_HASH <<
+        " name: " << NAME_HASH << std::endl;
+      } // scope
+
       storage_t::instance().register_field(
           type_key, field_key, wrapper_t::register_callback);
 

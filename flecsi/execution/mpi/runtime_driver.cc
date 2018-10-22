@@ -176,26 +176,17 @@ runtime_driver(
     flecsi_context.add_index_map(is.first, _map);
   } // for
 
-  //Set up maps from structured mesh to index-spaces
-  // bounded by boxes and vice versa.
-  using box_t = flecsi::coloring::box_t; 
-  for (auto is: flecsi_context.box_coloring_map())
-  {
-    std::map<size_t, box_t> bmap; 
-    size_t counter(0);
+#if defined(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL)
 
-    bmap[counter++] = is.second.exclusive.box;
-
-    for (auto s: is.second.shared)
-     bmap[counter++] = s.box;
-
-    for (auto g: is.second.ghost)
-     bmap[counter++] = g.box;
-
-    flecsi_context.add_box_map(is.first, bmap); 
+  // Execute control
+  if(flecsi_context.top_level_driver()) {
+    flecsi_context.top_level_driver()(argc, argv);
   }
 
+#else
+
   flecsi_context.advance_state();
+
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   specialization_spmd_init(argc, argv);
@@ -205,6 +196,8 @@ runtime_driver(
 
   // Execute the user driver.
   driver(argc, argv);
+
+#endif // FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL
 
 } // runtime_driver
 

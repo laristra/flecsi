@@ -58,7 +58,6 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     @param runtime The Legion task runtime.
     @param context The Legion task runtime context.
    */
-
   init_args_t(Legion::Runtime * runtime, Legion::Context & context)
       : runtime(runtime), context(context) {} // init_args
 
@@ -259,8 +258,72 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     > &a
   )
   {
-    // TODO: implement
+    auto & h = a.handle;
+
+    Legion::MappingTagID tag = EXCLUSIVE_LR;
+
+    Legion::RegionRequirement md_rr(
+        h.metadata_color_region, READ_WRITE, EXCLUSIVE,
+        h.metadata_color_region);
+    md_rr.add_field(h.fid);
+    region_reqs.push_back(md_rr);
+
+    Legion::RegionRequirement ex_rr(
+        h.offsets_exclusive_lr, privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE,
+        h.offsets_color_region, tag);
+    ex_rr.add_field(h.fid);
+    region_reqs.push_back(ex_rr);
+
+    Legion::RegionRequirement sh_rr(
+        h.offsets_shared_lr, privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE,
+        h.offsets_color_region);
+    sh_rr.add_field(h.fid);
+    region_reqs.push_back(sh_rr);
+
+    Legion::RegionRequirement gh_rr(
+        h.offsets_ghost_lr, privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE,
+        h.offsets_color_region);
+    gh_rr.add_field(h.fid);
+    region_reqs.push_back(gh_rr);
+
+    Legion::RegionRequirement ex_rr2(
+        h.entries_exclusive_lr, privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE,
+        h.entries_color_region, tag);
+    ex_rr2.add_field(h.fid);
+    region_reqs.push_back(ex_rr2);
+
+    Legion::RegionRequirement sh_rr2(
+        h.entries_shared_lr, privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE,
+        h.entries_color_region);
+    sh_rr2.add_field(h.fid);
+    region_reqs.push_back(sh_rr2);
+
+    Legion::RegionRequirement gh_rr2(
+        h.entries_ghost_lr, privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE,
+        h.entries_color_region);
+    gh_rr2.add_field(h.fid);
+    region_reqs.push_back(gh_rr2);
   }
+
+  template<
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
+  >
+  void
+  handle(
+    ragged_accessor<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    > & a
+  )
+  {
+    handle(reinterpret_cast<sparse_accessor<
+      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+  } // handle
 
   template<
     typename T
@@ -272,7 +335,64 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     > &m
   )
   {
-    // TODO: implement
+    auto & h = m.h_;
+
+    Legion::MappingTagID tag = EXCLUSIVE_LR;
+
+    Legion::RegionRequirement md_rr(
+        h.metadata_color_region, READ_WRITE, EXCLUSIVE,
+        h.metadata_color_region);
+    md_rr.add_field(h.fid);
+    region_reqs.push_back(md_rr);
+
+    Legion::RegionRequirement ex_rr(
+        h.offsets_exclusive_lr, READ_WRITE, EXCLUSIVE,
+        h.offsets_color_region, tag);
+    ex_rr.add_field(h.fid);
+    region_reqs.push_back(ex_rr);
+
+    Legion::RegionRequirement sh_rr(
+        h.offsets_shared_lr, READ_WRITE, EXCLUSIVE,
+        h.offsets_color_region);
+    sh_rr.add_field(h.fid);
+    region_reqs.push_back(sh_rr);
+
+    Legion::RegionRequirement gh_rr(
+        h.offsets_ghost_lr, READ_WRITE, EXCLUSIVE,
+        h.offsets_color_region);
+    gh_rr.add_field(h.fid);
+    region_reqs.push_back(gh_rr);
+
+    Legion::RegionRequirement ex_rr2(
+        h.entries_exclusive_lr, READ_WRITE, EXCLUSIVE,
+        h.entries_color_region, tag);
+    ex_rr2.add_field(h.fid);
+    region_reqs.push_back(ex_rr2);
+
+    Legion::RegionRequirement sh_rr2(
+        h.entries_shared_lr, READ_WRITE, EXCLUSIVE,
+        h.entries_color_region);
+    sh_rr2.add_field(h.fid);
+    region_reqs.push_back(sh_rr2);
+
+    Legion::RegionRequirement gh_rr2(
+        h.entries_ghost_lr, READ_WRITE, EXCLUSIVE,
+        h.entries_color_region);
+    gh_rr2.add_field(h.fid);
+    region_reqs.push_back(gh_rr2);
+  }
+
+  template<
+    typename T
+  >
+  void
+  handle(
+    ragged_mutator<
+      T
+    > & m
+  )
+  {
+    handle(reinterpret_cast<sparse_mutator<T>&>(m));
   }
 
   /*!
