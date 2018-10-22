@@ -13,9 +13,6 @@ env:
     - DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes
     - DISTRO=ubuntu_mpich RUNTIME=mpi DOCKERHUB=true
     - DISTRO=ubuntu_mpich RUNTIME=mpi WERROR=yes
-#    - DISTRO=ubuntu COVERAGE=ON RUNTIME=legion SONARQUBE=ON
-#    - DISTRO=ubuntu COVERAGE=ON RUNTIME=mpi    SONARQUBE=ON
-#    - DISTRO=ubuntu COVERAGE=ON RUNTIME=hpx    SONARQUBE=ON
 
     - DISTRO=fedora RUNTIME=legion    DOCKERHUB=true
     - DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
@@ -54,8 +51,6 @@ matrix:
     - compiler: clang
       env: DISTRO=fedora RUNTIME=mpi WERROR=yes
     - compiler: clang
-      env: DISTRO=ubuntu COVERAGE=ON RUNTIME=hpx    SONARQUBE=ON
-    - compiler: clang
       env: DISTRO=fedora RUNTIME=hpx    DOCKERHUB=true
     - compiler: clang
       env: DISTRO=fedora RUNTIME=hpx    IGNORE_NOCI=true
@@ -74,7 +69,6 @@ script:
   - cd ../../
   - mv -v ${TRAVIS_REPO_SLUG} $HOME/docker
   - cp -r $HOME/.ccache ${HOME}/docker/ccache
-  - cp -r $HOME/.sonar ${HOME}/docker/sonar
   - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
   - if [[ ${TRAVIS_BRANCH} != stable ]]; then TAG="${TAG}_${TRAVIS_BRANCH//[^a-zA-Z0-9]/_}"; fi
   - travis_retry timeout 540 docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
@@ -84,8 +78,6 @@ script:
                 --build-arg CXXFLAGS="${WERROR:+-Werror} -Wno-deprecated-declarations"
                 --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
                 --build-arg CC=${CC} --build-arg CXX=${CXX}
-                --build-arg SONARQUBE=${SONARQUBE} --build-arg SONARQUBE_TOKEN=${SONARQUBE_TOKEN}
-                --build-arg SONARQUBE_GITHUB_TOKEN=${SONARQUBE_GITHUB_TOKEN}
                 --build-arg CI=${CI} --build-arg TRAVIS=${TRAVIS} --build-arg TRAVIS_OS_NAME=${DISTRO}
                 --build-arg IGNORE_NOCI=${IGNORE_NOCI}
                 --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH} --build-arg TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER}
@@ -96,7 +88,6 @@ script:
     rm -rf ${HOME}/.ccache &&
     CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG} /bin/bash) &&
     docker cp ${CON}:/home/flecsi/.ccache ${HOME}/ &&
-    docker cp ${CON}:/home/flecsi/.sonar ${HOME}/
 
 after_success:
   - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable) && ${DOCKERHUB} = true ]] && DEPLOY=yes
@@ -136,8 +127,6 @@ branches:
 
 cache:
   ccache: true
-  directories:
-    - $HOME/.sonar
 
 compiler:
   - gcc
