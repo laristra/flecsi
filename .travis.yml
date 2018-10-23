@@ -87,7 +87,7 @@ script:
                 -t ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG} ${HOME}/docker/ &&
     rm -rf ${HOME}/.ccache &&
     CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG} /bin/bash) &&
-    docker cp ${CON}:/home/flecsi/.ccache ${HOME}/ &&
+    docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
 
 after_success:
   - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable) && ${DOCKERHUB} = true ]] && DEPLOY=yes
