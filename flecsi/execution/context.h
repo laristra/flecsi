@@ -654,6 +654,7 @@ struct context__ : public CONTEXT_POLICY {
     return box_coloring_info_;
   } // box_colorings
 
+  /*
   void add_box_map(size_t index_space, std::map<size_t, box_t> & box_map) {
     box_map_[index_space] = box_map;
 
@@ -662,13 +663,13 @@ struct context__ : public CONTEXT_POLICY {
       //reverse_box_map_[index_space][i.second] = i.first;
     } // for
   } // add_box_map
-
+  */
   /*!
     Return the index map associated with the given index space.
 
     @param index_space The map key.
    */
-
+  /*
   auto & box_map(size_t index_space) {
     auto it = box_map_.find(index_space);
     clog_assert(it != box_map_.end(), "invalid index space");
@@ -676,6 +677,7 @@ struct context__ : public CONTEXT_POLICY {
     return it->second;
   } // box_map
 
+   */
   /*!
     \todo DOCUMENT!
    */

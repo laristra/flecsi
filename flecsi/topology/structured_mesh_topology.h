@@ -120,18 +120,8 @@ public:
   structured_mesh_topology__(const structured_mesh_topology__ & m) : base_t(m.ms_) {}
 
   //! Constructor
-  structured_mesh_topology__(sm_id_array_t global_lbnds, 
-                             sm_id_array_t global_ubnds,
-                             sm_id_array_t global_strides, 
-                             sm_id_t primary_dim,  
-			     storage_t * ms = nullptr) : base_t(ms)
-  {
-     if (ms != nullptr)
-     {
-       initialize_storage(global_lbnds, global_ubnds, global_strides, primary_dim);
-     } 
-  }
-
+  structured_mesh_topology__(storage_t * ms = nullptr) : base_t(ms) {}
+  
   // mesh destructor
   virtual ~structured_mesh_topology__()
   {
@@ -149,7 +139,7 @@ public:
  //!                       That is, the input can represent bounds for 
  //!                       either vertices or cells. 
  //--------------------------------------------------------------------------//
-  void initialize_storage(sm_id_array_t global_lbnds, 
+  void initialize(sm_id_array_t global_lbnds, 
                           sm_id_array_t global_ubnds,
                           sm_id_array_t global_strides,
                           sm_id_t primary_dim)
@@ -189,18 +179,11 @@ public:
         else 
              primary = true; 
     
-        base_t::ms_->index_spaces[0][i].init(primary, primary_dim_,  
+        base_t::ms_->index_spaces[0][i].init_from_primary(primary, primary_dim_,  
         globalbnds_low_, globalbnds_up_, global_strides_, 
         (primary_dim_ == 0) ? bnds_info[1][meshdim_-1][i]: 
         bnds_info[0][meshdim_-1][i]);
       } 
-
-     //create query table once
-     //qt = new query::QueryTable<MESH_TYPE::num_dimensions, 
-     //                           MESH_TYPE::num_dimensions+1,
-     //                           MESH_TYPE::num_dimensions, 
-     //                           MESH_TYPE::num_dimensions+1>(); 
-    
   }
  
  /******************************************************************************
@@ -951,7 +934,6 @@ public:
   } //stencil_entity 
 
 private:
-
   //Mesh dimension
   size_t meshdim_; 
 
@@ -960,13 +942,6 @@ private:
   sm_id_array_t globalbnds_low_;
   sm_id_array_t globalbnds_up_;
   sm_id_array_t global_strides_; 
-
-
-  //Helper struct for traversal routines 
-  //query::QueryTable<MESH_TYPE::num_dimensions, MESH_TYPE::num_dimensions+1, 
-  //                  MESH_TYPE::num_dimensions, MESH_TYPE::num_dimensions+1>  *qt; 
-
-
 }; // class structured_mesh_topology__
 
 } // namespace topology

@@ -487,7 +487,59 @@ struct client_registration_wrapper__<
     }
 
     template<typename TUPLE_ENTRY_TYPE>
-    void handle_type() {} // handle_type
+    void handle_type() {
+      using INDEX_TYPE = typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
+      using DOMAIN_TYPE =
+          typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
+      using ENTITY_TYPE =
+          typename std::tuple_element<2, TUPLE_ENTRY_TYPE>::type;
+
+      constexpr size_t entity_hash = utils::hash::client_entity_hash<
+          NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value, DOMAIN_TYPE::value,
+          ENTITY_TYPE::dimension>();
+
+      const size_t type_key =
+          typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+
+      //Register a field for the lower bounds of the logical
+      //boxes representing the entities of this type.
+      using lbnd_wrapper_t = field_registration_wrapper__<
+          CLIENT_TYPE, flecsi::data::color, size_t, entity_hash, 0, 1,
+          INDEX_TYPE::value>;
+
+      const size_t lbnd_fieldkey = utils::hash::client_internal_field_hash<
+          utils::const_string_t("__flecsi_internal_box_lower_bounds__").hash(),
+          INDEX_TYPE::value>();
+
+      storage_t::instance().register_field(
+          type_key, lbnd_fieldkey, lbnd_wrapper_t::register_callback);
+
+      //Register a field for the upper bounds of the logical
+      //boxes representing the entities of this type.
+      using ubnd_wrapper_t = field_registration_wrapper__<
+          CLIENT_TYPE, flecsi::data::color, size_t, entity_hash, 0, 1,
+          INDEX_TYPE::value>;
+
+      const size_t ubnd_fieldkey = utils::hash::client_internal_field_hash<
+          utils::const_string_t("__flecsi_internal_box_upper_bounds__").hash(),
+          INDEX_TYPE::value>();
+
+      storage_t::instance().register_field(
+          type_key, ubnd_fieldkey, ubnd_wrapper_t::register_callback);
+      
+      //Register a field for the strides of the logical
+      //boxes representing the entities of this type.
+      using strides_wrapper_t = field_registration_wrapper__<
+          CLIENT_TYPE, flecsi::data::color, size_t, entity_hash, 0, 1,
+          INDEX_TYPE::value>;
+
+      const size_t strides_fieldkey = utils::hash::client_internal_field_hash<
+          utils::const_string_t("__flecsi_internal_box_strides__").hash(),
+          INDEX_TYPE::value>();
+
+      storage_t::instance().register_field(
+          type_key, strides_fieldkey, strides_wrapper_t::register_callback);
+     } //handle_type
 
   }; // struct entity_walker_t
 
@@ -504,7 +556,6 @@ struct client_registration_wrapper__<
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
     const size_t instance_hash =
         utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
-    auto const & field_registry = storage.field_registry();
 
     // Only register field attributes if this is the first time
     // that we have seen this type.

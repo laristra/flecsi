@@ -46,7 +46,9 @@ TEST(structured, 1Dprimecell){
   
   auto mst = new structured_mesh_storage__<TestMesh1dType::num_dimensions, 
                                           TestMesh1dType::num_domains>();
-  auto mesh = new TestMesh(lower_bounds, upper_bounds, strides, primary_dim,  mst); 
+  auto mesh = new TestMesh(mst); 
+  
+  mesh->initialize(lower_bounds, upper_bounds, strides, primary_dim); 
   
   size_t nv, ne;
   auto lbnd = mesh->primary_lower_bounds();
