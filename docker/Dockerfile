@@ -24,7 +24,6 @@ ARG IGNORE_NOCI
 RUN rm -rf /home/flecsi/.ccache
 COPY flecsi /home/flecsi/flecsi
 COPY ccache/ /home/flecsi/.ccache
-COPY sonar/ /home/flecsi/.sonar
 USER root
 RUN chown -R flecsi:flecsi /home/flecsi/flecsi /home/flecsi/.ccache /home/flecsi/.sonar
 USER flecsi
