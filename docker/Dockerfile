@@ -25,7 +25,7 @@ RUN rm -rf /home/flecsi/.ccache
 COPY flecsi /home/flecsi/flecsi
 COPY ccache/ /home/flecsi/.ccache
 USER root
-RUN chown -R flecsi:flecsi /home/flecsi/flecsi /home/flecsi/.ccache /home/flecsi/.sonar
+RUN chown -R flecsi:flecsi /home/flecsi/flecsi /home/flecsi/.ccache
 USER flecsi
 
 WORKDIR /home/flecsi/flecsi
