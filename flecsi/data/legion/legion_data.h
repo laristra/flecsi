@@ -889,10 +889,9 @@ public:
           runtime_->get_logical_subregion_by_color(ctx_,
             sis_owner_lp, SHARED_OWNER).get_index_space();
         sis->all_shared_partition = runtime_->create_index_partition(ctx_,
-          sis_all_shared_is, color_domain_, sis_all_shared_partitioning,
-          true /*disjoint*/);
+          sis->index_space, color_domain_, sis_all_shared_partitioning,
+          false /*alias*/);
         attach_name(*sis, sis->shared_partition, "shared partitioning");
-
       }
     }
 
