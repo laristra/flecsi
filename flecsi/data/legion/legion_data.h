@@ -710,6 +710,9 @@ public:
         FieldAllocator allocator =
             runtime_->create_field_allocator(ctx_, sis->field_space);
 
+        allocator.allocate_field(
+          sizeof(LegionRuntime::Arrays::Point<2>), ghost_owner_pos_fid);
+
         for (const field_info_t & fi : context.registered_fields()) {
           switch (fi.storage_class) {
             case ragged:
