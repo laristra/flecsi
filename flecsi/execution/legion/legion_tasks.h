@@ -459,7 +459,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
           Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
           ghost_entries_acc(regions[3], fid, field_info.size + sizeof(size_t));
 
-      
+if (my_color ==0)
+std::cout<<"IRINA DEBUG, new fid"<<std::endl;    
 
       for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
         offset_t * ghost_start_and_count_location =
@@ -479,6 +480,10 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
           LegionRuntime::Arrays::make_point(owner_location[0],
           owner_start_and_count_location->start());
 
+if (my_color ==0)
+std::cout<<"ghost_point = "<<ghost_point<<"  , owner_point = "<<
+owner_point<<std::endl;
+
         auto ghost_ptr = Legion::DomainPoint::from_point<2>(ghost_point);
         auto shared_ptr = Legion::DomainPoint::from_point<2>(owner_point);
         char *ptr_ghost_acc = (char*)(ghost_entries_acc.ptr(ghost_ptr));
@@ -496,6 +501,85 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   }
 
 } // ghost_copy_task
+
+
+__flecsi_internal_legion_task(sparse_set_owner_position_task, void){
+  using offset_t = data::sparse_data_offset_t;
+
+  const int my_color = runtime->find_local_MPI_rank();
+
+  context_t & context = context_t::instance();
+
+  clog_assert(regions.size() == 3, "sparse_set_owner_position task requires 3 regions");
+ 
+  auto ghost_owner_pos_fid = 
+      LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+
+  auto position_ref_acc = regions[0]
+                              .get_field_accessor(ghost_owner_pos_fid)
+                              .typeify<LegionRuntime::Arrays::Point<2>>();
+
+  Legion::Domain ghost_domain = runtime->get_index_space_domain(
+      ctx, regions[0].get_logical_region().get_index_space());
+
+  Legion::Domain ghost_entries_domain = runtime->get_index_space_domain(
+      ctx, regions[2].get_logical_region().get_index_space());
+
+  LegionRuntime::Arrays::Rect<2> ghost_rect = ghost_domain.get_rect<2>();
+  LegionRuntime::Arrays::Rect<2> ghost_entries_rect = 
+		ghost_entries_domain.get_rect<2>();
+
+  LegionRuntime::Arrays::GenericPointInRectIterator<2> entries_itr(
+		ghost_entries_rect);
+
+  size_t num_owner_entries = ghost_entries_rect.hi[1]-ghost_entries_rect.lo[1];
+  size_t num_ghosts = ghost_rect.hi[1]-ghost_rect.lo[1];
+  size_t max_entries_per_index=num_owner_entries/num_ghosts;
+std::cout <<"IRINA DEBUG, owner_entr_num = "<<num_owner_entries<<
+", num_ghosts = "<<num_ghosts <<", max_entr = "<<
+num_owner_entries/num_ghosts<<std::endl;
+
+
+  Legion::FieldID fid = *(task->regions[1].privilege_fields.begin());
+
+  const Legion::FieldAccessor<READ_ONLY, char, 2,
+      Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
+      owner_offset_acc(regions[1], fid, sizeof(offset_t));
+  Legion::FieldAccessor<READ_WRITE, LegionRuntime::Arrays::Point<2>, 2,
+          Legion::coord_t, Realm::AffineAccessor<
+					LegionRuntime::Arrays::Point<2>, 2, Legion::coord_t> >
+          ghost_entries_acc(regions[2], ghost_owner_pos_fid, 
+          sizeof(LegionRuntime::Arrays::Point<2>));  
+
+  std::vector <LegionRuntime::Arrays::Point<2>> owner_points;
+  for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
+    LegionRuntime::Arrays::Point<2> owner_location =
+           position_ref_acc.read(itr.p);
+    const offset_t * owner_start_and_count_location =
+        reinterpret_cast <const offset_t*>(owner_offset_acc.ptr(
+              Legion::DomainPoint::from_point<2>(owner_location)));
+  
+      for (size_t count =0; count <max_entries_per_index;
+       count ++)
+      {
+        LegionRuntime::Arrays::Point<2> owner_point=
+        LegionRuntime::Arrays::make_point(owner_location[0],
+          owner_start_and_count_location->start()+count);
+        owner_points.push_back(owner_point);
+       // auto &ptr = entries_itr.p;
+       // ghost_entries_acc.write(ptr, owner_point);
+      }//for
+  }//for
+
+  size_t i=0;
+  for (Legion::Domain::DomainPointIterator itr(ghost_entries_domain); itr;
+			itr++) {
+    auto &ptr = itr.p;
+    ghost_entries_acc.write(ptr, owner_points[i]);     
+    i++;
+  }
+
+}
 
 /*!
  Owners subregions task returns subrects required from every neighbor

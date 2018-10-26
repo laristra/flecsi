@@ -198,6 +198,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
       rr_ghost.add_field(ghost_owner_pos_fid);
+      rr_entries_ghost.add_field(ghost_owner_pos_fid);
 
       // TODO - circular dependency including internal_task.h
       auto constexpr key =

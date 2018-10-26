@@ -716,6 +716,9 @@ public:
         FieldAllocator allocator =
             runtime_->create_field_allocator(ctx_, sis->field_space);
 
+        allocator.allocate_field(
+          sizeof(LegionRuntime::Arrays::Point<2>), ghost_owner_pos_fid);
+
         for (const field_info_t & fi : context.registered_fields()) {
           switch (fi.storage_class) {
             case ragged:
@@ -895,10 +898,9 @@ public:
           runtime_->get_logical_subregion_by_color(ctx_,
             sis_owner_lp, SHARED_OWNER).get_index_space();
         sis->all_shared_partition = runtime_->create_index_partition(ctx_,
-          sis_all_shared_is, color_domain_, sis_all_shared_partitioning,
-          true /*disjoint*/);
+          sis->index_space, color_domain_, sis_all_shared_partitioning,
+          false /*alias*/);
         attach_name(*sis, sis->shared_partition, "shared partitioning");
-
       }
     }
 
