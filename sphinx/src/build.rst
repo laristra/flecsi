@@ -59,14 +59,16 @@ project is available from github at
 <https://github.com/laristra/flecsi-third-party>`_.
 Note that a suitable version of MPI is required for the superbuild.
 
-**Admonishment: Users should note that, while this approach is easier,
-it may not provide as robust a solution as individually building each
-dependency, and that care should be taken before installing these
-libraries on a production system to avoid possible conflicts or
-duplication. Production deployments of some of these tools may have
-architecture or system specific needs that will not be met by our
-superbuild. Users who are working with development branches of FleCSI
-are encouraged to build each package separately.**
+.. topic:: Admonishment
+
+  Users should note that, while this approach is easier, it may not
+  provide as robust a solution as individually building each dependency,
+  and that care should be taken before installing these libraries on a
+  production system to avoid possible conflicts or duplication.
+  Production deployments of some of these tools may have architecture or
+  system specific needs that will not be met by our superbuild. Users
+  who are working with development branches of FleCSI are encouraged to
+  build each package separately.
 
 Build instructions for the TPLs:
 

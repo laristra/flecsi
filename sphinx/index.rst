@@ -35,6 +35,7 @@ not locked into particular layouts or data structure representations.
   src/tutorial
   src/user-guide
   src/developer-guide
+  src/team
 
 .. .. doxygenindex::
    This is broken right now.
