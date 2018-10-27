@@ -1,0 +1,420 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Object Factory &mdash; FleCSI 1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/developer-guide/patterns/factory.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Type Erasure" href="type_erasure.html" />
+    <link rel="prev" title="Meyer’s Singleton" href="meyers_singleton.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: 1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../build.html">Building FleCSI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">FleCSI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide.html">FleCSI User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../developer-guide.html">FleCSI Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../style-guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style-guide.html#appendix-a-style-examples">Appendix A: Style Examples</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../patterns.html">FleCSI Design Patterns</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="meyers_singleton.html">Meyer’s Singleton</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Object Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="type_erasure.html">Type Erasure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="policies.html">Policy-Based Design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CRTP.html">Curiously Recurring Template Pattern (CRTP)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">FleCSI Team</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../developer-guide.html">FleCSI Developer Guide</a> &raquo;</li>
+        
+          <li><a href="../patterns.html">FleCSI Design Patterns</a> &raquo;</li>
+        
+      <li>Object Factory</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/src/developer-guide/patterns/factory.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="object-factory">
+<span id="object-factory"></span><h1>Object Factory<a class="headerlink" href="#object-factory" title="Permalink to this headline">¶</a></h1>
+<p>An object factory is a design pattern that allows a program to have
+multiple registered handlers for different types. As a motivating
+example, consider a program that must be able to read-in a variety of
+image formats:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">get_suffix</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+  <span class="n">base_io_handler_t</span> <span class="o">*</span> <span class="n">handler</span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">suffix</span> <span class="o">==</span> <span class="s">&quot;gif&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">handler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">gif_io_handler_t</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+  <span class="p">}</span>
+  <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">suffix</span> <span class="o">==</span> <span class="s">&quot;jpeg&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">handler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">jpeg_io_handler_t</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+  <span class="p">}</span>
+  <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">suffix</span> <span class="o">==</span> <span class="s">&quot;png&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">handler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">png_io_handler_t</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+  <span class="p">}</span> <span class="c1">// if</span>
+
+  <span class="n">handler</span><span class="o">-&gt;</span><span class="n">render</span><span class="p">();</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// main</span>
+</pre></div>
+</div>
+<p>This code is tedious to maintain for at least two reasons:</p>
+<ul class="simple">
+<li>It explicitly collects all of the types that can be handled by the
+program into a single logic block. This means that every time a new
+format is added, we must go back to this code and add a case for it.</li>
+<li>The composing object must include all of the type information for the
+various handlers. This may not be desirable or possible in all cases,
+or may simply violate the project’s design.</li>
+</ul>
+<p>A much better mechanism is to use an object factory:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="n">base_io_handler_t</span> <span class="o">*</span> <span class="n">handler</span> <span class="o">=</span> <span class="n">factory_t</span><span class="o">::</span><span class="n">instance</span><span class="p">().</span><span class="n">create_handler</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+      
+  <span class="n">handler</span><span class="o">-&gt;</span><span class="n">render</span><span class="p">();</span>
+
+<span class="p">}</span> <span class="c1">// main</span>
+</pre></div>
+</div>
+<p>The code section below shows the factory type that makes this possible.
+There are three primary properties of the factory type that are
+important to this design pattern:</p>
+<ol class="simple">
+<li>The factory is a singleton, and can be called from external scope to
+register the various handler types. In this example, we are using the
+Meyer’s singleton discussed elsewhere in this document.</li>
+<li>The factory exposes an interface to register a callback function for
+each suffix type. We will see how this can be called from each handler
+type’s implementation to avoid having to collect all of the handlers
+together in one place.</li>
+<li>The factory exposes a creation method that uses the filename’s suffix
+to lookup the correct callback function to create a handler of the
+appropriate type.</li>
+</ol>
+<p>These are enumerated in the code comments in the following section:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">factory_t</span>
+<span class="p">{</span>
+
+  <span class="k">using</span> <span class="n">callback_t</span> <span class="o">=</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">base_io_handler_t</span> <span class="o">*</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
+
+  <span class="c1">// 1. Meyer&#39;s singleton instance method.</span>
+  <span class="k">static</span>
+  <span class="n">factory_t</span> <span class="o">&amp;</span>
+  <span class="n">instance</span><span class="p">()</span>
+  <span class="p">{</span>
+    <span class="k">static</span> <span class="n">factory_t</span> <span class="n">s</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">s</span><span class="p">;</span>
+  <span class="p">}</span> <span class="c1">// instance</span>
+
+  <span class="c1">// 2. Callback registration method.</span>
+  <span class="kt">bool</span>
+  <span class="n">register_handler</span><span class="p">(</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">suffix</span><span class="p">,</span>
+    <span class="n">callback_t</span> <span class="o">&amp;</span> <span class="n">callback</span>
+  <span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">registry_</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span> <span class="o">==</span> <span class="n">registry_</span><span class="p">.</span><span class="n">end</span><span class="p">())</span> <span class="p">{</span>
+      <span class="n">registry_</span><span class="p">[</span><span class="n">suffix</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback</span><span class="p">;</span>
+    <span class="p">}</span> <span class="c1">// if</span>
+  <span class="p">}</span> <span class="c1">// register_handler</span>
+
+  <span class="c1">// 3. Handler creation method.</span>
+  <span class="n">base_io_handler_t</span> <span class="o">*</span>
+  <span class="n">create_handler</span><span class="p">(</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">filename</span>
+  <span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">get_suffix</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span>
+
+    <span class="n">assert</span><span class="p">(</span><span class="n">registry_</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span> <span class="o">!=</span> <span class="n">registry_</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+
+    <span class="k">return</span> <span class="n">registry_</span><span class="p">[</span><span class="n">suffix</span><span class="p">](</span><span class="n">filename</span><span class="p">);</span>
+  <span class="p">}</span> <span class="c1">// create_handler</span>
+
+  <span class="n">factory_t</span><span class="p">(</span><span class="k">const</span> <span class="n">factory_t</span> <span class="o">&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
+  <span class="n">factory_t</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="n">factory_t</span> <span class="o">&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">callback_t</span><span class="o">&gt;</span> <span class="n">registry_</span><span class="p">;</span>
+
+  <span class="n">factory_t</span><span class="p">()</span> <span class="p">{}</span>
+  <span class="o">~</span><span class="n">factory_t</span><span class="p">()</span> <span class="p">{}</span>
+
+<span class="p">};</span> <span class="c1">// struct factory_t</span>
+</pre></div>
+</div>
+<p>Using the <em>factory_t</em> interface, we can register a particular handler
+like this:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="c1">// 1. Define derived handler class (in this case for GIF images).</span>
+<span class="k">struct</span> <span class="nl">gif_io_handler_t</span> <span class="p">:</span> <span class="k">public</span> <span class="n">base_io_handler_t</span>
+<span class="p">{</span>
+  <span class="n">gif_io_handler_t</span><span class="p">(</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">filename</span>
+  <span class="p">)</span>
+  <span class="p">{</span>
+    <span class="c1">// Initialize handler and read GIF image.</span>
+  <span class="p">}</span> <span class="c1">// gif_io_handler_t</span>
+
+<span class="p">};</span> <span class="c1">// struct gif_io_handler_t</span>
+
+<span class="c1">// 2. Define a function to create a new instance of gif_io_handler_t.</span>
+<span class="n">base_io_handler_t</span> <span class="o">*</span>
+<span class="nf">create_gif_io_handler</span><span class="p">(</span>
+  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">filename</span>
+<span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="n">gif_io_handler_t</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span>
+<span class="p">}</span> <span class="c1">// create_gif_io_handler</span>
+
+<span class="c1">// 3. Register the handler callback function with the object factory.</span>
+<span class="kr">inline</span> <span class="kt">bool</span> <span class="n">gif_io_handler_registered</span> <span class="o">=</span>
+  <span class="n">factory_t</span><span class="o">::</span><span class="n">instance</span><span class="p">().</span><span class="n">register_handler</span><span class="p">(</span><span class="s">&quot;gif&quot;</span><span class="p">,</span> <span class="n">create_gif_io_handler</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Notice that the logic used to register a new handler can be called from
+within the file that defines it. This is extremely useful in maintaining
+code because there is no single place where all of the handlers must be
+known. The factory keeps track of this for us with its *registry_* map.
+Now, if the developer wants to add a new type, they must only define the
+type, deriving from the base <em>base_io_handler_t</em> type, and register it.
+One caveat is that the source or header file that uses the factory can
+only see factory entries who’s header is included in that file or its
+dependencies. However, this can often be handled by globing or as a
+build configuration step.</p>
+<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : --></div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="type_erasure.html" class="btn btn-neutral float-right" title="Type Erasure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="meyers_singleton.html" class="btn btn-neutral" title="Meyer’s Singleton" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'1.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+    /* Sidebar */
+    .wy-nav-side {
+      background: #6e808b;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>

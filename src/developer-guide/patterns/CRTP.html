@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Curiously Recurring Template Pattern (CRTP) &mdash; FleCSI 1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/developer-guide/patterns/CRTP.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="FleCSI Team" href="../../team.html" />
+    <link rel="prev" title="Policy-Based Design" href="policies.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: 1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../build.html">Building FleCSI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">FleCSI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide.html">FleCSI User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../developer-guide.html">FleCSI Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../style-guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style-guide.html#appendix-a-style-examples">Appendix A: Style Examples</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../patterns.html">FleCSI Design Patterns</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="meyers_singleton.html">Meyer’s Singleton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="factory.html">Object Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="type_erasure.html">Type Erasure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="policies.html">Policy-Based Design</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Curiously Recurring Template Pattern (CRTP)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">FleCSI Team</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../developer-guide.html">FleCSI Developer Guide</a> &raquo;</li>
+        
+          <li><a href="../patterns.html">FleCSI Design Patterns</a> &raquo;</li>
+        
+      <li>Curiously Recurring Template Pattern (CRTP)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/src/developer-guide/patterns/CRTP.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="curiously-recurring-template-pattern-crtp">
+<span id="curiously-recurring-template-pattern-crtp"></span><h1>Curiously Recurring Template Pattern (CRTP)<a class="headerlink" href="#curiously-recurring-template-pattern-crtp" title="Permalink to this headline">¶</a></h1>
+<p>More generally known as F-bound polymorphism, this idiom was formalized
+in the 1980s. The name <em>CRTP</em> was coined by Jim Coplien in 1995. The
+wikipedia entry is
+<a class="reference external" href="https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern">here</a>.</p>
+<p>The general form of the pattern involves a templated base class and a
+derived class that specializes the base class with its own type:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="k">template</span><span class="o">&lt;</span>
+      <span class="k">typename</span> <span class="n">CRTP_TYPE</span>
+    <span class="o">&gt;</span>
+    <span class="k">struct</span> <span class="n">base__</span> <span class="p">{</span>
+    <span class="p">};</span> <span class="c1">// struct base__</span>
+
+    <span class="k">struct</span> <span class="nl">derived__</span> <span class="p">:</span> <span class="k">public</span> <span class="n">base__</span><span class="o">&lt;</span><span class="n">derived__</span><span class="o">&gt;</span> <span class="c1">// This is the important bit.</span>
+    <span class="p">{</span>
+    <span class="p">};</span> <span class="c1">// struct derived__</span>
+</pre></div>
+</div>
+<p>One use of this pattern in FleCSI is for static polymorphism. In
+particular, by statically casting the base type to the derived type, we
+can allow the derived type to specialize the behavior of the base class
+interface. In the following code example, *tuple_walker__* is the base
+class for a derived type identified by <em>CRTP_TYPE</em>:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="k">template</span><span class="o">&lt;</span>
+      <span class="k">typename</span> <span class="n">CRTP_TYPE</span>
+    <span class="o">&gt;</span>
+    <span class="k">struct</span> <span class="n">tuple_walker__</span>
+    <span class="p">{</span>
+      <span class="c1">// In this example, we employ a helper type to walk a tuple and</span>
+      <span class="c1">// apply the handler method defined by the derived type.</span>
+      <span class="k">template</span><span class="o">&lt;</span>
+        <span class="k">typename</span> <span class="n">TUPLE_TYPE</span>
+      <span class="o">&gt;</span>
+      <span class="kt">void</span> <span class="n">walk</span><span class="p">(</span>
+        <span class="n">TUPLE_TYPE</span> <span class="o">&amp;</span> <span class="n">t</span>
+      <span class="p">)</span>
+      <span class="p">{</span>
+        <span class="k">using</span> <span class="n">HELPER_TYPE</span> <span class="o">=</span>
+          <span class="n">tuple_walker_helper__</span><span class="o">&lt;</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">tuple_size</span><span class="o">&lt;</span><span class="n">TUPLE_TYPE</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">TUPLE_TYPE</span><span class="p">,</span>
+            <span class="n">CRTP_TYPE</span>
+          <span class="o">&gt;</span><span class="p">;</span>
+      
+        <span class="c1">// CRTP is needed here to recover the derived type&#39;s type</span>
+        <span class="c1">// for this static cast.</span>
+        <span class="n">HELPER_TYPE</span><span class="o">::</span><span class="n">walk</span><span class="p">(</span><span class="o">*</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">CRTP_TYPE</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">),</span> <span class="n">t</span><span class="p">);</span>
+      <span class="p">}</span> <span class="c1">// walk</span>
+    <span class="p">};</span> <span class="c1">// struct tuple_walker__</span>
+</pre></div>
+</div>
+<p>The helper class calls the handle method:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="k">template</span><span class="o">&lt;</span>
+      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">INDEX</span><span class="p">,</span>
+      <span class="k">typename</span> <span class="n">TUPLE_TYPE</span><span class="p">,</span>
+      <span class="k">typename</span> <span class="n">CRTP_TYPE</span>
+    <span class="o">&gt;</span>
+    <span class="k">struct</span> <span class="n">tuple_walker_helper__</span>
+    <span class="p">{</span>
+      <span class="c1">// The walk method of the helper class calls the CRTP type&#39;s</span>
+      <span class="c1">// handle method.</span>
+      <span class="k">static</span>
+      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span>
+      <span class="n">walk</span><span class="p">(</span>
+        <span class="n">CRTP_TYPE</span> <span class="o">&amp;</span> <span class="n">p</span><span class="p">,</span>
+        <span class="n">TUPLE_TYPE</span> <span class="o">&amp;</span> <span class="n">t</span>
+      <span class="p">)</span>
+      <span class="p">{</span>
+        <span class="n">p</span><span class="p">.</span><span class="n">handle</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="n">CURRENT</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">));</span>
+        <span class="k">return</span> <span class="n">HELPER_TYPE</span><span class="o">::</span><span class="n">walk</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
+      <span class="p">}</span> <span class="c1">// walk</span>
+    <span class="p">};</span> <span class="c1">// tuple_walker_helper__</span>
+</pre></div>
+</div>
+<p>The <em>p.handle</em> method, defined by the <em>CRTP_TYPE</em>, allows the derived
+type to apply specialized logic to each element type of the <em>TUPLE_TYPE</em>.</p>
+<p>Several other uses of CRTP are documented on
+<a class="reference external" href="https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern">widipedia</a>.</p>
+<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : --></div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../../team.html" class="btn btn-neutral float-right" title="FleCSI Team" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="policies.html" class="btn btn-neutral" title="Policy-Based Design" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'1.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+    /* Sidebar */
+    .wy-nav-side {
+      background: #6e808b;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>

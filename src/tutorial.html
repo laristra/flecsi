@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>FleCSI Tutorial &mdash; FleCSI 1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/tutorial.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Building the Examples" href="tutorial/flecsit.html" />
+    <link rel="prev" title="CMake Configuration Options" href="build/options.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: 1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="build.html">Building FleCSI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">FleCSI Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#flecsi-design-philosophy">FleCSI Design Philosophy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admonishment">Admonishment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-docker-container">Using the Docker Container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tutorial-examples">Tutorial Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/flecsit.html">Building the Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/driver.html">Driver Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide.html">FleCSI User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer-guide.html">FleCSI Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">FleCSI Team</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>FleCSI Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/src/tutorial.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="flecsi-tutorial">
+<h1>FleCSI Tutorial<a class="headerlink" href="#flecsi-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial attempts to give a basic overview of the design philosophy
+and structure of the FleCSI programming system. Each subdirectory
+contains an example code that can be compiled with the <em>flecsit</em>
+compiler script. More details on how to do this are given below in the
+<em>Getting Started</em> section.</p>
+<div class="section" id="flecsi-design-philosophy">
+<h2>FleCSI Design Philosophy<a class="headerlink" href="#flecsi-design-philosophy" title="Permalink to this headline">¶</a></h2>
+<p>The structure of applications built on top of the FleCSI programming
+system assumes three basic types of users. Each of the user types has
+their own set of responsibilities that are designed to separate
+concerns, and to make sure that development tasks are intuitive and
+achievable by the associated user type.</p>
+<p>The user types are:</p>
+<ul class="simple">
+<li><strong>FleCSI Core Developer</strong> <br />
+These are users who design, implement, and maintain the core FleCSI
+library. Generally, these users are expert C++ developers who have a
+well-developed understanding of the the low-level design of the FleCSI
+software architecture. These users are generally computer scientists
+with expertise in generic programming techniques, data structure
+design, and optimization.</li>
+<li><strong>FleCSI Specialization Developer</strong> <br />
+These are users who adapt the core FleCSI data structures and runtime
+interfaces to create domain-specific interfaces for application
+developers.  These users are required to understand the components of
+the FleCSI interface that can be statically specialized, and must have
+a solid understanding of the runtime interface. Additionally,
+specialization developers are assumed to understand the requirements
+of the application area for which they are designing an interface.
+These users are generally computational scientists with expertise in
+one or more numerical methods areas.</li>
+<li><strong>FleCSI Application Developer</strong> <br />
+These users are methods developers or physicists who use a particular
+FleCSI specialization layer to develop and maintain application codes.
+These are the FleCSI end-users, who have expertise in designing and
+implementing numerical methods to solve complicated, multiphysics
+simulation problems.</li>
+</ul>
+<p>The source code implementing a FleCSI project will reflect this user
+structure: The project will link to the core FleCSI library; The project
+will use one or more specializations (These will usually also be
+libraries that are linked to by the application.); and, The application
+developers will use the core and specialization interfaces to write
+their applications.</p>
+</div>
+<div class="section" id="admonishment">
+<h2>Admonishment<a class="headerlink" href="#admonishment" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial is primarily designed as an introduction for application
+developers, i.e., we do not go into the details of designing or
+implementing the specialization layer, and the discussion of core FleCSI
+features is limited to the high-level execution and data interfaces.</p>
+<p>Because a specialization layer is necessary to use FleCSI, we have
+provided a simple mesh interface as part of the tutorial. Users who are
+interested in the basic structure of a mesh_topology specialization are
+encouraged to examine the source code in the <em>specialization</em>
+subdirectory of this tutorial (The complete source code is in the
+<em>flecsi-tutorial/specialization</em> subdirectory of the main project.)</p>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial assumes that you have successfully downloaded and built
+FleCSI, and that you have installed it somewhere on your system.
+Instructions for building FleCSI are available from the related pages
+[here](<a class="reference external" href="https://laristra.github.io/flecsi/assets/doxygen/md__home_flecsi_flecsi_auxiliary_markdown_01-Build.html">https://laristra.github.io/flecsi/assets/doxygen/md__home_flecsi_flecsi_auxiliary_markdown_01-Build.html</a>).</p>
+</div>
+<div class="section" id="using-the-docker-container">
+<h2>Using the Docker Container<a class="headerlink" href="#using-the-docker-container" title="Permalink to this headline">¶</a></h2>
+<p>The tutorial is also available as a Docker container. This simplifies
+getting and installing FleCSI and its dependencies. To use the Docker
+container, you should have the Docker daemon installed on your system.
+Docker is available for several different platforms from the
+[Docker Website](<a class="reference external" href="https://www.docker.com">https://www.docker.com</a>).</p>
+<p>To pull the tutorial image, do:
+<code class="docutils literal"><span class="pre">`bash</span>
+<span class="pre">$</span> <span class="pre">docker</span> <span class="pre">pull</span> <span class="pre">laristra/flecsi-tutorial:latest</span>
+<span class="pre">`</span></code>
+This will download the image to your machine. Once the pull is complete,
+you can run the image like:
+<code class="docutils literal"><span class="pre">`bash</span>
+<span class="pre">$</span> <span class="pre">docker</span> <span class="pre">run</span> <span class="pre">-it</span> <span class="pre">-h</span> <span class="pre">tutorialhost</span> <span class="pre">-u</span> <span class="pre">flecsi</span> <span class="pre">laristra/flecsi-tutorial:latest</span> <span class="pre">/bin/bash</span>
+<span class="pre">`</span></code>
+This will place you into a bash prompt, from which you can build and run
+the tutorial examples. The tutorials are in the <em>flecsi-tutorial</em>
+directory in the Docker container.</p>
+<p><strong>Note:</strong> You can also pull a Docker image for a specific runtime, e.g.,
+mpi or legion. The default image <em>latest</em> is built against the MPI
+backend. To pull the legion backend image do:
+<code class="docutils literal"><span class="pre">`</span>
+<span class="pre">$</span> <span class="pre">docker</span> <span class="pre">pull</span> <span class="pre">laristra/flecsi-tutorial:legion</span>
+<span class="pre">`</span></code></p>
+</div>
+<div class="section" id="tutorial-examples">
+<h2>Tutorial Examples<a class="headerlink" href="#tutorial-examples" title="Permalink to this headline">¶</a></h2>
+<p>The tutorial examples are designed to guide the reader through basic to
+more advanced FleCSI concepts.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/flecsit.html">Building the Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/driver.html">Driver Example</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tutorial/flecsit.html" class="btn btn-neutral float-right" title="Building the Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="build/options.html" class="btn btn-neutral" title="CMake Configuration Options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'1.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+    /* Sidebar */
+    .wy-nav-side {
+      background: #6e808b;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>

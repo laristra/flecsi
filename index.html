@@ -1,0 +1,366 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction &mdash; FleCSI 1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgindex.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Building FleCSI" href="src/build.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#">
+          
+
+          
+            
+            <img src="_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: 1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="src/build.html">Building FleCSI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src/tutorial.html">FleCSI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src/user-guide.html">FleCSI User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src/developer-guide.html">FleCSI Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src/team.html">FleCSI Team</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<div class="twocol docutils container">
+<div class="leftside docutils container">
+<div class="figure align-left" id="id1">
+<img alt="_images/anvil.jpg" src="_images/anvil.jpg" />
+<p class="caption"><span class="caption-text">Taylor Anvil Impact</span></p>
+</div>
+</div>
+<div class="rightside docutils container">
+<p>FleCSI is a compile-time configurable framework designed to support
+multi-physics application development. As such, FleCSI provides a very
+general set of infrastructure design patterns that can be specialized and
+extended to suit the needs of a broad variety of solver and data
+requirements. FleCSI currently supports multi-dimensional mesh topology,
+geometry, and adjacency information, as well as n-dimensional hashed-tree
+data structures, graph partitioning interfaces, and dependency closures.</p>
+<p>FleCSI introduces a functional programming model with control, execution,
+and data abstractions that are consistent both with MPI and with
+state-of-the-art, task-based runtimes such as Legion and Charm++. The
+abstraction layer insulates developers from the underlying runtime, while
+allowing support for multiple runtime systems including conventional
+models like asynchronous MPI.</p>
+<p>The intent is to provide developers with a concrete set of user-friendly
+programming tools that can be used now, while allowing flexibility in
+choosing runtime implementations and optimizations that can be applied to
+future architectures and runtimes.</p>
+<p>FleCSI’s control and execution models provide formal nomenclature for
+describing poorly understood concepts such as kernels and tasks. FleCSI’s
+data model provides a low-buy-in approach that makes it an attractive
+option for many application projects, as developers are not locked into
+particular layouts or data structure representations.</p>
+</div>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="src/build.html">Building FleCSI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/build.html#requirements-prerequisites">Requirements &amp; Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/build.html#flecsi-third-party-libraries-project">FleCSI Third Party Libraries Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/build.html#build-environment">Build Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/build.html#getting-the-code">Getting The Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/build.html#configuration-build">Configuration &amp; Build</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src/build/options.html">CMake Configuration Options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/tutorial.html">FleCSI Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#flecsi-design-philosophy">FleCSI Design Philosophy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#admonishment">Admonishment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#using-the-docker-container">Using the Docker Container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#tutorial-examples">Tutorial Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src/tutorial/flecsit.html">Building the Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/tutorial/driver.html">Driver Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/user-guide.html">FleCSI User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/user-guide/control.html">Control Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/user-guide/data.html">Data Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/user-guide/execution.html">Execution Model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/developer-guide.html">FleCSI Developer Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/developer-guide/style-guide.html">Style Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#guiding-principles">Guiding Principles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#directory-structure">Directory Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#names-and-order-of-includes">Names and Order of Includes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#struct-class-conventions">Struct &amp; Class Conventions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#structs-vs-classes">Structs vs. Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#variable-names">Variable Names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#formatting">Formatting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#control-flow">Control Flow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#braced-initialization">Braced Initialization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#function-method-formatting">Function &amp; Method Formatting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#more-on-spaces">More on spaces…</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#function-method-formatting-prototypes">Function &amp; Method Formatting (prototypes)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#type-names">Type Names</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#template-type-naming">Template Type Naming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#template-parameter-names">Template Parameter Names</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#error-exception-handling">Error &amp; Exception Handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="src/developer-guide/style-guide.html#appendix-a-style-examples">Appendix A: Style Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/developer-guide/patterns.html">FleCSI Design Patterns</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/patterns/meyers_singleton.html">Meyer’s Singleton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/patterns/factory.html">Object Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/patterns/type_erasure.html">Type Erasure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/patterns/policies.html">Policy-Based Design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/patterns/CRTP.html">Curiously Recurring Template Pattern (CRTP)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/team.html">FleCSI Team</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/team/ben.html">Ben Bergen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/team/christoph.html">Christoph Junghans</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/team/david.html">David Daniel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/team/irina.html">Irina Demeshko</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/team/jonas.html">Jonas Lippuner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/team/jonathan.html">Jonathan Graham</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/team/nick.html">Nick Moss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/team/oleg.html">Oleg Korobkin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/team/ollie.html">Li-Ta (Ollie) Lo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/team/karen.html">Karen Tsai</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="src/build.html" class="btn btn-neutral float-right" title="Building FleCSI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'1.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+    /* Sidebar */
+    .wy-nav-side {
+      background: #6e808b;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>

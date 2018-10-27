@@ -1,0 +1,668 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Style Guide &mdash; FleCSI 1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/developer-guide/style-guide.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="FleCSI Design Patterns" href="patterns.html" />
+    <link rel="prev" title="FleCSI Developer Guide" href="../developer-guide.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: 1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">Building FleCSI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">FleCSI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">FleCSI User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../developer-guide.html">FleCSI Developer Guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Style Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#guiding-principles">Guiding Principles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#names-and-order-of-includes">Names and Order of Includes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#struct-class-conventions">Struct &amp; Class Conventions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#structs-vs-classes">Structs vs. Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#variable-names">Variable Names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#formatting">Formatting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#control-flow">Control Flow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#braced-initialization">Braced Initialization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#function-method-formatting">Function &amp; Method Formatting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#more-on-spaces">More on spaces…</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#function-method-formatting-prototypes">Function &amp; Method Formatting (prototypes)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#type-names">Type Names</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#template-type-naming">Template Type Naming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#template-parameter-names">Template Parameter Names</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#error-exception-handling">Error &amp; Exception Handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#appendix-a-style-examples">Appendix A: Style Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patterns.html">FleCSI Design Patterns</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">FleCSI Team</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../developer-guide.html">FleCSI Developer Guide</a> &raquo;</li>
+        
+      <li>Style Guide</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/src/developer-guide/style-guide.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="style-guide">
+<span id="style-guide"></span><h1>Style Guide<a class="headerlink" href="#style-guide" title="Permalink to this headline">¶</a></h1>
+<p>If not otherwise indicated, the FleCSI coding style follows the Google
+C++ Style Guide.</p>
+<p>Notable exceptions include:</p>
+<ul class="simple">
+<li>C++ Exception Handling</li>
+<li>Type Names</li>
+<li>Function Names</li>
+<li>Variable Names (in some cases)</li>
+<li>Structs vs. Classes</li>
+<li>Formatting</li>
+</ul>
+<p>The exceptions are covered in the following sections.</p>
+<div class="section" id="guiding-principles">
+<span id="guiding-principles"></span><h2>Guiding Principles<a class="headerlink" href="#guiding-principles" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>No line in a file shall exceed 80 characters!</li>
+<li>If you are editing a file, maintain the original formatting unless it
+violates our style guide. If it does, fix it!</li>
+<li>For the most part, all names are lowercase and follow the conventions
+of the C++ Standard Template Library.</li>
+<li>All delimiters should be terminated with a C++-style comment:</li>
+</ul>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>     <span class="k">struct</span> <span class="n">trivial_t</span> <span class="p">{</span>
+       <span class="kt">double</span> <span class="n">value</span><span class="p">;</span>
+     <span class="p">};</span> <span class="c1">// struct trivial_t &lt;- This is the delimiter comment</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Conditional and loop logic should use explicit delimiters:</li>
+</ul>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">do_it</span><span class="p">(</span><span class="n">i</span><span class="p">);</span> <span class="c1">// WRONG!</span>
+</pre></div>
+</div>
+<blockquote>
+<div>Correct way:</div></blockquote>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">do_it</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="p">}</span> <span class="c1">// for</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>FleCSI header includes should use the full relative path from the
+top-level FleCSI source directory, e.g.:</li>
+</ul>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&quot;../mesh_topology.h&quot; // WRONG!</span><span class="cp"></span>
+</pre></div>
+</div>
+<blockquote>
+<div>Correct way:</div></blockquote>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&lt;flecsi/topology/mesh_topology.h&gt;</span><span class="cp"></span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>FleCSI header guard names should use the partial relative path. They
+should be lower case, and they should be appended with an underscore
+h (_h). The endif statement should be appended with a C++-style
+comment repeating the guard name. As an example, if the header file is
+in <strong>‘flecsi/partition/dcrs.h’</strong>, its guard entry should look like:</li>
+</ul>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="cp">#ifndef HEADER_HH </span><span class="c1">// WRONG!</span>
+</pre></div>
+</div>
+<blockquote>
+<div>Correct way:</div></blockquote>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="cp">#ifndef partition_dcrs_h</span>
+    <span class="cp">#define partition_dcrs_h</span>
+
+    <span class="c1">// Code...</span>
+
+    <span class="cp">#endif </span><span class="c1">// partition_dcrs_h</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="directory-structure">
+<span id="directory-structure"></span><h2>Directory Structure<a class="headerlink" href="#directory-structure" title="Permalink to this headline">¶</a></h2>
+<p>The source code for the core FleCSI infrastructure is located in the
+<em>top-level/flecsi</em> directory. For the most part, the subdirectories of
+this directory correspond to the different namespaces in the core
+infrastructure. Each of these subdirectories must contain a valid
+CMakeLists.txt file. However, none of their children should have a
+CMakeLists.txt file, i.e., the build system will not recurse beyond the
+first level of subdirectories. Developers should use relative paths
+within a CMakeLists.txt file to identify source in subdirectories.</p>
+<p>Unit test files should be placed in the <em>test</em> subdirectory of each
+namespace subdirectory. By convention, developers should not create
+subdirectories within the test subdirectory.</p>
+</div>
+<div class="section" id="names-and-order-of-includes">
+<span id="names-and-order-of-includes"></span><h2>Names and Order of Includes<a class="headerlink" href="#names-and-order-of-includes" title="Permalink to this headline">¶</a></h2>
+<p>This is <strong>not</strong> an exception to the Google C++ Syle Guide! Please read the
+guide and follow its conventions.</p>
+</div>
+<div class="section" id="struct-class-conventions">
+<span id="struct-class-conventions"></span><h2>Struct &amp; Class Conventions<a class="headerlink" href="#struct-class-conventions" title="Permalink to this headline">¶</a></h2>
+<p>This section describes the basic conventions used in defining structs
+and classes. For some examples of correctly formatted type definitions,
+please look at Appendix A.</p>
+<div class="section" id="structs-vs-classes">
+<span id="structs-vs-classes"></span><h3>Structs vs. Classes<a class="headerlink" href="#structs-vs-classes" title="Permalink to this headline">¶</a></h3>
+<p>The public interface should appear at the top of the type definition
+when possible.</p>
+<p>According to many sources, developers should prefer <em>class</em> to <em>struct</em>.
+The only real difference between the two definitions is the default
+access permissions, i.e., <em>struct</em> defaults to public, and <em>class</em>
+defaults to private.</p>
+<p>For FleCSI, we mostly follow the Google C++ Style Guide, which prefers
+<em>class</em> over <em>struct</em> unless the type is intended to offer direct access to
+its data members. An exception to this rule is for metaprogramming
+types. Many of the types used in metaprogramming do not have any data
+members (they only provide type definitions). In this case, developers
+should prefer <em>struct</em> over <em>class</em>.</p>
+<p>Like the Google C++ Style Guide convention, developers should always use
+a struct for type definitions that do not have restricted access
+permissions.</p>
+</div>
+</div>
+<div class="section" id="variable-names">
+<span id="variable-names"></span><h2>Variable Names<a class="headerlink" href="#variable-names" title="Permalink to this headline">¶</a></h2>
+<p>This is <em>mostly</em> not an exception to the Google C++ Style Guide, so you
+should read the guide and understand its conventions for variable names.
+In FleCSI, we follow those conventions for classes, and for structs that
+do not have restricted access permissions. For structs that <strong>do</strong> have
+access permissions, we follow the Google C++ Style Guide convention for
+classes.</p>
+</div>
+<div class="section" id="formatting">
+<span id="formatting"></span><h2>Formatting<a class="headerlink" href="#formatting" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="control-flow">
+<span id="control-flow"></span><h3>Control Flow<a class="headerlink" href="#control-flow" title="Permalink to this headline">¶</a></h3>
+<p>Control flow operations should not insert spaces:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="k">for</span> <span class="p">(</span> <span class="kt">size_t</span> <span class="n">i</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span> <span class="p">)</span> <span class="p">{</span> <span class="c1">// WRONG!</span>
+    <span class="p">}</span> <span class="c1">// for</span>
+
+    <span class="k">if</span> <span class="p">(</span> <span class="n">condition</span> <span class="p">)</span> <span class="p">{}</span> <span class="c1">// WRONG!</span>
+</pre></div>
+</div>
+<p>Correct way:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">}</span> <span class="c1">// for</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">}</span> <span class="c1">// if</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="braced-initialization">
+<span id="braced-initialization"></span><h3>Braced Initialization<a class="headerlink" href="#braced-initialization" title="Permalink to this headline">¶</a></h3>
+<p>Braced initialization <em>should</em> use spaces:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span> <span class="n">vec</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">};</span> <span class="c1">// WRONG!</span>
+</pre></div>
+</div>
+<p>Correct way:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span> <span class="n">vec</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="function-method-formatting">
+<span id="function-method-formatting"></span><h3>Function &amp; Method Formatting<a class="headerlink" href="#function-method-formatting" title="Permalink to this headline">¶</a></h3>
+<p>Function and method invocations should not insert spaces:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="n">my_function</span> <span class="p">(</span> <span class="n">argument1</span><span class="p">,</span> <span class="s">&quot;argument 2&quot;</span> <span class="p">);</span> <span class="c1">// WRONG!</span>
+</pre></div>
+</div>
+<p>Correct way:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="n">my_function</span><span class="p">(</span><span class="n">argument1</span><span class="p">,</span> <span class="s">&quot;argument 2&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="more-on-spaces">
+<span id="more-on-spaces"></span><h3>More on spaces…<a class="headerlink" href="#more-on-spaces" title="Permalink to this headline">¶</a></h3>
+<p>Never put empty characters at the end of a line!</p>
+</div>
+<div class="section" id="function-method-formatting-prototypes">
+<span id="function-method-formatting-prototypes"></span><h3>Function &amp; Method Formatting (prototypes)<a class="headerlink" href="#function-method-formatting-prototypes" title="Permalink to this headline">¶</a></h3>
+<p>Functions and methods should be formatted with each template parameter,
+the scope (static, inline), the return type, the name, and each
+signature parameter on its own line:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="k">template</span><span class="o">&lt;</span>
+      <span class="k">typename</span> <span class="n">TYPENAME1</span><span class="p">,</span>
+      <span class="k">typename</span> <span class="n">TYPENAME2</span><span class="p">,</span>
+      <span class="k">typename</span> <span class="n">TYPENAME3</span>
+    <span class="o">&gt;</span>
+    <span class="k">static</span>
+    <span class="n">return_t</span> <span class="o">&amp;</span>
+    <span class="n">name</span><span class="p">(</span>
+      <span class="n">argument1</span> <span class="n">arg1name</span><span class="p">,</span>
+      <span class="n">argument2</span> <span class="n">arg2name</span><span class="p">,</span>
+      <span class="n">argument3</span> <span class="n">arg3name</span>
+    <span class="p">)</span>
+    <span class="p">{</span>
+    <span class="p">}</span> <span class="c1">// name</span>
+</pre></div>
+</div>
+<p>Parameters should have one tab equivalent indentation. The convention is
+to define a tab as two spaces. FleCSI source files have formatting hints
+for Vim and Emacs to expand tabs to this number of spaces.</p>
+<p><strong>NOTE:</strong> If the parameters to a function or method definition are
+trivial, i.e., there is only a single template parameter, <strong>or</strong> there
+are no signature parameters, it is not necessary to break up the
+arguments:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="c1">// Trivial template and signature</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">TYPENAME</span><span class="o">&gt;</span>
+    <span class="n">return_t</span> <span class="o">&amp;</span>
+    <span class="n">name</span><span class="p">()</span>
+    <span class="p">{</span>
+    <span class="p">}</span> <span class="c1">// name</span>
+
+    <span class="c1">// Trivial template</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">TYPENAME</span><span class="o">&gt;</span>
+    <span class="n">return_t</span> <span class="o">&amp;</span>
+    <span class="n">name</span><span class="p">(</span>
+      <span class="n">argument1</span> <span class="n">arg1name</span><span class="p">,</span>
+      <span class="n">argument2</span> <span class="n">arg2name</span>
+    <span class="p">)</span>
+    <span class="p">{</span>
+    <span class="p">}</span> <span class="c1">// name</span>
+
+    <span class="c1">// Trivial signature</span>
+    <span class="k">template</span><span class="o">&lt;</span>
+      <span class="k">typename</span> <span class="n">TYPENAME1</span><span class="p">,</span>
+      <span class="k">typename</span> <span class="n">TYPENAME2</span>
+    <span class="o">&gt;</span>
+    <span class="n">return_t</span> <span class="o">&amp;</span>
+    <span class="n">name</span><span class="p">()</span>
+    <span class="p">{</span>
+    <span class="p">}</span> <span class="c1">// name</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="type-names">
+<span id="type-names"></span><h2>Type Names<a class="headerlink" href="#type-names" title="Permalink to this headline">¶</a></h2>
+<p>FleCSI follows a C-style naming convention of all lower-case letters
+with underscores. Fully-qualified types should also append an
+underscore lower-case <em>t</em>, i.e., _t to the end of the type name:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="k">struct</span> <span class="n">my_type_t</span>
+    <span class="p">{</span>
+      <span class="kt">double</span> <span class="n">value</span><span class="p">;</span>
+    <span class="p">};</span> <span class="c1">// struct my_type_t</span>
+</pre></div>
+</div>
+<p>Type definitions should be terminated with a C-style comment indicating
+the type name.</p>
+<div class="section" id="template-type-naming">
+<span id="template-type-naming"></span><h3>Template Type Naming<a class="headerlink" href="#template-type-naming" title="Permalink to this headline">¶</a></h3>
+<p>For templated types, use a double underscore for the unqualified type:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="n">my_template_type__</span>
+</pre></div>
+</div>
+<p>This allows the type to be fully qualified using the normal type naming
+convention listed above, e.g.:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="c1">// Unqualified type definition</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">TYPENAME</span><span class="o">&gt;</span>
+    <span class="k">struct</span> <span class="n">my_template_type__</span>
+    <span class="p">{</span>
+      <span class="n">TYPENAME</span> <span class="n">value</span><span class="p">;</span>
+    <span class="p">};</span> <span class="c1">// struct my_template_type__</span>
+
+    <span class="c1">// Fully qualified type</span>
+    <span class="k">using</span> <span class="n">my_template_type_t</span> <span class="o">=</span> <span class="n">my_template_type__</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The double underscore was chosen so that it does not conflict with
+member variable names, which use a single underscore.</p>
+</div>
+<div class="section" id="template-parameter-names">
+<span id="template-parameter-names"></span><h3>Template Parameter Names<a class="headerlink" href="#template-parameter-names" title="Permalink to this headline">¶</a></h3>
+<p>Template parameters should use descriptive, uppercase names:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="c1">//------------------------------------------------------------------------//</span>
+    <span class="c1">//! @tparam TYPENAME The POD type.</span>
+    <span class="c1">//! @tparam ARGUMENTS A variadic list of arguments.</span>
+    <span class="c1">//------------------------------------------------------------------------//</span>
+
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">TYPENAME</span><span class="p">,</span> <span class="k">typename</span> <span class="p">...</span> <span class="n">ARGUMENTS</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="error-exception-handling">
+<span id="error-exception-handling"></span><h2>Error &amp; Exception Handling<a class="headerlink" href="#error-exception-handling" title="Permalink to this headline">¶</a></h2>
+<p>Use assertions and static assertions to assert things that must be true:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="k">template</span><span class="o">&lt;</span><span class="kt">size_t</span> <span class="n">FROM_DIMENSION</span><span class="o">&gt;</span>
+    <span class="n">connectivity</span> <span class="o">&amp;</span>
+    <span class="n">get</span><span class="p">(</span>
+      <span class="kt">size_t</span> <span class="n">to_dim</span>
+    <span class="p">)</span>
+    <span class="p">{</span>
+      <span class="k">static_assert</span><span class="p">(</span><span class="n">FROM_DIMENSION</span> <span class="o">&lt;=</span> <span class="n">DIMENSION</span><span class="p">,</span> <span class="s">&quot;invalid from dimension&quot;</span><span class="p">);</span>
+      <span class="n">assert</span><span class="p">(</span><span class="n">to_dim</span> <span class="o">&lt;=</span> <span class="n">DIMENSION</span> <span class="o">&amp;&amp;</span> <span class="s">&quot;invalid to dimension&quot;</span><span class="p">);</span>
+      <span class="k">return</span> <span class="n">conns_</span><span class="p">[</span><span class="n">FROM_DIMENSION</span><span class="p">][</span><span class="n">to_dim</span><span class="p">];</span>
+    <span class="p">}</span> <span class="c1">// get</span>
+</pre></div>
+</div>
+<p>In this case, we can verify that the from dimension (template parameter
+FROM_DIMENSION) is in bounds using a static assertion. We need to use a
+dynamic assertion to check the to dimension (to_dim) since it is passed
+as an argument to the method. In both cases, the assertions must be true
+for the code to not be broken, i.e., if the assertion is not true, there
+is a bug! Fix it!</p>
+<p>Use exception handling to catch exceptional situations, i.e., when a
+condition for the correct functioning of the code is not met. An
+exception may be caught and the program can recover from it:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="k">try</span> <span class="p">{</span>
+      <span class="n">type_t</span> <span class="o">*</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">type_t</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">bad_alloc</span> <span class="o">&amp;</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// do something because the allocation failed...</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(...)</span> <span class="p">{</span>
+      <span class="c1">// default exception</span>
+    <span class="p">}</span> <span class="c1">// try</span>
+</pre></div>
+</div>
+<p>In many cases, exception handling should be reserved for interfaces that
+can be called by a developer. Internal interfaces should use assertions
+to identify bugs.</p>
+</div>
+<div class="section" id="summary">
+<span id="summary"></span><h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>Failure to respect the FleCSI style guidelines will lead to public
+ritualized torture and eventual sacrifice…</p>
+<hr class="docutils" />
+<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(appendix-a) --><p>\pagebreak</p>
+</div>
+</div>
+<div class="section" id="appendix-a-style-examples">
+<span id="appendix-a-style-examples"></span><h1>Appendix A: Style Examples<a class="headerlink" href="#appendix-a-style-examples" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span>    <span class="c1">//------------------------------------------------------------------------//</span>
+    <span class="c1">//! The my_interface_t type provides an example of a correctly formatted</span>
+    <span class="c1">//! and documented type.</span>
+    <span class="c1">//------------------------------------------------------------------------//</span>
+
+    <span class="k">template</span><span class="o">&lt;</span>
+      <span class="k">typename</span> <span class="n">TYPENAME</span>
+    <span class="o">&gt;</span>
+    <span class="k">struct</span> <span class="n">my_interface_t</span>
+    <span class="p">{</span>
+
+      <span class="c1">//----------------------------------------------------------------------//</span>
+      <span class="c1">//! Construct a my_interface_t with value.</span>
+      <span class="c1">//----------------------------------------------------------------------//</span>
+
+      <span class="n">my_interface_t</span><span class="p">(</span>
+        <span class="n">TYPENAME</span> <span class="n">value</span>
+      <span class="p">)</span>
+      <span class="o">:</span>
+        <span class="n">value_</span><span class="p">(</span><span class="n">initialize</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+      <span class="p">{}</span>
+
+      <span class="c1">//----------------------------------------------------------------------//</span>
+      <span class="c1">//! This method provides an example of a member function.</span>
+      <span class="c1">//!</span>
+      <span class="c1">//! @param input The input value to the method.</span>
+      <span class="c1">//!</span>
+      <span class="c1">//! @return A modified value of type TYPENAME.</span>
+      <span class="c1">//----------------------------------------------------------------------//</span>
+
+      <span class="n">TYPENAME</span>
+      <span class="n">two_times</span><span class="p">(</span>
+        <span class="n">TYPENAME</span> <span class="n">input</span>
+      <span class="p">)</span>
+      <span class="p">{</span>
+        <span class="k">return</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">value_</span><span class="p">;</span>
+      <span class="p">}</span> <span class="c1">// two_times</span>
+
+    <span class="k">private</span><span class="o">:</span>
+
+      <span class="c1">// private member functions</span>
+
+      <span class="kt">void</span>
+      <span class="n">initialize</span><span class="p">(</span>
+        <span class="n">TYPENAME</span> <span class="n">value</span>
+      <span class="p">)</span>
+      <span class="p">{</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="o">+</span> <span class="mf">5.0</span><span class="p">;</span>
+      <span class="p">}</span> <span class="c1">// initialize</span>
+
+      <span class="c1">// private data members</span>
+
+      <span class="n">TYPENAME</span> <span class="n">value_</span><span class="p">;</span>
+
+    <span class="p">};</span> <span class="c1">// struct my_interface_t</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : --></div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="patterns.html" class="btn btn-neutral float-right" title="FleCSI Design Patterns" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../developer-guide.html" class="btn btn-neutral" title="FleCSI Developer Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'1.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+    /* Sidebar */
+    .wy-nav-side {
+      background: #6e808b;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>
