@@ -29,12 +29,12 @@ attractive option for many application projects, as developers are
 not locked into particular layouts or data structure representations.
 
 .. toctree::
-  :maxdepth: 2
   :caption: Contents:
 
   src/build
   src/tutorial
-  src/patterns
+  src/user-guide
+  src/developer-guide
 
 .. .. doxygenindex::
    This is broken right now.

@@ -8,7 +8,6 @@ of the FleCSI core library. If you *are not* a FleCSI developer, you can
 safely skip this informaiton.
 
 .. toctree::
-  :maxdepth: 1
   :caption: Patterns:
 
   patterns/meyers_singleton

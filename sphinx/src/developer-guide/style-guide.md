@@ -1,5 +1,3 @@
-<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(style-guide) -->
-
 # Style Guide
 
 If not otherwise indicated, the FleCSI coding style follows the Google
