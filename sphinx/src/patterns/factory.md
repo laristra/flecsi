@@ -1,10 +1,11 @@
-# Design Pattern: Object Factory
+# Object Factory
 
 An object factory is a design pattern that allows a program to have
 multiple registered handlers for different types. As a motivating
 example, consider a program that must be able to read-in a variety of
 image formats:
-```
+
+```cpp
 int main(int argc, char ** argv) {
 
   std::string suffix = get_suffix(argv[1]);
@@ -36,7 +37,8 @@ This code is tedious to maintain for at least two reasons:
   or may simply violate the project's design.
 
 A much better mechanism is to use an object factory:
-```
+
+```cpp
 int main(int argc, char ** argv) {
 
   base_io_handler_t * handler = factory_t::instance().create_handler(argv[0]);
@@ -62,7 +64,8 @@ important to this design pattern:
   appropriate type.
 
 These are enumerated in the code comments in the following section:
-```
+
+```cpp
 struct factory_t
 {
 
@@ -115,9 +118,11 @@ private:
 
 }; // struct factory_t
 ```
+
 Using the *factory_t* interface, we can register a particular handler
 like this:
-```
+
+```cpp
 // 1. Define derived handler class (in this case for GIF images).
 struct gif_io_handler_t : public base_io_handler_t
 {
@@ -143,6 +148,7 @@ create_gif_io_handler(
 inline bool gif_io_handler_registered =
   factory_t::instance().register_handler("gif", create_gif_io_handler);
 ```
+
 Notice that the logic used to register a new handler can be called from
 within the file that defines it. This is extremely useful in maintaining
 code because there is no single place where all of the handlers must be

@@ -1,4 +1,4 @@
-# Design Pattern: Curiously Recurring Template Pattern (CRTP)
+# Curiously Recurring Template Pattern (CRTP)
 
 More generally known as F-bound polymorphism, this idiom was formalized
 in the 1980s. The name *CRTP* was coined by Jim Coplien in 1995. The
@@ -8,7 +8,7 @@ wikipedia entry is
 The general form of the pattern involves a templated base class and a
 derived class that specializes the base class with its own type:
 
-```
+```cpp
     template<
       typename CRTP_TYPE
     >
@@ -26,7 +26,7 @@ can allow the derived type to specialize the behavior of the base class
 interface. In the following code example, *tuple_walker__* is the base
 class for a derived type identified by *CRTP_TYPE*:
 
-```
+```cpp
     template<
       typename CRTP_TYPE
     >
@@ -57,7 +57,7 @@ class for a derived type identified by *CRTP_TYPE*:
 
 The helper class calls the handle method:
 
-```
+```cpp
     template<
       std::size_t INDEX,
       typename TUPLE_TYPE,

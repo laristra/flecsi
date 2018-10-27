@@ -1,11 +1,12 @@
-# Design Pattern: Type Erasure
+# Type Erasure
 
 Type erasure allows the creation of a gneneric container, i.e., one that
 contains instances of different types. This contravenes C++'s normal
 requirements of strict and static typing. This pattern is attributed to
 Kevlin Henney, *C++ Report 12(7)*, July/August 2000, entitled,
 [Valued Conversions](http://www.two-sdg.demon.co.uk/curbralan/papers/ValuedConversions.pdf). His definition of the *any* type follows:
-```
+
+```cpp
 class any
 {
 public:
@@ -60,7 +61,7 @@ private:
 Using this basic definition, we can add inward conversion interface from
 arbitrary types:
 
-```
+```cpp
 class any
 {
 public:
@@ -100,7 +101,7 @@ public:
 
 Recovering the typed value can be handled like:
 
-```
+```cpp
 class any
 {
 public:
@@ -148,7 +149,8 @@ Working off of this model, FleCSI uses a simpler, less-explicit form of
 type erasure through the definition of a common method interface for a
 set of parameterized types. For example, if several types define a
 method *erasure_method* like
-```
+
+```cpp
 template<
   typename ... PARAMS
 >

@@ -87,6 +87,7 @@ html_theme_options = {
 html_static_path = [ '_static' ]
 
 html_logo = '_static/images/flecsi.png'
+html_favicon = '_static/images/favicon.ico'
 
 html_sidebars = {
     '**': [

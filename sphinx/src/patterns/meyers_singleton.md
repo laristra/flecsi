@@ -1,29 +1,29 @@
 # Meyer's Singleton
 
 A singleton is a type instance for which there is one, and only one,
-object in the system.
+object in the system:
 
-```
-    struct singleton_t
-    {
+```cpp
+struct singleton_t
+{
 
-      static
-      singleton_t &
-      instance()
-      {
-        static singleton_t s;
-        return s;
-      } // instance
+  static
+  singleton_t &
+  instance()
+  {
+    static singleton_t s;
+    return s;
+  } // instance
 
-      singleton_t(const singleton_t &) = delete;
-      singleton_t & operator = (const singleton_t &) = delete;
+  singleton_t(const singleton_t &) = delete;
+  singleton_t & operator = (const singleton_t &) = delete;
 
-    private:
+private:
 
-      singleton_t() {}
-      ~singleton_t() {}
+  singleton_t() {}
+  ~singleton_t() {}
 
-    }; // struct singleton_t
+}; // struct singleton_t
 ```
 
 Attributed to Scott Meyers, this singleton pattern exploits three

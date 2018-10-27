@@ -12,5 +12,9 @@ safely skip this informaiton.
   :caption: Patterns:
 
   patterns/meyers_singleton
+  patterns/factory
+  patterns/type_erasure
+  patterns/policies
+  patterns/CRTP
 
 .. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :
