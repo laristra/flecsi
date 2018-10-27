@@ -105,11 +105,13 @@ backend. To pull the legion backend image do:
 $ docker pull laristra/flecsi-tutorial:legion
 ```
 
-Examples
-********
+Tutorial Examples
+*****************
+
+The tutorial examples are designed to guide the reader through basic to
+more advanced FleCSI concepts.
 
 .. toctree::
-  :caption: Examples:
 
   tutorial/flecsit
   tutorial/driver

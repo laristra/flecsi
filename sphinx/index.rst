@@ -5,8 +5,10 @@ Introduction
 
    .. container:: leftside
 
-      .. image:: _static/images/anvil.jpg
+      .. figure:: _static/images/anvil.jpg
          :align: left
+
+         Taylor Anvil Impact
 
    .. container:: rightside
 
