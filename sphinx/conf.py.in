@@ -4,10 +4,17 @@
 # All rights reserved
 #------------------------------------------------------------------------------#
 
+import sys
+
+# Add the Breathe path
+# FIXME: This should be discovered during cmake configuration
+sys.path.append("/usr/local/lib/python3.6/dist-packages/breathe/")
+
 # Sphinx extensions as list of strings
 extensions = [
     'sphinx.ext.mathjax',
-    'sphinx.ext.githubpages'
+    'sphinx.ext.githubpages',
+    'breathe'
 ]
 
 # Add any paths that contain templates
@@ -20,6 +27,10 @@ source_suffix = [ '.rst', '.md' ]
 source_parsers = {
     '.md': 'recommonmark.parser.CommonMarkParser'
 }
+
+# This is required for the Breathe configuration
+breathe_projects = { "FleCSI": "@CMAKE_BINARY_DIR@/doc/doxygen/xml" }
+breathe_default_project = "FleCSI"
 
 # Master toctree document
 master_doc = 'index'
@@ -47,7 +58,8 @@ exclude_patterns = [
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+#pygments_style = '_static/flecsi' (This might work in 3.0)
+pygments_style = 'monokai'
 
 # Enable todo and todolist
 todo_include_todos = True
@@ -56,12 +68,13 @@ todo_include_todos = True
 html_theme = 'sphinx_rtd_theme'
 
 html_theme_options = {
-    'canonical_url': '',
+    'canonical_url': 'https://flecsi.org',
     'analytics_id': '',
     'logo_only': True,
     'display_version': True,
     'prev_next_buttons_location': 'bottom',
     'style_external_links': False,
+
     # Toc options
     'collapse_navigation': True,
     'sticky_navigation': True,

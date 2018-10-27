@@ -1,12 +1,4 @@
-# FleCSI: Tutorial - 00 Driver Example
-<!--
-  The above header is required for Doxygen to correctly name the
-  auto-generated page. It is ignored in the FleCSI guide documentation.
--->
-
-<!-- CINCHDOC DOCUMENT(user-guide) SECTION(tutorial::driver) -->
-
-# Driver Example
+## Driver Example
 
 As a runtime abstraction layer, FleCSI replaces the normal main
 function with a driver function. Like main, the driver is the most

@@ -1,11 +1,3 @@
-# FleCSI: Build
-<!--
-  The above header is required for Doxygen to correctly name the
-  auto-generated page. It is ignored in the FleCSI guide documentation.
--->
-
-<!-- CINCHDOC DOCUMENT(user-guide | developer-guide) SECTION(build) -->
-
 # Building FleCSI
 
 FleCSI can be configured to run with different distributed-memory

@@ -1,4 +1,4 @@
-# Design Pattern: Meyer's Singleton
+# Meyer's Singleton
 
 A singleton is a type instance for which there is one, and only one,
 object in the system.

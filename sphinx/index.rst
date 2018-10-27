@@ -1,7 +1,3 @@
-.. toctree::
-  :maxdepth: 2
-  :caption: Contents:
-
 Introduction
 ============
 
@@ -32,6 +28,13 @@ FleCSI's data model provides a low-buy-in approach that makes it an
 attractive option for many application projects, as developers are
 not locked into particular layouts or data structure representations.
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. toctree::
+  :maxdepth: 2
+  :caption: Contents:
+
+  src/build
+  src/tutorial
+  src/patterns
+
+.. .. doxygenindex::
+   This is broken right now.
