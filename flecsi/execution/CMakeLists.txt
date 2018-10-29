@@ -140,8 +140,6 @@ cinch_add_unit(launch
     test/launch.cc
   POLICY
     SERIAL
-  FOLDER
-    "Tests/Execution"
 )
 
 cinch_add_unit(simple_function
@@ -156,9 +154,7 @@ cinch_add_unit(simple_function
   LIBRARIES
     FleCSI
   NOCI
-  FOLDER
-    "Tests/Execution"
-  )
+)
 
 #
 # Test global reduction
@@ -177,9 +173,7 @@ cinch_add_unit(reduction
     FleCSI
   THREADS 2
   NOCI
-  FOLDER
-    "Tests/Execution"
-  )
+)
 
 #
 # Test basic task calling capability using the register_task
@@ -198,9 +192,7 @@ cinch_add_unit(simple_task
     FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
   NOCI
-  FOLDER
-    "Tests/Execution"
-  )
+)
 
 #
 # Test basic task to test future_handle
@@ -220,8 +212,6 @@ cinch_add_unit(future_handle
     ${CINCH_RUNTIME_LIBRARIES}
   THREADS 2
   NOCI
-  FOLDER
-    "Tests/Execution"
   )
 
   if(ENABLE_PARMETIS)
@@ -245,8 +235,6 @@ cinch_add_unit(future_handle
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         -DFLECSI_8_8_MESH
       POLICY ${UNIT_POLICY}
-      FOLDER
-        "Tests/Execution/Devel"
     )
 
   if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
@@ -269,8 +257,6 @@ cinch_add_unit(future_handle
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         -DFLECSI_16_16_MESH
       POLICY ${UNIT_POLICY}
-      FOLDER
-        "Tests/Execution/Devel"
     )
 
     cinch_add_devel_target(concept_coloring
@@ -292,8 +278,6 @@ cinch_add_unit(future_handle
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         -DFLECSI_16_16_MESH
       POLICY ${UNIT_POLICY}
-      FOLDER
-        "Tests/Execution/Devel"
     )
 
     cinch_add_devel_target(index_subspaces
@@ -315,8 +299,6 @@ cinch_add_unit(future_handle
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         -DFLECSI_8_8_MESH
       POLICY ${UNIT_POLICY}
-      FOLDER
-        "Tests/Execution/Devel"
     )
 
     # cinch_add_unit(forall
@@ -360,8 +342,6 @@ cinch_add_unit(future_handle
       POLICY ${UNIT_POLICY}
       THREADS 2
       NOCI
-      FOLDER
-        "Tests/Execution"
     )
 
     cinch_add_unit(handle_accessor
@@ -383,8 +363,6 @@ cinch_add_unit(future_handle
       POLICY ${UNIT_POLICY}
       THREADS 2
       NOCI
-      FOLDER
-        "Tests/Execution"
     )
 
 
@@ -407,8 +385,6 @@ cinch_add_unit(future_handle
       POLICY ${UNIT_POLICY}
       THREADS 2
       NOCI
-      FOLDER
-        "Tests/Execution"
     )
 
     cinch_add_unit(unordered_ispaces
@@ -428,8 +404,6 @@ cinch_add_unit(future_handle
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
       POLICY ${UNIT_POLICY}
       NOCI
-      FOLDER
-        "Tests/Execution"
     )
 
     cinch_add_unit(data_client_handle
@@ -454,8 +428,6 @@ cinch_add_unit(future_handle
       POLICY ${UNIT_POLICY}
       THREADS 2
       NOCI
-      FOLDER
-        "Tests/Execution"
     )
 
     cinch_add_unit(dense_data
@@ -480,8 +452,6 @@ cinch_add_unit(future_handle
       POLICY ${UNIT_POLICY}
       THREADS 2
       NOCI
-      FOLDER
-        "Tests/Execution"
     )
 
     cinch_add_unit(finite_difference_dense
@@ -505,8 +475,6 @@ cinch_add_unit(future_handle
       POLICY ${UNIT_POLICY}
       THREADS 5
       NOCI
-      FOLDER
-        "Tests/Execution"
     )
 
     cinch_add_unit(global_data
@@ -526,8 +494,6 @@ cinch_add_unit(future_handle
       POLICY ${UNIT_POLICY}
       THREADS 2
       NOCI
-      FOLDER
-        "Tests/Execution"
     )
 
     cinch_add_unit(sparse_data
@@ -552,8 +518,6 @@ cinch_add_unit(future_handle
         POLICY ${UNIT_POLICY}
       THREADS 4
         NOCI
-        FOLDER
-          "Tests/Execution"
       )
 
     cinch_add_unit(finite_difference_sparse
@@ -577,8 +541,6 @@ cinch_add_unit(future_handle
       POLICY ${UNIT_POLICY}
       THREADS 5
       NOCI
-      FOLDER
-        "Tests/Execution"
     )
 
     cinch_add_unit(ragged_data
@@ -602,8 +564,6 @@ cinch_add_unit(future_handle
         POLICY ${UNIT_POLICY}
         THREADS 2
         NOCI
-        FOLDER
-          "Tests/Execution"
       )
 
     if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
@@ -623,8 +583,6 @@ cinch_add_unit(future_handle
         POLICY ${UNIT_POLICY}
         THREADS 2
         NOCI
-        FOLDER
-          "Tests/Execution"
       )
 
       # cinch_add_unit(particles

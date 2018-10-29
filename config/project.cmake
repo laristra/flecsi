@@ -16,7 +16,7 @@
 # Set the minimum Cinch version
 #------------------------------------------------------------------------------#
 
-cinch_minimum_required(1.0)
+cinch_minimum_required(VERSION 1.0)
 
 #------------------------------------------------------------------------------#
 # Set the project name
@@ -90,6 +90,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
   set(ENABLE_HPX ON CACHE BOOL "Enable HPX" FORCE)
+  set(ENABLE_BOOST ON CACHE BOOL "Enable Boost" FORCE)
   set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
 endif()
 
@@ -216,8 +217,9 @@ endif()
 # Boost Program Options
 #------------------------------------------------------------------------------#
 
-if(ENABLE_BOOST_PROGRAM_OPTIONS)
+if(ENABLE_BOOST)
   list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
+  message (WARNING "FLECSI_LIBRARY_DEPENDENCIES = " ${FLECSI_LIBRARY_DEPENDENCIES})
 endif()
 
 #------------------------------------------------------------------------------#
@@ -533,7 +535,6 @@ export(PACKAGE FleCSI)
 #------------------------------------------------------------------------------#
 # CMake config file: This should be the last thing to happen.
 #------------------------------------------------------------------------------#
-
 configure_file(${PROJECT_SOURCE_DIR}/config/FleCSIConfig.cmake.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/FleCSIConfig.cmake @ONLY)
 
