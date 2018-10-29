@@ -372,14 +372,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   };
   args_t args = *(args_t *)task->args;
 
-  if(args.sparse){
-    clog_assert(regions.size() == 4, "ghost_copy_task requires 4 regions");
-    clog_assert(task->regions.size() == 4, "ghost_copy_task requires 4 regions");
-  }
-  else{
-    clog_assert(regions.size() == 2, "ghost_copy_task requires 2 regions");
-    clog_assert(task->regions.size() == 2, "ghost_copy_task requires 2 regions");
-  }
+  clog_assert(regions.size() == 2, "ghost_copy_task requires 2 regions");
+  clog_assert(task->regions.size() == 2, "ghost_copy_task requires 2 regions");
 
   clog_assert(
       (task->regions[1].privilege_fields.size() -
@@ -430,14 +424,73 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 		} // for fid
   }else {//sparse
 
+
+
+/*
+Legion::Domain owner_entries_domain = runtime->get_index_space_domain(
+       ctx, regions[0].get_logical_region().get_index_space());
+
+      LegionRuntime::Arrays::Rect<2> ent_rect = owner_entries_domain.get_rect<2>();
+
+std::cout <<"IRINA DEBUG, args.max_entries_per_index = "<<
+args.max_entries_per_index<<std::endl;
+
+ std::cout <<"IRINA DEBUG,my_color= "<<my_color<<" owner domain lo"<<ent_rect.lo[0]<<", "<<
+ ent_rect.lo[1]<<", hi :"<<ent_rect.hi[0]<<", "<<
+ ent_rect.hi[1]<<std::endl;
+
+  Legion::Domain ghost_entries_domain = runtime->get_index_space_domain(
+       ctx, regions[1].get_logical_region().get_index_space());
+
+  LegionRuntime::Arrays::Rect<2> ghost_ent_rect =
+	ghost_entries_domain.get_rect<2>();
+ std::cout <<"IRINA DEBUG,my_color= "<<my_color<<" ghost domain lo"<<ghost_ent_rect.lo[0]<<", "<<
+ ghost_ent_rect.lo[1]<<", hi :"<<ghost_ent_rect.hi[0]<<", "<<
+ ghost_ent_rect.hi[1]<<std::endl;
+
+*/
+
+
     const int my_color = runtime->find_local_MPI_rank();
 
+//    for (auto fid : task->regions[0].privilege_fields) {
+   
     for (auto fid : task->regions[0].privilege_fields) {
-     
-      std::vector<LegionRuntime::Arrays::Point<2>> ghost_points;
-      std::vector<LegionRuntime::Arrays::Point<2>> shared_points;
-      std::vector<LegionRuntime::Arrays::Point<2>> owners_points;
-      std::vector<size_t> counts;
+      // Look up field info in context
+      auto iitr = context.field_info_map().find(
+          {args.data_client_hash, args.index_space});
+      clog_assert(iitr != context.field_info_map().end(), "invalid index space");
+      auto fitr = iitr->second.find(fid);
+      clog_assert(fitr != iitr->second.end(), "invalid fid");
+      const context_t::field_info_t & field_info = fitr->second;
+
+      const Legion::FieldAccessor<READ_ONLY, char, 2,
+          Legion::coord_t, Realm::AffineAccessor< char, 2, Legion::coord_t> >
+          owner_acc(regions[0], fid, field_info.size +sizeof(size_t));
+      const Legion::FieldAccessor<READ_WRITE, char, 2,
+          Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
+          ghost_acc(regions[1], fid, field_info.size +sizeof(size_t));
+
+      for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
+        //auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
+        auto &ghost_ptr = itr.p;
+        LegionRuntime::Arrays::Point<2> owner_location =
+           position_ref_acc.read(ghost_ptr);
+        auto owner_ptr = Legion::DomainPoint::from_point<2>(owner_location);
+
+        char *ptr_ghost_acc = (char*)(ghost_acc.ptr(ghost_ptr));
+        char *ptr_owner_acc = (char*)(owner_acc.ptr(owner_ptr));
+        size_t size = field_info.size + sizeof(size_t);
+        size_t chunk = size * args.max_entries_per_index;
+        memcpy(ptr_ghost_acc, ptr_owner_acc, chunk);
+      } // for ghost_domain
+    } // for fid
+  
+#if 0
+  //    std::vector<LegionRuntime::Arrays::Point<2>> ghost_points;
+  //    std::vector<LegionRuntime::Arrays::Point<2>> shared_points;
+  //    std::vector<LegionRuntime::Arrays::Point<2>> owners_points;
+  //    std::vector<size_t> counts;
 
       // Look up field info in context
       auto iitr = context.field_info_map().find(
@@ -498,8 +551,8 @@ owner_point<<std::endl;
 
        
     }//for
+#endif
   }
-
 } // ghost_copy_task
 
 
@@ -532,13 +585,10 @@ __flecsi_internal_legion_task(sparse_set_owner_position_task, void){
   LegionRuntime::Arrays::GenericPointInRectIterator<2> entries_itr(
 		ghost_entries_rect);
 
-  size_t num_owner_entries = ghost_entries_rect.hi[1]-ghost_entries_rect.lo[1];
-  size_t num_ghosts = ghost_rect.hi[1]-ghost_rect.lo[1];
+  size_t num_owner_entries =
+		ghost_entries_rect.hi[1]-ghost_entries_rect.lo[1]+1;
+  size_t num_ghosts = ghost_rect.hi[1]-ghost_rect.lo[1]+1;
   size_t max_entries_per_index=num_owner_entries/num_ghosts;
-std::cout <<"IRINA DEBUG, owner_entr_num = "<<num_owner_entries<<
-", num_ghosts = "<<num_ghosts <<", max_entr = "<<
-num_owner_entries/num_ghosts<<std::endl;
-
 
   Legion::FieldID fid = *(task->regions[1].privilege_fields.begin());
 
@@ -546,10 +596,10 @@ num_owner_entries/num_ghosts<<std::endl;
       Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
       owner_offset_acc(regions[1], fid, sizeof(offset_t));
   Legion::FieldAccessor<READ_WRITE, LegionRuntime::Arrays::Point<2>, 2,
-          Legion::coord_t, Realm::AffineAccessor<
-					LegionRuntime::Arrays::Point<2>, 2, Legion::coord_t> >
-          ghost_entries_acc(regions[2], ghost_owner_pos_fid, 
-          sizeof(LegionRuntime::Arrays::Point<2>));  
+      Legion::coord_t, Realm::AffineAccessor<
+		  LegionRuntime::Arrays::Point<2>, 2, Legion::coord_t> >
+      ghost_entries_acc(regions[2], ghost_owner_pos_fid, 
+      sizeof(LegionRuntime::Arrays::Point<2>));  
 
   std::vector <LegionRuntime::Arrays::Point<2>> owner_points;
   for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
@@ -576,6 +626,10 @@ num_owner_entries/num_ghosts<<std::endl;
 			itr++) {
     auto &ptr = itr.p;
     ghost_entries_acc.write(ptr, owner_points[i]);     
+if (runtime->find_local_MPI_rank()==0){
+std::cout <<"IRINA DEBUG owner point ["<<i<<"] = "<<
+owner_points[i]<<"    to "<<itr.p<<std::endl;
+}
     i++;
   }
 
