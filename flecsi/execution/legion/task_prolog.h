@@ -225,13 +225,14 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
       }
 
-      ghost_launcher.add_region_requirement(rr_owners);
-      ghost_launcher.add_region_requirement(rr_ghost);
-
-      if(is_sparse){
-          ghost_launcher.add_region_requirement(rr_entries_shared);
-          ghost_launcher.add_region_requirement(rr_entries_ghost);
-        }
+      if(!is_sparse){
+        ghost_launcher.add_region_requirement(rr_owners);
+        ghost_launcher.add_region_requirement(rr_ghost);
+      }
+      else if(is_sparse){
+        ghost_launcher.add_region_requirement(rr_entries_shared);
+        ghost_launcher.add_region_requirement(rr_entries_ghost);
+      }
 
       ghost_launcher.tag = MAPPER_FORCE_RANK_MATCH;
       runtime->execute_index_space(context, ghost_launcher);
