@@ -83,7 +83,7 @@
 // Boost.ProgramOptions
 //----------------------------------------------------------------------------//
 
-#cmakedefine FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS
+#cmakedefine FLECSI_ENABLE_BOOST
 
 //----------------------------------------------------------------------------//
 // Enable coloring
