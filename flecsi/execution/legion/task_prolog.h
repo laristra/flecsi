@@ -225,11 +225,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
       }
 
-      if(!is_sparse){
-        ghost_launcher.add_region_requirement(rr_owners);
-        ghost_launcher.add_region_requirement(rr_ghost);
-      }
-      else if(is_sparse){
+      ghost_launcher.add_region_requirement(rr_owners);
+      ghost_launcher.add_region_requirement(rr_ghost);
+
+      if(is_sparse){
         ghost_launcher.add_region_requirement(rr_entries_shared);
         ghost_launcher.add_region_requirement(rr_entries_ghost);
       }
