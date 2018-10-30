@@ -53,8 +53,10 @@ TEST(structured, simple){
   auto ms = new structured_mesh_storage__<TestMesh2dType::num_dimensions,
                                           TestMesh2dType::num_domains>();
   
-
-  auto mesh = new TestMesh(lower_bounds, upper_bounds, strides, primary_dim, ms); 
+  auto mesh = new TestMesh(ms); 
+  
+  mesh->initialize(lower_bounds, upper_bounds, strides, primary_dim); 
+  
   size_t nv, ne, nf;
 
   auto lbnd = mesh->primary_lower_bounds();

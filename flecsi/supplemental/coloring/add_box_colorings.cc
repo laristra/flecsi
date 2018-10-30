@@ -48,7 +48,7 @@ void add_box_colorings(coloring_map_t map) {
   size_t nhalo_domain = 0; 
   size_t thru_dim = 0; 
 
-  flecsi::coloring::box_coloring_info_t colored_cells;
+  flecsi::coloring::box_coloring_t colored_cells;
   flecsi::coloring::coloring_info_t colored_cells_aggregate;
 
   // Create a colorer instance to generate the coloring.
