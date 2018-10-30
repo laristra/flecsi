@@ -1,12 +1,4 @@
-# FleCSI: Tutorial - 08 MPI Interoperability
-<!--
-  The above header is required for Doxygen to correctly name the
-  auto-generated page. It is ignored in the FleCSI guide documentation.
--->
-
-<!-- CINCHDOC DOCUMENT(user-guide) SECTION(tutorial::mpi-interoperability) -->
-
-# MPI Interoperability Example
+# Example 8: MPI Interoperability Example
 
 FleCSI provides straightforward interoperability with libraries and code
 that depend on the MPI runtime. Data that are registered in FleCSI may

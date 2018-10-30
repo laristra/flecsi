@@ -1,4 +1,4 @@
-## Driver Example
+## Example 1: Driver
 
 As a runtime abstraction layer, FleCSI replaces the normal main
 function with a driver function. Like main, the driver is the most

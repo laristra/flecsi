@@ -6,12 +6,10 @@ find the script, and to include any dynamic library dependencies. We
 have provided initialization scripts for bash, csh, and environment
 modules to ease this step.
 
-**If you are using the Docker container, you
-can simply run:**
+**If you are using the Docker container, you can simply run:**
 ```
 $ module load flecsi-tutorial
 ```
-
 Otherwise, to use the bash or csh script, source the script
 (located in the bin directory of your FleCSI install path):
 ```bash
@@ -30,7 +28,6 @@ $ flecsit compile example.cc
 ```
 where *example.cc* is the name of the example source file. This will
 produce an executable that can be run like:
-
 ```bash
 $ ./example
 ```
@@ -38,10 +35,8 @@ For help on the flecsit compile command, type:
 ```
 $ flecsit compile --help
 ```
-
 Some examples are designed to run in parallel (indicated in the example
 documentation). These should be run with a suitable MPI interpreter:
-
 ```bash
 $ mpirun -np 2 example
 ```

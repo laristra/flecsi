@@ -1,12 +1,4 @@
-# FleCSI: Tutorial - 05 Dense Data
-<!--
-  The above header is required for Doxygen to correctly name the
-  auto-generated page. It is ignored in the FleCSI guide documentation.
--->
-
-<!-- CINCHDOC DOCUMENT(user-guide) SECTION(tutorial::dense-data) -->
-
-# Dense Data
+# Example 5: Dense Data
 
 The FleCSI data model provides several different storage types. A
 storage type is a formal term that implies a particular logical layout
@@ -28,7 +20,6 @@ using user-defined types as dense field data.
 
 This example uses a user-defined struct as the dense data type. The
 *struct_type_t* is defined in the *types.h* file:
-
 ```cpp
 #pragma once
 
@@ -63,7 +54,6 @@ Aside from using a struct type, this example of registering data is
 identical to registering a fundamental type, e.g., double or size_t.
 
 The code for this example can be found in *dense.cc*:
-
 ```cpp
 #include <iostream>
 

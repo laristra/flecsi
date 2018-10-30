@@ -1,12 +1,4 @@
-# FleCSI: Tutorial - 01 Task Example
-<!--
-  The above header is required for Doxygen to correctly name the
-  auto-generated page. It is ignored in the FleCSI guide documentation.
--->
-
-<!-- CINCHDOC DOCUMENT(user-guide) SECTION(tutorial::tasks) -->
-
-# Task Example
+# Example 2: Tasks
 
 A FleCSI task is the basic execution unit of distributed-memory (SPMD)
 and conventional task-based (MPMD) parallelism. This example

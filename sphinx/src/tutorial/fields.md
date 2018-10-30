@@ -1,12 +1,4 @@
-# FleCSI: Tutorial - 04 Fields
-<!--
-  The above header is required for Doxygen to correctly name the
-  auto-generated page. It is ignored in the FleCSI guide documentation.
--->
-
-<!-- CINCHDOC DOCUMENT(user-guide) SECTION(tutorial::fields) -->
-
-# Fields
+# Example 4: Fields
 
 In FleCSI, a field is a logical array that is defined on an index space.
 The elements of the field are defined through a template argument, so

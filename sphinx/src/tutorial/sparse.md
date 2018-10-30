@@ -1,12 +1,4 @@
-# FleCSI: Tutorial - 05 Sparse Data
-<!--
-  The above header is required for Doxygen to correctly name the
-  auto-generated page. It is ignored in the FleCSI guide documentation.
--->
-
-<!-- CINCHDOC DOCUMENT(user-guide) SECTION(tutorial::sparse-data) -->
-
-# Sparse Data
+# Example 6: Sparse Data
 
 The FleCSI sparse storage class allows the representation of sparse data
 fields, i.e., fields on which zero, one or more data may be defined at

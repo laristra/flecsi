@@ -1,12 +1,4 @@
-# FleCSI: Tutorial - 03 Index Spaces
-<!--
-  The above header is required for Doxygen to correctly name the
-  auto-generated page. It is ignored in the FleCSI guide documentation.
--->
-
-<!-- CINCHDOC DOCUMENT(user-guide) SECTION(tutorial::index-spaces) -->
-
-# Index Spaces
+# Example 3: Index Spaces
 
 Index spaces are a fundamental concept of the FleCSI programming model.
 In principle, an index space is simply an enumerated set. In practice,
@@ -35,7 +27,6 @@ id. Although these particular types are relatively trivial, an actual
 specialization type may expose interfaces that are arbitrarily complex.
 
 The code for this example can be found in *index-spaces.cc*:
-
 ```cpp
 #include <iostream>
 
