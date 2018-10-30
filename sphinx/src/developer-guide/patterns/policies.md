@@ -76,4 +76,50 @@ private:
 }; // struct policy_t
 ```
 
+FleCSI often uses the preprocessor to select policies by defining a
+fully-qualified host type. An example of this is the *context_t* type
+that is defined in 'flecsi/runtime/flecsi_runtime_context_policy.h'.
+Here is a code fragment from that file that illustrates the pattern:
+```cpp
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+
+#include <flecsi/execution/legion/context_policy.h>
+
+namespace flecsi {
+namespace execution {
+
+using FLECSI_RUNTIME_CONTEXT_POLICY = legion_context_policy_t;
+
+} // namespace execution
+} // namespace flecsi
+
+#else
+
+// additional runtime choices
+
+#endif
+```
+This file is included in the core context type definition in
+'flecsi/execution/context.h', where FLECSI_RUNTIME_CONTEXT_POLICY is
+used to *close* the type:
+```cpp
+#include <flecsi/runtime/flecsi_runtime_context_policy.h>
+
+namespace flecsi {
+namespace execution {
+
+/*!
+  The context_t type is the high-level interface to the FleCSI runtime
+  context.
+
+  @ingroup execution
+ */
+
+using context_t = context__<FLECSI_RUNTIME_CONTEXT_POLICY>;
+```
+The *context_t* can then be used by the core FleCSI library, regardless
+of the particular runtime. Additionally, in code sections that are
+runtime-aware, the context_t type can expose runtime-specific methods
+and data.
+
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
