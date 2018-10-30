@@ -47,5 +47,26 @@ Introduction
   src/developer-guide
   src/team
 
+.. Not sure exactly why, but this seems to do what I want at the
+   bottom of the page...
+
+.. image:: _static/images/lanl.png
+   :align: center
+   :scale: 75%
+
+.. container:: twocol
+
+   .. container:: leftside
+
+      .. image:: _static/images/nnsa.png
+         :align: left
+         :scale: 75%
+
+   .. container:: rightside
+
+      .. image:: _static/images/ecp.png
+         :align: right
+         :scale: 75%
+
 .. .. doxygenindex::
    This is broken right now.
