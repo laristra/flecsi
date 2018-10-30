@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <flecsi/data/data_constants.h>
 #include <flecsi/data/sparse_data_handle.h>
 
 namespace flecsi {

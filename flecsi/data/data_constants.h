@@ -13,6 +13,8 @@
                                                                               */
 #pragma once
 
+#include <cstddef>
+
 /*! @file */
 
 namespace flecsi {
