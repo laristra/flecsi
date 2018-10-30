@@ -46,14 +46,9 @@ required by other runtime backends.
 struct policy_t
 {
   double exucute() {
-    ...do something with data_
+    // ...do something with data_ and return a copy
     return data_;
   } // execute
-
-  double raw_data() {
-    ..do sometthing nasty with the data)
-    return data_;
-  }
 
 private:
 
@@ -67,5 +62,18 @@ policy type is known in some part of the code, and the *hidden* policy
 interface can be used to apply runtime-specific execution. An example of
 this feature is the MPI interoperability interface methods in the Legion
 context.
+```cpp
+struct policy_t
+{
+  double & data() {
+    return data_;
+  }
+
+private:
+
+  double data_;
+
+}; // struct policy_t
+```
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
