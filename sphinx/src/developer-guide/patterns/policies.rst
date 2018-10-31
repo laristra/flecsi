@@ -1,4 +1,5 @@
-# Policy-Based Design
+Policy-Based Design
+===================
 
 FleCSI makes heavy use of policy types to specialize the behavior of
 higher-level interfaces. Simply put, a *policy* type is a template
@@ -7,15 +8,17 @@ parameter that is used to customize the behavior of a *wrapper* or
 
 Consider this simple definition of a *host* type that takes a *policy*
 that specializes the *execute* method:
-```cpp
-template<typename POLICY>
-struct host__ : public POLICY
-{
-  decltype(auto) execute() {
-    return POLICY::execute();
-  } // execute
-}; // struct host__
-```
+
+.. code-block:: cpp
+
+  template<typename POLICY>
+  struct host__ : public POLICY
+  {
+    decltype(auto) execute() {
+      return POLICY::execute();
+    } // execute
+  }; // struct host__
+
 This pattern is something like a static version of dynamic polymorphism,
 i.e., the *host* type defines an interface that is implemented by the
 *policy*, much in the same way that a derived class implements a *pure*
@@ -42,25 +45,22 @@ FleCSI often uses this feature of policy design to carry state that is
 required by a particular backend, e.g., the Legion context carries
 handshake and process maps for MPI interoperability that are not
 required by other runtime backends.
-```cpp
-struct policy_t
-{
-  double exucute() {
-    ...do something with data_
-    return data_;
-  } // execute
 
-  double raw_data() {
-    ..do sometthing nasty with the data)
-    return data_;
-  }
+.. code-block:: cpp
 
-private:
+  struct policy_t
+  {
+    double exucute() {
+      // ...do something with data_ and return a copy
+      return data_;
+    } // execute
 
-  double data_;
+  private:
 
-}; // struct policy_t
-```
+    double data_;
+
+  }; // struct policy_t
+
 Another feature of this design pattern is that policies can add to the
 public interface of the host type. This is useful in cases where the
 policy type is known in some part of the code, and the *hidden* policy
@@ -68,4 +68,68 @@ interface can be used to apply runtime-specific execution. An example of
 this feature is the MPI interoperability interface methods in the Legion
 context.
 
-<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
+.. code-block:: cpp
+
+  struct policy_t
+  {
+    double & data() {
+      return data_;
+    }
+
+  private:
+
+    double data_;
+
+  }; // struct policy_t
+
+FleCSI often uses the preprocessor to select policies by defining a
+fully-qualified host type. An example of this is the *context_t* type
+that is defined in 'flecsi/runtime/flecsi_runtime_context_policy.h'.
+Here is a code fragment from that file that illustrates the pattern:
+
+.. code-block:: cpp
+
+  #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+
+  #include <flecsi/execution/legion/context_policy.h>
+
+  namespace flecsi {
+  namespace execution {
+
+  using FLECSI_RUNTIME_CONTEXT_POLICY = legion_context_policy_t;
+
+  } // namespace execution
+  } // namespace flecsi
+
+  #else
+
+  // additional runtime choices
+
+  #endif
+
+This file is included in the core context type definition in
+'flecsi/execution/context.h', where FLECSI_RUNTIME_CONTEXT_POLICY is
+used to *close* the type:
+
+.. code-block:: cpp
+
+  #include <flecsi/runtime/flecsi_runtime_context_policy.h>
+
+  namespace flecsi {
+  namespace execution {
+
+  /*!
+    The context_t type is the high-level interface to the FleCSI runtime
+    context.
+
+    @ingroup execution
+   */
+
+  using context_t = context__<FLECSI_RUNTIME_CONTEXT_POLICY>;
+
+The *context_t* can then be used by the core FleCSI library, regardless
+of the particular runtime. Additionally, in code sections that are
+runtime-aware, the context_t type can expose runtime-specific methods
+and data.
+
+.. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :

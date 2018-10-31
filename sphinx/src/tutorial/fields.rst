@@ -1,12 +1,5 @@
-# FleCSI: Tutorial - 04 Fields
-<!--
-  The above header is required for Doxygen to correctly name the
-  auto-generated page. It is ignored in the FleCSI guide documentation.
--->
-
-<!-- CINCHDOC DOCUMENT(user-guide) SECTION(tutorial::fields) -->
-
-# Fields
+Example 4: Fields
+=================
 
 In FleCSI, a field is a logical array that is defined on an index space.
 The elements of the field are defined through a template argument, so
@@ -120,72 +113,72 @@ NOTES:
 
 The code for this example can be found in *fields.cc*:
 
-```cpp
-#include <iostream>
+.. code-block:: cpp
 
-#include<flecsi-tutorial/specialization/mesh/mesh.h>
-#include<flecsi/data/data.h>
-#include<flecsi/execution/execution.h>
+  #include <iostream>
 
-using namespace flecsi;
-using namespace flecsi::tutorial;
+  #include<flecsi-tutorial/specialization/mesh/mesh.h>
+  #include<flecsi/data/data.h>
+  #include<flecsi/execution/execution.h>
 
-// This call registers a field called 'field' against a data client
-// with type 'mesh_t' on the index space 'cells'. The field is in the
-// namespace 'example', and is of type 'double'. The field has storage
-// class 'dense', and has '1' version.
+  using namespace flecsi;
+  using namespace flecsi::tutorial;
 
-flecsi_register_field(mesh_t, example, field, double, dense, 1, cells);
+  // This call registers a field called 'field' against a data client
+  // with type 'mesh_t' on the index space 'cells'. The field is in the
+  // namespace 'example', and is of type 'double'. The field has storage
+  // class 'dense', and has '1' version.
 
-namespace example {
+  flecsi_register_field(mesh_t, example, field, double, dense, 1, cells);
 
-// This task takes mesh and field accessors and initializes the
-// field with the id of the cell on which it is defined.
+  namespace example {
 
-void initialize_field(mesh<ro> mesh, field<rw> f) {
-  for(auto c: mesh.cells(owned)) {
-    f(c) = double(c->id());
-  } // for
-} // initialize_field
+  // This task takes mesh and field accessors and initializes the
+  // field with the id of the cell on which it is defined.
 
-// Task registration is as usual...
+  void initialize_field(mesh<ro> mesh, field<rw> f) {
+    for(auto c: mesh.cells(owned)) {
+      f(c) = double(c->id());
+    } // for
+  } // initialize_field
 
-flecsi_register_task(initialize_field, example, loc, single);
+  // Task registration is as usual...
 
-// This task prints the field values.
+  flecsi_register_task(initialize_field, example, loc, single);
 
-void print_field(mesh<ro> mesh, field<ro> f) {
-  for(auto c: mesh.cells(owned)) {
-    std::cout << "cell id: " << c->id() << " has value " <<
-      f(c) << std::endl;
-  } // for
-} // print_field
+  // This task prints the field values.
 
-// Task registration is as usual...
+  void print_field(mesh<ro> mesh, field<ro> f) {
+    for(auto c: mesh.cells(owned)) {
+      std::cout << "cell id: " << c->id() << " has value " <<
+        f(c) << std::endl;
+    } // for
+  } // print_field
 
-flecsi_register_task(print_field, example, loc, single);
+  // Task registration is as usual...
 
-} // namespace example
+  flecsi_register_task(print_field, example, loc, single);
 
-namespace flecsi {
-namespace execution {
+  } // namespace example
 
-void driver(int argc, char ** argv) {
+  namespace flecsi {
+  namespace execution {
 
-  // Get data handles to the client and field
+  void driver(int argc, char ** argv) {
 
-  auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
-  auto f = flecsi_get_handle(m, example, field, double, dense, 0);
+    // Get data handles to the client and field
 
-  // Task execution is as usual...
+    auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
+    auto f = flecsi_get_handle(m, example, field, double, dense, 0);
 
-  flecsi_execute_task(initialize_field, example, single, m, f);
-  flecsi_execute_task(print_field, example, single, m, f);
+    // Task execution is as usual...
 
-} // driver
+    flecsi_execute_task(initialize_field, example, single, m, f);
+    flecsi_execute_task(print_field, example, single, m, f);
 
-} // namespace execution
-} // namespace flecsi
-```
+  } // driver
 
-<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
+  } // namespace execution
+  } // namespace flecsi
+
+.. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :

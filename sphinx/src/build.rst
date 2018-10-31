@@ -2,6 +2,8 @@
 
    <br />
 
+.. _build:
+
 Building FleCSI
 ===============
 

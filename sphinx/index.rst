@@ -53,6 +53,7 @@ Introduction
 .. image:: _static/images/lanl.png
    :align: center
    :scale: 75%
+   :target: https://www.lanl.gov
 
 .. container:: twocol
 
@@ -61,12 +62,14 @@ Introduction
       .. image:: _static/images/nnsa.png
          :align: left
          :scale: 75%
+         :target: https://www.energy.gov/nnsa/national-nuclear-security-administration
 
    .. container:: rightside
 
       .. image:: _static/images/ecp.png
          :align: right
          :scale: 75%
+         :target: https://www.exascaleproject.org
 
 .. .. doxygenindex::
    This is broken right now.
