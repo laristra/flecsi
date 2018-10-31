@@ -557,7 +557,7 @@ runtime_driver(
         ctx, sis_ghost_lr, flecsi_sis.ghost_partition);
 			runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_lp,
 				"ghost logical partition");
-#if 1
+#if 0
       const auto sparse_set_pos_id =
         context_.task_id<__flecsi_internal_task_key(
     		sparse_set_owner_position_task)>();

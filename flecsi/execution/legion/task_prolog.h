@@ -134,6 +134,85 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
   } // handle
 
+
+  Legion::LogicalPartition
+  create_ghost_owners_partition_for_sparse_entries (size_t idx_space)
+	{
+      auto & context_ = context_t::instance();
+      auto& ispace_dmap = context_.index_space_data_map();
+      //auto& flecsi_ispace = data.index_space(idx_space);
+      //auto& flecsi_sis = data.sparse_index_space(idx_space);
+      size_t sparse_idx_space = idx_space + 8192;
+
+      using field_info_t = context_t::field_info_t;
+
+      auto ghost_owner_pos_fid =
+        LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+
+      auto constexpr key =
+          flecsi::utils::const_string_t{
+						EXPAND_AND_STRINGIFY(sparse_set_owner_position_task)}.hash();
+
+      const auto sparse_set_pos_id = context_.task_id<key>();
+
+      Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id,
+        color_domain, Legion::TaskArgument(nullptr, 0),
+        Legion::ArgumentMap());
+
+      sparse_pos_launcher.add_region_requirement(
+        Legion::RegionRequirement(ispace_dmap[idx_space].ghost_lp,
+            0/*projection ID*/,
+            READ_ONLY, EXCLUSIVE, ispace_dmap[idx_space].entire_region))
+                .add_field(ghost_owner_pos_fid);
+
+      Legion::FieldID fid;
+      for ( const field_info_t & fi : context_.registered_fields()){
+        if (fi.index_space == idx_space)
+          if(!utils::hash::is_internal(fi.key))
+              fid = fi.fid;
+      }
+
+      sparse_pos_launcher.add_region_requirement(
+        Legion::RegionRequirement(ispace_dmap[idx_space].ghost_owners_lp,
+            0/*projection ID*/,
+            READ_ONLY, EXCLUSIVE, ispace_dmap[idx_space].entire_region))
+                .add_field(fid);
+      sparse_pos_launcher.add_region_requirement(
+        Legion::RegionRequirement(ispace_dmap[sparse_idx_space].ghost_lp,
+            0/*projection ID*/,
+            WRITE_DISCARD, EXCLUSIVE,
+						ispace_dmap[sparse_idx_space].entire_region))
+                .add_field(ghost_owner_pos_fid);
+
+      sparse_pos_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+      auto future = runtime->execute_index_space(context, sparse_pos_launcher);
+      future.wait_all_results(false);
+
+      Legion::LogicalRegion sis_primary_lr =
+          ispace_dmap[sparse_idx_space].entire_region;
+//				ispace_dmap[sparse_idx_space].primary_lp.get_logical_region();
+
+      Legion::IndexSpace is_of_colors = runtime->create_index_space(context,
+        color_domain);
+
+      ispace_dmap[sparse_idx_space].ghost_owners_ip =
+        runtime->create_partition_by_image(context,
+        sis_primary_lr.get_index_space(),
+        ispace_dmap[sparse_idx_space].ghost_lp,
+        ispace_dmap[sparse_idx_space].entire_region,
+				ghost_owner_pos_fid, is_of_colors);
+
+     runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_owners_ip,
+        "ghost owners index partition");
+     ispace_dmap[sparse_idx_space].ghost_owners_lp =
+      runtime->get_logical_partition(
+      context, sis_primary_lr, ispace_dmap[sparse_idx_space].ghost_owners_ip);
+     runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_owners_lp,
+        "ghost owners logical partition");
+ 
+    return ispace_dmap[sparse_idx_space].ghost_owners_lp;
+  }
+
   /*!
    Walk the data handles for a flecsi task, store info for ghost copies
    in member variables, and add phase barriers to launcher as needed.
@@ -225,11 +304,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
       }
 
-      if(!is_sparse){
-        ghost_launcher.add_region_requirement(rr_owners);
-        ghost_launcher.add_region_requirement(rr_ghost);
-      }
-      else if(is_sparse){
+      ghost_launcher.add_region_requirement(rr_owners);
+      ghost_launcher.add_region_requirement(rr_ghost);
+
+      if(is_sparse){
         ghost_launcher.add_region_requirement(rr_entries_shared);
         ghost_launcher.add_region_requirement(rr_entries_ghost);
       }
@@ -283,9 +361,11 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 //          owner_subregion_partitions.push_back(
 //			h.ghost_owners_offsets_subregion_lp);
 
+          if ( h.ghost_owners_entries_lp==Legion::LogicalPartition::NO_PART)
+             h.ghost_owners_entries_lp=
+							create_ghost_owners_partition_for_sparse_entries(h.index_space);  
           ghost_owner_entries_partitions.push_back(
              h.ghost_owners_entries_lp);
-//h.entries_shared_lp);
          
           entire_regions.push_back(h.offsets_entire_region); 
           entries_regions.push_back(h.entries_entire_region);
@@ -370,7 +450,9 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           ghost_owners_partitions.push_back(h.ghost_owners_offsets_lp);
 //          owner_subregion_partitions.push_back(
 //                      h.ghost_owners_offsets_subregion_lp);
-
+          if ( h.ghost_owners_entries_lp==Legion::LogicalPartition::NO_PART)
+             h.ghost_owners_entries_lp=
+              create_ghost_owners_partition_for_sparse_entries(h.index_space);
           ghost_owner_entries_partitions.push_back(
             h.ghost_owners_entries_lp);
          
