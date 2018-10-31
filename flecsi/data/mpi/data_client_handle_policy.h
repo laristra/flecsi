@@ -36,6 +36,11 @@ struct data_client_handle_entity_t
   field_id_t fid2;
   field_id_t fid3;
   field_id_t id_fid;
+
+  //fields specific to structured topology
+  field_id_t fid_lbnd;
+  field_id_t fid_ubnd;
+  field_id_t fid_strides;
 }; // struct data_client_handle_entity_t
 
 //----------------------------------------------------------------------------//

@@ -665,6 +665,38 @@ struct data_client_policy_handler__<topology::structured_mesh_topology__<POLICY_
       ent.dim = ei.dim;
       ent.size = ei.size;
 
+      const field_info_t * fi = context.get_field_info_from_key(
+          h.type_hash,
+          utils::hash::client_internal_field_hash(
+              utils::const_string_t("__flecsi_internal_box_lower_bounds__").hash(),
+              ent.index_space));
+
+      if (fi) {
+        ent.fid_lbnd = fi->fid;
+      }
+
+      fi = context.get_field_info_from_key(
+          h.type_hash,
+          utils::hash::client_internal_field_hash(
+              utils::const_string_t("__flecsi_internal_box_upper_bounds__")
+                  .hash(),
+              ent.index_space));
+
+      if (fi) {
+        ent.fid_ubnd = fi->fid;
+      }
+
+      fi = context.get_field_info_from_key(
+          h.type_hash,
+          utils::hash::client_internal_field_hash(
+              utils::const_string_t("__flecsi_internal_box_strides__")
+                  .hash(),
+              ent.index_space));
+
+      if (fi) {
+        ent.fid_strides = fi->fid;
+      }
+
       ++entity_index;
     } // for
 
