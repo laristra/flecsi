@@ -82,7 +82,7 @@
                                                                                \
   /* Unspecialized type declaration. */                                        \
   template<std::size_t N, typename S>                                          \
-  struct reflection_variable__ {};                                             \
+  struct reflection_variable_u {};                                             \
                                                                                \
   /* Each invocation of this creates an explicit specialization. */            \
   BOOST_PP_SEQ_FOR_EACH_I(                                                     \
@@ -98,18 +98,18 @@
                                                                                \
   /* Interface for each data member. */                                        \
   template<typename S>                                                         \
-  struct reflection_variable__<i, S> {                                         \
+  struct reflection_variable_u<i, S> {                                         \
     S & self_;                                                                 \
                                                                                \
     /* Constructor */                                                          \
-    reflection_variable__(S & self) : self_(self) {}                           \
+    reflection_variable_u(S & self) : self_(self) {}                           \
                                                                                \
     /* Return a const reference to the variable instance. */                   \
     typename std::add_const<__typeof(t)>::type & get() const {                 \
       return self_.__strip(t);                                                 \
     }                                                                          \
                                                                                \
-  }; /* struct reflection_variable__<i,S> */
+  }; /* struct reflection_variable_u<i,S> */
 
 namespace flecsi {
 namespace utils {
@@ -127,8 +127,8 @@ struct reflection {
   /// Get the reflection variable at index N.
   ///
   template<std::size_t N, typename T>
-  static typename T::template reflection_variable__<N, T> variable(T & t) {
-    return typename T::template reflection_variable__<N, T>(t);
+  static typename T::template reflection_variable_u<N, T> variable(T & t) {
+    return typename T::template reflection_variable_u<N, T>(t);
   } // get_variable
 }; // reflection
 

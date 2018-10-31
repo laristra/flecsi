@@ -40,7 +40,7 @@ namespace hpx {
 // FIXME: Tuple storage type.
 ///
 template<>
-struct storage_class__<tuple> {
+struct storage_class_u<tuple> {
 
   struct tuple_handle_t {}; // struct tuple_handle_t
 

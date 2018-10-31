@@ -29,14 +29,14 @@ template<
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-struct accessor__ : public accessor_base_t {};
+struct accessor_u : public accessor_base_t {};
 
 template<
     typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-struct accessor__<
+struct accessor_u<
     data::base,
     T,
     EXCLUSIVE_PERMISSIONS,

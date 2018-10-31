@@ -9,7 +9,7 @@ using namespace std;
 using namespace flecsi;
 using namespace topology;
 
-class Vertex : public mesh_entity__<0, 1> {
+class Vertex : public mesh_entity_u<0, 1> {
 public:
   template<size_t M>
   uint64_t precedence() const {
@@ -18,22 +18,22 @@ public:
   Vertex() = default;
 
   template<typename ST>
-  Vertex(mesh_topology_base__<ST> &) {}
+  Vertex(mesh_topology_base_u<ST> &) {}
 };
 
-class Edge : public mesh_entity__<1, 1> {
+class Edge : public mesh_entity_u<1, 1> {
 public:
   template<typename ST>
-  Edge(mesh_topology_base__<ST> &) {}
+  Edge(mesh_topology_base_u<ST> &) {}
 };
 
-class Face : public mesh_entity__<1, 1> {
+class Face : public mesh_entity_u<1, 1> {
 public:
   template<typename ST>
-  Face(mesh_topology_base__<ST> &) {}
+  Face(mesh_topology_base_u<ST> &) {}
 };
 
-class Cell : public mesh_entity__<2, 1> {
+class Cell : public mesh_entity_u<2, 1> {
 public:
   using id_t = flecsi::utils::id_t;
 
@@ -44,7 +44,7 @@ public:
   std::vector<size_t> create_entities(
       id_t cell_id,
       size_t dim,
-      domain_connectivity__<2> & c,
+      domain_connectivity_u<2> & c,
       id_t * e) {
     id_t * v = c.get_entities(cell_id, 0);
 
@@ -88,8 +88,8 @@ public:
   using bindings = std::tuple<>;
 
   template<size_t M, size_t D, typename ST>
-  static mesh_entity_base__<num_domains> *
-  create_entity(mesh_topology_base__<ST> * mesh, size_t num_vertices) {
+  static mesh_entity_base_u<num_domains> *
+  create_entity(mesh_topology_base_u<ST> * mesh, size_t num_vertices) {
     switch (M) {
       case 0: {
         switch (D) {
@@ -106,7 +106,7 @@ public:
   }
 };
 
-using TestMesh = mesh_topology__<TestMesh2dType>;
+using TestMesh = mesh_topology_u<TestMesh2dType>;
 
 TEST(mesh_topology, traversal) {
 

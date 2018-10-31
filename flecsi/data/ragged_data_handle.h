@@ -39,7 +39,7 @@ template<
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS,
     typename DATA_POLICY>
-struct ragged_data_handle_base__ : public DATA_POLICY {
+struct ragged_data_handle_base_u : public DATA_POLICY {
 
   using offset_t = data::sparse_data_offset_t;
 
@@ -58,9 +58,9 @@ struct ragged_data_handle_base__ : public DATA_POLICY {
   //! Default constructor.
   //--------------------------------------------------------------------------//
 
-  ragged_data_handle_base__() {}
+  ragged_data_handle_base_u() {}
 
-  ragged_data_handle_base__(
+  ragged_data_handle_base_u(
       size_t num_exclusive,
       size_t num_shared,
       size_t num_ghost)
@@ -72,7 +72,7 @@ struct ragged_data_handle_base__ : public DATA_POLICY {
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  ragged_data_handle_base__(const ragged_data_handle_base__ & b)
+  ragged_data_handle_base_u(const ragged_data_handle_base_u & b)
       : DATA_POLICY(b), index_space(b.index_space),
         data_client_hash(b.data_client_hash), entries(b.entries),
         offsets(b.offsets), num_exclusive_(b.num_exclusive_),
@@ -112,7 +112,7 @@ private:
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
-//! The data_handle__ type is the high-level data handle type.
+//! The data_handle_u type is the high-level data handle type.
 //!
 //! @tparam T                     The data type referenced by the handle.
 //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
@@ -131,7 +131,7 @@ template<
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-using ragged_data_handle__ = ragged_data_handle_base__<
+using ragged_data_handle_u = ragged_data_handle_base_u<
     T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,

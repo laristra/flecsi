@@ -53,7 +53,7 @@ namespace execution {
 /// Executor interface.
 ///
 template<typename RETURN, typename ARG_TUPLE>
-struct executor__ {
+struct executor_u {
   ///
   ///
   ///
@@ -63,7 +63,7 @@ struct executor__ {
     return hpx::async(
         std::forward<Exec>(exec), std::move(user_fun), std::forward<A>(targs));
   } // execute_task
-}; // struct executor__
+}; // struct executor_u
 
 //----------------------------------------------------------------------------//
 // Execution policy.
@@ -76,17 +76,17 @@ struct executor__ {
 struct FLECSI_EXPORT hpx_execution_policy_t {
 
   template<typename R, launch_type_t launch = launch_type_t::single>
-  using future__ = hpx_future__<R, launch>;
+  using future_u = hpx_future_u<R, launch>;
 
   //--------------------------------------------------------------------------//
-  //! The task_wrapper__ type FIXME
+  //! The task_wrapper_u type FIXME
   //!
   //! @tparam RETURN The return type of the task. FIXME
   //--------------------------------------------------------------------------//
 
   template<typename FUNCTOR_TYPE>
-  using functor_task_wrapper__ =
-      typename flecsi::execution::functor_task_wrapper__<FUNCTOR_TYPE>;
+  using functor_task_wrapper_u =
+      typename flecsi::execution::functor_task_wrapper_u<FUNCTOR_TYPE>;
 
   struct runtime_state_t {};
 
@@ -147,7 +147,7 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     //     auto processor_type = context_.processor_type<KEY>();
     //     if (launch == processor_type_t::mpi)
 
-    return executor__<RETURN, ARG_TUPLE>::execute(
+    return executor_u<RETURN, ARG_TUPLE>::execute(
         context_t::instance().get_default_executor(),
         std::move(fun), std::forward_as_tuple(std::forward<ARGS>(args)...));
   } // execute_task

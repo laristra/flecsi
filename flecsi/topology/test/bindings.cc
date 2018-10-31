@@ -11,7 +11,7 @@ using namespace topology;
 
 #define FILTER(E) [&](auto E) -> bool
 
-class Vertex : public mesh_entity__<0, 2> {
+class Vertex : public mesh_entity_u<0, 2> {
 public:
   Vertex() {}
 
@@ -21,12 +21,12 @@ public:
   }
 };
 
-class Edge : public mesh_entity__<1, 2> {
+class Edge : public mesh_entity_u<1, 2> {
 public:
   Edge() {}
 };
 
-class Cell : public mesh_entity__<2, 2> {
+class Cell : public mesh_entity_u<2, 2> {
 public:
   using id_t = flecsi::utils::id_t;
 
@@ -37,7 +37,7 @@ public:
   std::vector<size_t> create_entities(
       id_t cell_id,
       size_t dim,
-      domain_connectivity__<2> & c,
+      domain_connectivity_u<2> & c,
       id_t * e) {
 
     id_t * v = c.get_entities(cell_id, 0);
@@ -62,8 +62,8 @@ public:
       size_t to_domain,
       size_t create_dim,
       id_t cell_id,
-      domain_connectivity__<2> & primal_conn,
-      domain_connectivity__<2> & domain_conn,
+      domain_connectivity_u<2> & primal_conn,
+      domain_connectivity_u<2> & domain_conn,
       id_t * c) {
 
     id_t * v = primal_conn.get_entities(cell_id, 0);
@@ -108,12 +108,12 @@ public:
   }
 };
 
-class Corner : public mesh_entity__<0, 2> {
+class Corner : public mesh_entity_u<0, 2> {
 public:
   Corner() {}
 };
 
-class Wedge : public mesh_entity__<1, 2> {
+class Wedge : public mesh_entity_u<1, 2> {
 public:
   Wedge() {}
 };
@@ -158,8 +158,8 @@ public:
   >;
 
   template<size_t M, size_t D, typename ST>
-  static mesh_entity_base__<num_domains> *
-  create_entity(mesh_topology_base__<ST> * mesh, size_t num_vertices) {
+  static mesh_entity_base_u<num_domains> *
+  create_entity(mesh_topology_base_u<ST> * mesh, size_t num_vertices) {
     switch (M) {
       case 0: {
         switch (D) {
@@ -187,7 +187,7 @@ public:
   }
 };
 
-using TestMesh = mesh_topology__<TestMesh2dType>;
+using TestMesh = mesh_topology_u<TestMesh2dType>;
 
 TEST(mesh_topology, traversal) {
 

@@ -26,7 +26,7 @@ template<
   size_t NAME,
   typename OPERATION
 >
-struct reduction_wrapper__ {
+struct reduction_wrapper_u {
 
   static void registration_callback()
   {
@@ -54,7 +54,7 @@ struct reduction_wrapper__ {
 
   } // registration_callback
 
-}; // struct reduction_wrapper__
+}; // struct reduction_wrapper_u
 
 } // namespace execution
 } // namespace flecsi

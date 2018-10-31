@@ -57,7 +57,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
 //----------------------------------------------------------------------------//
 
 /*!
-mesh_topology__ is parameterized on a class (MESH_TYPE) which gives
+mesh_topology_u is parameterized on a class (MESH_TYPE) which gives
 information about its entity types, connectivities and more. the mesh
 topology is responsibly for computing connectivity info between entities
 of different topological dimension, e.g: vertex -> cell,
@@ -104,10 +104,10 @@ entity set - contains an iterable set of entities. Support set operations such
  @ingroup mesh-topology
  */
 template<class MESH_TYPE>
-class mesh_topology__ : public mesh_topology_base__<mesh_storage__<
+class mesh_topology_u : public mesh_topology_base_u<mesh_storage_u<
                             MESH_TYPE::num_dimensions,
                             MESH_TYPE::num_domains,
-                            num_index_subspaces__<MESH_TYPE>::value>> {
+                            num_index_subspaces_u<MESH_TYPE>::value>> {
   // static verification of mesh policy
 
   static_assert(
@@ -156,13 +156,13 @@ class mesh_topology__ : public mesh_topology_base__<mesh_storage__<
 
 public:
   // mesh storage type definition
-  using storage_t = mesh_storage__<
+  using storage_t = mesh_storage_u<
       MESH_TYPE::num_dimensions,
       MESH_TYPE::num_domains,
-      num_index_subspaces__<MESH_TYPE>::value>;
+      num_index_subspaces_u<MESH_TYPE>::value>;
 
   // mesh topology base definition
-  using base_t = mesh_topology_base__<storage_t>;
+  using base_t = mesh_topology_base_u<storage_t>;
 
   // entity ID type
   using id_t = utils::id_t;
@@ -180,32 +180,32 @@ public:
   // tree topologies. It is also useful for detecting illegal usage, such as
   // when a user adds data members.
   //--------------------------------------------------------------------------//
-  using type_identifier_t = mesh_topology__;
+  using type_identifier_t = mesh_topology_u;
 
   // Don't allow the mesh to be copied or copy constructed
 
   //! don't allow mesh to be assigned
-  mesh_topology__ & operator=(const mesh_topology__ &) = delete;
+  mesh_topology_u & operator=(const mesh_topology_u &) = delete;
 
   //! Allow move operations
-  mesh_topology__(mesh_topology__ && o) = default;
+  mesh_topology_u(mesh_topology_u && o) = default;
 
   //! override default move assignement
-  mesh_topology__ & operator=(mesh_topology__ && o) = default;
+  mesh_topology_u & operator=(mesh_topology_u && o) = default;
 
   //! Constructor, takes as input a mesh storage or storage can later be set
-  mesh_topology__(storage_t * ms = nullptr) : base_t(ms) {
+  mesh_topology_u(storage_t * ms = nullptr) : base_t(ms) {
     if (ms != nullptr) {
       initialize_storage();
     } // if
-  } // mesh_topology__()
+  } // mesh_topology_u()
 
   //! Copy constructor: alias another mesh
-  mesh_topology__(const mesh_topology__ & m) : base_t(m.ms_) {}
+  mesh_topology_u(const mesh_topology_u & m) : base_t(m.ms_) {}
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
-  virtual ~mesh_topology__() {}
+  virtual ~mesh_topology_u() {}
 
   //--------------------------------------------------------------------------//
   //! Initialize the mesh storage after it has been set
@@ -331,10 +331,10 @@ public:
   void init() {
     // Compute mesh connectivity
     using TP = typename MESH_TYPE::connectivities;
-    compute_connectivity__<DOM, std::tuple_size<TP>::value, TP>::compute(*this);
+    compute_connectivity_u<DOM, std::tuple_size<TP>::value, TP>::compute(*this);
 
     using BT = typename MESH_TYPE::bindings;
-    compute_bindings__<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
+    compute_bindings_u<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
 
   //--------------------------------------------------------------------------//
@@ -347,7 +347,7 @@ public:
   template<size_t DOM = 0>
   void init_bindings() {
     using BT = typename MESH_TYPE::bindings;
-    compute_bindings__<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
+    compute_bindings_u<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
 
   //--------------------------------------------------------------------------//
@@ -571,7 +571,7 @@ public:
     assert(!c.empty() && "empty connectivity");
 
     using etype = entity_type<DIM, TO_DOM>;
-    using dtype = domain_entity__<TO_DOM, etype>;
+    using dtype = domain_entity_u<TO_DOM, etype>;
 
     return c.get_index_space().slice<dtype>(
         c.range(e->template id<FROM_DOM>()));
@@ -599,7 +599,7 @@ public:
     assert(!c.empty() && "empty connectivity");
 
     using etype = entity_type<DIM, TO_DOM>;
-    using dtype = domain_entity__<TO_DOM, etype>;
+    using dtype = domain_entity_u<TO_DOM, etype>;
 
     return c.get_index_space().slice<dtype>(
         c.range(e->template id<FROM_DOM>()));
@@ -621,7 +621,7 @@ public:
       size_t FROM_DOM = 0,
       size_t TO_DOM = FROM_DOM,
       class ENT_TYPE>
-  decltype(auto) entities(domain_entity__<FROM_DOM, ENT_TYPE> & e) const {
+  decltype(auto) entities(domain_entity_u<FROM_DOM, ENT_TYPE> & e) const {
     return entities<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
@@ -641,7 +641,7 @@ public:
       size_t FROM_DOM = 0,
       size_t TO_DOM = FROM_DOM,
       class ENT_TYPE>
-  decltype(auto) entities(domain_entity__<FROM_DOM, ENT_TYPE> & e) {
+  decltype(auto) entities(domain_entity_u<FROM_DOM, ENT_TYPE> & e) {
     return entities<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
@@ -655,7 +655,7 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto entities() const {
     using etype = entity_type<DIM, DOM>;
-    using dtype = domain_entity__<DOM, etype>;
+    using dtype = domain_entity_u<DOM, etype>;
     return base_t::ms_->index_spaces[DOM][DIM].template slice<dtype>();
   } // entities
 
@@ -672,7 +672,7 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto entities(partition_t partition) const {
     using etype = entity_type<DIM, DOM>;
-    using dtype = domain_entity__<DOM, etype>;
+    using dtype = domain_entity_u<DOM, etype>;
     return base_t::ms_->partition_index_spaces[partition][DOM][DIM]
         .template slice<dtype>();
   } // entities
@@ -720,7 +720,7 @@ public:
       size_t FROM_DOM = 0,
       size_t TO_DOM = FROM_DOM,
       class ENT_TYPE>
-  decltype(auto) entity_ids(domain_entity__<FROM_DOM, ENT_TYPE> & e) {
+  decltype(auto) entity_ids(domain_entity_u<FROM_DOM, ENT_TYPE> & e) {
     return entity_ids<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
@@ -786,7 +786,7 @@ public:
       size_t FROM_DOM = 0,
       size_t TO_DOM = FROM_DOM,
       class ENT_TYPE>
-  void reverse_entities(domain_entity__<FROM_DOM, ENT_TYPE> & e) {
+  void reverse_entities(domain_entity_u<FROM_DOM, ENT_TYPE> & e) {
     return reverse_entities<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
@@ -832,7 +832,7 @@ public:
       size_t TO_DOM = FROM_DOM,
       class ENT_TYPE,
       class U>
-  void reverse_entities(domain_entity__<FROM_DOM, ENT_TYPE> & e, U && order) {
+  void reverse_entities(domain_entity_u<FROM_DOM, ENT_TYPE> & e, U && order) {
     return reorder_entities<DIM, FROM_DOM, TO_DOM>(
         e.entity(), std::forward<U>(order));
   } // entities
@@ -1071,9 +1071,9 @@ public:
   auto & get_index_subspace() {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
-    using index_subspaces = typename get_index_subspaces__<MESH_TYPE>::type;
+    using index_subspaces = typename get_index_subspaces_u<MESH_TYPE>::type;
 
-    constexpr size_t subspace_index = find_index_subspace_from_id__<
+    constexpr size_t subspace_index = find_index_subspace_from_id_u<
         std::tuple_size<index_subspaces>::value, index_subspaces,
         INDEX_SUBSPACE>::find();
 
@@ -1085,7 +1085,7 @@ public:
     using index_space_t =
         typename std::tuple_element<0, subspace_entry_t>::type;
 
-    constexpr size_t index = find_index_space_from_id__<
+    constexpr size_t index = find_index_space_from_id_u<
         std::tuple_size<entity_types_t>::value, entity_types_t,
         index_space_t::value>::find();
 
@@ -1099,16 +1099,16 @@ public:
     using entity_t = typename std::tuple_element<2, entry_t>::type;
 
     return base_t::ms_->index_subspaces[INDEX_SUBSPACE]
-        .template cast<domain_entity__<domain_t::value, entity_t>>();
+        .template cast<domain_entity_u<domain_t::value, entity_t>>();
   }
 
   template<size_t INDEX_SUBSPACE>
   const auto & get_index_subspace() const {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
-    using index_subspaces = typename get_index_subspaces__<MESH_TYPE>::type;
+    using index_subspaces = typename get_index_subspaces_u<MESH_TYPE>::type;
 
-    constexpr size_t subspace_index = find_index_subspace_from_id__<
+    constexpr size_t subspace_index = find_index_subspace_from_id_u<
         std::tuple_size<index_subspaces>::value, index_subspaces,
         INDEX_SUBSPACE>::find();
 
@@ -1120,7 +1120,7 @@ public:
     using index_space_t =
         typename std::tuple_element<0, subspace_entry_t>::type;
 
-    constexpr size_t index = find_index_space_from_id__<
+    constexpr size_t index = find_index_space_from_id_u<
         std::tuple_size<entity_types_t>::value, entity_types_t,
         index_space_t::value>::find();
 
@@ -1134,7 +1134,7 @@ public:
     using entity_t = typename std::tuple_element<2, entry_t>::type;
 
     return base_t::ms_->index_subspaces[INDEX_SUBSPACE]
-        .template cast<domain_entity__<domain_t::value, entity_t>>();
+        .template cast<domain_entity_u<domain_t::value, entity_t>>();
   }
 
   size_t get_index_subspace_size_(size_t index_subspace) {
@@ -1143,10 +1143,10 @@ public:
 
 private:
   template<size_t, size_t, class>
-  friend struct compute_connectivity__;
+  friend struct compute_connectivity_u;
 
   template<size_t, size_t, class>
-  friend struct compute_bindings__;
+  friend struct compute_bindings_u;
 
   template<size_t DOM, typename VERT_TYPE>
   void init_cell_(
@@ -1243,7 +1243,7 @@ private:
     // keep track of the local ids, since they may be added out of order
     std::vector<size_t> entity_ids;
 
-    domain_connectivity__<MESH_TYPE::num_dimensions> & dc =
+    domain_connectivity_u<MESH_TYPE::num_dimensions> & dc =
         base_t::ms_->topology[Domain][Domain];
 
     // Get connectivity for cells to vertices.
@@ -1269,24 +1269,24 @@ private:
     using entity_type = entity_type<DimensionToBuild, Domain>;
 
     auto & is = base_t::ms_->index_spaces[Domain][DimensionToBuild]
-                    .template cast<domain_entity__<Domain, entity_type>>();
+                    .template cast<domain_entity_u<Domain, entity_type>>();
 
     auto & cis = base_t::ms_->index_spaces[Domain][UsingDimension]
-                     .template cast<domain_entity__<Domain, cell_type>>();
+                     .template cast<domain_entity_u<Domain, cell_type>>();
 
     // Lookup the index space for the entity type being created.
-    constexpr size_t cell_index_space = find_index_space_from_dimension__<
+    constexpr size_t cell_index_space = find_index_space_from_dimension_u<
         std::tuple_size<typename MESH_TYPE::entity_types>::value,
         typename MESH_TYPE::entity_types, UsingDimension, Domain>::find();
 
     // Lookup the index space for the vertices from the mesh
     // specialization.
-    constexpr size_t vertex_index_space = find_index_space_from_dimension__<
+    constexpr size_t vertex_index_space = find_index_space_from_dimension_u<
         std::tuple_size<typename MESH_TYPE::entity_types>::value,
         typename MESH_TYPE::entity_types, 0, Domain>::find();
 
     // Lookup the index space for the entity type being created.
-    constexpr size_t entity_index_space = find_index_space_from_dimension__<
+    constexpr size_t entity_index_space = find_index_space_from_dimension_u<
         std::tuple_size<typename MESH_TYPE::entity_types>::value,
         typename MESH_TYPE::entity_types, DimensionToBuild, Domain>::find();
 
@@ -1497,7 +1497,7 @@ private:
     const auto & context_ = flecsi::execution::context_t::instance();
 
     // find the from index space and get the mapping from global to local
-    constexpr size_t to_index_space = find_index_space_from_dimension__<
+    constexpr size_t to_index_space = find_index_space_from_dimension_u<
         std::tuple_size<typename MESH_TYPE::entity_types>::value,
         typename MESH_TYPE::entity_types, TO_DIM, TO_DOM>::find();
 
@@ -1857,31 +1857,31 @@ private:
     // get the cells from mesh storage
     auto & cell_storage =
         base_t::ms_->index_spaces[FROM_DOM][cell_dim]
-            .template cast<domain_entity__<FROM_DOM, cell_type>>();
+            .template cast<domain_entity_u<FROM_DOM, cell_type>>();
 
     // get the entities from mesh storage
     auto & binding_storage =
         base_t::ms_->index_spaces[TO_DOM][TO_DIM]
-            .template cast<domain_entity__<TO_DOM, binding_type>>();
+            .template cast<domain_entity_u<TO_DOM, binding_type>>();
 
     // Lookup the index space for the cell type.
-    constexpr auto cell_index_space = find_index_space_from_dimension__<
+    constexpr auto cell_index_space = find_index_space_from_dimension_u<
         std::tuple_size<typename MESH_TYPE::entity_types>::value,
         typename MESH_TYPE::entity_types, cell_dim, FROM_DOM>::find();
 
     // lookup all primal index spaces in the FROM_DOM
     auto entity_index_spaces =
-        find_all_index_spaces_in_domain__<MESH_TYPE, FROM_DOM>();
+        find_all_index_spaces_in_domain_u<MESH_TYPE, FROM_DOM>();
 
     // Lookup the index space for the entity type being created.
-    constexpr auto binding_index_space = find_index_space_from_dimension__<
+    constexpr auto binding_index_space = find_index_space_from_dimension_u<
         std::tuple_size<typename MESH_TYPE::entity_types>::value,
         typename MESH_TYPE::entity_types, TO_DIM, TO_DOM>::find();
 
     // get the primal mesh connectivity and the domain connectivity
-    domain_connectivity__<num_dims> & primal_conn =
+    domain_connectivity_u<num_dims> & primal_conn =
         base_t::ms_->topology[FROM_DOM][FROM_DOM];
-    domain_connectivity__<num_dims> & domain_conn =
+    domain_connectivity_u<num_dims> & domain_conn =
         base_t::ms_->topology[FROM_DOM][TO_DOM];
 
     // get the global to local index space map
@@ -2180,7 +2180,7 @@ private:
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
-}; // class mesh_topology__
+}; // class mesh_topology_u
 
 } // namespace topology
 } // namespace flecsi

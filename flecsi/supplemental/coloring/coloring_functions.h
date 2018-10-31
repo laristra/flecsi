@@ -42,7 +42,7 @@ template <
   typename COLOR_INFO
 >
 void color_entity(
-  topology::mesh_definition__<DIMENSION> const & md,
+  topology::mesh_definition_u<DIMENSION> const & md,
   coloring::communicator_t * communicator,
   CLOSURE_SET const & closure,
   ENTITY_MAP const & remote_info_map,

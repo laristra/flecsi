@@ -26,7 +26,7 @@ namespace io {
 /// \brief simple_definition_t provides a very basic implementation of
 ///        the mesh_definition_t interface.
 ///
-class simple_definition_t : public topology::mesh_definition__<2> {
+class simple_definition_t : public topology::mesh_definition_u<2> {
 public:
   /// Default constructor
   simple_definition_t(const char * filename) {

@@ -12,7 +12,7 @@
 #include <mpi.h>
 #include <sstream>
 
-using index_coloring_t = flecsi::coloring::index_coloring__<size_t>;
+using index_coloring_t = flecsi::coloring::index_coloring_u<size_t>;
 using ghost_info_t = index_coloring_t::ghost_info_t;
 using shared_info_t = index_coloring_t::shared_info_t;
 

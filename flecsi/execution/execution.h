@@ -43,7 +43,7 @@ clog_register_tag(execution);
  */
 
 #define __flecsi_internal_return_type(task)                                    \
-  typename flecsi::utils::function_traits__<decltype(task)>::return_type
+  typename flecsi::utils::function_traits_u<decltype(task)>::return_type
 
 /*!
   @def __flecsi_internal_arguments_type
@@ -56,7 +56,7 @@ clog_register_tag(execution);
  */
 
 #define __flecsi_internal_arguments_type(task)                                 \
-  typename flecsi::utils::function_traits__<decltype(task)>::arguments_type
+  typename flecsi::utils::function_traits_u<decltype(task)>::arguments_type
 
 //----------------------------------------------------------------------------//
 // Top-Level Driver Interface
@@ -93,7 +93,7 @@ clog_register_tag(execution);
   @param driver A std::function<int(int, char **)> that shall be invoked by
                 the FLeCSI runtime after initialization. Normally, this
                 function should be the \em execute method of a
-                flecsi::control::control__<control_policy_t> instance.
+                flecsi::control::control_u<control_policy_t> instance.
 
   @ingroup execution
  */
@@ -476,7 +476,7 @@ clog_register_tag(execution);
     return flecsi::utils::tuple_function(func, args);                          \
   } /* delegate func */                                                        \
                                                                                \
-  using function_handle_##func##_t = flecsi::execution::function_handle__<     \
+  using function_handle_##func##_t = flecsi::execution::function_handle_u<     \
       __flecsi_internal_return_type(func),                                     \
       __flecsi_internal_arguments_type(func)>;                                 \
                                                                                \
@@ -540,5 +540,5 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Define a function handle type */                                          \
-  using func = flecsi::execution::function_handle__<                           \
+  using func = flecsi::execution::function_handle_u<                           \
       return_type, std::tuple<__VA_ARGS__>>

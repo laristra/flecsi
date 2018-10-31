@@ -180,8 +180,8 @@ TEST(space_vector, cross_magnitude) {
 
 } // TEST
 
-using point_2d_t = point__<double,2>;
-using point_3d_t = point__<double,3>;
+using point_2d_t = point_u<double,2>;
+using point_3d_t = point_u<double,3>;
 
 TEST(space_vector, normal) {
 

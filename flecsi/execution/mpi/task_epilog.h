@@ -45,7 +45,7 @@ namespace execution {
  @ingroup execution
  */
 
-struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
+struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
 
   /*!
    Construct a task_epilog_t instance.
@@ -104,7 +104,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
   } // handle
 
   template<typename T, size_t PERMISSIONS>
-  void handle(global_accessor__<T, PERMISSIONS> & a) {
+  void handle(global_accessor_u<T, PERMISSIONS> & a) {
     auto & h = a.handle;
 
     // Skip Read Only handles
@@ -114,7 +114,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
     auto & context = context_t::instance();
     const int my_color = context.color();
     MPI_Bcast(
-        &a.data(), 1, flecsi::coloring::mpi_typetraits__<T>::type(), 0,
+        &a.data(), 1, flecsi::coloring::mpi_typetraits_u<T>::type(), 0,
         MPI_COMM_WORLD);
   } // handle
 
@@ -130,9 +130,9 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
               GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    using offset_t = typename mutator_handle__<T>::offset_t;
-    using entry_value_t = typename mutator_handle__<T>::entry_value_t;
-    using commit_info_t = typename mutator_handle__<T>::commit_info_t;
+    using offset_t = typename mutator_handle_u<T>::offset_t;
+    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
+    using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
 
     // Skip Read Only handles
     if (EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
@@ -206,7 +206,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
       for (auto peer : shared.shared) {
         MPI_Isend(
             &send_count_buf[i], 1,
-            flecsi::coloring::mpi_typetraits__<uint32_t>::type(), peer,
+            flecsi::coloring::mpi_typetraits_u<uint32_t>::type(), peer,
             shared.id, MPI_COMM_WORLD, &requests[i]);
         i++;
       }
@@ -218,7 +218,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
       MPI_Status status;
       MPI_Irecv(
           &recv_count_buf[i], 1,
-          flecsi::coloring::mpi_typetraits__<uint32_t>::type(), ghost.rank,
+          flecsi::coloring::mpi_typetraits_u<uint32_t>::type(), ghost.rank,
           ghost.id, MPI_COMM_WORLD, &requests[i + send_count]);
       i++;
     }
@@ -236,9 +236,9 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
   void handle(sparse_mutator<T> & m) {
     auto & h = m.h_;
 
-    using offset_t = typename mutator_handle__<T>::offset_t;
-    using entry_value_t = typename mutator_handle__<T>::entry_value_t;
-    using commit_info_t = typename mutator_handle__<T>::commit_info_t;
+    using offset_t = typename mutator_handle_u<T>::offset_t;
+    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
+    using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
 
     clog_assert(
         *h.num_exclusive_insertions <= *h.reserve,
