@@ -1,4 +1,5 @@
-# Style Guide
+Style Guide
+===========
 
 If not otherwise indicated, the FleCSI coding style follows the Google
 C++ Style Guide.
@@ -19,45 +20,46 @@ The exceptions are covered in the following sections.
 * No line in a file shall exceed 80 characters!
 
 * If you are editing a file, maintain the original formatting unless it
-violates our style guide. If it does, fix it!
+  violates our style guide. If it does, fix it!
 
 * For the most part, all names are lowercase and follow the conventions
-of the C++ Standard Template Library.
+  of the C++ Standard Template Library.
 
 * All delimiters should be terminated with a C++-style comment:
 
-```cpp
-     struct trivial_t {
-       double value;
-     }; // struct trivial_t <- This is the delimiter comment
-```
+.. code-block:: cpp
+
+  struct trivial_t {
+    double value;
+  }; // struct trivial_t <- This is the delimiter comment
+
 
 * Conditional and loop logic should use explicit delimiters:
 
-```cpp
-    for(size_t i{0}; i<10; ++i) do_it(i); // WRONG!
-```
+.. code-block:: cpp
+
+  for(size_t i{0}; i<10; ++i) do_it(i); // WRONG!
 
 > Correct way:
 
-```cpp
-    for(size_t i{0}; i<10; ++i) {
-      do_it(i);
-    } // for
-```
+.. code-block:: cpp
+
+  for(size_t i{0}; i<10; ++i) {
+    do_it(i);
+  } // for
 
 * FleCSI header includes should use the full relative path from the
-top-level FleCSI source directory, e.g.:
+  top-level FleCSI source directory, e.g.:
 
-```cpp
-    #include "../mesh_topology.h" // WRONG!
-```
+.. code-block:: cpp
+
+  #include "../mesh_topology.h" // WRONG!
 
 > Correct way:
 
-```cpp
-    #include <flecsi/topology/mesh_topology.h>
-```
+.. code-block:: cpp
+
+  #include <flecsi/topology/mesh_topology.h>
 
 * FleCSI header guard names should use the partial relative path. They
   should be lower case, and they should be appended with an underscore
@@ -65,20 +67,20 @@ top-level FleCSI source directory, e.g.:
   comment repeating the guard name. As an example, if the header file is
   in **'flecsi/partition/dcrs.h'**, its guard entry should look like:
 
-```cpp
-    #ifndef HEADER_HH // WRONG!
-```
+.. code-block:: cpp
+
+  #ifndef HEADER_HH // WRONG!
 
 > Correct way:
 
-```cpp
-    #ifndef partition_dcrs_h
-    #define partition_dcrs_h
+.. code-block:: cpp
 
-    // Code...
+  #ifndef partition_dcrs_h
+  #define partition_dcrs_h
 
-    #endif // partition_dcrs_h
-```
+  // Code...
+
+  #endif // partition_dcrs_h
 
 ## Directory Structure 
 
@@ -142,50 +144,50 @@ classes.
 
 Control flow operations should not insert spaces:
 
-```cpp
-    for ( size_t i{0}; i<N; ++i ) { // WRONG!
-    } // for
+.. code-block:: cpp
 
-    if ( condition ) {} // WRONG!
-```
+  for ( size_t i{0}; i<N; ++i ) { // WRONG!
+  } // for
+
+  if ( condition ) {} // WRONG!
 
 Correct way:
 
-```cpp
-    for(size_t i{0}; i<N; ++i) {
-    } // for
+.. code-block:: cpp
 
-    if(condition) {
-    } // if
-```
+  for(size_t i{0}; i<N; ++i) {
+  } // for
+
+  if(condition) {
+  } // if
 
 ### Braced Initialization
 
 Braced initialization *should* use spaces:
 
-```cpp
-    std::vector<size_t> vec = {1,2,3}; // WRONG!
-```
+.. code-block:: cpp
+
+  std::vector<size_t> vec = {1,2,3}; // WRONG!
 
 Correct way:
 
-```cpp
-    std::vector<size_t> vec = { 1, 2, 3 };
-```
+.. code-block:: cpp
+
+  std::vector<size_t> vec = { 1, 2, 3 };
 
 ### Function & Method Formatting
 
 Function and method invocations should not insert spaces:
 
-```cpp
-    my_function ( argument1, "argument 2" ); // WRONG!
-```
+.. code-block:: cpp
+
+  my_function ( argument1, "argument 2" ); // WRONG!
 
 Correct way:
 
-```cpp
-    my_function(argument1, "argument 2");
-```
+.. code-block:: cpp
+
+  my_function(argument1, "argument 2");
 
 ### More on spaces...
 
@@ -197,22 +199,22 @@ Functions and methods should be formatted with each template parameter,
 the scope (static, inline), the return type, the name, and each
 signature parameter on its own line:
 
-```cpp
-    template<
-      typename TYPENAME1,
-      typename TYPENAME2,
-      typename TYPENAME3
-    >
-    static
-    return_t &
-    name(
-      argument1 arg1name,
-      argument2 arg2name,
-      argument3 arg3name
-    )
-    {
-    } // name
-```
+.. code-block:: cpp
+
+  template<
+    typename TYPENAME1,
+    typename TYPENAME2,
+    typename TYPENAME3
+  >
+  static
+  return_t &
+  name(
+    argument1 arg1name,
+    argument2 arg2name,
+    argument3 arg3name
+  )
+  {
+  } // name
 
 Parameters should have one tab equivalent indentation. The convention is
 to define a tab as two spaces. FleCSI source files have formatting hints
@@ -223,34 +225,34 @@ trivial, i.e., there is only a single template parameter, **or** there
 are no signature parameters, it is not necessary to break up the
 arguments:
 
-```cpp
-    // Trivial template and signature
-    template<typename TYPENAME>
-    return_t &
-    name()
-    {
-    } // name
+.. code-block:: cpp
 
-    // Trivial template
-    template<typename TYPENAME>
-    return_t &
-    name(
-      argument1 arg1name,
-      argument2 arg2name
-    )
-    {
-    } // name
+  // Trivial template and signature
+  template<typename TYPENAME>
+  return_t &
+  name()
+  {
+  } // name
 
-    // Trivial signature
-    template<
-      typename TYPENAME1,
-      typename TYPENAME2
-    >
-    return_t &
-    name()
-    {
-    } // name
-```
+  // Trivial template
+  template<typename TYPENAME>
+  return_t &
+  name(
+    argument1 arg1name,
+    argument2 arg2name
+  )
+  {
+  } // name
+
+  // Trivial signature
+  template<
+    typename TYPENAME1,
+    typename TYPENAME2
+  >
+  return_t &
+  name()
+  {
+  } // name
 
 ## Type Names
 
@@ -258,12 +260,12 @@ FleCSI follows a C-style naming convention of all lower-case letters
 with underscores. Fully-qualified types should also append an
 underscore lower-case *t*, i.e., \_t to the end of the type name:
 
-```cpp
-    struct my_type_t
-    {
-      double value;
-    }; // struct my_type_t
-```
+.. code-block:: cpp
+
+  struct my_type_t
+  {
+    double value;
+  }; // struct my_type_t
 
 Type definitions should be terminated with a C-style comment indicating
 the type name.
@@ -272,24 +274,25 @@ the type name.
 
 For templated types, use a double underscore for the unqualified type:
 
-```cpp
-    my_template_type__
-```
+.. code-block:: cpp
+
+  my_template_type__
+
 
 This allows the type to be fully qualified using the normal type naming
 convention listed above, e.g.:
 
-```cpp
-    // Unqualified type definition
-    template<typename TYPENAME>
-    struct my_template_type__
-    {
-      TYPENAME value;
-    }; // struct my_template_type__
+.. code-block:: cpp
 
-    // Fully qualified type
-    using my_template_type_t = my_template_type__<double>;
-```
+  // Unqualified type definition
+  template<typename TYPENAME>
+  struct my_template_type__
+  {
+    TYPENAME value;
+  }; // struct my_template_type__
+
+  // Fully qualified type
+  using my_template_type_t = my_template_type__<double>;
 
 The double underscore was chosen so that it does not conflict with
 member variable names, which use a single underscore.
@@ -298,31 +301,31 @@ member variable names, which use a single underscore.
 
 Template parameters should use descriptive, uppercase names:
 
-```cpp
-    //------------------------------------------------------------------------//
-    //! @tparam TYPENAME The POD type.
-    //! @tparam ARGUMENTS A variadic list of arguments.
-    //------------------------------------------------------------------------//
+.. code-block:: cpp
 
-    template<typename TYPENAME, typename ... ARGUMENTS>
-```
+  //------------------------------------------------------------------------//
+  //! @tparam TYPENAME The POD type.
+  //! @tparam ARGUMENTS A variadic list of arguments.
+  //------------------------------------------------------------------------//
+
+  template<typename TYPENAME, typename ... ARGUMENTS>
 
 ## Error & Exception Handling
 
 Use assertions and static assertions to assert things that must be true:
 
-```cpp
-    template<size_t FROM_DIMENSION>
-    connectivity &
-    get(
-      size_t to_dim
-    )
-    {
-      static_assert(FROM_DIMENSION <= DIMENSION, "invalid from dimension");
-      assert(to_dim <= DIMENSION && "invalid to dimension");
-      return conns_[FROM_DIMENSION][to_dim];
-    } // get
-```
+.. code-block:: cpp
+
+  template<size_t FROM_DIMENSION>
+  connectivity &
+  get(
+    size_t to_dim
+  )
+  {
+    static_assert(FROM_DIMENSION <= DIMENSION, "invalid from dimension");
+    assert(to_dim <= DIMENSION && "invalid to dimension");
+    return conns_[FROM_DIMENSION][to_dim];
+  } // get
 
 In this case, we can verify that the from dimension (template parameter
 FROM_DIMENSION) is in bounds using a static assertion. We need to use a
@@ -335,17 +338,17 @@ Use exception handling to catch exceptional situations, i.e., when a
 condition for the correct functioning of the code is not met. An
 exception may be caught and the program can recover from it:
 
-```cpp
-    try {
-      type_t * t = new type_t;
-    }
-    catch(std::bad_alloc & e) {
-      // do something because the allocation failed...
-    }
-    catch(...) {
-      // default exception
-    } // try
-```
+.. code-block:: cpp
+
+  try {
+    type_t * t = new type_t;
+  }
+  catch(std::bad_alloc & e) {
+    // do something because the allocation failed...
+  }
+  catch(...) {
+    // default exception
+  } // try
 
 In many cases, exception handling should be reserved for interfaces that
 can be called by a developer. Internal interfaces should use assertions
@@ -356,72 +359,65 @@ to identify bugs.
 Failure to respect the FleCSI style guidelines will lead to public
 ritualized torture and eventual sacrifice...
 
---------------------------------------------------------------------------------
+Appendix A: Style Examples
+==========================
 
-<!-- CINCHDOC DOCUMENT(developer-guide) SECTION(appendix-a) -->
+.. code-block:: cpp
 
-\pagebreak
+  //------------------------------------------------------------------------//
+  //! The my_interface_t type provides an example of a correctly formatted
+  //! and documented type.
+  //------------------------------------------------------------------------//
 
-# Appendix A: Style Examples
+  template<
+    typename TYPENAME
+  >
+  struct my_interface_t
+  {
 
-```cpp
-    //------------------------------------------------------------------------//
-    //! The my_interface_t type provides an example of a correctly formatted
-    //! and documented type.
-    //------------------------------------------------------------------------//
+    //----------------------------------------------------------------------//
+    //! Construct a my_interface_t with value.
+    //----------------------------------------------------------------------//
 
-    template<
-      typename TYPENAME
-    >
-    struct my_interface_t
+    my_interface_t(
+      TYPENAME value
+    )
+    :
+      value_(initialize(value))
+    {}
+
+    //----------------------------------------------------------------------//
+    //! This method provides an example of a member function.
+    //!
+    //! @param input The input value to the method.
+    //!
+    //! @return A modified value of type TYPENAME.
+    //----------------------------------------------------------------------//
+
+    TYPENAME
+    two_times(
+      TYPENAME input
+    )
     {
+      return 2.0*value_;
+    } // two_times
 
-      //----------------------------------------------------------------------//
-      //! Construct a my_interface_t with value.
-      //----------------------------------------------------------------------//
+  private:
 
-      my_interface_t(
-        TYPENAME value
-      )
-      :
-        value_(initialize(value))
-      {}
+    // private member functions
 
-      //----------------------------------------------------------------------//
-      //! This method provides an example of a member function.
-      //!
-      //! @param input The input value to the method.
-      //!
-      //! @return A modified value of type TYPENAME.
-      //----------------------------------------------------------------------//
+    void
+    initialize(
+      TYPENAME value
+    )
+    {
+      return value + 5.0;
+    } // initialize
 
-      TYPENAME
-      two_times(
-        TYPENAME input
-      )
-      {
-        return 2.0*value_;
-      } // two_times
+    // private data members
 
-    private:
+    TYPENAME value_;
 
-      // private member functions
+  }; // struct my_interface_t
 
-      void
-      initialize(
-        TYPENAME value
-      )
-      {
-        return value + 5.0;
-      } // initialize
-
-      // private data members
-
-      TYPENAME value_;
-
-    }; // struct my_interface_t
-```
-
---------------------------------------------------------------------------------
-
-<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
+.. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :

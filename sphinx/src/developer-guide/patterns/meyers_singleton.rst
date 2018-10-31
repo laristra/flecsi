@@ -1,30 +1,31 @@
-# Meyer's Singleton
+Meyer's Singleton
+=================
 
 A singleton is a type instance for which there is one, and only one,
 object in the system:
 
-```cpp
-struct singleton_t
-{
+.. code-block:: cpp
 
-  static
-  singleton_t &
-  instance()
+  struct singleton_t
   {
-    static singleton_t s;
-    return s;
-  } // instance
 
-  singleton_t(const singleton_t &) = delete;
-  singleton_t & operator = (const singleton_t &) = delete;
+    static
+    singleton_t &
+    instance()
+    {
+      static singleton_t s;
+      return s;
+    } // instance
 
-private:
+    singleton_t(const singleton_t &) = delete;
+    singleton_t & operator = (const singleton_t &) = delete;
 
-  singleton_t() {}
-  ~singleton_t() {}
+  private:
 
-}; // struct singleton_t
-```
+    singleton_t() {}
+    ~singleton_t() {}
+
+  }; // struct singleton_t
 
 Attributed to Scott Meyers, this singleton pattern exploits three
 important properties:
@@ -50,7 +51,8 @@ These are discussed at length in *Modern C++ Design: Generic Programming
 and Design Patterns Applied* by Andrei Alexandrescu.
 
 More explanations about singletons in C++ are
-[here](http://stackoverflow.com/questions/1008019/c-singleton-design-pattern).
+`here
+<http://stackoverflow.com/questions/1008019/c-singleton-design-pattern>`_.
 
 Here is a more verbose description of static storage duration from the
 C++ standard:
@@ -74,4 +76,4 @@ execution shall wait for completion of the initialization. If control
 re-enters the declaration recursively while the variable is being
 initialized, the behavior is undefined.*
 
-<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
+.. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :
