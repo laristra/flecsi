@@ -1,4 +1,5 @@
-# Example 3: Index Spaces
+Example 3: Index Spaces
+=======================
 
 Index spaces are a fundamental concept of the FleCSI programming model.
 In principle, an index space is simply an enumerated set. In practice,
@@ -27,64 +28,65 @@ id. Although these particular types are relatively trivial, an actual
 specialization type may expose interfaces that are arbitrarily complex.
 
 The code for this example can be found in *index-spaces.cc*:
-```cpp
-#include <iostream>
 
-#include<flecsi-tutorial/specialization/mesh/mesh.h>
-#include<flecsi/data/data.h>
-#include<flecsi/execution/execution.h>
+.. code-block:: cpp
 
-using namespace flecsi;
-using namespace flecsi::tutorial;
+  #include <iostream>
 
-flecsi_register_data_client(mesh_t, clients, mesh);
+  #include<flecsi-tutorial/specialization/mesh/mesh.h>
+  #include<flecsi/data/data.h>
+  #include<flecsi/execution/execution.h>
 
-namespace example {
+  using namespace flecsi;
+  using namespace flecsi::tutorial;
 
-void simple(mesh<ro> mesh) {
+  flecsi_register_data_client(mesh_t, clients, mesh);
 
-  // Iterate over the vertices index space
+  namespace example {
 
-  for(auto v: mesh.vertices()) {
-    v->print("Hello World! I'm a vertex!");
-  } // for
+  void simple(mesh<ro> mesh) {
 
-  // Iterate over the cells index space, and then over
-  // the vertices index space.
+    // Iterate over the vertices index space
 
-  for(auto c: mesh.cells(owned)) {
-    c->print("Hello World! I am a cell!");
-
-    for(auto v: mesh.vertices(c)) {
-      v->print("I'm a vertex!");
+    for(auto v: mesh.vertices()) {
+      v->print("Hello World! I'm a vertex!");
     } // for
-  } // for
 
-} // simple
+    // Iterate over the cells index space, and then over
+    // the vertices index space.
 
-// Task registration is as usual...
+    for(auto c: mesh.cells(owned)) {
+      c->print("Hello World! I am a cell!");
 
-flecsi_register_task(simple, example, loc, single);
+      for(auto v: mesh.vertices(c)) {
+        v->print("I'm a vertex!");
+      } // for
+    } // for
 
-} // namespace example
+  } // simple
 
-namespace flecsi {
-namespace execution {
+  // Task registration is as usual...
 
-void driver(int argc, char ** argv) {
+  flecsi_register_task(simple, example, loc, single);
 
-  // Get a data client handle as usual...
+  } // namespace example
 
-  auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
+  namespace flecsi {
+  namespace execution {
 
-  // Task execution is as usual...
+  void driver(int argc, char ** argv) {
 
-  flecsi_execute_task(simple, example, single, m);
+    // Get a data client handle as usual...
 
-} // driver
+    auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
 
-} // namespace execution
-} // namespace flecsi
-```
+    // Task execution is as usual...
 
-<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
+    flecsi_execute_task(simple, example, single, m);
+
+  } // driver
+
+  } // namespace execution
+  } // namespace flecsi
+
+.. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :

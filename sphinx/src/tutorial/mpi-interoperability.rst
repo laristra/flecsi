@@ -1,4 +1,5 @@
-# Example 8: MPI Interoperability Example
+Example 8: MPI Interoperability Example
+=======================================
 
 FleCSI provides straightforward interoperability with libraries and code
 that depend on the MPI runtime. Data that are registered in FleCSI may
@@ -10,7 +11,4 @@ the MPI runtime.
 
 NOTES:
 
-```cpp
-```
-
-<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
+.. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :

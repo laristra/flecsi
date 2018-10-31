@@ -1,4 +1,5 @@
-# Example 2: Tasks
+Example 2: Tasks
+================
 
 A FleCSI task is the basic execution unit of distributed-memory (SPMD)
 and conventional task-based (MPMD) parallelism. This example
@@ -63,46 +64,46 @@ NOTES:
 
 The code for this example can be found in *tasks.cc*:
 
-```cpp
-#include <iostream>
+.. code-block:: cpp
 
-#include<flecsi/execution/execution.h>
+  #include <iostream>
 
-namespace example {
+  #include<flecsi/execution/execution.h>
 
-// This is the definition of simple_task
+  namespace example {
 
-void simple_task() {
+  // This is the definition of simple_task
 
-  // Print message from inside of the task
+  void simple_task() {
 
-  std::cout << "Hello World from " << __FUNCTION__ << std::endl;
+    // Print message from inside of the task
 
-} // simple_task
+    std::cout << "Hello World from " << __FUNCTION__ << std::endl;
 
-// This line registers the "simple_task" (defined directly above)
-// with the FleCSI runtime.
-//
-// NOTE: The task must be registered using the actual C++
-// namespace in which it is defined, i.e., "example".
+  } // simple_task
 
-flecsi_register_task(simple_task, example, loc, single);
+  // This line registers the "simple_task" (defined directly above)
+  // with the FleCSI runtime.
+  //
+  // NOTE: The task must be registered using the actual C++
+  // namespace in which it is defined, i.e., "example".
 
-} // namespace example
+  flecsi_register_task(simple_task, example, loc, single);
 
-namespace flecsi {
-namespace execution {
+  } // namespace example
 
-void driver(int argc, char ** argv) {
+  namespace flecsi {
+  namespace execution {
 
-  // This time, the driver executes a task to do the output
+  void driver(int argc, char ** argv) {
 
-  flecsi_execute_task(simple_task, example, single);
+    // This time, the driver executes a task to do the output
 
-} // driver
+    flecsi_execute_task(simple_task, example, single);
 
-} // namespace execution
-} // namespace flecsi
-```
+  } // driver
 
-<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
+  } // namespace execution
+  } // namespace flecsi
+
+.. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :
