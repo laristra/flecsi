@@ -381,7 +381,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 
 
 
-
+#if 0
+{
 Legion::Domain owner_entries_domain = runtime->get_index_space_domain(
        ctx, regions[2].get_logical_region().get_index_space());
 
@@ -402,9 +403,15 @@ args.max_entries_per_index<<std::endl;
  std::cout <<"IRINA DEBUG,my_color= "<<my_color<<" ghost domain lo"<<ghost_ent_rect.lo[0]<<", "<<
  ghost_ent_rect.lo[1]<<", hi :"<<ghost_ent_rect.hi[0]<<", "<<
  ghost_ent_rect.hi[1]<<std::endl;
+}
+#endif
 
+    Legion::Domain ghost_entries_domain = runtime->get_index_space_domain(
+       ctx, regions[3].get_logical_region().get_index_space());
 
-
+    auto entries_position_ref_acc = regions[3]
+                              .get_field_accessor(ghost_owner_pos_fid)
+                              .typeify<LegionRuntime::Arrays::Point<2>>();
 
     const int my_color = runtime->find_local_MPI_rank();
 
@@ -432,19 +439,30 @@ args.max_entries_per_index<<std::endl;
           Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
           ghost_acc(regions[3], fid, field_info.size +sizeof(size_t));
 
-      for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
+      for (Legion::Domain::DomainPointIterator itr(ghost_entries_domain);
+				itr; itr++) {
         //auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
         auto &ghost_ptr = itr.p;
         LegionRuntime::Arrays::Point<2> owner_location =
-           position_ref_acc.read(ghost_ptr);
+           entries_position_ref_acc.read(ghost_ptr);
         auto owner_ptr = Legion::DomainPoint::from_point<2>(owner_location);
+
+std::cout <<"IRINA DEBUG, owner ptr = "<<owner_ptr<<
+", ghost_ptr  = "<<ghost_ptr<<std::endl;
 
         char *ptr_ghost_acc = (char*)(ghost_acc.ptr(ghost_ptr));
         char *ptr_owner_acc = (char*)(owner_acc.ptr(owner_ptr));
         size_t size = field_info.size + sizeof(size_t);
         size_t chunk = size * args.max_entries_per_index;
         memcpy(ptr_ghost_acc, ptr_owner_acc, chunk);
-
+      }//for ghost_entries_domain
+     
+      
+      for (Legion::Domain::DomainPointIterator itr(ghost_domain);
+        itr; itr++){
+        auto &ghost_ptr = itr.p;
+        LegionRuntime::Arrays::Point<2> owner_location =
+           position_ref_acc.read(ghost_ptr);
         offset_t * ghost_start_and_count_location =
           reinterpret_cast <offset_t*>(ghost_offset_acc.ptr(itr.p));
         const offset_t * owner_start_and_count_location =
@@ -587,7 +605,7 @@ __flecsi_internal_legion_task(sparse_set_owner_position_task, void){
       {
         LegionRuntime::Arrays::Point<2> owner_point=
         LegionRuntime::Arrays::make_point(owner_location[0],
-          owner_location);//+count);
+          owner_start_and_count_location->start()+count);
         owner_points.push_back(owner_point);
         std::cout <<"IRINA DEBUG, start = "<< owner_start_and_count_location->start()<<" , count = "<<owner_start_and_count_location->count()<<std::endl;
        // auto &ptr = entries_itr.p;
