@@ -1,4 +1,5 @@
-## Example 1: Driver
+Example 1: Driver
+=================
 
 As a runtime abstraction layer, FleCSI replaces the normal main
 function with a driver function. Like main, the driver is the most
@@ -18,15 +19,15 @@ user's driver as with a normal main function.
 
 Try compiling this example with flecsit:
 
-```
-$ flecsit compile driver.cc
-```
+.. code-block:: console
+
+  $ flecsit compile driver.cc
 
 You can run it like:
 
-```
-$ ./driver arg1 arg2
-```
+.. code-block:: console
+
+  $ ./driver arg1 arg2
 
 You can experiment with changing the output or handling of the
 command-line arguments.
@@ -37,28 +38,28 @@ NOTES:
 
 The code for this example can be found in *driver.cc*:
 
-```cpp
-#include <iostream>
+.. code-block:: cpp
 
-namespace flecsi {
-namespace execution {
+  #include <iostream>
 
-void driver(int argc, char ** argv) {
+  namespace flecsi {
+  namespace execution {
 
-  // Print the message
+  void driver(int argc, char ** argv) {
 
-  std::cout << "Hello World" << std::endl;
+    // Print the message
 
-  // Print the arguments that were passed on the command line
+    std::cout << "Hello World" << std::endl;
 
-  for(size_t i{1}; i<argc; ++i) {
-    std::cout << "\targ(" << i << "): " << argv[i] << std::endl;
-  } // for
+    // Print the arguments that were passed on the command line
 
-} // driver
+    for(size_t i{1}; i<argc; ++i) {
+      std::cout << "\targ(" << i << "): " << argv[i] << std::endl;
+    } // for
 
-} // namespace execution
-} // namespace flecsi
-```
+  } // driver
 
-<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
+  } // namespace execution
+  } // namespace flecsi
+
+.. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :
