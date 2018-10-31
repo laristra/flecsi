@@ -21,7 +21,7 @@ Requirements & Prerequisites
 The following list of requirements provides a complete set of build
 options, but is not necessary for a particular build:
 
-* **C++14 compliant compiler** |br|
+* **C++17 compliant compiler** |br|
   At the current time, FleCSI has been tested with GNU, Clang, and Intel
   C++ compilers.
 
