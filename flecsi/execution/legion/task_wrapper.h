@@ -53,7 +53,7 @@ namespace execution {
  */
 
 template<typename RETURN, typename ARG_TUPLE, RETURN (*DELEGATE)(ARG_TUPLE)>
-struct execution_wrapper__ {
+struct execution_wrapper_u {
 
   /*!
    Execute the delegate function, storing the return value.
@@ -77,7 +77,7 @@ struct execution_wrapper__ {
 private:
   RETURN value_;
 
-}; // struct execution_wrapper__
+}; // struct execution_wrapper_u
 
 /*!
  Wrapper to handle void returns from user task execution.
@@ -89,7 +89,7 @@ private:
  */
 
 template<typename ARG_TUPLE, void (*DELEGATE)(ARG_TUPLE)>
-struct execution_wrapper__<void, ARG_TUPLE, DELEGATE> {
+struct execution_wrapper_u<void, ARG_TUPLE, DELEGATE> {
 
   /*!
    Execute the delegate function. No value is stored for void.
@@ -106,7 +106,7 @@ struct execution_wrapper__<void, ARG_TUPLE, DELEGATE> {
 
   void get() {}
 
-}; // struct execution_wrapper__
+}; // struct execution_wrapper_u
 
 /*!
  Pure Legion task wrapper.
@@ -124,7 +124,7 @@ template<
         const std::vector<Legion::PhysicalRegion> &,
         Legion::Context,
         Legion::Runtime *)>
-struct pure_task_wrapper__ {
+struct pure_task_wrapper_u {
 
   /*!
     The task_id_t type is a unique identifier for Legion tasks.
@@ -164,7 +164,7 @@ struct pure_task_wrapper__ {
                    << launch << std::endl
                    << std::endl;
       }
-        registration_wrapper__<RETURN, TASK>::register_task(
+        registration_wrapper_u<RETURN, TASK>::register_task(
             tid, Legion::Processor::LOC_PROC, config_options, task_name);
         break;
       case processor_type_t::toc: {
@@ -172,7 +172,7 @@ struct pure_task_wrapper__ {
         clog(info) << "Registering PURE toc task: " << task_name << std::endl
                    << std::endl;
       }
-        registration_wrapper__<RETURN, TASK>::register_task(
+        registration_wrapper_u<RETURN, TASK>::register_task(
             tid, Legion::Processor::TOC_PROC, config_options, task_name);
         break;
       case processor_type_t::mpi:
@@ -184,10 +184,10 @@ struct pure_task_wrapper__ {
     } // switch
   } // registration_callback
 
-}; // struct pure_task_wrapper__
+}; // struct pure_task_wrapper_u
 
 /*!
- The task_wrapper__ type provides registation callback and execution
+ The task_wrapper_u type provides registation callback and execution
  functions for user and MPI tasks.
 
  @tparam RETURN    The return type of the user task.
@@ -203,7 +203,7 @@ template<
     typename RETURN,
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
-struct task_wrapper__ {
+struct task_wrapper_u {
 
   /*!
     The task_id_t type is a unique identifier for Legion tasks.
@@ -240,7 +240,7 @@ struct task_wrapper__ {
         clog(info) << "Registering loc task: " << name << std::endl
                    << std::endl;
       }
-        registration_wrapper__<RETURN, execute_user_task>::register_task(
+        registration_wrapper_u<RETURN, execute_user_task>::register_task(
             tid, Legion::Processor::LOC_PROC, config_options, name);
         break;
       case processor_type_t::toc: {
@@ -248,7 +248,7 @@ struct task_wrapper__ {
         clog(info) << "Registering toc task: " << name << std::endl
                    << std::endl;
       }
-        registration_wrapper__<RETURN, execute_user_task>::register_task(
+        registration_wrapper_u<RETURN, execute_user_task>::register_task(
             tid, Legion::Processor::TOC_PROC, config_options, name);
         break;
       case processor_type_t::mpi: {
@@ -256,7 +256,7 @@ struct task_wrapper__ {
         clog(info) << "Registering MPI task: " << name << std::endl
                    << std::endl;
       }
-        registration_wrapper__<void, execute_mpi_task>::register_task(
+        registration_wrapper_u<void, execute_mpi_task>::register_task(
             tid, Legion::Processor::LOC_PROC, config_options, name);
         break;
       default:
@@ -287,7 +287,7 @@ struct task_wrapper__ {
 
     // Execute the user's task
     // return (*DELEGATE)(task_args);
-    execution_wrapper__<RETURN, ARG_TUPLE, DELEGATE> wrapper;
+    execution_wrapper_u<RETURN, ARG_TUPLE, DELEGATE> wrapper;
     wrapper.execute(std::forward<ARG_TUPLE>(task_args));
 
     finalize_handles_t finalize_handles;
@@ -328,7 +328,7 @@ struct task_wrapper__ {
 
   } // execute_mpi_task
 
-}; // struct task_wrapper__
+}; // struct task_wrapper_u
 
 } // namespace execution
 } // namespace flecsi

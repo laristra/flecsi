@@ -84,7 +84,7 @@ method. References to each type's *erasure_method* function can be
 stored in a standard container because they are all of the same type.
 This pattern is used in several places in FleCSI. A specific example is
 in *flecsi/execution/legion/task_wrapper.h*. In particular,
-*task_wrapper__::registration_callback* and
-*task_wrapper__::execute_user_task* use this design pattern.
+*task_wrapper_u::registration_callback* and
+*task_wrapper_u::execute_user_task* use this design pattern.
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->

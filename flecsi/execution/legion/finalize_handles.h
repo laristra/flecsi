@@ -22,7 +22,7 @@ namespace execution {
   FIXME
   @ingroup execution
  */
-struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
+struct finalize_handles_t : public utils::tuple_walker_u<finalize_handles_t> {
 
   /*!
     FIXME
@@ -34,7 +34,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
       size_t EXCLUSIVE_PERMISSIONS,
       size_t SHARED_PERMISSIONS,
       size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor__<
+  void handle(dense_accessor_u<
               T,
               EXCLUSIVE_PERMISSIONS,
               SHARED_PERMISSIONS,
@@ -56,7 +56,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     > &a
   )
   {
-    using entry_value_t = typename mutator_handle__<T>::entry_value_t;
+    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
     auto & h = a.handle;
@@ -101,8 +101,8 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
     > &m
   )
   {
-    using entry_value_t = typename mutator_handle__<T>::entry_value_t;
-    using commit_info_t = typename mutator_handle__<T>::commit_info_t;
+    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
+    using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
     using offset_t = data::sparse_data_offset_t;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
@@ -168,7 +168,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
       std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
 
     if (PERMISSIONS == wo || PERMISSIONS == rw) {
       auto & context_ = context_t::instance();
@@ -192,7 +192,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
       !std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
     h.delete_storage();
   } // handle
 

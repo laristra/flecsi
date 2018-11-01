@@ -29,7 +29,7 @@ namespace data {
 
 struct hpx_data_policy_t {
   template<size_t STORAGE_TYPE>
-  using storage_class__ = hpx::storage_class__<STORAGE_TYPE>;
+  using storage_class_u = hpx::storage_class_u<STORAGE_TYPE>;
 
   template<
       typename DATA_CLIENT_TYPE,
@@ -39,7 +39,7 @@ struct hpx_data_policy_t {
       size_t NAME_HASH,
       size_t INDEX_SPACE,
       size_t VERSIONS>
-  using field_wrapper__ = hpx_field_registration_wrapper__<
+  using field_wrapper_u = hpx_field_registration_wrapper_u<
       DATA_CLIENT_TYPE,
       STORAGE_TYPE,
       DATA_TYPE,
@@ -49,7 +49,7 @@ struct hpx_data_policy_t {
       VERSIONS>;
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
-  using client_wrapper__ = hpx_client_registration_wrapper__<
+  using client_wrapper_u = hpx_client_registration_wrapper_u<
       DATA_CLIENT_TYPE,
       NAMESPACE_HASH,
       NAME_HASH>;

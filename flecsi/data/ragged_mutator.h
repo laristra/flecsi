@@ -36,7 +36,7 @@ namespace flecsi {
 struct ragged_mutator_base_t {};
 
 //----------------------------------------------------------------------------//
-//! The ragged mutator__ type captures information about permissions
+//! The ragged mutator_u type captures information about permissions
 //! and specifies a data policy. It allows resizing of each ragged array
 //! per index, uses the existing sparse data representation, but provides
 //! more efficient indexing and insertion.
@@ -47,24 +47,24 @@ struct ragged_mutator_base_t {};
 //----------------------------------------------------------------------------//
 
 template<typename T>
-struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
+struct mutator_u<data::ragged, T> : public mutator_u<data::sparse, T>,
                                     public ragged_mutator_base_t {
 
-  using base_t = mutator__<data::sparse, T>;
+  using base_t = mutator_u<data::sparse, T>;
 
   using handle_t = typename base_t::handle_t;
   using offset_t = typename base_t::offset_t;
   using entry_value_t = typename base_t::entry_value_t;
   using erase_set_t = typename base_t::erase_set_t;
-  using ragged_changes_t = typename mutator_handle__<T>::ragged_changes_t;
+  using ragged_changes_t = typename mutator_handle_u<T>::ragged_changes_t;
   using ragged_changes_map_t =
-      typename mutator_handle__<T>::ragged_changes_map_t;
+      typename mutator_handle_u<T>::ragged_changes_map_t;
 
   //--------------------------------------------------------------------------//
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  mutator__(const mutator_handle__<T> & h) : base_t(h) {
+  mutator_u(const mutator_handle_u<T> & h) : base_t(h) {
     assert(!base_t::h_.ragged_changes_map_ && "expected null changes map");
     base_t::h_.ragged_changes_map_ = new ragged_changes_map_t;
   }
@@ -213,9 +213,9 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
 };
 
 template<typename T>
-using ragged_mutator__ = mutator__<data::ragged, T>;
+using ragged_mutator_u = mutator_u<data::ragged, T>;
 
 template<typename T>
-using ragged_mutator = ragged_mutator__<T>;
+using ragged_mutator = ragged_mutator_u<T>;
 
 } // namespace flecsi
