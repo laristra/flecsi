@@ -144,6 +144,9 @@ cinch_add_unit(structured_1d
     test/structured_1d.cc
     ${DRIVER_INITIALIZATION}
     ${RUNTIME_DRIVER}
+  DEFINES
+    FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+    FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
   INPUTS
     test/structured_1d.blessed
   LIBRARIES

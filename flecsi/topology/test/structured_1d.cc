@@ -1,12 +1,16 @@
 #include <iostream>
 #include <cinchtest.h>
-#include "flecsi/topology/structured_mesh_topology.h"
-#include "flecsi/topology/mesh_storage.h"
+#include <flecsi/coloring/box_types.h>
+#include <flecsi/coloring/simple_box_colorer.h>
+#include <flecsi/execution/execution.h>
+#include <flecsi/topology/structured_mesh_topology.h>
+#include <flecsi/topology/mesh_storage.h>
 
 using namespace std;
-using namespace flecsi;
-using namespace topology;
 
+namespace flecsi {
+namespace topology {
+namespace test {
 
 class Vertex : public structured_mesh_entity__<0, 1>{
 public:
@@ -24,20 +28,71 @@ public:
   using entity_types = std::tuple<
   std::tuple<index_space_<0>, domain_<0>, Vertex>,
   std::tuple<index_space_<1>, domain_<0>, Edge>>;
+
+  using connectivities = std::tuple<>;
+  using bindings = std::tuple<>;
+   
+  template<size_t M, size_t D, typename MESH_TOPOLOGY>
+  static constexpr
+  structured_mesh_entity_base__<num_domains> *
+  create_entity(MESH_TOPOLOGY* mesh, size_t num_vertices, const id_t & id)
+  { return nullptr; }
 };
 
-using TestMesh = structured_mesh_topology__<TestMesh1dType>;
+struct TestMesh : public mesh_topology__<TestMesh1dType> {};
 
-namespace flecsi {
-namespace execution {
-//----------------------------------------------------------------------------//
-//// User driver.
-////----------------------------------------------------------------------------//
-void driver(int argc, char ** argv) {};
-} //flecsi
-} //execution
 
-TEST(structured, 1Dprimecell){
+void task_tlt_init() {
+  
+  // Get the context instance.
+  auto & context_ = execution::context_t::instance();
+
+  int rank, size;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  {
+    clog_tag_guard(coloring);
+    clog(info) << "add_colorings, rank: " << rank << std::endl;
+  }
+
+  // Define bounds for the box corresponding to cells 
+  size_t grid_size[1] = {10};
+  size_t ncolors[1]={1};
+  size_t nhalo = 1;
+  size_t nhalo_domain = 0; 
+  size_t thru_dim = 0; 
+
+  coloring::box_coloring_t colored_cells;
+  std::unordered_map<size_t, coloring::coloring_info_t> color_info;
+  auto & colored_cells_aggregate = color_info[1];
+
+  // Create a colorer instance to generate the coloring.
+  auto colorer = std::make_shared<flecsi::coloring::simple_box_colorer_t<1>>();
+
+  //Create the coloring info for cells
+  colored_cells = colorer->color(grid_size, nhalo, nhalo_domain, thru_dim, ncolors);
+
+  //Create the aggregate type for cells
+  colored_cells_aggregate = colorer->create_aggregate_color_info(colored_cells);
+
+  //Add box coloring to context
+  context_.add_box_coloring(thru_dim, colored_cells, color_info);
+
+}
+
+flecsi_register_mpi_task(task_tlt_init, flecsi::topology::test);
+
+void task_spmd_init(flecsi::data_client_handle__<TestMesh, flecsi::wo> mesh)
+{}
+
+
+flecsi_register_task(task_spmd_init, flecsi::topology::test, loc,
+    single|flecsi::leaf);
+
+
+#if 0
+test_task(structured, 1Dprimecell) {
 
   std::array<size_t,TestMesh1dType::num_dimensions> lower_bounds = {2};
   std::array<size_t,TestMesh1dType::num_dimensions> upper_bounds = {4};
@@ -130,4 +185,47 @@ TEST(structured, 1Dprimecell){
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("structured_1d.blessed"));
   delete mst;
   delete mesh;
+
+}
+#endif
+
+} // test
+} // topology
+
+
+
+namespace execution {
+
+//----------------------------------------------------------------------------//
+//// User driver.
+////----------------------------------------------------------------------------//
+void driver(int argc, char ** argv)
+{};
+
+//----------------------------------------------------------------------------//
+//// User init.
+////----------------------------------------------------------------------------//
+void specialization_tlt_init(int argc, char ** argv) {
+  std::cout << "TLT INIT" << std::endl;
+  
+  flecsi_execute_mpi_task(task_tlt_init, flecsi::topology::test);
+
+} // specialization_tlt_init
+
+void specialization_spmd_init(int argc, char ** argv) {
+  auto & context = flecsi::execution::context_t::instance();
+  std::cout << "SPMD INIT" << std::endl;
+  using TestMesh = flecsi::topology::test::TestMesh;
+  auto mesh_handle = flecsi_get_client_handle(
+      TestMesh, meshes, mesh0);
+  flecsi_execute_task(task_spmd_init, flecsi::topology::test, single,
+      mesh_handle);
+}
+
+} //execution
+
+
+} //flecsi
+
+TEST(structured, 1Dprimecell){
 } // TEST

@@ -350,10 +350,10 @@ if(PARMETIS_FOUND)
   list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${PARMETIS_INCLUDE_DIRS})
 endif()
 
-if(NOT COLORING_LIBRARIES)
-  MESSAGE(FATAL_ERROR
-    "You need parmetis to enable partitioning" )
-endif()
+#if(NOT COLORING_LIBRARIES)
+#  MESSAGE(FATAL_ERROR
+#    "You need parmetis to enable partitioning" )
+#endif()
 
 list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${COLORING_LIBRARIES})
 
