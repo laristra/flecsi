@@ -497,16 +497,15 @@ args.max_entries_per_index<<std::endl;
            entries_position_ref_acc.read(ghost_ptr);
         auto owner_ptr = Legion::DomainPoint::from_point<2>(owner_location);
 
-std::cout <<"IRINA DEBUG, owner ptr = "<<owner_ptr<<
-", ghost_ptr  = "<<ghost_ptr<<std::endl;
+//std::cout <<"IRINA DEBUG, owner ptr = "<<owner_ptr<<
+//", ghost_ptr  = "<<ghost_ptr<<std::endl;
 
         char *ptr_ghost_acc = (char*)(ghost_acc.ptr(ghost_ptr));
         char *ptr_owner_acc = (char*)(owner_acc.ptr(owner_ptr));
         size_t size = field_info.size + sizeof(size_t);
-        size_t chunk = size * args.max_entries_per_index;
+        size_t chunk = size;// * args.max_entries_per_index;
         memcpy(ptr_ghost_acc, ptr_owner_acc, chunk);
       }//for ghost_entries_domain
-     
       
       for (Legion::Domain::DomainPointIterator itr(ghost_domain);
         itr; itr++){
@@ -523,7 +522,7 @@ std::cout <<"IRINA DEBUG, owner ptr = "<<owner_ptr<<
           owner_start_and_count_location->count());
 
       } // for ghost_domain
-    } // if
+    } // for fids
   
 #if 0
   //    std::vector<LegionRuntime::Arrays::Point<2>> ghost_points;
@@ -591,7 +590,7 @@ owner_point<<std::endl;
        
     }//for
 #endif
-  }
+  }//if
 } // ghost_copy_task
 
 
@@ -627,7 +626,8 @@ __flecsi_internal_legion_task(sparse_set_owner_position_task, void){
   size_t num_owner_entries =
 		ghost_entries_rect.hi[1]-ghost_entries_rect.lo[1]+1;
   size_t num_ghosts = ghost_rect.hi[1]-ghost_rect.lo[1]+1;
-  size_t max_entries_per_index=num_owner_entries/num_ghosts;
+  if (num_ghosts!=0){
+     size_t max_entries_per_index=num_owner_entries/num_ghosts;
 
   Legion::FieldID fid = *(task->regions[1].privilege_fields.begin());
 
@@ -657,7 +657,7 @@ __flecsi_internal_legion_task(sparse_set_owner_position_task, void){
         LegionRuntime::Arrays::make_point(owner_location[0],
           owner_start_and_count_location->start()+count);
         owner_points.push_back(owner_point);
-        std::cout <<"IRINA DEBUG, start = "<< owner_start_and_count_location->start()<<" , count = "<<owner_start_and_count_location->count()<<std::endl;
+//        std::cout <<"IRINA DEBUG, start = "<< owner_start_and_count_location->start()<<" , count = "<<owner_start_and_count_location->count()<<std::endl;
        // auto &ptr = entries_itr.p;
        // ghost_entries_acc.write(ptr, owner_point);
       }//for
@@ -668,13 +668,13 @@ __flecsi_internal_legion_task(sparse_set_owner_position_task, void){
 			itr++) {
     auto &ptr = itr.p;
     ghost_entries_acc.write(ptr, owner_points[i]);     
-if (runtime->find_local_MPI_rank()==0){
-std::cout <<"IRINA DEBUG owner point ["<<i<<"] = "<<
-owner_points[i]<<"    to "<<itr.p<<std::endl;
-}
+//if (runtime->find_local_MPI_rank()==0){
+//std::cout <<"IRINA DEBUG owner point ["<<i<<"] = "<<
+//owner_points[i]<<"    to "<<itr.p<<std::endl;
+//}
     i++;
   }
-
+}
 }
 
 /*!
