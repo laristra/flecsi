@@ -175,7 +175,7 @@ public:
             const sm_id_array_2d_t &global_ubnds, 
             const sm_id_array_2d_t &global_strides)
   {
-     assert (global_lbnds.size()==global_ubnds.size();
+     assert (global_lbnds.size()==global_ubnds.size());
     // Check that the primary IS doesn't have multiple boxes
     if (primary) 
     {
