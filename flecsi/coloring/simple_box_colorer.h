@@ -57,8 +57,19 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     int count = 1;
     for (size_t nc = 0; nc < D; ++nc)
       count = static_cast<int>(count * ncolors[nc]);
-    assert(count == size);
-    assert(thru_dim < D);
+
+    // Dont assert, abort.  Because assertions are removed with -DNDEBUG, and
+    // this does not provided any performance benefit.
+    // Note: could use clog_err, but its behaviour is not as expected (i.e. does
+    // not always show output).
+    if ( count != size ) {
+      std::cerr << "Number of processors (" << size << ") must equal the"
+        << " total number of domains (" << count << ")" << std::endl;
+    }
+    if ( thru_dim >= D ) {
+      std::cerr << "Through dimension (" << thru_dim << ") must less than"
+        << " total number of dimensions (" << D  << ")" << std::endl;
+    }
 
     // Obtain indices of the current rank
     size_t idx[D];
@@ -157,6 +168,101 @@ private:
     }
     return pbox;
   } // create_primary_box
+
+  template<size_t D_ = D>
+  typename std::enable_if<D_ == 1>::type create_exclusive_and_shared_boxes(
+      box_coloring_t & colbox,
+      size_t ncolors[D],
+      size_t idx[D],
+      size_t rank) {
+    box_t pbox = colbox.primary.box;
+    size_t hl = colbox.primary.nhalo;
+    size_t TD = colbox.primary.thru_dim;
+
+    // Compute bounds for exclusive box
+    box_t ebox = pbox;
+
+    for (size_t i = 0; i < D; ++i) {
+      if (!colbox.primary.onbnd[2 * i])
+        ebox.lowerbnd[i] += hl;
+      if (!colbox.primary.onbnd[2 * i + 1])
+        ebox.upperbnd[i] -= hl;
+    }
+
+    colbox.exclusive.box = ebox;
+    colbox.exclusive.colors.emplace_back(rank);
+
+    size_t il[3] = {0, 0, 1};
+    size_t iu[3] = {1, 0, 0};
+    size_t im[3][2] = {{0, 1}, {1, 2}, {2, 0}};
+
+    size_t IM[D][4];
+    for (size_t i = 0; i < D; ++i) {
+      IM[i][0] = pbox.lowerbnd[i];
+      IM[i][1] = ebox.lowerbnd[i];
+      IM[i][2] = ebox.upperbnd[i];
+      IM[i][3] = pbox.upperbnd[i];
+    }
+
+    box_t sbox(D);
+    box_color_t scbox;
+    size_t ind[D], idx_new[D], cval;
+
+    {
+      for (size_t i = 0; i < 3; ++i) {
+        bool flag;
+        if ((i == 1))
+          flag = false;
+        else if (IM[0][i] != IM[0][i + 1])
+          flag = true;
+        else if (
+            (i == 1) && (IM[0][i] == IM[0][i + 1]))
+          flag = true;
+        else
+          flag = false;
+
+        if (flag) {
+          sbox.lowerbnd[0] = IM[0][i] + il[i];
+          sbox.upperbnd[0] = IM[0][i + 1] - iu[i];
+
+          scbox.box = sbox;
+          scbox.colors.clear();
+
+          ind[0] = i;
+
+          // Add edge shared ranks
+          for (size_t d = 0; d < D; ++d) {
+            idx_new[0] = idx[0];
+            if (ind[d] == 0) {
+              idx_new[d] -= 1;
+              cval = idx_new[0];
+              scbox.colors.emplace_back(cval);
+            } else if (ind[d] == 2) {
+              idx_new[d] += 1;
+              cval = idx_new[0];
+              scbox.colors.emplace_back(cval);
+            }
+          }
+
+          // Add corner vertex shared ranks
+          if (TD == 0) {
+            idx_new[0] = idx[0];
+
+            if ((i == 0)) {
+              idx_new[0] -= 1;
+              cval = idx_new[0];
+              scbox.colors.emplace_back(cval);
+            } else if ((i == 2)) {
+              idx_new[0] += 1;
+              cval = idx_new[0];
+              scbox.colors.emplace_back(cval);
+            }
+          }
+          colbox.shared.emplace_back(scbox);
+        }
+      }
+    }
+  } // create_exclusive_and_shared_boxes
 
   template<size_t D_ = D>
   typename std::enable_if<D_ == 2>::type create_exclusive_and_shared_boxes(
@@ -493,6 +599,66 @@ private:
     }
 
   } // create_exclusive_and_shared_boxes
+
+  template<size_t D_ = D>
+  typename std::enable_if<D_ == 1>::type create_ghost_boxes(
+      box_coloring_t & colbox,
+      size_t ncolors[D],
+      size_t idx[D]) {
+    box_t pbox = colbox.primary.box;
+    size_t hl = colbox.primary.nhalo;
+    size_t TD = colbox.primary.thru_dim;
+
+    // Compute bounds for exclusive box
+    box_t gbox = pbox;
+
+    for (size_t i = 0; i < D; ++i) {
+      if (!colbox.primary.onbnd[2 * i])
+        gbox.lowerbnd[i] -= hl;
+      if (!colbox.primary.onbnd[2 * i + 1])
+        gbox.upperbnd[i] += hl;
+    }
+
+    size_t il[3] = {0, 0, 1};
+    size_t iu[3] = {1, 0, 0};
+    size_t im[3][2] = {{0, 1}, {1, 2}, {2, 0}};
+
+    size_t IM[D][4];
+    for (size_t i = 0; i < D; ++i) {
+      IM[i][0] = gbox.lowerbnd[i];
+      IM[i][1] = pbox.lowerbnd[i];
+      IM[i][2] = pbox.upperbnd[i];
+      IM[i][3] = gbox.upperbnd[i];
+    }
+
+    box_t ghbox(D);
+    box_color_t gcbox;
+    size_t idx_new[D], cval;
+
+    {
+      int rankmap[3][2] = {{0, -1}, {1, 0}, {0, 1}};
+
+      for (size_t i = 0; i < 3; ++i) {
+        if (i == 1)
+          continue;
+        else if (IM[0][i] != IM[0][i + 1]) {
+          ghbox.lowerbnd[0] = IM[0][i] + il[i];
+          ghbox.upperbnd[0] = IM[0][i + 1] - iu[i];
+
+          gcbox.colors.clear();
+          size_t id = i;
+          if (TD <= rankmap[id][0]) {
+            idx_new[0] = idx[0] + rankmap[id][1];
+
+            cval = idx_new[0];
+            gcbox.box = ghbox;
+            gcbox.colors.emplace_back(cval);
+            colbox.ghost.emplace_back(gcbox);
+          }
+        }
+      }
+    }
+  } // create_ghost_boxes
 
   template<size_t D_ = D>
   typename std::enable_if<D_ == 2>::type create_ghost_boxes(

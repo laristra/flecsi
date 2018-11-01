@@ -126,6 +126,13 @@ cinch_add_devel_target(devel-dcrs
   THREADS 5
 )
 
+cinch_add_unit(boxcolor1d
+  SOURCES test/test_simple_box_colorer_1d.cc
+  INPUTS
+  LIBRARIES ${COLORING_LIBRARIES}
+  POLICY MPI
+  THREADS 3
+)
 cinch_add_unit(boxcolor2d
   SOURCES test/test_simple_box_colorer_2d.cc
   INPUTS

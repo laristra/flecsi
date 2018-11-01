@@ -637,6 +637,7 @@ struct data_client_policy_handler__<topology::structured_mesh_topology__<POLICY_
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
   static data_client_handle__<DATA_CLIENT_TYPE, 0> get_client_handle() {
     using entity_types = typename POLICY_TYPE::entity_types;
+    using field_info_t = execution::context_t::field_info_t;
 
     data_client_handle__<DATA_CLIENT_TYPE, 0> h;
 
