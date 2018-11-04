@@ -1,5 +1,5 @@
-Example 8: MPI Interoperability Example
-=======================================
+Example 8: MPI Interoperability
+===============================
 
 FleCSI provides straightforward interoperability with libraries and code
 that depend on the MPI runtime. Data that are registered in FleCSI may

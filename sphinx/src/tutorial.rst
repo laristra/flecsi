@@ -118,6 +118,7 @@ more advanced FleCSI concepts.
 .. toctree::
 
   tutorial/flecsit
+  tutorial/specialization
   tutorial/driver
   tutorial/tasks
   tutorial/index-spaces
