@@ -76,8 +76,8 @@ using id_vector_map_t =
 using index_vector_t = std::vector<size_t>;
 
 //-----------------------------------------------------------------//
-//! \class entity_base__ types.h
-//! \brief entity_base__ defines a base class that stores the raw info that
+//! \class entity_base_u types.h
+//! \brief entity_base_u defines a base class that stores the raw info that
 //! a topology needs, i.e: id and rank data
 //!
 //! \tparam N The number of domains.
@@ -89,9 +89,9 @@ public:
 };
 
 template<size_t NUM_DOMAINS>
-class entity_base__ : public entity_base_ {
+class entity_base_u : public entity_base_ {
 public:
-  ~entity_base__() {}
+  ~entity_base_u() {}
 
   //-----------------------------------------------------------------//
   //! Return the id of this entity.
@@ -145,7 +145,7 @@ protected:
 private:
   std::array<id_t, NUM_DOMAINS> ids_;
 
-}; // class entity_base__
+}; // class entity_base_u
 
 //-----------------------------------------------------------------//
 //! Define the vector type for storing entities.
@@ -153,7 +153,7 @@ private:
 //! \tparam NUM_DOMAINS The number of domains.
 //-----------------------------------------------------------------//
 template<size_t NUM_DOMAINS>
-using entity_vector_t = std::vector<entity_base__<NUM_DOMAINS> *>;
+using entity_vector_t = std::vector<entity_base_u<NUM_DOMAINS> *>;
 
 } // namespace topology
 } // namespace flecsi

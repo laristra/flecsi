@@ -37,6 +37,7 @@ namespace topology {
 //! \brief connectivity_t provides basic connectivity information in a
 //! compressed storage format.
 //-----------------------------------------------------------------//
+
 class connectivity_t {
 public:
   using id_t = utils::id_t;
@@ -311,7 +312,7 @@ public:
     offsets_.add_end(index_space_.size());
   } // end_from
 
-  index_space__<entity_base_ *, false, true, false, void, entity_storage_t>
+  index_space_u<entity_base_ *, false, true, false, void, entity_storage_t>
       index_space_;
 
   offset_storage_t offsets_;

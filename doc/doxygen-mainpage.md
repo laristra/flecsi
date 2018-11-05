@@ -67,7 +67,7 @@ designed to indicate whether or not a type is fully qualified (A fully
 qualified type is one for which all template parameters have been
 specified.) Fully qualified types are of the form *type_name_t*, where
 the underscore-t indicates that *type_name_t* is fully resolved. Types
-that are not fully qualified are of the form *type_name__*, where the
+that are not fully qualified are of the form *type_name_u*, where the
 double-underscore indicates that the type still has unresolved
 parameters. The following code illustrates this convention:
 ```
@@ -75,10 +75,10 @@ parameters. The following code illustrates this convention:
 template<
   typename T
 >
-struct type_name__ {};
+struct type_name_u {};
 
 // Fully-qualified type.
-using type_name_t = type_name__<double>;
+using type_name_t = type_name_u<double>;
 ```
 
 ## Design Patterns

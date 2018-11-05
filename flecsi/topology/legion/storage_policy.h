@@ -37,7 +37,7 @@ namespace flecsi {
 namespace topology {
 
 template<size_t, size_t>
-class mesh_entity__;
+class mesh_entity_u;
 
 ///
 /// \class legion_data_handle_policy_t data_handle_policy.h
@@ -45,44 +45,44 @@ class mesh_entity__;
 ///
 
 template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
-struct legion_topology_storage_policy_t__ {
+struct legion_topology_storage_policy_t_u {
   static constexpr size_t num_partitions = 5;
 
   using id_t = utils::id_t;
 
   using index_spaces_t = std::array<
-      index_space__<
+      index_space_u<
           mesh_entity_base_ *,
           true,
           true,
           true,
           void,
-          topology_storage__>,
+          topology_storage_u>,
       NUM_DIMS + 1>;
 
   using index_subspaces_t = std::array<
-      index_space__<
+      index_space_u<
           mesh_entity_base_ *,
           false,
           true,
           false,
           void,
-          topology_storage__>,
+          topology_storage_u>,
       NUM_INDEX_SUBSPACES>;
 
   using partition_index_spaces_t = std::array<
-      index_space__<
+      index_space_u<
           mesh_entity_base_ *,
           false,
           false,
           true,
           void,
-          topology_storage__>,
+          topology_storage_u>,
       NUM_DIMS + 1>;
 
-  // array of array of domain_connectivity__
+  // array of array of domain_connectivity_u
   std::array<
-      std::array<domain_connectivity__<NUM_DIMS>, NUM_DOMAINS>,
+      std::array<domain_connectivity_u<NUM_DIMS>, NUM_DOMAINS>,
       NUM_DOMAINS>
       topology;
 
@@ -95,7 +95,7 @@ struct legion_topology_storage_policy_t__ {
 
   size_t color;
 
-  legion_topology_storage_policy_t__() {
+  legion_topology_storage_policy_t_u() {
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();
   }
@@ -120,9 +120,9 @@ struct legion_topology_storage_policy_t__ {
     id_storage.set_buffer(ids, num_entities, true);
 
     for (auto & domain_connectivities : topology) {
-      auto & domain_connectivity__ = domain_connectivities[domain];
+      auto & domain_connectivity_u = domain_connectivities[domain];
       for (size_t d = 0; d <= NUM_DIMS; ++d) {
-        domain_connectivity__.get(d, dim).set_entity_storage(s);
+        domain_connectivity_u.get(d, dim).set_entity_storage(s);
       } // for
     } // for
 
@@ -221,7 +221,7 @@ struct legion_topology_storage_policy_t__ {
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(ARG_TYPES &&... args) {
-    using dtype = domain_entity__<DOM, T>;
+    using dtype = domain_entity_u<DOM, T>;
 
     auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
     size_t entity = is.size();
@@ -243,7 +243,7 @@ struct legion_topology_storage_policy_t__ {
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(const id_t & id, ARG_TYPES &&... args) {
-    using dtype = domain_entity__<DOM, T>;
+    using dtype = domain_entity_u<DOM, T>;
 
     auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
 
@@ -263,7 +263,7 @@ struct legion_topology_storage_policy_t__ {
     return ent;
   } // make
 
-}; // class legion_topology_storage_policy_t__
+}; // class legion_topology_storage_policy_t_u
 
 } // namespace topology
 } // namespace flecsi

@@ -39,10 +39,10 @@ public:
     >;
 };
 
-using set_t = set_topology__<set_types>;
+using set_t = set_topology_u<set_types>;
 
 template<typename DC, size_t PS>
-using client_handle_t = data_client_handle__<DC, PS>;
+using client_handle_t = data_client_handle_u<DC, PS>;
 
 void task1(client_handle_t<set_t, wo> sh) {
   auto e1 = sh.make<entity1>();

@@ -537,7 +537,7 @@ struct legion_context_policy_t {
    */
 
   template<typename T, launch_type_t launch>
-  auto reduce_max(legion_future__<T, launch> & local_future) {
+  auto reduce_max(legion_future_u<T, launch> & local_future) {
     Legion::DynamicCollective & max_reduction = max_reduction_;
 
     auto legion_runtime = Legion::Runtime::get_runtime();
@@ -552,7 +552,7 @@ struct legion_context_policy_t {
     auto global_future = legion_runtime->get_dynamic_collective_result(
         legion_context, max_reduction);
 
-    return legion_future__<T, launch_type_t::single>(global_future);
+    return legion_future_u<T, launch_type_t::single>(global_future);
   }
 
   /*!
@@ -579,7 +579,7 @@ struct legion_context_policy_t {
    */
 
   template<typename T, launch_type_t launch>
-  auto reduce_min(legion_future__<T, launch> & local_future) {
+  auto reduce_min(legion_future_u<T, launch> & local_future) {
     Legion::DynamicCollective & min_reduction = min_reduction_;
 
     auto legion_runtime = Legion::Runtime::get_runtime();
@@ -594,7 +594,7 @@ struct legion_context_policy_t {
     auto global_future = legion_runtime->get_dynamic_collective_result(
         legion_context, min_reduction);
 
-    return legion_future__<T, launch_type_t::single>(global_future);
+    return legion_future_u<T, launch_type_t::single>(global_future);
   }
 
   /*!
