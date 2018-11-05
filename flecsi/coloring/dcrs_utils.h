@@ -45,7 +45,7 @@ clog_register_tag(dcrs_utils);
 
 template<size_t DIMENSION, size_t MESH_DIMENSION>
 inline std::set<size_t>
-naive_coloring(topology::mesh_definition__<MESH_DIMENSION> & md) {
+naive_coloring(topology::mesh_definition_u<MESH_DIMENSION> & md) {
   std::set<size_t> indices;
 
   {
@@ -108,7 +108,7 @@ template<
     std::size_t TO_DIMENSION = DIMENSION,
     std::size_t THRU_DIMENSION = DIMENSION - 1>
 inline dcrs_t
-make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
+make_dcrs(const typename topology::mesh_definition_u<DIMENSION> & md) {
   int size;
   int rank;
 

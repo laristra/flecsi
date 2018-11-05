@@ -50,7 +50,7 @@ namespace execution {
   @ingroup execution
 */
 
-struct init_args_t : public utils::tuple_walker__<init_args_t> {
+struct init_args_t : public utils::tuple_walker_u<init_args_t> {
 
   /*!
     Construct an init_args_t instance.
@@ -94,7 +94,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
       size_t EXCLUSIVE_PERMISSIONS,
       size_t SHARED_PERMISSIONS,
       size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor__<
+  void handle(dense_accessor_u<
               T,
               EXCLUSIVE_PERMISSIONS,
               SHARED_PERMISSIONS,
@@ -128,7 +128,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   } // handle
 
   template<typename T, size_t PERMISSIONS>
-  void handle(global_accessor__<T, PERMISSIONS> & a) {
+  void handle(global_accessor_u<T, PERMISSIONS> & a) {
     auto & h = a.handle;
 
     if (h.state < SPECIALIZATION_SPMD_INIT) {
@@ -148,7 +148,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   }
 
   template<typename T, size_t PERMISSIONS>
-  void handle(color_accessor__<T, PERMISSIONS> & a) {
+  void handle(color_accessor_u<T, PERMISSIONS> & a) {
     auto & h = a.handle;
     clog_assert(h.state > SPECIALIZATION_TLT_INIT, "accessing color data    \
          handle from specialization_tlt_init is not supported");
@@ -165,7 +165,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
       std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
 
     std::unordered_map<size_t, size_t> region_map;
 
@@ -238,8 +238,8 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   // Initialize arguments for future handle
   ///
   template<typename T, launch_type_t launch>
-  void handle(legion_future__<T, launch> & h) {
-    futures.push_back(std::make_shared<legion_future__<T, launch>>(h));
+  void handle(legion_future_u<T, launch> & h) {
+    futures.push_back(std::make_shared<legion_future_u<T, launch>>(h));
   }
 
   template<
@@ -402,7 +402,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
       std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
 
     for (size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];

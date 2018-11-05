@@ -72,12 +72,12 @@ namespace hpx {
 /// \tparam MD The meta data type.
 ///
 template<typename T, size_t EP, size_t SP, size_t GP>
-struct dense_handle_t : public dense_data_handle__<T, EP, SP, GP> {
+struct dense_handle_t : public dense_data_handle_u<T, EP, SP, GP> {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using base = dense_data_handle__<T, EP, SP, GP>;
+  using base = dense_data_handle_u<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -373,7 +373,7 @@ private:
 /// FIXME: Dense storage type.
 ///
 template<>
-struct storage_class__<dense> {
+struct storage_class_u<dense> {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
@@ -394,7 +394,7 @@ struct storage_class__<dense> {
     return h;
   }
 
-}; // struct storage_class__
+}; // struct storage_class_u
 
 } // namespace hpx
 } // namespace data

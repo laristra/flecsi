@@ -44,7 +44,7 @@ using phase_ = flecsi::utils::typeify<size_t, PHASE>;
  */
 
 template<bool (*PREDICATE)(), typename ... PHASES>
-struct cycle__ {
+struct cycle_u {
 
   using TYPE = std::tuple<PHASES ...>;
 
@@ -59,18 +59,18 @@ struct cycle__ {
     return PREDICATE();
   } // run
 
-}; // struct cycle__
+}; // struct cycle_u
 
 /*!
-  The phase_walker__ class allows execution of statically-defined
+  The phase_walker_u class allows execution of statically-defined
   control points.
  */
 
 template<typename CONTROL_POLICY>
-struct phase_walker__
-  : public flecsi::utils::tuple_walker__<phase_walker__<CONTROL_POLICY>>
+struct phase_walker_u
+  : public flecsi::utils::tuple_walker_u<phase_walker_u<CONTROL_POLICY>>
 {
-  phase_walker__(int argc, char ** argv) : argc_(argc), argv_(argv) {}
+  phase_walker_u(int argc, char ** argv) : argc_(argc), argv_(argv) {}
 
   /*!
     Handle the tuple type \em PHASE_TYPE for type size_t.
@@ -96,7 +96,7 @@ struct phase_walker__
   } // handle_type
 
   /*!
-    Handle the tuple type \em PHASE_TYPE for type cycle__.
+    Handle the tuple type \em PHASE_TYPE for type cycle_u.
 
     @tparam PHASE_TYPE The phase type. This can either be a size_t
                        or a \em cycle. Cycles are defined by the
@@ -110,7 +110,7 @@ struct phase_walker__
     !std::is_same<typename PHASE_TYPE::TYPE, size_t>::value>::type
   handle_type() {
     while(PHASE_TYPE::predicate()) {
-      phase_walker__ phase_walker(argc_, argv_);
+      phase_walker_u phase_walker(argc_, argv_);
       phase_walker.template walk_types<typename PHASE_TYPE::TYPE>();
     } // while
   } // handle_type
@@ -120,22 +120,22 @@ private:
   int argc_;
   char ** argv_;
 
-}; // struct phase_walker__
+}; // struct phase_walker_u
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 
 /*!
-  The phase_writer__ class allows execution of statically-defined
+  The phase_writer_u class allows execution of statically-defined
   control points.
  */
 
 template<typename CONTROL_POLICY>
-struct phase_writer__
-  : public flecsi::utils::tuple_walker__<phase_writer__<CONTROL_POLICY>>
+struct phase_writer_u
+  : public flecsi::utils::tuple_walker_u<phase_writer_u<CONTROL_POLICY>>
 {
   using graphviz_t = flecsi::utils::graphviz_t;
 
-  phase_writer__(graphviz_t & gv) : gv_(gv) {}
+  phase_writer_u(graphviz_t & gv) : gv_(gv) {}
 
   /*!
     Handle the tuple type \em PHASE_TYPE for type size_t.
@@ -179,7 +179,7 @@ struct phase_writer__
   } // handle_type
 
   /*!
-    Handle the tuple type \em PHASE_TYPE for type cycle__.
+    Handle the tuple type \em PHASE_TYPE for type cycle_u.
 
     @tparam PHASE_TYPE The phase type. This can either be a size_t
                        or a \em cycle. Cycles are defined by the
@@ -193,7 +193,7 @@ struct phase_writer__
     !std::is_same<typename PHASE_TYPE::TYPE, size_t>::value>::type
   handle_type() {
 
-    phase_writer__ phase_writer(gv_);
+    phase_writer_u phase_writer(gv_);
     phase_writer.template walk_types<typename PHASE_TYPE::TYPE>();
 
     // Add edges for cycles and beautify them...
@@ -216,7 +216,7 @@ private:
 
   graphviz_t & gv_;
 
-}; // struct phase_writer__
+}; // struct phase_writer_u
 
 #endif // FLECSI_ENABLE_GRAPHVIZ
 

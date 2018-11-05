@@ -166,7 +166,7 @@
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
   flecsi::data::field_interface_t::get_handle<                                 \
-      typename flecsi::data_client_type__<decltype(client_handle)>::type,      \
+      typename flecsi::data_client_type_u<decltype(client_handle)>::type,      \
       flecsi::data::storage_class, data_type,                                  \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
@@ -410,7 +410,7 @@
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
   flecsi::data::field_interface_t::get_mutator<                                \
-      typename flecsi::data_client_type__<decltype(client_handle)>::type,      \
+      typename flecsi::data_client_type_u<decltype(client_handle)>::type,      \
       flecsi::data::storage_class, data_type,                                  \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \

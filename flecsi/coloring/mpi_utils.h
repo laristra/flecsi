@@ -35,7 +35,7 @@ namespace coloring {
  */
 
 template<typename TYPE>
-struct mpi_typetraits__ {
+struct mpi_typetraits_u {
 
   inline static MPI_Datatype type() {
     static MPI_Datatype data_type = MPI_DATATYPE_NULL;
@@ -49,7 +49,7 @@ struct mpi_typetraits__ {
 };
 
 template<>
-struct mpi_typetraits__<size_t> {
+struct mpi_typetraits_u<size_t> {
   inline static MPI_Datatype type() {
     if (sizeof(size_t) == 8) {
       return MPI_UNSIGNED_LONG_LONG;
@@ -57,21 +57,21 @@ struct mpi_typetraits__<size_t> {
       return MPI_UNSIGNED;
     } // if
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 template<>
-struct mpi_typetraits__<int> {
+struct mpi_typetraits_u<int> {
   inline static MPI_Datatype type() {
     return MPI_INT;
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 template<>
-struct mpi_typetraits__<double> {
+struct mpi_typetraits_u<double> {
   inline static MPI_Datatype type() {
     return MPI_DOUBLE;
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 } // namespace coloring
 } // namespace flecsi

@@ -74,13 +74,13 @@ template<
   size_t SP,
   size_t GP
 >
-struct dense_handle_t : public dense_data_handle__<T, EP, SP, GP>
+struct dense_handle_t : public dense_data_handle_u<T, EP, SP, GP>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using base = dense_data_handle__<T, EP, SP, GP>;
+  using base = dense_data_handle_u<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -108,7 +108,7 @@ struct dense_handle_t : public dense_data_handle__<T, EP, SP, GP>
 /// Dense storage type. Provides an interface from obtaining data handles
 ///
 template<>
-struct storage_class__<dense>
+struct storage_class_u<dense>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -183,7 +183,7 @@ struct storage_class__<dense>
 
     auto data = registered_field_data[field_info.fid].data();
     // populate data member of data_handle_t
-    auto &hb = dynamic_cast<dense_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
+    auto &hb = dynamic_cast<dense_data_handle_u<DATA_TYPE, 0, 0, 0>&>(h);
 
     hb.fid = field_info.fid;
     hb.index_space = field_info.index_space;

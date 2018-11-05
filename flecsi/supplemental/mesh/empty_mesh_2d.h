@@ -21,7 +21,7 @@
 namespace flecsi {
 namespace supplemental {
 
-  class vertex : public topology::mesh_entity__<0, 1>{
+  class vertex : public topology::mesh_entity_u<0, 1>{
   public:
     template<size_t M>
     uint64_t precedence() const { return 0; }
@@ -29,14 +29,14 @@ namespace supplemental {
 
   };
 
-  class cell : public topology::mesh_entity__<2, 1>{
+  class cell : public topology::mesh_entity_u<2, 1>{
   public:
 
     using id_t = flecsi::utils::id_t;
 
     std::vector<size_t>
     create_entities(id_t cell_id, size_t dim,
-                    topology::domain_connectivity__<2> & c, id_t * e){
+                    topology::domain_connectivity_u<2> & c, id_t * e){
       return {2, 2, 2, 2};
     }
 
@@ -57,8 +57,8 @@ namespace supplemental {
     using bindings = std::tuple<>;
 
     template<size_t M, size_t D, typename ST>
-    static topology::mesh_entity_base__<num_domains>*
-    create_entity(topology::mesh_topology_base__<ST>* mesh,
+    static topology::mesh_entity_base_u<num_domains>*
+    create_entity(topology::mesh_topology_base_u<ST>* mesh,
                   size_t num_vertices){
       switch(M){
         case 0:{
@@ -74,7 +74,7 @@ namespace supplemental {
     }
   };
 
-  using empty_mesh_t = topology::mesh_topology__<empty_mesh_types_t>;
-  using empty_mesh_2d_t = topology::mesh_topology__<empty_mesh_types_t>;
+  using empty_mesh_t = topology::mesh_topology_u<empty_mesh_types_t>;
+  using empty_mesh_2d_t = topology::mesh_topology_u<empty_mesh_types_t>;
 } // namespace supplemental
 } // namespace flecsi

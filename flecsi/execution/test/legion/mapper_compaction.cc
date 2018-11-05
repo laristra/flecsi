@@ -45,7 +45,7 @@ void fill_task(const Legion::Task * task,
     }
 }
 // Register the task. The task id is automatically generated.
-__flecsi_internal_register_legion_task(fill_task,
+flecsi_internal_register_legion_task(fill_task,
   processor_type_t::loc, single|leaf);
 
 // Define a Legion task to register.
@@ -104,7 +104,7 @@ int internal_task_example_1(const Legion::Task * task,
 } // internal_task_example
 
 // Register the task. The task id is automatically generated.
-__flecsi_internal_register_legion_task(internal_task_example_1,
+flecsi_internal_register_legion_task(internal_task_example_1,
   processor_type_t::loc, single|leaf);
 //----------------------------------------------------------------------------//
 
@@ -132,7 +132,7 @@ void driver(int argc, char ** argv) {
   LogicalRegion stencil_lr = runtime->create_logical_region(context , is, fs);
 
   //Fill out LR with numbers:
-  auto key_0 = __flecsi_internal_task_key(fill_task);
+  auto key_0 = flecsi_internal_task_key(fill_task);
   Legion::TaskLauncher task_launcher(
     context_t::instance().task_id(key_0),
     Legion::TaskArgument(nullptr, 0));
@@ -185,7 +185,7 @@ void driver(int argc, char ** argv) {
   LogicalPartition gh_lp =
     runtime->get_logical_partition(context, stencil_lr, gh_ip);
  
-  auto key_1 = __flecsi_internal_task_key(internal_task_example_1);
+  auto key_1 = flecsi_internal_task_key(internal_task_example_1);
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher index_launcher(
