@@ -8,7 +8,7 @@ import sys
 
 # Add the Breathe path
 # FIXME: This should be discovered during cmake configuration
-sys.path.append("/usr/local/lib/python3.6/dist-packages/breathe/")
+sys.path.append("@CINCH_BREATHE_PACKAGE_DIR@")
 
 # Sphinx extensions as list of strings
 extensions = [
