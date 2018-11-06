@@ -62,16 +62,16 @@ namespace hpx {
 ///
 ///
 template<typename T>
-struct entry_value__ {
-  entry_value__(size_t entry) : entry(entry) {}
+struct entry_value_u {
+  entry_value_u(size_t entry) : entry(entry) {}
 
-  entry_value__(size_t entry, T value) : entry(entry), value(value) {}
+  entry_value_u(size_t entry, T value) : entry(entry), value(value) {}
 
-  entry_value__() {}
+  entry_value_u() {}
 
   size_t entry;
   T value;
-}; // struct entry_value__
+}; // struct entry_value_u
 
 static constexpr size_t INDICES_FLAG = 1UL << 63;
 static constexpr size_t ENTRIES_FLAG = 1UL << 62;
@@ -98,7 +98,7 @@ struct sparse_accessor_t {
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
-  using entry_value_t = entry_value__<T>;
+  using entry_value_t = entry_value_u<T>;
 
   using index_space_ =
       topology::index_space<topology::simple_entry<size_t>, true>;
@@ -288,7 +288,7 @@ struct sparse_mutator_t {
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
-  using entry_value_t = entry_value__<T>;
+  using entry_value_t = entry_value_u<T>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -518,7 +518,7 @@ struct sparse_mutator_t {
   } // commit
 
 private:
-  using spare_map_t = std::multimap<size_t, entry_value__<T>>;
+  using spare_map_t = std::multimap<size_t, entry_value_u<T>>;
   using erase_set_t = std::set<std::pair<size_t, size_t>>;
 
   size_t num_slots_;
@@ -529,7 +529,7 @@ private:
   size_t num_indices_;
   size_t num_entries_;
   size_t * indices_;
-  entry_value__<T> * entries_;
+  entry_value_u<T> * entries_;
   spare_map_t spare_map_;
   erase_set_t * erase_set_;
 }; // struct sparse_accessor_t

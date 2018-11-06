@@ -55,13 +55,13 @@ namespace execution {
 
 struct legion_execution_policy_t {
   /*!
-    The future__ type may be used for explicit synchronization of tasks.
+    The future_u type may be used for explicit synchronization of tasks.
 
     @tparam RETURN The return type of the task.
    */
 
   template<typename RETURN, launch_type_t launch>
-  using future__ = legion_future__<RETURN, launch>;
+  using future_u = legion_future_u<RETURN, launch>;
 
   /*!
     The runtime_state_t type identifies a public type for the high-level
@@ -110,7 +110,7 @@ struct legion_execution_policy_t {
       std::string name) {
     clog(info) << "Registering legion task " << KEY << " " << name << std::endl;
 
-    using wrapper_t = pure_task_wrapper__<RETURN, TASK>;
+    using wrapper_t = pure_task_wrapper_u<RETURN, TASK>;
 
     const bool success = context_t::instance().register_task(
       KEY, processor, launch, name, wrapper_t::registration_callback);
@@ -122,7 +122,7 @@ struct legion_execution_policy_t {
 
   /*!
     Legion backend task registration. For documentation on this
-    method, please see task__::register_task.
+    method, please see task_u::register_task.
    */
 
   template<
@@ -133,7 +133,7 @@ struct legion_execution_policy_t {
   static bool
   register_task(processor_type_t processor, launch_t launch, std::string name) {
 
-    using wrapper_t = task_wrapper__<KEY, RETURN, ARG_TUPLE, DELEGATE>;
+    using wrapper_t = task_wrapper_u<KEY, RETURN, ARG_TUPLE, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
       KEY, processor, launch, name, wrapper_t::registration_callback);
@@ -145,7 +145,7 @@ struct legion_execution_policy_t {
 
   /*!
     Legion backend task execution. For documentation on this
-    method, please see task__::execute_task.
+    method, please see task_u::execute_task.
    */
 
   template<
@@ -227,7 +227,7 @@ struct legion_execution_policy_t {
           // Reset the calling state to false.
           context_.unset_call_mpi(legion_context, legion_runtime);
 
-          return legion_future__<RETURN, launch_type_t::index>(future);
+          return legion_future_u<RETURN, launch_type_t::index>(future);
         } else { // check for execution_state
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
@@ -275,7 +275,7 @@ struct legion_execution_policy_t {
 
           auto future = context_.unset_call_mpi_single();
 
-          return legion_future__<RETURN, launch_type_t::index>(future);
+          return legion_future_u<RETURN, launch_type_t::index>(future);
         } // if check for execution state
       } else {
         //        clog_fatal(" loc task doesn'thave an implementation for
@@ -310,7 +310,7 @@ struct legion_execution_policy_t {
         auto future =
             legion_runtime->execute_index_space(legion_context, index_launcher);
 
-        return legion_future__<RETURN, launch_type_t::index>(future);
+        return legion_future_u<RETURN, launch_type_t::index>(future);
       } // if
     }
   };
@@ -386,7 +386,7 @@ struct legion_execution_policy_t {
         task_epilog_t task_epilog(legion_runtime, legion_context);
         task_epilog.walk(task_args);
 
-        return legion_future__<RETURN, launch_type_t::single>(future);
+        return legion_future_u<RETURN, launch_type_t::single>(future);
       } // if
     }
   };
@@ -411,7 +411,7 @@ struct legion_execution_policy_t {
 
   /*!
     Legion backend function registration. For documentation on this
-    method, please see function__::register_function.
+    method, please see function_u::register_function.
    */
 
   template<
@@ -426,7 +426,7 @@ struct legion_execution_policy_t {
 
   /*!
     Legion backend function execution. For documentation on this
-    method, please see function__::execute_function.
+    method, please see function_u::execute_function.
    */
 
   template<typename FUNCTION_HANDLE, typename... ARGS>

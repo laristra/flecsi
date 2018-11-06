@@ -32,12 +32,12 @@ namespace utils {
 //----------------------------------------------------------------------------//
 
 template<std::size_t INDEX, typename TUPLE_TYPE, typename CRTP_TYPE>
-struct tuple_walker_helper__ {
+struct tuple_walker_helper_u {
 
   static constexpr std::size_t CURRENT =
       std::tuple_size<TUPLE_TYPE>::value - INDEX;
 
-  using HELPER_TYPE = tuple_walker_helper__<INDEX - 1, TUPLE_TYPE, CRTP_TYPE>;
+  using HELPER_TYPE = tuple_walker_helper_u<INDEX - 1, TUPLE_TYPE, CRTP_TYPE>;
 
   //--------------------------------------------------------------------------//
   //! Walk the given tuple, calling the CRTP type's handle method.
@@ -63,16 +63,16 @@ struct tuple_walker_helper__ {
     return HELPER_TYPE::walk_types(p);
   } // walk_types
 
-}; // tuple_walker_helper__
+}; // tuple_walker_helper_u
 
 //----------------------------------------------------------------------------//
-//! Terminator type for tuple_walker_helper__.
+//! Terminator type for tuple_walker_helper_u.
 //!
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
 template<typename TUPLE_TYPE, typename CRTP_TYPE>
-struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE> {
+struct tuple_walker_helper_u<0, TUPLE_TYPE, CRTP_TYPE> {
 
   //--------------------------------------------------------------------------//
   //! Termination of tuple walk.
@@ -90,7 +90,7 @@ struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE> {
     return 0;
   } // walk_types
 
-}; // struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE>
+}; // struct tuple_walker_helper_u<0, TUPLE_TYPE, CRTP_TYPE>
 
 //----------------------------------------------------------------------------//
 //! Type for iterating through tuples. This type uses CRTP to expose handler
@@ -102,7 +102,7 @@ struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE> {
 //----------------------------------------------------------------------------//
 
 template<typename CRTP_TYPE>
-struct tuple_walker__ {
+struct tuple_walker_u {
 
   //--------------------------------------------------------------------------//
   //! Walk the given tuple, applying the handler to each element.
@@ -116,7 +116,7 @@ struct tuple_walker__ {
 
   template<typename TUPLE_TYPE>
   void walk(TUPLE_TYPE & t) {
-    using HELPER_TYPE = tuple_walker_helper__<
+    using HELPER_TYPE = tuple_walker_helper_u<
         std::tuple_size<TUPLE_TYPE>::value, TUPLE_TYPE, CRTP_TYPE>;
 
     HELPER_TYPE::walk(*static_cast<CRTP_TYPE *>(this), t);
@@ -132,13 +132,13 @@ struct tuple_walker__ {
 
   template<typename TUPLE_TYPE>
   void walk_types() {
-    using HELPER_TYPE = tuple_walker_helper__<
+    using HELPER_TYPE = tuple_walker_helper_u<
         std::tuple_size<TUPLE_TYPE>::value, TUPLE_TYPE, CRTP_TYPE>;
 
     HELPER_TYPE::walk_types(*static_cast<CRTP_TYPE *>(this));
   } // walk_type
 
-}; // struct tuple_walker__
+}; // struct tuple_walker_u
 
 } // namespace utils
 } // namespace flecsi

@@ -5,7 +5,7 @@
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
-// Using this approach allows us to have only one storage_class__
+// Using this approach allows us to have only one storage_class_u
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
 #include <flecsi/data/storage_class.h>
@@ -27,7 +27,7 @@ namespace legion {
 // FIXME: Scoped storage type.
 ///
 template<>
-struct storage_class__<scoped> {
+struct storage_class_u<scoped> {
 
   ///
   //
@@ -43,7 +43,7 @@ struct storage_class__<scoped> {
     return {};
   } // get_handle
 
-}; // struct storage_class__
+}; // struct storage_class_u
 
 } // namespace legion
 } // namespace data
