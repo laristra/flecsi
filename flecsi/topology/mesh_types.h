@@ -19,18 +19,14 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
-#include <unordered_map>
 #include <vector>
 
 #include <flecsi/data/data_client.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/topology/entity_storage.h>
-#include <flecsi/topology/index_space.h>
+#include <flecsi/topology/connectivity.h>
 #include <flecsi/topology/mesh_utils.h>
 #include <flecsi/topology/partition.h>
 #include <flecsi/topology/types.h>
-#include <flecsi/utils/array_ref.h>
-#include <flecsi/utils/reorder.h>
 
 namespace flecsi {
 namespace topology {
@@ -536,6 +532,7 @@ public:
 //! Holds the connectivities from domain M1 -> M2 for all topological
 //! dimensions.
 //-----------------------------------------------------------------//
+
 template<size_t DIM>
 class domain_connectivity_u
 {
@@ -775,7 +772,7 @@ unserialize_dimension_(mesh_topology_base_u<STORAGE_TYPE> & mesh,
 
   using id_t = utils::id_t;
 
-  std::vector<mesh_entity_base_ *> ents;
+  std::vector<entity_base_ *> ents;
   std::vector<id_t> ids;
   ents.reserve(num_entities);
   ids.reserve(num_entities);

@@ -134,6 +134,7 @@ if(ENABLE_FLECSIT)
     # FleCSIT dependencies
     #--------------------------------------------------------------------------#
 
+    set(PythonInterp_FIND_VERSION TRUE) # unknown hack to search for versions
     find_package(PythonInterp 2.7 REQUIRED)
 
     if(${PYTHON_VERSION_MAJOR} LESS 3)
