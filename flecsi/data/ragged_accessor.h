@@ -29,7 +29,7 @@ namespace flecsi {
 struct ragged_accessor_base_t {};
 
 //----------------------------------------------------------------------------//
-//! The ragged accessor__ type captures information about permissions
+//! The ragged accessor_u type captures information about permissions
 //! and specifies a data policy.
 //!
 //! @tparam T                     The data type referenced by the handle.
@@ -48,18 +48,18 @@ template<typename T,
   size_t EXCLUSIVE_PERMISSIONS,
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS>
-struct accessor__<data::ragged,
+struct accessor_u<data::ragged,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS> : public accessor__<data::sparse,
+  GHOST_PERMISSIONS> : public accessor_u<data::sparse,
                          T,
                          EXCLUSIVE_PERMISSIONS,
                          SHARED_PERMISSIONS,
                          GHOST_PERMISSIONS>,
                        public ragged_accessor_base_t {
 
-  using base_t = accessor__<data::sparse,
+  using base_t = accessor_u<data::sparse,
     T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
@@ -71,7 +71,7 @@ struct accessor__<data::ragged,
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  accessor__(const sparse_data_handle__<T, 0, 0, 0> & h) : base_t(h) {}
+  accessor_u(const sparse_data_handle_u<T, 0, 0, 0> & h) : base_t(h) {}
 
   T & operator()(size_t index, size_t ragged_index) {
     const offset_t & offset = base_t::handle.offsets[index];
@@ -86,7 +86,7 @@ template<typename T,
   size_t EXCLUSIVE_PERMISSIONS,
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS>
-using ragged_accessor__ = accessor__<data::ragged,
+using ragged_accessor_u = accessor_u<data::ragged,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
@@ -96,7 +96,7 @@ template<typename T,
   size_t EXCLUSIVE_PERMISSIONS,
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS>
-using ragged_accessor = ragged_accessor__<T,
+using ragged_accessor = ragged_accessor_u<T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
   GHOST_PERMISSIONS>;

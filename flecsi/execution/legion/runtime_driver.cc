@@ -203,7 +203,7 @@ runtime_driver(
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
  
   const auto pos_compaction_id =
-    context_.task_id<__flecsi_internal_task_key(owner_pos_compaction_task)>();
+    context_.task_id<flecsi_internal_task_key(owner_pos_compaction_task)>();
   
   Legion::IndexLauncher pos_compaction_launcher(pos_compaction_id,
       data.color_domain(), Legion::TaskArgument(nullptr, 0),
@@ -298,7 +298,7 @@ runtime_driver(
   std::map<size_t,Legion::Serializer> args_serializers;
 
   const auto spmd_id =
-    context_.task_id<__flecsi_internal_task_key(spmd_task)>();
+    context_.task_id<flecsi_internal_task_key(spmd_task)>();
 
   {
   clog_tag_guard(runtime_driver);
@@ -1209,7 +1209,7 @@ spmd_task(
     // Fix ghost reference/pointer to point to compacted position of
     // shared that it needs
     Legion::TaskLauncher fix_ghost_refs_launcher(context_.task_id<
-      __flecsi_internal_task_key(owner_pos_correction_task)>(),
+      flecsi_internal_task_key(owner_pos_correction_task)>(),
       Legion::TaskArgument(nullptr, 0));
 
     {
@@ -1236,7 +1236,7 @@ spmd_task(
 
     // Find subrects from each owner that I must copy in ghost_copy_task
     Legion::TaskLauncher owners_subregions_launcher(context_.task_id<
-      __flecsi_internal_task_key(owners_subregions_task)>(),
+      flecsi_internal_task_key(owners_subregions_task)>(),
       Legion::TaskArgument(nullptr, 0));
 
     owners_subregions_launcher.add_future(Legion::Future::from_value(runtime,

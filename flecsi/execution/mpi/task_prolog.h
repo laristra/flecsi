@@ -43,7 +43,7 @@ namespace execution {
    @ingroup execution
    */
 
-  struct task_prolog_t : public flecsi::utils::tuple_walker__<task_prolog_t>
+  struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t>
   {
 
     /*!
@@ -74,7 +74,7 @@ namespace execution {
     >
     void
     handle(
-     dense_accessor__<
+     dense_accessor_u<
        T,
        EXCLUSIVE_PERMISSIONS,
        SHARED_PERMISSIONS,
@@ -91,7 +91,7 @@ namespace execution {
     >
     void
     handle(
-     global_accessor__<
+     global_accessor_u<
        T,
        PERMISSIONS
      > & a
@@ -183,7 +183,7 @@ namespace execution {
     >
     typename std::enable_if_t<std::is_base_of<topology::mesh_topology_base_t, T>::value>
     handle(
-      data_client_handle__<T, PERMISSIONS> & h
+      data_client_handle_u<T, PERMISSIONS> & h
     )
     {
       auto& context_ = context_t::instance();
@@ -326,7 +326,7 @@ namespace execution {
     >
     typename std::enable_if_t<std::is_base_of<topology::set_topology_base_t, T>::value>
     handle(
-      data_client_handle__<T, PERMISSIONS> & h
+      data_client_handle_u<T, PERMISSIONS> & h
     )
     {
       auto& context_ = context_t::instance();

@@ -35,7 +35,7 @@ namespace flecsi {
 struct sparse_accessor_base_t {};
 
 //----------------------------------------------------------------------------//
-//! The sparse accessor__ type captures information about permissions
+//! The sparse accessor_u type captures information about permissions
 //! and specifies a data policy. It provides methods for looking up
 //! a data item given an index and entry, for querying allocated indices and
 //! entries per index and over all indices.
@@ -56,17 +56,17 @@ template<typename T,
   size_t EXCLUSIVE_PERMISSIONS,
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS>
-struct accessor__<data::sparse,
+struct accessor_u<data::sparse,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS> : public accessor__<data::base,
+  GHOST_PERMISSIONS> : public accessor_u<data::base,
                          T,
                          EXCLUSIVE_PERMISSIONS,
                          SHARED_PERMISSIONS,
                          GHOST_PERMISSIONS>,
                        public sparse_accessor_base_t {
-  using handle_t = sparse_data_handle__<T,
+  using handle_t = sparse_data_handle_u<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS>;
@@ -75,15 +75,15 @@ struct accessor__<data::sparse,
   using entry_value_t = typename handle_t::entry_value_t;
 
   using index_space_t =
-    topology::index_space__<topology::simple_entry__<size_t>, true>;
+    topology::index_space_u<topology::simple_entry_u<size_t>, true>;
 
   //-------------------------------------------------------------------------//
   //! Copy constructor.
   //-------------------------------------------------------------------------//
 
-  accessor__(const accessor__ & a) : handle(a.handle) {}
+  accessor_u(const accessor_u & a) : handle(a.handle) {}
 
-  accessor__(const sparse_data_handle__<T, 0, 0, 0> & h)
+  accessor_u(const sparse_data_handle_u<T, 0, 0, 0> & h)
     : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   T & operator()(size_t index, size_t entry) {
@@ -228,7 +228,7 @@ template<typename T,
   size_t EXCLUSIVE_PERMISSIONS,
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS>
-using sparse_accessor__ = accessor__<data::sparse,
+using sparse_accessor_u = accessor_u<data::sparse,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
@@ -238,7 +238,7 @@ template<typename T,
   size_t EXCLUSIVE_PERMISSIONS,
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS>
-using sparse_accessor = sparse_accessor__<T,
+using sparse_accessor = sparse_accessor_u<T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
   GHOST_PERMISSIONS>;

@@ -50,16 +50,16 @@ template<typename ENTITY_TYPE,
   typename PREDICATE,
   typename FUNCTION>
 inline void
-for_each__(
+for_each_u(
   flecsi::topology::
-    index_space__<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> & index_space,
+    index_space_u<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> & index_space,
   FUNCTION && function) {
   const size_t end = index_space.end_offset();
 
   for(size_t i(index_space.begin_offset()); i < end; ++i) {
     function(std::forward<ENTITY_TYPE>(index_space.get_offset(i)));
   } // for
-} // for_each__
+} // for_each_u
 
 //----------------------------------------------------------------------------//
 //! Abstraction function for fine-grained, data-parallel interface.
@@ -91,9 +91,9 @@ template<typename ENTITY_TYPE,
   typename FUNCTION,
   typename REDUCTION>
 inline void
-reduce_each__(
+reduce_each_u(
   flecsi::topology::
-    index_space__<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> & index_space,
+    index_space_u<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> & index_space,
   REDUCTION & reduction,
   FUNCTION && function) {
   size_t end = index_space.end_offset();
@@ -101,7 +101,7 @@ reduce_each__(
   for(size_t i(index_space.begin_offset()); i < end; ++i) {
     function(std::forward<ENTITY_TYPE>(index_space.get_offset(i)), reduction);
   } // for
-} // reduce_each__
+} // reduce_each_u
 
 } // namespace execution
 } // namespace flecsi

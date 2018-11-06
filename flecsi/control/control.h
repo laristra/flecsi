@@ -31,14 +31,14 @@ namespace control {
  */
 
 template<typename CONTROL_POLICY>
-struct control__ : public CONTROL_POLICY {
+struct control_u : public CONTROL_POLICY {
 
-  using dag_t = flecsi::utils::dag__<typename CONTROL_POLICY::node_t>;
+  using dag_t = flecsi::utils::dag_u<typename CONTROL_POLICY::node_t>;
   using node_t = typename dag_t::node_t;
-  using phase_walker_t = phase_walker__<control__<CONTROL_POLICY>>;
+  using phase_walker_t = phase_walker_u<control_u<CONTROL_POLICY>>;
 
-  static control__ & instance() {
-    static control__ c;
+  static control_u & instance() {
+    static control_u c;
     return c;
   } // instance
 
@@ -50,7 +50,7 @@ struct control__ : public CONTROL_POLICY {
   } // execute
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-  using phase_writer_t = phase_writer__<control__<CONTROL_POLICY>>;
+  using phase_writer_t = phase_writer_u<control_u<CONTROL_POLICY>>;
   using graphviz_t = flecsi::utils::graphviz_t;
 
   void write(graphviz_t & gv) {
@@ -99,7 +99,7 @@ private:
   std::map<size_t, dag_t> registry_;
   std::map<size_t, std::vector<node_t>> sorted_;
 
-}; // control__
+}; // control_u
 
 } // namespace flecsi
 } // namespace control

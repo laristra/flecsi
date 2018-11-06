@@ -276,7 +276,7 @@ For templated types, use a double underscore for the unqualified type:
 
 .. code-block:: cpp
 
-  my_template_type__
+  my_template_type_u
 
 
 This allows the type to be fully qualified using the normal type naming
@@ -286,13 +286,13 @@ convention listed above, e.g.:
 
   // Unqualified type definition
   template<typename TYPENAME>
-  struct my_template_type__
+  struct my_template_type_u
   {
     TYPENAME value;
-  }; // struct my_template_type__
+  }; // struct my_template_type_u
 
   // Fully qualified type
-  using my_template_type_t = my_template_type__<double>;
+  using my_template_type_t = my_template_type_u<double>;
 
 The double underscore was chosen so that it does not conflict with
 member variable names, which use a single underscore.

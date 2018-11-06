@@ -52,7 +52,7 @@ namespace execution {
   @ingroup execution
  */
 
-struct init_handles_t : public flecsi::utils::tuple_walker__<init_handles_t> {
+struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
   /*!
     Construct an init_handles_t instance.
@@ -72,7 +72,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker__<init_handles_t> {
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor__<T,
+  void handle(dense_accessor_u<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
@@ -240,7 +240,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker__<init_handles_t> {
   } // handle
 
   template<typename T, size_t PERMISSIONS>
-  void handle(global_accessor__<T, PERMISSIONS> & a) {
+  void handle(global_accessor_u<T, PERMISSIONS> & a) {
     auto & h = a.handle;
 
     constexpr size_t num_regions = 1;
@@ -292,7 +292,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker__<init_handles_t> {
   } // global_handle
 
   template<typename T, size_t PERMISSIONS>
-  void handle(color_accessor__<T, PERMISSIONS> & a) {
+  void handle(color_accessor_u<T, PERMISSIONS> & a) {
     auto & h = a.handle;
 
     constexpr size_t num_regions = 1;
@@ -347,7 +347,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker__<init_handles_t> {
    Initialize arguments for future handle
    */
   template<typename T, launch_type_t launch>
-  void handle(legion_future__<T, launch> & h) {
+  void handle(legion_future_u<T, launch> & h) {
     h.data_ = Legion::Future(futures[future_id]).get_result<T>();
     future_id++;
   } // handle
@@ -355,7 +355,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker__<init_handles_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
     auto & context_ = context_t::instance();
 
     auto storage = h.set_storage(new typename T::storage_t);
@@ -486,7 +486,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker__<init_handles_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
     auto & context_ = context_t::instance();
 
     auto storage = h.set_storage(new typename T::storage_t);
@@ -543,7 +543,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker__<init_handles_t> {
 
     constexpr size_t num_regions = 3;
 
-    using entry_value_t = data::sparse_entry_value__<T>;
+    using entry_value_t = data::sparse_entry_value_u<T>;
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 
@@ -665,7 +665,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker__<init_handles_t> {
 
     constexpr size_t num_regions = 3;
 
-    using entry_value_t = data::sparse_entry_value__<T>;
+    using entry_value_t = data::sparse_entry_value_u<T>;
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 

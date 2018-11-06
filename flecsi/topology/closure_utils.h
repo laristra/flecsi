@@ -40,7 +40,7 @@ namespace topology {
 
 template<size_t from_dim, size_t to_dim, size_t thru_dim, size_t D>
 std::set<size_t>
-entity_neighbors(const mesh_definition__<D> & md, size_t entity_id) {
+entity_neighbors(const mesh_definition_u<D> & md, size_t entity_id) {
   // Get the vertices of the requested id
   auto vertices = md.entities_set(from_dim, 0, entity_id);
 
@@ -94,7 +94,7 @@ template<size_t from_dim,
   typename U,
   typename = std::enable_if_t<utils::is_iterative_container_v<U>>>
 std::set<size_t>
-entity_neighbors(const mesh_definition__<D> & md, U && indices) {
+entity_neighbors(const mesh_definition_u<D> & md, U && indices) {
   clog_assert(from_dim == to_dim, "from_dim does not equal to to_dim");
 
   // Closure should include the initial set
@@ -158,7 +158,7 @@ entity_neighbors(const mesh_definition__<D> & md, U && indices) {
 
 template<size_t from_dim, size_t to_dim, size_t D>
 std::set<size_t>
-entity_referencers(const mesh_definition__<D> & md, size_t id) {
+entity_referencers(const mesh_definition_u<D> & md, size_t id) {
   std::set<size_t> referencers;
 
   // Iterate over entities adding any entity that contains
@@ -191,7 +191,7 @@ entity_referencers(const mesh_definition__<D> & md, size_t id) {
 
 template<size_t from_dim, size_t to_dim, size_t D, typename U>
 std::set<size_t>
-entity_closure(const mesh_definition__<D> & md, U && indices) {
+entity_closure(const mesh_definition_u<D> & md, U && indices) {
   std::set<size_t> closure;
 
   // Iterate over the entities in indices and add any vertices that are

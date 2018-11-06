@@ -35,7 +35,7 @@ namespace utils {
  */
 
 template<typename TYPE>
-struct mpi_typetraits__ {
+struct mpi_typetraits_u {
 
   inline static MPI_Datatype type() {
     static MPI_Datatype data_type = MPI_DATATYPE_NULL;
@@ -49,7 +49,7 @@ struct mpi_typetraits__ {
 };
 
 template<>
-struct mpi_typetraits__<size_t> {
+struct mpi_typetraits_u<size_t> {
   inline static MPI_Datatype type() {
     if (sizeof(size_t) == 8) {
       return MPI_UNSIGNED_LONG_LONG;
@@ -57,77 +57,77 @@ struct mpi_typetraits__<size_t> {
       return MPI_UNSIGNED;
     } // if
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 template<>
-struct mpi_typetraits__<char> {
+struct mpi_typetraits_u<char> {
   inline static MPI_Datatype type() {
     return MPI_SIGNED_CHAR;
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 template<>
-struct mpi_typetraits__<unsigned char> {
+struct mpi_typetraits_u<unsigned char> {
   inline static MPI_Datatype type() {
     return MPI_UNSIGNED_CHAR;
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 template<>
-struct mpi_typetraits__<short> {
+struct mpi_typetraits_u<short> {
   inline static MPI_Datatype type() {
     return MPI_SHORT;
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 template<>
-struct mpi_typetraits__<unsigned short> {
+struct mpi_typetraits_u<unsigned short> {
   inline static MPI_Datatype type() {
     return MPI_UNSIGNED_SHORT;
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 template<>
-struct mpi_typetraits__<int> {
+struct mpi_typetraits_u<int> {
   inline static MPI_Datatype type() {
     return MPI_INT;
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 template<>
-struct mpi_typetraits__<unsigned> {
+struct mpi_typetraits_u<unsigned> {
   inline static MPI_Datatype type() {
     return MPI_UNSIGNED;
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 template<>
-struct mpi_typetraits__<long> {
+struct mpi_typetraits_u<long> {
   inline static MPI_Datatype type() {
     return MPI_LONG;
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 template<>
-struct mpi_typetraits__<double> {
+struct mpi_typetraits_u<double> {
   inline static MPI_Datatype type() {
     return MPI_DOUBLE;
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 template<>
-struct mpi_typetraits__<float> {
+struct mpi_typetraits_u<float> {
   inline static MPI_Datatype type() {
     return MPI_FLOAT;
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 template<>
-struct mpi_typetraits__<long double> {
+struct mpi_typetraits_u<long double> {
   inline static MPI_Datatype type() {
     return MPI_LONG_DOUBLE;
   }
-}; // mpi_typetraits__
+}; // mpi_typetraits_u
 
 } // namespace utils
 } // namespace flecsi

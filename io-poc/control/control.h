@@ -7,7 +7,7 @@
 
 namespace io_poc {
 
-using control_t = flecsi::control::control__<io_poc::control_policy_t>;
+using control_t = flecsi::control::control_u<io_poc::control_policy_t>;
 
 } // namespace io_poc
 

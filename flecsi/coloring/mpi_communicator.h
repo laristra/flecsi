@@ -108,7 +108,7 @@ public:
     } // for
 
     const auto mpi_size_t_type =
-      flecsi::utils::mpi_typetraits__<size_t>::type();
+      flecsi::utils::mpi_typetraits_u<size_t>::type();
 
     // Send the request indices to all other ranks.
     int result =
@@ -141,7 +141,7 @@ public:
       request_indices.begin(), request_indices.end());
 
     const auto mpi_size_t_type =
-      flecsi::utils::mpi_typetraits__<size_t>::type();
+      flecsi::utils::mpi_typetraits_u<size_t>::type();
 
     size_t max_request_indices = get_max_request_size(request_indices.size());
 
@@ -262,7 +262,7 @@ public:
       request_indices.begin(), request_indices.end());
 
     const auto mpi_size_t_type =
-      flecsi::utils::mpi_typetraits__<size_t>::type();
+      flecsi::utils::mpi_typetraits_u<size_t>::type();
 
     size_t max_request_indices = get_max_request_size(request_indices.size());
 
@@ -402,8 +402,8 @@ public:
     // Send the request size (in indices) to each rank.
     std::vector<size_t> recv_cnts(colors);
     int result = MPI_Alltoall(&send_cnts[0], 1,
-      utils::mpi_typetraits__<size_t>::type(), &recv_cnts[0], 1,
-      utils::mpi_typetraits__<size_t>::type(), MPI_COMM_WORLD);
+      utils::mpi_typetraits_u<size_t>::type(), &recv_cnts[0], 1,
+      utils::mpi_typetraits_u<size_t>::type(), MPI_COMM_WORLD);
 
     // Start receive operations (non-blocking).
     std::vector<std::vector<size_t>> rbuffers(colors);
@@ -413,7 +413,7 @@ public:
         rbuffers[r].resize(recv_cnts[r]);
         requests.push_back({});
         MPI_Irecv(&rbuffers[r][0], recv_cnts[r],
-          utils::mpi_typetraits__<size_t>::type(), r, 0, MPI_COMM_WORLD,
+          utils::mpi_typetraits_u<size_t>::type(), r, 0, MPI_COMM_WORLD,
           &requests[requests.size() - 1]);
       } // if
     } // for
@@ -426,7 +426,7 @@ public:
           std::back_inserter(sbuffers[r]));
 
         MPI_Send(&sbuffers[r][0], send_cnts[r],
-          utils::mpi_typetraits__<size_t>::type(), r, 0, MPI_COMM_WORLD);
+          utils::mpi_typetraits_u<size_t>::type(), r, 0, MPI_COMM_WORLD);
       } // if
     } // for
 
@@ -463,7 +463,7 @@ public:
         rbuffers[r].resize(send_cnts[r], 0);
         requests.push_back({});
         MPI_Irecv(&rbuffers[r][0], send_cnts[r],
-          utils::mpi_typetraits__<size_t>::type(), r, 0, MPI_COMM_WORLD,
+          utils::mpi_typetraits_u<size_t>::type(), r, 0, MPI_COMM_WORLD,
           &requests[requests.size() - 1]);
       } // if
     } // for
@@ -473,7 +473,7 @@ public:
       // If we received a request, prepare to send an answer.
       if(recv_cnts[r]) {
         MPI_Send(&sbuffers[r][0], recv_cnts[r],
-          utils::mpi_typetraits__<size_t>::type(), r, 0, MPI_COMM_WORLD);
+          utils::mpi_typetraits_u<size_t>::type(), r, 0, MPI_COMM_WORLD);
       } // if
     } // for
 
@@ -510,7 +510,7 @@ public:
     std::vector<size_t> buffer(colors);
 
     const auto mpi_size_t_type =
-      flecsi::utils::mpi_typetraits__<size_t>::type();
+      flecsi::utils::mpi_typetraits_u<size_t>::type();
 
     int result = MPI_Allgather(&size, 1, mpi_size_t_type, buffer.data(), 1,
       mpi_size_t_type, MPI_COMM_WORLD);
@@ -619,7 +619,7 @@ public:
 
     // Get a valid MPI type for size_t.
     const auto mpi_size_t_type =
-      flecsi::utils::mpi_typetraits__<size_t>::type();
+      flecsi::utils::mpi_typetraits_u<size_t>::type();
 
     // This may be inefficient, but this call is doing a reduction
     // to determine the maximum number of indices requested by any rank

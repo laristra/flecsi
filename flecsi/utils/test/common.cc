@@ -11,7 +11,7 @@
 #include <cinchtest.h>
 
 // =============================================================================
-// For testing flecsi::utils::function_traits__
+// For testing flecsi::utils::function_traits_u
 // =============================================================================
 
 // a class...

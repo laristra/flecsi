@@ -45,7 +45,7 @@ namespace execution {
  @ingroup execution
  */
 
-struct task_prolog_t : public flecsi::utils::tuple_walker__<task_prolog_t> {
+struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   /*!
    Construct a task_prolog_t instance.
@@ -80,7 +80,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker__<task_prolog_t> {
       size_t EXCLUSIVE_PERMISSIONS,
       size_t SHARED_PERMISSIONS,
       size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor__<
+  void handle(dense_accessor_u<
               T,
               EXCLUSIVE_PERMISSIONS,
               SHARED_PERMISSIONS,

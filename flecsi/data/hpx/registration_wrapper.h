@@ -33,7 +33,7 @@ template<
     size_t NAME_HASH,
     size_t INDEX_SPACE,
     size_t VERSIONS>
-struct hpx_field_registration_wrapper__ {
+struct hpx_field_registration_wrapper_u {
   using field_id_t = size_t;
 
   static void register_callback(field_id_t fid) {
@@ -48,12 +48,12 @@ struct hpx_field_registration_wrapper__ {
 /// \brief registration_wrapper_t provides...
 ///
 template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
-struct hpx_client_registration_wrapper__ {
+struct hpx_client_registration_wrapper_u {
 }; // class hpx_client_registration_wrapper_t
 
 template<typename POLICY_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
-struct hpx_client_registration_wrapper__<
-    flecsi::topology::mesh_topology__<POLICY_TYPE>,
+struct hpx_client_registration_wrapper_u<
+    flecsi::topology::mesh_topology_u<POLICY_TYPE>,
     NAMESPACE_HASH,
     NAME_HASH> {
   using field_id_t = size_t;
@@ -66,16 +66,16 @@ struct hpx_client_registration_wrapper__<
   } // register_callback
 
   template<typename TUPLE_ENTRY_TYPE>
-  struct type_walker__
-      : public flecsi::utils::tuple_walker__<type_walker__<TUPLE_ENTRY_TYPE>> {
+  struct type_walker_u
+      : public flecsi::utils::tuple_walker_u<type_walker_u<TUPLE_ENTRY_TYPE>> {
     void handle(TUPLE_ENTRY_TYPE const & entry) {
       std::cout << "adding with domain: " << std::get<1>(entry) << std::endl;
     } // handle
-  }; // struct type_walker__
+  }; // struct type_walker_u
 
   static void register_data() {
     // walk types
-    type_walker__<typename POLICY_TYPE::entity_types> type_wakler;
+    type_walker_u<typename POLICY_TYPE::entity_types> type_wakler;
 
   } // register_data
 

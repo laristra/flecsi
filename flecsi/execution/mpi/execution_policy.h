@@ -37,25 +37,25 @@ namespace execution {
  */
 
 template<typename RETURN, typename ARG_TUPLE>
-struct executor__ {
+struct executor_u {
   /*!
    FIXME documentation
    */
   template<typename T, typename A>
   static decltype(auto) execute(T function, A && targs) {
     auto user_fun = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(function));
-    mpi_future__<RETURN> future;
+    mpi_future_u<RETURN> future;
     future.set(user_fun(std::forward<A>(targs)));
     return future;
   } // execute
-}; // struct executor__
+}; // struct executor_u
 
 /*!
  FIXME documentation
  */
 
 template<typename ARG_TUPLE>
-struct executor__<void, ARG_TUPLE> {
+struct executor_u<void, ARG_TUPLE> {
   /*!
    FIXME documentation
    */
@@ -63,12 +63,12 @@ struct executor__<void, ARG_TUPLE> {
   static decltype(auto) execute(T function, A && targs) {
     auto user_fun = (reinterpret_cast<void (*)(ARG_TUPLE)>(function));
 
-    mpi_future__<void> future;
+    mpi_future_u<void> future;
     user_fun(std::forward<A>(targs));
 
     return future;
   } // execute_task
-}; // struct executor__
+}; // struct executor_u
 
 //----------------------------------------------------------------------------//
 // Execution policy.
@@ -84,13 +84,13 @@ struct executor__<void, ARG_TUPLE> {
 struct mpi_execution_policy_t {
 
   /*!
-    The future__ type may be used for explicit synchronization of tasks.
+    The future_u type may be used for explicit synchronization of tasks.
 
     @tparam RETURN The return type of the task.
    */
 
   template<typename RETURN, launch_type_t launch>
-  using future__ = mpi_future__<RETURN, launch>;
+  using future_u = mpi_future_u<RETURN, launch>;
 
   /*!
     The runtime_state_t type identifies a public type for the high-level
@@ -114,7 +114,7 @@ struct mpi_execution_policy_t {
 
   /*!
     MPI backend task registration. For documentation on this
-    method please see task__::register_task.
+    method please see task_u::register_task.
    */
 
   template<size_t TASK,
@@ -129,7 +129,7 @@ struct mpi_execution_policy_t {
 
   /*!
     MPI backend task execution. For documentation on this method,
-    please see task__::execute_task.
+    please see task_u::execute_task.
    */
 
   template<launch_type_t launch,
@@ -151,7 +151,7 @@ struct mpi_execution_policy_t {
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
 
-    auto future = executor__<RETURN, ARG_TUPLE>::execute(
+    auto future = executor_u<RETURN, ARG_TUPLE>::execute(
       function, std::forward<ARG_TUPLE>(task_args));
 
     task_epilog_t task_epilog;
@@ -178,7 +178,7 @@ struct mpi_execution_policy_t {
         datatype = reduction_type->second;
       }
       else {
-        datatype = flecsi::utils::mpi_typetraits__<RETURN>::type();
+        datatype = flecsi::utils::mpi_typetraits_u<RETURN>::type();
       } // if
 
       auto reduction_op = context_.reduction_operations().find(REDUCTION);
@@ -192,7 +192,7 @@ struct mpi_execution_policy_t {
       MPI_Allreduce(&sendbuf, &recvbuf, 1, datatype, reduction_op->second,
         MPI_COMM_WORLD);
 
-      mpi_future__<RETURN> gfuture;
+      mpi_future_u<RETURN> gfuture;
       gfuture.set(recvbuf);
       return gfuture;
     }
@@ -207,12 +207,12 @@ struct mpi_execution_policy_t {
 
   /*!
     MPI backend reduction registration. For documentation on this
-    method please see task__::register_reduction_operation.
+    method please see task_u::register_reduction_operation.
    */
 
   template<size_t NAME, typename OPERATION>
   static bool register_reduction_operation() {
-    using wrapper_t = reduction_wrapper__<NAME, OPERATION>;
+    using wrapper_t = reduction_wrapper_u<NAME, OPERATION>;
 
     return context_t::instance().register_reduction_operation(
       NAME, wrapper_t::registration_callback);
@@ -224,7 +224,7 @@ struct mpi_execution_policy_t {
 
   /*!
     MPI backend function registration. For documentation on this
-    method, please see function__::register_function.
+    method, please see function_u::register_function.
    */
 
   template<size_t FUNCTION,
@@ -238,7 +238,7 @@ struct mpi_execution_policy_t {
 
   /*!
     MPI backend function execution. For documentation on this
-    method, please see function__::execute_function.
+    method, please see function_u::execute_function.
    */
 
   template<typename HANDLE, typename... ARGS>

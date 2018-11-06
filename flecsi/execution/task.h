@@ -26,7 +26,7 @@ namespace flecsi {
 namespace execution {
 
 /*!
-  The task_interface__ type provides a high-level task interface that is
+  The task_interface_u type provides a high-level task interface that is
   implemented by the given execution policy.
 
   @tparam EXECUTION_POLICY The backend execution policy.
@@ -35,7 +35,7 @@ namespace execution {
  */
 
 template<typename EXECUTION_POLICY>
-struct task_interface__ {
+struct task_interface_u {
 
   /*!
     The runtime_state_t type stores runtime-specific state information
@@ -113,7 +113,7 @@ struct task_interface__ {
       HASH, TYPE>();
   } // register_reduction_operation
 
-}; // struct task_interface__
+}; // struct task_interface_u
 
 template<typename TYPE>
 struct reduce_sum {
@@ -155,7 +155,7 @@ namespace execution {
   @ingroup execution
  */
 
-using task_interface_t = task_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
+using task_interface_t = task_interface_u<FLECSI_RUNTIME_EXECUTION_POLICY>;
 
 /*!
   Use the execution policy to define the future type.
@@ -166,7 +166,7 @@ using task_interface_t = task_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
  */
 
 template<typename RETURN, launch_type_t launch>
-using future__ = FLECSI_RUNTIME_EXECUTION_POLICY::future__<RETURN, launch>;
+using future_u = FLECSI_RUNTIME_EXECUTION_POLICY::future_u<RETURN, launch>;
 
 //----------------------------------------------------------------------------//
 // Static verification of public future interface for type defined by
@@ -180,11 +180,11 @@ FLECSI_MEMBER_CHECKER(wait);
 FLECSI_MEMBER_CHECKER(get);
 
 static_assert(
-    verify_future::has_member_wait<future__<double>>::value,
+    verify_future::has_member_wait<future_u<double>>::value,
     "future type missing wait method");
 
 static_assert(
-    verify_future::has_member_get<future__<double>>::value,
+    verify_future::has_member_get<future_u<double>>::value,
     "future type missing get method");
 #endif
 

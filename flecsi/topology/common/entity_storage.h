@@ -23,7 +23,7 @@ namespace flecsi {
 namespace topology {
 
 template<typename T>
-using topology_storage__ = array_buffer__<T>;
+using topology_storage_u = array_buffer_u<T>;
 
 class offset_storage_
 {
@@ -67,12 +67,12 @@ public:
   }
 
 private:
-  topology_storage__<offset_t> s_;
+  topology_storage_u<offset_t> s_;
   size_t start_ = 0;
 };
 
 template<typename T>
-class identity_storage__
+class identity_storage_u
 {
 public:
   class iterator

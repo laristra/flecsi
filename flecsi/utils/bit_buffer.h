@@ -25,7 +25,7 @@ namespace flecsi {
 namespace utils {
 
 /*!
- The bit_buffer__ type provides a bit-addressable buffer which can set
+ The bit_buffer_u type provides a bit-addressable buffer which can set
  and retrivie arbitrary bit collections which may potentially span multiple
  words of its underlying storage. Unlike std::bitset, it can address multiple
  bits efficiently, e.g. bits 0-3 of index 7 and its size does not have to
@@ -35,23 +35,23 @@ namespace utils {
  */
 
 template<typename T, size_t BITS_PER_INDEX>
-class bit_buffer__
+class bit_buffer_u
 {
 public:
   static constexpr size_t word_bits = sizeof(T) * 8;
 
   static_assert(BITS_PER_INDEX <= word_bits, "invalid bit buffer params");
 
-  class range_proxy__
+  class range_proxy_u
   {
   public:
-    range_proxy__(bit_buffer__ & b,
+    range_proxy_u(bit_buffer_u & b,
       size_t index,
       size_t bit_start,
       size_t bit_end)
       : b_(b), index_(index), bit_start_(bit_start), bit_end_(bit_end) {}
 
-    range_proxy__ & operator=(const T & value) {
+    range_proxy_u & operator=(const T & value) {
       b_.set_(index_, bit_start_, bit_end_, value);
       return *this;
     }
@@ -61,19 +61,19 @@ public:
     }
 
   private:
-    bit_buffer__ & b_;
+    bit_buffer_u & b_;
     size_t index_;
     size_t bit_start_;
     size_t bit_end_;
   };
 
-  class proxy__
+  class proxy_u
   {
   public:
-    proxy__(bit_buffer__ & b, size_t index, size_t bit)
+    proxy_u(bit_buffer_u & b, size_t index, size_t bit)
       : b_(b), index_(index), bit_(bit) {}
 
-    proxy__ & operator=(const T & value) {
+    proxy_u & operator=(const T & value) {
       b_.set_(index_, bit_, value);
       return *this;
     }
@@ -83,26 +83,26 @@ public:
     }
 
   private:
-    bit_buffer__ & b_;
+    bit_buffer_u & b_;
     size_t index_;
     size_t bit_;
   };
 
-  bit_buffer__(uint8_t * buffer) : buffer_(buffer) {}
+  bit_buffer_u(uint8_t * buffer) : buffer_(buffer) {}
 
-  proxy__ operator()(size_t index, ) {
-    return proxy__(*this, index, 0);
+  proxy_u operator()(size_t index, ) {
+    return proxy_u(*this, index, 0);
   }
 
-  proxy__ operator()(size_t index, size_t bit) {
-    return proxy__(*this, index, bit);
+  proxy_u operator()(size_t index, size_t bit) {
+    return proxy_u(*this, index, bit);
   }
 
-  range_proxy__ operator()(size_t index, size_t bit_start, size_t bit_end) {
+  range_proxy_u operator()(size_t index, size_t bit_start, size_t bit_end) {
     assert(
       bit_start <= bit_end && bit_start < BITS_PER_INDEX && "invalid index");
 
-    return range_proxy__(*this, index, bit_start, bit_end);
+    return range_proxy_u(*this, index, bit_start, bit_end);
   }
 
   void set_(size_t index, size_t bit_start, size_t bit_end, T value) {

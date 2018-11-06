@@ -47,9 +47,9 @@ struct sparse_mutator_base_t {};
 //----------------------------------------------------------------------------//
 
 template<typename T>
-struct mutator__<data::sparse, T> : public mutator__<data::base, T>,
+struct mutator_u<data::sparse, T> : public mutator_u<data::base, T>,
                                     public sparse_mutator_base_t {
-  using handle_t = mutator_handle__<T>;
+  using handle_t = mutator_handle_u<T>;
   using offset_t = typename handle_t::offset_t;
   using entry_value_t = typename handle_t::entry_value_t;
   using erase_set_t = typename handle_t::erase_set_t;
@@ -58,7 +58,7 @@ struct mutator__<data::sparse, T> : public mutator__<data::base, T>,
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  mutator__(const mutator_handle__<T> & h) : h_(h) {}
+  mutator_u(const mutator_handle_u<T> & h) : h_(h) {}
 
   T & operator()(size_t index, size_t entry) {
     assert(h_.offsets_ && "uninitialized mutator");
@@ -160,9 +160,9 @@ struct mutator__<data::sparse, T> : public mutator__<data::base, T>,
 };
 
 template<typename T>
-using sparse_mutator__ = mutator__<data::sparse, T>;
+using sparse_mutator_u = mutator_u<data::sparse, T>;
 
 template<typename T>
-using sparse_mutator = sparse_mutator__<T>;
+using sparse_mutator = sparse_mutator_u<T>;
 
 } // namespace flecsi

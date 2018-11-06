@@ -31,7 +31,7 @@ This design pattern is relatively simple, and has the form:
 
 ```cpp
 template<typename POLICY>
-struct interface_type__ : public POLICY
+struct interface_type_u : public POLICY
 {
   decltype(auto) method(parameter_1 && p1, parameter_2 && p2, ...) {
     return POLICY::method(std::forward<parameter_1>(p1), ...);
@@ -91,7 +91,7 @@ namespace execution {
   @ingroup execution
  */
 
-using context_t = context__<FLECSI_RUNTIME_CONTEXT_POLICY>;
+using context_t = context_u<FLECSI_RUNTIME_CONTEXT_POLICY>;
 
 } // namespace execution
 } // namespace flecsi
@@ -153,8 +153,8 @@ registered, invoked, and executed.
 
 From the point of view of the core FleCSI library, a data client is a
 type that defines one or more index spaces on which data may be
-registered. Examples of FleCSI data client types are: *mesh_topology__*,
-*tree_topology__*, and *set_topology__*. Each of these types provide
+registered. Examples of FleCSI data client types are: *mesh_topology_u*,
+*tree_topology_u*, and *set_topology_u*. Each of these types provide
 interfaces to iterators over the various entity types that make up the
 elements of the topology. When a user registers a field, it is loosley
 equivalent to adding a data member to the client type. At runtime, an

@@ -25,32 +25,32 @@ namespace flecsi {
 namespace topology {
 
 /*----------------------------------------------------------------------------*
- * class index_space__
+ * class index_space_u
  *----------------------------------------------------------------------------*/
 
 template<size_t, class E>
-class domain_entity__;
+class domain_entity_u;
 
 //! helper classes for resolving types
 template<typename T>
-struct index_space_ref_type__ {
+struct index_space_ref_type_u {
   using type = T &;
 };
 
 //! helper classes for resolving types
 template<typename S>
-struct index_space_ref_type__<S *> {
+struct index_space_ref_type_u<S *> {
   using type = S *;
 };
 
 //! helper classes for resolving types
 template<size_t M, class E>
-struct index_space_ref_type__<domain_entity__<M, E>> {
-  using type = domain_entity__<M, E>;
+struct index_space_ref_type_u<domain_entity_u<M, E>> {
+  using type = domain_entity_u<M, E>;
 };
 
 //----------------------------------------------------------------------------//
-//! index_space__ provides a compile-time
+//! index_space_u provides a compile-time
 //! configurable and iterable container of objects, e.g. mesh/tree topology
 //! entities and their id's. Index space defines the concept of STORAGE -
 //! whether the actual entities referenced are stored within this index space
@@ -82,7 +82,7 @@ template<class T,
   class F = void,
   template<typename, typename...> class ID_STORAGE_TYPE = std::vector,
   template<typename, typename...> class STORAGE_TYPE = ID_STORAGE_TYPE>
-class index_space__
+class index_space_u
 {
 public:
   //! ID type
@@ -104,7 +104,7 @@ public:
   using item_t = typename std::remove_pointer<T>::type;
 
   //! Reference type
-  using ref_t = typename index_space_ref_type__<T>::type;
+  using ref_t = typename index_space_ref_type_u<T>::type;
 
   //! reference casting type
   using cast_t = std::decay_t<ref_t>;
@@ -467,7 +467,7 @@ public:
   public:
     using B = iterator_base_<S>;
 
-    using ref_t = index_space_ref_type__<S>;
+    using ref_t = index_space_ref_type_u<S>;
 
     //-----------------------------------------------------------------//
     //! Copy constructor
@@ -604,7 +604,7 @@ public:
   //! Constructor. If storage is true then allocate storage type,
   //! else this index space will index into a separate storage.
   //-----------------------------------------------------------------//
-  index_space__(bool storage = STORAGE)
+  index_space_u(bool storage = STORAGE)
     : v_(new id_storage_t), begin_(0), end_(0), owned_(true), sorted_(SORTED),
       s_(storage ? new storage_t : nullptr) {
     assert((STORAGE || !storage) && "invalid instantiation");
@@ -621,7 +621,7 @@ public:
     class F2,
     template<typename, typename...> class ID_STORAGE_TYPE2,
     template<typename, typename...> class STORAGE_TYPE2>
-  index_space__(const index_space__<S,
+  index_space_u(const index_space_u<S,
                   STORAGE2,
                   OWNED2,
                   SORTED2,
@@ -642,7 +642,7 @@ public:
   //-----------------------------------------------------------------//
   //! Constructor to alias an existing index space unless OWNED.
   //-----------------------------------------------------------------//
-  index_space__(const index_space__ & is)
+  index_space_u(const index_space_u & is)
     : v_(OWNED ? new id_storage_t(*is.v_) : is.v_), begin_(is.begin_),
       end_(is.end_), owned_(OWNED), sorted_(is.sorted_), s_(is.s_) {
     assert(s_ && "no storage");
@@ -652,7 +652,7 @@ public:
   //-----------------------------------------------------------------//
   //! Move constructor.
   //-----------------------------------------------------------------//
-  index_space__(index_space__ && is)
+  index_space_u(index_space_u && is)
     : v_(std::move(is.v_)), begin_(std::move(is.begin_)),
       end_(std::move(is.end_)), sorted_(std::move(is.sorted_)),
       s_(std::move(is.s_)) {
@@ -676,7 +676,7 @@ public:
   //-----------------------------------------------------------------//
   //! Destructor.
   //-----------------------------------------------------------------//
-  ~index_space__() {
+  ~index_space_u() {
     if(OWNED || owned_) {
       delete v_;
     }
@@ -710,7 +710,7 @@ public:
   //-----------------------------------------------------------------//
   //! Assignment operator. Alias an existing index space unless OWNED.
   //-----------------------------------------------------------------//
-  index_space__ & operator=(const index_space__ & is) {
+  index_space_u & operator=(const index_space_u & is) {
     assert(!STORAGE && "invalid assignment");
 
     if(OWNED) {
@@ -734,7 +734,7 @@ public:
   //-----------------------------------------------------------------//
   //! Move assignment operator.
   //-----------------------------------------------------------------//
-  index_space__ & operator=(index_space__ && is) {
+  index_space_u & operator=(index_space_u && is) {
     v_ = std::move(is.v_);
 
     if(OWNED || is.owned_) {
@@ -775,7 +775,7 @@ public:
   auto & cast() {
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
-    auto res = reinterpret_cast<index_space__<S, STORAGE2, OWNED2, SORTED2, F2,
+    auto res = reinterpret_cast<index_space_u<S, STORAGE2, OWNED2, SORTED2, F2,
       ID_STORAGE_TYPE2, STORAGE_TYPE2> *>(this);
     assert(res != nullptr && "invalid cast");
     return *res;
@@ -796,7 +796,7 @@ public:
   auto & cast() const {
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
-    auto res = reinterpret_cast<index_space__<S, STORAGE2, OWNED2, SORTED2, F2,
+    auto res = reinterpret_cast<index_space_u<S, STORAGE2, OWNED2, SORTED2, F2,
       ID_STORAGE_TYPE2, STORAGE_TYPE2> *>(this);
     assert(res != nullptr && "invalid cast");
     return *res;
@@ -888,7 +888,7 @@ public:
   //-----------------------------------------------------------------//
   template<class S = T>
   auto slice(size_t begin, size_t end) const {
-    return index_space__<S, false, false, SORTED, F, ID_STORAGE_TYPE,
+    return index_space_u<S, false, false, SORTED, F, ID_STORAGE_TYPE,
       STORAGE_TYPE>(*this, begin, end);
   }
 
@@ -902,7 +902,7 @@ public:
   //-----------------------------------------------------------------//
   template<class S = T>
   auto slice(const std::pair<size_t, size_t> & range) const {
-    return index_space__<S, false, false, SORTED, F, ID_STORAGE_TYPE,
+    return index_space_u<S, false, false, SORTED, F, ID_STORAGE_TYPE,
       STORAGE_TYPE>(*this, range.first, range.second);
   }
 
@@ -915,7 +915,7 @@ public:
   //-----------------------------------------------------------------//
   template<class S = T>
   auto slice() const {
-    return index_space__<S, false, false, SORTED, F, ID_STORAGE_TYPE,
+    return index_space_u<S, false, false, SORTED, F, ID_STORAGE_TYPE,
       STORAGE_TYPE>(*this, begin_, end_);
   }
 
@@ -1050,14 +1050,14 @@ public:
     class F2,
     template<typename, typename...> class INDEX_STORAGE_TYPE2,
     template<typename, typename...> class STORAGE_TYPE2>
-  void set_master(const index_space__<T,
+  void set_master(const index_space_u<T,
     STORAGE2,
     OWNED2,
     SORTED2,
     F2,
     INDEX_STORAGE_TYPE2,
     STORAGE_TYPE2> & master) {
-    set_master(const_cast<index_space__<T, STORAGE2, OWNED2, SORTED2, F2,
+    set_master(const_cast<index_space_u<T, STORAGE2, OWNED2, SORTED2, F2,
         INDEX_STORAGE_TYPE2, STORAGE_TYPE2> &>(master));
   }
 
@@ -1071,7 +1071,7 @@ public:
     class F2,
     template<typename, typename...> class INDEX_STORAGE_TYPE2,
     template<typename, typename...> class STORAGE_TYPE2>
-  void set_master(index_space__<T,
+  void set_master(index_space_u<T,
     STORAGE2,
     OWNED2,
     SORTED2,
@@ -1159,7 +1159,7 @@ public:
   //-----------------------------------------------------------------//
   template<typename Predicate>
   auto filter(Predicate && f) const {
-    index_space__<T, false, true, false, void, std::vector, STORAGE_TYPE> is;
+    index_space_u<T, false, true, false, void, std::vector, STORAGE_TYPE> is;
     is.set_master(*this);
 
     for(auto item : *this) {
@@ -1187,7 +1187,7 @@ public:
   //-----------------------------------------------------------------//
   template<class S>
   auto map(map_function<S> f) const {
-    index_space__<S, false, true, false, void, std::vector, STORAGE_TYPE> is;
+    index_space_u<S, false, true, false, void, std::vector, STORAGE_TYPE> is;
     is.set_master(*this);
 
     is.begin_push_(v_->size());
@@ -1256,7 +1256,7 @@ public:
 
     // If the list was sorted beforehand, the result will also be
     // sorted.  Own the index_vector_t (i.e., create storage for it)
-    using new_index_space_t = index_space__<T, false, true, SORTED>;
+    using new_index_space_t = index_space_u<T, false, true, SORTED>;
 
     // get the predicate result type
     using result_t =
@@ -1334,7 +1334,7 @@ public:
   //! the ID storage if not already sorted and will create a copy
   //! of its aliased indices if OWNED is false.
   //-----------------------------------------------------------------//
-  index_space__ & operator&=(const index_space__ & r) {
+  index_space_u & operator&=(const index_space_u & r) {
     prepare_();
 
     id_storage_t ret;
@@ -1370,8 +1370,8 @@ public:
   //-----------------------------------------------------------------//
   //! Return r-value of set intersection of passed index spaces
   //-----------------------------------------------------------------//
-  index_space__ operator&(const index_space__ & r) const {
-    index_space__ ret(*this);
+  index_space_u operator&(const index_space_u & r) const {
+    index_space_u ret(*this);
     ret &= r;
     return ret;
   }
@@ -1381,7 +1381,7 @@ public:
   //! the ID storage if not already sorted and will create a copy
   //! of its aliased indices if OWNED is false.
   //-----------------------------------------------------------------//
-  index_space__ & operator|=(const index_space__ & r) {
+  index_space_u & operator|=(const index_space_u & r) {
     prepare_();
 
     id_storage_t ret;
@@ -1418,8 +1418,8 @@ public:
   //-----------------------------------------------------------------//
   //! Return r-value of set union of passed index spaces.
   //-----------------------------------------------------------------//
-  index_space__ operator|(const index_space__ & r) const {
-    index_space__ ret(*this);
+  index_space_u operator|(const index_space_u & r) const {
+    index_space_u ret(*this);
     ret |= r;
     return ret;
   }
@@ -1429,7 +1429,7 @@ public:
   //! the ID storage if not already sorted and will create a copy
   //! of its aliased indices if OWNED is false.
   //-----------------------------------------------------------------//
-  index_space__ & operator-=(const index_space__ & r) {
+  index_space_u & operator-=(const index_space_u & r) {
     prepare_();
 
     id_storage_t ret(v_->size());
@@ -1462,8 +1462,8 @@ public:
   //-----------------------------------------------------------------//
   //! Return r-value of set difference of passed index spaces.
   //-----------------------------------------------------------------//
-  index_space__ operator-(const index_space__ & r) const {
-    index_space__ ret(*this);
+  index_space_u operator-(const index_space_u & r) const {
+    index_space_u ret(*this);
     ret -= r;
     return ret;
   }
@@ -1530,7 +1530,7 @@ public:
   //! are appended. It will create a copy of its aliased indices if
   //! OWNED is false.
   //-----------------------------------------------------------------//
-  void append(const index_space__ & is) {
+  void append(const index_space_u & is) {
     if(!OWNED && !owned_) {
       v_ = new id_storage_t(*v_);
       owned_ = true;
@@ -1561,7 +1561,7 @@ public:
   //-----------------------------------------------------------------//
   //! Shortcut for push_back()
   //-----------------------------------------------------------------//
-  index_space__ & operator<<(T item) {
+  index_space_u & operator<<(T item) {
     push_back(item);
     return *this;
   }
@@ -1630,7 +1630,7 @@ private:
     class,
     template<class, class...> class,
     template<class, class...> class>
-  friend class index_space__;
+  friend class index_space_u;
 
   friend class connectivity_t;
 
@@ -1776,7 +1776,7 @@ private:
 //! a convenience class which associates a simple ID with type T
 //----------------------------------------------------------------------------//
 template<typename T>
-class simple_entry__
+class simple_entry_u
 {
 public:
   using id_t = simple_id;
@@ -1784,7 +1784,7 @@ public:
   //-----------------------------------------------------------------//
   //! Constructor to associate an id with an entry
   //-----------------------------------------------------------------//
-  simple_entry__(id_t id, const T & entry) : id_(id), entry_(entry) {}
+  simple_entry_u(id_t id, const T & entry) : id_(id), entry_(entry) {}
 
   //-----------------------------------------------------------------//
   //! Conversion operator

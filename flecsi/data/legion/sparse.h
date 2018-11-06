@@ -5,7 +5,7 @@
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
-// Using this approach allows us to have only one storage_class__
+// Using this approach allows us to have only one storage_class_u
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
 #include <flecsi/data/storage_class.h>
@@ -56,22 +56,22 @@ namespace legion {
 ///           know what you are doing...
 ///
 template<typename T, size_t EP, size_t SP, size_t GP>
-struct sparse_handle__ : public sparse_data_handle__<T, EP, SP, GP> {
+struct sparse_handle_u : public sparse_data_handle_u<T, EP, SP, GP> {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using base = sparse_data_handle__<T, EP, SP, GP>;
+  using base = sparse_data_handle_u<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  sparse_handle__() {}
+  sparse_handle_u() {}
 
   template<typename, size_t, size_t, size_t>
-  friend class sparse_handle__;
-}; // struct sparse_handle__
+  friend class sparse_handle_u;
+}; // struct sparse_handle_u
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -91,20 +91,20 @@ struct sparse_handle__ : public sparse_data_handle__<T, EP, SP, GP> {
   A mutator commits its data in its temporary buffers in the task epilog.
  */
 template<>
-struct storage_class__<sparse> {
+struct storage_class_u<sparse> {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
   template<typename T, size_t EP, size_t SP, size_t GP>
-  using handle__ = sparse_handle__<T, EP, SP, GP>;
+  using handle_u = sparse_handle_u<T, EP, SP, GP>;
 
   template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION>
-  static handle__<DATA_TYPE, 0, 0, 0> get_handle(
+  static handle_u<DATA_TYPE, 0, 0, 0> get_handle(
     const data_client_t & data_client) {
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
@@ -130,7 +130,7 @@ struct storage_class__<sparse> {
     const size_t max_entries_per_index = iitr->second.max_entries_per_index;
     const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
-    handle__<DATA_TYPE, 0, 0, 0> h;
+    handle_u<DATA_TYPE, 0, 0, 0> h;
 
     h.reserve = exclusive_reserve;
     h.max_entries_per_index = max_entries_per_index;
@@ -188,7 +188,7 @@ struct storage_class__<sparse> {
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION>
-  static mutator_handle__<DATA_TYPE>
+  static mutator_handle_u<DATA_TYPE>
   get_mutator(const data_client_t & data_client, size_t slots) {
     auto & context = execution::context_t::instance();
 
@@ -211,7 +211,7 @@ struct storage_class__<sparse> {
     const size_t max_entries_per_index = iitr->second.max_entries_per_index;
     const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
-    mutator_handle__<DATA_TYPE> h(max_entries_per_index, slots);
+    mutator_handle_u<DATA_TYPE> h(max_entries_per_index, slots);
 
     h.offsets_color_region = ism[index_space].color_region;
     h.offsets_exclusive_lr = ism[index_space].exclusive_lr;
@@ -255,13 +255,13 @@ struct storage_class__<sparse> {
 }; // struct storage_class_t
 
 template<>
-struct storage_class__<ragged> {
+struct storage_class_u<ragged> {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
   template<typename T, size_t EP, size_t SP, size_t GP>
-  using handle__ = sparse_handle__<T, EP, SP, GP>;
+  using handle_u = sparse_handle_u<T, EP, SP, GP>;
 
   template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
@@ -269,7 +269,7 @@ struct storage_class__<ragged> {
     size_t NAME,
     size_t VERSION>
   static auto get_handle(const data_client_t & data_client) {
-    return storage_class__<sparse>::get_handle<DATA_CLIENT_TYPE, DATA_TYPE,
+    return storage_class_u<sparse>::get_handle<DATA_CLIENT_TYPE, DATA_TYPE,
       NAMESPACE, NAME, VERSION>(data_client);
   }
 
@@ -279,7 +279,7 @@ struct storage_class__<ragged> {
     size_t NAME,
     size_t VERSION>
   static auto get_mutator(const data_client_t & data_client, size_t slots) {
-    return storage_class__<sparse>::get_mutator<DATA_CLIENT_TYPE, DATA_TYPE,
+    return storage_class_u<sparse>::get_mutator<DATA_CLIENT_TYPE, DATA_TYPE,
       NAMESPACE, NAME, VERSION>(data_client, slots);
   }
 }; // struct storage_class_t

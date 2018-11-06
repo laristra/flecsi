@@ -27,15 +27,15 @@ clog_register_tag(reduction_wrapper);
 namespace flecsi {
 namespace execution {
 
-struct reduction_wrapper_unique__ {};
+struct reduction_wrapper_unique_u {};
 
 template<size_t HASH, typename TYPE>
-struct reduction_wrapper__ {
+struct reduction_wrapper_u {
 
   using rhs_t = typename TYPE::RHS;
   using lhs_t = typename TYPE::LHS;
 
-  using oid_t = flecsi::utils::unique_id_t<reduction_wrapper_unique__>;
+  using oid_t = flecsi::utils::unique_id_t<reduction_wrapper_unique_u>;
 
   /*!
     Register the user-defined reduction operator with the runtime.
@@ -71,7 +71,7 @@ struct reduction_wrapper__ {
 
   } // registration_callback
 
-}; // struct reduction_wrapper__
+}; // struct reduction_wrapper_u
 
 } // namespace execution
 } // namespace flecsi

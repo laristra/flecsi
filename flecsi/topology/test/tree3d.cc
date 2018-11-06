@@ -38,7 +38,7 @@ public:
 
   using entity_t = entity;
 
-  class branch : public tree_branch__<branch_int_t, dimension> {
+  class branch : public tree_branch_u<branch_int_t, dimension> {
   public:
     branch() {}
 
@@ -108,15 +108,15 @@ uniform(double a, double b) {
   return a + (b - a) * uniform();
 }
 
-using tree_topology__ = tree_topology<tree_policy>;
-using entity_t = tree_topology__::entity;
-using point_t = tree_topology__::point_t;
-using branch_t = tree_topology__::branch_t;
-using branch_id_t = tree_topology__::branch_id_t;
-using element_t = tree_topology__::element_t;
+using tree_topology_u = tree_topology<tree_policy>;
+using entity_t = tree_topology_u::entity;
+using point_t = tree_topology_u::point_t;
+using branch_t = tree_topology_u::branch_t;
+using branch_id_t = tree_topology_u::branch_id_t;
+using element_t = tree_topology_u::element_t;
 
 TEST(tree_topology, neighbors) {
-  tree_topology__ t;
+  tree_topology_u t;
 
   vector<entity_t *> ents;
 

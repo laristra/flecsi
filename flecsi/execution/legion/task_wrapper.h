@@ -54,7 +54,7 @@ template<typename RETURN,
     const std::vector<Legion::PhysicalRegion> &,
     Legion::Context,
     Legion::Runtime *)>
-struct pure_task_wrapper__ {
+struct pure_task_wrapper_u {
 
   /*!
     The task_id_t type is a unique identifier for Legion tasks.
@@ -111,10 +111,10 @@ struct pure_task_wrapper__ {
     } // if
   } // registration_callback
 
-}; // struct pure_task_wrapper__
+}; // struct pure_task_wrapper_u
 
 /*!
- The task_wrapper__ type provides registation callback and execution
+ The task_wrapper_u type provides registation callback and execution
  functions for user and MPI tasks.
 
  @tparam RETURN    The return type of the user task.
@@ -129,7 +129,7 @@ template<size_t KEY,
   typename RETURN,
   typename ARG_TUPLE,
   RETURN (*DELEGATE)(ARG_TUPLE)>
-struct task_wrapper__ {
+struct task_wrapper_u {
 
   /*!
     The task_id_t type is a unique identifier for Legion tasks.
@@ -253,7 +253,7 @@ struct task_wrapper__ {
 
   } // execute_mpi_task
 
-}; // struct task_wrapper__
+}; // struct task_wrapper_u
 
 } // namespace execution
 } // namespace flecsi

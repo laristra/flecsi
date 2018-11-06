@@ -38,7 +38,7 @@ namespace hpx {
 // FIXME: Tuple storage type.
 ///
 template<>
-struct storage_class__<tuple> {
+struct storage_class_u<tuple> {
 #if 0
 ///
 // FIXME: Tuple storage type.

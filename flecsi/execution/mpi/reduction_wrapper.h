@@ -28,7 +28,7 @@ namespace flecsi {
 namespace execution {
 
 template<size_t HASH, typename TYPE>
-struct reduction_wrapper__ {
+struct reduction_wrapper_u {
 
   using rhs_t = typename TYPE::RHS;
   using lhs_t = typename TYPE::LHS;
@@ -100,7 +100,7 @@ struct reduction_wrapper__ {
     reduction_ops[HASH] = mpiop;
   } // registration_callback
 
-}; // struct reduction_wrapper__
+}; // struct reduction_wrapper_u
 
 } // namespace execution
 } // namespace flecsi

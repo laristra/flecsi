@@ -28,7 +28,7 @@ namespace flecsi {
 namespace data {
 
 /*!
-  The storage__ type provides a high-level data model context interface that
+  The storage_u type provides a high-level data model context interface that
   is implemented by the given storage policy. It provides an interface for
   client and field registration.
 
@@ -39,7 +39,7 @@ namespace data {
  */
 
 template<typename STORAGE_POLICY>
-struct storage__ : public STORAGE_POLICY {
+struct storage_u : public STORAGE_POLICY {
 
   //--------------------------------------------------------------------------//
   // Public type definitions.
@@ -154,8 +154,8 @@ struct storage__ : public STORAGE_POLICY {
     @return The single instance of this type.
    */
 
-  static storage__ & instance() {
-    static storage__ d;
+  static storage_u & instance() {
+    static storage_u d;
     return d;
   } // instance
 
@@ -169,22 +169,22 @@ struct storage__ : public STORAGE_POLICY {
 
 private:
   // Default constructor
-  storage__() : STORAGE_POLICY() {}
+  storage_u() : STORAGE_POLICY() {}
 
   // Destructor
-  ~storage__() {}
+  ~storage_u() {}
 
   // We don't need any of these
-  storage__(const storage__ &) = delete;
-  storage__ & operator=(const storage__ &) = delete;
-  storage__(storage__ &&) = delete;
-  storage__ & operator=(storage__ &&) = delete;
+  storage_u(const storage_u &) = delete;
+  storage_u & operator=(const storage_u &) = delete;
+  storage_u(storage_u &&) = delete;
+  storage_u & operator=(storage_u &&) = delete;
 
   std::set<std::pair<size_t, size_t>> registered_client_fields_;
   std::unordered_map<size_t, field_entry_t> field_registry_;
   std::unordered_map<size_t, client_entry_t> client_registry_;
 
-}; // class storage__
+}; // class storage_u
 
 } // namespace data
 } // namespace flecsi
@@ -194,7 +194,7 @@ private:
 namespace flecsi {
 namespace data {
 
-using storage_t = storage__<FLECSI_RUNTIME_STORAGE_POLICY>;
+using storage_t = storage_u<FLECSI_RUNTIME_STORAGE_POLICY>;
 
 } // namespace data
 } // namespace flecsi

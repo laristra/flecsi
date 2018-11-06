@@ -214,7 +214,7 @@ private:
 //----------------------------------------------------------------------------//
 
 template<typename T, size_t PS>
-struct global_handle__ : public global_data_handle__<T, PS> {};
+struct global_handle_u : public global_data_handle_u<T, PS> {};
  // struct global_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -229,7 +229,7 @@ struct global_handle__ : public global_data_handle__<T, PS> {};
 // FIXME: Scalar storage type.
 ///
 template<>
-struct storage_class__<global> {
+struct storage_class_u<global> {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -242,9 +242,9 @@ struct storage_class__<global> {
 //  using accessor_t = global_accessor_t<T, MD>;
 
   template<typename T, size_t PS>
-  using handle_t = global_handle__<T, PS>;
+  using handle_t = global_handle_u<T, PS>;
 
-//  using st_t = storage_class__<global>;
+//  using st_t = storage_class_u<global>;
 
 #if 0
   //--------------------------------------------------------------------------//
@@ -600,7 +600,7 @@ struct storage_class__<global> {
       size_t VERSION,
       size_t PERMISSIONS>
   static handle_t<DATA_TYPE, 0>
-  get_handle(const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS> &
+  get_handle(const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> &
                  client_handle) {
     handle_t<DATA_TYPE, 0> h;
     return {};

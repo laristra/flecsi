@@ -206,7 +206,7 @@ struct hpx_context_policy_t {
         T global_max{};
         T local_max = local_future.get();
         MPI_Allreduce(&local_max, &global_max, 1,
-           flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
+           flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
            MPI_COMM_WORLD);
         return global_max;
       });
@@ -252,7 +252,7 @@ struct hpx_context_policy_t {
         T global_min{};
         T local_min = local_future.get();
         MPI_Allreduce(&local_min, &global_min, 1,
-           flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
+           flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
            MPI_COMM_WORLD);
         return global_min;
       });

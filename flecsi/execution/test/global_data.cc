@@ -25,7 +25,7 @@
 using namespace flecsi;
 
 template<size_t PERMISSION>
-using gint = global_accessor__<int, PERMISSION>;
+using gint = global_accessor_u<int, PERMISSION>;
 
 void set_global_int(gint<rw> global, int value) {
   auto& context = execution::context_t::instance();

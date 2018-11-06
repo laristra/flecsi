@@ -30,7 +30,7 @@ namespace utils {
 //----------------------------------------------------------------------------//
 
 template <typename CRTP_TYPE>
-struct tuple_walker__ {
+struct tuple_walker_u {
 private:
     template <typename T>
     void dispatch(T& t) {
@@ -88,7 +88,7 @@ public:
     void walk_types() {
         walk_types_impl<0, TUPLE_TYPE>();
     }
-}; // struct tuple_walker__
+}; // struct tuple_walker_u
 
 } // namespace utils
 } // namespace flecsi

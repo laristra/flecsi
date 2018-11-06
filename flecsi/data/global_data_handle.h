@@ -27,7 +27,7 @@ namespace flecsi {
 struct global_data_handle_base_t {};
 
 /*!
- The global_data_handle_base__ type captures information about permissions
+ The global_data_handle_base_u type captures information about permissions
  and specifies a data policy.
 
  @tparam T                     The data type referenced by the handle.
@@ -39,7 +39,7 @@ struct global_data_handle_base_t {};
  */
 
 template<typename T, size_t PERMISSIONS, typename DATA_POLICY>
-struct global_data_handle_base__ : public DATA_POLICY,
+struct global_data_handle_base_u : public DATA_POLICY,
                                    public global_data_handle_base_t {
 
   /*!
@@ -51,13 +51,13 @@ struct global_data_handle_base__ : public DATA_POLICY,
    Default constructor.
    */
 
-  global_data_handle_base__() {}
+  global_data_handle_base_u() {}
 
   /*!
     Copy constructor.
    */
 
-  global_data_handle_base__(const global_data_handle_base__ & b)
+  global_data_handle_base_u(const global_data_handle_base_u & b)
     : DATA_POLICY(b) {
     combined_data = b.combined_data;
 #ifdef COMPACTED_STORAGE_SORT
@@ -92,7 +92,7 @@ struct global_data_handle_base__ : public DATA_POLICY,
 namespace flecsi {
 
 /*!
- The global_data_handle__ type is the high-level data handle type.
+ The global_data_handle_u type is the high-level data handle type.
 
  @tparam T                     The data type referenced by the handle.
  @tparam PERMISSIONS           The permissions required on the exclusive
@@ -103,7 +103,7 @@ namespace flecsi {
  */
 
 template<typename T, size_t PERMISSIONS>
-using global_data_handle__ = global_data_handle_base__<T,
+using global_data_handle_u = global_data_handle_base_u<T,
   PERMISSIONS,
   FLECSI_RUNTIME_GLOBAL_DATA_HANDLE_POLICY>;
 

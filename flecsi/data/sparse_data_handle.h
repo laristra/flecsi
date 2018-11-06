@@ -24,10 +24,10 @@ template<typename T,
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS,
   typename DATA_POLICY>
-struct sparse_data_handle_base__ : public DATA_POLICY {
+struct sparse_data_handle_base_u : public DATA_POLICY {
 
   using offset_t = data::sparse_data_offset_t;
-  using entry_value_t = data::sparse_entry_value__<T>;
+  using entry_value_t = data::sparse_entry_value_u<T>;
 
   /*!
     Capture the underlying data type.
@@ -44,9 +44,9 @@ struct sparse_data_handle_base__ : public DATA_POLICY {
   //! Default constructor.
   //--------------------------------------------------------------------------//
 
-  sparse_data_handle_base__() {}
+  sparse_data_handle_base_u() {}
 
-  sparse_data_handle_base__(size_t num_exclusive,
+  sparse_data_handle_base_u(size_t num_exclusive,
     size_t num_shared,
     size_t num_ghost)
     : num_exclusive_(num_exclusive), num_shared_(num_shared),
@@ -57,7 +57,7 @@ struct sparse_data_handle_base__ : public DATA_POLICY {
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  sparse_data_handle_base__(const sparse_data_handle_base__ & b)
+  sparse_data_handle_base_u(const sparse_data_handle_base_u & b)
     : DATA_POLICY(b), index_space(b.index_space),
       data_client_hash(b.data_client_hash), entries(b.entries),
       offsets(b.offsets), num_exclusive_(b.num_exclusive_),
@@ -96,7 +96,7 @@ struct sparse_data_handle_base__ : public DATA_POLICY {
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
-//! The data_handle__ type is the high-level data handle type.
+//! The data_handle_u type is the high-level data handle type.
 //!
 //! @tparam T                     The data type referenced by the handle.
 //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
@@ -114,7 +114,7 @@ template<typename T,
   size_t EXCLUSIVE_PERMISSIONS,
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS>
-using sparse_data_handle__ = sparse_data_handle_base__<T,
+using sparse_data_handle_u = sparse_data_handle_base_u<T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
   GHOST_PERMISSIONS,

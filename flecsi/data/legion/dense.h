@@ -17,7 +17,7 @@
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
-// Using this approach allows us to have only one storage_class__
+// Using this approach allows us to have only one storage_class_u
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
 #include <flecsi/data/storage_class.h>
@@ -59,7 +59,7 @@ template<typename T,
   size_t EXCLUSIVE_PERMISSIONS,
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS>
-struct dense_handle_t : public dense_data_handle__<T,
+struct dense_handle_t : public dense_data_handle_u<T,
                           EXCLUSIVE_PERMISSIONS,
                           SHARED_PERMISSIONS,
                           GHOST_PERMISSIONS> {
@@ -67,7 +67,7 @@ struct dense_handle_t : public dense_data_handle__<T,
    Type definitions.
    */
 
-  using base_t = dense_data_handle__<T,
+  using base_t = dense_data_handle_u<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS>;
@@ -135,7 +135,7 @@ struct dense_handle_t : public dense_data_handle__<T,
  */
 
 template<>
-struct storage_class__<dense> {
+struct storage_class_u<dense> {
 
   /*!
     Type definitions.
@@ -198,7 +198,7 @@ struct storage_class__<dense> {
     size_t VERSION,
     size_t PERMISSIONS>
   static handle_t<DATA_TYPE, 0, 0, 0> get_handle(
-    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
+    const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
 
@@ -244,7 +244,7 @@ struct storage_class__<dense> {
     return h;
   } // get_handle
 
-}; // struct storage_class__
+}; // struct storage_class_u
 
 } // namespace legion
 } // namespace data

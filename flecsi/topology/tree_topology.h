@@ -59,13 +59,13 @@ namespace flecsi {
 namespace topology {
 
 template<typename T, size_t DIM>
-struct tree_geometry__ {};
+struct tree_geometry_u {};
 
 //-----------------------------------------------------------------//
 //! \brief 1d geometry class for computing intersections and distances.
 //-----------------------------------------------------------------//
 template<typename T>
-struct tree_geometry__<T, 1> {
+struct tree_geometry_u<T, 1> {
   using point_t = point<T, 1>;
   using element_t = T;
 
@@ -136,7 +136,7 @@ struct tree_geometry__<T, 1> {
 //! \brief 2d geometry class for computing intersections and distances.
 //-----------------------------------------------------------------//
 template<typename T>
-struct tree_geometry__<T, 2> {
+struct tree_geometry_u<T, 2> {
   using point_t = point<T, 2>;
   using element_t = T;
 
@@ -220,7 +220,7 @@ struct tree_geometry__<T, 2> {
 //! \brief 1d geometry class for computing intersections and distances.
 //-----------------------------------------------------------------//
 template<typename T>
-struct tree_geometry__<T, 3> {
+struct tree_geometry_u<T, 3> {
   using point_t = point<T, 3>;
   using element_t = T;
 
@@ -305,7 +305,7 @@ struct tree_geometry__<T, 3> {
   parameterized on arbitrary dimension DIM and integer type T.
  */
 template<typename T, size_t DIM>
-class branch_id__
+class branch_id_u
 {
 public:
   using int_t = T;
@@ -316,7 +316,7 @@ public:
 
   static constexpr size_t max_depth = (bits - 1) / dimension;
 
-  branch_id__() : id_(0) {}
+  branch_id_u() : id_(0) {}
 
   //-----------------------------------------------------------------//
   //! Construct a branch id from an array of dimensions and range for each
@@ -324,7 +324,7 @@ public:
   //! for the branch id.
   //-----------------------------------------------------------------//
   template<typename S>
-  branch_id__(const std::array<point<S, dimension>, 2> & range,
+  branch_id_u(const std::array<point<S, dimension>, 2> & range,
     const point<S, dimension> & p,
     size_t depth)
     : id_(int_t(1) << depth * dimension + (bits - 1) % dimension) {
@@ -346,20 +346,20 @@ public:
     }
   }
 
-  constexpr branch_id__(const branch_id__ & bid) : id_(bid.id_) {}
+  constexpr branch_id_u(const branch_id_u & bid) : id_(bid.id_) {}
 
   //-----------------------------------------------------------------//
   //! Get the root branch id (depth 0).
   //-----------------------------------------------------------------//
-  static constexpr branch_id__ root() {
-    return branch_id__(int_t(1) << (bits - 1) % dimension);
+  static constexpr branch_id_u root() {
+    return branch_id_u(int_t(1) << (bits - 1) % dimension);
   }
 
   //-----------------------------------------------------------------//
   //! Get the null branch id.
   //-----------------------------------------------------------------//
-  static constexpr branch_id__ null() {
-    return branch_id__(0);
+  static constexpr branch_id_u null() {
+    return branch_id_u(0);
   }
 
   //-----------------------------------------------------------------//
@@ -383,16 +383,16 @@ public:
     return d;
   }
 
-  branch_id__ & operator=(const branch_id__ & bid) {
+  branch_id_u & operator=(const branch_id_u & bid) {
     id_ = bid.id_;
     return *this;
   }
 
-  constexpr bool operator==(const branch_id__ & bid) const {
+  constexpr bool operator==(const branch_id_u & bid) const {
     return id_ == bid.id_;
   }
 
-  constexpr bool operator!=(const branch_id__ & bid) const {
+  constexpr bool operator!=(const branch_id_u & bid) const {
     return id_ != bid.id_;
   }
 
@@ -425,8 +425,8 @@ public:
   //-----------------------------------------------------------------//
   //! Return the parent of this branch id (depth - 1)
   //-----------------------------------------------------------------//
-  constexpr branch_id__ parent() const {
-    return branch_id__(id_ >> dimension);
+  constexpr branch_id_u parent() const {
+    return branch_id_u(id_ >> dimension);
   }
 
   //-----------------------------------------------------------------//
@@ -476,7 +476,7 @@ public:
     id_ = value;
   }
 
-  bool operator<(const branch_id__ & bid) const {
+  bool operator<(const branch_id_u & bid) const {
     return id_ < bid.id_;
   }
 
@@ -515,7 +515,7 @@ public:
 private:
   int_t id_;
 
-  constexpr branch_id__(int_t id) : id_(id) {}
+  constexpr branch_id_u(int_t id) : id_(id) {}
 };
 
 //-----------------------------------------------------------------//
@@ -550,14 +550,14 @@ private:
 
 template<typename T, size_t DIM>
 std::ostream &
-operator<<(std::ostream & ostr, const branch_id__<T, DIM> & id) {
+operator<<(std::ostream & ostr, const branch_id_u<T, DIM> & id) {
   id.output_(ostr);
   return ostr;
 }
 
 template<typename T, size_t DIM>
-struct branch_id_hasher__ {
-  size_t operator()(const branch_id__<T, DIM> & k) const {
+struct branch_id_hasher_u {
+  size_t operator()(const branch_id_u<T, DIM> & k) const {
     return std::hash<T>()(k.value_());
   }
 };
@@ -588,7 +588,7 @@ public:
 
   using branch_int_t = typename Policy::branch_int_t;
 
-  using branch_id_t = branch_id__<branch_int_t, dimension>;
+  using branch_id_t = branch_id_u<branch_int_t, dimension>;
 
   using branch_id_vector_t = std::vector<branch_id_t>;
 
@@ -604,13 +604,13 @@ public:
 
   using entity_id_vector_t = std::vector<entity_id_t>;
 
-  using geometry_t = tree_geometry__<element_t, dimension>;
+  using geometry_t = tree_geometry_u<element_t, dimension>;
 
-  using entity_space_t = index_space__<entity_t *, true, true, false>;
+  using entity_space_t = index_space_u<entity_t *, true, true, false>;
 
-  using branch_space_t = index_space__<branch_t *, true, true, false>;
+  using branch_space_t = index_space_u<branch_t *, true, true, false>;
 
-  using subentity_space_t = index_space__<entity_t *, false, true, false>;
+  using subentity_space_t = index_space_u<entity_t *, false, true, false>;
 
   struct filter_valid {
     bool operator()(entity_t * ent) const {
@@ -1253,7 +1253,7 @@ public:
 private:
   using branch_map_t = std::unordered_map<branch_id_t,
     branch_t *,
-    branch_id_hasher__<branch_int_t, dimension>>;
+    branch_id_hasher_u<branch_int_t, dimension>>;
 
   branch_id_t to_branch_id(const point_t & p, size_t max_depth) {
     return branch_id_t(range_, p, max_depth);
@@ -1735,7 +1735,7 @@ class tree_entity
 public:
   using id_t = entity_id_t;
 
-  using branch_id_t = branch_id__<T, DIM>;
+  using branch_id_t = branch_id_u<T, DIM>;
 
   tree_entity() : branch_id_(branch_id_t::null()) {}
 
@@ -1778,20 +1778,20 @@ private:
 //! Tree branch base class.
 //-----------------------------------------------------------------//
 template<typename T, size_t DIM>
-class tree_branch__
+class tree_branch_u
 {
 public:
   using branch_int_t = T;
 
   static const size_t dimension = DIM;
 
-  using branch_id_t = branch_id__<T, DIM>;
+  using branch_id_t = branch_id_u<T, DIM>;
 
   using id_t = branch_id_t;
 
   static constexpr size_t num_children = branch_int_t(1) << dimension;
 
-  tree_branch__()
+  tree_branch_u()
     : action_(action::none), parent_(nullptr), children_(nullptr) {}
 
   branch_id_t id() const {
@@ -1819,7 +1819,7 @@ public:
     action_ = action::none;
   }
 
-  tree_branch__ * parent() const {
+  tree_branch_u * parent() const {
     return parent_;
   }
 
@@ -1892,8 +1892,8 @@ private:
 
   action action_;
 
-  tree_branch__ * parent_;
-  tree_branch__ * children_;
+  tree_branch_u * parent_;
+  tree_branch_u * children_;
 
   branch_id_t id_;
 };

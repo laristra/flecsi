@@ -37,23 +37,23 @@ class set_topology_base_t
 };
 
 template<class STORAGE_TYPE>
-class set_topology_base__ : public data::data_client_t,
+class set_topology_base_u : public data::data_client_t,
                             public set_topology_base_t
 {
 public:
   // Default constructor
-  set_topology_base__(STORAGE_TYPE * ss = nullptr) : ss_(ss) {}
+  set_topology_base_u(STORAGE_TYPE * ss = nullptr) : ss_(ss) {}
 
   // Don't allow the set to be copied or copy constructed
-  set_topology_base__(const set_topology_base__ & s) : ss_(s.ss_) {}
+  set_topology_base_u(const set_topology_base_u & s) : ss_(s.ss_) {}
 
-  set_topology_base__ & operator=(const set_topology_base__ &) = delete;
+  set_topology_base_u & operator=(const set_topology_base_u &) = delete;
 
   /// Allow move operations
-  set_topology_base__(set_topology_base__ &&) = default;
+  set_topology_base_u(set_topology_base_u &&) = default;
 
   //! override default move assignement
-  set_topology_base__ & operator=(set_topology_base__ && o) {
+  set_topology_base_u & operator=(set_topology_base_u && o) {
     // call base_t move operator
     data::data_client_t::operator=(std::move(o));
     // return a reference to the object

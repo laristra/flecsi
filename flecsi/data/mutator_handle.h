@@ -37,10 +37,10 @@ namespace flecsi {
 //----------------------------------------------------------------------------//
 
 template<typename T, typename MUTATOR_POLICY>
-class mutator_handle_base__ : public MUTATOR_POLICY
+class mutator_handle_base_u : public MUTATOR_POLICY
 {
 public:
-  using entry_value_t = data::sparse_entry_value__<T>;
+  using entry_value_t = data::sparse_entry_value_u<T>;
 
   using offset_t = data::sparse_data_offset_t;
 
@@ -63,7 +63,7 @@ public:
   //! Default constructor.
   //--------------------------------------------------------------------------//
 
-  mutator_handle_base__(size_t num_exclusive,
+  mutator_handle_base_u(size_t num_exclusive,
     size_t num_shared,
     size_t num_ghost,
     size_t max_entries_per_index,
@@ -85,12 +85,12 @@ public:
     pi_.end[2] = pi_.end[1] + num_ghost;
   }
 
-  mutator_handle_base__(size_t max_entries_per_index, size_t num_slots)
+  mutator_handle_base_u(size_t max_entries_per_index, size_t num_slots)
     : max_entries_per_index_(max_entries_per_index), num_slots_(num_slots) {}
 
-  mutator_handle_base__(const mutator_handle_base__ & b) = default;
+  mutator_handle_base_u(const mutator_handle_base_u & b) = default;
 
-  ~mutator_handle_base__() {}
+  ~mutator_handle_base_u() {}
 
   void init(size_t num_exclusive,
     size_t num_shared,
@@ -615,7 +615,7 @@ public:
 namespace flecsi {
 
 template<typename T>
-using mutator_handle__ =
-  mutator_handle_base__<T, FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY>;
+using mutator_handle_u =
+  mutator_handle_base_u<T, FLECSI_RUNTIME_MUTATOR_HANDLE_POLICY>;
 
 } // namespace flecsi

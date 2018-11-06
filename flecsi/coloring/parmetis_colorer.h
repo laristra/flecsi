@@ -177,8 +177,8 @@ struct parmetis_colorer_t : public colorer_t {
     // Do all-to-all to find out where everything belongs.
     std::vector<idx_t> recv_cnts(size);
     result = MPI_Alltoall(&send_cnts[0], 1,
-      utils::mpi_typetraits__<idx_t>::type(), &recv_cnts[0], 1,
-      utils::mpi_typetraits__<idx_t>::type(), MPI_COMM_WORLD);
+      utils::mpi_typetraits_u<idx_t>::type(), &recv_cnts[0], 1,
+      utils::mpi_typetraits_u<idx_t>::type(), MPI_COMM_WORLD);
 
 #if 0
     if(rank == 0) {
@@ -200,7 +200,7 @@ struct parmetis_colorer_t : public colorer_t {
         rbuffers[r].resize(recv_cnts[r]);
         requests.push_back({});
         MPI_Irecv(&rbuffers[r][0], recv_cnts[r],
-          utils::mpi_typetraits__<idx_t>::type(), r, 0, MPI_COMM_WORLD,
+          utils::mpi_typetraits_u<idx_t>::type(), r, 0, MPI_COMM_WORLD,
           &requests[requests.size() - 1]);
       } // if
     } // for
@@ -210,7 +210,7 @@ struct parmetis_colorer_t : public colorer_t {
       if(send_cnts[r]) {
         sbuffers[r].resize(send_cnts[r]);
         MPI_Send(&sbuffers[r][0], send_cnts[r],
-          utils::mpi_typetraits__<idx_t>::type(), r, 0, MPI_COMM_WORLD);
+          utils::mpi_typetraits_u<idx_t>::type(), r, 0, MPI_COMM_WORLD);
       } // if
     } // for
 

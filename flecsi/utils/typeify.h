@@ -28,13 +28,13 @@ namespace utils {
  */
 
 template<typename T, T M>
-struct typeify__ {
+struct typeify_u {
   using TYPE = T;
   static constexpr T value = M;
 };
 
 template<typename T, T M>
-constexpr T typeify__<T, M>::value;
+constexpr T typeify_u<T, M>::value;
 
 } // namespace utils
 } // namespace flecsi

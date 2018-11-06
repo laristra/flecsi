@@ -23,7 +23,7 @@ namespace flecsi {
 namespace data {
 
 /*!
-  The field_interface__ type provides a high-level field interface that
+  The field_interface_u type provides a high-level field interface that
   is implemented by the given data policy.
 
   @tparam DATA_POLICY The backend data policy.
@@ -32,7 +32,7 @@ namespace data {
  */
 
 template<typename DATA_POLICY>
-struct field_interface__ {
+struct field_interface_u {
 
   /*!
     Register a field with the FleCSI runtime. This method should be thought
@@ -72,7 +72,7 @@ struct field_interface__ {
       "max field versions exceeded");
 
     using wrapper_t =
-      field_registration_wrapper__<DATA_CLIENT_TYPE, STORAGE_CLASS, DATA_TYPE,
+      field_registration_wrapper_u<DATA_CLIENT_TYPE, STORAGE_CLASS, DATA_TYPE,
         NAMESPACE_HASH, NAME_HASH, VERSIONS, INDEX_SPACE>;
 
     const size_t client_type_key =
@@ -117,12 +117,12 @@ struct field_interface__ {
     size_t VERSION = 0,
     size_t PERMISSIONS>
   static decltype(auto) get_handle(
-    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
+    const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
 
     using storage_class_t =
-      typename DATA_POLICY::template storage_class__<STORAGE_CLASS>;
+      typename DATA_POLICY::template storage_class_u<STORAGE_CLASS>;
 
     return storage_class_t::template get_handle<DATA_CLIENT_TYPE, DATA_TYPE,
       NAMESPACE_HASH, NAME_HASH, VERSION>(client_handle);
@@ -154,13 +154,13 @@ struct field_interface__ {
     size_t VERSION = 0,
     size_t PERMISSIONS>
   static decltype(auto) get_mutator(
-    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle,
+    const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle,
     size_t slots) {
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
 
     using storage_class_t =
-      typename DATA_POLICY::template storage_class__<STORAGE_CLASS>;
+      typename DATA_POLICY::template storage_class_u<STORAGE_CLASS>;
 
     return storage_class_t::template get_mutator<DATA_CLIENT_TYPE, DATA_TYPE,
       NAMESPACE_HASH, NAME_HASH, VERSION>(client_handle, slots);
@@ -227,7 +227,7 @@ struct field_interface__ {
       PREDICATE>(client, version, std::forward<PREDICATE>(predicate), sorted);
   } // get_handles
 
-}; // struct field_interface__
+}; // struct field_interface_u
 
 } // namespace data
 } // namespace flecsi
@@ -241,7 +241,7 @@ struct field_interface__ {
 namespace flecsi {
 namespace data {
 
-using field_interface_t = field_interface__<FLECSI_RUNTIME_DATA_POLICY>;
+using field_interface_t = field_interface_u<FLECSI_RUNTIME_DATA_POLICY>;
 
 } // namespace data
 } // namespace flecsi

@@ -40,7 +40,7 @@ namespace flecsi {
 namespace execution {
 
 /*!
-  The context__ type provides a high-level runtime context interface that
+  The context_u type provides a high-level runtime context interface that
   is implemented by the given context policy.
 
   @tparam CONTEXT_POLICY The backend context policy.
@@ -49,7 +49,7 @@ namespace execution {
  */
 
 template<class CONTEXT_POLICY>
-struct context__ : public CONTEXT_POLICY {
+struct context_u : public CONTEXT_POLICY {
   using index_coloring_t = flecsi::coloring::index_coloring_t;
   using coloring_info_t = flecsi::coloring::coloring_info_t;
   using set_coloring_info_t = flecsi::coloring::set_coloring_info_t;
@@ -163,7 +163,7 @@ struct context__ : public CONTEXT_POLICY {
   bool register_global_object() {
     size_t KEY = NAMESPACE_HASH ^ INDEX;
 
-    using wrapper_t = global_object_wrapper__<OBJECT_TYPE>;
+    using wrapper_t = global_object_wrapper_u<OBJECT_TYPE>;
 
     std::get<0>(global_object_registry_[KEY]) = {};
     std::get<1>(global_object_registry_[KEY]) = &wrapper_t::cleanup;
@@ -234,8 +234,8 @@ struct context__ : public CONTEXT_POLICY {
     @return The single instance of this type.
    */
 
-  static context__ & instance() {
-    static context__ context;
+  static context_u & instance() {
+    static context_u context;
     return context;
   } // instance
 
@@ -813,10 +813,10 @@ struct context__ : public CONTEXT_POLICY {
 
 private:
   // Default constructor
-  context__() : CONTEXT_POLICY() {}
+  context_u() : CONTEXT_POLICY() {}
 
   // Destructor
-  ~context__() {
+  ~context_u() {
     // Invoke the cleanup function for each global object
     for(auto & go : global_object_registry_) {
       std::get<1>(go.second)(std::get<0>(go.second));
@@ -827,10 +827,10 @@ private:
   // We don't need any of these
   //--------------------------------------------------------------------------//
 
-  context__(const context__ &) = delete;
-  context__ & operator=(const context__ &) = delete;
-  context__(context__ &&) = delete;
-  context__ & operator=(context__ &&) = delete;
+  context_u(const context_u &) = delete;
+  context_u & operator=(const context_u &) = delete;
+  context_u(context_u &&) = delete;
+  context_u & operator=(context_u &&) = delete;
 
   //--------------------------------------------------------------------------//
   // Top-level driver.
@@ -1002,7 +1002,7 @@ private:
 
   size_t execution_state_ = SPECIALIZATION_TLT_INIT;
 
-}; // class context__
+}; // class context_u
 
 } // namespace execution
 } // namespace flecsi
@@ -1021,7 +1021,7 @@ namespace execution {
   @ingroup execution
  */
 
-using context_t = context__<FLECSI_RUNTIME_CONTEXT_POLICY>;
+using context_t = context_u<FLECSI_RUNTIME_CONTEXT_POLICY>;
 
 } // namespace execution
 } // namespace flecsi

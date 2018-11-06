@@ -34,7 +34,7 @@ namespace execution {
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(spmd_task, processor_type_t::loc, index);
+flecsi_internal_register_legion_task(spmd_task, processor_type_t::loc, index);
 
 /*!
   Register task to handoff to the MPI runtime.
@@ -46,7 +46,7 @@ __flecsi_internal_register_legion_task(spmd_task, processor_type_t::loc, index);
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(handoff_to_mpi_task,
+flecsi_internal_register_legion_task(handoff_to_mpi_task,
   processor_type_t::loc,
   index | leaf);
 
@@ -60,7 +60,7 @@ __flecsi_internal_register_legion_task(handoff_to_mpi_task,
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(wait_on_mpi_task,
+flecsi_internal_register_legion_task(wait_on_mpi_task,
   processor_type_t::loc,
   index | leaf);
 
@@ -74,7 +74,7 @@ __flecsi_internal_register_legion_task(wait_on_mpi_task,
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(unset_call_mpi_task,
+flecsi_internal_register_legion_task(unset_call_mpi_task,
   processor_type_t::loc,
   index | leaf);
 
@@ -88,7 +88,7 @@ __flecsi_internal_register_legion_task(unset_call_mpi_task,
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(owner_pos_compaction_task,
+flecsi_internal_register_legion_task(owner_pos_compaction_task,
   processor_type_t::loc,
   index | leaf);
 
@@ -102,7 +102,7 @@ __flecsi_internal_register_legion_task(owner_pos_compaction_task,
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(owner_pos_correction_task,
+flecsi_internal_register_legion_task(owner_pos_correction_task,
   processor_type_t::loc,
   index | leaf);
 
@@ -116,7 +116,7 @@ __flecsi_internal_register_legion_task(owner_pos_correction_task,
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(ghost_copy_task,
+flecsi_internal_register_legion_task(ghost_copy_task,
   processor_type_t::loc,
   single | leaf);
 
@@ -130,7 +130,7 @@ __flecsi_internal_register_legion_task(ghost_copy_task,
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(owners_subregions_task,
+flecsi_internal_register_legion_task(owners_subregions_task,
   processor_type_t::loc,
   single | leaf);
 

@@ -51,7 +51,7 @@ using namespace flecsi::control;
 
 struct control_policy_t {
 
-  using control_t = control__<control_policy_t>;
+  using control_t = control_u<control_policy_t>;
 
   /*!
    */
@@ -60,7 +60,7 @@ struct control_policy_t {
     return control_t::instance().step()++ < 5;
   } // evolve
 
-  using evolve = cycle__<
+  using evolve = cycle_u<
     evolve_control, // stopping predicate
     phase_<advance>,
     phase_<analyze>,
@@ -118,7 +118,7 @@ operator << (std::ostream & stream, control_policy_t::node_t const & node) {
  * Define control policy type.
  *----------------------------------------------------------------------------*/
 
-using control_t = control__<control_policy_t>;
+using control_t = control_u<control_policy_t>;
 
 /*----------------------------------------------------------------------------*
  * Convenience

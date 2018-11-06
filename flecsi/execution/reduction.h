@@ -10,7 +10,7 @@ namespace flecsi {
 namespace execution {
 namespace reduction {
 
-#define __flecsi_register_operation_types(operation)                           \
+#define flecsi_register_operation_types(operation)                           \
   flecsi_register_reduction_operation(operation, int);                         \
   flecsi_register_reduction_operation(operation, long);                        \
   flecsi_register_reduction_operation(operation, short);                       \
@@ -62,7 +62,7 @@ struct min {
 
 }; // struct min
 
-__flecsi_register_operation_types(min);
+flecsi_register_operation_types(min);
 
 //----------------------------------------------------------------------------//
 // Max
@@ -107,7 +107,7 @@ struct max {
 
 }; // struct max
 
-__flecsi_register_operation_types(max);
+flecsi_register_operation_types(max);
 
 //----------------------------------------------------------------------------//
 // Sum
@@ -152,7 +152,7 @@ struct sum {
 
 }; // struct sum
 
-__flecsi_register_operation_types(sum);
+flecsi_register_operation_types(sum);
 
 /*!
   Product reduction type.
@@ -197,7 +197,7 @@ struct product {
 
 }; // struct product
 
-__flecsi_register_operation_types(product);
+flecsi_register_operation_types(product);
 
 } // namespace reduction
 } // namespace execution

@@ -26,20 +26,20 @@ namespace flecsi {
 namespace topology {
 
 template<typename SET_TYPE>
-struct legion_set_topology_storage_policy__ {
+struct legion_set_topology_storage_policy_u {
   using id_t = utils::id_t;
 
   using entity_types_t = typename SET_TYPE::entity_types;
 
   static const size_t num_index_spaces = std::tuple_size<entity_types_t>::value;
 
-  using index_spaces_t = std::array<index_space__<set_entity_t *,
+  using index_spaces_t = std::array<index_space_u<set_entity_t *,
                                       true,
                                       true,
                                       true,
                                       void,
-                                      identity_storage__,
-                                      topology_storage__>,
+                                      identity_storage_u,
+                                      topology_storage_u>,
     num_index_spaces>;
 
   index_spaces_t index_spaces;
@@ -50,14 +50,14 @@ struct legion_set_topology_storage_policy__ {
 
   index_space_map_t index_space_map;
 
-  ~legion_set_topology_storage_policy__() {}
+  ~legion_set_topology_storage_policy_u() {}
 
-  legion_set_topology_storage_policy__() {
+  legion_set_topology_storage_policy_u() {
 
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();
 
-    map_set_index_spaces__<std::tuple_size<entity_types_t>::value,
+    map_set_index_spaces_u<std::tuple_size<entity_types_t>::value,
       entity_types_t, index_space_map_t>::map(index_space_map);
   }
 
@@ -83,7 +83,7 @@ struct legion_set_topology_storage_policy__ {
   template<class T, class... S>
   T * make(S &&... args) {
     constexpr size_t index_space =
-      find_set_index_space__<num_index_spaces, entity_types_t, T>::find();
+      find_set_index_space_u<num_index_spaces, entity_types_t, T>::find();
 
     auto & is = index_spaces[index_space].template cast<T *>();
     size_t entity = is.size();

@@ -33,7 +33,7 @@ namespace flecsi {
 namespace execution {
 
 struct finalize_handles_t
-  : public flecsi::utils::tuple_walker__<finalize_handles_t>
+  : public flecsi::utils::tuple_walker_u<finalize_handles_t>
 {
   /*!
   Nothing needs to be done to finalize a dense data handle.
@@ -42,7 +42,7 @@ struct finalize_handles_t
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(dense_data_handle__<T,
+  void handle(dense_data_handle_u<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & h) {} // handle
@@ -51,9 +51,9 @@ struct finalize_handles_t
   void handle(sparse_mutator<T> & m) {
     auto & h = m.h_;
 
-    using offset_t = typename mutator_handle__<T>::offset_t;
-    using entry_value_t = typename mutator_handle__<T>::entry_value_t;
-    using commit_info_t = typename mutator_handle__<T>::commit_info_t;
+    using offset_t = typename mutator_handle_u<T>::offset_t;
+    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
+    using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
 
     auto & context = context_t::instance();
     const int my_color = context.color();
@@ -127,7 +127,7 @@ struct finalize_handles_t
     for(auto & shared : index_coloring.shared) {
       for(auto peer : shared.shared) {
         MPI_Isend(&send_count_buf[i], 1,
-          flecsi::utils::mpi_typetraits__<uint32_t>::type(), peer, 99,
+          flecsi::utils::mpi_typetraits_u<uint32_t>::type(), peer, 99,
           MPI_COMM_WORLD, &requests[i]);
         i++;
       }
@@ -138,7 +138,7 @@ struct finalize_handles_t
     for(auto & ghost : index_coloring.ghost) {
       MPI_Status status;
       MPI_Irecv(&recv_count_buf[i], 1,
-        flecsi::utils::mpi_typetraits__<uint32_t>::type(), ghost.rank, 99,
+        flecsi::utils::mpi_typetraits_u<uint32_t>::type(), ghost.rank, 99,
         MPI_COMM_WORLD, &recv_requests[i]);
       i++;
     }
@@ -160,7 +160,7 @@ struct finalize_handles_t
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
     auto & context_ = context_t::instance();
 
     auto storage = h.storage();
@@ -189,7 +189,7 @@ struct finalize_handles_t
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
     if(PERMISSIONS == wo || PERMISSIONS == rw) {
       auto & context_ = context_t::instance();
       auto & ssm = context_.index_subspace_info();

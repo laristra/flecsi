@@ -38,7 +38,7 @@ enum action_attributes_t : size_t {
 
 struct control_policy_t {
 
-  using control_t = flecsi::control::control__<control_policy_t>;
+  using control_t = flecsi::control::control_u<control_policy_t>;
 
   using node_t = io_poc::node_t;
 
@@ -48,7 +48,7 @@ struct control_policy_t {
 
   #define phase(name) flecsi::control::phase_<name>
 
-  using evolve = flecsi::control::cycle__<
+  using evolve = flecsi::control::cycle_u<
     evolve_control, // stopping predicate
     phase(advance),
     phase(analyze),
