@@ -65,7 +65,7 @@ void specialization_spmd_init(int argc, char ** argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
 /*!
- @def __flecsi_internal_legion_task
+ @def flecsi_internal_legion_task
 
  This macro simplifies pure Legion task definitions by filling in the
  boiler-plate function arguments.
@@ -76,7 +76,7 @@ void specialization_spmd_init(int argc, char ** argv);
  @ingroup legion-execution
 */
 
-#define __flecsi_internal_legion_task(task_name, return_type)                  \
+#define flecsi_internal_legion_task(task_name, return_type)                  \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Legion task template */                                                   \
@@ -92,7 +92,7 @@ void specialization_spmd_init(int argc, char ** argv);
  @ingroup legion-execution
  */
 
-__flecsi_internal_legion_task(owner_pos_correction_task, void) {
+flecsi_internal_legion_task(owner_pos_correction_task, void) {
 
   {
     clog_tag_guard(legion_tasks);
@@ -193,7 +193,7 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
  @ingroup legion-execution
  */
 
-__flecsi_internal_legion_task(handoff_to_mpi_task, void) {
+flecsi_internal_legion_task(handoff_to_mpi_task, void) {
   context_t::instance().handoff_to_mpi();
 } // handoff_to_mpi_task
 
@@ -204,7 +204,7 @@ __flecsi_internal_legion_task(handoff_to_mpi_task, void) {
  @ingroup legion-execution
  */
 
-__flecsi_internal_legion_task(wait_on_mpi_task, void) {
+flecsi_internal_legion_task(wait_on_mpi_task, void) {
   context_t::instance().wait_on_mpi();
 } // wait_on_mpi_task
 
@@ -214,7 +214,7 @@ __flecsi_internal_legion_task(wait_on_mpi_task, void) {
  @ingroup legion-execution
 */
 
-__flecsi_internal_legion_task(unset_call_mpi_task, void) {
+flecsi_internal_legion_task(unset_call_mpi_task, void) {
   context_t::instance().set_mpi_state(false);
 } // unset_call_mpi_task
 
@@ -224,7 +224,7 @@ __flecsi_internal_legion_task(unset_call_mpi_task, void) {
  @ingroup legion-execution
  */
 
-__flecsi_internal_legion_task(owner_pos_compaction_task, void) {
+flecsi_internal_legion_task(owner_pos_compaction_task, void) {
   const int my_color = task->index_point.point_data[0];
 
   {
@@ -315,7 +315,7 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
  @ingroup legion-execution
  */
 
-__flecsi_internal_legion_task(ghost_copy_task, void) {
+flecsi_internal_legion_task(ghost_copy_task, void) {
   using offset_t = data::sparse_data_offset_t;
 
   const int my_color = runtime->find_local_MPI_rank();
@@ -502,7 +502,7 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
  @ingroup legion-execution
  */
 
-__flecsi_internal_legion_task(owners_subregions_task, subrect_map) {
+flecsi_internal_legion_task(owners_subregions_task, subrect_map) {
   const int my_color = runtime->find_local_MPI_rank();
   // clog(error) << "rank " << my_color << " owners_subregions_task" <<
   // std::endl;
@@ -564,7 +564,7 @@ __flecsi_internal_legion_task(owners_subregions_task, subrect_map) {
   return lid_to_subrect_map;
 } // owners_subregions
 
-#undef __flecsi_internal_legion_task
+#undef flecsi_internal_legion_task
 
 /*!
   FIXME DEOCUMENTATION

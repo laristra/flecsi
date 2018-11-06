@@ -25,7 +25,7 @@
 namespace flecsi {
 namespace execution {
 
-struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
+struct finalize_handles_t : public utils::tuple_walker_u<finalize_handles_t>
 {
   /*!
   Nothing needs to be done to finalize a dense data handle.
@@ -38,7 +38,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   >
   void
   handle(
-    dense_data_handle__<
+    dense_data_handle_u<
       T,
       EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS,
@@ -60,9 +60,9 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   {
     auto& h = m.h_;
 
-    using offset_t = typename mutator_handle__<T>::offset_t;
-    using entry_value_t = typename mutator_handle__<T>::entry_value_t;
-    using commit_info_t = typename mutator_handle__<T>::commit_info_t;
+    using offset_t = typename mutator_handle_u<T>::offset_t;
+    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
+    using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
 
     auto &context = context_t::instance();
     const int my_color = context.color();
@@ -144,7 +144,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
       for (auto peer : shared.shared) {
         MPI_Isend(&send_count_buf[i],
                   1,
-                  flecsi::coloring::mpi_typetraits__<uint32_t>::type(),
+                  flecsi::coloring::mpi_typetraits_u<uint32_t>::type(),
                   peer, 99, MPI_COMM_WORLD, &requests[i]);
         i++;
       }
@@ -156,7 +156,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
       MPI_Status status;
       MPI_Irecv(&recv_count_buf[i],
                 1,
-                flecsi::coloring::mpi_typetraits__<uint32_t>::type(),
+                flecsi::coloring::mpi_typetraits_u<uint32_t>::type(),
                 ghost.rank, 99, MPI_COMM_WORLD, &recv_requests[i]);
       i++;
     }
@@ -185,7 +185,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   typename std::enable_if_t<std::is_base_of<topology::set_topology_base_t, T>
     ::value>
   handle(
-    data_client_handle__<T, PERMISSIONS> & h
+    data_client_handle_u<T, PERMISSIONS> & h
   )
   {
     auto& context_ = context_t::instance();
@@ -230,7 +230,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
   typename std::enable_if_t<std::is_base_of<topology::mesh_topology_base_t, T>
     ::value>
   handle(
-    data_client_handle__<T, PERMISSIONS> & h
+    data_client_handle_u<T, PERMISSIONS> & h
   )
   {
     if(PERMISSIONS == wo || PERMISSIONS == rw){

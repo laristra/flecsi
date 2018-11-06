@@ -34,7 +34,7 @@ template<
   typename R,
   launch_type_t launch = launch_type_t::single
 >
-struct mpi_future__
+struct mpi_future_u
 {
   using result_t = R;
 
@@ -65,25 +65,25 @@ struct mpi_future__
 
   result_t result_;
 
-}; // struct mpi_future__
+}; // struct mpi_future_u
 
 /*!
  FIXME documentation
  */
 template<launch_type_t launch>
-struct mpi_future__<void, launch>
+struct mpi_future_u<void, launch>
 {
   /*!
    FIXME documentation
    */
   void wait() {}
 
-}; // struct mpi_future__
+}; // struct mpi_future_u
 
 template<
     typename RETURN,
     launch_type_t launch>
-using flecsi_future = mpi_future__<
+using flecsi_future = mpi_future_u<
     RETURN,
     launch>;
 

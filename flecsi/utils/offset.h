@@ -24,14 +24,14 @@ namespace flecsi {
 namespace utils {
 
 /**
- * @brief offset__ represents an offset range (a start index plus a count of
+ * @brief offset_u represents an offset range (a start index plus a count of
  * elements) in a single uint64_t. The lower COUNT_BITS bits are used for the
  * count and the remaining bits are used for the start index.
  *
  * @tparam COUNT_BITS Number of bits used for the count
  */
 template<size_t COUNT_BITS>
-class offset__ {
+class offset_u {
 public:
   static_assert(COUNT_BITS <= 32, "COUNT_BITS max exceeded");
 
@@ -49,7 +49,7 @@ public:
    */
   static constexpr uint64_t start_max = (1ul << (64 - COUNT_BITS)) - 1;
 
-  offset__() : o_(0ul) {}
+  offset_u() : o_(0ul) {}
 
   /**
    * @brief Construct a new offset range from a start index and a count.
@@ -57,7 +57,7 @@ public:
    * @param start Start index of the offset range
    * @param count The count (number) of elements
    */
-  offset__(uint64_t start, uint32_t count) : o_(start << COUNT_BITS | count) {
+  offset_u(uint64_t start, uint32_t count) : o_(start << COUNT_BITS | count) {
     assert(count <= count_mask);
     assert(start <= start_max);
   }
@@ -71,8 +71,8 @@ public:
    *              the previous offset range.
    * @param count The count (number) of elements
    */
-  offset__(const offset__ & prev, uint32_t count)
-      : offset__(prev.end(), count) {}
+  offset_u(const offset_u & prev, uint32_t count)
+      : offset_u(prev.end(), count) {}
 
   /**
    * @brief Get the start index of the offset range.
