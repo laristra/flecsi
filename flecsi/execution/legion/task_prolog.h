@@ -168,8 +168,10 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       Legion::FieldID fid;
       for ( const field_info_t & fi : context_.registered_fields()){
         if (fi.index_space == idx_space)
-          if(!utils::hash::is_internal(fi.key))
+          if(!utils::hash::is_internal(fi.key)){
               fid = fi.fid;
+              break;
+          }
       }
 
       sparse_pos_launcher.add_region_requirement(

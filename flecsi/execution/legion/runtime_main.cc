@@ -140,7 +140,6 @@ int main(int argc, char ** argv) {
     // Execute the flecsi runtime.
     result = flecsi::execution::context_t::instance().initialize(argc, argv);
 
-    //Legion::Runtime::wait_for_shutdown(); 
   } // if
 
 #if defined(FLECSI_ENABLE_MPI)
