@@ -631,8 +631,8 @@ __flecsi_internal_legion_task(sparse_set_owner_position_task, void){
 
   Legion::FieldID fid = *(task->regions[1].privilege_fields.begin());
 
-  const Legion::FieldAccessor<READ_ONLY, char, 2,
-      Legion::coord_t, Realm::AffineAccessor<char, 2, Legion::coord_t> >
+  const Legion::FieldAccessor<READ_ONLY, offset_t, 2,
+      Legion::coord_t, Realm::AffineAccessor<offset_t, 2, Legion::coord_t> >
       owner_offset_acc(regions[1], fid, sizeof(offset_t));
 
   Legion::FieldAccessor<READ_WRITE, LegionRuntime::Arrays::Point<2>, 2,
