@@ -100,6 +100,7 @@ Alternatively, you can run *ccmake* in place of *cmake*, and use
 Finally:
 ```
 $ make
+$ make install
 ```
 builds and installs the FleCSI third-party libraries in the prefix
 that you specified.
