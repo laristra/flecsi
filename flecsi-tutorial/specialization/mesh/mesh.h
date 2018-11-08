@@ -34,7 +34,7 @@ namespace tutorial {
 //----------------------------------------------------------------------------//
 
 struct specialization_mesh_t :
-  public flecsi::topology::mesh_topology__<specialization_mesh_policy_t>
+  public flecsi::topology::mesh_topology_u<specialization_mesh_policy_t>
 {
 
   void print(const char * string) {
@@ -51,7 +51,7 @@ struct specialization_mesh_t :
 
 #if 0
   template< typename E, size_t M>
-  auto cells(flecsi::topology::domain_entity__<M, E> & e) {
+  auto cells(flecsi::topology::domain_entity_u<M, E> & e) {
     return entities<2, 0>(e);
   } // cells
 #endif
@@ -61,7 +61,7 @@ struct specialization_mesh_t :
   } // vertices
 
   template< typename E, size_t M>
-  auto vertices(flecsi::topology::domain_entity__<M, E> & e) {
+  auto vertices(flecsi::topology::domain_entity_u<M, E> & e) {
     return entities<0, 0>(e);
   } // vertices
 
@@ -75,7 +75,7 @@ using mesh_t = specialization_mesh_t;
 
 template<
   size_t PRIVILEGES>
-using mesh = data_client_handle__<mesh_t, PRIVILEGES>;
+using mesh = data_client_handle_u<mesh_t, PRIVILEGES>;
 
 template<
   size_t SHARED_PRIVILEGES>

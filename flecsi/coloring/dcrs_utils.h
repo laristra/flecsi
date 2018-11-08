@@ -45,7 +45,7 @@ clog_register_tag(dcrs_utils);
 
 template<size_t DIMENSION, size_t MESH_DIMENSION>
 inline std::set<size_t>
-naive_coloring(topology::mesh_definition__<MESH_DIMENSION> & md) {
+naive_coloring(topology::mesh_definition_u<MESH_DIMENSION> & md) {
   std::set<size_t> indices;
 
   {
@@ -71,13 +71,13 @@ naive_coloring(topology::mesh_definition__<MESH_DIMENSION> & md) {
     size_t init_indices = quot + ((rank >= (size - rem)) ? 1 : 0);
 
     size_t offset(0);
-    for (size_t r(0); r < rank; ++r) {
+    for(size_t r(0); r < rank; ++r) {
       offset += quot + ((r >= (size - rem)) ? 1 : 0);
     } // for
 
     clog_one(info) << "offset: " << offset << std::endl;
 
-    for (size_t i(0); i < init_indices; ++i) {
+    for(size_t i(0); i < init_indices; ++i) {
       indices.insert(offset + i);
       clog_one(info) << "inserting: " << offset + i << std::endl;
     } // for
@@ -102,13 +102,12 @@ naive_coloring(topology::mesh_definition__<MESH_DIMENSION> & md) {
 
  @ingroup coloring
  */
-template<
-    std::size_t DIMENSION,
-    std::size_t FROM_DIMENSION = DIMENSION,
-    std::size_t TO_DIMENSION = DIMENSION,
-    std::size_t THRU_DIMENSION = DIMENSION - 1>
+template<std::size_t DIMENSION,
+  std::size_t FROM_DIMENSION = DIMENSION,
+  std::size_t TO_DIMENSION = DIMENSION,
+  std::size_t THRU_DIMENSION = DIMENSION - 1>
 inline dcrs_t
-make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
+make_dcrs(const typename topology::mesh_definition_u<DIMENSION> & md) {
   int size;
   int rank;
 
@@ -131,7 +130,7 @@ make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
   dcrs.distribution.push_back(0);
 
   // Set the distributions for each rank. This happens on all ranks.
-  for (size_t r(0); r < size; ++r) {
+  for(size_t r(0); r < size; ++r) {
     const size_t indices = quot + ((r >= (size - rem)) ? 1 : 0);
     dcrs.distribution.push_back(dcrs.distribution[r] + indices);
   } // for
@@ -154,24 +153,24 @@ make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
   std::map<cellid, std::vector<cellid>> cell2cells;
 
   // build global cell to cell through # of shared vertices connectivity
-  for (size_t cell(0); cell < md.num_entities(FROM_DIMENSION); ++cell) {
+  for(size_t cell(0); cell < md.num_entities(FROM_DIMENSION); ++cell) {
     std::map<cellid, size_t> cell_counts;
 
-    for (auto vertex : md.entities(FROM_DIMENSION, 0, cell)) {
+    for(auto vertex : md.entities(FROM_DIMENSION, 0, cell)) {
       // build vertex to cell connectivity, O(n_cells * n_polygon_sides)
       // of insert().
       vertex2cells[vertex].push_back(cell);
 
       // Count the number of times this cell shares a common vertex with
       // some other cell. O(n_cells * n_polygon_sides * vertex to cells degrees)
-      for (auto other : vertex2cells[vertex]) {
-        if (other != cell)
+      for(auto other : vertex2cells[vertex]) {
+        if(other != cell)
           cell_counts[other] += 1;
       }
     }
 
-    for (auto count : cell_counts) {
-      if (count.second > THRU_DIMENSION) {
+    for(auto count : cell_counts) {
+      if(count.second > THRU_DIMENSION) {
         // append cell to cell through "dimension" connectivity, we need to
         // add both directions
         cell2cells[cell].push_back(count.first);
@@ -181,10 +180,10 @@ make_dcrs(const typename topology::mesh_definition__<DIMENSION> & md) {
   }
 
   // turn subset of cell 2 cell connectivity to dcrs
-  for (size_t i(0); i < init_indices; ++i) {
+  for(size_t i(0); i < init_indices; ++i) {
     auto cell = dcrs.distribution[rank] + i;
 
-    for (auto n : cell2cells[cell]) {
+    for(auto n : cell2cells[cell]) {
       dcrs.indices.push_back(n);
     } // for
 

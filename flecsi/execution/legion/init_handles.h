@@ -30,14 +30,15 @@
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
-#include <flecsi/data/sparse_accessor.h>
-#include <flecsi/data/ragged_accessor.h>
-#include <flecsi/data/sparse_mutator.h>
-#include <flecsi/data/ragged_mutator.h>
 #include <flecsi/data/global_accessor.h>
+#include <flecsi/data/ragged_accessor.h>
+#include <flecsi/data/ragged_mutator.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/sparse_mutator.h>
 #include <flecsi/topology/mesh_topology.h>
 #include <flecsi/topology/mesh_types.h>
 #include <flecsi/topology/set_topology.h>
+
 #include <flecsi/utils/tuple_walker.h>
 
 namespace flecsi {
@@ -51,7 +52,7 @@ namespace execution {
   @ingroup execution
  */
 
-struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
+struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
   /*!
     Construct an init_handles_t instance.
@@ -60,24 +61,21 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     @param context The Legion task runtime context.
    */
 
-  init_handles_t(
-      Legion::Runtime * runtime,
-      Legion::Context & context,
-      const std::vector<Legion::PhysicalRegion> & regions,
-      const std::vector<Legion::Future> & futures)
-      : runtime(runtime), context(context), regions(regions), futures(futures),
-        region(0), future_id(0) {} // init_handles
+  init_handles_t(Legion::Runtime * runtime,
+    Legion::Context & context,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    const std::vector<Legion::Future> & futures)
+    : runtime(runtime), context(context), regions(regions), futures(futures),
+      region(0), future_id(0) {} // init_handles
 
-  template<
-      typename T,
-      size_t EXCLUSIVE_PERMISSIONS,
-      size_t SHARED_PERMISSIONS,
-      size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor__<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(dense_accessor_u<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
     constexpr size_t num_regions = 3;
@@ -96,15 +94,16 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
                             GHOST_PERMISSIONS};
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
-      if (permissions[r] == size_t(reserved)) {
+    for(size_t r = 0; r < num_regions; ++r) {
+      if(permissions[r] == size_t(reserved)) {
         data[r] = nullptr;
         sizes[r] = 0;
         prs[r] = Legion::PhysicalRegion();
 
         clog(error) << "reserved permissions mode used on region " << r
                     << std::endl;
-      } else {
+      }
+      else {
         prs[r] = regions[region + r];
         Legion::LogicalRegion lr = prs[r].get_logical_region();
         Legion::IndexSpace is = lr.get_index_space();
@@ -123,7 +122,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       } // if
     } // for
 
-      // region += num_regions;
+    // region += num_regions;
 
 #ifndef MAPPER_COMPACTION
     // Create the concatenated buffer E+S+G
@@ -134,13 +133,13 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     // aliases the combined buffer for its respective region.
     size_t pos{0};
 
-    for (size_t r{0}; r < num_regions; ++r) {
-      switch (r) {
+    for(size_t r{0}; r < num_regions; ++r) {
+      switch(r) {
         case 0: // Exclusive
           h.exclusive_size = sizes[r];
           h.exclusive_pr = prs[r];
           h.exclusive_data =
-              h.exclusive_size == 0 ? nullptr : h.combined_data + pos;
+            h.exclusive_size == 0 ? nullptr : h.combined_data + pos;
           h.exclusive_buf = data[r];
           h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
           break;
@@ -173,7 +172,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     auto & gis_to_cis = context_.gis_to_cis_map(h.index_space);
 
     size_t indx = 0;
-    for (auto & citr : gis_to_cis) {
+    for(auto & citr : gis_to_cis) {
       size_t c = citr.second;
       assert(c < h.combined_size);
       h.combined_data_sort[indx] = h.combined_data[c];
@@ -203,8 +202,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     } // scope
 
     size_t pos{0};
-    for (size_t r{0}; r < num_regions; ++r) {
-      switch (r) {
+    for(size_t r{0}; r < num_regions; ++r) {
+      switch(r) {
         case 0: // Exclusive
           h.exclusive_size = sizes[r];
           h.exclusive_pr = prs[r];
@@ -239,7 +238,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
   } // handle
 
   template<typename T, size_t PERMISSIONS>
-  void handle(global_accessor__<T, PERMISSIONS> & a) {
+  void handle(global_accessor_u<T, PERMISSIONS> & a) {
     auto & h = a.handle;
 
     constexpr size_t num_regions = 1;
@@ -255,15 +254,16 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t permissions[] = {PERMISSIONS};
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
-      if (permissions[r] == size_t(reserved)) {
+    for(size_t r = 0; r < num_regions; ++r) {
+      if(permissions[r] == size_t(reserved)) {
         data[r] = nullptr;
         sizes[r] = 0;
         prs[r] = Legion::PhysicalRegion();
 
         clog(error) << "reserved permissions mode used on region " << r
                     << std::endl;
-      } else {
+      }
+      else {
         prs[r] = regions[region + r];
         Legion::LogicalRegion lr = prs[r].get_logical_region();
         Legion::IndexSpace is = lr.get_index_space();
@@ -290,7 +290,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
   } // global_handle
 
   template<typename T, size_t PERMISSIONS>
-  void handle(color_accessor__<T, PERMISSIONS> & a) {
+  void handle(color_accessor_u<T, PERMISSIONS> & a) {
     auto & h = a.handle;
 
     constexpr size_t num_regions = 1;
@@ -306,15 +306,16 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t permissions[] = {PERMISSIONS};
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
-      if (permissions[r] == size_t(reserved)) {
+    for(size_t r = 0; r < num_regions; ++r) {
+      if(permissions[r] == size_t(reserved)) {
         data[r] = nullptr;
         sizes[r] = 0;
         prs[r] = Legion::PhysicalRegion();
 
         clog(error) << "reserved permissions mode used on region " << r
                     << std::endl;
-      } else {
+      }
+      else {
         prs[r] = regions[region + r];
         Legion::LogicalRegion lr = prs[r].get_logical_region();
         Legion::IndexSpace is = lr.get_index_space();
@@ -344,15 +345,15 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
    Initialize arguments for future handle
    */
   template<typename T, launch_type_t launch>
-  void handle(legion_future__<T, launch> & h) {
+  void handle(legion_future_u<T, launch> & h) {
     h.data_ = Legion::Future(futures[future_id]).get_result<T>();
     future_id++;
   } // handle
 
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
-      std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
+    std::is_base_of<topology::mesh_topology_base_t, T>::value>
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
     auto & context_ = context_t::instance();
 
     auto storage = h.set_storage(new typename T::storage_t);
@@ -369,7 +370,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     LegionRuntime::Arrays::Rect<2> sr;
     LegionRuntime::Accessor::ByteOffset bo[2]; 
 
-    for (size_t i{0}; i < h.num_handle_entities; ++i) {
+    for(size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
       region_map[ent.index_space] = region;
@@ -384,14 +385,14 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       dr = d.get_rect<2>();
 
       auto ents_raw =
-          static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
+        static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
       auto ents = reinterpret_cast<topology::mesh_entity_base_ *>(ents_raw);
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
 
       auto ac2 = regions[region]
-                     .get_field_accessor(ent.id_fid)
-                     .template typeify<utils::id_t>();
+                   .get_field_accessor(ent.id_fid)
+                   .template typeify<utils::id_t>();
       auto ids = ac2.template raw_rect_ptr<2>(dr, sr, bo);
 
       //calculating exclusive, shared and ghost sizes fro the entity
@@ -411,7 +412,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     // Mapping adjacency data from Legion and initializing mesh storage.
     //------------------------------------------------------------------------//
 
-    for (size_t i{0}; i < h.num_handle_adjacencies; ++i) {
+    for(size_t i{0}; i < h.num_handle_adjacencies; ++i) {
       data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
 
       Legion::PhysicalRegion pr = regions[region_map[adj.from_index_space]];
@@ -419,7 +420,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       Legion::IndexSpace is = lr.get_index_space();
 
       auto ac = pr.get_field_accessor(adj.offset_fid)
-                    .template typeify<utils::offset_t>();
+                  .template typeify<utils::offset_t>();
 
       Legion::Domain d = runtime->get_index_space_domain(context, is);
 
@@ -438,8 +439,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       is = lr.get_index_space();
 
       auto ac3 = regions[region]
-                     .get_field_accessor(adj.index_fid)
-                     .template typeify<utils::id_t>();
+                   .get_field_accessor(adj.index_fid)
+                   .template typeify<utils::id_t>();
 
       d = runtime->get_index_space_domain(context, is);
 
@@ -451,14 +452,13 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
       adj.num_indices = num_indices;
 
-      storage->init_connectivity(
-          adj.from_domain, adj.to_domain, adj.from_dim, adj.to_dim, offsets,
-          num_offsets, indices, num_indices, _read);
+      storage->init_connectivity(adj.from_domain, adj.to_domain, adj.from_dim,
+        adj.to_dim, offsets, num_offsets, indices, num_indices, _read);
 
       ++region;
     } // for
 
-    for (size_t i{0}; i < h.num_index_subspaces; ++i) {
+    for(size_t i{0}; i < h.num_index_subspaces; ++i) {
       data_client_handle_index_subspace_t & iss = h.handle_index_subspaces[i];
 
       Legion::PhysicalRegion pr = regions[region];
@@ -466,8 +466,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       Legion::IndexSpace is = lr.get_index_space();
 
       auto ac = regions[region]
-                    .get_field_accessor(iss.index_fid)
-                    .template typeify<utils::id_t>();
+                  .get_field_accessor(iss.index_fid)
+                  .template typeify<utils::id_t>();
 
       Legion::Domain d = runtime->get_index_space_domain(context, is);
 
@@ -477,22 +477,21 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
-      storage->init_index_subspace(
-          iss.index_space, iss.index_subspace, iss.domain, iss.dim, ids,
-          num_indices, _read);
+      storage->init_index_subspace(iss.index_space, iss.index_subspace,
+        iss.domain, iss.dim, ids, num_indices, _read);
 
       ++region;
     }
 
-    if (!_read) {
+    if(!_read) {
       h.initialize_storage();
     }
   }
 
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
-      std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
+    std::is_base_of<topology::set_topology_base_t, T>::value>
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
     auto & context_ = context_t::instance();
 
     auto storage = h.set_storage(new typename T::storage_t);
@@ -503,7 +502,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
 
     bool _read{PERMISSIONS == ro || PERMISSIONS == rw};
 
-    for (size_t i{0}; i < h.num_handle_entities; ++i) {
+    for(size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
       Legion::PhysicalRegion pr = regions[region];
@@ -517,7 +516,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       LegionRuntime::Accessor::ByteOffset bo[1];
 
       auto ents_raw =
-          static_cast<uint8_t *>(ac.template raw_rect_ptr<1>(r, sr, bo));
+        static_cast<uint8_t *>(ac.template raw_rect_ptr<1>(r, sr, bo));
       auto ents = reinterpret_cast<topology::set_entity_t *>(ents_raw);
 
       size_t num_ents = sr.hi[0] - sr.lo[0] + 1;
@@ -533,35 +532,27 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
   //-----------------------------------------------------------------------//
   template<typename T>
   static typename std::enable_if_t<
-      !std::is_base_of<dense_accessor_base_t, T>::value &&
-      !std::is_base_of<data_client_handle_base_t, T>::value>
+    !std::is_base_of<dense_accessor_base_t, T>::value &&
+    !std::is_base_of<data_client_handle_base_t, T>::value>
   handle(T &) {} // handle
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    sparse_accessor <
-    T,
+    size_t GHOST_PERMISSIONS>
+  void handle(sparse_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS
-    > &a
-  )
-  {
+    GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
     constexpr size_t num_regions = 3;
 
-    using entry_value_t = data::sparse_entry_value__<T>;
+    using entry_value_t = data::sparse_entry_value_u<T>;
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 
-    sparse_field_data_t* md;
+    sparse_field_data_t * md;
 
     {
       Legion::PhysicalRegion pr = regions[region];
@@ -569,8 +560,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       Legion::LogicalRegion lr = pr.get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = pr.get_field_accessor(h.fid).
-        template typeify<sparse_field_data_t>();
+      auto ac =
+        pr.get_field_accessor(h.fid).template typeify<sparse_field_data_t>();
 
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
 
@@ -598,12 +589,12 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t offsets_sizes[num_regions];
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
+    for(size_t r = 0; r < num_regions; ++r) {
       offsets_prs[r] = regions[region + r];
       Legion::LogicalRegion lr = offsets_prs[r].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = 
+      auto ac =
         offsets_prs[r].get_field_accessor(h.fid).template typeify<offset_t>();
 
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
@@ -616,18 +607,17 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       h.offsets_size += offsets_sizes[r];
     } // for
 
-
     h.offsets = new offset_t[h.offsets_size];
 
     size_t pos = 0;
 
     assert( md->initialized);
 
-    for (size_t r{0}; r < num_regions; ++r) {
-      std::memcpy(h.offsets + pos, offsets_data[r],
-                  offsets_sizes[r] * sizeof(offset_t));
+    for(size_t r{0}; r < num_regions; ++r) {
+      std::memcpy(
+        h.offsets + pos, offsets_data[r], offsets_sizes[r] * sizeof(offset_t));
       pos += offsets_sizes[r];
-    }  
+    }
 
     region += num_regions;
 
@@ -636,31 +626,33 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t entries_sizes[num_regions];
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
+    for(size_t r = 0; r < num_regions; ++r) {
       entries_prs[r] = regions[region + r];
       Legion::LogicalRegion lr = entries_prs[r].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = entries_prs[r].get_field_accessor(h.fid).
-        template typeify<entry_value_t>();
+      auto ac = entries_prs[r]
+                  .get_field_accessor(h.fid)
+                  .template typeify<entry_value_t>();
 
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
 
       LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
-      h.entries_data[r] = entries_data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      h.entries_data[r] = entries_data[r] =
+        ac.template raw_rect_ptr<2>(dr, sr, bo);
       entries_sizes[r] = sr.hi[1] - sr.lo[1] + 1;
       h.entries_size += entries_sizes[r];
     } // for
 
-    entry_value_t* entries = new entry_value_t[h.entries_size];
+    entry_value_t * entries = new entry_value_t[h.entries_size];
 
     pos = 0;
 
-    for (size_t r{0}; r < num_regions; ++r) {
+    for(size_t r{0}; r < num_regions; ++r) {
       std::memcpy(entries + pos, entries_data[r],
-                  entries_sizes[r] * sizeof(entry_value_t));
+        entries_sizes[r] * sizeof(entry_value_t));
       pos += entries_sizes[r];
     }
 
@@ -669,45 +661,29 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     region += num_regions;
   }
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    ragged_accessor<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    > & a
-  )
-  {
-    handle(reinterpret_cast<sparse_accessor<
-      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+    size_t GHOST_PERMISSIONS>
+  void handle(ragged_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
   } // handle
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    sparse_mutator<
-    T
-    > &m
-  )
-  {
+  template<typename T>
+  void handle(sparse_mutator<T> & m) {
     auto & h = m.h_;
 
     constexpr size_t num_regions = 3;
 
-    using entry_value_t = data::sparse_entry_value__<T>;
+    using entry_value_t = data::sparse_entry_value_u<T>;
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 
-    sparse_field_data_t* md;
+    sparse_field_data_t * md;
 
     {
       Legion::PhysicalRegion pr = regions[region];
@@ -715,8 +691,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       Legion::LogicalRegion lr = pr.get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = pr.get_field_accessor(h.fid).
-        template typeify<sparse_field_data_t>();
+      auto ac =
+        pr.get_field_accessor(h.fid).template typeify<sparse_field_data_t>();
 
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
 
@@ -745,12 +721,12 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t offsets_sizes[num_regions];
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
+    for(size_t r = 0; r < num_regions; ++r) {
       offsets_prs[r] = regions[region + r];
       Legion::LogicalRegion lr = offsets_prs[r].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = 
+      auto ac =
         offsets_prs[r].get_field_accessor(h.fid).template typeify<offset_t>();
 
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
@@ -758,27 +734,27 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
       LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
-      h.offsets_data[r] = offsets_data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      h.offsets_data[r] = offsets_data[r] =
+        ac.template raw_rect_ptr<2>(dr, sr, bo);
       offsets_sizes[r] = sr.hi[1] - sr.lo[1] + 1;
       h.offsets_size += offsets_sizes[r];
     } // for
-
 
     h.offsets = new offset_t[h.offsets_size];
 
     size_t pos = 0;
 
-    if(md->initialized){
-      for (size_t r{0}; r < num_regions; ++r) {
+    if(md->initialized) {
+      for(size_t r{0}; r < num_regions; ++r) {
         std::memcpy(h.offsets + pos, offsets_data[r],
-                    offsets_sizes[r] * sizeof(offset_t));
+          offsets_sizes[r] * sizeof(offset_t));
         pos += offsets_sizes[r];
-      }  
+      }
     }
-    else{
+    else {
       size_t n = md->num_shared + md->num_ghost;
 
-      for(size_t i = 0; i < n; ++i){
+      for(size_t i = 0; i < n; ++i) {
         h.offsets[md->num_exclusive + i].set_offset(
           h.reserve + i * md->max_entries_per_index);
       }
@@ -791,53 +767,47 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t> {
     size_t entries_sizes[num_regions];
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for (size_t r = 0; r < num_regions; ++r) {
+    for(size_t r = 0; r < num_regions; ++r) {
       entries_prs[r] = regions[region + r];
       Legion::LogicalRegion lr = entries_prs[r].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = entries_prs[r].get_field_accessor(h.fid).
-        template typeify<entry_value_t>();
+      auto ac = entries_prs[r]
+                  .get_field_accessor(h.fid)
+                  .template typeify<entry_value_t>();
 
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
 
       LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
-      h.entries_data[r] = entries_data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      h.entries_data[r] = entries_data[r] =
+        ac.template raw_rect_ptr<2>(dr, sr, bo);
       entries_sizes[r] = sr.hi[1] - sr.lo[1] + 1;
       h.entries_size += entries_sizes[r];
     } // for
 
-    entry_value_t* entries = new entry_value_t[h.entries_size];
+    entry_value_t * entries = new entry_value_t[h.entries_size];
 
     std::memcpy(entries, entries_data[0],
-        md->num_exclusive_filled * sizeof(entry_value_t));
+      md->num_exclusive_filled * sizeof(entry_value_t));
 
     pos = entries_sizes[0];
 
-    for (size_t r{1}; r < num_regions; ++r) {
+    for(size_t r{1}; r < num_regions; ++r) {
       std::memcpy(entries + pos, entries_data[r],
-                  entries_sizes[r] * sizeof(entry_value_t));
+        entries_sizes[r] * sizeof(entry_value_t));
       pos += entries_sizes[r];
     }
 
-    h.entries = reinterpret_cast<uint8_t*>(entries);
+    h.entries = reinterpret_cast<uint8_t *>(entries);
 
     region += num_regions;
   }
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    ragged_mutator<
-      T
-    > & m
-  )
-  {
-    handle(reinterpret_cast<sparse_mutator<T>&>(m));
+  template<typename T>
+  void handle(ragged_mutator<T> & m) {
+    handle(reinterpret_cast<sparse_mutator<T> &>(m));
   }
 
   Legion::Runtime * runtime;

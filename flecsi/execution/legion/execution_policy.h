@@ -28,17 +28,19 @@
 
 #include <legion.h>
 
+#include <flecsi/utils/const_string.h>
+
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/context_policy.h>
 #include <flecsi/execution/legion/future.h>
 #include <flecsi/execution/legion/init_args.h>
+#include <flecsi/execution/legion/reduction_wrapper.h>
 #include <flecsi/execution/legion/runtime_state.h>
 #include <flecsi/data/data.h>
 #include <flecsi/execution/legion/task_epilog.h>
 #include <flecsi/execution/legion/task_prolog.h>
 #include <flecsi/execution/legion/task_wrapper.h>
-#include <flecsi/utils/const_string.h>
 
 namespace flecsi {
 namespace execution {
@@ -55,14 +57,15 @@ namespace execution {
  */
 
 struct legion_execution_policy_t {
+
   /*!
-    The future__ type may be used for explicit synchronization of tasks.
+    The future_u type may be used for explicit synchronization of tasks.
 
     @tparam RETURN The return type of the task.
    */
 
-  template <typename RETURN, launch_type_t launch>
-  using future__ = legion_future__<RETURN, launch>;
+  template<typename RETURN, launch_type_t launch>
+  using future_u = legion_future_u<RETURN, launch>;
 
   /*!
     The runtime_state_t type identifies a public type for the high-level
@@ -89,26 +92,30 @@ struct legion_execution_policy_t {
     accessed via legion_context_policy_t::task_id using a valid
     task hash.
 
-    @tparam KEY    A hash key identifying the task.
-    @tparam RETURN The return type of the pure Legion task.
-    @tparam TASK   The function pointer template type of the task.
+    @tparam TASK     A hash key identifying the task.
+    @tparam RETURN   The return type of the pure Legion task.
+    @tparam DELEGATE The function pointer template type of the task.
 
     @param name The string name for the task. This can be set to any
                 valid std::string value.
    */
 
-  template <size_t KEY, typename RETURN,
-            RETURN (*TASK)(const Legion::Task *,
-                           const std::vector<Legion::PhysicalRegion> &,
-                           Legion::Context, Legion::Runtime *)>
-  static bool register_legion_task(processor_type_t processor, launch_t launch,
-                                   std::string name) {
-    clog(info) << "Registering legion task " << KEY << " " << name << std::endl;
+  template<size_t TASK,
+    typename RETURN,
+    RETURN (*DELEGATE)(const Legion::Task *,
+      const std::vector<Legion::PhysicalRegion> &,
+      Legion::Context,
+      Legion::Runtime *)>
+  static bool register_legion_task(processor_type_t processor,
+    launch_t launch,
+    std::string name) {
+    clog(info) << "Registering legion task " << TASK << " " << name
+               << std::endl;
 
-    using wrapper_t = pure_task_wrapper__<RETURN, TASK>;
+    using wrapper_t = pure_task_wrapper_u<RETURN, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
-      KEY, processor, launch, name, wrapper_t::registration_callback);
+      TASK, processor, launch, name, wrapper_t::registration_callback);
 
     clog_assert(success, "callback registration failed for " << name);
 
@@ -117,21 +124,20 @@ struct legion_execution_policy_t {
 
   /*!
     Legion backend task registration. For documentation on this
-    method, please see task__::register_task.
+    method, please see task_u::register_task.
    */
 
-  template<
-      size_t KEY,
-      typename RETURN,
-      typename ARG_TUPLE,
-      RETURN (*DELEGATE)(ARG_TUPLE)>
+  template<size_t TASK,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*DELEGATE)(ARG_TUPLE)>
   static bool
   register_task(processor_type_t processor, launch_t launch, std::string name) {
 
-    using wrapper_t = task_wrapper__<KEY, RETURN, ARG_TUPLE, DELEGATE>;
+    using wrapper_t = task_wrapper_u<TASK, RETURN, ARG_TUPLE, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
-      KEY, processor, launch, name, wrapper_t::registration_callback);
+      TASK, processor, launch, name, wrapper_t::registration_callback);
 
     clog_assert(success, "callback registration failed for " << name);
 
@@ -145,7 +151,7 @@ struct legion_execution_policy_t {
 
   template <launch_type_t LAUNCH, Legion::ReductionOpID REDUCTION_ID,
      size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
-  struct execute_task__ {
+  struct execute_task_u {
     static void execute(ARGS &&... args) {
       clog_fatal("invalid launch type" << std::endl);
     }
@@ -156,7 +162,7 @@ struct legion_execution_policy_t {
      REDUCTIONID!=0)
    */
   template <size_t KEY, Legion::ReductionOpID REDUCTION_ID, typename RETURN,	    typename ARG_TUPLE, typename... ARGS>
-  struct execute_task__<launch_type_t::index, REDUCTION_ID,  KEY, RETURN,
+  struct execute_task_u<launch_type_t::index, REDUCTION_ID,  KEY, RETURN,
 	ARG_TUPLE, ARGS...> {
     static decltype(auto) execute(ARG_TUPLE task_args) {
       using namespace Legion;
@@ -227,7 +233,7 @@ struct legion_execution_policy_t {
      (REDUCTIONID==0)
    */
   template <size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
-  struct execute_task__<launch_type_t::index, 0,  KEY, RETURN, ARG_TUPLE,
+  struct execute_task_u<launch_type_t::index, 0,  KEY, RETURN, ARG_TUPLE,
                               ARGS...> {
     static decltype(auto) execute(ARG_TUPLE task_args) {
       using namespace Legion;
@@ -259,11 +265,8 @@ struct legion_execution_policy_t {
 //FIXME the check
 //        if (!(legion_context->is_inner_context())) {
 
-          ArgumentMap arg_map;
-          IndexLauncher launcher(
-              context_.task_id<KEY>(),
-              Legion::Domain::from_rect<1>(context_.all_processes()),
-              TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
+    // This will guard the entire method
+    clog_tag_guard(execution);
 
           for (auto &req : init_args.region_reqs) {
             launcher.add_region_requirement(req);
@@ -290,14 +293,16 @@ struct legion_execution_policy_t {
 	  legion_context,launcher);
         future.wait_all_results(true);
 
-          // Handoff to the MPI runtime.
-          context_.handoff_to_mpi(legion_context, legion_runtime);
+    // Execute a tuple walker that applies the task epilog operations
+    // on the mapped handles
+    task_epilog_t task_epilog(legion_runtime, legion_context);
+    task_epilog.walk(task_args);
 
-          // Wait for MPI to finish execution (synchronous).
-          context_.wait_on_mpi(legion_context, legion_runtime);
+    //------------------------------------------------------------------------//
+    // Single launch
+    //------------------------------------------------------------------------//
 
-          // Reset the calling state to false.
-          context_.unset_call_mpi(legion_context, legion_runtime);
+    if constexpr(LAUNCH == launch_type_t::single) {
 
           // Enqueue the epilog.
           task_epilog_t task_epilog(legion_runtime, legion_context);
@@ -349,6 +354,7 @@ struct legion_execution_policy_t {
           task_prolog.sparse = false;
           task_prolog.walk(task_args);
           task_prolog.launch_copies();
+          } // scope
 
           task_prolog_t task_prolog_sparse(
               legion_runtime, legion_context, launch_domain);
@@ -361,7 +367,8 @@ struct legion_execution_policy_t {
           auto future_map = legion_runtime->execute_index_space(
             legion_context, index_task_launcher);
 
-          // Enqueue the epilog.
+          // Execute a tuple walker that applies the task epilog operations
+          // on the mapped handles
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
 
@@ -377,7 +384,7 @@ struct legion_execution_policy_t {
    */
   template <Legion::ReductionOpID REDUCTION_ID, size_t KEY, typename RETURN,
     typename ARG_TUPLE, typename... ARGS>
-  struct execute_task__<launch_type_t::single, REDUCTION_ID,KEY, RETURN,
+  struct execute_task_u<launch_type_t::single, REDUCTION_ID,KEY, RETURN,
     ARG_TUPLE, ARGS...> {
     static decltype(auto) execute( ARG_TUPLE task_args) {
       using namespace Legion;
@@ -475,40 +482,62 @@ struct legion_execution_policy_t {
 	 size_t KEY, typename RETURN,  typename ARG_TUPLE, typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
 
-    ARG_TUPLE task_args_tmp = std::make_tuple(args...);
+            for(auto & future : init_args.futures) {
+              future->add_to_single_task_launcher(launcher);
+            } // for
 
-    return execute_task__<LAUNCH, REDUCTION_ID, KEY, RETURN, ARG_TUPLE,
+    return execute_task_u<LAUNCH, REDUCTION_ID, KEY, RETURN, ARG_TUPLE,
                                 ARGS...>::execute(task_args_tmp);
   } // execute_task
 
 
   //--------------------------------------------------------------------------//
   // Function interface.
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------//
 
   /*!
     Legion backend function registration. For documentation on this
-    method, please see function__::register_function.
+    method, please see function_u::register_function.
    */
 
-  template <size_t KEY, typename RETURN, typename ARG_TUPLE,
-            RETURN (*FUNCTION)(ARG_TUPLE)>
+  template<size_t FUNCTION,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*DELEGATE)(ARG_TUPLE)>
   static bool register_function() {
     return context_t::instance()
-        .template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
+      .template register_function<FUNCTION, RETURN, ARG_TUPLE, DELEGATE>();
   } // register_function
 
   /*!
     Legion backend function execution. For documentation on this
-    method, please see function__::execute_function.
+    method, please see function_u::execute_function.
    */
 
-  template <typename FUNCTION_HANDLE, typename... ARGS>
-  static decltype(auto) execute_function(FUNCTION_HANDLE &handle,
-                                         ARGS &&... args) {
+  template<typename FUNCTION_HANDLE, typename... ARGS>
+  static decltype(auto) execute_function(FUNCTION_HANDLE & handle,
+    ARGS &&... args) {
     return handle(context_t::instance().function(handle.get_key()),
-                  std::forward_as_tuple(args...));
+      std::forward_as_tuple(args...));
   } // execute_function
+
+  //------------------------------------------------------------------------//
+  // Reduction interface.
+  //------------------------------------------------------------------------//
+
+  /*!
+   Legion backend reduction registration. For documentation on this
+   method please see task_u::register_reduction_operation.
+   */
+
+  template<size_t HASH, typename TYPE>
+  static bool register_reduction_operation() {
+
+    using wrapper_t = reduction_wrapper_u<HASH, TYPE>;
+
+    return context_t::instance().register_reduction_operation(
+      HASH, wrapper_t::registration_callback);
+  } // register_reduction_operation
 
 }; // struct legion_execution_policy_t
 

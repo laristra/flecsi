@@ -21,7 +21,7 @@ namespace topology {
 // \class test_definition_t test_definition.h
 // \brief test_definition_t provides...
 ///
-class test_definition_t : public mesh_definition__<2> {
+class test_definition_t : public mesh_definition_u<2> {
 public:
   double vertices_[25][3] = {
       {0.0, 0.0, 0.0},   {0.25, 0.0, 0.0}, {0.5, 0.0, 0.0},   {0.75, 0.0, 0.0},

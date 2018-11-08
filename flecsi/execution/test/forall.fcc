@@ -31,7 +31,7 @@ using adjacency_info_t = flecsi::coloring::adjacency_info_t;
 template<
   size_t PS
 >
-using mesh = data_client_handle__<mesh_t, PS>;
+using mesh = data_client_handle_u<mesh_t, PS>;
 
 template<
   size_t EP,

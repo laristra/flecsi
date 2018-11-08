@@ -26,7 +26,7 @@ namespace flecsi {
 namespace execution {
 
 /*!
-  The task_interface__ type provides a high-level task interface that is
+  The task_interface_u type provides a high-level task interface that is
   implemented by the given execution policy.
 
   @tparam EXECUTION_POLICY The backend execution policy.
@@ -35,7 +35,7 @@ namespace execution {
  */
 
 template<typename EXECUTION_POLICY>
-struct task_interface__ {
+struct task_interface_u {
 
   /*!
     The runtime_state_t type stores runtime-specific state information
@@ -65,57 +65,55 @@ struct task_interface__ {
             the specific backend runtime being used.
    */
 
-  template<
-      size_t KEY,
-      typename RETURN,
-      typename ARG_TUPLE,
-      RETURN (*DELEGATE)(ARG_TUPLE)>
+  template<size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*DELEGATE)(ARG_TUPLE)>
   static decltype(auto)
   register_task(processor_type_t processor, launch_t launch, std::string name) {
-    return EXECUTION_POLICY::template register_task<
-        KEY, RETURN, ARG_TUPLE, DELEGATE>(processor, launch, name);
+    return EXECUTION_POLICY::template register_task<KEY, RETURN, ARG_TUPLE,
+      DELEGATE>(processor, launch, name);
   } // register_task
 
   /*!
     Execute a task.
 
-    @tparam RETURN The return type of the task.
+    @tparam LAUNCH    The launch mode for this task execution.
+    @tparam TASK      The task hash key.
+    @tparam REDUCTION The reduction operation hash key.
+    @tparam RETURN    The return type of the task.
     @tparam ARG_TUPLE A std::tuple of the user task argument types.
-    @tparam ARGS The task arguments.
+    @tparam ARGS      The task arguments.
 
-    @param launch The launch mode for this task execution.
     @param args   The arguments to pass to the user task during execution.
    */
 
-  template<launch_type_t LAUNCH, Legion::ReductionOpID REDUCTION_ID,
-    size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
+  template<launch_type_t LAUNCH,
+    size_t TASK,
+    size_t REDUCTION,
+    typename RETURN,
+    typename ARG_TUPLE,
+    typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
-    return EXECUTION_POLICY::template execute_task<LAUNCH, REDUCTION_ID,
-	 KEY, RETURN, ARG_TUPLE>(std::forward<ARGS>(args)...);
+    return EXECUTION_POLICY::template execute_task<LAUNCH, TASK, REDUCTION,
+      RETURN, ARG_TUPLE>(std::forward<ARGS>(args)...);
   } // execute_task
 
   /*!
     Register a custom reduction operation.
 
-    @tparam NAME      A hash key identifying the operation.
-    @tparam OPERATION The user-defined operation type. The interface
-                      for this type is prescribed and is statically
-                      checked at this level.
+    @tparam HASH A hash key identifying the operation.
+    @tparam TYPE The user-defined operation type. The interface
+                 for this type is prescribed.
    */
 
-  template<
-    size_t NAME,
-    typename OPERATION>
-  static decltype(auto)
-  register_reduction_operation() {
-
-    // FIXME: Add static check of OPERATION type
-
+  template<size_t HASH, typename TYPE>
+  static decltype(auto) register_reduction_operation() {
     return EXECUTION_POLICY::template register_reduction_operation<
-      NAME, OPERATION>();
+      HASH, TYPE>();
   } // register_reduction_operation
 
-}; // struct task_interface__
+}; // struct task_interface_u
 
 template<typename TYPE>
 struct reduce_sum {
@@ -157,7 +155,7 @@ namespace execution {
   @ingroup execution
  */
 
-using task_interface_t = task_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
+using task_interface_t = task_interface_u<FLECSI_RUNTIME_EXECUTION_POLICY>;
 
 /*!
   Use the execution policy to define the future type.
@@ -168,7 +166,7 @@ using task_interface_t = task_interface__<FLECSI_RUNTIME_EXECUTION_POLICY>;
  */
 
 template<typename RETURN, launch_type_t launch>
-using future__ = FLECSI_RUNTIME_EXECUTION_POLICY::future__<RETURN, launch>;
+using future_u = FLECSI_RUNTIME_EXECUTION_POLICY::future_u<RETURN, launch>;
 
 //----------------------------------------------------------------------------//
 // Static verification of public future interface for type defined by
@@ -182,11 +180,11 @@ FLECSI_MEMBER_CHECKER(wait);
 FLECSI_MEMBER_CHECKER(get);
 
 static_assert(
-    verify_future::has_member_wait<future__<double>>::value,
+    verify_future::has_member_wait<future_u<double>>::value,
     "future type missing wait method");
 
 static_assert(
-    verify_future::has_member_get<future__<double>>::value,
+    verify_future::has_member_get<future_u<double>>::value,
     "future type missing get method");
 #endif
 

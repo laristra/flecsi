@@ -756,12 +756,14 @@ WARN_LOGFILE           = @CMAKE_BINARY_DIR@/doxygen.out
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT = @CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen-mainpage.md \
-	@CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen-setup.h \
-	@CMAKE_CURRENT_SOURCE_DIR@/flecsi \
-	@CMAKE_CURRENT_SOURCE_DIR@/auxiliary \
-	@CMAKE_CURRENT_SOURCE_DIR@/flecsi-tutorial \
-	@CMAKE_CURRENT_SOURCE_DIR@/cinch/logging
+INPUT = @CMAKE_CURRENT_SOURCE_DIR@/flecsi/control
+#INPUT = \
+#  @CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen-mainpage.md \
+#	@CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen-setup.h \
+#	@CMAKE_CURRENT_SOURCE_DIR@/flecsi \
+#	@CMAKE_CURRENT_SOURCE_DIR@/auxiliary \
+#	@CMAKE_CURRENT_SOURCE_DIR@/flecsi-tutorial \
+#	@CMAKE_CURRENT_SOURCE_DIR@/cinch/logging
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1971,7 +1973,7 @@ PREDEFINED             = FLECSI_ENABLE_SPECIALIZATION_DRIVER ENABLE_CLOG CLOG_EN
 # definition found in the source code.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-EXPAND_AS_DEFINED      = __flecsi_internal_legion_task
+EXPAND_AS_DEFINED      = flecsi_internal_legion_task
 
 # If the SKIP_FUNCTION_MACROS tag is set to YES then doxygen's preprocessor will
 # remove all references to function-like macros that are alone on a line, have

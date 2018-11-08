@@ -15,7 +15,6 @@
 
 /*! @file */
 
-
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
 // Using this approach allows us to have only one storage_class_t
@@ -33,8 +32,9 @@
 #include <flecsi/data/data_client.h>
 #include <flecsi/data/dense_data_handle.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/index_space.h>
+
+#include <flecsi/utils/const_string.h>
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -68,19 +68,13 @@ namespace mpi {
 ///           low-level \e flecsi interface, so it is assumed that you
 ///           know what you are doing...
 ///
-template<
-  typename T,
-  size_t EP,
-  size_t SP,
-  size_t GP
->
-struct dense_handle_t : public dense_data_handle__<T, EP, SP, GP>
-{
+template<typename T, size_t EP, size_t SP, size_t GP>
+struct dense_handle_t : public dense_data_handle_u<T, EP, SP, GP> {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using base = dense_data_handle__<T, EP, SP, GP>;
+  using base = dense_data_handle_u<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -108,18 +102,12 @@ struct dense_handle_t : public dense_data_handle__<T, EP, SP, GP>
 /// Dense storage type. Provides an interface from obtaining data handles
 ///
 template<>
-struct storage_class__<dense>
-{
+struct storage_class_u<dense> {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  template<
-    typename T,
-    size_t EP,
-    size_t SP,
-    size_t GP
-  >
+  template<typename T, size_t EP, size_t SP, size_t GP>
   using handle_t = dense_handle_t<T, EP, SP, GP>;
 
   /*!
@@ -137,53 +125,43 @@ struct storage_class__<dense>
     @tparam VERSION          The field version.
     @tparam PERMISSIONS      The data client permissions.
    */
-  template<
-    typename DATA_CLIENT_TYPE,
+  template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
-    size_t VERSION
-  >
-  static
-  handle_t<DATA_TYPE, 0, 0, 0>
-  get_handle(
-    const data_client_t & data_client
-  )
-  {
+    size_t VERSION>
+  static handle_t<DATA_TYPE, 0, 0, 0> get_handle(
+    const data_client_t & data_client) {
     handle_t<DATA_TYPE, 0, 0, 0> h;
 
-    auto& context = execution::context_t::instance();
+    auto & context = execution::context_t::instance();
 
     using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
 
     // get field_info for this data handle
-    auto& field_info =
-      context.get_field_info_from_name(
-        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
+    auto & field_info = context.get_field_info_from_name(
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
       utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
     // get color_info for this field.
-    auto& color_info =
+    auto & color_info =
       (context.coloring_info(field_info.index_space)).at(context.color());
-    auto &index_coloring = context.coloring(field_info.index_space);
+    auto & index_coloring = context.coloring(field_info.index_space);
 
-    auto& registered_field_data = context.registered_field_data();
+    auto & registered_field_data = context.registered_field_data();
     auto fieldDataIter = registered_field_data.find(field_info.fid);
-    if (fieldDataIter == registered_field_data.end()) {
+    if(fieldDataIter == registered_field_data.end()) {
       size_t size = field_info.size * (color_info.exclusive +
-                                       color_info.shared +
-                                       color_info.ghost);
+                                        color_info.shared + color_info.ghost);
       // TODO: deal with VERSION
-      context.register_field_data(field_info.fid,
-                                  size);
-      context.register_field_metadata<DATA_TYPE>(field_info.fid,
-                                                 color_info,
-                                                 index_coloring);
+      context.register_field_data(field_info.fid, size);
+      context.register_field_metadata<DATA_TYPE>(
+        field_info.fid, color_info, index_coloring);
     }
 
     auto data = registered_field_data[field_info.fid].data();
     // populate data member of data_handle_t
-    auto &hb = dynamic_cast<dense_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
+    auto & hb = dynamic_cast<dense_data_handle_u<DATA_TYPE, 0, 0, 0> &>(h);
 
     hb.fid = field_info.fid;
     hb.index_space = field_info.index_space;
@@ -210,4 +188,3 @@ struct storage_class__<dense>
 } // namespace mpi
 } // namespace data
 } // namespace flecsi
-

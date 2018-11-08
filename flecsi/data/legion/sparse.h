@@ -5,7 +5,7 @@
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_class.h!!!
-// Using this approach allows us to have only one storage_class__
+// Using this approach allows us to have only one storage_class_u
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
 #include <flecsi/data/storage_class.h>
@@ -21,7 +21,6 @@
 #include <flecsi/data/mutator_handle.h>
 #include <flecsi/data/sparse_data_handle.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/index_space.h>
 
 //----------------------------------------------------------------------------//
@@ -62,23 +61,23 @@ namespace legion {
     size_t SP,
     size_t GP
   >
-  struct sparse_handle__ : public sparse_data_handle__<T, EP, SP, GP>
+  struct sparse_handle_u : public sparse_data_handle_u<T, EP, SP, GP>
   {
     //--------------------------------------------------------------------------//
     // Type definitions.
     //--------------------------------------------------------------------------//
 
-    using base = sparse_data_handle__<T, EP, SP, GP>;
+    using base = sparse_data_handle_u<T, EP, SP, GP>;
 
     //--------------------------------------------------------------------------//
     // Constructors.
     //--------------------------------------------------------------------------//
 
-    sparse_handle__(){}
+    sparse_handle_u(){}
 
     template<typename, size_t, size_t, size_t>
-    friend class sparse_handle__;
-  }; // struct sparse_handle__
+    friend class sparse_handle_u;
+  }; // struct sparse_handle_u
 
   //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
   // Main type definition.
@@ -98,7 +97,7 @@ namespace legion {
     A mutator commits its data in its temporary buffers in the task epilog.
    */
   template<>
-  struct storage_class__<sparse>
+  struct storage_class_u<sparse>
   {
     //--------------------------------------------------------------------------//
     // Type definitions.
@@ -110,7 +109,7 @@ namespace legion {
       size_t SP,
       size_t GP
     >
-    using handle__ = sparse_handle__<T, EP, SP, GP>;
+    using handle_u = sparse_handle_u<T, EP, SP, GP>;
 
     template<
       typename DATA_CLIENT_TYPE,
@@ -120,7 +119,7 @@ namespace legion {
       size_t VERSION
     >
     static
-    handle__<DATA_TYPE, 0, 0, 0>
+    handle_u<DATA_TYPE, 0, 0, 0>
     get_handle(
       const data_client_t & data_client
     )
@@ -217,7 +216,7 @@ namespace legion {
       size_t VERSION
     >
     static
-    mutator_handle__<DATA_TYPE>
+    mutator_handle_u<DATA_TYPE>
     get_mutator(
       const data_client_t & data_client,
       size_t slots
@@ -292,7 +291,7 @@ namespace legion {
   }; // struct storage_class_t
 
   template<>
-  struct storage_class__<ragged>
+  struct storage_class_u<ragged>
   {
     //--------------------------------------------------------------------------//
     // Type definitions.
@@ -304,7 +303,7 @@ namespace legion {
       size_t SP,
       size_t GP
     >
-    using handle__ = sparse_handle__<T, EP, SP, GP>;
+    using handle_u = sparse_handle_u<T, EP, SP, GP>;
 
     template<
       typename DATA_CLIENT_TYPE,
@@ -319,7 +318,7 @@ namespace legion {
       const data_client_t & data_client
     )
     {
-      return storage_class__<sparse>::get_handle<
+      return storage_class_u<sparse>::get_handle<
         DATA_CLIENT_TYPE,
         DATA_TYPE,
         NAMESPACE,
@@ -342,7 +341,7 @@ namespace legion {
       size_t slots
     )
     {
-      return storage_class__<sparse>::get_mutator<
+      return storage_class_u<sparse>::get_mutator<
         DATA_CLIENT_TYPE,
         DATA_TYPE,
         NAMESPACE,

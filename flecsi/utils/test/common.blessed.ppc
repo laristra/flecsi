@@ -55,5 +55,3 @@ std::tuple<float, double, __float128>
 int
 std::tuple<float, double, __float128>
 
-hello
-hello again

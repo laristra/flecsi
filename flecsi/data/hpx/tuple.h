@@ -24,8 +24,6 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
-#include "flecsi/utils/const_string.h"
-
 ///
 // \file hpx/tuple.h
 // \authors bergen
@@ -40,21 +38,7 @@ namespace hpx {
 // FIXME: Tuple storage type.
 ///
 template<>
-struct storage_class__<tuple> {
-
-  struct tuple_handle_t {}; // struct tuple_handle_t
-
-  ///
-  //
-  ///
-  template<typename T, size_t NS>
-  static tuple_handle_t
-  get_handle(uintptr_t runtime_namespace, const utils::const_string_t & key) {
-    return {};
-  } // get_handle
-
-
-
+struct storage_class_u<tuple> {
 #if 0
 ///
 // FIXME: Tuple storage type.

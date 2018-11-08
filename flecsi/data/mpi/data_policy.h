@@ -9,11 +9,11 @@
 //----------------------------------------------------------------------------//
 
 #include <flecsi/data/common/registration_wrapper.h>
+#include <flecsi/data/mpi/color.h>
 #include <flecsi/data/mpi/dense.h>
+#include <flecsi/data/mpi/global.h>
 #include <flecsi/data/mpi/sparse.h>
 #include <flecsi/data/storage.h>
-#include <flecsi/data/mpi/global.h>
-#include <flecsi/data/mpi/color.h>
 //#include <flecsi/data/mpi/scoped.h>
 //#include <flecsi/data/mpi/tuple.h>
 
@@ -24,17 +24,14 @@ namespace data {
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
 
-struct mpi_data_policy_t
-{
+struct mpi_data_policy_t {
   //--------------------------------------------------------------------------//
-  //! The storage_class__ type determines the underlying storage mechanism
+  //! The storage_class_u type determines the underlying storage mechanism
   //! for the backend runtime.
   //--------------------------------------------------------------------------//
 
-  template<
-    size_t STORAGE_CLASS
-  >
-  using storage_class__ = mpi::storage_class__<STORAGE_CLASS>;
+  template<size_t STORAGE_CLASS>
+  using storage_class_u = mpi::storage_class_u<STORAGE_CLASS>;
 
 }; // class mpi_data_policy_t
 
@@ -42,4 +39,4 @@ struct mpi_data_policy_t
 } // namespace flecsi
 
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

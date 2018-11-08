@@ -24,27 +24,28 @@ namespace flecsi {
 namespace topology {
 
 //----------------------------------------------------------------------------//
-//! The mesh_definition__ type...
+//! The mesh_definition_u type...
 //!
 //! @ingroup mesh-topology
 //----------------------------------------------------------------------------//
 
 template<size_t DIMENSION>
-class mesh_definition__ {
+class mesh_definition_u
+{
 public:
-  using point_t = point__<double, DIMENSION>;
+  using point_t = point_u<double, DIMENSION>;
 
   /// Default constructor
-  mesh_definition__() {}
+  mesh_definition_u() {}
 
   /// Copy constructor (disabled)
-  mesh_definition__(const mesh_definition__ &) = delete;
+  mesh_definition_u(const mesh_definition_u &) = delete;
 
   /// Assignment operator (disabled)
-  mesh_definition__ & operator=(const mesh_definition__ &) = delete;
+  mesh_definition_u & operator=(const mesh_definition_u &) = delete;
 
   /// Destructor
-  virtual ~mesh_definition__() {}
+  virtual ~mesh_definition_u() {}
 
   ///
   /// Return the dimension of the mesh.
@@ -92,7 +93,7 @@ public:
     return std::set<size_t>(vvec.begin(), vvec.end());
   } // entities_set
 
-}; // class mesh_definition__
+}; // class mesh_definition_u
 
 } // namespace topology
 } // namespace flecsi

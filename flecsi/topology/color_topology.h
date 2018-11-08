@@ -24,28 +24,30 @@ namespace topology {
 // Color topology.
 //----------------------------------------------------------------------------//
 
-class color_topology_base__ : public data::data_client_t {
+class color_topology_base_u : public data::data_client_t
+{
 public:
   using id_t = utils::id_t;
 };
 
 /*!
-  color_topology__
+  color_topology_u
 
  @ingroup color-topology
  */
-class color_topology__ : public color_topology_base__ {
+class color_topology_u : public color_topology_base_u
+{
 
 public:
-  using type_identifier_t = color_topology__;
+  using type_identifier_t = color_topology_u;
 
   //! Constructor
-  color_topology__() {} // color_topology__()
+  color_topology_u() {} // color_topology_u()
 
   //! Copy constructor
-  color_topology__(const color_topology__ & m) {}
+  color_topology_u(const color_topology_u & m) {}
 
-}; // class color_topology__
+}; // class color_topology_u
 
 } // namespace topology
 } // namespace flecsi

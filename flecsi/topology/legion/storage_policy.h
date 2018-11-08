@@ -37,7 +37,7 @@ namespace flecsi {
 namespace topology {
 
 template<size_t, size_t>
-class mesh_entity__;
+class mesh_entity_u;
 
 ///
 /// \class legion_data_handle_policy_t data_handle_policy.h
@@ -45,72 +45,64 @@ class mesh_entity__;
 ///
 
 template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
-struct legion_topology_storage_policy_t__ {
+struct legion_topology_storage_policy_t_u {
   static constexpr size_t num_partitions = 5;
 
   using id_t = utils::id_t;
 
-  using index_spaces_t = std::array<
-      index_space__<
-          mesh_entity_base_ *,
-          true,
-          true,
-          true,
-          void,
-          topology_storage__>,
-      NUM_DIMS + 1>;
+  using index_spaces_t = std::array<index_space_u<mesh_entity_base_ *,
+                                      true,
+                                      true,
+                                      true,
+                                      void,
+                                      topology_storage_u>,
+    NUM_DIMS + 1>;
 
-  using index_subspaces_t = std::array<
-      index_space__<
-          mesh_entity_base_ *,
-          false,
-          true,
-          false,
-          void,
-          topology_storage__>,
-      NUM_INDEX_SUBSPACES>;
+  using index_subspaces_t = std::array<index_space_u<mesh_entity_base_ *,
+                                         false,
+                                         true,
+                                         false,
+                                         void,
+                                         topology_storage_u>,
+    NUM_INDEX_SUBSPACES>;
 
-  using partition_index_spaces_t = std::array<
-      index_space__<
-          mesh_entity_base_ *,
-          false,
-          false,
-          true,
-          void,
-          topology_storage__>,
-      NUM_DIMS + 1>;
+  using partition_index_spaces_t = std::array<index_space_u<mesh_entity_base_ *,
+                                                false,
+                                                false,
+                                                true,
+                                                void,
+                                                topology_storage_u>,
+    NUM_DIMS + 1>;
 
-  // array of array of domain_connectivity__
-  std::array<
-      std::array<domain_connectivity__<NUM_DIMS>, NUM_DOMAINS>,
-      NUM_DOMAINS>
-      topology;
+  // array of array of domain_connectivity_u
+  std::array<std::array<domain_connectivity_u<NUM_DIMS>, NUM_DOMAINS>,
+    NUM_DOMAINS>
+    topology;
 
   std::array<index_spaces_t, NUM_DOMAINS> index_spaces;
 
   index_subspaces_t index_subspaces;
 
   std::array<std::array<partition_index_spaces_t, NUM_DOMAINS>, num_partitions>
-      partition_index_spaces;
+    partition_index_spaces;
 
   size_t color;
 
-  legion_topology_storage_policy_t__() {
+  legion_topology_storage_policy_t_u() {
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();
   }
 
-  void init_entities(
-      size_t domain,
-      size_t dim,
-      mesh_entity_base_ * entities,
-      utils::id_t * ids,
-      size_t size,
-      size_t num_entities,
-      size_t num_exclusive,
-      size_t num_shared,
-      size_t num_ghost,
-      bool read) {
+  void init_entities(size_t domain,
+    size_t dim,
+    mesh_entity_base_ * entities,
+    utils::id_t * ids,
+    size_t size,
+    size_t num_entities,
+    size_t num_exclusive,
+    size_t num_shared,
+    size_t num_ghost,
+    bool read) {
     auto & is = index_spaces[domain][dim];
 
     auto s = is.storage();
@@ -119,14 +111,14 @@ struct legion_topology_storage_policy_t__ {
     auto & id_storage = is.id_storage();
     id_storage.set_buffer(ids, num_entities, true);
 
-    for (auto & domain_connectivities : topology) {
-      auto & domain_connectivity__ = domain_connectivities[domain];
-      for (size_t d = 0; d <= NUM_DIMS; ++d) {
-        domain_connectivity__.get(d, dim).set_entity_storage(s);
+    for(auto & domain_connectivities : topology) {
+      auto & domain_connectivity_u = domain_connectivities[domain];
+      for(size_t d = 0; d <= NUM_DIMS; ++d) {
+        domain_connectivity_u.get(d, dim).set_entity_storage(s);
       } // for
     } // for
 
-    if (!read) {
+    if(!read) {
       return;
     }
 
@@ -135,12 +127,12 @@ struct legion_topology_storage_policy_t__ {
     size_t shared_end = num_exclusive + num_shared;
     size_t ghost_end = shared_end + num_ghost;
 
-    for (size_t partition = 0; partition < num_partitions; ++partition) {
+    for(size_t partition = 0; partition < num_partitions; ++partition) {
       auto & isp = partition_index_spaces[partition][domain][dim];
       isp.set_storage(s);
       isp.set_id_storage(&id_storage);
 
-      switch (partition_t(partition)) {
+      switch(partition_t(partition)) {
         case exclusive:
           isp.set_begin(0);
           isp.set_end(num_exclusive);
@@ -163,14 +155,13 @@ struct legion_topology_storage_policy_t__ {
     }
   } // init_entities
 
-  void init_index_subspace(
-      size_t index_space,
-      size_t index_subspace,
-      size_t domain,
-      size_t dim,
-      utils::id_t * ids,
-      size_t num_entities,
-      bool read) {
+  void init_index_subspace(size_t index_space,
+    size_t index_subspace,
+    size_t domain,
+    size_t dim,
+    utils::id_t * ids,
+    size_t num_entities,
+    bool read) {
 
     auto & context_ = execution::context_t::instance();
     auto & ssm = context_.index_subspace_info();
@@ -186,23 +177,22 @@ struct legion_topology_storage_policy_t__ {
     auto & id_storage = iss.id_storage();
     id_storage.set_buffer(ids, si.capacity, si.size);
 
-    if (!read) {
+    if(!read) {
       return;
     }
 
     iss.set_end(si.size);
   } // init_index_subspaces
 
-  void init_connectivity(
-      size_t from_domain,
-      size_t to_domain,
-      size_t from_dim,
-      size_t to_dim,
-      utils::offset_t * offsets,
-      size_t num_offsets,
-      utils::id_t * indices,
-      size_t num_indices,
-      bool read) {
+  void init_connectivity(size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
+    size_t to_dim,
+    utils::offset_t * offsets,
+    size_t num_offsets,
+    utils::id_t * indices,
+    size_t num_indices,
+    bool read) {
     // TODO - this is an initial implementation for testing purposes.
     // We may wish to store the buffer pointers coming from Legion directly
     // into the connectivity
@@ -214,20 +204,20 @@ struct legion_topology_storage_policy_t__ {
 
     conn.offsets().storage().set_buffer(offsets, num_offsets, read);
 
-    if (read) {
+    if(read) {
       conn.get_index_space().set_end(num_indices);
     }
   } // init_connectivities
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(ARG_TYPES &&... args) {
-    using dtype = domain_entity__<DOM, T>;
+    using dtype = domain_entity_u<DOM, T>;
 
     auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
     size_t entity = is.size();
 
     auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
-    auto ent = new (placement_ptr) T(std::forward<ARG_TYPES>(args)...);
+    auto ent = new(placement_ptr) T(std::forward<ARG_TYPES>(args)...);
 
     id_t global_id = id_t::make<T::dimension, DOM>(entity, color);
     ent->template set_global_id<DOM>(global_id);
@@ -243,14 +233,14 @@ struct legion_topology_storage_policy_t__ {
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(const id_t & id, ARG_TYPES &&... args) {
-    using dtype = domain_entity__<DOM, T>;
+    using dtype = domain_entity_u<DOM, T>;
 
     auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
 
     size_t entity = id.entity();
 
     auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
-    auto ent = new (placement_ptr) T(std::forward<ARG_TYPES>(args)...);
+    auto ent = new(placement_ptr) T(std::forward<ARG_TYPES>(args)...);
 
     ent->template set_global_id<DOM>(id);
 
@@ -263,7 +253,7 @@ struct legion_topology_storage_policy_t__ {
     return ent;
   } // make
 
-}; // class legion_topology_storage_policy_t__
+}; // class legion_topology_storage_policy_t_u
 
 } // namespace topology
 } // namespace flecsi

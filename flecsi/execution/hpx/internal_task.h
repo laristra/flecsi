@@ -15,10 +15,11 @@
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/execution.h>
-#include <flecsi/utils/common.h>
+
+#include <flecsi/utils/const_string.h>
 
 //----------------------------------------------------------------------------//
-//! @def __flecsi_internal_task_key
+//! @def flecsi_internal_task_key
 //!
 //! Convenience macro to create a task key from hpx task information.
 //!
@@ -32,14 +33,14 @@
 //! @ingroup hpx-execution
 //----------------------------------------------------------------------------//
 
-#define __flecsi_internal_task_key(task)                                       \
+#define flecsi_internal_task_key(task)                                       \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Use const_string_t interface to create the key */                         \
   flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()
 
 //----------------------------------------------------------------------------//
-//! @def __flecsi_internal_register_hpx_task
+//! @def flecsi_internal_register_hpx_task
 //!
 //! This macro registers an internal hpx task.
 //!
@@ -51,14 +52,14 @@
 //! @ingroup hpx-execution
 //----------------------------------------------------------------------------//
 
-#define __flecsi_internal_register_hpx_task(task, processor, launch)        \
+#define flecsi_internal_register_hpx_task(task, processor, launch)           \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the execution policy to register the task */                         \
-  static inline bool task ## _task_registered =                                \
-    flecsi::execution::hpx_execution_policy_t::register_hpx_task<        \
+  inline bool task ## _task_registered =                                       \
+    flecsi::execution::hpx_execution_policy_t::register_hpx_task<              \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
-      typename flecsi::utils::function_traits__<decltype(task)>::return_type,  \
+      typename flecsi::utils::function_traits_u<decltype(task)>::return_type,  \
       task                                                                     \
     >                                                                          \
     (processor, launch, { EXPAND_AND_STRINGIFY(task) })

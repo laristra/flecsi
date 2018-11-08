@@ -38,7 +38,7 @@ public:
 
   using entity_t = entity;
 
-  class branch : public topology::tree_branch__<branch_int_t, dimension> {
+  class branch : public topology::tree_branch_u<branch_int_t, dimension> {
   public:
     branch() {}
 
@@ -98,15 +98,15 @@ public:
   using branch_t = branch;
 };
 
-using tree_topology__ = topology::tree_topology<tree_policy>;
-using entity_t = tree_topology__::entity;
-using point_t = tree_topology__::point_t;
-using branch_t = tree_topology__::branch_t;
-using branch_id_t = tree_topology__::branch_id_t;
-using element_t = tree_topology__::element_t;
+using tree_topology_u = topology::tree_topology<tree_policy>;
+using entity_t = tree_topology_u::entity;
+using point_t = tree_topology_u::point_t;
+using branch_t = tree_topology_u::branch_t;
+using branch_id_t = tree_topology_u::branch_id_t;
+using element_t = tree_topology_u::element_t;
 
 TEST(tree_topology, insert_find_remove) {
-  tree_topology__ t;
+  tree_topology_u t;
 
   pseudo_random rng;
 
@@ -131,7 +131,7 @@ TEST(tree_topology, insert_find_remove) {
 }
 
 TEST(tree_topology, assert_branches) {
-  tree_topology__ t;
+  tree_topology_u t;
 
   pseudo_random rng;
 
@@ -159,7 +159,7 @@ TEST(tree_topology, assert_branches) {
 }
 
 TEST(tree_topology, find_radius) {
-  tree_topology__ t;
+  tree_topology_u t;
 
   pseudo_random rng;
 
@@ -209,7 +209,7 @@ TEST(tree_topology, find_radius) {
 }
 
 TEST(tree_topology, find_radius_thread_pool) {
-  tree_topology__ t;
+  tree_topology_u t;
   thread_pool pool;
   pool.start(8);
 
@@ -261,7 +261,7 @@ TEST(tree_topology, find_radius_thread_pool) {
 }
 
 TEST(tree_topology, neighbors) {
-  tree_topology__ t;
+  tree_topology_u t;
 
   pseudo_random rng;
 
@@ -299,7 +299,7 @@ TEST(tree_topology, neighbors) {
 }
 
 TEST(tree_topology, neighbors_thread_pool) {
-  tree_topology__ t;
+  tree_topology_u t;
   thread_pool pool;
   pool.start(8);
 
@@ -339,7 +339,7 @@ TEST(tree_topology, neighbors_thread_pool) {
 }
 
 TEST(tree_topology, neighbors_rectangular) {
-  tree_topology__ t({0, 0}, {50, 30});
+  tree_topology_u t({0, 0}, {50, 30});
 
   pseudo_random rng;
 
@@ -377,7 +377,7 @@ TEST(tree_topology, neighbors_rectangular) {
 }
 
 TEST(tree_topology, neighbors_box) {
-  tree_topology__ t;
+  tree_topology_u t;
 
   pseudo_random rng;
 
@@ -418,7 +418,7 @@ TEST(tree_topology, neighbors_box) {
 }
 
 TEST(tree_topology, iterator_update_all) {
-  tree_topology__ t;
+  tree_topology_u t;
 
   pseudo_random rng;
 

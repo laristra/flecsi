@@ -49,10 +49,9 @@ __flecsi_internal_register_legion_task(
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(
-    handoff_to_mpi_task,
-    processor_type_t::loc,
-    index | leaf);
+flecsi_internal_register_legion_task(handoff_to_mpi_task,
+  processor_type_t::loc,
+  index | leaf);
 
 /*!
   Register task to wait on the MPI runtime.
@@ -64,10 +63,9 @@ __flecsi_internal_register_legion_task(
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(
-    wait_on_mpi_task,
-    processor_type_t::loc,
-    index | leaf);
+flecsi_internal_register_legion_task(wait_on_mpi_task,
+  processor_type_t::loc,
+  index | leaf);
 
 /*!
   Register task to unset the active state for the MPI runtime.
@@ -79,10 +77,9 @@ __flecsi_internal_register_legion_task(
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(
-    unset_call_mpi_task,
-    processor_type_t::loc,
-    index | leaf);
+flecsi_internal_register_legion_task(unset_call_mpi_task,
+  processor_type_t::loc,
+  index | leaf);
 
 /*!
   Register compaction task.
@@ -94,10 +91,9 @@ __flecsi_internal_register_legion_task(
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(
-    owner_pos_compaction_task,
-    processor_type_t::loc,
-    index | leaf);
+flecsi_internal_register_legion_task(owner_pos_compaction_task,
+  processor_type_t::loc,
+  index | leaf);
 
 /*!
   Register fix_ghost_refs task.
@@ -109,10 +105,9 @@ __flecsi_internal_register_legion_task(
   @ingroup legion-execution
  */
 
-__flecsi_internal_register_legion_task(
-    owner_pos_correction_task,
-    processor_type_t::loc,
-    index | leaf);
+flecsi_internal_register_legion_task(owner_pos_correction_task,
+  processor_type_t::loc,
+  index | leaf);
 
 /*!
   Register ghost_copy task.
@@ -171,14 +166,15 @@ template<>
 void
 MaxReductionOp::apply<false>(LHS & lhs, RHS rhs) {
   int64_t * target = (int64_t *)&lhs;
-  union {
+  union
+  {
     int64_t as_int;
     double as_T;
   } oldval, newval;
   do {
     oldval.as_int = *target;
     newval.as_T = std::max(oldval.as_T, rhs);
-  } while (!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
+  } while(!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
 }
 
 template<>
@@ -191,14 +187,15 @@ template<>
 void
 MaxReductionOp::fold<false>(RHS & rhs1, RHS rhs2) {
   int64_t * target = (int64_t *)&rhs1;
-  union {
+  union
+  {
     int64_t as_int;
     double as_T;
   } oldval, newval;
   do {
     oldval.as_int = *target;
     newval.as_T = std::max(oldval.as_T, rhs2);
-  } while (!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
+  } while(!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
 }
 
 const double MinReductionOp::identity = std::numeric_limits<double>::max();
@@ -213,14 +210,15 @@ template<>
 void
 MinReductionOp::apply<false>(LHS & lhs, RHS rhs) {
   int64_t * target = (int64_t *)&lhs;
-  union {
+  union
+  {
     int64_t as_int;
     double as_T;
   } oldval, newval;
   do {
     oldval.as_int = *target;
     newval.as_T = std::min(oldval.as_T, rhs);
-  } while (!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
+  } while(!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
 }
 
 template<>
@@ -233,14 +231,15 @@ template<>
 void
 MinReductionOp::fold<false>(RHS & rhs1, RHS rhs2) {
   int64_t * target = (int64_t *)&rhs1;
-  union {
+  union
+  {
     int64_t as_int;
     double as_T;
   } oldval, newval;
   do {
     oldval.as_int = *target;
     newval.as_T = std::min(oldval.as_T, rhs2);
-  } while (!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
+  } while(!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
 }
 
 } // namespace execution

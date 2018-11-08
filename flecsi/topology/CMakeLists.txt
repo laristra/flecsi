@@ -22,6 +22,7 @@ set(topology_HEADERS
   color_topology.h
   common/array_buffer.h
   common/entity_storage.h
+  connectivity.h
   entity_storage.h
   index_space.h
   mesh_definition.h
@@ -111,8 +112,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
      test/traversal.blessed
    LIBRARIES
      FleCSI
-   FOLDER
-     "Tests/Topology"
   )
 
   cinch_add_unit(bindings
@@ -122,8 +121,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
      test/bindings.blessed
    LIBRARIES
      FleCSI
-   FOLDER
-     "Tests/Topology"
   )
 
 endif()
@@ -133,8 +130,6 @@ cinch_add_unit(dual
     test/dual.cc
   INPUTS
     test/dual.blessed
-  FOLDER
-    "Tests/Topology"
 )
 
 #------------------------------------------------------------------------------#
@@ -185,8 +180,6 @@ cinch_add_unit(dual
 cinch_add_unit(structured
   SOURCES
     test/structured.cc
-  FOLDER
-    "Tests/Topology"
 )
 
 #------------------------------------------------------------------------------#
@@ -205,8 +198,6 @@ cinch_add_unit(structured
 cinch_add_unit(closure
   SOURCES
     test/closure.cc
-  FOLDER
-    "Tests/Topology"
 )
 
 cinch_add_unit(devel-closure
@@ -214,8 +205,6 @@ cinch_add_unit(devel-closure
     test/devel-closure.cc
   POLICY
     SERIAL_DEVEL
-  FOLDER
-    "Tests/Topology"
 )
 
 # FIXME: Check this with refactor

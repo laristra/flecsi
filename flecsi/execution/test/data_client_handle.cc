@@ -29,7 +29,7 @@ namespace execution {
 using test_mesh_t = flecsi::supplemental::test_mesh_2d_t;
 
 template<typename DC, size_t PS>
-using client_handle_t = data_client_handle__<DC, PS>;
+using client_handle_t = data_client_handle_u<DC, PS>;
 
 void
 task1(client_handle_t<test_mesh_t, ro> mesh) {

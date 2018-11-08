@@ -54,6 +54,14 @@ runtime_driver(
   clog(info) << "In Legion runtime driver" << std::endl;
   }//scope
 
+  int num_colors;
+  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
+
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "MPI num_colors is " << num_colors << std::endl;
+  }
+
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
@@ -95,12 +103,17 @@ runtime_driver(
     } // for
   } // for
 
-  int num_colors;
-  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
-  {
-  clog_tag_guard(runtime_driver);
-  clog(info) << "MPI num_colors is " << num_colors << std::endl;
-  }
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for reduction operations
+  //--------------------------------------------------------------------------//
+
+  auto & reduction_ops = context_.reduction_operations();
+  for(auto & ro: reduction_ops) {
+    ro.second.collective = runtime->create_dynamic_collective(ctx, num_colors,
+      ro.second.id, ro.second.initial.data(), ro.second.initial.size());
+  } // for
+
+  //--------------------------------------------------------------------------//
 
   data::legion_data_t data(ctx, runtime, num_colors);
   
@@ -176,21 +189,16 @@ runtime_driver(
   data.finalize(coloring_info);
 
   //-------------------------------------------------------------------------//
-  // check number of fields allocated for sparse data
+  // check nuber of fields allocated for sparse data
   //-------------------------------------------------------------------------//
 
-  for(const field_info_t& field_info : context_.registered_fields()){
-    if(field_info.storage_class==sparse || field_info.storage_class==ragged ){
+  for(const field_info_t& field_info : context_.registered_fields()) {
+    if(field_info.storage_class==sparse || field_info.storage_class==ragged ) {
         auto sparse_idx_space = field_info.index_space ;
 
         context_.increment_sparse_fields(sparse_idx_space);
-      }
-    } 
-
-  //-------------------------------------------------------------------------//
-  //  Create Legion reduction 
-  //-------------------------------------------------------------------------//
-  //FIXME add logic for reduction
+    } // if
+  } /// for 
 
   //-------------------------------------------------------------------------//
   // Excute Legion task to maps between pre-compacted and compacted
@@ -201,7 +209,7 @@ runtime_driver(
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
  
   const auto pos_compaction_id =
-    context_.task_id<__flecsi_internal_task_key(owner_pos_compaction_task)>();
+    context_.task_id<flecsi_internal_task_key(owner_pos_compaction_task)>();
   
   Legion::IndexLauncher pos_compaction_launcher(pos_compaction_id,
       data.color_domain(), Legion::TaskArgument(nullptr, 0),
@@ -913,7 +921,6 @@ setup_rank_context_task(
 
   } // for
 
-
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
@@ -921,7 +928,6 @@ setup_rank_context_task(
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
 
-/*
   //adding information for the global and color handles to the ispace_map
   if (number_of_global_fields>0){
 

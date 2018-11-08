@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <flecsi/utils/common.h>
+#include <flecsi/utils/macros.h>
 #include <flecsi/utils/const_string.h>
 
 #include <flecsi-tutorial/specialization/control/policy.h>
@@ -22,7 +22,7 @@
 namespace flecsi {
 namespace tutorial {
 
-using control_t = flecsi::control::control__<control_policy_t>;
+using control_t = flecsi::control::control_u<control_policy_t>;
 
 #define hash_name(name)                                                        \
   flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
