@@ -145,7 +145,7 @@ struct legion_execution_policy_t {
   } // register_task
 
   /*!
-   We use "execute_task__" class in purose to be able to use
+   We use "execute_task_u" class in purose to be able to use
    partial template specializations for the execute method
    */
 
@@ -223,10 +223,10 @@ struct legion_execution_policy_t {
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
 
-          return legion_future__<RETURN, launch_type_t::single>(future);
+          return legion_future_u<RETURN, launch_type_t::single>(future);
       }
     }
-  };//end execute_task__
+  };//end execute_task_u
 
    /*!
     Partial template specialization for the non-reduction task Index task 
@@ -267,6 +267,11 @@ struct legion_execution_policy_t {
 
     // This will guard the entire method
     clog_tag_guard(execution);
+ 			 ArgumentMap arg_map;
+       IndexLauncher launcher(
+              context_.task_id<KEY>(),
+              Legion::Domain::from_rect<1>(context_.all_processes()),
+              TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
 
           for (auto &req : init_args.region_reqs) {
             launcher.add_region_requirement(req);
@@ -308,7 +313,7 @@ struct legion_execution_policy_t {
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
 
-          return legion_future__<RETURN, launch_type_t::index>(future);
+          return legion_future_u<RETURN, launch_type_t::index>(future);
 //FIXME the check
 #if 0
         } else { // check for execution_state
@@ -373,7 +378,7 @@ struct legion_execution_policy_t {
           task_epilog.walk(task_args);
 
 
-          return legion_future__<RETURN, launch_type_t::index>(future_map);
+          return legion_future_u<RETURN, launch_type_t::index>(future_map);
          
       } // if
     }
@@ -397,7 +402,7 @@ struct legion_execution_policy_t {
      (REDUCTIONID==0)
    */
   template < size_t KEY, typename RETURN, typename ARG_TUPLE, typename... ARGS>
-  struct execute_task__<launch_type_t::single, 0, KEY, RETURN,
+  struct execute_task_u<launch_type_t::single, 0, KEY, RETURN,
     ARG_TUPLE, ARGS...> {
     static decltype(auto) execute( ARG_TUPLE task_args) {
       using namespace Legion;
@@ -469,14 +474,14 @@ struct legion_execution_policy_t {
         task_epilog_t task_epilog(legion_runtime, legion_context);
         task_epilog.walk(task_args);
 
-        return legion_future__<RETURN, launch_type_t::single>(future);
+        return legion_future_u<RETURN, launch_type_t::single>(future);
       } // if
     }
   };
 
   /*!
     Legion backend task execution. For documentation on this
-    method, please see task__::execute_task.
+    method, please see task_u::execute_task.
    */
   template <launch_type_t LAUNCH, Legion::ReductionOpID REDUCTION_ID,
 	 size_t KEY, typename RETURN,  typename ARG_TUPLE, typename... ARGS>

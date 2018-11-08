@@ -225,7 +225,7 @@ struct legion_future_u<RETURN, launch_type_t::index> : public future_base_t {
     @param legion_future The Legion future instance.
    */
 
-  legion_future__(const Legion::Future &legion_future)
+  legion_future_u(const Legion::Future &legion_future)
   {
     legion_future_[0]=legion_future;
   }
@@ -271,7 +271,7 @@ struct legion_future_u<RETURN, launch_type_t::index> : public future_base_t {
 private:
   Legion::FutureMap legion_future_;
 
-}; // struct legion_future__
+}; // struct legion_future_u
 
 /*!
  Explicit specialization for index launch FutureMap and void.
@@ -294,7 +294,7 @@ struct legion_future_u<void, launch_type_t::index> : public future_base_t {
     : legion_future_(legion_future) {}
 
 
-  legion_future__(const Legion::Future &legion_future)
+  legion_future_u(const Legion::Future &legion_future)
   {
     legion_future_[0]=legion_future;
   }

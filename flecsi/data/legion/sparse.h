@@ -150,7 +150,7 @@ namespace legion {
       const size_t max_entries_per_index = iitr->second.max_entries_per_index;
       const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
-      handle__<DATA_TYPE, 0, 0, 0> h;
+      handle_u<DATA_TYPE, 0, 0, 0> h;
 
       h.reserve = exclusive_reserve;
       h.max_entries_per_index = max_entries_per_index;
@@ -244,7 +244,7 @@ namespace legion {
       const size_t max_entries_per_index = iitr->second.max_entries_per_index;
       const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
-      mutator_handle__<DATA_TYPE> h(max_entries_per_index, slots);
+      mutator_handle_u<DATA_TYPE> h(max_entries_per_index, slots);
 
       h.offsets_entire_region = ism[index_space].entire_region;
       h.offsets_exclusive_lp = ism[index_space].exclusive_lp;

@@ -521,7 +521,7 @@ struct legion_context_policy_t {
    */
 
   template<typename T, launch_type_t launch>
-  auto reduce_max(legion_future__<T, launch> & global_future) {
+  auto reduce_max(legion_future_u<T, launch> & global_future) {
 
     auto global_max_ = global_future.get();
 
@@ -529,13 +529,12 @@ struct legion_context_policy_t {
   }
 
   /*!
-  /*!
     Perform reduction of the minimum value
     @param task future
    */
 
   template<typename T,  launch_type_t launch>
-  auto reduce_min(legion_future__<T, launch> & global_future) {
+  auto reduce_min(legion_future_u<T, launch> & global_future) {
 
     auto global_min_ = global_future.get();
 

@@ -231,7 +231,6 @@ flecsi_internal_legion_task(owner_pos_compaction_task, void) {
 
   {
     clog_tag_guard(legion_tasks);
-
     // In old position of shared, write compacted location
     // In compacted position of ghost, write the reference/pointer
     // to pre-compacted shared
@@ -304,7 +303,7 @@ flecsi_internal_legion_task(owner_pos_compaction_task, void) {
  @ingroup legion-execution
  */
 
-__flecsi_internal_legion_task(ghost_copy_task, void) {
+flecsi_internal_legion_task(ghost_copy_task, void) {
   using offset_t = data::sparse_data_offset_t;
 
   const int my_color = runtime->find_local_MPI_rank();
@@ -444,7 +443,7 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 } // ghost_copy_task
 
 
-__flecsi_internal_legion_task(sparse_set_owner_position_task, void){
+flecsi_internal_legion_task(sparse_set_owner_position_task, void){
   using offset_t = data::sparse_data_offset_t;
 
   const int my_color = runtime->find_local_MPI_rank();
