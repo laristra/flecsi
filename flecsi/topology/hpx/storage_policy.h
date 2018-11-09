@@ -30,7 +30,7 @@
 namespace flecsi {
 namespace topology {
 
-class mesh_entity_base_;
+class entity_base_;
 
 template<size_t, size_t>
 class mesh_entity_t;
@@ -47,7 +47,7 @@ struct hpx_topology_storage_policy_u {
 
   using index_spaces_t = std::array<
       index_space_u<
-          mesh_entity_base_ *,
+          entity_base_ *,
           true,
           true,
           true,
@@ -57,7 +57,7 @@ struct hpx_topology_storage_policy_u {
 
   using index_subspaces_t = std::array<
       index_space_u<
-          mesh_entity_base_ *,
+          entity_base_ *,
           false,
           true,
           false,
@@ -67,7 +67,7 @@ struct hpx_topology_storage_policy_u {
 
   using partition_index_spaces_t = std::array<
       index_space_u<
-          mesh_entity_base_ *,
+          entity_base_ *,
           false,
           false,
           true,

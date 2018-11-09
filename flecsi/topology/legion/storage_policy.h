@@ -52,7 +52,7 @@ struct legion_topology_storage_policy_t_u {
 
   using index_spaces_t = std::array<
       index_space_u<
-          mesh_entity_base_ *,
+          entity_base_ *,
           true,
           true,
           true,
@@ -62,7 +62,7 @@ struct legion_topology_storage_policy_t_u {
 
   using index_subspaces_t = std::array<
       index_space_u<
-          mesh_entity_base_ *,
+          entity_base_ *,
           false,
           true,
           false,
@@ -72,7 +72,7 @@ struct legion_topology_storage_policy_t_u {
 
   using partition_index_spaces_t = std::array<
       index_space_u<
-          mesh_entity_base_ *,
+          entity_base_ *,
           false,
           false,
           true,
@@ -103,7 +103,7 @@ struct legion_topology_storage_policy_t_u {
   void init_entities(
       size_t domain,
       size_t dim,
-      mesh_entity_base_ * entities,
+      entity_base_ * entities,
       utils::id_t * ids,
       size_t size,
       size_t num_entities,

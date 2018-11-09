@@ -218,7 +218,7 @@ namespace execution {
                                                                size);
         }
         auto ents =
-          reinterpret_cast<topology::mesh_entity_base_*>(registered_field_data[ent.fid].data());
+          reinterpret_cast<topology::entity_base_*>(registered_field_data[ent.fid].data());
 
         fieldDataIter = registered_field_data.find(ent.id_fid);
         if (fieldDataIter == registered_field_data.end()) {

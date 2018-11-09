@@ -387,7 +387,7 @@ struct init_handles_t : public utils::tuple_walker_u<init_handles_t> {
 
       auto ents_raw =
           static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
-      auto ents = reinterpret_cast<topology::mesh_entity_base_ *>(ents_raw);
+      auto ents = reinterpret_cast<topology::entity_base_ *>(ents_raw);
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
 
