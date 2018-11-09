@@ -136,7 +136,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
 
   Legion::LogicalPartition
-  create_ghost_owners_partition_for_sparse_entries (size_t idx_space)
+  create_ghost_owners_partition_for_sparse_entries (size_t idx_space,
+		size_t fid)
 	{
       auto & context_ = context_t::instance();
       auto& ispace_dmap = context_.index_space_data_map();
@@ -164,16 +165,6 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
             0/*projection ID*/,
             READ_ONLY, EXCLUSIVE, ispace_dmap[idx_space].entire_region))
                 .add_field(ghost_owner_pos_fid);
-
-      Legion::FieldID fid;
-      for ( const field_info_t & fi : context_.registered_fields()){
-        if (fi.index_space == idx_space)
-          if(!utils::hash::is_internal(fi.key)){
-              fid = fi.fid;
-              break;
-          }
-      }
-
       sparse_pos_launcher.add_region_requirement(
         Legion::RegionRequirement(ispace_dmap[idx_space].ghost_owners_lp,
             0/*projection ID*/,
@@ -365,7 +356,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
           if ( h.ghost_owners_entries_lp==Legion::LogicalPartition::NO_PART)
              h.ghost_owners_entries_lp=
-							create_ghost_owners_partition_for_sparse_entries(h.index_space);  
+							create_ghost_owners_partition_for_sparse_entries(h.index_space,
+								h.fid);  
           ghost_owner_entries_partitions.push_back(
              h.ghost_owners_entries_lp);
          
@@ -454,7 +446,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 //                      h.ghost_owners_offsets_subregion_lp);
           if ( h.ghost_owners_entries_lp==Legion::LogicalPartition::NO_PART)
              h.ghost_owners_entries_lp=
-              create_ghost_owners_partition_for_sparse_entries(h.index_space);
+              create_ghost_owners_partition_for_sparse_entries(h.index_space,
+								h.fid);
           ghost_owner_entries_partitions.push_back(
             h.ghost_owners_entries_lp);
          
