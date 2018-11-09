@@ -88,6 +88,7 @@ typedef struct task_entity_s {
   Legion::FieldID id_fid;
   Legion::FieldID color_fid;
   Legion::FieldID offset_fid;
+  int print_flag;
 }task_entity_t;
 
 typedef struct task_mesh_definition_s {
@@ -1613,6 +1614,121 @@ __flecsi_internal_legion_task(output_partition_task, void) {
   auto entity_coloring_info = communicator->gather_coloring_info(entity_color_info);
   context_t & context_ = context_t::instance();
   context_.add_coloring(entity_map_id, entity, entity_coloring_info);
+}
+
+/*!
+ print partition task
+
+ @ingroup legion-execution
+ */
+
+__flecsi_internal_legion_task(print_partition_task, void) {
+	const int my_rank = runtime->find_local_MPI_rank();
+  const int point = task->index_point.point_data[0];
+  
+  assert(point == my_rank);
+  
+  const task_entity_t *task_entity = (const task_entity_t*)task->args;
+  int entity_map_id = task_entity->entity_map_id;
+  int entity_id = task_entity->entity_id;
+  int id_fid = task_entity->id_fid; 
+  int color_fid = task_entity->color_fid;
+  int offset_fid = task_entity->offset_fid;
+  int print_flag = task_entity->print_flag;
+  
+  assert(task->regions.size() == 4);
+  assert(task->regions[0].privilege_fields.size() == 2);
+	const Legion::FieldAccessor<READ_ONLY,int,1> primary_id_acc(regions[0], id_fid);
+	const Legion::FieldAccessor<READ_ONLY,LegionRuntime::Arrays::Point<1>,1> primary_color_acc(regions[0], color_fid);
+	
+  assert(task->regions[1].privilege_fields.size() == 3);
+	const Legion::FieldAccessor<READ_ONLY,int,1> ghost_id_acc(regions[1], id_fid);
+  const Legion::FieldAccessor<READ_ONLY,int,1> ghost_offset_acc(regions[1], offset_fid);
+  const Legion::FieldAccessor<READ_ONLY,LegionRuntime::Arrays::Point<1>,1> ghost_color_acc(regions[1], color_fid);
+  
+  assert(task->regions[2].privilege_fields.size() == 2);  
+  const Legion::FieldAccessor<READ_ONLY,int,1> shared_id_acc(regions[2], id_fid);
+  const Legion::FieldAccessor<READ_ONLY,int,1> shared_offset_acc(regions[2], offset_fid);
+  
+  assert(task->regions[3].privilege_fields.size() == 2);
+  const Legion::FieldAccessor<READ_ONLY,int,1> exclusive_id_acc(regions[3], id_fid);
+	const Legion::FieldAccessor<READ_ONLY,int,1> exclusive_offset_acc(regions[3], offset_fid);
+  
+
+  printf("\n");
+  
+  flecsi::coloring::index_coloring_t entity;
+  coloring::coloring_info_t entity_color_info;
+  
+  // Primary cell
+	int ct = 0;
+  Legion::Domain primary_domain = runtime->get_index_space_domain(ctx,
+                   task->regions[0].region.get_index_space());
+	
+	printf("[%d, %d, %d] primary, ", my_rank, entity_id, entity_map_id);								 
+  for (Legion::PointInDomainIterator<1> pir(primary_domain); pir(); pir++) {
+	  if (ct == 0) {
+		  int color = primary_color_acc.read(*pir);
+			printf("parmetis color %d, ", color);
+		}
+		if (print_flag) {
+      printf("%d ", (int)primary_id_acc[*pir]);
+    }
+	  ct ++;
+    
+	}
+	printf(" CP total %d\n", ct);
+  
+  std::set<size_t> empty_set;
+	
+  // Ghost cell
+	ct = 0;
+  Legion::Domain ghost_domain = runtime->get_index_space_domain(ctx,
+                   task->regions[1].region.get_index_space());
+	
+	printf("[%d, %d, %d] ghost, ", my_rank, entity_id, entity_map_id);								 
+  for (Legion::PointInDomainIterator<1> pir(ghost_domain); pir(); pir++) {
+    int color = ghost_color_acc.read(*pir);
+//	  printf("%d:%d:%d ", (int)cell_ghost_id_acc[*pir], shared_color, color);
+    if (print_flag) {
+      printf("%d ", (int)ghost_id_acc[*pir]);
+    }
+		ct ++;
+    
+	}
+  printf(" CG total %d\n", ct);
+  
+  // Shared cell
+	ct = 0;
+  Legion::Domain shared_domain = runtime->get_index_space_domain(ctx,
+                   task->regions[2].region.get_index_space());
+	
+	printf("[%d, %d, %d] shared, ", my_rank, entity_id, entity_map_id);								 
+  for (Legion::PointInDomainIterator<1> pir(shared_domain); pir(); pir++) {
+	  if (print_flag) {
+      printf("%d ", (int)shared_id_acc[*pir]);
+    }
+		ct ++;
+    
+	}
+	printf(" CS total %d\n", ct);
+
+  // Exclusive cell
+	ct = 0;
+  Legion::Domain exclusive_domain = runtime->get_index_space_domain(ctx,
+                   task->regions[3].region.get_index_space());
+	
+	printf("[%d, %d, %d] execlusive, ", my_rank, entity_id, entity_map_id);								 
+  for (Legion::PointInDomainIterator<1> pir(exclusive_domain); pir(); pir++) {
+	  if (print_flag) {
+      printf("%d ", (int)exclusive_id_acc[*pir]);
+    }
+		ct ++;
+	}
+	printf(" CE total %d\n", ct);
+	
+	printf("\n");
+
 }
 
 /*!

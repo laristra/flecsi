@@ -621,5 +621,61 @@ void legion_dependent_partition_policy_t::output_partition(legion_entity &entity
   fm_epoch4.wait_all_results(true);
 }
 
+void legion_dependent_partition_policy_t::print_partition(legion_entity &entity, legion_partition &primary, legion_partition &ghost, legion_partition &shared, legion_partition &exclusive, int print_flag)
+{
+  Legion::Runtime *runtime = Legion::Runtime::get_runtime();
+  Legion::Context ctx = Legion::Runtime::get_context();
+  context_t & context_ = context_t::instance();
+  
+  set_offset(entity, primary);
+  
+  // **************************************************************************
+	// Launch index task to verify partition results
+  const auto print_partition_task_id =
+    context_.task_id<__flecsi_internal_task_key(print_partition_task)>();
+  
+  task_entity_t task_entity;
+  task_entity.entity_map_id = entity.map_id;
+  task_entity.entity_id = entity.id;
+  task_entity.id_fid = entity.id_fid;
+  task_entity.color_fid = entity.color_fid;
+  task_entity.offset_fid = entity.offset_fid;
+  task_entity.print_flag = print_flag;
+  
+  Legion::IndexLauncher print_partition_launcher(print_partition_task_id,
+    																			 partition_index_space, Legion::TaskArgument(&task_entity, sizeof(task_entity_t)),
+      																		 Legion::ArgumentMap());
+	
+	print_partition_launcher.add_region_requirement(
+	  Legion::RegionRequirement(primary.logical_partition, 0/*projection ID*/,
+	                            READ_ONLY, EXCLUSIVE, entity.logical_region));
+  print_partition_launcher.region_requirements[0].add_field(entity.id_fid);
+  print_partition_launcher.region_requirements[0].add_field(entity.color_fid);
+	
+	print_partition_launcher.add_region_requirement(
+	  Legion::RegionRequirement(ghost.logical_partition, 0/*projection ID*/,
+	                            READ_ONLY, EXCLUSIVE, entity.logical_region));
+  print_partition_launcher.region_requirements[1].add_field(entity.id_fid);
+  print_partition_launcher.region_requirements[1].add_field(entity.offset_fid);
+  print_partition_launcher.region_requirements[1].add_field(entity.color_fid);
+  
+	print_partition_launcher.add_region_requirement(
+	  Legion::RegionRequirement(shared.logical_partition, 0/*projection ID*/,
+	                            READ_ONLY, EXCLUSIVE, entity.logical_region));
+  print_partition_launcher.region_requirements[2].add_field(entity.id_fid);
+  print_partition_launcher.region_requirements[2].add_field(entity.offset_fid);
+  
+	print_partition_launcher.add_region_requirement(
+	  Legion::RegionRequirement(exclusive.logical_partition, 0/*projection ID*/,
+	                            READ_ONLY, EXCLUSIVE, entity.logical_region));
+  print_partition_launcher.region_requirements[3].add_field(entity.id_fid);
+  print_partition_launcher.region_requirements[3].add_field(entity.offset_fid);
+	
+
+  print_partition_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  Legion::FutureMap fm_epoch4 = runtime->execute_index_space(ctx, print_partition_launcher);
+  fm_epoch4.wait_all_results(true);
+}
+
 } // namespace execution
 } // namespace flecsi

@@ -83,6 +83,7 @@ public:
   legion_partition partition_by_difference(legion_entity &entity, legion_partition &par1, legion_partition &par2);
   legion_partition partition_by_intersection(legion_entity &entity, legion_partition &par1, legion_partition &par2);
   void output_partition(legion_entity &entity, legion_partition &primary, legion_partition &ghost, legion_partition &shared, legion_partition &exclusive);
+  void print_partition(legion_entity &entity, legion_partition &primary, legion_partition &ghost, legion_partition &shared, legion_partition &exclusive, int print_flag);
   void min_reduction_by_color(legion_entity &entity, legion_partition &alias_partition);
 
 public:

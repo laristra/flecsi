@@ -337,6 +337,21 @@ __flecsi_internal_register_legion_task(
     output_partition_task,
     processor_type_t::loc,
     index | leaf);
+    
+/*!
+  Register print_partition index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */
+
+__flecsi_internal_register_legion_task(
+    print_partition_task,
+    processor_type_t::loc,
+    index | leaf);
 
 const double MaxReductionOp::identity = std::numeric_limits<double>::min();
 

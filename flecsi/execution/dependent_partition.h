@@ -49,6 +49,11 @@ struct dependent_partition__ : public DEPENDENT_PARTITION_POLICY {
      DEPENDENT_PARTITION_POLICY::output_partition(entity, primary, ghost, shared, exclusive);
   }
   
+  void print_partition(space_t &entity, set_t &primary, set_t &ghost, set_t &shared, set_t &exclusive, int print_flag)
+  {
+     DEPENDENT_PARTITION_POLICY::print_partition(entity, primary, ghost, shared, exclusive, print_flag);
+  }
+  
   void min_reduction_by_color(space_t &entity, set_t &alias_partition)
   {
     DEPENDENT_PARTITION_POLICY::min_reduction_by_color(entity, alias_partition);
