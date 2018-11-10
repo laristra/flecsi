@@ -1216,8 +1216,6 @@ __flecsi_internal_legion_task(init_cell_task, init_mesh_task_rt_t) {
 
   task_mesh_definition_t task_md = *(task_mesh_definition_t*)task->args;
   flecsi::topology::mesh_definition_base__ *sd = (flecsi::topology::mesh_definition_base__ *)task_md.md_ptr;
-
-	int total_num_cells = sd->num_entities(1);
 									 
 	auto partetis_dcrs = flecsi::coloring::make_dcrs(*sd, sd->get_dimension(), sd->get_dimension()-1);
   auto colorer = std::make_shared<flecsi::coloring::parmetis_colorer_t>();
