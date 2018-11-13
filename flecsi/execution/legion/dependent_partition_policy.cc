@@ -627,7 +627,7 @@ void legion_dependent_partition_policy_t::print_partition(legion_entity &entity,
   Legion::Context ctx = Legion::Runtime::get_context();
   context_t & context_ = context_t::instance();
   
-  set_offset(entity, primary);
+ // set_offset(entity, primary);
   
   // **************************************************************************
 	// Launch index task to verify partition results

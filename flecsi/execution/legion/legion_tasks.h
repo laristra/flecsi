@@ -1535,7 +1535,7 @@ __flecsi_internal_legion_task(output_partition_task, void) {
 		  int color = primary_color_acc.read(*pir);
 			printf("parmetis color %d, ", color);
 		}
-		printf("%d ", (int)primary_id_acc[*pir]);
+//		printf("%d ", (int)primary_id_acc[*pir]);
 	  ct ++;
     
     int cell_id = (int)primary_id_acc[*pir];
@@ -1554,7 +1554,7 @@ __flecsi_internal_legion_task(output_partition_task, void) {
   for (Legion::PointInDomainIterator<1> pir(ghost_domain); pir(); pir++) {
     int color = ghost_color_acc.read(*pir);
 //	  printf("%d:%d:%d ", (int)cell_ghost_id_acc[*pir], shared_color, color);
-    printf("%d ", (int)ghost_id_acc[*pir]);
+  //  printf("%d ", (int)ghost_id_acc[*pir]);
 		ct ++;
     entity_color_info.ghost_owners.insert(color);
     
@@ -1574,7 +1574,7 @@ __flecsi_internal_legion_task(output_partition_task, void) {
 	
 	printf("[%d, %d, %d] shared, ", my_rank, entity_id, entity_map_id);								 
   for (Legion::PointInDomainIterator<1> pir(shared_domain); pir(); pir++) {
-	  printf("%d ", (int)shared_id_acc[*pir]);
+//	  printf("%d ", (int)shared_id_acc[*pir]);
 		ct ++;
     
     int cell_id = (int)shared_id_acc[*pir];
@@ -1593,7 +1593,7 @@ __flecsi_internal_legion_task(output_partition_task, void) {
 	
 	printf("[%d, %d, %d] execlusive, ", my_rank, entity_id, entity_map_id);								 
   for (Legion::PointInDomainIterator<1> pir(exclusive_domain); pir(); pir++) {
-	  printf("%d ", (int)exclusive_id_acc[*pir]);
+//	  printf("%d ", (int)exclusive_id_acc[*pir]);
 		ct ++;
     int cell_id = (int)exclusive_id_acc[*pir];
     int offset = (int)exclusive_offset_acc[*pir];
