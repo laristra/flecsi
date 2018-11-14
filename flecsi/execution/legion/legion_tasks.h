@@ -651,6 +651,7 @@ __flecsi_internal_legion_task(owners_subregions_task, subrect_map) {
   return lid_to_subrect_map;
 } // owners_subregions
 
+#if 0
 /*!
  init mesh task
 
@@ -1191,6 +1192,8 @@ __flecsi_internal_legion_task(verify_dp_task, void) {
 	
 	printf("\n");
 }
+
+#endif
 
 /*!
  init cell task

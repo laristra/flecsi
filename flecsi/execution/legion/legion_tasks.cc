@@ -159,6 +159,7 @@ __flecsi_internal_register_legion_task(
     processor_type_t::loc,
     index| leaf);
 
+#if 0
 /*!
   Register init mesh index task.
 
@@ -188,22 +189,6 @@ __flecsi_internal_register_legion_task(
     init_adjacency_task,
     processor_type_t::loc,
     index | leaf);
-	
-/*!
-  Register init vertex color index task.
-
-  \remark The translation unit that contains this call will not be
-         necessary with C++17, as it will be possible to move this call
-         into the header file using inline variables.
-
-  @ingroup legion-execution
- */
-
-__flecsi_internal_register_reduction_task(
-    init_vertex_color_task,
-    processor_type_t::loc,
-    index | leaf,
-    MinReductionPointOp::redop_id);
 
 /*!
   Register verify vertex color index task.
@@ -247,6 +232,8 @@ __flecsi_internal_register_legion_task(
     verify_dp_task,
     processor_type_t::loc,
     index | leaf);
+
+#endif
     
 /*!
   Register init cell index task.
@@ -352,6 +339,22 @@ __flecsi_internal_register_legion_task(
     print_partition_task,
     processor_type_t::loc,
     index | leaf);
+    
+/*!
+  Register init vertex color index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */
+
+__flecsi_internal_register_reduction_task(
+    init_vertex_color_task,
+    processor_type_t::loc,
+    index | leaf,
+    MinReductionPointOp::redop_id);
 
 const double MaxReductionOp::identity = std::numeric_limits<double>::min();
 

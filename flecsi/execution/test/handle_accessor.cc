@@ -20,7 +20,6 @@
 #include <flecsi/io/simple_definition.h>
 #include <flecsi/supplemental/coloring/add_colorings.h>
 #include <flecsi/supplemental/mesh/empty_mesh_2d.h>
-#include <flecsi/supplemental/coloring/add_colorings_dependent_partition.h>
 #include <flecsi/supplemental/coloring/add_colorings_unified.h>
 
 using namespace flecsi;
@@ -71,7 +70,6 @@ specialization_tlt_init(int argc, char ** argv) {
   map.vertices = 1;
   map.cells = 0;
 
- // add_colorings_dependent_partition();
   add_colorings_unified(map);
 //  flecsi_execute_mpi_task(add_colorings, flecsi::supplemental, map);
 } // specialization_tlt_init

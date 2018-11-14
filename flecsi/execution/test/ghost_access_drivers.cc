@@ -15,7 +15,6 @@
 #include <flecsi/execution/execution.h>
 #include <flecsi/supplemental/coloring/add_colorings.h>
 #include <flecsi/supplemental/mesh/empty_mesh_2d.h>
-#include <flecsi/supplemental/coloring/add_colorings_dependent_partition.h>
 #include <flecsi/supplemental/coloring/add_colorings_unified.h>
 
 #define INDEX_ID 0
@@ -75,7 +74,6 @@ specialization_tlt_init(int argc, char ** argv) {
 
   //add_colorings(map);
   add_colorings_unified(map);
-//  add_colorings_dependent_partition();
 //  flecsi_execute_mpi_task(add_colorings, flecsi::supplemental, map);
 
 } // specialization_tlt_init
