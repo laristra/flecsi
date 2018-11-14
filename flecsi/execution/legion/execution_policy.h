@@ -321,6 +321,8 @@ struct legion_execution_policy_t {
 #ifdef MAPPER_COMPACTION
           launcher.tag = MAPPER_COMPACTED_STORAGE;
 #endif
+          launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
           // Add region requirements and future dependencies to the
           // task launcher
           for(auto & req : init_args.region_reqs) {
