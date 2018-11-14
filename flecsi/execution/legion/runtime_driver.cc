@@ -233,7 +233,7 @@ runtime_driver(
   // Fix ghost reference/pointer to point to compacted position of
   // shared that it needs
   const auto pos_correction_id =
-    context_.task_id<__flecsi_internal_task_key(owner_pos_correction_task)>();
+    context_.task_id<flecsi_internal_task_key(owner_pos_correction_task)>();
 
   Legion::IndexLauncher fix_ghost_refs_launcher(pos_correction_id,
     data.color_domain(), Legion::TaskArgument(nullptr, 0), Legion::ArgumentMap());
@@ -301,7 +301,7 @@ runtime_driver(
   std::map<size_t,Legion::Serializer> args_serializers;
 
   const auto setup_rank_context_id =
-    context_.task_id<__flecsi_internal_task_key(setup_rank_context_task)>();
+    context_.task_id<flecsi_internal_task_key(setup_rank_context_task)>();
 
    using sparse_index_space_info_t = context_t::sparse_index_space_info_t;
 
@@ -416,7 +416,7 @@ runtime_driver(
   //launch a task that willl fill ghost_owner_pos_fid for the sparse
   //entity Logical Region
   const auto sparse_set_pos_id =
-    context_.task_id<__flecsi_internal_task_key(
+    context_.task_id<flecsi_internal_task_key(
     sparse_set_owner_position_task)>();
   Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id,
     data.color_domain(), Legion::TaskArgument(nullptr, 0),
@@ -564,7 +564,7 @@ runtime_driver(
 				"ghost logical partition");
 #if 0
       const auto sparse_set_pos_id =
-        context_.task_id<__flecsi_internal_task_key(
+        context_.task_id<flecsi_internal_task_key(
     		sparse_set_owner_position_task)>();
   		Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id,
     		data.color_domain(), Legion::TaskArgument(nullptr, 0),
@@ -644,7 +644,7 @@ runtime_driver(
     //launch a task that willl fill ghost_owner_pos_fid for the sparse
     //entity Logical Region
     const auto sparse_set_pos_id =
-    context_.task_id<__flecsi_internal_task_key(
+    context_.task_id<flecsi_internal_task_key(
     sparse_set_owner_position_task)>();
   Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id,
     data.color_domain(), Legion::TaskArgument(nullptr, 0),
@@ -928,7 +928,7 @@ setup_rank_context_task(
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
 
-  //adding information for the global and color handles to the ispace_map
+/*  //adding information for the global and color handles to the ispace_map
   if (number_of_global_fields>0){
 
     size_t global_index_space =

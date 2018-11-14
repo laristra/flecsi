@@ -212,7 +212,7 @@ struct legion_execution_policy_t {
           } // for
 
           for(auto & future : init_args.futures) {
-            future->add_to_single_task_launcher(launcher);
+            launcher.add_future(future);
           } // for
 
           LegionRuntime::Arrays::Rect<1> launch_bounds(0,1);
@@ -328,7 +328,7 @@ struct legion_execution_policy_t {
           } // for
 
           for(auto & future : init_args.futures) {
-            future->add_to_single_task_launcher(launcher);
+           launcher.add_future(future);
           } // for
 
           // Execute a tuple walker that applies the task prolog operations
@@ -364,7 +364,7 @@ struct legion_execution_policy_t {
             Legion::Future future;
 
             future = legion_runtime->execute_index_space(legion_context,
-                index_task_launcher, REDUCTION_ID);
+                launcher, REDUCTION);
             // Enqueue the epilog.
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
@@ -373,7 +373,7 @@ struct legion_execution_policy_t {
           }
           else {
             // Enqueue the task.
-            auto future_map =
+            Legion::FutureMap future_map =
               legion_runtime->execute_index_space(legion_context, launcher);
 
             // Execute a tuple walker that applies the task epilog operations
@@ -396,10 +396,19 @@ struct legion_execution_policy_t {
           // FIXME: This will need to change with the new control model
  //         if(context_.execution_state() == SPECIALIZATION_TLT_INIT) {
 
+            LegionRuntime::Arrays::Rect<1> launch_bounds(
+              LegionRuntime::Arrays::Point<1>(0),
+              LegionRuntime::Arrays::Point<1>(context_.colors()-1));
+            Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+
+
+
             ArgumentMap arg_map;
             IndexLauncher launcher(context_.task_id<TASK>(),
               Legion::Domain::from_rect<1>(context_.all_processes()),
               TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
+
+            launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
             // Add region requirements and future dependencies to the
             // task launcher
@@ -408,7 +417,7 @@ struct legion_execution_policy_t {
             } // for
 
             for(auto & future : init_args.futures) {
-              future->add_to_index_task_launcher(launcher);
+              launcher.add_future(future);
             } // for
 
             // Execute a tuple walker that applies the task prolog operations
@@ -430,13 +439,9 @@ struct legion_execution_policy_t {
             } // scope
 
 
-            Legion::MustEpochLauncher must_epoch_launcher;
-            must_epoch_launcher.add_index_task(launcher);
-
             // Launch the MPI task
-            auto future = legion_runtime->execute_must_epoch(
-              legion_context, must_epoch_launcher);
-
+            auto future = legion_runtime->execute_index_space(
+          	  legion_context,launcher);
             // Force synchronization
             future.wait_all_results(true);
 

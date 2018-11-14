@@ -52,9 +52,6 @@ public:
 
 //  virtual RETURN get(size_t index = 0, bool silence_warnings = false) = 0;
 
-  virtual void
-  add_future_to_index_task_launcher(Legion::IndexLauncher &launcher) const = 0;
-
   virtual void init_future(void) = 0;
 
   virtual void finalize_future(void) = 0;
@@ -81,6 +78,18 @@ struct legion_future_u {};
 
 template<typename RETURN>
 struct legion_future_u<RETURN, launch_type_t::single> : public future_base_t {
+
+  legion_future_u(const legion_future_u &f)
+  {
+    data_=f.data_;
+    initialized_=f.initialized_;
+    auto legion_runtime = Legion::Runtime::get_runtime();
+    if (initialized_)
+      legion_future_ = Legion::Future::from_value(legion_runtime, data_);
+    else
+      legion_future_=f.legion_future_;
+  }
+
   /*!
     Construct a future from a Legion future.
 

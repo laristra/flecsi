@@ -5,7 +5,7 @@
 
 add_executable(io-poc
   io-poc.cc
-  ${CMAKE_SOURCE_DIR}/flecsi/control/runtime_main.cc
+  ${CMAKE_SOURCE_DIR}/flecsi/flecsi/control/runtime_main.cc
 )
 
 include_directories(${CMAKE_SOURCE_DIR})

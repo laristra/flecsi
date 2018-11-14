@@ -314,6 +314,7 @@ struct legion_context_policy_t {
 
   void unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
+  Legion::FutureMap unset_call_mpi_single();
   Legion::FutureMap unset_call_mpi_index(Legion::Context & ctx,
     Legion::Runtime * runtime);
 
