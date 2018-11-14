@@ -480,5 +480,18 @@ MinReductionPointOp::fold<false>(RHS & rhs1, RHS rhs2) {
   } while (!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
 }
 
+void dp_debug_printf(int verbose_level, const char *format, ...)
+{
+  if (verbose_level > DP_VERBOSE_PRINT) {
+    return;
+  } else {
+    va_list args;
+    va_start(args, format);
+    vprintf(format, args);
+    va_end(args);
+    return;
+  }
+}
+
 } // namespace execution
 } // namespace flecsi
