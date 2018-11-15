@@ -324,38 +324,38 @@ list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${FLECSI_RUNTIME_LIBRARIES})
 # Enable partitioning with METIS
 #------------------------------------------------------------------------------#
 
-find_package(METIS 5.1)
+#find_package(METIS 5.1)
 
 if(ENABLE_MPI)
   # Counter-intuitive variable: set to TRUE to disable test
   set(PARMETIS_TEST_RUNS TRUE)
-  find_package(ParMETIS 4.0)
+  #  find_package(ParMETIS 4.0)
 endif()
 
-set(COLORING_LIBRARIES)
+#set(COLORING_LIBRARIES)
 
-if(METIS_FOUND)
-  list(APPEND COLORING_LIBRARIES ${METIS_LIBRARIES})
-  include_directories(${METIS_INCLUDE_DIRS})
-  set(ENABLE_METIS TRUE)
+#if(METIS_FOUND)
+#  list(APPEND COLORING_LIBRARIES ${METIS_LIBRARIES})
+#  include_directories(${METIS_INCLUDE_DIRS})
+#  set(ENABLE_METIS TRUE)
 
-  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${METIS_INCLUDE_DIRS})
-endif()
+#  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${METIS_INCLUDE_DIRS})
+#endif()
 
-if(PARMETIS_FOUND)
-  list(APPEND COLORING_LIBRARIES ${PARMETIS_LIBRARIES})
-  include_directories(${PARMETIS_INCLUDE_DIRS})
-  set(ENABLE_PARMETIS TRUE)
+#if(PARMETIS_FOUND)
+#  list(APPEND COLORING_LIBRARIES ${PARMETIS_LIBRARIES})
+#  include_directories(${PARMETIS_INCLUDE_DIRS})
+#  set(ENABLE_PARMETIS TRUE)
 
-  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${PARMETIS_INCLUDE_DIRS})
-endif()
+#  list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${PARMETIS_INCLUDE_DIRS})
+#endif()
 
-if(NOT COLORING_LIBRARIES)
-  MESSAGE(FATAL_ERROR
-    "You need parmetis to enable partitioning" )
-endif()
+#if(NOT COLORING_LIBRARIES)
+#  MESSAGE(FATAL_ERROR
+#    "You need parmetis to enable partitioning" )
+#endif()
 
-list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${COLORING_LIBRARIES})
+#list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${COLORING_LIBRARIES})
 
 #------------------------------------------------------------------------------#
 # Process id bits
