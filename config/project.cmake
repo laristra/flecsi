@@ -42,6 +42,9 @@ set(CINCH_HEADER_SUFFIXES "\\.h")
 
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
+# Cmake support of C++17 didnt start until version 3.8
+cmake_minimum_required(VERSION 3.8)
+
 
 #------------------------------------------------------------------------------#
 # This variable is used to collect library and include dependencies for
