@@ -37,12 +37,12 @@ namespace execution {
 template<
     typename R,
     launch_type_t launch = launch_type_t::single>
-using hpx_future__ = hpx::shared_future<R>;
+using hpx_future_u = hpx::shared_future<R>;
 
 template<
     typename RETURN,
     launch_type_t launch>
-using flecsi_future = hpx_future__<
+using flecsi_future = hpx_future_u<
     RETURN,
     launch>;
 

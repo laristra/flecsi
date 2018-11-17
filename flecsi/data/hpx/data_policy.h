@@ -27,14 +27,14 @@ namespace data {
 struct hpx_data_policy_t
 {
   //--------------------------------------------------------------------------//
-  //! The storage_class__ type determines the underlying storage mechanism
+  //! The storage_class_u type determines the underlying storage mechanism
   //! for the backend runtime.
   //--------------------------------------------------------------------------//
 
   template<
     size_t STORAGE_CLASS
   >
-  using storage_class__ = hpx::storage_class__<STORAGE_CLASS>;
+  using storage_class_u = hpx::storage_class_u<STORAGE_CLASS>;
 
 }; // class hpx_data_policy_t
 

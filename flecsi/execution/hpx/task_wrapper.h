@@ -25,7 +25,7 @@ namespace execution {
 template <
   typename FUNCTOR_TYPE
 >
-struct functor_task_wrapper__
+struct functor_task_wrapper_u
 {
 };
 

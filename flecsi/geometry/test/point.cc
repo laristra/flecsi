@@ -18,9 +18,9 @@
 
 using namespace flecsi;
 
-using point_1d_t = point__<double,1>;
-using point_2d_t = point__<double,2>;
-using point_3d_t = point__<double,3>;
+using point_1d_t = point_u<double,1>;
+using point_2d_t = point_u<double,2>;
+using point_3d_t = point_u<double,3>;
 
 TEST(point, sanity) {
   point_1d_t a1{-1.0};

@@ -219,7 +219,6 @@ endif()
 
 if(ENABLE_BOOST)
   list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
-  message (WARNING "FLECSI_LIBRARY_DEPENDENCIES = " ${FLECSI_LIBRARY_DEPENDENCIES})
 endif()
 
 #------------------------------------------------------------------------------#

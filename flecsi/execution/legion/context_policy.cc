@@ -117,7 +117,7 @@ legion_context_policy_t::unset_call_mpi(
 
   const auto tid =
       context_t::instance()
-          .task_id<__flecsi_internal_task_key(unset_call_mpi_task)>();
+          .task_id<flecsi_internal_task_key(unset_call_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher launcher(
@@ -139,7 +139,7 @@ legion_context_policy_t::unset_call_mpi_single() {
 
   const auto tid =
       context_t::instance()
-          .task_id<__flecsi_internal_task_key(unset_call_mpi_task)>();
+          .task_id<flecsi_internal_task_key(unset_call_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
 
@@ -163,7 +163,7 @@ legion_context_policy_t::handoff_to_mpi(
     Legion::Runtime * runtime) {
   const auto tid =
       context_t::instance()
-          .task_id<__flecsi_internal_task_key(handoff_to_mpi_task)>();
+          .task_id<flecsi_internal_task_key(handoff_to_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(
@@ -186,7 +186,7 @@ legion_context_policy_t::wait_on_mpi(
     Legion::Context & ctx,
     Legion::Runtime * runtime) {
   const auto tid = context_t::instance()
-                       .task_id<__flecsi_internal_task_key(wait_on_mpi_task)>();
+                       .task_id<flecsi_internal_task_key(wait_on_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(

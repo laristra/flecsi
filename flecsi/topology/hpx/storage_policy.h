@@ -39,42 +39,42 @@ namespace topology {
 ///
 
 template<size_t NUM_DIMS, size_t NUM_DOMS, size_t NUM_INDEX_SUBSPACES>
-struct hpx_topology_storage_policy__ {
+struct hpx_topology_storage_policy_u {
   static constexpr size_t num_partitions = 5;
   using id_t = utils::id_t;
 
   using index_spaces_t = std::array<
-      index_space__<
+      index_space_u<
           mesh_entity_base_ *,
           true,
           true,
           true,
           void,
-          topology_storage__>,
+          topology_storage_u>,
       NUM_DIMS + 1>;
 
   using index_subspaces_t = std::array<
-      index_space__<
+      index_space_u<
           mesh_entity_base_ *,
           false,
           true,
           false,
           void,
-          topology_storage__>,
+          topology_storage_u>,
       NUM_INDEX_SUBSPACES>;
 
   using partition_index_spaces_t = std::array<
-      index_space__<
+      index_space_u<
           mesh_entity_base_ *,
           false,
           false,
           true,
           void,
-          topology_storage__>,
+          topology_storage_u>,
       NUM_DIMS + 1>;
 
-  // array of array of domain_connectivity__
-  std::array<std::array<domain_connectivity__<NUM_DIMS>, NUM_DOMS>,
+  // array of array of domain_connectivity_u
+  std::array<std::array<domain_connectivity_u<NUM_DIMS>, NUM_DOMS>,
     NUM_DOMS> topology;
 
   std::array<index_spaces_t, NUM_DOMS> index_spaces;
@@ -86,7 +86,7 @@ struct hpx_topology_storage_policy__ {
 
   size_t color;
 
-  hpx_topology_storage_policy__() {
+  hpx_topology_storage_policy_u() {
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();
   }
@@ -211,7 +211,7 @@ struct hpx_topology_storage_policy__ {
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(ARG_TYPES &&... args) {
-    using dtype = domain_entity__<DOM, T>;
+    using dtype = domain_entity_u<DOM, T>;
 
     auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
     size_t entity = is.size();
@@ -233,7 +233,7 @@ struct hpx_topology_storage_policy__ {
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(const id_t & id, ARG_TYPES &&... args) {
-    using dtype = domain_entity__<DOM, T>;
+    using dtype = domain_entity_u<DOM, T>;
 
     auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
 

@@ -395,7 +395,7 @@ struct hpx_context_policy_t
               compact_origin_lengs[static_cast<int>(ghost_owner)].size()),
           compact_origin_lengs[static_cast<int>(ghost_owner)].data(),
           compact_origin_disps[static_cast<int>(ghost_owner)].data(),
-          flecsi::coloring::mpi_typetraits__<T>::type(), &origin_type);
+          flecsi::coloring::mpi_typetraits_u<T>::type(), &origin_type);
       MPI_Type_commit(&origin_type);
       metadata.origin_types.insert({ghost_owner, origin_type});
 
@@ -404,7 +404,7 @@ struct hpx_context_policy_t
               compact_target_lengs[static_cast<int>(ghost_owner)].size()),
           compact_target_lengs[static_cast<int>(ghost_owner)].data(),
           compact_target_disps[static_cast<int>(ghost_owner)].data(),
-          flecsi::coloring::mpi_typetraits__<T>::type(), &target_type);
+          flecsi::coloring::mpi_typetraits_u<T>::type(), &target_type);
       MPI_Type_commit(&target_type);
       metadata.target_types.insert({ghost_owner, target_type});
     }
@@ -440,7 +440,7 @@ struct hpx_context_policy_t
     // Each shared and ghost cells element is an array of max_entries_per_index
     // of entry_value_t
     MPI_Datatype shared_ghost_type;
-    MPI_Type_contiguous(sizeof(data::sparse_entry_value__<T>) * 5,
+    MPI_Type_contiguous(sizeof(data::sparse_entry_value_u<T>) * 5,
                         MPI_BYTE, &shared_ghost_type);
     MPI_Type_commit(&shared_ghost_type);
     for (auto ghost_owner : coloring_info.ghost_owners) {
@@ -450,7 +450,7 @@ struct hpx_context_policy_t
       MPI_Type_indexed(metadata.compact_origin_lengs[ghost_owner].size(),
                        metadata.compact_origin_lengs[ghost_owner].data(),
                        metadata.compact_origin_disps[ghost_owner].data(),
-                       //flecsi::coloring::mpi_typetraits__<T>::type(),
+                       //flecsi::coloring::mpi_typetraits_u<T>::type(),
                        shared_ghost_type,
                        &origin_type);
       MPI_Type_commit(&origin_type);
@@ -459,7 +459,7 @@ struct hpx_context_policy_t
       MPI_Type_indexed(metadata.compact_target_lengs[ghost_owner].size(),
                        metadata.compact_target_lengs[ghost_owner].data(),
                        metadata.compact_target_disps[ghost_owner].data(),
-                       //flecsi::coloring::mpi_typetraits__<T>::type(),
+                       //flecsi::coloring::mpi_typetraits_u<T>::type(),
                        shared_ghost_type,
                        &target_type);
       MPI_Type_commit(&target_type);
@@ -728,7 +728,7 @@ struct hpx_context_policy_t
 
   template <typename T>
   auto
-  reduce_max(hpx_future__<T>& local_future) -> hpx_future__<T>
+  reduce_max(hpx_future_u<T>& local_future) -> hpx_future_u<T>
   {
     auto gloabl_max_f = local_future.then(
       mpi_exec_,
@@ -736,7 +736,7 @@ struct hpx_context_policy_t
         T global_max{};
         T local_max = local_future.get();
         MPI_Allreduce(&local_max, &global_max, 1,
-           flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
+           flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
            MPI_COMM_WORLD);
         return global_max;
       });
@@ -774,7 +774,7 @@ struct hpx_context_policy_t
 
   template <typename T>
   auto
-  reduce_min(hpx_future__<T>& local_future) -> hpx_future__<T>
+  reduce_min(hpx_future_u<T>& local_future) -> hpx_future_u<T>
   {
     auto global_min_f = local_future.then(
       mpi_exec_,
@@ -782,7 +782,7 @@ struct hpx_context_policy_t
         T global_min{};
         T local_min = local_future.get();
         MPI_Allreduce(&local_min, &global_min, 1,
-           flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
+           flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
            MPI_COMM_WORLD);
         return global_min;
       });

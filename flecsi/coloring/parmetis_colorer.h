@@ -175,8 +175,8 @@ struct parmetis_colorer_t : public colorer_t {
     // Do all-to-all to find out where everything belongs.
     std::vector<idx_t> recv_cnts(size);
     result = MPI_Alltoall(
-        &send_cnts[0], 1, mpi_typetraits__<idx_t>::type(), &recv_cnts[0], 1,
-        mpi_typetraits__<idx_t>::type(), MPI_COMM_WORLD);
+        &send_cnts[0], 1, mpi_typetraits_u<idx_t>::type(), &recv_cnts[0], 1,
+        mpi_typetraits_u<idx_t>::type(), MPI_COMM_WORLD);
 
 #if 0
     if(rank == 0) {

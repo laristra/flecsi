@@ -27,7 +27,7 @@ namespace flecsi {
 struct dense_data_handle_base_t {};
 
 /*!
- The dense_data_handle_base__ type captures information about permissions
+ The dense_data_handle_base_u type captures information about permissions
  and specifies a data policy.
 
  @tparam T                     The data type referenced by the handle.
@@ -48,7 +48,7 @@ template<
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS,
     typename DATA_POLICY>
-struct dense_data_handle_base__ : public DATA_POLICY,
+struct dense_data_handle_base_u : public DATA_POLICY,
                                   public dense_data_handle_base_t {
 
   /*!
@@ -60,13 +60,13 @@ struct dense_data_handle_base__ : public DATA_POLICY,
    Default constructor.
    */
 
-  dense_data_handle_base__() {}
+  dense_data_handle_base_u() {}
 
   /*!
     Copy constructor.
    */
 
-  dense_data_handle_base__(const dense_data_handle_base__ & b)
+  dense_data_handle_base_u(const dense_data_handle_base_u & b)
       : DATA_POLICY(b) {
     exclusive_data = b.exclusive_data;
     shared_data = b.shared_data;
@@ -119,7 +119,7 @@ struct dense_data_handle_base__ : public DATA_POLICY,
 namespace flecsi {
 
 /*!
- The dense_data_handle__ type is the high-level data handle type.
+ The dense_data_handle_u type is the high-level data handle type.
 
  @tparam T                     The data type referenced by the handle.
  @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
@@ -138,7 +138,7 @@ template<
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-using dense_data_handle__ = dense_data_handle_base__<
+using dense_data_handle_u = dense_data_handle_base_u<
     T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,

@@ -33,7 +33,7 @@ clog_register_tag(execution);
 //----------------------------------------------------------------------------//
 
 /*!
-  @def __flecsi_internal_return_type
+  @def flecsi_internal_return_type
 
   This macro returns the inferred return type for a user task.
 
@@ -42,11 +42,11 @@ clog_register_tag(execution);
   @ingroup execution
  */
 
-#define __flecsi_internal_return_type(task)                                    \
-  typename flecsi::utils::function_traits__<decltype(task)>::return_type
+#define flecsi_internal_return_type(task)                                    \
+  typename flecsi::utils::function_traits_u<decltype(task)>::return_type
 
 /*!
-  @def __flecsi_internal_arguments_type
+  @def flecsi_internal_arguments_type
 
   This macro returns the inferred argument type for a user task.
 
@@ -55,8 +55,8 @@ clog_register_tag(execution);
   @ingroup execution
  */
 
-#define __flecsi_internal_arguments_type(task)                                 \
-  typename flecsi::utils::function_traits__<decltype(task)>::arguments_type
+#define flecsi_internal_arguments_type(task)                                 \
+  typename flecsi::utils::function_traits_u<decltype(task)>::arguments_type
 
 //----------------------------------------------------------------------------//
 // Top-Level Driver Interface
@@ -93,7 +93,7 @@ clog_register_tag(execution);
   @param driver A std::function<int(int, char **)> that shall be invoked by
                 the FLeCSI runtime after initialization. Normally, this
                 function should be the \em execute method of a
-                flecsi::control::control__<control_policy_t> instance.
+                flecsi::control::control_u<control_policy_t> instance.
 
   @ingroup execution
  */
@@ -227,8 +227,8 @@ clog_register_tag(execution);
   /* of the arguments (as opposed to the raw argument pack). This is */        \
   /* necessary because we cannot infer the argument type without using */      \
   /* a tuple. */                                                               \
-  inline __flecsi_internal_return_type(task)                                   \
-      task##_tuple_delegate(__flecsi_internal_arguments_type(task) args) {     \
+  inline flecsi_internal_return_type(task)                                   \
+      task##_tuple_delegate(flecsi_internal_arguments_type(task) args) {     \
     return flecsi::utils::tuple_function(task, args);                          \
   } /* delegate task */                                                        \
                                                                                \
@@ -236,8 +236,8 @@ clog_register_tag(execution);
   inline bool task##_task_registered =                                         \
       flecsi::execution::task_interface_t::register_task<                      \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
-          __flecsi_internal_return_type(task),                                 \
-          __flecsi_internal_arguments_type(task), task##_tuple_delegate>(      \
+          flecsi_internal_return_type(task),                                 \
+          flecsi_internal_arguments_type(task), task##_tuple_delegate>(      \
           flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(task)})
 
 /*!
@@ -263,8 +263,8 @@ clog_register_tag(execution);
   /* of the arguments (as opposed to the raw argument pack). This is */        \
   /* necessary because we cannot infer the argument type without using */      \
   /* a tuple. */                                                               \
-  inline __flecsi_internal_return_type(task)                                   \
-      task##_tuple_delegate(__flecsi_internal_arguments_type(task) args) {     \
+  inline flecsi_internal_return_type(task)                                   \
+      task##_tuple_delegate(flecsi_internal_arguments_type(task) args) {     \
     return flecsi::utils::tuple_function(task, args);                          \
   } /* delegate task */                                                        \
                                                                                \
@@ -273,8 +273,8 @@ clog_register_tag(execution);
       flecsi::execution::task_interface_t::register_task<                      \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::task)}    \
               .hash(),                                                         \
-          __flecsi_internal_return_type(task),                                 \
-          __flecsi_internal_arguments_type(task), task##_tuple_delegate>(      \
+          flecsi_internal_return_type(task),                                 \
+          flecsi_internal_arguments_type(task), task##_tuple_delegate>(      \
           flecsi::processor, flecsi::launch,                                   \
           {EXPAND_AND_STRINGIFY(nspace::task)})
 
@@ -364,8 +364,8 @@ clog_register_tag(execution);
   flecsi::execution::task_interface_t::execute_task<                           \
       flecsi::execution::launch_type_t::launch,                                \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
-      __flecsi_internal_return_type(task),                                     \
-      __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
+      flecsi_internal_return_type(task),                                     \
+      flecsi_internal_arguments_type(task)>(__VA_ARGS__)
 
 /*!
   @def flecsi_execute_task
@@ -471,22 +471,22 @@ clog_register_tag(execution);
   /* of the arguments (as opposed to the raw argument pack). This is */        \
   /* necessary because we cannot infer the argument type without using */      \
   /* a tuple. */                                                               \
-  inline __flecsi_internal_return_type(func)                                   \
-      func##_tuple_delegate(__flecsi_internal_arguments_type(func) args) {     \
+  inline flecsi_internal_return_type(func)                                   \
+      func##_tuple_delegate(flecsi_internal_arguments_type(func) args) {     \
     return flecsi::utils::tuple_function(func, args);                          \
   } /* delegate func */                                                        \
                                                                                \
-  using function_handle_##func##_t = flecsi::execution::function_handle__<     \
-      __flecsi_internal_return_type(func),                                     \
-      __flecsi_internal_arguments_type(func)>;                                 \
+  using function_handle_##func##_t = flecsi::execution::function_handle_u<     \
+      flecsi_internal_return_type(func),                                     \
+      flecsi_internal_arguments_type(func)>;                                 \
                                                                                \
   /* Call the execution policy to register the function delegate */            \
   inline bool func##_func_registered =                                         \
       flecsi::execution::function_interface_t::register_function<              \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace::func)}    \
               .hash(),                                                         \
-          __flecsi_internal_return_type(func),                                 \
-          __flecsi_internal_arguments_type(func), func##_tuple_delegate>()
+          flecsi_internal_return_type(func),                                 \
+          flecsi_internal_arguments_type(func), func##_tuple_delegate>()
 
 /*!
   @def flecsi_execute_function
@@ -540,5 +540,5 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Define a function handle type */                                          \
-  using func = flecsi::execution::function_handle__<                           \
+  using func = flecsi::execution::function_handle_u<                           \
       return_type, std::tuple<__VA_ARGS__>>

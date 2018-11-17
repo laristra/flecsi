@@ -22,6 +22,7 @@ set(topology_HEADERS
   color_topology.h
   common/array_buffer.h
   common/entity_storage.h
+  connectivity.h
   entity_storage.h
   index_space.h
   mesh_definition.h

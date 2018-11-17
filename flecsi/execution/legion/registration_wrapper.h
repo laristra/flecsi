@@ -27,7 +27,7 @@ namespace flecsi {
 namespace execution {
 
 /*!
- The registration_wrapper__ type selects between void and non-void
+ The registration_wrapper_u type selects between void and non-void
  return values for task registration.
 
  @tparam RETURN The return type of the task.
@@ -43,7 +43,7 @@ template<
         const std::vector<Legion::PhysicalRegion> &,
         Legion::Context,
         Legion::Runtime *)>
-struct registration_wrapper__ {
+struct registration_wrapper_u {
 
   /*!
    This method registers the given task with the Legion runtime.
@@ -68,10 +68,10 @@ struct registration_wrapper__ {
     } // scope
 
   } // register_task
-}; // struct registration_wrapper__
+}; // struct registration_wrapper_u
 
 /*!
- Partial specialization of registration_wrapper__ for void return type.
+ Partial specialization of registration_wrapper_u for void return type.
 
  @tparam TASK   The function pointer template type of the task.
 
@@ -83,7 +83,7 @@ template<void (*TASK)(
     const std::vector<Legion::PhysicalRegion> &,
     Legion::Context,
     Legion::Runtime *)>
-struct registration_wrapper__<void, TASK> {
+struct registration_wrapper_u<void, TASK> {
 
   static void register_task(
       const Legion::TaskID tid,
@@ -102,7 +102,7 @@ struct registration_wrapper__<void, TASK> {
     } // scope
 
   } // register_task
-}; // struct registration_wrapper__
+}; // struct registration_wrapper_u
 
 } // namespace execution
 } // namespace flecsi

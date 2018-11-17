@@ -12,25 +12,25 @@ derived class that specializes the base class with its own type:
     template<
       typename CRTP_TYPE
     >
-    struct base__ {
-    }; // struct base__
+    struct base_u {
+    }; // struct base_u
 
-    struct derived__ : public base__<derived__> // This is the important bit.
+    struct derived_u : public base_u<derived_u> // This is the important bit.
     {
-    }; // struct derived__
+    }; // struct derived_u
 ```
 
 One use of this pattern in FleCSI is for static polymorphism. In
 particular, by statically casting the base type to the derived type, we
 can allow the derived type to specialize the behavior of the base class
-interface. In the following code example, *tuple_walker__* is the base
+interface. In the following code example, *tuple_walker_u* is the base
 class for a derived type identified by *CRTP_TYPE*:
 
 ```
     template<
       typename CRTP_TYPE
     >
-    struct tuple_walker__
+    struct tuple_walker_u
     {
       // In this example, we employ a helper type to walk a tuple and
       // apply the handler method defined by the derived type.
@@ -42,7 +42,7 @@ class for a derived type identified by *CRTP_TYPE*:
       )
       {
         using HELPER_TYPE =
-          tuple_walker_helper__<
+          tuple_walker_helper_u<
             std::tuple_size<TUPLE_TYPE>::value,
             TUPLE_TYPE,
             CRTP_TYPE
@@ -52,7 +52,7 @@ class for a derived type identified by *CRTP_TYPE*:
         // for this static cast.
         HELPER_TYPE::walk(*static_cast<CRTP_TYPE*>(this), t);
       } // walk
-    }; // struct tuple_walker__
+    }; // struct tuple_walker_u
 ```
 
 The helper class calls the handle method:
@@ -63,7 +63,7 @@ The helper class calls the handle method:
       typename TUPLE_TYPE,
       typename CRTP_TYPE
     >
-    struct tuple_walker_helper__
+    struct tuple_walker_helper_u
     {
       // The walk method of the helper class calls the CRTP type's
       // handle method.
@@ -77,7 +77,7 @@ The helper class calls the handle method:
         p.handle(std::get<CURRENT>(t));
         return HELPER_TYPE::walk(p, t);
       } // walk
-    }; // tuple_walker_helper__
+    }; // tuple_walker_helper_u
 ```
 
 The *p.handle* method, defined by the *CRTP_TYPE*, allows the derived
