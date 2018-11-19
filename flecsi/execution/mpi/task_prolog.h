@@ -266,7 +266,8 @@ namespace execution {
           execution::context_t::instance().register_field_data(adj.index_fid,
                                                                size);
         }
-        adj.indices_buf = reinterpret_cast<id_t *>(registered_field_data[adj.index_fid].data());
+        adj.indices_buf = reinterpret_cast<utils::id_t *>(
+					registered_field_data[adj.index_fid].data());
 
         storage->init_connectivity(adj.from_domain, adj.to_domain,
                                    adj.from_dim, adj.to_dim,
@@ -293,7 +294,8 @@ namespace execution {
         }
         // assign the storage to the buffer
         iss.indices_buf =
-          reinterpret_cast<id_t *>(registered_field_data[iss.index_fid].data());
+          reinterpret_cast<utils::id_t *>(
+					registered_field_data[iss.index_fid].data());
       	// now initialize the index subspace
         storage->init_index_subspace(
         	iss.index_space,

@@ -111,9 +111,9 @@ struct hpx_topology_storage_policy_u {
     id_storage.set_buffer(ids, num_entities, true);
 
     for (auto & domain_connectivities : topology) {
-      auto & domain_connectivity__ = domain_connectivities[domain];
+      auto & domain_connectivity_u = domain_connectivities[domain];
       for (size_t d = 0; d <= NUM_DIMS; ++d) {
-        domain_connectivity__.get(d, dim).set_entity_storage(s);
+        domain_connectivity_u.get(d, dim).set_entity_storage(s);
       } // for
     }   // for
 
@@ -252,7 +252,7 @@ struct hpx_topology_storage_policy_u {
 
     return ent;
   } // make
-}; // class hpx_topology_storage_policy__
+}; // class hpx_topology_storage_policy_u
 
 } // namespace topology
 } // namespace flecsi
