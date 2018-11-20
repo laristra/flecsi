@@ -1545,6 +1545,7 @@ __flecsi_internal_legion_task(output_partition_task, void) {
 	  ct ++;
     
     int cell_id = (int)primary_id_acc[*pir];
+    assert(cell_id >= 0);
     entity.primary.insert(cell_id);
 	}
 	dp_debug_printf(1, " CP total %d\n", ct);
@@ -1566,6 +1567,8 @@ __flecsi_internal_legion_task(output_partition_task, void) {
     
     int cell_id = (int)ghost_id_acc[*pir];
     int offset = (int)ghost_offset_acc[*pir];
+    assert(cell_id >= 0);
+    assert(offset >= 0);
     entity.ghost.insert(
             flecsi::coloring::entity_info_t(cell_id,
             color, offset, empty_set));
@@ -1585,6 +1588,8 @@ __flecsi_internal_legion_task(output_partition_task, void) {
     
     int cell_id = (int)shared_id_acc[*pir];
     int offset = (int)shared_offset_acc[*pir];
+    assert(cell_id >= 0);
+    assert(offset >= 0);
     entity.shared.insert(
             flecsi::coloring::entity_info_t(cell_id,
             my_rank, offset, empty_set));
@@ -1603,6 +1608,8 @@ __flecsi_internal_legion_task(output_partition_task, void) {
 		ct ++;
     int cell_id = (int)exclusive_id_acc[*pir];
     int offset = (int)exclusive_offset_acc[*pir];
+    assert(cell_id >= 0);
+    assert(offset >= 0);
     entity.exclusive.insert(
             flecsi::coloring::entity_info_t(cell_id,
             my_rank, offset, empty_set));
