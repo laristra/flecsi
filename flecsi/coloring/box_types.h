@@ -25,7 +25,7 @@ namespace coloring {
  */
 
 struct box_t {
-  size_t dim_; 
+  size_t dim_;  
   std::vector<size_t> lowerbnd;
   std::vector<size_t> upperbnd;
 
@@ -50,6 +50,12 @@ struct box_t {
     return count;
   }
 
+  bool isempty()
+  {
+    if (size() == 0)
+     return true; 
+  }
+
 }; // class box_t
 
 /*!
@@ -70,7 +76,7 @@ struct box_info_t {
   size_t nhalo_domain;
   size_t thru_dim;
   std::vector<bool> onbnd; 
-  //std::bitset<D * 2> onbnd;
+  std::vector<size_t> strides;
 }; // class box_info_t
 
 /*!
@@ -78,8 +84,13 @@ struct box_info_t {
  */
 struct box_coloring_t  
 {
-  //! The primary box
-  box_info_t primary;
+  // The primary flag is true if the partition is on the index-space 
+  // of the primary entity. Ex. the cells or the vertices of the mesh.
+  bool primary = false;       
+  size_t primary_dim = 0; 
+  
+  //! The box info for partitioned box
+  box_info_t partition;
 
   //! The exclusive box owned by current rank
   box_color_t exclusive;
@@ -92,7 +103,11 @@ struct box_coloring_t
 
   //! The aggregate of domain-halo boxes
   std::vector<box_t> domain_halo;
-}; // class box_coloring_info_t
+  
+  //! The bounding box covering exclusive+shared+ghost+domain-halo boxes
+  std::vector<box_t> overlay;
+
+}; // class box_coloring_t
 
 
 } // namespace coloring

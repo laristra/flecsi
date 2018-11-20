@@ -13,6 +13,7 @@
 #include <vector>
 #include <cmath>
 
+#include "flecsi/coloring/box_types.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/topology/mesh_utils.h"
 #include "flecsi/topology/structured_index_space.h"
@@ -155,6 +156,48 @@ class structured_mesh_topology_base__ : public data::data_client_t,
   STORAGE_TYPE * ms_ = nullptr;
 }; // structured_mesh_topology_base__
 
+using box_t = flecsi::coloring::box_t; 
+struct box_metadata
+{
+   box_metadata(box_t exclusive, std::vector<box_t> shared, 
+                std::vector<box_t> ghost, std::vector<box_t> domain_halo,
+                std::vector<box_t> overlay): exclusive_{exclusive}, 
+                shared_{shared}, ghost_{ghost}, domain_halo_{domain_halo},
+                overlay_{overlay} {}; 
+
+   auto exclusive() 
+   {
+     return exclusive_;
+   }   
+   
+   auto shared() 
+   {
+     return shared_;
+   }   
+
+   auto ghost() 
+   {
+     return ghost_;
+   }
+   
+   auto domain_halo() 
+   {
+     return domain_halo_;
+   }
+  
+   auto overlay() 
+   {
+     return overlay_;
+   }  
+ 
+private:
+   box_t exclusive_;   
+   std::vector<box_t> shared_;   
+   std::vector<box_t> ghost_;
+   std::vector<box_t> domain_halo_;
+   std::vector<box_t> overlay_;
+
+}; // struct box_metadata 
 
 } // namespace topology
 } // namespace flecsi

@@ -273,6 +273,11 @@ public:
    std::cout<<"Primary == "<<primary<<std::endl; 
   } //init
 
+  void init_partition()
+  {
+  } //init_partition
+
+
   //default constructor
   structured_index_space__(){};
 

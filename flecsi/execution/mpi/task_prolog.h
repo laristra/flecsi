@@ -399,12 +399,23 @@ namespace execution {
       data_client_handle__<T, PERMISSIONS> & h
     )
     {
-      auto& context_ = context_t::instance();
-
       // h is partially initialized in client.h
       auto storage = h.set_storage(new typename T::storage_t);
 
-      h.initialize_storage();
+      // use the box_colorings map to initialize the index_space for each entity type 
+      auto& context_ = context_t::instance();
+      int color = context_.color();
+
+      for(size_t i{0}; i<h.num_handle_entities; ++i) {
+        data_client_handle_entity_t & ent = h.handle_entities[i];
+
+        const size_t index_space = ent.index_space;
+        const size_t dim = ent.dim;
+
+        // get color_info for this field.
+        auto& color_info = (context_.coloring_info(index_space)).at(color);
+      }
+      // h.initialize_storage();
     } // handle for structured_mesh_topology
 
   }; // struct task_prolog_t

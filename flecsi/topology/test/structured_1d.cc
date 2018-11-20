@@ -28,9 +28,6 @@ public:
   using entity_types = std::tuple<
   std::tuple<index_space_<0>, domain_<0>, Vertex>,
   std::tuple<index_space_<1>, domain_<0>, Edge>>;
-
-  using connectivities = std::tuple<>;
-  using bindings = std::tuple<>;
    
   template<size_t M, size_t D, typename MESH_TOPOLOGY>
   static constexpr
@@ -39,8 +36,9 @@ public:
   { return nullptr; }
 };
 
-struct TestMesh : public mesh_topology__<TestMesh1dType> {};
+struct TestMesh : public structured_mesh_topology__<TestMesh1dType> {};
 
+flecsi_register_data_client(TestMesh, meshes, mesh0); 
 
 void task_tlt_init() {
   
@@ -77,7 +75,7 @@ void task_tlt_init() {
   colored_cells_aggregate = colorer->create_aggregate_color_info(colored_cells);
 
   //Add box coloring to context
-  context_.add_box_coloring(thru_dim, colored_cells, color_info);
+  context_.add_box_coloring(1, colored_cells, color_info);
 
 }
 

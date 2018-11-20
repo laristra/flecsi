@@ -25,25 +25,28 @@ TEST(simple_colorer, simpletest3d)
   flecsi::coloring::simple_box_colorer_t<3> sbc;
   auto col = sbc.color(grid_size, nhalo, nhalo_domain, thru_dim, ncolors);
   if (rank == 26){
-  cout<<"Rank-"<<rank<<"::Primary Box:LBND  = { "<<col.primary.box.lowerbnd[0]<<", "
-                                                 <<col.primary.box.lowerbnd[1]<<", "
-                                                 <<col.primary.box.lowerbnd[2]<<" } "<<endl;
+  cout<<"Rank-"<<rank<<"::Partition Box:LBND  = { "<<col.partition.box.lowerbnd[0]<<", "
+                                                 <<col.partition.box.lowerbnd[1]<<", "
+                                                 <<col.partition.box.lowerbnd[2]<<" } "<<endl;
 
-  cout<<"Rank-"<<rank<<"::Primary Box:UBND  = { "<<col.primary.box.upperbnd[0]<<", "
-                                                 <<col.primary.box.upperbnd[1]<<", "
-                                                 <<col.primary.box.upperbnd[2]<<" } "<<endl;
+  cout<<"Rank-"<<rank<<"::Partition Box:UBND  = { "<<col.partition.box.upperbnd[0]<<", "
+                                                 <<col.partition.box.upperbnd[1]<<", "
+                                                 <<col.partition.box.upperbnd[2]<<" } "<<endl;
 
 
-  cout<<"Rank-"<<rank<<"::Primary-Box:#Halo = " <<col.primary.nhalo<<endl;
-  cout<<"Rank-"<<rank<<"::Primary-Box:#DomainHalo = " <<col.primary.nhalo_domain<<endl;
-  cout<<"Rank-"<<rank<<"::Primary-Box:Through dim = " <<col.primary.thru_dim<<endl;
+  cout<<"Rank-"<<rank<<"::Partition Box:Strides  = { "<<col.partition.strides[0]<<", "
+                                                 <<col.partition.strides[1]<<", "
+                                                 <<col.partition.strides[2]<<" } "<<endl;
+  cout<<"Rank-"<<rank<<"::Partition-Box:#Halo = " <<col.partition.nhalo<<endl;
+  cout<<"Rank-"<<rank<<"::Partition-Box:#DomainHalo = " <<col.partition.nhalo_domain<<endl;
+  cout<<"Rank-"<<rank<<"::Partition-Box:Through dim = " <<col.partition.thru_dim<<endl;
 
-  cout<<"Rank-"<<rank<<"::Primary-Box:On domain boundary = [ ";
+  cout<<"Rank-"<<rank<<"::Partition-Box:On domain boundary = [ ";
   for (size_t i = 0 ; i < 6; i++)
-     cout<<"col.primary.onbnd[i]";
+     cout<<col.partition.onbnd[i]<<" ";
   cout<<"]"<<std::endl;
 
-  //cout<<"Rank-"<<rank<<"::Primary-Box:On domain boundary = [ "<<col.primary.onbnd<<" ]"<<endl;
+  //cout<<"Rank-"<<rank<<"::Partition-Box:On domain boundary = [ "<<col.partition.onbnd<<" ]"<<endl;
 
   cout<<"Rank-"<<rank<<"::Exclusive-Box:LBND  = { "<<col.exclusive.box.lowerbnd[0]<<", "
                                                    <<col.exclusive.box.lowerbnd[1]<<", "

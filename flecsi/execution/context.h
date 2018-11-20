@@ -641,20 +641,20 @@ struct context__ : public CONTEXT_POLICY {
 
    box_coloring_t & box_coloring(size_t index_space) {
     auto it = box_colorings_.find(index_space);
-    if (it == box_colorings_.end()) {
+   /* if (it == box_colorings_.end()) {
       clog(fatal) << "invalid index_space " << index_space << std::endl;
     } // if
-
+   */
     return it->second;
   } // box_coloring
 
   const std::unordered_map<size_t, coloring_info_t> &
   box_coloring_info(size_t index_space) {
     auto it = box_coloring_info_.find(index_space);
-    if (it == box_coloring_info_.end()) {
+   /* if (it == box_coloring_info_.end()) {
       clog(fatal) << "invalid index space " << index_space << std::endl;
     } // if
-
+   */
     return it->second;
   } // box_coloring_info
   

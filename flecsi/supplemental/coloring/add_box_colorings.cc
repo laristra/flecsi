@@ -55,7 +55,8 @@ void add_box_colorings(coloring_map_t map) {
   auto colorer = std::make_shared<flecsi::coloring::simple_box_colorer_t<2>>();
 
   //Create the coloring info for cells
-  colored_cells = colorer->color(grid_size, nhalo, nhalo_domain, thru_dim, ncolors);
+  colored_cells = colorer->color(grid_size, nhalo, nhalo_domain, thru_dim, 
+                                 ncolors);
 
   //Create the aggregate type for cells
   colored_cells_aggregate = colorer->create_aggregate_color_info(colored_cells);
