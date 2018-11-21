@@ -393,28 +393,6 @@ clog_register_tag(execution);
   /* MACRO IMPLEMENTATION */                                                   \
 flecsi_internal_execute_task(task, launch, 0, ##__VA_ARGS__) 
                                                                                \
-//<<<<<<< HEAD
-//  /* Execute the user task */                                                  \
-//  /* WARNING: This macro returns a future. Don't add terminations! */          \
-//  flecsi::execution::task_interface_t::execute_task<                           \
-//      flecsi::execution::launch_type_t::launch,                                \
-//      0,                                                                       \
-//      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
-//      __flecsi_internal_return_type(task),                                     \
-//      __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
-
-#define flecsi_execute_reduction_task_simple(task, launch, redop_id, ...)      \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  /* Execute the user task */                                                  \
-  /* WARNING: This macro returns a future. Don't add terminations! */          \
-  flecsi::execution::task_interface_t::execute_task<                           \
-      flecsi::execution::launch_type_t::launch,                                \
-      redop_id,                                                                \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
-      __flecsi_internal_return_type(task),                                     \
-      __flecsi_internal_arguments_type(task)>(__VA_ARGS__)
-
 /*!
   @def flecsi_execute_task
 
@@ -434,24 +412,6 @@ flecsi_internal_execute_task(task, launch, 0, ##__VA_ARGS__)
   /* Execute the user task */                                                  \
   flecsi_internal_execute_task(nspace::task, launch, 0, ##__VA_ARGS__)
 
-/*!
-  @def flecsi_execute_reduction_task
-
-  This macro executes a user task.
-
-  @param task   The user task to execute.
-  @param nspace The enclosing namespace of the task.
-  @param launch The launch mode for the task.
-  @param redop_id Reduction ID
-  @param ...    The arguments to pass to the user task during execution.
-
-  @ingroup execution
- */
-#define flecsi_execute_reduction_task(task, nspace, launch, redop_id, ...)                         \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  /* Execute the user task */                                                  \
-  flecsi_execute_reduction_task_simple(nspace::task, launch, redop_id, ##__VA_ARGS__)
 
 /*!
   @def flecsi_execute_mpi_task_simple
@@ -520,16 +480,13 @@ flecsi_internal_execute_task(task, launch, 0, ##__VA_ARGS__)
 
 /*!
   @def flecsi_execute_reduction_task
-
   This macro executes a reduction task.
-
   @param task      The user task to execute.
   @param nspace    The enclosing namespace of the task.
   @param launch    The launch mode for the task.
   @param type      The reduction operation type.
   @param datatype  The reduction operation data type.
   @param ...       The arguments to pass to the user task during execution.
-
   @ingroup execution
  */
 
@@ -539,13 +496,14 @@ flecsi_internal_execute_task(task, launch, 0, ##__VA_ARGS__)
                                                                                \
   flecsi::execution::task_interface_t::execute_task<                           \
     flecsi::execution::launch_type_t::launch,                                  \
-    flecsi_internal_hash(nspace::task),                                      \
+    flecsi_internal_hash(nspace::task),                                        \
     flecsi::utils::hash::reduction_hash<                                       \
-      flecsi_internal_hash(type),                                            \
-      flecsi_internal_hash(datatype)                                         \
+      flecsi_internal_hash(type),                                              \
+      flecsi_internal_hash(datatype)                                           \
     >(),                                                                       \
-    flecsi_internal_return_type(task),                                       \
+    flecsi_internal_return_type(task),                                         \
     flecsi_internal_arguments_type(task)>(__VA_ARGS__)
+
 
 //----------------------------------------------------------------------------//
 // Function Interface
