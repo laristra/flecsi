@@ -174,6 +174,9 @@ struct legion_execution_policy_t {
     auto legion_runtime = Legion::Runtime::get_runtime();
     auto legion_context = Legion::Runtime::get_context();
 
+    constexpr size_t ZERO =
+            flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
+
     // Execute a tuple walker that applies the task epilog operations
     // on the mapped handles
 //    task_epilog_t task_epilog(legion_runtime, legion_context);
@@ -245,9 +248,6 @@ struct legion_execution_policy_t {
           // on the mapped handles
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
-
-          constexpr size_t ZERO =
-            flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
 
           if constexpr(REDUCTION != ZERO) {
 #if 0
@@ -350,9 +350,6 @@ struct legion_execution_policy_t {
           task_prolog.walk(task_args);
           task_prolog.launch_copies();
           } // scope
-
-          constexpr size_t ZERO =
-            flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
 
           if constexpr(REDUCTION != ZERO) {
             clog(info) << "executing reduction logic for " <<
@@ -461,7 +458,12 @@ struct legion_execution_policy_t {
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
 
-            return legion_future_u<RETURN, launch_type_t::index>(future);
+            if constexpr(REDUCTION != ZERO) {
+              clog(fatal) << "there is no implementation for the mpi \
+							 reduction task " <<std::endl;
+            } else {
+              return legion_future_u<RETURN, launch_type_t::index>(future);
+            }
 #if 0
           }
           else {
