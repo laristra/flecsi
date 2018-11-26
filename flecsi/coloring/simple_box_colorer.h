@@ -879,7 +879,36 @@ private:
   void compute_overlaying_bounding_box(box_coloring_t& colbox)
   {
     box_t obb(D); 
+
+    std::vector<size_t> lbnds[D]; 
+    std::vector<size_t> ubnds[D]; 
+
+    for (size_t d = 0; d < D; d++){
+     for (size_t i = 0; i < colbox.ghost.size(); i++)
+     {
+       lbnds[d].push_back(colbox.ghost[i].box.lowerbnd[d]);
+       ubnds[d].push_back(colbox.ghost[i].box.upperbnd[d]);
+     }
+    }
+
+    for (size_t d = 0; d < D; d++){
+     for (size_t i = 0; i < colbox.domain_halo.size(); i++)
+     {
+       lbnds[d].push_back(colbox.domain_halo[i].lowerbnd[d]);
+       ubnds[d].push_back(colbox.domain_halo[i].upperbnd[d]);
+     }
+    }
     
+    for (size_t d = 0; d < D; d++){
+     std::sort(lbnds[d].begin(), lbnds[d].end());
+     std::sort(ubnds[d].begin(), ubnds[d].end()) 
+    }
+
+     for (size_t d = 0; d < D; d++){
+      obb.lowerbnd[d] = *lbnds[d].begin();
+      obb.upperbnd[d] = *(ubnds[d].end()-1);
+     }
+
 
   } // compute_overlaying_bounding_box
 

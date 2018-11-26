@@ -696,7 +696,7 @@ struct context__ : public CONTEXT_POLICY {
   /*!
     \todo DOCUMENT!
    */
-
+  /*
   const auto & box_map(size_t index_space) const {
     auto it = box_map_.find(index_space);
     clog_assert(it != box_map_.end(), "invalid index space");
@@ -710,18 +710,18 @@ struct context__ : public CONTEXT_POLICY {
 
     return it->second;
   } // reverse_box_map
-
+  */
   /*!
     \todo DOCUMENT!
    */
-
+  /*
   const auto & reverse_box_map(size_t index_space) const {
     auto it = reverse_box_map_.find(index_space);
     clog_assert(it != reverse_box_map_.end(), "invalid index space");
 
     return it->second;
   } // reverse_box_map
-
+  */
 
   /*!
     Add an adjacency/connectivity from one index space to another.
@@ -1099,8 +1099,8 @@ private:
   //--------------------------------------------------------------------------//
   std::map<size_t, box_coloring_t> box_colorings_;
   std::map<size_t, std::unordered_map<size_t, coloring_info_t>> box_coloring_info_;
-  std::map<size_t, std::map<size_t, box_t>> box_map_;
-  std::map<size_t, std::map<box_t, size_t>> reverse_box_map_;//The inner map should 
+  //std::map<size_t, std::map<size_t, box_t>> box_map_;
+  //std::map<size_t, std::map<box_t, size_t>> reverse_box_map_;//The inner map should 
   //be unordered map
   
   //--------------------------------------------------------------------------//

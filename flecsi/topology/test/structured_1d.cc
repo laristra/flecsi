@@ -62,8 +62,7 @@ void task_tlt_init() {
   size_t thru_dim = 0; 
 
   coloring::box_coloring_t colored_cells;
-  std::unordered_map<size_t, coloring::coloring_info_t> color_info;
-  auto & colored_cells_aggregate = color_info[1];
+  flecsi::coloring::coloring_info_t colored_cells_aggregate;
 
   // Create a colorer instance to generate the coloring.
   auto colorer = std::make_shared<flecsi::coloring::simple_box_colorer_t<1>>();
@@ -74,8 +73,14 @@ void task_tlt_init() {
   //Create the aggregate type for cells
   colored_cells_aggregate = colorer->create_aggregate_color_info(colored_cells);
 
+ // Create a communicator instance to get coloring_info_t from other ranks 
+  auto communicator = std::make_shared<flecsi::coloring::mpi_communicator_t>();
+
+  // Gather the coloring info from all colors
+  auto cell_coloring_info = communicator->gather_coloring_info(colored_cells_aggregate);
+
   //Add box coloring to context
-  context_.add_box_coloring(1, colored_cells, color_info);
+  context_.add_box_coloring(1, colored_cells, cell_coloring_info);
 
 }
 

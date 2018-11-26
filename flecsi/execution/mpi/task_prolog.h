@@ -413,7 +413,7 @@ namespace execution {
         const size_t dim = ent.dim;
 
         // get color_info for this field.
-        auto& color_info = (context_.coloring_info(index_space)).at(color);
+        auto& box_info = (context_.box_coloring(index_space)).at(color);
       }
       // h.initialize_storage();
     } // handle for structured_mesh_topology

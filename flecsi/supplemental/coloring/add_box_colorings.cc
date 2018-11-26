@@ -17,6 +17,7 @@
 
 #include <flecsi/execution/execution.h>
 #include <flecsi/coloring/simple_box_colorer.h>
+#include <flecsi/coloring/mpi_communicator.h>
 #include <flecsi/supplemental/coloring/add_box_colorings.h>
 
 clog_register_tag(coloring);
@@ -61,8 +62,14 @@ void add_box_colorings(coloring_map_t map) {
   //Create the aggregate type for cells
   colored_cells_aggregate = colorer->create_aggregate_color_info(colored_cells);
 
+   // Create a communicator instance to get coloring_info_t from other ranks 
+  auto communicator = std::make_shared<flecsi::coloring::mpi_communicator_t>();
+
+  // Gather the coloring info from all colors
+  auto cell_coloring_info = communicator->gather_coloring_info(colored_cells_aggregate);
+
   //Add box coloring to context
-  context_.add_box_coloring(map.cells, colored_cells, colored_cell_aggregate);
+  context_.add_box_coloring(map.cells, colored_cells, cell_coloring_info);
 
 } // add_box_colorings
 
