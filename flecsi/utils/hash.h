@@ -368,22 +368,24 @@ intermediate_hash(size_t dimension, size_t domain) {
 //----------------------------------------------------------------------------//
 
 template<typename T, typename U>
-constexpr T
-string_hash_u(U && str, const T h, const std::size_t i, const std::size_t n) {
-  // An unstated assumption appears to be that n is the length of str, which is
-  // a string type, and that i <= n. Otherwise, we're going to have problems.
-  return i == n
-             ? h
-             : string_hash_u(
-                   str,
-                   h ^ static_cast<T>(std::forward<U>(str)[i]) << 8 * (i % 8),
-                   i + 1, n);
-} // string_hash_u
+inline constexpr T
+string_hash(U &&str, const std::size_t n)
+{
+  if (n == 0)
+    return 0;
 
-template<typename T, typename U>
-constexpr T
-string_hash(U && str, const std::size_t n) {
-  return string_hash_u<T>(str, 0, 0, n);
+  // String-to-integer hash function, based on prime numbers.
+  // References:
+  //    https://stackoverflow.com/questions/8317508/hash-function-for-a-string
+  //    https://planetmath.org/goodhashtableprimes
+
+  const T P = 3145739; // prime
+  const T Q = 6291469; // prime, a bit less than 2x the first
+
+  T h = 37; // prime
+  for (std::size_t i = 0;  i < n;  ++i)
+    h = (h * P) ^ (str[i] * Q);
+  return h;
 } // string_hash
 
 } // namespace utils
