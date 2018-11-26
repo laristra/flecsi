@@ -327,13 +327,13 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   #
   # Compacted storage interface
   #
-  option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper compaction" ON)
+  option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper compaction" OFF)
 
   if(ENABLE_MAPPER_COMPACTION)
     add_definitions(-DMAPPER_COMPACTION)
     set (MAPPER_COMPACTION TRUE)
   else()
-    option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" ON)
+    option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" OFF)
 
     if(COMPACTED_STORAGE_SORT)
       add_definitions(-DCOMPACTED_STORAGE_SORT)
