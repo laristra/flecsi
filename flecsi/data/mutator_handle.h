@@ -325,10 +325,10 @@ public:
     cbuf = new entry_value_t[max_entries_per_index_];
 
     for (size_t index = start; index < end; ++index) {
-      entry_value_t * eptr = ci->entries[1] + max_entries_per_index_ * index;
-
       const offset_t & oi = offsets_[index];
       offset_t & coi = offsets[index];
+
+      entry_value_t * eptr = entries + coi.start();
 
       entry_value_t * sptr = entries_ + index * num_slots_;
 
