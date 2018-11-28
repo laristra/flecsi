@@ -57,7 +57,7 @@ flecsi_register_field(
 //----------------------------------------------------------------------------//
 
 void
-init(mesh<ro> mesh, field<rw, rw, ro> h) {
+init(mesh<ro> mesh, field<rw, rw, na> h) {
   auto & context = execution::context_t::instance();
   auto rank = context.color();
 

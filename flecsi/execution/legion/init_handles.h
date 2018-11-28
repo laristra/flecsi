@@ -96,10 +96,6 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
     for(size_t r = 0; r < num_regions; ++r) {
       if(permissions[r] == size_t(reserved)) {
-        data[r] = nullptr;
-        sizes[r] = 0;
-        prs[r] = Legion::PhysicalRegion();
-
         clog(error) << "reserved permissions mode used on region " << r
                     << std::endl;
       }
@@ -256,10 +252,6 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
     for(size_t r = 0; r < num_regions; ++r) {
       if(permissions[r] == size_t(reserved)) {
-        data[r] = nullptr;
-        sizes[r] = 0;
-        prs[r] = Legion::PhysicalRegion();
-
         clog(error) << "reserved permissions mode used on region " << r
                     << std::endl;
       }
@@ -308,10 +300,6 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
     for(size_t r = 0; r < num_regions; ++r) {
       if(permissions[r] == size_t(reserved)) {
-        data[r] = nullptr;
-        sizes[r] = 0;
-        prs[r] = Legion::PhysicalRegion();
-
         clog(error) << "reserved permissions mode used on region " << r
                     << std::endl;
       }

@@ -85,7 +85,7 @@ flecsi_register_field(
 //----------------------------------------------------------------------------//
 
 void
-init(mesh<ro> mesh, field<rw, rw, ro> f) {
+init(mesh<ro> mesh, field<rw, rw, na> f) {
   for (auto c : mesh.cells(owned)) {
     auto idx = c->index();
     // domain is 0..2*pi in both x and y
@@ -130,7 +130,7 @@ void
 compute_deriv(
     mesh<ro> mesh,
     field<ro, ro, ro> f,
-    field<wo, wo, ro> deriv,
+    field<wo, wo, na> deriv,
     bool div_x) {
   double h = 2.0 * pi / (double)(N - 1);
 
