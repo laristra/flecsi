@@ -16,7 +16,7 @@
 # Set the minimum Cinch version
 #------------------------------------------------------------------------------#
 
-cinch_minimum_required(VERSION 1.0)
+cinch_minimum_required(VERSION v1.0)
 
 #------------------------------------------------------------------------------#
 # Set the project name
