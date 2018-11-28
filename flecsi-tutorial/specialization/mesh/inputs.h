@@ -24,8 +24,8 @@ namespace tutorial {
 // structured mesh in several places (initialization and output). If the mesh
 // input file is changed, these values will need to be updated.
 
-constexpr size_t input_mesh_dimension_x = 16;
-constexpr size_t input_mesh_dimension_y = 16;
+constexpr size_t input_mesh_dimension_x = 8;
+constexpr size_t input_mesh_dimension_y = 8;
 
 // The FLECSI_TUTORIAL_INPUT_MESH environment variable should be set by the
 // environment scripts provided for the tutorial. This value should never be set

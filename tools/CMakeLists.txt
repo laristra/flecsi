@@ -43,6 +43,10 @@ endif()
 set(FLECSIT_FLECSI_LIBRARY
   ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/libFleCSI.${LIB_SUFFIX})
 
+################################################################################
+# Much of this can probably go...
+################################################################################
+
 #------------------------------------------------------------------------------#
 # Create string of compiler definitions for script
 #------------------------------------------------------------------------------#
@@ -112,6 +116,10 @@ set(FLECSIT_LDFLAGS "${FLECSIT_LDFLAGS} -L${CMAKE_BINARY_DIR}/lib")
 
 string(STRIP "${FLECSIT_LDFLAGS}" FLECSIT_LDFLAGS)
 
+################################################################################
+# Try to remove to here...
+################################################################################
+
 #------------------------------------------------------------------------------#
 # FleCSIT
 #------------------------------------------------------------------------------#
@@ -126,6 +134,7 @@ if(ENABLE_FLECSIT)
     # FleCSIT dependencies
     #--------------------------------------------------------------------------#
 
+    set(PythonInterp_FIND_VERSION TRUE) # unknown hack to search for versions
     find_package(PythonInterp 2.7 REQUIRED)
 
     if(${PYTHON_VERSION_MAJOR} LESS 3)

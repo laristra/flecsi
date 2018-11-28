@@ -47,7 +47,7 @@ TEST(index_space, index_space) {
 
   pseudo_random rng;
 
-  using index_space_t = index_space__<object *, true, true, false>;
+  using index_space_t = index_space_u<object *, true, true, false>;
   index_space_t is;
 
   for (size_t i = 0; i < 10000; ++i) {
@@ -87,7 +87,7 @@ TEST(index_space, index_space) {
 TEST(index_space, bin) {
 
   // create an index space object for testing
-  using index_space_t = index_space__<object, true, true, false>;
+  using index_space_t = index_space_u<object, true, true, false>;
   index_space_t is;
 
   constexpr size_t num_objects = 10;

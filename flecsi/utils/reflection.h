@@ -40,35 +40,35 @@
  * Macro definitions.
  *----------------------------------------------------------------------------*/
 
-#define __remove(...) __VA_ARGS__
-#define __eat(...)
+#define flecsi_internal_remove(...) __VA_ARGS__
+#define flecsi_internal_eat(...)
 
-#define __typeof(x) __detail_typeof(__detail_typeof_probe x, )
-#define __detail_typeof(...) __detail_typeof_head(__VA_ARGS__)
-#define __detail_typeof_head(x, ...) __remove x
-#define __detail_typeof_probe(...) (__VA_ARGS__),
+#define flecsi_internal_typeof(x) flecsi_internal_detail_typeof(flecsi_internal_detail_typeof_probe x, )
+#define flecsi_internal_detail_typeof(...) flecsi_internal_detail_typeof_head(__VA_ARGS__)
+#define flecsi_internal_detail_typeof_head(x, ...) flecsi_internal_remove x
+#define flecsi_internal_detail_typeof_probe(...) (__VA_ARGS__),
 
 //
 // Strip the type from the reflection declaration, i.e., if 'x' is:
 //
 // double myvar
 //
-// then __strip(x) is:
+// then flecsi_internal_strip(x) is:
 //
 // myvar
 //
-#define __strip(x) __eat x
+#define flecsi_internal_strip(x) flecsi_internal_eat x
 
 //
 // Snip the reflection declaration (show without paranthesis), i.e., if 'x' is:
 //
 // (double myvar)
 //
-// then __snip(x) is:
+// then flecsi_internal_snip(x) is:
 //
 // double myvar
 //
-#define __snip(x) __remove x
+#define flecsi_internal_snip(x) flecsi_internal_remove x
 
 ///
 ///
@@ -76,17 +76,17 @@
 #define declare_reflected(...)                                                 \
                                                                                \
   static const std::size_t num_reflected_ =                                    \
-      BOOST_PP_VARIADIC_SIZE(__VA_ARGS__);                                     \
+    BOOST_PP_VARIADIC_SIZE(__VA_ARGS__);                                       \
                                                                                \
   friend struct reflection;                                                    \
                                                                                \
   /* Unspecialized type declaration. */                                        \
   template<std::size_t N, typename S>                                          \
-  struct reflection_variable__ {};                                             \
+  struct reflection_variable_u {};                                             \
                                                                                \
   /* Each invocation of this creates an explicit specialization. */            \
   BOOST_PP_SEQ_FOR_EACH_I(                                                     \
-      reflection_variable, data, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
+    reflection_variable, data, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
 //
 //
@@ -94,22 +94,22 @@
 #define reflection_variable(r, data, i, t)                                     \
                                                                                \
   /* This line adds the member data. */                                        \
-  __snip(t);                                                                   \
+  flecsi_internal_snip(t);                                                                   \
                                                                                \
   /* Interface for each data member. */                                        \
   template<typename S>                                                         \
-  struct reflection_variable__<i, S> {                                         \
+  struct reflection_variable_u<i, S> {                                         \
     S & self_;                                                                 \
                                                                                \
     /* Constructor */                                                          \
-    reflection_variable__(S & self) : self_(self) {}                           \
+    reflection_variable_u(S & self) : self_(self) {}                           \
                                                                                \
     /* Return a const reference to the variable instance. */                   \
-    typename std::add_const<__typeof(t)>::type & get() const {                 \
-      return self_.__strip(t);                                                 \
+    typename std::add_const<flecsi_internal_typeof(t)>::type & get() const {                 \
+      return self_.flecsi_internal_strip(t);                                                 \
     }                                                                          \
                                                                                \
-  }; /* struct reflection_variable__<i,S> */
+  }; /* struct reflection_variable_u<i,S> */
 
 namespace flecsi {
 namespace utils {
@@ -127,8 +127,8 @@ struct reflection {
   /// Get the reflection variable at index N.
   ///
   template<std::size_t N, typename T>
-  static typename T::template reflection_variable__<N, T> variable(T & t) {
-    return typename T::template reflection_variable__<N, T>(t);
+  static typename T::template reflection_variable_u<N, T> variable(T & t) {
+    return typename T::template reflection_variable_u<N, T>(t);
   } // get_variable
 }; // reflection
 

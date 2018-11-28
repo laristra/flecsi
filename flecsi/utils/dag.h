@@ -1,3 +1,16 @@
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
 
 /*! @file */
@@ -19,18 +32,18 @@ namespace flecsi {
 namespace utils {
 
 /*!
-  The dag_node__ type defines a compile-time extensible node for the
-  FleCSI dag__ data structure.
+  The dag_node_u type defines a compile-time extensible node for the
+  FleCSI dag_u data structure.
  */
 
 template<typename NODE_POLICY>
-struct dag_node__ : public NODE_POLICY {
+struct dag_node_u : public NODE_POLICY {
 
   using edge_list_t = std::list<size_t>;
 
   /*! Constructor */
 
-  dag_node__() : NODE_POLICY() {}
+  dag_node_u() : NODE_POLICY() {}
 
   /*!
     Constructor.
@@ -42,7 +55,7 @@ struct dag_node__ : public NODE_POLICY {
    */
 
   template<typename ... ARGS>
-  dag_node__(size_t hash, std::string const & label, ARGS && ... args)
+  dag_node_u(size_t hash, std::string const & label, ARGS && ... args)
     : hash_(hash), label_(label), NODE_POLICY(std::forward<ARGS>(args) ...) {
   }
 
@@ -50,7 +63,7 @@ struct dag_node__ : public NODE_POLICY {
     Copy constructor.
    */
 
-  dag_node__(dag_node__ const & node)
+  dag_node_u(dag_node_u const & node)
     :
       hash_(node.hash_),
       label_(node.label_),
@@ -78,13 +91,13 @@ struct dag_node__ : public NODE_POLICY {
             at file scope.
    */
 
-  bool initialize(dag_node__ const & node) {
+  bool initialize(dag_node_u const & node) {
     hash_ = node.hash_;
     label_ = node.label_;
     return NODE_POLICY::initialize(node);
   } // update
 
-  dag_node__ & operator = (dag_node__ const & node) {
+  dag_node_u & operator = (dag_node_u const & node) {
     NODE_POLICY::operator = (node);
 
     hash_ = node.hash_;
@@ -100,11 +113,11 @@ private:
   std::string label_ = "";
   edge_list_t edge_list_ = {};
 
-}; // struct dag_node__
+}; // struct dag_node_u
 
 template<typename NODE_POLICY>
 inline std::ostream & 
-operator << (std::ostream & stream, dag_node__<NODE_POLICY> const & node) {
+operator << (std::ostream & stream, dag_node_u<NODE_POLICY> const & node) {
   stream << "hash: " << node.hash() << std::endl;
   stream << "label: " << node.label() << std::endl;
   stream << static_cast<NODE_POLICY const &>(node);
@@ -119,9 +132,9 @@ operator << (std::ostream & stream, dag_node__<NODE_POLICY> const & node) {
 } // operator <<
 
 template<typename NODE_POLICY>
-struct dag__
+struct dag_u
 {
-  using node_t = dag_node__<NODE_POLICY>;
+  using node_t = dag_node_u<NODE_POLICY>;
   using node_map_t = std::map<size_t, node_t>;
   using node_vector_t = std::vector<node_t>;
   using node_list_t = std::list<node_t>;
@@ -262,11 +275,11 @@ private:
   std::string label_;
   node_map_t nodes_;
 
-}; // struct dag__
+}; // struct dag_u
 
 template<typename NODE_POLICY>
 inline std::ostream & 
-operator << (std::ostream & stream, dag__<NODE_POLICY> const & dag) {
+operator << (std::ostream & stream, dag_u<NODE_POLICY> const & dag) {
   for(auto n: dag.nodes()) {
     stream << n.second << std::endl;
   } // for

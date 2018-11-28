@@ -29,7 +29,7 @@ namespace flecsi {
 struct ragged_accessor_base_t {};
 
 //----------------------------------------------------------------------------//
-//! The ragged accessor__ type captures information about permissions
+//! The ragged accessor_u type captures information about permissions
 //! and specifies a data policy.
 //!
 //! @tparam T                     The data type referenced by the handle.
@@ -44,31 +44,26 @@ struct ragged_accessor_base_t {};
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-struct accessor__<
-    data::ragged,
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+struct accessor_u<data::ragged,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS> : public accessor_u<data::sparse,
+                         T,
+                         EXCLUSIVE_PERMISSIONS,
+                         SHARED_PERMISSIONS,
+                         GHOST_PERMISSIONS>,
+                       public ragged_accessor_base_t {
+
+  using base_t = accessor_u<data::sparse,
     T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>
-    : public accessor__<
-          data::sparse,
-          T,
-          EXCLUSIVE_PERMISSIONS,
-          SHARED_PERMISSIONS,
-          GHOST_PERMISSIONS>,
-      public ragged_accessor_base_t {
-
-  using base_t = accessor__<
-      data::sparse,
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS>;
+    GHOST_PERMISSIONS>;
 
   using offset_t = typename base_t::offset_t;
 
@@ -76,38 +71,34 @@ struct accessor__<
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  accessor__(const sparse_data_handle__<T, 0, 0, 0> & h) : base_t(h) {}
+  accessor_u(const sparse_data_handle_u<T, 0, 0, 0> & h) : base_t(h) {}
 
   T & operator()(size_t index, size_t ragged_index) {
     const offset_t & offset = base_t::handle.offsets[index];
     assert(
-        ragged_index < offset.count() && "ragged accessor: index out of range");
+      ragged_index < offset.count() && "ragged accessor: index out of range");
 
     return (base_t::handle.entries + offset.start() + ragged_index)->value;
   } // operator ()
 };
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-using ragged_accessor__ = accessor__<
-    data::ragged,
-    T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>;
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+using ragged_accessor_u = accessor_u<data::ragged,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS>;
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-using ragged_accessor = ragged_accessor__<
-    T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>;
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+using ragged_accessor = ragged_accessor_u<T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS>;
 
 } // namespace flecsi

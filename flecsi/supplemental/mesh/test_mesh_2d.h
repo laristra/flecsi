@@ -48,7 +48,7 @@ enum neighbor_id : size_t { left_ = 0, right_ = 1, above_ = 2, below_ = 3 };
 using point_t = std::array<double, 2>;
 using index_t = std::array<size_t, 2>;
 
-struct vertex_t : public flecsi::topology::mesh_entity__<0, 1> {
+struct vertex_t : public flecsi::topology::mesh_entity_u<0, 1> {
   vertex_t(point_t const & p, index_t const & index) : p_(p), index_(index) {}
 
   point_t const & coordinates() const {
@@ -64,13 +64,13 @@ private:
   index_t index_;
 }; // struct vertex_t
 
-struct edge_t : public flecsi::topology::mesh_entity__<1, 1> {
+struct edge_t : public flecsi::topology::mesh_entity_u<1, 1> {
 }; // struct edge_t
 
-struct face_t : public flecsi::topology::mesh_entity__<1, 1> {
+struct face_t : public flecsi::topology::mesh_entity_u<1, 1> {
 }; // struct face_t
 
-struct cell_t : public flecsi::topology::mesh_entity__<2, 1> {
+struct cell_t : public flecsi::topology::mesh_entity_u<2, 1> {
   using id_t = flecsi::utils::id_t;
 
   cell_t(const index_t & index) : index_(index) {
@@ -80,7 +80,7 @@ struct cell_t : public flecsi::topology::mesh_entity__<2, 1> {
   std::vector<size_t> create_entities(
       id_t cell_id,
       size_t dim,
-      flecsi::topology::domain_connectivity__<2> & c,
+      flecsi::topology::domain_connectivity_u<2> & c,
       id_t * e) {
     clog_assert(false, "cell_t::create_entities is not implemented");
     return {};
@@ -160,8 +160,8 @@ struct test_mesh_2d_policy_t {
 #endif
 
   template<size_t M, size_t D, typename ST>
-  static flecsi::topology::mesh_entity_base__<num_domains> * create_entity(
-      flecsi::topology::mesh_topology_base__<ST> * mesh,
+  static flecsi::topology::mesh_entity_base_u<num_domains> * create_entity(
+      flecsi::topology::mesh_topology_base_u<ST> * mesh,
       size_t num_vertices,
       id_t const & id) {
 #if 0
@@ -193,7 +193,7 @@ struct test_mesh_2d_policy_t {
 //----------------------------------------------------------------------------//
 
 struct test_mesh_2d_t
-    : public flecsi::topology::mesh_topology__<test_mesh_2d_policy_t> {
+    : public flecsi::topology::mesh_topology_u<test_mesh_2d_policy_t> {
 
   auto cells() {
     return entities<2, 0>();
@@ -204,7 +204,7 @@ struct test_mesh_2d_t
   } // cells
 
   template<typename E, size_t M>
-  auto vertices(flecsi::topology::domain_entity__<M, E> & e) {
+  auto vertices(flecsi::topology::domain_entity_u<M, E> & e) {
     return entities<0, 0>(e);
   } // vertices
   /*
@@ -214,7 +214,7 @@ struct test_mesh_2d_t
     >
     auto
     vertices(
-      flecsi::topology::domain_entity__<M, E> & e
+      flecsi::topology::domain_entity_u<M, E> & e
     )
     const
     {
@@ -261,7 +261,7 @@ do_test_mesh_2d_coloring() {
 //----------------------------------------------------------------------------//
 
 void
-initialize_mesh(data_client_handle__<test_mesh_2d_t, wo> mesh) {
+initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
   auto & context = execution::context_t::instance();
 
   auto & vertex_map{context.index_map(index_spaces::vertices)};

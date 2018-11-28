@@ -71,22 +71,23 @@ def execute(verbose, debug, build):
     # Echo the subprocess call
     if verbose:
         print 'Invoking:'
-        print '/usr/bin/cmake ' + cxx_compiler + ' ' + cxx_flags + ' ' + \
+        print 'cmake ' + cxx_compiler + ' ' + cxx_flags + ' ' + \
             cxx_debug_flags + ' .'
 
     # Call CMake and make to build the example
-    subprocess.call(['/usr/bin/cmake', cxx_compiler, cxx_flags,
+    subprocess.call(['cmake', cxx_compiler, cxx_flags,
         cxx_debug_flags, '.'], stdout=devnull)
 
     if verbose:
         print 'Invoking:'
-        print '/usr/bin/make install VERBOSE=1'
+        print 'make VERBOSE=1'
         subprocess.call(['/usr/bin/make', 'VERBOSE=1'])
-        subprocess.call(['/usr/bin/make', 'install', 'VERBOSE=1'],
+        print 'make install VERBOSE=1'
+        subprocess.call(['make', 'install', 'VERBOSE=1'],
             stdout=devnull)
     else:
-        subprocess.call(['/usr/bin/make'])
-        subprocess.call(['/usr/bin/make', 'install'], stdout=devnull)
+        subprocess.call(['make'])
+        subprocess.call(['make', 'install'], stdout=devnull)
 
     if not debug:
         shutil.rmtree(tmpdir)

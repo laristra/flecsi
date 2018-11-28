@@ -35,8 +35,9 @@
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/hpx/runtime_driver.h>
 #include <flecsi/utils/common.h>
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/export_definitions.h>
+
+#include <flecsi/utils/const_string.h>
 
 ///
 /// \file hpx/execution_policy.h
@@ -205,7 +206,7 @@ struct hpx_context_policy_t {
         T global_max{};
         T local_max = local_future.get();
         MPI_Allreduce(&local_max, &global_max, 1,
-           flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
+           flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
            MPI_COMM_WORLD);
         return global_max;
       });
@@ -251,7 +252,7 @@ struct hpx_context_policy_t {
         T global_min{};
         T local_min = local_future.get();
         MPI_Allreduce(&local_min, &global_min, 1,
-           flecsi::coloring::mpi_typetraits__<T>::type(), MPI_MAX,
+           flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
            MPI_COMM_WORLD);
         return global_min;
       });

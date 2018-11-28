@@ -27,7 +27,8 @@ namespace flecsi {
 //!
 //! @ingroup concurrency
 //------------------------------------------------------------------------//
-class thread_pool {
+class thread_pool
+{
 public:
   //! signature of internally queued function
   using function_t = std::function<void(void)>;
@@ -50,12 +51,12 @@ public:
   //! Internal run method. Do not call directly.
   //---------------------------------------------------------------------//
   void run_() {
-    for (;;) {
+    for(;;) {
       sem_.acquire();
 
       mutex_.lock();
 
-      if (done_) {
+      if(done_) {
         mutex_.unlock();
         return;
       }
@@ -87,7 +88,7 @@ public:
   void start(size_t num_threads) {
     assert(threads_.empty() && "thread pool already started");
 
-    for (size_t i = 0; i < num_threads; ++i) {
+    for(size_t i = 0; i < num_threads; ++i) {
       auto t = new std::thread(&thread_pool::run_, this);
       threads_.push_back(t);
     }
@@ -97,14 +98,14 @@ public:
   //! Interrupt the thread pool and wait for all threads to finish.
   //---------------------------------------------------------------------//
   void join() {
-    if (done_) {
+    if(done_) {
       return;
     }
 
     done_ = true;
     sem_.interrupt();
 
-    for (auto t : threads_) {
+    for(auto t : threads_) {
       t->join();
       delete t;
     }

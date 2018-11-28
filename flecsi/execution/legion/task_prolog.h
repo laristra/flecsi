@@ -29,6 +29,9 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_field.h>
 
+#include <flecsi/utils/const_string.h>
+#include <flecsi/utils/tuple_walker.h>
+
 clog_register_tag(prolog);
 
 namespace flecsi {
@@ -42,7 +45,7 @@ namespace execution {
  @ingroup execution
  */
 
-struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
+struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   /*!
    Construct a task_prolog_t instance.
@@ -79,7 +82,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       size_t EXCLUSIVE_PERMISSIONS,
       size_t SHARED_PERMISSIONS,
       size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor__<
+  void handle(dense_accessor_u<
               T,
               EXCLUSIVE_PERMISSIONS,
               SHARED_PERMISSIONS,
@@ -90,7 +93,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
     auto & h = a.handle;
 
-    if (!h.global && !h.color) {
+    if(!h.global && !h.color) {
       auto & flecsi_context = context_t::instance();
 
       bool read_phase = false;
@@ -100,8 +103,8 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       read_phase = GHOST_PERMISSIONS != reserved;
       write_phase = (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw);
 
-      if (read_phase) {
-        if (!*(h.ghost_is_readable)) {
+      if(read_phase) {
+        if(!*(h.ghost_is_readable)) {
           {
             clog_tag_guard(prolog);
             clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
@@ -231,7 +234,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
           continue;
         }
       } // for group
-      if (!found_group) {
+      if(!found_group) {
         std::set<size_t> new_group;
         new_group.insert(handle);
         handle_groups.push_back(new_group);
@@ -267,7 +270,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
       }
 
       auto ghost_owner_pos_fid =
-          LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+        LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
       rr_ghost.add_field(ghost_owner_pos_fid);
       rr_entries_ghost.add_field(ghost_owner_pos_fid);
@@ -311,8 +314,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
 
   } // launch copies
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS
@@ -393,24 +395,16 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
     } // if
   }
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    ragged_accessor<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    > & a
-  )
-  {
-    handle(reinterpret_cast<sparse_accessor<
-      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+    size_t GHOST_PERMISSIONS>
+  void handle(ragged_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
   } // handle
 
   template<
@@ -481,17 +475,9 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
        }
   }
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    ragged_mutator<
-      T
-    > & m
-  )
-  {
-    handle(reinterpret_cast<sparse_mutator<T>&>(m));
+  template<typename T>
+  void handle(ragged_mutator<T> & m) {
+    handle(reinterpret_cast<sparse_mutator<T> &>(m));
   }
 
   /*!
@@ -499,9 +485,9 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t> {
    */
 
   template<typename T>
-  static typename std::enable_if_t<
-      !std::is_base_of<dense_accessor_base_t, T>::value>
-  handle(T &) {} // handle
+  static
+    typename std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
+    handle(T &) {} // handle
 
   // member variables
   Legion::Runtime * runtime;

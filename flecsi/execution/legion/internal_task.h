@@ -26,10 +26,11 @@
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/execution.h>
-#include <flecsi/utils/common.h>
+
+#include <flecsi/utils/const_string.h>
 
 /*!
-  @def __flecsi_internal_task_key
+  @def flecsi_internal_task_key
 
   Convenience macro to create a task key from Legion task information.
 
@@ -43,14 +44,14 @@
  @ingroup legion-execution
  */
 
-#define __flecsi_internal_task_key(task)                                       \
+#define flecsi_internal_task_key(task)                                       \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Use const_string_t interface to create the key */                         \
   flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()
 
 /*!
-  @def __flecsi_internal_register_legion_task
+  @def flecsi_internal_register_legion_task
 
   This macro registers an internal Legion task.
 
@@ -62,13 +63,13 @@
   @ingroup legion-execution
 */
 
-#define __flecsi_internal_register_legion_task(task, processor, launch)        \
+#define flecsi_internal_register_legion_task(task, processor, launch)        \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the execution policy to register the task */                         \
-  static inline bool task##_task_registered =                                  \
+  inline bool task##_task_registered =                                         \
       flecsi::execution::legion_execution_policy_t::register_legion_task<      \
           flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
-          typename flecsi::utils::function_traits__<decltype(                  \
+          typename flecsi::utils::function_traits_u<decltype(                  \
               task)>::return_type,                                             \
           task>(processor, launch, {EXPAND_AND_STRINGIFY(task)})

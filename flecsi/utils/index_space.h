@@ -25,7 +25,8 @@ namespace utils {
 //! \brief index_space_t provides...
 //!
 
-class index_space_t {
+class index_space_t
+{
 public:
   using iterator_t = iterator<index_space_t, std::size_t>;
 

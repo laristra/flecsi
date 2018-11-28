@@ -36,7 +36,7 @@ namespace flecsi {
 struct dense_accessor_base_t {};
 
 /*!
- The dense accessor__ type captures information about permissions
+ The dense accessor_u type captures information about permissions
  and specifies a data policy.
 
  @tparam T                     The data type referenced by the handle.
@@ -51,36 +51,31 @@ struct dense_accessor_base_t {};
  @ingroup data
  */
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-struct accessor__<
-    data::dense,
-    T,
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+struct accessor_u<data::dense,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS> : public accessor_u<data::base,
+                         T,
+                         EXCLUSIVE_PERMISSIONS,
+                         SHARED_PERMISSIONS,
+                         GHOST_PERMISSIONS>,
+                       public dense_accessor_base_t {
+  using handle_t = dense_data_handle_u<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>
-    : public accessor__<
-          data::base,
-          T,
-          EXCLUSIVE_PERMISSIONS,
-          SHARED_PERMISSIONS,
-          GHOST_PERMISSIONS>,
-      public dense_accessor_base_t {
-  using handle_t = dense_data_handle__<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS>;
+    GHOST_PERMISSIONS>;
 
   /*!
    Copy constructor.
    */
 
-  accessor__(const dense_data_handle__<T, 0, 0, 0> & h)
-      : handle(reinterpret_cast<const handle_t &>(h)) {}
+  accessor_u(const dense_data_handle_u<T, 0, 0, 0> & h)
+    : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   /*!
    \brief Provide logical array-based access to the data for this
@@ -110,7 +105,7 @@ struct accessor__<
    */
 
   const T & operator()(size_t index) const {
-    return const_cast<accessor__ &>(*this)(index);
+    return const_cast<accessor_u &>(*this)(index);
   }
 
   /*!
@@ -236,7 +231,7 @@ struct accessor__<
    \tparam E A complex index type.
 
    This version of the operator is provided to support use with
-   \e flecsi mesh entity types \ref mesh_entity_base__.
+   \e flecsi mesh entity types \ref mesh_entity_base_u.
    */
   template<typename E>
   T & operator()(E * e) {
@@ -246,27 +241,23 @@ struct accessor__<
   handle_t handle;
 };
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-using dense_accessor__ = accessor__<
-    data::dense,
-    T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>;
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+using dense_accessor_u = accessor_u<data::dense,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS>;
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-using dense_accessor = dense_accessor__<
-    T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>;
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+using dense_accessor = dense_accessor_u<T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS>;
 
 } // namespace flecsi

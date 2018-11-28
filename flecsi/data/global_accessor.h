@@ -37,7 +37,7 @@ namespace flecsi {
 struct global_accessor_base_t {};
 
 /*!
- The global accessor__ type captures information about permissions
+ The global accessor_u type captures information about permissions
  and specifies a data policy.
 
  @tparam T                     The data type referenced by the handle.
@@ -49,14 +49,14 @@ struct global_accessor_base_t {};
  */
 
 template<typename T, size_t PERMISSIONS>
-struct accessor__<data::global, T, PERMISSIONS, 0, 0>
-    : public accessor__<data::base, T, PERMISSIONS, 0, 0>,
-      global_accessor_base_t {
+struct accessor_u<data::global, T, PERMISSIONS, 0, 0>
+  : public accessor_u<data::base, T, PERMISSIONS, 0, 0>,
+    global_accessor_base_t {
 
-  using handle_t = global_data_handle__<T, PERMISSIONS>;
+  using handle_t = global_data_handle_u<T, PERMISSIONS>;
 
-  accessor__(const global_data_handle__<T, 0> & h)
-      : handle(reinterpret_cast<const handle_t &>(h)) {}
+  accessor_u(const global_data_handle_u<T, 0> & h)
+    : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   operator T &() {
     return data();
@@ -74,7 +74,7 @@ struct accessor__<data::global, T, PERMISSIONS, 0, 0>
     return 1;
   } // size
 
-  accessor__ & operator=(const T & x) {
+  accessor_u & operator=(const T & x) {
     data() = x;
     return *this;
   } // operator =
@@ -121,13 +121,13 @@ struct accessor__<data::global, T, PERMISSIONS, 0, 0>
 };
 
 template<typename T, size_t PERMISSIONS>
-struct accessor__<data::color, T, PERMISSIONS, 0, 0>
-    : public accessor__<data::base, T, PERMISSIONS, 0, 0> {
+struct accessor_u<data::color, T, PERMISSIONS, 0, 0>
+  : public accessor_u<data::base, T, PERMISSIONS, 0, 0> {
 
-  using handle_t = global_data_handle__<T, PERMISSIONS>;
+  using handle_t = global_data_handle_u<T, PERMISSIONS>;
 
-  accessor__(const global_data_handle__<T, 0> & h)
-      : handle(reinterpret_cast<const handle_t &>(h)) {}
+  accessor_u(const global_data_handle_u<T, 0> & h)
+    : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   operator T &() {
     return data();
@@ -145,12 +145,12 @@ struct accessor__<data::color, T, PERMISSIONS, 0, 0>
     return 1;
   }
 
-  accessor__ & operator=(const T & x) {
+  accessor_u & operator=(const T & x) {
     data() = x;
     return *this;
   }
 
-  T & operator=(accessor__) {
+  T & operator=(accessor_u) {
     return *handle.combined_data;
   }
 
@@ -194,16 +194,16 @@ struct accessor__<data::color, T, PERMISSIONS, 0, 0>
 };
 
 template<typename T, size_t PERMISSIONS>
-using color_accessor__ = accessor__<data::color, T, PERMISSIONS, 0, 0>;
+using color_accessor_u = accessor_u<data::color, T, PERMISSIONS, 0, 0>;
 
 template<typename T, size_t PERMISSIONS>
-using global_accessor__ = accessor__<data::global, T, PERMISSIONS, 0, 0>;
+using global_accessor_u = accessor_u<data::global, T, PERMISSIONS, 0, 0>;
 
 // TODO: these definitions need to be part of the specialization
 template<typename T, size_t PERMISSIONS>
-using global_accessor = global_accessor__<T, PERMISSIONS>;
+using global_accessor = global_accessor_u<T, PERMISSIONS>;
 
 template<typename T, size_t PERMISSIONS>
-using color_accessor = color_accessor__<T, PERMISSIONS>;
+using color_accessor = color_accessor_u<T, PERMISSIONS>;
 
 } // namespace flecsi

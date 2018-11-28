@@ -28,14 +28,15 @@
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
-#include <flecsi/data/sparse_accessor.h>
-#include <flecsi/data/ragged_accessor.h>
-#include <flecsi/data/sparse_mutator.h>
-#include <flecsi/data/ragged_mutator.h>
 #include <flecsi/data/global_accessor.h>
+#include <flecsi/data/ragged_accessor.h>
+#include <flecsi/data/ragged_mutator.h>
+#include <flecsi/data/sparse_accessor.h>
+#include <flecsi/data/sparse_mutator.h>
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/topology/mesh_types.h>
 #include <flecsi/topology/set_types.h>
+
 #include <flecsi/utils/tuple_walker.h>
 
 namespace flecsi {
@@ -50,7 +51,7 @@ namespace execution {
   @ingroup execution
 */
 
-struct init_args_t : public utils::tuple_walker__<init_args_t> {
+struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
   /*!
     Construct an init_args_t instance.
@@ -59,7 +60,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     @param context The Legion task runtime context.
    */
   init_args_t(Legion::Runtime * runtime, Legion::Context & context)
-      : runtime(runtime), context(context) {} // init_args
+    : runtime(runtime), context(context) {} // init_args
 
   /*!
     Convert the template privileges to proper Legion privileges.
@@ -68,7 +69,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
    */
 
   static Legion::PrivilegeMode privilege_mode(size_t mode) {
-    switch (mode) {
+    switch(mode) {
       case size_t(reserved):
         return NO_ACCESS;
       case size_t(ro):
@@ -89,16 +90,14 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
     FIXME
    */
 
-  template<
-      typename T,
-      size_t EXCLUSIVE_PERMISSIONS,
-      size_t SHARED_PERMISSIONS,
-      size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor__<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(dense_accessor_u<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
       clog_assert(
@@ -133,7 +132,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t> {
 template<
       typename T,
       size_t PERMISSIONS>
-  void handle(global_accessor__<
+  void handle(global_accessor_u<
               T,
               PERMISSIONS> & a)
   {
@@ -161,7 +160,7 @@ template<
   template<
       typename T,
       size_t PERMISSIONS>
-  void handle(color_accessor__<
+  void handle(color_accessor_u<
               T,
               PERMISSIONS> & a)
   {
@@ -181,7 +180,7 @@ template<
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
       std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
     
     std::unordered_map<size_t, size_t> region_map;
 
@@ -230,27 +229,19 @@ template<
   // Initialize arguments for future handle
   ///
   template <typename T, launch_type_t launch>
-  void handle(legion_future__<T, launch> &h) {
+  void handle(legion_future_u<T, launch> &h) {
     futures.push_back (h.raw_future());
     h.init_future();
   }
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    sparse_accessor <
-    T,
+    size_t GHOST_PERMISSIONS>
+  void handle(sparse_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS
-    > &a
-  )
-  {
+    GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
@@ -300,36 +291,20 @@ template<
     region_reqs.push_back(gh_rr2);
   }
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    ragged_accessor<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    > & a
-  )
-  {
-    handle(reinterpret_cast<sparse_accessor<
-      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+    size_t GHOST_PERMISSIONS>
+  void handle(ragged_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
   } // handle
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    sparse_mutator<
-    T
-    > &m
-  )
-  {
+  template<typename T>
+  void handle(sparse_mutator<T> & m) {
     auto & h = m.h_;
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
@@ -377,17 +352,9 @@ template<
     region_reqs.push_back(gh_rr2);
   }
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    ragged_mutator<
-      T
-    > & m
-  )
-  {
-    handle(reinterpret_cast<sparse_mutator<T>&>(m));
+  template<typename T>
+  void handle(ragged_mutator<T> & m) {
+    handle(reinterpret_cast<sparse_mutator<T> &>(m));
   }
 
   /*!
@@ -396,10 +363,10 @@ template<
 
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
-      std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle__<T, PERMISSIONS> & h) {
+    std::is_base_of<topology::set_topology_base_t, T>::value>
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
 
-    for (size_t i{0}; i < h.num_handle_entities; ++i) {
+    for(size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
       Legion::RegionRequirement rr(
@@ -416,8 +383,8 @@ template<
 
   template<typename T>
   static typename std::enable_if_t<
-      !std::is_base_of<dense_accessor_base_t, T>::value &&
-      !std::is_base_of<data_client_handle_base_t, T>::value>
+    !std::is_base_of<dense_accessor_base_t, T>::value &&
+    !std::is_base_of<data_client_handle_base_t, T>::value>
   handle(T &) {} // handle
 
   Legion::Runtime * runtime;
