@@ -551,6 +551,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       INPUTS
         test/simple2d-8x8.msh
         test/simple2d-16x16.msh
+        test/ragged_data.blessed
       LIBRARIES
         FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
@@ -561,7 +562,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         -DFLECSI_8_8_MESH
       POLICY ${UNIT_POLICY}
-      THREADS 2
+      THREADS 4
       NOCI
     )
 
