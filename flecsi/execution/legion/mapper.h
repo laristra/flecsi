@@ -158,6 +158,7 @@ public:
     const Legion::Task & task,
     const Legion::Mapping::Mapper::MapTaskInput & input,
     Legion::Mapping::Mapper::MapTaskOutput & output) {
+    DefaultMapper::map_task(ctx, task, input, output);
 
     if((task.tag == MAPPER_COMPACTED_STORAGE) && (task.regions.size() > 0)) {
 
@@ -227,8 +228,6 @@ public:
         } // end if
       } // end for
 
-    } else {
-      DefaultMapper::map_task(ctx, task, input, output);
     }// end if
 
   } // map_task
