@@ -250,33 +250,10 @@ struct legion_execution_policy_t {
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
 
-          if constexpr(REDUCTION != ZERO) {
-#if 0
-            clog(info) << "executing reduction logic for " <<
-              REDUCTION << std::endl;
-            auto reduction_op =
-              context_.reduction_operations().find(REDUCTION);
+          static_assert(REDUCTION == ZERO,
+            "reductions are not supported for single tasks");
 
-            clog_assert(reduction_op != context_.reduction_operations().end(),
-              "invalid reduction operation");
-
-            auto & collective = reduction_op->second.collective;
-
-            legion_runtime->defer_dynamic_collective_arrival(legion_context,
-              collective, future);
-            collective =
-              legion_runtime->advance_dynamic_collective(legion_context,
-                collective);
-            auto gfuture = legion_runtime->get_dynamic_collective_result(
-              legion_context, collective);
-
-            return legion_future_u<RETURN, launch_type_t::single>(gfuture);
-#endif
-            clog(fatal)<<"there is no implementation reduction task with the single task launcher"<<std::endl;
-          }
-          else {
-            return legion_future_u<RETURN, launch_type_t::single>(future);
-          } // if
+          return legion_future_u<RETURN, launch_type_t::single>(future);
         } // scope
 
         case processor_type_t::toc:
@@ -364,7 +341,8 @@ struct legion_execution_policy_t {
             Legion::Future future;
 
             future = legion_runtime->execute_index_space(legion_context,
-                launcher, context_.reduction_operations()[REDUCTION].id);
+              launcher, context_.reduction_operations()[REDUCTION].id);
+
             // Enqueue the epilog.
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);

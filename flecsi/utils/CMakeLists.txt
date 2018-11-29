@@ -39,7 +39,6 @@ set(utils_HEADERS
   macros.h
   mpi_type_traits.h
   offset.h
-  reflection.h
   reorder.h
   set_intersection.h
   set_utils.h
@@ -144,16 +143,6 @@ cinch_add_unit(reorder
   SOURCES
     test/reorder.cc
 )
-
-if(NOT MSVC)
-  # FIXME: MSVC's preprocessor is too broken for this
-  cinch_add_unit(reflection
-  SOURCES
-    test/reflection.cc
-  POLICY
-    SERIAL_DEVEL
-  )
-endif()
 
 cinch_add_unit(humble
   SOURCES

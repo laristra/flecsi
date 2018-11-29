@@ -118,13 +118,6 @@ set(FLECSI_INCLUDE_DEPENDENCIES)
 set(FLECSI_LIBRARY_DEPENDENCIES)
 
 #------------------------------------------------------------------------------#
-# Enable Boost.Preprocessor
-#------------------------------------------------------------------------------#
-
-# This changes the Cinch default
-set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
-
-#------------------------------------------------------------------------------#
 # Add options for runtime selection
 #------------------------------------------------------------------------------#
 
@@ -272,7 +265,7 @@ endif()
 # Boost Program Options
 #------------------------------------------------------------------------------#
 
-if(ENABLE_BOOST_PROGRAM_OPTIONS)
+if(ENABLE_BOOST)
   list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
 endif()
 

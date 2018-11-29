@@ -22,7 +22,7 @@
 #include <iostream>
 #include <string>
 
-#if defined(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
+#if defined(FLECSI_ENABLE_BOOST)
   #include <boost/program_options.hpp>
   using namespace boost::program_options;
 #endif
@@ -45,7 +45,7 @@ int main(int argc, char ** argv) {
   // Initialize clog tags to output all tag groups
   std::string tags("all");
 
-#if defined(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
+#if defined(FLECSI_ENABLE_BOOST)
   std::string program(argv[0]);
   options_description desc(program.substr(program.find('/')+1).c_str());
 

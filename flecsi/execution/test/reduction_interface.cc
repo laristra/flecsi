@@ -6,6 +6,7 @@
 #include <cinchdevel.h>
 
 #include <flecsi/execution/context.h>
+#include <flecsi/execution/execution.h>
 #include <flecsi/execution/reduction.h>
 #include <flecsi/supplemental/coloring/add_colorings.h>
 #include <flecsi/supplemental/mesh/test_mesh_2d.h>
@@ -103,28 +104,28 @@ void driver(int argc, char ** argv) {
 
   {
   auto f = flecsi_execute_reduction_task(double_task, flecsi::execution,
-    single, min, double, mh, vh);
+    index, min, double, mh, vh);
 
   clog(info) << "reduction min: " << f.get() << std::endl;
   } // scope
 
   {
   auto f = flecsi_execute_reduction_task(double_task, flecsi::execution,
-    single, max, double, mh, vh);
+    index, max, double, mh, vh);
 
   clog(info) << "reduction max: " << f.get() << std::endl;
   } // scope
 
   {
   auto f = flecsi_execute_reduction_task(double_task, flecsi::execution,
-    single, sum, double, mh, vh);
+    index, sum, double, mh, vh);
 
   clog(info) << "reduction sum: " << f.get() << std::endl;
   } // scope
 
   {
   auto f = flecsi_execute_reduction_task(double_task, flecsi::execution,
-    single, product, double, mh, vh);
+    index, product, double, mh, vh);
 
   clog(info) << "reduction product: " << f.get() << std::endl;
   } // scope
