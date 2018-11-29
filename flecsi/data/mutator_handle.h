@@ -513,7 +513,7 @@ public:
           slot_entry = ++slots < slots_end ? slots->entry : end;
         }
 
-        while (existing_entry == slot_entry ||
+        while (existing_entry == spare_entry ||
                (ERASE && erase_set_->find(std::make_pair(
                              index, existing_entry)) != erase_set_->end())) {
           existing_entry = ++existing < existing_end ? existing->entry : end;
