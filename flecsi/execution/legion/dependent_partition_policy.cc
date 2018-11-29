@@ -115,7 +115,7 @@ legion_entity legion_dependent_partition_policy_t::load_cell(int cells_size, int
 
   // Launch index task to init cell and vertex
   const auto init_cell_task_id =
-    context_.task_id<__flecsi_internal_task_key(init_cell_task)>();
+    context_.task_id<flecsi_internal_task_key(init_cell_task)>();
   
   Legion::IndexLauncher init_cell_launcher(init_cell_task_id,
       																		 partition_index_space, Legion::TaskArgument(&task_md, sizeof(task_mesh_definition_t)),
@@ -190,7 +190,7 @@ legion_entity legion_dependent_partition_policy_t::load_non_cell(int entities_si
   // **************************************************************************
   // Launch index task to init cell and vertex
   const auto init_non_cell_task_id =
-    context_.task_id<__flecsi_internal_task_key(init_non_cell_task)>();
+    context_.task_id<flecsi_internal_task_key(init_non_cell_task)>();
   
   task_entity_t task_entity;
   task_entity.entity_id = entity_id;
@@ -289,7 +289,7 @@ legion_adjacency legion_dependent_partition_policy_t::load_cell_to_cell(legion_e
   // **************************************************************************
 	// Launch index task to init cell to cell and cell to vertex connectivity
   const auto init_cell_to_cell_task_id =
-    context_.task_id<__flecsi_internal_task_key(init_cell_to_cell_task)>();
+    context_.task_id<flecsi_internal_task_key(init_cell_to_cell_task)>();
   
   task_mesh_definition_t task_md;
   task_md.md_ptr = (intptr_t )&md;
@@ -402,7 +402,7 @@ legion_adjacency legion_dependent_partition_policy_t::load_cell_to_others(legion
   // **************************************************************************
 	// Launch index task to init cell to vertex connectivity
   const auto init_cell_to_others_task_id =
-    context_.task_id<__flecsi_internal_task_key(init_cell_to_others_task)>();
+    context_.task_id<flecsi_internal_task_key(init_cell_to_others_task)>();
   
   task_mesh_definition_t task_md;
   task_md.md_ptr = (intptr_t )&md;
@@ -456,7 +456,7 @@ void legion_dependent_partition_policy_t::min_reduction_by_color(legion_entity &
   // **************************************************************************
   // Launch index task to init vertex color
   const auto init_vertex_color_task_id =
-    context_.task_id<__flecsi_internal_task_key(init_vertex_color_task)>();
+    context_.task_id<flecsi_internal_task_key(init_vertex_color_task)>();
   
   Legion::IndexLauncher init_vertex_color_launcher(init_vertex_color_task_id,
     																			 partition_index_space, Legion::TaskArgument(nullptr, 0),
@@ -546,7 +546,7 @@ void legion_dependent_partition_policy_t::set_offset(legion_entity &entity, legi
   // **************************************************************************
 	// Launch index task to init offset
   const auto set_entity_offset_task_id =
-    context_.task_id<__flecsi_internal_task_key(set_entity_offset_task)>();
+    context_.task_id<flecsi_internal_task_key(set_entity_offset_task)>();
   
   int entity_id = entity.id;
   
@@ -577,7 +577,7 @@ void legion_dependent_partition_policy_t::output_partition(legion_entity &entity
   // **************************************************************************
 	// Launch index task to verify partition results
   const auto output_partition_task_id =
-    context_.task_id<__flecsi_internal_task_key(output_partition_task)>();
+    context_.task_id<flecsi_internal_task_key(output_partition_task)>();
   
   task_entity_t task_entity;
   task_entity.entity_map_id = entity.map_id;
@@ -632,7 +632,7 @@ void legion_dependent_partition_policy_t::print_partition(legion_entity &entity,
   // **************************************************************************
 	// Launch index task to verify partition results
   const auto print_partition_task_id =
-    context_.task_id<__flecsi_internal_task_key(print_partition_task)>();
+    context_.task_id<flecsi_internal_task_key(print_partition_task)>();
   
   task_entity_t task_entity;
   task_entity.entity_map_id = entity.map_id;

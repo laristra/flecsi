@@ -65,7 +65,6 @@ struct task_interface_u {
             the specific backend runtime being used.
    */
 
-<<<<<<< HEAD
   template<
       size_t KEY,
       typename RETURN,
@@ -76,16 +75,6 @@ struct task_interface_u {
   register_task(processor_type_t processor, launch_t launch, std::string name) {
     return EXECUTION_POLICY::template register_task<
         KEY, RETURN, ARG_TUPLE, DELEGATE, REDUCTION>(processor, launch, name);
-=======
-  template<size_t KEY,
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*DELEGATE)(ARG_TUPLE)>
-  static decltype(auto)
-  register_task(processor_type_t processor, launch_t launch, std::string name) {
-    return EXECUTION_POLICY::template register_task<KEY, RETURN, ARG_TUPLE,
-      DELEGATE>(processor, launch, name);
->>>>>>> origin/feature/replication_merge
   } // register_task
 
   /*!
