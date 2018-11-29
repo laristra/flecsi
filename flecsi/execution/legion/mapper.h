@@ -228,7 +228,7 @@ public:
         } // end if
       } // end for
 
-    } // end if
+    }// end if
 
   } // map_task
 
