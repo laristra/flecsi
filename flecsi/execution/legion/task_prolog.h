@@ -100,7 +100,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       bool write_phase = false;
       const int my_color = runtime->find_local_MPI_rank();
 
-      read_phase = GHOST_PERMISSIONS != reserved;
+      read_phase = GHOST_PERMISSIONS != na;
       write_phase = (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw);
 
       if(read_phase) {
@@ -342,7 +342,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     bool write_phase = false;
     const int my_color = runtime->find_local_MPI_rank();
 
-    read_phase = GHOST_PERMISSIONS != reserved;
+    read_phase = GHOST_PERMISSIONS != na;
     write_phase = (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw);
 
     if (read_phase) {

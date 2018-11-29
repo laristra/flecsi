@@ -34,8 +34,8 @@ void check_all_cells_task(
 flecsi_register_task_simple(check_all_cells_task, loc, index | leaf);
 
 void set_primary_cells_task(
-    dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
-    dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
+    dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::na> cell_ID,
+    dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::na> test,
     size_t cycle);
 flecsi_register_task_simple(set_primary_cells_task, loc, index | leaf);
 
@@ -106,8 +106,8 @@ driver(int argc, char ** argv) {
 
 void
 set_primary_cells_task(
-    dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
-    dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
+    dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::na> cell_ID,
+    dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::na> test,
     size_t cycle) {
 
   flecsi::execution::context_t & context_ =
