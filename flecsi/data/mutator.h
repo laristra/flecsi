@@ -24,9 +24,9 @@ namespace flecsi {
 struct mutator_base_t {};
 
 template<data::storage_label_type_t, typename T>
-struct mutator__ : public mutator_base_t {};
+struct mutator_u : public mutator_base_t {};
 
 template<typename T>
-struct mutator__<data::base, T> {}; // struct mutator__
+struct mutator_u<data::base, T> {}; // struct mutator_u
 
 } // namespace flecsi

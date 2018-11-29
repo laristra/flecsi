@@ -21,7 +21,7 @@
 #include <flecsi/coloring/dcrs_utils.h>
 #include <flecsi/coloring/parmetis_colorer.h>
 #include <flecsi/coloring/mpi_communicator.h>
-#include <flecsi/utils/tuple_walker.h>
+
 #include <flecsi/utils/tuple_visit.h>
 
 //#include <flecsi/supplemental/coloring/coloring_functions.h>
@@ -310,7 +310,7 @@ void generic_coloring(
   // End lambda
   //--------------------------------------------------------------------------//
 
-  tuple_visit<typename COLORING_POLICY::auxiliary>(color_entity);
+  flecsi::utils::tuple_visit<typename COLORING_POLICY::auxiliary>(color_entity);
 
 } // generic_coloring
 
@@ -324,17 +324,17 @@ struct coloring_policy_t {
 
   // FIXME: change names to be better, i.e., through dimension and
   // depth are dependent information.
-  using primary = primary_independent__<0, 2, 0, 2>;
+  using primary = primary_independent_u<0, 2, 0, 2>;
 
   using auxiliary = std::tuple<
-    auxiliary_independent__<1, 0, 2>,
-    auxiliary_independent__<2, 1, 2>
+    auxiliary_independent_u<1, 0, 2>,
+    auxiliary_independent_u<2, 1, 2>
   >;
 
   static constexpr size_t auxiliary_colorings =
     std::tuple_size<auxiliary>::value;
 
-  using mesh_definition_t = flecsi::topology::mesh_definition__<2>;
+  using mesh_definition_t = flecsi::topology::mesh_definition_u<2>;
 
 }; // coloring_policy_t
 

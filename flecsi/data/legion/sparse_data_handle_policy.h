@@ -32,7 +32,7 @@ struct legion_sparse_data_handle_policy_t {
   legion_sparse_data_handle_policy_t() {}
 
   legion_sparse_data_handle_policy_t(
-      const legion_sparse_data_handle_policy_t & p) = default;
+    const legion_sparse_data_handle_policy_t & p) = default;
 
   bool * ghost_is_readable;
   bool * write_phase_started;
@@ -84,11 +84,10 @@ struct legion_sparse_data_handle_policy_t {
   size_t exclusive_priv;
   size_t shared_priv;
   size_t ghost_priv;
- 
   size_t offsets_size = 0;
   size_t entries_size = 0;
 
-  void* entries_data[3];
+  void * entries_data[3];
 }; // class legion_sparse_data_handle_policy_t
 
 } // namespace flecsi

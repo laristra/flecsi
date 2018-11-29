@@ -41,7 +41,7 @@ operator << (std::ostream & stream, node_policy_t const & node) {
   return stream;
 } // operator <<
 
-using dag_t = flecsi::utils::dag__<node_policy_t>;
+using dag_t = flecsi::utils::dag_u<node_policy_t>;
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 using graphviz_t = flecsi::utils::graphviz_t;

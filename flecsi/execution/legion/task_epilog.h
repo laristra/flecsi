@@ -41,7 +41,7 @@ namespace execution {
  @ingroup execution
  */
 
-struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
+struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
   /*!
    Construct a task_epilog_t instance.
@@ -51,7 +51,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
    */
 
   task_epilog_t(Legion::Runtime * runtime, Legion::Context & context)
-      : runtime(runtime), context(context) {} // task_epilog_t
+    : runtime(runtime), context(context) {} // task_epilog_t
 
   /*!
    FIXME: Need description
@@ -68,21 +68,19 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
    @param context The Legion task runtime context.
    */
 
-  template<
-      typename T,
-      size_t EXCLUSIVE_PERMISSIONS,
-      size_t SHARED_PERMISSIONS,
-      size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor__<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(dense_accessor_u<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    if (!h.global && !h.color) {
-      bool write_phase{(SHARED_PERMISSIONS == wo) ||
-                       (SHARED_PERMISSIONS == rw)};
+    if(!h.global && !h.color) {
+      bool write_phase{
+        (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw)};
 
       if (write_phase && (*h.write_phase_started)) {
 
@@ -101,26 +99,17 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
 
   } // handle
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    sparse_accessor <
-    T,
+    size_t GHOST_PERMISSIONS>
+  void handle(sparse_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS
-    > &a
-  )
-  {
+    GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    bool write_phase{(SHARED_PERMISSIONS == wo) ||
-                     (SHARED_PERMISSIONS == rw)};
+    bool write_phase{(SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw)};
 
     if (write_phase && (*h.write_phase_started)) {
 
@@ -131,36 +120,20 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
     } // if write phase
   }
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    ragged_accessor<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    > & a
-  )
-  {
-    handle(reinterpret_cast<sparse_accessor<
-      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+    size_t GHOST_PERMISSIONS>
+  void handle(ragged_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
   } // handle
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    sparse_mutator<
-    T
-    > &m
-  )
-  {
+  template<typename T>
+  void handle(sparse_mutator<T> & m) {
     auto & h = m.h_;
 
     if ((*h.write_phase_started)){ 
@@ -169,17 +142,9 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
     } // if write phase
   }
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    ragged_mutator<
-      T
-    > & m
-  )
-  {
-    handle(reinterpret_cast<sparse_mutator<T>&>(m));
+  template<typename T>
+  void handle(ragged_mutator<T> & m) {
+    handle(reinterpret_cast<sparse_mutator<T> &>(m));
   }
 
   /*!
@@ -189,9 +154,9 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
    */
 
   template<typename T>
-  static typename std::enable_if_t<
-      !std::is_base_of<dense_accessor_base_t, T>::value>
-  handle(T &) {} // handle
+  static
+    typename std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
+    handle(T &) {} // handle
 
   Legion::Runtime * runtime;
   Legion::Context & context;

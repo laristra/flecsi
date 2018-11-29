@@ -24,7 +24,7 @@ using point_t = flecsi::supplemental::point_t;
 using mesh_t = flecsi::supplemental::test_mesh_2d_t;
 
 template<size_t PS>
-using mesh = data_client_handle__<mesh_t, PS>;
+using mesh = data_client_handle_u<mesh_t, PS>;
 
 template<size_t EP, size_t SP, size_t GP>
 using field = dense_accessor<double, EP, SP, GP>;
@@ -51,7 +51,7 @@ void
 initialize_pressure(mesh<ro> m, field<rw, rw, ro> p) {
   size_t count{0};
 
-  auto & context{execution::context_t::instance()};
+  auto & context{ context_t::instance() };
 
   for (auto c : m.cells(owned)) {
     p(c) = (context.color() + 1) * 1000.0 + count++;
@@ -88,7 +88,7 @@ print_mesh(mesh<ro> m, field<ro, ro, ro> p) {
     clog(info) << "print_mesh task" << std::endl;
   } // scope
 
-  auto & context = execution::context_t::instance();
+  auto & context = context_t::instance();
   auto & vertex_map = context.index_map(index_spaces::vertices);
   auto & cell_map = context.index_map(index_spaces::cells);
 

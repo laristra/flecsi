@@ -39,7 +39,7 @@ struct legion_dense_data_handle_policy_t {
   legion_dense_data_handle_policy_t() {}
 
   legion_dense_data_handle_policy_t(
-      const legion_dense_data_handle_policy_t & p) = default;
+    const legion_dense_data_handle_policy_t & p) = default;
 
   bool * ghost_is_readable;
   bool * write_phase_started;

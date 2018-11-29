@@ -32,7 +32,7 @@
 namespace flecsi {
 
 template<typename T>
-using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
+using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage_u<T>;
 
 using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 
@@ -46,7 +46,7 @@ using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 namespace flecsi {
 
 template<typename T>
-using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
+using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage_u<T>;
 
 using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 
@@ -60,7 +60,7 @@ using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 namespace flecsi {
 
 template<typename T>
-using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
+using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage_u<T>;
 
 using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 

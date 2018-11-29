@@ -28,7 +28,7 @@ using namespace supplemental;
 clog_register_tag(coloring);
 
 void
-writer(dense_accessor<double, wo, ro, ro> x) {
+writer(dense_accessor<double, wo, na, na> x) {
   std::cout << "exclusive writer write" << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
     x.exclusive(i) = static_cast<double>(i);

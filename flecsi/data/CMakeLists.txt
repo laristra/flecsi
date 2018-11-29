@@ -246,8 +246,7 @@ if(ENABLE_PARMETIS)
     POLICY ${UNIT_POLICY}
     THREADS 2
     NOCI
-    FOLDER "Tests/Data"
-    )
+  )
 
 endif()
 

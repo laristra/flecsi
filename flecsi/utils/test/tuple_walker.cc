@@ -3,41 +3,34 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-// includes: flecsi
-#include <flecsi/utils/tuple_walker.h>
 
-// includes: C++
 #include <iostream>
 
-// includes: other
 #include <cinchtest.h>
 
+#include <flecsi/utils/tuple_walker.h>
+
 // struct once
-struct once : public flecsi::utils::tuple_walker__<once> {
+struct once : public flecsi::utils::tuple_walker_u<once> {
   void handle(const double d) const {
     CINCH_CAPTURE() << d << std::endl;
   }
 };
 
 // struct twice
-struct twice : public flecsi::utils::tuple_walker__<twice> {
+struct twice : public flecsi::utils::tuple_walker_u<twice> {
   void handle(const double d) {
     CINCH_CAPTURE() << 2 * d << std::endl;
   }
 };
 
 // struct thrice
-struct thrice : public flecsi::utils::tuple_walker__<thrice> {
+struct thrice : public flecsi::utils::tuple_walker_u<thrice> {
   void handle(double d) const {
     CINCH_CAPTURE() << 3 * d << std::endl;
   }
 };
 
-// =============================================================================
-// Test various constructs in tuple_walker.h
-// =============================================================================
-
-// TEST
 TEST(tuple_walker, all) {
   std::tuple<> nothing;
   std::tuple<int, float, double> t(1, float(2), double(3));

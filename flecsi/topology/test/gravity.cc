@@ -77,7 +77,7 @@ public:
 
   using entity_t = body;
 
-  class branch : public topology::tree_branch__<branch_int_t, dimension> {
+  class branch : public topology::tree_branch_u<branch_int_t, dimension> {
   public:
     branch() {}
 
@@ -134,17 +134,17 @@ public:
   using branch_t = branch;
 };
 
-using tree_topology__ = topology::tree_topology<tree_policy>;
-using body = tree_topology__::body;
-using point_t = tree_topology__::point_t;
-using branch_t = tree_topology__::branch_t;
-using branch_id_t = tree_topology__::branch_id_t;
+using tree_topology_u = topology::tree_topology<tree_policy>;
+using body = tree_topology_u::body;
+using point_t = tree_topology_u::point_t;
+using branch_t = tree_topology_u::branch_t;
+using branch_id_t = tree_topology_u::branch_id_t;
 
 static const size_t N = 5000;
 static const size_t TS = 5;
 
 TEST(tree_topology, gravity) {
-  tree_topology__ t;
+  tree_topology_u t;
 
   thread_pool pool;
   pool.start(8);

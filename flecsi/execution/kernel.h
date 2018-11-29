@@ -43,25 +43,23 @@ namespace execution {
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-template<
-    typename ENTITY_TYPE,
-    bool STORAGE,
-    bool OWNED,
-    bool SORTED,
-    typename PREDICATE,
-    typename FUNCTION>
+template<typename ENTITY_TYPE,
+  bool STORAGE,
+  bool OWNED,
+  bool SORTED,
+  typename PREDICATE,
+  typename FUNCTION>
 inline void
-for_each__(
-    flecsi::topology::
-        index_space__<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> &
-            index_space,
-    FUNCTION && function) {
+for_each_u(
+  flecsi::topology::
+    index_space_u<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> & index_space,
+  FUNCTION && function) {
   const size_t end = index_space.end_offset();
 
-  for (size_t i(index_space.begin_offset()); i < end; ++i) {
+  for(size_t i(index_space.begin_offset()); i < end; ++i) {
     function(std::forward<ENTITY_TYPE>(index_space.get_offset(i)));
   } // for
-} // for_each__
+} // for_each_u
 
 //----------------------------------------------------------------------------//
 //! Abstraction function for fine-grained, data-parallel interface.
@@ -85,27 +83,25 @@ for_each__(
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-template<
-    typename ENTITY_TYPE,
-    bool STORAGE,
-    bool OWNED,
-    bool SORTED,
-    typename PREDICATE,
-    typename FUNCTION,
-    typename REDUCTION>
+template<typename ENTITY_TYPE,
+  bool STORAGE,
+  bool OWNED,
+  bool SORTED,
+  typename PREDICATE,
+  typename FUNCTION,
+  typename REDUCTION>
 inline void
-reduce_each__(
-    flecsi::topology::
-        index_space__<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> &
-            index_space,
-    REDUCTION & reduction,
-    FUNCTION && function) {
+reduce_each_u(
+  flecsi::topology::
+    index_space_u<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> & index_space,
+  REDUCTION & reduction,
+  FUNCTION && function) {
   size_t end = index_space.end_offset();
 
-  for (size_t i(index_space.begin_offset()); i < end; ++i) {
+  for(size_t i(index_space.begin_offset()); i < end; ++i) {
     function(std::forward<ENTITY_TYPE>(index_space.get_offset(i)), reduction);
   } // for
-} // reduce_each__
+} // reduce_each_u
 
 } // namespace execution
 } // namespace flecsi

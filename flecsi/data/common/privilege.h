@@ -22,6 +22,7 @@ enum privilege_t : size_t {
   ro = 1,
   wo = 2,
   rw = 3,
+  na = 3,
 }; // enum privilege_t
 
 } // namespace flecsi

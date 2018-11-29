@@ -29,7 +29,7 @@
   @param action The action to execute.
   @param ...    A variadic list of arguments to pass to the node that is
                 created by the call. These are defined by the user's
-                dag__ specialization type.
+                dag_u specialization type.
 
   @ingroup control
  */

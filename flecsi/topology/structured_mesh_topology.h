@@ -19,31 +19,32 @@ namespace flecsi {
 namespace topology {
 
 ///
-// \class structured_mesh_topology__ structured_mesh_topology.h
-// \brief structured_mesh_topology__ provides...
+// \class structured_mesh_topology_u structured_mesh_topology.h
+// \brief structured_mesh_topology_u provides...
 ///
 template<typename MT>
-class structured_mesh_topology__ {
+class structured_mesh_topology_u
+{
 public:
   /// Default constructor
-  structured_mesh_topology__() {}
+  structured_mesh_topology_u() {}
 
   /// Copy constructor (disabled)
-  structured_mesh_topology__(const structured_mesh_topology__ &) = delete;
+  structured_mesh_topology_u(const structured_mesh_topology_u &) = delete;
 
   /// Assignment operator (disabled)
-  structured_mesh_topology__ &
-  operator=(const structured_mesh_topology__ &) = delete;
+  structured_mesh_topology_u & operator=(
+    const structured_mesh_topology_u &) = delete;
 
   /// Destructor
-  ~structured_mesh_topology__() {}
+  ~structured_mesh_topology_u() {}
 
   size_t num_entities(size_t dim, size_t domain = 0) {
     return MT::num_entities(dim, domain);
   } // num_entities
 
 private:
-}; // class structured_mesh_topology__
+}; // class structured_mesh_topology_u
 
 } // namespace topology
 } // namespace flecsi

@@ -124,7 +124,6 @@ Travis-CI is going to build and run
   * `WERROR` yes/no for displaying warnings
   * `IGNORE_NOCI` true/false for still building all tests on Travis-CI
     even if NOCI is true for some tests
-  * `SONARQUBE` ON/OFF for producing inspection files on code qualities
   * `COVERAGE` ON/OFF for producing code coverage analysis files
   * `MPI` ON/OFF for using MPI (We could just always set this to ON)
   * `DOCS` true/false for producing documentation

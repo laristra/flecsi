@@ -57,7 +57,7 @@ flecsi_register_global_object(global_fxy_target, global, vec_2d_t);
 using mesh_t = flecsi::supplemental::test_mesh_2d_t;
 
 template<size_t PS>
-using mesh = data_client_handle__<mesh_t, PS>;
+using mesh = data_client_handle_u<mesh_t, PS>;
 
 template<size_t EP, size_t SP, size_t GP>
 using field = dense_accessor<double, EP, SP, GP>;
@@ -85,7 +85,7 @@ flecsi_register_field(
 //----------------------------------------------------------------------------//
 
 void
-init(mesh<ro> mesh, field<rw, rw, ro> f) {
+init(mesh<ro> mesh, field<rw, rw, na> f) {
   for (auto c : mesh.cells(owned)) {
     auto idx = c->index();
     // domain is 0..2*pi in both x and y
@@ -130,7 +130,7 @@ void
 compute_deriv(
     mesh<ro> mesh,
     field<ro, ro, ro> f,
-    field<wo, wo, ro> deriv,
+    field<wo, wo, na> deriv,
     bool div_x) {
   double h = 2.0 * pi / (double)(N - 1);
 

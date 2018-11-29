@@ -21,83 +21,84 @@ namespace flecsi {
 namespace topology {
 
 template<size_t, typename>
-class domain_entity__;
+class domain_entity_u;
 
 template<typename item_t>
-struct array_buffer_type__ {
+struct array_buffer_type_u {
   using type = item_t *;
 };
 
 template<size_t M, typename E>
-struct array_buffer_type__<domain_entity__<M, E>> {
+struct array_buffer_type_u<domain_entity_u<M, E>> {
   using type = E *;
 };
 
 template<typename item_t>
-struct array_buffer_type__<item_t *> {
+struct array_buffer_type_u<item_t *> {
   using type = item_t *;
 };
 
 template<typename T>
-struct array_buf_ref_type__ {
+struct array_buf_ref_type_u {
   using type = T &;
 };
 
 template<typename S>
-struct array_buf_ref_type__<S *> {
+struct array_buf_ref_type_u<S *> {
   using type = S *;
 };
 
 template<size_t M, class E>
-struct array_buf_ref_type__<domain_entity__<M, E>> {
+struct array_buf_ref_type_u<domain_entity_u<M, E>> {
   using type = E *;
 };
 
 template<typename T, bool B>
-struct array_buf_ref_get__ {
+struct array_buf_ref_get_u {
   static T get(T a, size_t i) {
     return &a[i];
   }
 };
 
 template<typename T>
-struct array_buf_ref_get__<T, false> {
+struct array_buf_ref_get_u<T, false> {
   static auto get(T a, size_t i) -> decltype(a[i]) {
     return a[i];
   }
 };
 
 template<typename T>
-class array_buffer__ {
+class array_buffer_u
+{
 public:
-  using item_t = typename array_buffer_type__<T>::type;
+  using item_t = typename array_buffer_type_u<T>::type;
 
   using iterator = item_t;
 
   using const_iterator = item_t;
 
-  using ref_t = typename array_buf_ref_type__<T>::type;
+  using ref_t = typename array_buf_ref_type_u<T>::type;
 
-  array_buffer__() : buf_(nullptr), size_(0), capacity_(0) {}
+  array_buffer_u() : buf_(nullptr), size_(0), capacity_(0) {}
 
   ref_t operator[](size_t index) {
-    return array_buf_ref_get__<item_t, std::is_pointer<ref_t>::value>::get(
-        buf_, index);
+    return array_buf_ref_get_u<item_t, std::is_pointer<ref_t>::value>::get(
+      buf_, index);
   }
 
   const ref_t operator[](size_t index) const {
-    return array_buf_ref_get__<
-        const item_t, std::is_pointer<ref_t>::value>::get(buf_, index);
+    return array_buf_ref_get_u<const item_t,
+      std::is_pointer<ref_t>::value>::get(buf_, index);
   }
 
   ref_t back() {
-    return array_buf_ref_get__<item_t, std::is_pointer<ref_t>::value>::get(
-        buf_, size_ - 1);
+    return array_buf_ref_get_u<item_t, std::is_pointer<ref_t>::value>::get(
+      buf_, size_ - 1);
   }
 
   const ref_t back() const {
-    return array_buf_ref_get__<item_t, std::is_pointer<ref_t>::value>::get(
-        buf_, size_ - 1);
+    return array_buf_ref_get_u<item_t, std::is_pointer<ref_t>::value>::get(
+      buf_, size_ - 1);
   }
 
   size_t size() const {

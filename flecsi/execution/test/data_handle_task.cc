@@ -55,7 +55,7 @@ color_data_handle_dump(color_accessor<double, ro> x) {
 }
 
 void
-exclusive_writer(dense_accessor<double, wo, ro, ro> x) {
+exclusive_writer(dense_accessor<double, wo, na, na> x) {
   clog(info) << "exclusive writer write" << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
     x.exclusive(i) = static_cast<double>(i);
@@ -101,7 +101,7 @@ mpi_task(int val, global_accessor<double, ro> x) {
 }
 
 void
-exclusive_mpi(dense_accessor<double, ro, ro, ro> x) {
+exclusive_mpi(dense_accessor<double, ro, na, na> x) {
   clog(info) << "exclusive reader read: " << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
     ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
@@ -162,8 +162,8 @@ specialization_tlt_init(int argc, char ** argv) {
 //  flecsi_execute_mpi_task(add_colorings, flecsi::supplemental, map);
 
   auto global_handle = flecsi_get_global(ns, velocity, double, 0);
-  flecsi_execute_task_simple(global_data_handle_dump, index, global_handle);
   flecsi_execute_task_simple(global_writer, single, global_handle);
+  flecsi_execute_task_simple(global_data_handle_dump, index, global_handle);
   flecsi_execute_task_simple(global_reader, index, global_handle);
   flecsi_execute_task(mpi_task,, index, 10, global_handle);
   auto global_handle2 = flecsi_get_global(ns, time, double, 0);
@@ -193,9 +193,9 @@ driver(int argc, char ** argv) {
   auto h = flecsi_get_handle(ch, ns, pressure, double, dense, 0);
 
 //  flecsi_execute_task_simple(task1, single, h, 128);
-  flecsi_execute_task_simple(data_handle_dump, index, h);
   flecsi_execute_task_simple(exclusive_writer, index, h);
   flecsi_execute_task_simple(exclusive_reader, index, h);
+  flecsi_execute_task_simple(data_handle_dump, index, h);
 
   // get global handle
   auto global_handle = flecsi_get_global(ns, velocity, double, 0);
@@ -205,8 +205,8 @@ driver(int argc, char ** argv) {
   // get color handle
   auto color_handle = flecsi_get_color(ns, density, double, 0);
 
-  flecsi_execute_task_simple(color_data_handle_dump, index, color_handle);
   flecsi_execute_task_simple(color_writer, index, color_handle);
+  flecsi_execute_task_simple(color_data_handle_dump, index, color_handle);
   flecsi_execute_task_simple(color_reader, index, color_handle);
   flecsi_execute_task(mpi_task, , index, 10, global_handle);
 

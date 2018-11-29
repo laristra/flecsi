@@ -35,7 +35,7 @@ void read_task(
 flecsi_register_task_simple(read_task, loc, index);
 
 void write_task(
-    dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
+    dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::na> cell_ID,
     const int my_color,
     const size_t cycle,
     const bool delay);
@@ -135,7 +135,7 @@ driver(int argc, char ** argv) {
 
 void
 write_task(
-    dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
+    dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::na> cell_ID,
     const int my_color,
     const size_t cycle,
     const bool delay) {

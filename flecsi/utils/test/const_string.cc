@@ -82,7 +82,7 @@ TEST(const_string, all) {
   // Machine-dependent (via std::size_t); just do sanity checks
   EXPECT_TRUE(a.hash() > 0);
   const const_string_t b("");
-  EXPECT_TRUE(b.hash() == 0); // known via i == n selection in hash__()
+  EXPECT_TRUE(b.hash() == 0); // known via i == n selection in hash_u()
   const const_string_t c("x");
   EXPECT_TRUE(c.hash() > 0);
 

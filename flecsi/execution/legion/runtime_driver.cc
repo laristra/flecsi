@@ -57,6 +57,14 @@ runtime_driver(
   //sleep(20);
   }//scope
 
+  int num_colors;
+  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
+
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "MPI num_colors is " << num_colors << std::endl;
+  }
+
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
@@ -98,12 +106,17 @@ runtime_driver(
     } // for
   } // for
 
-  int num_colors;
-  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
-  {
-  clog_tag_guard(runtime_driver);
-  clog(info) << "MPI num_colors is " << num_colors << std::endl;
-  }
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for reduction operations
+  //--------------------------------------------------------------------------//
+
+  auto & reduction_ops = context_.reduction_operations();
+  for(auto & ro: reduction_ops) {
+    ro.second.collective = runtime->create_dynamic_collective(ctx, num_colors,
+      ro.second.id, ro.second.initial.data(), ro.second.initial.size());
+  } // for
+
+  //--------------------------------------------------------------------------//
 
   data::legion_data_t data(ctx, runtime, num_colors);
   
@@ -179,21 +192,16 @@ runtime_driver(
   data.finalize(coloring_info);
 
   //-------------------------------------------------------------------------//
-  // check number of fields allocated for sparse data
+  // check nuber of fields allocated for sparse data
   //-------------------------------------------------------------------------//
 
-  for(const field_info_t& field_info : context_.registered_fields()){
-    if(field_info.storage_class==sparse || field_info.storage_class==ragged ){
+  for(const field_info_t& field_info : context_.registered_fields()) {
+    if(field_info.storage_class==sparse || field_info.storage_class==ragged ) {
         auto sparse_idx_space = field_info.index_space ;
 
         context_.increment_sparse_fields(sparse_idx_space);
-      }
-    } 
-
-  //-------------------------------------------------------------------------//
-  //  Create Legion reduction 
-  //-------------------------------------------------------------------------//
-  //FIXME add logic for reduction
+    } // if
+  } /// for 
 
   //-------------------------------------------------------------------------//
   // Excute Legion task to maps between pre-compacted and compacted
@@ -204,7 +212,7 @@ runtime_driver(
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
  
   const auto pos_compaction_id =
-    context_.task_id<__flecsi_internal_task_key(owner_pos_compaction_task)>();
+    context_.task_id<flecsi_internal_task_key(owner_pos_compaction_task)>();
   
   Legion::IndexLauncher pos_compaction_launcher(pos_compaction_id,
       data.color_domain(), Legion::TaskArgument(nullptr, 0),
@@ -228,7 +236,7 @@ runtime_driver(
   // Fix ghost reference/pointer to point to compacted position of
   // shared that it needs
   const auto pos_correction_id =
-    context_.task_id<__flecsi_internal_task_key(owner_pos_correction_task)>();
+    context_.task_id<flecsi_internal_task_key(owner_pos_correction_task)>();
 
   Legion::IndexLauncher fix_ghost_refs_launcher(pos_correction_id,
     data.color_domain(), Legion::TaskArgument(nullptr, 0), Legion::ArgumentMap());
@@ -296,7 +304,7 @@ runtime_driver(
   std::map<size_t,Legion::Serializer> args_serializers;
 
   const auto setup_rank_context_id =
-    context_.task_id<__flecsi_internal_task_key(setup_rank_context_task)>();
+    context_.task_id<flecsi_internal_task_key(setup_rank_context_task)>();
 
    using sparse_index_space_info_t = context_t::sparse_index_space_info_t;
 
@@ -411,7 +419,7 @@ runtime_driver(
   //launch a task that willl fill ghost_owner_pos_fid for the sparse
   //entity Logical Region
   const auto sparse_set_pos_id =
-    context_.task_id<__flecsi_internal_task_key(
+    context_.task_id<flecsi_internal_task_key(
     sparse_set_owner_position_task)>();
   Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id,
     data.color_domain(), Legion::TaskArgument(nullptr, 0),
@@ -559,7 +567,7 @@ runtime_driver(
 				"ghost logical partition");
 #if 0
       const auto sparse_set_pos_id =
-        context_.task_id<__flecsi_internal_task_key(
+        context_.task_id<flecsi_internal_task_key(
     		sparse_set_owner_position_task)>();
   		Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id,
     		data.color_domain(), Legion::TaskArgument(nullptr, 0),
@@ -639,7 +647,7 @@ runtime_driver(
     //launch a task that willl fill ghost_owner_pos_fid for the sparse
     //entity Logical Region
     const auto sparse_set_pos_id =
-    context_.task_id<__flecsi_internal_task_key(
+    context_.task_id<flecsi_internal_task_key(
     sparse_set_owner_position_task)>();
   Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id,
     data.color_domain(), Legion::TaskArgument(nullptr, 0),
@@ -916,7 +924,6 @@ setup_rank_context_task(
 
   } // for
 
-
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
@@ -924,8 +931,7 @@ setup_rank_context_task(
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
 
-/*
-  //adding information for the global and color handles to the ispace_map
+/*  //adding information for the global and color handles to the ispace_map
   if (number_of_global_fields>0){
 
     size_t global_index_space =

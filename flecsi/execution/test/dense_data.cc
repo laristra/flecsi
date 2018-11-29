@@ -33,7 +33,7 @@ namespace execution {
 using mesh_t = flecsi::supplemental::test_mesh_2d_t;
 
 template<size_t PS>
-using mesh = data_client_handle__<mesh_t, PS>;
+using mesh = data_client_handle_u<mesh_t, PS>;
 
 template<size_t EP, size_t SP, size_t GP>
 using field = dense_accessor<size_t, EP, SP, GP>;
@@ -57,7 +57,7 @@ flecsi_register_field(
 //----------------------------------------------------------------------------//
 
 void
-init(mesh<ro> mesh, field<rw, rw, ro> h) {
+init(mesh<ro> mesh, field<rw, rw, na> h) {
   auto & context = execution::context_t::instance();
   auto rank = context.color();
 

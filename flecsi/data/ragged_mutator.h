@@ -36,7 +36,7 @@ namespace flecsi {
 struct ragged_mutator_base_t {};
 
 //----------------------------------------------------------------------------//
-//! The ragged mutator__ type captures information about permissions
+//! The ragged mutator_u type captures information about permissions
 //! and specifies a data policy. It allows resizing of each ragged array
 //! per index, uses the existing sparse data representation, but provides
 //! more efficient indexing and insertion.
@@ -47,24 +47,24 @@ struct ragged_mutator_base_t {};
 //----------------------------------------------------------------------------//
 
 template<typename T>
-struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
+struct mutator_u<data::ragged, T> : public mutator_u<data::sparse, T>,
                                     public ragged_mutator_base_t {
 
-  using base_t = mutator__<data::sparse, T>;
+  using base_t = mutator_u<data::sparse, T>;
 
   using handle_t = typename base_t::handle_t;
   using offset_t = typename base_t::offset_t;
   using entry_value_t = typename base_t::entry_value_t;
   using erase_set_t = typename base_t::erase_set_t;
-  using ragged_changes_t = typename mutator_handle__<T>::ragged_changes_t;
+  using ragged_changes_t = typename mutator_handle_u<T>::ragged_changes_t;
   using ragged_changes_map_t =
-      typename mutator_handle__<T>::ragged_changes_map_t;
+    typename mutator_handle_u<T>::ragged_changes_map_t;
 
   //--------------------------------------------------------------------------//
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  mutator__(const mutator_handle__<T> & h) : base_t(h) {
+  mutator_u(const mutator_handle_u<T> & h) : base_t(h) {
     assert(!base_t::h_.ragged_changes_map_ && "expected null changes map");
     base_t::h_.ragged_changes_map_ = new ragged_changes_map_t;
   }
@@ -77,38 +77,38 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
 
     size_t n = offset.count();
 
-    if (n >= base_t::h_.num_slots_) {
-      if (index < base_t::h_.num_exclusive_) {
+    if(n >= base_t::h_.num_slots_) {
+      if(index < base_t::h_.num_exclusive_) {
         (*base_t::h_.num_exclusive_insertions)++;
       }
 
       return base_t::h_.spare_map_->emplace(index, entry_value_t(ragged_index))
-          ->second.value;
+        ->second.value;
     } // if
 
     entry_value_t * start = base_t::h_.entries_ + index * base_t::h_.num_slots_;
     entry_value_t * end = start + n;
 
-    entry_value_t * itr = std::lower_bound(
-        start, end, entry_value_t(ragged_index),
+    entry_value_t * itr =
+      std::lower_bound(start, end, entry_value_t(ragged_index),
         [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
           return e1.entry < e2.entry;
         });
 
     // if we are attempting to create an entry that already exists
     // just over-write the value and exit.
-    if (itr != end && itr->entry == ragged_index) {
+    if(itr != end && itr->entry == ragged_index) {
       return itr->value;
     }
 
-    while (end != itr) {
+    while(end != itr) {
       *(end) = *(end - 1);
       --end;
     } // while
 
     itr->entry = ragged_index;
 
-    if (index < base_t::h_.num_exclusive_) {
+    if(index < base_t::h_.num_exclusive_) {
       (*base_t::h_.num_exclusive_insertions)++;
     }
 
@@ -120,15 +120,15 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
   void resize(size_t index, size_t size) {
     assert(index < base_t::h_.num_entries_);
 
-    assert(
-        size <= base_t::h_.max_entries_per_index_ &&
-        "resize length exceeds max entries per index");
+    assert(size <= base_t::h_.max_entries_per_index_ &&
+           "resize length exceeds max entries per index");
 
     auto itr = base_t::h_.ragged_changes_map_->find(index);
-    if (itr == base_t::h_.ragged_changes_map_->end()) {
+    if(itr == base_t::h_.ragged_changes_map_->end()) {
       ragged_changes_t changes(size);
       base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
-    } else {
+    }
+    else {
       itr->second.size = size;
     }
   }
@@ -137,23 +137,24 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
     assert(index < base_t::h_.num_entries_);
 
     auto itr = base_t::h_.ragged_changes_map_->find(index);
-    if (itr == base_t::h_.ragged_changes_map_->end()) {
+    if(itr == base_t::h_.ragged_changes_map_->end()) {
       const offset_t & offset = base_t::h_.offsets_[index];
       assert(ragged_index < offset.count());
       ragged_changes_t changes(offset.count() - 1);
       changes.init_erase_set();
       changes.erase_set->insert(ragged_index);
       base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
-    } else {
+    }
+    else {
       ragged_changes_t & changes = itr->second;
 
       assert(ragged_index < changes.size);
 
-      if (!changes.erase_set) {
+      if(!changes.erase_set) {
         changes.init_erase_set();
       }
 
-      if (changes.erase_set->insert(ragged_index).second) {
+      if(changes.erase_set->insert(ragged_index).second) {
         --changes.size;
       }
     }
@@ -163,16 +164,17 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
     assert(index < base_t::h_.num_entries_);
 
     auto itr = base_t::h_.ragged_changes_map_->find(index);
-    if (itr == base_t::h_.ragged_changes_map_->end()) {
+    if(itr == base_t::h_.ragged_changes_map_->end()) {
       const offset_t & offset = base_t::h_.offsets_[index];
       ragged_changes_t changes(offset.count() + 1);
       changes.init_push_values();
       changes.push_values->push_back(value);
       base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
-    } else {
+    }
+    else {
       ragged_changes_t & changes = itr->second;
 
-      if (!changes.push_values) {
+      if(!changes.push_values) {
         changes.init_push_values();
       }
 
@@ -186,26 +188,28 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
     assert(index < base_t::h_.num_entries_);
 
     auto itr = base_t::h_.ragged_changes_map_->find(index);
-    if (itr == base_t::h_.ragged_changes_map_->end()) {
+    if(itr == base_t::h_.ragged_changes_map_->end()) {
       const offset_t & offset = base_t::h_.offsets_[index];
       assert(ragged_index < offset.count());
       ragged_changes_t changes(offset.count() + 1);
       changes.init_insert_values();
       changes.insert_values->emplace(ragged_index, value);
       base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
-    } else {
+    }
+    else {
       ragged_changes_t & changes = itr->second;
 
       assert(ragged_index < changes.size);
 
-      if (!changes.insert_values) {
+      if(!changes.insert_values) {
         changes.init_insert_values();
       }
 
       auto p = changes.insert_values->emplace(ragged_index, value);
-      if (p.second) {
+      if(p.second) {
         ++changes.size;
-      } else {
+      }
+      else {
         p.first->second = value;
       }
     }
@@ -213,9 +217,9 @@ struct mutator__<data::ragged, T> : public mutator__<data::sparse, T>,
 };
 
 template<typename T>
-using ragged_mutator__ = mutator__<data::ragged, T>;
+using ragged_mutator_u = mutator_u<data::ragged, T>;
 
 template<typename T>
-using ragged_mutator = ragged_mutator__<T>;
+using ragged_mutator = ragged_mutator_u<T>;
 
 } // namespace flecsi
