@@ -92,7 +92,7 @@ template<
         const std::vector<Legion::PhysicalRegion> &,
         Legion::Context,
         Legion::Runtime *)>
-struct registration_wrapper__<RETURN, TASK, 0> {
+struct registration_wrapper_u<RETURN, TASK, 0> {
 
   /*!
     This method registers the given task with the Legion runtime.
@@ -144,7 +144,7 @@ template<void (*TASK)(
     Legion::Context,
     Legion::Runtime *),
     size_t REDUCTION>
-struct registration_wrapper__<void, TASK, REDUCTION> {
+struct registration_wrapper_u<void, TASK, REDUCTION> {
 
   static void register_task(
       const Legion::TaskID tid,
