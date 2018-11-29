@@ -264,9 +264,9 @@ public:
         } // end if
       } // end for
 
-    }else{
+    } else {
       DefaultMapper::map_task(ctx, task, input, output);
-    } // end if
+    }// end if
 
   } // map_task
 

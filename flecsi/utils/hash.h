@@ -20,7 +20,7 @@
 
 namespace flecsi {
 namespace utils {
-
+#if 0
 ////////////////////////////////////////////////////////////////////////////////
 // String hash function for const_string_t type.
 // Perhaps this should move into const_string.h
@@ -44,6 +44,8 @@ constexpr T
 string_hash(U && str, const std::size_t n) {
   return string_hash_u<T>(str, 0, 0, n);
 } // string_hash
+
+#endif 
 
 namespace hash {
 
@@ -431,7 +433,32 @@ inline constexpr size_t
 reduction_hash() {
   return (OPERATOR_HASH << 32) ^ DATA_HASH;
 } // reduction_hash
-
 } // namespace hash
+
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+
+template<typename T, typename U>
+inline constexpr T
+string_hash(U &&str, const std::size_t n)
+{
+  if (n == 0)
+    return 0;
+
+  // String-to-integer hash function, based on prime numbers.
+  // References:
+  //    https://stackoverflow.com/questions/8317508/hash-function-for-a-string
+  //    https://planetmath.org/goodhashtableprimes
+
+  const T P = 3145739; // prime
+  const T Q = 6291469; // prime, a bit less than 2x the first
+
+  T h = 37; // prime
+  for (std::size_t i = 0;  i < n;  ++i)
+    h = (h * P) ^ (str[i] * Q);
+  return h;
+} // string_hash
+
+//} // namespace hash
 } // namespace utils
 } // namespace flecsi
