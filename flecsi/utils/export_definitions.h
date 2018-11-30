@@ -11,10 +11,7 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
-
-
-#if !defined(FLECSI_EXPORT_DEFINITIONS)
-#define FLECSI_EXPORT_DEFINITIONS
+#pragma once
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 #define FLECSI_SYMBOL_EXPORT __declspec(dllexport)
@@ -63,6 +60,4 @@
 #define FLECSI_EXPORT FLECSI_SYMBOL_IMPORT
 #define FLECSI_EXCEPTION_EXPORT FLECSI_SYMBOL_IMPORT
 #define FLECSI_API_EXPORT FLECSI_APISYMBOL_IMPORT
-#endif
-
 #endif

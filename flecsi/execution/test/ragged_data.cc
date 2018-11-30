@@ -93,10 +93,10 @@ print(
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1);
 
-flecsi_register_task_simple(init, loc, single);
-flecsi_register_task_simple(modify, loc, single);
-flecsi_register_task_simple(mutate, loc, single);
-flecsi_register_task_simple(print, loc, single);
+flecsi_register_task_simple(init, loc, index);
+flecsi_register_task_simple(modify, loc, index);
+flecsi_register_task_simple(mutate, loc, index);
+flecsi_register_task_simple(print, loc, index);
 
 flecsi_register_field(
     test_mesh_t,
@@ -126,7 +126,7 @@ specialization_tlt_init(int argc, char ** argv) {
 void
 specialization_spmd_init(int argc, char ** argv) {
   auto mh = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
-  flecsi_execute_task(initialize_mesh, flecsi::supplemental, single, mh);
+  flecsi_execute_task(initialize_mesh, flecsi::supplemental, index, mh);
 } // specialization_spmd_init
 
 //----------------------------------------------------------------------------//
@@ -139,14 +139,14 @@ driver(int argc, char ** argv) {
   auto pm = flecsi_get_mutator(ch, hydro, pressure, double, ragged, 0, 5);
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, ragged, 0);
 
-  flecsi_execute_task_simple(init, single, ch, pm);
-  flecsi_execute_task_simple(print, single, ch, ph);
+  flecsi_execute_task_simple(init, index, ch, pm);
+  flecsi_execute_task_simple(print, index, ch, ph);
 
-  flecsi_execute_task_simple(modify, single, ch, ph);
-  flecsi_execute_task_simple(print, single, ch, ph);
+  flecsi_execute_task_simple(modify, index, ch, ph);
+  flecsi_execute_task_simple(print, index, ch, ph);
 
-  flecsi_execute_task_simple(mutate, single, ch, pm);
-  auto future = flecsi_execute_task_simple(print, single, ch, ph);
+  flecsi_execute_task_simple(mutate, index, ch, pm);
+  auto future = flecsi_execute_task_simple(print, index, ch, ph);
   future.wait(); // wait before comparing results
 
   auto & context = execution::context_t::instance();

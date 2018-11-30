@@ -37,7 +37,7 @@ void specialization_tlt_init(int argc, char ** argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
-void  specialization_spmd_init(int argc, char **argv);
+void specialization_spmd_init(int argc, char ** argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
 /*! @cond IGNORE */

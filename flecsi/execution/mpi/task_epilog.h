@@ -34,6 +34,8 @@
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/execution/context.h>
 
+#include <flecsi/utils/tuple_walker.h>
+
 namespace flecsi {
 namespace execution {
 
@@ -45,7 +47,7 @@ namespace execution {
  @ingroup execution
  */
 
-struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
+struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
   /*!
    Construct a task_epilog_t instance.

@@ -73,16 +73,10 @@
 #cmakedefine FLECSI_COUNTER_TYPE @FLECSI_COUNTER_TYPE@
 
 //----------------------------------------------------------------------------//
-// Boost.Preprocessor
+// Boost
 //----------------------------------------------------------------------------//
 
-#cmakedefine FLECSI_ENABLE_BOOST_PREPROCESSOR
-
-//----------------------------------------------------------------------------//
-// Boost.ProgramOptions
-//----------------------------------------------------------------------------//
-
-#cmakedefine FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS
+#cmakedefine FLECSI_ENABLE_BOOST
 
 //----------------------------------------------------------------------------//
 // Enable coloring

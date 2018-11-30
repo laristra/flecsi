@@ -25,7 +25,7 @@
 #include <flecsi/execution/context.h>
 
 // Boost command-line options
-#if defined(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
+#if defined(FLECSI_ENABLE_BOOST)
   #include <boost/program_options.hpp>
   using namespace boost::program_options;
 #endif
@@ -53,7 +53,7 @@ int main(int argc, char ** argv) {
   //--------------------------------------------------------------------------//
   // Use BOOST Program Options
 
-#if defined(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
+#if defined(FLECSI_ENABLE_BOOST)
   options_description desc("Cinch test options");  
 
   // Add command-line options
@@ -81,7 +81,7 @@ int main(int argc, char ** argv) {
   } // if
 
   
-#endif // FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS
+#endif // FLECSI_ENABLE_BOOST
 
   // End BOOST Program Options
   //--------------------------------------------------------------------------//

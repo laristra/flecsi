@@ -26,7 +26,8 @@
 #ifndef FLECSI_MEMBER_CHECKER
 #define FLECSI_MEMBER_CHECKER(X)                                               \
   template<typename T>                                                         \
-  class has_member_##X {                                                       \
+  class has_member_##X                                                         \
+  {                                                                            \
     struct F {                                                                 \
       int X;                                                                   \
     };                                                                         \

@@ -90,7 +90,7 @@ init(mesh<ro> mesh, sparse_mutator f, size_t field_idx) {
   }
 } // init
 
-flecsi_register_task(init, flecsi::execution, loc, single);
+flecsi_register_task(init, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Check results
@@ -118,7 +118,7 @@ check_results(
   }
 } // print
 
-flecsi_register_task(check_results, flecsi::execution, loc, single);
+flecsi_register_task(check_results, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Compute derivative
@@ -157,7 +157,7 @@ compute_deriv(
   }
 } // modify
 
-flecsi_register_task(compute_deriv, flecsi::execution, loc, single);
+flecsi_register_task(compute_deriv, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Copy field
@@ -175,7 +175,7 @@ copy(
   }
 } // copy
 
-flecsi_register_task(copy, flecsi::execution, loc, single);
+flecsi_register_task(copy, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Top-Level Specialization Initialization
@@ -200,7 +200,7 @@ specialization_tlt_init(int argc, char ** argv) {
 void
 specialization_spmd_init(int argc, char ** argv) {
   auto mh = flecsi_get_client_handle(mesh_t, meshes, mesh1);
-  flecsi_execute_task(initialize_mesh, flecsi::supplemental, single, mh);
+  flecsi_execute_task(initialize_mesh, flecsi::supplemental, index, mh);
 } // specialization_spmd_init
 
 //----------------------------------------------------------------------------//
@@ -269,39 +269,39 @@ driver(int argc, char ** argv) {
       global_fxy_target, global, vec_2d_t, fxy_target);
 
   // f[7] will be f
-  flecsi_execute_task(init, flecsi::execution, single, mh, fm, 7);
+  flecsi_execute_task(init, flecsi::execution, index, mh, fm, 7);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, fh, 7, global_f_target);
+      check_results, flecsi::execution, index, mh, fh, 7, global_f_target);
 
   // g[1] will also be f
-  flecsi_execute_task(init, flecsi::execution, single, mh, gm, 1);
+  flecsi_execute_task(init, flecsi::execution, index, mh, gm, 1);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, gh, 1, global_f_target);
+      check_results, flecsi::execution, index, mh, gh, 1, global_f_target);
 
   // overwrite g[1] with x derivative of f[7], so it will be fx
   flecsi_execute_task(
-      compute_deriv, flecsi::execution, single, mh, fh, 7, gh, 1, true);
+      compute_deriv, flecsi::execution, index, mh, fh, 7, gh, 1, true);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, gh, 1, global_fx_target);
+      check_results, flecsi::execution, index, mh, gh, 1, global_fx_target);
 
   // initialize g[1111111] with f
-  flecsi_execute_task(init, flecsi::execution, single, mh, gm, 1111111);
+  flecsi_execute_task(init, flecsi::execution, index, mh, gm, 1111111);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, gh, 1111111,
+      check_results, flecsi::execution, index, mh, gh, 1111111,
       global_f_target);
 
   // copy g[1] to f[7777777]
-  flecsi_execute_task(copy, flecsi::execution, single, mh, gh, 1, fm, 7777777);
+  flecsi_execute_task(copy, flecsi::execution, index, mh, gh, 1, fm, 7777777);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, fh, 7777777,
+      check_results, flecsi::execution, index, mh, fh, 7777777,
       global_fx_target);
 
   // overwrite g[1111111] with y derivative of f[7777777], so it will be fxy
   flecsi_execute_task(
-      compute_deriv, flecsi::execution, single, mh, fh, 7777777, gh, 1111111,
+      compute_deriv, flecsi::execution, index, mh, fh, 7777777, gh, 1111111,
       false);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, gh, 1111111,
+      check_results, flecsi::execution, index, mh, gh, 1111111,
       global_fxy_target);
 } // specialization_driver
 
