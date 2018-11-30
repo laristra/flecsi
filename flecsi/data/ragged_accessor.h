@@ -15,7 +15,13 @@
 
 /*! @file */
 
+#include <unordered_set>
+
+#include <cinchlog.h>
+
+#include <flecsi/data/accessor.h>
 #include <flecsi/data/sparse_data_handle.h>
+#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 
@@ -52,34 +58,97 @@ struct accessor_u<data::ragged,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS> : public accessor_u<data::sparse,
+  GHOST_PERMISSIONS> : public accessor_u<data::base,
                          T,
                          EXCLUSIVE_PERMISSIONS,
                          SHARED_PERMISSIONS,
                          GHOST_PERMISSIONS>,
                        public ragged_accessor_base_t {
-
-  using base_t = accessor_u<data::sparse,
-    T,
+  using handle_t = sparse_data_handle_u<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS>;
 
-  using offset_t = typename base_t::offset_t;
+  using offset_t = typename handle_t::offset_t;
+  using entry_value_t = typename handle_t::entry_value_t;
+
+  using index_space_t =
+    topology::index_space_u<topology::simple_entry_u<size_t>, true>;
 
   //--------------------------------------------------------------------------//
-  //! Copy constructor.
+  //! Constructor from handle.
   //--------------------------------------------------------------------------//
 
-  accessor_u(const sparse_data_handle_u<T, 0, 0, 0> & h) : base_t(h) {}
+  accessor_u(const sparse_data_handle_u<T, 0, 0, 0> & h)
+    : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   T & operator()(size_t index, size_t ragged_index) {
-    const offset_t & offset = base_t::handle.offsets[index];
+    const offset_t & offset = handle.offsets[index];
     assert(
       ragged_index < offset.count() && "ragged accessor: index out of range");
 
-    return (base_t::handle.entries + offset.start() + ragged_index)->value;
+    return (handle.entries + offset.start() + ragged_index)->value;
   } // operator ()
+
+  //-------------------------------------------------------------------------//
+  //! Return all entries used over all indices.
+  //-------------------------------------------------------------------------//
+  index_space_t entries() const {
+    size_t id = 0;
+    index_space_t is;
+    std::unordered_set<size_t> found;
+
+    for(size_t index = 0; index < handle.num_total_; ++index) {
+      const offset_t & oi = handle.offsets[index];
+
+      entry_value_t * itr = handle.entries + oi.start();
+      entry_value_t * end = itr + oi.count();
+
+      while(itr != end) {
+        size_t entry = itr->entry;
+        if(found.find(entry) == found.end()) {
+          is.push_back({id++, entry});
+          found.insert(entry);
+        }
+        ++itr;
+      }
+    }
+
+    return is;
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return all entries used over the specified index.
+  //-------------------------------------------------------------------------//
+  index_space_t entries(size_t index) const {
+    clog_assert(
+      index < handle.num_total_, "sparse accessor: index out of bounds");
+
+    const offset_t & oi = handle.offsets[index];
+
+    entry_value_t * itr = handle.entries + oi.start();
+    entry_value_t * end = itr + oi.count();
+
+    index_space_t is;
+
+    size_t id = 0;
+    while(itr != end) {
+      is.push_back({id++, itr->entry});
+      ++itr;
+    }
+
+    return is;
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return the maximum possible entries
+  //-------------------------------------------------------------------------//
+  auto max_entries() const noexcept {
+    return handle.max_entries_per_index;
+  }
+
+  handle_t handle;
+
 };
 
 template<typename T,

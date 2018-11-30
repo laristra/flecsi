@@ -25,7 +25,6 @@
 #include <flecsi/data/ragged_accessor.h>
 #include <flecsi/data/ragged_mutator.h>
 #include <flecsi/data/sparse_accessor.h>
-#include <flecsi/data/sparse_accessor.h>
 #include <flecsi/data/sparse_mutator.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/coloring/mpi_utils.h>
@@ -111,6 +110,24 @@ namespace execution {
     >
     void
     handle(
+      ragged_accessor<
+        T,
+        EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS,
+        GHOST_PERMISSIONS
+      > & a
+    )
+    {
+    } // handle
+
+    template<
+      typename T,
+      size_t EXCLUSIVE_PERMISSIONS,
+      size_t SHARED_PERMISSIONS,
+      size_t GHOST_PERMISSIONS
+    >
+    void
+    handle(
       sparse_accessor<
         T,
         EXCLUSIVE_PERMISSIONS,
@@ -156,7 +173,7 @@ namespace execution {
     >
     void
     handle(
-      sparse_mutator<
+      ragged_mutator<
         T
       > & m
     )
@@ -169,7 +186,7 @@ namespace execution {
     >
     void
     handle(
-      ragged_mutator<
+      sparse_mutator<
         T
       > & m
     )

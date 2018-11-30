@@ -103,6 +103,27 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
+  void handle(ragged_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    auto & h = a.handle;
+
+    bool write_phase{(SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw)};
+
+    if (write_phase && (*h.write_phase_started)) {
+
+        clog(trace) << " WRITE PHASE EPILOGUE"
+                    << std::endl;
+
+      *(h.write_phase_started) = false;
+    } // if write phase
+  } // handle
+
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
   void handle(sparse_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
@@ -118,33 +139,26 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
       *(h.write_phase_started) = false;
     } // if write phase
-  }
-
-  template<typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-  void handle(ragged_accessor<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {
-    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
   } // handle
 
   template<typename T>
-  void handle(sparse_mutator<T> & m) {
+  void handle(ragged_mutator<T> & m) {
     auto & h = m.h_;
 
-    if ((*h.write_phase_started)){ 
+    if ((*h.write_phase_started)){
         clog(trace) << " WRITE PHASE EPILOGUE"<<std::endl;
       *(h.write_phase_started) = false;
     } // if write phase
   }
 
   template<typename T>
-  void handle(ragged_mutator<T> & m) {
-    handle(reinterpret_cast<sparse_mutator<T> &>(m));
+  void handle(sparse_mutator<T> & m) {
+    auto & h = m.h_;
+
+    if ((*h.write_phase_started)){
+        clog(trace) << " WRITE PHASE EPILOGUE"<<std::endl;
+      *(h.write_phase_started) = false;
+    } // if write phase
   }
 
   /*!

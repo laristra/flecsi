@@ -15,8 +15,8 @@
 
 /*! @file */
 
+#include <flecsi/data/mutator.h>
 #include <flecsi/data/mutator_handle.h>
-#include <flecsi/data/sparse_mutator.h>
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -47,46 +47,43 @@ struct ragged_mutator_base_t {};
 //----------------------------------------------------------------------------//
 
 template<typename T>
-struct mutator_u<data::ragged, T> : public mutator_u<data::sparse, T>,
+struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
                                     public ragged_mutator_base_t {
-
-  using base_t = mutator_u<data::sparse, T>;
-
-  using handle_t = typename base_t::handle_t;
-  using offset_t = typename base_t::offset_t;
-  using entry_value_t = typename base_t::entry_value_t;
-  using erase_set_t = typename base_t::erase_set_t;
+  using handle_t = mutator_handle_u<T>;
+  using offset_t = typename handle_t::offset_t;
+  using entry_value_t = typename handle_t::entry_value_t;
+  using erase_set_t = typename handle_t::erase_set_t;
   using ragged_changes_t = typename mutator_handle_u<T>::ragged_changes_t;
   using ragged_changes_map_t =
     typename mutator_handle_u<T>::ragged_changes_map_t;
 
   //--------------------------------------------------------------------------//
-  //! Copy constructor.
+  //! Constructor from handle.
   //--------------------------------------------------------------------------//
 
-  mutator_u(const mutator_handle_u<T> & h) : base_t(h) {
-    assert(!base_t::h_.ragged_changes_map_ && "expected null changes map");
-    base_t::h_.ragged_changes_map_ = new ragged_changes_map_t;
+  mutator_u(const mutator_handle_u<T> & h) : h_(h) {
+    assert(!h_.ragged_changes_map_ && "expected null changes map");
+    h_.ragged_changes_map_ = new ragged_changes_map_t;
   }
 
   T & operator()(size_t index, size_t ragged_index) {
-    assert(base_t::h_.offsets_ && "uninitialized ragged_mutator");
-    assert(index < base_t::h_.num_entries_);
+    assert(h_.offsets_ && "uninitialized ragged_mutator");
+    assert(index < h_.num_entries_);
 
-    offset_t & offset = base_t::h_.offsets_[index];
+    offset_t & offset = h_.offsets_[index];
 
     size_t n = offset.count();
 
-    if(n >= base_t::h_.num_slots_) {
-      if(index < base_t::h_.num_exclusive_) {
-        (*base_t::h_.num_exclusive_insertions)++;
+    if(n >= h_.num_slots_) {
+      if(index < h_.num_exclusive_) {
+        (*h_.num_exclusive_insertions)++;
       }
 
-      return base_t::h_.spare_map_->emplace(index, entry_value_t(ragged_index))
+      return h_.spare_map_->emplace(index, entry_value_t(ragged_index))
         ->second.value;
     } // if
 
-    entry_value_t * start = base_t::h_.entries_ + index * base_t::h_.num_slots_;
+    entry_value_t * start = h_.entries_ + index * h_.num_slots_;
     entry_value_t * end = start + n;
 
     entry_value_t * itr =
@@ -108,8 +105,8 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::sparse, T>,
 
     itr->entry = ragged_index;
 
-    if(index < base_t::h_.num_exclusive_) {
-      (*base_t::h_.num_exclusive_insertions)++;
+    if(index < h_.num_exclusive_) {
+      (*h_.num_exclusive_insertions)++;
     }
 
     offset.set_count(n + 1);
@@ -118,15 +115,15 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::sparse, T>,
   } // operator ()
 
   void resize(size_t index, size_t size) {
-    assert(index < base_t::h_.num_entries_);
+    assert(index < h_.num_entries_);
 
-    assert(size <= base_t::h_.max_entries_per_index_ &&
+    assert(size <= h_.max_entries_per_index_ &&
            "resize length exceeds max entries per index");
 
-    auto itr = base_t::h_.ragged_changes_map_->find(index);
-    if(itr == base_t::h_.ragged_changes_map_->end()) {
+    auto itr = h_.ragged_changes_map_->find(index);
+    if(itr == h_.ragged_changes_map_->end()) {
       ragged_changes_t changes(size);
-      base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
+      h_.ragged_changes_map_->emplace(index, std::move(changes));
     }
     else {
       itr->second.size = size;
@@ -134,16 +131,16 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::sparse, T>,
   }
 
   void erase(size_t index, size_t ragged_index) {
-    assert(index < base_t::h_.num_entries_);
+    assert(index < h_.num_entries_);
 
-    auto itr = base_t::h_.ragged_changes_map_->find(index);
-    if(itr == base_t::h_.ragged_changes_map_->end()) {
-      const offset_t & offset = base_t::h_.offsets_[index];
+    auto itr = h_.ragged_changes_map_->find(index);
+    if(itr == h_.ragged_changes_map_->end()) {
+      const offset_t & offset = h_.offsets_[index];
       assert(ragged_index < offset.count());
       ragged_changes_t changes(offset.count() - 1);
       changes.init_erase_set();
       changes.erase_set->insert(ragged_index);
-      base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
+      h_.ragged_changes_map_->emplace(index, std::move(changes));
     }
     else {
       ragged_changes_t & changes = itr->second;
@@ -161,15 +158,15 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::sparse, T>,
   }
 
   void push_back(size_t index, const T & value) {
-    assert(index < base_t::h_.num_entries_);
+    assert(index < h_.num_entries_);
 
-    auto itr = base_t::h_.ragged_changes_map_->find(index);
-    if(itr == base_t::h_.ragged_changes_map_->end()) {
-      const offset_t & offset = base_t::h_.offsets_[index];
+    auto itr = h_.ragged_changes_map_->find(index);
+    if(itr == h_.ragged_changes_map_->end()) {
+      const offset_t & offset = h_.offsets_[index];
       ragged_changes_t changes(offset.count() + 1);
       changes.init_push_values();
       changes.push_values->push_back(value);
-      base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
+      h_.ragged_changes_map_->emplace(index, std::move(changes));
     }
     else {
       ragged_changes_t & changes = itr->second;
@@ -185,16 +182,16 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::sparse, T>,
 
   // insert BEFORE ragged index
   void insert(size_t index, size_t ragged_index, const T & value) {
-    assert(index < base_t::h_.num_entries_);
+    assert(index < h_.num_entries_);
 
-    auto itr = base_t::h_.ragged_changes_map_->find(index);
-    if(itr == base_t::h_.ragged_changes_map_->end()) {
-      const offset_t & offset = base_t::h_.offsets_[index];
+    auto itr = h_.ragged_changes_map_->find(index);
+    if(itr == h_.ragged_changes_map_->end()) {
+      const offset_t & offset = h_.offsets_[index];
       assert(ragged_index < offset.count());
       ragged_changes_t changes(offset.count() + 1);
       changes.init_insert_values();
       changes.insert_values->emplace(ragged_index, value);
-      base_t::h_.ragged_changes_map_->emplace(index, std::move(changes));
+      h_.ragged_changes_map_->emplace(index, std::move(changes));
     }
     else {
       ragged_changes_t & changes = itr->second;
@@ -214,6 +211,8 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::sparse, T>,
       }
     }
   }
+
+  handle_t h_;
 };
 
 template<typename T>
