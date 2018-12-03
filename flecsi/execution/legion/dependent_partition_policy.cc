@@ -123,7 +123,7 @@ legion_entity legion_dependent_partition_policy_t::load_cell(int cells_size, int
 	
 	init_cell_launcher.add_region_requirement(
 	  Legion::RegionRequirement(cell_equal_lp, 0/*projection ID*/,
-	                            READ_WRITE, EXCLUSIVE, cell_lr));
+	                            WRITE_DISCARD, EXCLUSIVE, cell_lr));
   init_cell_launcher.region_requirements[0].add_field(FID_CELL_ID);
   init_cell_launcher.region_requirements[0].add_field(FID_CELL_PARTITION_COLOR);
 			
@@ -203,7 +203,7 @@ legion_entity legion_dependent_partition_policy_t::load_non_cell(int entities_si
 	
 	init_non_cell_launcher.add_region_requirement(
 	  Legion::RegionRequirement(entity_equal_lp, 0/*projection ID*/,
-	                            READ_WRITE, EXCLUSIVE, entity_lr));
+	                            WRITE_DISCARD, EXCLUSIVE, entity_lr));
   init_non_cell_launcher.region_requirements[0].add_field(id_fid);
 	init_non_cell_launcher.region_requirements[0].add_field(color_fid);
 			
@@ -303,15 +303,18 @@ legion_adjacency legion_dependent_partition_policy_t::load_cell_to_cell(legion_e
 	
 	init_cell_to_cell_launcher.add_region_requirement(
 	  Legion::RegionRequirement(cell_region.equal_lp, 0/*projection ID*/,
-	                            READ_WRITE, EXCLUSIVE, cell_region.logical_region));
+	                            READ_ONLY, EXCLUSIVE, cell_region.logical_region));
   init_cell_to_cell_launcher.region_requirements[0].add_field(FID_CELL_ID);
-  init_cell_to_cell_launcher.region_requirements[0].add_field(FID_CELL_CELL_NRANGE);
+	init_cell_to_cell_launcher.add_region_requirement(
+	  Legion::RegionRequirement(cell_region.equal_lp, 0/*projection ID*/,
+	                            WRITE_DISCARD, EXCLUSIVE, cell_region.logical_region));
+  init_cell_to_cell_launcher.region_requirements[1].add_field(FID_CELL_CELL_NRANGE);
 	
 	init_cell_to_cell_launcher.add_region_requirement(
 	  Legion::RegionRequirement(cell_to_cell_lp, 0/*projection ID*/,
-	                            READ_WRITE, EXCLUSIVE, cell_to_cell_lr));
-	init_cell_to_cell_launcher.region_requirements[1].add_field(FID_CELL_TO_CELL_ID);
-	init_cell_to_cell_launcher.region_requirements[1].add_field(FID_CELL_TO_CELL_PTR);
+	                            WRITE_DISCARD, EXCLUSIVE, cell_to_cell_lr));
+	init_cell_to_cell_launcher.region_requirements[2].add_field(FID_CELL_TO_CELL_ID);
+	init_cell_to_cell_launcher.region_requirements[2].add_field(FID_CELL_TO_CELL_PTR);
 	
   init_cell_to_cell_launcher.tag = MAPPER_FORCE_RANK_MATCH;
   Legion::FutureMap fm_epoch2 = runtime->execute_index_space(ctx, init_cell_to_cell_launcher);
@@ -417,15 +420,18 @@ legion_adjacency legion_dependent_partition_policy_t::load_cell_to_others(legion
 	
 	init_cell_to_others_launcher.add_region_requirement(
 	  Legion::RegionRequirement(cell_region.equal_lp, 0/*projection ID*/,
-	                            READ_WRITE, EXCLUSIVE, cell_region.logical_region));
+	                            READ_ONLY, EXCLUSIVE, cell_region.logical_region));
   init_cell_to_others_launcher.region_requirements[0].add_field(FID_CELL_ID);
-	init_cell_to_others_launcher.region_requirements[0].add_field(image_nrange_fid);
+	init_cell_to_others_launcher.add_region_requirement(
+	  Legion::RegionRequirement(cell_region.equal_lp, 0/*projection ID*/,
+	                            WRITE_DISCARD, EXCLUSIVE, cell_region.logical_region));
+	init_cell_to_others_launcher.region_requirements[1].add_field(image_nrange_fid);
 	
 	init_cell_to_others_launcher.add_region_requirement(
 	  Legion::RegionRequirement(cell_to_others_lp, 0/*projection ID*/,
-	                            READ_WRITE, EXCLUSIVE, cell_to_others_lr));
-	init_cell_to_others_launcher.region_requirements[1].add_field(cell_to_others_id_fid);
-	init_cell_to_others_launcher.region_requirements[1].add_field(cell_to_others_ptr_fid);
+	                            WRITE_DISCARD, EXCLUSIVE, cell_to_others_lr));
+	init_cell_to_others_launcher.region_requirements[2].add_field(cell_to_others_id_fid);
+	init_cell_to_others_launcher.region_requirements[2].add_field(cell_to_others_ptr_fid);
 			
   init_cell_to_others_launcher.tag = MAPPER_FORCE_RANK_MATCH;
   Legion::FutureMap fm_epoch2 = runtime->execute_index_space(ctx, init_cell_to_others_launcher);
@@ -556,7 +562,7 @@ void legion_dependent_partition_policy_t::set_offset(legion_entity &entity, legi
 	
 	set_entity_offset_launcher.add_region_requirement(
 	  Legion::RegionRequirement(primary.logical_partition, 0/*projection ID*/,
-	                            READ_WRITE, EXCLUSIVE, entity.logical_region));
+	                            WRITE_DISCARD, EXCLUSIVE, entity.logical_region));
   set_entity_offset_launcher.region_requirements[0].add_field(entity.offset_fid);
   
 	

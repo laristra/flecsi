@@ -1201,8 +1201,8 @@ flecsi_internal_legion_task(init_cell_task, init_mesh_task_rt_t) {
   assert (task->regions.size() == 1);
   assert (task->regions[0].privilege_fields.size() == 2);
   
-	const Legion::FieldAccessor<READ_WRITE,int,1> cell_id_acc(regions[0], FID_CELL_ID);
-	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Point<1>,1> cell_color_acc(regions[0], FID_CELL_PARTITION_COLOR);
+	const Legion::FieldAccessor<WRITE_DISCARD,int,1> cell_id_acc(regions[0], FID_CELL_ID);
+	const Legion::FieldAccessor<WRITE_DISCARD,LegionRuntime::Arrays::Point<1>,1> cell_color_acc(regions[0], FID_CELL_PARTITION_COLOR);
 	
 	int total_num_colors = task->index_domain.get_volume();
   Legion::Domain cell_domain = runtime->get_index_space_domain(ctx,
@@ -1280,8 +1280,8 @@ flecsi_internal_legion_task(init_non_cell_task, void) {
   int id_fid = task_entity->id_fid; 
   int color_fid = task_entity->color_fid;
   
-	const Legion::FieldAccessor<READ_WRITE,int,1> entity_id_acc(regions[0], id_fid);
-	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Point<1>,1> entity_color_acc(regions[0], color_fid);
+	const Legion::FieldAccessor<WRITE_DISCARD,int,1> entity_id_acc(regions[0], id_fid);
+	const Legion::FieldAccessor<WRITE_DISCARD,LegionRuntime::Arrays::Point<1>,1> entity_color_acc(regions[0], color_fid);
 	
 	int total_num_colors = task->index_domain.get_volume();
 
@@ -1315,14 +1315,15 @@ flecsi_internal_legion_task(init_cell_to_cell_task, void) {
   
   assert(point == my_rank);
 
-  assert (task->regions.size() == 2);
-  assert (task->regions[0].privilege_fields.size() == 2);
-  assert (task->regions[1].privilege_fields.size() == 2);
+  assert (task->regions.size() == 3);
+  assert (task->regions[0].privilege_fields.size() == 1);
+  assert (task->regions[1].privilege_fields.size() == 1);
+  assert (task->regions[2].privilege_fields.size() == 2);
     
-	const Legion::FieldAccessor<READ_WRITE,int,1> cell_id_acc(regions[0], FID_CELL_ID);
-	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Rect<1>,1> cell_cell_nrange_acc(regions[0], FID_CELL_CELL_NRANGE);
-	const Legion::FieldAccessor<WRITE_DISCARD,int,1> cell_to_cell_id_acc(regions[1], FID_CELL_TO_CELL_ID);
-	const Legion::FieldAccessor<WRITE_DISCARD,LegionRuntime::Arrays::Point<1>,1> cell_to_cell_ptr_acc(regions[1], FID_CELL_TO_CELL_PTR);
+	const Legion::FieldAccessor<READ_ONLY,int,1> cell_id_acc(regions[0], FID_CELL_ID);
+	const Legion::FieldAccessor<WRITE_DISCARD,LegionRuntime::Arrays::Rect<1>,1> cell_cell_nrange_acc(regions[1], FID_CELL_CELL_NRANGE);
+	const Legion::FieldAccessor<WRITE_DISCARD,int,1> cell_to_cell_id_acc(regions[2], FID_CELL_TO_CELL_ID);
+	const Legion::FieldAccessor<WRITE_DISCARD,LegionRuntime::Arrays::Point<1>,1> cell_to_cell_ptr_acc(regions[2], FID_CELL_TO_CELL_PTR);
 	
 	int num_color;
 	MPI_Comm_size(MPI_COMM_WORLD, &num_color);
@@ -1336,7 +1337,7 @@ flecsi_internal_legion_task(init_cell_to_cell_task, void) {
   Legion::Domain cell_domain = runtime->get_index_space_domain(ctx,
                    task->regions[0].region.get_index_space());
   Legion::Domain cell_to_cell_domain = runtime->get_index_space_domain(ctx,
-                   task->regions[1].region.get_index_space());
+                   task->regions[2].region.get_index_space());
 							 
 	auto dcrs = flecsi::coloring::make_dcrs(*sd, sd->get_dimension(), 0);
 	
@@ -1384,23 +1385,24 @@ flecsi_internal_legion_task(init_cell_to_others_task, void) {
   
   assert(point == my_rank);
   
-  assert (task->regions.size() == 2);
-  assert (task->regions[0].privilege_fields.size() == 2);
-  assert (task->regions[1].privilege_fields.size() == 2);
+  assert (task->regions.size() == 3);
+  assert (task->regions[0].privilege_fields.size() == 1);
+  assert (task->regions[1].privilege_fields.size() == 1);
+  assert (task->regions[2].privilege_fields.size() == 2);
   
   std::set<Legion::FieldID>::iterator it = task->regions[0].privilege_fields.begin();
   Legion::FieldID cell_id_fid = *(it);
-  it++;
-  Legion::FieldID cell_others_nrange_fid = *(it);
   it = task->regions[1].privilege_fields.begin();
+  Legion::FieldID cell_others_nrange_fid = *(it);
+  it = task->regions[2].privilege_fields.begin();
   Legion::FieldID cell_to_others_id_fid = *(it);
   it++;
   Legion::FieldID cell_to_others_ptr_fid = *(it);
   
-	const Legion::FieldAccessor<READ_WRITE,int,1> cell_id_acc(regions[0], cell_id_fid);
-	const Legion::FieldAccessor<READ_WRITE,LegionRuntime::Arrays::Rect<1>,1> cell_others_nrange_acc(regions[0], cell_others_nrange_fid);
-	const Legion::FieldAccessor<WRITE_DISCARD,int,1> cell_to_others_id_acc(regions[1], cell_to_others_id_fid);
-	const Legion::FieldAccessor<WRITE_DISCARD,LegionRuntime::Arrays::Point<1>,1> cell_to_others_ptr_acc(regions[1], cell_to_others_ptr_fid);
+	const Legion::FieldAccessor<READ_ONLY,int,1> cell_id_acc(regions[0], cell_id_fid);
+	const Legion::FieldAccessor<WRITE_DISCARD,LegionRuntime::Arrays::Rect<1>,1> cell_others_nrange_acc(regions[1], cell_others_nrange_fid);
+	const Legion::FieldAccessor<WRITE_DISCARD,int,1> cell_to_others_id_acc(regions[2], cell_to_others_id_fid);
+	const Legion::FieldAccessor<WRITE_DISCARD,LegionRuntime::Arrays::Point<1>,1> cell_to_others_ptr_acc(regions[2], cell_to_others_ptr_fid);
 	
 	int num_color;
 	MPI_Comm_size(MPI_COMM_WORLD, &num_color);
@@ -1417,7 +1419,7 @@ flecsi_internal_legion_task(init_cell_to_others_task, void) {
   Legion::Domain cell_domain = runtime->get_index_space_domain(ctx,
                    task->regions[0].region.get_index_space());
   Legion::Domain cell_to_others_domain = runtime->get_index_space_domain(ctx,
-                   task->regions[1].region.get_index_space());
+                   task->regions[2].region.get_index_space());
 							 
 	
 	int idx_cell2others = 0;
@@ -1459,7 +1461,7 @@ flecsi_internal_legion_task(set_entity_offset_task, void) {
   assert (task->regions[0].privilege_fields.size() == 1);
   Legion::FieldID fid = *(task->regions[0].privilege_fields.begin());
   
-  const Legion::FieldAccessor<READ_WRITE,int,1> primary_offset_acc(regions[0], fid);
+  const Legion::FieldAccessor<WRITE_DISCARD,int,1> primary_offset_acc(regions[0], fid);
   
   const int* entity_id = (const int*)task->args;
   
