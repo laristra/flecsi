@@ -37,7 +37,7 @@ using namespace flecsi::control;
 
 int main(int argc, char ** argv) {
 
-  context_t & runtime_ = context_t::instance();
+  runtime_t & runtime_ = runtime_t::instance();
 
   // Invoke registered runtime initializations
   runtime_.initialize_runtimes(argc, argv);

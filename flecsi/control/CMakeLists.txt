@@ -5,6 +5,7 @@
 
 set(control_HEADERS
   control.h
+  runtime.h
   phase_walker.h
 )
 
