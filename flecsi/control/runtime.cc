@@ -37,7 +37,7 @@ using namespace flecsi::control;
 
 int main(int argc, char ** argv) {
 
-  runtime_t & runtime_ = runtime_t::instance();
+  context_t & runtime_ = context_t::instance();
 
   // Invoke registered runtime initializations
   runtime_.initialize_runtimes(argc, argv);
@@ -78,7 +78,7 @@ int main(int argc, char ** argv) {
     } // if
 
     return runtime_.finalize_runtimes(argc, argv,
-      runtime_exit_mode_t::unrecognized_option);
+      exit_mode_t::unrecognized_option);
   } // if
 
   if(vm.count("help")) {
@@ -87,7 +87,7 @@ int main(int argc, char ** argv) {
     } // if
 
     return runtime_.finalize_runtimes(argc, argv,
-      runtime_exit_mode_t::help);
+      exit_mode_t::help);
   } // if
 #endif
 
@@ -115,7 +115,7 @@ int main(int argc, char ** argv) {
   } // if
 
   // Invoke registered runtime finalizations
-  runtime_.finalize_runtimes(argc, argv, runtime_exit_mode_t::success);
+  runtime_.finalize_runtimes(argc, argv, exit_mode_t::success);
 
   return result;
 } // main

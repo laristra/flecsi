@@ -24,7 +24,7 @@ inline int initialize(int argc, char ** argv) {
   return 0;
 } // initialize
 
-inline int finalize(int argc, char ** argv, runtime_exit_mode_t mode) {
+inline int finalize(int argc, char ** argv, exit_mode_t mode) {
   std::cout << "Executing finalize with mode " << size_t{mode} << std::endl;
   return 0;
 } // initialize
