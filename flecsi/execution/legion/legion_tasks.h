@@ -57,6 +57,7 @@ namespace execution {
 enum FieldIDs {
   FID_CELL_ID = 328,
   FID_CELL_PARTITION_COLOR,
+  FID_CELL_OFFSET,
   FID_CELL_CELL_NRANGE,
   FID_CELL_VERTEX_NRANGE,
   FID_CELL_EDGE_NRANGE,
@@ -68,11 +69,9 @@ enum FieldIDs {
   FID_CELL_TO_EDGE_PTR,
   FID_VERTEX_ID,
   FID_VERTEX_PARTITION_COLOR,
-	FID_VERTEX_PARTITION_COLOR_ID,
+  FID_VERTEX_OFFSET,
   FID_EDGE_ID,
   FID_EDGE_PARTITION_COLOR,
-  FID_CELL_OFFSET,
-  FID_VERTEX_OFFSET,
   FID_EDGE_OFFSET,
 };
 
@@ -818,30 +817,6 @@ flecsi_internal_legion_task(init_adjacency_task, void) {
 	}
 	printf("\n\n");
 #endif
-}
-
-/*!
- verify vertex color task
-
- @ingroup legion-execution
- */
-
-flecsi_internal_legion_task(verify_vertex_color_task, void) {
-	const int my_rank = runtime->find_local_MPI_rank();
-	const Legion::FieldAccessor<READ_ONLY,int,1> vertex_alias_id_acc(regions[0], FID_VERTEX_ID);
-	const Legion::FieldAccessor<READ_ONLY,LegionRuntime::Arrays::Point<1>,1> vertex_alias_color_id_acc(regions[0], FID_VERTEX_PARTITION_COLOR);
-	
-	int ct = 0;
-  Legion::Domain vertex_alias_domain = runtime->get_index_space_domain(ctx,
-                   task->regions[0].region.get_index_space());
-									 
-	dp_debug_printf(2, "Alias vertex rank %d, ", my_rank);								 
-  for (Legion::PointInDomainIterator<1> pir(vertex_alias_domain); pir(); pir++) {
-		LegionRuntime::Arrays::Point<1> pt = vertex_alias_color_id_acc[*pir];
-	  dp_debug_printf(2, "%d:%d ", (int)vertex_alias_id_acc[*pir], pt.x[0]);
-		ct ++;
-	}
-	dp_debug_printf(2, " total %d\n", ct);
 }
 
 /*!
@@ -1645,19 +1620,15 @@ flecsi_internal_legion_task(print_partition_task, void) {
 	const Legion::FieldAccessor<READ_ONLY,int,1> primary_id_acc(regions[0], id_fid);
 	const Legion::FieldAccessor<READ_ONLY,LegionRuntime::Arrays::Point<1>,1> primary_color_acc(regions[0], color_fid);
 	
-  assert(task->regions[1].privilege_fields.size() == 3);
+  assert(task->regions[1].privilege_fields.size() == 2);
 	const Legion::FieldAccessor<READ_ONLY,int,1> ghost_id_acc(regions[1], id_fid);
-  const Legion::FieldAccessor<READ_ONLY,int,1> ghost_offset_acc(regions[1], offset_fid);
   const Legion::FieldAccessor<READ_ONLY,LegionRuntime::Arrays::Point<1>,1> ghost_color_acc(regions[1], color_fid);
   
-  assert(task->regions[2].privilege_fields.size() == 2);  
+  assert(task->regions[2].privilege_fields.size() == 1);  
   const Legion::FieldAccessor<READ_ONLY,int,1> shared_id_acc(regions[2], id_fid);
-  const Legion::FieldAccessor<READ_ONLY,int,1> shared_offset_acc(regions[2], offset_fid);
   
-  assert(task->regions[3].privilege_fields.size() == 2);
-  const Legion::FieldAccessor<READ_ONLY,int,1> exclusive_id_acc(regions[3], id_fid);
-	const Legion::FieldAccessor<READ_ONLY,int,1> exclusive_offset_acc(regions[3], offset_fid);
-  
+  assert(task->regions[3].privilege_fields.size() == 1);
+  const Legion::FieldAccessor<READ_ONLY,int,1> exclusive_id_acc(regions[3], id_fid); 
 
   printf("\n");
   
@@ -1809,6 +1780,36 @@ flecsi_internal_legion_task(init_vertex_color_task, void) {
 	//	vertex_alias_color_acc[*pir] <<= LegionRuntime::Arrays::Point<1>(color);
 	  ct ++;
 	}
+}
+
+/*!
+ verify vertex color task
+
+ @ingroup legion-execution
+ */
+
+flecsi_internal_legion_task(verify_vertex_color_task, void) {
+    const int my_rank = runtime->find_local_MPI_rank();
+
+  std::set<Legion::FieldID>::iterator it = task->regions[0].privilege_fields.begin();
+  Legion::FieldID id_fid = *(it);
+  it++;
+  Legion::FieldID color_fid = *(it);
+
+    const Legion::FieldAccessor<READ_ONLY,int,1> vertex_alias_id_acc(regions[0], id_fid);
+    const Legion::FieldAccessor<READ_ONLY,LegionRuntime::Arrays::Point<1>,1> vertex_alias_color_id_acc(regions[0], color_fid);
+
+    int ct = 0;
+  Legion::Domain vertex_alias_domain = runtime->get_index_space_domain(ctx,
+                   task->regions[0].region.get_index_space());
+
+  dp_debug_printf(1, "Alias vertex rank %d, ", my_rank);
+  for (Legion::PointInDomainIterator<1> pir(vertex_alias_domain); pir(); pir++) {
+    LegionRuntime::Arrays::Point<1> pt = vertex_alias_color_id_acc[*pir];
+    dp_debug_printf(1, "%d:%d ", (int)vertex_alias_id_acc[*pir], pt.x[0]);
+    ct ++;
+  }
+  dp_debug_printf(1, " total %d\n", ct);
 }
 
 #undef flecsi_internal_legion_task

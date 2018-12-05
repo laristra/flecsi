@@ -184,21 +184,6 @@ flecsi_internal_register_legion_task(
     init_adjacency_task,
     processor_type_t::loc,
     index | leaf);
-
-/*!
-  Register verify vertex color index task.
-
-  \remark The translation unit that contains this call will not be
-         necessary with C++17, as it will be possible to move this call
-         into the header file using inline variables.
-
-  @ingroup legion-execution
- */	
-  	
-flecsi_internal_register_legion_task(
-    verify_vertex_color_task,
-    processor_type_t::loc,
-    index | leaf);
 	
 /*!
   Register init offset index task.
@@ -332,6 +317,21 @@ flecsi_internal_register_legion_task(
 
 flecsi_internal_register_legion_task(
     print_partition_task,
+    processor_type_t::loc,
+    index | leaf);
+    
+/*!
+  Register verify vertex color index task.
+
+  \remark The translation unit that contains this call will not be
+         necessary with C++17, as it will be possible to move this call
+         into the header file using inline variables.
+
+  @ingroup legion-execution
+ */	
+	
+flecsi_internal_register_legion_task(
+    verify_vertex_color_task,
     processor_type_t::loc,
     index | leaf);
     

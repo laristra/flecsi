@@ -476,6 +476,25 @@ void legion_dependent_partition_policy_t::min_reduction_by_color(legion_entity &
   init_vertex_color_launcher.tag = MAPPER_FORCE_RANK_MATCH;
   Legion::FutureMap fm_epoch3 = runtime->execute_index_space(ctx, init_vertex_color_launcher);
   fm_epoch3.wait_all_results(true);
+  
+#if 0
+  const auto verify_vertex_color_task_id =
+    context_.task_id<flecsi_internal_task_key(verify_vertex_color_task)>();
+
+  Legion::IndexLauncher verify_vertex_color_launcher(verify_vertex_color_task_id,
+                                            partition_index_space, Legion::TaskArgument(nullptr, 0),
+                                            Legion::ArgumentMap());
+
+  verify_vertex_color_launcher.add_region_requirement(
+    Legion::RegionRequirement(alias_partition.logical_partition, 0/*projection ID*/,
+                              READ_ONLY, EXCLUSIVE, entity.logical_region));
+  verify_vertex_color_launcher.region_requirements[0].add_field(entity.id_fid);
+  verify_vertex_color_launcher.region_requirements[0].add_field(color_fid);
+
+  verify_vertex_color_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  Legion::FutureMap fm_epoch_test1 = runtime->execute_index_space(ctx, verify_vertex_color_launcher);
+  fm_epoch_test1.wait_all_results(true);
+#endif
 }
 
 legion_partition legion_dependent_partition_policy_t::partition_by_color(legion_entity &entity)
@@ -662,20 +681,17 @@ void legion_dependent_partition_policy_t::print_partition(legion_entity &entity,
 	  Legion::RegionRequirement(ghost.logical_partition, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, entity.logical_region));
   print_partition_launcher.region_requirements[1].add_field(entity.id_fid);
-  print_partition_launcher.region_requirements[1].add_field(entity.offset_fid);
   print_partition_launcher.region_requirements[1].add_field(entity.color_fid);
   
 	print_partition_launcher.add_region_requirement(
 	  Legion::RegionRequirement(shared.logical_partition, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, entity.logical_region));
   print_partition_launcher.region_requirements[2].add_field(entity.id_fid);
-  print_partition_launcher.region_requirements[2].add_field(entity.offset_fid);
   
 	print_partition_launcher.add_region_requirement(
 	  Legion::RegionRequirement(exclusive.logical_partition, 0/*projection ID*/,
 	                            READ_ONLY, EXCLUSIVE, entity.logical_region));
   print_partition_launcher.region_requirements[3].add_field(entity.id_fid);
-  print_partition_launcher.region_requirements[3].add_field(entity.offset_fid);
 	
 
   print_partition_launcher.tag = MAPPER_FORCE_RANK_MATCH;
