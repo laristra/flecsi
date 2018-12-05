@@ -25,6 +25,7 @@
 #include <mpi.h>
 
 #include <cstdlib>
+#include <iostream>
 
 /*
   Initialization for Legion runtime.
@@ -77,7 +78,7 @@ inline int initialize(int argc, char ** argv) {
   - Shutdown MPI
  */
 
-inline int finalize(int argc, char ** argv, exit_mode_t mode) {
+inline int finalize(int argc, char ** argv, flecsi::runtime::exit_mode_t mode) {
   std::cout << "Executing finalize with mode " << size_t{mode} << std::endl;
 
 #if defined(FLECSI_ENABLE_MPI)
@@ -94,7 +95,11 @@ inline bool output(int argc, char ** argv) {
   return false;
 } // output
 
-inline runtime_handle_t handler{ initialize, finalize, output };
+inline flecsi::runtime::runtime_handler_t handler{
+  initialize,
+  finalize,
+  output
+};
 
 flecsi_append_runtime_handler(handler);
 

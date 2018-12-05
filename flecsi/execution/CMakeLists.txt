@@ -36,6 +36,9 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/runtime.cc
   )
 
+  set(UNIT_POLICY LEGION)
+  set(RUNTIME_DRIVER legion/runtime.cc)
+
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(execution_HEADERS
@@ -74,4 +77,17 @@ set(execution_HEADERS
 set(execution_SOURCES
   ${execution_SOURCES}
   PARENT_SCOPE
+)
+
+#------------------------------------------------------------------------------#
+# Unit tests.
+#------------------------------------------------------------------------------#
+
+add_executable(runtime_initialization
+    ../control/runtime.cc
+    ${RUNTIME_DRIVER}
+)
+
+target_link_libraries(runtime_initialization ${CINCH_RUNTIME_LIBRARIES}
+  ${COLORING_LIBRARIES}
 )
