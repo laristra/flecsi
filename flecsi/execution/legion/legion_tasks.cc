@@ -440,7 +440,7 @@ MinReductionOp::fold<false>(RHS & rhs1, RHS rhs2) {
 }
 
 // reduction point
-const LegionRuntime::Arrays::Point<1> MinReductionPointOp::identity = LegionRuntime::Arrays::Point<1>(21);
+const LegionRuntime::Arrays::Point<1> MinReductionPointOp::identity = LegionRuntime::Arrays::Point<1>(std::numeric_limits<int>::max());
 
 template<>
 void
@@ -451,7 +451,7 @@ MinReductionPointOp::apply<true>(LHS & lhs, RHS rhs) {
 template<>
 void
 MinReductionPointOp::apply<false>(LHS & lhs, RHS rhs) {
-  int64_t * target = (int64_t *)&(lhs.x[0]);
+  volatile int64_t * target = (int64_t *)&(lhs.x[0]);
   union {
     int64_t as_int;
     long long as_T;
@@ -471,7 +471,7 @@ MinReductionPointOp::fold<true>(RHS & rhs1, RHS rhs2) {
 template<>
 void
 MinReductionPointOp::fold<false>(RHS & rhs1, RHS rhs2) {
-  int64_t * target = (int64_t *)&(rhs1.x[0]);
+  volatile int64_t * target = (int64_t *)&(rhs1.x[0]);
   union {
     int64_t as_int;
     long long as_T;
