@@ -11,7 +11,8 @@
 #include <algorithm>
 #include <type_traits>
 
-#include "flecsi/topology/structured_querytable.h"
+#include <flecsi/coloring/box_types.h>
+#include <flecsi/topology/structured_querytable.h>
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -41,6 +42,7 @@ public:
                              MESH_DIMENSION+1,
                              MESH_DIMENSION,
                              MESH_DIMENSION+1>;
+  using box_t              = flecsi::coloring::box_t;  
 
  /******************************************************************************
  *               Constructors/Destructors/Initializations                      *    
@@ -273,6 +275,110 @@ public:
    std::cout<<"Primary == "<<primary<<std::endl; 
   } //init
 
+  void init(bool primary,
+            size_t primary_dim,
+            size_t num_boxes,
+            std::vector<box_t> &global_boxes,
+            std::vector<std::vector<size_t>> &global_strides  
+            )
+  {
+    // Check that the primary IS doesn't have multiple boxes
+    if (primary) 
+    {
+      assert (num_boxes==1);
+      assert(global_boxes.size()==1); 
+      assert(global_strides.size()==1); 
+    }
+
+    offset_ = 0;
+    primary_ = primary;
+    primary_dim_ = primary_dim; 
+    num_boxes_ = num_boxes; 
+    sm_id_array_t global_low, global_up, global_str;
+    sm_id_array_t local_low, local_up;
+
+    for (size_t i = 0; i < num_boxes_; i++)
+    {
+      size_t global_count = 1, local_count = 1;
+      std::fill(global_low.begin(), global_low.end(), 0);;
+      std::fill(global_up.begin(), global_up.end(), 0);;
+      std::fill(local_low.begin(), local_low.end(), 0);;
+      std::fill(local_up.begin(), local_up.end(), 0);;
+
+      for (size_t j = 0; j < MESH_DIMENSION; j++)
+      {
+         global_low[j] = global_boxes[i].lowerbnd[j];
+         global_up[j]  = global_boxes[i].upperbnd[j];
+         global_str[j] = global_strides[i][j];
+         global_count *= global_str[j];
+
+         local_count *= global_up[j] - global_low[j]+1;
+         local_low[j] = 0;
+         local_up[j]  = global_up[j] - global_low[j];
+      }
+
+      //set up local box bnds
+      lbox_offset_.push_back(0);
+      lbox_size_.push_back(local_count);
+      lbox_lowbnds_.push_back(local_low);
+      lbox_upbnds_.push_back(local_up);
+
+      //set up global box bnds 
+      gbox_size_.push_back(global_count);
+      gbox_lowbnds_.push_back(global_low);
+      gbox_upbnds_.push_back(global_up);
+      gbox_strides_.push_back(global_str);
+    }
+
+    size_ = 0;
+    for (size_t i = 0; i < num_boxes_; i++)
+     size_ += lbox_size_[i];
+
+    //Create the tables for local traversal
+    qtable_.template create_table(); 
+
+    //debug print
+    for (size_t i = 0; i < num_boxes_; i++)
+    {
+      std::cout<<"lBox-id = "<<i<<std::endl;
+      std::cout<<" -- lBox-offset = "<<lbox_offset_[i]<<std::endl;
+      std::cout<<" -- lBox-size   = "<<lbox_size_[i]<<std::endl;
+
+      std::cout<<" ----lBox-lower-bnds = { ";
+      for (size_t j = 0 ; j < MESH_DIMENSION; j++)
+        std::cout<<lbox_lowbnds_[i][j]<<", ";
+      std::cout<<"}"<<std::endl;
+    
+      std::cout<<" ----lBox-upper-bnds = { ";
+      for (size_t j = 0 ; j < MESH_DIMENSION; j++)
+        std::cout<<lbox_upbnds_[i][j]<<", ";
+      std::cout<<"}"<<std::endl;
+    }
+
+    for (size_t i = 0; i < num_boxes_; i++)
+    {
+      std::cout<<"gBox-id = "<<i<<std::endl;
+      std::cout<<" -- gBox-size   = "<<gbox_size_[i]<<std::endl;
+
+      std::cout<<" ----gBox-lower-bnds = { ";
+      for (size_t j = 0 ; j < MESH_DIMENSION; j++)
+        std::cout<<gbox_lowbnds_[i][j]<<", ";
+      std::cout<<"}"<<std::endl;
+    
+      std::cout<<" ----gBox-upper-bnds = { ";
+      for (size_t j = 0 ; j < MESH_DIMENSION; j++)
+        std::cout<<gbox_upbnds_[i][j]<<", ";
+      std::cout<<"}"<<std::endl;
+
+      std::cout<<" ----gBox-strides = { ";
+      for (size_t j = 0 ; j < MESH_DIMENSION; j++)
+        std::cout<<gbox_strides_[i][j]<<", ";
+      std::cout<<"}"<<std::endl;
+    }
+   std::cout<<"size == "<<size_<<std::endl;
+   std::cout<<"Primary == "<<primary<<std::endl; 
+ 
+  }
   void init_partition()
   {
   } //init_partition

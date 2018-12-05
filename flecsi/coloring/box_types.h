@@ -88,24 +88,37 @@ struct box_coloring_t
   // of the primary entity. Ex. the cells or the vertices of the mesh.
   bool primary = false;       
   size_t primary_dim = 0; 
+  size_t num_boxes = 1; 
+ 
   
   //! The box info for partitioned box
-  box_info_t partition;
+  std::vector<box_info_t> partition;
 
   //! The exclusive box owned by current rank
-  box_color_t exclusive;
+  std::vector<box_color_t> exclusive;
 
   //! The aggregate of shared boxes
-  std::vector<box_color_t> shared;
+  std::vector<std::vector<box_color_t>> shared;
 
   //! The aggregate of ghost boxes
-  std::vector<box_color_t> ghost;
+  std::vector<std::vector<box_color_t>> ghost;
 
   //! The aggregate of domain-halo boxes
-  std::vector<box_t> domain_halo;
+  std::vector<std::vector<box_t>> domain_halo;
   
   //! The bounding box covering exclusive+shared+ghost+domain-halo boxes
   std::vector<box_t> overlay;
+
+  //! Resize 
+  void resize()
+  {
+    partition.resize(num_boxes);
+    exclusive.resize(num_boxes);
+    shared.resize(num_boxes);
+    ghost.resize(num_boxes);
+    domain_halo.resize(num_boxes);
+    overlay.resize(num_boxes);
+  } //resize
 
 }; // class box_coloring_t
 

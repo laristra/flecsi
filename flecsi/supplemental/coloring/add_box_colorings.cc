@@ -24,7 +24,7 @@ clog_register_tag(coloring);
 clog_register_tag(coloring_output);
 
 namespace flecsi {
-namespace execution {
+namespace supplemental {
 
 void add_box_colorings(coloring_map_t map) {
 
@@ -73,7 +73,7 @@ void add_box_colorings(coloring_map_t map) {
 
 } // add_box_colorings
 
-flecsi_register_mpi_task(add_box_colorings, flecsi::execution);
+flecsi_register_mpi_task(add_box_colorings, flecsi::supplemental);
 
 } // namespace execution
 } // namespace flecsi

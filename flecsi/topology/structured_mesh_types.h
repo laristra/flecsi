@@ -13,11 +13,11 @@
 #include <vector>
 #include <cmath>
 
-#include "flecsi/coloring/box_types.h"
-#include "flecsi/data/data_client.h"
-#include "flecsi/topology/mesh_utils.h"
-#include "flecsi/topology/structured_index_space.h"
-#include "flecsi/topology/types.h"
+#include <flecsi/coloring/box_types.h>
+#include <flecsi/data/data_client.h>
+#include <flecsi/topology/mesh_utils.h>
+#include <flecsi/topology/structured_index_space.h>
+#include <flecsi/topology/types.h>
 
 //----------------------------------------------------------------------------//
 //! @file

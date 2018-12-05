@@ -160,6 +160,9 @@ cinch_add_unit(structured_2d
     test/structured_2d.cc
     ${DRIVER_INITIALIZATION}
     ${RUNTIME_DRIVER}
+  DEFINES
+    FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+    FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
   INPUTS
     test/structured_2d.blessed
   LIBRARIES

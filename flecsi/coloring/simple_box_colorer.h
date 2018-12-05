@@ -86,7 +86,7 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     // Compute the strides of the global mesh
     std::vector<size_t> strides(D); 
     for (size_t i = 0; i < D; ++i) {
-      strides[i] = grid_size[i];
+      strides[i] = grid_size[i] + 2*nhalo_domain;
     }
 
     // Step 2: Compute the primary box bounds for the current rank
@@ -94,40 +94,42 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
 
     // Step 2: Create colored box type and set its primary box
     // info to the one created in step 1.
-    box_coloring_t colbox;
-    colbox.primary = true;
-    colbox.primary_dim = D;
-    
-    colbox.partition.box = pbox;
-    colbox.partition.strides = strides;
-    colbox.partition.nhalo = nhalo;
-    colbox.partition.nhalo_domain = nhalo_domain;
-    colbox.partition.thru_dim = thru_dim;
+    box_coloring_t colbox_cells;
+    colbox_cells.primary = true;
+    colbox_cells.primary_dim = D;
+    colbox_cells.num_boxes = 1; 
+    colbox_cells.resize(); 
+
+    colbox_cells.partition[0].box = pbox;
+    colbox_cells.partition[0].strides = strides;
+    colbox_cells.partition[0].nhalo = nhalo;
+    colbox_cells.partition[0].nhalo_domain = nhalo_domain;
+    colbox_cells.partition[0].thru_dim = thru_dim;
     
     //Set the onbnd vector to false 
     for(size_t i = 0; i < 2*D; ++i)
-     colbox.partition.onbnd.push_back(false);
+     colbox_cells.partition[0].onbnd.push_back(false);
 
     for (size_t i = 0; i < D; ++i) {
       if (pbox.lowerbnd[i] == domain.lowerbnd[i])
-        colbox.partition.onbnd[2 * i] = true;
+        colbox_cells.partition[0].onbnd[2 * i] = true;
       if (pbox.upperbnd[i] == domain.upperbnd[i])
-        colbox.partition.onbnd[2 * i+1] = true;
+        colbox_cells.partition[0].onbnd[2 * i+1] = true;
     }
-
+  
     // Step 3: Compute exclusive and shared boxes from primary box info.
-    create_exclusive_and_shared_boxes(colbox, ncolors, idx, rank);
+    create_exclusive_and_shared_boxes(colbox_cells, ncolors, idx, rank);
 
     // Step 4: Compute ghost boxes
-    create_ghost_boxes(colbox, ncolors, idx);
+    create_ghost_boxes(colbox_cells, ncolors, idx);
 
     // Step 5: Compute domain halo boxes
-    create_domain_halo_boxes(colbox);
+    create_domain_halo_boxes(colbox_cells);
 
     //Step 6: Compute the overlaying bounding box
-    compute_overlaying_bounding_box(colbox);
+    compute_overlaying_bounding_box(colbox_cells);
 
-    return colbox;
+    return colbox_cells;
   } // color
 
   
@@ -136,27 +138,27 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     coloring_info_t colinfo; 
  
     //#exclusive entities
-    colinfo.exclusive = cbox.exclusive.box.size();
+    colinfo.exclusive = cbox.exclusive[0].box.size();
 
     //#shared entities
     colinfo.shared = 0; 
     std::set<size_t> shared_ranks; 
-    for (size_t i = 0; i < cbox.shared.size(); i++)
+    for (size_t i = 0; i < cbox.shared[0].size(); i++)
     {
-      colinfo.shared += cbox.shared[i].box.size();
-      for (size_t j = 0; j < cbox.shared[i].colors.size(); j++)
-         shared_ranks.insert(cbox.shared[i].colors[j]);
+      colinfo.shared += cbox.shared[0][i].box.size();
+      for (size_t j = 0; j < cbox.shared[0][i].colors.size(); j++)
+         shared_ranks.insert(cbox.shared[0][i].colors[j]);
     }
     colinfo.shared_users = shared_ranks; 
 
     //#ghost entities
     colinfo.ghost = 0; 
     std::set<size_t> ghost_ranks; 
-    for (size_t i = 0; i < cbox.ghost.size(); i++)
+    for (size_t i = 0; i < cbox.ghost[0].size(); i++)
     {
-      colinfo.ghost += cbox.ghost[i].box.size();
-      for (size_t j = 0; j < cbox.ghost[i].colors.size(); j++)
-         ghost_ranks.insert(cbox.ghost[i].colors[j]);
+      colinfo.ghost += cbox.ghost[0][i].box.size();
+      for (size_t j = 0; j < cbox.ghost[0][i].colors.size(); j++)
+         ghost_ranks.insert(cbox.ghost[0][i].colors[j]);
     }
     colinfo.ghost_owners = ghost_ranks;
 
@@ -186,22 +188,22 @@ private:
       size_t ncolors[D],
       size_t idx[D],
       size_t rank) {
-    box_t pbox = colbox.partition.box;
-    size_t hl = colbox.partition.nhalo;
-    size_t TD = colbox.partition.thru_dim;
+    box_t pbox = colbox.partition[0].box;
+    size_t hl = colbox.partition[0].nhalo;
+    size_t TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
     box_t ebox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
-      if (!colbox.partition.onbnd[2 * i])
+      if (!colbox.partition[0].onbnd[2 * i])
         ebox.lowerbnd[i] += hl;
-      if (!colbox.partition.onbnd[2 * i + 1])
+      if (!colbox.partition[0].onbnd[2 * i + 1])
         ebox.upperbnd[i] -= hl;
     }
 
-    colbox.exclusive.box = ebox;
-    colbox.exclusive.colors.emplace_back(rank);
+    colbox.exclusive[0].box = ebox;
+    colbox.exclusive[0].colors.emplace_back(rank);
 
     size_t il[3] = {0, 0, 1};
     size_t iu[3] = {1, 0, 0};
@@ -269,7 +271,7 @@ private:
               scbox.colors.emplace_back(cval);
             }
           }
-          colbox.shared.emplace_back(scbox);
+          colbox.shared[0].emplace_back(scbox);
         }
       }
     }
@@ -281,22 +283,22 @@ private:
       size_t ncolors[D],
       size_t idx[D],
       size_t rank) {
-    box_t pbox = colbox.partition.box;
-    size_t hl = colbox.partition.nhalo;
-    size_t TD = colbox.partition.thru_dim;
+    box_t pbox = colbox.partition[0].box;
+    size_t hl = colbox.partition[0].nhalo;
+    size_t TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
     box_t ebox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
-      if (!colbox.partition.onbnd[2 * i])
+      if (!colbox.partition[0].onbnd[2 * i])
         ebox.lowerbnd[i] += hl;
-      if (!colbox.partition.onbnd[2 * i + 1])
+      if (!colbox.partition[0].onbnd[2 * i + 1])
         ebox.upperbnd[i] -= hl;
     }
 
-    colbox.exclusive.box = ebox;
-    colbox.exclusive.colors.emplace_back(rank);
+    colbox.exclusive[0].box = ebox;
+    colbox.exclusive[0].colors.emplace_back(rank);
 
     size_t il[3] = {0, 0, 1};
     size_t iu[3] = {1, 0, 0};
@@ -387,7 +389,7 @@ private:
                 scbox.colors.emplace_back(cval);
               }
             }
-            colbox.shared.emplace_back(scbox);
+            colbox.shared[0].emplace_back(scbox);
           }
         }
     }
@@ -399,22 +401,22 @@ private:
       size_t ncolors[D],
       size_t idx[D],
       size_t rank) {
-    box_t pbox = colbox.partition.box;
-    size_t hl = colbox.partition.nhalo;
-    size_t TD = colbox.partition.thru_dim;
+    box_t pbox = colbox.partition[0].box;
+    size_t hl = colbox.partition[0].nhalo;
+    size_t TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
     box_t ebox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
-      if (!colbox.partition.onbnd[2 * i])
+      if (!colbox.partition[0].onbnd[2 * i])
         ebox.lowerbnd[i] += hl;
-      if (!colbox.partition.onbnd[2 * i + 1])
+      if (!colbox.partition[0].onbnd[2 * i + 1])
         ebox.upperbnd[i] -= hl;
     }
 
-    colbox.exclusive.box = ebox;
-    colbox.exclusive.colors.emplace_back(rank);
+    colbox.exclusive[0].box = ebox;
+    colbox.exclusive[0].colors.emplace_back(rank);
 
     size_t il[3] = {0, 0, 1};
     size_t iu[3] = {1, 0, 0};
@@ -604,7 +606,7 @@ private:
                   scbox.colors.emplace_back(cval);
                 }
               }
-              colbox.shared.emplace_back(scbox);
+              colbox.shared[0].emplace_back(scbox);
             }
           }
     }
@@ -616,17 +618,17 @@ private:
       box_coloring_t & colbox,
       size_t ncolors[D],
       size_t idx[D]) {
-    box_t pbox = colbox.partition.box;
-    size_t hl = colbox.partition.nhalo;
-    size_t TD = colbox.partition.thru_dim;
+    box_t pbox = colbox.partition[0].box;
+    size_t hl = colbox.partition[0].nhalo;
+    size_t TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
     box_t gbox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
-      if (!colbox.partition.onbnd[2 * i])
+      if (!colbox.partition[0].onbnd[2 * i])
         gbox.lowerbnd[i] -= hl;
-      if (!colbox.partition.onbnd[2 * i + 1])
+      if (!colbox.partition[0].onbnd[2 * i + 1])
         gbox.upperbnd[i] += hl;
     }
 
@@ -664,7 +666,7 @@ private:
             cval = idx_new[0];
             gcbox.box = ghbox;
             gcbox.colors.emplace_back(cval);
-            colbox.ghost.emplace_back(gcbox);
+            colbox.ghost[0].emplace_back(gcbox);
           }
         }
       }
@@ -676,17 +678,17 @@ private:
       box_coloring_t & colbox,
       size_t ncolors[D],
       size_t idx[D]) {
-    box_t pbox = colbox.partition.box;
-    size_t hl = colbox.partition.nhalo;
-    size_t TD = colbox.partition.thru_dim;
+    box_t pbox = colbox.partition[0].box;
+    size_t hl = colbox.partition[0].nhalo;
+    size_t TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
     box_t gbox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
-      if (!colbox.partition.onbnd[2 * i])
+      if (!colbox.partition[0].onbnd[2 * i])
         gbox.lowerbnd[i] -= hl;
-      if (!colbox.partition.onbnd[2 * i + 1])
+      if (!colbox.partition[0].onbnd[2 * i + 1])
         gbox.upperbnd[i] += hl;
     }
 
@@ -730,7 +732,7 @@ private:
               cval = idx_new[0] + ncolors[0] * idx_new[1];
               gcbox.box = ghbox;
               gcbox.colors.emplace_back(cval);
-              colbox.ghost.emplace_back(gcbox);
+              colbox.ghost[0].emplace_back(gcbox);
             }
           }
         }
@@ -742,17 +744,17 @@ private:
       box_coloring_t & colbox,
       size_t ncolors[D],
       size_t idx[D]) {
-    box_t pbox = colbox.partition.box;
-    size_t hl = colbox.partition.nhalo;
-    size_t TD = colbox.partition.thru_dim;
+    box_t pbox = colbox.partition[0].box;
+    size_t hl = colbox.partition[0].nhalo;
+    size_t TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
     box_t gbox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
-      if (!colbox.partition.onbnd[2 * i])
+      if (!colbox.partition[0].onbnd[2 * i])
         gbox.lowerbnd[i] -= hl;
-      if (!colbox.partition.onbnd[2 * i + 1])
+      if (!colbox.partition[0].onbnd[2 * i + 1])
         gbox.upperbnd[i] += hl;
     }
 
@@ -808,7 +810,7 @@ private:
                        ncolors[0] * ncolors[1] * idx_new[2];
                 gcbox.box = ghbox;
                 gcbox.colors.emplace_back(cval);
-                colbox.ghost.emplace_back(gcbox);
+                colbox.ghost[0].emplace_back(gcbox);
               }
             }
           }
@@ -816,16 +818,16 @@ private:
   } // create_ghost_boxes
 
   void create_domain_halo_boxes(box_coloring_t & colbox) {
-    box_t pbox = colbox.partition.box;
-    size_t hl = colbox.partition.nhalo_domain;
+    box_t pbox = colbox.partition[0].box;
+    size_t hl = colbox.partition[0].nhalo_domain;
 
     // Compute bounds for domain with halo
     box_t dbox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
-      if (colbox.partition.onbnd[2 * i])
+      if (colbox.partition[0].onbnd[2 * i])
         dbox.lowerbnd[i] -= hl;
-      if (colbox.partition.onbnd[2 * i + 1])
+      if (colbox.partition[0].onbnd[2 * i + 1])
         dbox.upperbnd[i] += hl;
     }
 
@@ -852,7 +854,7 @@ private:
             dhbox.upperbnd[0] = IM[0][i + 1] - iu[i];
             dhbox.lowerbnd[1] = IM[1][j] + il[j];
             dhbox.upperbnd[1] = IM[1][j + 1] - iu[j];
-            colbox.domain_halo.emplace_back(dhbox);
+            colbox.domain_halo[0].emplace_back(dhbox);
           }
         }
     } else if (D == 3) {
@@ -870,7 +872,7 @@ private:
               dhbox.upperbnd[1] = IM[1][j + 1] - iu[j];
               dhbox.lowerbnd[2] = IM[2][k] + il[k];
               dhbox.upperbnd[2] = IM[2][k + 1] - iu[k];
-              colbox.domain_halo.emplace_back(dhbox);
+              colbox.domain_halo[0].emplace_back(dhbox);
             }
           }
     }
@@ -878,37 +880,40 @@ private:
 
   void compute_overlaying_bounding_box(box_coloring_t& colbox)
   {
-    box_t obb(D); 
+    for (size_t n = 0; n < colbox.num_boxes; n++){
+   
+      box_t obb(D); 
+      std::vector<size_t> lbnds[D]; 
+      std::vector<size_t> ubnds[D]; 
 
-    std::vector<size_t> lbnds[D]; 
-    std::vector<size_t> ubnds[D]; 
+      for (size_t d = 0; d < D; d++){
+       for (size_t i = 0; i < colbox.ghost[n].size(); i++)
+       {
+         lbnds[d].push_back(colbox.ghost[n][i].box.lowerbnd[d]);
+         ubnds[d].push_back(colbox.ghost[n][i].box.upperbnd[d]);
+       }
+      }
 
-    for (size_t d = 0; d < D; d++){
-     for (size_t i = 0; i < colbox.ghost.size(); i++)
-     {
-       lbnds[d].push_back(colbox.ghost[i].box.lowerbnd[d]);
-       ubnds[d].push_back(colbox.ghost[i].box.upperbnd[d]);
-     }
-    }
+      for (size_t d = 0; d < D; d++){
+       for (size_t i = 0; i < colbox.domain_halo[n].size(); i++)
+       {
+         lbnds[d].push_back(colbox.domain_halo[n][i].lowerbnd[d]);
+         ubnds[d].push_back(colbox.domain_halo[n][i].upperbnd[d]);
+       }
+      }
+      
+      for (size_t d = 0; d < D; d++){
+       std::sort(lbnds[d].begin(), lbnds[d].end());
+       std::sort(ubnds[d].begin(), ubnds[d].end()); 
+      }
 
-    for (size_t d = 0; d < D; d++){
-     for (size_t i = 0; i < colbox.domain_halo.size(); i++)
-     {
-       lbnds[d].push_back(colbox.domain_halo[i].lowerbnd[d]);
-       ubnds[d].push_back(colbox.domain_halo[i].upperbnd[d]);
-     }
-    }
-    
-    for (size_t d = 0; d < D; d++){
-     std::sort(lbnds[d].begin(), lbnds[d].end());
-     std::sort(ubnds[d].begin(), ubnds[d].end()) 
-    }
+       for (size_t d = 0; d < D; d++){
+        obb.lowerbnd[d] = *lbnds[d].begin();
+        obb.upperbnd[d] = *(ubnds[d].end()-1);
+       }
 
-     for (size_t d = 0; d < D; d++){
-      obb.lowerbnd[d] = *lbnds[d].begin();
-      obb.upperbnd[d] = *(ubnds[d].end()-1);
-     }
-
+      colbox.overlay[n] = obb; 
+   }
 
   } // compute_overlaying_bounding_box
 

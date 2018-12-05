@@ -1,12 +1,18 @@
+
 #include <iostream>
 #include <cinchtest.h>
-#include "flecsi/topology/structured_mesh_topology.h"
-#include "flecsi/topology/mesh_storage.h"
+#include <flecsi/coloring/box_types.h>
+#include <flecsi/coloring/simple_box_colorer.h>
+#include <flecsi/coloring/mpi_communicator.h>
+#include <flecsi/execution/execution.h>
+#include <flecsi/topology/structured_mesh_topology.h>
+#include <flecsi/topology/mesh_storage.h>
 
 using namespace std;
-using namespace flecsi;
-using namespace topology;
 
+namespace flecsi {
+namespace topology {
+namespace test { 
 
 class Vertex : public structured_mesh_entity__<0, 1>{
 public:
@@ -33,8 +39,111 @@ public:
   std::tuple<index_space_<2>, domain_<0>, Face>>;
 };
 
-using TestMesh = structured_mesh_topology__<TestMesh2dType>;
+struct TestMesh : public structured_mesh_topology__<TestMesh2dType> {};
 
+flecsi_register_data_client(TestMesh, meshes, mesh0);
+
+void task_tlt_init() {
+
+  // Get the context instance.
+  auto & context_ = execution::context_t::instance();
+
+  int rank, size;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  {
+    clog_tag_guard(coloring);
+    clog(info) << "add_colorings, rank: " << rank << std::endl;
+  }
+
+  // Define bounds for the box corresponding to cells
+  size_t grid_size[2] = {4,4};
+  size_t ncolors[2]={2,1};
+  size_t nhalo = 1;
+  size_t nhalo_domain = 1;
+  size_t thru_dim = 0;
+
+  coloring::box_coloring_t colored_cells;
+  flecsi::coloring::coloring_info_t colored_cells_aggregate;
+
+  // Create a colorer instance to generate the coloring.
+  auto colorer = std::make_shared<flecsi::coloring::simple_box_colorer_t<2>>();
+
+  //Create the coloring info for cells
+  colored_cells = colorer->color(grid_size, nhalo, nhalo_domain, thru_dim, ncolors);
+
+  //Create the aggregate type for cells
+  colored_cells_aggregate = colorer->create_aggregate_color_info(colored_cells);
+
+ // Create a communicator instance to get coloring_info_t from other ranks
+  auto communicator = std::make_shared<flecsi::coloring::mpi_communicator_t>();
+
+  // Gather the coloring info from all colors
+  auto cell_coloring_info = communicator->gather_coloring_info(colored_cells_aggregate);
+
+  //Add box coloring to context
+  context_.add_box_coloring(2, colored_cells, cell_coloring_info);
+
+}
+
+flecsi_register_mpi_task(task_tlt_init, flecsi::topology::test);
+
+void task_spmd_init(flecsi::data_client_handle__<TestMesh, flecsi::wo> mesh)
+{
+  for (auto c: mesh.entities<2>())
+   cout << "---- face id: " << c.id(0) << endl; 
+
+  //CINCH_CAPTURE() << "---- face id: " << c.id(0) << endl; 
+  
+  //CINCH_WRITE("structured_2d_new.blessed");
+}
+
+flecsi_register_task(task_spmd_init, flecsi::topology::test, loc,
+    single|flecsi::leaf);
+
+} //namespace test
+} //namespace topology
+
+namespace execution {
+
+//----------------------------------------------------------------------------//
+//// User driver.
+////----------------------------------------------------------------------------//
+void driver(int argc, char ** argv)
+{
+  //CINCH_WRITE("structured_2d_new.blessed");
+};
+
+//----------------------------------------------------------------------------//
+//// User init.
+////----------------------------------------------------------------------------//
+void specialization_tlt_init(int argc, char ** argv) {
+  std::cout << "TLT INIT" << std::endl;
+
+  flecsi_execute_mpi_task(task_tlt_init, flecsi::topology::test);
+
+} // specialization_tlt_init
+
+void specialization_spmd_init(int argc, char ** argv) {
+  auto & context = flecsi::execution::context_t::instance();
+  std::cout << "SPMD INIT" << std::endl;
+  using TestMesh = flecsi::topology::test::TestMesh;
+  auto mesh_handle = flecsi_get_client_handle(
+      TestMesh, meshes, mesh0);
+  flecsi_execute_task(task_spmd_init, flecsi::topology::test, single,
+      mesh_handle);
+}
+
+} //execution
+
+
+} //flecsi
+
+TEST(structured, 2Dsimple){
+} // TEST
+
+#if 0
 namespace flecsi {
 namespace execution {
 //----------------------------------------------------------------------------//
@@ -206,3 +315,4 @@ TEST(structured, simple){
   delete ms;
   delete mesh;
 } // TEST
+#endif 

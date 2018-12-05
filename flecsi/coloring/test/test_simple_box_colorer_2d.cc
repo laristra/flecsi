@@ -24,34 +24,34 @@ TEST(simple_colorer, simpletest2d)
   flecsi::coloring::simple_box_colorer_t<2> sbc;
   auto col = sbc.color(grid_size, nhalo, nhalo_domain, thru_dim, ncolors);
 
-  cout<<"Rank-"<<rank<<"::Partition Box:LBND  = { "<<col.partition.box.lowerbnd[0]<<", "
-                                                 <<col.partition.box.lowerbnd[1]<<" } "<<endl;
+  cout<<"Rank-"<<rank<<"::Partition Box:LBND  = { "<<col.partition[0].box.lowerbnd[0]<<", "
+                                                 <<col.partition[0].box.lowerbnd[1]<<" } "<<endl;
 
-  cout<<"Rank-"<<rank<<"::Partition Box:UBND  = { "<<col.partition.box.upperbnd[0]<<", "
-                                                 <<col.partition.box.upperbnd[1]<<" } "<<endl;
+  cout<<"Rank-"<<rank<<"::Partition Box:UBND  = { "<<col.partition[0].box.upperbnd[0]<<", "
+                                                 <<col.partition[0].box.upperbnd[1]<<" } "<<endl;
 
-  cout<<"Rank-"<<rank<<"::Partition Box:Strides  = { "<<col.partition.strides[0]<<", "
-                                                 <<col.partition.strides[1]<<" } "<<endl;
-  cout<<"Rank-"<<rank<<"::Partition-Box:#Halo = " <<col.partition.nhalo<<endl;
-  cout<<"Rank-"<<rank<<"::Partition-Box:#DomainHalo = " <<col.partition.nhalo_domain<<endl;
-  cout<<"Rank-"<<rank<<"::Partition-Box:Through dim = " <<col.partition.thru_dim<<endl;
+  cout<<"Rank-"<<rank<<"::Partition Box:Strides  = { "<<col.partition[0].strides[0]<<", "
+                                                 <<col.partition[0].strides[1]<<" } "<<endl;
+  cout<<"Rank-"<<rank<<"::Partition-Box:#Halo = " <<col.partition[0].nhalo<<endl;
+  cout<<"Rank-"<<rank<<"::Partition-Box:#DomainHalo = " <<col.partition[0].nhalo_domain<<endl;
+  cout<<"Rank-"<<rank<<"::Partition-Box:Through dim = " <<col.partition[0].thru_dim<<endl;
   
   cout<<"Rank-"<<rank<<"::Partition-Box:On domain boundary = [ ";
   for (size_t i = 0 ; i < 4; i++)
-     cout<<col.partition.onbnd[i]<<" ";
+     cout<<col.partition[0].onbnd[i]<<" ";
   cout<<"]"<<std::endl;
 
   //cout<<"Rank-"<<rank<<"::Partition-Box:On domain boundary = [ "<<col.partition.onbnd<<" ]"<<endl;
 
-  cout<<"Rank-"<<rank<<"::Exclusive-Box:LBND  = { "<<col.exclusive.box.lowerbnd[0]<<", "
-                                                   <<col.exclusive.box.lowerbnd[1]<<" } "<<endl;
+  cout<<"Rank-"<<rank<<"::Exclusive-Box:LBND  = { "<<col.exclusive[0].box.lowerbnd[0]<<", "
+                                                   <<col.exclusive[0].box.lowerbnd[1]<<" } "<<endl;
 
-  cout<<"Rank-"<<rank<<"::Exclusive-Box:UBND  = { "<<col.exclusive.box.upperbnd[0]<<", "
-                                                   <<col.exclusive.box.upperbnd[1]<<" } "<<endl;
+  cout<<"Rank-"<<rank<<"::Exclusive-Box:UBND  = { "<<col.exclusive[0].box.upperbnd[0]<<", "
+                                                   <<col.exclusive[0].box.upperbnd[1]<<" } "<<endl;
 
-  cout<<"Rank-"<<rank<<"::Exclusive-Box:colors = "<<col.exclusive.colors[0]<<endl;
+  cout<<"Rank-"<<rank<<"::Exclusive-Box:colors = "<<col.exclusive[0].colors[0]<<endl;
 
-  for (auto s: col.shared)
+  for (auto s: col.shared[0])
   {
     cout<<"Rank-"<<rank<<"::Shared-Boxes:LBND  = { "<<s.box.lowerbnd[0]<<", "
                                                     <<s.box.lowerbnd[1]<<" } "<<endl;
@@ -65,7 +65,7 @@ TEST(simple_colorer, simpletest2d)
     cout<<endl;
   }
 
-  for (auto g: col.ghost)
+  for (auto g: col.ghost[0])
   {
     cout<<"Rank-"<<rank<<"::Ghost-Boxes:LBND  = { "<<g.box.lowerbnd[0]<<", "
                                                    <<g.box.lowerbnd[1]<<" } "<<endl;
@@ -79,12 +79,21 @@ TEST(simple_colorer, simpletest2d)
     cout<<endl;
   }
 
-  for (auto d: col.domain_halo)
+  for (auto d: col.domain_halo[0])
   {
     cout<<"Rank-"<<rank<<"::DomainHalo-Boxes:LBND  = { "<<d.lowerbnd[0]<<", "
                                                         <<d.lowerbnd[1]<<" } "<<endl;
 
     cout<<"Rank-"<<rank<<"::DomainHalo-Boxes:UBND  = { "<<d.upperbnd[0]<<", "
+                                                        <<d.upperbnd[1]<<" } "<<endl;
+  }
+
+  for (auto d: col.overlay)
+  {
+    cout<<"Rank-"<<rank<<"::Overlay-Boxes:LBND  = { "<<d.lowerbnd[0]<<", "
+                                                        <<d.lowerbnd[1]<<" } "<<endl;
+
+    cout<<"Rank-"<<rank<<"::Overlay-Boxes:UBND  = { "<<d.upperbnd[0]<<", "
                                                         <<d.upperbnd[1]<<" } "<<endl;
   }
 }

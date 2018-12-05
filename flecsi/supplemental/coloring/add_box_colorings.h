@@ -16,7 +16,7 @@
 /*! @file */
 
 namespace flecsi {
-namespace execution {
+namespace supplemental {
 
 struct coloring_map_t
 {

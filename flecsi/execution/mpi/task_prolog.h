@@ -411,9 +411,19 @@ namespace execution {
 
         const size_t index_space = ent.index_space;
         const size_t dim = ent.dim;
-
+        const size_t domain = ent.domain;
+        if (dim == 2){
         // get color_info for this field.
-        auto& box_info = (context_.box_coloring(index_space)).at(color);
+        //auto& box_info = (context_.box_coloring(index_space)).at(color);
+        
+        auto& box_info = context_.box_coloring(index_space);
+        std::vector<std::vector<size_t>> strides(box_info.num_boxes);
+        for (size_t n = 0; n < box_info.num_boxes; n++)
+            strides[n] = box_info.partition[n].strides;
+
+        storage->init(domain, dim, box_info.primary, box_info.primary_dim, box_info.num_boxes,
+                     box_info.overlay, strides);   
+       }
       }
       // h.initialize_storage();
     } // handle for structured_mesh_topology

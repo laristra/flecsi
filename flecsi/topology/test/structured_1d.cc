@@ -2,6 +2,7 @@
 #include <cinchtest.h>
 #include <flecsi/coloring/box_types.h>
 #include <flecsi/coloring/simple_box_colorer.h>
+#include <flecsi/coloring/mpi_communicator.h>
 #include <flecsi/execution/execution.h>
 #include <flecsi/topology/structured_mesh_topology.h>
 #include <flecsi/topology/mesh_storage.h>

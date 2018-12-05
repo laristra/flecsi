@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <flecsi/coloring/box_types.h>
 #include <flecsi/data/data_client.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/topology/mesh_storage.h>
@@ -39,6 +40,8 @@ namespace topology {
 template<size_t NUM_DIMS, size_t NUM_DOMS>
 struct mpi_structured_topology_storage_policy__ {
   static constexpr size_t num_partitions = 5;
+  
+  using box_t = flecsi::coloring::box_t; 
 
   using index_spaces_t = std::array<
           structured_index_space__<
@@ -63,6 +66,23 @@ struct mpi_structured_topology_storage_policy__ {
     auto & context_ = flecsi::execution::context_t::instance();
     color = context_.color();
   }
+
+
+  void init(
+  size_t domain,
+  size_t dim, 
+  bool primary,
+  size_t primary_dim,
+  size_t num_boxes,
+  std::vector<box_t> &global_boxes,
+  std::vector<std::vector<size_t>> &global_strides  
+  )
+  {
+    auto& is = index_spaces[domain][dim];
+    is.init(primary, primary_dim, num_boxes, global_boxes, global_strides); 
+
+  } //init
+
 /*
   void init(
       size_t domain,
