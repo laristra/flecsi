@@ -20,7 +20,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace control {
+namespace runtime {
 
 enum exit_mode_t : size_t {
   success,
@@ -128,7 +128,7 @@ private:
 }; // runtime_t
 
 } // namespace flecsi
-} // namespace control
+} // namespace runtime
 
 /*!
   @def flecsi_register_runtime_driver(driver)
@@ -143,7 +143,7 @@ private:
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   inline bool flecsi_registered_driver_##driver =                              \
-    flecsi::control::runtime_t::instance().register_driver(driver)
+    flecsi::runtime::runtime_t::instance().register_driver(driver)
 
 /*!
   @def flecsi_register_runtime_handler(handler)
@@ -161,4 +161,4 @@ private:
   /* MACRO DEFINITION */                                                       \
                                                                                \
   inline bool flecsi_append_runtime_handler_##handler =                        \
-    flecsi::control::runtime_t::instance().append_runtime_handler(handler)
+    flecsi::runtime::runtime_t::instance().append_runtime_handler(handler)

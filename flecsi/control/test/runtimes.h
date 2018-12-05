@@ -17,7 +17,7 @@
 
 #include <iostream>
 
-using namespace flecsi::control;
+using namespace flecsi::runtime;
 
 inline int initialize(int argc, char ** argv) {
   std::cout << "Executing initialize" << std::endl;

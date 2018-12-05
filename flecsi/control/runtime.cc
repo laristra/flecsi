@@ -27,7 +27,7 @@
   using namespace boost::program_options;
 #endif
 
-using namespace flecsi::control;
+using namespace flecsi::runtime;
 
 /*!
   The main function makes use of Boost program options (optionally). These
