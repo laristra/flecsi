@@ -39,7 +39,28 @@ struct context_u : public CONTEXT_POLICY {
     return context;
   } // instance
 
+  /*!
+    Get the color of this process by reference. This method can be used
+    to set the color.
+    In the current implementation, this is the MPI rank.
+   */
+
+  size_t & color() {
+    return color_;
+  } // color
+
+  /*!
+    Get the color of this process.
+    In the current implementation, this is the MPI rank.
+   */
+
+  size_t color() const {
+    return color_;
+  } // color
+
 private:
+
+  size_t color_ = 0;
 
   context_u() : CONTEXT_POLICY() {}
 

@@ -17,6 +17,7 @@
 
 #include <flecsi-config.h>
 #include <flecsi/control/runtime.h>
+#include <flecsi/execution/context.h>
 
 #if !defined(FLECSI_ENABLE_MPI)
   #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
@@ -66,6 +67,7 @@ inline int initialize(int argc, char ** argv) {
   // get the rank
   int rank{0};
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  flecsi::execution::context_t::instance().color() = rank;
 
 #endif // FLECSI_ENABLE_MPI
 
@@ -92,7 +94,7 @@ inline int finalize(int argc, char ** argv, flecsi::runtime::exit_mode_t mode) {
 } // initialize
 
 inline bool output(int argc, char ** argv) {
-  return false;
+  return flecsi::execution::context_t::instance().color() == 0;
 } // output
 
 inline flecsi::runtime::runtime_handler_t handler{
