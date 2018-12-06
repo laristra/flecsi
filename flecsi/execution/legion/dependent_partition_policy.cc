@@ -85,7 +85,7 @@ legion_entity legion_dependent_partition_policy_t::load_cell(int cells_size, int
   printf("[Load cells] num_cells_per_rank: ");
 	for (j = 0; j < num_color; j++) {
 		cell_count_per_color = quot + ((j >= (num_color - rem)) ? 1 : 0);
-		printf("%d, ", j, cell_count_per_color);
+		printf("%d, ", cell_count_per_color);
 		total_cell_count += cell_count_per_color;
 		cell_count_per_subspace_scan[j+1] = total_cell_count;
 	}
