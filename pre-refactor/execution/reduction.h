@@ -56,10 +56,6 @@ struct min {
 
   } // fold
 
-  static T initial() {
-    return T{std::numeric_limits<T>::max()};
-  } // initial
-
 }; // struct min
 
 flecsi_register_operation_types(min);
@@ -100,10 +96,6 @@ struct max {
     } // if constexpr
 
   } // fold
-
-  static T initial() {
-    return T{std::numeric_limits<T>::min()};
-  } // initial
 
 }; // struct max
 
@@ -146,10 +138,6 @@ struct sum {
 
   } // fold
 
-  static T initial() {
-    return T{0};
-  } // initial
-
 }; // struct sum
 
 flecsi_register_operation_types(sum);
@@ -190,10 +178,6 @@ struct product {
     } // if constexpr
 
   } // fold
-
-  static T initial() {
-    return T{1};
-  } // initial
 
 }; // struct product
 
