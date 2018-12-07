@@ -38,7 +38,7 @@ task1(client_handle_t<test_mesh_t, ro> mesh) {
 
 void
 fill_task(
-    client_handle_t<test_mesh_t, wo> mesh,
+    client_handle_t<test_mesh_t, ro> mesh,
     dense_accessor<double, rw, rw, na> pressure) {
   size_t count = 0;
   for (auto c : mesh.cells()) {
