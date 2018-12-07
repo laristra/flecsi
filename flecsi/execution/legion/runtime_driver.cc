@@ -103,18 +103,6 @@ runtime_driver(
     } // for
   } // for
 
-  //--------------------------------------------------------------------------//
-  // Invoke callbacks for reduction operations
-  //--------------------------------------------------------------------------//
-
-  auto & reduction_ops = context_.reduction_operations();
-  for(auto & ro: reduction_ops) {
-    ro.second.collective = runtime->create_dynamic_collective(ctx, num_colors,
-      ro.second.id, ro.second.initial.data(), ro.second.initial.size());
-  } // for
-
-  //--------------------------------------------------------------------------//
-
   data::legion_data_t data(ctx, runtime, num_colors);
   
   data.init_global_handles();
