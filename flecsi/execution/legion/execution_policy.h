@@ -339,8 +339,9 @@ struct legion_execution_policy_t {
 
             Legion::Future future;
 
+            size_t reduction_id = context_.reduction_operations()[REDUCTION];
             future = legion_runtime->execute_index_space(legion_context,
-              launcher, reduction_op);
+              launcher, reduction_id);
 
             // Enqueue the epilog.
             task_epilog_t task_epilog(legion_runtime, legion_context);
