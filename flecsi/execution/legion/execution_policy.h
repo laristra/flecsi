@@ -438,8 +438,8 @@ struct legion_execution_policy_t {
             task_epilog.walk(task_args);
 
             if constexpr(REDUCTION != ZERO) {
-              clog(fatal) << "there is no implementation for the mpi \
-							 reduction task " <<std::endl;
+              clog_fatal("there is no implementation for the mpi"
+							 " reduction task");
             } else {
               return legion_future_u<RETURN, launch_type_t::index>(future);
             }
