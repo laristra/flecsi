@@ -57,7 +57,7 @@ template<typename T, size_t D>
 space_vector<T, D>
 point_to_vector(const point_u<T, D> & p) {
   space_vector<T, D> sv;
-  for (size_t d(0); d < D; ++d)
+  for(size_t d(0); d < D; ++d)
     sv[d] = p[d];
   return sv;
 }
@@ -68,7 +68,7 @@ point_to_vector(const point_u<T, D> & p) {
 template<typename T, size_t D>
 space_vector<T, D> operator*(const space_vector<T, D> & v, const T s) {
   space_vector<T, D> tmp(v);
-  for (size_t d(0); d < D; ++d)
+  for(size_t d(0); d < D; ++d)
     tmp[d] = s * v[d];
   return tmp;
 }
@@ -81,7 +81,7 @@ T
 dot(const space_vector<T, D> & a, const space_vector<T, D> & b) {
   T sum(0);
 
-  for (size_t d(0); d < D; ++d) {
+  for(size_t d(0); d < D; ++d) {
     sum += a[d] * b[d];
   } // for
 
@@ -95,7 +95,7 @@ template<typename T, size_t D>
 T
 magnitude(const space_vector<T, D> & a) {
   T sum(0);
-  for (size_t d(0); d < D; ++d) {
+  for(size_t d(0); d < D; ++d) {
     sum += utils::square(a[d]);
   } // for
 
@@ -151,9 +151,8 @@ normal(const point_u<T, 2> & a, const point_u<T, 2> & b) {
 template<typename T>
 space_vector<T, 3>
 normal(const space_vector<T, 3> & a, const space_vector<T, 3> & b) {
-  space_vector<T, 3> tmp(
-      a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2],
-      a[0] * b[1] - a[1] * b[0]);
+  space_vector<T, 3> tmp(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2],
+    a[0] * b[1] - a[1] * b[0]);
   return tmp;
 } // normal
 

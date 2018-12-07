@@ -27,7 +27,7 @@ using namespace supplemental;
 clog_register_tag(coloring);
 
 void
-writer(dense_accessor<double, wo, ro, ro> x) {
+writer(dense_accessor<double, wo, na, na> x) {
   std::cout << "exclusive writer write" << std::endl;
   for (int i = 0; i < x.exclusive_size(); i++) {
     x.exclusive(i) = static_cast<double>(i);
@@ -44,8 +44,8 @@ reader(dense_accessor<double, ro, ro, ro> x) {
 
 flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
 
-flecsi_register_task_simple(writer, loc, single);
-flecsi_register_task_simple(reader, loc, single);
+flecsi_register_task_simple(writer, loc, index);
+flecsi_register_task_simple(reader, loc, index);
 
 flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
@@ -81,7 +81,9 @@ driver(int argc, char ** argv) {
   clog(info) << "In driver" << std::endl;
 
   auto & context = execution::context_t::instance();
-  ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
+  // There no longer is a separate state for driver and specialization_tlt_init
+  // under control replication.
+  //ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
 
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -91,8 +93,8 @@ driver(int argc, char ** argv) {
 
   auto h = flecsi_get_handle(ch, ns, pressure, double, dense, 0);
 
-  flecsi_execute_task_simple(writer, single, h);
-  flecsi_execute_task_simple(reader, single, h);
+  flecsi_execute_task_simple(writer, index, h);
+  flecsi_execute_task_simple(reader, index, h);
 } // driver
 
 //----------------------------------------------------------------------------//

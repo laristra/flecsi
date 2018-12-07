@@ -17,7 +17,7 @@
 #include <tuple>
 
 #include <flecsi/control/control.h>
-#include <flecsi/utils/common.h>
+#include <flecsi/utils/typeify.h>
 #include <flecsi-tutorial/specialization/control/node_type.h>
 
 namespace flecsi {

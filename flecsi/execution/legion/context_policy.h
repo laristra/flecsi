@@ -44,8 +44,6 @@
 #include <flecsi/execution/legion/runtime_state.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
-#include <flecsi/utils/const_string.h>
-#include <flecsi/utils/tuple_wrapper.h>
 
 namespace flecsi {
 namespace execution {
@@ -60,13 +58,19 @@ namespace execution {
 // FIXME : should we generate theese IDs somewhere?
 enum {
   // Use the first 8 bits for storing the rhsf index
-  MAPPER_FORCE_RANK_MATCH  = 0x00001000,
+  MAPPER_FORCE_RANK_MATCH = 0x00001000,
   MAPPER_COMPACTED_STORAGE = 0x00002000,
-  MAPPER_SUBRANK_LAUNCH    = 0x00003000,
-  EXCLUSIVE_LR             = 0x00004000,
-  SPARSE_RR                = 0x11000001,
-  RR                       = 0x00005002, 
+  MAPPER_SUBRANK_LAUNCH = 0x00003000,
+  EXCLUSIVE_LR = 0x00004000,
+  SPARSE_RR = 0x11000001,
+  RR = 0x00005002,
 };
+
+struct reduction_data_t {
+  size_t id;
+  std::vector<std::byte> initial;
+  Legion::DynamicCollective collective;
+}; // struct reduction_data_t
 
 /*!
   The legion_context_policy_t is the backend runtime context policy for
@@ -84,7 +88,7 @@ struct legion_context_policy_t {
    */
 
   using registration_function_t =
-      std::function<void(task_id_t, processor_type_t, launch_t, std::string &)>;
+    std::function<void(task_id_t, processor_type_t, launch_t, std::string &)>;
 
   /*!
    The unique_tid_t type create a unique id generator for registering
@@ -98,33 +102,26 @@ struct legion_context_policy_t {
     registration map below.
    */
 
-  using task_info_t = std::tuple<
-      task_id_t,
-      processor_type_t,
-      launch_t,
-      std::string,
-      registration_function_t>;
+  using task_info_t = std::tuple<task_id_t,
+    processor_type_t,
+    launch_t,
+    std::string,
+    registration_function_t>;
 
-  struct sparse_field_data_t
-  {
-    sparse_field_data_t(){}
+  struct sparse_field_data_t {
+    sparse_field_data_t() {}
 
-    sparse_field_data_t(
-      size_t type_size,
+    sparse_field_data_t(size_t type_size,
       size_t num_exclusive,
       size_t num_shared,
       size_t num_ghost,
       size_t max_entries_per_index,
-      size_t exclusive_reserve
-    )
-    : type_size(type_size),
-    num_exclusive(num_exclusive),
-    num_shared(num_shared),
-    num_ghost(num_ghost),
-    num_total(num_exclusive + num_shared + num_ghost),
-    max_entries_per_index(max_entries_per_index),
-    reserve(exclusive_reserve),
-    num_exclusive_filled(0){}
+      size_t exclusive_reserve)
+      : type_size(type_size), num_exclusive(num_exclusive),
+        num_shared(num_shared), num_ghost(num_ghost),
+        num_total(num_exclusive + num_shared + num_ghost),
+        max_entries_per_index(max_entries_per_index),
+        reserve(exclusive_reserve), num_exclusive_filled(0) {}
 
     size_t type_size;
 
@@ -160,10 +157,18 @@ struct legion_context_policy_t {
   /*!
     Return the color for which the context was initialized.
    */
+  // FIXME: As long as MAPPER_FORCE_RANK_MATCH is really only doing RDMA and
+  // not forcing the rank match, this will never do what it is supposed to
+  // without a setter.
 
   size_t color() const {
-    return color_;
+    auto runtime = Legion::Runtime::get_runtime();
+    return runtime->find_local_MPI_rank();
   } // color
+
+  void set_color(size_t color) {
+    color_ = color;
+  }
 
   /*!
     Return the number of colors.
@@ -310,6 +315,8 @@ struct legion_context_policy_t {
   void unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
   Legion::FutureMap unset_call_mpi_single();
+  Legion::FutureMap unset_call_mpi_index(Legion::Context & ctx,
+    Legion::Runtime * runtime);
 
   /*!
     Switch execution to the MPI runtime.
@@ -333,8 +340,8 @@ struct legion_context_policy_t {
     @return A future map with the result of the task execution.
    */
 
-  Legion::FutureMap
-  wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
+  Legion::FutureMap wait_on_mpi(Legion::Context & ctx,
+    Legion::Runtime * runtime);
 
   void wait_on_mpi_single() {
     handshake_.legion_wait_on_mpi();
@@ -361,21 +368,19 @@ struct legion_context_policy_t {
     @param callback The registration call back function.
    */
 
-  bool register_task(
-      size_t key,
-      processor_type_t processor,
-      launch_t launch,
-      std::string & name,
-      const registration_function_t & callback) {
+  bool register_task(size_t key,
+    processor_type_t processor,
+    launch_t launch,
+    std::string & name,
+    const registration_function_t & callback) {
     clog(info) << "Registering task callback " << name << " with key " << key
                << std::endl;
 
-    clog_assert(
-        task_registry_.find(key) == task_registry_.end(),
-        "task key already exists");
+    clog_assert(task_registry_.find(key) == task_registry_.end(),
+      "task key already exists");
 
     task_registry_[key] = std::make_tuple(
-        unique_tid_t::instance().next(), processor, launch, name, callback);
+      unique_tid_t::instance().next(), processor, launch, name, callback);
 
     return true;
   } // register_task
@@ -390,9 +395,8 @@ struct legion_context_policy_t {
   task_info_t & task_info() {
     auto task_entry = task_registry_.find(KEY);
 
-    clog_assert(
-        task_entry != task_registry_.end(),
-        "task key " << KEY << " does not exist");
+    clog_assert(task_entry != task_registry_.end(),
+      "task key " << KEY << " does not exist");
 
     return task_entry->second;
   } // task_info
@@ -406,18 +410,17 @@ struct legion_context_policy_t {
   task_info_t & task_info(size_t key) {
     auto task_entry = task_registry_.find(key);
 
-    clog_assert(
-        task_entry != task_registry_.end(),
-        "task key " << key << " does not exist");
+    clog_assert(task_entry != task_registry_.end(),
+      "task key " << key << " does not exist");
 
     return task_entry->second;
   } // task_info
 
-    /*!
-      FIXME
+  /*!
+    FIXME
 
-      @param key The task hash key.
-     */
+    @param key The task hash key.
+   */
 
 #define task_info_template_method(name, return_type, index)                    \
   template<size_t KEY>                                                         \
@@ -429,11 +432,11 @@ struct legion_context_policy_t {
     return std::get<index>(task_info<KEY>());                                  \
   }
 
-    /*!
-      FIXME
+  /*!
+    FIXME
 
-      @param key The task hash key.
-     */
+    @param key The task hash key.
+   */
 
 #define task_info_method(name, return_type, index)                             \
   return_type name(size_t key) {                                               \
@@ -466,34 +469,34 @@ struct legion_context_policy_t {
   struct index_space_data_t {
     std::map<field_id_t, bool> ghost_is_readable;
     std::map<field_id_t, bool> write_phase_started;
-    std::map<field_id_t, Legion::PhaseBarrier> pbarriers_as_owner;
-    std::map<field_id_t, std::vector<Legion::PhaseBarrier>>
-        ghost_owners_pbarriers;
-    std::vector<Legion::LogicalRegion> ghost_owners_lregions;
-    std::vector<Legion::LogicalRegion> ghost_owners_subregions;
+    Legion::IndexPartition ghost_owners_ip;  // prevent Destructor call
+    Legion::LogicalPartition ghost_owners_lp;
+    Legion::LogicalRegion entire_region;
+    Legion::LogicalPartition color_partition;
+    Legion::LogicalPartition primary_lp;
+    Legion::LogicalPartition exclusive_lp;
+    Legion::LogicalPartition shared_lp;
+    Legion::LogicalPartition ghost_lp;
     Legion::STL::
         map<LegionRuntime::Arrays::coord_t, LegionRuntime::Arrays::coord_t>
             global_to_local_color_map;
-    Legion::LogicalRegion color_region;
-    Legion::LogicalRegion primary_lr;
-    Legion::LogicalRegion exclusive_lr;
-    Legion::LogicalRegion shared_lr;
-    Legion::LogicalRegion ghost_lr;
   };
 
   struct index_subspace_data_t {
-    Legion::LogicalRegion region;
+    Legion::LogicalRegion logical_region;
+    Legion::LogicalPartition logical_partition;
   };
 
   struct sparse_metadata_t{
-    Legion::LogicalRegion color_region;
+    Legion::LogicalPartition color_partition;
+    Legion::LogicalRegion entire_region;
   };
 
-  void set_sparse_metadata(const sparse_metadata_t& sparse_metadata){
+  void set_sparse_metadata(const sparse_metadata_t & sparse_metadata) {
     sparse_metadata_ = sparse_metadata;
   }
 
-  const sparse_metadata_t& sparse_metadata(){
+  sparse_metadata_t& sparse_metadata(){
     return sparse_metadata_;    
   }
 
@@ -513,64 +516,17 @@ struct legion_context_policy_t {
     return index_subspace_data_map_;
   }
 
-  /*!
-    Set DynamicCollective for <double> max reduction
 
-    @param max_reduction Legion DynamicCollective for <double> max reduction
-   */
-
-  void set_max_reduction(Legion::DynamicCollective & max_reduction) {
-    max_reduction_ = max_reduction;
-  }
-
-  /*!
-    Get DynamicCollective for <double> max reduction
-   */
-
-  auto & max_reduction() {
-    return max_reduction_;
-  }
-
-  /*!
-    Perform reduction of the maximum value
+    /*! Perform reduction of the maximum value
     @param task future
    */
 
   template<typename T, launch_type_t launch>
-  auto reduce_max(legion_future_u<T, launch> & local_future) {
-    Legion::DynamicCollective & max_reduction = max_reduction_;
+  auto reduce_max(legion_future_u<T, launch> & global_future) {
 
-    auto legion_runtime = Legion::Runtime::get_runtime();
-    auto legion_context = Legion::Runtime::get_context();
+    auto global_max_ = global_future.get();
 
-    local_future.defer_dynamic_collective_arrival(
-        legion_runtime, legion_context, max_reduction);
-
-    max_reduction = legion_runtime->advance_dynamic_collective(
-        legion_context, max_reduction);
-
-    auto global_future = legion_runtime->get_dynamic_collective_result(
-        legion_context, max_reduction);
-
-    return legion_future_u<T, launch_type_t::single>(global_future);
-  }
-
-  /*!
-    Set DynamicCollective for <double> in reduction
-
-    @param min_reduction Legion DynamicCollective for <double> max reduction
-   */
-
-  void set_min_reduction(Legion::DynamicCollective & min_reduction) {
-    min_reduction_ = min_reduction;
-  }
-
-  /*!
-    Get DynamicCollective for <double> max reduction
-   */
-
-  auto & min_reduction() {
-    return min_reduction_;
+    return global_future;
   }
 
   /*!
@@ -578,24 +534,20 @@ struct legion_context_policy_t {
     @param task future
    */
 
-  template<typename T, launch_type_t launch>
-  auto reduce_min(legion_future_u<T, launch> & local_future) {
-    Legion::DynamicCollective & min_reduction = min_reduction_;
+  template<typename T,  launch_type_t launch>
+  auto reduce_min(legion_future_u<T, launch> & global_future) {
 
-    auto legion_runtime = Legion::Runtime::get_runtime();
-    auto legion_context = Legion::Runtime::get_context();
+    auto global_min_ = global_future.get();
 
-    local_future.defer_dynamic_collective_arrival(
-        legion_runtime, legion_context, min_reduction);
-
-    min_reduction = legion_runtime->advance_dynamic_collective(
-        legion_context, min_reduction);
-
-    auto global_future = legion_runtime->get_dynamic_collective_result(
-        legion_context, min_reduction);
-
-    return legion_future_u<T, launch_type_t::single>(global_future);
+    return global_future;
   }
+  /*!
+    Return the map of registered reduction operations.
+   */
+
+  auto & reduction_operations() {
+    return reduction_ops_;
+  } // reduction_operations
 
   /*!
     Compute internal field id for from/to index space pair for connectivity.
@@ -613,6 +565,7 @@ struct legion_context_policy_t {
   }
 
 private:
+
   size_t color_ = 0;
   size_t colors_ = 0;
 
@@ -628,6 +581,12 @@ private:
   //--------------------------------------------------------------------------//
 
   std::unordered_map<size_t, void *> function_registry_;
+
+  //--------------------------------------------------------------------------//
+  // Reduction operations.
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, reduction_data_t> reduction_ops_;
 
   //--------------------------------------------------------------------------//
   // Legion data members.
@@ -650,8 +609,6 @@ private:
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
   sparse_metadata_t sparse_metadata_;
-  Legion::DynamicCollective max_reduction_;
-  Legion::DynamicCollective min_reduction_;
 
 }; // class legion_context_policy_t
 

@@ -39,7 +39,7 @@ task1(client_handle_t<test_mesh_t, ro> mesh) {
 void
 fill_task(
     client_handle_t<test_mesh_t, wo> mesh,
-    dense_accessor<double, rw, rw, ro> pressure) {
+    dense_accessor<double, rw, rw, na> pressure) {
   size_t count = 0;
   for (auto c : mesh.cells()) {
     pressure(c) = count++;
@@ -71,7 +71,7 @@ hello() {
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1);
 
-flecsi_register_task_simple(task1, loc, single);
+flecsi_register_task_simple(task1, loc, index);
 
 flecsi_register_field(
     test_mesh_t,
@@ -82,9 +82,9 @@ flecsi_register_field(
     1,
     index_spaces::cells);
 
-flecsi_register_task_simple(fill_task, loc, single);
-flecsi_register_task_simple(print_task, loc, single);
-flecsi_register_task_simple(hello, loc, single);
+flecsi_register_task_simple(fill_task, loc, index);
+flecsi_register_task_simple(print_task, loc, index);
+flecsi_register_task_simple(hello, loc, index);
 
 //----------------------------------------------------------------------------//
 // Specialization driver.
@@ -99,20 +99,21 @@ specialization_tlt_init(int argc, char ** argv) {
 void
 specialization_spmd_init(int argc, char ** argv) {
   auto mh = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
-  flecsi_execute_task(initialize_mesh, flecsi::supplemental, single, mh);
+  flecsi_execute_task(initialize_mesh, flecsi::supplemental, index, mh);
 } // specialization_spmd_init
 
 //----------------------------------------------------------------------------//
 // User driver.
 //----------------------------------------------------------------------------//
 
+
 void
 driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   auto ph = flecsi_get_handle(ch, hydro, pressure, double, dense, 0);
 
-  flecsi_execute_task_simple(fill_task, single, ch, ph);
-  auto future = flecsi_execute_task_simple(print_task, single, ch, ph);
+  flecsi_execute_task_simple(fill_task, index, ch, ph);
+  auto future = flecsi_execute_task_simple(print_task, index, ch, ph);
   future.wait(); // wait before comparing results
 
   auto & context = execution::context_t::instance();

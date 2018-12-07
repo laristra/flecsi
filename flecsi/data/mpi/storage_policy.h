@@ -6,12 +6,10 @@
 namespace flecsi {
 namespace data {
 
-struct mpi_storage_policy_t {
-
-}; // struct mpi_storage_policy_t
+struct mpi_storage_policy_t {}; // struct mpi_storage_policy_t
 
 } // namespace data
 } // namespace flecsi
 
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

@@ -85,7 +85,7 @@ flecsi_register_field(
 //----------------------------------------------------------------------------//
 
 void
-init(mesh<ro> mesh, field<rw, rw, ro> f) {
+init(mesh<ro> mesh, field<rw, rw, na> f) {
   for (auto c : mesh.cells(owned)) {
     auto idx = c->index();
     // domain is 0..2*pi in both x and y
@@ -96,7 +96,7 @@ init(mesh<ro> mesh, field<rw, rw, ro> f) {
   }
 } // init
 
-flecsi_register_task(init, flecsi::execution, loc, single);
+flecsi_register_task(init, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Check results
@@ -120,7 +120,7 @@ check_results(mesh<ro> mesh, field<ro, ro, ro> values, size_t global_target) {
   }
 } // print
 
-flecsi_register_task(check_results, flecsi::execution, loc, single);
+flecsi_register_task(check_results, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Compute derivative
@@ -130,7 +130,7 @@ void
 compute_deriv(
     mesh<ro> mesh,
     field<ro, ro, ro> f,
-    field<wo, wo, ro> deriv,
+    field<wo, wo, na> deriv,
     bool div_x) {
   double h = 2.0 * pi / (double)(N - 1);
 
@@ -155,7 +155,7 @@ compute_deriv(
   }
 } // modify
 
-flecsi_register_task(compute_deriv, flecsi::execution, loc, single);
+flecsi_register_task(compute_deriv, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Top-Level Specialization Initialization
@@ -174,7 +174,7 @@ specialization_tlt_init(int argc, char ** argv) {
 void
 specialization_spmd_init(int argc, char ** argv) {
   auto mh = flecsi_get_client_handle(mesh_t, meshes, mesh1);
-  flecsi_execute_task(initialize_mesh, flecsi::supplemental, single, mh);
+  flecsi_execute_task(initialize_mesh, flecsi::supplemental, index, mh);
 } // specialization_spmd_init
 
 //----------------------------------------------------------------------------//
@@ -242,24 +242,24 @@ driver(int argc, char ** argv) {
   flecsi_initialize_global_object(
       global_fxy_target, global, vec_2d_t, fxy_target);
 
-  flecsi_execute_task(init, flecsi::execution, single, mh, fh);
+  flecsi_execute_task(init, flecsi::execution, index, mh, fh);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, fh, global_f_target);
+      check_results, flecsi::execution, index, mh, fh, global_f_target);
 
   flecsi_execute_task(
-      compute_deriv, flecsi::execution, single, mh, fh, fxh, true);
+      compute_deriv, flecsi::execution, index, mh, fh, fxh, true);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, fxh, global_fx_target);
+      check_results, flecsi::execution, index, mh, fxh, global_fx_target);
 
   flecsi_execute_task(
-      compute_deriv, flecsi::execution, single, mh, fh, fyh, false);
+      compute_deriv, flecsi::execution, index, mh, fh, fyh, false);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, fyh, global_fy_target);
+      check_results, flecsi::execution, index, mh, fyh, global_fy_target);
 
   flecsi_execute_task(
-      compute_deriv, flecsi::execution, single, mh, fxh, fxyh, false);
+      compute_deriv, flecsi::execution, index, mh, fxh, fxyh, false);
   flecsi_execute_task(
-      check_results, flecsi::execution, single, mh, fxyh, global_fxy_target);
+      check_results, flecsi::execution, index, mh, fxyh, global_fxy_target);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//

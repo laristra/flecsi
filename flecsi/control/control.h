@@ -15,12 +15,12 @@
 
 /*! @file */
 
+#include <flecsi/control/phase_walker.h>
+#include <flecsi/utils/dag.h>
+
 #include <functional>
 #include <map>
 #include <vector>
-
-#include <flecsi/control/phase_walker.h>
-#include <flecsi/utils/dag.h>
 
 #include <flecsi-config.h>
 
@@ -33,14 +33,14 @@ namespace control {
 template<typename CONTROL_POLICY>
 struct control_u : public CONTROL_POLICY {
 
+  using dag_t = flecsi::utils::dag_u<typename CONTROL_POLICY::node_t>;
+  using node_t = typename dag_t::node_t;
+  using phase_walker_t = phase_walker_u<control_u<CONTROL_POLICY>>;
+
   static control_u & instance() {
     static control_u c;
     return c;
   } // instance
-
-  using dag_t = flecsi::utils::dag_u<typename CONTROL_POLICY::node_t>;
-  using node_t = typename dag_t::node_t;
-  using phase_walker_t = phase_walker_u<control_u<CONTROL_POLICY>>;
 
   static int execute(int argc, char ** argv) {
     instance().sort_phases();
