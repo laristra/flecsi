@@ -754,7 +754,7 @@ setup_rank_context_task(
   auto& ispace_dmap = context_.index_space_data_map();
   auto& sis_map = context_.sparse_index_space_info_map();
 
-  size_t region_index;
+  size_t region_index=0;
   //---------------------------------------------------------------------//
   // Deserialize task arguments
   // --------------------------------------------------------------------//
