@@ -321,11 +321,11 @@ public:
 
     cbuf = new entry_value_t[max_entries_per_index_];
 
-    for(size_t index = start; index < end; ++index) {
-      entry_value_t * eptr = ci->entries[1] + max_entries_per_index_ * index;
-
+    for (size_t index = start; index < end; ++index) {
       const offset_t & oi = offsets_[index];
       offset_t & coi = offsets[index];
+
+      entry_value_t * eptr = entries + coi.start();
 
       entry_value_t * sptr = entries_ + index * num_slots_;
 
@@ -510,9 +510,9 @@ public:
           slot_entry = ++slots < slots_end ? slots->entry : end;
         }
 
-        while(existing_entry == slot_entry ||
-              (ERASE && erase_set_->find(std::make_pair(
-                          index, existing_entry)) != erase_set_->end())) {
+        while (existing_entry == spare_entry ||
+               (ERASE && erase_set_->find(std::make_pair(
+                             index, existing_entry)) != erase_set_->end())) {
           existing_entry = ++existing < existing_end ? existing->entry : end;
         }
 
