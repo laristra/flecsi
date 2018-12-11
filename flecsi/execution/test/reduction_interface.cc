@@ -41,7 +41,7 @@ flecsi_register_field(mesh_t, data, double_values, double, dense, 1,
 // Double
 //----------------------------------------------------------------------------//
 
-void double_init(mesh<ro> m, field<rw, rw, ro> v) {
+void double_init(mesh<ro> m, field<rw, rw, na> v) {
   for(auto c: m.cells(owned)) {
     v(c) = 1.0;
   } // for
