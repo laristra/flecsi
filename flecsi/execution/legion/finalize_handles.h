@@ -187,7 +187,6 @@ struct finalize_handles_t
 
   template<typename T, launch_type_t launch>
   void handle(legion_future_u<T, launch> & h) {
-    h.finalize_future();
   }
 
   template<typename T>
