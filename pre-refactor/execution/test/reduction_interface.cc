@@ -32,6 +32,7 @@ using field = dense_accessor<double, EP, SP, GP>;
 //----------------------------------------------------------------------------//
 // Variable registration
 //----------------------------------------------------------------------------//
+flecsi_register_data_client(mesh_t, meshes, m);
 
 flecsi_register_field(mesh_t, data, double_values, double, dense, 1,
   index_spaces::cells);
@@ -40,13 +41,13 @@ flecsi_register_field(mesh_t, data, double_values, double, dense, 1,
 // Double
 //----------------------------------------------------------------------------//
 
-void double_init(mesh<ro> m, field<rw, rw, ro> v) {
+void double_init(mesh<ro> m, field<rw, rw, na> v) {
   for(auto c: m.cells(owned)) {
     v(c) = 1.0;
   } // for
 } // double_init
 
-flecsi_register_task(double_init, flecsi::execution, loc, single);
+flecsi_register_task(double_init, flecsi::execution, loc, index);
 
 double double_task(mesh<ro> m, field<rw, rw, ro> v) {
   double sum{ 0.0 };
@@ -58,7 +59,7 @@ double double_task(mesh<ro> m, field<rw, rw, ro> v) {
   return sum;
 } // double_task
 
-flecsi_register_task(double_task, flecsi::execution, loc, single);
+flecsi_register_task(double_task, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Top-Level Specialization Initialization
@@ -85,8 +86,8 @@ specialization_spmd_init(int argc, char ** argv) {
     clog(info) << "specialization_spmd_init function" << std::endl;
   } // scope
 
-  auto mh = flecsi_get_client_handle(mesh_t, clients, m);
-  flecsi_execute_task(initialize_mesh, flecsi::supplemental, single, mh);
+  auto mh = flecsi_get_client_handle(mesh_t, meshes, m);
+  flecsi_execute_task(initialize_mesh, flecsi::supplemental, index, mh);
 } // specialization_spmd_ini
 
 //----------------------------------------------------------------------------//
@@ -97,10 +98,10 @@ void driver(int argc, char ** argv) {
 
   clog_tag_guard(reduction_interface);
 
-  auto mh = flecsi_get_client_handle(mesh_t, clients, m);
+  auto mh = flecsi_get_client_handle(mesh_t, meshes, m);
   auto vh = flecsi_get_handle(mh, data, double_values, double, dense, 0);
 
-  flecsi_execute_task(double_init, flecsi::execution, single, mh, vh);
+  flecsi_execute_task(double_init, flecsi::execution, index, mh, vh);
 
   {
   auto f = flecsi_execute_reduction_task(double_task, flecsi::execution,
