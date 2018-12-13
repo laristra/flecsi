@@ -6,7 +6,7 @@
 #include <flecsi/utils/demangle.h>
 #include <flecsi/utils/test/print_type.h>
 
-#include <cinchtest.h>
+#include <ctest.h>
 
 TEST(common, all) {
 

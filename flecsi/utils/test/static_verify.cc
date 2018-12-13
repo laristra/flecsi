@@ -10,7 +10,7 @@
 #include <iostream>
 
 // includes: other
-#include <cinchtest.h>
+#include <ctest.h>
 
 // =============================================================================
 // Some classes, with or without members foo and bar.

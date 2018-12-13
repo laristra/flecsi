@@ -8,7 +8,7 @@
 #include <flecsi/utils/test/print_type.h>
 
 // includes: other
-#include <cinchtest.h>
+#include <ctest.h>
 
 // =============================================================================
 // For testing flecsi::utils::function_traits_u

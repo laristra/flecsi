@@ -21,7 +21,7 @@
 #include <vector>
 
 // includes: other
-#include <cinchtest.h>
+#include <ctest.h>
 
 // =============================================================================
 // Helper constructs

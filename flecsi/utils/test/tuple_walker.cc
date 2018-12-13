@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include <cinchtest.h>
+#include <ctest.h>
 
 #include <flecsi/utils/tuple_walker.h>
 

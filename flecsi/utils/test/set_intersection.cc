@@ -7,7 +7,7 @@
 #include <flecsi/utils/set_intersection.h>
 
 // includes: other
-#include <cinchtest.h>
+#include <ctest.h>
 
 // intersects
 template<class CONTAINER>

@@ -12,7 +12,7 @@
 #include <iostream>
 
 // includes: other
-#include <cinchtest.h>
+#include <ctest.h>
 
 // a base class
 class base {};

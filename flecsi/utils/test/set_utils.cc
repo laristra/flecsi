@@ -10,7 +10,7 @@
 #include <iostream>
 
 // includes: other
-#include <cinchtest.h>
+#include <ctest.h>
 
 // print_set
 template<class T>

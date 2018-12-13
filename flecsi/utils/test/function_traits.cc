@@ -3,7 +3,7 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-#include <cinchtest.h>
+#include <ctest.h>
 
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/test/print_type.h>

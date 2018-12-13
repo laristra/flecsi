@@ -6,7 +6,7 @@
 // includes: flecsi
 
 // includes: other
-#include <cinchtest.h>
+#include <ctest.h>
 
 // =============================================================================
 // Test various constructs in logging.h

@@ -3,7 +3,7 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-#include <cinchtest.h>
+#include <ctest.h>
 
 #include <flecsi/utils/hash.h>
 

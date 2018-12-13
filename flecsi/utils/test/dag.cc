@@ -5,7 +5,7 @@
 
 #include <bitset>
 
-#include <cinchtest.h>
+#include <ctest.h>
 
 #include <flecsi-config.h>
 #include <flecsi/utils/common.h>

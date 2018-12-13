@@ -9,7 +9,7 @@
 // includes: C++
 
 // includes: other
-#include <cinchtest.h>
+#include <ctest.h>
 
 // =============================================================================
 // Test various constructs in humble.h

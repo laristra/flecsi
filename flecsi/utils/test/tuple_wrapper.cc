@@ -3,7 +3,7 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-#include <cinchtest.h>
+#include <ctest.h>
 
 #include <flecsi/utils/tuple_wrapper.h>
 #include <flecsi/utils/demangle.h>

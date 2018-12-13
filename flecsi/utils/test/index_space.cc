@@ -12,7 +12,7 @@
 #include <iostream>
 
 // includes: other
-#include <cinchtest.h>
+#include <ctest.h>
 
 // =============================================================================
 // Test various aspects of flecsi::utils::index_space

@@ -15,7 +15,7 @@
 #include <bitset>
 #include <tuple>
 
-#include <cinchtest.h>
+#include <ctest.h>
 
 #include <flecsi/control/control.h>
 #include <flecsi/control/phase_walker.h>
