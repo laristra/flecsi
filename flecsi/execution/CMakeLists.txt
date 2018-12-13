@@ -43,21 +43,31 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(execution_HEADERS
     ${execution_HEADERS}
+    mpi/runtime.h
   )
 
   set(execution_SOURCES
     ${execution_SOURCES}
+    mpi/runtime.cc
   )
+
+  set(UNIT_POLICY MPI)
+  set(RUNTIME_DRIVER mpi/runtime.cc)
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
   set(execution_HEADERS
     ${execution_HEADERS}
+    hpx/runtime.h
   )
 
   set(execution_SOURCES
     ${execution_SOURCES}
+    hpx/runtime.cc
   )
+
+  set(UNIT_POLICY HPX)
+  set(RUNTIME_DRIVER hpx/runtime.cc)
 
 endif()
 
