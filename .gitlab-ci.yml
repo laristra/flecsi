@@ -85,6 +85,7 @@ build:ubuntu_mpi_clang:
   extends: build:ubuntu_mpi
   before_script:
     - export CC=clang
+    - export CXX=clang++
 
 build:ubuntu_mpich_mpi:
   extends: .build
@@ -96,6 +97,7 @@ build:ubuntu_mpich_mpi_clang:
   extends: build:ubuntu_mpich_mpi
   before_script:
     - export CC=clang
+    - export CXX=clang++
 
 build:fedora_mpi:
   extends: .build
