@@ -4,12 +4,6 @@ stages:
   - format
   - deploy
 
-before_script:
-  - git submodule init
-  - git config submodule.cinch.url https://github.com/laristra/cinch.git
-  #- git config submodule.ristra-utils.url https://github.com/laristra/ristra-utils
-  - git submodule update --init --recursive
-
 .build:
   retry:
     max: 2
@@ -21,7 +15,7 @@ before_script:
     DISTRO: ""
     RUNTIME: ""
     GLOBAL_CI_VARIABLE: "global_ci_value"
-    GIT_SUBMODULE_STRATEGY: none
+    GIT_SUBMODULE_STRATEGY: recursive
     ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
   image:    
     name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
@@ -31,6 +25,7 @@ before_script:
     paths:
       - ${ARTIFACTS_PROJECT_PATH}
   script:
+    # This causes index lock sometimes
     #- git submodule init
     #- git config submodule.cinch.url https://github.com/laristra/cinch.git
     #- git config submodule.ristra-utils.url https://github.com/laristra/ristra-utils
