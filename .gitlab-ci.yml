@@ -1,8 +1,27 @@
 stages:
+  - prep
   - build
   - test
   - format
   - deploy
+
+prep:
+  retry: 2
+  variables:
+    GLOBAL_CI_VARIABLE: "global_ci_value"
+    ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
+  image: gitlab/dind:latest #user: root
+  stage: prep
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - ${ARTIFACTS_PROJECT_PATH}
+  script:
+    - git submodule init
+    - git config submodule.cinch.url https://github.com/laristra/cinch.git
+    #- git config submodule.ristra-utils.url https://github.com/laristra/ristra-utils
+    - git submodule update --init --recursive
+
 
 .build:
   retry:
@@ -20,15 +39,17 @@ stages:
   image:    
     name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
   stage:    build
+  dependencies:
+    - prep
   artifacts:
     expire_in: 1 hour
     paths:
       - ${ARTIFACTS_PROJECT_PATH}
   script:
-    - git submodule init
-    - git config submodule.cinch.url https://github.com/laristra/cinch.git
+    #- git submodule init
+    #- git config submodule.cinch.url https://github.com/laristra/cinch.git
     #- git config submodule.ristra-utils.url https://github.com/laristra/ristra-utils
-    - git submodule update --init --recursive
+    #- git submodule update --init --recursive
     - mkdir ${CI_PROJECT_DIR}/build
     - cd build
     - | 
