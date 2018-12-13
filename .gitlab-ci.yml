@@ -24,11 +24,16 @@ stages:
     expire_in: 1 hour
     paths:
       - ${ARTIFACTS_PROJECT_PATH}
-  script:
+  before_script:
     - git submodule init
     - git config submodule.cinch.url https://github.com/laristra/cinch.git
-    - git config submodule.ristra-utils.url https://github.com/laristra/ristra-utils
+    #- git config submodule.ristra-utils.url https://github.com/laristra/ristra-utils
     - git submodule update --init --recursive
+  script:
+    #- git submodule init
+    #- git config submodule.cinch.url https://github.com/laristra/cinch.git
+    #- git config submodule.ristra-utils.url https://github.com/laristra/ristra-utils
+    #- git submodule update --init --recursive
     - mkdir ${CI_PROJECT_DIR}/build
     - cd build
     - | 
