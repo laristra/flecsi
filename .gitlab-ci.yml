@@ -6,7 +6,7 @@ stages:
 
 .build:
   retry:
-    max: 3
+    max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
@@ -135,7 +135,7 @@ build:fedora_mpich_legion:
 
 
 .test:
-  retry: 3
+  retry: 2
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
     DISTRO: ""
@@ -223,7 +223,7 @@ test:fedora_mpich_legion:
 
 
 .format:
-  retry: 3
+  retry: 2
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
     DISTRO: ""
@@ -258,7 +258,7 @@ format:fedora_mpi:
 
 
 .deploy:
-  retry: 3
+  retry: 2
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
     DISTRO: ""
