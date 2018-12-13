@@ -6,7 +6,7 @@ stages:
 
 .build:
   retry:
-    max: 2
+    max: 3
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
@@ -80,11 +80,21 @@ build:ubuntu_mpi:
     DISTRO: "ubuntu"
     RUNTIME: "mpi"
 
+build:ubuntu_mpi_clang:
+  extends: build:ubuntu_mpi
+  before_script:
+    - export CC=clang
+
 build:ubuntu_mpich_mpi:
   extends: .build
   variables:
     DISTRO: "ubuntu_mpich"
     RUNTIME: "mpi"
+
+build:ubuntu_mpich_mpi_clang:
+  extends: build:ubuntu_mpich_mpi
+  before_script:
+    - export CC=clang
 
 build:fedora_mpi:
   extends: .build
@@ -125,7 +135,7 @@ build:fedora_mpich_legion:
 
 
 .test:
-  retry: 2
+  retry: 3
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
     DISTRO: ""
@@ -213,7 +223,7 @@ test:fedora_mpich_legion:
 
 
 .format:
-  retry: 2
+  retry: 3
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
     DISTRO: ""
@@ -248,7 +258,7 @@ format:fedora_mpi:
 
 
 .deploy:
-  retry: 2
+  retry: 3
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
     DISTRO: ""
