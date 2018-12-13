@@ -7,7 +7,7 @@
 #include <flecsi/utils/tuple_function.h>
 
 // includes: other
-#include <ctest.h>
+#include <cinch/ctest.h>
 
 // struct foo
 struct foo {

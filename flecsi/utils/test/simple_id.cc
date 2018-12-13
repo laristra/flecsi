@@ -16,7 +16,7 @@
 #include <flecsi/utils/simple_id.h>
 
 // includes: other
-#include <ctest.h>
+#include <cinch/ctest.h>
 
 using namespace flecsi::utils;
 

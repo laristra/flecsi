@@ -3,7 +3,7 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-#include <ctest.h>
+#include <cinch/ctest.h>
 
 #include <flecsi/utils/checksum.h>
 

@@ -20,7 +20,7 @@
 #include <iostream>
 
 // includes: other
-#include <ctest.h>
+#include <cinch/ctest.h>
 
 // =============================================================================
 // Sanity check

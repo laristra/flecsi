@@ -12,7 +12,7 @@
 #include <iostream>
 
 // includes: other
-#include <ctest.h>
+#include <cinch/ctest.h>
 
 // =============================================================================
 // Test various constructs in utility.h

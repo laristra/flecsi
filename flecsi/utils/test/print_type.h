@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <ctest.h>
+#include <cinch/ctest.h>
 
 #include <flecsi/utils/demangle.h>
 

@@ -16,7 +16,7 @@
 #include <flecsi/utils/reorder.h>
 
 // system includes
-#include <ctest.h>
+#include <cinch/ctest.h>
 #include <random>
 
 // some using declarations

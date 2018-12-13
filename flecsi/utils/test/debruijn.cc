@@ -16,7 +16,7 @@
 
 #include <random>
 
-#include <ctest.h>
+#include <cinch/ctest.h>
 
 // =============================================================================
 // Exercise all of debruijn.h's constructs

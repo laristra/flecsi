@@ -20,7 +20,7 @@
 // includes: C++
 
 // includes: other
-#include <ctest.h>
+#include <cinch/ctest.h>
 
 // =============================================================================
 // Sanity check for factory.h

@@ -12,7 +12,7 @@
 #include <iostream>
 
 // includes: other
-#include <ctest.h>
+#include <cinch/ctest.h>
 
 // print_refc
 // Prints an array_ref<char>, as a character string
