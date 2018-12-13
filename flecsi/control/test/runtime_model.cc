@@ -12,6 +12,6 @@
    All rights reserved.
                                                                               */
 
+#include <cinch/runtime.h>
 #include <flecsi/control/test/policy.h>
-#include <flecsi/control/runtime.h>
 #include <flecsi/control/test/runtimes.h>

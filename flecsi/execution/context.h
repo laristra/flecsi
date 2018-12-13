@@ -15,6 +15,8 @@
 
 /*! @file */
 
+#include <cstddef>
+
 namespace flecsi {
 namespace execution {
 

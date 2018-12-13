@@ -13,11 +13,11 @@
                                                                               */
 #pragma once
 
-#include <flecsi/control/runtime.h>
+#include <cinch/runtime.h>
 
 #include <iostream>
 
-using namespace flecsi::runtime;
+using namespace cinch;
 
 inline int initialize(int argc, char ** argv) {
   std::cout << "Executing initialize" << std::endl;
@@ -36,11 +36,11 @@ inline bool output(int argc, char ** argv) {
 
 inline runtime_handler_t handler{ initialize, finalize, output };
 
-flecsi_append_runtime_handler(handler);
+cinch_append_runtime_handler(handler);
 
 inline int runtime_test_runtime_driver(int argc, char ** argv) {
   std::cout << "Executing runtime driver" << std::endl;
   return 0;
 } // runtime_test_runtime_driver
 
-flecsi_register_runtime_driver(runtime_test_runtime_driver);
+cinch_register_runtime_driver(runtime_test_runtime_driver);

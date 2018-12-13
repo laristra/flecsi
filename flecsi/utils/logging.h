@@ -15,7 +15,7 @@
 
 /*! @file */
 
-#include <cinchlog.h>
+#include <cinch/clog.h>
 
 namespace flecsi {
 namespace utils {

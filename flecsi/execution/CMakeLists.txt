@@ -84,8 +84,8 @@ set(execution_SOURCES
 #------------------------------------------------------------------------------#
 
 add_executable(runtime_initialization
-    ../control/runtime.cc
-    ${RUNTIME_DRIVER}
+  ${CINCH_SOURCE_DIR}/cinch/runtime.cc
+  ${RUNTIME_DRIVER}
 )
 
 target_link_libraries(runtime_initialization ${CINCH_RUNTIME_LIBRARIES}

@@ -20,7 +20,7 @@
 #include <queue>
 #include <vector>
 
-#include <cinchlog.h>
+#include <cinch/clog.h>
 
 #include <flecsi-config.h>
 

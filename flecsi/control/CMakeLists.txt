@@ -5,7 +5,6 @@
 
 set(control_HEADERS
   control.h
-  runtime.h
   phase_walker.h
 )
 
@@ -49,7 +48,7 @@ cinch_add_unit(control
 #------------------------------------------------------------------------------#
 
 add_executable(runtime
-  runtime.cc
+  ${CINCH_SOURCE_DIR}/cinch/runtime.cc
   test/runtime_model.cc
 )
 
