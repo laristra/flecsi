@@ -1,5 +1,351 @@
-include:
-  - './gitlab-ci/ubuntu.yml'
-  - './gitlab-ci/ubuntu_mpich.yml'
-  - './gitlab-ci/fedora.yml'
-  - './gitlab-ci/fedora_mpich.yml'
+stages:
+  - build
+  - test
+  - format
+  - deploy
+
+.build:
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - unknown_failure
+  variables:
+    DISTRO: ""
+    RUNTIME: ""
+    GLOBAL_CI_VARIABLE: "global_ci_value"
+    GIT_SUBMODULE_STRATEGY: none
+    ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
+  image:    
+    name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
+  stage:    build
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - ${ARTIFACTS_PROJECT_PATH}
+  script:
+    - git submodule init
+    - git config submodule.cinch.url https://github.com/laristra/cinch.git
+    - git config submodule.ristra-utils.url https://github.com/laristra/ristra-utils
+    - git submodule update --init --recursive
+    - mkdir ${CI_PROJECT_DIR}/build
+    - cd build
+    - | 
+      cmake   -DENABLE_LEGION=$LEGION \
+        -DFLECSI_RUNTIME_MODEL=$RUNTIME \
+         ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON}\
+        -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] \
+                && echo OFF || echo ON) \
+        -DENABLE_UNIT_TESTS=ON \
+        -DENABLE_PARMETIS=ON \
+        -DENABLE_COLORING=ON \
+        -DENABLE_DOXYGEN=ON \
+        -DENABLE_DOCUMENTATION=OFF \
+         ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} \
+        ..
+    - make doxygen
+    - |
+      if [ ${COVERAGE} ]; 
+      then python -m coverxygen --xml-dir doc/doxygen/xml/ \
+              --src-dir .. \
+              --output doxygen.coverage.info; 
+           wget -O codecov.sh https://codecov.io/bash;
+           bash codecov.sh -X gcov \
+               -f doxygen.coverage.info \
+               -F documentation; 
+           doxy-coverage --threshold 24 doc/doxygen/xml/; 
+      fi
+    - make install DESTDIR=${PWD}/install 
+    - rm -rf ${PWD}/install
+    - cd .. 
+    - |
+      if [ ${COVERAGE} ]; 
+      then if [ ${CC} = clang ]; 
+           then $HOME/.local/bin/codecov -F "${CC}" \
+          --gcov-exec "llvm-cov gcov"; 
+           else $HOME/.local/bin/codecov -F "${CC}"; 
+           fi; 
+      fi
+    - cd build 
+    - sudo make install 
+    - cp -r /usr/local ${CI_PROJECT_DIR}/.
+
+
+##################################
+### Build ###
+build:ubuntu_mpi:
+  extends: .build
+  variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
+
+build:ubuntu_mpich_mpi:
+  extends: .build
+  variables:
+    DISTRO: "ubuntu_mpich"
+    RUNTIME: "mpi"
+
+build:fedora_mpi:
+  extends: .build
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
+
+build:fedora_mpich_mpi:
+  extends: .build
+  variables:
+    DISTRO: "fedora_mpich"
+    RUNTIME: "mpi"
+
+build:ubuntu_legion:
+  extends: .build
+  variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "legion"
+
+build:ubuntu_mpich_legion:
+  extends: .build
+  variables:
+    DISTRO: "ubuntu_mpich"
+    RUNTIME: "legion"
+
+build:fedora_legion:
+  extends: .build
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "legion"
+
+build:fedora_mpich_legion:
+  extends: .build
+  variables:
+    DISTRO: "fedora_mpich"
+    RUNTIME: "legion"
+##################################
+
+
+.test:
+  retry: 2
+  variables:
+    GLOBAL_CI_VARIABLE: "global_ci_value"
+    DISTRO: ""
+    RUNTIME: ""
+    ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
+  image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
+  stage:  test
+  dependencies:
+    - .build 
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - ${ARTIFACTS_PROJECT_PATH}
+  script: 
+    - cd ${CI_PROJECT_DIR}/build/
+    - make test ARGS="-V"
+
+
+##################################
+### Test ###
+test:ubuntu_mpi:
+  extends: .test
+  variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
+  dependencies:
+    - build:ubuntu_mpi
+
+test:ubuntu_mpich_mpi:
+  extends: .test
+  variables:
+    DISTRO: "ubuntu_mpich"
+    RUNTIME: "mpi"
+  dependencies:
+    - build:ubuntu_mpich_mpi
+
+test:fedora_mpi:
+  extends: .test
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
+  dependencies:
+    - build:fedora_mpi
+
+test:fedora_mpich_mpi:
+  extends: .test
+  variables:
+    DISTRO: "fedora_mpich"
+    RUNTIME: "mpi"
+  dependencies:
+    - build:fedora_mpich_mpi
+
+test:ubuntu_legion:
+  extends: .test
+  variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "legion"
+  dependencies:
+    - build:ubuntu_legion
+
+test:ubuntu_mpich_legion:
+  extends: .test
+  variables:
+    DISTRO: "ubuntu_mpich"
+    RUNTIME: "legion"
+  dependencies:
+    - build:ubuntu_mpich_legion
+
+test:fedora_legion:
+  extends: .test
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "legion"
+  dependencies:
+    - build:fedora_legion
+
+test:fedora_mpich_legion:
+  extends: .test
+  variables:
+    DISTRO: "fedora_mpich"
+    RUNTIME: "legion"
+  dependencies:
+    - build:fedora_mpich_legion
+##################################
+
+
+.format:
+  retry: 2
+  variables:
+    GLOBAL_CI_VARIABLE: "global_ci_value"
+    DISTRO: ""
+    RUNTIME: ""
+  image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
+  stage:  format
+  dependencies:
+    - .test
+  script:
+    - cd ${CI_PROJECT_DIR}/build/
+    - make format-FleCSI && git diff #--exit-code
+
+
+##################################
+### Format ###
+format:ubuntu_mpi:
+  extends: .format
+  variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
+  dependencies:
+    - test:ubuntu_mpi
+
+format:fedora_mpi:
+  extends: .format
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
+  dependencies:
+    - test:fedora_mpi
+##################################
+
+
+.deploy:
+  retry: 2
+  variables:
+    GLOBAL_CI_VARIABLE: "global_ci_value"
+    DISTRO: ""
+    RUNTIME: ""
+    ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
+  #services:
+  #  - docker:dind
+  image: gitlab/dind:latest #user: root
+  stage: deploy
+  dependencies:
+    - .test
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - ${ARTIFACTS_PROJECT_PATH}
+  script:
+    - |
+      if [[ ${CC} != gcc ]]; 
+      then TAG="_${CC}"; 
+      fi
+    - |
+      if [[ ${CI_COMMIT_REF_NAME} != stable ]]; 
+      then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; 
+      fi
+    - docker pull laristra/flecsi-third-party:${DISTRO} 
+    - CON=$(docker run -d laristra/flecsi-third-party:${DISTRO} /bin/bash) 
+    - docker cp /builds ${CON}:/.
+    - docker cp ${CI_PROJECT_DIR}/local ${CON}:/usr/local
+    - rm -r ${CI_PROJECT_DIR}/local
+    - docker cp ${CI_PROJECT_DIR} ${CON}:/home/flecsi
+    #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+    #- docker push "${CI_COMMIT_REF_SLUG}:${DISTRO}_${RUNTIME}${TAG}
+
+
+##################################
+### Deploy ###
+deploy:ubuntu_mpi:
+  extends: .deploy
+  variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
+  dependencies:
+    - test:ubuntu_mpi
+
+deploy:ubuntu_mpich_mpi:
+  extends: .deploy
+  variables:
+    DISTRO: "ubuntu_mpich"
+    RUNTIME: "mpi"
+  dependencies:
+    - test:ubuntu_mpich_mpi
+
+deploy:fedora_mpi:
+  extends: .deploy
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
+  dependencies:
+    - test:fedora_mpi
+
+deploy:fedora_mpich_mpi:
+  extends: .deploy
+  variables:
+    DISTRO: "fedora_mpich"
+    RUNTIME: "mpi"
+  dependencies:
+    - test:fedora_mpich_mpi
+
+deploy:ubuntu_legion:
+  extends: .deploy
+  variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "legion"
+  dependencies:
+    - test:ubuntu_legion
+
+deploy:ubuntu_mpich_legion:
+  extends: .deploy
+  variables:
+    DISTRO: "ubuntu_mpich"
+    RUNTIME: "legion"
+  dependencies:
+    - test:ubuntu_mpich_legion
+
+deploy:fedora_legion:
+  extends: .deploy
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "legion"
+  dependencies:
+    - test:fedora_legion
+
+deploy:fedora_mpich_legion:
+  extends: .deploy
+  variables:
+    DISTRO: "fedora_mpich"
+    RUNTIME: "legion"
+  dependencies:
+    - test:fedora_mpich_legion
+##################################
