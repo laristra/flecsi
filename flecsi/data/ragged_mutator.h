@@ -53,65 +53,34 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   using offset_t = typename handle_t::offset_t;
   using entry_value_t = typename handle_t::entry_value_t;
   using erase_set_t = typename handle_t::erase_set_t;
-  using ragged_changes_t = typename mutator_handle_u<T>::ragged_changes_t;
-  using ragged_changes_map_t =
-    typename mutator_handle_u<T>::ragged_changes_map_t;
+  using overflow_map_t = typename mutator_handle_u<T>::overflow_map_t;
 
   //--------------------------------------------------------------------------//
   //! Constructor from handle.
   //--------------------------------------------------------------------------//
 
   mutator_u(const mutator_handle_u<T> & h) : h_(h) {
-    assert(!h_.ragged_changes_map_ && "expected null changes map");
-    h_.ragged_changes_map_ = new ragged_changes_map_t;
+    assert(!h_.overflow_map_ && "expected null overflow map");
   }
 
   T & operator()(size_t index, size_t ragged_index) {
     assert(h_.offsets_ && "uninitialized ragged_mutator");
     assert(index < h_.num_entries_);
 
-    offset_t & offset = h_.offsets_[index];
+    offset_t & offset = h_.offsets_orig_[index];
 
     size_t n = offset.count();
+    size_t nnew = h_.offsets_[index].count();
+    assert(ragged_index < nnew);
 
-    if(n >= h_.num_slots_) {
-      if(index < h_.num_exclusive_) {
-        (*h_.num_exclusive_insertions)++;
-      }
-
-      return h_.spare_map_->emplace(index, entry_value_t(ragged_index))
-        ->second.value;
-    } // if
-
-    entry_value_t * start = h_.entries_ + index * h_.num_slots_;
-    entry_value_t * end = start + n;
-
-    entry_value_t * itr =
-      std::lower_bound(start, end, entry_value_t(ragged_index),
-        [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
-          return e1.entry < e2.entry;
-        });
-
-    // if we are attempting to create an entry that already exists
-    // just over-write the value and exit.
-    if(itr != end && itr->entry == ragged_index) {
-      return itr->value;
+    if(ragged_index >= n) {
+      auto & overflow = h_.overflow_map_->at(index);
+      assert(ragged_index - n < overflow.size());
+      return overflow[ragged_index - n].value;
     }
 
-    while(end != itr) {
-      *(end) = *(end - 1);
-      --end;
-    } // while
-
-    itr->entry = ragged_index;
-
-    if(index < h_.num_exclusive_) {
-      (*h_.num_exclusive_insertions)++;
-    }
-
-    offset.set_count(n + 1);
-
-    return itr->value;
+    entry_value_t * start = h_.entries_orig_ + offset.start();
+    return start[ragged_index].value;
   } // operator ()
 
   void resize(size_t index, size_t size) {
@@ -120,16 +89,21 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     assert(size <= h_.max_entries_per_index_ &&
            "resize length exceeds max entries per index");
 
-    auto itr = h_.ragged_changes_map_->find(index);
-    if(itr == h_.ragged_changes_map_->end()) {
-      ragged_changes_t changes(size);
-      h_.ragged_changes_map_->emplace(index, std::move(changes));
+    offset_t & offset_new = h_.offsets_[index];
+    offset_new.set_count(size);
+
+    offset_t & offset = h_.offsets_orig_[index];
+    size_t n = offset.count();
+    if(size > n) {
+      auto & overflow = (*h_.overflow_map_)[index];
+      overflow.resize(size - n);
     }
     else {
-      itr->second.size = size;
+      h_.overflow_map_->erase(index);
     }
-  }
+  } // resize
 
+#if 0
   void erase(size_t index, size_t ragged_index) {
     assert(index < h_.num_entries_);
 
@@ -211,6 +185,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
       }
     }
   }
+#endif
 
   handle_t h_;
 };

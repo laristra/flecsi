@@ -66,11 +66,14 @@ mutate(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
         rm(c, j) = rank * 10000 + gid * 100 + 50 + j;
       }
     }
+    else if (gid == 13) {
+      rm(c, 6) = -rm(c, 6) + 60;
+    }
     // flip the checkerboard:  entries that had 3 entries will now
     // have 2, and vice-versa
     else if (parity) {
       rm.resize(c, 2);
-      rm(c, 1) = rank * 10000 + gid * 100 + 66;
+      rm(c, 1) = -rm(c, 1) + 70;
     }
     else {
       rm.resize(c, 3);

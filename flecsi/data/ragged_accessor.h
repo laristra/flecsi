@@ -125,16 +125,12 @@ struct accessor_u<data::ragged,
       index < handle.num_total_, "sparse accessor: index out of bounds");
 
     const offset_t & oi = handle.offsets[index];
-
-    entry_value_t * itr = handle.entries + oi.start();
-    entry_value_t * end = itr + oi.count();
+    const size_t count = oi.count();
 
     index_space_t is;
 
-    size_t id = 0;
-    while(itr != end) {
-      is.push_back({id++, itr->entry});
-      ++itr;
+    for(size_t i = 0; i < count; ++i) {
+      is.push_back({i, i});
     }
 
     return is;
