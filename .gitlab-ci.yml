@@ -15,7 +15,7 @@ stages:
     DISTRO: ""
     RUNTIME: ""
     GLOBAL_CI_VARIABLE: "global_ci_value"
-    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_STRATEGY: none
     ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
   image:    
     name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
