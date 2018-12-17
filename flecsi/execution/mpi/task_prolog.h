@@ -181,11 +181,11 @@ namespace execution {
       auto & h = m.h_;
       h.init();
 
-      using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
+      using value_t = typename mutator_handle_u<T>::value_t;
       using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
 
-      entry_value_t * entries =
-          reinterpret_cast<entry_value_t *>(&(*h.entries)[0]);
+      value_t * entries =
+          reinterpret_cast<value_t *>(&(*h.entries)[0]);
 
       commit_info_t ci;
       ci.offsets = &(*h.offsets)[0];

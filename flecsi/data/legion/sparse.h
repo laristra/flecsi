@@ -61,23 +61,23 @@ namespace legion {
     size_t SP,
     size_t GP
   >
-  struct sparse_handle_u : public sparse_data_handle_u<T, EP, SP, GP>
+  struct ragged_handle_u : public ragged_data_handle_u<T, EP, SP, GP>
   {
     //--------------------------------------------------------------------------//
     // Type definitions.
     //--------------------------------------------------------------------------//
 
-    using base = sparse_data_handle_u<T, EP, SP, GP>;
+    using base = ragged_data_handle_u<T, EP, SP, GP>;
 
     //--------------------------------------------------------------------------//
     // Constructors.
     //--------------------------------------------------------------------------//
 
-    sparse_handle_u(){}
+    ragged_handle_u(){}
 
     template<typename, size_t, size_t, size_t>
-    friend class sparse_handle_u;
-  }; // struct sparse_handle_u
+    friend class ragged_handle_u;
+  }; // struct ragged_handle_u
 
   //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
   // Main type definition.
@@ -97,7 +97,7 @@ namespace legion {
     A mutator commits its data in its temporary buffers in the task epilog.
    */
   template<>
-  struct storage_class_u<sparse>
+  struct storage_class_u<ragged>
   {
     //--------------------------------------------------------------------------//
     // Type definitions.
@@ -109,7 +109,7 @@ namespace legion {
       size_t SP,
       size_t GP
     >
-    using handle_u = sparse_handle_u<T, EP, SP, GP>;
+    using handle_u = ragged_handle_u<T, EP, SP, GP>;
 
     template<
       typename DATA_CLIENT_TYPE,
@@ -291,7 +291,7 @@ namespace legion {
   }; // struct storage_class_t
 
   template<>
-  struct storage_class_u<ragged>
+  struct storage_class_u<sparse>
   {
     //--------------------------------------------------------------------------//
     // Type definitions.
@@ -303,7 +303,7 @@ namespace legion {
       size_t SP,
       size_t GP
     >
-    using handle_u = sparse_handle_u<T, EP, SP, GP>;
+    using handle_u = ragged_handle_u<data::sparse_entry_value_u<T>, EP, SP, GP>;
 
     template<
       typename DATA_CLIENT_TYPE,
@@ -318,9 +318,9 @@ namespace legion {
       const data_client_t & data_client
     )
     {
-      return storage_class_u<sparse>::get_handle<
+      return storage_class_u<ragged>::get_handle<
         DATA_CLIENT_TYPE,
-        DATA_TYPE,
+        data::sparse_entry_value_u<DATA_TYPE>,
         NAMESPACE,
         NAME,
         VERSION
@@ -341,9 +341,9 @@ namespace legion {
       size_t slots
     )
     {
-      return storage_class_u<sparse>::get_mutator<
+      return storage_class_u<ragged>::get_mutator<
         DATA_CLIENT_TYPE,
-        DATA_TYPE,
+        data::sparse_entry_value_u<DATA_TYPE>,
         NAMESPACE,
         NAME,
         VERSION

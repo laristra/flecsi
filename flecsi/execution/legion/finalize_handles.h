@@ -66,17 +66,17 @@ struct finalize_handles_t :
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
+    using value_t = T;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
     auto & h = a.handle;
     auto md = static_cast<sparse_field_data_t *>(h.metadata);
 
     std::memcpy(h.entries_data[0], h.entries,
-      md->num_exclusive_filled * sizeof(entry_value_t));
+      md->num_exclusive_filled * sizeof(value_t));
 
     std::memcpy(h.entries_data[1], h.entries + md->reserve,
-      md->num_shared * sizeof(entry_value_t) * md->max_entries_per_index);
+      md->num_shared * sizeof(value_t) * md->max_entries_per_index);
   } // handle
 
   template<
@@ -88,7 +88,9 @@ struct finalize_handles_t :
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
+    using accessor_t = sparse_accessor< T, EXCLUSIVE_PERMISSIONS,
+              SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+    using entry_value_t = typename accessor_t::entry_value_t;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
     auto & h = a.handle;
@@ -103,14 +105,14 @@ struct finalize_handles_t :
 
   template<typename T>
   void handle(ragged_mutator<T> & m) {
-    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
+    using value_t = T;
     using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
     using offset_t = data::sparse_data_offset_t;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
     auto & h = m.h_;
 
-    entry_value_t * entries = reinterpret_cast<entry_value_t *>(h.entries);
+    value_t * entries = reinterpret_cast<value_t *>(h.entries);
 
     commit_info_t ci;
     ci.offsets = h.offsets;
@@ -135,20 +137,22 @@ struct finalize_handles_t :
     }
 
     std::memcpy(h.entries_data[0], h.entries,
-      md->num_exclusive_filled * sizeof(entry_value_t));
+      md->num_exclusive_filled * sizeof(value_t));
 
     std::memcpy(h.entries_data[1],
-      h.entries + h.reserve * sizeof(entry_value_t),
-      h.num_shared() * sizeof(entry_value_t) * h.max_entries_per_index());
+      h.entries + h.reserve * sizeof(value_t),
+      h.num_shared() * sizeof(value_t) * h.max_entries_per_index());
 
     md->initialized = true;
   } // handle
 
   template<typename T>
   void handle(sparse_mutator<T> & m) {
-    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
-    using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
-    using offset_t = data::sparse_data_offset_t;
+    using mutator_t = sparse_mutator<T>;
+    using entry_value_t = typename mutator_t::entry_value_t;
+    using offset_t = typename mutator_t::offset_t;
+    using handle_t = typename mutator_t::handle_t;
+    using commit_info_t = typename handle_t::commit_info_t;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
     auto & h = m.h_;

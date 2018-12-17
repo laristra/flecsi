@@ -64,13 +64,13 @@ struct accessor_u<data::ragged,
                          SHARED_PERMISSIONS,
                          GHOST_PERMISSIONS>,
                        public ragged_accessor_base_t {
-  using handle_t = sparse_data_handle_u<T,
+  using handle_t = ragged_data_handle_u<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS>;
 
   using offset_t = typename handle_t::offset_t;
-  using entry_value_t = typename handle_t::entry_value_t;
+  using value_t = T;
 
   using index_space_t =
     topology::index_space_u<topology::simple_entry_u<size_t>, true>;
@@ -79,7 +79,7 @@ struct accessor_u<data::ragged,
   //! Constructor from handle.
   //--------------------------------------------------------------------------//
 
-  accessor_u(const sparse_data_handle_u<T, 0, 0, 0> & h)
+  accessor_u(const ragged_data_handle_u<T, 0, 0, 0> & h)
     : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   T & operator()(size_t index, size_t ragged_index) {
@@ -87,7 +87,7 @@ struct accessor_u<data::ragged,
     assert(
       ragged_index < offset.count() && "ragged accessor: index out of range");
 
-    return (handle.entries + offset.start() + ragged_index)->value;
+    return handle.entries[offset.start() + ragged_index];
   } // operator ()
 
   //-------------------------------------------------------------------------//
@@ -101,8 +101,8 @@ struct accessor_u<data::ragged,
     for(size_t index = 0; index < handle.num_total_; ++index) {
       const offset_t & oi = handle.offsets[index];
 
-      entry_value_t * itr = handle.entries + oi.start();
-      entry_value_t * end = itr + oi.count();
+      value_t * itr = handle.entries + oi.start();
+      value_t * end = itr + oi.count();
 
       while(itr != end) {
         size_t entry = itr->entry;

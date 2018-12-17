@@ -52,7 +52,7 @@ struct finalize_handles_t
     auto & h = m.h_;
 
     using offset_t = typename mutator_handle_u<T>::offset_t;
-    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
+    using value_t = typename mutator_handle_u<T>::value_t;
     using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
 
     auto & context = context_t::instance();
@@ -63,8 +63,8 @@ struct finalize_handles_t
     auto & sparse_field_metadata =
       context.registered_sparse_field_metadata().at(h.fid);
 
-    entry_value_t * entries =
-      reinterpret_cast<entry_value_t *>(&(*h.entries)[0]);
+    value_t * entries =
+      reinterpret_cast<value_t *>(&(*h.entries)[0]);
     auto offsets = &(*h.offsets)[0];
     auto shared_data = entries + *h.reserve; // ci.entries[1];
     auto ghost_data =
@@ -73,13 +73,13 @@ struct finalize_handles_t
 
     // Get entry_values
     MPI_Datatype shared_ghost_type;
-    MPI_Type_contiguous(sizeof(entry_value_t), MPI_BYTE, &shared_ghost_type);
+    MPI_Type_contiguous(sizeof(value_t), MPI_BYTE, &shared_ghost_type);
     MPI_Type_commit(&shared_ghost_type);
 
     MPI_Win win;
     MPI_Win_create(shared_data,
-      sizeof(entry_value_t) * h.num_shared() * h.max_entries_per_index(),
-      sizeof(entry_value_t), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+      sizeof(value_t) * h.num_shared() * h.max_entries_per_index(),
+      sizeof(value_t), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
     MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
     MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
@@ -157,9 +157,11 @@ struct finalize_handles_t
   void handle(sparse_mutator<T> & m) {
     auto & h = m.h_;
 
-    using offset_t = typename mutator_handle_u<T>::offset_t;
-    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
-    using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
+    using mutator_t = sparse_mutator<T>;
+    using offset_t = typename mutator_t::offset_t;
+    using entry_value_t = typename mutator_t::entry_value_t;
+    using handle_t = typename mutator_t::handle_t;
+    using commit_info_t = typename handle_t::commit_info_t;
 
     auto & context = context_t::instance();
     const int my_color = context.color();

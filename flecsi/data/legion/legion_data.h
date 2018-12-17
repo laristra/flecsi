@@ -701,6 +701,12 @@ public:
         for (const field_info_t & fi : context.registered_fields()) {
           switch (fi.storage_class) {
             case ragged:
+              if(fi.index_space == is.index_space_id) {
+                if(!utils::hash::is_internal(fi.key)) {
+                  allocator.allocate_field(fi.size, fi.fid);
+                }
+              }
+              break;
             case sparse:
               if(fi.index_space == is.index_space_id) {
                 if(!utils::hash::is_internal(fi.key)) {

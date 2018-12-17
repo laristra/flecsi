@@ -51,7 +51,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
                                     public ragged_mutator_base_t {
   using handle_t = mutator_handle_u<T>;
   using offset_t = typename handle_t::offset_t;
-  using entry_value_t = typename handle_t::entry_value_t;
+  using value_t = T;
   using erase_set_t = typename handle_t::erase_set_t;
   using overflow_map_t = typename mutator_handle_u<T>::overflow_map_t;
 
@@ -76,11 +76,10 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     if(ragged_index >= n) {
       auto & overflow = h_.overflow_map_->at(index);
       assert(ragged_index - n < overflow.size());
-      return overflow[ragged_index - n].value;
+      return overflow[ragged_index - n];
     }
 
-    entry_value_t * start = h_.entries_orig_ + offset.start();
-    return start[ragged_index].value;
+    return h_.entries_orig_[offset.start() + ragged_index];
   } // operator ()
 
   void resize(size_t index, size_t size) {

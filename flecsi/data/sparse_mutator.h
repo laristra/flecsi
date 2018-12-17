@@ -47,20 +47,23 @@ struct sparse_mutator_base_t {};
 //----------------------------------------------------------------------------//
 
 template<typename T>
-struct mutator_u<data::sparse, T> : public mutator_u<data::base, T>,
+struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_entry_value_u<T>>,
                                     public sparse_mutator_base_t {
-  using handle_t = mutator_handle_u<T>;
+  using entry_value_t = data::sparse_entry_value_u<T>;
+  using handle_t = mutator_handle_u<entry_value_t>;
   using offset_t = typename handle_t::offset_t;
-  using entry_value_t = typename handle_t::entry_value_t;
   using erase_set_t = typename handle_t::erase_set_t;
+
+  using base_t = mutator_u<data::ragged, entry_value_t>;
 
   //--------------------------------------------------------------------------//
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  mutator_u(const mutator_handle_u<T> & h) : h_(h) {}
+  mutator_u(const handle_t & h) : base_t(h) {}
 
   T & operator()(size_t index, size_t entry) {
+    auto & h_ = base_t::h_;
     assert(h_.offsets_ && "uninitialized mutator");
     assert(index < h_.num_entries_);
 
@@ -110,6 +113,7 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::base, T>,
   } // operator ()
 
   void dump() {
+    auto & h_ = base_t::h_;
     for(size_t p = 0; p < 3; ++p) {
       switch(p) {
         case 0:
@@ -149,6 +153,7 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::base, T>,
   }
 
   void erase(size_t index, size_t entry) {
+    auto & h_ = base_t::h_;
     if(!h_.erase_set_) {
       h_.erase_set_ = new erase_set_t;
     }
@@ -156,8 +161,7 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::base, T>,
     h_.erase_set_->emplace(std::make_pair(index, entry));
   }
 
-  handle_t h_;
-};
+}; // mutator_u
 
 template<typename T>
 using sparse_mutator_u = mutator_u<data::sparse, T>;
