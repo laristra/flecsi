@@ -213,7 +213,8 @@ endif()
 # Boost Program Options
 #------------------------------------------------------------------------------#
 
-if(ENABLE_BOOST_PROGRAM_OPTIONS)
+set( ENABLE_BOOST_PROGRAM_OPTIONS ${ENABLE_BOOST} )
+if(ENABLE_BOOST)
   list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
 endif()
 
