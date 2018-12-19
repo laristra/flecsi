@@ -353,7 +353,7 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
 
 } // initizlize_mesh
 
-flecsi_register_task(initialize_mesh, flecsi::supplemental, loc, single);
+flecsi_register_task(initialize_mesh, flecsi::supplemental, loc, index);
 
 } // namespace supplemental
 } // namespace flecsi

@@ -16,8 +16,8 @@
 /*! @file */
 
 #include <flecsi/utils/tuple_walker.h>
-#include <flecsi/utils/common.h>
 #include <flecsi/utils/const_string.h>
+#include <flecsi/utils/typeify.h>
 
 #include <flecsi-config.h>
 
@@ -33,7 +33,7 @@ namespace control {
  */
 
 template<size_t PHASE>
-using phase_ = flecsi::utils::typeify<size_t, PHASE>;
+using phase_ = flecsi::utils::typeify_u<size_t, PHASE>;
 
 /*!
   Allow users to define cyclic control points. Cycles can be nested.
@@ -73,7 +73,7 @@ struct phase_walker_u
   phase_walker_u(int argc, char ** argv) : argc_(argc), argv_(argv) {}
 
   /*!
-    Handle the tuple type \em PHASE_TYPE for type size_t.
+    Handle the tuple type \em PHASE_TYPE.
 
     @tparam PHASE_TYPE The phase type. This can either be a size_t
                        or a \em cycle. Cycles are defined by the
@@ -83,36 +83,27 @@ struct phase_walker_u
    */
 
   template<typename PHASE_TYPE>
-  typename std::enable_if<
-    std::is_same<typename PHASE_TYPE::TYPE, size_t>::value>::type
-  handle_type() {
-    // Execute each control action for this phase
-    auto & sorted =
-      CONTROL_POLICY::instance().sorted_phase_map(PHASE_TYPE::value);
+  void handle_type() {
 
-    for(auto & node: sorted) {
-      node.action()(argc_, argv_);
-    } // for
-  } // handle_type
+    if constexpr(std::is_same<typename PHASE_TYPE::TYPE, size_t>::value) {
 
-  /*!
-    Handle the tuple type \em PHASE_TYPE for type cycle_u.
+      // This is not a cycle -> execute each control action for this phase
+      auto & sorted =
+        CONTROL_POLICY::instance().sorted_phase_map(PHASE_TYPE::value);
 
-    @tparam PHASE_TYPE The phase type. This can either be a size_t
-                       or a \em cycle. Cycles are defined by the
-                       specialization and must conform to the
-                       interface used in the appropriate handle_type
-                       method.
-   */
+      for(auto & node: sorted) {
+        node.action()(argc_, argv_);
+      } // for
+    }
+    else {
 
-  template<typename PHASE_TYPE>
-  typename std::enable_if<
-    !std::is_same<typename PHASE_TYPE::TYPE, size_t>::value>::type
-  handle_type() {
-    while(PHASE_TYPE::predicate()) {
-      phase_walker_u phase_walker(argc_, argv_);
-      phase_walker.template walk_types<typename PHASE_TYPE::TYPE>();
-    } // while
+      // This is a cycle -> create a new phase walker to recurse the cycle.
+      while(PHASE_TYPE::predicate()) {
+        phase_walker_u phase_walker(argc_, argv_);
+        phase_walker.template walk_types<typename PHASE_TYPE::TYPE>();
+      } // while
+    } // if
+
   } // handle_type
 
 private:

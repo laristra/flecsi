@@ -1,130 +1,131 @@
 stages:
-                - build
-                - test
-                - format
-                - deploy
+  - build
+  - test
+  - format
+  - deploy
 
 build_ubuntu_mpi:
-        variables:
-                  GLOBAL_CI_VARIABLE: "global_ci_value"
-                  GIT_SUBMODULE_STRATEGY: none
-                  DISTRO: "ubuntu"
-                  RUNTIME: "mpi"
-                  ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
-        image:    
-                  name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
-        stage:    build
-        artifacts:
-                  expire_in: 1 hour
-                  paths:
-                        - ${ARTIFACTS_PROJECT_PATH}
-        script:
-                - git submodule init
-                - git config submodule.cinch.url https://github.com/laristra/cinch.git
-                - git submodule update --init --recursive
-                - mkdir ${CI_PROJECT_DIR}/build
-                - cd build
-                - | 
-                        cmake   -DENABLE_LEGION=$LEGION \
-                                -DFLECSI_RUNTIME_MODEL=$RUNTIME \
-                                 ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON}\
-                                -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] \
-                                                          && echo OFF || echo ON) \
-                                -DENABLE_UNIT_TESTS=ON \
-                                -DENABLE_PARMETIS=ON \
-                                -DENABLE_COLORING=ON \
-                                -DENABLE_DOXYGEN=ON \
-                                -DENABLE_DOCUMENTATION=OFF \
-                                 ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} \
-                                ..
-                - make doxygen
-                - |
-                        if [ ${COVERAGE} ]; 
-                        then python -m coverxygen --xml-dir doc/doxygen/xml/ \
-                                                  --src-dir .. \
-                                                  --output doxygen.coverage.info; 
-                             wget -O codecov.sh https://codecov.io/bash;
-                             bash codecov.sh -X gcov \
-                                             -f doxygen.coverage.info \
-                                             -F documentation; 
-                             doxy-coverage --threshold 24 doc/doxygen/xml/; 
-                        fi
-                - make install DESTDIR=${PWD}/install 
-                - rm -rf ${PWD}/install
-                - cd .. 
-                - |
-                        if [ ${COVERAGE} ]; 
-                        then if [ ${CC} = clang ]; 
-                             then $HOME/.local/bin/codecov -F "${CC}" \
-                                  --gcov-exec "llvm-cov gcov"; 
-                             else $HOME/.local/bin/codecov -F "${CC}"; 
-                             fi; 
-                        fi
-                - cd build 
-                - sudo make install 
-                - cp -r /usr/local ${CI_PROJECT_DIR}/.
+  variables:
+    GLOBAL_CI_VARIABLE: "global_ci_value"
+    GIT_SUBMODULE_STRATEGY: none
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
+    ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
+  image:    
+    name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
+  stage:    build
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - ${ARTIFACTS_PROJECT_PATH}
+  script:
+    - git submodule init
+    - git config submodule.cinch.url https://github.com/laristra/cinch.git
+    - git config submodule.ristra-utils.url https://github.com/laristra/ristra-utils
+    - git submodule update --init --recursive
+    - mkdir ${CI_PROJECT_DIR}/build
+    - cd build
+    - | 
+      cmake   -DENABLE_LEGION=$LEGION \
+        -DFLECSI_RUNTIME_MODEL=$RUNTIME \
+         ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON}\
+        -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] \
+                && echo OFF || echo ON) \
+        -DENABLE_UNIT_TESTS=ON \
+        -DENABLE_PARMETIS=ON \
+        -DENABLE_COLORING=ON \
+        -DENABLE_DOXYGEN=ON \
+        -DENABLE_DOCUMENTATION=OFF \
+         ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} \
+        ..
+    - make doxygen
+    - |
+      if [ ${COVERAGE} ]; 
+      then python -m coverxygen --xml-dir doc/doxygen/xml/ \
+              --src-dir .. \
+              --output doxygen.coverage.info; 
+           wget -O codecov.sh https://codecov.io/bash;
+           bash codecov.sh -X gcov \
+               -f doxygen.coverage.info \
+               -F documentation; 
+           doxy-coverage --threshold 24 doc/doxygen/xml/; 
+      fi
+    - make install DESTDIR=${PWD}/install 
+    - rm -rf ${PWD}/install
+    - cd .. 
+    - |
+      if [ ${COVERAGE} ]; 
+      then if [ ${CC} = clang ]; 
+           then $HOME/.local/bin/codecov -F "${CC}" \
+          --gcov-exec "llvm-cov gcov"; 
+           else $HOME/.local/bin/codecov -F "${CC}"; 
+           fi; 
+      fi
+    - cd build 
+    - sudo make install 
+    - cp -r /usr/local ${CI_PROJECT_DIR}/.
 
 test_ubuntu_mpi:
-        variables:
-                GLOBAL_CI_VARIABLE: "global_ci_value"
-                DISTRO: "ubuntu"
-                RUNTIME: "mpi"
-                ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
-        image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
-        stage:  test
-        dependencies:
-                - build_ubuntu_mpi 
-        artifacts:
-                expire_in: 1 hour
-                paths:
-                        - ${ARTIFACTS_PROJECT_PATH}
-        script: 
-                - cd ${CI_PROJECT_DIR}/build/
-                - make test ARGS="-V"
+  variables:
+    GLOBAL_CI_VARIABLE: "global_ci_value"
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
+    ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
+  image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
+  stage:  test
+  dependencies:
+    - build_ubuntu_mpi 
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - ${ARTIFACTS_PROJECT_PATH}
+  script: 
+    - cd ${CI_PROJECT_DIR}/build/
+    - make test ARGS="-V"
 
 format_ubuntu_mpi:
-        variables:
-                GLOBAL_CI_VARIABLE: "global_ci_value"
-                DISTRO: "ubuntu"
-                RUNTIME: "mpi"
-        image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
-        stage:  format
-        dependencies:
-                - test_ubuntu_mpi
-        script:
-                - cd ${CI_PROJECT_DIR}/build/
-                - make format-FleCSI && git diff #--exit-code
+  variables:
+    GLOBAL_CI_VARIABLE: "global_ci_value"
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
+  image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
+  stage:  format
+  dependencies:
+    - test_ubuntu_mpi
+  script:
+    - cd ${CI_PROJECT_DIR}/build/
+    - make format-FleCSI && git diff #--exit-code
 
 deploy_ubuntu_mpi:
-        variables:
-                GLOBAL_CI_VARIABLE: "global_ci_value"
-                DISTRO: "ubuntu"
-                RUNTIME: "mpi"
-                ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
-        image: docker:latest #user: root
-        stage: deploy
-        services:
-                - docker:dind
-        dependencies:
-                - test_ubuntu_mpi
-        artifacts:
-                expire_in: 1 hour
-                paths:
-                        - ${ARTIFACTS_PROJECT_PATH}
-        script:
-                - |
-                        if [[ ${CC} != gcc ]]; 
-                        then TAG="_${CC}"; 
-                        fi
-                - |
-                        if [[ ${CI_COMMIT_REF_NAME} != stable ]]; 
-                        then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; 
-                        fi
-                - docker pull laristra/flecsi-third-party:${DISTRO} 
-                - CON=$(docker run -d laristra/flecsi-third-party:${DISTRO} /bin/bash) 
-                - docker cp /builds ${CON}:/.
-                - docker cp ${CI_PROJECT_DIR}/local ${CON}:/usr/local
-                - rm -r ${CI_PROJECT_DIR}/local
-                - docker cp ${CI_PROJECT_DIR} ${CON}:/home/flecsi
-                #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-                #- docker push "${CI_COMMIT_REF_SLUG}:${DISTRO}_${RUNTIME}${TAG}
+  variables:
+    GLOBAL_CI_VARIABLE: "global_ci_value"
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
+    ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
+  #services:
+  #  - docker:dind
+  image: gitlab/dind:latest #user: root
+  stage: deploy
+  dependencies:
+    - test_ubuntu_mpi
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - ${ARTIFACTS_PROJECT_PATH}
+  script:
+    - |
+      if [[ ${CC} != gcc ]]; 
+      then TAG="_${CC}"; 
+      fi
+    - |
+      if [[ ${CI_COMMIT_REF_NAME} != stable ]]; 
+      then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; 
+      fi
+    - docker pull laristra/flecsi-third-party:${DISTRO} 
+    - CON=$(docker run -d laristra/flecsi-third-party:${DISTRO} /bin/bash) 
+    - docker cp /builds ${CON}:/.
+    - docker cp ${CI_PROJECT_DIR}/local ${CON}:/usr/local
+    - rm -r ${CI_PROJECT_DIR}/local
+    - docker cp ${CI_PROJECT_DIR} ${CON}:/home/flecsi
+    #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+    #- docker push "${CI_COMMIT_REF_SLUG}:${DISTRO}_${RUNTIME}${TAG}

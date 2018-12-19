@@ -67,7 +67,8 @@ namespace utils {
  */
 
 template<typename T>
-class array_ref {
+class array_ref
+{
 
 public:
   /// \name types
@@ -98,7 +99,7 @@ public:
   array_ref & operator=(const array_ref &) = default;
 
   constexpr array_ref(const T * array, const size_type length)
-      : ptr_(array), length_(length) {}
+    : ptr_(array), length_(length) {}
 
   // Implicit conversion constructors
 
@@ -106,11 +107,11 @@ public:
   /// conversion operator.
   template<typename Allocator>
   array_ref(const std::vector<T, Allocator> & v)
-      : ptr_(v.data()), length_(v.size()) {}
+    : ptr_(v.data()), length_(v.size()) {}
 
   template<typename traits, typename Allocator>
   array_ref(const std::basic_string<T, traits, Allocator> & s)
-      : ptr_(s.data()), length_(s.size()) {}
+    : ptr_(s.data()), length_(s.size()) {}
 
   template<size_type N>
   constexpr array_ref(const T (&a)[N]) : ptr_(a), length_(N) {}
@@ -119,18 +120,17 @@ public:
   /// conversion operator.
   template<size_type N>
   constexpr array_ref(const std::array<T, N> & a)
-      : ptr_(a.data()), length_(N) {}
+    : ptr_(a.data()), length_(N) {}
 
   /// \todo See \c basic_string_ref::substr for interface
   /// questions. We want something like this on \c array_ref, but
   /// probably not with this name.
-  constexpr array_ref
-  substr(const size_type pos, const size_type n = size_type(-1)) const {
+  constexpr array_ref substr(const size_type pos,
+    const size_type n = size_type(-1)) const {
     // Recursive implementation to satisfy constexpr.
-    return (
-        pos > size() ? substr(size(), n)
-                     : n > size() - pos ? substr(pos, size() - pos)
-                                        : array_ref(data() + pos, n));
+    return (pos > size() ? substr(size(), n)
+                         : n > size() - pos ? substr(pos, size() - pos)
+                                            : array_ref(data() + pos, n));
   }
   /// @}
 
@@ -189,7 +189,7 @@ public:
     return i >= size() ? throw std::out_of_range("at() argument out of range")
       : ptr_[i];
     */
-    if (i >= size())
+    if(i >= size())
       throw std::out_of_range("at() argument out of range");
     return ptr_[i];
   }
