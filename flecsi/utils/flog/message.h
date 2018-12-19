@@ -19,6 +19,10 @@
 
 #include "colors.h"
 
+#include <iostream>
+
+#include "flog_types.h"
+
 namespace flecsi {
 namespace utils {
 namespace flog {
@@ -35,14 +39,40 @@ true_state()
 } // true_state
 
 /*!
+  Create a timestamp.
+ */
+
+inline
+std::string
+timestamp(bool underscores = false)
+{
+  char stamp[14];
+  time_t t = time(0);
+  std::string format = underscores ? "%m%d_%H%M%S" : "%m%d %H:%M:%S";
+  strftime(stamp, sizeof(stamp), format.c_str(), localtime(&t));
+  return std::string(stamp);
+} // timestamp
+
+/*!
+  Strip path from string up to last character C.
+
+  @tparam C The character to strip.
+ */
+
+template<char C>
+std::string rstrip(const char *file) {
+  std::string tmp(file);
+  return tmp.substr(tmp.rfind(C)+1);
+} // rstrip
+
+/*!
   The log_message_t type provides a base class for implementing
   formatted logging utilities.
  */
 
 template<typename P>
 struct log_message_t
-{
-  /*!
+{ /*!
     Constructor.
 
     @tparam P Predicate function type.
@@ -142,7 +172,7 @@ struct severity ## _log_message_t                                              \
   {                                                                            \
     /* Clean colors from the stream */                                         \
     if(clean_color_) {                                                         \
-      clog_t::instance().buffer_stream() << COLOR_PLAIN;                       \
+      flog_t::instance().buffer_stream() << COLOR_PLAIN;                       \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -152,12 +182,21 @@ struct severity ## _log_message_t                                              \
     format                                                                     \
 }
 
+#define message_stamp                                                          \
+  timestamp() << " " << rstrip<'/'>(file_) << ":" << line_
+
+#if !defined(SERIAL) && defined(FLOG_ENABLE_MPI)
+  #define mpi_stamp " r" << mpi_state_t::instance().rank()
+#else
+  #define mpi_stamp ""
+#endif
+
 // Trace
-severity_message_t(trace, decltype(cinch::true_state),
+severity_message_t(trace, decltype(flecsi::utils::flog::true_state),
   {
     std::ostream & stream =
-      clog_t::instance().severity_stream(CLOG_STRIP_LEVEL < 1 &&
-        predicate_() && clog_t::instance().tag_enabled());
+      flog_t::instance().severity_stream(CLOG_STRIP_LEVEL < 1 &&
+        predicate_() && flog_t::instance().tag_enabled());
 
     {
     stream << OUTPUT_CYAN("[T") << OUTPUT_LTGRAY(message_stamp);
@@ -169,11 +208,11 @@ severity_message_t(trace, decltype(cinch::true_state),
   });
 
 // Info
-severity_message_t(info, decltype(cinch::true_state),
+severity_message_t(info, decltype(flecsi::utils::flog::true_state),
   {
     std::ostream & stream =
-      clog_t::instance().severity_stream(CLOG_STRIP_LEVEL < 2 &&
-        predicate_() && clog_t::instance().tag_enabled());
+      flog_t::instance().severity_stream(CLOG_STRIP_LEVEL < 2 &&
+        predicate_() && flog_t::instance().tag_enabled());
 
     {
     stream << OUTPUT_GREEN("[I") << OUTPUT_LTGRAY(message_stamp);
@@ -185,11 +224,11 @@ severity_message_t(info, decltype(cinch::true_state),
   });
 
 // Warn
-severity_message_t(warn, decltype(cinch::true_state),
+severity_message_t(warn, decltype(flecsi::utils::flog::true_state),
   {
     std::ostream & stream =
-      clog_t::instance().severity_stream(CLOG_STRIP_LEVEL < 3 &&
-        predicate_() && clog_t::instance().tag_enabled());
+      flog_t::instance().severity_stream(CLOG_STRIP_LEVEL < 3 &&
+        predicate_() && flog_t::instance().tag_enabled());
 
     {
     stream << OUTPUT_BROWN("[W") << OUTPUT_LTGRAY(message_stamp);
@@ -202,7 +241,7 @@ severity_message_t(warn, decltype(cinch::true_state),
   });
 
 // Error
-severity_message_t(error, decltype(cinch::true_state),
+severity_message_t(error, decltype(flecsi::utils::flog::true_state),
   {
     std::ostream & stream = std::cerr;
 

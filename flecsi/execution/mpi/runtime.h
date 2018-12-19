@@ -18,6 +18,10 @@
 #include <flecsi-config.h>
 #include <cinch-config.h>
 
+#if defined(FLECSI_ENABLE_FLOG)
+  #include <flecsi/utils/flog.h>
+#endif
+
 #include <flecsi/execution/context.h>
 
 #include <cinch/runtime.h>
@@ -36,15 +40,17 @@
   using namespace boost::program_options;
 #endif
 
-inline std::string __flecsi_tags_default = "all";
+inline std::string __flecsi_tags = "all";
 
 #if defined(CINCH_ENABLE_BOOST)
 inline void add_options(options_description & desc) {
+#if defined(FLECSI_ENABLE_FLOG)
   desc.add_options()
-    ("tags,t", value(&__flecsi_tags_default)->implicit_value("0"),
+    ("tags,t", value(&__flecsi_tags)->implicit_value("0"),
     "Enable the specified output tags, e.g., --tags=tag1,tag2."
     " Passing --tags by itself will print the available tags.")
   ;
+#endif
 } // add_options
 #endif
 
@@ -53,23 +59,34 @@ inline int initialize(int argc, char ** argv, parsed_options & parsed) {
 #else
 inline int initialize(int argc, char ** argv) {
 #endif
-  std::cout << "Executing initialize" << std::endl;
 
-  // Initialize MPI runtime
+#if defined(FLECSI_ENABLE_FLOG)
+  if(__flecsi_tags == "0") {
+    std::cout << "Available tags (FLOG):" << std::endl;
+
+    for(auto t: flog_tag_map()) {
+      std::cout << " " << t.first << std::endl;
+    } // for
+
+    return 1;
+  } // if
+#endif
+
   MPI_Init(&argc, &argv);
 
-  // Get the rank
   int rank{0};
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   flecsi::execution::context_t::instance().color() = rank;
+
+#if defined(FLECSI_ENABLE_FLOG)
+  flog_init(__flecsi_tags);
+#endif
 
   return 0;
 } // initialize
 
 inline int finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
-  std::cout << "Executing finalize with mode " << size_t{mode} << std::endl;
 
-  // Shutdown MPI runtime
   MPI_Finalize();
 
   return 0;

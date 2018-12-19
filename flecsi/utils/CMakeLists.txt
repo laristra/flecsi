@@ -69,6 +69,7 @@ set(utils_HEADERS
 set(utils_SOURCES
   debruijn.cc
   demangle.cc
+  flog/packet.cc
 )
 
 #------------------------------------------------------------------------------#

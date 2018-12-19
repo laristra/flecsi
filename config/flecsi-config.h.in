@@ -30,12 +30,6 @@
 #cmakedefine FLECSI_ENABLE_LEGION
 
 //----------------------------------------------------------------------------//
-// Control Model
-//----------------------------------------------------------------------------//
-
-#cmakedefine FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL
-
-//----------------------------------------------------------------------------//
 // Enable Legion thread-local storage interface
 //----------------------------------------------------------------------------//
 
@@ -77,6 +71,17 @@
 //----------------------------------------------------------------------------//
 
 #cmakedefine FLECSI_ENABLE_BOOST
+
+//----------------------------------------------------------------------------//
+// FLOG
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_FLOG
+#cmakedefine FLOG_STRIP_LEVEL
+#cmakedefine FLOG_COLOR_OUTPUT
+#cmakedefine FLOG_ENABLE_TAGS
+#cmakedefine FLOG_TAG_BITS @FLOG_TAG_BITS@
+#cmakedefine FLOG_ENABLE_EXTERNAL
 
 //----------------------------------------------------------------------------//
 // Enable coloring

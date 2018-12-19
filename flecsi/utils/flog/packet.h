@@ -28,6 +28,9 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <cstring>
+#include <iostream>
 #include <mutex>
 #include <sstream>
 #include <thread>
@@ -93,7 +96,7 @@ struct packet_t
   } // data
 
   size_t bytes() const {
-    return sec_bytes + usec_bytes + CLOG_MAX_MESSAGE_SIZE;
+    return sec_bytes + usec_bytes + FLOG_MAX_MESSAGE_SIZE;
   } // bytes
 
   bool operator < (packet_t const & b) {
@@ -104,12 +107,12 @@ struct packet_t
 
 private:
 
-  char data_[sec_bytes + usec_bytes + CLOG_MAX_MESSAGE_SIZE];
+  char data_[sec_bytes + usec_bytes + FLOG_MAX_MESSAGE_SIZE];
 
 }; // packet_t
 
 // Forward
-inline void flush_packets();
+void flush_packets();
 
 #if defined(FLECSI_ENABLE_MPI)
 struct mpi_state_t
@@ -160,28 +163,6 @@ private:
   bool initialized_ = false;
 
 }; // mpi_state_t
-
-void flush_packets() {
-  while(mpi_state_t::instance().run_flusher()) {
-    usleep(CLOG_PACKET_FLUSH_INTERVAL);
-
-    {
-    std::lock_guard<std::mutex> guard(mpi_state_t::instance().packets_mutex());
-
-    if(mpi_state_t::instance().packets().size()) {
-      std::sort(mpi_state_t::instance().packets().begin(),
-        mpi_state_t::instance().packets().end());
-
-      for(auto & p: mpi_state_t::instance().packets()) {
-        clog_t::instance().stream() << p.message();
-      } // for
-
-      mpi_state_t::instance().packets().clear();
-    } // if
-    } // scope
-
-  } // while
-} // flush_packets
 #endif // FLECSI_ENABLE_MPI
 
 } // namespace flog

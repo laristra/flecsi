@@ -17,6 +17,14 @@
 
 #include <flecsi-config.h>
 
+#include "colors.h"
+#include "packet.h"
+
+#include <bitset>
+#include <cassert>
+#include <sstream>
+#include <unordered_map>
+
 namespace flecsi {
 namespace utils {
 namespace flog {
@@ -297,7 +305,7 @@ struct tee_stream_t
     // Allow users to turn std::flog output on and off from
     // their environment.
     if(std::getenv("FLOG_ENABLE_STDLOG")) {
-      tee_.add_buffer("flog", std::flog.rdbuf(), true);
+      tee_.add_buffer("flog", std::clog.rdbuf(), true);
     } // if
   } // tee_stream_t
 
@@ -403,11 +411,12 @@ public:
   void
   init(std::string active = "none")
   {
-    #if defined(FLOG_DEBUG)
-      std::cerr << COLOR_LTGRAY << "FLOG: initializing runtime" <<
-        COLOR_PLAIN << std::endl;
-    #endif
+#if defined(FLOG_DEBUG)
+    std::cerr << COLOR_LTGRAY << "FLOG: initializing runtime" <<
+      COLOR_PLAIN << std::endl;
+#endif
 
+#if defined(FLOG_ENABLE_TAGS)
     // Because active tags are specified at runtime, it is
     // necessary to maintain a map of the compile-time registered
     // tag names to the id that they get assigned after the flog_t
@@ -444,21 +453,22 @@ public:
       } // while
     } // if
 
-    #if defined(FLOG_DEBUG)
-      std::cerr << COLOR_LTGRAY << "FLOG: active tags (" <<
-        active << ")" << COLOR_PLAIN << std::endl;
-    #endif
+#if defined(FLOG_DEBUG)
+    std::cerr << COLOR_LTGRAY << "FLOG: active tags (" <<
+      active << ")" << COLOR_PLAIN << std::endl;
+#endif
 
+#endif // FLOG_ENABLE_TAGS
 
 #if defined(FLECSI_ENABLE_MPI)
 
-    #if defined(FLOG_DEBUG)
-      std::cerr << COLOR_LTGRAY << "FLOG: initializing mpi state" <<
-        COLOR_PLAIN << std::endl;
-    #endif
+#if defined(FLOG_DEBUG)
+    std::cerr << COLOR_LTGRAY << "FLOG: initializing mpi state" <<
+      COLOR_PLAIN << std::endl;
+#endif
 
     mpi_state_t::instance().init();
-#endif
+#endif // FLECSI_ENABLE_MPI
 
     initialized_ = true;
   } // init

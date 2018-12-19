@@ -17,7 +17,7 @@
 
 #include <flecsi-config.h>
 
-#include <flog/message.h>
+#include "flog/message.h"
 
 #if defined(FLECSI_ENABLE_FLOG)
 
@@ -53,6 +53,17 @@
 #define flog_tag_guard(name)                                                   \
   flecsi::utils::flog::flog_tag_scope_t name ## _flog_tag_scope__(             \
     flog_tag_lookup(name))
+
+/*!
+  @def flog_tag_map
+
+  Return a std::map of registered tags.
+  
+  @ingroup logging 
+ */
+
+#define flog_tag_map()                                                         \
+  flecsi::utils::flog::flog_t::instance().tag_map()
 
 /*!
   @def flog_init(active)
