@@ -28,6 +28,12 @@ set(utils_HEADERS
   dimensioned_array.h
   export_definitions.h
   factory.h
+  flog/colors.h
+  flog/flog_types.h
+  flog.h
+  flog/message.h
+  flog/packet.h
+  flog/serialize.h
   function_traits.h
   graphviz.h
   hash.h
