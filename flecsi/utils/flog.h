@@ -225,6 +225,28 @@
   flecsi::utils::flog::error_log_message_t(__FILE__, __LINE__).stream() <<     \
     message
 
+/*!
+  @def clog_fatal(message)
+
+  Throw a runtime exception with the provided message.
+
+  @param message The stream message to be printed.
+
+  @note Fatal level severity log entires are not disabled by tags or
+        by the ENABLE_CLOG or CLOG_STRIP_LEVEL build options, i.e.,
+        they are always active.
+
+  @b Usage
+  @code
+  int value{20};
+
+  // Print the value and exit
+  clog_fatal("Value: " << value);
+  @endcode
+
+  @ingroup clog
+ */
+
 #else
 
 #define flog_register_tag(name)
@@ -239,3 +261,45 @@
 #define flog_error(message)
 
 #endif // FLECSI_ENABLE_FLOG
+
+#define flog_fatal(message)                                                    \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  {                                                                            \
+  std::stringstream _sstream;                                                  \
+  _sstream << OUTPUT_LTRED("FATAL ERROR ") <<                                  \
+    OUTPUT_YELLOW(flecsi::utils::flog::rstrip<'/'>(__FILE__) << ":" <<         \
+      __LINE__ << " ") << OUTPUT_LTRED(message) << std::endl;                  \
+  throw std::runtime_error(_sstream.str());                                    \
+  } /* scope */
+
+/*!
+  @def clog_assert(test, message)
+
+  Clog assertion interface. Assertions allow the developer to catch
+  invalid program state. This call will invoke clog_fatal if the test
+  condition is false.
+
+  @param test    The test condition.
+  @param message The stream message to be printed.
+
+  @note Failed assertions are not disabled by tags or
+        by the ENABLE_CLOG or CLOG_STRIP_LEVEL build options, i.e.,
+        they are always active.
+
+  @b Usage
+  @code
+  int value{20};
+
+  // Print the value and exit
+  clog_assert(value == 20, "invalid value");
+  @endcode
+
+  @ingroup clog
+ */
+
+#define clog_assert(test, message)                                             \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  if(!(test)) { clog_fatal(message); }
+

@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <cstddef>
+#include <functional>
 
 namespace flecsi {
 namespace execution {
@@ -60,9 +61,25 @@ struct context_u : public CONTEXT_POLICY {
     return color_;
   } // color
 
+  using top_level_action_t = std::function<int(int, char **)>;
+
+  /*!
+    Set the top-level action.
+   */
+
+  bool register_top_level_action(top_level_action_t tla) {
+    top_level_action_ = tla;
+    return true;
+  } // register_top_level_action
+
+  top_level_action_t & top_level_action() {
+    return top_level_action_;
+  } // top_level_action
+
 private:
 
   size_t color_ = 0;
+  top_level_action_t top_level_action_ = {};
 
   context_u() : CONTEXT_POLICY() {}
 

@@ -15,18 +15,18 @@
 
 /*! @file */
 
-#include <list>
-#include <map>
-#include <queue>
-#include <vector>
-
-#include <cinch/clog.h>
-
 #include <flecsi-config.h>
+
+#include <flecsi/utils/flog.h>
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 #include <flecsi/utils/graphviz.h>
 #endif
+
+#include <list>
+#include <map>
+#include <queue>
+#include <vector>
 
 namespace flecsi {
 namespace utils {
@@ -235,7 +235,7 @@ struct dag_u
     } // while
 
     if(count != nodes_.size()) {
-      clog_fatal("sorting failed. This is not a DAG!!!");
+      flog_fatal("sorting failed. This is not a DAG!!!");
     } // if
 
     return sorted;
