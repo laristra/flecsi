@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+using namespace flecsi::control;
+
 int unit_init(int argc, char ** argv) {
   std::cout << "SHIT" << std::endl;
   return 0;

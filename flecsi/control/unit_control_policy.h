@@ -17,6 +17,7 @@
 
 #include <flecsi/control/control.h>
 #include <flecsi/control/default_node.h>
+#include <flecsi/utils/macros.h>
 
 namespace flecsi {
 namespace control {

@@ -15,7 +15,6 @@
 option(FLECSI_ENABLE_FLOG "Enable FleCSI Logging Utility (FLOG)" OFF)
 
 if(FLECSI_ENABLE_FLOG)
-
   set(FLOG_STRIP_LEVEL "0" CACHE STRING "Set the clog strip level")
   option(FLOG_COLOR_OUTPUT "Enable colorized clog logging" ON)
   option(FLOG_ENABLE_TAGS "Enable tag groups" ${ENABLE_BOOST})
@@ -37,6 +36,8 @@ if(FLECSI_ENABLE_FLOG)
   endif()
 
   option(FLOG_DEBUG "Enable clog debugging" OFF)
+
+  find_package(Threads)
 
   list(APPEND CINCH_RUNTIME_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 endif()

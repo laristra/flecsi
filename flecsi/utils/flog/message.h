@@ -195,7 +195,7 @@ struct severity ## _log_message_t                                              \
 severity_message_t(trace, decltype(flecsi::utils::flog::true_state),
   {
     std::ostream & stream =
-      flog_t::instance().severity_stream(CLOG_STRIP_LEVEL < 1 &&
+      flog_t::instance().severity_stream(FLOG_STRIP_LEVEL < 1 &&
         predicate_() && flog_t::instance().tag_enabled());
 
     {
@@ -211,7 +211,7 @@ severity_message_t(trace, decltype(flecsi::utils::flog::true_state),
 severity_message_t(info, decltype(flecsi::utils::flog::true_state),
   {
     std::ostream & stream =
-      flog_t::instance().severity_stream(CLOG_STRIP_LEVEL < 2 &&
+      flog_t::instance().severity_stream(FLOG_STRIP_LEVEL < 2 &&
         predicate_() && flog_t::instance().tag_enabled());
 
     {
@@ -227,7 +227,7 @@ severity_message_t(info, decltype(flecsi::utils::flog::true_state),
 severity_message_t(warn, decltype(flecsi::utils::flog::true_state),
   {
     std::ostream & stream =
-      flog_t::instance().severity_stream(CLOG_STRIP_LEVEL < 3 &&
+      flog_t::instance().severity_stream(FLOG_STRIP_LEVEL < 3 &&
         predicate_() && flog_t::instance().tag_enabled());
 
     {

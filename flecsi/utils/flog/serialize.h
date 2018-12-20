@@ -85,7 +85,7 @@ private:
 
 void flush_packets() {
   while(mpi_state_t::instance().run_flusher()) {
-    usleep(CLOG_PACKET_FLUSH_INTERVAL);
+    usleep(FLOG_PACKET_FLUSH_INTERVAL);
 
     {
     std::lock_guard<std::mutex> guard(mpi_state_t::instance().packets_mutex());
