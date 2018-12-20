@@ -54,3 +54,12 @@ using control_t =
 
 } // namespace control
 } // namespace flecsi
+
+#define unit_register_action(phase, name, action, ...)                         \
+  inline bool action_##name##_registered =                                     \
+    flecsi::control::control_t::instance().phase_map(phase,                    \
+      EXPAND_AND_STRINGIFY(phase)).                                            \
+      initialize_node({                                                        \
+        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),      \
+        EXPAND_AND_STRINGIFY(name),                                            \
+        action, ##__VA_ARGS__ });

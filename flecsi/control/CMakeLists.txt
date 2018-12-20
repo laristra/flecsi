@@ -54,3 +54,11 @@ add_executable(runtime
 
 target_link_libraries(runtime ${CINCH_RUNTIME_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(unit
+  ${CINCH_SOURCE_DIR}/cinch/runtime.cc
+  test/unit.cc
+)
+
+target_link_libraries(unit ${CINCH_RUNTIME_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT})
