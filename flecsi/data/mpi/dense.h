@@ -155,56 +155,117 @@ struct storage_class__<dense>
     auto& context = execution::context_t::instance();
 
     using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
+    
+    //checking if the data_client type is mesh_topology
+    if (std::is_base_of<flecsi::topology::mesh_topology_base_t, client_type>::value) { 
 
-    // get field_info for this data handle
-    auto& field_info =
-      context.get_field_info_from_name(
-        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
-      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
+      // get field_info for this data handle
+      auto& field_info =
+	context.get_field_info_from_name(
+	  typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
+	utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
-    // get color_info for this field.
-    auto& color_info =
-      (context.coloring_info(field_info.index_space)).at(context.color());
-    auto &index_coloring = context.coloring(field_info.index_space);
+      // get color_info for this field.
+      auto& color_info =
+	(context.coloring_info(field_info.index_space)).at(context.color());
+      auto &index_coloring = context.coloring(field_info.index_space);
 
-    auto& registered_field_data = context.registered_field_data();
-    auto fieldDataIter = registered_field_data.find(field_info.fid);
-    if (fieldDataIter == registered_field_data.end()) {
-      size_t size = field_info.size * (color_info.exclusive +
-                                       color_info.shared +
-                                       color_info.ghost);
-      // TODO: deal with VERSION
-      context.register_field_data(field_info.fid,
-                                  size);
-      context.register_field_metadata<DATA_TYPE>(field_info.fid,
-                                                 color_info,
-                                                 index_coloring);
+      auto& registered_field_data = context.registered_field_data();
+      auto fieldDataIter = registered_field_data.find(field_info.fid);
+      if (fieldDataIter == registered_field_data.end()) {
+	size_t size = field_info.size * (color_info.exclusive +
+					 color_info.shared +
+					 color_info.ghost);
+	// TODO: deal with VERSION
+	context.register_field_data(field_info.fid,
+				    size);
+	context.register_field_metadata<DATA_TYPE>(field_info.fid,
+						   color_info,
+						   index_coloring);
+      }
+
+      auto data = registered_field_data[field_info.fid].data();
+      // populate data member of data_handle_t
+      auto &hb = dynamic_cast<dense_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
+
+      hb.fid = field_info.fid;
+      hb.index_space = field_info.index_space;
+      hb.data_client_hash = field_info.data_client_hash;
+
+      hb.exclusive_size = color_info.exclusive;
+      hb.combined_data = hb.exclusive_buf = hb.exclusive_data =
+	reinterpret_cast<DATA_TYPE *>(data);
+      hb.combined_size = color_info.exclusive;
+
+      hb.shared_size = color_info.shared;
+      hb.shared_data = hb.shared_buf = hb.exclusive_data + hb.exclusive_size;
+      hb.combined_size += color_info.shared;
+
+      hb.ghost_size = color_info.ghost;
+      hb.ghost_data = hb.ghost_buf = hb.shared_data + hb.shared_size;
+      hb.combined_size += color_info.ghost;
+
+      return h;
+   }
+
+    //checking if the data_client type is structured_mesh_topology
+    if (std::is_base_of<flecsi::topology::structured_mesh_topology_base_t, client_type>::value) { 
+
+      // get field_info for this data handle
+      auto& field_info =
+	context.get_field_info_from_name(
+	  typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
+	utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
+
+      // get color_info for this field.
+      auto& color_info =
+	(context.coloring_info(field_info.index_space)).at(context.color());
+      auto &box_coloring = context.box_coloring(field_info.index_space);
+
+      auto& registered_field_data = context.registered_field_data();
+      auto fieldDataIter = registered_field_data.find(field_info.fid);
+      if (fieldDataIter == registered_field_data.end()) {
+
+	size_t count = 0; 
+	for (size_t i = 0; i < box_coloring.num_boxes; i++)
+	    count += box_coloring.overlay[i].size(); 
+
+	size_t size = field_info.size * count; 
+
+	// TODO: deal with VERSION
+	context.register_field_data(field_info.fid,
+				    size);
+	context.register_field_metadata_stopo<DATA_TYPE>(field_info.fid,
+						   color_info,
+						   box_coloring);
+      }
+
+      auto data = registered_field_data[field_info.fid].data();
+      // populate data member of data_handle_t
+      auto &hb = dynamic_cast<dense_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
+
+      hb.fid = field_info.fid;
+      hb.index_space = field_info.index_space;
+      hb.data_client_hash = field_info.data_client_hash;
+
+      hb.exclusive_size = color_info.exclusive;
+      hb.combined_data = hb.exclusive_buf = hb.exclusive_data =
+	reinterpret_cast<DATA_TYPE *>(data);
+      hb.combined_size = color_info.exclusive;
+
+      hb.shared_size = color_info.shared;
+      hb.shared_data = hb.shared_buf = reinterpret_cast<DATA_TYPE *>(data);
+      //hb.shared_data = hb.shared_buf = hb.exclusive_data + hb.exclusive_size;
+      hb.combined_size += color_info.shared;
+
+      hb.ghost_size = color_info.ghost;
+      hb.ghost_data = hb.ghost_buf = reinterpret_cast<DATA_TYPE *>(data);
+      //hb.ghost_data = hb.ghost_buf = hb.shared_data + hb.shared_size;
+      hb.combined_size += color_info.ghost;
+
+      return h;
     }
-
-    auto data = registered_field_data[field_info.fid].data();
-    // populate data member of data_handle_t
-    auto &hb = dynamic_cast<dense_data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
-
-    hb.fid = field_info.fid;
-    hb.index_space = field_info.index_space;
-    hb.data_client_hash = field_info.data_client_hash;
-
-    hb.exclusive_size = color_info.exclusive;
-    hb.combined_data = hb.exclusive_buf = hb.exclusive_data =
-      reinterpret_cast<DATA_TYPE *>(data);
-    hb.combined_size = color_info.exclusive;
-
-    hb.shared_size = color_info.shared;
-    hb.shared_data = hb.shared_buf = hb.exclusive_data + hb.exclusive_size;
-    hb.combined_size += color_info.shared;
-
-    hb.ghost_size = color_info.ghost;
-    hb.ghost_data = hb.ghost_buf = hb.shared_data + hb.shared_size;
-    hb.combined_size += color_info.ghost;
-
-    return h;
-  }
-
+ }
 }; // struct storage_class_t
 
 } // namespace mpi
