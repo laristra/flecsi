@@ -96,6 +96,7 @@ set(execution_SOURCES
 # FIXME: Remove this when unit tests are working again
 add_executable(runtime_initialization
   ${CINCH_SOURCE_DIR}/cinch/runtime.cc
+  ../control/test/unit.cc
   ../utils/flog/packet.cc
   ${RUNTIME_DRIVER}
 )

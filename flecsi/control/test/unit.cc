@@ -1,12 +1,13 @@
-#include <flecsi/control/unit_control_policy.h>
+#include <flecsi/control/ftest.h>
 
 #include <iostream>
 
-using namespace flecsi::control;
-
-int unit_init(int argc, char ** argv) {
-  std::cout << "SHIT" << std::endl;
+int unit_initialization(int argc, char ** argv) {
+  std::cout << "Executing initialization action" << std::endl;
   return 0;
 }
 
-unit_register_action(initialize, unit_init, unit_init);
+int unit_driver(int argc, char ** argv) {
+  std::cout << "Executing driver action" << std::endl;
+  return 0;
+}

@@ -40,11 +40,12 @@ struct default_node_t {
 
 private:
 
-  action_t action_;
-  bitset_t bitset_;
+  action_t action_ = {};
+  bitset_t bitset_ = 0;
 
 }; // struct default_node_t
 
+inline
 std::ostream &
 operator << (std::ostream & stream, default_node_t const & node) {
   stream << "bitset: " << node.bitset() << std::endl;

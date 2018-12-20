@@ -104,15 +104,8 @@ cinch_append_runtime_handler(handler);
 
 // FIXME: This is wrong, but I need to test it...
 inline int runtime_driver(int argc, char ** argv) {
-  std::cout << "Executing runtime driver" << std::endl;
   return flecsi::execution::context_t::instance().
     top_level_action()(argc, argv);
 } // runtime_driver
 
 cinch_register_runtime_driver(runtime_driver);
-
-#include <flecsi/control/unit_control_policy.h>
-
-inline bool tla_registered =
-  flecsi::execution::context_t::instance().register_top_level_action(
-    flecsi::control::control_t::execute);
