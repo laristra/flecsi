@@ -5,6 +5,11 @@ stages:
   - format
   - deploy
 
+only:
+  - master
+  - /^stable\/.*$/
+  - merge_requests
+
 prep:
   retry: 2
   variables:
@@ -262,14 +267,6 @@ test:fedora_mpich_legion:
 
 ##################################
 ### Format ###
-format:ubuntu_mpi:
-  extends: .format
-  variables:
-    DISTRO: "ubuntu"
-    RUNTIME: "mpi"
-  dependencies:
-    - test:ubuntu_mpi
-
 format:fedora_mpi:
   extends: .format
   variables:
@@ -277,6 +274,14 @@ format:fedora_mpi:
     RUNTIME: "mpi"
   dependencies:
     - test:fedora_mpi
+
+format:fedora_legion:
+  extends: .format
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "legion"
+  dependencies:
+    - test:fedora_legion
 ##################################
 
 
@@ -304,7 +309,7 @@ format:fedora_mpi:
       fi
     - |
       if [[ ${CI_COMMIT_REF_NAME} != stable ]]; 
-      then TAG="${TAG}_${CI_COMMIT_REF_NAME//\//_}"; 
+      then TAG="${TAG}_${CI_COMMIT_REF_NAME//[^a-zA-Z0-9]/_}"; 
       fi
     - docker pull laristra/flecsi-third-party:${DISTRO} 
     - CON=$(docker run -d laristra/flecsi-third-party:${DISTRO} /bin/bash) 
