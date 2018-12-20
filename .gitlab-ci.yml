@@ -159,6 +159,17 @@ build:fedora_mpich_legion:
   variables:
     DISTRO: "fedora_mpich"
     RUNTIME: "legion"
+
+build:fedora_hpx:
+  extends: .build
+  before_script:
+    - export CC=clang
+    - export CXX=clang++
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "hpx"
+  allow_failure: true
+
 ##################################
 
 
