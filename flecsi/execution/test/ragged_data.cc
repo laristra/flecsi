@@ -65,9 +65,12 @@ mutate(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
       for (size_t j = 3; j < 10; ++j) {
         rm(c, j) = rank * 10000 + gid * 100 + 50 + j;
       }
+      rm.erase(c, 1);
     }
     else if (gid == 13) {
-      rm(c, 6) = -rm(c, 6) + 60;
+      auto n = rank * 10000 + gid * 100 + 66;
+      rm.push_back(c, n);
+      rm.insert(c, 1, n + 1);
     }
     // flip the checkerboard:  entries that had 3 entries will now
     // have 2, and vice-versa
@@ -76,8 +79,9 @@ mutate(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
       rm(c, 1) = -rm(c, 1) + 70;
     }
     else {
-      rm.resize(c, 3);
-      rm(c, 2) = rank * 10000 + gid * 100 + 77;
+      auto n = rank * 10000 + gid * 100 + 88;
+      rm.insert(c, 1, n);
+      rm(c, 2) = -rm(c, 2) + 80;
     }
   }
 } // mutate
