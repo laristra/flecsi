@@ -10,12 +10,6 @@ before_script:
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
 
 prep:
-  only:
-    refs:
-      - master
-      - /^stable.*$/
-      - /^pull.*head.*$/
-      - merge_requests
   retry: 2
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
@@ -34,12 +28,6 @@ prep:
 
 
 .build:
-  only:
-    refs:
-      - master
-      - /^stable.*$/
-      - /^pull.*head.*$/
-      - merge_requests
   retry:
     max: 2
     when:
@@ -185,12 +173,6 @@ build:fedora_hpx:
 
 
 .test:
-  only:
-    refs:
-      - master
-      - /^stable.*$/
-      - /^pull.*head.*$/
-      - merge_requests
   retry: 2
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
@@ -279,12 +261,6 @@ test:fedora_mpich_legion:
 
 
 .format:
-  only:
-    refs:
-      - master
-      - /^stable.*$/
-      - /^pull.*head.*$/
-      - merge_requests
   retry: 2
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
@@ -320,12 +296,6 @@ format:fedora_legion:
 
 
 .deploy:
-  only:
-    refs:
-      - master
-      - /^stable.*$/
-      - /^pull.*head.*$/
-      - merge_requests
   retry: 2
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
