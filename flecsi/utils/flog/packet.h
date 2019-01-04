@@ -17,6 +17,8 @@
 
 #include <flecsi-config.h>
 
+#if defined(FLECSI_ENABLE_FLOG)
+
 #if defined(FLECSI_ENABLE_MPI)
   #include <mpi.h>
 #endif
@@ -168,3 +170,5 @@ private:
 } // namespace flog
 } // namespace utils
 } // namespace flecsi
+
+#endif // FLECSI_ENABLE_FLOG

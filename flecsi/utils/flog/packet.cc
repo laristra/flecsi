@@ -11,9 +11,10 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
-
 #include "flog_types.h"
 #include "packet.h"
+
+#if defined(FLECSI_ENABLE_FLOG)
 
 namespace flecsi {
 namespace utils {
@@ -46,3 +47,5 @@ void flush_packets() {
 } // namespace flog
 } // namespace utils
 } // namespace flecsi
+
+#endif // FLECSI_ENABLE_FLOG

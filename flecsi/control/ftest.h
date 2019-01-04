@@ -19,7 +19,10 @@
 
 #include <flecsi/control/control.h>
 #include <flecsi/control/default_node.h>
+#include <flecsi/utils/flog.h>
 #include <flecsi/utils/macros.h>
+
+#include <cinch/ctest.h>
 
 namespace flecsi {
 namespace control {

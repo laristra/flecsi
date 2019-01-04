@@ -17,11 +17,10 @@
 
 #include <flecsi-config.h>
 
-#include "colors.h"
+#include "flog_types.h"
+#include "utils.h"
 
 #include <iostream>
-
-#include "flog_types.h"
 
 namespace flecsi {
 namespace utils {
@@ -37,33 +36,6 @@ true_state()
 {
   return true;
 } // true_state
-
-/*!
-  Create a timestamp.
- */
-
-inline
-std::string
-timestamp(bool underscores = false)
-{
-  char stamp[14];
-  time_t t = time(0);
-  std::string format = underscores ? "%m%d_%H%M%S" : "%m%d %H:%M:%S";
-  strftime(stamp, sizeof(stamp), format.c_str(), localtime(&t));
-  return std::string(stamp);
-} // timestamp
-
-/*!
-  Strip path from string up to last character C.
-
-  @tparam C The character to strip.
- */
-
-template<char C>
-std::string rstrip(const char *file) {
-  std::string tmp(file);
-  return tmp.substr(tmp.rfind(C)+1);
-} // rstrip
 
 /*!
   The log_message_t type provides a base class for implementing
@@ -100,8 +72,8 @@ struct log_message_t
     can_send_to_one_(can_send_to_one), clean_color_(false)
   {
 #if defined(FLOG_DEBUG)
-    std::cerr << COLOR_LTGRAY << "FLOG: log_message_t constructor " <<
-      file << " " << line << COLOR_PLAIN << std::endl;
+    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: log_message_t constructor " <<
+      file << " " << line << FLOG_COLOR_PLAIN << std::endl;
 #endif
   } // log_message_t
 
@@ -109,8 +81,8 @@ struct log_message_t
   ~log_message_t()
   {
 #if defined(FLOG_DEBUG)
-    std::cerr << COLOR_LTGRAY << "FLOG: log_message_t destructor " <<
-      COLOR_PLAIN << std::endl;
+    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: log_message_t destructor " <<
+      FLOG_COLOR_PLAIN << std::endl;
 #endif
 
 #if !defined(SERIAL) && defined(FLOG_ENABLE_MPI)
@@ -172,7 +144,7 @@ struct severity ## _log_message_t                                              \
   {                                                                            \
     /* Clean colors from the stream */                                         \
     if(clean_color_) {                                                         \
-      flog_t::instance().buffer_stream() << COLOR_PLAIN;                       \
+      flog_t::instance().buffer_stream() << FLOG_COLOR_PLAIN;                  \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -199,9 +171,9 @@ severity_message_t(trace, decltype(flecsi::utils::flog::true_state),
         predicate_() && flog_t::instance().tag_enabled());
 
     {
-    stream << OUTPUT_CYAN("[T") << OUTPUT_LTGRAY(message_stamp);
-    stream << OUTPUT_DKGRAY(mpi_stamp);
-    stream << OUTPUT_CYAN("] ");
+    stream << FLOG_OUTPUT_CYAN("[T") << FLOG_OUTPUT_LTGRAY(message_stamp);
+    stream << FLOG_OUTPUT_DKGRAY(mpi_stamp);
+    stream << FLOG_OUTPUT_CYAN("] ");
     } // scope
 
     return stream;
@@ -215,9 +187,9 @@ severity_message_t(info, decltype(flecsi::utils::flog::true_state),
         predicate_() && flog_t::instance().tag_enabled());
 
     {
-    stream << OUTPUT_GREEN("[I") << OUTPUT_LTGRAY(message_stamp);
-    stream << OUTPUT_DKGRAY(mpi_stamp);
-    stream << OUTPUT_GREEN("] ");
+    stream << FLOG_OUTPUT_GREEN("[I") << FLOG_OUTPUT_LTGRAY(message_stamp);
+    stream << FLOG_OUTPUT_DKGRAY(mpi_stamp);
+    stream << FLOG_OUTPUT_GREEN("] ");
     } // scope
 
     return stream;
@@ -231,9 +203,9 @@ severity_message_t(warn, decltype(flecsi::utils::flog::true_state),
         predicate_() && flog_t::instance().tag_enabled());
 
     {
-    stream << OUTPUT_BROWN("[W") << OUTPUT_LTGRAY(message_stamp);
-    stream << OUTPUT_DKGRAY(mpi_stamp);
-    stream << OUTPUT_BROWN("] ") << COLOR_YELLOW;
+    stream << FLOG_OUTPUT_BROWN("[W") << FLOG_OUTPUT_LTGRAY(message_stamp);
+    stream << FLOG_OUTPUT_DKGRAY(mpi_stamp);
+    stream << FLOG_OUTPUT_BROWN("] ") << FLOG_COLOR_YELLOW;
     } // scope
 
     clean_color_ = true;
@@ -246,9 +218,9 @@ severity_message_t(error, decltype(flecsi::utils::flog::true_state),
     std::ostream & stream = std::cerr;
 
     {
-    stream << OUTPUT_RED("[E") << OUTPUT_LTGRAY(message_stamp);
-    stream << OUTPUT_DKGRAY(mpi_stamp);
-    stream << OUTPUT_RED("] ") << COLOR_LTRED;
+    stream << FLOG_OUTPUT_RED("[E") << FLOG_OUTPUT_LTGRAY(message_stamp);
+    stream << FLOG_OUTPUT_DKGRAY(mpi_stamp);
+    stream << FLOG_OUTPUT_RED("] ") << FLOG_COLOR_LTRED;
     } // scope
 
     clean_color_ = true;

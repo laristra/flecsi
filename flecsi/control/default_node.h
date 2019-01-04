@@ -15,6 +15,8 @@
 
 /*! @file */
 
+#include <bitset>
+
 namespace flecsi {
 namespace control {
 

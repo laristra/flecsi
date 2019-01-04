@@ -182,6 +182,12 @@ the directory specified by CMAKE_INSTALL_PREFIX:
 
   $ make install
 
+Building the Documentation
+**************************
+
+Install pip3. Using pip3, install sphinx, recommonmark, and
+sphinx_rtd_theme.
+
 .. toctree::
   :caption: Advanced:
 

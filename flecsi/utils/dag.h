@@ -23,6 +23,8 @@
 #include <flecsi/utils/graphviz.h>
 #endif
 
+#include <algorithm>
+#include <iostream>
 #include <list>
 #include <map>
 #include <queue>

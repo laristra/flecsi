@@ -19,13 +19,6 @@
 cinch_minimum_required(VERSION v1.0)
 
 #------------------------------------------------------------------------------#
-# FLOG
-#------------------------------------------------------------------------------#
-
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/config)
-include(flog)
-
-#------------------------------------------------------------------------------#
 # Set the project name
 #------------------------------------------------------------------------------#
 
@@ -110,6 +103,13 @@ mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
 #------------------------------------------------------------------------------#
 
 cinch_load_extras(MPI LEGION HPX)
+
+#------------------------------------------------------------------------------#
+# FLOG
+#------------------------------------------------------------------------------#
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/config)
+include(flog)
 
 # After we load the cinch options, we need to capture the configuration
 # state for the particular Cinch build configuration and set variables that

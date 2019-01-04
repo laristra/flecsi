@@ -102,7 +102,6 @@ inline cinch::runtime_handler_t handler{
 
 cinch_append_runtime_handler(handler);
 
-// FIXME: This is wrong, but I need to test it...
 inline int runtime_driver(int argc, char ** argv) {
   return flecsi::execution::context_t::instance().
     top_level_action()(argc, argv);

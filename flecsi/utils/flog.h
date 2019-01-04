@@ -17,7 +17,13 @@
 
 #include <flecsi-config.h>
 
-#include "flog/message.h"
+#include "flog/utils.h"
+
+#if defined(FLECSI_ENABLE_FLOG)
+  #include "flog/message.h"
+#endif
+
+#include <sstream>
 
 #if defined(FLECSI_ENABLE_FLOG)
 
@@ -233,7 +239,7 @@
   @param message The stream message to be printed.
 
   @note Fatal level severity log entires are not disabled by tags or
-        by the ENABLE_CLOG or CLOG_STRIP_LEVEL build options, i.e.,
+        by the ENABLE_FLOG or FLOG_STRIP_LEVEL build options, i.e.,
         they are always active.
 
   @b Usage
@@ -267,24 +273,24 @@
                                                                                \
   {                                                                            \
   std::stringstream _sstream;                                                  \
-  _sstream << OUTPUT_LTRED("FATAL ERROR ") <<                                  \
-    OUTPUT_YELLOW(flecsi::utils::flog::rstrip<'/'>(__FILE__) << ":" <<         \
-      __LINE__ << " ") << OUTPUT_LTRED(message) << std::endl;                  \
+  _sstream << FLOG_OUTPUT_LTRED("FATAL ERROR ") <<                             \
+    FLOG_OUTPUT_YELLOW(flecsi::utils::flog::rstrip<'/'>(__FILE__) << ":" <<    \
+      __LINE__ << " ") << FLOG_OUTPUT_LTRED(message) << std::endl;             \
   throw std::runtime_error(_sstream.str());                                    \
   } /* scope */
 
 /*!
-  @def clog_assert(test, message)
+  @def flog_assert(test, message)
 
   Clog assertion interface. Assertions allow the developer to catch
-  invalid program state. This call will invoke clog_fatal if the test
+  invalid program state. This call will invoke flog_fatal if the test
   condition is false.
 
   @param test    The test condition.
   @param message The stream message to be printed.
 
   @note Failed assertions are not disabled by tags or
-        by the ENABLE_CLOG or CLOG_STRIP_LEVEL build options, i.e.,
+        by the ENABLE_FLOG or FLOG_STRIP_LEVEL build options, i.e.,
         they are always active.
 
   @b Usage
@@ -292,14 +298,13 @@
   int value{20};
 
   // Print the value and exit
-  clog_assert(value == 20, "invalid value");
+  flog_assert(value == 20, "invalid value");
   @endcode
 
-  @ingroup clog
+  @ingroup flog
  */
 
-#define clog_assert(test, message)                                             \
+#define flog_assert(test, message)                                             \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  if(!(test)) { clog_fatal(message); }
-
+  if(!(test)) { flog_fatal(message); }

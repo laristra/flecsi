@@ -17,8 +17,10 @@
 
 #include <flecsi-config.h>
 
-#include "colors.h"
+#if defined(FLECSI_ENABLE_FLOG)
+
 #include "packet.h"
+#include "utils.h"
 
 #include <bitset>
 #include <cassert>
@@ -412,8 +414,8 @@ public:
   init(std::string active = "none")
   {
 #if defined(FLOG_DEBUG)
-    std::cerr << COLOR_LTGRAY << "FLOG: initializing runtime" <<
-      COLOR_PLAIN << std::endl;
+    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: initializing runtime" <<
+      FLOG_COLOR_PLAIN << std::endl;
 #endif
 
 #if defined(FLOG_ENABLE_TAGS)
@@ -454,8 +456,8 @@ public:
     } // if
 
 #if defined(FLOG_DEBUG)
-    std::cerr << COLOR_LTGRAY << "FLOG: active tags (" <<
-      active << ")" << COLOR_PLAIN << std::endl;
+    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: active tags (" <<
+      active << ")" << FLOG_COLOR_PLAIN << std::endl;
 #endif
 
 #endif // FLOG_ENABLE_TAGS
@@ -463,8 +465,8 @@ public:
 #if defined(FLECSI_ENABLE_MPI)
 
 #if defined(FLOG_DEBUG)
-    std::cerr << COLOR_LTGRAY << "FLOG: initializing mpi state" <<
-      COLOR_PLAIN << std::endl;
+    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: initializing mpi state" <<
+      FLOG_COLOR_PLAIN << std::endl;
 #endif
 
     mpi_state_t::instance().init();
@@ -550,8 +552,8 @@ public:
     const size_t id = ++tag_id_;
     assert(id < FLOG_TAG_BITS && "Tag bits overflow! Increase FLOG_TAG_BITS");
 #if defined(FLOG_DEBUG)
-    std::cerr << COLOR_LTGRAY << "FLOG: registering tag " << tag <<
-      ": " << id << COLOR_PLAIN << std::endl;
+    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: registering tag " << tag <<
+      ": " << id << FLOG_COLOR_PLAIN << std::endl;
 #endif
     tag_map_[tag] = id;
     return id;
@@ -584,8 +586,8 @@ public:
 
 #if defined(FLOG_DEBUG)
     auto active_set = tag_bitset_.test(active_tag_) == 1 ? "true" : "false";
-    std::cerr << COLOR_LTGRAY << "FLOG: tag " << active_tag_ << " is " <<
-      active_set << COLOR_PLAIN << std::endl;
+    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: tag " << active_tag_ << " is " <<
+      active_set << FLOG_COLOR_PLAIN << std::endl;
 #endif
 
     // If the runtime context hasn't been initialized, return true only
@@ -608,9 +610,9 @@ public:
   lookup_tag(const char * tag)
   {
     if(tag_map_.find(tag) == tag_map_.end()) {
-      std::cerr << COLOR_YELLOW << "FLOG: !!!WARNING " << tag <<
+      std::cerr << FLOG_COLOR_YELLOW << "FLOG: !!!WARNING " << tag <<
         " has not been registered. Ignoring this group..." <<
-        COLOR_PLAIN << std::endl;
+        FLOG_COLOR_PLAIN << std::endl;
       return 0;
     } // if
 
@@ -652,7 +654,7 @@ private:
   ~flog_t()
   {
 #if defined(FLOG_DEBUG)
-    std::cerr << COLOR_LTGRAY << "FLOG: flog_t destructor" << std::endl;
+    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: flog_t destructor" << std::endl;
 #endif
   }
 
@@ -686,16 +688,16 @@ struct flog_tag_scope_t
     stash_(flog_t::instance().active_tag())
   {
 #if defined(FLOG_DEBUG)
-    std::cerr << COLOR_LTGRAY << "FLOG: activating tag " << tag <<
-      COLOR_PLAIN << std::endl;
+    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: activating tag " << tag <<
+      FLOG_COLOR_PLAIN << std::endl;
 #endif
 
     // Warn users about externally-scoped messages
     if(!flog_t::instance().initialized()) {
-      std::cerr << COLOR_YELLOW << "FLOG: !!!WARNING You cannot use " <<
+      std::cerr << FLOG_COLOR_YELLOW << "FLOG: !!!WARNING You cannot use " <<
         "tag guards for externally scoped messages!!! " <<
         "This message will be active if FLOG_ENABLE_EXTERNAL is defined!!!" <<
-        COLOR_PLAIN << std::endl;
+        FLOG_COLOR_PLAIN << std::endl;
     } // if
 
     flog_t::instance().active_tag() = tag;
@@ -712,6 +714,34 @@ private:
 
 }; // flog_tag_scope_t
 
+#define send_to_one(message)                                                   \
+                                                                               \
+  if(mpi_state_t::instance().initialized()) { \
+    packet_t pkt(message);                                                     \
+                                                                               \
+    packet_t * pkts = mpi_state_t::instance().rank() == 0 ?                    \
+      new packet_t[mpi_state_t::instance().size()] :                           \
+      nullptr;                                                                 \
+                                                                               \
+    MPI_Gather(pkt.data(), pkt.bytes(), MPI_BYTE,                              \
+      pkts, pkt.bytes(), MPI_BYTE, 0, MPI_COMM_WORLD);                         \
+                                                                               \
+    if(mpi_state_t::instance().rank()==0) {                                    \
+                                                                               \
+      std::lock_guard<std::mutex>                                              \
+        guard(mpi_state_t::instance().packets_mutex());                        \
+                                                                               \
+      for(size_t i{0}; i<mpi_state_t::instance().size(); ++i) {                \
+        mpi_state_t::instance().packets().push_back(pkts[i]);                  \
+      } /* for */                                                              \
+                                                                               \
+      delete[] pkts;                                                           \
+                                                                               \
+    } /* if */                                                                 \
+  } /* if */
+
 } // namespace flog
 } // namespace utils
 } // namespace flecsi
+
+#endif // FLECSI_ENABLE_FLOG

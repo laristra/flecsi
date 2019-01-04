@@ -57,9 +57,9 @@ done
 
 $cmake_mode \
   -DCMAKE_CXX_COMPILER=g++ \
-  -DCMAKE_CXX_FLAGS="-fmax-errors=5 -Wno-deprecated-declarations" \
+  -DCMAKE_CXX_FLAGS="-fmax-errors=5 -Wno-deprecated-declarations -fdiagnostics-color=always" \
   -DCMAKE_C_COMPILER=gcc \
-  -DCMAKE_C_FLAGS="-fmax-errors=5" \
+  -DCMAKE_C_FLAGS="-fmax-errors=5 -fdiagnostics-color=always" \
   -DFLECSI_RUNTIME_MODEL=$runtime $extra_define \
   -DENABLE_BOOST=ON \
   -DENABLE_CLOG=ON \

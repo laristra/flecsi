@@ -80,8 +80,9 @@
 #define FLOG_STRIP_LEVEL @FLOG_STRIP_LEVEL@
 #cmakedefine FLOG_COLOR_OUTPUT
 #cmakedefine FLOG_ENABLE_TAGS
-#cmakedefine FLOG_TAG_BITS @FLOG_TAG_BITS@
+#define FLOG_TAG_BITS @FLOG_TAG_BITS@
 #cmakedefine FLOG_ENABLE_EXTERNAL
+#cmakedefine FLOG_ENABLE_MPI
 
 //----------------------------------------------------------------------------//
 // Enable coloring
