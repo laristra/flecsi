@@ -65,7 +65,6 @@ function(flecsi_add_unit name)
     set(_OUTPUT_DIR
       "${CMAKE_BINARY_DIR}/test/${PROJECT_NAME}/${_SOURCE_DIR_NAME}")
   endif()
-  message(STATUS "_OUTPUT_DIR: ${_OUTPUT_DIR}")
 
   #----------------------------------------------------------------------------#
   # Make sure that MPI_LANGUAGE is set.
@@ -91,15 +90,31 @@ function(flecsi_add_unit name)
   #----------------------------------------------------------------------------#
   # Check to see if the user has specified a runtime and process it.
   #----------------------------------------------------------------------------#
-  message(STATUS "Here")
-  if(FLECSI_RUNTIME_MODEL STREQUAL "mpi" AND MPI_${MPI_LANGUAGE}_FOUND)
-    message(STATUS "Here")
+  if(FLECSI_RUNTIME_MODEL STREQUAL "mpi"
+    AND MPI_${MPI_LANGUAGE}_FOUND)
 
     set(unit_policy_runtime
       ${FLECSI_SOURCE_DIR}/flecsi/execution/mpi/runtime.cc)
     set(unit_policy_flags ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS})
     set(unit_policy_includes ${MPI_${MPI_LANGUAGE}_INCLUDE_PATH})
     set(unit_policy_libraries ${MPI_${MPI_LANGUAGE}_LIBRARIES})
+    set(unit_policy_exec ${MPIEXEC})
+    set(unit_policy_exec_threads ${MPIEXEC_NUMPROC_FLAG})
+    set(unit_policy_exec_preflags ${MPIEXEC_PREFLAGS})
+    set(unit_policy_exec_postflags ${MPIEXEC_POSTFLAGS})
+
+  elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion"
+    AND MPI_${MPI_LANGUAGE}_FOUND
+    AND Legion_FOUND)
+
+    set(unit_policy_runtime
+      ${FLECSI_SOURCE_DIR}/flecsi/execution/legion/runtime.cc)
+    set(unit_policy_flags ${Legion_CXX_FLAGS}
+      ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS})
+    set(unit_policy_includes ${Legion_INCLUDE_DIRS}
+      ${MPI_${MPI_LANGUAGE}_INCLUDE_PATH})
+    set(unit_policy_libraries ${Legion_LIBRARIES} ${Legion_LIB_FLAGS}
+      ${MPI_${MPI_LANGUAGE}_LIBRARIES})
     set(unit_policy_exec ${MPIEXEC})
     set(unit_policy_exec_threads ${MPIEXEC_NUMPROC_FLAG})
     set(unit_policy_exec_preflags ${MPIEXEC_PREFLAGS})
@@ -271,22 +286,22 @@ function(flecsi_add_unit name)
       )
     endforeach(instance)
   else()
-   if(unit_policy_exec)
-    add_test(
-      NAME
-        "${_TEST_PREFIX}${name}"
-      COMMAND
-        ${unit_policy_exec}
-        ${unit_policy_exec_threads}
-        ${unit_THREADS}
-        ${unit_policy_exec_preflags}
-        $<TARGET_FILE:${name}>
-        ${unit_ARGUMENTS}
-        ${unit_policy_exec_postflags}
-        ${UNIT_FLAGS}
-      WORKING_DIRECTORY ${_OUTPUT_DIR}
-    )
-    else()
+    if(unit_policy_exec)
+      add_test(
+        NAME
+          "${_TEST_PREFIX}${name}"
+        COMMAND
+          ${unit_policy_exec}
+          ${unit_policy_exec_threads}
+          ${unit_THREADS}
+          ${unit_policy_exec_preflags}
+          $<TARGET_FILE:${name}>
+          ${unit_ARGUMENTS}
+          ${unit_policy_exec_postflags}
+          ${UNIT_FLAGS}
+        WORKING_DIRECTORY ${_OUTPUT_DIR}
+      )
+  else()
       add_test(
         NAME
           "${_TEST_PREFIX}${name}"
