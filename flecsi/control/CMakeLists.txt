@@ -30,17 +30,6 @@ set(control_SOURCES
 )
 
 #------------------------------------------------------------------------------#
-# Unit tests.
-#------------------------------------------------------------------------------#
-
-cinch_add_unit(control
-  SOURCES
-    test/control.cc
-  LIBRARIES
-    ${FLECSI_LIBRARY_DEPENDENCIES}
-)
-
-#------------------------------------------------------------------------------#
 # Runtime executable
 #
 # This is used to test the basic runtime logic of the control model. It will

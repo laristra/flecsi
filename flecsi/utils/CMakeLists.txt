@@ -80,22 +80,22 @@ set(utils_SOURCES
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   set(UNIT_POLICY SERIAL)
-  set(RUNTIME_DRIVER ../execution/serial/runtime_driver.cc)
+  set(RUNTIME_DRIVER ../execution/serial/runtime.cc)
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(UNIT_POLICY LEGION)
-  set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
+  set(RUNTIME_DRIVER ../execution/legion/runtime.cc)
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(UNIT_POLICY MPI)
-  set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
+  set(RUNTIME_DRIVER ../execution/mpi/runtime.cc)
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
   set(UNIT_POLICY HPX)
-  set(RUNTIME_DRIVER ../execution/hpx/runtime_driver.cc)
+  set(RUNTIME_DRIVER ../execution/hpx/runtime.cc)
 
 endif()
 
@@ -118,16 +118,11 @@ set(utils_SOURCES
 )
 
 #------------------------------------------------------------------------------#
-# Unit tests.
-#------------------------------------------------------------------------------#
 
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-cinch_add_devel_target(clog
+flecsi_add_unit(hash
   SOURCES
-    test/clog.cc
-  POLICY ${UNIT_POLICY}
+    test/hash.cc
 )
-endif()
 
 set(factory_blessed_input test/factory.blessed.gnug)
 
@@ -135,7 +130,7 @@ if(MSVC)
   set(factory_blessed_input test/factory.blessed.msvc)
 endif()
 
-cinch_add_unit(factory
+flecsi_add_unit(factory
   SOURCES
     demangle.cc
     test/factory.cc
@@ -144,165 +139,12 @@ cinch_add_unit(factory
     ${factory_blessed_input}
 )
 
-cinch_add_unit(reorder
-  SOURCES
-    test/reorder.cc
-)
+#add_executable(hash
+#  ${CINCH_SOURCE_DIR}/cinch/runtime.cc
+#  test/hash.cc
+#  flog/packet.cc
+#  ${RUNTIME_DRIVER}
+#)
 
-cinch_add_unit(humble
-  SOURCES
-    test/humble.cc
-)
-
-set(iterator_blessed_input test/iterator.blessed.gnug)
-
-if(MSVC)
-  set(iterator_blessed_input test/iterator.blessed.msvc)
-endif()
-
-cinch_add_unit(utils_iterator
-  SOURCES
-    demangle.cc
-    test/iterator.cc
-  INPUTS
-    test/iterator.blessed
-    ${iterator_blessed_input}
-)
-
-cinch_add_unit(logging
-  SOURCES
-    test/logging.cc
-)
-
-cinch_add_unit(set_intersection
-  SOURCES
-    test/set_intersection.cc
-)
-
-cinch_add_unit(set_utils
-  SOURCES
-    test/set_utils.cc
-  INPUTS
-    test/set_utils.blessed
-)
-
-cinch_add_unit(simple_id
-  SOURCES
-    test/simple_id.cc
-)
-
-cinch_add_unit(static_verify
-  SOURCES
-    test/static_verify.cc
-)
-
-cinch_add_unit(test_utility
-  SOURCES
-    demangle.cc
-    test/utility.cc
-  INPUTS
-    test/utility.blessed.gnug
-)
-
-set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.gnug)
-
-if(MSVC)
-  set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.msvc)
-endif()
-
-cinch_add_unit(tuple_type_converter
-  SOURCES
-    demangle.cc
-    test/tuple_type_converter.cc
-  INPUTS
-    ${tuple_type_converter_blessed_input}
-)
-
-cinch_add_unit(tuple_wrapper
-  SOURCES
-    demangle.cc
-    test/tuple_wrapper.cc
-)
-
-cinch_add_unit(tuple_function
-  SOURCES
-    test/tuple_function.cc
-)
-
-set(index_space_blessed_input test/index_space.blessed.gnug)
-
-if(MSVC)
-  set(index_space_blessed_input test/index_space.blessed.msvc)
-endif()
-
-cinch_add_unit(index_space
-  SOURCES
-    demangle.cc
-    test/index_space.cc
-  INPUTS
-    test/index_space.blessed ${index_space_blessed_input}
-)
-
-set(array_ref_blessed_input test/array_ref.blessed.gnug)
-
-if(MSVC)
-  set(array_ref_blessed_input test/array_ref.blessed.msvc)
-endif()
-
-cinch_add_unit(array_ref
-  SOURCES
-    demangle.cc
-    test/array_ref.cc
-  INPUTS
-    test/array_ref.blessed ${array_ref_blessed_input}
-)
-
-set(common_blessed_input test/common.blessed.gnug)
-
-if(MSVC)
-  set(common_blessed_input test/common.blessed.msvc)
-endif()
-
-cinch_add_unit(common
-  SOURCES
-    demangle.cc
-    test/common.cc
-  INPUTS
-    test/common.blessed.ppc test/common.blessed ${common_blessed_input}
-)
-
-set(id_blessed_input test/id.blessed.gnug)
-
-if(MSVC)
-  set(id_blessed_input test/id.blessed.msvc)
-endif()
-
-cinch_add_unit(id
-  SOURCES
-    demangle.cc
-    test/id.cc
-  INPUTS
-    test/id.blessed ${id_blessed_input}
-)
-
-if(ENABLE_OPENSSL)
-  cinch_add_unit(checksum
-    SOURCES
-      test/checksum.cc
-    LIBRARIES
-      ${OPENSSL_LIBRARIES}
-  )
-endif()
-
-cinch_add_unit(debruijn
-  SOURCES
-    debruijn.cc
-    test/debruijn.cc
-)
-
-cinch_add_unit(tuple_walker
-  SOURCES
-    test/tuple_walker.cc
-  INPUTS
-    test/tuple_walker.blessed
-)
+#target_link_libraries(hash ${CINCH_RUNTIME_LIBRARIES}
+#  ${CMAKE_THREAD_LIBS_INIT})

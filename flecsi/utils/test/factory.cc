@@ -12,15 +12,11 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-// includes: flecsi
+#include <flecsi/control/ftest.h>
+
 #include <flecsi/utils/factory.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/test/print_type.h>
-
-// includes: C++
-
-// includes: other
-#include <cinch/ctest.h>
 
 // =============================================================================
 // Sanity check for factory.h
@@ -62,7 +58,7 @@ create_test_io(std::string & filename) {
 
 // register this io type with factory
 bool test_registered =
-    io_factory_t::instance().registerType("tst", create_test_io);
+  io_factory_t::instance().registerType("tst", create_test_io);
 
 /*
 TEST(factory, sanity) {
@@ -110,8 +106,9 @@ add_dd(double d1, double d2) {
   return new double(d1 + d2);
 }
 
-// TEST
-TEST(factory, all) {
+int unit_initialization(int argc, char ** argv) { return 0; }
+
+int unit_driver(int argc, char ** argv) {
 
   // ------------------------
   // types
@@ -119,7 +116,7 @@ TEST(factory, all) {
 
   // one variant
   using factory_charkey_t = // return, key,  arguments...
-      flecsi::utils::Factory_<float, char, int, float, double>;
+    flecsi::utils::Factory_<float, char, int, float, double>;
   print_type<factory_charkey_t::createHandler>();
   print_type<factory_charkey_t::key_t>();
   print_type<factory_charkey_t::map_t>();
@@ -127,7 +124,7 @@ TEST(factory, all) {
 
   // another variant
   using factory_longkey_t = // return, key,  arguments...
-      flecsi::utils::Factory_<double, long, double, double>;
+    flecsi::utils::Factory_<double, long, double, double>;
   print_type<factory_longkey_t::createHandler>();
   print_type<factory_longkey_t::key_t>();
   print_type<factory_longkey_t::map_t>();
@@ -246,52 +243,6 @@ TEST(factory, all) {
 #else
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("factory.blessed"));
 #endif
+
+  return 0;
 } // TEST
-
-/*----------------------------------------------------------------------------*
- * Cinch test Macros
- *
- *  ==== I/O ====
- *  CINCH_CAPTURE()              : Insertion stream for capturing output.
- *                                 Captured output can be written or
- *                                 compared using the macros below.
- *
- *    EXAMPLE:
- *      CINCH_CAPTURE() << "My value equals: " << myvalue << std::endl;
- *
- *  CINCH_COMPARE_BLESSED(file); : Compare captured output with
- *                                 contents of a blessed file.
- *
- *  CINCH_WRITE(file);           : Write captured output to file.
- *
- * Google Test Macros
- *
- * Basic Assertions:
- *
- *  ==== Fatal ====             ==== Non-Fatal ====
- *  ASSERT_TRUE(condition);     EXPECT_TRUE(condition)
- *  ASSERT_FALSE(condition);    EXPECT_FALSE(condition)
- *
- * Binary Comparison:
- *
- *  ==== Fatal ====             ==== Non-Fatal ====
- *  ASSERT_EQ(val1, val2);      EXPECT_EQ(val1, val2)
- *  ASSERT_NE(val1, val2);      EXPECT_NE(val1, val2)
- *  ASSERT_LT(val1, val2);      EXPECT_LT(val1, val2)
- *  ASSERT_LE(val1, val2);      EXPECT_LE(val1, val2)
- *  ASSERT_GT(val1, val2);      EXPECT_GT(val1, val2)
- *  ASSERT_GE(val1, val2);      EXPECT_GE(val1, val2)
- *
- * String Comparison:
- *
- *  ==== Fatal ====                     ==== Non-Fatal ====
- *  ASSERT_STREQ(expected, actual);     EXPECT_STREQ(expected, actual)
- *  ASSERT_STRNE(expected, actual);     EXPECT_STRNE(expected, actual)
- *  ASSERT_STRCASEEQ(expected, actual); EXPECT_STRCASEEQ(expected, actual)
- *  ASSERT_STRCASENE(expected, actual); EXPECT_STRCASENE(expected, actual)
- *----------------------------------------------------------------------------*/
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

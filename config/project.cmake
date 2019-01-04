@@ -31,6 +31,12 @@ else()
 endif()
 
 #------------------------------------------------------------------------------#
+# Set the FleCSI top-level source directory
+#------------------------------------------------------------------------------#
+
+set(FLECSI_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
+#------------------------------------------------------------------------------#
 # Automatic version creation.
 #------------------------------------------------------------------------------#
 
@@ -110,6 +116,7 @@ cinch_load_extras(MPI LEGION HPX)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/config)
 include(flog)
+include(funit)
 
 # After we load the cinch options, we need to capture the configuration
 # state for the particular Cinch build configuration and set variables that
