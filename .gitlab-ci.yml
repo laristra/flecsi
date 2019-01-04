@@ -13,7 +13,7 @@ prep:
   only:
     - master
     - /^stable\/.*$/
-    - /^pull\/.*$/
+    - /^pull\/.*\/head$/
     - merge_requests
   retry: 2
   variables:
@@ -36,7 +36,7 @@ prep:
   only:
     - master
     - /^stable\/.*$/
-    - /^pull\/.*$/
+    - /^pull\/.*\/head$/
     - merge_requests
   retry:
     max: 2
@@ -186,7 +186,7 @@ build:fedora_hpx:
   only:
     - master
     - /^stable\/.*$/
-    - /^pull\/.*$/
+    - /^pull\/.*\/head$/
     - merge_requests
   retry: 2
   variables:
@@ -279,7 +279,7 @@ test:fedora_mpich_legion:
   only:
     - master
     - /^stable\/.*$/
-    - /^pull\/.*$/
+    - /^pull\/.*\/head$/
     - merge_requests
   retry: 2
   variables:
@@ -319,7 +319,7 @@ format:fedora_legion:
   only:
     - master
     - /^stable\/.*$/
-    - /^pull\/.*$/ 
+    - /^pull\/.*\/head$/ 
     - merge_requests
   retry: 2
   variables:
