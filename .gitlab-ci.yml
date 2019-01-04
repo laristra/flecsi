@@ -11,10 +11,11 @@ before_script:
 
 prep:
   only:
-    - master
-    - /^stable.*$/
-    - /^pull.*head.*$/
     - merge_requests
+    refs:
+      - master
+      - /^stable.*$/
+      - /^pull.*head.*$/
   retry: 2
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
@@ -34,10 +35,11 @@ prep:
 
 .build:
   only:
-    - master
-    - /^stable.*$/
-    - /^pull.*head.*$/
     - merge_requests
+    refs:
+      - master
+      - /^stable.*$/
+      - /^pull.*head.*$/
   retry:
     max: 2
     when:
@@ -184,10 +186,11 @@ build:fedora_hpx:
 
 .test:
   only:
-    - master
-    - /^stable.*$/
-    - /^pull.*head.*$/
     - merge_requests
+    refs:
+      - master
+      - /^stable.*$/
+      - /^pull.*head.*$/
   retry: 2
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
@@ -277,10 +280,11 @@ test:fedora_mpich_legion:
 
 .format:
   only:
-    - master
-    - /^stable.*$/
-    - /^pull.*head.*$/
     - merge_requests
+    refs:
+      - master
+      - /^stable.*$/
+      - /^pull.*head.*$/
   retry: 2
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
@@ -317,10 +321,11 @@ format:fedora_legion:
 
 .deploy:
   only:
-    - master
-    - /^stable.*$/
-    - /^pull.*head.*$/
     - merge_requests
+    refs:
+      - master
+      - /^stable.*$/
+      - /^pull.*head.*$/
   retry: 2
   variables:
     GLOBAL_CI_VARIABLE: "global_ci_value"
