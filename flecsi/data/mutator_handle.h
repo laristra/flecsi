@@ -117,18 +117,12 @@ public:
   }
 
   void init() {
-    offsets_ = new offset_t[num_entries_];
-    entries_ = new value_t[num_entries_ * num_slots_];
     new_counts_ = new int32_t[num_entries_];
     spare_map_ = new spare_map_t;
+    overflow_map_ = new overflow_map_t;
+
     std::fill_n(new_counts_, num_entries_, -1);
   }
-
-  void fill_ragged(const commit_info_t & ci) {
-    entries_orig_ = ci.entries[0];
-    offsets_orig_ = ci.offsets;
-    overflow_map_ = new overflow_map_t;
-  } // fill_ragged
 
   size_t commit(commit_info_t * ci) {
     assert(new_counts_ && "uninitialized mutator");
@@ -200,10 +194,8 @@ public:
       coi.set_count(count);
     } // for index
 
-    delete[] entries_;
     entries_ = nullptr;
 
-    delete[] offsets_;
     offsets_ = nullptr;
 
     delete[] new_counts_;
@@ -211,10 +203,6 @@ public:
 
     delete spare_map_;
     spare_map_ = nullptr;
-
-    entries_orig_ = nullptr;
-
-    offsets_orig_ = nullptr;
 
     delete overflow_map_;
     overflow_map_ = nullptr;
@@ -252,7 +240,7 @@ public:
 
   size_t new_count(size_t index) const {
     int nc = new_counts_[index];
-    return (nc >= 0 ? nc : offsets_orig_[index].count());
+    return (nc >= 0 ? nc : offsets_[index].count());
   }
 
   using spare_map_t = std::multimap<size_t, value_t>;
@@ -265,9 +253,7 @@ public:
   size_t num_slots_;
   size_t num_entries_;
   offset_t * offsets_ = nullptr;
-  offset_t * offsets_orig_ = nullptr;
   value_t * entries_ = nullptr;
-  value_t * entries_orig_ = nullptr;
   int32_t * new_counts_ = nullptr;
   spare_map_t * spare_map_ = nullptr;
   erase_set_t * erase_set_ = nullptr;

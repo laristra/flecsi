@@ -178,22 +178,13 @@ namespace execution {
       > & m
     )
     {
+      using value_t = typename mutator_handle_u<T>::value_t;
+
       auto & h = m.h_;
       h.init();
 
-      using value_t = typename mutator_handle_u<T>::value_t;
-      using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
-
-      value_t * entries =
-          reinterpret_cast<value_t *>(&(*h.entries)[0]);
-
-      commit_info_t ci;
-      ci.offsets = &(*h.offsets)[0];
-      ci.entries[0] = entries;
-      ci.entries[1] = entries + *h.reserve;
-      ci.entries[2] = ci.entries[1] + h.num_shared() * h.max_entries_per_index();
-
-      h.fill_ragged(ci);
+      h.entries_ = reinterpret_cast<value_t *>(&(*h.entries)[0]);
+      h.offsets_ = &(*h.offsets)[0];
     } // handle
 
     template<

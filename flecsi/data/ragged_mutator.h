@@ -67,7 +67,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     assert(h_.offsets_ && "uninitialized ragged_mutator");
     assert(index < h_.num_entries_);
 
-    offset_t & offset = h_.offsets_orig_[index];
+    offset_t & offset = h_.offsets_[index];
 
     size_t n = offset.count();
     size_t nnew = h_.new_count(index);
@@ -79,7 +79,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
       return overflow[ragged_index - n];
     }
 
-    return h_.entries_orig_[offset.start() + ragged_index];
+    return h_.entries_[offset.start() + ragged_index];
   } // operator ()
 
   size_t size(size_t index) const {
@@ -95,7 +95,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
 
     h_.new_counts_[index] = size;
 
-    offset_t & offset = h_.offsets_orig_[index];
+    offset_t & offset = h_.offsets_[index];
     size_t n = offset.count();
     if(size > n) {
       auto & overflow = (*h_.overflow_map_)[index];
@@ -109,7 +109,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   void erase(size_t index, size_t ragged_index) {
     assert(index < h_.num_entries_);
 
-    offset_t & offset = h_.offsets_orig_[index];
+    offset_t & offset = h_.offsets_[index];
 
     size_t n = offset.count();
     size_t nnew = h_.new_count(index);
@@ -126,7 +126,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     }
 
     // erase from base area
-    auto eptr = h_.entries_orig_ + offset.start();
+    auto eptr = h_.entries_ + offset.start();
     size_t ncopy = std::min(n, nnew);
     std::copy(&eptr[ragged_index + 1], &eptr[ncopy],
               &eptr[ragged_index]);
@@ -141,7 +141,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   void push_back(size_t index, const T & value) {
     assert(index < h_.num_entries_);
 
-    offset_t & offset = h_.offsets_orig_[index];
+    offset_t & offset = h_.offsets_[index];
 
     size_t n = offset.count();
     size_t nnew = h_.new_count(index);
@@ -156,7 +156,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     }
 
     // add to base area
-    auto eptr = h_.entries_orig_ + offset.start();
+    auto eptr = h_.entries_ + offset.start();
     eptr[nnew] = value;
   } // push_back
 
@@ -164,7 +164,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   void insert(size_t index, size_t ragged_index, const T & value) {
     assert(index < h_.num_entries_);
 
-    offset_t & offset = h_.offsets_orig_[index];
+    offset_t & offset = h_.offsets_[index];
 
     size_t n = offset.count();
     size_t nnew = h_.new_count(index);
@@ -181,7 +181,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     }
 
     // insert in base area
-    auto eptr = h_.entries_orig_ + offset.start();
+    auto eptr = h_.entries_ + offset.start();
     if (nnew >= n) {
       // shift into overflow area, if needed
       auto & overflow = (*h_.overflow_map_)[index];

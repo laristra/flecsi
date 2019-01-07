@@ -783,7 +783,6 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     using value_t = T;
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
-    using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
 
     sparse_field_data_t * md;
 
@@ -906,13 +905,8 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     region += num_regions;
 
-    commit_info_t ci;
-    ci.offsets = h.offsets;
-    ci.entries[0] = entries;
-    ci.entries[1] = entries + h.reserve;
-    ci.entries[2] = ci.entries[1] + h.num_shared() * h.max_entries_per_index();
-
-    h.fill_ragged(ci);
+    h.entries_ = entries;
+    h.offsets_ = h.offsets;
   } // handle
 
   template<typename T>
