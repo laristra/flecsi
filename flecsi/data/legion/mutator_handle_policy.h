@@ -13,6 +13,7 @@
 
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/runtime/types.h>
+#include <flecsi/execution/context.h>
 
 //----------------------------------------------------------------------------//
 /// @file
@@ -31,8 +32,8 @@ namespace flecsi {
 struct legion_mutator_handle_policy_t {
   legion_mutator_handle_policy_t() {}
 
-  legion_mutator_handle_policy_t(const legion_mutator_handle_policy_t & p) =
-      default;
+  legion_mutator_handle_policy_t(
+    const legion_mutator_handle_policy_t & p) = default;
 
   using offset_t = data::sparse_data_offset_t;
 
@@ -47,35 +48,29 @@ struct legion_mutator_handle_policy_t {
 
   // These depend on color but are only used in specifying
   // the region requirements
-  Legion::LogicalRegion offsets_color_region;
-  Legion::LogicalRegion offsets_exclusive_lr;
-  Legion::LogicalRegion offsets_shared_lr;
-  Legion::LogicalRegion offsets_ghost_lr;
+  Legion::LogicalRegion entries_entire_region;
+  Legion::LogicalPartition entries_color_parition;
+  Legion::LogicalPartition entries_exclusive_lp;
+  Legion::LogicalPartition entries_shared_lp;
+  Legion::LogicalPartition entries_ghost_lp;
 
-  Legion::LogicalRegion entries_color_region;
-  Legion::LogicalRegion entries_exclusive_lr;
-  Legion::LogicalRegion entries_shared_lr;
-  Legion::LogicalRegion entries_ghost_lr;
+  Legion::LogicalRegion offsets_entire_region;                                    Legion::LogicalPartition offsets_color_partition;                               Legion::LogicalPartition offsets_exclusive_lp;
+  Legion::LogicalPartition offsets_shared_lp;
+  Legion::LogicalPartition offsets_ghost_lp;
 
-  Legion::LogicalRegion metadata_color_region;
+  Legion::LogicalRegion metadata_entire_region;
+  Legion::LogicalPartition metadata_lp;
+ 
+  void * metadata; 
 
-  std::vector<Legion::LogicalRegion> ghost_owners_offsets_lregions;
-  std::vector<Legion::LogicalRegion> ghost_owners_offsets_subregions;
+  Legion::LogicalPartition ghost_owners_offsets_lp;
+//  std::vector<Legion::LogicalRegion> ghost_owners_offsets_subregions;
 
-  std::vector<Legion::LogicalRegion> ghost_owners_entries_lregions;
+  Legion::LogicalPartition ghost_owners_entries_lp;
 
 
   Legion::Context context;
   Legion::Runtime * runtime;
-
-  Legion::PhysicalRegion metadata_pr;
-
-  void* metadata;
-
-  // Tuple-walk copies data_handle then discards updates at the end.
-  // Some pointers are necessary for updates to live between walks.
-  Legion::PhaseBarrier * pbarrier_as_owner_ptr;
-  std::vector<Legion::PhaseBarrier *> ghost_owners_pbarriers_ptrs;
 
   const Legion::STL::map<
       LegionRuntime::Arrays::coord_t,
@@ -84,14 +79,13 @@ struct legion_mutator_handle_policy_t {
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions
 
-
-  offset_t* offsets;
-  void* offsets_data[3];
+  offset_t * offsets;
+  void * offsets_data[3];
 
   size_t offsets_size = 0;
-  uint8_t* entries;
+  uint8_t * entries;
   size_t entries_size = 0;
-  void* entries_data[3];
+  void * entries_data[3];
 
 }; // class legion_mutator_handle_policy_t
 

@@ -32,16 +32,16 @@ void
 remap_shared_entities()
 {
   // TODO: Is this superseded by index_map/reverse_index_map?
-  auto& flecsi_context = context_t::instance();
-  const int my_color = static_cast<int>(flecsi_context.color());
+  auto& context_ = context_t::instance();
+  const int my_color = static_cast<int>(context_.color());
 
-  for (auto& coloring_info_pair : flecsi_context.coloring_info_map()) {
+  for (auto& coloring_info_pair : context_.coloring_info_map()) {
     auto index_space = coloring_info_pair.first;
     auto &coloring_info = coloring_info_pair.second;
 
-    auto &my_coloring_info = flecsi_context.coloring_info(index_space).at(
+    auto &my_coloring_info = context_.coloring_info(index_space).at(
       my_color);
-    auto &index_coloring = flecsi_context.coloring(index_space);
+    auto &index_coloring = context_.coloring(index_space);
 
     std::set<flecsi::coloring::entity_info_t> new_shared;
 
@@ -106,6 +106,18 @@ runtime_driver(
   clog(info) << "In MPI runtime driver" << std::endl;
   }
 
+  auto & context_ = context_t::instance();
+
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for entries in the reduction operation registry.
+  //--------------------------------------------------------------------------//
+
+  auto & reduction_registry = context_.reduction_registry();
+
+  for(auto & c: reduction_registry) {
+    c.second();
+  } // for
+
   //--------------------------------------------------------------------------//
   // Invoke callbacks for entries in the client registry.
   //
@@ -136,9 +148,8 @@ runtime_driver(
     } // for
   } // for
 
-  auto& flecsi_context = context_t::instance();
-  for (auto fi : flecsi_context.registered_fields()) {
-    flecsi_context.put_field_info(fi);
+  for (auto fi : context_.registered_fields()) {
+    context_.put_field_info(fi);
   }
 
 #if defined(FLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
@@ -158,7 +169,7 @@ runtime_driver(
   // This depends on the ordering of the BLIS data structure setup.
   // Currently, this is Exclusive - Shared - Ghost.
 
-  for(auto is: flecsi_context.coloring_map()) {
+  for(auto is: context_.coloring_map()) {
     std::map<size_t, size_t> _map;
     size_t counter(0);
 
@@ -174,26 +185,26 @@ runtime_driver(
       _map[counter++] = index.id;
     } // for
 
-    flecsi_context.add_index_map(is.first, _map);
+    context_.add_index_map(is.first, _map);
   } // for
 
 #if defined(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL)
 
   // Execute control
-  if(flecsi_context.top_level_driver()) {
-    flecsi_context.top_level_driver()(argc, argv);
+  if(context_.top_level_driver()) {
+    context_.top_level_driver()(argc, argv);
   }
 
 #else
 
-  flecsi_context.advance_state();
+  context_.advance_state();
 
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   specialization_spmd_init(argc, argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
-  flecsi_context.advance_state();
+  context_.advance_state();
 
   // Execute the user driver.
   driver(argc, argv);

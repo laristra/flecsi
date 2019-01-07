@@ -87,24 +87,6 @@ square(const T & a) {
   return a * a;
 }
 
-//----------------------------------------------------------------------------//
-// C++ demangler
-//----------------------------------------------------------------------------//
-
-FLECSI_EXPORT std::string demangle(const char * const name);
-
-template<class T>
-inline std::string
-type() {
-  return demangle(typeid(T).name());
-}
-
-inline std::string
-type(const std::type_info & type_info) {
-  return demangle(type_info.name());
-}
-
-//----------------------------------------------------------------------------//
 // Unique Identifier Utilities
 //----------------------------------------------------------------------------//
 
@@ -155,72 +137,5 @@ unique_name(const T * const t) {
   return ss.str();
 } // unique_name
 
-//----------------------------------------------------------------------------//
-// Function Traits
-//----------------------------------------------------------------------------//
-
-template<typename T>
-struct function_traits_u : function_traits_u<decltype(&T::operator())> {};
-
-template<typename R, typename... As>
-struct function_traits_u<R(As...)> {
-  using return_type = R;
-  using arguments_type = std::tuple<As...>;
-};
-
-template<typename R, typename... As>
-struct function_traits_u<R (*)(As...)> : public function_traits_u<R(As...)> {};
-
-template<typename C, typename R, typename... As>
-struct function_traits_u<R (C::*)(As...)> : public function_traits_u<R(As...)> {
-  using owner_type = C;
-};
-
-template<typename C, typename R, typename... As>
-struct function_traits_u<R (C::*)(As...) const>
-    : public function_traits_u<R(As...)> {
-  using owner_type = C;
-};
-
-template<typename C, typename R, typename... As>
-struct function_traits_u<R (C::*)(As...) volatile>
-    : public function_traits_u<R(As...)> {
-  using owner_type = C;
-};
-
-template<typename C, typename R, typename... As>
-struct function_traits_u<R (C::*)(As...) const volatile>
-    : public function_traits_u<R(As...)> {
-  using owner_type = C;
-};
-
-template<typename R, typename... As>
-struct function_traits_u<std::function<R(As...)>>
-    : public function_traits_u<R(As...)> {};
-
-template<typename T>
-struct function_traits_u<T &> : public function_traits_u<T> {};
-template<typename T>
-struct function_traits_u<const T &> : public function_traits_u<T> {};
-template<typename T>
-struct function_traits_u<volatile T &> : public function_traits_u<T> {};
-template<typename T>
-struct function_traits_u<const volatile T &> : public function_traits_u<T> {};
-template<typename T>
-struct function_traits_u<T &&> : public function_traits_u<T> {};
-template<typename T>
-struct function_traits_u<const T &&> : public function_traits_u<T> {};
-template<typename T>
-struct function_traits_u<volatile T &&> : public function_traits_u<T> {};
-template<typename T>
-struct function_traits_u<const volatile T &&> : public function_traits_u<T> {};
-
 } // namespace utils
 } // namespace flecsi
-
-//----------------------------------------------------------------------------//
-// Preprocessor String Utilities
-//----------------------------------------------------------------------------//
-
-#define _UTIL_STRINGIFY(s) #s
-#define EXPAND_AND_STRINGIFY(s) _UTIL_STRINGIFY(s)

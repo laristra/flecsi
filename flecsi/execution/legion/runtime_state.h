@@ -28,12 +28,11 @@ namespace execution {
 
 struct legion_runtime_state_t {
 
-  legion_runtime_state_t(
-      Legion::Context & context_,
-      Legion::Runtime * runtime_,
-      const Legion::Task * task_,
-      const std::vector<Legion::PhysicalRegion> & regions_)
-      : context(context_), runtime(runtime_), task(task_), regions(regions_) {}
+  legion_runtime_state_t(Legion::Context & context_,
+    Legion::Runtime * runtime_,
+    const Legion::Task * task_,
+    const std::vector<Legion::PhysicalRegion> & regions_)
+    : context(context_), runtime(runtime_), task(task_), regions(regions_) {}
 
   Legion::Context & context;
   Legion::Runtime * runtime;
@@ -42,7 +41,8 @@ struct legion_runtime_state_t {
 
 }; // struct legion_runtime_state_t
 
-class flecsi_task_base_t {
+class flecsi_task_base_t
+{
 protected:
   legion_runtime_state_t state_;
 

@@ -42,7 +42,7 @@ template<typename T, typename... As>
 decltype(auto)
 tuple_function(T & f, std::tuple<As...> & t) {
   return tuple_function(
-      f, t, std::make_integer_sequence<std::size_t, sizeof...(As)>{});
+    f, t, std::make_integer_sequence<std::size_t, sizeof...(As)>{});
 } // tuple_function
 
 /*

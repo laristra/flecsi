@@ -30,6 +30,8 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/coloring/mpi_utils.h>
 
+#include <flecsi/utils/tuple_walker.h>
+
 namespace flecsi {
 namespace execution {
 
@@ -41,7 +43,7 @@ namespace execution {
    @ingroup execution
    */
 
-  struct task_prolog_t : public utils::tuple_walker_u<task_prolog_t>
+  struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t>
   {
 
     /*!

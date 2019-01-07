@@ -24,10 +24,14 @@ template <typename _Tuple, typename _Fn, size_t... _Idx>
 void
 tuple_visit_impl(_Tuple&& t, _Fn&& f, std::index_sequence<_Idx...>)
 {
-  // This treats creates an initializer list so that the index
-  // sequence is expanded properly. The (f(x), 0) uses the comma operator
-  // so that f is evaluated, but the resulting value is discarded. The value
-  // of the entire expression is 0. Attribution: Andy Prowl on stackoverflow.
+  /*
+    This creates an initializer list so that the index sequence is
+    expanded properly. The (f(x), 0) uses the comma operator so
+    that f is evaluated, but the resulting value is discarded. The value
+    of the entire expression is 0.
+
+    Attribution: Andy Prowl on stackoverflow.
+   */
   auto _l = { (f(_Idx, std::get<_Idx>(t)), 0)... };
 }
 

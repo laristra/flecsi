@@ -31,10 +31,12 @@ struct data_client_handle_entity_t {
   field_id_t fid2;
   field_id_t fid3;
   field_id_t id_fid;
-  Legion::LogicalRegion color_region;
-  Legion::LogicalRegion exclusive_region;
-  Legion::LogicalRegion shared_region;
-  Legion::LogicalRegion ghost_region;
+  Legion::LogicalRegion entire_region;
+  Legion::LogicalPartition color_partition;
+  Legion::LogicalPartition primary_partition;
+  Legion::LogicalPartition exclusive_partition;
+  Legion::LogicalPartition shared_partition;
+  Legion::LogicalPartition ghost_partition;
 }; // struct data_client_handle_entity_t
 
 //----------------------------------------------------------------------------//
@@ -58,15 +60,18 @@ struct data_client_handle_adjacency_t {
   field_id_t index_fid;
   field_id_t offset_fid;
   Legion::LogicalRegion adj_region;
-  Legion::LogicalRegion from_color_region;
-  Legion::LogicalRegion from_primary_region;
+  Legion::LogicalPartition adj_color_partition;
+  Legion::LogicalRegion from_entire_region;
+  Legion::LogicalPartition from_color_partition;
+  Legion::LogicalPartition from_primary_partition;
 }; // struct data_client_handle_adjacency_t
 
 struct data_client_handle_index_subspace_t {
   size_t index_space;
   size_t index_subspace;
   field_id_t index_fid;
-  Legion::LogicalRegion region;
+  Legion::LogicalRegion logical_region;
+  Legion::LogicalPartition logical_partition;
   size_t domain;
   size_t dim;
 };
@@ -95,7 +100,7 @@ struct legion_data_client_handle_policy_t {
   data_client_handle_entity_t handle_entities[MAX_ENTITIES];
   data_client_handle_adjacency_t handle_adjacencies[MAX_ADJACENCIES];
   data_client_handle_index_subspace_t
-      handle_index_subspaces[MAX_INDEX_SUBSPACES];
+    handle_index_subspaces[MAX_INDEX_SUBSPACES];
 }; // struct data_client_handle_policy_t
 
 } // namespace flecsi

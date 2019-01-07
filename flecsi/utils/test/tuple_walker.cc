@@ -3,14 +3,12 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-// includes: flecsi
-#include <flecsi/utils/tuple_walker.h>
 
-// includes: C++
 #include <iostream>
 
-// includes: other
 #include <cinchtest.h>
+
+#include <flecsi/utils/tuple_walker.h>
 
 // struct once
 struct once : public flecsi::utils::tuple_walker_u<once> {
@@ -33,11 +31,6 @@ struct thrice : public flecsi::utils::tuple_walker_u<thrice> {
   }
 };
 
-// =============================================================================
-// Test various constructs in tuple_walker.h
-// =============================================================================
-
-// TEST
 TEST(tuple_walker, all) {
   std::tuple<> nothing;
   std::tuple<int, float, double> t(1, float(2), double(3));

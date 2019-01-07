@@ -121,6 +121,7 @@ int main(int argc, char ** argv) {
      
     // Execute the flecsi runtime.
     result = flecsi::execution::context_t::instance().initialize(argc, argv);
+
   } // if
 
 #if defined(FLECSI_ENABLE_MPI)

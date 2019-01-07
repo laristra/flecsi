@@ -1,0 +1,34 @@
+#! /usr/bin/env bash
+
+# Check for git on the system
+git=`which git`
+
+if [ "$git" = "" ] ; then
+  echo "ERROR! You must have git installed to use this script!!!"
+  exit
+fi
+
+git_version=`git describe`
+
+# Count the number of dots in the git describe version. This allows us
+# to distinguish between version information like "release-1.0.1-commit-hash"
+# and "stable-1.0-commit-hash". In the first case (2 dots), we just strip
+# off the remaining information (commit and hash) because this is a version
+# that has been set to include the patch level. In the second case, this
+# is a version that only has the major and minor revision numbers specified.
+# In this case, we use the commit number to form the patch level.
+
+dots=`echo $git_version | grep -o "\." | wc -l`
+
+case $dots in
+
+  1) # One dot: The major.minor.patch is specified.
+    echo "FleCSI version: " `echo $git_version | sed 's,\-,\.,;s,\-.*$,,g'`
+  ;;
+
+  2) # Two dots: Only the major.minor is specified, use the commit number
+     # for the patch level.
+    echo "FleCSI version: " `echo $git_version | sed 's,\-.*,,g'`
+  ;;
+
+esac

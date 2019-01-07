@@ -3,11 +3,9 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-// includes: flecsi
-#include <flecsi/utils/hash.h>
-
-// includes: other
 #include <cinchtest.h>
+
+#include <flecsi/utils/hash.h>
 
 // =============================================================================
 // Test various aspects of flecsi::utils::hash

@@ -18,11 +18,11 @@ namespace flecsi {
 //! handle.
 //----------------------------------------------------------------------------//
 
-struct data_client_handle_entity_t
-{
+struct data_client_handle_entity_t {
   using field_id_t = size_t;
 
-  data_client_handle_entity_t() : index_space(0), dim(0), domain(0), size(0), fid(0) {}
+  data_client_handle_entity_t()
+    : index_space(0), dim(0), domain(0), size(0), fid(0) {}
 
   size_t index_space;
   size_t index_space2;
@@ -43,8 +43,7 @@ struct data_client_handle_entity_t
 //! mesh topology, traversing the data client adjacency specifications,
 //! which is then passed the data client handle.
 //----------------------------------------------------------------------------//
-struct data_client_handle_adjacency_t
-{
+struct data_client_handle_adjacency_t {
   size_t adj_index_space;
   size_t from_index_space;
   size_t to_index_space;
@@ -69,8 +68,7 @@ struct data_client_handle_index_subspace_t {
   size_t dim;
 };
 
-struct mpi_data_client_handle_policy_t
-{
+struct mpi_data_client_handle_policy_t {
   // FIXME: This needs to be exposed at a higher level
 
   // maximum number of adjacencies to read, this limits the size of the
@@ -88,10 +86,11 @@ struct mpi_data_client_handle_policy_t
   size_t num_index_subspaces;
   data_client_handle_entity_t handle_entities[MAX_ENTITIES];
   data_client_handle_adjacency_t handle_adjacencies[MAX_ADJACENCIES];
-  data_client_handle_index_subspace_t handle_index_subspaces[MAX_INDEX_SUBSPACES];
+  data_client_handle_index_subspace_t
+    handle_index_subspaces[MAX_INDEX_SUBSPACES];
 }; // struct data_client_handle_policy_t
 
 } // namespace flecsi
 
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

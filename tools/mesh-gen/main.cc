@@ -23,7 +23,7 @@ int main(int argc, char ** argv) {
 	std::string flag("-a");
 	bool ascii = (flag.compare(argv[1]) == 0) && ++arg;
 
-	const size_t M = atoi(argv[arg]);
+	const size_t M = atoi(argv[arg++]);
 	const size_t N = atoi(argv[arg]);
 
 	size_t vertices = (M+1)*(N+1);
@@ -109,12 +109,12 @@ int main(int argc, char ** argv) {
 	tex << std::endl;
 
 	tex << "\\draw[step=1cm,black] (0, 0) grid (" <<
-		M << ", " << N << ");" << std::endl;
+		N << ", " << M << ");" << std::endl;
 
 	size_t cell(0);
 	for(size_t j(0); j<M; ++j) {
 		double yoff(0.5+j);
-		for(size_t i(0); i<M; ++i) {
+		for(size_t i(0); i<N; ++i) {
 			double xoff(0.5+i);
 			tex << "\\node at (" << xoff << ", " << yoff <<
 				") {" << cell++ << "};" << std::endl;

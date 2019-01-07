@@ -25,9 +25,6 @@ set(coloring_HEADERS
   crs.h
   index_coloring.h
   dcrs_utils.h
-  mpi_communicator.h
-  mpi_utils.h
-  parmetis_colorer.h
   box_types.h
   box_colorer.h
   simple_box_colorer.h

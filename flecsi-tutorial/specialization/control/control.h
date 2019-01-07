@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <flecsi/utils/common.h>
+#include <flecsi/utils/macros.h>
 #include <flecsi/utils/const_string.h>
 
 #include <flecsi-tutorial/specialization/control/policy.h>
