@@ -77,14 +77,12 @@ struct context_u : public CONTEXT_POLICY {
   } // top_level_action
 
 private:
-
   size_t color_ = 0;
   top_level_action_t top_level_action_ = {};
 
   context_u() : CONTEXT_POLICY() {}
 
-  ~context_u() {
-  } // ~context_u
+  ~context_u() {} // ~context_u
 
   // These are deleted because this type is a singleton, i.e.,
   // we don't want anyone to be able to make copies or references.

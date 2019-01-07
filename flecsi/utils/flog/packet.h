@@ -20,11 +20,11 @@
 #if defined(FLECSI_ENABLE_FLOG)
 
 #if defined(FLECSI_ENABLE_MPI)
-  #include <mpi.h>
+#include <mpi.h>
 #endif
 
 #if defined(_MSC_VER)
-  #error "Need implementation for Windows"
+#error "Need implementation for Windows"
 #endif
 
 #include <sys/time.h>
@@ -55,30 +55,29 @@ namespace utils {
 namespace flog {
 
 /*!
-  Packet type for serializing output from distributed-memory tasks. 
+  Packet type for serializing output from distributed-memory tasks.
  */
 
-struct packet_t
-{
+struct packet_t {
   static constexpr size_t sec_bytes = sizeof(time_t);
   static constexpr size_t usec_bytes = sizeof(suseconds_t);
 
   packet_t(const char * msg = nullptr) {
     timeval stamp;
     if(gettimeofday(&stamp, NULL)) {
-      std::cerr << "FLOG: call to gettimeofday failed!!! " <<
-        __FILE__ << __LINE__ << std::endl;
+      std::cerr << "FLOG: call to gettimeofday failed!!! " << __FILE__
+                << __LINE__ << std::endl;
       std::exit(1);
     } // if
 
     strncpy(data_, reinterpret_cast<const char *>(&stamp.tv_sec), sec_bytes);
-    strncpy(data_+sec_bytes, reinterpret_cast<const char *>(&stamp.tv_usec),
+    strncpy(data_ + sec_bytes, reinterpret_cast<const char *>(&stamp.tv_usec),
       usec_bytes);
 
     std::ostringstream oss;
     oss << msg;
 
-    strcpy(data_+sec_bytes+usec_bytes, oss.str().c_str());
+    strcpy(data_ + sec_bytes + usec_bytes, oss.str().c_str());
   } // packet_t
 
   time_t const & seconds() const {
@@ -86,7 +85,7 @@ struct packet_t
   } // seconds
 
   suseconds_t const & useconds() const {
-    return *reinterpret_cast<suseconds_t const *>(data_+sec_bytes);
+    return *reinterpret_cast<suseconds_t const *>(data_ + sec_bytes);
   } // seconds
 
   const char * message() {
@@ -101,14 +100,12 @@ struct packet_t
     return sec_bytes + usec_bytes + FLOG_MAX_MESSAGE_SIZE;
   } // bytes
 
-  bool operator < (packet_t const & b) {
-    return this->seconds() == b.seconds() ?
-      this->useconds() < b.useconds() :
-      this->seconds() < b.seconds();
+  bool operator<(packet_t const & b) {
+    return this->seconds() == b.seconds() ? this->useconds() < b.useconds()
+                                          : this->seconds() < b.seconds();
   } // operator <
 
 private:
-
   char data_[sec_bytes + usec_bytes + FLOG_MAX_MESSAGE_SIZE];
 
 }; // packet_t
@@ -117,8 +114,7 @@ private:
 void flush_packets();
 
 #if defined(FLECSI_ENABLE_MPI)
-struct mpi_state_t
-{
+struct mpi_state_t {
   static mpi_state_t & instance() {
     static mpi_state_t s;
     return s;
@@ -134,22 +130,36 @@ struct mpi_state_t
     initialized_ = true;
   } // init
 
-  bool initialized() { return initialized_; }
+  bool initialized() {
+    return initialized_;
+  }
 
-  int rank() { return rank_; }
-  int size() { return size_; }
+  int rank() {
+    return rank_;
+  }
+  int size() {
+    return size_;
+  }
 
-  std::thread & flusher_thread() { return flusher_thread_; }
-  std::mutex & packets_mutex() { return packets_mutex_; }
-  std::vector<packet_t> & packets() { return packets_; }
+  std::thread & flusher_thread() {
+    return flusher_thread_;
+  }
+  std::mutex & packets_mutex() {
+    return packets_mutex_;
+  }
+  std::vector<packet_t> & packets() {
+    return packets_;
+  }
 
-  bool run_flusher() { return run_flusher_; }
-  void end_flusher() { run_flusher_ = false; }
+  bool run_flusher() {
+    return run_flusher_;
+  }
+  void end_flusher() {
+    run_flusher_ = false;
+  }
 
 private:
-
-  ~mpi_state_t()
-  {
+  ~mpi_state_t() {
     if(initialized_) {
       end_flusher();
       flusher_thread_.join();

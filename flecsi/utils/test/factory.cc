@@ -106,11 +106,9 @@ add_dd(double d1, double d2) {
   return new double(d1 + d2);
 }
 
-int unit_initialization(int argc, char ** argv) { return 0; }
+int factory(int argc, char ** argv) {
 
-int unit_driver(int argc, char ** argv) {
-
-  FLECSI_TEST(factory);
+  FTEST();
 
   // ------------------------
   // types
@@ -247,4 +245,6 @@ int unit_driver(int argc, char ** argv) {
 #endif
 
   return 0;
-} // TEST
+}
+
+ftest_register_test(factory);

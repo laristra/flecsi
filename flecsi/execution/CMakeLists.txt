@@ -92,16 +92,3 @@ set(execution_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
-
-# FIXME: Remove this when unit tests are working again
-add_executable(runtime_initialization
-  ${CINCH_SOURCE_DIR}/cinch/runtime.cc
-  ../control/test/unit.cc
-  ../utils/flog/packet.cc
-  ${RUNTIME_DRIVER}
-)
-
-target_link_libraries(runtime_initialization ${CINCH_RUNTIME_LIBRARIES}
-  ${COLORING_LIBRARIES}
-)
-# // FIXME: Remove to here

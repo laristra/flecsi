@@ -66,7 +66,7 @@ struct control_u : public CONTROL_POLICY {
     @param phase The control point id or \em phase. Phases are defined
                  by the specialization.
    */
-  
+
   dag_t & phase_map(size_t phase, std::string const & label = "default") {
     if(registry_.find(phase) == registry_.end()) {
       registry_[phase].label() = label;
@@ -87,10 +87,9 @@ struct control_u : public CONTROL_POLICY {
   } // sorted_phase_map
 
 private:
-
   void sort_phases() {
     if(sorted_.size() == 0) {
-      for(auto & d: registry_) {
+      for(auto & d : registry_) {
         sorted_[d.first] = d.second.sort();
       } // for
     } // if
@@ -101,5 +100,5 @@ private:
 
 }; // control_u
 
-} // namespace flecsi
 } // namespace control
+} // namespace flecsi

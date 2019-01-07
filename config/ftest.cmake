@@ -19,7 +19,7 @@ if(ENABLE_UNIT_TESTS)
   enable_testing()
 endif()
 
-function(flecsi_add_unit name)
+function(ftest_add_unit name)
 
   #----------------------------------------------------------------------------#
   # Enable new behavior for in-list if statements.

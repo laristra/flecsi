@@ -15,11 +15,9 @@
 #include <flecsi/control/ftest.h>
 #include <flecsi/utils/hash.h>
 
-int unit_initialization(int argc, char ** argv) { return 0; }
+int hash(int argc, char ** argv) {
 
-int unit_driver(int argc, char ** argv) {
-
-  FLECSI_TEST(hash);
+  FTEST();
 
   using flecsi::utils::string_hash;
 
@@ -346,4 +344,6 @@ int unit_driver(int argc, char ** argv) {
   ASSERT_EQ(num_collisions, 0);
 
   return 0;
-} // unit_driver
+}
+
+ftest_register_test(hash);

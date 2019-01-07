@@ -118,8 +118,10 @@ set(utils_SOURCES
 )
 
 #------------------------------------------------------------------------------#
+# Unit tests.
+#------------------------------------------------------------------------------#
 
-flecsi_add_unit(hash
+ftest_add_unit(hash
   SOURCES
     test/hash.cc
 )
@@ -130,12 +132,7 @@ if(MSVC)
   set(factory_blessed_input test/factory.blessed.msvc)
 endif()
 
-flecsi_add_unit(fantasy
-  SOURCES
-    test/fantasy.cc
-)
-
-flecsi_add_unit(factory
+ftest_add_unit(factory
   SOURCES
     demangle.cc
     test/factory.cc
@@ -143,13 +140,3 @@ flecsi_add_unit(factory
     test/factory.blessed
     ${factory_blessed_input}
 )
-
-#add_executable(hash
-#  ${CINCH_SOURCE_DIR}/cinch/runtime.cc
-#  test/hash.cc
-#  flog/packet.cc
-#  ${RUNTIME_DRIVER}
-#)
-
-#target_link_libraries(hash ${CINCH_RUNTIME_LIBRARIES}
-#  ${CMAKE_THREAD_LIBS_INIT})

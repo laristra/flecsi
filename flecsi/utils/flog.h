@@ -20,7 +20,7 @@
 #include "flog/utils.h"
 
 #if defined(FLECSI_ENABLE_FLOG)
-  #include "flog/message.h"
+#include "flog/message.h"
 #endif
 
 #include <sstream>
@@ -40,36 +40,36 @@
 
   Register a tag group with the runtime (flog_t). We need the static
   size_t so that tag scopes can be created quickly during execution.
-  
-  @ingroup logging 
+
+  @ingroup logging
  */
 
 #define flog_register_tag(name)                                                \
-  static size_t name ## _flog_tag_id =                                         \
-  flecsi::utils::flog::flog_t::instance().register_tag(_flog_stringify(name))
+  static size_t name##_flog_tag_id =                                           \
+    flecsi::utils::flog::flog_t::instance().register_tag(                      \
+      _flog_stringify(name))
 
 /*!
   @def flog_tag_guard
 
   Create a new tag scope.
-  
-  @ingroup logging 
+
+  @ingroup logging
  */
 
 #define flog_tag_guard(name)                                                   \
-  flecsi::utils::flog::flog_tag_scope_t name ## _flog_tag_scope__(             \
+  flecsi::utils::flog::flog_tag_scope_t name##_flog_tag_scope__(               \
     flog_tag_lookup(name))
 
 /*!
   @def flog_tag_map
 
   Return a std::map of registered tags.
-  
-  @ingroup logging 
+
+  @ingroup logging
  */
 
-#define flog_tag_map()                                                         \
-  flecsi::utils::flog::flog_t::instance().tag_map()
+#define flog_tag_map() flecsi::utils::flog::flog_t::instance().tag_map()
 
 /*!
   @def flog_init(active)
@@ -99,7 +99,7 @@
  */
 
 #define flog_init(active)                                                      \
-/* MACRO IMPLEMENTATION */                                                     \
+  /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi::utils::flog::flog_t::instance().init(active)
 
@@ -130,10 +130,10 @@
  */
 
 #define flog(severity)                                                         \
-/* MACRO IMPLEMENTATION */                                                     \
+  /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  true && flecsi::utils::flog::severity ## _log_message_t(                     \
-    __FILE__, __LINE__).stream()
+  true &&                                                                      \
+    flecsi::utils::flog::severity##_log_message_t(__FILE__, __LINE__).stream()
 
 /*!
   @def flog_trace(message)
@@ -154,10 +154,10 @@
  */
 
 #define flog_trace(message)                                                    \
-/* MACRO IMPLEMENTATION */                                                     \
+  /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi::utils::flog::trace_log_message_t(__FILE__, __LINE__).stream() <<     \
-    message
+  flecsi::utils::flog::trace_log_message_t(__FILE__, __LINE__).stream()        \
+    << message
 
 /*!
   @def flog_info(message)
@@ -178,10 +178,10 @@
  */
 
 #define flog_info(message)                                                     \
-/* MACRO IMPLEMENTATION */                                                     \
+  /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi::utils::flog::info_log_message_t(__FILE__, __LINE__).stream() <<      \
-    message
+  flecsi::utils::flog::info_log_message_t(__FILE__, __LINE__).stream()         \
+    << message
 
 /*!
   @def flog_warn(message)
@@ -202,10 +202,10 @@
  */
 
 #define flog_warn(message)                                                     \
-/* MACRO IMPLEMENTATION */                                                     \
+  /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi::utils::flog::warn_log_message_t(__FILE__, __LINE__).stream() <<      \
-    message
+  flecsi::utils::flog::warn_log_message_t(__FILE__, __LINE__).stream()         \
+    << message
 
 /*!
   @def flog_error(message)
@@ -226,10 +226,10 @@
  */
 
 #define flog_error(message)                                                    \
-/* MACRO IMPLEMENTATION */                                                     \
+  /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi::utils::flog::error_log_message_t(__FILE__, __LINE__).stream() <<     \
-    message
+  flecsi::utils::flog::error_log_message_t(__FILE__, __LINE__).stream()        \
+    << message
 
 /*!
   @def clog_fatal(message)
@@ -260,7 +260,11 @@
 #define flog_tag_guard(name)
 
 #define flog_init(active)
-#define flog(severity) if(true) {} else std::cerr
+#define flog(severity)                                                         \
+  if(true) {                                                                   \
+  }                                                                            \
+  else                                                                         \
+    std::cerr
 #define flog_trace(message)
 #define flog_info(message)
 #define flog_warn(message)
@@ -269,14 +273,15 @@
 #endif // FLECSI_ENABLE_FLOG
 
 #define flog_fatal(message)                                                    \
-/* MACRO IMPLEMENTATION */                                                     \
+  /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   {                                                                            \
-  std::stringstream _sstream;                                                  \
-  _sstream << FLOG_OUTPUT_LTRED("FATAL ERROR ") <<                             \
-    FLOG_OUTPUT_YELLOW(flecsi::utils::flog::rstrip<'/'>(__FILE__) << ":" <<    \
-      __LINE__ << " ") << FLOG_OUTPUT_LTRED(message) << std::endl;             \
-  throw std::runtime_error(_sstream.str());                                    \
+    std::stringstream _sstream;                                                \
+    _sstream << FLOG_OUTPUT_LTRED("FATAL ERROR ")                              \
+             << FLOG_OUTPUT_YELLOW(flecsi::utils::flog::rstrip<'/'>(__FILE__)  \
+                                   << ":" << __LINE__ << " ")                  \
+             << FLOG_OUTPUT_LTRED(message) << std::endl;                       \
+    throw std::runtime_error(_sstream.str());                                  \
   } /* scope */
 
 /*!
@@ -305,6 +310,8 @@
  */
 
 #define flog_assert(test, message)                                             \
-/* MACRO IMPLEMENTATION */                                                     \
+  /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  if(!(test)) { flog_fatal(message); }
+  if(!(test)) {                                                                \
+    flog_fatal(message);                                                       \
+  }

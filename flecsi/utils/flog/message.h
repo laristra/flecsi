@@ -30,10 +30,8 @@ namespace flog {
   Function always returning true. Used for defaults.
  */
 
-inline
-bool
-true_state()
-{
+inline bool
+true_state() {
   return true;
 } // true_state
 
@@ -43,46 +41,42 @@ true_state()
  */
 
 template<typename P>
-struct log_message_t
-{ /*!
-    Constructor.
+struct log_message_t { /*!
+                         Constructor.
 
-    @tparam P Predicate function type.
+                         @tparam P Predicate function type.
 
-    @param file            The current file (where the log message was
-                           created).  In general, this will always use the
-                           __FILE__ parameter from the calling macro.
-    @param line            The current line (where the log message was called).
-                           In general, this will always use the __LINE__
-                           parameter from the calling macro.
-    @param predicate       The predicate function to determine whether or not
-                           the calling runtime should produce output.
-    @param can_send_to_one A boolean indicating whether the calling scope
-                           can route messages through one rank.
-   */
+                         @param file            The current file (where the log
+                         message was created).  In general, this will always use
+                         the
+                                                __FILE__ parameter from the
+                         calling macro.
+                         @param line            The current line (where the log
+                         message was called). In general, this will always use
+                         the __LINE__ parameter from the calling macro.
+                         @param predicate       The predicate function to
+                         determine whether or not the calling runtime should
+                         produce output.
+                         @param can_send_to_one A boolean indicating whether the
+                         calling scope can route messages through one rank.
+                        */
 
-  log_message_t(
-    const char * file,
+  log_message_t(const char * file,
     int line,
     P && predicate,
-    bool can_send_to_one = true
-  )
-  :
-    file_(file), line_(line), predicate_(predicate),
-    can_send_to_one_(can_send_to_one), clean_color_(false)
-  {
+    bool can_send_to_one = true)
+    : file_(file), line_(line), predicate_(predicate),
+      can_send_to_one_(can_send_to_one), clean_color_(false) {
 #if defined(FLOG_DEBUG)
-    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: log_message_t constructor " <<
-      file << " " << line << FLOG_COLOR_PLAIN << std::endl;
+    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: log_message_t constructor " << file
+              << " " << line << FLOG_COLOR_PLAIN << std::endl;
 #endif
   } // log_message_t
 
-  virtual
-  ~log_message_t()
-  {
+  virtual ~log_message_t() {
 #if defined(FLOG_DEBUG)
-    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: log_message_t destructor " <<
-      FLOG_COLOR_PLAIN << std::endl;
+    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: log_message_t destructor "
+              << FLOG_COLOR_PLAIN << std::endl;
 #endif
 
 #if !defined(SERIAL) && defined(FLOG_ENABLE_MPI)
@@ -104,15 +98,11 @@ struct log_message_t
     formatting to a particular severity output.
    */
 
-  virtual
-  std::ostream &
-  stream()
-  {
+  virtual std::ostream & stream() {
     return flog_t::instance().severity_stream(predicate_());
   } // stream
 
 protected:
-
   const char * file_;
   int line_;
   P & predicate_;
@@ -129,103 +119,89 @@ protected:
 //----------------------------------------------------------------------------//
 
 #define severity_message_t(severity, P, format)                                \
-struct severity ## _log_message_t                                              \
-  : public log_message_t<P>                                                    \
-{                                                                              \
-  severity ## _log_message_t(                                                  \
-    const char * file,                                                         \
-    int line,                                                                  \
-    P && predicate = true_state,                                               \
-    bool can_send_to_one = true                                                \
-  )                                                                            \
-    : log_message_t<P>(file, line, predicate, can_send_to_one) {}              \
+  struct severity##_log_message_t : public log_message_t<P> {                  \
+    severity##_log_message_t(const char * file,                                \
+      int line,                                                                \
+      P && predicate = true_state,                                             \
+      bool can_send_to_one = true)                                             \
+      : log_message_t<P>(file, line, predicate, can_send_to_one) {}            \
                                                                                \
-  ~severity ## _log_message_t()                                                \
-  {                                                                            \
-    /* Clean colors from the stream */                                         \
-    if(clean_color_) {                                                         \
-      flog_t::instance().buffer_stream() << FLOG_COLOR_PLAIN;                  \
+    ~severity##_log_message_t() {                                              \
+      /* Clean colors from the stream */                                       \
+      if(clean_color_) {                                                       \
+        flog_t::instance().buffer_stream() << FLOG_COLOR_PLAIN;                \
+      }                                                                        \
     }                                                                          \
-  }                                                                            \
                                                                                \
-  std::ostream &                                                               \
-  stream() override                                                            \
-    /* This is replaced by the scoped logic */                                 \
-    format                                                                     \
-}
+    std::ostream &                                                             \
+    stream() override /* This is replaced by the scoped logic */               \
+      format                                                                   \
+  }
 
-#define message_stamp                                                          \
-  timestamp() << " " << rstrip<'/'>(file_) << ":" << line_
+#define message_stamp timestamp() << " " << rstrip<'/'>(file_) << ":" << line_
 
 #if !defined(SERIAL) && defined(FLOG_ENABLE_MPI)
-  #define mpi_stamp " r" << mpi_state_t::instance().rank()
+#define mpi_stamp " r" << mpi_state_t::instance().rank()
 #else
-  #define mpi_stamp ""
+#define mpi_stamp ""
 #endif
 
 // Trace
-severity_message_t(trace, decltype(flecsi::utils::flog::true_state),
-  {
-    std::ostream & stream =
-      flog_t::instance().severity_stream(FLOG_STRIP_LEVEL < 1 &&
-        predicate_() && flog_t::instance().tag_enabled());
+severity_message_t(trace, decltype(flecsi::utils::flog::true_state), {
+  std::ostream & stream = flog_t::instance().severity_stream(
+    FLOG_STRIP_LEVEL < 1 && predicate_() && flog_t::instance().tag_enabled());
 
-    {
+  {
     stream << FLOG_OUTPUT_CYAN("[T") << FLOG_OUTPUT_LTGRAY(message_stamp);
     stream << FLOG_OUTPUT_DKGRAY(mpi_stamp);
     stream << FLOG_OUTPUT_CYAN("] ");
-    } // scope
+  } // scope
 
-    return stream;
-  });
+  return stream;
+});
 
 // Info
-severity_message_t(info, decltype(flecsi::utils::flog::true_state),
-  {
-    std::ostream & stream =
-      flog_t::instance().severity_stream(FLOG_STRIP_LEVEL < 2 &&
-        predicate_() && flog_t::instance().tag_enabled());
+severity_message_t(info, decltype(flecsi::utils::flog::true_state), {
+  std::ostream & stream = flog_t::instance().severity_stream(
+    FLOG_STRIP_LEVEL < 2 && predicate_() && flog_t::instance().tag_enabled());
 
-    {
+  {
     stream << FLOG_OUTPUT_GREEN("[I") << FLOG_OUTPUT_LTGRAY(message_stamp);
     stream << FLOG_OUTPUT_DKGRAY(mpi_stamp);
     stream << FLOG_OUTPUT_GREEN("] ");
-    } // scope
+  } // scope
 
-    return stream;
-  });
+  return stream;
+});
 
 // Warn
-severity_message_t(warn, decltype(flecsi::utils::flog::true_state),
-  {
-    std::ostream & stream =
-      flog_t::instance().severity_stream(FLOG_STRIP_LEVEL < 3 &&
-        predicate_() && flog_t::instance().tag_enabled());
+severity_message_t(warn, decltype(flecsi::utils::flog::true_state), {
+  std::ostream & stream = flog_t::instance().severity_stream(
+    FLOG_STRIP_LEVEL < 3 && predicate_() && flog_t::instance().tag_enabled());
 
-    {
+  {
     stream << FLOG_OUTPUT_BROWN("[W") << FLOG_OUTPUT_LTGRAY(message_stamp);
     stream << FLOG_OUTPUT_DKGRAY(mpi_stamp);
     stream << FLOG_OUTPUT_BROWN("] ") << FLOG_COLOR_YELLOW;
-    } // scope
+  } // scope
 
-    clean_color_ = true;
-    return stream;
-  });
+  clean_color_ = true;
+  return stream;
+});
 
 // Error
-severity_message_t(error, decltype(flecsi::utils::flog::true_state),
-  {
-    std::ostream & stream = std::cerr;
+severity_message_t(error, decltype(flecsi::utils::flog::true_state), {
+  std::ostream & stream = std::cerr;
 
-    {
+  {
     stream << FLOG_OUTPUT_RED("[E") << FLOG_OUTPUT_LTGRAY(message_stamp);
     stream << FLOG_OUTPUT_DKGRAY(mpi_stamp);
     stream << FLOG_OUTPUT_RED("] ") << FLOG_COLOR_LTRED;
-    } // scope
+  } // scope
 
-    clean_color_ = true;
-    return stream;
-  });
+  clean_color_ = true;
+  return stream;
+});
 
 #undef severity_message_t
 

@@ -116,7 +116,7 @@ cinch_load_extras(MPI LEGION HPX)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/config)
 include(flog)
-include(funit)
+include(ftest)
 
 # After we load the cinch options, we need to capture the configuration
 # state for the particular Cinch build configuration and set variables that

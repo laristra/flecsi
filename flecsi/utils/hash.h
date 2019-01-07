@@ -45,7 +45,7 @@ string_hash(U && str, const std::size_t n) {
   return string_hash_u<T>(str, 0, 0, n);
 } // string_hash
 
-#endif 
+#endif
 
 namespace hash {
 
@@ -340,12 +340,7 @@ client_adjacency_to_dimension(size_t key) {
   @ingroup utils
  */
 
-template<
-  size_t LABEL,
-  size_t NAMESPACE,
-  size_t NAME,
-  size_t INDEX_SPACE
->
+template<size_t LABEL, size_t NAMESPACE, size_t NAME, size_t INDEX_SPACE>
 inline constexpr size_t
 client_internal_field_hash() {
   return ((LABEL ^ (NAMESPACE ^ NAME)) << 8 | INDEX_SPACE) | (1ull << 63);
@@ -368,13 +363,10 @@ client_internal_field_hash() {
  */
 
 inline size_t
-client_internal_field_hash(
-  size_t label,
+client_internal_field_hash(size_t label,
   size_t nspace,
   size_t name,
-  size_t index_space
-)
-{
+  size_t index_space) {
   return ((label ^ (nspace ^ name)) << 8 | index_space) | (1ull << 63);
 } // client_internal_field_hash
 
@@ -440,9 +432,8 @@ reduction_hash() {
 
 template<typename T, typename U>
 inline constexpr T
-string_hash(U &&str, const std::size_t n)
-{
-  if (n == 0)
+string_hash(U && str, const std::size_t n) {
+  if(n == 0)
     return 0;
 
   // String-to-integer hash function, based on prime numbers.
@@ -454,7 +445,7 @@ string_hash(U &&str, const std::size_t n)
   const T Q = 6291469; // prime, a bit less than 2x the first
 
   T h = 37; // prime
-  for (std::size_t i = 0;  i < n;  ++i)
+  for(std::size_t i = 0; i < n; ++i)
     h = (h * P) ^ (str[i] * Q);
   return h;
 } // string_hash

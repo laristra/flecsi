@@ -11,8 +11,8 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
-#include "flog_types.h"
 #include "packet.h"
+#include "flog_types.h"
 
 #if defined(FLECSI_ENABLE_FLOG)
 
@@ -21,23 +21,25 @@ namespace utils {
 namespace flog {
 
 #if defined(FLECSI_ENABLE_MPI)
-void flush_packets() {
+void
+flush_packets() {
   while(mpi_state_t::instance().run_flusher()) {
     usleep(FLOG_PACKET_FLUSH_INTERVAL);
 
     {
-    std::lock_guard<std::mutex> guard(mpi_state_t::instance().packets_mutex());
+      std::lock_guard<std::mutex> guard(
+        mpi_state_t::instance().packets_mutex());
 
-    if(mpi_state_t::instance().packets().size()) {
-      std::sort(mpi_state_t::instance().packets().begin(),
-        mpi_state_t::instance().packets().end());
+      if(mpi_state_t::instance().packets().size()) {
+        std::sort(mpi_state_t::instance().packets().begin(),
+          mpi_state_t::instance().packets().end());
 
-      for(auto & p: mpi_state_t::instance().packets()) {
-        flog_t::instance().stream() << p.message();
-      } // for
+        for(auto & p : mpi_state_t::instance().packets()) {
+          flog_t::instance().stream() << p.message();
+        } // for
 
-      mpi_state_t::instance().packets().clear();
-    } // if
+        mpi_state_t::instance().packets().clear();
+      } // if
     } // scope
 
   } // while

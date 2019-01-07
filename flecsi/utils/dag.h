@@ -56,31 +56,38 @@ struct dag_node_u : public NODE_POLICY {
                  the node policy constructor.
    */
 
-  template<typename ... ARGS>
-  dag_node_u(size_t hash, std::string const & label, ARGS && ... args)
-    : hash_(hash), label_(label), NODE_POLICY(std::forward<ARGS>(args) ...) {
-  }
+  template<typename... ARGS>
+  dag_node_u(size_t hash, std::string const & label, ARGS &&... args)
+    : hash_(hash), label_(label), NODE_POLICY(std::forward<ARGS>(args)...) {}
 
   /*!
     Copy constructor.
    */
 
   dag_node_u(dag_node_u const & node)
-    :
-      hash_(node.hash_),
-      label_(node.label_),
-      edge_list_(node.edge_list_),
-      NODE_POLICY(node)
-    {}
+    : hash_(node.hash_), label_(node.label_), edge_list_(node.edge_list_),
+      NODE_POLICY(node) {}
 
-  size_t const & hash() const { return hash_; }
-  size_t & hash() { return hash_; }
+  size_t const & hash() const {
+    return hash_;
+  }
+  size_t & hash() {
+    return hash_;
+  }
 
-  std::string const & label() const { return label_; }
-  std::string & label() { return label_; }
+  std::string const & label() const {
+    return label_;
+  }
+  std::string & label() {
+    return label_;
+  }
 
-  edge_list_t const & edges() const { return edge_list_; }
-  edge_list_t & edges() { return edge_list_; }
+  edge_list_t const & edges() const {
+    return edge_list_;
+  }
+  edge_list_t & edges() {
+    return edge_list_;
+  }
 
   /*!
     This method initializes the node state without overwriting any of the
@@ -99,8 +106,8 @@ struct dag_node_u : public NODE_POLICY {
     return NODE_POLICY::initialize(node);
   } // update
 
-  dag_node_u & operator = (dag_node_u const & node) {
-    NODE_POLICY::operator = (node);
+  dag_node_u & operator=(dag_node_u const & node) {
+    NODE_POLICY::operator=(node);
 
     hash_ = node.hash_;
     label_ = node.label_;
@@ -110,7 +117,6 @@ struct dag_node_u : public NODE_POLICY {
   } // operator =
 
 private:
-
   size_t hash_ = 0;
   std::string label_ = "";
   edge_list_t edge_list_ = {};
@@ -118,14 +124,14 @@ private:
 }; // struct dag_node_u
 
 template<typename NODE_POLICY>
-inline std::ostream & 
-operator << (std::ostream & stream, dag_node_u<NODE_POLICY> const & node) {
+inline std::ostream &
+operator<<(std::ostream & stream, dag_node_u<NODE_POLICY> const & node) {
   stream << "hash: " << node.hash() << std::endl;
   stream << "label: " << node.label() << std::endl;
   stream << static_cast<NODE_POLICY const &>(node);
 
   stream << "edges: ";
-  for(auto e: node.edges()) {
+  for(auto e : node.edges()) {
     stream << e << " ";
   } // for
   stream << std::endl;
@@ -134,20 +140,29 @@ operator << (std::ostream & stream, dag_node_u<NODE_POLICY> const & node) {
 } // operator <<
 
 template<typename NODE_POLICY>
-struct dag_u
-{
+struct dag_u {
   using node_t = dag_node_u<NODE_POLICY>;
   using node_map_t = std::map<size_t, node_t>;
   using node_vector_t = std::vector<node_t>;
   using node_list_t = std::list<node_t>;
 
-  std::string const & label() const { return label_; }
-  std::string & label() { return label_; }
+  std::string const & label() const {
+    return label_;
+  }
+  std::string & label() {
+    return label_;
+  }
 
-  node_map_t const & nodes() const { return nodes_; }
-  node_map_t & nodes() { return nodes_; }
+  node_map_t const & nodes() const {
+    return nodes_;
+  }
+  node_map_t & nodes() {
+    return nodes_;
+  }
 
-  node_t & node(size_t hash) { return nodes_[hash]; }
+  node_t & node(size_t hash) {
+    return nodes_[hash];
+  }
 
   bool initialize_node(node_t const & node) {
     return nodes_[node.hash()].initialize(node);
@@ -178,7 +193,7 @@ struct dag_u
 
     nodes_[to].edges().push_back(from);
 
-	 return true;
+    return true;
   } // add_edge
 
   /*!
@@ -252,7 +267,7 @@ struct dag_u
   void add(graphviz_t & gv) {
     std::map<size_t, Agnode_t *> node_map;
 
-    for(auto n: nodes_) {
+    for(auto n : nodes_) {
       const std::string hash = std::to_string(n.second.hash());
 
       node_map[n.second.hash()] =
@@ -263,8 +278,8 @@ struct dag_u
       gv.set_node_attribute(hash.c_str(), "fillcolor", "#c5def5");
     } // for
 
-    for(auto n: nodes_) {
-      for(auto e: n.second.edges()) {
+    for(auto n : nodes_) {
+      for(auto e : n.second.edges()) {
         gv.add_edge(node_map[e], node_map[n.first]);
       } // for
     } // for
@@ -273,16 +288,15 @@ struct dag_u
 #endif // FLECSI_ENABLE_GRAPHVIZ
 
 private:
-
   std::string label_;
   node_map_t nodes_;
 
 }; // struct dag_u
 
 template<typename NODE_POLICY>
-inline std::ostream & 
-operator << (std::ostream & stream, dag_u<NODE_POLICY> const & dag) {
-  for(auto n: dag.nodes()) {
+inline std::ostream &
+operator<<(std::ostream & stream, dag_u<NODE_POLICY> const & dag) {
+  for(auto n : dag.nodes()) {
     stream << n.second << std::endl;
   } // for
 
