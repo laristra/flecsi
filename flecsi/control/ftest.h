@@ -26,6 +26,8 @@
 
 #define FLECSI_TEST(name)                                                      \
   CINCH_TEST(name)
+#define FTEST(name)                                                            \
+  CINCH_TEST(name)
 #define FLECSI_CAPTURE()                                                       \
   CINCH_CAPTURE()
 #define FLECSI_DUMP()                                                          \
@@ -40,7 +42,8 @@ namespace control {
 
 enum simulation_phases_t : size_t {
   initialize,
-  driver
+  driver,
+  finalize
 }; // enum simulation_phases_t
 
 struct ftest_control_policy_t {
@@ -52,7 +55,8 @@ struct ftest_control_policy_t {
 
   using phases = std::tuple<
     phase(initialize),
-    phase(driver)
+    phase(driver),
+    phase(finalize)
   >;
 
 }; // struct ftest_control_policy_t
@@ -63,6 +67,7 @@ using control_t =
 } // namespace control
 } // namespace flecsi
 
+#if 0
 int unit_initialization(int argc, char ** argv);
 int unit_driver(int argc, char ** argv);
 
@@ -79,6 +84,37 @@ inline bool unit_driver_registered =
       flecsi::utils::const_string_t{"driver"}.hash(),
       "unit_driver", unit_driver
     });
+#endif
+
+#define ftest_register_initializer(action, ...)                                \
+  bool initializer_##action##_registered =                                                     \
+    flecsi::control::control_t::instance().phase_map(   \
+      flecsi::control::initialize,                                               \
+      EXPAND_AND_STRINGIFY(flecsi::control::initialize)).                        \
+      initialize_node({                                                          \
+        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(action)}.hash(),      \
+        EXPAND_AND_STRINGIFY(action),                                            \
+        action, ##__VA_ARGS__ });
+
+#define ftest_add_initializer_dependency(to, from)                             \
+  bool registered_initializer_##to##from =                                                 \
+    flecsi::control::control_t::instance().phase_map(flecsi::control::initialize).              \
+      add_edge(flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(), \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())
+
+#define ftest_register_driver(action, ...)                                     \
+  bool driver_##action##_registered = flecsi::control::control_t::instance().phase_map(            \
+    flecsi::control::driver, EXPAND_AND_STRINGIFY(flecsi::control::driver)).   \
+    initialize_node({                                                          \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(action)}.hash(),      \
+      EXPAND_AND_STRINGIFY(action),                                            \
+      action, ##__VA_ARGS__ });
+
+#define ftest_add_driver_dependency(to, from)                                  \
+  bool registered_driver_##to##from =                                                 \
+    flecsi::control::control_t::instance().phase_map(flecsi::control::driver).                  \
+      add_edge(flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(), \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())
 
 #include <flecsi/execution/context.h>
 

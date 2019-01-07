@@ -130,6 +130,11 @@ if(MSVC)
   set(factory_blessed_input test/factory.blessed.msvc)
 endif()
 
+flecsi_add_unit(fantasy
+  SOURCES
+    test/fantasy.cc
+)
+
 flecsi_add_unit(factory
   SOURCES
     demangle.cc
