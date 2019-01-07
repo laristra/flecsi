@@ -119,24 +119,19 @@ public:
   void init() {
     offsets_ = new offset_t[num_entries_];
     entries_ = new value_t[num_entries_ * num_slots_];
+    new_counts_ = new int32_t[num_entries_];
     spare_map_ = new spare_map_t;
+    std::fill_n(new_counts_, num_entries_, -1);
   }
 
   void fill_ragged(const commit_info_t & ci) {
     entries_orig_ = ci.entries[0];
     offsets_orig_ = ci.offsets;
     overflow_map_ = new overflow_map_t;
-
-    for(size_t index = 0; index < num_entries_; ++index) {
-      const offset_t & offset = offsets_orig_[index];
-      size_t count = offset.count();
-
-      offsets_[index].set_count(count);
-    }
   } // fill_ragged
 
   size_t commit(commit_info_t * ci) {
-    assert(offsets_ && "uninitialized mutator");
+    assert(new_counts_ && "uninitialized mutator");
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
 
@@ -151,11 +146,10 @@ public:
     size_t offset = 0;
 
     for(size_t index = 0; index < num_exclusive_; ++index) {
-      const offset_t & oi = offsets_[index];
       offset_t & coi = offsets[index];
 
       size_t num_existing = coi.count();
-      size_t count = oi.count();
+      size_t count = new_count(index);
       size_t base_count = std::min(count, num_existing);
 
       std::copy_n(eptr, base_count, cptr);
@@ -185,12 +179,11 @@ public:
     size_t end = start + pi_.count[1] + pi_.count[2];
 
     for(size_t index = start; index < end; ++index) {
-      const offset_t & oi = offsets_[index];
       offset_t & coi = offsets[index];
 
       size_t num_existing = coi.count();
 
-      size_t count = oi.count();
+      size_t count = new_count(index);
       assert(count <= max_entries_per_index_ &&
              "ragged data: exceeded max_entries_per_index in shared/ghost");
 
@@ -212,6 +205,9 @@ public:
 
     delete[] offsets_;
     offsets_ = nullptr;
+
+    delete[] new_counts_;
+    new_counts_ = nullptr;
 
     delete spare_map_;
     spare_map_ = nullptr;
@@ -254,6 +250,11 @@ public:
     return ci_;
   }
 
+  size_t new_count(size_t index) const {
+    int nc = new_counts_[index];
+    return (nc >= 0 ? nc : offsets_orig_[index].count());
+  }
+
   using spare_map_t = std::multimap<size_t, value_t>;
   using erase_set_t = std::set<std::pair<size_t, size_t>>;
   using overflow_map_t = std::unordered_map<size_t, std::vector<value_t>>;
@@ -267,6 +268,7 @@ public:
   offset_t * offsets_orig_ = nullptr;
   value_t * entries_ = nullptr;
   value_t * entries_orig_ = nullptr;
+  int32_t * new_counts_ = nullptr;
   spare_map_t * spare_map_ = nullptr;
   erase_set_t * erase_set_ = nullptr;
   overflow_map_t * overflow_map_ = nullptr;

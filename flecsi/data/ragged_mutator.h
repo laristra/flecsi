@@ -70,7 +70,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     offset_t & offset = h_.offsets_orig_[index];
 
     size_t n = offset.count();
-    size_t nnew = h_.offsets_[index].count();
+    size_t nnew = h_.new_count(index);
     assert(ragged_index < nnew);
 
     if(ragged_index >= n) {
@@ -84,7 +84,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
 
   size_t size(size_t index) const {
     assert(index < h_.num_entries_);
-    return h_.offsets_[index].count();
+    return h_.new_count(index);
   }
 
   void resize(size_t index, size_t size) {
@@ -93,8 +93,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     assert(size <= h_.max_entries_per_index_ &&
            "resize length exceeds max entries per index");
 
-    offset_t & offset_new = h_.offsets_[index];
-    offset_new.set_count(size);
+    h_.new_counts_[index] = size;
 
     offset_t & offset = h_.offsets_orig_[index];
     size_t n = offset.count();
@@ -111,13 +110,12 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     assert(index < h_.num_entries_);
 
     offset_t & offset = h_.offsets_orig_[index];
-    offset_t & offset_new = h_.offsets_[index];
 
     size_t n = offset.count();
-    size_t nnew = offset_new.count();
+    size_t nnew = h_.new_count(index);
     assert(ragged_index < nnew);
 
-    offset_new.set_count(nnew - 1);
+    h_.new_counts_[index] = nnew - 1;
 
     if(ragged_index >= n) {
       // erase from overflow area
@@ -144,12 +142,11 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     assert(index < h_.num_entries_);
 
     offset_t & offset = h_.offsets_orig_[index];
-    offset_t & offset_new = h_.offsets_[index];
 
     size_t n = offset.count();
-    size_t nnew = offset_new.count();
+    size_t nnew = h_.new_count(index);
 
-    offset_new.set_count(nnew + 1);
+    h_.new_counts_[index] = nnew + 1;
 
     if (nnew >= n) {
       // add to overflow area
@@ -168,13 +165,12 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     assert(index < h_.num_entries_);
 
     offset_t & offset = h_.offsets_orig_[index];
-    offset_t & offset_new = h_.offsets_[index];
 
     size_t n = offset.count();
-    size_t nnew = offset_new.count();
+    size_t nnew = h_.new_count(index);
     assert(ragged_index <= nnew);
 
-    offset_new.set_count(nnew + 1);
+    h_.new_counts_[index] = nnew + 1;
 
     if(ragged_index >= n) {
       // insert in overflow area
