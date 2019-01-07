@@ -19,6 +19,8 @@ int unit_initialization(int argc, char ** argv) { return 0; }
 
 int unit_driver(int argc, char ** argv) {
 
+  FLECSI_TEST(hash);
+
   using flecsi::utils::string_hash;
 
   if(sizeof(std::size_t) == 8) {

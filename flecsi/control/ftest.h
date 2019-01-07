@@ -24,6 +24,17 @@
 
 #include <cinch/ctest.h>
 
+#define FLECSI_TEST(name)                                                      \
+  CINCH_TEST(name)
+#define FLECSI_CAPTURE()                                                       \
+  CINCH_CAPTURE()
+#define FLECSI_DUMP()                                                          \
+  CINCH_DUMP()
+#define FLECSI_EQUAL_BLESSED(f)                                                \
+  CINCH_EQUAL_BLESSED(f)
+#define FLECSI_WRITE(f)                                                        \
+  CINCH_WRITE(f)
+
 namespace flecsi {
 namespace control {
 

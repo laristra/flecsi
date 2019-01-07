@@ -20,6 +20,11 @@ namespace execution {
 
 struct legion_context_policy_t {
 
+  int start(int argc, char ** argv) {
+
+    return 0;
+  } // start
+
 }; // struct legion_context_policy_t
 
 } // namespace execution

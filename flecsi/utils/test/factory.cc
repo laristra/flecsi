@@ -110,6 +110,8 @@ int unit_initialization(int argc, char ** argv) { return 0; }
 
 int unit_driver(int argc, char ** argv) {
 
+  FLECSI_TEST(factory);
+
   // ------------------------
   // types
   // ------------------------
@@ -120,7 +122,7 @@ int unit_driver(int argc, char ** argv) {
   print_type<factory_charkey_t::createHandler>();
   print_type<factory_charkey_t::key_t>();
   print_type<factory_charkey_t::map_t>();
-  CINCH_CAPTURE() << std::endl;
+  FLECSI_CAPTURE() << std::endl;
 
   // another variant
   using factory_longkey_t = // return, key,  arguments...
@@ -128,7 +130,7 @@ int unit_driver(int argc, char ** argv) {
   print_type<factory_longkey_t::createHandler>();
   print_type<factory_longkey_t::key_t>();
   print_type<factory_longkey_t::map_t>();
-  CINCH_CAPTURE() << std::endl;
+  FLECSI_CAPTURE() << std::endl;
 
   // ------------------------
   // instance
@@ -164,22 +166,22 @@ int unit_driver(int argc, char ** argv) {
   // 'b' can't re-associate...
   bool b2 = factory_charkey_t::instance().registerType('b', b_foo);
 
-  CINCH_CAPTURE() << int(a) << std::endl;  // true
-  CINCH_CAPTURE() << int(b) << std::endl;  // true
-  CINCH_CAPTURE() << int(c) << std::endl;  // true
-  CINCH_CAPTURE() << int(b2) << std::endl; // false ('b' didn't re-associate)
-  CINCH_CAPTURE() << std::endl;
+  FLECSI_CAPTURE() << int(a) << std::endl;  // true
+  FLECSI_CAPTURE() << int(b) << std::endl;  // true
+  FLECSI_CAPTURE() << int(c) << std::endl;  // true
+  FLECSI_CAPTURE() << int(b2) << std::endl; // false ('b' didn't re-associate)
+  FLECSI_CAPTURE() << std::endl;
 
   bool bar1 = faclong1.instance().registerType(1, bar_1);
   bool bar2 = faclong1.instance().registerType(2, bar_2);
   bool bar3 = faclong1.instance().registerType(3, bar_1); // ok, same handler
   bool bar4 = faclong1.instance().registerType(2, bar_2); // bad, same key
 
-  CINCH_CAPTURE() << int(bar1) << std::endl;
-  CINCH_CAPTURE() << int(bar2) << std::endl;
-  CINCH_CAPTURE() << int(bar3) << std::endl;
-  CINCH_CAPTURE() << int(bar4) << std::endl;
-  CINCH_CAPTURE() << std::endl;
+  FLECSI_CAPTURE() << int(bar1) << std::endl;
+  FLECSI_CAPTURE() << int(bar2) << std::endl;
+  FLECSI_CAPTURE() << int(bar3) << std::endl;
+  FLECSI_CAPTURE() << int(bar4) << std::endl;
+  FLECSI_CAPTURE() << std::endl;
 
   // ------------------------
   // create
@@ -199,15 +201,15 @@ int unit_driver(int argc, char ** argv) {
   double * d2 = factory_longkey_t::instance().create(3, 3.0, 4.0);
   double * d3 = factory_longkey_t::instance().create(2, 5.0, 6.0);
 
-  CINCH_CAPTURE() << *f1 << std::endl;
-  CINCH_CAPTURE() << *f2 << std::endl;
-  CINCH_CAPTURE() << *f3 << std::endl;
-  CINCH_CAPTURE() << std::endl;
+  FLECSI_CAPTURE() << *f1 << std::endl;
+  FLECSI_CAPTURE() << *f2 << std::endl;
+  FLECSI_CAPTURE() << *f3 << std::endl;
+  FLECSI_CAPTURE() << std::endl;
 
-  CINCH_CAPTURE() << *d1 << std::endl;
-  CINCH_CAPTURE() << *d2 << std::endl;
-  CINCH_CAPTURE() << *d3 << std::endl;
-  CINCH_CAPTURE() << std::endl;
+  FLECSI_CAPTURE() << *d1 << std::endl;
+  FLECSI_CAPTURE() << *d2 << std::endl;
+  FLECSI_CAPTURE() << *d3 << std::endl;
+  FLECSI_CAPTURE() << std::endl;
 
   // Recall:
   //    add_ifd: return i + f + d
@@ -220,8 +222,8 @@ int unit_driver(int argc, char ** argv) {
   float * f4 = factory_charkey_t::instance().create('+', 1, 2.3f, 4.5);
   double * d4 = factory_longkey_t::instance().create(123, 6.7, 8.9);
 
-  CINCH_CAPTURE() << *f4 << std::endl;
-  CINCH_CAPTURE() << *d4 << std::endl;
+  FLECSI_CAPTURE() << *f4 << std::endl;
+  FLECSI_CAPTURE() << *d4 << std::endl;
 
   // Cleanup
   delete d4;
@@ -237,11 +239,11 @@ int unit_driver(int argc, char ** argv) {
   // Compare
   // ------------------------
 #ifdef __GNUG__
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("factory.blessed.gnug"));
+  EXPECT_TRUE(FLECSI_EQUAL_BLESSED("factory.blessed.gnug"));
 #elif defined(_MSC_VER)
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("factory.blessed.msvc"));
+  EXPECT_TRUE(FLECSI_EQUAL_BLESSED("factory.blessed.msvc"));
 #else
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("factory.blessed"));
+  EXPECT_TRUE(FLECSI_EQUAL_BLESSED("factory.blessed"));
 #endif
 
   return 0;
