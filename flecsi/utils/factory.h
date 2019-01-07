@@ -26,7 +26,8 @@ namespace utils {
 //! \brief Factory_ provides a generic object factory class.
 //!
 template<typename RETURN, typename KEY, typename... Args>
-class Factory_ {
+class Factory_
+{
 public:
   //! Function pointer type for creation method.
   using createHandler = RETURN * (*)(Args... args);
@@ -95,7 +96,7 @@ public:
     typename map_t::const_iterator ita = map_.find(key);
 
     // make sure that the id exists in the map
-    if (ita == map_.end()) {
+    if(ita == map_.end()) {
       std::cerr << "Error Unknown Type ID" << std::endl;
       std::exit(1);
     } // if

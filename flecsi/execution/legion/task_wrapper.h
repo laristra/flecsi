@@ -31,99 +31,29 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/finalize_handles.h>
 #include <flecsi/execution/legion/init_handles.h>
-#include <flecsi/execution/legion/registration_wrapper.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/tuple_function.h>
 #include <flecsi/utils/tuple_type_converter.h>
-#include <flecsi/utils/tuple_walker.h>
 
-clog_register_tag(wrapper);
+clog_register_tag(task_wrapper);
 
 namespace flecsi {
 namespace execution {
 
 /*!
- Wrapper to handle returns from user task execution.
+  Pure Legion task wrapper.
 
- @tparam RETURN    The return type of the user task.
- @tparam ARG_TUPLE A std::tuple of the user task arguments.
- @tparam DELEGATE  The delegate function that invokes the user task.
+  @tparam RETURN The return type of the task.
+  @tparam TASK   The legion task.
 
- @ingroup legion-execution
+  @ingroup legion-execution
  */
 
-template<typename RETURN, typename ARG_TUPLE, RETURN (*DELEGATE)(ARG_TUPLE)>
-struct execution_wrapper_u {
-
-  /*!
-   Execute the delegate function, storing the return value.
-   */
-
-  void execute(ARG_TUPLE && args) {
-    value_ = (*DELEGATE)(std::forward<ARG_TUPLE>(args));
-  } // execute
-
-  /*!
-   Recover the return value. This is similar to a future, but with
-   immediate execution. This function is suitable for returning from
-   the task wrapper types below to handle void vs. non-void return types.
-   */
-
-  RETURN
-  get() {
-    return value_;
-  } // get
-
-private:
-  RETURN value_;
-
-}; // struct execution_wrapper_u
-
-/*!
- Wrapper to handle void returns from user task execution.
-
- @tparam ARG_TUPLE A std::tuple of the user task arguments.
- @tparam DELEGATE  The delegate function that invokes the user task.
-
- @ingroup legion-execution
- */
-
-template<typename ARG_TUPLE, void (*DELEGATE)(ARG_TUPLE)>
-struct execution_wrapper_u<void, ARG_TUPLE, DELEGATE> {
-
-  /*!
-   Execute the delegate function. No value is stored for void.
-   */
-
-  void execute(ARG_TUPLE && args) {
-    (*DELEGATE)(std::forward<ARG_TUPLE>(args));
-  } // execute
-
-  /*!
-   This function is suitable for returning from the task wrapper
-   types below to handle void return types.
-   */
-
-  void get() {}
-
-}; // struct execution_wrapper_u
-
-/*!
- Pure Legion task wrapper.
-
- @tparam RETURN The return type of the task.
- @tparam TASK   The legion task.
-
- @ingroup legion-execution
- */
-
-template<
-    typename RETURN,
-    RETURN (*TASK)(
-        const Legion::Task *,
-        const std::vector<Legion::PhysicalRegion> &,
-        Legion::Context,
-        Legion::Runtime *)>
+template<typename RETURN,
+  RETURN (*TASK)(const Legion::Task *,
+    const std::vector<Legion::PhysicalRegion> &,
+    Legion::Context,
+    Legion::Runtime *)>
 struct pure_task_wrapper_u {
 
   /*!
@@ -136,52 +66,49 @@ struct pure_task_wrapper_u {
    Registration callback function for pure Legion tasks.
 
    @param tid The task id to assign to the task.
-   @param processor A valid Legion processor type.
+   @param processor_type A valid Legion processor type.
    @param launch A \ref launch_t with the launch parameters.
    @param A std::string containing the task name.
    */
 
-  static void registration_callback(
-      task_id_t tid,
-      processor_type_t processor,
-      launch_t launch,
-      std::string & task_name) {
+  static void registration_callback(task_id_t tid,
+    processor_type_t processor_type,
+    launch_t launch,
+    std::string & name) {
     {
-      clog_tag_guard(wrapper);
-      clog(info) << "Executing PURE registration callback (" << task_name << ")"
-                 << std::endl;
+      clog_tag_guard(task_wrapper);
+      clog(info) << "registering pure Legion task " << name << std::endl;
     }
 
-    // Create configuration options using launch information provided
-    // by the user.
-    Legion::TaskConfigOptions config_options{
-        launch_leaf(launch), launch_inner(launch), launch_idempotent(launch)};
+    Legion::TaskVariantRegistrar registrar(tid, name.c_str());
+    Legion::Processor::Kind kind = processor_type == processor_type_t::toc ?
+      Legion::Processor::TOC_PROC : Legion::Processor::LOC_PROC;
+    registrar.add_constraint(Legion::ProcessorConstraint(kind));
+    registrar.set_leaf(launch_leaf(launch));
+    registrar.set_inner(launch_inner(launch));
+    registrar.set_idempotent(launch_idempotent(launch));
 
-    switch (processor) {
-      case processor_type_t::loc: {
-        clog_tag_guard(wrapper);
-        clog(info) << "Registering PURE loc task: " << task_name << " "
-                   << launch << std::endl
-                   << std::endl;
+    /*
+      This section of conditionals is necessary because there is still
+      a distinction between void and non-void task registration with
+      Legion, and we still have to use different execution tasks for
+      normal and MPI tasks. MPI tasks are required to have void returns,
+      so there is no mpi case for non-void tasks.
+     */
+
+    if constexpr(std::is_same_v<RETURN, void>) {
+      if(processor_type == processor_type_t::mpi) {
+        clog_fatal("MPI type passed to pure task registration");
       }
-        registration_wrapper_u<RETURN, TASK>::register_task(
-            tid, Legion::Processor::LOC_PROC, config_options, task_name);
-        break;
-      case processor_type_t::toc: {
-        clog_tag_guard(wrapper);
-        clog(info) << "Registering PURE toc task: " << task_name << std::endl
-                   << std::endl;
-      }
-        registration_wrapper_u<RETURN, TASK>::register_task(
-            tid, Legion::Processor::TOC_PROC, config_options, task_name);
-        break;
-      case processor_type_t::mpi:
-        clog_fatal("MPI type passed to pure legion registration");
-        break;
-      default:
-        clog_fatal("wrong processor type is specified for the task registration");
-        break;
-    } // switch
+      else {
+        Legion::Runtime::preregister_task_variant<TASK>(registrar,
+          name.c_str());
+      } // if
+    }
+    else {
+      Legion::Runtime::preregister_task_variant<RETURN, TASK>(registrar,
+        name.c_str());
+    } // if
   } // registration_callback
 
 }; // struct pure_task_wrapper_u
@@ -198,11 +125,10 @@ struct pure_task_wrapper_u {
  @ingroup legion-execution
  */
 
-template<
-    size_t KEY,
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*DELEGATE)(ARG_TUPLE)>
+template<size_t KEY,
+  typename RETURN,
+  typename ARG_TUPLE,
+  RETURN (*DELEGATE)(ARG_TUPLE)>
 struct task_wrapper_u {
 
   /*!
@@ -214,68 +140,63 @@ struct task_wrapper_u {
   /*!
    Registration callback function for user tasks.
 
-   @param tid    The task id to assign to the task.
-   @param launch A \ref launch_t with the launch parameters.
-   @param name   A std::string containing the task name.
+   @param tid            The task id to assign to the task.
+   @param processor_type A \ref processor_type_t with the processor type.
+   @param launch         A \ref launch_t with the launch parameters.
+   @param name           A std::string containing the task name.
    */
 
-  static void registration_callback(
-      task_id_t tid,
-      processor_type_t processor,
-      launch_t launch,
-      std::string & name) {
+  static void registration_callback(task_id_t tid,
+    processor_type_t processor_type,
+    launch_t launch,
+    std::string & name) {
     {
-      clog_tag_guard(wrapper);
-      clog(info) << "Executing registration callback for " << name << std::endl;
+      clog_tag_guard(task_wrapper);
+      clog(info) << "registering task " << name << std::endl;
     }
 
-    // Create configuration options using launch information provided
-    // by the user.
-    Legion::TaskConfigOptions config_options{
-        launch_leaf(launch), launch_inner(launch), launch_idempotent(launch)};
+    Legion::TaskVariantRegistrar registrar(tid, name.c_str());
+    Legion::Processor::Kind kind = processor_type == processor_type_t::toc ?
+      Legion::Processor::TOC_PROC : Legion::Processor::LOC_PROC;
+    registrar.add_constraint(Legion::ProcessorConstraint(kind));
+    registrar.set_leaf(launch_leaf(launch));
+    registrar.set_inner(launch_inner(launch));
+    registrar.set_idempotent(launch_idempotent(launch));
 
-    switch (processor) {
-      case processor_type_t::loc: {
-        clog_tag_guard(wrapper);
-        clog(info) << "Registering loc task: " << name << std::endl
-                   << std::endl;
+    /*
+      This section of conditionals is necessary because there is still
+      a distinction between void and non-void task registration with
+      Legion, and we still have to use different execution tasks for
+      normal and MPI tasks. MPI tasks are required to have void returns,
+      so there is no mpi case for non-void tasks.
+     */
+
+    if constexpr(std::is_same_v<RETURN, void>) {
+      if(processor_type == processor_type_t::mpi) {
+        Legion::Runtime::preregister_task_variant<execute_mpi_task>(
+          registrar, name.c_str());
       }
-        registration_wrapper_u<RETURN, execute_user_task>::register_task(
-            tid, Legion::Processor::LOC_PROC, config_options, name);
-        break;
-      case processor_type_t::toc: {
-        clog_tag_guard(wrapper);
-        clog(info) << "Registering toc task: " << name << std::endl
-                   << std::endl;
-      }
-        registration_wrapper_u<RETURN, execute_user_task>::register_task(
-            tid, Legion::Processor::TOC_PROC, config_options, name);
-        break;
-      case processor_type_t::mpi: {
-        clog_tag_guard(wrapper);
-        clog(info) << "Registering MPI task: " << name << std::endl
-                   << std::endl;
-      }
-        registration_wrapper_u<void, execute_mpi_task>::register_task(
-            tid, Legion::Processor::LOC_PROC, config_options, name);
-        break;
-      default:
-        clog_fatal("wrong processor type is specified for the task registration");
-        break;
-    } // switch
+      else {
+        Legion::Runtime::preregister_task_variant<execute_user_task>(
+          registrar, name.c_str());
+      } // if
+    }
+    else {
+      Legion::Runtime::preregister_task_variant<RETURN, execute_user_task>(
+        registrar, name.c_str());
+    } // if
   } // registration_callback
 
   /*!
     Execution wrapper method for user tasks.
    */
 
-  static RETURN execute_user_task(
-      const Legion::Task * task,
-      const std::vector<Legion::PhysicalRegion> & regions,
-      Legion::Context context,
-      Legion::Runtime * runtime) {
+  static RETURN execute_user_task(const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime) {
     {
-      clog_tag_guard(wrapper);
+      clog_tag_guard(task_wrapper);
       clog(info) << "In execute_user_task" << std::endl;
     }
 
@@ -285,28 +206,32 @@ struct task_wrapper_u {
     init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(task_args);
 
-    // Execute the user's task
-    // return (*DELEGATE)(task_args);
-    execution_wrapper_u<RETURN, ARG_TUPLE, DELEGATE> wrapper;
-    wrapper.execute(std::forward<ARG_TUPLE>(task_args));
+    if constexpr(std::is_same_v<RETURN, void>) {
+      (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
-    finalize_handles_t finalize_handles;
-    finalize_handles.walk(task_args);
+      finalize_handles_t finalize_handles;
+      finalize_handles.walk(task_args);
+    }
+    else {
+      RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
-    return wrapper.get();
+      finalize_handles_t finalize_handles;
+      finalize_handles.walk(task_args);
+
+      return result;
+    } // if
   } // execute_user_task
 
   /*!
     Execution wrapper method for MPI tasks.
    */
 
-  static void execute_mpi_task(
-      const Legion::Task * task,
-      const std::vector<Legion::PhysicalRegion> & regions,
-      Legion::Context context,
-      Legion::Runtime * runtime) {
+  static void execute_mpi_task(const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime) {
     {
-      clog_tag_guard(wrapper);
+      clog_tag_guard(task_wrapper);
       clog(info) << "In execute_mpi_task" << std::endl;
     }
 

@@ -29,7 +29,6 @@
 #include <flecsi/data/dense_data_handle.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/hash.h>
 #include <flecsi/utils/index_space.h>
 
@@ -56,25 +55,22 @@ namespace legion {
  @ingroup data
 */
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-struct dense_handle_t : public dense_data_handle_u<
-                            T,
-                            EXCLUSIVE_PERMISSIONS,
-                            SHARED_PERMISSIONS,
-                            GHOST_PERMISSIONS> {
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+struct dense_handle_t : public dense_data_handle_u<T,
+                          EXCLUSIVE_PERMISSIONS,
+                          SHARED_PERMISSIONS,
+                          GHOST_PERMISSIONS> {
   /*!
    Type definitions.
    */
 
-  using base_t = dense_data_handle_u<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS>;
+  using base_t = dense_data_handle_u<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS>;
 
   /*!
    Constructors.
@@ -93,30 +89,28 @@ struct dense_handle_t : public dense_data_handle_u<
     // Unmap physical regions and copy back out ex/sh/gh regions if we
     // have write permissions
 
-    if (base_t::exclusive_data) {
-      if (base_t::exclusive_priv > privilege_t::ro) {
-        std::memcpy(
-            base_t::exclusive_buf, base_t::exclusive_data,
-            base_t::exclusive_size * sizeof(T));
+    if(base_t::exclusive_data) {
+      if(base_t::exclusive_priv > privilege_t::ro) {
+        std::memcpy(base_t::exclusive_buf, base_t::exclusive_data,
+          base_t::exclusive_size * sizeof(T));
       }
     }
 
-    if (base_t::shared_data) {
-      if (base_t::shared_priv > privilege_t::ro) {
-        std::memcpy(
-            base_t::shared_buf, base_t::shared_data,
-            base_t::shared_size * sizeof(T));
+    if(base_t::shared_data) {
+      if(base_t::shared_priv > privilege_t::ro) {
+        std::memcpy(base_t::shared_buf, base_t::shared_data,
+          base_t::shared_size * sizeof(T));
       }
     }
 
-      // ghost is never mapped with write permissions
+    // ghost is never mapped with write permissions
 
 #ifndef MAPPER_COMPACTION
-    if (base_t::master && base_t::combined_data) {
+    if(base_t::master && base_t::combined_data) {
       delete[] base_t::combined_data;
     }
 #ifdef COMPACTED_STORAGE_SORT
-    if (base_t::master && base_t::combined_data_sort) {
+    if(base_t::master && base_t::combined_data_sort) {
       delete[] base_t::combined_data_sort;
     }
 #endif
@@ -147,16 +141,14 @@ struct storage_class_u<dense> {
     Type definitions.
    */
 
-  template<
-      typename T,
-      size_t EXCLUSIVE_PERMISSIONS,
-      size_t SHARED_PERMISSIONS,
-      size_t GHOST_PERMISSIONS>
-  using handle_t = dense_handle_t<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS>;
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  using handle_t = dense_handle_t<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS>;
 
   //--------------------------------------------------------------------------//
   // Data handles.
@@ -167,18 +159,16 @@ struct storage_class_u<dense> {
    */
 
   template<typename T, size_t NAMESPACE, typename Predicate>
-  static decltype(auto) get_handles(
-      const data_client_t & data_client,
-      size_t version,
-      Predicate && predicate,
-      bool sorted) {}
+  static decltype(auto) get_handles(const data_client_t & data_client,
+    size_t version,
+    Predicate && predicate,
+    bool sorted) {}
 
   template<typename T, typename Predicate>
-  static decltype(auto) get_handles(
-      const data_client_t & data_client,
-      size_t version,
-      Predicate && predicate,
-      bool sorted) {}
+  static decltype(auto) get_handles(const data_client_t & data_client,
+    size_t version,
+    Predicate && predicate,
+    bool sorted) {}
 
   template<typename T, size_t NAMESPACE>
   static decltype(auto)
@@ -201,27 +191,24 @@ struct storage_class_u<dense> {
     @tparam VERSION          The field version.
     @tparam PERMISSIONS      The data client permissions.
    */
-  template<
-      typename DATA_CLIENT_TYPE,
-      typename DATA_TYPE,
-      size_t NAMESPACE,
-      size_t NAME,
-      size_t VERSION,
-      size_t PERMISSIONS>
-  static handle_t<DATA_TYPE, 0, 0, 0>
-  get_handle(const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> &
-                 client_handle) {
+  template<typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION,
+    size_t PERMISSIONS>
+  static handle_t<DATA_TYPE, 0, 0, 0> get_handle(
+    const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
     static_assert(
-        VERSION < utils::hash::field_max_versions,
-        "max field version exceeded");
+      VERSION < utils::hash::field_max_versions, "max field version exceeded");
 
     handle_t<DATA_TYPE, 0, 0, 0> h;
 
     auto & context = execution::context_t::instance();
 
     auto & field_info = context.get_field_info_from_name(
-        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
-        utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
+      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
     size_t index_space = field_info.index_space;
     auto & ism = context.index_space_data_map();
@@ -231,25 +218,25 @@ struct storage_class_u<dense> {
     h.shared_lr = ism[index_space].shared_lr;
     h.ghost_lr = ism[index_space].ghost_lr;
     h.pbarrier_as_owner_ptr =
-        &ism[index_space].pbarriers_as_owner[field_info.fid];
+      &ism[index_space].pbarriers_as_owner[field_info.fid];
     h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
     h.write_phase_started =
-        &(ism[index_space].write_phase_started[field_info.fid]);
+      &(ism[index_space].write_phase_started[field_info.fid]);
     h.ghost_owners_pbarriers_ptrs.resize(0);
 
     const size_t _pb_size{
-        ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
+      ism[index_space].ghost_owners_pbarriers[field_info.fid].size()};
 
-    for (size_t i = 0; i < _pb_size; i++) {
+    for(size_t i = 0; i < _pb_size; i++) {
       h.ghost_owners_pbarriers_ptrs.push_back(
-          &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
+        &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
     } // for
 
     h.ghost_owners_lregions = ism[index_space].ghost_owners_lregions;
     h.ghost_owners_subregions = ism[index_space].ghost_owners_subregions;
     h.color_region = ism[index_space].color_region;
     h.global_to_local_color_map_ptr =
-        &ism[index_space].global_to_local_color_map;
+      &ism[index_space].global_to_local_color_map;
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
     h.state = context.execution_state();

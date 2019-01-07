@@ -15,7 +15,8 @@
 #pragma once
 
 #include <cinchtest.h>
-#include <flecsi/utils/common.h>
+
+#include <flecsi/utils/demangle.h>
 
 // print_type(name)
 inline void print_type(const char *const name)

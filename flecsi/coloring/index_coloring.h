@@ -57,9 +57,8 @@ struct index_coloring_t {
    \return True if \e ip is equivalent to \e this, false otherwise.
    */
   bool operator==(const index_coloring_t & ip) const {
-    return (
-        this->primary == ip.primary && this->exclusive == ip.exclusive &&
-        this->shared == ip.shared && this->ghost == ip.ghost);
+    return (this->primary == ip.primary && this->exclusive == ip.exclusive &&
+            this->shared == ip.shared && this->ghost == ip.ghost);
   } // operator ==
 
 }; // struct index_coloring_t

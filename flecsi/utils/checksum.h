@@ -44,11 +44,10 @@ struct checksum_t {
  */
 template<typename T>
 void
-checksum(
-    T * buffer,
-    std::size_t elements,
-    checksum_t & sum,
-    const char * digest = "md5") {
+checksum(T * buffer,
+  std::size_t elements,
+  checksum_t & sum,
+  const char * digest = "md5") {
   std::size_t bytes = elements * sizeof(T);
 
   EVP_MD_CTX * ctx = EVP_MD_CTX_create();
@@ -92,7 +91,7 @@ checksum(
   char tmp[256];
   strcpy(sum.strvalue, "");
 
-  for (std::size_t i(0); i < sum.length; i++) {
+  for(std::size_t i(0); i < sum.length; i++) {
     sprintf(tmp, "%02x", sum.value[i]);
     strcat(sum.strvalue, tmp);
   } // for

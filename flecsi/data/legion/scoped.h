@@ -12,8 +12,6 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
-#include <flecsi/utils/const_string.h>
-
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: Apr 17, 2016
@@ -33,15 +31,6 @@ struct storage_class_u<scoped> {
   //
   ///
   struct scoped_handle_t {}; // struct scoped_handle_t
-
-  ///
-  //
-  ///
-  template<typename T, size_t NS>
-  static scoped_handle_t
-  get_handle(uintptr_t runtime_namespace, const utils::const_string_t & key) {
-    return {};
-  } // get_handle
 
 }; // struct storage_class_u
 
