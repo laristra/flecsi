@@ -31,6 +31,8 @@ void test1(int argc, char ** argv) {
   FTEST();
   ASSERT_EQ(0,0);
   EXPECT_EQ(0,0);
+
+  flog(info) << "THIS IS SOME LOG INFO FOR A TEST" << std::endl;
 }
 
 ftest_register_test(test1);

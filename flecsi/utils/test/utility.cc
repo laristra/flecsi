@@ -19,7 +19,9 @@
 // =============================================================================
 
 // TEST
-TEST(utility, all) {
+void utility(int argc, char ** argv) {
+  FTEST();
+
   print_type<typename flecsi::utils::as_const<char, char>::type>();
   print_type<typename flecsi::utils::as_const<char, int >::type>();
   print_type<typename flecsi::utils::as_const<char, const volatile double>::type>();
