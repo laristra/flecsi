@@ -250,8 +250,6 @@ function(ftest_add_unit name)
   # Add the test target to CTest
   #----------------------------------------------------------------------------#
 
-  list(LENGTH unit_THREADS thread_instances)
-
   if(unit_NOOPENMPI AND ( "$ENV{OPENMPI}" STREQUAL "true" )
     AND ( NOT "$ENV{IGNORE_NOOPENMPI}" STREQUAL "true" ))
     message(STATUS "Skipping test ${_TEST_PREFIX}${name} "
@@ -264,6 +262,8 @@ function(ftest_add_unit name)
     message(STATUS "Skipping test ${_TEST_PREFIX}${name} due to CI enabled")
     return()
   endif()
+
+  list(LENGTH unit_THREADS thread_instances)
 
   if(${thread_instances} GREATER 1)
     foreach(instance ${unit_THREADS})
@@ -282,9 +282,9 @@ function(ftest_add_unit name)
       )
 
       set_tests_properties("${_TEST_PREFIX}${name}_${instance}"
-        PROPERTIES LABELS ${unit_TESTLABELS}
+        PROPERTIES LABELS "${unit_TESTLABELS}"
       )
-    endforeach(instance)
+    endforeach()
   else()
     if(unit_policy_exec)
       add_test(
