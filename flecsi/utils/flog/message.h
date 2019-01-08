@@ -126,7 +126,17 @@ protected:
     ~severity##_log_message_t() {                                              \
       /* Clean colors from the stream */                                       \
       if(clean_color_) {                                                       \
-        flog_t::instance().buffer_stream() << FLOG_COLOR_PLAIN;                \
+        auto str = flog_t::instance().buffer_stream().str();                   \
+        if(str.back() == '\n') {                                               \
+          str = str.substr(0, str.size() - 1);                                 \
+          str += FLOG_COLOR_PLAIN;                                             \
+          str += '\n';                                                         \
+          flog_t::instance().buffer_stream().str(std::string{});               \
+          flog_t::instance().buffer_stream() << str;                           \
+        }                                                                      \
+        else {                                                                 \
+          flog_t::instance().buffer_stream() << FLOG_COLOR_PLAIN;              \
+        }                                                                      \
       }                                                                        \
     }                                                                          \
                                                                                \
@@ -156,7 +166,7 @@ severity_message_t(trace, decltype(flecsi::utils::flog::true_state), {
 
   {
     stream << FLOG_OUTPUT_CYAN("[T") << FLOG_OUTPUT_LTGRAY(message_stamp);
-    stream << FLOG_OUTPUT_DKGRAY(mpi_stamp);
+    stream << FLOG_OUTPUT_BROWN(mpi_stamp);
     stream << FLOG_OUTPUT_CYAN("] ");
   } // scope
 
@@ -170,7 +180,7 @@ severity_message_t(info, decltype(flecsi::utils::flog::true_state), {
 
   {
     stream << FLOG_OUTPUT_GREEN("[I") << FLOG_OUTPUT_LTGRAY(message_stamp);
-    stream << FLOG_OUTPUT_DKGRAY(mpi_stamp);
+    stream << FLOG_OUTPUT_BROWN(mpi_stamp);
     stream << FLOG_OUTPUT_GREEN("] ");
   } // scope
 
@@ -184,7 +194,7 @@ severity_message_t(warn, decltype(flecsi::utils::flog::true_state), {
 
   {
     stream << FLOG_OUTPUT_BROWN("[W") << FLOG_OUTPUT_LTGRAY(message_stamp);
-    stream << FLOG_OUTPUT_DKGRAY(mpi_stamp);
+    stream << FLOG_OUTPUT_BROWN(mpi_stamp);
     stream << FLOG_OUTPUT_BROWN("] ") << FLOG_COLOR_YELLOW;
   } // scope
 
@@ -194,11 +204,11 @@ severity_message_t(warn, decltype(flecsi::utils::flog::true_state), {
 
 // Error
 severity_message_t(error, decltype(flecsi::utils::flog::true_state), {
-  std::ostream & stream = std::cerr;
+  std::ostream & stream = flog_t::instance().severity_stream(true);
 
   {
     stream << FLOG_OUTPUT_RED("[E") << FLOG_OUTPUT_LTGRAY(message_stamp);
-    stream << FLOG_OUTPUT_DKGRAY(mpi_stamp);
+    stream << FLOG_OUTPUT_BROWN(mpi_stamp);
     stream << FLOG_OUTPUT_RED("] ") << FLOG_COLOR_LTRED;
   } // scope
 
