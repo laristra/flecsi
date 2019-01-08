@@ -127,14 +127,14 @@ cinch_add_unit(boxcolor2d
   SOURCES test/test_simple_box_colorer_2d.cc
   INPUTS
   LIBRARIES ${COLORING_LIBRARIES}
-  POLICY MPI
+  POLICY ${UNIT_POLICY}
   THREADS 4
 )
 cinch_add_unit(boxcolor3d
   SOURCES test/test_simple_box_colorer_3d.cc
   INPUTS
   LIBRARIES ${COLORING_LIBRARIES}
-  POLICY MPI
+  POLICY ${UNIT_POLICY}
   THREADS 4
 )
 # Both of these tests depend on ParMETIS.

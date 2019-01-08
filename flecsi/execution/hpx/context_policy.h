@@ -43,6 +43,7 @@
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/data/common/data_types.h>
+#include <flecsi/data/common/privilege.h>
 #include <flecsi/utils/export_definitions.h>
 
 namespace flecsi {
