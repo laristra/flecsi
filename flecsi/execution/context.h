@@ -15,8 +15,12 @@
 
 /*! @file */
 
+#include <flecsi/utils/flog.h>
+
 #include <cstddef>
 #include <functional>
+
+flog_register_tag(context);
 
 namespace flecsi {
 namespace execution {

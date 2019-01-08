@@ -98,10 +98,6 @@ inline int initialize(int argc, char ** argv) {
   MPI_Init(&argc, &argv);
 #endif
 
-  int rank{0};
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  flecsi::execution::context_t::instance().color() = rank;
-
 #if defined(FLECSI_ENABLE_FLOG)
   flog_init(__flecsi_tags);
 #endif

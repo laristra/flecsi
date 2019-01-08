@@ -231,8 +231,28 @@
   flecsi::utils::flog::error_log_message_t(__FILE__, __LINE__).stream()        \
     << message
 
+#else
+
+#define flog_register_tag(name)
+#define flog_tag_guard(name)
+
+#define flog_init(active)
+
+#define flog(severity)                                                         \
+  if(true) {                                                                   \
+  }                                                                            \
+  else                                                                         \
+    std::cerr
+
+#define flog_trace(message)
+#define flog_info(message)
+#define flog_warn(message)
+#define flog_error(message)
+
+#endif // FLECSI_ENABLE_FLOG
+
 /*!
-  @def clog_fatal(message)
+  @def flog_fatal(message)
 
   Throw a runtime exception with the provided message.
 
@@ -247,29 +267,11 @@
   int value{20};
 
   // Print the value and exit
-  clog_fatal("Value: " << value);
+  flog_fatal("Value: " << value);
   @endcode
 
-  @ingroup clog
+  @ingroup flog
  */
-
-#else
-
-#define flog_register_tag(name)
-#define flog_tag_guard(name)
-
-#define flog_init(active)
-#define flog(severity)                                                         \
-  if(true) {                                                                   \
-  }                                                                            \
-  else                                                                         \
-    std::cerr
-#define flog_trace(message)
-#define flog_info(message)
-#define flog_warn(message)
-#define flog_error(message)
-
-#endif // FLECSI_ENABLE_FLOG
 
 #define flog_fatal(message)                                                    \
   /* MACRO IMPLEMENTATION */                                                   \

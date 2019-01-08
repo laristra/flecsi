@@ -20,17 +20,33 @@ namespace execution {
 
 struct mpi_context_policy_t {
 
+  /*
+    Documnetation for this interface is in the top-level context type.
+   */
+
   size_t color() const {
     return color_;
   }
+
+  /*
+    Documnetation for this interface is in the top-level context type.
+   */
 
   void set_color(size_t color) {
     color_ = color;
   }
 
+  /*
+    Documnetation for this interface is in the top-level context type.
+   */
+
   size_t colors() const {
     return colors_;
   }
+
+  /*
+    Documnetation for this interface is in the top-level context type.
+   */
 
   void set_colors(size_t colors) {
     colors_ = colors;

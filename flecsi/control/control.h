@@ -17,12 +17,15 @@
 
 #include <flecsi/control/phase_walker.h>
 #include <flecsi/utils/dag.h>
+#include <flecsi/utils/flog.h>
 
 #include <functional>
 #include <map>
 #include <vector>
 
 #include <flecsi-config.h>
+
+flog_register_tag(control);
 
 namespace flecsi {
 namespace control {
@@ -43,6 +46,12 @@ struct control_u : public CONTROL_POLICY {
   } // instance
 
   static int execute(int argc, char ** argv) {
+
+    {
+    flog_tag_guard(control);
+    flog(info) << __FUNCTION__ << std::endl;
+    }
+
     instance().sort_phases();
     phase_walker_t pw(argc, argv);
     pw.template walk_types<typename CONTROL_POLICY::phases>();

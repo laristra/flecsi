@@ -17,7 +17,16 @@
 
 #include <string>
 
-#include <cinchlog.h>
+#include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/context.h>
+//#include <flecsi/execution/legion/finalize_handles.h>
+//#include <flecsi/execution/legion/init_handles.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/flog.h>
+#include <flecsi/utils/tuple_function.h>
+#include <flecsi/utils/tuple_type_converter.h>
+
 #include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_LEGION)
@@ -26,16 +35,7 @@
 
 #include <legion.h>
 
-#include <flecsi/execution/common/launch.h>
-#include <flecsi/execution/common/processor.h>
-#include <flecsi/execution/context.h>
-#include <flecsi/execution/legion/finalize_handles.h>
-#include <flecsi/execution/legion/init_handles.h>
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/tuple_function.h>
-#include <flecsi/utils/tuple_type_converter.h>
-
-clog_register_tag(task_wrapper);
+flog_register_tag(task_wrapper);
 
 namespace flecsi {
 namespace execution {
@@ -76,8 +76,8 @@ struct pure_task_wrapper_u {
     launch_t launch,
     std::string & name) {
     {
-      clog_tag_guard(task_wrapper);
-      clog(info) << "registering pure Legion task " << name << std::endl;
+      flog_tag_guard(task_wrapper);
+      flog(info) << "registering pure Legion task " << name << std::endl;
     }
 
     Legion::TaskVariantRegistrar registrar(tid, name.c_str());
@@ -98,7 +98,7 @@ struct pure_task_wrapper_u {
 
     if constexpr(std::is_same_v<RETURN, void>) {
       if(processor_type == processor_type_t::mpi) {
-        clog_fatal("MPI type passed to pure task registration");
+        flog_fatal("MPI type passed to pure task registration");
       }
       else {
         Legion::Runtime::preregister_task_variant<TASK>(registrar,
@@ -113,6 +113,7 @@ struct pure_task_wrapper_u {
 
 }; // struct pure_task_wrapper_u
 
+#if 0
 /*!
  The task_wrapper_u type provides registation callback and execution
  functions for user and MPI tasks.
@@ -151,8 +152,8 @@ struct task_wrapper_u {
     launch_t launch,
     std::string & name) {
     {
-      clog_tag_guard(task_wrapper);
-      clog(info) << "registering task " << name << std::endl;
+      flog_tag_guard(task_wrapper);
+      flog(info) << "registering task " << name << std::endl;
     }
 
     Legion::TaskVariantRegistrar registrar(tid, name.c_str());
@@ -196,8 +197,8 @@ struct task_wrapper_u {
     Legion::Context context,
     Legion::Runtime * runtime) {
     {
-      clog_tag_guard(task_wrapper);
-      clog(info) << "In execute_user_task" << std::endl;
+      flog_tag_guard(task_wrapper);
+      flog(info) << "In execute_user_task" << std::endl;
     }
 
     // Unpack task arguments
@@ -234,8 +235,8 @@ struct task_wrapper_u {
     Legion::Context context,
     Legion::Runtime * runtime) {
     {
-      clog_tag_guard(task_wrapper);
-      clog(info) << "In execute_mpi_task" << std::endl;
+      flog_tag_guard(task_wrapper);
+      flog(info) << "In execute_mpi_task" << std::endl;
     }
 
     // Unpack task arguments.
@@ -257,6 +258,7 @@ struct task_wrapper_u {
   } // execute_mpi_task
 
 }; // struct task_wrapper_u
+#endif
 
 } // namespace execution
 } // namespace flecsi

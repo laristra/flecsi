@@ -12,7 +12,7 @@
 #  All rights reserved.
 #
 
-option(ENABLE_UNIT_TESTS "Enalle unit testing" OFF)
+#option(ENABLE_UNIT_TESTS "Enalle unit testing" OFF)
 option(ENABLE_EXPENSIVE_TESTS "Enable tests labeled 'expensive'" OFF)
 
 if(ENABLE_UNIT_TESTS)
@@ -223,6 +223,7 @@ function(ftest_add_unit name)
     target_link_libraries(${name} ${unit_LIBRARIES})
   endif()
 
+  target_link_libraries(${name} FleCSI)
   target_link_libraries(${name} ${CINCH_RUNTIME_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT})
 

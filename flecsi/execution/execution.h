@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <flecsi/execution/context.h>
+#include <flecsi/execution/task.h>
 
 /*!
   @def flecsi_color

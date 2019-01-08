@@ -20,7 +20,6 @@
 
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
-#include <flecsi/utils/static_verify.h>
 
 namespace flecsi {
 namespace execution {
@@ -115,27 +114,6 @@ struct task_interface_u {
 
 }; // struct task_interface_u
 
-template<typename TYPE>
-struct reduce_sum {
-  TYPE apply(TYPE & lhs, TYPE rhs) {
-    return lhs += rhs;
-  } // apply
-}; // struct reduce_sum
-
-template<typename TYPE>
-struct reduce_min {
-  TYPE apply(TYPE & lhs, TYPE rhs) {
-    return lhs < rhs ? lhs : rhs;
-  } // apply
-}; // struct reduce_min
-
-template<typename TYPE>
-struct reduce_max {
-  TYPE apply(TYPE & lhs, TYPE rhs) {
-    return lhs > rhs ? lhs : rhs;
-  } // apply
-}; // struct reduce_max
-
 } // namespace execution
 } // namespace flecsi
 
@@ -165,30 +143,8 @@ using task_interface_t = task_interface_u<FLECSI_RUNTIME_EXECUTION_POLICY>;
   @ingroup execution
  */
 
-template<typename RETURN, launch_type_t launch>
-using future_u = FLECSI_RUNTIME_EXECUTION_POLICY::future_u<RETURN, launch>;
-
-//----------------------------------------------------------------------------//
-// Static verification of public future interface for type defined by
-// execution policy.
-//----------------------------------------------------------------------------//
-
-namespace verify_future {
-
-#if 0
-FLECSI_MEMBER_CHECKER(wait);
-FLECSI_MEMBER_CHECKER(get);
-
-static_assert(
-    verify_future::has_member_wait<future_u<double>>::value,
-    "future type missing wait method");
-
-static_assert(
-    verify_future::has_member_get<future_u<double>>::value,
-    "future type missing get method");
-#endif
-
-} // namespace verify_future
+//template<typename RETURN, launch_type_t launch>
+//using future_u = FLECSI_RUNTIME_EXECUTION_POLICY::future_u<RETURN, launch>;
 
 } // namespace execution
 } // namespace flecsi
