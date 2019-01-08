@@ -59,7 +59,7 @@
 
 #define flog_tag_guard(name)                                                   \
   flecsi::utils::flog::flog_tag_scope_t name##_flog_tag_scope__(               \
-    flog_tag_lookup(name))
+    flecsi::utils::flog::flog_t::instance().lookup_tag(_flog_stringify(name)))
 
 /*!
   @def flog_tag_map
@@ -256,7 +256,6 @@
 #else
 
 #define flog_register_tag(name)
-#define flog_tag_lookup(name)
 #define flog_tag_guard(name)
 
 #define flog_init(active)

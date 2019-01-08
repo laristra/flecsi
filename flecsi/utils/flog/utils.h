@@ -19,6 +19,10 @@
 
 #include <string>
 
+#define _flog_util_stringify(s) #s
+#define _flog_stringify(s) _flog_util_stringify(s)
+#define _flog_concat(a, b) a ## b
+
 //----------------------------------------------------------------------------//
 // Set color output macros depending on whether or not FLOG_COLOR_OUTPUT
 // is defined.

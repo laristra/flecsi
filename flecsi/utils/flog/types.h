@@ -616,6 +616,10 @@ private:
 
 }; // flog_tag_scope_t
 
+} // namespace flog
+} // namespace utils
+} // namespace flecsi
+
 #define send_to_one(message)                                                   \
                                                                                \
   if(mpi_state_t::instance().initialized()) {                                  \
@@ -641,9 +645,5 @@ private:
                                                                                \
     } /* if */                                                                 \
   } /* if */
-
-} // namespace flog
-} // namespace utils
-} // namespace flecsi
 
 #endif // FLECSI_ENABLE_FLOG

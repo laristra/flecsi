@@ -43,22 +43,19 @@ struct context_u : public CONTEXT_POLICY {
   } // instance
 
   /*!
-    Get the color of this process by reference. This method can be used
-    to set the color.
-    In the current implementation, this is the MPI rank.
-   */
-
-  size_t & color() {
-    return color_;
-  } // color
-
-  /*!
     Get the color of this process.
-    In the current implementation, this is the MPI rank.
    */
 
   size_t color() const {
-    return color_;
+    return CONTEXT_POLICY::color();
+  } // color
+
+  /*!
+    Get the number of colors.
+   */
+
+  size_t colors() const {
+    return CONTEXT_POLICY::colors();
   } // color
 
   using top_level_action_t = std::function<int(int, char **)>;
@@ -78,6 +75,7 @@ struct context_u : public CONTEXT_POLICY {
 
 private:
   size_t color_ = 0;
+  size_t colors_ = 0;
   top_level_action_t top_level_action_ = {};
 
   context_u() : CONTEXT_POLICY() {}
