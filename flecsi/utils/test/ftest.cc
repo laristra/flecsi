@@ -15,13 +15,13 @@
 #include <flecsi/utils/ftest.h>
 
 void init_a(int argc, char ** argv) {
-  std::cout << "init a" << std::endl;
+  flog(info) << "init a" << std::endl;
 }
 
 ftest_register_initialize(init_a);
 
 void init_b(int argc, char ** argv) {
-  std::cout << "init b" << std::endl;
+  flog(info) << "init b" << std::endl;
 }
 
 ftest_register_initialize(init_b);
@@ -45,7 +45,7 @@ void test2(int argc, char ** argv) {
 ftest_register_test(test2);
 
 void finalize(int argc, char ** argv) {
-  std::cout << "finalize" << std::endl;
+  flog(info) << "finalize" << std::endl;
 }
 
 ftest_register_finalize(finalize);

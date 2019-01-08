@@ -38,11 +38,11 @@ struct state_t {
       stream << FLOG_OUTPUT_LTRED("TEST FAILED " << name_) <<
         FLOG_COLOR_PLAIN << std::endl;
       stream << error_stream_.str();
-      std::cerr << stream.str();
+      flog(utility) << stream.str();
       std::exit(1);
     }
     else {
-      std::cerr << FLOG_OUTPUT_LTGREEN("TEST PASSED " << name_) <<
+      flog(utility) << FLOG_OUTPUT_LTGREEN("TEST PASSED " << name_) <<
         FLOG_COLOR_PLAIN << std::endl;
     } // if
   } // process
@@ -84,7 +84,7 @@ struct fatal_handler_t {
     stream << FLOG_OUTPUT_LTRED("TEST FAILED " << runtime_.name()) <<
       FLOG_COLOR_PLAIN << std::endl;
     stream << runtime_.stringstream().str();
-    std::cerr << stream.str();
+    flog(utility) << stream.str();
     std::exit(1);
   } // ~fatal_handler_t
 
@@ -146,6 +146,8 @@ inline bool string_case_compare(const char * lhs, const char * rhs) {
 } // namespace flecsi
 
 #define FTEST()                                                                \
+  flecsi::utils::flog::flog_t::instance().config_stream().add_buffer(          \
+    "flog", std::clog, true);                                                  \
   flecsi::utils::ftest::state_t __ftest_state_instance(__FUNCTION__)
 
 #define EXPECT_TRUE(condition)                                                 \

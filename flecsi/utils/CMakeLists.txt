@@ -126,6 +126,7 @@ set(utils_SOURCES
 ftest_add_unit(ftest
   SOURCES
     test/ftest.cc
+  THREADS 6
 )
 
 ftest_add_unit(hash

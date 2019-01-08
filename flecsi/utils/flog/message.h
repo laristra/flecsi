@@ -41,25 +41,22 @@ true_state() {
  */
 
 template<typename P>
-struct log_message_t { /*!
-                         Constructor.
+struct log_message_t {
 
-                         @tparam P Predicate function type.
+  /*!
+    Constructor.
 
-                         @param file            The current file (where the log
-                         message was created).  In general, this will always use
-                         the
-                                                __FILE__ parameter from the
-                         calling macro.
-                         @param line            The current line (where the log
-                         message was called). In general, this will always use
-                         the __LINE__ parameter from the calling macro.
-                         @param predicate       The predicate function to
-                         determine whether or not the calling runtime should
-                         produce output.
-                         @param can_send_to_one A boolean indicating whether the
-                         calling scope can route messages through one rank.
-                        */
+    @param file            The current file (where the log message was
+                            created). In general, this will always use the
+                            __FILE__ parameter from the calling macro.
+    @param line            The current line (where the log message was
+                           called). In general, this will always use the
+                           __LINE__ parameter from the calling macro.
+    @param predicate       The predicate function to determine whether or not
+                           the calling runtime should produce output.
+    @param can_send_to_one A boolean indicating whether the calling scope can
+                           route messages through one rank.
+*/
 
   log_message_t(const char * file,
     int line,
@@ -145,6 +142,12 @@ protected:
 #else
 #define mpi_stamp ""
 #endif
+
+// Utility
+severity_message_t(utility, decltype(flecsi::utils::flog::true_state), {
+  std::ostream & stream = flog_t::instance().severity_stream(true);
+  return stream;
+});
 
 // Trace
 severity_message_t(trace, decltype(flecsi::utils::flog::true_state), {

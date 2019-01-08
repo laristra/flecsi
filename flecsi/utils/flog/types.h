@@ -59,13 +59,16 @@ public:
 
   /*!
     Add a buffer to which output should be written. This also enables
-    the buffer,i.e., output will be written to it.
+    the buffer,i.e., output will be written to it. For a given key,
+    only the first call to this method will have an effect.
    */
 
   void add_buffer(std::string key, std::streambuf * sb, bool colorized) {
-    buffers_[key].enabled = true;
-    buffers_[key].buffer = sb;
-    buffers_[key].colorized = colorized;
+    if(buffers_.find(key) == buffers_.end()) {
+      buffers_[key].enabled = true;
+      buffers_[key].buffer = sb;
+      buffers_[key].colorized = colorized;
+    } // if
   } // add_buffer
 
   /*!
@@ -74,6 +77,7 @@ public:
    */
 
   bool enable_buffer(std::string key) {
+    assert(buffers_.find(key) != buffers_.end());
     buffers_[key].enabled = true;
     return buffers_[key].enabled;
   } // enable_buffer
@@ -83,6 +87,7 @@ public:
    */
 
   bool disable_buffer(std::string key) {
+    assert(buffers_.find(key) != buffers_.end());
     buffers_[key].enabled = false;
     return buffers_[key].enabled;
   } // disable_buffer
