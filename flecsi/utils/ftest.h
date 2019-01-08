@@ -18,18 +18,10 @@
 #include <tuple>
 
 #include <flecsi/control/control.h>
-#include <flecsi/control/default_node.h>
 #include <flecsi/utils/flog.h>
+#include <flecsi/utils/ftest/node.h>
+#include <flecsi/utils/ftest/types.h>
 #include <flecsi/utils/macros.h>
-
-#include <cinch/ctest.h>
-
-#define FLECSI_TEST(name) CINCH_TEST()
-#define FTEST() CINCH_TEST()
-#define FLECSI_CAPTURE() CINCH_CAPTURE()
-#define FLECSI_DUMP() CINCH_DUMP()
-#define FLECSI_EQUAL_BLESSED(f) CINCH_EQUAL_BLESSED(f)
-#define FLECSI_WRITE(f) CINCH_WRITE(f)
 
 namespace flecsi {
 namespace control {
@@ -43,7 +35,7 @@ enum simulation_phases_t : size_t {
 struct ftest_control_policy_t {
 
   using control_t = flecsi::control::control_u<ftest_control_policy_t>;
-  using node_t = flecsi::control::default_node_t;
+  using node_t = flecsi::utils::ftest::node_t;
 
 #define phase(name) flecsi::control::phase_<name>
 

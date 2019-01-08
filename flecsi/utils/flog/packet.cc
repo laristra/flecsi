@@ -12,7 +12,7 @@
    All rights reserved.
                                                                               */
 #include "packet.h"
-#include "flog_types.h"
+#include "types.h"
 
 #if defined(FLECSI_ENABLE_FLOG)
 

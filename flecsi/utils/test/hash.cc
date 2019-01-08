@@ -12,7 +12,7 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/control/ftest.h>
+#include <flecsi/utils/ftest.h>
 #include <flecsi/utils/hash.h>
 
 void hash(int argc, char ** argv) {

@@ -6,7 +6,6 @@
 set(control_HEADERS
   control.h
   default_node.h
-  ftest.h
   phase_walker.h
 )
 
@@ -45,8 +44,3 @@ add_executable(runtime
 
 target_link_libraries(runtime ${CINCH_RUNTIME_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT})
-
-ftest_add_unit(unit
-  SOURCES
-    test/unit.cc
-)

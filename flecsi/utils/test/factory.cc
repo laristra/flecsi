@@ -12,7 +12,7 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#include <flecsi/control/ftest.h>
+#include <flecsi/utils/ftest.h>
 
 #include <flecsi/utils/factory.h>
 #include <flecsi/utils/common.h>
@@ -120,7 +120,7 @@ int factory(int argc, char ** argv) {
   print_type<factory_charkey_t::createHandler>();
   print_type<factory_charkey_t::key_t>();
   print_type<factory_charkey_t::map_t>();
-  FLECSI_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // another variant
   using factory_longkey_t = // return, key,  arguments...
@@ -128,7 +128,7 @@ int factory(int argc, char ** argv) {
   print_type<factory_longkey_t::createHandler>();
   print_type<factory_longkey_t::key_t>();
   print_type<factory_longkey_t::map_t>();
-  FLECSI_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // ------------------------
   // instance
@@ -164,22 +164,22 @@ int factory(int argc, char ** argv) {
   // 'b' can't re-associate...
   bool b2 = factory_charkey_t::instance().registerType('b', b_foo);
 
-  FLECSI_CAPTURE() << int(a) << std::endl;  // true
-  FLECSI_CAPTURE() << int(b) << std::endl;  // true
-  FLECSI_CAPTURE() << int(c) << std::endl;  // true
-  FLECSI_CAPTURE() << int(b2) << std::endl; // false ('b' didn't re-associate)
-  FLECSI_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << int(a) << std::endl;  // true
+  FTEST_CAPTURE() << int(b) << std::endl;  // true
+  FTEST_CAPTURE() << int(c) << std::endl;  // true
+  FTEST_CAPTURE() << int(b2) << std::endl; // false ('b' didn't re-associate)
+  FTEST_CAPTURE() << std::endl;
 
   bool bar1 = faclong1.instance().registerType(1, bar_1);
   bool bar2 = faclong1.instance().registerType(2, bar_2);
   bool bar3 = faclong1.instance().registerType(3, bar_1); // ok, same handler
   bool bar4 = faclong1.instance().registerType(2, bar_2); // bad, same key
 
-  FLECSI_CAPTURE() << int(bar1) << std::endl;
-  FLECSI_CAPTURE() << int(bar2) << std::endl;
-  FLECSI_CAPTURE() << int(bar3) << std::endl;
-  FLECSI_CAPTURE() << int(bar4) << std::endl;
-  FLECSI_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << int(bar1) << std::endl;
+  FTEST_CAPTURE() << int(bar2) << std::endl;
+  FTEST_CAPTURE() << int(bar3) << std::endl;
+  FTEST_CAPTURE() << int(bar4) << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // ------------------------
   // create
@@ -199,15 +199,15 @@ int factory(int argc, char ** argv) {
   double * d2 = factory_longkey_t::instance().create(3, 3.0, 4.0);
   double * d3 = factory_longkey_t::instance().create(2, 5.0, 6.0);
 
-  FLECSI_CAPTURE() << *f1 << std::endl;
-  FLECSI_CAPTURE() << *f2 << std::endl;
-  FLECSI_CAPTURE() << *f3 << std::endl;
-  FLECSI_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << *f1 << std::endl;
+  FTEST_CAPTURE() << *f2 << std::endl;
+  FTEST_CAPTURE() << *f3 << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
-  FLECSI_CAPTURE() << *d1 << std::endl;
-  FLECSI_CAPTURE() << *d2 << std::endl;
-  FLECSI_CAPTURE() << *d3 << std::endl;
-  FLECSI_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << *d1 << std::endl;
+  FTEST_CAPTURE() << *d2 << std::endl;
+  FTEST_CAPTURE() << *d3 << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // Recall:
   //    add_ifd: return i + f + d
@@ -220,8 +220,8 @@ int factory(int argc, char ** argv) {
   float * f4 = factory_charkey_t::instance().create('+', 1, 2.3f, 4.5);
   double * d4 = factory_longkey_t::instance().create(123, 6.7, 8.9);
 
-  FLECSI_CAPTURE() << *f4 << std::endl;
-  FLECSI_CAPTURE() << *d4 << std::endl;
+  FTEST_CAPTURE() << *f4 << std::endl;
+  FTEST_CAPTURE() << *d4 << std::endl;
 
   // Cleanup
   delete d4;
@@ -237,11 +237,11 @@ int factory(int argc, char ** argv) {
   // Compare
   // ------------------------
 #ifdef __GNUG__
-  EXPECT_TRUE(FLECSI_EQUAL_BLESSED("factory.blessed.gnug"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("factory.blessed.gnug"));
 #elif defined(_MSC_VER)
-  EXPECT_TRUE(FLECSI_EQUAL_BLESSED("factory.blessed.msvc"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("factory.blessed.msvc"));
 #else
-  EXPECT_TRUE(FLECSI_EQUAL_BLESSED("factory.blessed"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("factory.blessed"));
 #endif
 
   return 0;

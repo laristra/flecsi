@@ -21,6 +21,7 @@ set(utils_HEADERS
   array_ref.h
   bit_buffer.h
   checksum.h
+  common.h
   const_string.h
   dag.h
   debruijn.h
@@ -28,10 +29,11 @@ set(utils_HEADERS
   dimensioned_array.h
   export_definitions.h
   factory.h
-  flog/flog_types.h
   flog.h
   flog/message.h
   flog/packet.h
+  flog/types.h
+  flog/utils.h
   function_traits.h
   graphviz.h
   hash.h
@@ -120,6 +122,11 @@ set(utils_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
+
+ftest_add_unit(ftest
+  SOURCES
+    test/ftest.cc
+)
 
 ftest_add_unit(hash
   SOURCES

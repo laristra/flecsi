@@ -18,17 +18,18 @@
 #include <bitset>
 
 namespace flecsi {
-namespace control {
+namespace utils {
+namespace ftest {
 
-struct default_node_t {
+struct node_t {
 
   using bitset_t = std::bitset<8>;
-  using action_t = std::function<int(int, char **)>;
+  using action_t = std::function<void(int, char **)>;
 
-  default_node_t(action_t const & action = {}, bitset_t const & bitset = {})
+  node_t(action_t const & action = {}, bitset_t const & bitset = {})
     : action_(action), bitset_(bitset) {}
 
-  bool initialize(default_node_t const & node) {
+  bool initialize(node_t const & node) {
     action_ = node.action_;
     bitset_ = node.bitset_;
     return true;
@@ -52,14 +53,15 @@ private:
   action_t action_ = {};
   bitset_t bitset_ = 0;
 
-}; // struct default_node_t
+}; // struct node_t
 
 inline std::ostream &
-operator<<(std::ostream & stream, default_node_t const & node) {
+operator<<(std::ostream & stream, node_t const & node) {
   stream << "bitset: " << node.bitset() << std::endl;
   stream << "action: " << &node.action() << std::endl;
   return stream;
 } // operator <<
 
-} // namespace control
+} // namespace ftest
+} // namespace utils
 } // namespace flecsi

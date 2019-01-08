@@ -43,8 +43,6 @@
 namespace flecsi {
 namespace utils {
 
-
-
 //----------------------------------------------------------------------------//
 // Typeification.
 //----------------------------------------------------------------------------//
@@ -63,7 +61,7 @@ constexpr T typeify<T, M>::value;
 //----------------------------------------------------------------------------//
 
 using id_t =
-    id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_GBITS>;
+  id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_GBITS>;
 
 using offset_t = offset_u<16>;
 
@@ -101,14 +99,13 @@ square(const T & a) {
 //----------------------------------------------------------------------------//
 
 #if !defined(FLECSI_GENERATED_ID_MAX)
-  // 1044480 = (1<<20) - 4096
+// 1044480 = (1<<20) - 4096
 #define FLECSI_GENERATED_ID_MAX 1044480
 #endif
 
 //! Generate unique ids
-template<
-    typename T,
-    std::size_t MAXIMUM = (std::numeric_limits<std::size_t>::max)()>
+template<typename T,
+  std::size_t MAXIMUM = (std::numeric_limits<std::size_t>::max)()>
 struct unique_id_t {
   static unique_id_t & instance() {
     static unique_id_t u;

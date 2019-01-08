@@ -63,23 +63,23 @@
 
 #else
 
-#define FLOG_COLOR_BLACK    "\033[0;30m"
-#define FLOG_COLOR_DKGRAY   "\033[1;30m"
-#define FLOG_COLOR_RED      "\033[0;31m"
-#define FLOG_COLOR_LTRED    "\033[1;31m"
-#define FLOG_COLOR_GREEN    "\033[0;32m"
-#define FLOG_COLOR_LTGREEN  "\033[1;32m"
-#define FLOG_COLOR_BROWN    "\033[0;33m"
-#define FLOG_COLOR_YELLOW   "\033[1;33m"
-#define FLOG_COLOR_BLUE     "\033[0;34m"
-#define FLOG_COLOR_LTBLUE   "\033[1;34m"
-#define FLOG_COLOR_PURPLE   "\033[0;35m"
+#define FLOG_COLOR_BLACK "\033[0;30m"
+#define FLOG_COLOR_DKGRAY "\033[1;30m"
+#define FLOG_COLOR_RED "\033[0;31m"
+#define FLOG_COLOR_LTRED "\033[1;31m"
+#define FLOG_COLOR_GREEN "\033[0;32m"
+#define FLOG_COLOR_LTGREEN "\033[1;32m"
+#define FLOG_COLOR_BROWN "\033[0;33m"
+#define FLOG_COLOR_YELLOW "\033[1;33m"
+#define FLOG_COLOR_BLUE "\033[0;34m"
+#define FLOG_COLOR_LTBLUE "\033[1;34m"
+#define FLOG_COLOR_PURPLE "\033[0;35m"
 #define FLOG_COLOR_LTPURPLE "\033[1;35m"
-#define FLOG_COLOR_CYAN     "\033[0;36m"
-#define FLOG_COLOR_LTCYAN   "\033[1;36m"
-#define FLOG_COLOR_LTGRAY   "\033[0;37m"
-#define FLOG_COLOR_WHITE    "\033[1;37m"
-#define FLOG_COLOR_PLAIN    "\033[0m"
+#define FLOG_COLOR_CYAN "\033[0;36m"
+#define FLOG_COLOR_LTCYAN "\033[1;36m"
+#define FLOG_COLOR_LTGRAY "\033[0;37m"
+#define FLOG_COLOR_WHITE "\033[1;37m"
+#define FLOG_COLOR_PLAIN "\033[0m"
 
 #define FLOG_OUTPUT_BLACK(s) FLOG_COLOR_BLACK << s << FLOG_COLOR_PLAIN
 #define FLOG_OUTPUT_DKGRAY(s) FLOG_COLOR_DKGRAY << s << FLOG_COLOR_PLAIN
@@ -108,10 +108,8 @@ namespace flog {
   Create a timestamp.
  */
 
-inline
-std::string
-timestamp(bool underscores = false)
-{
+inline std::string
+timestamp(bool underscores = false) {
   char stamp[14];
   time_t t = time(0);
   std::string format = underscores ? "%m%d_%H%M%S" : "%m%d %H:%M:%S";
@@ -126,9 +124,10 @@ timestamp(bool underscores = false)
  */
 
 template<char C>
-std::string rstrip(const char *file) {
+std::string
+rstrip(const char * file) {
   std::string tmp(file);
-  return tmp.substr(tmp.rfind(C)+1);
+  return tmp.substr(tmp.rfind(C) + 1);
 } // rstrip
 
 } // namespace flog

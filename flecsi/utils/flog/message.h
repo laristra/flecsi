@@ -17,7 +17,7 @@
 
 #include <flecsi-config.h>
 
-#include "flog_types.h"
+#include "types.h"
 #include "utils.h"
 
 #include <iostream>

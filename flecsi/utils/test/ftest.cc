@@ -12,7 +12,7 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/control/ftest.h>
+#include <flecsi/utils/ftest.h>
 
 void init_a(int argc, char ** argv) {
   std::cout << "init a" << std::endl;
