@@ -12,7 +12,7 @@
 #  All rights reserved.
 #
 
-#option(ENABLE_UNIT_TESTS "Enalle unit testing" OFF)
+option(ENABLE_UNIT_TESTS "Enalle unit testing" OFF)
 option(ENABLE_EXPENSIVE_TESTS "Enable tests labeled 'expensive'" OFF)
 
 if(ENABLE_UNIT_TESTS)

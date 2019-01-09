@@ -16,8 +16,8 @@ include(CMakeDependentOption)
 
 option(FLECSI_ENABLE_FLOG "Enable FleCSI Logging Utility (FLOG)" OFF)
 
-cmake_dependent_option(ENABLE_UNIT_TESTS "Enable unit testing"
-  ON "FLECSI_ENABLE_FLOG" OFF)
+#cmake_dependent_option(ENABLE_UNIT_TESTS "Enable unit testing"
+#  ON "FLECSI_ENABLE_FLOG" ON)
 
 if(FLECSI_ENABLE_FLOG)
   set(FLOG_STRIP_LEVEL "0" CACHE STRING "Set the clog strip level")

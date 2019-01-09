@@ -20,7 +20,7 @@ namespace flecsi {
 namespace utils {
 namespace flog {
 
-#if defined(FLECSI_ENABLE_MPI)
+#if defined(FLOG_ENABLE_MPI)
 void
 flush_packets() {
   while(mpi_state_t::instance().run_flusher()) {
@@ -44,7 +44,7 @@ flush_packets() {
 
   } // while
 } // flush_packets
-#endif // FLECSI_ENABLE_MPI
+#endif // FLOG_ENABLE_MPI
 
 } // namespace flog
 } // namespace utils

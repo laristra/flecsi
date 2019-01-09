@@ -15,16 +15,22 @@
 
 /*! @file */
 
+#include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
+
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
 #include <legion.h>
 
-#include <flecsi/execution/common/launch.h>
-#include <flecsi/execution/common/processor.h>
-#include <flecsi/runtime/types.h>
-#include <flecsi/utils/common.h>
+#if !defined(FLECSI_ENABLE_MPI)
+#error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
+#endif
+
+#include <mpi.h>
 
 #include <map>
 #include <unordered_map>
