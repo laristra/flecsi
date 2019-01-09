@@ -31,20 +31,10 @@ int legion_context_policy_t::start(int argc, char ** argv) {
     flog(info) << __FUNCTION__ << std::endl;
   }
 
-  Runtime::set_top_level_task_id(FLECSI_TOP_LEVEL_TASK_ID);
-
   /*
-    Configure interoperability layer.
+    Setup top-level task.
    */
-  int rank, size;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-  // FIXME: This needs to change to use the point ID from task.
-  color_ = rank;
-  colors_ = size;
-
-  Legion::Runtime::configure_MPI_interoperability(rank);
+  Runtime::set_top_level_task_id(FLECSI_TOP_LEVEL_TASK_ID);
 
   {
   Legion::TaskVariantRegistrar registrar(FLECSI_TOP_LEVEL_TASK_ID,
@@ -70,14 +60,32 @@ int legion_context_policy_t::start(int argc, char ** argv) {
   } // for
   // clang-format on
 
-  Runtime::add_registration_callback(mapper_registration);
-
   /*
     Arg 0: MPI has initial control (true).
     Arg 1: Number of MPI participants (1).
     Arg 2: Number of Legion participants (1).
    */
+
   handshake_ = Legion::Runtime::create_handshake(true, 1, 1);
+
+  /*
+    Register custom mapper.
+   */
+  Runtime::add_registration_callback(mapper_registration);
+
+  /*
+    Configure interoperability layer.
+   */
+
+  int rank, size;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+  // FIXME: This needs to change to use the point ID from task.
+  color_ = rank;
+  colors_ = size;
+
+  Legion::Runtime::configure_MPI_interoperability(rank);
 
   Runtime::start(argc, argv, true);
 
@@ -91,7 +99,7 @@ int legion_context_policy_t::start(int argc, char ** argv) {
     wait_on_legion();
   }
 
-  Legion::Runtime::wait_for_shutdown();
+//  Legion::Runtime::wait_for_shutdown();
   
   return 0;
 } // legion_context_policy_t::start

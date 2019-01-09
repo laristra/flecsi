@@ -76,7 +76,7 @@ struct log_message_t {
               << FLOG_COLOR_PLAIN << std::endl;
 #endif
 
-#if !defined(SERIAL) && defined(FLOG_ENABLE_MPI)
+#if defined(FLOG_ENABLE_MPI)
     if(can_send_to_one_) {
       send_to_one(flog_t::instance().buffer_stream().str().c_str());
     }
@@ -147,7 +147,7 @@ protected:
 
 #define message_stamp timestamp() << " " << rstrip<'/'>(file_) << ":" << line_
 
-#if !defined(SERIAL) && defined(FLOG_ENABLE_MPI)
+#if defined(FLOG_ENABLE_MPI)
 #define mpi_stamp " r" << mpi_state_t::instance().rank()
 #else
 #define mpi_stamp ""

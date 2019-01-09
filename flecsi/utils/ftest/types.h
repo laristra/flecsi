@@ -152,22 +152,22 @@ inline bool string_case_compare(const char * lhs, const char * rhs) {
 
 #define EXPECT_TRUE(condition)                                                 \
   (condition) ||                                                               \
-  flecsi::utils::ftest::nonfatal_handler_t(#condition, __FILE__, __LINE__,                    \
+  flecsi::utils::ftest::nonfatal_handler_t(#condition, __FILE__, __LINE__,     \
     __ftest_state_instance).stream()
 
 #define EXPECT_FALSE(condition)                                                \
   !(condition) ||                                                              \
-  flecsi::utils::ftest::nonfatal_handler_t(#condition, __FILE__, __LINE__,                    \
+  flecsi::utils::ftest::nonfatal_handler_t(#condition, __FILE__, __LINE__,     \
     __ftest_state_instance).stream()
 
 #define ASSERT_TRUE(condition)                                                 \
   (condition) ||                                                               \
-  flecsi::utils::ftest::fatal_handler_t(#condition, __FILE__, __LINE__,                       \
+  flecsi::utils::ftest::fatal_handler_t(#condition, __FILE__, __LINE__,        \
     __ftest_state_instance).stream()
 
 #define ASSERT_FALSE(condition)                                                \
   !(condition) ||                                                              \
-  flecsi::utils::ftest::fatal_handler_t(#condition, __FILE__, __LINE__,                       \
+  flecsi::utils::ftest::fatal_handler_t(#condition, __FILE__, __LINE__,        \
     __ftest_state_instance).stream()
 
 #define ASSERT_EQ(val1, val2)                                                  \
@@ -207,38 +207,38 @@ inline bool string_case_compare(const char * lhs, const char * rhs) {
   EXPECT_TRUE((val1) >= (val2))
 
 #define ASSERT_STREQ(str1, str2)                                               \
-  flecsi::utils::ftest::string_compare(str1, str2) ||                                         \
+  flecsi::utils::ftest::string_compare(str1, str2) ||                          \
   flecsi::utils::ftest::fatal_handler_t(str1 " == " str2, __FILE__, __LINE__).stream()
 
 #define EXPECT_STREQ(str1, str2)                                               \
-  flecsi::utils::ftest::string_compare(str1, str2) ||                                         \
+  flecsi::utils::ftest::string_compare(str1, str2) ||                          \
   flecsi::utils::ftest::nonfatal_handler_t(str1 " == " str2, __FILE__, __LINE__).stream()
 
 #define ASSERT_STRNE(str1, str2)                                               \
-  !flecsi::utils::ftest::string_compare(str1, str2) ||                                        \
+  !flecsi::utils::ftest::string_compare(str1, str2) ||                         \
   flecsi::utils::ftest::fatal_handler_t(str1 " != " str2, __FILE__, __LINE__).stream()
 
 #define EXPECT_STRNE(str1, str2)                                               \
-  !flecsi::utils::ftest::string_compare(str1, str2) ||                                        \
+  !flecsi::utils::ftest::string_compare(str1, str2) ||                         \
   flecsi::utils::ftest::nonfatal_handler_t(str1 " != " str2, __FILE__, __LINE__).stream()
 
 #define ASSERT_STRCASEEQ(str1, str2)                                           \
-  flecsi::utils::ftest::string_case_compare(str1, str2) ||                                    \
+  flecsi::utils::ftest::string_case_compare(str1, str2) ||                     \
   flecsi::utils::ftest::fatal_handler_t(str1 " == " str2 " (case insensitive)",               \
     __FILE__, __LINE__).stream()
 
 #define EXPECT_STRCASEEQ(str1, str2)                                           \
-  flecsi::utils::ftest::string_case_compare(str1, str2) ||                                    \
+  flecsi::utils::ftest::string_case_compare(str1, str2) ||                     \
   flecsi::utils::ftest::nonfatal_handler_t(str1 " == " str2 " (case insensitive)",            \
     __FILE__, __LINE__).stream()
 
 #define ASSERT_STRCASENE(str1, str2)                                           \
-  !flecsi::utils::ftest::string_case_compare(str1, str2) ||                                   \
+  !flecsi::utils::ftest::string_case_compare(str1, str2) ||                    \
   flecsi::utils::ftest::fatal_handler_t(str1 " != " str2 " (case insensitive)",               \
     __FILE__, __LINE__).stream()
 
 #define EXPECT_STRCASENE(str1, str2)                                           \
-  !flecsi::utils::ftest::string_case_compare(str1, str2) ||                                   \
+  !flecsi::utils::ftest::string_case_compare(str1, str2) ||                    \
   flecsi::utils::ftest::nonfatal_handler_t(str1 " != " str2 " (case insensitive)",            \
     __FILE__, __LINE__).stream()
 

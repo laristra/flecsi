@@ -19,7 +19,7 @@
 
 #if defined(FLECSI_ENABLE_FLOG)
 
-#if defined(FLECSI_ENABLE_MPI)
+#if defined(FLOG_ENABLE_MPI)
 #include <mpi.h>
 #endif
 
@@ -113,7 +113,7 @@ private:
 // Forward
 void flush_packets();
 
-#if defined(FLECSI_ENABLE_MPI)
+#if defined(FLOG_ENABLE_MPI)
 struct mpi_state_t {
   static mpi_state_t & instance() {
     static mpi_state_t s;
@@ -175,7 +175,7 @@ private:
   bool initialized_ = false;
 
 }; // mpi_state_t
-#endif // FLECSI_ENABLE_MPI
+#endif // FLOG_ENABLE_MPI
 
 } // namespace flog
 } // namespace utils

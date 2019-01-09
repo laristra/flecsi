@@ -402,7 +402,7 @@ public:
 
 #endif // FLOG_ENABLE_TAGS
 
-#if defined(FLECSI_ENABLE_MPI)
+#if defined(FLOG_ENABLE_MPI)
 
 #if defined(FLOG_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: initializing mpi state"
@@ -410,7 +410,7 @@ public:
 #endif
 
     mpi_state_t::instance().init();
-#endif // FLECSI_ENABLE_MPI
+#endif // FLOG_ENABLE_MPI
 
     initialized_ = true;
   } // init
@@ -541,7 +541,7 @@ public:
     return initialized_;
   } // initialized
 
-#if defined(FLECSI_ENABLE_MPI)
+#if defined(FLOG_ENABLE_MPI)
   int rank() {
     return mpi_state_t::instance().rank();
   } // rank
