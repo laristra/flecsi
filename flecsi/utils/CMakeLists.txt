@@ -73,35 +73,6 @@ set(utils_SOURCES
 )
 
 #------------------------------------------------------------------------------#
-# Runtime-specific files for unit tests.
-#
-# UNIT_POLICY and RUNTIME_DRIVER are set for unit tests that are not
-# runtime specific and can be configured for whichever runtime is active.
-#------------------------------------------------------------------------------#
-
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-
-  set(UNIT_POLICY SERIAL)
-  set(RUNTIME_DRIVER ../execution/serial/runtime.cc)
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-
-  set(UNIT_POLICY LEGION)
-  set(RUNTIME_DRIVER ../execution/legion/runtime.cc)
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
-
-  set(UNIT_POLICY MPI)
-  set(RUNTIME_DRIVER ../execution/mpi/runtime.cc)
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-
-  set(UNIT_POLICY HPX)
-  set(RUNTIME_DRIVER ../execution/hpx/runtime.cc)
-
-endif()
-
-#------------------------------------------------------------------------------#
 # Export header list to parent scope.
 #------------------------------------------------------------------------------#
 
@@ -119,26 +90,42 @@ set(utils_SOURCES
   PARENT_SCOPE
 )
 
-#------------------------------------------------------------------------------#
+################################################################################
 # Unit tests.
+################################################################################
+
+#------------------------------------------------------------------------------#
+# ftest
 #------------------------------------------------------------------------------#
 
 ftest_add_unit(ftest
   SOURCES
     test/ftest.cc
   THREADS
-    4
+    1 2 4
 )
+
+#------------------------------------------------------------------------------#
+# hash
+#------------------------------------------------------------------------------#
 
 ftest_add_unit(hash
   SOURCES
     test/hash.cc
 )
 
+#------------------------------------------------------------------------------#
+# reorder
+#------------------------------------------------------------------------------#
+
 ftest_add_unit(reorder
   SOURCES
 		test/reorder.cc
 )
+
+#------------------------------------------------------------------------------#
+# factory
+#------------------------------------------------------------------------------#
 
 set(factory_blessed_input test/factory.blessed.gnug)
 
@@ -155,6 +142,10 @@ ftest_add_unit(factory
     ${factory_blessed_input}
 )
 
+#------------------------------------------------------------------------------#
+# id
+#------------------------------------------------------------------------------#
+
 set(id_blessed_input test/id.blessed.gnug)
 
 if(MSVC)
@@ -167,6 +158,10 @@ ftest_add_unit(id
   INPUTS
     test/id.blessed ${id_blessed_input}
 )
+
+#------------------------------------------------------------------------------#
+# utils_iterator
+#------------------------------------------------------------------------------#
 
 set(iterator_blessed_input test/iterator.blessed.gnug)
 
@@ -183,10 +178,18 @@ ftest_add_unit(utils_iterator
     ${iterator_blessed_input}
 )
 
+#------------------------------------------------------------------------------#
+# set_intersection
+#------------------------------------------------------------------------------#
+
 ftest_add_unit(set_intersection
   SOURCES
     test/set_intersection.cc
 )
+
+#------------------------------------------------------------------------------#
+# set_utils
+#------------------------------------------------------------------------------#
 
 ftest_add_unit(set_utils
   SOURCES
@@ -195,10 +198,18 @@ ftest_add_unit(set_utils
     test/set_utils.blessed
 )
 
+#------------------------------------------------------------------------------#
+# simple_id
+#------------------------------------------------------------------------------#
+
 ftest_add_unit(simple_id
   SOURCES
     test/simple_id.cc
 )
+
+#------------------------------------------------------------------------------#
+# static_verify
+#------------------------------------------------------------------------------#
 
 ftest_add_unit(static_verify
   SOURCES

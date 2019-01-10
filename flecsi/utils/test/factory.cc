@@ -117,17 +117,19 @@ int factory(int argc, char ** argv) {
   // one variant
   using factory_charkey_t = // return, key,  arguments...
     flecsi::utils::Factory_<float, char, int, float, double>;
-  print_type<factory_charkey_t::createHandler>();
-  print_type<factory_charkey_t::key_t>();
-  print_type<factory_charkey_t::map_t>();
+
+  FTEST_CAPTURE() << FTEST_TTYPE(factory_charkey_t::createHandler) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(factory_charkey_t::key_t) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(factory_charkey_t::map_t) << std::endl;
   FTEST_CAPTURE() << std::endl;
 
   // another variant
   using factory_longkey_t = // return, key,  arguments...
     flecsi::utils::Factory_<double, long, double, double>;
-  print_type<factory_longkey_t::createHandler>();
-  print_type<factory_longkey_t::key_t>();
-  print_type<factory_longkey_t::map_t>();
+
+  FTEST_CAPTURE() << FTEST_TTYPE(factory_longkey_t::createHandler) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(factory_longkey_t::key_t) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(factory_longkey_t::map_t) << std::endl;
   FTEST_CAPTURE() << std::endl;
 
   // ------------------------
