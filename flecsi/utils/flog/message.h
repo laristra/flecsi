@@ -148,7 +148,7 @@ protected:
 #define message_stamp timestamp() << " " << rstrip<'/'>(file_) << ":" << line_
 
 #if defined(FLOG_ENABLE_MPI)
-#define mpi_stamp " r" << mpi_state_t::instance().rank()
+#define mpi_stamp " c" << mpi_state_t::instance().rank()
 #else
 #define mpi_stamp ""
 #endif
@@ -167,7 +167,7 @@ severity_message_t(trace, decltype(flecsi::utils::flog::true_state), {
 
   {
     stream << FLOG_OUTPUT_CYAN("[T") << FLOG_OUTPUT_LTGRAY(message_stamp);
-    stream << FLOG_OUTPUT_BROWN(mpi_stamp);
+    stream << FLOG_OUTPUT_CYAN(mpi_stamp);
     stream << FLOG_OUTPUT_CYAN("] ");
   } // scope
 
@@ -181,7 +181,7 @@ severity_message_t(info, decltype(flecsi::utils::flog::true_state), {
 
   {
     stream << FLOG_OUTPUT_GREEN("[I") << FLOG_OUTPUT_LTGRAY(message_stamp);
-    stream << FLOG_OUTPUT_BROWN(mpi_stamp);
+    stream << FLOG_OUTPUT_CYAN(mpi_stamp);
     stream << FLOG_OUTPUT_GREEN("] ");
   } // scope
 
@@ -195,7 +195,7 @@ severity_message_t(warn, decltype(flecsi::utils::flog::true_state), {
 
   {
     stream << FLOG_OUTPUT_BROWN("[W") << FLOG_OUTPUT_LTGRAY(message_stamp);
-    stream << FLOG_OUTPUT_BROWN(mpi_stamp);
+    stream << FLOG_OUTPUT_CYAN(mpi_stamp);
     stream << FLOG_OUTPUT_BROWN("] ") << FLOG_COLOR_YELLOW;
   } // scope
 
@@ -210,7 +210,7 @@ severity_message_t(error, decltype(flecsi::utils::flog::true_state), {
 
   {
     stream << FLOG_OUTPUT_RED("[E") << FLOG_OUTPUT_LTGRAY(message_stamp);
-    stream << FLOG_OUTPUT_BROWN(mpi_stamp);
+    stream << FLOG_OUTPUT_CYAN(mpi_stamp);
     stream << FLOG_OUTPUT_RED("] ") << FLOG_COLOR_LTRED;
   } // scope
 
