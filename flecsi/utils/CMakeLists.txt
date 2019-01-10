@@ -152,7 +152,6 @@ endif()
 
 ftest_add_unit(factory
   SOURCES
-    demangle.cc
     test/factory.cc
   INPUTS
     test/factory.blessed
@@ -186,6 +185,24 @@ ftest_add_unit(id
   INPUTS
     test/id.blessed
     ${id_blessed_input}
+)
+
+#------------------------------------------------------------------------------#
+# index_space
+#------------------------------------------------------------------------------#
+
+set(index_space_blessed_input test/index_space.blessed.gnug)
+
+if(MSVC)
+  set(index_space_blessed_input test/index_space.blessed.msvc)
+endif()
+
+ftest_add_unit(index_space
+  SOURCES
+    test/index_space.cc
+  INPUTS
+    test/index_space.blessed
+    ${index_space_blessed_input}
 )
 
 #------------------------------------------------------------------------------#
@@ -256,7 +273,6 @@ endif()
 
 ftest_add_unit(utils_iterator
   SOURCES
-    demangle.cc
     test/iterator.cc
   INPUTS
     test/iterator.blessed

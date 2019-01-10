@@ -12,11 +12,9 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#include <flecsi/utils/ftest.h>
-
 #include <flecsi/utils/factory.h>
+#include <flecsi/utils/ftest.h>
 #include <flecsi/utils/common.h>
-#include <flecsi/utils/test/print_type.h>
 
 // =============================================================================
 // Sanity check for factory.h
