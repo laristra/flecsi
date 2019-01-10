@@ -155,7 +155,8 @@ protected:
 
 // Utility
 severity_message_t(utility, decltype(flecsi::utils::flog::true_state), {
-  std::ostream & stream = flog_t::instance().severity_stream(true);
+  std::ostream & stream = flog_t::instance().severity_stream(
+      flog_t::instance().tag_enabled());
   return stream;
 });
 

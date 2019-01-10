@@ -37,18 +37,6 @@ template<typename EXECUTION_POLICY>
 struct task_interface_u {
 
   /*!
-    The runtime_state_t type stores runtime-specific state information
-    that is required to execute a user task. This is only needed for
-    the functor interface, which is currently not in use.
-   */
-
-  using runtime_state_t = typename EXECUTION_POLICY::runtime_state_t;
-
-  static runtime_state_t & runtime_state(void * task) {
-    return EXECUTION_POLICY::runtime_state(task);
-  } // runtime_state
-
-  /*!
     Register a task with the FleCSI runtime.
 
     @tparam KEY       A hash key identifying the task.

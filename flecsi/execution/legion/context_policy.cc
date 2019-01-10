@@ -24,8 +24,6 @@ namespace execution {
 int legion_context_policy_t::start(int argc, char ** argv) {
   using namespace Legion;
 
-  // FIXME: Remove this once flog is working
-  std::cerr << "IN FUNCTION: " << __FUNCTION__ << std::endl;
   {
     flog_tag_guard(context);
     flog(info) << __FUNCTION__ << std::endl;
@@ -99,7 +97,10 @@ int legion_context_policy_t::start(int argc, char ** argv) {
     wait_on_legion();
   }
 
-//  Legion::Runtime::wait_for_shutdown();
+  // Make sure that the flusher thread executes at least one cycle.
+  __flog_internal_wait_on_flusher();
+
+  Legion::Runtime::wait_for_shutdown();
   
   return 0;
 } // legion_context_policy_t::start
@@ -195,11 +196,13 @@ legion_context_policy_t::connect_with_mpi(Legion::Context & ctx,
   const std::map<int, Legion::AddressSpace> & forward_mapping =
     runtime->find_forward_MPI_mapping();
 
+#if 0
   for(std::map<int, Legion::AddressSpace>::const_iterator it =
         forward_mapping.begin();
       it != forward_mapping.end(); it++)
     printf(
       "MPI Rank %d maps to Legion Address Space %d\n", it->first, it->second);
+#endif
 } // legion_context_policy_t::connect_with_mpi
 
 } // namespace execution

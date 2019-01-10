@@ -47,7 +47,7 @@
 #endif
 
 #ifndef FLOG_PACKET_FLUSH_INTERVAL
-#define FLOG_PACKET_FLUSH_INTERVAL 100
+#define FLOG_PACKET_FLUSH_INTERVAL 100000
 #endif
 
 namespace flecsi {

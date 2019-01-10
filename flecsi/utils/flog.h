@@ -231,6 +231,9 @@
   flecsi::utils::flog::error_log_message_t(__FILE__, __LINE__).stream()        \
     << message
 
+#define __flog_internal_wait_on_flusher()                                      \
+  usleep(FLOG_PACKET_FLUSH_INTERVAL)
+
 #else
 
 #define flog_register_tag(name)
@@ -248,6 +251,8 @@
 #define flog_info(message)
 #define flog_warn(message)
 #define flog_error(message)
+
+#define __flog_internal_wait_on_flusher()
 
 #endif // FLECSI_ENABLE_FLOG
 

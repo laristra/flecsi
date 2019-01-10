@@ -21,6 +21,8 @@
 
 #include <flecsi/utils/flog.h>
 
+flog_register_tag(ftest);
+
 namespace flecsi {
 namespace utils {
 namespace ftest {
@@ -33,6 +35,8 @@ struct state_t {
   } // initialize
 
   ~state_t() {
+    flog_tag_guard(ftest);
+
     if(error_stream_.str().size()) {
       std::stringstream stream;
       stream << FLOG_OUTPUT_LTRED("TEST FAILED " << name_) <<
@@ -79,6 +83,7 @@ struct fatal_handler_t {
   } // fatal_handler_t
 
   ~fatal_handler_t() {
+    flog_tag_guard(ftest);
     runtime_.stringstream() << FLOG_COLOR_PLAIN << std::endl;
     std::stringstream stream;
     stream << FLOG_OUTPUT_LTRED("TEST FAILED " << runtime_.name()) <<
