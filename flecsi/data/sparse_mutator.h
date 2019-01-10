@@ -70,10 +70,21 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
     offset_t & offset = h_.offsets_[index];
 
     size_t n = offset.count();
+    size_t nnew = h_.new_count(index);
 
-    entry_value_t * start = h_.entries_ + index * h_.num_slots_;
-    entry_value_t * end = start + n;
+    entry_value_t * start = h_.entries_ + offset.start();
+    entry_value_t * end = start + std::min(n, nnew);
 
+    // try to find entry in overflow, if appropriate
+    bool use_overflow = (nnew > n &&
+            (n == 0 || entry > end[-1].entry));
+    if(use_overflow) {
+      auto & overflow = h_.overflow_map_->at(index);
+      start = overflow.data();
+      end = start + (nnew - n);
+    }
+
+    // find where entry should be
     entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
       [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
         return e1.entry < e2.entry;
@@ -85,33 +96,16 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
       return itr->value;
     }
 
-    // if we neet to add the entry, but we've exceeded the number of available
-    // slots, dump it into the extra storage
-    if(n >= h_.num_slots_) {
-      if(index < h_.num_exclusive_) {
-        (*h_.num_exclusive_insertions)++;
-      }
+    // otherwise, create a new entry
+    size_t ragged_idx = itr - start;
+    if (use_overflow) ragged_idx += n;
+    auto & ragged = static_cast<base_t &>(*this);
+    ragged.insert(index, ragged_idx, {entry, T()});
+    return ragged(index, ragged_idx).value;
 
-      return h_.spare_map_->emplace(index, entry_value_t(entry))->second.value;
-    } // if
-
-    // otherwise, add the value normally
-    while(end != itr) {
-      *(end) = *(end - 1);
-      --end;
-    } // while
-
-    itr->entry = entry;
-
-    if(index < h_.num_exclusive_) {
-      (*h_.num_exclusive_insertions)++;
-    }
-
-    offset.set_count(n + 1);
-
-    return itr->value;
   } // operator ()
 
+#if 0
   void dump() {
     auto & h_ = base_t::h_;
     for(size_t p = 0; p < 3; ++p) {
@@ -160,6 +154,7 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
 
     h_.erase_set_->emplace(std::make_pair(index, entry));
   }
+#endif
 
 }; // mutator_u
 

@@ -118,24 +118,6 @@ namespace execution {
       > & a
     )
     {
-    } // handle
-
-    template<
-      typename T,
-      size_t EXCLUSIVE_PERMISSIONS,
-      size_t SHARED_PERMISSIONS,
-      size_t GHOST_PERMISSIONS
-    >
-    void
-    handle(
-      sparse_accessor<
-        T,
-        EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS,
-        GHOST_PERMISSIONS
-      > & a
-    )
-    {
 //      // TODO: move field data allocation here?
 //      auto& context = context_t::instance();
 //      const int my_color = context.color();
@@ -187,18 +169,11 @@ namespace execution {
       h.offsets_ = &(*h.offsets)[0];
     } // handle
 
-    template<
-      typename T
-    >
-    void
-    handle(
-      sparse_mutator<
-        T
-      > & m
-    )
-    {
-      m.h_.init();
-    } // handle
+    template<typename T>
+    void handle(sparse_mutator<T> & m) {
+      using base_t = typename sparse_mutator<T>::base_t;
+      handle(static_cast<base_t &>(m));
+    }
 
     template<
       typename T,

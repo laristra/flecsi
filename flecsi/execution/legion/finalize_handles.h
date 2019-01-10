@@ -88,19 +88,9 @@ struct finalize_handles_t :
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using accessor_t = sparse_accessor< T, EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
-    using entry_value_t = typename accessor_t::entry_value_t;
-    using sparse_field_data_t = context_t::sparse_field_data_t;
-
-    auto & h = a.handle;
-    auto md = static_cast<sparse_field_data_t *>(h.metadata);
-
-    std::memcpy(h.entries_data[0], h.entries,
-      md->num_exclusive_filled * sizeof(entry_value_t));
-
-    std::memcpy(h.entries_data[1], h.entries + md->reserve,
-      md->num_shared * sizeof(entry_value_t) * md->max_entries_per_index);
+    using base_t = typename sparse_accessor<
+            T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
+    handle(static_cast<base_t &>(a));
   } // handle
 
   template<typename T>
@@ -148,48 +138,9 @@ struct finalize_handles_t :
 
   template<typename T>
   void handle(sparse_mutator<T> & m) {
-    using mutator_t = sparse_mutator<T>;
-    using entry_value_t = typename mutator_t::entry_value_t;
-    using offset_t = typename mutator_t::offset_t;
-    using handle_t = typename mutator_t::handle_t;
-    using commit_info_t = typename handle_t::commit_info_t;
-    using sparse_field_data_t = context_t::sparse_field_data_t;
-
-    auto & h = m.h_;
-
-    entry_value_t * entries = reinterpret_cast<entry_value_t *>(h.entries);
-
-    commit_info_t ci;
-    ci.offsets = h.offsets;
-    ci.entries[0] = entries;
-    ci.entries[1] = entries + h.reserve;
-    ci.entries[2] = ci.entries[1] + h.num_shared() * h.max_entries_per_index();
-
-    auto md = static_cast<sparse_field_data_t *>(h.metadata);
-
-    md->num_exclusive_filled = h.commit(&ci);
-
-    std::memcpy(
-      h.offsets_data[0], h.offsets, h.num_exclusive() * sizeof(offset_t));
-
-    std::memcpy(h.offsets_data[1], h.offsets + h.num_exclusive(),
-      h.num_shared() * sizeof(offset_t));
-
-    if(!md->initialized) {
-      std::memcpy(h.offsets_data[2],
-        h.offsets + h.num_exclusive() + h.num_shared(),
-        h.num_ghost() * sizeof(offset_t));
-    }
-
-    std::memcpy(h.entries_data[0], h.entries,
-      md->num_exclusive_filled * sizeof(entry_value_t));
-
-    std::memcpy(h.entries_data[1],
-      h.entries + h.reserve * sizeof(entry_value_t),
-      h.num_shared() * sizeof(entry_value_t) * h.max_entries_per_index());
-
-    md->initialized = true;
-  } // handle
+    using base_t = typename sparse_mutator<T>::base_t;
+    handle(static_cast<base_t &>(m));
+  }
 
   /*!
      The finalize_handles_t type can be called to walk task args after task
