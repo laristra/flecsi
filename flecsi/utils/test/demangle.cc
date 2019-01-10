@@ -1,28 +1,35 @@
-/*----------------------------------------------------------------------------*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *----------------------------------------------------------------------------*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#include <flecsi/utils/demangle.h>
-#include <flecsi/utils/test/print_type.h>
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 
-#include <cinch/ctest.h>
+#include <flecsi/utils/ftest.h>
 
-TEST(common, all) {
+void demangle(int argc, char ** argv) {
+
+  FTEST();
 
   // demangle, type
   // The results depend on #ifdef __GNUG__, so we'll just exercise
   // these functions, without checking for particular results.
   EXPECT_NE(flecsi::utils::demangle("foo"), "");
-  const std::string str_demangle = flecsi::utils::demangle(typeid(int).name()),
-                    str_type = flecsi::utils::type<int>();
+
+  auto str_demangle = FTEST_TTYPE(int);
+  auto str_type = flecsi::utils::type<int>();
+
   EXPECT_NE(str_demangle, "");
   EXPECT_NE(str_type, "");
   EXPECT_EQ(str_demangle, str_type);
 
-} // TEST
+}
 
-/*----------------------------------------------------------------------------*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *----------------------------------------------------------------------------*/
+ftest_register_test(demangle);
