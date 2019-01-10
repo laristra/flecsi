@@ -1,5 +1,4 @@
 stages:
-  - prep
   - build
   - test
   - format
@@ -8,23 +7,6 @@ stages:
 # global before script
 before_script:
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
-
-prep:
-  retry: 2
-  variables:
-    GLOBAL_CI_VARIABLE: "global_ci_value"
-    ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
-  image: gitlab/dind:latest #user: root
-  stage: prep
-  artifacts:
-    expire_in: 1 hour
-    paths:
-      - ${ARTIFACTS_PROJECT_PATH}
-  script:
-    - git submodule init
-    - git config submodule.cinch.url https://github.com/laristra/cinch.git
-    #- git config submodule.ristra-utils.url https://github.com/laristra/ristra-utils
-    - git submodule update --init --recursive
 
 
 .build:
@@ -46,23 +28,19 @@ prep:
   image:    
     name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
   stage:    build
-  dependencies:
-    - prep
   artifacts:
     expire_in: 1 hour
     paths:
       - ${ARTIFACTS_PROJECT_PATH}
   script:
-    #- git submodule init
-    #- git config submodule.cinch.url https://github.com/laristra/cinch.git
-    #- git config submodule.ristra-utils.url https://github.com/laristra/ristra-utils
-    #- git submodule update --init --recursive
+    - git submodule init
+    - git config submodule.cinch.url https://github.com/laristra/cinch.git
+    - git submodule update --init --recursive
     - mkdir ${CI_PROJECT_DIR}/build
     - cd build
     - ccache -z
     - | 
       cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-        #-DENABLE_LEGION=$LEGION \
         -DFLECSI_RUNTIME_MODEL=$RUNTIME \
          ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON}\
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] \
@@ -283,6 +261,7 @@ build:fedora_hpx_clang:
     DISTRO: ""
     RUNTIME: ""
     COVERAGE: "OFF"
+    IGNORE_NOCI: "FALSE"
     ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
   image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
   stage:  test
@@ -520,6 +499,54 @@ test:fedora_hpx_clang:
   dependencies:
     - build:fedora_hpx_clang
 
+test:fedora_mpi_coverage:
+  extends: test:fedora_mpi
+  variables:
+    COVERAGE: "ON"
+  dependencies:
+    - build:fedora_mpi
+  allow_failure: true
+
+test:fedora_legion_coverage:
+  extends: test:fedora_legion
+  variables:
+    COVERAGE: "ON"
+  dependencies:
+    - build:fedora_legion
+  allow_failure: true
+
+test:fedora_hpx_coverage:
+  extends: test:fedora_hpx
+  variables:
+    COVERAGE: "ON"
+  dependencies:
+    - build:fedora_hpx
+  allow_failure: true
+
+test:fedora_mpi_ignoreNoCI:
+  extends: test:fedora_mpi
+  variables:
+    IGNORE_NOCI: "TRUE"
+  dependencies:
+    - build:fedora_mpi
+  allow_failure: true
+
+test:fedora_legion_ignoreNoCI:
+  extends: test:fedora_legion
+  variables:
+    IGNORE_NOCI: "TRUE"
+  dependencies:
+    - build:fedora_legion
+  allow_failure: true
+
+test:fedora_hpx_ignoreNoCI:
+  extends: test:fedora_hpx
+  variables:
+    IGNORE_NOCI: "TRUE"
+  dependencies:
+    - build:fedora_hpx
+  allow_failure: true
+
 ##################################
 
 
@@ -563,7 +590,6 @@ format:fedora_hpx:
     RUNTIME: "hpx"
   dependencies:
     - build:fedora_hpx
-  allow_failure: true
 
 ##################################
 
