@@ -37,6 +37,9 @@ prep:
   variables:
     DISTRO: ""
     RUNTIME: ""
+    WERROR: "yes"
+    BUILD_TYPE: "Debug"
+    COVERAGE: "ON"
     GLOBAL_CI_VARIABLE: "global_ci_value"
     GIT_SUBMODULE_STRATEGY: none
     ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
@@ -56,8 +59,10 @@ prep:
     #- git submodule update --init --recursive
     - mkdir ${CI_PROJECT_DIR}/build
     - cd build
+    - ccache -z
     - | 
-      cmake   -DENABLE_LEGION=$LEGION \
+      cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+        #-DENABLE_LEGION=$LEGION \
         -DFLECSI_RUNTIME_MODEL=$RUNTIME \
          ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON}\
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] \
@@ -69,30 +74,10 @@ prep:
         -DENABLE_DOCUMENTATION=OFF \
          ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} \
         ..
-    - make doxygen
-    - |
-      if [ ${COVERAGE} ]; 
-      then python -m coverxygen --xml-dir doc/doxygen/xml/ \
-              --src-dir .. \
-              --output doxygen.coverage.info; 
-           wget -O codecov.sh https://codecov.io/bash;
-           bash codecov.sh -X gcov \
-               -f doxygen.coverage.info \
-               -F documentation; 
-           doxy-coverage --threshold 24 doc/doxygen/xml/; 
-      fi
+    - make -k VERBOSE=1 -j2
+    - ccache -s
     - make install DESTDIR=${PWD}/install 
     - rm -rf ${PWD}/install
-    - cd .. 
-    - |
-      if [ ${COVERAGE} ]; 
-      then if [ ${CC} = clang ]; 
-           then $HOME/.local/bin/codecov -F "${CC}" \
-          --gcov-exec "llvm-cov gcov"; 
-           else $HOME/.local/bin/codecov -F "${CC}"; 
-           fi; 
-      fi
-    - cd build 
     - sudo make install 
     - cp -r /usr/local ${CI_PROJECT_DIR}/.
 
@@ -105,11 +90,21 @@ build:ubuntu_mpi:
     DISTRO: "ubuntu"
     RUNTIME: "mpi"
 
+build:ubuntu_mpi_release:
+  extends: build:ubuntu_mpi
+  variables:
+    BUILD_TYPE: "Release"
+
 build:ubuntu_mpi_clang:
   extends: build:ubuntu_mpi
   before_script:
     - export CC=clang
     - export CXX=clang++
+
+build:ubuntu_mpi_clang_release:
+  extends: build:ubuntu_mpi_clang
+  variables:
+    BUILD_TYPE: "Release"
 
 build:ubuntu_mpich_mpi:
   extends: .build
@@ -117,11 +112,21 @@ build:ubuntu_mpich_mpi:
     DISTRO: "ubuntu_mpich"
     RUNTIME: "mpi"
 
+build:ubuntu_mpich_mpi_release:
+  extends: build:ubuntu_mpich_mpi
+  variables:
+    BUILD_TYPE: "Release"
+
 build:ubuntu_mpich_mpi_clang:
   extends: build:ubuntu_mpich_mpi
   before_script:
     - export CC=clang
     - export CXX=clang++
+
+build:ubuntu_mpich_mpi_clang_release:
+  extends: build:ubuntu_mpich_mpi_clang
+  variables:
+    BUILD_TYPE: "Release"
 
 build:fedora_mpi:
   extends: .build
@@ -129,11 +134,43 @@ build:fedora_mpi:
     DISTRO: "fedora"
     RUNTIME: "mpi"
 
+build:fedora_mpi_release:
+  extends: build:fedora_mpi
+  variables:
+    BUILD_TYPE: "Release"
+
+build:fedora_mpi_clang:
+  extends: build:fedora_mpi
+  before_script:
+    - export CC=clang
+    - export CXX=clang++
+
+build:fedora_mpi_clang_release:
+  extends: build:fedora_mpi_clang
+  variables:
+    BUILD_TYPE: "Release"
+
 build:fedora_mpich_mpi:
   extends: .build
   variables:
     DISTRO: "fedora_mpich"
     RUNTIME: "mpi"
+
+build:fedora_mpich_mpi_release:
+  extends: build:fedora_mpich_mpi
+  variables:
+    BUILD_TYPE: "Release"
+
+build:fedora_mpich_mpi_clang:
+  extends: build:fedora_mpich_mpi
+  before_script:
+    - export CC=clang
+    - export CXX=clang++
+
+build:fedora_mpich_mpi_clang_release:
+  extends: build:fedora_mpich_mpi_clang
+  variables:
+    BUILD_TYPE: "Release"
 
 build:ubuntu_legion:
   extends: .build
@@ -141,11 +178,43 @@ build:ubuntu_legion:
     DISTRO: "ubuntu"
     RUNTIME: "legion"
 
+build:ubuntu_legion_release:
+  extends: build:ubuntu_legion
+  variables:
+    BUILD_TYPE: "Release"
+
+build:ubuntu_legion_clang:
+  extends: build:ubuntu_legion
+  before_script:
+    - export CC=clang
+    - export CXX=clang++
+
+build:ubuntu_legion_clang_release:
+  extends: build:ubuntu_legion_clang
+  variables:
+    BUILD_TYPE: "Release"
+
 build:ubuntu_mpich_legion:
   extends: .build
   variables:
     DISTRO: "ubuntu_mpich"
     RUNTIME: "legion"
+
+build:ubuntu_mpich_legion_release:
+  extends: build:ubuntu_mpich_legion
+  variables:
+    BUILD_TYPE: "Release"
+
+build:ubuntu_mpich_legion_clang:
+  extends: build:ubuntu_mpich_legion
+  before_script:
+    - export CC=clang
+    - export CXX=clang++
+
+build:ubuntu_mpich_legion_clang_release:
+  extends: build:ubuntu_mpich_legion_clang
+  variables:
+    BUILD_TYPE: "Release"
 
 build:fedora_legion:
   extends: .build
@@ -153,21 +222,56 @@ build:fedora_legion:
     DISTRO: "fedora"
     RUNTIME: "legion"
 
+build:fedora_legion_release:
+  extends: build:fedora_legion
+  variables:
+    BUILD_TYPE: "Release"
+
+build:fedora_legion_clang:
+  extends: build:fedora_legion
+  before_script:
+    - export CC=clang
+    - export CXX=clang++
+
+build:fedora_legion_clang_release:
+  extends: build:fedora_legion_clang
+  variables:
+    BUILD_TYPE: "Release"
+
 build:fedora_mpich_legion:
   extends: .build
   variables:
     DISTRO: "fedora_mpich"
     RUNTIME: "legion"
 
-build:fedora_hpx:
-  extends: .build
+build:fedora_mpich_legion_release:
+  extends: build:fedora_mpich_legion
+  variables:
+    BUILD_TYPE: "Release"
+
+build:fedora_mpich_legion_clang:
+  extends: build:fedora_mpich_legion
   before_script:
     - export CC=clang
     - export CXX=clang++
+
+build:fedora_mpich_legion_clang_release:
+  extends: build:fedora_mpich_legion_clang
+  variables:
+    BUILD_TYPE: "Release"
+
+build:fedora_hpx:
+  extends: .build
   variables:
     DISTRO: "fedora"
     RUNTIME: "hpx"
   allow_failure: true
+
+build:fedora_hpx_clang:
+  extends: build:fedora_hpx
+  before_script:
+    - export CC=clang
+    - export CXX=clang++
 
 ##################################
 
@@ -178,6 +282,7 @@ build:fedora_hpx:
     GLOBAL_CI_VARIABLE: "global_ci_value"
     DISTRO: ""
     RUNTIME: ""
+    COVERAGE: "OFF"
     ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
   image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
   stage:  test
@@ -190,6 +295,29 @@ build:fedora_hpx:
   script: 
     - cd ${CI_PROJECT_DIR}/build/
     - make test ARGS="-V"
+    - gcovr .
+    - make doxygen
+    - |
+      if [ ${COVERAGE} ];
+      then python -m coverxygen --xml-dir doc/doxygen/xml/ \
+              --src-dir .. \
+              --output doxygen.coverage.info;
+           wget -O codecov.sh https://codecov.io/bash;
+           bash codecov.sh -X gcov \
+               -f doxygen.coverage.info \
+               -F documentation;
+           doxy-coverage --threshold 24 doc/doxygen/xml/;
+      fi
+    - cd ..
+    - |
+      if [ ${COVERAGE} ];
+      then if [ ${CC} = clang ];
+           then $HOME/.local/bin/codecov -F "${CC}" \
+          --gcov-exec "llvm-cov gcov";
+           else $HOME/.local/bin/codecov -F "${CC}";
+           fi;
+      fi
+    - cd build/
 
 
 ##################################
@@ -202,6 +330,21 @@ test:ubuntu_mpi:
   dependencies:
     - build:ubuntu_mpi
 
+test:ubuntu_mpi_release:
+  extends: test:ubuntu_mpi
+  dependencies:
+    - build:ubuntu_mpi_release
+
+test:ubuntu_mpi_clang:
+  extends: test:ubuntu_mpi
+  dependencies:
+    - build:ubuntu_mpi_clang
+
+test:ubuntu_mpi_clang_release:
+  extends: test:ubuntu_mpi_clang
+  dependencies:
+    - build:ubuntu_mpi_clang_release
+
 test:ubuntu_mpich_mpi:
   extends: .test
   variables:
@@ -209,6 +352,21 @@ test:ubuntu_mpich_mpi:
     RUNTIME: "mpi"
   dependencies:
     - build:ubuntu_mpich_mpi
+
+test:ubuntu_mpich_mpi_release:
+  extends: test:ubuntu_mpich_mpi
+  dependencies:
+    - build:ubuntu_mpich_mpi_release
+
+test:ubuntu_mpich_mpi_clang:
+  extends: test:ubuntu_mpich_mpi
+  dependencies:
+    - build:ubuntu_mpich_mpi_clang
+
+test:ubuntu_mpich_mpi_clang_release:
+  extends: test:ubuntu_mpich_mpi_clang
+  dependencies:
+    - build:ubuntu_mpich_mpi_clang_release
 
 test:fedora_mpi:
   extends: .test
@@ -218,6 +376,21 @@ test:fedora_mpi:
   dependencies:
     - build:fedora_mpi
 
+test:fedora_mpi_release:
+  extends: test:fedora_mpi
+  dependencies:
+    - build:fedora_mpi_release
+
+test:fedora_mpi_clang:
+  extends: test:fedora_mpi
+  dependencies:
+    - build:fedora_mpi_clang
+
+test:fedora_mpi_clang_release:
+  extends: test:fedora_mpi_clang
+  dependencies:
+    - build:fedora_mpi_clang_release
+
 test:fedora_mpich_mpi:
   extends: .test
   variables:
@@ -225,6 +398,21 @@ test:fedora_mpich_mpi:
     RUNTIME: "mpi"
   dependencies:
     - build:fedora_mpich_mpi
+
+test:fedora_mpich_mpi_release:
+  extends: test:fedora_mpich_mpi
+  dependencies:
+    - build:fedora_mpich_mpi_release
+
+test:fedora_mpich_mpi_clang:
+  extends: test:fedora_mpich_mpi
+  dependencies:
+    - build:fedora_mpich_mpi_clang
+
+test:fedora_mpich_mpi_clang_release:
+  extends: test:fedora_mpich_mpi_clang
+  dependencies:
+    - build:fedora_mpich_mpi_clang_release
 
 test:ubuntu_legion:
   extends: .test
@@ -234,6 +422,21 @@ test:ubuntu_legion:
   dependencies:
     - build:ubuntu_legion
 
+test:ubuntu_legion_release:
+  extends: test:ubuntu_legion
+  dependencies:
+    - build:ubuntu_legion_release
+
+test:ubuntu_legion_clang:
+  extends: test:ubuntu_legion
+  dependencies:
+    - build:ubuntu_legion_clang
+
+test:ubuntu_legion_clang_release:
+  extends: test:ubuntu_legion_clang
+  dependencies:
+    - build:ubuntu_legion_clang_release
+
 test:ubuntu_mpich_legion:
   extends: .test
   variables:
@@ -241,6 +444,21 @@ test:ubuntu_mpich_legion:
     RUNTIME: "legion"
   dependencies:
     - build:ubuntu_mpich_legion
+
+test:ubuntu_mpich_legion_release:
+  extends: test:ubuntu_mpich_legion
+  dependencies:
+    - build:ubuntu_mpich_legion_release
+
+test:ubuntu_mpich_legion_clang:
+  extends: test:ubuntu_mpich_legion
+  dependencies:
+    - build:ubuntu_mpich_legion_clang
+
+test:ubuntu_mpich_legion_clang_release:
+  extends: test:ubuntu_mpich_legion_clang
+  dependencies:
+    - build:ubuntu_mpich_legion_clang_release
 
 test:fedora_legion:
   extends: .test
@@ -250,6 +468,21 @@ test:fedora_legion:
   dependencies:
     - build:fedora_legion
 
+test:fedora_legion_release:
+  extends: test:fedora_legion
+  dependencies:
+    - build:fedora_legion_release
+
+test:fedora_legion_clang:
+  extends: test:fedora_legion
+  dependencies:
+    - build:fedora_legion_clang
+
+test:fedora_legion_clang_release:
+  extends: test:fedora_legion_clang
+  dependencies:
+    - build:fedora_legion_clang_release
+
 test:fedora_mpich_legion:
   extends: .test
   variables:
@@ -257,6 +490,36 @@ test:fedora_mpich_legion:
     RUNTIME: "legion"
   dependencies:
     - build:fedora_mpich_legion
+
+test:fedora_mpich_legion_release:
+  extends: test:fedora_mpich_legion
+  dependencies:
+    - build:fedora_mpich_legion_release
+
+test:fedora_mpich_legion_clang:
+  extends: test:fedora_mpich_legion
+  dependencies:
+    - build:fedora_mpich_legion_clang
+
+test:fedora_mpich_legion_clang_release:
+  extends: test:fedora_mpich_legion_clang
+  dependencies:
+    - build:fedora_mpich_legion_clang_release
+
+test:fedora_hpx:
+  extends: .test
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "hpx"
+  dependencies:
+    - build:fedora_hpx
+  allow_failure: true
+
+test:fedora_hpx_clang:
+  extends: test:fedora_hpx
+  dependencies:
+    - build:fedora_hpx_clang
+
 ##################################
 
 
@@ -269,7 +532,7 @@ test:fedora_mpich_legion:
   image:  laristra/flecsi-third-party:${DISTRO} #user: flecsi
   stage:  format
   dependencies:
-    - .test
+    - .build
   script:
     - cd ${CI_PROJECT_DIR}/build/
     - make format-FleCSI && git diff #--exit-code
@@ -283,7 +546,7 @@ format:fedora_mpi:
     DISTRO: "fedora"
     RUNTIME: "mpi"
   dependencies:
-    - test:fedora_mpi
+    - build:fedora_mpi
 
 format:fedora_legion:
   extends: .format
@@ -291,7 +554,17 @@ format:fedora_legion:
     DISTRO: "fedora"
     RUNTIME: "legion"
   dependencies:
-    - test:fedora_legion
+    - build:fedora_legion
+
+format:fedora_hpx:
+  extends: .format
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "hpx"
+  dependencies:
+    - build:fedora_hpx
+  allow_failure: true
+
 ##################################
 
 
@@ -341,6 +614,21 @@ deploy:ubuntu_mpi:
   dependencies:
     - test:ubuntu_mpi
 
+deploy:ubuntu_mpi_release:
+  extends: deploy:ubuntu_mpi
+  dependencies:
+    - test:ubuntu_mpi_release
+
+deploy:ubuntu_mpi_clang:
+  extends: deploy:ubuntu_mpi
+  dependencies:
+    - test:ubuntu_mpi_clang
+
+deploy:ubuntu_mpi_clang_release:
+  extends: deploy:ubuntu_mpi_clang
+  dependencies:
+    - test:ubuntu_mpi_clang_release
+
 deploy:ubuntu_mpich_mpi:
   extends: .deploy
   variables:
@@ -348,6 +636,21 @@ deploy:ubuntu_mpich_mpi:
     RUNTIME: "mpi"
   dependencies:
     - test:ubuntu_mpich_mpi
+
+deploy:ubuntu_mpich_mpi_release:
+  extends: deploy:ubuntu_mpich_mpi
+  dependencies:
+    - test:ubuntu_mpich_mpi_release
+
+deploy:ubuntu_mpich_mpi_clang:
+  extends: deploy:ubuntu_mpich_mpi
+  dependencies:
+    - test:ubuntu_mpich_mpi_clang
+
+deploy:ubuntu_mpich_mpi_clang_release:
+  extends: deploy:ubuntu_mpich_mpi_clang
+  dependencies:
+    - test:ubuntu_mpich_mpi_clang_release
 
 deploy:fedora_mpi:
   extends: .deploy
@@ -357,6 +660,21 @@ deploy:fedora_mpi:
   dependencies:
     - test:fedora_mpi
 
+deploy:fedora_mpi_release:
+  extends: deploy:fedora_mpi
+  dependencies:
+    - test:fedora_mpi_release
+
+deploy:fedora_mpi_clang:
+  extends: deploy:fedora_mpi
+  dependencies:
+    - test:fedora_mpi_clang
+
+deploy:fedora_mpi_clang_release:
+  extends: deploy:fedora_mpi_clang
+  dependencies:
+    - test:fedora_mpi_clang_release
+
 deploy:fedora_mpich_mpi:
   extends: .deploy
   variables:
@@ -364,6 +682,21 @@ deploy:fedora_mpich_mpi:
     RUNTIME: "mpi"
   dependencies:
     - test:fedora_mpich_mpi
+
+deploy:fedora_mpich_mpi_release:
+  extends: deploy:fedora_mpich_mpi
+  dependencies:
+    - test:fedora_mpich_mpi_release
+
+deploy:fedora_mpich_mpi_clang:
+  extends: deploy:fedora_mpich_mpi
+  dependencies:
+    - test:fedora_mpich_mpi_clang
+
+deploy:fedora_mpich_mpi_clang_release:
+  extends: deploy:fedora_mpich_mpi_clang
+  dependencies:
+    - test:fedora_mpich_mpi_clang_release
 
 deploy:ubuntu_legion:
   extends: .deploy
@@ -373,6 +706,21 @@ deploy:ubuntu_legion:
   dependencies:
     - test:ubuntu_legion
 
+deploy:ubuntu_legion_release:
+  extends: deploy:ubuntu_legion
+  dependencies:
+    - test:ubuntu_legion_release
+
+deploy:ubuntu_legion_clang:
+  extends: deploy:ubuntu_legion
+  dependencies:
+    - test:ubuntu_legion_clang
+
+deploy:ubuntu_legion_clang_release:
+  extends: deploy:ubuntu_legion_clang
+  dependencies:
+    - test:ubuntu_legion_clang_release
+
 deploy:ubuntu_mpich_legion:
   extends: .deploy
   variables:
@@ -380,6 +728,21 @@ deploy:ubuntu_mpich_legion:
     RUNTIME: "legion"
   dependencies:
     - test:ubuntu_mpich_legion
+
+deploy:ubuntu_mpich_legion_release:
+  extends: deploy:ubuntu_mpich_legion
+  dependencies:
+    - test:ubuntu_mpich_legion_release
+
+deploy:ubuntu_mpich_legion_clang:
+  extends: deploy:ubuntu_mpich_legion
+  dependencies:
+    - test:ubuntu_mpich_legion_clang
+
+deploy:ubuntu_mpich_legion_clang_release:
+  extends: deploy:ubuntu_mpich_legion_clang
+  dependencies:
+    - test:ubuntu_mpich_legion_clang_release
 
 deploy:fedora_legion:
   extends: .deploy
@@ -389,6 +752,21 @@ deploy:fedora_legion:
   dependencies:
     - test:fedora_legion
 
+deploy:fedora_legion_release:
+  extends: deploy:fedora_legion
+  dependencies:
+    - test:fedora_legion_release
+
+deploy:fedora_legion_clang:
+  extends: deploy:fedora_legion
+  dependencies:
+    - test:fedora_legion_clang
+
+deploy:fedora_legion_clang_release:
+  extends: deploy:fedora_legion_clang
+  dependencies:
+    - test:fedora_legion_clang_release
+
 deploy:fedora_mpich_legion:
   extends: .deploy
   variables:
@@ -396,4 +774,20 @@ deploy:fedora_mpich_legion:
     RUNTIME: "legion"
   dependencies:
     - test:fedora_mpich_legion
+
+deploy:fedora_mpich_legion_release:
+  extends: deploy:fedora_mpich_legion
+  dependencies:
+    - test:fedora_mpich_legion_release
+
+deploy:fedora_mpich_legion_clang:
+  extends: deploy:fedora_mpich_legion
+  dependencies:
+    - test:fedora_mpich_legion_clang
+
+deploy:fedora_mpich_legion_clang_release:
+  extends: deploy:fedora_mpich_legion_clang
+  dependencies:
+    - test:fedora_mpich_legion_clang_release
+
 ##################################
