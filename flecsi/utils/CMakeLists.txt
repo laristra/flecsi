@@ -135,6 +135,11 @@ ftest_add_unit(hash
     test/hash.cc
 )
 
+ftest_add_unit(reorder
+  SOURCES
+		test/reorder.cc
+)
+
 set(factory_blessed_input test/factory.blessed.gnug)
 
 if(MSVC)
@@ -161,4 +166,41 @@ ftest_add_unit(id
     test/id.cc
   INPUTS
     test/id.blessed ${id_blessed_input}
+)
+
+set(iterator_blessed_input test/iterator.blessed.gnug)
+
+if(MSVC)
+  set(iterator_blessed_input test/iterator.blessed.msvc)
+endif()
+
+ftest_add_unit(utils_iterator
+  SOURCES
+    demangle.cc
+    test/iterator.cc
+  INPUTS
+    test/iterator.blessed
+    ${iterator_blessed_input}
+)
+
+ftest_add_unit(set_intersection
+  SOURCES
+    test/set_intersection.cc
+)
+
+ftest_add_unit(set_utils
+  SOURCES
+    test/set_utils.cc
+  INPUTS
+    test/set_utils.blessed
+)
+
+ftest_add_unit(simple_id
+  SOURCES
+    test/simple_id.cc
+)
+
+ftest_add_unit(static_verify
+  SOURCES
+    test/static_verify.cc
 )

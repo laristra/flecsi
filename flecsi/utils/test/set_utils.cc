@@ -1,25 +1,31 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-// includes: flecsi
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
+#include <flecsi/utils/ftest.h>
 #include <flecsi/utils/set_utils.h>
 
 // includes: C++
 #include <iostream>
 
-// includes: other
-#include <cinch/ctest.h>
-
 // print_set
 template<class T>
 void
 print_set(const char * const prefix, const std::set<T> & set) {
-  CINCH_CAPTURE() << prefix << " == {";
+  FTEST_CAPTURE() << prefix << " == {";
   for (auto i = set.begin(); i != set.end(); ++i)
-    CINCH_CAPTURE() << " " << *i;
-  CINCH_CAPTURE() << " }" << std::endl;
+    FTEST_CAPTURE() << " " << *i;
+  FTEST_CAPTURE() << " }" << std::endl;
 }
 
 // =============================================================================
@@ -27,7 +33,10 @@ print_set(const char * const prefix, const std::set<T> & set) {
 // =============================================================================
 
 // TEST
-TEST(set_utils, all) {
+void set_utils(int argc, char ** argv) {
+
+  FTEST();
+
   std::set<std::size_t> a = {1, 3, 5, 7, 10, 11};
   std::set<std::size_t> b = {2, 3, 6, 7, 10, 12};
   std::set<std::size_t> c = {0, 20};
@@ -39,7 +48,7 @@ TEST(set_utils, all) {
   print_set("c", c);
   print_set("d", d);
   print_set("e", e);
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   print_set("intersection(a,a)", flecsi::utils::set_intersection(a, a));
   print_set("intersection(a,b)", flecsi::utils::set_intersection(a, b));
@@ -56,7 +65,7 @@ TEST(set_utils, all) {
   print_set("intersection(d,d)", flecsi::utils::set_intersection(a, d));
   print_set("intersection(d,e)", flecsi::utils::set_intersection(a, e));
   print_set("intersection(e,e)", flecsi::utils::set_intersection(a, e));
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   print_set("union(a,a)", flecsi::utils::set_union(a, a));
   print_set("union(a,b)", flecsi::utils::set_union(a, b));
@@ -73,7 +82,7 @@ TEST(set_utils, all) {
   print_set("union(d,d)", flecsi::utils::set_union(a, d));
   print_set("union(d,e)", flecsi::utils::set_union(a, e));
   print_set("union(e,e)", flecsi::utils::set_union(a, e));
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   print_set("difference(a,a)", flecsi::utils::set_difference(a, a));
   print_set("difference(a,b)", flecsi::utils::set_difference(a, b));
@@ -92,11 +101,8 @@ TEST(set_utils, all) {
   print_set("difference(e,e)", flecsi::utils::set_difference(a, e));
 
   // compare
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("set_utils.blessed"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("set_utils.blessed"));
 
 } // TEST
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_test(set_utils);

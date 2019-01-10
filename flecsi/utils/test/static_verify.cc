@@ -1,24 +1,26 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-// includes: flecsi
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
+#include <flecsi/utils/ftest.h>
 #include <flecsi/utils/static_verify.h>
 
-// includes: C++
 #include <iostream>
 
-// includes: other
-#include <cinch/ctest.h>
-
-// =============================================================================
-// Some classes, with or without members foo and bar.
-// These will facilitate our check of the FLECSI_MEMBER_CHECKER macro.
-// =============================================================================
-
-// foo first
-// bar second
+/*
+  Some classes, with or without members foo and bar.
+  These will facilitate our check of the FLECSI_MEMBER_CHECKER macro.
+ */
 
 struct first {
   int foo;
@@ -33,9 +35,7 @@ struct both {
   void bar(void) {}
 };
 
-struct neither {
-  // nothing
-};
+struct neither {};
 
 // make sure two bars aren't counted as a foo and a bar
 struct bars {
@@ -43,9 +43,11 @@ struct bars {
   void bar(int) {}
 };
 
-// We'll be interested in checking classes for the presence or absence
-// of members foo and bar. The following macro calls produce constructs
-// that will facilitate our doing this.
+/*
+  We'll be interested in checking classes for the presence or absence
+  of members foo and bar. The following macro calls produce constructs
+  that will facilitate our doing this.
+ */
 FLECSI_MEMBER_CHECKER(foo); // Makes has_member_foo<T>. ...Does T have foo?
 FLECSI_MEMBER_CHECKER(bar); // Makes has_member_bar<T>. ...Does T have bar?
 
@@ -56,21 +58,19 @@ bool const has_member_bar<T>::value;
 
 namespace flecsi {
 namespace utils {
+
 template<class T>
 bool const is_tuple<T>::value;
+
 template<class... T>
 bool const is_tuple<std::tuple<T...>>::value;
+
 } // namespace utils
 } // namespace flecsi
 
-// =============================================================================
-// Test constructs in flecsi::utils::static_verify.h
-// =============================================================================
+void static_verify(int argc, char ** argv) {
 
-TEST(static_verify, all) {
-  // ------------------------
-  // FLECSI_MEMBER_CHECKER
-  // ------------------------
+  FTEST(); 
 
   // first{} has foo only
   EXPECT_EQ(has_member_foo<first>::value, true);
@@ -105,9 +105,6 @@ TEST(static_verify, all) {
   EXPECT_EQ((flecsi::utils::is_tuple<std::tuple<int, char>>::value), true);
   // the last line needed () because of ,
 
-} // TEST
+} // static_verify
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_test(static_verify);

@@ -1,22 +1,20 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 // user includes
 #include <flecsi/utils/reorder.h>
 
-// system includes
-#include <cinch/ctest.h>
+#include <flecsi/utils/ftest.h>
 #include <random>
 
 // some using declarations
@@ -32,38 +30,32 @@ const vector<int> v = {0, 3, 2, 1};
 const vector<int> order = {3, 0, 1, 2};
 const vector<int> ans = {3, 2, 1, 0};
 
-//=============================================================================
-//! \brief Test the inplace reordering (with order array preserved)
-//=============================================================================
 
-TEST(reorder, inplace) {
+void reorder_inplace(int argc, char ** argv) {
+
+	FTEST();
 
   auto vcpy = v;
   auto ocpy = order;
   reorder(ocpy.begin(), ocpy.end(), vcpy.begin());
   ASSERT_EQ(vcpy, ans);
 
-} // TEST
+}
 
-//=============================================================================
-//! \brief Test the inplace reordering (with order array destroyed)
-//=============================================================================
+void reorder_destroy(int argc, char ** argv) {
 
-TEST(reorder, destroy) {
-
+  FTEST();
+ 
   auto vcpy = v;
   auto ocpy = order;
   reorder_destructive(ocpy.begin(), ocpy.end(), vcpy.begin());
   ASSERT_EQ(vcpy, ans);
 
-} // TEST
+}
 
-//=============================================================================
-//! \brief More-extensive testing of both inplace reordering functions
-//=============================================================================
+void reorder_both(int argc, char ** argv) {
 
-// TEST
-TEST(reorder, both) {
+  FTEST();
 
   // We'll run our test ntimes times, each time on a vector
   // with a randomly computed length in [0..maxlen]
@@ -126,9 +118,8 @@ TEST(reorder, both) {
       EXPECT_EQ(copy[original_order[i]], initial[i]);
   } // for
 
-} // TEST
+}
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_test(reorder_inplace);
+ftest_register_test(reorder_destroy);
+ftest_register_test(reorder_both);
