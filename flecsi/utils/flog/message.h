@@ -205,7 +205,8 @@ severity_message_t(warn, decltype(flecsi::utils::flog::true_state), {
 
 // Error
 severity_message_t(error, decltype(flecsi::utils::flog::true_state), {
-  std::ostream & stream = flog_t::instance().severity_stream(true);
+  std::ostream & stream = flog_t::instance().severity_stream(
+    FLOG_STRIP_LEVEL < 4 && predicate_() && flog_t::instance().tag_enabled());
 
   {
     stream << FLOG_OUTPUT_RED("[E") << FLOG_OUTPUT_LTGRAY(message_stamp);

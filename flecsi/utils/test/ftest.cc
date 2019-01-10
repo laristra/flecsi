@@ -16,14 +16,19 @@
 
 void init_a(int argc, char ** argv) {
   flog_tag_guard(ftest);
-  flog(trace) << "init a" << std::endl;
+  flog(info) << "init a" << std::endl;
+
+  flog(trace) << "trace (strip level " << FLOG_STRIP_LEVEL << ")"<< std::endl;
+  flog(info) << "info (strip level " << FLOG_STRIP_LEVEL << ")"<< std::endl;
+  flog(warn) << "warn (strip level " << FLOG_STRIP_LEVEL << ")"<< std::endl;
+  flog(error) << "error (strip level " << FLOG_STRIP_LEVEL << ")"<< std::endl;
 }
 
 ftest_register_initialize(init_a);
 
 void init_b(int argc, char ** argv) {
   flog_tag_guard(ftest);
-  flog(warn) << "init b" << std::endl;
+  flog(info) << "init b" << std::endl;
 }
 
 ftest_register_initialize(init_b);
