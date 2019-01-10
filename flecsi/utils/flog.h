@@ -23,6 +23,7 @@
 #include "flog/message.h"
 #endif
 
+#include <iostream>
 #include <sstream>
 
 #if defined(FLECSI_ENABLE_FLOG)
