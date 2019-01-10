@@ -1,38 +1,37 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-// includes: flecsi
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
+#include <flecsi/utils/ftest.h>
 #include <flecsi/utils/utility.h>
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/test/print_type.h>
 
-// includes: C++
-#include <iostream>
-
-// includes: other
-#include <cinch/ctest.h>
-
-// =============================================================================
-// Test various constructs in utility.h
-// =============================================================================
-
-// TEST
 void utility(int argc, char ** argv) {
+
   FTEST();
 
-  print_type<typename flecsi::utils::as_const<char, char>::type>();
-  print_type<typename flecsi::utils::as_const<char, int >::type>();
-  print_type<typename flecsi::utils::as_const<char, const volatile double>::type>();
+  using char_char_t = typename flecsi::utils::as_const<char, char>::type;
+  FTEST_CAPTURE() << FTEST_TTYPE(char_char_t) << std::endl;
 
-  // compare
+  using char_int_t = typename flecsi::utils::as_const<char, int>::type;
+  FTEST_CAPTURE() << FTEST_TTYPE(char_int_t) << std::endl;
+
+  using char_double_t =
+    typename flecsi::utils::as_const<char, const volatile double>::type;
+  FTEST_CAPTURE() << FTEST_TTYPE(char_double_t) << std::endl;
+
 #ifdef __GNUG__
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("utility.blessed.gnug"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("utility.blessed.gnug"));
 #endif
-} // TEST
+}
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_test(utility);
