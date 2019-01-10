@@ -54,9 +54,6 @@ void top_level_task(const Legion::Task * task,
   context_.connect_with_mpi(ctx, runtime);
   context_.wait_on_mpi(ctx, runtime);
   
-  // FIXME: Remove this once flog is working
-  std::cerr << "IN FUNCTION: " << __FUNCTION__ << std::endl;
-
   auto args = runtime->get_input_args();
   context_.top_level_action()(args.argc, args.argv);
 

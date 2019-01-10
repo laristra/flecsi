@@ -77,10 +77,43 @@ struct context_u : public CONTEXT_POLICY {
     return top_level_action_;
   } // top_level_action
 
+  //--------------------------------------------------------------------------//
+  // Function interface.
+  //--------------------------------------------------------------------------//
+
+  /*!
+    FIXME: This interface needs to be updated.
+   */
+
+  template<size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE)>
+  bool register_function() {
+    flog_assert(function_registry_.find(KEY) == function_registry_.end(),
+      "function has already been registered");
+
+    const std::size_t addr = reinterpret_cast<std::size_t>(FUNCTION);
+    flog(info) << "Registering function: " << addr << std::endl;
+
+    function_registry_[KEY] = reinterpret_cast<void *>(FUNCTION);
+    return true;
+  } // register_function
+
 private:
   size_t color_ = 0;
   size_t colors_ = 0;
   top_level_action_t top_level_action_ = {};
+
+  //--------------------------------------------------------------------------//
+  // Function data members.
+  //--------------------------------------------------------------------------//
+
+  std::unordered_map<size_t, void *> function_registry_;
+
+  //--------------------------------------------------------------------------//
+  // Singleton.
+  //--------------------------------------------------------------------------//
 
   context_u() : CONTEXT_POLICY() {}
 
