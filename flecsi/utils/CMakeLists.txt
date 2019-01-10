@@ -95,32 +95,40 @@ set(utils_SOURCES
 ################################################################################
 
 #------------------------------------------------------------------------------#
-# ftest
+# array_ref
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(ftest
+set(array_ref_blessed_input test/array_ref.blessed.gnug)
+
+if(MSVC)
+  set(array_ref_blessed_input test/array_ref.blessed.msvc)
+endif()
+
+ftest_add_unit(array_ref
   SOURCES
-    test/ftest.cc
-  THREADS
-    1 2 4
+    test/array_ref.cc
+  INPUTS
+    test/array_ref.blessed
+    ${array_ref_blessed_input}
 )
 
 #------------------------------------------------------------------------------#
-# hash
+# array_ref
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(hash
+#set(common_blessed_input test/common.blessed.gnug)
+
+if(MSVC)
+  set(common_blessed_input test/common.blessed.msvc)
+endif()
+
+ftest_add_unit(common
   SOURCES
-    test/hash.cc
-)
-
-#------------------------------------------------------------------------------#
-# reorder
-#------------------------------------------------------------------------------#
-
-ftest_add_unit(reorder
-  SOURCES
-		test/reorder.cc
+    test/common.cc
+  INPUTS
+    test/common.blessed.ppc
+    test/common.blessed
+    ${common_blessed_input}
 )
 
 #------------------------------------------------------------------------------#
@@ -143,6 +151,17 @@ ftest_add_unit(factory
 )
 
 #------------------------------------------------------------------------------#
+# ftest
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(ftest
+  SOURCES
+    test/ftest.cc
+  THREADS
+    1 2 4
+)
+
+#------------------------------------------------------------------------------#
 # id
 #------------------------------------------------------------------------------#
 
@@ -156,26 +175,26 @@ ftest_add_unit(id
   SOURCES
     test/id.cc
   INPUTS
-    test/id.blessed ${id_blessed_input}
+    test/id.blessed
+    ${id_blessed_input}
 )
 
 #------------------------------------------------------------------------------#
-# utils_iterator
+# hash
 #------------------------------------------------------------------------------#
 
-set(iterator_blessed_input test/iterator.blessed.gnug)
-
-if(MSVC)
-  set(iterator_blessed_input test/iterator.blessed.msvc)
-endif()
-
-ftest_add_unit(utils_iterator
+ftest_add_unit(hash
   SOURCES
-    demangle.cc
-    test/iterator.cc
-  INPUTS
-    test/iterator.blessed
-    ${iterator_blessed_input}
+    test/hash.cc
+)
+
+#------------------------------------------------------------------------------#
+# reorder
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(reorder
+  SOURCES
+		test/reorder.cc
 )
 
 #------------------------------------------------------------------------------#
@@ -214,4 +233,23 @@ ftest_add_unit(simple_id
 ftest_add_unit(static_verify
   SOURCES
     test/static_verify.cc
+)
+
+#------------------------------------------------------------------------------#
+# utils_iterator
+#------------------------------------------------------------------------------#
+
+set(iterator_blessed_input test/iterator.blessed.gnug)
+
+if(MSVC)
+  set(iterator_blessed_input test/iterator.blessed.msvc)
+endif()
+
+ftest_add_unit(utils_iterator
+  SOURCES
+    demangle.cc
+    test/iterator.cc
+  INPUTS
+    test/iterator.blessed
+    ${iterator_blessed_input}
 )

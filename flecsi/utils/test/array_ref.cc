@@ -3,56 +3,46 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-// includes: flecsi
 #include <flecsi/utils/array_ref.h>
 #include <flecsi/utils/common.h>
-#include <flecsi/utils/test/print_type.h>
+#include <flecsi/utils/ftest.h>
 
-// includes: C++
 #include <iostream>
 
-// includes: other
-#include <cinch/ctest.h>
-
-// print_refc
 // Prints an array_ref<char>, as a character string
 inline void
 print_refc(const flecsi::utils::array_ref<char> & arr) {
   for (auto c = arr.begin(); c != arr.end(); ++c)
-    CINCH_CAPTURE() << *c;
-  CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << *c;
+  FTEST_CAPTURE() << std::endl;
 }
 
-using flecsi::utils::array_ref;
+void array_ref(int argc, char ** argv) {
 
-//=============================================================================
-//! \brief Test various constructs in array_ref.h
-//=============================================================================
+  FTEST();
 
-TEST(array_ref, all) {
+  using refd = flecsi::utils::array_ref<double>;
+  using refc = flecsi::utils::array_ref<char>;
+  using reff = flecsi::utils::array_ref<float>;
+  using refi = flecsi::utils::array_ref<int>;
 
-  using refd = array_ref<double>;
-  using refc = array_ref<char>;
-  using reff = array_ref<float>;
-  using refi = array_ref<int>;
-
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // ------------------------
   // types
   // ------------------------
 
-  print_type<refd::value_type>();
-  print_type<refd::pointer>();
-  print_type<refd::reference>();
-  print_type<refd::const_reference>();
-  print_type<refd::const_iterator>();
-  print_type<refd::iterator>();
-  print_type<refd::const_reverse_iterator>();
-  print_type<refd::reverse_iterator>();
-  print_type<refd::size_type>();
-  print_type<refd::difference_type>();
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(refd::value_type) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(refd::pointer) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(refd::reference) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(refd::const_reference) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(refd::const_iterator) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(refd::iterator) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(refd::const_reverse_iterator) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(refd::reverse_iterator) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(refd::size_type) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(refd::difference_type) << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // ------------------------
   // constructor/assignment
@@ -117,7 +107,7 @@ TEST(array_ref, all) {
   const std::string abc = "abcdefghi";
 
   print_refc(refc(abc));
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   print_refc(refc(abc).substr(0));
   print_refc(refc(abc).substr(1));
@@ -126,7 +116,7 @@ TEST(array_ref, all) {
   print_refc(refc(abc).substr(8));
   print_refc(refc(abc).substr(9));   // blank
   print_refc(refc(abc).substr(100)); // blank
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   print_refc(refc(abc).substr(0, 2));
   print_refc(refc(abc).substr(1, 4));
@@ -135,24 +125,24 @@ TEST(array_ref, all) {
   print_refc(refc(abc).substr(8, 1));
   print_refc(refc(abc).substr(9, 1));   // blank
   print_refc(refc(abc).substr(100, 1)); // blank
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // ------------------------
   // iterators
   // ------------------------
 
   for (auto it = abc.begin(); it != abc.end(); ++it)
-    CINCH_CAPTURE() << *it;
-  CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << *it;
+  FTEST_CAPTURE() << std::endl;
   for (auto it = abc.cbegin(); it != abc.cend(); ++it)
-    CINCH_CAPTURE() << *it;
-  CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << *it;
+  FTEST_CAPTURE() << std::endl;
   for (auto it = abc.rbegin(); it != abc.rend(); ++it)
-    CINCH_CAPTURE() << *it;
-  CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << *it;
+  FTEST_CAPTURE() << std::endl;
   for (auto it = abc.crbegin(); it != abc.crend(); ++it)
-    CINCH_CAPTURE() << *it;
-  CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << *it;
+  FTEST_CAPTURE() << std::endl;
 
   // ------------------------
   // capacity
@@ -162,11 +152,11 @@ TEST(array_ref, all) {
   const std::vector<double> vec3 = {3.14, 2.18, 2.72};
   const refd cap3 = vec3;
 
-  CINCH_CAPTURE() << cap0.size() << std::endl;
-  CINCH_CAPTURE() << (cap0.empty() ? "true" : "false") << std::endl; // empty
-  CINCH_CAPTURE() << cap3.size() << std::endl;
-  CINCH_CAPTURE() << (cap3.empty() ? "true" : "false") << std::endl; // not
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << cap0.size() << std::endl;
+  FTEST_CAPTURE() << (cap0.empty() ? "true" : "false") << std::endl; // empty
+  FTEST_CAPTURE() << cap3.size() << std::endl;
+  FTEST_CAPTURE() << (cap3.empty() ? "true" : "false") << std::endl; // not
+  FTEST_CAPTURE() << std::endl;
 
   // max_size() is machine-dependent, so I won't put it into a comparison
   // file. Let's basically just be sure it's callable and reasonable...
@@ -178,29 +168,29 @@ TEST(array_ref, all) {
   // ------------------------
 
   // []
-  CINCH_CAPTURE() << cap3[0] << std::endl;
-  CINCH_CAPTURE() << cap3[1] << std::endl;
-  CINCH_CAPTURE() << cap3[2] << std::endl;
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << cap3[0] << std::endl;
+  FTEST_CAPTURE() << cap3[1] << std::endl;
+  FTEST_CAPTURE() << cap3[2] << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // at()
-  CINCH_CAPTURE() << cap3.at(0) << std::endl;
-  CINCH_CAPTURE() << cap3.at(1) << std::endl;
-  CINCH_CAPTURE() << cap3.at(2) << std::endl;
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << cap3.at(0) << std::endl;
+  FTEST_CAPTURE() << cap3.at(1) << std::endl;
+  FTEST_CAPTURE() << cap3.at(2) << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // test at() exception
   try {
-    CINCH_CAPTURE() << cap3.at(3) << std::endl;
+    FTEST_CAPTURE() << cap3.at(3) << std::endl;
   } catch (...) {
-    CINCH_CAPTURE() << "Caught an (intentionally generated!) test exception";
+    FTEST_CAPTURE() << "Caught an (intentionally generated!) test exception";
   }
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // front(), back()
-  CINCH_CAPTURE() << cap3.front() << std::endl;
-  CINCH_CAPTURE() << cap3.back() << std::endl;
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << cap3.front() << std::endl;
+  FTEST_CAPTURE() << cap3.back() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // data()
   EXPECT_NE(cap3.data(), nullptr);
@@ -236,15 +226,15 @@ TEST(array_ref, all) {
     refi f = iarray;
     f.remove_prefix(2);
     f.remove_suffix(1);
-    CINCH_CAPTURE() << f.front() << std::endl;
-    CINCH_CAPTURE() << f.back() << std::endl;
-    CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << f.front() << std::endl;
+    FTEST_CAPTURE() << f.back() << std::endl;
+    FTEST_CAPTURE() << std::endl;
 
     f.remove_prefix(3);
     f.remove_suffix(2);
-    CINCH_CAPTURE() << f.front() << std::endl;
-    CINCH_CAPTURE() << f.back() << std::endl;
-    CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << f.front() << std::endl;
+    FTEST_CAPTURE() << f.back() << std::endl;
+    FTEST_CAPTURE() << std::endl;
 
     f.remove_prefix(1); // ==> nothing left!
     EXPECT_EQ(f.size(), 0);
@@ -256,9 +246,9 @@ TEST(array_ref, all) {
     refd d = darray;
     d.pop_back();
     d.pop_front();
-    CINCH_CAPTURE() << d.front() << std::endl;
-    CINCH_CAPTURE() << d.back() << std::endl;
-    CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << d.front() << std::endl;
+    FTEST_CAPTURE() << d.back() << std::endl;
+    FTEST_CAPTURE() << std::endl;
   }
 
   // ------------------------
@@ -270,41 +260,38 @@ TEST(array_ref, all) {
     const std::size_t length = 9;
     int ints[length] = {1, 9, 2, 8, 3, 7, 4, 6, 5};
     refi a = flecsi::utils::make_array_ref(&ints[0], length);
-    CINCH_CAPTURE() << a.front() << '\n';
-    CINCH_CAPTURE() << a.back() << '\n' << std::endl;
+    FTEST_CAPTURE() << a.front() << '\n';
+    FTEST_CAPTURE() << a.back() << '\n' << std::endl;
 
     // from T [n]
     refi b = flecsi::utils::make_array_ref(ints);
-    CINCH_CAPTURE() << b.front() << '\n';
-    CINCH_CAPTURE() << b.back() << '\n' << std::endl;
+    FTEST_CAPTURE() << b.front() << '\n';
+    FTEST_CAPTURE() << b.back() << '\n' << std::endl;
 
     // from std::vector
     std::vector<int> ivec(10, 1); // 10 1s
     refi c = flecsi::utils::make_array_ref(ivec);
-    CINCH_CAPTURE() << c.front() << '\n';
-    CINCH_CAPTURE() << c.back() << '\n' << std::endl;
+    FTEST_CAPTURE() << c.front() << '\n';
+    FTEST_CAPTURE() << c.back() << '\n' << std::endl;
 
     // from std::array
     const std::array<int, 2> iarr = {{10, 20}};
     refi d = flecsi::utils::make_array_ref(iarr);
-    CINCH_CAPTURE() << d.front() << '\n';
-    CINCH_CAPTURE() << d.back() << '\n';
+    FTEST_CAPTURE() << d.front() << '\n';
+    FTEST_CAPTURE() << d.back() << '\n';
   }
 
   // ------------------------
   // compare
   // ------------------------
 #ifdef __GNUG__
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("array_ref.blessed.gnug"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("array_ref.blessed.gnug"));
 #elif defined(_MSC_VER)
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("array_ref.blessed.msvc"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("array_ref.blessed.msvc"));
 #else
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("array_ref.blessed"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("array_ref.blessed"));
 #endif
 
-} // TEST
+}
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_test(array_ref);
