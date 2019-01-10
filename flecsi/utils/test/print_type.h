@@ -16,7 +16,6 @@
 #include <flecsi/utils/demangle.h>
 #include <flecsi/utils/ftest.h>
 
-// print_type(name)
 inline void print_type(const char *const name)
 {
    #ifdef __GNUG__
@@ -26,14 +25,8 @@ inline void print_type(const char *const name)
    #endif
 }
 
-// print_type<T>()
 template<class T>
 inline void print_type()
 {
    print_type(typeid(T).name());
 }
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

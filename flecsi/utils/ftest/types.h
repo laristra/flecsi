@@ -19,6 +19,7 @@
 #include <string>
 #include <sstream>
 
+#include <flecsi/utils/demangle.h>
 #include <flecsi/utils/flog.h>
 
 flog_register_tag(ftest);
@@ -154,6 +155,12 @@ inline bool string_case_compare(const char * lhs, const char * rhs) {
   flecsi::utils::flog::flog_t::instance().config_stream().add_buffer(          \
     "flog", std::clog, true);                                                  \
   flecsi::utils::ftest::state_t __ftest_state_instance(__FUNCTION__)
+
+#define FTEST_TYPE(name)                                                       \
+  flecsi::utils::demangle((name))
+
+#define FTEST_TTYPE(type)                                                      \
+  flecsi::utils::demangle(typeid(type).name())
 
 #define EXPECT_TRUE(condition)                                                 \
   (condition) ||                                                               \

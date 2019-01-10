@@ -149,3 +149,16 @@ ftest_add_unit(factory
     test/factory.blessed
     ${factory_blessed_input}
 )
+
+set(id_blessed_input test/id.blessed.gnug)
+
+if(MSVC)
+  set(id_blessed_input test/id.blessed.msvc)
+endif()
+
+ftest_add_unit(id
+  SOURCES
+    test/id.cc
+  INPUTS
+    test/id.blessed ${id_blessed_input}
+)
