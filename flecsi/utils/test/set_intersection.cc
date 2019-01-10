@@ -1,13 +1,20 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-// includes: flecsi
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
+#include <flecsi/utils/ftest.h>
 #include <flecsi/utils/set_intersection.h>
 
-// includes: other
-#include <cinch/ctest.h>
 
 // intersects
 template<class CONTAINER>
@@ -22,7 +29,10 @@ intersects(const CONTAINER & one, const CONTAINER & two) {
 // =============================================================================
 
 // TEST
-TEST(set_intersection, all) {
+void set_intersection(int argc, char ** argv) {
+
+  FTEST();
+
   std::vector<int> a = {1, 3, 5, 7, 10, 11};
   std::vector<int> b = {2, 4, 6, 8, 10, 12};
   std::vector<int> c = {0, 20};
@@ -49,9 +59,6 @@ TEST(set_intersection, all) {
   EXPECT_EQ(intersects(a, e), false);
   EXPECT_EQ(intersects(e, f), false);
 
-} // TEST
+} // set_intersection
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_test(set_intersection)

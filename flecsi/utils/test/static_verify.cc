@@ -1,16 +1,22 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-// includes: flecsi
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
+#include <flecsi/utils/ftest.h>
 #include <flecsi/utils/static_verify.h>
 
 // includes: C++
 #include <iostream>
-
-// includes: other
-#include <cinch/ctest.h>
 
 // =============================================================================
 // Some classes, with or without members foo and bar.
@@ -67,10 +73,12 @@ bool const is_tuple<std::tuple<T...>>::value;
 // Test constructs in flecsi::utils::static_verify.h
 // =============================================================================
 
-TEST(static_verify, all) {
+void static_verify(int argc, char ** argv) {
   // ------------------------
   // FLECSI_MEMBER_CHECKER
   // ------------------------
+
+  FTEST(); 
 
   // first{} has foo only
   EXPECT_EQ(has_member_foo<first>::value, true);
@@ -105,9 +113,6 @@ TEST(static_verify, all) {
   EXPECT_EQ((flecsi::utils::is_tuple<std::tuple<int, char>>::value), true);
   // the last line needed () because of ,
 
-} // TEST
+} // static_verify
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_test(static_verify);

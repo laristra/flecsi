@@ -1,9 +1,19 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 
 // includes: flecsi
+#include <flecsi/utils/ftest.h>
 #include <flecsi/utils/iterator.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/test/print_type.h>
@@ -13,14 +23,14 @@
 #include <iostream>
 #include <vector>
 
-// includes: other
-#include <cinch/ctest.h>
 
-// =============================================================================
-// Test various aspects of flecsi::utils::iterator
-// =============================================================================
+/*
+   Test various aspects of flecsi::utils::iterator
+ */
+void iterator(int argc, char ** argv) {
 
-TEST(iterator, all) {
+  FTEST();
+
   // some containers
   std::vector<int> veci{1, 2, 3, 5, 7, 11, 13, 17}; // we'll start at [1] :-)
   std::array<double, 5> vecd{{1.234, 5.678, 3.1416, 2.7183, 1.414}}; // at [2]
@@ -52,9 +62,9 @@ TEST(iterator, all) {
 
   // test: pre-increment
   ++i;
-  CINCH_CAPTURE() << "The second prime is: " << *i << std::endl; // should be 3
+  FTEST_CAPTURE() << "The second prime is: " << *i << std::endl; // should be 3
   ++(++i); // works, because return is &
-  CINCH_CAPTURE() << "The fourth prime is: " << *i << std::endl; // should be 7
+  FTEST_CAPTURE() << "The fourth prime is: " << *i << std::endl; // should be 7
 
   // test: dereference
   EXPECT_EQ(*i, 7);
@@ -70,15 +80,13 @@ TEST(iterator, all) {
 
   // compare
 #ifdef __GNUG__
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed.gnug"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("iterator.blessed.gnug"));
 #elif defined(_MSC_VER)
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed.msvc"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("iterator.blessed.msvc"));
 #else
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("iterator.blessed"));
 #endif
 } // TEST
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_test(iterator);
+
