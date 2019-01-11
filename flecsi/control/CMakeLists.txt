@@ -39,3 +39,18 @@ cinch_add_unit(control
   LIBRARIES
     ${FLECSI_LIBRARY_DEPENDENCIES}
 )
+
+#------------------------------------------------------------------------------#
+# Runtime executable
+#
+# This is used to test the basic runtime logic of the control model. It will
+# not work as a normal unit test.
+#------------------------------------------------------------------------------#
+
+add_executable(runtime
+  runtime_main.cc
+  test/runtime_model.cc
+)
+
+target_link_libraries(runtime ${CINCH_RUNTIME_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT})

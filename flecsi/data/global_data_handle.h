@@ -58,7 +58,7 @@ struct global_data_handle_base_u : public DATA_POLICY,
    */
 
   global_data_handle_base_u(const global_data_handle_base_u & b)
-      : DATA_POLICY(b) {
+    : DATA_POLICY(b) {
     combined_data = b.combined_data;
 #ifdef COMPACTED_STORAGE_SORT
     combined_data_sort = b.combined_data_sort;
@@ -103,9 +103,8 @@ namespace flecsi {
  */
 
 template<typename T, size_t PERMISSIONS>
-using global_data_handle_u = global_data_handle_base_u<
-    T,
-    PERMISSIONS,
-    FLECSI_RUNTIME_GLOBAL_DATA_HANDLE_POLICY>;
+using global_data_handle_u = global_data_handle_base_u<T,
+  PERMISSIONS,
+  FLECSI_RUNTIME_GLOBAL_DATA_HANDLE_POLICY>;
 
 } // namespace flecsi

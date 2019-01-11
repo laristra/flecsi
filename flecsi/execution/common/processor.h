@@ -18,8 +18,6 @@
 #include <bitset>
 #include <iostream>
 
-#include <flecsi/utils/debruijn.h>
-
 namespace flecsi {
 
 /*!
@@ -37,7 +35,7 @@ enum processor_type_t : size_t { loc, toc, mpi }; // enum processor_type_t
 
 inline std::ostream &
 operator<<(std::ostream & stream, const processor_type_t & variant) {
-  switch (variant) {
+  switch(variant) {
     case processor_type_t::loc:
       stream << "loc";
       break;

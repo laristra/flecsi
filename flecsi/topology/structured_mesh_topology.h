@@ -23,7 +23,8 @@ namespace topology {
 // \brief structured_mesh_topology_u provides...
 ///
 template<typename MT>
-class structured_mesh_topology_u {
+class structured_mesh_topology_u
+{
 public:
   /// Default constructor
   structured_mesh_topology_u() {}
@@ -32,8 +33,8 @@ public:
   structured_mesh_topology_u(const structured_mesh_topology_u &) = delete;
 
   /// Assignment operator (disabled)
-  structured_mesh_topology_u &
-  operator=(const structured_mesh_topology_u &) = delete;
+  structured_mesh_topology_u & operator=(
+    const structured_mesh_topology_u &) = delete;
 
   /// Destructor
   ~structured_mesh_topology_u() {}
