@@ -24,7 +24,7 @@
   <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version:</span>
+		<span id="projectnumber">Version: 1.0</span>
    </div>
   </td>
  </tr>
@@ -114,9 +114,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  bool registered_##to##from =                                                 <a class="code" href="structflecsi_1_1execution_1_1context__u.html#ad7e9b5256cdfaf272fff345c1a1ffcde">\</a></div><div class="line"><a class="code" href="structflecsi_1_1execution_1_1context__u.html#ad7e9b5256cdfaf272fff345c1a1ffcde">    flecsi::execution::context_t::instance</a>().control_phase_map(phase).         \</div><div class="line">      add_edge(<a class="code" href="classflecsi_1_1utils_1_1const__string__t.html">flecsi::utils::const_string_t</a>{EXPAND_AND_STRINGIFY(to)}.hash(), \</div><div class="line">        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())</div><div class="ttc" id="structflecsi_1_1execution_1_1context__u_html_ad7e9b5256cdfaf272fff345c1a1ffcde"><div class="ttname"><a href="structflecsi_1_1execution_1_1context__u.html#ad7e9b5256cdfaf272fff345c1a1ffcde">flecsi::execution::context_u::instance</a></div><div class="ttdeci">static context_u &amp; instance()</div><div class="ttdef"><b>Definition:</b> context.h:216</div></div>
-<div class="ttc" id="classflecsi_1_1utils_1_1const__string__t_html"><div class="ttname"><a href="classflecsi_1_1utils_1_1const__string__t.html">flecsi::utils::const_string_t</a></div><div class="ttdef"><b>Definition:</b> const_string.h:33</div></div>
-</div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  bool registered_##to##from =                                                 \</div><div class="line">    flecsi::execution::context_t::instance().control_phase_map(phase).         \</div><div class="line">      add_edge(flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(), \</div><div class="line">        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())</div></div><!-- fragment -->
 </div>
 </div>
 <a id="a5fd60faa32e3b29da7e298533d3eb7a8"></a>
@@ -156,9 +154,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  bool name##phase##_registered =                                              <a class="code" href="structflecsi_1_1execution_1_1context__u.html#ad7e9b5256cdfaf272fff345c1a1ffcde">\</a></div><div class="line"><a class="code" href="structflecsi_1_1execution_1_1context__u.html#ad7e9b5256cdfaf272fff345c1a1ffcde">    flecsi::execution::context_t::instance</a>().control_phase_map(phase).         \</div><div class="line">      initialize_node(                                                         \</div><div class="line">        { <a class="code" href="classflecsi_1_1utils_1_1const__string__t.html">flecsi::utils::const_string_t</a>{EXPAND_AND_STRINGIFY(name)}.hash(),    \</div><div class="line">        action, ##__VA_ARGS__ })</div><div class="ttc" id="structflecsi_1_1execution_1_1context__u_html_ad7e9b5256cdfaf272fff345c1a1ffcde"><div class="ttname"><a href="structflecsi_1_1execution_1_1context__u.html#ad7e9b5256cdfaf272fff345c1a1ffcde">flecsi::execution::context_u::instance</a></div><div class="ttdeci">static context_u &amp; instance()</div><div class="ttdef"><b>Definition:</b> context.h:216</div></div>
-<div class="ttc" id="classflecsi_1_1utils_1_1const__string__t_html"><div class="ttname"><a href="classflecsi_1_1utils_1_1const__string__t.html">flecsi::utils::const_string_t</a></div><div class="ttdef"><b>Definition:</b> const_string.h:33</div></div>
-</div><!-- fragment --><p>Register a control point action with the control model.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  bool name##phase##_registered =                                              \</div><div class="line">    flecsi::execution::context_t::instance().control_phase_map(phase).         \</div><div class="line">      initialize_node(                                                         \</div><div class="line">        { flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \</div><div class="line">        action, ##__VA_ARGS__ })</div></div><!-- fragment --><p>Register a control point action with the control model.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">phase</td><td>The control point id or <em>phase</em> at which to register the given action. </td></tr>

@@ -24,7 +24,7 @@
   <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version:</span>
+		<span id="projectnumber">Version: 1.0</span>
    </div>
   </td>
  </tr>
@@ -61,111 +61,30 @@ $(function() {
 </div>
 
 <div class="contents">
-<div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div>
-
-<h3><a id="index_a"></a>- a -</h3><ul>
-<li>accessor_u()
-: <a class="el" href="structflecsi_1_1accessor__u_3_01data_1_1dense_00_01T_00_01EXCLUSIVE__PERMISSIONS_00_01SHARED__PEb133ab9348c8454ebc6464fc890c46f5.html#abc7eb62431055651c3dd5ee4be8adce5">flecsi::accessor_u&lt; data::dense, T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS &gt;</a>
-, <a class="el" href="structflecsi_1_1accessor__u_3_01data_1_1ragged_00_01T_00_01EXCLUSIVE__PERMISSIONS_00_01SHARED__P9fc945c0d6c32717f1f42bdf8e4ff15d.html#a6adb06c39bca28449c4131c456013bac">flecsi::accessor_u&lt; data::ragged, T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS &gt;</a>
-, <a class="el" href="structflecsi_1_1accessor__u_3_01data_1_1sparse_00_01T_00_01EXCLUSIVE__PERMISSIONS_00_01SHARED__Pa1e9cbf455137975651d6e620bfc272d.html#a6660c30ad8f093b31f610d9c6e2f8ec7">flecsi::accessor_u&lt; data::sparse, T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS &gt;</a>
+<div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div><ul>
+<li>append_runtime_handler()
+: <a class="el" href="structflecsi_1_1control_1_1runtime__t.html#a8be72eed29a8d927194957da6c811eea">flecsi::control::runtime_t</a>
 </li>
-<li>acquire()
-: <a class="el" href="classflecsi_1_1virtual__semaphore.html#abe37a20a2d8f91da5b1e781b3f905b39">flecsi::virtual_semaphore</a>
+<li>finalize_runtimes()
+: <a class="el" href="structflecsi_1_1control_1_1runtime__t.html#a462cb01a6cae241525b18291ae337f82">flecsi::control::runtime_t</a>
 </li>
-<li>active_rank()
-: <a class="el" href="structcinch_1_1mpi__config__t.html#a6d5494d29456b458bdf476ec416a5a85">cinch::mpi_config_t</a>
+<li>handle_type()
+: <a class="el" href="structflecsi_1_1control_1_1phase__walker__u.html#a0be3968d0f1e0aa7288f2870a9a62c0e">flecsi::control::phase_walker_u&lt; CONTROL_POLICY &gt;</a>
 </li>
-<li>active_tag()
-: <a class="el" href="classcinch_1_1clog__t.html#aab3400d9815fee427499212ab0caddbb">cinch::clog_t</a>
+<li>initialize_runtimes()
+: <a class="el" href="structflecsi_1_1control_1_1runtime__t.html#a8934413be316798cd8e9af8871f672c7">flecsi::control::runtime_t</a>
 </li>
-<li>add_adjacency()
-: <a class="el" href="classflecsi_1_1data_1_1legion__data__t.html#a61f0e5f8e104bef1823eeca8c2dbf33a">flecsi::data::legion_data_t</a>
-, <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a42144defd5f2aae3371d0d504bdc5212">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
+<li>participate_in_output()
+: <a class="el" href="structflecsi_1_1control_1_1runtime__t.html#a89681e28a888f331199608a31524fd35">flecsi::control::runtime_t</a>
 </li>
-<li>add_adjacency_triple()
-: <a class="el" href="structflecsi_1_1execution_1_1context__u.html#ab59e26d98d47c544502c7d5d40041c82">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
+<li>phase_map()
+: <a class="el" href="structflecsi_1_1control_1_1control__u.html#a9f94de9a2e2715235595fed7fd25153c">flecsi::control::control_u&lt; CONTROL_POLICY &gt;</a>
 </li>
-<li>add_buffer()
-: <a class="el" href="classcinch_1_1tee__buffer__t.html#a35c42f16fca1bb03cefc2cb79cbd6d7c">cinch::tee_buffer_t</a>
-, <a class="el" href="structcinch_1_1tee__stream__t.html#af11164ec3fd3dac063e49a16c71a0995">cinch::tee_stream_t</a>
+<li>runtimes()
+: <a class="el" href="structflecsi_1_1control_1_1runtime__t.html#a93f79cddfdedf75843ef16ad654d2855">flecsi::control::runtime_t</a>
 </li>
-<li>add_coloring()
-: <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a30b5570bca78884181354cf17f66f7b5">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
-</li>
-<li>add_edge()
-: <a class="el" href="structflecsi_1_1utils_1_1dag__u.html#ad8ee0810ed4465224ecaed365a9cd72c">flecsi::utils::dag_u&lt; NODE_POLICY &gt;</a>
-</li>
-<li>add_future_to_single_task_launcher()
-: <a class="el" href="structflecsi_1_1execution_1_1legion__future__u_3_01RETURN_00_01launch__type__t_1_1index_01_4.html#a4ee92be4352fa03c917ae915a60b4931">flecsi::execution::legion_future_u&lt; RETURN, launch_type_t::index &gt;</a>
-, <a class="el" href="structflecsi_1_1execution_1_1legion__future__u_3_01RETURN_00_01launch__type__t_1_1single_01_4.html#a885e72a5133cb8b624946e785b17c3af">flecsi::execution::legion_future_u&lt; RETURN, launch_type_t::single &gt;</a>
-, <a class="el" href="structflecsi_1_1execution_1_1legion__future__u_3_01void_00_01launch__type__t_1_1index_01_4.html#a1ba225af50e62f26c5d944573a5a3e79">flecsi::execution::legion_future_u&lt; void, launch_type_t::index &gt;</a>
-, <a class="el" href="structflecsi_1_1execution_1_1legion__future__u_3_01void_00_01launch__type__t_1_1single_01_4.html#a11dabd9aa847dcf403b1ca8bc01819b3">flecsi::execution::legion_future_u&lt; void, launch_type_t::single &gt;</a>
-</li>
-<li>add_index_map()
-: <a class="el" href="structflecsi_1_1execution_1_1context__u.html#aca5be3b73ef4e9745faf0f30f2e2fea3">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
-</li>
-<li>add_index_space()
-: <a class="el" href="classflecsi_1_1data_1_1legion__data__t.html#a999987969002259e037d0ebbd383c300">flecsi::data::legion_data_t</a>
-</li>
-<li>add_set_index_space()
-: <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a2a414fc4ce48e5015e08b02206a110fd">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
-</li>
-<li>adjacencies()
-: <a class="el" href="structflecsi_1_1execution_1_1context__u.html#aedf58e614f1baa787f770edbb630d50b">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
-</li>
-<li>adjacency_fid()
-: <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ae0468a482758276dd12f8e10ba727862">flecsi::execution::legion_context_policy_t</a>
-</li>
-<li>adjacency_info()
-: <a class="el" href="structflecsi_1_1execution_1_1context__u.html#aad68769f0fe2ff7cd26cac50598e4519">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
-</li>
-<li>adjacency_triple_t
-: <a class="el" href="structflecsi_1_1execution_1_1context__u.html#af921ae7ad07c2c1faf705b7738f024e5">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
-</li>
-<li>advance_state()
-: <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a55805efa77d777f9ad3d606604e74a01">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
-</li>
-<li>all_entities()
-: <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a91ee5d1dec3033f03e7eaf2b27cdc2ba">flecsi::topology::tree_topology&lt; P &gt;</a>
-</li>
-<li>all_processes()
-: <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ad36a79b2fd6ee779782fdeef5bb1f807">flecsi::execution::legion_context_policy_t</a>
-</li>
-<li>alltoall_coloring_info()
-: <a class="el" href="classflecsi_1_1coloring_1_1mpi__communicator__t.html#a282377765e2b3e2ce8431a24a7a0aafd">flecsi::coloring::mpi_communicator_t</a>
-</li>
-<li>any_cast
-: <a class="el" href="classflecsi_1_1utils_1_1any__t.html#a49cdfa15f3e473f776295031f7c621da">flecsi::utils::any_t</a>
-</li>
-<li>any_t()
-: <a class="el" href="classflecsi_1_1utils_1_1any__t.html#a3aa337b6e3d05e9e2c749d67d0c328e5">flecsi::utils::any_t</a>
-</li>
-<li>append()
-: <a class="el" href="classflecsi_1_1topology_1_1index__space__u.html#af1f08a34feac8b5715779627877a3645">flecsi::topology::index_space_u&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
-</li>
-<li>append_()
-: <a class="el" href="classflecsi_1_1topology_1_1index__space__u.html#a1949fe3811ede7e874b04774b308c83e">flecsi::topology::index_space_u&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
-</li>
-<li>append_to_index_space_()
-: <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#a6c5062cfbfe41bd2f245d65c5d3581f3">flecsi::topology::mesh_topology_u&lt; MESH_TYPE &gt;</a>
-</li>
-<li>apply()
-: <a class="el" href="classflecsi_1_1topology_1_1index__space__u.html#a8a87d50fcd20b163c198c88440ea357e">flecsi::topology::index_space_u&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
-</li>
-<li>apply_function
-: <a class="el" href="classflecsi_1_1topology_1_1index__space__u.html#a73a2ad8a601825eba7949c863b1a977d">flecsi::topology::index_space_u&lt; T, STORAGE, OWNED, SORTED, F, ID_STORAGE_TYPE, STORAGE_TYPE &gt;</a>
-</li>
-<li>apply_in_box()
-: <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a02802824e490d052d9b57e66b7e475eb">flecsi::topology::tree_topology&lt; P &gt;</a>
-</li>
-<li>apply_in_radius()
-: <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a98b34212db16e17536989f83449e529f">flecsi::topology::tree_topology&lt; P &gt;</a>
-</li>
-<li>array_ref()
-: <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#ab1a31a06325b1ac319ca71a0ebd3d29d">flecsi::utils::array_ref&lt; T &gt;</a>
-</li>
-<li>assert_client_exists()
-: <a class="el" href="structflecsi_1_1data_1_1storage__u.html#a3866a8b88463cc812a0b9e8bf6e872cc">flecsi::data::storage_u&lt; STORAGE_POLICY &gt;</a>
+<li>sorted_phase_map()
+: <a class="el" href="structflecsi_1_1control_1_1control__u.html#a65f886f168cf147bf482771f9adc0588">flecsi::control::control_u&lt; CONTROL_POLICY &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->

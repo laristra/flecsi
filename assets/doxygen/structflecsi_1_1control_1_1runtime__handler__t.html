@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>Interface Documentation: Main Page</title>
+<title>Interface Documentation: flecsi::control::runtime_handler_t Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -45,7 +45,6 @@ $(function() {
 });
 </script>
 <div id="main-nav"></div>
-</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -60,11 +59,39 @@ $(function() {
 </iframe>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>control</b></li><li class="navelem"><a class="el" href="structflecsi_1_1control_1_1runtime__handler__t.html">runtime_handler_t</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structflecsi_1_1control_1_1runtime__handler__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Interface Documentation Documentation</div>  </div>
+<div class="title">flecsi::control::runtime_handler_t Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="runtime_8h_source.html">runtime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a5336cf4b9844bb07b3b076951ba4c096"><td class="memItemLeft" align="right" valign="top"><a id="a5336cf4b9844bb07b3b076951ba4c096"></a>
+std::function&lt; int(int, char **)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b></td></tr>
+<tr class="separator:a5336cf4b9844bb07b3b076951ba4c096"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a550b4601389c91fb9936539100e7fe3c"><td class="memItemLeft" align="right" valign="top"><a id="a550b4601389c91fb9936539100e7fe3c"></a>
+std::function&lt; int(int, char **, runtime_exit_mode_t)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>finalize</b></td></tr>
+<tr class="separator:a550b4601389c91fb9936539100e7fe3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56015d4543694526a58b5a279b636cc7"><td class="memItemLeft" align="right" valign="top"><a id="a56015d4543694526a58b5a279b636cc7"></a>
+std::function&lt; bool(int, char **)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>output</b></td></tr>
+<tr class="separator:a56015d4543694526a58b5a279b636cc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Type to define runtime initialization and finalization handlers. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/flecsi/flecsi/flecsi/control/<a class="el" href="runtime_8h_source.html">runtime.h</a></li>
+</ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

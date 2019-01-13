@@ -24,7 +24,7 @@
   <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version:</span>
+		<span id="projectnumber">Version: 1.0</span>
    </div>
   </td>
  </tr>
@@ -72,9 +72,9 @@ $(function() {
 <div class="title">phase_walker.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;<a class="el" href="tuple__walker_8h_source.html">flecsi/utils/tuple_walker.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="common_8h_source.html">flecsi/utils/common.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="const__string_8h_source.html">flecsi/utils/const_string.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;flecsi/utils/tuple_walker.h&gt;</code><br />
+<code>#include &lt;flecsi/utils/const_string.h&gt;</code><br />
+<code>#include &lt;flecsi/utils/typeify.h&gt;</code><br />
 <code>#include &lt;flecsi-config.h&gt;</code><br />
 </div>
 <p><a href="phase__walker_8h_source.html">Go to the source code of this file.</a></p>
@@ -88,13 +88,13 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a7fa9ee6bed1e3106bac6f7a04f31cf71"><td class="memTemplParams" colspan="2">template&lt;size_t PHASE&gt; </td></tr>
-<tr class="memitem:a7fa9ee6bed1e3106bac6f7a04f31cf71"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="phase__walker_8h.html#a7fa9ee6bed1e3106bac6f7a04f31cf71">flecsi::control::phase_</a> = <a class="el" href="structflecsi_1_1utils_1_1typeify.html">flecsi::utils::typeify</a>&lt; size_t, PHASE &gt;</td></tr>
-<tr class="separator:a7fa9ee6bed1e3106bac6f7a04f31cf71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63b0d7da253f9c1e477e50dc7326e05b"><td class="memTemplParams" colspan="2">template&lt;size_t PHASE&gt; </td></tr>
+<tr class="memitem:a63b0d7da253f9c1e477e50dc7326e05b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="phase__walker_8h.html#a63b0d7da253f9c1e477e50dc7326e05b">flecsi::control::phase_</a> = flecsi::utils::typeify_u&lt; size_t, PHASE &gt;</td></tr>
+<tr class="separator:a63b0d7da253f9c1e477e50dc7326e05b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a id="file_a7fa9ee6bed1e3106bac6f7a04f31cf71"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a7fa9ee6bed1e3106bac6f7a04f31cf71">&#9670;&nbsp;</a></span>phase_</h2>
+<a id="file_a63b0d7da253f9c1e477e50dc7326e05b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a63b0d7da253f9c1e477e50dc7326e05b">&#9670;&nbsp;</a></span>phase_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -102,7 +102,7 @@ Typedefs</h2></td></tr>
 template&lt;size_t PHASE&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="phase__walker_8h.html#a7fa9ee6bed1e3106bac6f7a04f31cf71">flecsi::control::phase_</a> = typedef <a class="el" href="structflecsi_1_1utils_1_1typeify.html">flecsi::utils::typeify</a>&lt;size_t, PHASE&gt;</td>
+          <td class="memname">using <a class="el" href="phase__walker_8h.html#a63b0d7da253f9c1e477e50dc7326e05b">flecsi::control::phase_</a> = typedef flecsi::utils::typeify_u&lt;size_t, PHASE&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">

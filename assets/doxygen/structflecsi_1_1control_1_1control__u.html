@@ -24,7 +24,7 @@
   <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version:</span>
+		<span id="projectnumber">Version: 1.0</span>
    </div>
   </td>
  </tr>
@@ -86,10 +86,10 @@ Inheritance diagram for flecsi::control::control_u&lt; CONTROL_POLICY &gt;:</div
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a2a1a1d72799011023d129876c1dc2aff"><td class="memItemLeft" align="right" valign="top"><a id="a2a1a1d72799011023d129876c1dc2aff"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>dag_t</b> = <a class="el" href="structflecsi_1_1utils_1_1dag__u.html">flecsi::utils::dag_u</a>&lt; typename CONTROL_POLICY::node_t &gt;</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>dag_t</b> = flecsi::utils::dag_u&lt; typename CONTROL_POLICY::node_t &gt;</td></tr>
 <tr class="separator:a2a1a1d72799011023d129876c1dc2aff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f72ee7279c676337347948c6576ef1d"><td class="memItemLeft" align="right" valign="top"><a id="a7f72ee7279c676337347948c6576ef1d"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>node_t</b> = typename <a class="el" href="structflecsi_1_1utils_1_1dag__node__u.html">dag_t::node_t</a></td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>node_t</b> = typename dag_t::node_t</td></tr>
 <tr class="separator:a7f72ee7279c676337347948c6576ef1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbc9f8c5f367ee33b99f4e9d992d5ae6"><td class="memItemLeft" align="right" valign="top"><a id="adbc9f8c5f367ee33b99f4e9d992d5ae6"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>phase_walker_t</b> = <a class="el" href="structflecsi_1_1control_1_1phase__walker__u.html">phase_walker_u</a>&lt; <a class="el" href="structflecsi_1_1control_1_1control__u.html">control_u</a>&lt; CONTROL_POLICY &gt; &gt;</td></tr>
@@ -97,7 +97,7 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>phase_walker_t</b> =
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9f94de9a2e2715235595fed7fd25153c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1utils_1_1dag__u.html">dag_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1control_1_1control__u.html#a9f94de9a2e2715235595fed7fd25153c">phase_map</a> (size_t phase, std::string const &amp;label=&quot;default&quot;)</td></tr>
+<tr class="memitem:a9f94de9a2e2715235595fed7fd25153c"><td class="memItemLeft" align="right" valign="top">dag_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1control_1_1control__u.html#a9f94de9a2e2715235595fed7fd25153c">phase_map</a> (size_t phase, std::string const &amp;label=&quot;default&quot;)</td></tr>
 <tr class="separator:a9f94de9a2e2715235595fed7fd25153c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65f886f168cf147bf482771f9adc0588"><td class="memItemLeft" align="right" valign="top">std::vector&lt; node_t &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1control_1_1control__u.html#a65f886f168cf147bf482771f9adc0588">sorted_phase_map</a> (size_t phase)</td></tr>
 <tr class="separator:a65f886f168cf147bf482771f9adc0588"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,7 +124,7 @@ template&lt;typename CONTROL_POLICY &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structflecsi_1_1utils_1_1dag__u.html">dag_t</a>&amp; <a class="el" href="structflecsi_1_1control_1_1control__u.html">flecsi::control::control_u</a>&lt; CONTROL_POLICY &gt;::phase_map </td>
+          <td class="memname">dag_t&amp; <a class="el" href="structflecsi_1_1control_1_1control__u.html">flecsi::control::control_u</a>&lt; CONTROL_POLICY &gt;::phase_map </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>phase</em>, </td>
@@ -193,7 +193,7 @@ template&lt;typename CONTROL_POLICY &gt; </div>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/flecsi/flecsi/flecsi/control/<a class="el" href="control_2control_8h_source.html">control.h</a></li>
+<li>/home/flecsi/flecsi/flecsi/control/<a class="el" href="control_8h_source.html">control.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
