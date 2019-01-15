@@ -1,6 +1,6 @@
 ![logo](doc/flecsi.png)
 
-[![Build Status](https://travis-ci.org/laristra/flecsi.svg?branch=master)](https://travis-ci.org/laristra/flecsi)
+[![Build Status](https://travis-ci.com/laristra/flecsi.svg?branch=master)](https://travis-ci.com/laristra/flecsi)
 [![codecov.io](https://codecov.io/github/laristra/flecsi/coverage.svg?branch=master)](https://codecov.io/github/laristra/flecsi?branch=master)
 
 # Introduction
