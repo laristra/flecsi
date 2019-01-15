@@ -352,7 +352,7 @@ public:
   } // instance
 
   void init(std::string active = "none") {
-#if defined(FLOG_DEBUG)
+#if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: initializing runtime"
               << FLOG_COLOR_PLAIN << std::endl;
 #endif
@@ -395,7 +395,7 @@ public:
       } // while
     } // if
 
-#if defined(FLOG_DEBUG)
+#if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: active tags (" << active << ")"
               << FLOG_COLOR_PLAIN << std::endl;
 #endif
@@ -404,7 +404,7 @@ public:
 
 #if defined(FLOG_ENABLE_MPI)
 
-#if defined(FLOG_DEBUG)
+#if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: initializing mpi state"
               << FLOG_COLOR_PLAIN << std::endl;
 #endif
@@ -477,7 +477,7 @@ public:
 
     const size_t id = ++tag_id_;
     assert(id < FLOG_TAG_BITS && "Tag bits overflow! Increase FLOG_TAG_BITS");
-#if defined(FLOG_DEBUG)
+#if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: registering tag " << tag << ": "
               << id << FLOG_COLOR_PLAIN << std::endl;
 #endif
@@ -504,7 +504,7 @@ public:
   bool tag_enabled() {
 #if defined(FLOG_ENABLE_TAGS)
 
-#if defined(FLOG_DEBUG)
+#if defined(FLOG_ENABLE_DEBUG)
     auto active_set = tag_bitset_.test(active_tag_) == 1 ? "true" : "false";
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: tag " << active_tag_ << " is "
               << active_set << FLOG_COLOR_PLAIN << std::endl;
@@ -560,7 +560,7 @@ private:
     : null_stream_(0), tag_id_(0), active_tag_(0) {} // flog_t
 
   ~flog_t() {
-#if defined(FLOG_DEBUG)
+#if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: flog_t destructor" << std::endl;
 #endif
   }
@@ -590,7 +590,7 @@ private:
 
 struct flog_tag_scope_t {
   flog_tag_scope_t(size_t tag = 0) : stash_(flog_t::instance().active_tag()) {
-#if defined(FLOG_DEBUG)
+#if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: activating tag " << tag
               << FLOG_COLOR_PLAIN << std::endl;
 #endif

@@ -23,12 +23,7 @@
 #define _flog_stringify(s) _flog_util_stringify(s)
 #define _flog_concat(a, b) a ## b
 
-//----------------------------------------------------------------------------//
-// Set color output macros depending on whether or not FLOG_COLOR_OUTPUT
-// is defined.
-//----------------------------------------------------------------------------//
-
-#ifndef FLOG_COLOR_OUTPUT
+#ifndef FLOG_ENABLE_COLOR_OUTPUT
 
 #define FLOG_COLOR_BLACK ""
 #define FLOG_COLOR_DKGRAY ""
@@ -102,7 +97,7 @@
 #define FLOG_OUTPUT_LTGRAY(s) FLOG_COLOR_LTGRAY << s << FLOG_COLOR_PLAIN
 #define FLOG_OUTPUT_WHITE(s) FLOG_COLOR_WHITE << s << FLOG_COLOR_PLAIN
 
-#endif // FLOG_COLOR_OUTPUT
+#endif // FLOG_ENABLE_COLOR_OUTPUT
 
 namespace flecsi {
 namespace utils {

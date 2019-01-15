@@ -40,6 +40,10 @@
 namespace flecsi {
 namespace execution {
 
+/*----------------------------------------------------------------------------*
+  Legion top-level task.
+ *----------------------------------------------------------------------------*/
+
 void top_level_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
@@ -64,6 +68,10 @@ void top_level_task(const Legion::Task * task,
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);
 } // top_level_task
+
+/*----------------------------------------------------------------------------*
+  Other legion tasks.
+ *----------------------------------------------------------------------------*/
 
 /*!
  Interprocess communication to pass control to MPI runtime.

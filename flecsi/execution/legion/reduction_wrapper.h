@@ -15,14 +15,13 @@
 
 /*! @file */
 
-#include <cinchlog.h>
-
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/flog.h>
 
 #include <legion.h>
 
-clog_register_tag(reduction_wrapper);
+flog_register_tag(reduction_wrapper);
 
 namespace flecsi {
 namespace execution {
@@ -46,12 +45,12 @@ struct reduction_wrapper_u {
     // Get the map of registered operations
     auto & reduction_ops = context_t::instance().reduction_operations();
 
-    clog_assert(reduction_ops.find(HASH) == reduction_ops.end(),
+    flog_assert(reduction_ops.find(HASH) == reduction_ops.end(),
       typeid(TYPE).name() << " has already been registered with this name");
 
     {
-    clog_tag_guard(reduction_interface);
-    clog(info) << "registering reduction operation " << HASH << std::endl;
+    flog_tag_guard(reduction_interface);
+    flog(info) << "registering reduction operation " << HASH << std::endl;
     }
 
     const size_t id = oid_t::instance().next();

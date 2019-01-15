@@ -56,13 +56,6 @@ set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
 #------------------------------------------------------------------------------#
-# Create user guide header with version information
-#------------------------------------------------------------------------------#
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/flecsi_ug_header.tex.in
-    ${CMAKE_BINARY_DIR}/doc/flecsi_ug_header.tex)
-
-#------------------------------------------------------------------------------#
 # These variables are used to collect library and include dependencies
 # for the FleCSIConfig file below.
 #------------------------------------------------------------------------------#
@@ -111,12 +104,16 @@ mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
 cinch_load_extras(MPI LEGION HPX)
 
 #------------------------------------------------------------------------------#
-# FLOG
+# FLOG and FTEST
 #------------------------------------------------------------------------------#
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/config)
 include(flog)
 include(ftest)
+
+#------------------------------------------------------------------------------#
+# Capture settings from build system
+#------------------------------------------------------------------------------#
 
 # After we load the cinch options, we need to capture the configuration
 # state for the particular Cinch build configuration and set variables that
@@ -149,9 +146,11 @@ endforeach()
 
 set(FLECSI_ID_PBITS "20" CACHE STRING
   "Select the number of bits to use for partition ids. There will be 62-FLECSI_ID_PBITS-FLECSI_ID_FBITS available for entity ids")
+mark_as_advanced(FLECSI_ID_PBITS)
 
 set(FLECSI_ID_FBITS "4" CACHE STRING
   "Select the number of bits to use for id flags. There will be 62-FLECSI_ID_PBITS-FLECSI_ID_FBITS available for entity ids")
+mark_as_advanced(FLECSI_ID_FBITS)
 
 #------------------------------------------------------------------------------#
 # Add option for counter size
@@ -159,12 +158,7 @@ set(FLECSI_ID_FBITS "4" CACHE STRING
 
 set(FLECSI_COUNTER_TYPE "int32_t" CACHE STRING
   "Select the type that will be used for loop and iterator values")
-
-#------------------------------------------------------------------------------#
-# Control Model
-#------------------------------------------------------------------------------#
-
-option(ENABLE_DYNAMIC_CONTROL_MODEL "Enable the new FleCSI control model" OFF)
+mark_as_advanced(FLECSI_COUNTER_TYPE)
 
 #------------------------------------------------------------------------------#
 # Add option for FleCSIT command-line tool.
@@ -201,6 +195,7 @@ endif()
 #------------------------------------------------------------------------------#
 
 option(ENABLE_OPENSSL "Enable OpenSSL Support" OFF)
+mark_as_advanced(ENABLE_OPENSSL)
 
 if(ENABLE_OPENSSL)
   find_package(OpenSSL REQUIRED)
@@ -231,16 +226,6 @@ if(ENABLE_BOOST)
 endif()
 
 #------------------------------------------------------------------------------#
-# Pthreads
-#------------------------------------------------------------------------------#
-
-if(ENABLE_CLOG)
-  if(CLOG_ENABLE_MPI)
-    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${CMAKE_THREAD_LIBS_INIT})
-  endif()
-endif()
-
-#------------------------------------------------------------------------------#
 # Runtime models
 #------------------------------------------------------------------------------#
 
@@ -256,6 +241,8 @@ foreach(dl_lib ${CMAKE_DL_LIBS})
 
   list(APPEND DL_LIBS ${DL_LIB})
 endforeach()
+
+mark_as_advanced(DL_LIB)
 
 #
 # Legion interface
@@ -435,8 +422,6 @@ install(
 #------------------------------------------------------------------------------#
 
 cinch_add_library_target(FleCSI flecsi EXPORT_TARGET FleCSITargets)
-
-#set_target_properties(FleCSI PROPERTIES FOLDER "Core")
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   option(ENABLE_FLECSI_TUTORIAL

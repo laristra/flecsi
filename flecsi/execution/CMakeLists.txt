@@ -23,6 +23,8 @@ set(execution_HEADERS
   common/processor.h
   context.h
   execution.h
+  global_object_wrapper.h
+  task.h
 )
 
 set(execution_SOURCES

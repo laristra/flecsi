@@ -12,8 +12,14 @@
 #  All rights reserved.
 #
 
-option(ENABLE_UNIT_TESTS "Enalle unit testing" OFF)
-option(ENABLE_EXPENSIVE_TESTS "Enable tests labeled 'expensive'" OFF)
+include(CMakeDependentOption)
+
+cmake_dependent_option(ENABLE_UNIT_TESTS "Enalle unit testing" ON
+  "ENABLE_FLOG" OFF)
+cmake_dependent_option(ENABLE_EXPENSIVE_TESTS
+  "Enalle unit tests labeled 'expensive'" OFF "ENABLE_FLOG" OFF)
+
+mark_as_advanced(ENABLE_EXPENSIVE_TESTS)
 
 if(ENABLE_UNIT_TESTS)
   enable_testing()

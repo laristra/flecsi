@@ -14,35 +14,30 @@
 
 include(CMakeDependentOption)
 
-option(FLECSI_ENABLE_FLOG "Enable FleCSI Logging Utility (FLOG)" OFF)
+option(ENABLE_FLOG "Enable FleCSI Logging Utility (FLOG)" OFF)
 
-#cmake_dependent_option(ENABLE_UNIT_TESTS "Enable unit testing"
-#  ON "FLECSI_ENABLE_FLOG" ON)
+cmake_dependent_option(FLOG_ENABLE_COLOR_OUTPUT
+  "Enable colorized flog logging" ON "ENABLE_FLOG" OFF)
+cmake_dependent_option(FLOG_ENABLE_TAGS "Enable tag groups" ON
+  "ENABLE_FLOG;ENABLE_BOOST" OFF)
+cmake_dependent_option(FLOG_ENABLE_MPI "Enable flog MPI support" ON
+  "ENABLE_FLOG;ENABLE_MPI" OFF)
+cmake_dependent_option(FLOG_ENABLE_DEBUG "Enable flog debug mode" OFF
+  "ENABLE_FLOG" OFF)
+cmake_dependent_option(FLOG_ENABLE_EXTERNAL
+  "Enable messages that are defined at file scope" OFF "ENABLE_FLOG" OFF)
+set(FLOG_TAG_BITS "64" CACHE STRING
+  "Select the number of bits to use for tag groups")
 
-if(FLECSI_ENABLE_FLOG)
+mark_as_advanced(FLOG_ENABLE_DEBUG)
+mark_as_advanced(FLOG_ENABLE_EXTERNAL)
+mark_as_advanced(FLOG_TAG_BITS)
+
+if(ENABLE_FLOG)
   set(FLOG_STRIP_LEVEL "0" CACHE STRING "Set the clog strip level")
-  option(FLOG_COLOR_OUTPUT "Enable colorized clog logging" ON)
-  option(FLOG_ENABLE_TAGS "Enable tag groups" ${ENABLE_BOOST})
+endif()
 
-  if(FLOG_ENABLE_TAGS)
-    set(FLOG_TAG_BITS "64" CACHE STRING
-      "Select the number of bits to use for tag groups")
-  endif()
-
-  option(FLOG_ENABLE_EXTERNAL
-    "Enable messages that are defined at external scope" OFF)
-
-  if(MPI_${MPI_LANGUAGE}_FOUND)
-      option(FLOG_ENABLE_MPI "Enable clog MPI functions" ${ENABLE_MPI})
-
-      if(FLOG_ENABLE_MPI)
-        find_package(Threads)
-      endif()
-  endif()
-
-  option(FLOG_DEBUG "Enable clog debugging" OFF)
-
+if(FLOG_ENABLE_MPI)
   find_package(Threads)
-
   list(APPEND CINCH_RUNTIME_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 endif()

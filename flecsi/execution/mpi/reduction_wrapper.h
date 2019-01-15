@@ -15,14 +15,13 @@
 
 /*! @file */
 
-#include <cinchlog.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/utils/flog.h>
+#include <flecsi/utils/mpi_type_traits.h>
 
 #include <type_traits>
 
-#include <flecsi/execution/context.h>
-#include <flecsi/utils/mpi_type_traits.h>
-
-clog_register_tag(reduction_wrapper);
+flog_register_tag(reduction_wrapper);
 
 namespace flecsi {
 namespace execution {
@@ -57,8 +56,8 @@ struct reduction_wrapper_u {
 
   static void registration_callback() {
     {
-      clog_tag_guard(reduction_wrapper);
-      clog(info) << "Executing reduction wrapper callback for " << HASH
+      flog_tag_guard(reduction_wrapper);
+      flog(info) << "Executing reduction wrapper callback for " << HASH
                  << std::endl;
     } // scope
 
@@ -69,7 +68,7 @@ struct reduction_wrapper_u {
     auto & reduction_ops = context_.reduction_operations();
 
     // Check if operator has already been registered
-    clog_assert(reduction_ops.find(HASH) == reduction_ops.end(),
+    flog_assert(reduction_ops.find(HASH) == reduction_ops.end(),
       typeid(TYPE).name()
         << " has already been registered with this name");
 

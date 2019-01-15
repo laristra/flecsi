@@ -64,14 +64,14 @@ struct log_message_t {
     bool can_send_to_one = true)
     : file_(file), line_(line), predicate_(predicate),
       can_send_to_one_(can_send_to_one), clean_color_(false) {
-#if defined(FLOG_DEBUG)
+#if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: log_message_t constructor " << file
               << " " << line << FLOG_COLOR_PLAIN << std::endl;
 #endif
   } // log_message_t
 
   virtual ~log_message_t() {
-#if defined(FLOG_DEBUG)
+#if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: log_message_t destructor "
               << FLOG_COLOR_PLAIN << std::endl;
 #endif

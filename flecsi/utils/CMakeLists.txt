@@ -113,10 +113,10 @@ ftest_add_unit(array_ref
 )
 
 #------------------------------------------------------------------------------#
-# array_ref
+# common
 #------------------------------------------------------------------------------#
 
-#set(common_blessed_input test/common.blessed.gnug)
+set(common_blessed_input test/common.blessed.gnug)
 
 if(MSVC)
   set(common_blessed_input test/common.blessed.msvc)

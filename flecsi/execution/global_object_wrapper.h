@@ -16,6 +16,8 @@
 
 /*! @file */
 
+#include <cstdint>
+
 namespace flecsi {
 namespace execution {
 

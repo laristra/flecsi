@@ -10,7 +10,7 @@ namespace flecsi {
 namespace execution {
 namespace reduction {
 
-#define flecsi_register_operation_types(operation)                           \
+#define flecsi_register_operation_types(operation)                             \
   flecsi_register_reduction_operation(operation, int);                         \
   flecsi_register_reduction_operation(operation, long);                        \
   flecsi_register_reduction_operation(operation, short);                       \
@@ -19,14 +19,9 @@ namespace reduction {
   flecsi_register_reduction_operation(operation, float);                       \
   flecsi_register_reduction_operation(operation, double);
 
-//----------------------------------------------------------------------------//
-// Min
-//----------------------------------------------------------------------------//
-
 /*!
   Minimum reduction type.
  */
-
 
 template<typename T>
 struct min {
@@ -50,10 +45,9 @@ struct min {
       do {
         oldval.as_int = *target;
         newval.as_T = std::min(oldval.as_T, rhs);
-      } while(!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
-
-    } // if constexpr
-
+      } while(!__sync_bool_compare_and_swap(target, oldval.as_int,
+        newval.as_int));
+    } // if
   } // apply
 
   template<bool EXCLUSIVE >
@@ -72,18 +66,14 @@ struct min {
       do {
         oldval.as_int = *target;
         newval.as_T = std::min(oldval.as_T, rhs2);
-      } while(!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
-    } // if constexpr
-
+      } while(!__sync_bool_compare_and_swap(target, oldval.as_int,
+        newval.as_int));
+    } // if
   } // fold
 
 }; // struct min
 
 flecsi_register_operation_types(min);
-
-//----------------------------------------------------------------------------//
-// Max
-//----------------------------------------------------------------------------//
 
 /*!
   Maximum reduction type.
@@ -166,10 +156,6 @@ flecsi_register_operation_types(sum);
 /*!
   Product reduction type.
  */
-
-//----------------------------------------------------------------------------//
-// Product
-//----------------------------------------------------------------------------//
 
 template<typename T>
 struct product {
