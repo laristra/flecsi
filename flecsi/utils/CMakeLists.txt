@@ -170,6 +170,24 @@ ftest_add_unit(ftest
 )
 
 #------------------------------------------------------------------------------#
+# function_traits
+#------------------------------------------------------------------------------#
+
+set(function_traits_input test/function_traits.blessed.gnug)
+
+if(MSVC)
+  set(function_traits_input test/function_traits.blessed.msvc)
+endif()
+
+ftest_add_unit(function_traits
+  SOURCES
+    test/function_traits.cc
+  INPUTS
+    test/function_traits.blessed
+    ${function_traits_input}
+)
+
+#------------------------------------------------------------------------------#
 # id
 #------------------------------------------------------------------------------#
 
