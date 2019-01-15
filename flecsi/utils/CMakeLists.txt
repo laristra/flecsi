@@ -262,6 +262,24 @@ ftest_add_unit(static_verify
 )
 
 #------------------------------------------------------------------------------#
+# tuple_type_converter
+#------------------------------------------------------------------------------#
+
+set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.gnug)
+
+if(MSVC)
+  set(tuple_type_converter_blessed_input
+    test/tuple_type_converter.blessed.msvc)
+endif()
+
+ftest_add_unit(tuple_type_converter
+  SOURCES
+    test/tuple_type_converter.cc
+  INPUTS
+    ${tuple_type_converter_blessed_input}
+)
+
+#------------------------------------------------------------------------------#
 # utility
 #------------------------------------------------------------------------------#
 

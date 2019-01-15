@@ -3,10 +3,8 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-#include <cinch/ctest.h>
-
 #include <flecsi/utils/common.h>
-#include <flecsi/utils/test/print_type.h>
+#include <flecsi/utils/ftest.h>
 
 struct type_t {
   int operator()(float, double, long double) const {
@@ -24,43 +22,45 @@ test_function(double, int, long) {
   return float(0);
 }
 
-TEST(common, all) {
+void function_traits(int argc, char ** argv) {
+
+  FTEST();
 
   using flecsi::utils::function_traits_u;
 
   // general
-  print_type<function_traits_u<type_t>::return_type>();
-  print_type<function_traits_u<type_t>::arguments_type>();
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<type_t>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<type_t>::arguments_type>();
+  FTEST_CAPTURE() << std::endl;
 
   // f(...)
   // &f(...)
-  print_type<function_traits_u<decltype(test_function)>::return_type>();
-  print_type<function_traits_u<decltype(test_function)>::arguments_type>();
-  print_type<function_traits_u<decltype(&test_function)>::return_type>();
-  print_type<function_traits_u<decltype(&test_function)>::arguments_type>();
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(test_function)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(test_function)>::arguments_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&test_function)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&test_function)>::arguments_type>();
+  FTEST_CAPTURE() << std::endl;
 
   // &Class::f(...) [const] [volatile]
-  print_type<function_traits_u<decltype(&type_t::mem)>::return_type>();
-  print_type<function_traits_u<decltype(&type_t::mem)>::arguments_type>();
-  print_type<function_traits_u<decltype(&type_t::mem)>::owner_type>();
-  print_type<function_traits_u<decltype(&type_t::memc)>::return_type>();
-  print_type<function_traits_u<decltype(&type_t::memc)>::arguments_type>();
-  print_type<function_traits_u<decltype(&type_t::memc)>::owner_type>();
-  print_type<function_traits_u<decltype(&type_t::memv)>::return_type>();
-  print_type<function_traits_u<decltype(&type_t::memv)>::arguments_type>();
-  print_type<function_traits_u<decltype(&type_t::memv)>::owner_type>();
-  print_type<function_traits_u<decltype(&type_t::memcv)>::return_type>();
-  print_type<function_traits_u<decltype(&type_t::memcv)>::arguments_type>();
-  print_type<function_traits_u<decltype(&type_t::memcv)>::owner_type>();
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&type_t::mem)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&type_t::mem)>::arguments_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&type_t::mem)>::owner_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&type_t::memc)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&type_t::memc)>::arguments_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&type_t::memc)>::owner_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&type_t::memv)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&type_t::memv)>::arguments_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&type_t::memv)>::owner_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&type_t::memcv)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&type_t::memcv)>::arguments_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(&type_t::memcv)>::owner_type>();
+  FTEST_CAPTURE() << std::endl;
 
-  print_type<function_traits_u<
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<
     std::function<decltype(test_function)>>::return_type>();
-  print_type<function_traits_u<
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<
     std::function<decltype(test_function)>>::arguments_type>();
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   type_t type_instance;
 
@@ -74,38 +74,35 @@ TEST(common, all) {
   volatile type_t && frrv = type_t{};
   const volatile type_t && frrcv = type_t{};
 
-  print_type<function_traits_u<decltype(flr)>::return_type>();
-  print_type<function_traits_u<decltype(flr)>::arguments_type>();
-  print_type<function_traits_u<decltype(flrc)>::return_type>();
-  print_type<function_traits_u<decltype(flrc)>::arguments_type>();
-  print_type<function_traits_u<decltype(flrv)>::return_type>();
-  print_type<function_traits_u<decltype(flrv)>::arguments_type>();
-  print_type<function_traits_u<decltype(flrcv)>::return_type>();
-  print_type<function_traits_u<decltype(flrcv)>::arguments_type>();
-  print_type<function_traits_u<decltype(frr)>::return_type>();
-  print_type<function_traits_u<decltype(frr)>::arguments_type>();
-  print_type<function_traits_u<decltype(frrc)>::return_type>();
-  print_type<function_traits_u<decltype(frrc)>::arguments_type>();
-  print_type<function_traits_u<decltype(frrv)>::return_type>();
-  print_type<function_traits_u<decltype(frrv)>::arguments_type>();
-  print_type<function_traits_u<decltype(frrcv)>::return_type>();
-  print_type<function_traits_u<decltype(frrcv)>::arguments_type>();
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(flr)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(flr)>::arguments_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(flrc)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(flrc)>::arguments_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(flrv)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(flrv)>::arguments_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(flrcv)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(flrcv)>::arguments_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(frr)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(frr)>::arguments_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(frrc)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(frrc)>::arguments_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(frrv)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(frrv)>::arguments_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(frrcv)>::return_type>();
+  FTEST_CAPTURE() << FTEST_TTYPE(function_traits_u<decltype(frrcv)>::arguments_type>();
+  FTEST_CAPTURE() << std::endl;
 
 #ifdef __GNUG__
   #ifdef __PPC64__
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.ppc"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed.ppc"));
   #else
-    EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.gnug"));
+    EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed.gnug"));
   #endif
 #elif defined(_MSC_VER)
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.msvc"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed.msvc"));
 #else
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed"));
 #endif
-} // TEST
+}
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_test(function_traits);

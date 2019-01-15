@@ -12,13 +12,10 @@
    All rights reserved.
                                                                               */
 
-// includes: flecsi
 #include <flecsi/utils/ftest.h>
 #include <flecsi/utils/iterator.h>
 #include <flecsi/utils/common.h>
-#include <flecsi/utils/test/print_type.h>
 
-// includes: C++
 #include <array>
 #include <iostream>
 #include <vector>
@@ -36,10 +33,18 @@ void iterator(int argc, char ** argv) {
   std::array<double, 5> vecd{{1.234, 5.678, 3.1416, 2.7183, 1.414}}; // at [2]
 
   // test: types (container_t and type_t)
-  print_type<flecsi::utils::iterator<std::vector<int>,int>::container_t>();
-  print_type<flecsi::utils::iterator<std::vector<int>,int>::type_t>();
-  print_type<flecsi::utils::iterator<std::array<double,5>,double>::container_t>();
-  print_type<flecsi::utils::iterator<std::array<double,5>,double>::type_t>();
+  using vector_int_container_t =
+    flecsi::utils::iterator<std::vector<int>,int>::container_t;
+  FTEST_CAPTURE() << FTEST_TTYPE(vector_int_container_t) << std::endl;
+  using vector_int_type_t =
+    flecsi::utils::iterator<std::vector<int>,int>::type_t;
+  FTEST_CAPTURE() << FTEST_TTYPE(vector_int_type_t) << std::endl;
+  using array_double_container_t =
+    flecsi::utils::iterator<std::array<double,5>,double>::container_t;
+  FTEST_CAPTURE() << FTEST_TTYPE(array_double_container_t) << std::endl;
+  using array_double_type_t =
+    flecsi::utils::iterator<std::array<double,5>,double>::type_t;
+  FTEST_CAPTURE() << FTEST_TTYPE(array_double_type_t) << std::endl;
 
   // test: constructor from container and index
   flecsi::utils::iterator<std::vector<int>, int> i(veci, 1);
