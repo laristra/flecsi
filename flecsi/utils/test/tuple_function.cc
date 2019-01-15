@@ -1,13 +1,5 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
-
-// includes: flecsi
+#include <flecsi/utils/ftest.h>
 #include <flecsi/utils/tuple_function.h>
-
-// includes: other
-#include <cinch/ctest.h>
 
 // struct foo
 struct foo {
@@ -18,29 +10,27 @@ struct foo {
 
   // operator(), 1 argument
   template<class A>
-  auto operator()(const A & a) const -> decltype(a + 10) {
+  decltype(auto) operator()(const A & a) const {
     return a + 10;
   }
 
   // operator(), 2 arguments
   template<class A, class B>
-  auto operator()(const A & a, const B & b) const -> decltype(a + b) {
+  decltype(auto) operator()(const A & a, const B & b) const {
     return a + b;
   }
 
   // operator(), 3 arguments
   template<class A, class B, class C>
-  auto operator()(const A & a, const B & b, const C & c) const -> decltype(a + b + c) {
+  decltype(auto) operator()(const A & a, const B & b, const C & c) const {
     return a + b + c;
   }
 };
 
-// =============================================================================
-// Test various constructs in tuple_function.h
-// =============================================================================
+void tuple_function(int argc, char ** argv) {
 
-// TEST
-TEST(tuple_function, all) {
+  FTEST();
+
   std::tuple<> zero;
   std::tuple<int> one(1);
   std::tuple<int, float> two(1, float(2));
@@ -51,10 +41,6 @@ TEST(tuple_function, all) {
   EXPECT_EQ(flecsi::utils::tuple_function(f, one), 11);
   EXPECT_EQ(flecsi::utils::tuple_function(f, two), 3);
   EXPECT_EQ(flecsi::utils::tuple_function(f, three), 6);
+}
 
-} // TEST
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_test(tuple_function);

@@ -11,10 +11,9 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
-// user includes
 #include <flecsi/utils/reorder.h>
-
 #include <flecsi/utils/ftest.h>
+
 #include <random>
 
 // some using declarations
@@ -42,6 +41,8 @@ void reorder_inplace(int argc, char ** argv) {
 
 }
 
+ftest_register_test(reorder_inplace);
+
 void reorder_destroy(int argc, char ** argv) {
 
   FTEST();
@@ -52,6 +53,8 @@ void reorder_destroy(int argc, char ** argv) {
   ASSERT_EQ(vcpy, ans);
 
 }
+
+ftest_register_test(reorder_destroy);
 
 void reorder_both(int argc, char ** argv) {
 
@@ -117,9 +120,6 @@ void reorder_both(int argc, char ** argv) {
     for (std::size_t i = 0; i < len; ++i)
       EXPECT_EQ(copy[original_order[i]], initial[i]);
   } // for
-
 }
 
-ftest_register_test(reorder_inplace);
-ftest_register_test(reorder_destroy);
 ftest_register_test(reorder_both);

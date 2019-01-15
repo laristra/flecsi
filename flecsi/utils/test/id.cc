@@ -14,10 +14,9 @@
 
 #include <flecsi/utils/id.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/ftest.h>
 
 #include <vector>
-
-#include <flecsi/utils/ftest.h>
 
 template<std::size_t P, std::size_t E, std::size_t F, std::size_t G>
 void

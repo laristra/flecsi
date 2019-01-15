@@ -20,7 +20,6 @@
 #include <iostream>
 #include <vector>
 
-
 /*
    Test various aspects of flecsi::utils::iterator
  */

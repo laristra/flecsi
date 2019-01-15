@@ -15,20 +15,12 @@
 #include <flecsi/utils/ftest.h>
 #include <flecsi/utils/set_intersection.h>
 
-
-// intersects
 template<class CONTAINER>
-inline bool
-intersects(const CONTAINER & one, const CONTAINER & two) {
-  return flecsi::utils::intersects(
-      one.begin(), one.end(), two.begin(), two.end());
+inline bool intersects(const CONTAINER & one, const CONTAINER & two) {
+  return flecsi::utils::intersects(one.begin(), one.end(), two.begin(),
+    two.end());
 }
 
-// =============================================================================
-// Test flecsi::utils::set_intersection()
-// =============================================================================
-
-// TEST
 void set_intersection(int argc, char ** argv) {
 
   FTEST();
@@ -58,7 +50,6 @@ void set_intersection(int argc, char ** argv) {
   EXPECT_EQ(intersects(d, d), true);
   EXPECT_EQ(intersects(a, e), false);
   EXPECT_EQ(intersects(e, f), false);
-
-} // set_intersection
+}
 
 ftest_register_test(set_intersection)

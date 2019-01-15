@@ -1,29 +1,11 @@
-/*~-------------------------------------------------------------------------~~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2017 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
-
 #include <flecsi/utils/debruijn.h>
+#include <flecsi/utils/ftest.h>
 
 #include <random>
 
-#include <cinch/ctest.h>
+void debruijn(int argc, char ** argv) {
 
-// =============================================================================
-// Exercise all of debruijn.h's constructs
-// =============================================================================
-
-// TEST
-TEST(debruijn, all) {
+  FTEST();
 
   using flecsi::utils::debruijn32_t;
 
@@ -40,21 +22,21 @@ TEST(debruijn, all) {
   //    00000000000000000000000000000100
   //    ...
   //    10000000000000000000000000000000
-  for (uint32_t i = 0; i < 32; ++i)
+  for (uint32_t i = 0; i < 32; ++i) {
     EXPECT_EQ(debruijn32_t::index(1 << i), i);
+  } // for
 
   // index()
   // As above, but with 1s placed pseudo-randomly to
   // the left (never to the right) of the existing 1
   std::mt19937 random;
   random.seed(12345);
-  for (int count = 0; count < 10000; ++count) // run lots of cases
-    for (uint32_t i = 0; i < 32; ++i)
+  for (int count = 0; count < 10000; ++count) {
+    for (uint32_t i = 0; i < 32; ++i) {
       EXPECT_EQ(debruijn32_t::index(uint32_t(random() << i) | (1 << i)), i);
+    } // for
+  } // for
 
-} // TEST
+}
 
-/*~------------------------------------------------------------------------~--*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/
+ftest_register_test(debruijn);

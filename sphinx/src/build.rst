@@ -9,9 +9,9 @@ Building FleCSI
 
 FleCSI can be configured to run with different distributed-memory
 runtimes, including Legion, and MPI. FleCSI also has support for various
-fine-grained, node-level runtimes, including OpenMP, Kokkos, Agency, and
-the C++17 extensions for parallelism.  Full documentation of FleCSI
-requires both Pandoc and Doxygen. These configuration options are listed
+fine-grained, node-level runtimes, including OpenMP, Kokkos, and
+the C++17 extensions for parallelism. Full documentation of FleCSI
+requires both Sphinx and Doxygen. These configuration options are listed
 to convey to the reader that the FleCSI build system has several paths
 that can be taken to tailor FleCSI to a given system and architecture.
 
@@ -36,16 +36,16 @@ options, but is not necessary for a particular build:
 * **GASNet** |br|
   GASNet is only required if Legion support is enabled.
 
-* **Pandoc** |br|
-  Pandoc is only required to build the FleCSI guide documentation.
-  Pandoc is a format conversion tool. More information is available
-  at `http://pandoc.org <http://pandoc.org>`_.
-
 * **Doxygen** |br|
   Doxygen is only required to build the interface documentation.
 
+* **Sphinx** |br|
+  Sphinx only required to build the web-based documentation. We are
+  currently using Sphinx 1.1.0. We also require the Sphinx RTD Theme
+  (using version 0.4.2).
+
 * **CMake** |br|
-  We currently require CMake version 2.8 or greater.
+  We currently require CMake version 3.9 or greater.
 
 * **Python** |br|
   We currently require Python 2.7 or greater.

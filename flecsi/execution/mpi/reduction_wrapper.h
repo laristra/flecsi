@@ -46,7 +46,7 @@ struct reduction_wrapper_u {
     rhs_t * rhs = reinterpret_cast<rhs_t *>(in);
 
     for(size_t i{0}; i < *len; ++i) {
-      TYPE::apply(lhs[i], rhs[i]);
+      TYPE::template apply<true>(lhs[i], rhs[i]);
     } // for
   } // mpi_wrapper
 

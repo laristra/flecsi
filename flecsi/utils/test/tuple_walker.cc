@@ -1,13 +1,3 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
-
-
-#include <iostream>
-
-#include <cinch/ctest.h>
-
 #include <flecsi/utils/tuple_walker.h>
 
 // struct once
@@ -31,7 +21,10 @@ struct thrice : public flecsi::utils::tuple_walker_u<thrice> {
   }
 };
 
-TEST(tuple_walker, all) {
+void tuple_walker(int argc, char ** argv) {
+
+  FTEST();
+
   std::tuple<> nothing;
   std::tuple<int, float, double> t(1, float(2), double(3));
 
@@ -54,10 +47,6 @@ TEST(tuple_walker, all) {
 
   // compare
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("tuple_walker.blessed"));
+}
 
-} // TEST
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_test(tuple_walker);

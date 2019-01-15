@@ -1,16 +1,9 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
-
-#include <bitset>
-
-#include <cinch/ctest.h>
-
-#include <flecsi-config.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/const_string.h>
+#include <flecsi/utils/ftest.h>
 #include <flecsi/utils/dag.h>
+
+#include <bitset>
 
 struct node_policy_t {
 
@@ -58,7 +51,9 @@ const size_t e = flecsi_hash(e);
 const size_t f = flecsi_hash(f);
 const size_t g = flecsi_hash(g);
 
-TEST(dag, sanity) {
+void dag(int argc, char ** argv) {
+
+  FTEST();
 
   dag_t dag;
 
@@ -90,5 +85,6 @@ TEST(dag, sanity) {
   dag.add(gv);
   gv.write("dag.gv");
 #endif
+}
 
-} // TEST
+ftest_register_test(dag);

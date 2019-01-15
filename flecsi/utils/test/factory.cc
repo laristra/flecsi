@@ -1,26 +1,7 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
-
 #include <flecsi/utils/factory.h>
 #include <flecsi/utils/ftest.h>
 #include <flecsi/utils/common.h>
 
-// =============================================================================
-// Sanity check for factory.h
-// =============================================================================
-
-// base io class
 class io_base_t {
 public:
   io_base_t(std::string & filename) : filename_(filename) {}
@@ -34,7 +15,6 @@ protected:
 
 }; // struct io_base_t
 
-// create factory type
 using io_factory_t =
     flecsi::utils::Factory_<io_base_t, std::string, std::string &>;
 
@@ -48,59 +28,40 @@ struct test_io_t : public io_base_t {
 
 }; // struct test_io_t
 
-// derived io type
-io_base_t *
-create_test_io(std::string & filename) {
+io_base_t * create_test_io(std::string & filename) {
   return new test_io_t(filename);
 } // create_test_io
 
-// register this io type with factory
 bool test_registered =
   io_factory_t::instance().registerType("tst", create_test_io);
-
-/*
-TEST(factory, sanity) {
-  std::string filename("myfile");
-  std::string suffix("tst");
-  io_base_t * io = io_factory_t::instance().create(suffix, filename);
-
-  ASSERT_FALSE(io->read());
-
-  delete io;
-} // TEST
-*/
-
-// =============================================================================
-// More-complete exercising of factory.h's constructs
-// =============================================================================
 
 // Creation handlers for the Factory_ type variants in TEST() below. These
 // accept the arguments as given in those types, and return pointers to the
 // return types as given. Keys play no role here.
-float *
-a_foo(int, float, double) {
+
+float * a_foo(int, float, double) {
   return new float(1.2f);
 }
-float *
-b_foo(int, float, double) {
+
+float * b_foo(int, float, double) {
   return new float(3.4f);
 }
-double *
-bar_1(double, double) {
+
+double * bar_1(double, double) {
   return new double(5.6);
 }
-double *
-bar_2(double, double) {
+
+double * bar_2(double, double) {
   return new double(8.9);
 }
 
 // These handlers do something slightly more interesting. Well, less boring.
-float *
-add_ifd(int i, float f, double d) {
+
+float * add_ifd(int i, float f, double d) {
   return new float(i + f + float(d));
 }
-double *
-add_dd(double d1, double d2) {
+
+double * add_dd(double d1, double d2) {
   return new double(d1 + d2);
 }
 

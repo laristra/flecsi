@@ -1,8 +1,3 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
-
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/ftest.h>
 #include <flecsi/utils/index_space.h>

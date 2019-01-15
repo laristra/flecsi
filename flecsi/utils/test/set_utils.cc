@@ -15,24 +15,16 @@
 #include <flecsi/utils/ftest.h>
 #include <flecsi/utils/set_utils.h>
 
-// includes: C++
 #include <iostream>
 
-// print_set
-template<class T>
-void
-print_set(const char * const prefix, const std::set<T> & set) {
+template<class T> void print_set(const char * const prefix,
+  const std::set<T> & set) {
   FTEST_CAPTURE() << prefix << " == {";
   for (auto i = set.begin(); i != set.end(); ++i)
     FTEST_CAPTURE() << " " << *i;
   FTEST_CAPTURE() << " }" << std::endl;
 }
 
-// =============================================================================
-// Test flecsi::utils::set_utils
-// =============================================================================
-
-// TEST
 void set_utils(int argc, char ** argv) {
 
   FTEST();
@@ -102,7 +94,6 @@ void set_utils(int argc, char ** argv) {
 
   // compare
   EXPECT_TRUE(FTEST_EQUAL_BLESSED("set_utils.blessed"));
-
-} // TEST
+}
 
 ftest_register_test(set_utils);

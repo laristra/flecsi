@@ -1,8 +1,3 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2017 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
-
 #include <flecsi/utils/array_ref.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/ftest.h>
