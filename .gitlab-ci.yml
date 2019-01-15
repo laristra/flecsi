@@ -29,7 +29,7 @@ before_script:
     name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
   stage:    build
   artifacts:
-    expire_in: 1 hour
+    expire_in: 3 hour
     paths:
       - ${ARTIFACTS_PROJECT_PATH}
   script:
@@ -268,7 +268,7 @@ build:fedora_hpx_clang:
   dependencies:
     - .build 
   artifacts:
-    expire_in: 1 hour
+    expire_in: 3 hour
     paths:
       - ${ARTIFACTS_PROJECT_PATH}
   script: 
@@ -608,7 +608,7 @@ format:fedora_hpx:
   dependencies:
     - .test
   artifacts:
-    expire_in: 1 hour
+    expire_in: 3 hour
     paths:
       - ${ARTIFACTS_PROJECT_PATH}
   script:
