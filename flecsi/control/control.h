@@ -31,6 +31,16 @@ namespace flecsi {
 namespace control {
 
 /*!
+  The control_u type provides a control model for specifying a
+  set of control points as a coarse-grained control flow graph,
+  with each node of the graph specifying a set of actions as a
+  directed acyclic graph (DAG). The actions under a control point
+  DAG are topologically sorted to respect dependency edges, which can
+  be specified through the dag_u interface.
+
+  If Graphviz support is enabled, the control flow graph and its DAG nodes
+  can be written to a graphviz file that can be compiled and viewed using
+  the \em dot program.
  */
 
 template<typename CONTROL_POLICY>
@@ -40,10 +50,24 @@ struct control_u : public CONTROL_POLICY {
   using node_t = typename dag_t::node_t;
   using phase_walker_t = phase_walker_u<control_u<CONTROL_POLICY>>;
 
+  /*!
+    Meyer's singleton.
+   */
+
   static control_u & instance() {
     static control_u c;
     return c;
   } // instance
+
+  /*!
+    Execute the control flow graph.
+
+    @param argc The number of command-line arguments.
+    @param argv The command-line arguments.
+
+    @return An integer with \em 0 being success, and any other value
+            being failure.
+   */
 
   static int execute(int argc, char ** argv) {
 
@@ -61,6 +85,14 @@ struct control_u : public CONTROL_POLICY {
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
   using phase_writer_t = phase_writer_u<control_u<CONTROL_POLICY>>;
   using graphviz_t = flecsi::utils::graphviz_t;
+
+  /*!
+    Write the control flow graph to the graphviz object \em gv.
+
+    @param gv An instance of the graphviz_t type. Elements of the
+              control flow graph will be written to this object, which
+              may then be output to a file.
+   */
 
   void write(graphviz_t & gv) {
     sort_phases();
