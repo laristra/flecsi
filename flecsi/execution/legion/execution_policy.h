@@ -386,6 +386,10 @@ struct legion_execution_policy_t {
               Legion::Domain::from_rect<1>(context_.all_processes()),
               TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
 
+#ifdef MAPPER_COMPACTION
+          launcher.tag = MAPPER_COMPACTED_STORAGE;
+#endif
+
             launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
             // Add region requirements and future dependencies to the
