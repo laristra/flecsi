@@ -67,55 +67,23 @@ int check_task(const Legion::Task * task,
 
   IndexSpace ex_is=ex_lr.get_index_space();
   
-  //we need to get Rect for the parent index space in purpose to loop over
-  //compacted physical instance
-  IndexPartition parent_ip = runtime->get_parent_index_partition(ex_is);
-  IndexSpace parent_is = runtime->get_parent_index_space(parent_ip); 
-
-  Domain parent_dom = runtime->get_index_space_domain(context, parent_is);
-  LegionRuntime::Arrays::Rect<2> parent_rect = parent_dom.get_rect<2>();
-
-  //we get an accessor to the exclusive LR because it points to the
-  //first element in the compacted physical instanse
   FieldID fid = *(task->regions[0].privilege_fields.begin());
-  RegionAccessor<AccessorType::Generic, size_t> acc =
-    regions[0].get_field_accessor(fid).typeify<size_t>();
 
-  //loop over compacted physical instanse (this will not work with
-  //Legions bounds checking ON)
-/*  size_t k=0;
-  for (GenericPointInRectIterator<2> pir(parent_rect); pir; pir++)
-  {
-   k++;
-#ifndef BOUNDS_CHECKS
-    size_t count = acc.read(DomainPoint::from_point<1>(pir.p));
-    clog_assert(count==k, "MAPPER compaction is brocken ");
-    std::cout<<count<<std::endl;
-#endif
-  }
-*/
   size_t * combined_data;
 
-#if 0
-  LegionRuntime::Arrays::Rect<2> sr;
-  LegionRuntime::Accessor::ByteOffset bo[1];
-  combined_data = acc.template raw_rect_ptr<2>(parent_rect, sr, bo);
-#endif
-
   Legion::Domain ex_dom =
-            runtime->get_index_space_domain(context, ex_is);
-        LegionRuntime::Arrays::Rect<2> ex_rect = ex_dom.get_rect<2>();
+    runtime->get_index_space_domain(context, ex_is);
+  LegionRuntime::Arrays::Rect<2> ex_rect = ex_dom.get_rect<2>();
 
-        LegionRuntime::Arrays::Rect<2> sr;
-        LegionRuntime::Accessor::ByteOffset bo[2];
+  LegionRuntime::Arrays::Rect<2> sr;
+  LegionRuntime::Accessor::ByteOffset bo[2];
 
         // get an accessor to the first element in exclusive LR:
-        auto ac = regions[0].get_field_accessor(fid).template typeify<size_t>();
-        combined_data = ac.template raw_rect_ptr<2>(ex_rect, sr, bo);
+  auto ac = regions[0].get_field_accessor(fid).template typeify<size_t>();
+  combined_data = ac.template raw_rect_ptr<2>(ex_rect, sr, bo);
 
   for (size_t i=0; i<24;i++){
-  std::cout <<"combined_array ["<< i<<"] = "<<*(combined_data+i)<<std::endl;
- //  clog_assert((i+1)==*(combined_data+i), " ");
+    std::cout <<"combined_array ["<< i<<"] = "<<*(combined_data+i)<<std::endl;
   }
 
   return 0;
