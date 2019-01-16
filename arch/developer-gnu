@@ -62,9 +62,7 @@ $cmake_mode \
   -DCMAKE_C_FLAGS="-fmax-errors=5 -fdiagnostics-color=always" \
   -DFLECSI_RUNTIME_MODEL=$runtime $extra_define \
   -DENABLE_BOOST=ON \
-  -DFLECSI_ENABLE_FLOG=ON \
-  -DFLOG_ENABLE_TAGS=ON \
-  -DENABLE_DEVEL_TARGETS=ON \
+  -DENABLE_FLOG=ON \
   -DENABLE_UNIT_TESTS=ON \
   -DENABLE_FLECSIT=ON \
   -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
