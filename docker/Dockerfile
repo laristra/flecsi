@@ -1,4 +1,4 @@
-FROM laristra/flecsi-third-party:fedora
+FROM laristra/flecsi-third-party:fedora_stable_pre_refactor_112918
 
 ARG MINIMAL
 ARG LEGION

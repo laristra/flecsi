@@ -12,13 +12,10 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-// includes: flecsi
 #include <flecsi/utils/debruijn.h>
 
-// includes: C++
 #include <random>
 
-// includes: other
 #include <cinchtest.h>
 
 // =============================================================================

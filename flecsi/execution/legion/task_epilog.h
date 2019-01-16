@@ -41,7 +41,7 @@ namespace execution {
  @ingroup execution
  */
 
-struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
+struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
   /*!
    Construct a task_epilog_t instance.
@@ -51,7 +51,7 @@ struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
    */
 
   task_epilog_t(Legion::Runtime * runtime, Legion::Context & context)
-      : runtime(runtime), context(context) {} // task_epilog_t
+    : runtime(runtime), context(context) {} // task_epilog_t
 
   /*!
    FIXME: Need description
@@ -68,23 +68,21 @@ struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
    @param context The Legion task runtime context.
    */
 
-  template<
-      typename T,
-      size_t EXCLUSIVE_PERMISSIONS,
-      size_t SHARED_PERMISSIONS,
-      size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor_u<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(dense_accessor_u<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    if (!h.global && !h.color) {
-      bool write_phase{(SHARED_PERMISSIONS == wo) ||
-                       (SHARED_PERMISSIONS == rw)};
+    if(!h.global && !h.color) {
+      bool write_phase{
+        (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw)};
 
-      if (write_phase && (*h.write_phase_started)) {
+      if(write_phase && (*h.write_phase_started)) {
         const int my_color = runtime->find_local_MPI_rank();
 
         {
@@ -95,16 +93,15 @@ struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
                       << *(h.pbarrier_as_owner_ptr) << std::endl;
         } // scope
 
-        *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-            context,
+        *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(context,
 
-            // Phase READ
-            *(h.pbarrier_as_owner_ptr));
+          // Phase READ
+          *(h.pbarrier_as_owner_ptr));
 
         const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
 
         // As user
-        for (size_t owner = 0; owner < _pbp_size; owner++) {
+        for(size_t owner = 0; owner < _pbp_size; owner++) {
           {
             clog_tag_guard(epilog);
             clog(trace) << "rank " << my_color << " arrives & advances "
@@ -114,11 +111,10 @@ struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
           // Phase READ
           h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);
           *(h.ghost_owners_pbarriers_ptrs[owner]) =
-              runtime->advance_phase_barrier(
-                  context,
+            runtime->advance_phase_barrier(context,
 
-                  // Phase READ
-                  *(h.ghost_owners_pbarriers_ptrs)[owner]);
+              // Phase READ
+              *(h.ghost_owners_pbarriers_ptrs)[owner]);
         } // for
         *(h.write_phase_started) = false;
       } // if write phase
@@ -126,28 +122,19 @@ struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
     } // if global and color
   } // handle
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    sparse_accessor <
-    T,
+    size_t GHOST_PERMISSIONS>
+  void handle(sparse_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS
-    > &a
-  )
-  {
+    GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    bool write_phase{(SHARED_PERMISSIONS == wo) ||
-                     (SHARED_PERMISSIONS == rw)};
+    bool write_phase{(SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw)};
 
-    if (write_phase && (*h.write_phase_started)) {
+    if(write_phase && (*h.write_phase_started)) {
       const int my_color = runtime->find_local_MPI_rank();
 
       {
@@ -158,16 +145,15 @@ struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
                     << *(h.pbarrier_as_owner_ptr) << std::endl;
       } // scope
 
-      *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-          context,
+      *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(context,
 
-          // Phase READ
-          *(h.pbarrier_as_owner_ptr));
+        // Phase READ
+        *(h.pbarrier_as_owner_ptr));
 
       const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
 
       // As user
-      for (size_t owner = 0; owner < _pbp_size; owner++) {
+      for(size_t owner = 0; owner < _pbp_size; owner++) {
         {
           clog_tag_guard(epilog);
           clog(trace) << "rank " << my_color << " arrives & advances "
@@ -177,49 +163,32 @@ struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
         // Phase READ
         h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);
         *(h.ghost_owners_pbarriers_ptrs[owner]) =
-            runtime->advance_phase_barrier(
-                context,
+          runtime->advance_phase_barrier(context,
 
-                // Phase READ
-                *(h.ghost_owners_pbarriers_ptrs)[owner]);
+            // Phase READ
+            *(h.ghost_owners_pbarriers_ptrs)[owner]);
       } // for
       *(h.write_phase_started) = false;
     } // if write phase
   }
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    ragged_accessor<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    > & a
-  )
-  {
-    handle(reinterpret_cast<sparse_accessor<
-      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
+    size_t GHOST_PERMISSIONS>
+  void handle(ragged_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
   } // handle
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    sparse_mutator<
-    T
-    > &m
-  )
-  {
+  template<typename T>
+  void handle(sparse_mutator<T> & m) {
     auto & h = m.h_;
 
-    if ((*h.write_phase_started)) {
+    if((*h.write_phase_started)) {
       const int my_color = runtime->find_local_MPI_rank();
 
       {
@@ -230,16 +199,15 @@ struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
                     << *(h.pbarrier_as_owner_ptr) << std::endl;
       } // scope
 
-      *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-          context,
+      *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(context,
 
-          // Phase READ
-          *(h.pbarrier_as_owner_ptr));
+        // Phase READ
+        *(h.pbarrier_as_owner_ptr));
 
       const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
 
       // As user
-      for (size_t owner = 0; owner < _pbp_size; owner++) {
+      for(size_t owner = 0; owner < _pbp_size; owner++) {
         {
           clog_tag_guard(epilog);
           clog(trace) << "rank " << my_color << " arrives & advances "
@@ -249,27 +217,18 @@ struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
         // Phase READ
         h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);
         *(h.ghost_owners_pbarriers_ptrs[owner]) =
-            runtime->advance_phase_barrier(
-                context,
+          runtime->advance_phase_barrier(context,
 
-                // Phase READ
-                *(h.ghost_owners_pbarriers_ptrs)[owner]);
+            // Phase READ
+            *(h.ghost_owners_pbarriers_ptrs)[owner]);
       } // for
       *(h.write_phase_started) = false;
     } // if write phase
   }
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    ragged_mutator<
-      T
-    > & m
-  )
-  {
-    handle(reinterpret_cast<sparse_mutator<T>&>(m));
+  template<typename T>
+  void handle(ragged_mutator<T> & m) {
+    handle(reinterpret_cast<sparse_mutator<T> &>(m));
   }
 
   /*!
@@ -279,9 +238,9 @@ struct task_epilog_t : public utils::tuple_walker_u<task_epilog_t> {
    */
 
   template<typename T>
-  static typename std::enable_if_t<
-      !std::is_base_of<dense_accessor_base_t, T>::value>
-  handle(T &) {} // handle
+  static
+    typename std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
+    handle(T &) {} // handle
 
   Legion::Runtime * runtime;
   Legion::Context & context;

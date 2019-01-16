@@ -55,16 +55,6 @@ TEST(common, all) {
   CINCH_CAPTURE() << flecsi::utils::square(20.0) << std::endl;
   CINCH_CAPTURE() << std::endl;
 
-  // demangle, type
-  // The results depend on #ifdef __GNUG__, so we'll just exercise
-  // these functions, without checking for particular results.
-  EXPECT_NE(flecsi::utils::demangle("foo"), "");
-  const std::string str_demangle = flecsi::utils::demangle(typeid(int).name()),
-                    str_type = flecsi::utils::type<int>();
-  EXPECT_NE(str_demangle, "");
-  EXPECT_NE(str_type, "");
-  EXPECT_EQ(str_demangle, str_type);
-
   // ------------------------
   // Unique ID constructs
   // ------------------------
@@ -97,83 +87,6 @@ TEST(common, all) {
   EXPECT_NE(flecsi::utils::unique_name(&i), "");
   EXPECT_NE(flecsi::utils::unique_name(&f), "");
   EXPECT_NE(flecsi::utils::unique_name(&f), "");
-
-  // ------------------------
-  // Function traits
-  // ------------------------
-
-  using flecsi::utils::function_traits_u;
-
-  // general
-  print_type<function_traits_u<MyClass>::return_type>();
-  print_type<function_traits_u<MyClass>::arguments_type>();
-  CINCH_CAPTURE() << std::endl;
-
-  // f(...)
-  // &f(...)
-  print_type<function_traits_u<decltype(MyFun)>::return_type>();
-  print_type<function_traits_u<decltype(MyFun)>::arguments_type>();
-  print_type<function_traits_u<decltype(&MyFun)>::return_type>();
-  print_type<function_traits_u<decltype(&MyFun)>::arguments_type>();
-  CINCH_CAPTURE() << std::endl;
-
-  // &Class::f(...) [const] [volatile]
-  print_type<function_traits_u<decltype(&MyClass::mem)>::return_type>();
-  print_type<function_traits_u<decltype(&MyClass::mem)>::arguments_type>();
-  print_type<function_traits_u<decltype(&MyClass::mem)>::owner_type>();
-  print_type<function_traits_u<decltype(&MyClass::memc)>::return_type>();
-  print_type<function_traits_u<decltype(&MyClass::memc)>::arguments_type>();
-  print_type<function_traits_u<decltype(&MyClass::memc)>::owner_type>();
-  print_type<function_traits_u<decltype(&MyClass::memv)>::return_type>();
-  print_type<function_traits_u<decltype(&MyClass::memv)>::arguments_type>();
-  print_type<function_traits_u<decltype(&MyClass::memv)>::owner_type>();
-  print_type<function_traits_u<decltype(&MyClass::memcv)>::return_type>();
-  print_type<function_traits_u<decltype(&MyClass::memcv)>::arguments_type>();
-  print_type<function_traits_u<decltype(&MyClass::memcv)>::owner_type>();
-  CINCH_CAPTURE() << std::endl;
-
-  // std::function<f(...)>
-  print_type<function_traits_u<std::function<decltype(MyFun)>>::return_type>();
-  print_type<function_traits_u<std::function<decltype(MyFun)>>::arguments_type>();
-  CINCH_CAPTURE() << std::endl;
-
-  // [const] [volatile] T &[&]
-  MyClass MyC;
-
-  MyClass & Flr = MyC;
-  const MyClass & Flrc = MyC;
-  volatile MyClass & Flrv = MyC;
-  const volatile MyClass & Flrcv = MyC;
-
-  MyClass && Frr = MyClass{};
-  const MyClass && Frrc = MyClass{};
-  volatile MyClass && Frrv = MyClass{};
-  const volatile MyClass && Frrcv = MyClass{};
-
-  print_type<function_traits_u<decltype(Flr)>::return_type>();
-  print_type<function_traits_u<decltype(Flr)>::arguments_type>();
-  print_type<function_traits_u<decltype(Flrc)>::return_type>();
-  print_type<function_traits_u<decltype(Flrc)>::arguments_type>();
-  print_type<function_traits_u<decltype(Flrv)>::return_type>();
-  print_type<function_traits_u<decltype(Flrv)>::arguments_type>();
-  print_type<function_traits_u<decltype(Flrcv)>::return_type>();
-  print_type<function_traits_u<decltype(Flrcv)>::arguments_type>();
-  print_type<function_traits_u<decltype(Frr)>::return_type>();
-  print_type<function_traits_u<decltype(Frr)>::arguments_type>();
-  print_type<function_traits_u<decltype(Frrc)>::return_type>();
-  print_type<function_traits_u<decltype(Frrc)>::arguments_type>();
-  print_type<function_traits_u<decltype(Frrv)>::return_type>();
-  print_type<function_traits_u<decltype(Frrv)>::arguments_type>();
-  print_type<function_traits_u<decltype(Frrcv)>::return_type>();
-  print_type<function_traits_u<decltype(Frrcv)>::arguments_type>();
-  CINCH_CAPTURE() << std::endl;
-
-  // ------------------------
-  // Some preprocessor macros
-  // ------------------------
-
-  CINCH_CAPTURE() << _UTIL_STRINGIFY(hello) << std::endl;
-  CINCH_CAPTURE() << EXPAND_AND_STRINGIFY(hello again) << std::endl;
 
   // ------------------------
   // Compare

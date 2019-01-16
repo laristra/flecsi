@@ -51,7 +51,7 @@ void
 initialize_pressure(mesh<ro> m, field<rw, rw, ro> p) {
   size_t count{0};
 
-  auto & context{execution::context_t::instance()};
+  auto & context{ context_t::instance() };
 
   for (auto c : m.cells(owned)) {
     p(c) = (context.color() + 1) * 1000.0 + count++;
@@ -88,7 +88,7 @@ print_mesh(mesh<ro> m, field<ro, ro, ro> p) {
     clog(info) << "print_mesh task" << std::endl;
   } // scope
 
-  auto & context = execution::context_t::instance();
+  auto & context = context_t::instance();
   auto & vertex_map = context.index_map(index_spaces::vertices);
   auto & cell_map = context.index_map(index_spaces::cells);
 
