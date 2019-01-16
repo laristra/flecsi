@@ -540,6 +540,45 @@ install(
   COMPONENT dev
 )
 
+#------------------------------------------------------------------------------#
+# Output configuration summary.
+#------------------------------------------------------------------------------#
+
+string(APPEND _summary
+  "\n#----------------------------------------------------------------------#\n"
+    "# FleCSI Configuration Summary\n"
+    "#----------------------------------------------------------------------#\n"
+    "\n"
+    "  CMake Build Type: ${CMAKE_BUILD_TYPE}\n"
+    "  CMake Install Prefix: ${CMAKE_INSTALL_PREFIX}\n"
+    "\n"
+    "  FleCSI Runtime Model: ${FLECSI_RUNTIME_MODEL}\n"
+    "  FleCSI Logging Support: ${ENABLE_FLOG}"
+)
+
+if(ENABLE_FLOG)
+  string(APPEND _summary " (strip level ${FLOG_STRIP_LEVEL})\n")
+else()
+  string(APPEND _summary "\n")
+endif()
+
+string(APPEND _summary
+    "  FleCSI Unit Tests: ${ENABLE_UNIT_TESTS}\n"
+    "  FleCSI Tutorial: ${ENABLE_FLECSI_TUTORIAL}\n"
+    "  FleCSI Compiler Tool (flecsit): ${ENABLE_FLECSIT}\n"
+    "\n"
+    "  Boost Support: ${ENABLE_BOOST}\n"
+    "  Cuda Support: ${ENABLE_CUDA}\n"
+    "  Doxygen Support: ${ENABLE_DOXYGEN}\n"
+    "  Graphviz Support: ${ENABLE_GRAPHVIZ}\n"
+    "  OpenMP Support: ${ENABLE_OPENMP}\n"
+    "  Sphinx Support: ${ENABLE_SPHINX}\n"
+    "\n"
+    "#----------------------------------------------------------------------#\n"
+)
+
+message(STATUS ${_summary})
+
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :
