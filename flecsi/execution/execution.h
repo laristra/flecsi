@@ -34,6 +34,8 @@ clog_register_tag(execution);
 // Helper Macros
 //----------------------------------------------------------------------------//
 
+#define min_redop_id (size_t(1) << 20) - 4096
+#define max_redop_id (size_t(1) << 20) - 4095
 /*!
   @def flecsi_internal_hash
 
@@ -497,12 +499,12 @@ clog_register_tag(execution);
                                                                                \
   flecsi::execution::task_interface_t::execute_task<                           \
     flecsi::execution::launch_type_t::launch,                                  \
-    flecsi_internal_hash(nspace::task),                                      \
+    flecsi_internal_hash(nspace::task),                                        \
     flecsi::utils::hash::reduction_hash<                                       \
-      flecsi_internal_hash(type),                                            \
-      flecsi_internal_hash(datatype)                                         \
+      flecsi_internal_hash(type),                                              \
+      flecsi_internal_hash(datatype)                                           \
     >(),                                                                       \
-    flecsi_internal_return_type(task),                                       \
+    flecsi_internal_return_type(task),                                         \
     flecsi_internal_arguments_type(task)>(__VA_ARGS__)
 
 //----------------------------------------------------------------------------//
