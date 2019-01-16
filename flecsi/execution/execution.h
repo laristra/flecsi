@@ -32,7 +32,7 @@
   @ingroup execution
  */
 
-#define flecsi_internal_hash(name)                                           \
+#define flecsi_internal_hash(name)                                             \
   flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
 
 /*----------------------------------------------------------------------------*

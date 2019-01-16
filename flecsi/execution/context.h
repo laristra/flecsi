@@ -55,6 +55,20 @@ struct context_u : public CONTEXT_POLICY {
    *--------------------------------------------------------------------------*/
 
   /*!
+    Start the FleCSI runtime.
+
+    @param argc The number of command-line arguments.
+    @param argv The command-line arguments in a char **.
+
+    @return An integer with \em 0 being success, and any other value
+            being failure.
+   */
+
+  int start(int argc, char ** argv) {
+    return CONTEXT_POLICY::start(argc, argv);
+  } // start
+
+  /*!
     Get the color of this process.
    */
 

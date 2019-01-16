@@ -63,6 +63,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(execution_SOURCES
     ${execution_SOURCES}
+    mpi/context_policy.cc
     mpi/runtime.cc
   )
 

@@ -1,4 +1,3 @@
-
 /*
     @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
    /@@/////  /@@          @@////@@ @@////// /@@
@@ -69,6 +68,7 @@ int legion_context_policy_t::start(int argc, char ** argv) {
   /*
     Register custom mapper.
    */
+
   Runtime::add_registration_callback(mapper_registration);
 
   /*
@@ -84,6 +84,14 @@ int legion_context_policy_t::start(int argc, char ** argv) {
   colors_ = size;
 
   Legion::Runtime::configure_MPI_interoperability(rank);
+
+  /*
+    Register reduction operations.
+   */
+
+  for(auto & ro: context_t::instance().reduction_registry()) {
+    ro.second();
+  } // for
 
   Runtime::start(argc, argv, true);
 

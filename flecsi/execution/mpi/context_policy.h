@@ -20,6 +20,12 @@ namespace execution {
 
 struct mpi_context_policy_t {
 
+  /*!
+    Documnetation for this interface is in the top-level context type.
+   */
+
+  int start(int argc, char ** argv);
+
   /*
     Documnetation for this interface is in the top-level context type.
    */

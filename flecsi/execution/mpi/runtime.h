@@ -109,8 +109,7 @@ cinch_append_runtime_handler(handler);
 
 inline int
 runtime_driver(int argc, char ** argv) {
-  return flecsi::execution::context_t::instance().top_level_action()(
-    argc, argv);
+  return flecsi::execution::context_t::instance().start(argc, argv);
 } // runtime_driver
 
 cinch_register_runtime_driver(runtime_driver);

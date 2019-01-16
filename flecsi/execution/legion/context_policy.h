@@ -72,14 +72,8 @@ struct legion_context_policy_t {
     std::string,
     registration_function_t>;
 
-  /*!
-    Start the FleCSI runtime with Legion support.
-
-    @param argc The number of command-line arguments.
-    @param argv The command-line arguments in a char **.
-
-    @return An integer with \em 0 being success, and any other value
-            being failure.
+  /*
+    Documnetation for this interface is in the top-level context type.
    */
 
   int start(int argc, char ** argv);
