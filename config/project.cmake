@@ -544,38 +544,109 @@ install(
 # Output configuration summary.
 #------------------------------------------------------------------------------#
 
-string(APPEND _summary
-  "\n#----------------------------------------------------------------------#\n"
-    "# FleCSI Configuration Summary\n"
-    "#----------------------------------------------------------------------#\n"
+macro(summary_header)
+  string(APPEND _summary
+    "${CINCH_BoldCyan}"
     "\n"
-    "  CMake Build Type: ${CMAKE_BUILD_TYPE}\n"
-    "  CMake Install Prefix: ${CMAKE_INSTALL_PREFIX}\n"
+"
+#------------------------------------------------------------------------------#
+"
+    "# FleCSI Configuration Summary"
+"
+#------------------------------------------------------------------------------#
+"
     "\n"
-    "  FleCSI Runtime Model: ${FLECSI_RUNTIME_MODEL}\n"
-    "  FleCSI Logging Support: ${ENABLE_FLOG}"
+    "${CINCH_ColorReset}"
 )
+endmacro()
 
-if(ENABLE_FLOG)
-  string(APPEND _summary " (strip level ${FLOG_STRIP_LEVEL})\n")
-else()
+macro(summary_info name info)
+  if(NOT ${info} STREQUAL "")
+    string(REPLACE " " ";" split ${info})
+    list(LENGTH split split_length)
+    string(LENGTH ${name} name_length)
+
+    string(APPEND _summary
+        "${CINCH_Plain}"
+        "  ${name}:"
+        "${CINCH_Brown} "
+    )
+
+    if(split_length GREATER 1)
+      math(EXPR split_minus "${split_length}-1")
+      list(GET split ${split_minus} last)
+      list(REMOVE_AT split ${split_minus})
+
+      set(fill " ")
+      string(LENGTH ${fill} fill_length)
+      while(${fill_length} LESS ${name_length})
+        string(APPEND fill " ")
+        string(LENGTH ${fill} fill_length)
+      endwhile()
+
+      string(APPEND _summary "${CINCH_Brown}")
+      foreach(entry ${split})
+        string(APPEND _summary
+          "${entry}\n${fill}    "
+          )
+      endforeach()
+      string(APPEND _summary "${last}${CINCH_ColorReset}\n")
+    else()
+      string(APPEND _summary
+          "${info}"
+          "${CINCH_ColorReset}"
+          "\n"
+      )
+    endif()
+  endif()
+endmacro()
+
+macro(summary_option name state extra)
+  string(APPEND _summary
+    "${CINCH_Plain}"
+    "  ${name}:"
+    "${CINCH_ColorReset}"
+  )
+
+  if(${state})
+    string(APPEND _summary
+      "${CINCH_Green}"
+      " ${state}"
+      "${CINCH_ColorReset}"
+      "${extra}"
+    )
+  else()
+    string(APPEND _summary
+      "${CINCH_BoldGrey}"
+      " ${state}"
+      "${CINCH_ColorReset}"
+    )
+  endif()
   string(APPEND _summary "\n")
-endif()
+endmacro()
 
-string(APPEND _summary
-    "  FleCSI Unit Tests: ${ENABLE_UNIT_TESTS}\n"
-    "  FleCSI Tutorial: ${ENABLE_FLECSI_TUTORIAL}\n"
-    "  FleCSI Compiler Tool (flecsit): ${ENABLE_FLECSIT}\n"
-    "\n"
-    "  Boost Support: ${ENABLE_BOOST}\n"
-    "  Cuda Support: ${ENABLE_CUDA}\n"
-    "  Doxygen Support: ${ENABLE_DOXYGEN}\n"
-    "  Graphviz Support: ${ENABLE_GRAPHVIZ}\n"
-    "  OpenMP Support: ${ENABLE_OPENMP}\n"
-    "  Sphinx Support: ${ENABLE_SPHINX}\n"
-    "\n"
-    "#----------------------------------------------------------------------#\n"
-)
+summary_header()
+summary_info("CMAKE_BUILD_TYPE" "${CMAKE_BUILD_TYPE}")
+summary_info("CMAKE_INSTALL_PREFIX" "${CMAKE_INSTALL_PREFIX}")
+string(APPEND _summary "\n")
+summary_info("CMAKE_CXX_COMPILER" "${CMAKE_CXX_COMPILER}")
+summary_info("CMAKE_CXX_FLAGS" "${CMAKE_CXX_FLAGS}")
+summary_info("CMAKE_C_COMPILER" "${CMAKE_C_COMPILER}")
+summary_info("CMAKE_C_FLAGS" "${CMAKE_C_FLAGS}")
+string(APPEND _summary "\n")
+summary_info("FLECSI_RUNTIME_MODEL" "${FLECSI_RUNTIME_MODEL}")
+summary_option("ENABLE_FLOG" ${ENABLE_FLOG}
+  " (FLOG_STRIP_LEVEL ${FLOG_STRIP_LEVEL})")
+summary_option("ENABLE_UNIT_TESTS" ${ENABLE_UNIT_TESTS} "")
+summary_option("ENABLE_FLECSI_TUTORIAL" ${ENABLE_FLECSI_TUTORIAL} "")
+summary_option("ENABLE_FLECSIT" ${ENABLE_FLECSIT} "")
+string(APPEND _summary "\n")
+summary_option("ENABLE_BOOST" ${ENABLE_BOOST} "")
+summary_option("ENABLE_CUDA" ${ENABLE_CUDA} "")
+summary_option("ENABLE_DOXYGEN" ${ENABLE_DOXYGEN} "")
+summary_option("ENABLE_GRAPHVIZ" ${ENABLE_GRAPHVIZ} "")
+summary_option("ENABLE_OPENMP" ${ENABLE_OPENMP} "")
+summary_option("ENABLE_SPHINX" ${ENABLE_SPHINX} "")
 
 message(STATUS ${_summary})
 
