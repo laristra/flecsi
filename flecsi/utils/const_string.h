@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <flecsi/utils/hash.h>
+#include <flecsi/utils/macros.h>
 
 #include <cstring>
 #include <limits>
@@ -118,3 +119,20 @@ struct const_string_hasher_t {
 
 } // namespace utils
 } // namespace flecsi
+
+/*----------------------------------------------------------------------------*
+  Helper interface.
+ *----------------------------------------------------------------------------*/
+
+/*!
+  @def flecsi_internal_hash
+
+  This macro returns the hash of constant string version of the given name.
+
+  @param name The string to hash.
+
+  @ingroup utils
+ */
+
+#define flecsi_internal_hash(name)                                             \
+  flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()

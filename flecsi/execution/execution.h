@@ -17,23 +17,7 @@
 
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/task.h>
-
-/*----------------------------------------------------------------------------*
-  Helper interface.
- *----------------------------------------------------------------------------*/
-
-/*!
-  @def flecsi_internal_hash
-
-  This macro returns the hash of constant string version of the given name.
-
-  @param name The string to hash.
-
-  @ingroup execution
- */
-
-#define flecsi_internal_hash(name)                                             \
-  flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
+#include <flecsi/utils/const_string.h>
 
 /*----------------------------------------------------------------------------*
   Basic runtime interface
