@@ -41,7 +41,16 @@ set(FLOG_TAG_BITS "64" CACHE STRING
 mark_as_advanced(FLOG_TAG_BITS)
 
 if(ENABLE_FLOG)
-  set(FLOG_STRIP_LEVEL "1" CACHE STRING "Set the clog strip level")
+  set(FLOG_STRIP_LEVELS 0 1 2 3 4)
+
+  if(NOT FLOG_STRIP_LEVEL)
+    list(GET FLOG_STRIP_LEVELS 0 FLOG_STRIP_LEVEL)
+  endif()
+
+  set(FLOG_STRIP_LEVEL ${FLOG_STRIP_LEVEL} CACHE STRING
+    "Set the flog strip level (0-4)")
+
+  set_property(CACHE FLOG_STRIP_LEVEL PROPERTY STRINGS ${FLOG_STRIP_LEVELS})
 endif()
 
 if(FLOG_ENABLE_MPI)
