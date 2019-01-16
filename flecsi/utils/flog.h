@@ -232,8 +232,7 @@
   flecsi::utils::flog::error_log_message_t(__FILE__, __LINE__).stream()        \
     << message
 
-#define __flog_internal_wait_on_flusher()                                      \
-  usleep(FLOG_PACKET_FLUSH_INTERVAL)
+#define __flog_internal_wait_on_flusher() usleep(FLOG_PACKET_FLUSH_INTERVAL)
 
 #else
 

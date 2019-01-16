@@ -59,7 +59,10 @@ struct mpi_context_policy_t {
   }
 
 private:
-    
+  /*--------------------------------------------------------------------------*
+    Runtime data members.
+   *--------------------------------------------------------------------------*/
+
   size_t color_ = std::numeric_limits<size_t>::max();
   size_t colors_ = std::numeric_limits<size_t>::max();
 

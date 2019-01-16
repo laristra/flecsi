@@ -46,6 +46,7 @@ namespace execution {
 // to increase the launch_bits accordingly, i.e., launch_bits must
 // be greater than or equal to the number of bits in the bitset for
 // launch_t below.
+
 constexpr size_t launch_bits = 5;
 
 /*!
@@ -79,9 +80,9 @@ mask_to_type(launch_mask_t m) {
   return static_cast<launch_type_t>(flecsi::utils::debruijn32_t::index(m));
 } // mask_to_type
 
-/*!
-  Macro to create repetitive interfaces.
- */
+  /*!
+    Macro to create repetitive interfaces.
+   */
 
 #define test_boolean_interface(name)                                           \
   inline bool launch_##name(const launch_t & l) {                              \

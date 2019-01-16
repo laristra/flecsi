@@ -108,12 +108,12 @@ protected:
 
 }; // struct log_message_t
 
-//----------------------------------------------------------------------------//
-// Convenience macro to define severity levels.
-//
-// Log message types defined using this macro always use the default
-// predicate function, true_state().
-//----------------------------------------------------------------------------//
+/*----------------------------------------------------------------------------*
+  Convenience macro to define severity levels.
+
+  Log message types defined using this macro always use the default
+  predicate function, true_state().
+ *----------------------------------------------------------------------------*/
 
 #define severity_message_t(severity, P, format)                                \
   struct severity##_log_message_t : public log_message_t<P> {                  \
@@ -155,8 +155,8 @@ protected:
 
 // Utility
 severity_message_t(utility, decltype(flecsi::utils::flog::true_state), {
-  std::ostream & stream = flog_t::instance().severity_stream(
-      flog_t::instance().tag_enabled());
+  std::ostream & stream =
+    flog_t::instance().severity_stream(flog_t::instance().tag_enabled());
   return stream;
 });
 

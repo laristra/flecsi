@@ -96,8 +96,8 @@ struct task_interface_u {
 
   template<size_t HASH, typename TYPE>
   static decltype(auto) register_reduction_operation() {
-    return EXECUTION_POLICY::template register_reduction_operation<
-      HASH, TYPE>();
+    return EXECUTION_POLICY::template register_reduction_operation<HASH,
+      TYPE>();
   } // register_reduction_operation
 
 }; // struct task_interface_u
@@ -131,8 +131,8 @@ using task_interface_t = task_interface_u<FLECSI_RUNTIME_EXECUTION_POLICY>;
   @ingroup execution
  */
 
-//template<typename RETURN, launch_type_t launch>
-//using future_u = FLECSI_RUNTIME_EXECUTION_POLICY::future_u<RETURN, launch>;
+// template<typename RETURN, launch_type_t launch>
+// using future_u = FLECSI_RUNTIME_EXECUTION_POLICY::future_u<RETURN, launch>;
 
 } // namespace execution
 } // namespace flecsi

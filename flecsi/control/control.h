@@ -72,8 +72,8 @@ struct control_u : public CONTROL_POLICY {
   static int execute(int argc, char ** argv) {
 
     {
-    flog_tag_guard(control);
-    flog(info) << __FUNCTION__ << std::endl;
+      flog_tag_guard(control);
+      flog(info) << __FUNCTION__ << std::endl;
     }
 
     instance().sort_phases();
@@ -117,7 +117,7 @@ struct control_u : public CONTROL_POLICY {
   } // control_phase_map
 
   /*!
-    Retrun the sorted control map for the given phase.
+    Return the sorted control map for the given phase.
 
     @param phase The control point id or \em phase. Phases are defined
                  by the specialization.
@@ -128,6 +128,10 @@ struct control_u : public CONTROL_POLICY {
   } // sorted_phase_map
 
 private:
+  /*
+    Sort the dag under each control point.
+   */
+
   void sort_phases() {
     if(sorted_.size() == 0) {
       for(auto & d : registry_) {
@@ -135,6 +139,10 @@ private:
       } // for
     } // if
   } // sort_phases
+
+  /*--------------------------------------------------------------------------*
+    Data members.
+   *--------------------------------------------------------------------------*/
 
   std::map<size_t, dag_t> registry_;
   std::map<size_t, std::vector<node_t>> sorted_;

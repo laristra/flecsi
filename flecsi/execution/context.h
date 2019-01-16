@@ -158,7 +158,7 @@ struct context_u : public CONTEXT_POLICY {
    */
 
   template<size_t NAMESPACE_HASH, typename OBJECT_TYPE, typename... ARGS>
-  bool initialize_global_object(size_t index, ARGS && ... args) {
+  bool initialize_global_object(size_t index, ARGS &&... args) {
     size_t KEY = NAMESPACE_HASH ^ index;
     assert(global_object_registry_.find(KEY) != global_object_registry_.end());
     std::get<0>(global_object_registry_[KEY]) =
@@ -217,7 +217,6 @@ struct context_u : public CONTEXT_POLICY {
   } // register_function
 
 private:
-
   /*--------------------------------------------------------------------------*
     Singleton.
    *--------------------------------------------------------------------------*/
@@ -227,7 +226,7 @@ private:
   ~context_u() {
 
     // Cleanup the global objects
-    for(auto & go: global_object_registry_) {
+    for(auto & go : global_object_registry_) {
       std::get<1>(go.second)(std::get<0>(go.second));
     } // for
   } // ~context_u

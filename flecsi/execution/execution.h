@@ -36,7 +36,7 @@
   flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
 
 /*----------------------------------------------------------------------------*
-  Basic runtime interface 
+  Basic runtime interface
  *----------------------------------------------------------------------------*/
 
 /*!
@@ -89,12 +89,9 @@
                                                                                \
   inline bool type##_##datatype##_reduction_operation_registered =             \
     flecsi::execution::task_interface_t::register_reduction_operation<         \
-      flecsi::utils::hash::reduction_hash<                                     \
-        flecsi_internal_hash(type),                                            \
-        flecsi_internal_hash(datatype)                                         \
-      >(),                                                                     \
-      type<datatype>                                                           \
-    >()
+      flecsi::utils::hash::reduction_hash<flecsi_internal_hash(type),          \
+        flecsi_internal_hash(datatype)>(),                                     \
+      type<datatype>>()
 
 /*!
   @def flecsi_execute_reduction_task
@@ -108,19 +105,17 @@
   @ingroup execution
  */
 
-#define flecsi_execute_reduction_task(task, nspace, launch, type,              \
-  datatype, ...)                                                               \
+#define flecsi_execute_reduction_task(                                         \
+  task, nspace, launch, type, datatype, ...)                                   \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi::execution::task_interface_t::execute_task<                           \
     flecsi::execution::launch_type_t::launch,                                  \
     flecsi_internal_hash(nspace::task),                                        \
-    flecsi::utils::hash::reduction_hash<                                       \
-      flecsi_internal_hash(type),                                              \
-      flecsi_internal_hash(datatype)                                           \
-    >(),                                                                       \
-    flecsi_internal_return_type(task),                                         \
-    flecsi_internal_arguments_type(task)>(__VA_ARGS__)
+    flecsi::utils::hash::reduction_hash<flecsi_internal_hash(type),            \
+      flecsi_internal_hash(datatype)>(),                                       \
+    flecsi_internal_return_type(task), flecsi_internal_arguments_type(task)>(  \
+    __VA_ARGS__)
 
 /*----------------------------------------------------------------------------*
   Global object interface.
@@ -144,11 +139,8 @@
                                                                                \
   inline bool registered_global_object_##nspace##_##index =                    \
     flecsi::execution::context_t::instance()                                   \
-      .template register_global_object<                                        \
-        flecsi_internal_hash(nspace),                                          \
-        index,                                                                 \
-        type                                                                   \
-      >();
+      .template register_global_object<flecsi_internal_hash(nspace), index,    \
+        type>();
 
 /*!
   @def flecsi_initialize_global_object
@@ -170,10 +162,8 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi::execution::context_t::instance()                                     \
-    .template initialize_global_object<                                        \
-      flecsi_internal_hash(nspace),                                            \
-      type                                                                     \
-    >(index, ##__VA_ARGS__);
+    .template initialize_global_object<flecsi_internal_hash(nspace), type>(    \
+      index, ##__VA_ARGS__);
 
 /*!
   @def flecsi_get_global_object
@@ -191,8 +181,4 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi::execution::context_t::instance()                                     \
-    .template get_global_object<                                               \
-      flecsi_internal_hash(nspace),                                            \
-      type                                                                     \
-      >(index);
-
+    .template get_global_object<flecsi_internal_hash(nspace), type>(index);
