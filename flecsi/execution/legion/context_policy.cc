@@ -20,7 +20,8 @@
 namespace flecsi {
 namespace execution {
 
-int legion_context_policy_t::start(int argc, char ** argv) {
+int
+legion_context_policy_t::start(int argc, char ** argv) {
   using namespace Legion;
 
   {
@@ -34,13 +35,13 @@ int legion_context_policy_t::start(int argc, char ** argv) {
   Runtime::set_top_level_task_id(FLECSI_TOP_LEVEL_TASK_ID);
 
   {
-  Legion::TaskVariantRegistrar registrar(FLECSI_TOP_LEVEL_TASK_ID,
-    "runtime_driver");
-  registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
-  registrar.set_inner();
-  registrar.set_replicable();
-  Runtime::preregister_task_variant<top_level_task>(registrar,
-    "runtime_driver");
+    Legion::TaskVariantRegistrar registrar(
+      FLECSI_TOP_LEVEL_TASK_ID, "runtime_driver");
+    registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
+    registrar.set_inner();
+    registrar.set_replicable();
+    Runtime::preregister_task_variant<top_level_task>(
+      registrar, "runtime_driver");
   } // scope
 
   /*
@@ -89,7 +90,7 @@ int legion_context_policy_t::start(int argc, char ** argv) {
     Register reduction operations.
    */
 
-  for(auto & ro: context_t::instance().reduction_registry()) {
+  for(auto & ro : context_t::instance().reduction_registry()) {
     ro.second();
   } // for
 
@@ -109,10 +110,10 @@ int legion_context_policy_t::start(int argc, char ** argv) {
   __flog_internal_wait_on_flusher();
 
   Legion::Runtime::wait_for_shutdown();
-  
+
   return 0;
 } // legion_context_policy_t::start
-  
+
 //----------------------------------------------------------------------------//
 // Implementation of legion_context_policy_t::unset_call_mpi.
 //----------------------------------------------------------------------------//
@@ -125,18 +126,17 @@ legion_context_policy_t::unset_call_mpi(Legion::Context & ctx,
     flog(info) << "In unset_call_mpi" << std::endl;
   }
 
-  const auto tid =
-    context_t::instance()
-      .task_id<flecsi_internal_task_key(unset_call_mpi_task)>();
+  const auto tid = context_t::instance()
+                     .task_id<flecsi_internal_task_key(unset_call_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
-//IRINA DEBUG check number of processors
-  Legion::IndexLauncher launcher(
-      tid, Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-      Legion::TaskArgument(NULL, 0), arg_map);
+  // IRINA DEBUG check number of processors
+  Legion::IndexLauncher launcher(tid,
+    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+    Legion::TaskArgument(NULL, 0), arg_map);
 
   launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
-  auto fm = runtime->execute_index_space(ctx, launcher); 
+  auto fm = runtime->execute_index_space(ctx, launcher);
   fm.wait_all_results(true);
 } // legion_context_policy_t::unset_call_mpi
 
@@ -147,9 +147,8 @@ legion_context_policy_t::unset_call_mpi(Legion::Context & ctx,
 void
 legion_context_policy_t::handoff_to_mpi(Legion::Context & ctx,
   Legion::Runtime * runtime) {
-  const auto tid =
-    context_t::instance()
-      .task_id<flecsi_internal_task_key(handoff_to_mpi_task)>();
+  const auto tid = context_t::instance()
+                     .task_id<flecsi_internal_task_key(handoff_to_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(tid,
@@ -157,7 +156,7 @@ legion_context_policy_t::handoff_to_mpi(Legion::Context & ctx,
     Legion::TaskArgument(NULL, 0), arg_map);
 
   handoff_to_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
-  auto fm = runtime->execute_index_space(ctx,handoff_to_mpi_launcher);
+  auto fm = runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
 
   fm.wait_all_results(true);
 } // legion_context_policy_t::handoff_to_mpi
@@ -169,8 +168,8 @@ legion_context_policy_t::handoff_to_mpi(Legion::Context & ctx,
 Legion::FutureMap
 legion_context_policy_t::wait_on_mpi(Legion::Context & ctx,
   Legion::Runtime * runtime) {
-  const auto tid = context_t::instance()
-                     .task_id<flecsi_internal_task_key(wait_on_mpi_task)>();
+  const auto tid =
+    context_t::instance().task_id<flecsi_internal_task_key(wait_on_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(tid,
@@ -178,7 +177,7 @@ legion_context_policy_t::wait_on_mpi(Legion::Context & ctx,
     Legion::TaskArgument(NULL, 0), arg_map);
 
   wait_on_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
-  auto fm = runtime->execute_index_space(ctx,wait_on_mpi_launcher);
+  auto fm = runtime->execute_index_space(ctx, wait_on_mpi_launcher);
 
   fm.wait_all_results(true);
 

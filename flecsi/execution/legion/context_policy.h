@@ -306,11 +306,11 @@ struct legion_context_policy_t {
     return task_entry->second;
   } // task_info
 
-  /*!
-    Return task key information.
+    /*!
+      Return task key information.
 
-    @param key The task hash key.
-   */
+      @param key The task hash key.
+     */
 
 #define task_info_template_method(name, return_type, index)                    \
   template<size_t KEY>                                                         \
@@ -322,11 +322,11 @@ struct legion_context_policy_t {
     return std::get<index>(task_info<KEY>());                                  \
   }
 
-  /*!
-    Return task key information.
+    /*!
+      Return task key information.
 
-    @param key The task hash key.
-   */
+      @param key The task hash key.
+     */
 
 #define task_info_method(name, return_type, index)                             \
   return_type name(size_t key) {                                               \

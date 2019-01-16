@@ -18,8 +18,8 @@
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/execution.h>
-#include <flecsi/utils/function_traits.h>
 #include <flecsi/utils/const_string.h>
+#include <flecsi/utils/function_traits.h>
 #include <flecsi/utils/macros.h>
 
 #include <flecsi-config.h>
@@ -69,8 +69,7 @@
                                                                                \
   /* Call the execution policy to register the task */                         \
   inline bool task##_task_registered =                                         \
-      flecsi::execution::legion_execution_policy_t::register_legion_task<      \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
-          typename flecsi::utils::function_traits_u<decltype(                  \
-              task)>::return_type,                                             \
-          task>(processor, launch, {EXPAND_AND_STRINGIFY(task)})
+    flecsi::execution::legion_execution_policy_t::register_legion_task<        \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+      typename flecsi::utils::function_traits_u<decltype(task)>::return_type,  \
+      task>(processor, launch, {EXPAND_AND_STRINGIFY(task)})

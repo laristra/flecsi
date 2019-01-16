@@ -44,7 +44,8 @@ namespace execution {
   Legion top-level task.
  *----------------------------------------------------------------------------*/
 
-void top_level_task(const Legion::Task * task,
+void
+top_level_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
   Legion::Runtime * runtime) {
@@ -57,7 +58,7 @@ void top_level_task(const Legion::Task * task,
 
   context_.connect_with_mpi(ctx, runtime);
   context_.wait_on_mpi(ctx, runtime);
-  
+
   auto args = runtime->get_input_args();
   context_.top_level_action()(args.argc, args.argv);
 
@@ -84,7 +85,8 @@ flecsi_internal_legion_task(handoff_to_mpi_task, void) {
 } // handoff_to_mpi_task
 
 flecsi_internal_register_legion_task(handoff_to_mpi_task,
-  processor_type_t::loc, index | leaf);
+  processor_type_t::loc,
+  index | leaf);
 
 /*!
  Interprocess communication to wait for control to pass back to the Legion
@@ -98,7 +100,8 @@ flecsi_internal_legion_task(wait_on_mpi_task, void) {
 } // wait_on_mpi_task
 
 flecsi_internal_register_legion_task(wait_on_mpi_task,
-  processor_type_t::loc, index | leaf);
+  processor_type_t::loc,
+  index | leaf);
 
 /*!
  Interprocess communication to unset mpi execute state.
@@ -111,7 +114,8 @@ flecsi_internal_legion_task(unset_call_mpi_task, void) {
 } // unset_call_mpi_task
 
 flecsi_internal_register_legion_task(unset_call_mpi_task,
-  processor_type_t::loc, index | leaf);
+  processor_type_t::loc,
+  index | leaf);
 
 } // namespace execution
 } // namespace flecsi

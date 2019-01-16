@@ -115,29 +115,29 @@ public:
   virtual ~mpi_mapper_t(){};
 
   Legion::LayoutConstraintID default_policy_select_layout_constraints(
-      Legion::Mapping::MapperContext ctx,
-      Realm::Memory target_memory,
-      const Legion::RegionRequirement &req,
-      Legion::Mapping::DefaultMapper::MappingKind mapping_kind,
-      bool needs_field_constraint_check,
-      bool &force_new_instances)
-  {
-      // We always set force_new_instances to false since we are
-      // deciding to optimize for minimizing memory usage instead
-      // of avoiding Write-After-Read (WAR) dependences
-      force_new_instances = false;
-      std::vector<Legion::DimensionKind> ordering;
-      ordering.push_back(Legion::DimensionKind::DIM_Y);
-      ordering.push_back(Legion::DimensionKind::DIM_X);
-      ordering.push_back(Legion::DimensionKind::DIM_F);  // SOA
-      Legion::OrderingConstraint ordering_constraint(ordering, true /*contiguous*/);
-      Legion::LayoutConstraintSet layout_constraint;
-      layout_constraint.add_constraint(ordering_constraint);
+    Legion::Mapping::MapperContext ctx,
+    Realm::Memory target_memory,
+    const Legion::RegionRequirement & req,
+    Legion::Mapping::DefaultMapper::MappingKind mapping_kind,
+    bool needs_field_constraint_check,
+    bool & force_new_instances) {
+    // We always set force_new_instances to false since we are
+    // deciding to optimize for minimizing memory usage instead
+    // of avoiding Write-After-Read (WAR) dependences
+    force_new_instances = false;
+    std::vector<Legion::DimensionKind> ordering;
+    ordering.push_back(Legion::DimensionKind::DIM_Y);
+    ordering.push_back(Legion::DimensionKind::DIM_X);
+    ordering.push_back(Legion::DimensionKind::DIM_F); // SOA
+    Legion::OrderingConstraint ordering_constraint(
+      ordering, true /*contiguous*/);
+    Legion::LayoutConstraintSet layout_constraint;
+    layout_constraint.add_constraint(ordering_constraint);
 
-      // Do the registration
-      Legion::LayoutConstraintID result =
-        runtime->register_layout(ctx, layout_constraint);
-      return result;
+    // Do the registration
+    Legion::LayoutConstraintID result =
+      runtime->register_layout(ctx, layout_constraint);
+    return result;
   }
 
   /*!
@@ -159,7 +159,8 @@ public:
     Legion::Mapping::Mapper::MapTaskOutput & output) {
     DefaultMapper::map_task(ctx, task, input, output);
 
-    if((task.tag == FLECSI_MAPPER_COMPACTED_STORAGE) && (task.regions.size() > 0)) {
+    if((task.tag == FLECSI_MAPPER_COMPACTED_STORAGE) &&
+       (task.regions.size() > 0)) {
 
       Legion::Memory target_mem =
         DefaultMapper::default_policy_select_target_memory(
@@ -194,10 +195,9 @@ public:
           flog_assert((task.regions.size() >= (indx + 2)),
             "ERROR:: wrong number of regions passed to the task wirth \
                the  tag = FLECSI_MAPPER_COMPACTED_STORAGE");
-          
+
           flog_assert((!task.regions[indx].region.exists()),
-            "ERROR:: pasing not existing REGION to the mapper"
-            );
+            "ERROR:: pasing not existing REGION to the mapper");
           regions.push_back(task.regions[indx].region);
           regions.push_back(task.regions[indx + 1].region);
           regions.push_back(task.regions[indx + 2].region);
@@ -227,7 +227,7 @@ public:
         } // end if
       } // end for
 
-    }// end if
+    } // end if
 
   } // map_task
 
@@ -246,10 +246,10 @@ public:
       output.slices[0].domain = input.domain;
       output.slices[0].proc = task.target_proc;
       return;
-    } //end if FLECSI_MAPPER_SUBRANK_LAUNCH
+    } // end if FLECSI_MAPPER_SUBRANK_LAUNCH
 
-    if(task.tag == FLECSI_MAPPER_FORCE_RANK_MATCH){
-    // expect a 1-D index domain - each point goes to the corresponding node
+    if(task.tag == FLECSI_MAPPER_FORCE_RANK_MATCH) {
+      // expect a 1-D index domain - each point goes to the corresponding node
       assert(input.domain.get_dim() == 1);
       LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();
 
@@ -258,20 +258,20 @@ public:
       std::map<int, Legion::Processor> targets;
 
       Legion::Machine::ProcessorQuery pq =
-	Legion::Machine::ProcessorQuery(machine).only_kind(
-		Legion::Processor::LOC_PROC);
+        Legion::Machine::ProcessorQuery(machine).only_kind(
+          Legion::Processor::LOC_PROC);
       for(Legion::Machine::ProcessorQuery::iterator it = pq.begin();
-    	it != pq.end(); ++it) {
+          it != pq.end(); ++it) {
         Legion::Processor p = *it;
         int a = p.address_space();
         if(targets.count(a) == 0)
-	  targets[a] = p;
+          targets[a] = p;
       }
 
       output.slices.resize(1);
       for(int a = r.lo[0]; a <= r.hi[0]; a++) {
         assert(targets.count(a) > 0);
-        output.slices[0].domain = //Legion::Domain::from_rect<1>(
+        output.slices[0].domain = // Legion::Domain::from_rect<1>(
           Legion::Rect<1>(a, a);
         output.slices[0].proc = targets[a];
       }
