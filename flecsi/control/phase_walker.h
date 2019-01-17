@@ -41,6 +41,8 @@ using phase_ = flecsi::utils::typeify_u<size_t, PHASE>;
   @tparam PREDICATE  A predicate function that determines when
                      the cycle should end.
   @tparam PHASES ... A variadic list of phases within the cycle.
+
+  @ingroup control
  */
 
 template<bool (*PREDICATE)(), typename... PHASES>
@@ -64,6 +66,8 @@ struct cycle_u {
 /*!
   The phase_walker_u class allows execution of statically-defined
   control points.
+
+  @ingroup control
  */
 
 template<typename CONTROL_POLICY>
@@ -116,6 +120,8 @@ private:
 /*!
   The phase_writer_u class allows execution of statically-defined
   control points.
+
+  @ingroup control
  */
 
 template<typename CONTROL_POLICY>

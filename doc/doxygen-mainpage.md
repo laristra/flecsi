@@ -41,14 +41,11 @@ The FleCSI code base is divided into several namespaces:
 * **flecsi::execution**<br>
   FleCSI execution model types and interfaces.
 
+* **flecsi::control**<br>
+  FleCSI control model types and interfaces.
+
 * **flecsi::topology**<br>
   FleCSI graph, mesh, and tree topology data structures and interfaces.
-
-* **flecsi::geometry**<br>
-  FleCSI geometry types and interfaces.
-
-* **flecsi::dmp**<br>
-  FleCSI distributed-memory parallel types and interfaces.
 
 * **flecsi::io**<br>
   FleCSI I/O types and interfaces.
@@ -81,16 +78,10 @@ struct type_name_u {};
 using type_name_t = type_name_u<double>;
 ```
 
-## Design Patterns
-
-FleCSI makes use of several formal design patterns. Many of these are
-documented in the [Related Pages](pages.html) section of the documentation.
-
-
 ## More Documentation
 
 This document is intended only as documentation for the FleCSI C++
 interface. The FleCSI Developer and User Guides are available
-[here](https://flecsi.lanl.gov).
+[here](https://flecsi.org).
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->

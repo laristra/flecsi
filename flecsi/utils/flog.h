@@ -42,10 +42,12 @@
   Register a tag group with the runtime (flog_t). We need the static
   size_t so that tag scopes can be created quickly during execution.
 
-  @ingroup logging
+  @ingroup flog
  */
 
 #define flog_register_tag(name)                                                \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
   static size_t name##_flog_tag_id =                                           \
     flecsi::utils::flog::flog_t::instance().register_tag(                      \
       _flog_stringify(name))
@@ -55,10 +57,12 @@
 
   Create a new tag scope.
 
-  @ingroup logging
+  @ingroup flog
  */
 
 #define flog_tag_guard(name)                                                   \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
   flecsi::utils::flog::flog_tag_scope_t name##_flog_tag_scope__(               \
     flecsi::utils::flog::flog_t::instance().lookup_tag(_flog_stringify(name)))
 
@@ -67,10 +71,13 @@
 
   Return a std::map of registered tags.
 
-  @ingroup logging
+  @ingroup flog
  */
 
-#define flog_tag_map() flecsi::utils::flog::flog_t::instance().tag_map()
+#define flog_tag_map()                                                         \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::utils::flog::flog_t::instance().tag_map()
 
 /*!
   @def flog_init(active)
@@ -96,7 +103,7 @@
   } // main
   \endcode
 
-  @ingroup logging
+  @ingroup flog
  */
 
 #define flog_init(active)                                                      \
@@ -127,7 +134,7 @@
   flog(warn) << "Value: " << value << std::endl;
   @endcode
 
-  @ingroup logging
+  @ingroup flog
  */
 
 #define flog(severity)                                                         \
@@ -151,7 +158,7 @@
   flog_trace("Value: " << value);
   @endcode
 
-  @ingroup logging
+  @ingroup flog
  */
 
 #define flog_trace(message)                                                    \
@@ -175,7 +182,7 @@
   flog_info("Value: " << value);
   @endcode
 
-  @ingroup logging
+  @ingroup flog
  */
 
 #define flog_info(message)                                                     \
@@ -199,7 +206,7 @@
   flog_warn("Value: " << value);
   @endcode
 
-  @ingroup logging
+  @ingroup flog
  */
 
 #define flog_warn(message)                                                     \
@@ -223,7 +230,7 @@
   flog_error("Value: " << value);
   @endcode
 
-  @ingroup logging
+  @ingroup flog
  */
 
 #define flog_error(message)                                                    \

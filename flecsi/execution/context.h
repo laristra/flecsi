@@ -190,10 +190,10 @@ struct context_u : public CONTEXT_POLICY {
    *--------------------------------------------------------------------------*/
 
   /*!
-    Register a funtion with the runtime. Internally, interface is used both
-    for user-defined functions, and for task registration for MPI.
+    Register a funtion with the runtime. Internally, this interface is
+    used both for user-defined functions, and for task registration for MPI.
 
-    @tparam KEY       A hash key identifying the.
+    @tparam KEY       A hash key identifying the function.
     @tparam RETURN    The return type of the function.
     @tparam ARG_TUPLE A std::tuple of the function argument types.
     @tparam FUNCTION  A pointer to the function.

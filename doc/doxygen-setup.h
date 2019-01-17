@@ -1,10 +1,28 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 
 #ifndef FLECSI_DOXYGEN_SETUP_INCLUDE_ERROR
 #error "This file is only provided for Doxygen setup. DO NOT INCLUDE IT!!!"
+
+//----------------------------------------------------------------------------//
+// Control Model
+//----------------------------------------------------------------------------//
+
+/**
+ * Define the Control Model group.
+ * @defgroup control Control Interface
+ **/
 
 //----------------------------------------------------------------------------//
 // Execution Model
@@ -103,16 +121,11 @@
  **/
 
 //----------------------------------------------------------------------------//
-// Clog
+// Flog
 //----------------------------------------------------------------------------//
 
 /**
- * The Cinch logging utility (clog) provides a C++ interface for capturing
+ * The FleCSI logging utility (flog) provides a C++ interface for capturing
  * output during program execution.
- * @defgroup clog Cinch Logging Interface (clog)
+ * @defgroup flog FleCSI Logging Interface (flog)
  **/
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

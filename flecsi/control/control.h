@@ -41,6 +41,8 @@ namespace control {
   If Graphviz support is enabled, the control flow graph and its DAG nodes
   can be written to a graphviz file that can be compiled and viewed using
   the \em dot program.
+
+  @ingroup control
  */
 
 template<typename CONTROL_POLICY>
