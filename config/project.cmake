@@ -177,7 +177,6 @@ if(ENABLE_GRAPHVIZ)
 
   if(GRAPHVIZ_FOUND)
     include_directories(${GRAPHVIZ_INCLUDE_DIRS})
-    add_definitions(-DENABLE_GRAPHVIZ)
 
     list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${GRAPHVIZ_INCLUDE_DIR})
     list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${GRAPHVIZ_LIBRARIES})
@@ -196,7 +195,6 @@ if(ENABLE_OPENSSL)
 
   if(OPENSSL_FOUND)
     include_directories(${OPENSSL_INCLUDE_DIR})
-    add_definitions(-DENABLE_OPENSSL)
 
     list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${OPENSSL_INCLUDE_DIR})
     list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${OPENSSL_LIBRARIES})
@@ -262,19 +260,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   #
   # Compacted storage interface
   #
-  option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper compaction" OFF)
-
-  if(ENABLE_MAPPER_COMPACTION)
-    add_definitions(-DMAPPER_COMPACTION)
-    set (MAPPER_COMPACTION TRUE)
-  else()
-    option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" OFF)
-
-    if(COMPACTED_STORAGE_SORT)
-      add_definitions(-DCOMPACTED_STORAGE_SORT)
-      set(COMPACTED_STORAGE_SORT TRUE)
-    endif()
-  endif()
+  option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper compaction" ON)
+  mark_as_advanced(ENABLE_MAPPER_COMPACTION)
 
 #
 # MPI interface

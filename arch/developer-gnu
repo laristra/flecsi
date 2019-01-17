@@ -46,7 +46,7 @@ do
     legion|hpx)
       runtime=$1
     ;;
-    -D*)
+    *)
       cmake_args="$cmake_args $1"
     ;;
 	esac
