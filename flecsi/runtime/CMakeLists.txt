@@ -18,7 +18,7 @@ set(runtime_HEADERS
   flecsi_runtime_entity_storage_policy.h
   flecsi_runtime_storage_policy.h
   flecsi_runtime_data_handle_policy.h
-  flecsi_runtime_data_client_handle_policy.h
+  flecsi_runtime_client_handle_policy.h
   flecsi_runtime_data_policy.h
   flecsi_runtime_topology_policy.h
   flecsi_runtime_set_topology_policy.h
