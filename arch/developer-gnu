@@ -23,8 +23,8 @@ fi
 #------------------------------------------------------------------------------#
 
 cmake_mode=cmake
-extra_define=""
 runtime=mpi
+cmake_args=""
 
 while [[ $# -gt 0 ]]
 do
@@ -46,6 +46,9 @@ do
     legion|hpx)
       runtime=$1
     ;;
+    -D*)
+      cmake_args="$cmake_args $1"
+    ;;
 	esac
 
 	shift # next argument
@@ -55,17 +58,22 @@ done
 # Call CMake command
 #------------------------------------------------------------------------------#
 
+echo "Executing:"
+echo "$cmake_mode -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_FLAGS=\"-fmax-errors=5 -Wno-deprecated-declarations -fdiagnostics-color=always\" -DCMAKE_C_COMPILER=gcc -DCMAKE_C_FLAGS=\"-fmax-errors=5 -fdiagnostics-color=always\" -DFLECSI_RUNTIME_MODEL=$runtime -DENABLE_BOOST=ON -DENABLE_FLOG=ON -DENABLE_UNIT_TESTS=ON -DENABLE_FLECSIT=ON -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} $cmake_args $cinch_dir"
+echo ""
+
 $cmake_mode \
   -DCMAKE_CXX_COMPILER=g++ \
   -DCMAKE_CXX_FLAGS="-fmax-errors=5 -Wno-deprecated-declarations -fdiagnostics-color=always" \
   -DCMAKE_C_COMPILER=gcc \
   -DCMAKE_C_FLAGS="-fmax-errors=5 -fdiagnostics-color=always" \
-  -DFLECSI_RUNTIME_MODEL=$runtime $extra_define \
+  -DFLECSI_RUNTIME_MODEL=$runtime \
   -DENABLE_BOOST=ON \
   -DENABLE_FLOG=ON \
   -DENABLE_UNIT_TESTS=ON \
   -DENABLE_FLECSIT=ON \
   -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
+  $cmake_args \
   $cinch_dir
 
 #------------------------------------------------------------------------------#
