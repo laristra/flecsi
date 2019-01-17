@@ -17,11 +17,11 @@
 
 #include <tuple>
 
+#include <flecsi/utils/const_string.h>
 #include <flecsi/control/control.h>
 #include <flecsi/utils/flog.h>
 #include <flecsi/utils/ftest/node.h>
 #include <flecsi/utils/ftest/types.h>
-#include <flecsi/utils/macros.h>
 
 namespace flecsi {
 namespace control {
@@ -45,6 +45,15 @@ struct ftest_control_policy_t {
 
 using control_t =
   flecsi::control::control_u<flecsi::control::ftest_control_policy_t>;
+
+/*
+  Register a command-line option "--control-model" to output a dot file
+  that can be used to visualize the control points and actions of an
+  ftest executable. This macro can be used for any qualified control_u
+  specialization (not just the ftest example here).
+ */
+
+flecsi_register_control_options(control_t);
 
 } // namespace control
 } // namespace flecsi

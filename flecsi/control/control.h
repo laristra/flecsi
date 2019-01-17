@@ -153,3 +153,61 @@ private:
 
 } // namespace control
 } // namespace flecsi
+
+#if defined(FLECSI_ENABLE_GRAPHVIZ) && defined(FLECSI_ENABLE_BOOST)
+#include <cinch/runtime.h>
+
+/*!
+  @def flecsi_register_control_options
+
+  This macro registers a command-line option "--control-model" that,
+  when invoked, outputs a graphviz dot file that can be used to
+  visualize the control points and actions of an executable that
+  uses the control type passed as an argument.
+
+  @param control_type A qualified specialization of control_u.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_control_options(control_type)                          \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  using namespace boost::program_options;                                      \
+                                                                               \
+  inline void flecsi_control_add_options(options_description & desc) {         \
+    desc.add_options()(                                                        \
+      "control-model", "Output the current control model and exit.");          \
+  }                                                                            \
+                                                                               \
+  inline int flecsi_control_initialize(                                        \
+    int argc, char ** argv, variables_map & vm) {                              \
+    if(vm.count("control-model")) {                                            \
+      flecsi::utils::graphviz_t gv;                                            \
+      control_type::instance().write(gv);                                      \
+      auto file =                                                              \
+        flecsi::utils::flog::rstrip<'/'>(argv[0]) + "-control-model.dot";      \
+      std::cout << "Writing control model to " << file << std::endl;           \
+      gv.write(file.c_str());                                                  \
+      return 1;                                                                \
+    }                                                                          \
+                                                                               \
+    return 0;                                                                  \
+  }                                                                            \
+                                                                               \
+  inline int flecsi_control_finalize(                                          \
+    int argc, char ** argv, cinch::exit_mode_t mode) {                         \
+    return 0;                                                                  \
+  }                                                                            \
+                                                                               \
+  inline cinch::runtime_handler_t flecsi_control_handler{                      \
+    flecsi_control_initialize, flecsi_control_finalize,                        \
+    flecsi_control_add_options};                                               \
+                                                                               \
+  cinch_append_runtime_handler(flecsi_control_handler);
+
+#else
+
+#define flecsi_register_control_options(control_type)
+
+#endif // FLECSI_ENABLE_GRAPHVIZ && FLECSI_ENABLE_BOOST

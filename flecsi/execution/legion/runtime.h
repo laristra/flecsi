@@ -44,7 +44,7 @@ inline std::string __flecsi_tags = "all";
 
 #if defined(CINCH_ENABLE_BOOST)
 inline void
-add_options(options_description & desc) {
+flecsi_legion_add_options(options_description & desc) {
 #if defined(FLECSI_ENABLE_FLOG)
   desc.add_options()("tags,t", value(&__flecsi_tags)->implicit_value("0"),
     "Enable the specified output tags, e.g., --tags=tag1,tag2."
@@ -55,11 +55,10 @@ add_options(options_description & desc) {
 
 #if defined(CINCH_ENABLE_BOOST)
 inline int
-initialize(int argc, char ** argv, parsed_options & parsed) {
+flecsi_legion_initialize(int argc, char ** argv, variables_map & vm) {
 #else
 inline int
-initialize(int argc, char ** argv) {
-  std::cout << "Executing initialize" << std::endl;
+flecsi_legion_initialize(int argc, char ** argv) {
 #endif
 
 #if defined(FLECSI_ENABLE_FLOG)
@@ -106,7 +105,7 @@ initialize(int argc, char ** argv) {
 } // initialize
 
 inline int
-finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
+flecsi_legion_finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
 
 // Shutdown the MPI runtime
 #ifndef GASNET_CONDUIT_MPI
@@ -116,19 +115,19 @@ finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
   return 0;
 } // initialize
 
-inline cinch::runtime_handler_t handler {
-  initialize, finalize
+inline cinch::runtime_handler_t flecsi_legion_handler {
+  flecsi_legion_initialize, flecsi_legion_finalize
 #if defined(CINCH_ENABLE_BOOST)
     ,
-    add_options
+    flecsi_legion_add_options
 #endif
 };
 
-cinch_append_runtime_handler(handler);
+cinch_append_runtime_handler(flecsi_legion_handler);
 
 inline int
-runtime_driver(int argc, char ** argv) {
+flecsi_legion_runtime_driver(int argc, char ** argv) {
   return flecsi::execution::context_t::instance().start(argc, argv);
 } // runtime_driver
 
-cinch_register_runtime_driver(runtime_driver);
+cinch_register_runtime_driver(flecsi_legion_runtime_driver);

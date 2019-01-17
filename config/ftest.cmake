@@ -232,6 +232,7 @@ function(ftest_add_unit name)
   target_link_libraries(${name} FleCSI)
   target_link_libraries(${name} ${CINCH_RUNTIME_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT})
+  target_link_libraries(${name} ${FLECSI_LIBRARY_DEPENDENCIES})
 
   if(unit_policy_libraries)
     target_link_libraries(${name} ${unit_policy_libraries})
