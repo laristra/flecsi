@@ -94,6 +94,59 @@ flecsi_internal_register_legion_task(
     check_task,
     processor_type_t::loc,
     index | leaf);
+
+void copy_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context context,
+  Legion::Runtime * runtime)
+{
+  const int my_color = runtime->find_local_MPI_rank();
+
+  clog_assert(regions.size() == 2, "ghost_copy_task requires 2 regions");
+  clog_assert(task->regions.size() == 2, "ghost_copy_task requires 2 regions");
+
+  Legion::Domain owner_domain = runtime->get_index_space_domain(
+    context, regions[0].get_logical_region().get_index_space());
+  Legion::Domain ghost_domain = runtime->get_index_space_domain(
+    context, regions[1].get_logical_region().get_index_space());
+
+   FieldID fid = *(task->regions[0].privilege_fields.begin());
+
+   const Legion::FieldAccessor<READ_ONLY, size_t, 2,
+        Legion::coord_t, Realm::AffineAccessor< size_t, 2, Legion::coord_t> >
+        owner_acc(regions[0], fid, sizeof(size_t));
+  const Legion::FieldAccessor<READ_WRITE, size_t, 2,
+        Legion::coord_t, Realm::AffineAccessor<size_t, 2, Legion::coord_t> >
+        ghost_acc(regions[1], fid, sizeof(size_t));
+
+  std::vector <Legion::DomainPoint > owner_pts;
+
+  for (Legion::Domain::DomainPointIterator itr(owner_domain); itr; itr++) {
+        owner_pts.push_back(itr.p);
+  }//for
+
+  size_t count = 0;
+  for (Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
+      auto &ghost_ptr = itr.p;
+      auto owner_ptr = owner_pts[count];
+      
+      size_t *ptr_ghost_acc = (size_t*)(ghost_acc.ptr(ghost_ptr));
+      size_t *ptr_owner_acc = (size_t*)(owner_acc.ptr(owner_pts[count]));
+      memcpy(ptr_ghost_acc, ptr_owner_acc, sizeof(size_t));
+      count++;
+      std::cout <<"IRINA DEBUG sh = "<<size_t(*ptr_owner_acc)<<" , gh = "<<
+                size_t(*ptr_ghost_acc)<<std::endl;
+      std::cout<<"IRINA DEBUG owner pt = "<<owner_pts[count-1]<<
+        ", ghost = "<< ghost_ptr<<std::endl;
+  }//for
+
+}//copy_task
+
+// Register the task. The task id is automatically generated.
+flecsi_internal_register_legion_task(
+    copy_task,
+    processor_type_t::loc,
+    index | leaf);
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
@@ -133,7 +186,7 @@ void driver(int argc, char ** argv) {
     LegionRuntime::Arrays::Rect<2> primary_rect(
             make_point(color, 0),
             make_point(
-                color, num_elmts + num_ghost - 1));
+                color, num_elmts - 1));
      primary_partitioning[color] = Domain::from_rect<2>(primary_rect);
   }
  
@@ -168,10 +221,10 @@ void driver(int argc, char ** argv) {
   fm.wait_all_results(true);
 
 
-  //creating exclusive, shared and ghost partitionings  
-  IndexPartition ex_ip, sh_ip, gh_ip;
+  //creating exclusive, shared and ghost and owner partitionings  
+  IndexPartition ex_ip, sh_ip, gh_ip, owner_ip;
   {
-    DomainColoring ex_coloring, sh_coloring, gh_coloring;
+    DomainColoring ex_coloring, sh_coloring, gh_coloring, owner_coloring;
     int index = 0;
     // Iterate over all the colors and compute the entry
     // for both partitions for each color.
@@ -181,11 +234,23 @@ void driver(int argc, char ** argv) {
         make_point(color, 0),
             make_point(color, num_elmts - num_ghost - 1));
       LegionRuntime::Arrays::Rect<2> subrect2(
-        make_point(color, num_elmts - num_ghost - 1),
+        make_point(color, num_elmts - num_ghost ),
             make_point(color, num_elmts  - 1));
       LegionRuntime::Arrays::Rect<2> subrect3(
-        make_point(color, num_elmts  - 1),
+        make_point(color, num_elmts  ),
             make_point(color, num_elmts + num_ghost - 1));
+      if (color >0){
+        LegionRuntime::Arrays::Rect<2> subrect4(
+          make_point(color-1, num_elmts - num_ghost ),
+            make_point(color-1, num_elmts  - 1));
+        owner_coloring[color] = Domain::from_rect<2>(subrect4);
+      }
+      else{
+        LegionRuntime::Arrays::Rect<2> subrect4(
+          make_point(num_colors-1, num_elmts -num_ghost ),
+            make_point(num_colors-1, num_elmts  - 1));
+        owner_coloring[color] = Domain::from_rect<2>(subrect4);
+      }
 
       ex_coloring[color] = Domain::from_rect<2>(subrect1);
       sh_coloring[color] = Domain::from_rect<2>(subrect2);
@@ -197,6 +262,8 @@ void driver(int argc, char ** argv) {
                                     sh_coloring, true/*disjoint*/);
     gh_ip = runtime->create_index_partition(context , is, color_domain,
                                     gh_coloring, true/*disjoint*/);
+    owner_ip = runtime->create_index_partition(context , is, color_domain,
+                                    owner_coloring, true/*disjoint*/);
   }
 
   LogicalPartition ex_lp =
@@ -205,10 +272,33 @@ void driver(int argc, char ** argv) {
     runtime->get_logical_partition(context, lr, sh_ip);
   LogicalPartition gh_lp =
     runtime->get_logical_partition(context, lr, gh_ip);
- 
-  auto key_1 = flecsi_context.task_id<flecsi_internal_task_key(check_task)>();
+  LogicalPartition owner_lp =
+    runtime->get_logical_partition(context, lr, owner_ip);
 
-  Legion::IndexLauncher check_launcher(key_1, 
+  //copy launcher
+  auto key_1 = flecsi_context.task_id<flecsi_internal_task_key(copy_task)>();
+   Legion::IndexLauncher ghost_launcher(key_1, 
+          Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+          Legion::TaskArgument(nullptr, 0),
+          Legion::ArgumentMap());
+
+  Legion::RegionRequirement rr_owners(owner_lp,
+      0/*projection ID*/, READ_ONLY, EXCLUSIVE, lr);
+  rr_owners.add_field(FID_VAL);
+  Legion::RegionRequirement rr_ghost(gh_lp,
+      0/*projection ID*/, READ_WRITE, EXCLUSIVE, lr);
+  rr_ghost.add_field(FID_VAL);
+
+  ghost_launcher.add_region_requirement(rr_owners);
+  ghost_launcher.add_region_requirement(rr_ghost);
+
+  ghost_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  auto ghost_future = runtime->execute_index_space(context, ghost_launcher);
+  ghost_future.wait_all_results();
+
+  auto key_2 = flecsi_context.task_id<flecsi_internal_task_key(check_task)>();
+
+  Legion::IndexLauncher check_launcher(key_2, 
       Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
      Legion::TaskArgument(nullptr, 0), Legion::ArgumentMap());
 
@@ -217,19 +307,19 @@ void driver(int argc, char ** argv) {
       RegionRequirement(ex_lp, 0/*projection ID*/,
                        READ_ONLY, EXCLUSIVE, lr, tag))
       .add_field(FID_VAL);
-//  check_launcher.add_region_requirement(
-//      RegionRequirement(sh_lp, 0/*projection ID*/,
-//                        READ_ONLY, EXCLUSIVE, lr))
-//      .add_field(FID_VAL);
+  check_launcher.add_region_requirement(
+      RegionRequirement(sh_lp, 0/*projection ID*/,
+                        READ_ONLY, EXCLUSIVE, lr))
+      .add_field(FID_VAL);
   check_launcher.add_region_requirement(
       RegionRequirement(gh_lp, 0/*projection ID*/,
                         READ_ONLY, EXCLUSIVE, lr))
       .add_field(FID_VAL);
 
-  check_launcher.add_region_requirement(
-      RegionRequirement(sh_lp, 0/*projection ID*/,
-                        READ_ONLY, EXCLUSIVE, lr))
-      .add_field(FID_VAL);
+//  check_launcher.add_region_requirement(
+//      RegionRequirement(sh_lp, 0/*projection ID*/,
+//                        READ_ONLY, EXCLUSIVE, lr))
+//      .add_field(FID_VAL);
 
   check_launcher.tag=MAPPER_COMPACTED_STORAGE;
   check_launcher.tag = MAPPER_FORCE_RANK_MATCH;
