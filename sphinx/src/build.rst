@@ -36,16 +36,22 @@ options, but is not necessary for a particular build:
 * **GASNet** |br|
   GASNet is only required if Legion support is enabled.
 
+* **CMake** |br|
+  We currently require CMake version 3.9 or greater.
+
+* **Boost** |br|
+  Boost is only required if you wish to enable program options support
+  in the FleCSI unit test and tutorial executables. Please read this
+  explanation for more information.
+
 * **Doxygen** |br|
   Doxygen is only required to build the interface documentation.
 
 * **Sphinx** |br|
   Sphinx only required to build the web-based documentation. We are
   currently using Sphinx 1.1.0. We also require the Sphinx RTD Theme
-  (using version 0.4.2).
-
-* **CMake** |br|
-  We currently require CMake version 3.9 or greater.
+  (using version 0.4.2). These can be installed on most Linux systems
+  using pip.
 
 * **Python** |br|
   We currently require Python 2.7 or greater.
@@ -82,10 +88,10 @@ Build instructions for the TPLs:
   $ cd build
   $ cmake -DCMAKE_INSTALL_PREFIX=/path/to/install/directory ..
   $ make
+  $ make install
 
-The *make* command will also install the TPLs in the specified install
-directory. **It is recommended that users remove the install directory
-before updating or re-compiling the TPLs.**
+**It is recommended that users remove the install directory before
+updating or re-compiling the TPLs to insure a clean build.**
 
 Build Environment
 *****************
@@ -148,32 +154,25 @@ Example configuration: **MPI**
 
 .. code-block:: console
 
-  $ cmake -DFLECSI_RUNTIME_MODEL=mpi -DENABLE_MPI -DENABLE_COLORING ..
+  $ cmake -DFLECSI_RUNTIME_MODEL=mpi ..
 
 Example configuration: **MPI + OpenMP**
 
 .. code-block:: console
 
-  $ cmake -DFLECSI_RUNTIME_MODEL=mpi -DENABLE_MPI -DENABLE_COLORING -DENABLE_OPENMP ..
+  $ cmake -DFLECSI_RUNTIME_MODEL=mpi -DENABLE_OPENMP ..
 
 Example configuration: **Legion**
 
 .. code-block:: console
 
-  $ cmake -DFLECSI_RUNTIME_MODEL=legion -DENABLE_MPI -DENABLE_COLORING ..
+  $ cmake -DFLECSI_RUNTIME_MODEL=legion ..
 
 After configuration is complete, just use *make* to build:
 
 .. code-block:: console
 
   $ make -j 16
-
-This will build all targets *except* for the Doxygen documentation, which
-can be built with:
-
-.. code-block:: console
-
-  $ make doxygen
 
 Installation uses the normal *make install*, and will install FleCSI in
 the directory specified by CMAKE_INSTALL_PREFIX:
@@ -182,11 +181,64 @@ the directory specified by CMAKE_INSTALL_PREFIX:
 
   $ make install
 
+Building the Unit Tests
+***********************
+
+To build FleCSI unit test suite, enable the option for the FleCSI
+logging utility (flog). **By default, this will also enable the unit
+tests.**
+
+.. code-block:: console
+
+  $ cmake .. -DENABLE_FLOG
+
+After building FleCSI, you can run the unit tests like:
+
+.. code-block:: console
+
+  $ make test
+
 Building the Documentation
 **************************
 
-Install pip3. Using pip3, install sphinx, recommonmark, and
-sphinx_rtd_theme.
+FleCSI uses Doxygen for its API reference, and Sphinx for user and
+developer documentation.
+
+Doxygen can be installed with most Linux package managers.  To install
+Sphinx, you can install pip3, and use it to install *Sphinx*,
+*recommonmark*, and *sphinx_rtd_theme*. Your package manager should also
+have pip3, e.g., on Ubuntu, you can install all of these requirements
+like:
+
+.. code-block:: console
+
+  $ sudo apt install doxygen
+  $ sudo apt install pip3
+  $ pip3 install Sphinx
+  $ pip3 install recommonmark
+  $ pip3 install sphinx_rtd_theme
+
+To enable Doxygen and Sphinx, these options need to be enabled in CMake:
+
+.. code-block:: console
+
+  $ cmake -DENABLE_DOXYGEN=ON -DENABLE_SPHINX=ON ..
+
+Once you have properly configured FleCSI, you can build the
+documentation like:
+
+.. code-block:: console
+
+  $ make doxygen
+  $ make sphinx
+
+Both of these targets will be built in your build directory under *doc*,
+e.g., the main Doxygen index.html page will be located at
+*'doc/doxygen/html/index.html'*. Similarly, the Sphinx main index.html
+page will be located at *'doc/sphinx/index.html'*. You can open these in
+your browser with
+*file:///path/to/your/build/directory/doc/doxygen/html/index.html*, and
+*file:///path/to/your/build/directory/doc/sphinx/index.html*.
 
 .. toctree::
   :caption: Advanced:
