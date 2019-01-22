@@ -41,7 +41,8 @@ void fill_task(const Legion::Task * task,
             input_region.get_logical_region().get_index_space());
     LegionRuntime::Arrays::Rect<2> rect = domain.get_rect<2>();
     int count=0;
-    for (LegionRuntime::Arrays::GenericPointInRectIterator<2> pir(rect); pir; pir++){
+    for (LegionRuntime::Arrays::GenericPointInRectIterator<2> pir(rect);
+        pir; pir++){
       count++;
       acc.write(DomainPoint::from_point<2>(pir.p), count);
     }
@@ -70,6 +71,28 @@ int check_task(const Legion::Task * task,
   FieldID fid = *(task->regions[0].privilege_fields.begin());
 
   size_t * combined_data;
+
+//DEBUG
+{
+  Legion::Domain ex_dom =
+    runtime->get_index_space_domain(context, ex_is);
+  LegionRuntime::Arrays::Rect<2> ex_rect = ex_dom.get_rect<2>();
+  std::cout <<"IRINA DEBUG, ex_rect = "<<ex_rect<<std::endl;
+
+  IndexSpace sh_is=task->regions[1].region.get_index_space();
+  Legion::Domain sh_dom =
+    runtime->get_index_space_domain(context, sh_is);
+  LegionRuntime::Arrays::Rect<2> sh_rect = sh_dom.get_rect<2>();
+  std::cout <<"IRINA DEBUG, ex_rect = "<<sh_rect<<std::endl;
+
+  IndexSpace gh_is=task->regions[2].region.get_index_space();
+  Legion::Domain gh_dom =
+    runtime->get_index_space_domain(context, gh_is);
+  LegionRuntime::Arrays::Rect<2> gh_rect = gh_dom.get_rect<2>();
+  std::cout <<"IRINA DEBUG, ex_rect = "<<gh_rect<<std::endl;
+
+
+}
 
   Legion::Domain ex_dom =
     runtime->get_index_space_domain(context, ex_is);
@@ -217,6 +240,7 @@ void driver(int argc, char ** argv) {
 
 
   fill_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  fill_launcher.tag = MAPPER_COMPACTED_STORAGE;
   auto fm = runtime->execute_index_space(context, fill_launcher);
   fm.wait_all_results(true);
 
@@ -283,16 +307,17 @@ void driver(int argc, char ** argv) {
           Legion::ArgumentMap());
 
   Legion::RegionRequirement rr_owners(owner_lp,
-      0/*projection ID*/, READ_ONLY, EXCLUSIVE, lr);
+      0/*projection ID*/, READ_WRITE, EXCLUSIVE, lr);
   rr_owners.add_field(FID_VAL);
   Legion::RegionRequirement rr_ghost(gh_lp,
-      0/*projection ID*/, READ_WRITE, EXCLUSIVE, lr);
+      0/*projection ID*/, WRITE_DISCARD, EXCLUSIVE, lr);
   rr_ghost.add_field(FID_VAL);
 
   ghost_launcher.add_region_requirement(rr_owners);
   ghost_launcher.add_region_requirement(rr_ghost);
 
   ghost_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  ghost_launcher.tag = MAPPER_COMPACTED_STORAGE;
   auto ghost_future = runtime->execute_index_space(context, ghost_launcher);
   ghost_future.wait_all_results();
 
@@ -305,15 +330,15 @@ void driver(int argc, char ** argv) {
   Legion::MappingTagID tag = EXCLUSIVE_LR; 
   check_launcher.add_region_requirement(
       RegionRequirement(ex_lp, 0/*projection ID*/,
-                       READ_ONLY, EXCLUSIVE, lr, tag))
+                       READ_WRITE, EXCLUSIVE, lr, tag))
       .add_field(FID_VAL);
   check_launcher.add_region_requirement(
       RegionRequirement(sh_lp, 0/*projection ID*/,
-                        READ_ONLY, EXCLUSIVE, lr))
+                        READ_WRITE, EXCLUSIVE, lr))
       .add_field(FID_VAL);
   check_launcher.add_region_requirement(
       RegionRequirement(gh_lp, 0/*projection ID*/,
-                        READ_ONLY, EXCLUSIVE, lr))
+                        READ_WRITE, EXCLUSIVE, lr))
       .add_field(FID_VAL);
 
 //  check_launcher.add_region_requirement(
@@ -322,7 +347,7 @@ void driver(int argc, char ** argv) {
 //      .add_field(FID_VAL);
 
   check_launcher.tag=MAPPER_COMPACTED_STORAGE;
-  check_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+ // check_launcher.tag = MAPPER_FORCE_RANK_MATCH;
  auto fm2 = runtime->execute_index_space(context, check_launcher);
  fm2.wait_all_results();
 } // driver
