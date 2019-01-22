@@ -165,11 +165,17 @@ public:
       // check if we get region requirements for "exclusive, shared and ghost"
       // logical regions for each data handle
 
+      std::vector<Legion::DimensionKind> ordering;
+      ordering.push_back(Legion::DimensionKind::DIM_Y);
+      ordering.push_back(Legion::DimensionKind::DIM_X);
+      ordering.push_back(Legion::DimensionKind::DIM_F); // SOA
+      Legion::OrderingConstraint ordering_constraint(
+        ordering, true /*contiguous*/);
       // Filling out "layout_constraints" with the defaults
       Legion::LayoutConstraintSet layout_constraints;
       // No specialization
       layout_constraints.add_constraint(Legion::SpecializedConstraint());
-      layout_constraints.add_constraint(Legion::OrderingConstraint());
+      layout_constraints.add_constraint(ordering_constraint);
       // Constrained for the target memory kind
       layout_constraints.add_constraint(
         Legion::MemoryConstraint(target_mem.kind()));
@@ -192,11 +198,15 @@ public:
             "ERROR:: wrong number of regions passed to the task wirth \
                the  tag = FLECSI_MAPPER_COMPACTED_STORAGE");
 
-          flog_assert((!task.regions[indx].region.exists()),
+          flog_assert((task.regions[indx].region.exists()),
             "ERROR:: pasing not existing REGION to the mapper");
           regions.push_back(task.regions[indx].region);
           regions.push_back(task.regions[indx + 1].region);
           regions.push_back(task.regions[indx + 2].region);
+
+          std::cout << "IRINA DEBUG, exists = "
+                    << task.regions[indx + 1].region.exists() << ", "
+                    << task.regions[indx + 2].region.exists() << std::endl;
 
           flog_assert(runtime->find_or_create_physical_instance(ctx,
                         target_mem,
@@ -206,10 +216,19 @@ public:
                         created,
                         true /*acquire*/,
                         GC_NEVER_PRIORITY),
-            "FLeCSI mapper failed to allocate instance");
+            "ERROR: FleCSI mapper couldn't create an instance");
 
           for(size_t j = 0; j < 3; j++) {
             output.chosen_instances[indx + j].push_back(result);
+
+            std::cout << "IRINA DEBUG task " << task.get_task_name()
+                      << std::endl;
+            std::cout << "IRINA DEBUG Instance id for region (MAPPER_COMP) "
+                      << indx + j << " = " << result.get_instance_id()
+                      << " , size = " << result.get_instance_size()
+                      << " , color = " << context_t::instance().color()
+                      << std::endl;
+
           } // for
 
           indx = indx + 2;
@@ -229,6 +248,13 @@ public:
             "FLeCSI mapper failed to allocate instance");
 
           output.chosen_instances[indx].push_back(result);
+
+          std::cout << "IRINA DEBUG task " << task.get_task_name() << std::endl;
+          std::cout << "IRINA DEBUG Instance id for region " << indx << " = "
+                    << result.get_instance_id()
+                    << " , size = " << result.get_instance_size()
+                    << ", color = " << context_t::instance().color()
+                    << std::endl;
 
         } // end if
       } // end for
