@@ -166,31 +166,29 @@ public:
         DefaultMapper::default_policy_select_target_memory(
           ctx, task.target_proc, task.regions[0]);
 
-      // check if we get region requirements for "exclusive, shared and ghost"
-      // logical regions for each data handle
-
-
+      //creating ordering constraint
       std::vector<Legion::DimensionKind> ordering;
       ordering.push_back(Legion::DimensionKind::DIM_Y);
       ordering.push_back(Legion::DimensionKind::DIM_X);
       ordering.push_back(Legion::DimensionKind::DIM_F);  // SOA
       Legion::OrderingConstraint ordering_constraint(ordering, true /*contiguous*/);
-      // Filling out "layout_constraints" with the defaults
-      Legion::LayoutConstraintSet layout_constraints;
-      // No specialization
-      layout_constraints.add_constraint(Legion::SpecializedConstraint());
-      layout_constraints.add_constraint(ordering_constraint);
-      // Constrained for the target memory kind
-      layout_constraints.add_constraint(
-        Legion::MemoryConstraint(target_mem.kind()));
-      // Have all the field for the instance available
-      std::vector<Legion::FieldID> all_fields;
-      layout_constraints.add_constraint(Legion::FieldConstraint());
-
-      // FIXME:: add colocation_constraints
-      Legion::ColocationConstraint colocation_constraints;
 
       for(size_t indx = 0; indx < task.regions.size(); indx++) {
+
+        // Filling out "layout_constraints" with the defaults
+        Legion::LayoutConstraintSet layout_constraints;
+        // No specialization
+        layout_constraints.add_constraint(Legion::SpecializedConstraint());
+        layout_constraints.add_constraint(ordering_constraint);
+        // Constrained for the target memory kind
+        layout_constraints.add_constraint(
+          Legion::MemoryConstraint(target_mem.kind()));
+        // Have all the field for the instance available
+         std::vector<Legion::FieldID> all_fields;
+        for (auto fid : task.regions[indx].privilege_fields){
+          all_fields.push_back(fid);
+        }//for
+        layout_constraints.add_constraint(Legion::FieldConstraint(all_fields, true));
 
         Legion::Mapping::PhysicalInstance result;
         std::vector<Legion::LogicalRegion> regions;
@@ -209,8 +207,10 @@ public:
           regions.push_back(task.regions[indx + 1].region);
           regions.push_back(task.regions[indx + 2].region);
 
-std::cout<<"IRINA DEBUG, exists = "<<task.regions[indx+1].region.exists()<<
-", " << task.regions[indx+2].region.exists()<<std::endl;
+
+//          runtime->find_or_create_physical_instance(ctx, target_mem,
+//                        layout_constraints, regions, result, created,
+//                        true /*acquire*/, GC_NEVER_PRIORITY);
 
           clog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
                         layout_constraints, regions, result, created,
@@ -218,10 +218,8 @@ std::cout<<"IRINA DEBUG, exists = "<<task.regions[indx+1].region.exists()<<
                "ERROR: FleCSI mapper couldn't create an instance");
 
           for(size_t j = 0; j < 3; j++) {
+            output.chosen_instances[indx + j].clear();
             output.chosen_instances[indx + j].push_back(result);
-
-std::cout<<"IRINA DEBUG task "<<task.get_task_name()<<std::endl;
-std::cout <<"IRINA DEBUG Instance id for region (MAPPER_COMP) "<< indx+j<< " = "<<result.get_instance_id()<<" , size = "<< result.get_instance_size()<<" , color = "<<context_t::instance().color()<<std::endl;
 
           } // for
 
@@ -237,9 +235,6 @@ std::cout <<"IRINA DEBUG Instance id for region (MAPPER_COMP) "<< indx+j<< " = "
             "FLeCSI mapper failed to allocate instance");
 
           output.chosen_instances[indx].push_back(result);
-
-std::cout<<"IRINA DEBUG task "<<task.get_task_name()<<std::endl;
-std::cout <<"IRINA DEBUG Instance id for region "<< indx<< " = "<<result.get_instance_id()<<" , size = "<< result.get_instance_size()<<", color = " << context_t::instance().color()<<std::endl;
 
         } // end if
       } // end for

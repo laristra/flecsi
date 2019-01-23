@@ -72,28 +72,6 @@ int check_task(const Legion::Task * task,
 
   size_t * combined_data;
 
-//DEBUG
-{
-  Legion::Domain ex_dom =
-    runtime->get_index_space_domain(context, ex_is);
-  LegionRuntime::Arrays::Rect<2> ex_rect = ex_dom.get_rect<2>();
-  std::cout <<"IRINA DEBUG, ex_rect = "<<ex_rect<<std::endl;
-
-  IndexSpace sh_is=task->regions[1].region.get_index_space();
-  Legion::Domain sh_dom =
-    runtime->get_index_space_domain(context, sh_is);
-  LegionRuntime::Arrays::Rect<2> sh_rect = sh_dom.get_rect<2>();
-  std::cout <<"IRINA DEBUG, ex_rect = "<<sh_rect<<std::endl;
-
-  IndexSpace gh_is=task->regions[2].region.get_index_space();
-  Legion::Domain gh_dom =
-    runtime->get_index_space_domain(context, gh_is);
-  LegionRuntime::Arrays::Rect<2> gh_rect = gh_dom.get_rect<2>();
-  std::cout <<"IRINA DEBUG, ex_rect = "<<gh_rect<<std::endl;
-
-
-}
-
   Legion::Domain ex_dom =
     runtime->get_index_space_domain(context, ex_is);
   LegionRuntime::Arrays::Rect<2> ex_rect = ex_dom.get_rect<2>();
@@ -105,7 +83,12 @@ int check_task(const Legion::Task * task,
   auto ac = regions[0].get_field_accessor(fid).template typeify<size_t>();
   combined_data = ac.template raw_rect_ptr<2>(ex_rect, sr, bo);
 
+  size_t check_array[24]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
+      17,18,19,20};
+
   for (size_t i=0; i<24;i++){
+    size_t tmp = *(combined_data+i);
+    assert(tmp == check_array[i]);
     std::cout <<"combined_array ["<< i<<"] = "<<*(combined_data+i)<<std::endl;
   }
 
@@ -157,10 +140,6 @@ void copy_task(const Legion::Task * task,
       size_t *ptr_owner_acc = (size_t*)(owner_acc.ptr(owner_pts[count]));
       memcpy(ptr_ghost_acc, ptr_owner_acc, sizeof(size_t));
       count++;
-      std::cout <<"IRINA DEBUG sh = "<<size_t(*ptr_owner_acc)<<" , gh = "<<
-                size_t(*ptr_ghost_acc)<<std::endl;
-      std::cout<<"IRINA DEBUG owner pt = "<<owner_pts[count-1]<<
-        ", ghost = "<< ghost_ptr<<std::endl;
   }//for
 
 }//copy_task
@@ -228,7 +207,6 @@ void driver(int argc, char ** argv) {
    const auto key_0 =
     flecsi_context.task_id<flecsi_internal_task_key(fill_task)>();
 
-  std::cout <<"IRINA DEBUG key_0 = " <<key_0<<std::endl;
   Legion::IndexLauncher fill_launcher(key_0,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
      Legion::TaskArgument(nullptr, 0), Legion::ArgumentMap());
