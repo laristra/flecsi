@@ -15,6 +15,8 @@
 
 /*! @file */
 
+#include <flecsi/data/client_handle.h>
+
 /*!
   The client_interface_u type defines a high-level data client
   interface that is implemented by the given data policy.
