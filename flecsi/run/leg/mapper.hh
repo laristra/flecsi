@@ -155,6 +155,7 @@ public:
     Legion::Mapping::Mapper::MapTaskOutput & output) {
     DefaultMapper::map_task(ctx, task, input, output);
 
+#ifdef MAPPER_COMPACTION
     if((task.tag == FLECSI_MAPPER_COMPACTED_STORAGE) &&
        (task.regions.size() > 0)) {
 
@@ -247,6 +248,7 @@ public:
       } // end for
 
     } // end if
+#endif
 
   } // map_task
 
@@ -265,7 +267,8 @@ public:
         output.slices[0].proc = task.target_proc;
         break;
 
-      case FLECSI_MAPPER_FORCE_RANK_MATCH: {
+      case FLECSI_MAPPER_FORCE_RANK_MATCH:
+      case FLECSI_MAPPER_COMPACTED_STORAGE: {
         // expect a 1-D index domain - each point goes to the corresponding node
         assert(input.domain.get_dim() == 1);
         LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();
