@@ -86,11 +86,13 @@ int check_task(const Legion::Task * task,
   size_t check_array[24]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
       17,18,19,20};
 
+#ifdef MAPPER_COMPACTION
   for (size_t i=0; i<24;i++){
     size_t tmp = *(combined_data+i);
     assert(tmp == check_array[i]);
     std::cout <<"combined_array ["<< i<<"] = "<<*(combined_data+i)<<std::endl;
   }
+#endif
 
   return 0;
 } // internal_task_example
@@ -216,9 +218,9 @@ void driver(int argc, char ** argv) {
       WRITE_DISCARD, EXCLUSIVE, lr))
       .add_field(FID_VAL);
 
-
-  fill_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+#ifdef MAPPER_COMPACTION
   fill_launcher.tag = MAPPER_COMPACTED_STORAGE;
+#endif
   auto fm = runtime->execute_index_space(context, fill_launcher);
   fm.wait_all_results(true);
 
@@ -294,8 +296,10 @@ void driver(int argc, char ** argv) {
   ghost_launcher.add_region_requirement(rr_owners);
   ghost_launcher.add_region_requirement(rr_ghost);
 
-  ghost_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+#ifdef MAPPER_COMPACTION
   ghost_launcher.tag = MAPPER_COMPACTED_STORAGE;
+#endif
+
   auto ghost_future = runtime->execute_index_space(context, ghost_launcher);
   ghost_future.wait_all_results();
 
@@ -319,13 +323,9 @@ void driver(int argc, char ** argv) {
                         READ_WRITE, EXCLUSIVE, lr))
       .add_field(FID_VAL);
 
-//  check_launcher.add_region_requirement(
-//      RegionRequirement(sh_lp, 0/*projection ID*/,
-//                        READ_ONLY, EXCLUSIVE, lr))
-//      .add_field(FID_VAL);
-
+#ifdef MAPPER_COMPACTION
   check_launcher.tag=MAPPER_COMPACTED_STORAGE;
- // check_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+#endif
  auto fm2 = runtime->execute_index_space(context, check_launcher);
  fm2.wait_all_results();
 } // driver
