@@ -590,6 +590,7 @@ format:fedora_hpx:
     RUNTIME: "hpx"
   dependencies:
     - build:fedora_hpx
+  allow_failure: true
 
 ##################################
 
