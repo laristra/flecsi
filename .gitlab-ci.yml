@@ -274,7 +274,7 @@ build:fedora_hpx_clang:
   script: 
     - cd ${CI_PROJECT_DIR}/build/
     - make test ARGS="-V"
-    - gcovr .
+    - $HOME/.local/bin/gcovr .
     - make doxygen
     - |
       if [ ${COVERAGE} ];
