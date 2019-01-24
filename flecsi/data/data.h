@@ -39,7 +39,7 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the client interface to register the data */                         \
-  inline bool client_type##_##nspace##_##name##_data_client_registered =       \
-    flecsi::data::data_client_interface_t::register_data_client<client_type,   \
+  inline bool client_type##_##nspace##_##name##_client_registered =            \
+    flecsi::data::client_interface_t::register_client<client_type,             \
       flecsi_internal_hash(nspace), flecsi_internal_hash(name)>(               \
       {EXPAND_AND_STRINGIFY(name)})

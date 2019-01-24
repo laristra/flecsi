@@ -15,6 +15,8 @@
 
 /*! @file */
 
+#include <cstddef>
+
 namespace flecsi {
 
 /*!
@@ -82,7 +84,7 @@ struct client_type_u<flecsi::
 
 } // namespace flecsi
 
-#include <flecsi/runtime/flecsi_runtime_client_handle_policy.h>
+#include <flecsi/runtime/flecsi_runtime_data_policy.h>
 
 namespace flecsi {
 
@@ -98,6 +100,6 @@ namespace flecsi {
 template<typename CLIENT_TYPE, size_t PERMISSIONS>
 using client_handle_u = client_handle_base_u<CLIENT_TYPE,
   PERMISSIONS,
-  FLECSI_RUNTIME_CLIENT_HANDLE_POLICY>;
+  data::FLECSI_RUNTIME_CLIENT_HANDLE_POLICY>;
 
 } // namespace flecsi
