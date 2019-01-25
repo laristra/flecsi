@@ -15,9 +15,8 @@
 
 /*! @file */
 
-#if 0
-#include <flecsi/data/common/registration_wrapper.h>
-#include <flecsi/data/storage.h>
+#include <flecsi/data/common/field_registration_wrapper.h>
+#include <flecsi/execution/context.h>
 #include <flecsi/utils/hash.h>
 
 namespace flecsi {
@@ -52,9 +51,9 @@ struct field_interface_u {
     @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
                              of attribute names to avoid collisions.
     @tparam NAME_HASH        The attribute name.
-    @tparam INDEX_SPACE      The index space identifier.
     @tparam VERSIONS         The number of versions that shall be associated
                              with this attribute.
+    @tparam INDEX_SPACE      The index space identifier.
     
     @param name The string version of the field name.
 
@@ -83,7 +82,7 @@ struct field_interface_u {
       const size_t key =
         utils::hash::field_hash<NAMESPACE_HASH, NAME_HASH>(version);
 
-      if(!storage_t::instance().register_field(
+      if(!context_t::instance().register_field(
            client_type_key, key, wrapper_t::register_callback)) {
         return false;
       } // if
@@ -92,6 +91,7 @@ struct field_interface_u {
     return true;
   } // register_field
 
+#if 0
   /*!
     Return the handle associated with the given parameters and data client.
 
@@ -118,7 +118,7 @@ struct field_interface_u {
     size_t VERSION = 0,
     size_t PERMISSIONS>
   static decltype(auto) get_handle(
-    const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
+    const client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
 
@@ -155,7 +155,7 @@ struct field_interface_u {
     size_t VERSION = 0,
     size_t PERMISSIONS>
   static decltype(auto) get_mutator(
-    const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle,
+    const client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle,
     size_t slots) {
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
@@ -166,79 +166,18 @@ struct field_interface_u {
     return storage_class_t::template get_mutator<DATA_CLIENT_TYPE, DATA_TYPE,
       NAMESPACE_HASH, NAME_HASH, VERSION>(client_handle, slots);
   } // get_mutator
-
-  /*!
-    Return all handles of the given storage type, data type, and
-    namespace that satisfy a predicate function.
-
-    @tparam STORAGE_CLASS  The storage type for the data attribute.
-    @tparam DATA_TYPE      The data type, e.g., double. This may be
-                           P.O.D. or a user-defined type that is
-                           trivially-copyable.
-    @tparam NAMESPACE_HASH The namespace key. Namespaces allow separation
-                           of attribute names to avoid collisions.
-    @tparam PREDICATE      The data version.
-
-    @param client    The data client instance.
-    @param version   The data version to return.
-    @param predicate An instance of the predicate function that will be
-                     used to select the individual data elements.
-    @param sorted    Put the return data into sorted order.
-
-    @ingroup data
-   */
-
-  template<size_t STORAGE_CLASS,
-    typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    typename PREDICATE>
-  static decltype(auto) get_handles(const data_client_t & client,
-    size_t version,
-    PREDICATE && predicate,
-    bool sorted = true) {
-    return DATA_POLICY::template get_handles<STORAGE_CLASS, DATA_TYPE,
-      NAMESPACE_HASH, PREDICATE>(
-      client, version, std::forward<PREDICATE>(predicate), sorted);
-  } // get_handles
-
-  /*!
-    Return all handles of the given storage type, and data type that
-    satisfy a predicate function.
-
-    @tparam STORAGE_CLASS The storage type for the data attribute.
-    @tparam DATA_TYPE     The data type, e.g., double. This may be P.O.D.
-                          or a user-defined type that is trivially-copyable.
-    @tparam PREDICATE     The data version.
-
-    @param client    The data client instance.
-    @param version   The data version to return.
-    @param predicate An instance of the predicate function that will be
-                     used to select the individual data elements.
-    @param sorted    Put the return data into sorted order.
-
-    @ingroup data
-   */
-
-  template<size_t STORAGE_CLASS, typename DATA_TYPE, typename PREDICATE>
-  static decltype(auto) get_handles(const data_client_t & client,
-    size_t version,
-    PREDICATE && predicate,
-    bool sorted = true) {
-    return DATA_POLICY::template get_handles<STORAGE_CLASS, DATA_TYPE,
-      PREDICATE>(client, version, std::forward<PREDICATE>(predicate), sorted);
-  } // get_handles
+#endif
 
 }; // struct field_interface_u
 
 } // namespace data
 } // namespace flecsi
-#endif
 
 //----------------------------------------------------------------------------//
 // This include file defines the FLECSI_RUNTIME_DATA_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include <flecsi/runtime/flecsi_runtime_data_policy.h>
+#include <flecsi/runtime/data_policy.h>
 
 namespace flecsi {
 namespace data {

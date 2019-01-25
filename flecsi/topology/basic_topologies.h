@@ -20,33 +20,28 @@
 namespace flecsi {
 namespace topology {
 
-//----------------------------------------------------------------------------//
-// Color topology.
-//----------------------------------------------------------------------------//
+/*!
+  The global_topology_u type allows users to register data on a
+  topology with a single index, i.e., there is one instance of
+  the registered field type that is visible to all colors.
 
-class color_topology_base_u : public data::data_client_t
-{
-public:
-  using id_t = utils::id_t;
-};
+  @ingroup topology
+ */
+
+struct global_topology_u : public data::data_client_t {
+  using type_identifier_t = global_topology_u;
+}; // class global_topology_u
 
 /*!
-  color_topology_u
+  The color_topology_u type allows users to register data on a
+  per-color (similar to an MPI rank) basis. This topology will
+  have one instance of each registered field type per color.
 
- @ingroup color-topology
+  @ingroup topology
  */
-class color_topology_u : public color_topology_base_u
-{
 
-public:
+struct color_topology_u : public data::data_client_t {
   using type_identifier_t = color_topology_u;
-
-  //! Constructor
-  color_topology_u() {} // color_topology_u()
-
-  //! Copy constructor
-  color_topology_u(const color_topology_u & m) {}
-
 }; // class color_topology_u
 
 } // namespace topology

@@ -15,6 +15,10 @@
 
 /*! @file */
 
+#include <flecsi/data/common/client_registration_wrapper.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/utils/hash.h>
+
 #include <string>
 
 namespace flecsi {
@@ -43,7 +47,20 @@ struct client_interface_u {
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
   static bool register_client(std::string const & name) {
-    return true;
+    static_assert(sizeof(DATA_CLIENT_TYPE) ==
+                    sizeof(typename DATA_CLIENT_TYPE::type_identifier_t),
+      "Data clients may not add data members");
+
+    using wrapper_t = client_registration_wrapper_u<
+      typename DATA_CLIENT_TYPE::type_identifier_t, NAMESPACE_HASH, NAME_HASH>;
+
+    const size_t type_key =
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+
+    const size_t key = utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
+
+    return execution::context_t::instance().register_client(
+      type_key, key, wrapper_t::register_callback);
   } // register_client
 
   /*!
@@ -70,7 +87,7 @@ struct client_interface_u {
 // This include file defines the FLECSI_RUNTIME_DATA_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include <flecsi/runtime/flecsi_runtime_data_policy.h>
+#include <flecsi/runtime/data_policy.h>
 
 namespace flecsi {
 namespace data {

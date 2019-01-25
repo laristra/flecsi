@@ -475,8 +475,9 @@ set(FLECSI_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include
   ${FLECSI_EXTERNAL_INCLUDE_DIRS})
 
 set(FLECSI_CMAKE_DIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR}/cmake/FleCSI)
-set(FLECSI_RUNTIME_MAIN ${FLECSI_SHARE_DIR}/runtime/runtime_main.cc)
-set(FLECSI_RUNTIME_DRIVER ${FLECSI_SHARE_DIR}/runtime/runtime_driver.cc)
+# FIXME: Refactor
+#set(FLECSI_RUNTIME_MAIN ${FLECSI_SHARE_DIR}/runtime/runtime_main.cc)
+#set(FLECSI_RUNTIME_DRIVER ${FLECSI_SHARE_DIR}/runtime/runtime_driver.cc)
 
 #------------------------------------------------------------------------------#
 # Extract all project options so they can be exported to the

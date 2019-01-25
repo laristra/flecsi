@@ -17,50 +17,41 @@
 # scope below.
 #------------------------------------------------------------------------------#
 
-set(data_HEADERS
-  client.h
-  common/client_handler.h
-  common/client_registration_wrapper.h
-  common/field_registration_wrapper.h
-  data.h
-  data_client.h
-  field.h
+set(topology_HEADERS
+  basic_topologies.h
 )
 
-set(data_SOURCES
+set(topology_SOURCES
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  set(data_HEADERS
-    legion/client_handle.h
-    legion/client_handlers.h
-    legion/data_policy.h
-    ${data_HEADERS}
+  set(topology_HEADERS
+    ${topology_HEADERS}
   )
 
-  set(data_SOURCES
-    ${data_SOURCES}
+  set(topology_SOURCES
+    ${topology_SOURCES}
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
-  set(data_HEADERS
-    ${data_HEADERS}
+  set(topology_HEADERS
+    ${topology_HEADERS}
   )
 
-  set(data_SOURCES
-    ${data_SOURCES}
+  set(topology_SOURCES
+    ${topology_SOURCES}
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
-  set(data_HEADERS
-    ${data_HEADERS}
+  set(topology_HEADERS
+    ${topology_HEADERS}
   )
 
-  set(data_SOURCES
-    ${data_SOURCES}
+  set(topology_SOURCES
+    ${topology_SOURCES}
   )
 
 endif()
@@ -69,8 +60,8 @@ endif()
 # Export header list to parent scope.
 #------------------------------------------------------------------------------#
 
-set(data_HEADERS
-  ${data_HEADERS}
+set(topology_HEADERS
+  ${topology_HEADERS}
   PARENT_SCOPE
 )
 
@@ -78,16 +69,11 @@ set(data_HEADERS
 # Export source list to parent scope.
 #------------------------------------------------------------------------------#
 
-set(data_SOURCES
-  ${data_SOURCES}
+set(topology_SOURCES
+  ${topology_SOURCES}
   PARENT_SCOPE
 )
 
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
-
-ftest_add_unit(client
-  SOURCES
-    test/client.cc
-)

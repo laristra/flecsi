@@ -16,12 +16,15 @@
 /*! @file */
 
 #include <flecsi/execution/global_object_wrapper.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
 #include <flecsi/utils/flog.h>
 
 #include <cassert>
 #include <cstddef>
 #include <functional>
 #include <map>
+#include <set>
 #include <unordered_map>
 
 flog_register_tag(context);
@@ -40,6 +43,27 @@ namespace execution {
 
 template<class CONTEXT_POLICY>
 struct context_u : public CONTEXT_POLICY {
+
+  /*--------------------------------------------------------------------------*
+    Public types.
+   *--------------------------------------------------------------------------*/
+
+  using client_registration_function_t = std::function<void(size_t)>;
+  using client_value_t = std::pair<field_id_t, client_registration_function_t>;
+  using client_entry_t = std::unordered_map<size_t, client_value_t>;
+
+  using field_registration_function_t = std::function<void(size_t, size_t)>;
+  using field_value_t = std::pair<field_id_t, field_registration_function_t>;
+  using field_entry_t = std::unordered_map<size_t, field_value_t>;
+
+  /*--------------------------------------------------------------------------*
+    Deleted contructor and assignment interfaces.
+   *--------------------------------------------------------------------------*/
+
+  context_u(const context_u &) = delete;
+  context_u & operator=(const context_u &) = delete;
+  context_u(context_u &&) = delete;
+  context_u & operator=(context_u &&) = delete;
 
   /*!
     Meyer's singleton instance.
@@ -216,7 +240,79 @@ struct context_u : public CONTEXT_POLICY {
     return true;
   } // register_function
 
+  /*--------------------------------------------------------------------------*
+    Client interface.
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    Register a data client with the runtime.
+
+    @param type_hash  The data client indentifier hash.
+    @param key        The identifier hash.
+    @param callback   The registration call back function.
+   */
+
+  bool register_client(size_t type_hash, size_t key,
+    const client_registration_function_t & callback) {
+    if(client_registry_.find(type_hash) != client_registry_.end()) {
+      flog_assert(client_registry_[type_hash].find(key) == client_registry_[type_hash].end(), "client key already exists");
+    } // if
+
+    client_registry_[type_hash][key] =
+      std::make_pair(unique_fid_t::instance().next(), callback);
+
+    return true;
+  } // register_client
+
+  /*!
+    Return a boolean indicating whether or not the given instance of
+    a data client has had its internal fields registered with the
+    data model.
+
+    @param type_key     The hash key for the data client type.
+    @param instance_key The hash key for the data client instance.
+   */
+
+  bool client_fields_registered(size_t type_key, size_t instance_key) {
+    return !registered_client_fields_
+      .insert(std::make_pair(type_key, instance_key))
+      .second;
+  } // client_fields_registered
+
+  /*--------------------------------------------------------------------------*
+    Field interface.
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    Register a field with the runtime.
+
+    @param client_type_key The data client indentifier hash.
+    @param key             The identifier hash.
+    @param callback        The registration call back function.
+   */
+
+  bool register_field(size_t client_type_key, size_t key,
+    const field_registration_function_t & callback) {
+    if(field_registry_.find(client_type_key) != field_registry_.end()) {
+      if(field_registry_[client_type_key].find(key) !=
+         field_registry_[client_type_key].end()) {
+        flog(warn) << "field key already exists" << std::endl;
+      } // if
+    } // if
+
+    field_registry_[client_type_key][key] =
+      std::make_pair(unique_fid_t::instance().next(), callback);
+
+    return true;
+  } // register_field
+
 private:
+  /*--------------------------------------------------------------------------*
+    Private types.
+   *--------------------------------------------------------------------------*/
+
+  using unique_fid_t = utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
+
   /*--------------------------------------------------------------------------*
     Singleton.
    *--------------------------------------------------------------------------*/
@@ -229,12 +325,8 @@ private:
     for(auto & go : global_object_registry_) {
       std::get<1>(go.second)(std::get<0>(go.second));
     } // for
-  } // ~context_u
 
-  context_u(const context_u &) = delete;
-  context_u & operator=(const context_u &) = delete;
-  context_u(context_u &&) = delete;
-  context_u & operator=(context_u &&) = delete;
+  } // ~context_u
 
   /*--------------------------------------------------------------------------*
     Basic runtime data members.
@@ -265,6 +357,19 @@ private:
 
   std::unordered_map<size_t, void *> function_registry_;
 
+  /*--------------------------------------------------------------------------*
+    Client members.
+   *--------------------------------------------------------------------------*/
+
+  std::unordered_map<size_t, client_entry_t> client_registry_;
+  std::set<std::pair<size_t, size_t>> registered_client_fields_;
+
+  /*--------------------------------------------------------------------------*
+    Field members.
+   *--------------------------------------------------------------------------*/
+
+  std::unordered_map<size_t, field_entry_t> field_registry_;
+
 }; // struct context_u
 
 } // namespace execution
@@ -272,7 +377,7 @@ private:
 
 // This include file defines the FLECSI_RUNTIME_CONTEXT_POLICY used below.
 
-#include <flecsi/runtime/flecsi_runtime_context_policy.h>
+#include <flecsi/runtime/context_policy.h>
 
 namespace flecsi {
 namespace execution {
