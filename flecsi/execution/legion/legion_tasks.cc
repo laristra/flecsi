@@ -34,10 +34,9 @@ namespace execution {
   @ingroup legion-execution
  */
 
-flecsi_internal_register_legion_task(
-    setup_rank_context_task,
-    processor_type_t::loc,
-    index | leaf);
+flecsi_internal_register_legion_task(setup_rank_context_task,
+  processor_type_t::loc,
+  index | leaf);
 
 /*!
   Register task to handoff to the MPI runtime.
@@ -119,14 +118,13 @@ flecsi_internal_register_legion_task(owner_pos_correction_task,
   @ingroup legion-execution
  */
 
-flecsi_internal_register_legion_task(
-    ghost_copy_task,
-    processor_type_t::loc,
-    index | leaf);
+flecsi_internal_register_legion_task(ghost_copy_task,
+  processor_type_t::loc,
+  index | leaf);
 
 /*!
   Register sparse_set_owner_position_task task.
-  
+
   \remark The translation unit that contains this call will not be
          necessary with C++17, as it will be possible to move this call
          into the header file using inline variables.
@@ -134,10 +132,9 @@ flecsi_internal_register_legion_task(
   @ingroup legion-execution
  */
 
-flecsi_internal_register_legion_task(
-    sparse_set_owner_position_task,
-    processor_type_t::loc,
-    index | leaf);
+flecsi_internal_register_legion_task(sparse_set_owner_position_task,
+  processor_type_t::loc,
+  index | leaf);
 
 /*!
   Register owners_subregions task.
@@ -149,10 +146,9 @@ flecsi_internal_register_legion_task(
   @ingroup legion-execution
  */
 
-flecsi_internal_register_legion_task(
-    owners_subregions_task,
-    processor_type_t::loc,
-    index| leaf);
+flecsi_internal_register_legion_task(owners_subregions_task,
+  processor_type_t::loc,
+  index | leaf);
 
 const double MaxReductionOp::identity = std::numeric_limits<double>::min();
 

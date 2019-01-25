@@ -25,8 +25,7 @@ namespace legion {
 // FIXME: Tuple storage type.
 ///
 template<>
-struct storage_class_u<tuple> {
-}; // struct storage_class_u
+struct storage_class_u<tuple> {}; // struct storage_class_u
 
 } // namespace legion
 } // namespace data

@@ -175,14 +175,14 @@ struct legion_execution_policy_t {
     auto legion_context = Legion::Runtime::get_context();
 
     constexpr size_t ZERO =
-            flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
 
     // Execute a tuple walker that applies the task epilog operations
     // on the mapped handles
-//    task_epilog_t task_epilog(legion_runtime, legion_context);
+    //    task_epilog_t task_epilog(legion_runtime, legion_context);
 
-//IRINA FIXME why epilog is here?
-//    task_epilog.walk(task_args);
+    // IRINA FIXME why epilog is here?
+    //    task_epilog.walk(task_args);
 
     //------------------------------------------------------------------------//
     // Single launch
@@ -218,25 +218,25 @@ struct legion_execution_policy_t {
             launcher.add_future(future);
           } // for
 
-          LegionRuntime::Arrays::Rect<1> launch_bounds(0,1);
+          LegionRuntime::Arrays::Rect<1> launch_bounds(0, 1);
           Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
           {
-          task_prolog_t task_prolog(legion_runtime, legion_context,
-						launch_domain);
-          task_prolog.sparse = false;
-          task_prolog.walk(task_args);
-          task_prolog.launch_copies();
+            task_prolog_t task_prolog(
+              legion_runtime, legion_context, launch_domain);
+            task_prolog.sparse = false;
+            task_prolog.walk(task_args);
+            task_prolog.launch_copies();
           } // scope
 
           {
-          task_prolog_t task_prolog(legion_runtime, legion_context,
-						launch_domain);
-          task_prolog.sparse = true;
-          task_prolog.walk(task_args);
-          task_prolog.launch_copies();
+            task_prolog_t task_prolog(
+              legion_runtime, legion_context, launch_domain);
+            task_prolog.sparse = true;
+            task_prolog.walk(task_args);
+            task_prolog.launch_copies();
           } // scope
 
           // Enqueue the task.
@@ -249,8 +249,8 @@ struct legion_execution_policy_t {
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
 
-          static_assert(REDUCTION == ZERO,
-            "reductions are not supported for single tasks");
+          static_assert(
+            REDUCTION == ZERO, "reductions are not supported for single tasks");
 
           return legion_future_u<RETURN, launch_type_t::single>(future);
         } // scope
@@ -287,7 +287,7 @@ struct legion_execution_policy_t {
 
           LegionRuntime::Arrays::Rect<1> launch_bounds(
             LegionRuntime::Arrays::Point<1>(0),
-            LegionRuntime::Arrays::Point<1>(context_.colors()-1));
+            LegionRuntime::Arrays::Point<1>(context_.colors() - 1));
           Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
           Legion::ArgumentMap arg_map;
@@ -307,32 +307,31 @@ struct legion_execution_policy_t {
           } // for
 
           for(auto & future : init_args.futures) {
-           launcher.add_future(future);
+            launcher.add_future(future);
           } // for
 
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
           {
-          task_prolog_t task_prolog(legion_runtime, legion_context,
-            launch_domain);
-          task_prolog.sparse = false;
-          task_prolog.walk(task_args);
-          task_prolog.launch_copies();
+            task_prolog_t task_prolog(
+              legion_runtime, legion_context, launch_domain);
+            task_prolog.sparse = false;
+            task_prolog.walk(task_args);
+            task_prolog.launch_copies();
           } // scope
 
           {
-          task_prolog_t task_prolog(legion_runtime, legion_context,
-            launch_domain);
-          task_prolog.sparse = true;
-          task_prolog.walk(task_args);
-          task_prolog.launch_copies();
+            task_prolog_t task_prolog(
+              legion_runtime, legion_context, launch_domain);
+            task_prolog.sparse = true;
+            task_prolog.walk(task_args);
+            task_prolog.launch_copies();
           } // scope
 
           if constexpr(REDUCTION != ZERO) {
-            clog(info) << "executing reduction logic for " <<
-              REDUCTION << std::endl;
-            auto reduction_op =
-              context_.reduction_operations().find(REDUCTION);
+            clog(info) << "executing reduction logic for " << REDUCTION
+                       << std::endl;
+            auto reduction_op = context_.reduction_operations().find(REDUCTION);
 
             clog_assert(reduction_op != context_.reduction_operations().end(),
               "invalid reduction operation");
@@ -340,8 +339,8 @@ struct legion_execution_policy_t {
             Legion::Future future;
 
             size_t reduction_id = context_.reduction_operations()[REDUCTION];
-            future = legion_runtime->execute_index_space(legion_context,
-              launcher, reduction_id);
+            future = legion_runtime->execute_index_space(
+              legion_context, launcher, reduction_id);
 
             // Enqueue the epilog.
             task_epilog_t task_epilog(legion_runtime, legion_context);
@@ -358,9 +357,9 @@ struct legion_execution_policy_t {
             // on the mapped handles
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
-           
+
             return legion_future_u<RETURN, launch_type_t::index>(future_map);
-          }//else
+          } // else
         } // scope
 
         case processor_type_t::mpi: {
@@ -372,77 +371,75 @@ struct legion_execution_policy_t {
           init_args.walk(task_args);
 
           // FIXME: This will need to change with the new control model
- //         if(context_.execution_state() == SPECIALIZATION_TLT_INIT) {
+          //         if(context_.execution_state() == SPECIALIZATION_TLT_INIT) {
 
-            LegionRuntime::Arrays::Rect<1> launch_bounds(
-              LegionRuntime::Arrays::Point<1>(0),
-              LegionRuntime::Arrays::Point<1>(context_.colors()-1));
-            Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+          LegionRuntime::Arrays::Rect<1> launch_bounds(
+            LegionRuntime::Arrays::Point<1>(0),
+            LegionRuntime::Arrays::Point<1>(context_.colors() - 1));
+          Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
+          ArgumentMap arg_map;
+          IndexLauncher launcher(context_.task_id<TASK>(),
+            Legion::Domain::from_rect<1>(context_.all_processes()),
+            TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
 
+          launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
-            ArgumentMap arg_map;
-            IndexLauncher launcher(context_.task_id<TASK>(),
-              Legion::Domain::from_rect<1>(context_.all_processes()),
-              TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
+          // Add region requirements and future dependencies to the
+          // task launcher
+          for(auto & req : init_args.region_reqs) {
+            launcher.add_region_requirement(req);
+          } // for
 
-            launcher.tag = MAPPER_FORCE_RANK_MATCH;
+          for(auto & future : init_args.futures) {
+            launcher.add_future(future);
+          } // for
 
-            // Add region requirements and future dependencies to the
-            // task launcher
-            for(auto & req : init_args.region_reqs) {
-              launcher.add_region_requirement(req);
-            } // for
-
-            for(auto & future : init_args.futures) {
-              launcher.add_future(future);
-            } // for
-
-            // Execute a tuple walker that applies the task prolog operations
-            // on the mapped handles
-            {
-            task_prolog_t task_prolog(legion_runtime, legion_context,
-              launch_domain);
+          // Execute a tuple walker that applies the task prolog operations
+          // on the mapped handles
+          {
+            task_prolog_t task_prolog(
+              legion_runtime, legion_context, launch_domain);
             task_prolog.sparse = false;
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
-            } // scope
+          } // scope
 
-            {
-            task_prolog_t task_prolog(legion_runtime, legion_context,
-              launch_domain);
+          {
+            task_prolog_t task_prolog(
+              legion_runtime, legion_context, launch_domain);
             task_prolog.sparse = true;
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
-            } // scope
+          } // scope
 
+          // Launch the MPI task
+          auto future =
+            legion_runtime->execute_index_space(legion_context, launcher);
+          // Force synchronization
+          future.wait_all_results(true);
 
-            // Launch the MPI task
-            auto future = legion_runtime->execute_index_space(
-          	  legion_context,launcher);
-            // Force synchronization
-            future.wait_all_results(true);
+          // Handoff to the MPI runtime.
+          context_.handoff_to_mpi(legion_context, legion_runtime);
 
-            // Handoff to the MPI runtime.
-            context_.handoff_to_mpi(legion_context, legion_runtime);
+          // Wait for MPI to finish execution (synchronous).
+          context_.wait_on_mpi(legion_context, legion_runtime);
 
-            // Wait for MPI to finish execution (synchronous).
-            context_.wait_on_mpi(legion_context, legion_runtime);
+          // Reset the calling state to false.
+          context_.unset_call_mpi(legion_context, legion_runtime);
 
-            // Reset the calling state to false.
-            context_.unset_call_mpi(legion_context, legion_runtime);
+          // Execute a tuple walker that applies the task epilog operations
+          // on the mapped handles
+          task_epilog_t task_epilog(legion_runtime, legion_context);
+          task_epilog.walk(task_args);
 
-            // Execute a tuple walker that applies the task epilog operations
-            // on the mapped handles
-            task_epilog_t task_epilog(legion_runtime, legion_context);
-            task_epilog.walk(task_args);
-
-            if constexpr(REDUCTION != ZERO) {
-              clog_fatal("there is no implementation for the mpi"
-							 " reduction task");
-            } else {
-              return legion_future_u<RETURN, launch_type_t::index>(future);
-            }
+          if constexpr(REDUCTION != ZERO) {
+            clog_fatal("there is no implementation for the mpi"
+                       " reduction task");
+          }
+          else {
+            return legion_future_u<RETURN, launch_type_t::index>(future);
+          }
 #if 0
           }
           else {
