@@ -562,7 +562,7 @@ test:fedora_hpx_ignoreNoCI:
     - .build
   script:
     - cd ${CI_PROJECT_DIR}/build/
-    - make format-FleCSI && git diff #--exit-code
+    - make format-FleCSI && git diff --exit-code
 
 
 ##################################
