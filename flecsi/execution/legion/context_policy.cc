@@ -81,7 +81,7 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
   // Register reduction operations
   auto & reduction_registry = context_t::instance().reduction_registry();
 
-  for(auto & ro: reduction_registry) {
+  for(auto & ro : reduction_registry) {
     ro.second();
   } // for
 
@@ -122,23 +122,22 @@ legion_context_policy_t::unset_call_mpi(Legion::Context & ctx,
     clog(info) << "In unset_call_mpi" << std::endl;
   }
 
-  const auto tid =
-    context_t::instance()
-      .task_id<flecsi_internal_task_key(unset_call_mpi_task)>();
+  const auto tid = context_t::instance()
+                     .task_id<flecsi_internal_task_key(unset_call_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
-//IRINA DEBUG check number of processors
-  Legion::IndexLauncher launcher(
-      tid, Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-      Legion::TaskArgument(NULL, 0), arg_map);
+  // IRINA DEBUG check number of processors
+  Legion::IndexLauncher launcher(tid,
+    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+    Legion::TaskArgument(NULL, 0), arg_map);
 
-  //Legion::MustEpochLauncher must_epoch_launcher;
-  //must_epoch_launcher.launch_domain =
- //     Legion::Domain::from_rect<1>(context_t::instance().all_processes());
- // must_epoch_launcher.add_index_task(launcher);
- // auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
+  // Legion::MustEpochLauncher must_epoch_launcher;
+  // must_epoch_launcher.launch_domain =
+  //     Legion::Domain::from_rect<1>(context_t::instance().all_processes());
+  // must_epoch_launcher.add_index_task(launcher);
+  // auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
   launcher.tag = MAPPER_FORCE_RANK_MATCH;
-  auto fm = runtime->execute_index_space(ctx, launcher); 
+  auto fm = runtime->execute_index_space(ctx, launcher);
   fm.wait_all_results(true);
 } // legion_context_policy_t::unset_call_mpi
 
@@ -152,9 +151,8 @@ legion_context_policy_t::unset_call_mpi_index(Legion::Context & ctx,
   LegionRuntime::Arrays::Rect<1> launch_bounds(
     LegionRuntime::Arrays::Point<1>(0), LegionRuntime::Arrays::Point<1>(1));
 
-  const auto tid =
-    context_t::instance()
-      .task_id<flecsi_internal_task_key(unset_call_mpi_task)>();
+  const auto tid = context_t::instance()
+                     .task_id<flecsi_internal_task_key(unset_call_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
 
@@ -174,22 +172,21 @@ legion_context_policy_t::unset_call_mpi_index(Legion::Context & ctx,
 void
 legion_context_policy_t::handoff_to_mpi(Legion::Context & ctx,
   Legion::Runtime * runtime) {
-  const auto tid =
-    context_t::instance()
-      .task_id<flecsi_internal_task_key(handoff_to_mpi_task)>();
+  const auto tid = context_t::instance()
+                     .task_id<flecsi_internal_task_key(handoff_to_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(NULL, 0), arg_map);
 
-  //Legion::MustEpochLauncher must_epoch_launcher;
-  //must_epoch_launcher.launch_domain =
+  // Legion::MustEpochLauncher must_epoch_launcher;
+  // must_epoch_launcher.launch_domain =
   //    Legion::Domain::from_rect<1>(context_t::instance().all_processes());
-  //must_epoch_launcher.add_index_task(handoff_to_mpi_launcher);
-  //auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
+  // must_epoch_launcher.add_index_task(handoff_to_mpi_launcher);
+  // auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
   handoff_to_mpi_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-  auto fm = runtime->execute_index_space(ctx,handoff_to_mpi_launcher);
+  auto fm = runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
 
   fm.wait_all_results(true);
 } // legion_context_policy_t::handoff_to_mpi
@@ -201,21 +198,21 @@ legion_context_policy_t::handoff_to_mpi(Legion::Context & ctx,
 Legion::FutureMap
 legion_context_policy_t::wait_on_mpi(Legion::Context & ctx,
   Legion::Runtime * runtime) {
-  const auto tid = context_t::instance()
-                     .task_id<flecsi_internal_task_key(wait_on_mpi_task)>();
+  const auto tid =
+    context_t::instance().task_id<flecsi_internal_task_key(wait_on_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(NULL, 0), arg_map);
 
-  //Legion::MustEpochLauncher must_epoch_launcher;
-  //must_epoch_launcher.launch_domain =
+  // Legion::MustEpochLauncher must_epoch_launcher;
+  // must_epoch_launcher.launch_domain =
   //    Legion::Domain::from_rect<1>(context_t::instance().all_processes());
-  //must_epoch_launcher.add_index_task(wait_on_mpi_launcher);
+  // must_epoch_launcher.add_index_task(wait_on_mpi_launcher);
   wait_on_mpi_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-  auto fm = runtime->execute_index_space(ctx,wait_on_mpi_launcher);
-  //auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
+  auto fm = runtime->execute_index_space(ctx, wait_on_mpi_launcher);
+  // auto fm = runtime->execute_must_epoch(ctx, must_epoch_launcher);
 
   fm.wait_all_results(true);
 

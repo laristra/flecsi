@@ -36,7 +36,8 @@ namespace utils {
 //!
 //----------------------------------------------------------------------------//
 
-class debruijn32_t {
+class debruijn32_t
+{
 
   // de Bruijn sequence
   //            binary: 0000 0111 0111 1100 1011 0101 0011 0001
@@ -45,9 +46,9 @@ class debruijn32_t {
 
   // Lookup table. Note that this depends on the specific de Bruijn
   // sequence that is being used.
-  static constexpr uint32_t index_[32] = {
-      0,  1,  28, 2,  29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4,  8,
-      31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6,  11, 5,  10, 9};
+  static constexpr uint32_t index_[32] = {0, 1, 28, 2, 29, 14, 24, 3, 30, 22,
+    20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5,
+    10, 9};
 
 public:
   //--------------------------------------------------------------------------//

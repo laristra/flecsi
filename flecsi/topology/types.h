@@ -83,13 +83,15 @@ using index_vector_t = std::vector<size_t>;
 //! \tparam N The number of domains.
 //-----------------------------------------------------------------//
 
-class entity_base_ {
+class entity_base_
+{
 public:
   using id_t = flecsi::utils::id_t;
 };
 
 template<size_t NUM_DOMAINS>
-class entity_base_u : public entity_base_ {
+class entity_base_u : public entity_base_
+{
 public:
   ~entity_base_u() {}
 
