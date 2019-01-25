@@ -30,6 +30,7 @@
 
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
+#include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
@@ -38,10 +39,6 @@
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/mpi_type_traits.h>
-#include <flecsi/coloring/mpi_utils.h>
-#include <flecsi/coloring/coloring_types.h>
-#include <flecsi/coloring/index_coloring.h>
-#include <flecsi/data/common/data_types.h>
 
 #include <flecsi/utils/const_string.h>
 
@@ -575,7 +572,6 @@ struct mpi_context_policy_t {
   int rank;
 
 private:
-
   int color_ = 0;
   int colors_ = 0;
 

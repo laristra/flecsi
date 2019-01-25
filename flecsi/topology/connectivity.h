@@ -38,7 +38,8 @@ namespace topology {
 //! compressed storage format.
 //-----------------------------------------------------------------//
 
-class connectivity_t {
+class connectivity_t
+{
 public:
   using id_t = utils::id_t;
   using offset_t = utils::offset_t;
@@ -87,10 +88,10 @@ public:
 
     size_t n = cv.size();
 
-    for (size_t i = 0; i < n; ++i) {
+    for(size_t i = 0; i < n; ++i) {
       const id_vector_t & iv = cv[i];
 
-      for (id_t id : iv) {
+      for(id_t id : iv) {
         index_space_.batch_push_(id);
       } // for
 
@@ -112,7 +113,7 @@ public:
 
     uint64_t size = 0;
 
-    for (size_t i = 0; i < n; ++i) {
+    for(size_t i = 0; i < n; ++i) {
       uint32_t count = static_cast<std::uint32_t>(num_conns[i]);
       offsets_.add_count(count);
       size += count;
@@ -133,21 +134,21 @@ public:
   //! Debugging method. Dump the raw vectors of the connection.
   //-----------------------------------------------------------------//
   std::ostream & dump(std::ostream & stream) {
-    for (size_t i = 0; i < offsets_.size(); ++i) {
+    for(size_t i = 0; i < offsets_.size(); ++i) {
       offset_t oi = offsets_[i];
-      for (size_t j = 0; j < oi.count(); ++j) {
+      for(size_t j = 0; j < oi.count(); ++j) {
         stream << index_space_(oi.start() + j).entity() << std::endl;
       }
       stream << std::endl;
     }
 
     stream << "=== indices" << std::endl;
-    for (id_t id : index_space_.ids()) {
+    for(id_t id : index_space_.ids()) {
       stream << id.entity() << std::endl;
     } // for
 
     stream << "=== offsets" << std::endl;
-    for (size_t i = 0; i < offsets_.size(); ++i) {
+    for(size_t i = 0; i < offsets_.size(); ++i) {
       offset_t oi = offsets_[i];
       stream << oi.start() << " : " << oi.count() << std::endl;
     } // for
@@ -189,7 +190,7 @@ public:
     assert(index < offsets_.size());
     offset_t o = offsets_[index];
     return utils::make_array_ref(
-        index_space_.id_array() + o.start(), o.count());
+      index_space_.id_array() + o.start(), o.count());
   }
 
   //-----------------------------------------------------------------//
@@ -198,9 +199,8 @@ public:
   void reverse_entities(size_t index) {
     assert(index < offsets_.size());
     offset_t o = offsets_[index];
-    std::reverse(
-        index_space_.index_begin_() + o.start(),
-        index_space_.index_begin_() + o.end());
+    std::reverse(index_space_.index_begin_() + o.start(),
+      index_space_.index_begin_() + o.end());
   }
 
   //-----------------------------------------------------------------//
@@ -212,7 +212,7 @@ public:
     offset_t o = offsets_[index];
     assert(order.size() == o.count());
     utils::reorder(
-        order.begin(), order.end(), index_space_.id_array() + o.start());
+      order.begin(), order.end(), index_space_.id_array() + o.start());
   }
 
   //-----------------------------------------------------------------//
@@ -254,7 +254,7 @@ public:
 
     size_t size = 0;
 
-    for (size_t i = 0; i < n; i++) {
+    for(size_t i = 0; i < n; i++) {
       uint32_t count = conns[i].size();
       offsets_.add_count(count);
       size += count;
@@ -262,11 +262,11 @@ public:
 
     index_space_.begin_push_(size);
 
-    for (size_t i = 0; i < n; ++i) {
+    for(size_t i = 0; i < n; ++i) {
       const id_vector_t & conn = conns[i];
       uint64_t m = conn.size();
 
-      for (size_t j = 0; j < m; ++j) {
+      for(size_t j = 0; j < m; ++j) {
         index_space_.batch_push_(ev[conn[j]]->template global_id<DOM>());
       }
     }
@@ -313,7 +313,7 @@ public:
   } // end_from
 
   index_space_u<entity_base_ *, false, true, false, void, entity_storage_t>
-      index_space_;
+    index_space_;
 
   offset_storage_t offsets_;
 }; // class connectivity_t

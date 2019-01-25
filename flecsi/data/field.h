@@ -54,7 +54,7 @@ struct field_interface_u {
     @tparam INDEX_SPACE      The index space identifier.
     @tparam VERSIONS         The number of versions that shall be associated
                              with this attribute.
-    
+
     @param name The string version of the field name.
 
     @ingroup data
