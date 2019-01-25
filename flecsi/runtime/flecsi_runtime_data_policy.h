@@ -29,7 +29,7 @@
 namespace flecsi {
 namespace data {
 
-using FLECSI_RUNTIME_CLIENT_HANDLE_POLICY = legion_client_handle_policy_t;
+using FLECSI_RUNTIME_DATA_POLICY = legion_data_policy_t;
 
 } // namespace data
 } // namespace flecsi
@@ -41,7 +41,7 @@ using FLECSI_RUNTIME_CLIENT_HANDLE_POLICY = legion_client_handle_policy_t;
 namespace flecsi {
 namespace data {
 
-using FLECSI_RUNTIME_CLIENT_HANDLE_POLICY = mpi_client_handle_policy_t;
+using FLECSI_RUNTIME_DATA_POLICY = mpi_data_policy_t;
 
 } // namespace data
 } // namespace flecsi
@@ -53,7 +53,7 @@ using FLECSI_RUNTIME_CLIENT_HANDLE_POLICY = mpi_client_handle_policy_t;
 namespace flecsi {
 namespace data {
 
-using FLECSI_RUNTIME_CLIENT_HANDLE_POLICY = hpx_client_handle_policy_t;
+using FLECSI_RUNTIME_DATA_POLICY = hpx_data_policy_t;
 
 } // namespace data
 } // namespace flecsi

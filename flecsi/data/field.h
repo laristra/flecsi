@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#if 0
 #include <flecsi/data/common/registration_wrapper.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/utils/hash.h>
@@ -231,6 +232,7 @@ struct field_interface_u {
 
 } // namespace data
 } // namespace flecsi
+#endif
 
 //----------------------------------------------------------------------------//
 // This include file defines the FLECSI_RUNTIME_DATA_POLICY used below.
@@ -240,6 +242,13 @@ struct field_interface_u {
 
 namespace flecsi {
 namespace data {
+
+/*!
+  The field_interface_t type is the high-level interface to the FleCSI
+  field data model.
+
+  @ingroup data
+ */
 
 using field_interface_t = field_interface_u<FLECSI_RUNTIME_DATA_POLICY>;
 

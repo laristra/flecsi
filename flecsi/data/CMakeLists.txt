@@ -18,7 +18,10 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
+  client.h
+  common/client_handler.h
   data.h
+  field.h
 )
 
 set(data_SOURCES
@@ -27,6 +30,9 @@ set(data_SOURCES
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
+    legion/client_handle.h
+    legion/client_handlers.h
+    legion/policy.h
     ${data_HEADERS}
   )
 

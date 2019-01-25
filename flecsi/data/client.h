@@ -15,8 +15,6 @@
 
 /*! @file */
 
-#include <flecsi/data/client_handle.h>
-
 #include <string>
 
 namespace flecsi {
@@ -45,6 +43,7 @@ struct client_interface_u {
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
   static bool register_client(std::string const & name) {
+    return true;
   } // register_client
 
   /*!
@@ -57,7 +56,9 @@ struct client_interface_u {
    */
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
-  static client_handle_u<DATA_CLIENT_TYPE, 0> get_client_handle() {
+  static decltype(auto) get_client_handle() {
+    return DATA_POLICY::template get_client_handle<DATA_CLIENT_TYPE,
+      NAMESPACE_HASH, NAME_HASH>();
   } // get_client_handle
 
 }; // struct client_interface_u
@@ -74,8 +75,14 @@ struct client_interface_u {
 namespace flecsi {
 namespace data {
 
-using client_interface_t =
-  client_interface_u<FLECSI_RUNTIME_DATA_POLICY>;
+/*!
+  The client_interface_t type is the high-level interface to the FleCSI
+  data client model.
+
+  @ingroup data
+ */
+
+using client_interface_t = client_interface_u<FLECSI_RUNTIME_DATA_POLICY>;
 
 } // namespace data
 } // namespace flecsi
