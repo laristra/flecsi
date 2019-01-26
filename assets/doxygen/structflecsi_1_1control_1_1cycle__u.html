@@ -79,15 +79,15 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a8c5e9170872caad9b3c7f6e41798baa2"><td class="memItemLeft" align="right" valign="top"><a id="a8c5e9170872caad9b3c7f6e41798baa2"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>TYPE</b> = std::tuple&lt; PHASES ... &gt;</td></tr>
-<tr class="separator:a8c5e9170872caad9b3c7f6e41798baa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a838ea1b6d7c2d06bae118e44ed00b68d"><td class="memItemLeft" align="right" valign="top"><a id="a838ea1b6d7c2d06bae118e44ed00b68d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>TYPE</b> = std::tuple&lt; PHASES... &gt;</td></tr>
+<tr class="separator:a838ea1b6d7c2d06bae118e44ed00b68d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a549271b982f5659bc1e895e2dba97a22"><td class="memItemLeft" align="right" valign="top"><a id="a549271b982f5659bc1e895e2dba97a22"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>BEGIN_TYPE</b> = typename std::tuple_element&lt; 0, TYPE &gt;::type</td></tr>
 <tr class="separator:a549271b982f5659bc1e895e2dba97a22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a660168946c2a5ce1f6b1b1ed42c64420"><td class="memItemLeft" align="right" valign="top"><a id="a660168946c2a5ce1f6b1b1ed42c64420"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>END_TYPE</b> = typename std::tuple_element&lt; std::tuple_size&lt; TYPE &gt;::value-1, TYPE &gt;::type</td></tr>
-<tr class="separator:a660168946c2a5ce1f6b1b1ed42c64420"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a671486a2107d4ea1d95b272dad162557"><td class="memItemLeft" align="right" valign="top"><a id="a671486a2107d4ea1d95b272dad162557"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>END_TYPE</b> = typename std::tuple_element&lt; std::tuple_size&lt; TYPE &gt;::value - 1, TYPE &gt;::type</td></tr>
+<tr class="separator:a671486a2107d4ea1d95b272dad162557"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -105,7 +105,7 @@ static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>en
 <tr class="separator:a2b426d1ea716dc4f4bd399060613e4be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;bool(*)() PREDICATE, typename ... PHASES&gt;<br />
+<div class="textblock"><h3>template&lt;bool(*)() PREDICATE, typename... PHASES&gt;<br />
 struct flecsi::control::cycle_u&lt; PREDICATE, PHASES &gt;</h3>
 
 <p>Allow users to define cyclic control points. Cycles can be nested.</p>
