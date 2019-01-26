@@ -103,7 +103,7 @@ struct dense_handle_t : public dense_data_handle_u<T,
       }
     }
 
-    // ghost is never mapped with write permissions
+      // ghost is never mapped with write permissions
 
 #ifndef MAPPER_COMPACTION
     if(base_t::master && base_t::combined_data) {
@@ -221,8 +221,7 @@ struct storage_class_u<dense> {
     h.ghost_lp = ism[index_space].ghost_lp;
     h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
     h.write_phase_started =
-        &(ism[index_space].write_phase_started[field_info.fid]);
-
+      &(ism[index_space].write_phase_started[field_info.fid]);
 
     h.entire_region = ism[index_space].entire_region;
     h.color_partition = ism[index_space].color_partition;

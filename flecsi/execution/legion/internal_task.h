@@ -44,7 +44,7 @@
  @ingroup legion-execution
  */
 
-#define flecsi_internal_task_key(task)                                       \
+#define flecsi_internal_task_key(task)                                         \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Use const_string_t interface to create the key */                         \
@@ -63,16 +63,15 @@
   @ingroup legion-execution
 */
 
-#define flecsi_internal_register_legion_task(task, processor, launch)        \
+#define flecsi_internal_register_legion_task(task, processor, launch)          \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the execution policy to register the task */                         \
   inline bool task##_task_registered =                                         \
-      flecsi::execution::legion_execution_policy_t::register_legion_task<      \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
-          typename flecsi::utils::function_traits_u<decltype(                  \
-              task)>::return_type,                                             \
-          task>(processor, launch, {EXPAND_AND_STRINGIFY(task)})
+    flecsi::execution::legion_execution_policy_t::register_legion_task<        \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+      typename flecsi::utils::function_traits_u<decltype(task)>::return_type,  \
+      task>(processor, launch, {EXPAND_AND_STRINGIFY(task)})
 
 
 /*!
@@ -89,15 +88,13 @@
   @ingroup legion-execution
 */
 
-#define flecsi_internal_register_reduction_task(task, processor, launch,     \
-	reduction)                                                             \
+#define flecsi_internal_register_reduction_task(task, processor, launch,       \
+	reduction)                                                                 \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the execution policy to register the task */                         \
   bool task##_task_registered =                                                \
-      flecsi::execution::legion_execution_policy_t::register_legion_task<      \
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),    \
-          typename flecsi::utils::function_traits_u<decltype(                  \
-              task)>::return_type,                                             \
-          task, reduction>(processor, launch, {EXPAND_AND_STRINGIFY(task)})
-
+    flecsi::execution::legion_execution_policy_t::register_legion_task<        \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+      typename flecsi::utils::function_traits_u<decltype(task)>::return_type,  \
+      task, reduction>(processor, launch, {EXPAND_AND_STRINGIFY(task)})

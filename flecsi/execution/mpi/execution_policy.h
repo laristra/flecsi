@@ -164,7 +164,7 @@ struct mpi_execution_policy_t {
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
 
     if constexpr(REDUCTION != ZERO) {
-      
+
       MPI_Datatype datatype;
 
       if constexpr(!std::is_pod_v<RETURN>) {
@@ -189,8 +189,8 @@ struct mpi_execution_policy_t {
       const RETURN sendbuf = future.get();
       RETURN recvbuf;
 
-      MPI_Allreduce(&sendbuf, &recvbuf, 1, datatype, reduction_op->second,
-        MPI_COMM_WORLD);
+      MPI_Allreduce(
+        &sendbuf, &recvbuf, 1, datatype, reduction_op->second, MPI_COMM_WORLD);
 
       mpi_future_u<RETURN> gfuture;
       gfuture.set(recvbuf);
