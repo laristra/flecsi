@@ -18,21 +18,25 @@
 namespace flecsi {
 namespace data {
 
-//----------------------------------------------------------------------------//
-//! Enumeration of supported storage types.
-//----------------------------------------------------------------------------//
+/*!
+  The storage_class_t type enumerates the available FleCSI storage classes.
+  A FleCSI storage class provides a specific interface for different
+  logical data layouts, e.g., dense vs. sparse. The actual data layout
+  is implementation dependent.
+ */
 
-enum storage_label_type_t : size_t {
-  base,
-  dense,
+enum storage_class_t : size_t {
   global,
-  color,
+  color
+#if 0
+  dense,
   sparse,
   ragged,
   scoped,
   tuple,
   local,
   subspace
+#endif
 }; // enum storage_label_type_t
 
 } // namespace data

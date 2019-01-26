@@ -34,6 +34,10 @@ set(utils_HEADERS
   flog/packet.h
   flog/types.h
   flog/utils.h
+  ftest.h
+  ftest/node.h
+  ftest/output.h
+  ftest/types.h
   function_traits.h
   graphviz.h
   hash.h

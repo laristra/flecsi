@@ -54,7 +54,7 @@ struct field_interface_u {
     @tparam VERSIONS         The number of versions that shall be associated
                              with this attribute.
     @tparam INDEX_SPACE      The index space identifier.
-    
+
     @param name The string version of the field name.
 
     @ingroup data
@@ -82,7 +82,7 @@ struct field_interface_u {
       const size_t key =
         utils::hash::field_hash<NAMESPACE_HASH, NAME_HASH>(version);
 
-      if(!context_t::instance().register_field(
+      if(!execution::context_t::instance().register_field(
            client_type_key, key, wrapper_t::register_callback)) {
         return false;
       } // if

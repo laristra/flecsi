@@ -17,8 +17,8 @@
 
 #include <tuple>
 
-#include <flecsi/utils/const_string.h>
 #include <flecsi/control/control.h>
+#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/flog.h>
 #include <flecsi/utils/ftest/node.h>
 #include <flecsi/utils/ftest/types.h>

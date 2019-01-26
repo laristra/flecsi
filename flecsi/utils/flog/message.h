@@ -77,15 +77,22 @@ struct log_message_t {
 #endif
 
 #if defined(FLOG_ENABLE_MPI)
-    if(can_send_to_one_) {
+    if(can_send_to_one_ && flog_t::instance().initialized()) {
       send_to_one(flog_t::instance().buffer_stream().str().c_str());
     }
     else {
-      flog_t::instance().stream() << flog_t::instance().buffer_stream().str();
+      if(!flog_t::instance().initialized()) {
+#if defined(FLOG_ENABLE_EXTERNAL)
+        std::cout << flog_t::instance().buffer_stream().str();
+#endif
+      }
+      else {
+        flog_t::instance().stream() << flog_t::instance().buffer_stream().str();
+      } // if
     } // if
 #else
     flog_t::instance().stream() << flog_t::instance().buffer_stream().str();
-#endif
+#endif // FLOG_ENABLE_MPI
 
     flog_t::instance().buffer_stream().str(std::string{});
   } // ~log_message_t
@@ -157,6 +164,20 @@ protected:
 severity_message_t(utility, decltype(flecsi::utils::flog::true_state), {
   std::ostream & stream =
     flog_t::instance().severity_stream(flog_t::instance().tag_enabled());
+  return stream;
+});
+
+// Internal
+severity_message_t(internal, decltype(flecsi::utils::flog::true_state), {
+  std::ostream & stream = flog_t::instance().severity_stream(
+    FLOG_STRIP_LEVEL < 2 && predicate_() && flog_t::instance().tag_enabled());
+
+  {
+    stream << FLOG_OUTPUT_LTBLUE("[INT") << FLOG_OUTPUT_PURPLE(message_stamp);
+    stream << FLOG_OUTPUT_LTGRAY(mpi_stamp);
+    stream << FLOG_OUTPUT_LTBLUE("] ") << FLOG_COLOR_LTGRAY;
+  } // scope
+
   return stream;
 });
 

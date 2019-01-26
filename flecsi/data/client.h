@@ -17,6 +17,7 @@
 
 #include <flecsi/data/common/client_registration_wrapper.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/utils/flog.h>
 #include <flecsi/utils/hash.h>
 
 #include <string>
@@ -59,8 +60,20 @@ struct client_interface_u {
 
     const size_t key = utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
 
-    return execution::context_t::instance().register_client(
-      type_key, key, wrapper_t::register_callback);
+    flog(internal)
+      << "Registering data client" << std::endl
+      << "\tname: " << name << std::endl
+      << "\ttype: "
+      << utils::demangle(
+           typeid(typename DATA_CLIENT_TYPE::type_identifier_t).name())
+      << std::endl;
+
+    if(!execution::context_t::instance().register_client(
+         type_key, key, wrapper_t::register_callback)) {
+      return false;
+    } // if
+
+    return true;
   } // register_client
 
   /*!

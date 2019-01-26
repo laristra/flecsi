@@ -102,10 +102,11 @@ public:
 
     {
       flog_tag_guard(legion_mapper);
-      flog(info) << "Mapper constuctor: local=" << local
-                 << " cpus=" << local_cpus.size()
-                 << " gpus=" << local_gpus.size() << " sysmem=" << local_sysmem
-                 << std::endl;
+      flog(internal) << "Mapper constuctor" << std::endl
+                     << "\tlocal: " << local << std::endl
+                     << "\tcpus: " << local_cpus.size() << std::endl
+                     << "\tgpus: " << local_gpus.size() << std::endl
+                     << "\tsysmem: " << local_sysmem << std::endl;
     }
   } // end mpi_mapper_t
 

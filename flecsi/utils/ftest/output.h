@@ -1,9 +1,9 @@
 #pragma once
 
+#include <fstream>
+#include <iostream>
 #include <memory>
 #include <regex>
-#include <iostream>
-#include <fstream>
 
 namespace flecsi {
 namespace utils {
@@ -12,7 +12,6 @@ namespace ftest {
 class test_output_t
 {
 public:
-
   static test_output_t & instance() {
     static test_output_t g;
     return g;
@@ -57,7 +56,7 @@ public:
 
     std::ifstream f(testdir_filename);
 
-    if(! f.good()) {
+    if(!f.good()) {
       std::cerr << "Failed to open " << filename << std::endl;
       std::exit(1);
     } // if
@@ -73,10 +72,8 @@ public:
   } // equal_blessed
 
 private:
-
   test_output_t()
-    : stream_(new std::ostream(default_.rdbuf())) {
-  } // test_output_t
+    : stream_(new std::ostream(default_.rdbuf())) {} // test_output_t
 
   std::stringstream default_;
   std::shared_ptr<std::ostream> stream_;

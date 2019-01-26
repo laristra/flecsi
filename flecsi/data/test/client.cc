@@ -12,13 +12,15 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/data/client.h>
+#include <flecsi/data/data.h>
 #include <flecsi/utils/ftest.h>
 
-void client(int argc, char ** argv) {
+flecsi_register_global(test, global, double, 2);
+
+void global(int argc, char ** argv) {
 
   FTEST();
 
 }
 
-ftest_register_test(client);
+ftest_register_test(global);

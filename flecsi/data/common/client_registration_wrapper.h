@@ -17,7 +17,7 @@
 
 #include <flecsi/execution/context.h>
 #include <flecsi/runtime/types.h>
-#include <flecsi/topology/basic_topologies.h>
+#include <flecsi/topology/internal.h>
 //#include <flecsi/topology/mesh_topology.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/const_string.h>
@@ -432,11 +432,11 @@ struct client_registration_wrapper_u<
  */
 
 template<size_t NAMESPACE_HASH, size_t NAME_HASH>
-struct client_registration_wrapper_u<flecsi::topology::global_topology_u,
+struct client_registration_wrapper_u<flecsi::topology::global_topology_t,
   NAMESPACE_HASH,
   NAME_HASH> {
 
-  using CLIENT_TYPE = flecsi::topology::global_topology_u;
+  using CLIENT_TYPE = flecsi::topology::global_topology_t;
 
   static void register_callback(field_id_t fid) {}
 
@@ -447,11 +447,11 @@ struct client_registration_wrapper_u<flecsi::topology::global_topology_u,
  */
 
 template<size_t NAMESPACE_HASH, size_t NAME_HASH>
-struct client_registration_wrapper_u<flecsi::topology::color_topology_u,
+struct client_registration_wrapper_u<flecsi::topology::color_topology_t,
   NAMESPACE_HASH,
   NAME_HASH> {
 
-  using CLIENT_TYPE = flecsi::topology::color_topology_u;
+  using CLIENT_TYPE = flecsi::topology::color_topology_t;
 
   static void register_callback(field_id_t fid) {}
 

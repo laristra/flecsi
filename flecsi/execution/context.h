@@ -18,6 +18,7 @@
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/demangle.h>
 #include <flecsi/utils/flog.h>
 
 #include <cassert>
@@ -233,8 +234,15 @@ struct context_u : public CONTEXT_POLICY {
     flog_assert(function_registry_.find(KEY) == function_registry_.end(),
       "function has already been registered");
 
-    const std::size_t addr = reinterpret_cast<std::size_t>(FUNCTION);
-    flog(info) << "Registering function: " << addr << std::endl;
+    // clang-format off
+    flog(internal) << "Registering function" << std::endl <<
+      "\thash: " << KEY << std::endl <<
+      "\taddress: " << reinterpret_cast<std::size_t>(FUNCTION) << std::endl <<
+      "\treturn type: " <<
+        utils::demangle(typeid(RETURN).name()) << std::endl <<
+      "\ttuple type: " <<
+        utils::demangle(typeid(ARG_TUPLE).name()) << std::endl;
+    // clang-format on
 
     function_registry_[KEY] = reinterpret_cast<void *>(FUNCTION);
     return true;
@@ -252,10 +260,13 @@ struct context_u : public CONTEXT_POLICY {
     @param callback   The registration call back function.
    */
 
-  bool register_client(size_t type_hash, size_t key,
+  bool register_client(size_t type_hash,
+    size_t key,
     const client_registration_function_t & callback) {
     if(client_registry_.find(type_hash) != client_registry_.end()) {
-      flog_assert(client_registry_[type_hash].find(key) == client_registry_[type_hash].end(), "client key already exists");
+      flog_assert(client_registry_[type_hash].find(key) ==
+                    client_registry_[type_hash].end(),
+        "client key already exists");
     } // if
 
     client_registry_[type_hash][key] =
@@ -275,8 +286,8 @@ struct context_u : public CONTEXT_POLICY {
 
   bool client_fields_registered(size_t type_key, size_t instance_key) {
     return !registered_client_fields_
-      .insert(std::make_pair(type_key, instance_key))
-      .second;
+              .insert(std::make_pair(type_key, instance_key))
+              .second;
   } // client_fields_registered
 
   /*--------------------------------------------------------------------------*
@@ -291,7 +302,8 @@ struct context_u : public CONTEXT_POLICY {
     @param callback        The registration call back function.
    */
 
-  bool register_field(size_t client_type_key, size_t key,
+  bool register_field(size_t client_type_key,
+    size_t key,
     const field_registration_function_t & callback) {
     if(field_registry_.find(client_type_key) != field_registry_.end()) {
       if(field_registry_[client_type_key].find(key) !=

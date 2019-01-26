@@ -74,8 +74,9 @@ struct legion_execution_policy_t {
   static bool register_legion_task(processor_type_t processor,
     launch_t launch,
     std::string name) {
-    flog(info) << "Registering legion task " << TASK << " " << name
-               << std::endl;
+    flog(internal) << "Registering legion task" << std::endl
+                   << "\tname: " << name << std::endl
+                   << "\thash: " << TASK << std::endl;
 
     using wrapper_t = pure_task_wrapper_u<RETURN, DELEGATE>;
 

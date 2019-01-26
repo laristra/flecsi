@@ -18,7 +18,7 @@
 #------------------------------------------------------------------------------#
 
 set(topology_HEADERS
-  basic_topologies.h
+  internal.h
 )
 
 set(topology_SOURCES
