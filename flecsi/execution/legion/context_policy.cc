@@ -24,11 +24,6 @@ int
 legion_context_policy_t::start(int argc, char ** argv) {
   using namespace Legion;
 
-  {
-    flog_tag_guard(context);
-    flog(info) << __FUNCTION__ << std::endl;
-  }
-
   /*
     Setup top-level task.
    */
@@ -96,6 +91,11 @@ legion_context_policy_t::start(int argc, char ** argv) {
 
   Runtime::start(argc, argv, true);
 
+  {
+    flog_tag_guard(context);
+    flog(internal) << "Legion runtime started" << std::endl;
+  }
+
   handoff_to_legion();
   wait_on_legion();
 
@@ -123,7 +123,7 @@ legion_context_policy_t::unset_call_mpi(Legion::Context & ctx,
   Legion::Runtime * runtime) {
   {
     flog_tag_guard(context);
-    flog(info) << "In unset_call_mpi" << std::endl;
+    flog(internal) << "In unset_call_mpi" << std::endl;
   }
 
   const auto tid = context_t::instance()

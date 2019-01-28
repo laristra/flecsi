@@ -108,7 +108,7 @@ struct legion_context_policy_t {
   bool set_mpi_state(bool active) {
     {
       flog_tag_guard(context);
-      flog(internal) << "set_mpi_state " << active << std::endl;
+      flog(internal) << "In set_mpi_state " << active << std::endl;
     }
 
     mpi_active_ = active;
@@ -123,7 +123,7 @@ struct legion_context_policy_t {
   void set_mpi_task(std::function<void()> & mpi_task) {
     {
       flog_tag_guard(context);
-      flog(internal) << "set_mpi_task" << std::endl;
+      flog(internal) << "In set_mpi_task" << std::endl;
     }
 
     mpi_task_ = mpi_task;
@@ -160,7 +160,7 @@ struct legion_context_policy_t {
   void handoff_to_legion() {
     {
       flog_tag_guard(context);
-      flog(internal) << "handoff_to_legion" << std::endl;
+      flog(internal) << "In handoff_to_legion" << std::endl;
     }
     MPI_Barrier(MPI_COMM_WORLD);
     handshake_.mpi_handoff_to_legion();
@@ -173,7 +173,7 @@ struct legion_context_policy_t {
   void wait_on_legion() {
     {
       flog_tag_guard(context);
-      flog(internal) << "wait_on_legion" << std::endl;
+      flog(internal) << "In wait_on_legion" << std::endl;
     }
 
     handshake_.mpi_wait_on_legion();
@@ -187,7 +187,7 @@ struct legion_context_policy_t {
   void handoff_to_mpi() {
     {
       flog_tag_guard(context);
-      flog(internal) << "handoff_to_mpi" << std::endl;
+      flog(internal) << "In handoff_to_mpi" << std::endl;
     }
 
     handshake_.legion_handoff_to_mpi();
@@ -200,7 +200,7 @@ struct legion_context_policy_t {
   void wait_on_mpi() {
     {
       flog_tag_guard(context);
-      flog(internal) << "wait_on_mpi" << std::endl;
+      flog(internal) << "In wait_on_mpi" << std::endl;
     }
 
     handshake_.legion_wait_on_mpi();
