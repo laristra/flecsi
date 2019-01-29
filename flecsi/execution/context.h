@@ -147,30 +147,24 @@ struct context_u : public CONTEXT_POLICY {
    *--------------------------------------------------------------------------*/
 
   /*!
-    Register a global object with the context.
+    Add a global object to the context. Global objects cannot be added
+    from within a task. Attempts to do so will generate a runtime error.
 
-    @tparam NAMESPACE_HASH A unique hash that identifies the object.
-    @tparam INDEX          The index of the global object within the given
-                           namespace.
-    @tparam OBJECT_TYPE    The C++ type of the object.
+    The intent of the global object interface is to allow users
+    to use normal C++ inheritance patterns (with virtual functions)
+    for \b globally-constant objects within the FleCSI task system.
+    That said, this interface should be used with care, e.g., it is
+    expensive to add global objects because it requires synchronization
+    across runtime threads. Additionally, this interface also uses simple
+    type erasure so that all added global objects can be stored in a
+    single unordered map. Therefore, the user is responsible for
+    correctly specifying the OBJECT_TYPE parameter to this method,
+    and to the \ref get_global_object method.
 
-    @return a boolean value indicating success or failure.
-   */
-
-  template<size_t NAMESPACE_HASH, size_t INDEX, typename OBJECT_TYPE>
-  bool register_global_object() {
-    size_t KEY = NAMESPACE_HASH ^ INDEX;
-
-    using wrapper_t = global_object_wrapper_u<OBJECT_TYPE>;
-
-    std::get<0>(global_object_registry_[KEY]) = {};
-    std::get<1>(global_object_registry_[KEY]) = &wrapper_t::cleanup;
-
-    return true;
-  } // register_global_object
-
-  /*!
-    Register a global object with the context.
+    In normal usage, the user should call this method with a derived
+    type, and the \ref get_global_object method should be called with
+    a base type (assuming a common base type for all global objects
+    added within the NAMESPACE_HASH).
 
     @tparam NAMESPACE_HASH A unique hash that identifies the object.
     @tparam OBJECT_TYPE    The C++ type of the object.
@@ -179,17 +173,36 @@ struct context_u : public CONTEXT_POLICY {
     @param args  A variadic argument list to be passed to the constructor
                  of the global object.
 
-    @return a boolean value indicating success or failure.
+    @return A pointer to the newly allocated object.
+
+    @note The global object instance will automatically be deleted by
+          the runtime at shutdown.
    */
 
   template<size_t NAMESPACE_HASH, typename OBJECT_TYPE, typename... ARGS>
-  bool initialize_global_object(size_t index, ARGS &&... args) {
+  OBJECT_TYPE * add_global_object(size_t index, ARGS &&... args) {
     size_t KEY = NAMESPACE_HASH ^ index;
-    assert(global_object_registry_.find(KEY) != global_object_registry_.end());
+
+    flog_assert(
+      global_object_registry_.find(KEY) == global_object_registry_.end(),
+      "global key already exists");
+
+    auto ptr = new OBJECT_TYPE(std::forward<ARGS>(args)...);
+
+    flog(internal) << "Adding global object" << std::endl <<
+      "\tindex: " << index << std::endl <<
+      "\thash: " << NAMESPACE_HASH << std::endl <<
+      "\ttype: " << utils::demangle(typeid(OBJECT_TYPE).name()) << std::endl <<
+      "\taddress: " << ptr << std::endl;
+
     std::get<0>(global_object_registry_[KEY]) =
-      reinterpret_cast<uintptr_t>(new OBJECT_TYPE(std::forward<ARGS>(args)...));
-    return true;
-  } // new_global_object
+      reinterpret_cast<uintptr_t>(ptr);
+
+    using wrapper_t = global_object_wrapper_u<OBJECT_TYPE>;
+    std::get<1>(global_object_registry_[KEY]) = &wrapper_t::cleanup;
+
+    return ptr;
+  } // add_global_object
 
   /*!
     Get a global object instance.
@@ -199,15 +212,26 @@ struct context_u : public CONTEXT_POLICY {
 
     @param index The index of the global object within the given namespace.
 
-    @return a boolean value indicating success or failure.
+    @return A pointer to the object.
    */
 
   template<size_t NAMESPACE_HASH, typename OBJECT_TYPE>
   OBJECT_TYPE * get_global_object(size_t index) {
     size_t KEY = NAMESPACE_HASH ^ index;
-    assert(global_object_registry_.find(KEY) != global_object_registry_.end());
-    return reinterpret_cast<OBJECT_TYPE *>(
+    flog_assert(
+      global_object_registry_.find(KEY) != global_object_registry_.end(),
+      "key does not exist");
+
+    auto ptr = reinterpret_cast<OBJECT_TYPE *>(
       std::get<0>(global_object_registry_[KEY]));
+
+    flog(internal) << "Getting global object" << std::endl <<
+      "\tindex: " << index << std::endl <<
+      "\thash: " << NAMESPACE_HASH << std::endl <<
+      "\ttype: " << utils::demangle(typeid(OBJECT_TYPE).name()) << std::endl <<
+      "\taddress: " << ptr << std::endl;
+
+    return ptr;
   } // get_global_object
 
   /*--------------------------------------------------------------------------*
@@ -329,15 +353,15 @@ private:
     Singleton.
    *--------------------------------------------------------------------------*/
 
-  context_u() : CONTEXT_POLICY() {}
+  context_u() : CONTEXT_POLICY() { std::cout << "constructor" << std::endl; }
 
   ~context_u() {
+    std::cout << "destructor" << std::endl << std::flush;
 
     // Cleanup the global objects
     for(auto & go : global_object_registry_) {
       std::get<1>(go.second)(std::get<0>(go.second));
     } // for
-
   } // ~context_u
 
   /*--------------------------------------------------------------------------*

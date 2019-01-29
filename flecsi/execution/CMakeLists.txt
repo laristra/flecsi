@@ -115,3 +115,8 @@ ftest_add_unit(color
   THREADS
     4
 )
+
+ftest_add_unit(global-object
+  SOURCES
+    test/global-object.cc
+)

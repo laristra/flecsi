@@ -76,9 +76,10 @@ struct control_u : public CONTROL_POLICY {
 
     {
       flog_tag_guard(control);
-      flog(internal) << "Invoking control model" << std::endl <<
-        "\tpolicy type: " <<
-          utils::demangle(typeid(CONTROL_POLICY).name()) << std::endl;
+      flog(internal) << "Invoking control model" << std::endl
+                     << "\tpolicy type: "
+                     << utils::demangle(typeid(CONTROL_POLICY).name())
+                     << std::endl;
     }
 
     instance().sort_phases();

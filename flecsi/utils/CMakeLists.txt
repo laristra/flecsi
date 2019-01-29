@@ -26,7 +26,6 @@ set(utils_HEADERS
   dag.h
   debruijn.h
   demangle.h
-  dimensioned_array.h
   export_definitions.h
   factory.h
   flog.h
@@ -41,15 +40,12 @@ set(utils_HEADERS
   function_traits.h
   graphviz.h
   hash.h
-  humble.h
   id.h
   index_space.h
   iterator.h
-  logging.h
   macros.h
   mpi_type_traits.h
   offset.h
-  reorder.h
   set_intersection.h
   set_utils.h
   simple_id.h
@@ -62,7 +58,6 @@ set(utils_HEADERS
   type_traits.h
   typeify.h
   uint128.h
-  utility.h
 )
 
 #------------------------------------------------------------------------------#
@@ -237,15 +232,6 @@ ftest_add_unit(hash
 )
 
 #------------------------------------------------------------------------------#
-# reorder
-#------------------------------------------------------------------------------#
-
-ftest_add_unit(reorder
-  SOURCES
-		test/reorder.cc
-)
-
-#------------------------------------------------------------------------------#
 # set_intersection
 #------------------------------------------------------------------------------#
 
@@ -299,17 +285,6 @@ ftest_add_unit(tuple_type_converter
     test/tuple_type_converter.cc
   INPUTS
     ${tuple_type_converter_blessed_input}
-)
-
-#------------------------------------------------------------------------------#
-# utility
-#------------------------------------------------------------------------------#
-
-ftest_add_unit(test_utility
-  SOURCES
-    test/utility.cc
-  INPUTS
-    test/utility.blessed.gnug
 )
 
 #------------------------------------------------------------------------------#

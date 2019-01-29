@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <flecsi/execution/context.h>
+#include <flecsi/execution/legion/reduction_wrapper.h>
 #include <flecsi/execution/legion/task_wrapper.h>
 #include <flecsi/utils/flog.h>
 
@@ -87,6 +88,24 @@ struct legion_execution_policy_t {
 
     return true;
   } // register_legion_task
+
+  //------------------------------------------------------------------------//
+  // Reduction interface.
+  //------------------------------------------------------------------------//
+
+  /*!
+   Legion backend reduction registration. For documentation on this
+   method please see task_u::register_reduction_operation.
+   */
+
+  template<size_t HASH, typename TYPE>
+  static bool register_reduction_operation() {
+
+    using wrapper_t = reduction_wrapper_u<HASH, TYPE>;
+
+    return context_t::instance().register_reduction_operation(
+      HASH, wrapper_t::registration_callback);
+  } // register_reduction_operation
 
 }; // struct legion_execution_policy_t
 

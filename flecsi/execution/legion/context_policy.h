@@ -46,6 +46,8 @@ const size_t FLECSI_MAPPER_EXCLUSIVE_LR = 0x00004000;
 
 struct legion_context_policy_t {
 
+  virtual ~legion_context_policy_t() { std::cout << "destructor base" << std::endl; }
+
   /*!
      The registration_function_t type defines a function type for
      registration callbacks.
@@ -307,11 +309,11 @@ struct legion_context_policy_t {
     return task_entry->second;
   } // task_info
 
-    /*!
-      Return task key information.
+  /*!
+    Return task key information.
 
-      @param key The task hash key.
-     */
+    @param key The task hash key.
+   */
 
 #define task_info_template_method(name, return_type, index)                    \
   template<size_t KEY>                                                         \
@@ -325,11 +327,11 @@ struct legion_context_policy_t {
     return std::get<index>(task_info<KEY>());                                  \
   }
 
-    /*!
-      Return task key information.
+  /*!
+    Return task key information.
 
-      @param key The task hash key.
-     */
+    @param key The task hash key.
+   */
 
 #define task_info_method(name, return_type, index)                             \
   return_type name(size_t key) {                                               \
@@ -349,10 +351,22 @@ struct legion_context_policy_t {
   task_info_method(processor_type, processor_type_t, 1);
   // clang-format on
 
+  //--------------------------------------------------------------------------//
+  // Reduction interface.
+  //--------------------------------------------------------------------------//
+
+  /*!
+    Return the map of registered reduction operations.
+   */
+
+  auto & reduction_operations() {
+    return reduction_ops_;
+  } // reduction_operations
+
 private:
   /*--------------------------------------------------------------------------*
     Interoperability data members.
-  *--------------------------------------------------------------------------*/
+   *--------------------------------------------------------------------------*/
 
   // FIXME: This needs to change to use the point ID from task.
   size_t color_ = std::numeric_limits<size_t>::max();
@@ -365,15 +379,21 @@ private:
 
   /*--------------------------------------------------------------------------*
     Task data members.
-  *--------------------------------------------------------------------------*/
+   *--------------------------------------------------------------------------*/
 
   std::map<size_t, task_info_t> task_registry_;
 
   /*--------------------------------------------------------------------------*
     Function data members.
-  *--------------------------------------------------------------------------*/
+   *--------------------------------------------------------------------------*/
 
   std::unordered_map<size_t, void *> function_registry_;
+
+  /*--------------------------------------------------------------------------*
+    Reduction data members.
+   *--------------------------------------------------------------------------*/
+
+  std::map<size_t, size_t> reduction_ops_;
 
 }; // struct legion_context_policy_t
 

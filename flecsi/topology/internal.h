@@ -25,6 +25,7 @@ namespace topology {
   ids for the global and color topologies.
  */
 
+// FIXME: user id generator
 constexpr size_t global_index_space = 4096;
 constexpr size_t color_index_space = 4097;
 
