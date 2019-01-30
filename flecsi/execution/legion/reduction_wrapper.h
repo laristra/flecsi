@@ -15,9 +15,13 @@
 
 /*! @file */
 
-#include <flecsi/execution/context.h>
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/flog.h>
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not inlcude this file directly!
+#else
+  #include <flecsi/execution/context.h>
+  #include <flecsi/utils/common.h>
+  #include <flecsi/utils/flog.h>
+#endif
 
 #include <legion.h>
 

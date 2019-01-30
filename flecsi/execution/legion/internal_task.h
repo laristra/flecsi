@@ -15,12 +15,16 @@
 
 /*! @file */
 
-#include <flecsi/execution/common/processor.h>
-#include <flecsi/execution/context.h>
-#include <flecsi/execution/execution.h>
-#include <flecsi/utils/const_string.h>
-#include <flecsi/utils/function_traits.h>
-#include <flecsi/utils/macros.h>
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not inlcude this file directly!
+#else
+  #include <flecsi/execution/common/processor.h>
+  #include <flecsi/execution/context.h>
+  #include <flecsi/execution/execution.h>
+  #include <flecsi/utils/const_string.h>
+  #include <flecsi/utils/function_traits.h>
+  #include <flecsi/utils/macros.h>
+#endif
 
 #include <flecsi-config.h>
 

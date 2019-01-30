@@ -15,6 +15,10 @@
 
 /*! @file */
 
+#if !defined(__FLECSI_PRIVATE__)
+  #define __FLECSI_PRIVATE__
+#endif
+
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/reduction.h>
 #include <flecsi/execution/task.h>

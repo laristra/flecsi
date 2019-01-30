@@ -17,6 +17,13 @@
 
 #include <flecsi-config.h>
 
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not include this file directly!
+#else
+  #include <flecsi/execution/context.h>
+  #include <flecsi/execution/legion/tasks.h>
+#endif
+
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
@@ -25,9 +32,6 @@
 #include <legion.h>
 #include <legion_mapping.h>
 #include <mappers/default_mapper.h>
-
-#include <flecsi/execution/context.h>
-#include <flecsi/execution/legion/tasks.h>
 
 flog_register_tag(legion_mapper);
 

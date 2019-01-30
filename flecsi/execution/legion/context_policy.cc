@@ -12,6 +12,10 @@
    All rights reserved.
                                                                               */
 
+#if !defined(__FLECSI_PRIVATE__)
+  #define __FLECSI_PRIVATE__
+#endif
+
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_task.h>
 #include <flecsi/execution/legion/mapper.h>

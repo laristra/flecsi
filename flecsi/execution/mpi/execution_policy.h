@@ -15,6 +15,10 @@
 
 /*! @file */
 
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not inlcude this file directly!
+#endif
+
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/flog.h>
 

@@ -13,6 +13,8 @@
                                                                               */
 
 #include <flecsi/utils/ftest.h>
+
+#define __FLECSI_PRIVATE__
 #include <flecsi/execution/execution.h>
 
 using namespace flecsi::execution;

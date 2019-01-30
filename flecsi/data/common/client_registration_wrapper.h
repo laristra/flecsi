@@ -427,6 +427,10 @@ struct client_registration_wrapper_u<
 }; // class client_registration_wrapper_u
 #endif
 
+//----------------------------------------------------------------------------//
+// Global.
+//----------------------------------------------------------------------------//
+
 /*!
 
  */
@@ -441,6 +445,10 @@ struct client_registration_wrapper_u<flecsi::topology::global_topology_t,
   static void register_callback(field_id_t fid) {}
 
 }; // class client_registration_wrapper_u
+
+//----------------------------------------------------------------------------//
+// Color.
+//----------------------------------------------------------------------------//
 
 /*!
 

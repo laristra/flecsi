@@ -15,11 +15,15 @@
 
 /*! @file */
 
-#include <limits>
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not inlcude this file directly!
+#else
+  #include <flecsi/execution/task.h>
+  #include <flecsi/utils/const_string.h>
+  #include <flecsi/utils/hash.h>
+#endif
 
-#include <flecsi/execution/task.h>
-#include <flecsi/utils/const_string.h>
-#include <flecsi/utils/hash.h>
+#include <limits>
 
 /*----------------------------------------------------------------------------*
   Reduction Interface

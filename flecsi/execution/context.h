@@ -15,11 +15,15 @@
 
 /*! @file */
 
-#include <flecsi/execution/global_object_wrapper.h>
-#include <flecsi/runtime/types.h>
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/demangle.h>
-#include <flecsi/utils/flog.h>
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not inlcude this file directly!
+#else
+  #include <flecsi/execution/global_object_wrapper.h>
+  #include <flecsi/runtime/types.h>
+  #include <flecsi/utils/common.h>
+  #include <flecsi/utils/demangle.h>
+  #include <flecsi/utils/flog.h>
+#endif
 
 #include <cassert>
 #include <cstddef>
@@ -128,6 +132,18 @@ struct context_u : public CONTEXT_POLICY {
     return top_level_action_;
   } // top_level_action
 
+  /*!
+    Return the current task depth within the execution hierarchy. The
+    top-level task has depth \em 0. This interface is primarily intended
+    for FleCSI developers to use in enforcing runtime constraints.
+
+    @return A size_t with the current task level.
+   */
+
+  static size_t task_depth() {
+    return CONTEXT_POLICY::task_depth();
+  } // task_level
+
   /*--------------------------------------------------------------------------*
     Reduction interface.
    *--------------------------------------------------------------------------*/
@@ -183,17 +199,21 @@ struct context_u : public CONTEXT_POLICY {
   OBJECT_TYPE * add_global_object(size_t index, ARGS &&... args) {
     size_t KEY = NAMESPACE_HASH ^ index;
 
+    flog_assert(task_depth() == 0,
+      "you cannot add global objects from within a task");
+
     flog_assert(
       global_object_registry_.find(KEY) == global_object_registry_.end(),
       "global key already exists");
 
     auto ptr = new OBJECT_TYPE(std::forward<ARGS>(args)...);
 
-    flog(internal) << "Adding global object" << std::endl <<
-      "\tindex: " << index << std::endl <<
-      "\thash: " << NAMESPACE_HASH << std::endl <<
-      "\ttype: " << utils::demangle(typeid(OBJECT_TYPE).name()) << std::endl <<
-      "\taddress: " << ptr << std::endl;
+    flog(internal) << "Adding global object" << std::endl
+                   << "\tindex: " << index << std::endl
+                   << "\thash: " << NAMESPACE_HASH << std::endl
+                   << "\ttype: " << utils::demangle(typeid(OBJECT_TYPE).name())
+                   << std::endl
+                   << "\taddress: " << ptr << std::endl;
 
     std::get<0>(global_object_registry_[KEY]) =
       reinterpret_cast<uintptr_t>(ptr);
@@ -225,11 +245,12 @@ struct context_u : public CONTEXT_POLICY {
     auto ptr = reinterpret_cast<OBJECT_TYPE *>(
       std::get<0>(global_object_registry_[KEY]));
 
-    flog(internal) << "Getting global object" << std::endl <<
-      "\tindex: " << index << std::endl <<
-      "\thash: " << NAMESPACE_HASH << std::endl <<
-      "\ttype: " << utils::demangle(typeid(OBJECT_TYPE).name()) << std::endl <<
-      "\taddress: " << ptr << std::endl;
+    flog(internal) << "Getting global object" << std::endl
+                   << "\tindex: " << index << std::endl
+                   << "\thash: " << NAMESPACE_HASH << std::endl
+                   << "\ttype: " << utils::demangle(typeid(OBJECT_TYPE).name())
+                   << std::endl
+                   << "\taddress: " << ptr << std::endl;
 
     return ptr;
   } // get_global_object
@@ -353,7 +374,9 @@ private:
     Singleton.
    *--------------------------------------------------------------------------*/
 
-  context_u() : CONTEXT_POLICY() { std::cout << "constructor" << std::endl; }
+  context_u() : CONTEXT_POLICY() {
+    std::cout << "constructor" << std::endl;
+  }
 
   ~context_u() {
     std::cout << "destructor" << std::endl << std::flush;

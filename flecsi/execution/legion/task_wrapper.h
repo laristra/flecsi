@@ -15,17 +15,19 @@
 
 /*! @file */
 
-#include <string>
-
-#include <flecsi/execution/common/launch.h>
-#include <flecsi/execution/common/processor.h>
-#include <flecsi/execution/context.h>
-//#include <flecsi/execution/legion/finalize_handles.h>
-//#include <flecsi/execution/legion/init_handles.h>
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/flog.h>
-#include <flecsi/utils/tuple_function.h>
-#include <flecsi/utils/tuple_type_converter.h>
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not inlcude this file directly!
+#else
+  #include <flecsi/execution/common/launch.h>
+  #include <flecsi/execution/common/processor.h>
+  #include <flecsi/execution/context.h>
+  //#include <flecsi/execution/legion/finalize_handles.h>
+  //#include <flecsi/execution/legion/init_handles.h>
+  #include <flecsi/utils/common.h>
+  #include <flecsi/utils/flog.h>
+  #include <flecsi/utils/tuple_function.h>
+  #include <flecsi/utils/tuple_type_converter.h>
+#endif
 
 #include <flecsi-config.h>
 
@@ -34,6 +36,8 @@
 #endif
 
 #include <legion.h>
+
+#include <string>
 
 flog_register_tag(task_wrapper);
 

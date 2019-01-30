@@ -15,11 +15,15 @@
 
 /*! @file */
 
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not inlcude this file directly!
+#else
+  #include <flecsi/execution/common/launch.h>
+  #include <flecsi/execution/common/processor.h>
+#endif
+
 #include <iostream>
 #include <string>
-
-#include <flecsi/execution/common/launch.h>
-#include <flecsi/execution/common/processor.h>
 
 namespace flecsi {
 namespace execution {
@@ -108,7 +112,6 @@ struct task_interface_u {
 //----------------------------------------------------------------------------//
 // This include file defines the FLECSI_RUNTIME_EXECUTION_POLICY used below.
 //----------------------------------------------------------------------------//
-
 #include <flecsi/runtime/execution_policy.h>
 
 namespace flecsi {

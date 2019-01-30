@@ -18,11 +18,15 @@
 #include <cinch-config.h>
 #include <flecsi-config.h>
 
-#if defined(FLECSI_ENABLE_FLOG)
-#include <flecsi/utils/flog.h>
-#endif
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not inlcude this file directly!
+#else
+  #if defined(FLECSI_ENABLE_FLOG)
+    #include <flecsi/utils/flog.h>
+  #endif
 
-#include <flecsi/execution/context.h>
+  #include <flecsi/execution/context.h>
+#endif
 
 #include <cinch/runtime.h>
 

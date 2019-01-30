@@ -15,10 +15,14 @@
 
 /*! @file */
 
-#include <flecsi/execution/common/launch.h>
-#include <flecsi/execution/common/processor.h>
-#include <flecsi/runtime/types.h>
-#include <flecsi/utils/common.h>
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not inlcude this file directly!
+#else
+  #include <flecsi/execution/common/launch.h>
+  #include <flecsi/execution/common/processor.h>
+  #include <flecsi/runtime/types.h>
+  #include <flecsi/utils/common.h>
+#endif
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
@@ -45,8 +49,6 @@ const size_t FLECSI_MAPPER_SUBRANK_LAUNCH = 0x00003000;
 const size_t FLECSI_MAPPER_EXCLUSIVE_LR = 0x00004000;
 
 struct legion_context_policy_t {
-
-  virtual ~legion_context_policy_t() { std::cout << "destructor base" << std::endl; }
 
   /*!
      The registration_function_t type defines a function type for
@@ -75,21 +77,31 @@ struct legion_context_policy_t {
     registration_function_t>;
 
   /*
-    Documnetation for this interface is in the top-level context type.
+    Documentation for this interface is in the top-level context type.
    */
 
   int start(int argc, char ** argv);
 
   /*
-    Documnetation for this interface is in the top-level context type.
+    Documentation for this interface is in the top-level context type.
    */
+
+  /*
+    Documentation for this interface is in the top-level context type.
+   */
+
+  static size_t task_depth() {
+    return Legion::Runtime::get_runtime()
+      ->get_current_task(Legion::Runtime::get_context())
+      ->get_depth();
+  } // task_level
 
   size_t color() const {
     return color_;
   }
 
   /*
-    Documnetation for this interface is in the top-level context type.
+    Documentation for this interface is in the top-level context type.
    */
 
   size_t colors() const {

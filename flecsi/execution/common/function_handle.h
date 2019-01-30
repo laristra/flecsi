@@ -15,16 +15,20 @@
 
 /*! @file */
 
-#include <functional>
+#if !defined(__FLECSI_PRIVATE__)
+  #error "Do not inlcude this file directly"
+#endif
 
 #include <flecsi/utils/tuple_function.h>
+
+#include <functional>
 
 namespace flecsi {
 namespace execution {
 
 /*!
-  \tparam RETURN    Return value type.
-  \tparam ARG_TUPLE Argument type (std::tuple).
+  @tparam RETURN    Return value type.
+  @tparam ARG_TUPLE Argument type (std::tuple).
  */
 
 template<typename RETURN, typename ARG_TUPLE>

@@ -15,7 +15,11 @@
 
 /*! @file */
 
-#include <flecsi/execution/context.h>
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not inlcude this file directly!
+#else
+  #include <flecsi/execution/context.h>
+#endif
 
 /*!
  @def flecsi_internal_legion_task

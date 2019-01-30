@@ -12,6 +12,7 @@
    All rights reserved.
                                                                               */
 
+#define __FLECSI_PRIVATE__
 #include <flecsi/data/data.h>
 #include <flecsi/utils/ftest.h>
 
