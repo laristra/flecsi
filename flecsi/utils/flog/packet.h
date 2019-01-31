@@ -120,7 +120,7 @@ struct mpi_state_t {
     return s;
   } // instance
 
-  void init() {
+  void initialize() {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank_);
     MPI_Comm_size(MPI_COMM_WORLD, &size_);
 
@@ -128,7 +128,14 @@ struct mpi_state_t {
     instance().flusher_thread().swap(flusher);
 
     initialized_ = true;
-  } // init
+  } // initialize
+
+  void finalize() {
+    if(initialized_) {
+      end_flusher();
+      flusher_thread_.join();
+    } // if
+  } // finalize
 
   bool initialized() {
     return initialized_;
@@ -159,12 +166,6 @@ struct mpi_state_t {
   }
 
 private:
-  ~mpi_state_t() {
-    if(initialized_) {
-      end_flusher();
-      flusher_thread_.join();
-    } // if
-  }
 
   int rank_;
   int size_;

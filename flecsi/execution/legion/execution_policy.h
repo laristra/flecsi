@@ -104,7 +104,6 @@ struct legion_execution_policy_t {
 
   template<size_t HASH, typename TYPE>
   static bool register_reduction_operation() {
-
     using wrapper_t = reduction_wrapper_u<HASH, TYPE>;
 
     return context_t::instance().register_reduction_operation(

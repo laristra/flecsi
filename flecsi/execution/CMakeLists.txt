@@ -49,9 +49,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/runtime.cc
   )
 
-  set(UNIT_POLICY LEGION)
-  set(RUNTIME_DRIVER legion/runtime.cc)
-
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(execution_HEADERS
@@ -67,9 +64,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     mpi/runtime.cc
   )
 
-  set(UNIT_POLICY MPI)
-  set(RUNTIME_DRIVER mpi/runtime.cc)
-
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
   set(execution_HEADERS
@@ -81,9 +75,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     ${execution_SOURCES}
     hpx/runtime.cc
   )
-
-  set(UNIT_POLICY HPX)
-  set(RUNTIME_DRIVER hpx/runtime.cc)
 
 endif()
 
@@ -103,6 +94,26 @@ set(execution_HEADERS
 set(execution_SOURCES
   ${execution_SOURCES}
   PARENT_SCOPE
+)
+
+#------------------------------------------------------------------------------#
+# Executables.
+#------------------------------------------------------------------------------#
+
+add_executable(sanity
+  test/sanity.cc
+  legion/context_policy.cc
+  ../utils/flog/packet.cc
+  ${CMAKE_SOURCE_DIR}/cinch/cinch/runtime.cc
+)
+
+include_directories(${CMAKE_SOURCE_DIR})
+
+target_compile_definitions(sanity PUBLIC -DCINCH_RUNTIME_DEBUG)
+
+target_link_libraries(sanity
+  ${CINCH_RUNTIME_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
 )
 
 #------------------------------------------------------------------------------#

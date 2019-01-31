@@ -80,7 +80,7 @@
   flecsi::utils::flog::flog_t::instance().tag_map()
 
 /*!
-  @def flog_init(active)
+  @def flog_initialize(active)
 
   This call initializes the flog runtime with the list of tags specified
   in \em active.
@@ -97,7 +97,7 @@
 
      // Initialize the flog runtime with active tags, 'init', 'advance',
      // and 'analysis'.
-     flog_init(tags);
+     flog_initialize(tags);
 
      return 0;
   } // main
@@ -106,10 +106,23 @@
   @ingroup flog
  */
 
-#define flog_init(active)                                                      \
+#define flog_initialize(active)                                                \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi::utils::flog::flog_t::instance().init(active)
+  flecsi::utils::flog::flog_t::instance().initialize(active)
+
+/*!
+  @def flog_finalize()
+
+  This call finalizes the flog runtime.
+
+  @ingroup flog
+ */
+
+#define flog_finalize()                                                        \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  flecsi::utils::flog::flog_t::instance().finalize()
 
 /*!
   @def flog(severity)
@@ -246,7 +259,8 @@
 #define flog_register_tag(name)
 #define flog_tag_guard(name)
 
-#define flog_init(active)
+#define flog_initialize(active)
+#define flog_finalize()
 
 #define flog(severity)                                                         \
   if(true) {                                                                   \

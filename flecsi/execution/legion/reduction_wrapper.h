@@ -53,7 +53,7 @@ struct reduction_wrapper_u {
       typeid(TYPE).name() << " has already been registered with this name");
 
     {
-    flog_tag_guard(reduction_interface);
+    flog_tag_guard(reduction_wrapper);
     flog(info) << "registering reduction operation " << HASH << std::endl;
     }
 

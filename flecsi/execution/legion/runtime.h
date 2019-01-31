@@ -102,7 +102,7 @@ flecsi_legion_initialize(int argc, char ** argv) {
 #endif
 
 #if defined(FLECSI_ENABLE_FLOG)
-  flog_init(__flecsi_tags);
+  flog_initialize(__flecsi_tags);
 #endif
 
   return 0;
@@ -110,6 +110,10 @@ flecsi_legion_initialize(int argc, char ** argv) {
 
 inline int
 flecsi_legion_finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
+
+#if defined(FLECSI_ENABLE_FLOG)
+  flog_finalize();
+#endif
 
 // Shutdown the MPI runtime
 #ifndef GASNET_CONDUIT_MPI

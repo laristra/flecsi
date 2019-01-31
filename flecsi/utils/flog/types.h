@@ -351,7 +351,7 @@ public:
     return c;
   } // instance
 
-  void init(std::string active = "none") {
+  void initialize(std::string active = "none") {
 #if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: initializing runtime"
               << FLOG_COLOR_PLAIN << std::endl;
@@ -409,11 +409,17 @@ public:
               << FLOG_COLOR_PLAIN << std::endl;
 #endif
 
-    mpi_state_t::instance().init();
+    mpi_state_t::instance().initialize();
 #endif // FLOG_ENABLE_MPI
 
     initialized_ = true;
-  } // init
+  } // initialize
+
+  void finalize() {
+#if defined(FLOG_ENABLE_MPI)
+    mpi_state_t::instance().finalize();
+#endif // FLOG_ENABLE_MPI
+  } // finalize
 
   /*!
     Return the tag map.

@@ -86,10 +86,6 @@ struct legion_context_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  /*
-    Documentation for this interface is in the top-level context type.
-   */
-
   static size_t task_depth() {
     return Legion::Runtime::get_runtime()
       ->get_current_task(Legion::Runtime::get_context())
@@ -97,7 +93,9 @@ struct legion_context_policy_t {
   } // task_level
 
   size_t color() const {
-    return color_;
+    return Legion::Runtime::get_runtime()
+      ->get_current_task(Legion::Runtime::get_context())
+      ->index_point.point_data[0];
   }
 
   /*
@@ -106,6 +104,10 @@ struct legion_context_policy_t {
 
   size_t colors() const {
     return colors_;
+  }
+
+  void set_colors(size_t colors) {
+    colors_ = colors;
   }
 
   //--------------------------------------------------------------------------//

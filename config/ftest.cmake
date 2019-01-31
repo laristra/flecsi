@@ -135,10 +135,10 @@ function(ftest_add_unit name)
 
   # FIXME: I don't remember why this was necessary (if it was)
   # copy the main driver for the runtime policy
-  get_filename_component(_RUNTIME_MAIN ${unit_policy_runtime} NAME)
-  set(_TARGET_MAIN ${name}_${_RUNTIME_MAIN})
-  configure_file(${unit_policy_runtime}
-    ${_OUTPUT_DIR}/${_TARGET_MAIN} COPYONLY)
+  #  get_filename_component(_RUNTIME_MAIN ${unit_policy_runtime} NAME)
+  #  set(_TARGET_MAIN ${name}_${_RUNTIME_MAIN})
+  #  configure_file(${unit_policy_runtime}
+  #    ${_OUTPUT_DIR}/${_TARGET_MAIN} COPYONLY)
 
   #----------------------------------------------------------------------------#
   # Make sure that the user specified sources.
