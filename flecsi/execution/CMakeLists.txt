@@ -97,26 +97,6 @@ set(execution_SOURCES
 )
 
 #------------------------------------------------------------------------------#
-# Executables.
-#------------------------------------------------------------------------------#
-
-add_executable(sanity
-  test/sanity.cc
-  legion/context_policy.cc
-  ../utils/flog/packet.cc
-  ${CMAKE_SOURCE_DIR}/cinch/cinch/runtime.cc
-)
-
-include_directories(${CMAKE_SOURCE_DIR})
-
-target_compile_definitions(sanity PUBLIC -DCINCH_RUNTIME_DEBUG)
-
-target_link_libraries(sanity
-  ${CINCH_RUNTIME_LIBRARIES}
-  ${CMAKE_THREAD_LIBS_INIT}
-)
-
-#------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
 
