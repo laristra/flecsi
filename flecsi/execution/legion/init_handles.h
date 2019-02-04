@@ -118,7 +118,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       } // if
     } // for
 
-      // region += num_regions;
+    // region += num_regions;
 
 #ifndef MAPPER_COMPACTION
     // Create the concatenated buffer E+S+G

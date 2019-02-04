@@ -103,7 +103,7 @@ struct dense_handle_t : public dense_data_handle_u<T,
       }
     }
 
-      // ghost is never mapped with write permissions
+    // ghost is never mapped with write permissions
 
 #ifndef MAPPER_COMPACTION
     if(base_t::master && base_t::combined_data) {
