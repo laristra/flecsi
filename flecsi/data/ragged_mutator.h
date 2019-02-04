@@ -161,7 +161,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   } // push_back
 
   // insert BEFORE ragged index
-  void insert(size_t index, size_t ragged_index, const T & value) {
+  T * insert(size_t index, size_t ragged_index, const T & value) {
     assert(index < h_.num_entries_);
 
     offset_t & offset = h_.offsets_[index];
@@ -176,8 +176,9 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
       // insert in overflow area
       auto & overflow = (*h_.overflow_map_)[index];
       assert(ragged_index - n <= overflow.size());
-      overflow.insert(overflow.begin() + (ragged_index - n), value);
-      return;
+      auto itr = overflow.insert(
+              overflow.begin() + (ragged_index - n), value);
+      return &(*itr);
     }
 
     // insert in base area
@@ -191,6 +192,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     std::copy_backward(&eptr[ragged_index], &eptr[ncopy],
                        &eptr[ncopy + 1]);
     eptr[ragged_index] = value;
+    return &eptr[ragged_index];
   } // insert
 
   handle_t h_;

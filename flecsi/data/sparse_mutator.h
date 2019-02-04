@@ -63,45 +63,19 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
   mutator_u(const handle_t & h) : base_t(h) {}
 
   T & operator()(size_t index, size_t entry) {
-    auto & h_ = base_t::h_;
-    assert(h_.offsets_ && "uninitialized mutator");
-    assert(index < h_.num_entries_);
-
-    offset_t & offset = h_.offsets_[index];
-
-    size_t n = offset.count();
-    size_t nnew = h_.new_count(index);
-
-    entry_value_t * start = h_.entries_ + offset.start();
-    entry_value_t * end = start + std::min(n, nnew);
-
-    // try to find entry in overflow, if appropriate
-    bool use_overflow = (nnew > n &&
-            (n == 0 || entry > end[-1].entry));
-    if(use_overflow) {
-      auto & overflow = h_.overflow_map_->at(index);
-      start = overflow.data();
-      end = start + (nnew - n);
-    }
-
-    // find where entry should be
-    entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
-      [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
-        return e1.entry < e2.entry;
-      });
+    size_t ragged_idx;
+    auto itr = lower_bound(index, entry, &ragged_idx);
 
     // if we are attempting to create an entry that already exists
     // just over-write the value and exit.
-    if(itr != end && itr->entry == entry) {
+    if(itr && itr->entry == entry) {
       return itr->value;
     }
 
     // otherwise, create a new entry
-    size_t ragged_idx = itr - start;
-    if (use_overflow) ragged_idx += n;
     auto & ragged = static_cast<base_t &>(*this);
-    ragged.insert(index, ragged_idx, {entry, T()});
-    return ragged(index, ragged_idx).value;
+    auto ritr = ragged.insert(index, ragged_idx, {entry, T()});
+    return ritr->value;
 
   } // operator ()
 
@@ -145,16 +119,63 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
       }
     }
   }
+#endif
 
   void erase(size_t index, size_t entry) {
-    auto & h_ = base_t::h_;
-    if(!h_.erase_set_) {
-      h_.erase_set_ = new erase_set_t;
+    size_t ragged_idx;
+    auto itr = lower_bound(index, entry, &ragged_idx);
+
+    // if we are attempting to erase an entry that doesn't exist,
+    // then just return
+    if(!itr || itr->entry != entry) {
+      return;
     }
 
-    h_.erase_set_->emplace(std::make_pair(index, entry));
-  }
-#endif
+    // otherwise, erase
+    auto & ragged = static_cast<base_t &>(*this);
+    ragged.erase(index, ragged_idx);
+
+  } // erase
+
+  // for row 'index', return pointer to first entry not less
+  // than 'entry'
+  entry_value_t * lower_bound(size_t index, size_t entry, size_t * pos = nullptr) {
+    auto & h_ = base_t::h_;
+    assert(h_.offsets_ && "uninitialized mutator");
+    assert(index < h_.num_entries_);
+
+    offset_t & offset = h_.offsets_[index];
+
+    size_t n = offset.count();
+    size_t nnew = h_.new_count(index);
+
+    entry_value_t * start = h_.entries_ + offset.start();
+    entry_value_t * end = start + std::min(n, nnew);
+
+    // try to find entry in overflow, if appropriate
+    bool use_overflow = (nnew > n &&
+            (n == 0 || entry > end[-1].entry));
+    if(use_overflow) {
+      auto & overflow = h_.overflow_map_->at(index);
+      start = overflow.data();
+      end = start + (nnew - n);
+    }
+
+    // find where entry should be
+    entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
+      [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
+        return e1.entry < e2.entry;
+      });
+
+    if(pos) {
+      size_t ragged_idx = itr - start;
+      if(use_overflow) ragged_idx += n;
+      *pos = ragged_idx;
+    }
+
+    return (itr == end ? nullptr : itr);
+
+  } // lower_bound
 
 }; // mutator_u
 
