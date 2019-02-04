@@ -23,7 +23,7 @@ before_script:
     BUILD_TYPE: "Debug"
     COVERAGE: "ON"
     GLOBAL_CI_VARIABLE: "global_ci_value"
-    GIT_SUBMODULE_STRATEGY: normal
+    GIT_SUBMODULE_STRATEGY: none
     ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
   image:    
     name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
@@ -33,9 +33,9 @@ before_script:
     paths:
       - ${ARTIFACTS_PROJECT_PATH}
   script:
-    #- git submodule init
-    #- git config submodule.cinch.url https://github.com/laristra/cinch.git
-    #- git submodule update --init --recursive
+    - git submodule init
+    - git config submodule.cinch.url https://github.com/laristra/cinch.git
+    - git submodule update --init --recursive
     - mkdir ${CI_PROJECT_DIR}/build
     - cd build
     - ccache -z
