@@ -82,9 +82,32 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     return h_.entries_[offset.start() + ragged_index];
   } // operator ()
 
+  //-------------------------------------------------------------------------//
+  //! Return max number of entries used over all indices.
+  //-------------------------------------------------------------------------//
+  size_t size() const {
+    size_t max_so_far = 0;
+
+    for(size_t index = 0; index < h_.num_total_; ++index) {
+      max_so_far = std::max(max_so_far, h_.new_count(index));
+    }
+
+    return max_so_far;
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return number of entries used over the specified index.
+  //-------------------------------------------------------------------------//
   size_t size(size_t index) const {
     assert(index < h_.num_entries_);
     return h_.new_count(index);
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return the maximum possible number of entries
+  //-------------------------------------------------------------------------//
+  auto max_size() const noexcept {
+    return h_.max_entries_per_index;
   }
 
   void resize(size_t index, size_t size) {

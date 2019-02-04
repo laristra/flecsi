@@ -46,8 +46,9 @@ modify(
     client_handle_t<test_mesh_t, ro> mesh,
     ragged_accessor<double, rw, rw, ro> rh) {
   for (auto c : mesh.cells(owned)) {
-    for (auto entry : rh.entries(c)) {
-      rh(c, entry) = -rh(c, entry);
+    size_t rsize = rh.size(c);
+    for (size_t r = 0; r < rsize; ++r) {
+      rh(c, r) = -rh(c, r);
     }
   }
 } // modify
@@ -91,8 +92,9 @@ print(
     client_handle_t<test_mesh_t, ro> mesh,
     ragged_accessor<double, ro, ro, ro> rh) {
   for (auto c : mesh.cells()) {
-    for (auto entry : rh.entries(c)) {
-      CINCH_CAPTURE() << c->id() << ":" << entry << ": " << rh(c, entry)
+    size_t rsize = rh.size(c);
+    for (size_t r = 0; r < rsize; ++r) {
+      CINCH_CAPTURE() << c->id() << ":" << r << ": " << rh(c, r)
                       << std::endl;
     }
   }

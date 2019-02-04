@@ -15,8 +15,11 @@
 
 /*! @file */
 
+#include <unordered_set>
+
 #include <flecsi/data/mutator.h>
 #include <flecsi/data/mutator_handle.h>
+#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 
@@ -55,6 +58,9 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
   using erase_set_t = typename handle_t::erase_set_t;
 
   using base_t = mutator_u<data::ragged, entry_value_t>;
+
+  using index_space_t =
+    topology::index_space_u<topology::simple_entry_u<size_t>, true>;
 
   //--------------------------------------------------------------------------//
   //! Copy constructor.
@@ -176,6 +182,157 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
     return (itr == end ? nullptr : itr);
 
   } // lower_bound
+
+  // for row 'index', return pointer to first entry not less
+  // than 'entry'
+  const entry_value_t * lower_bound(size_t index, size_t entry) {
+    auto & h_ = base_t::h_;
+    assert(h_.offsets_ && "uninitialized mutator");
+    assert(index < h_.num_entries_);
+
+    const offset_t & offset = h_.offsets_[index];
+
+    size_t n = offset.count();
+    size_t nnew = h_.new_count(index);
+
+    const entry_value_t * start = h_.entries_ + offset.start();
+    const entry_value_t * end = start + std::min(n, nnew);
+
+    // try to find entry in overflow, if appropriate
+    bool use_overflow = (nnew > n &&
+            (n == 0 || entry > end[-1].entry));
+    if(use_overflow) {
+      auto & overflow = h_.overflow_map_->at(index);
+      start = overflow.data();
+      end = start + (nnew - n);
+    }
+
+    // find where entry should be
+    const entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
+      [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
+        return e1.entry < e2.entry;
+      });
+
+    return (itr == end ? nullptr : itr);
+
+  } // lower_bound
+
+  // for row 'index', test whether entry 'entry' is present
+  bool contains(size_t index, size_t entry) const {
+    auto itr = lower_bound(index, entry);
+    return (itr && itr->entry == entry);
+  } // contains
+
+  //-------------------------------------------------------------------------//
+  //! Return all entries used over all indices.
+  //-------------------------------------------------------------------------//
+  index_space_t entries() const {
+    auto & h_ = base_t::h_;
+    size_t id = 0;
+    index_space_t is;
+    std::unordered_set<size_t> found;
+
+    for(size_t index = 0; index < h_.num_total_; ++index) {
+      const offset_t & oi = h_.offsets[index];
+      size_t n = oi.count();
+      size_t nnew = h_.new_count(index);
+      size_t nbase = std::min(n, nnew);
+
+      entry_value_t * itr = h_.entries + oi.start();
+      entry_value_t * end = itr + nbase;
+
+      while(itr != end) {
+        size_t entry = itr->entry;
+        if(found.find(entry) == found.end()) {
+          is.push_back({id++, entry});
+          found.insert(entry);
+        }
+        ++itr;
+      }
+      if(nnew <= n) continue;
+
+      const auto& overflow = h_.overflow_map_->at(index);
+      for(const auto& ev : overflow) {
+        size_t entry = ev.entry;
+        if(found.find(entry) == found.end()) {
+          is.push_back({id++, entry});
+          found.insert(entry);
+        }
+      }
+    }
+
+    return is;
+  } // entries()
+
+  //-------------------------------------------------------------------------//
+  //! Return all entries used over the specified index.
+  //-------------------------------------------------------------------------//
+  index_space_t entries(size_t index) const {
+    auto & h_ = base_t::h_;
+    clog_assert(
+      index < h_.num_total_, "sparse mutator: index out of bounds");
+
+    const offset_t & oi = h_.offsets[index];
+    size_t n = oi.count();
+    size_t nnew = h_.new_count(index);
+    size_t nbase = std::min(n, nnew);
+
+    entry_value_t * itr = h_.entries + oi.start();
+    entry_value_t * end = itr + nbase;
+
+    index_space_t is;
+
+    size_t id = 0;
+    while(itr != end) {
+      is.push_back({id++, itr->entry});
+      ++itr;
+    }
+    if(nnew <= n) return is;
+
+    const auto& overflow = h_.overflow_map_->at(index);
+    for(const auto& ev : overflow) {
+      is.push_back({id++, ev.entry});
+    }
+
+    return is;
+  } // entries(index)
+
+  //-------------------------------------------------------------------------//
+  //! Return all indices allocated.
+  //-------------------------------------------------------------------------//
+  index_space_t indices() const {
+    auto & h_ = base_t::h_;
+    index_space_t is;
+    size_t id = 0;
+
+    for(size_t index = 0; index < h_.num_total_; ++index) {
+      const size_t count = h_.new_count(index);
+
+      if(count != 0) {
+        is.push_back({id++, index});
+      }
+    }
+
+    return is;
+  } // indices()
+
+  //-------------------------------------------------------------------------//
+  //! Return all indices allocated for a given entry.
+  //-------------------------------------------------------------------------//
+  index_space_t indices(size_t entry) const {
+    auto & h_ = base_t::h_;
+    index_space_t is;
+    size_t id = 0;
+
+    for(size_t index = 0; index < h_.num_total_; ++index) {
+      auto itr = lower_bound(index, entry);
+      if(itr && itr->entry == entry) {
+        is.push_back({id++, index});
+      }
+    }
+
+    return is;
+  } // indices(index)
 
 }; // mutator_u
 

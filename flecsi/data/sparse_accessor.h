@@ -93,20 +93,9 @@ struct accessor_u<data::sparse,
     : base_t(h) {}
 
   T & operator()(size_t index, size_t entry) {
-    auto & handle = base_t::handle;
-    assert(index < handle.num_total_ && "sparse accessor: index out of bounds");
-
-    const offset_t & oi = handle.offsets[index];
-
-    entry_value_t * start = handle.entries + oi.start();
-    entry_value_t * end = start + oi.count();
-
-    entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
-      [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
-        return k1.entry < k2.entry;
-      });
-
-    assert(itr != end && "sparse accessor: unmapped entry");
+    auto itr = lower_bound(index, entry);
+    assert(itr && itr->entry == entry
+               && "sparse accessor: unmapped entry");
 
     return itr->value;
   } // operator ()
@@ -115,6 +104,54 @@ struct accessor_u<data::sparse,
   T & operator()(E * e, size_t entry) {
     return this->operator()(e->template id<0>(), entry);
   } // operator ()
+
+  // for row 'index', return pointer to first entry not less
+  // than 'entry'
+  entry_value_t * lower_bound(size_t index, size_t entry) {
+    auto & handle = base_t::handle;
+    assert(index < handle.num_total_ && "sparse accessor: index out of bounds");
+
+    const offset_t & oi = handle.offsets[index];
+
+    entry_value_t * start = handle.entries + oi.start();
+    entry_value_t * end = start + oi.count();
+
+    // find where entry should be
+    entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
+      [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
+        return k1.entry < k2.entry;
+      });
+
+    return (itr == end ? nullptr : itr);
+
+  } // lower_bound
+
+  // for row 'index', return pointer to first entry not less
+  // than 'entry'
+  const entry_value_t * lower_bound(size_t index, size_t entry) const {
+    auto & handle = base_t::handle;
+    assert(index < handle.num_total_ && "sparse accessor: index out of bounds");
+
+    const offset_t & oi = handle.offsets[index];
+
+    const entry_value_t * start = handle.entries + oi.start();
+    const entry_value_t * end = start + oi.count();
+
+    // find where entry should be
+    const entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
+      [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
+        return k1.entry < k2.entry;
+      });
+
+    return (itr == end ? nullptr : itr);
+
+  } // lower_bound
+
+  // for row 'index', test whether entry 'entry' is present
+  bool contains(size_t index, size_t entry) const {
+    auto itr = lower_bound(index, entry);
+    return (itr && itr->entry == entry);
+  } // contains
 
   //-------------------------------------------------------------------------//
   //! Return all entries used over all indices.
@@ -196,15 +233,8 @@ struct accessor_u<data::sparse,
     size_t id = 0;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
-      const offset_t & oi = handle.offsets[index];
-
-      entry_value_t * start = handle.entries + oi.start();
-      entry_value_t * end = start + oi.count();
-
-      if(std::binary_search(start, end, entry_value_t(entry),
-           [](const auto & k1, const auto & k2) -> bool {
-             return k1.entry < k2.entry;
-           })) {
+      auto itr = lower_bound(index, entry);
+      if(itr && itr->entry == entry) {
         is.push_back({id++, index});
       }
     }

@@ -15,13 +15,10 @@
 
 /*! @file */
 
-#include <unordered_set>
-
 #include <cinchlog.h>
 
 #include <flecsi/data/accessor.h>
 #include <flecsi/data/sparse_data_handle.h>
-#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 
@@ -72,9 +69,6 @@ struct accessor_u<data::ragged,
   using offset_t = typename handle_t::offset_t;
   using value_t = T;
 
-  using index_space_t =
-    topology::index_space_u<topology::simple_entry_u<size_t>, true>;
-
   //--------------------------------------------------------------------------//
   //! Constructor from handle.
   //--------------------------------------------------------------------------//
@@ -91,55 +85,34 @@ struct accessor_u<data::ragged,
   } // operator ()
 
   //-------------------------------------------------------------------------//
-  //! Return all entries used over all indices.
+  //! Return max number of entries used over all indices.
   //-------------------------------------------------------------------------//
-  index_space_t entries() const {
-    size_t id = 0;
-    index_space_t is;
-    std::unordered_set<size_t> found;
+  size_t size() const {
+    size_t max_so_far = 0;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
       const offset_t & oi = handle.offsets[index];
-
-      value_t * itr = handle.entries + oi.start();
-      value_t * end = itr + oi.count();
-
-      while(itr != end) {
-        size_t entry = itr->entry;
-        if(found.find(entry) == found.end()) {
-          is.push_back({id++, entry});
-          found.insert(entry);
-        }
-        ++itr;
-      }
+      max_so_far = std::max(max_so_far, oi.count());
     }
 
-    return is;
+    return max_so_far;
   }
 
   //-------------------------------------------------------------------------//
-  //! Return all entries used over the specified index.
+  //! Return number of entries used over the specified index.
   //-------------------------------------------------------------------------//
-  index_space_t entries(size_t index) const {
+  size_t size(size_t index) const {
     clog_assert(
-      index < handle.num_total_, "sparse accessor: index out of bounds");
+      index < handle.num_total_, "ragged accessor: index out of bounds");
 
     const offset_t & oi = handle.offsets[index];
-    const size_t count = oi.count();
-
-    index_space_t is;
-
-    for(size_t i = 0; i < count; ++i) {
-      is.push_back({i, i});
-    }
-
-    return is;
+    return oi.count();
   }
 
   //-------------------------------------------------------------------------//
-  //! Return the maximum possible entries
+  //! Return the maximum possible number of entries
   //-------------------------------------------------------------------------//
-  auto max_entries() const noexcept {
+  auto max_size() const noexcept {
     return handle.max_entries_per_index;
   }
 
