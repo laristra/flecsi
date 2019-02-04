@@ -42,6 +42,31 @@ template<typename TYPE, size_t DIMENSION>
 using point__ = utils::dimensioned_array__<TYPE, DIMENSION, 1>;
 
 //----------------------------------------------------------------------------//
+//! L2 vector norm: ||p|| = sqrt{ sum_d p[d]*p[d] }
+//!
+//! @tparam TYPE      The type to use to represent coordinate values.
+//! @tparam DIMENSION The dimension of the point.
+//!
+//! @ingroup geometry
+//----------------------------------------------------------------------------//
+
+template<typename TYPE, size_t DIMENSION>
+TYPE
+norm2( point__<TYPE, DIMENSION> const & a) {
+  TYPE sum(0);
+  if constexpr (DIMENSION>1) {
+    for (size_t d(0); d < DIMENSION; ++d) {
+      sum += utils::square(a[d]);
+    } // for
+    sum= std::sqrt(sum);
+  }
+  else {
+    sum= std::abs(a[0]);
+  }
+  return sum;
+} // norm2
+
+//----------------------------------------------------------------------------//
 //! Multiplication operator.
 //!
 //! @tparam TYPE      The type to use to represent coordinate values.
