@@ -23,7 +23,7 @@ before_script:
     BUILD_TYPE: "Debug"
     COVERAGE: "ON"
     GLOBAL_CI_VARIABLE: "global_ci_value"
-    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_STRATEGY: normal
     ARTIFACTS_PROJECT_PATH: ${CI_PROJECT_DIR} #/builds/gitlab_account/flecsi
   image:    
     name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
