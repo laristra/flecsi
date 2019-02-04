@@ -58,10 +58,10 @@ public:
   //--------------------------------------------------------------------------//
 
   static constexpr uint32_t index(const uint32_t b) {
-  // 1. &  Two's-complement to isolate the right-most set bit
-  // 2. *  Shift and truncate the sequence by the isolated bit index
-  // 3. >> Shift off all but the high log_2(32) bits to get the lookup index
-  // 4. [] return the index from the lookup table
+    // 1. &  Two's-complement to isolate the right-most set bit
+    // 2. *  Shift and truncate the sequence by the isolated bit index
+    // 3. >> Shift off all but the high log_2(32) bits to get the lookup index
+    // 4. [] return the index from the lookup table
 #if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4146) // unary minus operator applied to unsigned
