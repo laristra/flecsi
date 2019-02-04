@@ -15,18 +15,18 @@
 
 /*! @file */
 
-#if !defined(__FLECSI_PRIVATE__)
-  #error Do not inlcude this file directly!
-#endif
-
 #include <cinch-config.h>
 #include <flecsi-config.h>
 
-#if defined(FLECSI_ENABLE_FLOG)
-#include <flecsi/utils/flog.h>
-#endif
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not inlcude this file directly!
+#else
+  #if defined(FLECSI_ENABLE_FLOG)
+    #include <flecsi/utils/flog.h>
+  #endif
 
-#include <flecsi/execution/context.h>
+  #include <flecsi/execution/context.h>
+#endif
 
 #include <cinch/runtime.h>
 
@@ -87,7 +87,7 @@ flecsi_mpi_initialize(int argc, char ** argv) {
   flecsi::execution::context_t::instance().set_colors(size);
 
 #if defined(FLECSI_ENABLE_FLOG)
-  flog_init(__flecsi_tags);
+  flog_initialize(__flecsi_tags);
 #endif
 
   return 0;
@@ -95,6 +95,10 @@ flecsi_mpi_initialize(int argc, char ** argv) {
 
 inline int
 flecsi_mpi_finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
+
+#if defined(FLECSI_ENABLE_FLOG)
+  flog_finalize();
+#endif
 
   MPI_Finalize();
 

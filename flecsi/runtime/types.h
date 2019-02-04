@@ -37,6 +37,8 @@ using task_id_t = Legion::TaskID;
 
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
+#include <cstddef>
+
 namespace flecsi {
 
 using field_id_t = size_t;
@@ -47,6 +49,8 @@ using task_id_t = size_t;
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
 
 namespace flecsi {
+
+#include <cstddef>
 
 using field_id_t = size_t;
 using task_id_t = size_t;
