@@ -85,7 +85,6 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
 
   } // operator ()
 
-#if 0
   void dump() {
     auto & h_ = base_t::h_;
     for(size_t p = 0; p < 3; ++p) {
@@ -108,24 +107,27 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
 
       for(size_t i = start; i < end; ++i) {
         const offset_t & offset = h_.offsets_[i];
+        size_t ostart = offset.start();
+        size_t n = offset.count();
+        size_t nnew = h_.new_count(i);
+        size_t nbase = std::min(n, nnew);
         std::cout << "  index: " << i << std::endl;
-        for(size_t j = 0; j < offset.count(); ++j) {
-          std::cout << "    " << h_.entries_[i * h_.num_slots_ + j].entry
-                    << " = " << h_.entries_[i * h_.num_slots_ + j].value
+        for(size_t j = 0; j < nbase; ++j) {
+          std::cout << "    " << h_.entries_[ostart + j].entry
+                    << " = " << h_.entries_[ostart + j].value
                     << std::endl;
         }
 
-        auto p = h_.spare_map_->equal_range(i);
-        auto itr = p.first;
-        while(itr != p.second) {
-          std::cout << "    +" << itr->second.entry << " = "
-                    << itr->second.value << std::endl;
-          ++itr;
+        if (nnew <= n) continue;
+
+        const auto& overflow = h_.overflow_map_->at(i);
+        for(const auto& ev : overflow) {
+          std::cout << "    +" << ev.entry
+                    << " = " << ev.value << std::endl;
         }
       }
     }
-  }
-#endif
+  } // dump
 
   void erase(size_t index, size_t entry) {
     size_t ragged_idx;
