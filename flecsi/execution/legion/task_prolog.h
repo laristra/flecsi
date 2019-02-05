@@ -398,17 +398,11 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
   template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void handle(
-    sparse_accessor <
-    T,
+    size_t GHOST_PERMISSIONS>
+  void handle(sparse_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS
-    > &a
-  )
-  {
+    GHOST_PERMISSIONS> & a) {
     using base_t = typename sparse_accessor<
             T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
     handle(static_cast<base_t &>(a));

@@ -132,8 +132,9 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
               GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    using handle_t = ragged_data_handle_u< T, EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+    using accessor_t = ragged_accessor<
+              T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+    using handle_t = typename accessor_t::handle_t;
     using offset_t = typename handle_t::offset_t;
     using value_t = T;
 

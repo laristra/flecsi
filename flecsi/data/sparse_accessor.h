@@ -15,12 +15,15 @@
 
 /*! @file */
 
+#include <algorithm>
+#include <iostream>
 #include <unordered_set>
 
 #include <cinchlog.h>
 
 #include <flecsi/data/accessor.h>
 #include <flecsi/data/sparse_data_handle.h>
+#include <flecsi/data/common/data_types.h>
 #include <flecsi/topology/index_space.h>
 
 namespace flecsi {

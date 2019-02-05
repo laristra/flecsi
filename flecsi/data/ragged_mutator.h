@@ -15,6 +15,8 @@
 
 /*! @file */
 
+#include <algorithm>
+
 #include <flecsi/data/mutator.h>
 #include <flecsi/data/mutator_handle.h>
 
@@ -52,7 +54,6 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   using handle_t = mutator_handle_u<T>;
   using offset_t = typename handle_t::offset_t;
   using value_t = T;
-  using erase_set_t = typename handle_t::erase_set_t;
   using overflow_map_t = typename mutator_handle_u<T>::overflow_map_t;
 
   //--------------------------------------------------------------------------//
@@ -74,11 +75,13 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     assert(ragged_index < nnew);
 
     if(ragged_index >= n) {
+      // value is in overflow area
       auto & overflow = h_.overflow_map_->at(index);
       assert(ragged_index - n < overflow.size());
       return overflow[ragged_index - n];
     }
 
+    // value is in base area
     return h_.entries_[offset.start() + ragged_index];
   } // operator ()
 

@@ -708,6 +708,9 @@ public:
               }
               break;
             case sparse:
+              // TODO:  We should be able to remove "+ sizeof(size_t)"
+              //        below, if we track down some other places where
+              //        it's also added manually, and remove those too.
               if(fi.index_space == is.index_space_id) {
                 if(!utils::hash::is_internal(fi.key)) {
                   allocator.allocate_field(fi.size + sizeof(size_t), fi.fid);

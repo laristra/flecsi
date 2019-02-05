@@ -241,8 +241,11 @@ struct storage_class_u<sparse> {
   // Type definitions.
   //--------------------------------------------------------------------------//
 
+  template<typename T>
+  using entry_value_u = data::sparse_entry_value_u<T>;
+
   template<typename T, size_t EP, size_t SP, size_t GP>
-  using handle_u = ragged_handle_u<data::sparse_entry_value_u<T>, EP, SP, GP>;
+  using handle_u = ragged_handle_u<entry_value_u<T>, EP, SP, GP>;
 
   template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
@@ -250,7 +253,7 @@ struct storage_class_u<sparse> {
     size_t NAME,
     size_t VERSION>
   static auto get_handle(const data_client_t & data_client) {
-    return storage_class_u<ragged>::get_handle<DATA_CLIENT_TYPE, data::sparse_entry_value_u<DATA_TYPE>,
+    return storage_class_u<ragged>::get_handle<DATA_CLIENT_TYPE, entry_value_u<DATA_TYPE>,
       NAMESPACE, NAME, VERSION>(data_client);
   }
 
@@ -260,7 +263,7 @@ struct storage_class_u<sparse> {
     size_t NAME,
     size_t VERSION>
   static auto get_mutator(const data_client_t & data_client, size_t slots) {
-    return storage_class_u<ragged>::get_mutator<DATA_CLIENT_TYPE, data::sparse_entry_value_u<DATA_TYPE>,
+    return storage_class_u<ragged>::get_mutator<DATA_CLIENT_TYPE, entry_value_u<DATA_TYPE>,
       NAMESPACE, NAME, VERSION>(data_client, slots);
   }
 }; // struct storage_class_t

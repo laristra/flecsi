@@ -297,13 +297,16 @@ namespace legion {
     // Type definitions.
     //--------------------------------------------------------------------------//
 
+    template<typename T>
+    using entry_value_u = data::sparse_entry_value_u<T>;
+
     template<
       typename T,
       size_t EP,
       size_t SP,
       size_t GP
     >
-    using handle_u = ragged_handle_u<data::sparse_entry_value_u<T>, EP, SP, GP>;
+    using handle_u = ragged_handle_u<entry_value_u<T>, EP, SP, GP>;
 
     template<
       typename DATA_CLIENT_TYPE,
@@ -320,7 +323,7 @@ namespace legion {
     {
       return storage_class_u<ragged>::get_handle<
         DATA_CLIENT_TYPE,
-        data::sparse_entry_value_u<DATA_TYPE>,
+        entry_value_u<DATA_TYPE>,
         NAMESPACE,
         NAME,
         VERSION
@@ -343,7 +346,7 @@ namespace legion {
     {
       return storage_class_u<ragged>::get_mutator<
         DATA_CLIENT_TYPE,
-        data::sparse_entry_value_u<DATA_TYPE>,
+        entry_value_u<DATA_TYPE>,
         NAMESPACE,
         NAME,
         VERSION

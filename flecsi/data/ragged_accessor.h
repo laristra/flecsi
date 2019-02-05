@@ -15,6 +15,8 @@
 
 /*! @file */
 
+#include <algorithm>
+
 #include <cinchlog.h>
 
 #include <flecsi/data/accessor.h>

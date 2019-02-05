@@ -15,6 +15,8 @@
 
 /*! @file */
 
+#include <algorithm>
+#include <iostream>
 #include <unordered_set>
 
 #include <flecsi/data/mutator.h>
@@ -55,7 +57,6 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
   using entry_value_t = data::sparse_entry_value_u<T>;
   using handle_t = mutator_handle_u<entry_value_t>;
   using offset_t = typename handle_t::offset_t;
-  using erase_set_t = typename handle_t::erase_set_t;
 
   using base_t = mutator_u<data::ragged, entry_value_t>;
 
@@ -187,7 +188,7 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
 
   // for row 'index', return pointer to first entry not less
   // than 'entry'
-  const entry_value_t * lower_bound(size_t index, size_t entry) {
+  const entry_value_t * lower_bound(size_t index, size_t entry) const {
     auto & h_ = base_t::h_;
     assert(h_.offsets_ && "uninitialized mutator");
     assert(index < h_.num_entries_);

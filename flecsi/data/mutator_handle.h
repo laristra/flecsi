@@ -16,11 +16,6 @@
 /*! @file */
 
 #include <algorithm>
-#include <cstring>
-#include <limits>
-#include <map>
-#include <memory>
-#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -29,11 +24,9 @@
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
-//! This class is used to implement the mutator for sparse data. It contains
-//! methods which implement commit functionality to pack the mutator's
-//! temporary slots and spare (overflow) map into the final commit buffer.
-//! This class implements functionality for both normal sparse data and the
-//! ragged sparse data type.
+//! This class is used to implement mutators for ragged and sparse data.
+//! Its methods implement commit functionality to pack the mutator's
+//! existing data and overflow map into the final commit buffer.
 //----------------------------------------------------------------------------//
 
 template<typename T, typename MUTATOR_POLICY>
@@ -118,7 +111,6 @@ public:
 
   void init() {
     new_counts_ = new int32_t[num_entries_];
-    spare_map_ = new spare_map_t;
     overflow_map_ = new overflow_map_t;
 
     std::fill_n(new_counts_, num_entries_, -1);
@@ -201,9 +193,6 @@ public:
     delete[] new_counts_;
     new_counts_ = nullptr;
 
-    delete spare_map_;
-    spare_map_ = nullptr;
-
     delete overflow_map_;
     overflow_map_ = nullptr;
 
@@ -243,8 +232,6 @@ public:
     return (nc >= 0 ? nc : offsets_[index].count());
   }
 
-  using spare_map_t = std::multimap<size_t, value_t>;
-  using erase_set_t = std::set<std::pair<size_t, size_t>>;
   using overflow_map_t = std::unordered_map<size_t, std::vector<value_t>>;
 
   partition_info_t pi_;
@@ -255,8 +242,6 @@ public:
   offset_t * offsets_ = nullptr;
   value_t * entries_ = nullptr;
   int32_t * new_counts_ = nullptr;
-  spare_map_t * spare_map_ = nullptr;
-  erase_set_t * erase_set_ = nullptr;
   overflow_map_t * overflow_map_ = nullptr;
   commit_info_t ci_;
 
