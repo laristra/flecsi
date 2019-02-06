@@ -28,13 +28,11 @@ struct legion_data_policy_t {
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
   static client_handle_u<DATA_CLIENT_TYPE, 0> get_client_handle() {
-
     using client_handler_t =
-      client_handler_u<typename DATA_CLIENT_TYPE::type_identifier>;
+      legion::client_handler_u<typename DATA_CLIENT_TYPE::type_identifier>;
 
-    return client_handler_t::template get_client_handle<DATA_CLIENT_TYPE,
-      NAMESPACE_HASH, NAME_HASH>();
-
+    return client_handler_t::template get_client_handle<NAMESPACE_HASH,
+      NAME_HASH>();
   } // get_client_handle
 
 }; // struct legion_data_policy_t

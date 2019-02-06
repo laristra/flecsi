@@ -15,7 +15,7 @@
 
 /*! @file */
 
-#include <flecsi/data/data_client.h>
+#include <flecsi/data/common/data_client.h>
 
 namespace flecsi {
 namespace topology {

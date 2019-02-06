@@ -40,23 +40,23 @@ struct client_interface_u {
   /*!
     Register a data client with the FleCSI runtime.
 
-    @tparam DATA_CLIENT_TYPE The data client type.
-    @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
-                             of attribute names to avoid collisions.
-    @tparam NAME_HASH        The attribute name.
+    @tparam CLIENT_TYPE    The data client type.
+    @tparam NAMESPACE_HASH The namespace key. Namespaces allow separation
+                           of attribute names to avoid collisions.
+    @tparam NAME_HASH      The attribute name.
    */
 
-  template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
+  template<typename CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
   static bool register_client(std::string const & name) {
-    static_assert(sizeof(DATA_CLIENT_TYPE) ==
-                    sizeof(typename DATA_CLIENT_TYPE::type_identifier_t),
+    static_assert(sizeof(CLIENT_TYPE) ==
+                    sizeof(typename CLIENT_TYPE::type_identifier_t),
       "Data clients may not add data members");
 
     using wrapper_t = client_registration_wrapper_u<
-      typename DATA_CLIENT_TYPE::type_identifier_t, NAMESPACE_HASH, NAME_HASH>;
+      typename CLIENT_TYPE::type_identifier_t, NAMESPACE_HASH, NAME_HASH>;
 
     const size_t type_key =
-      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+      typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
     const size_t key = utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
 
@@ -65,7 +65,7 @@ struct client_interface_u {
       << "\tname: " << name << std::endl
       << "\ttype: "
       << utils::demangle(
-           typeid(typename DATA_CLIENT_TYPE::type_identifier_t).name())
+           typeid(typename CLIENT_TYPE::type_identifier_t).name())
       << std::endl;
 
     if(!execution::context_t::instance().register_client(
@@ -79,15 +79,15 @@ struct client_interface_u {
   /*!
     Return a handle to a data client.
 
-    @tparam DATA_CLIENT_TYPE The data client type.
-    @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
-                             of attribute names to avoid collisions.
-    @tparam NAME_HASH        The attribute name.
+    @tparam CLIENT_TYPE    The data client type.
+    @tparam NAMESPACE_HASH The namespace key. Namespaces allow separation
+                           of attribute names to avoid collisions.
+    @tparam NAME_HASH      The attribute name.
    */
 
-  template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
+  template<typename CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
   static decltype(auto) get_client_handle() {
-    return DATA_POLICY::template get_client_handle<DATA_CLIENT_TYPE,
+    return DATA_POLICY::template get_client_handle<CLIENT_TYPE,
       NAMESPACE_HASH, NAME_HASH>();
   } // get_client_handle
 

@@ -166,7 +166,6 @@ struct mpi_state_t {
   }
 
 private:
-
   int rank_;
   int size_;
   std::thread flusher_thread_;

@@ -32,11 +32,12 @@ struct client_handle_base_t {};
   client types.
 
   @tparam CLIENT_TYPE The data client type.
-  @tparam PERMISSIONS The access permissions requested for this handle.
+  @tparam PRIVILEGES  The access permissions requested for this handle.
  */
 
-template<typename CLIENT_TYPE, size_t PERMISSIONS>
+template<typename CLIENT_TYPE, size_t PRIVILEGES>
 struct client_handle_u : public CLIENT_TYPE, public client_handle_base_t {
+
   using type = CLIENT_TYPE;
 
   /*!
@@ -50,12 +51,12 @@ struct client_handle_u : public CLIENT_TYPE, public client_handle_base_t {
     passed to a task with the unmapped (0) permissions.
    */
 
-  template<size_t UNMAPPED_PERMISSIONS>
-  client_handle_u(const client_handle_u<CLIENT_TYPE, UNMAPPED_PERMISSIONS> & h)
+  template<size_t UNMAPPED_PRIVILEGES>
+  client_handle_u(const client_handle_u<CLIENT_TYPE, UNMAPPED_PRIVILEGES> & h)
     : CLIENT_TYPE(h), type_hash(h.type_hash), name_hash(h.name_hash),
       namespace_hash(h.namespace_hash) {
     static_assert(
-      UNMAPPED_PERMISSIONS == 0, "passing mapped client handle to task args");
+      UNMAPPED_PRIVILEGES == 0, "passing mapped client handle to task args");
   }
 
   /*!
@@ -77,4 +78,21 @@ struct client_handle_u : public CLIENT_TYPE, public client_handle_base_t {
 }; // struct client_handle_u
 
 } // namespace data
+
+/*!
+  Base type to recover client type from a handle.
+ */
+
+template<typename T>
+struct client_type_u {};
+
+/*!
+  Recover type from handle.
+ */
+
+template<typename CLIENT_TYPE, size_t PRIVILEGES>
+struct client_type_u<data::client_handle_u<CLIENT_TYPE, PRIVILEGES>> {
+  using type = CLIENT_TYPE;
+};
+
 } // namespace flecsi

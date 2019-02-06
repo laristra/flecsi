@@ -16,7 +16,7 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error "Do not inlcude this file directly"
+#error "Do not inlcude this file directly"
 #endif
 
 #include <flecsi/utils/debruijn.h>
@@ -84,9 +84,9 @@ mask_to_type(launch_mask_t m) {
   return static_cast<launch_type_t>(flecsi::utils::debruijn32_t::index(m));
 } // mask_to_type
 
-/*!
-  Macro to create repetitive interfaces.
- */
+  /*!
+    Macro to create repetitive interfaces.
+   */
 
 #define test_boolean_interface(name)                                           \
   inline bool launch_##name(const launch_t & l) {                              \

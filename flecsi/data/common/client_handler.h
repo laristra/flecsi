@@ -15,8 +15,13 @@
 
 /*! @file */
 
+#ifndef POLICY_NAMESPACE
+#error You must define a data policy namespace before including this file.
+#endif
+
 namespace flecsi {
 namespace data {
+namespace POLICY_NAMESPACE {
 
 /*!
   The client policy handler type is responsible for extracting
@@ -26,8 +31,9 @@ namespace data {
   should be specialized on the specific client type.
  */
 
-template<typename DATA_CLIENT>
+template<typename CLIENT_TYPE>
 struct client_handler_u {};
 
+} // namespace POLICY_NAMESPACE
 } // namespace data
 } // namespace flecsi

@@ -16,7 +16,7 @@
 /*! @file */
 
 #ifndef __FLECSI_PRIVATE__
-  #define __FLECSI_PRIVATE__
+#define __FLECSI_PRIVATE__
 #endif
 
 #include <flecsi/control/control.h>

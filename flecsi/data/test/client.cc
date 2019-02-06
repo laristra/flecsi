@@ -15,12 +15,15 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/data/data.h>
 #include <flecsi/utils/ftest.h>
+#include <flecsi/data/legion/dense.h>
 
 flecsi_register_global(test, global, double, 2);
 
 void global(int argc, char ** argv) {
 
   FTEST();
+
+  auto th = flecsi_get_global(test, global, double, 0);
 
 }
 

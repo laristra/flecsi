@@ -16,13 +16,13 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not inlcude this file directly!
+#error Do not inlcude this file directly!
 #else
-  #include <flecsi/execution/global_object_wrapper.h>
-  #include <flecsi/runtime/types.h>
-  #include <flecsi/utils/common.h>
-  #include <flecsi/utils/demangle.h>
-  #include <flecsi/utils/flog.h>
+#include <flecsi/execution/global_object_wrapper.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/demangle.h>
+#include <flecsi/utils/flog.h>
 #endif
 
 #include <cassert>
@@ -199,8 +199,8 @@ struct context_u : public CONTEXT_POLICY {
   OBJECT_TYPE * add_global_object(size_t index, ARGS &&... args) {
     size_t KEY = NAMESPACE_HASH ^ index;
 
-    flog_assert(task_depth() == 0,
-      "you cannot add global objects from within a task");
+    flog_assert(
+      task_depth() == 0, "you cannot add global objects from within a task");
 
     flog_assert(
       global_object_registry_.find(KEY) == global_object_registry_.end(),

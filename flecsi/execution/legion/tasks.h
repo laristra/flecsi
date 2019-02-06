@@ -16,9 +16,9 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not inlcude this file directly!
+#error Do not inlcude this file directly!
 #else
-  #include <flecsi/execution/context.h>
+#include <flecsi/execution/context.h>
 #endif
 
 /*!

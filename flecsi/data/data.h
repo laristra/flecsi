@@ -17,9 +17,12 @@
 
 #include <flecsi/data/client.h>
 #include <flecsi/data/field.h>
-#include <flecsi/data/storage_class.h>
 #include <flecsi/topology/internal.h>
 #include <flecsi/utils/const_string.h>
+
+/*----------------------------------------------------------------------------*
+  General Topology Interface.
+ *----------------------------------------------------------------------------*/
 
 /*!
   @def flecsi_register_topology
@@ -48,11 +51,66 @@
       flecsi_internal_hash(nspace), flecsi_internal_hash(name)>(               \
       {EXPAND_AND_STRINGIFY(name)})
 
+/*!
+  @def flecsi_get_topology_handle
+
+  Access a topology.
+
+  @param type   The topology type.
+  @param nspace The namespace to use to access the variable.
+  @param name   The name of the data variable to access.
+
+  @ingroup data
+ */
+
+#define flecsi_get_topology_handle(type, nspace, name)                         \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* Call the storage policy to get a handle to the data client */             \
+  flecsi::data::client_interface_t::get_client_handle<type,                    \
+    flecsi_internal_hash(nspace), flecsi_internal_hash(name)>()
+
+/*----------------------------------------------------------------------------*
+  Field Interface.
+ *----------------------------------------------------------------------------*/
+
+/*!
+  @def flecsi_get_handle
+
+  Access data with a topology instance.
+
+  @param topology      The topology instance with which to access
+                       the data.
+  @param nspace        The namespace to use to access the variable.
+  @param name          The name of the data variable to access.
+  @param data_type     The data type to access, e.g., double or my_type_t.
+  @param storage_class The storage type for the data \ref storage_class_t.
+  @param version       The version number of the data to access. This
+                       parameter can be used to manage multiple data versions,
+                       e.g., for new and old state.
+
+  @ingroup data
+ */
+
+#define flecsi_get_handle(                                                     \
+  topology, nspace, name, data_type, storage_class, version)                   \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* Call the storage policy to get a handle to the data */                    \
+  flecsi::data::field_interface_t::get_handle<                                 \
+    typename flecsi::client_type_u<decltype(topology)>::type,                  \
+    flecsi::data::storage_class, data_type,                                    \
+    flecsi_internal_hash(nspace), flecsi_internal_hash(name),                  \
+    version>(topology)
+
+/*----------------------------------------------------------------------------*
+  Global Topology Interface.
+ *----------------------------------------------------------------------------*/
+
 namespace flecsi {
 namespace topology {
 
 flecsi_register_topology(global_topology_t, global_client, global_client);
-flecsi_register_topology(color_topology_t, color_client, color_client);
 
 } // namespace topology
 } // namespace flecsi
@@ -85,6 +143,43 @@ flecsi_register_topology(color_topology_t, color_client, color_client);
       flecsi::topology::global_topology_t, flecsi::data::global, data_type,    \
       flecsi_internal_hash(nspace), flecsi_internal_hash(name), versions,      \
       flecsi::topology::global_index_space>({EXPAND_AND_STRINGIFY(name)})
+
+/*!
+  @def flecsi_get_global
+
+  Access global data
+
+  @param nspace        The namespace to use to access the variable.
+  @param name          The name of the data variable to access.
+  @param data_type     The data type to access, e.g., double or my_type_t.
+  @param storage_class The storage type for the data \ref storage_class_t.
+  @param version       The version number of the data to access. This
+                       parameter can be used to manage multiple data versions,
+                       e.g., for new and old state.
+
+  @ingroup data
+ */
+
+#define flecsi_get_global(nspace, name, data_type, version)                    \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* WARNING: This macro returns a handle. Don't add terminations! */          \
+  flecsi_get_handle(                                                           \
+    flecsi_get_topology_handle(                                                \
+      flecsi::topology::global_topology_t, global_client, global_client),      \
+    nspace, name, data_type, global, version)
+
+/*----------------------------------------------------------------------------*
+  Color Topology Interface.
+ *----------------------------------------------------------------------------*/
+
+namespace flecsi {
+namespace topology {
+
+flecsi_register_topology(color_topology_t, color_client, color_client);
+
+} // namespace topology
+} // namespace flecsi
 
 /*!
   @def flecsi_register_color
