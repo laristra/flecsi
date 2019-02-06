@@ -13,7 +13,14 @@
                                                                               */
 #pragma once
 
-/*! @file */
+/*!
+  @file
+
+  This file contains specializations of the
+  \em client_registration_wrapper_u type for the various FleCSI
+  topology types. In general, the registration wrapper provides a
+  mechanism for data clients to register meta data with the runtime.
+ */
 
 #include <flecsi/execution/context.h>
 #include <flecsi/runtime/types.h>

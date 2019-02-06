@@ -13,7 +13,15 @@
                                                                               */
 #pragma once
 
-/*! @file */
+/*!
+  @file
+
+  This file defines the base \em storage_class_u type that can be
+  specialized by specific storage class, and by data client type.
+
+  This file also defines the storage classes for the internal \em global
+  and \em color client types.
+ */
 
 #include <flecsi/data/common/client_handle.h>
 
@@ -44,6 +52,7 @@ struct dense_handle_u {
 
 } // namespace global_topology
 
+template<>
 struct storage_class_u<dense, flecsi::topology::global_topology_t> {
 
   using client_t = flecsi::topology::global_topology_t;
@@ -52,8 +61,10 @@ struct storage_class_u<dense, flecsi::topology::global_topology_t> {
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION>
-  static global_topology::handle_t<DATA_TYPE, 0> get_handle(
+  static global_topology::dense_handle_u<client_t, 0> get_handle(
     const client_handle_u<client_t, 0> & client_handle) {
+    global_topology::dense_handle_u<client_t, 0> h;
+    return h;
   } // get_handle
 
 }; // struct storage_class_u

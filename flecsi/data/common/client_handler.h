@@ -13,7 +13,12 @@
                                                                               */
 #pragma once
 
-/*! @file */
+/*!
+  @file
+
+  This file defines the base \em client_handler_u type that is customized
+  for each specific data client type using partial specialization.
+ */
 
 #ifndef POLICY_NAMESPACE
 #error You must define a data policy namespace before including this file.

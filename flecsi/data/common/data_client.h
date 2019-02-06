@@ -13,7 +13,12 @@
                                                                               */
 #pragma once
 
-/*! @file */
+/*!
+  @file
+
+  This file contains the base \em data \em client type identifier. All
+  data client types should inherit from this type.
+ */
 
 #include <flecsi/utils/export_definitions.h>
 

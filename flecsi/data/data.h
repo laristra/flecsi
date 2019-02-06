@@ -13,7 +13,12 @@
                                                                               */
 #pragma once
 
-/*! @file */
+/*!
+  @file
+
+  This file contains the high-level, macro interface for the FleCSI
+  data model.
+ */
 
 #include <flecsi/data/client.h>
 #include <flecsi/data/field.h>

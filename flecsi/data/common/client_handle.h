@@ -13,7 +13,20 @@
                                                                               */
 #pragma once
 
-/*! @file */
+/*!
+  @file
+
+  This file defines the type identifier type \em client_handle_base_t, and
+  the basic client handle type \em client_handle_u, which is parameterized
+  on the \em data \em client type. These types provide the basic structure
+  for implementing handles to the various FleCSI data client types.
+
+  A handle is a cross-address-space-safe reference type (like a pointer)
+  that can be passed into a FleCSI task to allow access to a data client.
+  Data clients are types that expose one or more index spaces that can
+  have fields registered against them. Some examples are
+  \ref mesh_topology_u, and \ref tree_topology_u.
+ */
 
 #include <cstddef>
 

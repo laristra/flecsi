@@ -13,7 +13,14 @@
                                                                               */
 #pragma once
 
-/*! @file */
+/*!
+  @file
+
+  This file contains the C++ data model interface \em field_interface_t
+  for FleCSI field data structures. The \em field_interface_t type is a
+  specialization of the \em field_interface_u type on the backend runtimne
+  policy that is selected at compile time.
+ */
 
 #include <flecsi/data/common/field_registration_wrapper.h>
 #include <flecsi/execution/context.h>

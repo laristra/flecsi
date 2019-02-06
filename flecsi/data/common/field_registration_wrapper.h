@@ -13,7 +13,13 @@
                                                                               */
 #pragma once
 
-/*! @file */
+/*!
+  @file
+
+  This file contains the \em field_registration_wrapper_u type. This type
+  is currently used for all field registrations regardless of runtime or
+  client type.
+ */
 
 #include <flecsi/runtime/types.h>
 

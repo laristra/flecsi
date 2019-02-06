@@ -13,7 +13,15 @@
                                                                               */
 #pragma once
 
-/*! @file */
+/*!
+  @file
+
+  This file contains the C++ data model interface \em client_interface_t
+  for FleCSI topology data structures, which are also referred to as
+  \em data \em clients in this context. The \em client_interface_t type is
+  a specialization of the \em client_interface_u type on the backend
+  runtime policy that is selected at compile time.
+ */
 
 #include <flecsi/data/common/client_registration_wrapper.h>
 #include <flecsi/execution/context.h>
