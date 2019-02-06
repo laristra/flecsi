@@ -72,11 +72,13 @@ struct finalize_handles_t :
     auto & h = a.handle;
     auto md = static_cast<sparse_field_data_t *>(h.metadata);
 
+#ifndef MAPPER_COMPACTION
     std::memcpy(h.entries_data[0], h.entries,
       md->num_exclusive_filled * sizeof(entry_value_t));
 
     std::memcpy(h.entries_data[1], h.entries + md->reserve,
       md->num_shared * sizeof(entry_value_t) * md->max_entries_per_index);
+#endif
   }
 
   template<typename T,
@@ -112,6 +114,7 @@ struct finalize_handles_t :
 
     md->num_exclusive_filled = h.commit(&ci);
 
+#ifndef MAPPER_COMPACTION
     std::memcpy(
       h.offsets_data[0], h.offsets, h.num_exclusive() * sizeof(offset_t));
 
@@ -130,6 +133,7 @@ struct finalize_handles_t :
     std::memcpy(h.entries_data[1],
       h.entries + h.reserve * sizeof(entry_value_t),
       h.num_shared() * sizeof(entry_value_t) * h.max_entries_per_index());
+#endif
 
     md->initialized = true;
   }
