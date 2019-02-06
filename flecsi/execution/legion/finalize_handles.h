@@ -25,40 +25,37 @@ namespace execution {
   @ingroup execution
  */
 
-struct finalize_handles_t :
-  public flecsi::utils::tuple_walker_u<finalize_handles_t> {
+struct finalize_handles_t
+  : public flecsi::utils::tuple_walker_u<finalize_handles_t> {
 
   /*!
     FIXME
      @ingroup execution
    */
 
-  template<
-      typename T,
-      size_t EXCLUSIVE_PERMISSIONS,
-      size_t SHARED_PERMISSIONS,
-      size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor_u<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(dense_accessor_u<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
 #ifndef MAPPER_COMPACTION
 
-  auto & h = a.handle;
+    auto & h = a.handle;
 
-  if ((EXCLUSIVE_PERMISSIONS == rw) || (EXCLUSIVE_PERMISSIONS == wo))
-    std::memcpy(h.exclusive_buf, h.exclusive_data, h.exclusive_size * sizeof(T));
+    if((EXCLUSIVE_PERMISSIONS == rw) || (EXCLUSIVE_PERMISSIONS == wo))
+      std::memcpy(
+        h.exclusive_buf, h.exclusive_data, h.exclusive_size * sizeof(T));
 
-
-  if ((SHARED_PERMISSIONS == rw) || (SHARED_PERMISSIONS == wo))
-    std::memcpy(h.shared_buf, h.shared_data, h.shared_size * sizeof(T));
+    if((SHARED_PERMISSIONS == rw) || (SHARED_PERMISSIONS == wo))
+      std::memcpy(h.shared_buf, h.shared_data, h.shared_size * sizeof(T));
 
 #endif
   } // handle
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
@@ -185,7 +182,7 @@ struct finalize_handles_t :
    */
 
   template<typename T, launch_type_t launch>
-  void handle(legion_future_u<T, launch>  &h) {
+  void handle(legion_future_u<T, launch> & h) {
     h.finalize_future();
   }
 

@@ -85,11 +85,9 @@ public:
 
   ~mutator_handle_base_u() {}
 
-  void init(
-    const size_t &num_exclusive,
-    const size_t &num_shared,
-    const size_t &num_ghost
-    ){
+  void init(const size_t & num_exclusive,
+    const size_t & num_shared,
+    const size_t & num_ghost) {
     num_entries_ = num_exclusive + num_shared + num_ghost;
     num_exclusive_ = num_exclusive;
 

@@ -27,23 +27,24 @@ namespace utils {
 /*!
   \class const_string const_string.h
   \brief const_string provides compile-time string constants and hashing...
-  
+
   @ingroup utils
  */
 
-class const_string_t {
+class const_string_t
+{
 public:
   using hash_type_t = std::size_t;
 
   /*!
     Construct a constexpr string.
-   
+
     @param str A string literal.
    */
 
   template<hash_type_t N>
   constexpr const_string_t(const char (&str)[N])
-      : str_(str), size_(N - 1) {} // const_string_t
+    : str_(str), size_(N - 1) {} // const_string_t
 
   /*!
     Return the string literal for this const_string_t.
@@ -78,13 +79,11 @@ public:
   } // hash
 
 private:
-  
   constexpr bool equal_(const const_string_t & t, const std::size_t i) const {
     return i == size_ ? true : (*this)[i] == t[i] && equal_(t, i + 1);
   } // equal_
 
 public:
-
   /*!
    */
   constexpr bool operator==(const const_string_t & t) const {
@@ -98,7 +97,6 @@ public:
   } // operator !=
 
 private:
-
   const char * const str_;
   const hash_type_t size_;
 

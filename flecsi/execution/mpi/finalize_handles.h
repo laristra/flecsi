@@ -33,8 +33,7 @@ namespace flecsi {
 namespace execution {
 
 struct finalize_handles_t
-  : public flecsi::utils::tuple_walker_u<finalize_handles_t>
-{
+  : public flecsi::utils::tuple_walker_u<finalize_handles_t> {
   /*!
   Nothing needs to be done to finalize a dense data handle.
    */

@@ -50,8 +50,8 @@ struct reduction_wrapper_u {
       typeid(TYPE).name() << " has already been registered with this name");
 
     {
-    clog_tag_guard(reduction_interface);
-    clog(info) << "registering reduction operation " << HASH << std::endl;
+      clog_tag_guard(reduction_interface);
+      clog(info) << "registering reduction operation " << HASH << std::endl;
     }
 
     const size_t id = oid_t::instance().next();
@@ -60,14 +60,7 @@ struct reduction_wrapper_u {
     Legion::Runtime::register_reduction_op<TYPE>(id);
 
     // Save the id for invocation
-    reduction_ops[HASH].id = id;
-
-    // Save the initial value for registering the collective
-    // with the Legion runtime
-    size_t bytes = sizeof(rhs_t);
-    reduction_ops[HASH].initial.resize(bytes);
-    rhs_t initial_value = TYPE::initial();
-    std::memcpy(reduction_ops[HASH].initial.data(), &initial_value, bytes);
+    reduction_ops[HASH] = id;
 
   } // registration_callback
 
