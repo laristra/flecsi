@@ -169,27 +169,27 @@ build:ubuntu_legion_clang_release:
   variables:
     BUILD_TYPE: "Release"
 
-#build:ubuntu_mpich_legion:
-#extends: .build
-#variables:
-#DISTRO: "ubuntu_mpich"
-#RUNTIME: "legion"
-#
-#build:ubuntu_mpich_legion_release:
-#extends: build:ubuntu_mpich_legion
-#variables:
-#BUILD_TYPE: "Release"
-#
-#build:ubuntu_mpich_legion_clang:
-#extends: build:ubuntu_mpich_legion
-#before_script:
-#- export CC=clang
-#- export CXX=clang++
-#
-#build:ubuntu_mpich_legion_clang_release:
-#extends: build:ubuntu_mpich_legion_clang
-#variables:
-#BUILD_TYPE: "Release"
+build:ubuntu_mpich_legion:
+  extends: .build
+  variables:
+    DISTRO: "ubuntu_mpich"
+    RUNTIME: "legion"
+
+build:ubuntu_mpich_legion_release:
+  extends: build:ubuntu_mpich_legion
+  variables:
+    BUILD_TYPE: "Release"
+
+build:ubuntu_mpich_legion_clang:
+  extends: build:ubuntu_mpich_legion
+  before_script:
+    - export CC=clang
+    - export CXX=clang++
+
+build:ubuntu_mpich_legion_clang_release:
+  extends: build:ubuntu_mpich_legion_clang
+  variables:
+    BUILD_TYPE: "Release"
 
 build:fedora_legion:
   extends: .build
@@ -213,27 +213,27 @@ build:fedora_legion_clang_release:
   variables:
     BUILD_TYPE: "Release"
 
-#build:fedora_mpich_legion:
-#extends: .build
-#variables:
-#DISTRO: "fedora_mpich"
-#RUNTIME: "legion"
-#
-#build:fedora_mpich_legion_release:
-#extends: build:fedora_mpich_legion
-#variables:
-#BUILD_TYPE: "Release"
-#
-#build:fedora_mpich_legion_clang:
-#extends: build:fedora_mpich_legion
-#before_script:
-#- export CC=clang
-#- export CXX=clang++
-#
-#build:fedora_mpich_legion_clang_release:
-#extends: build:fedora_mpich_legion_clang
-#variables:
-#BUILD_TYPE: "Release"
+build:fedora_mpich_legion:
+  extends: .build
+  variables:
+    DISTRO: "fedora_mpich"
+    RUNTIME: "legion"
+
+build:fedora_mpich_legion_release:
+  extends: build:fedora_mpich_legion
+  variables:
+    BUILD_TYPE: "Release"
+
+build:fedora_mpich_legion_clang:
+  extends: build:fedora_mpich_legion
+  before_script:
+    - export CC=clang
+    - export CXX=clang++
+
+build:fedora_mpich_legion_clang_release:
+  extends: build:fedora_mpich_legion_clang
+  variables:
+    BUILD_TYPE: "Release"
 
 build:fedora_hpx:
   extends: .build
@@ -815,4 +815,3 @@ deploy:fedora_mpich_legion_clang_release:
     - test:fedora_mpich_legion_clang_release
 
 ##################################
-
