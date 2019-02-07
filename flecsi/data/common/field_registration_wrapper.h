@@ -29,22 +29,6 @@ namespace flecsi {
 namespace data {
 
 /*!
-  The storage_class_t type enumerates the available FleCSI storage classes.
-  A FleCSI storage class provides a specific interface for different
-  logical data layouts, e.g., dense vs. sparse. The actual data layout
-  is implementation dependent.
- */
-
-enum storage_class_t : size_t {
-  global,
-  color,
-  dense,
-  sparse,
-  ragged,
-  subspace
-}; // enum storage_label_type_t
-
-/*!
   The field_registration_wrapper_u type uses a form of type erasure
   (by defining a generic callback type) that can be used to capture
   static type information at runtime.

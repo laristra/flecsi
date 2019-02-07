@@ -31,6 +31,23 @@
 
 namespace flecsi {
 namespace data {
+
+/*!
+  The storage_class_t type enumerates the available FleCSI storage classes.
+  A FleCSI storage class provides a specific interface for different
+  logical data layouts, e.g., dense vs. sparse. The actual data layout
+  is implementation dependent.
+ */
+
+enum storage_class_t : size_t {
+  global,
+  color,
+  dense,
+  sparse,
+  ragged,
+  subspace
+}; // enum storage_label_type_t
+
 namespace POLICY_NAMESPACE {
 
 template<size_t STORAGE_CLASS, typename CLIENT_TYPE>

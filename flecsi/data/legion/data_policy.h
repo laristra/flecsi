@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <flecsi/data/legion/client_handlers.h>
+#include <flecsi/data/legion/dense.h>
 
 namespace flecsi {
 namespace data {
