@@ -16,12 +16,16 @@
 /*! @file */
 
 #include <flecsi/data/legion/client_handlers.h>
+
 #include <flecsi/data/legion/dense.h>
 
 namespace flecsi {
 namespace data {
 
 struct legion_data_policy_t {
+
+  template<size_t STORAGE_CLASS, typename CLIENT_TYPE>
+  using storage_class_u = legion::storage_class_u<STORAGE_CLASS, CLIENT_TYPE>;
 
   /*
     Documnetation for this interface is in the top-level client type.

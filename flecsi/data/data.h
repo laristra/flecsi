@@ -104,9 +104,8 @@
   /* Call the storage policy to get a handle to the data */                    \
   flecsi::data::field_interface_t::get_handle<                                 \
     typename flecsi::client_type_u<decltype(topology)>::type,                  \
-    flecsi::data::storage_class, data_type,                                    \
-    flecsi_internal_hash(nspace), flecsi_internal_hash(name),                  \
-    version>(topology)
+    flecsi::data::storage_class, data_type, flecsi_internal_hash(nspace),      \
+    flecsi_internal_hash(name), version>(topology)
 
 /*----------------------------------------------------------------------------*
   Global Topology Interface.
