@@ -18,6 +18,7 @@
 #include <cstdint>
 
 #include <flecsi/data/data.h>
+#include <flecsi/coloring/mpi_utils.h>
 
 clog_register_tag(runtime_driver);
 
@@ -33,7 +34,10 @@ remap_shared_entities()
 {
   // TODO: Is this superseded by index_map/reverse_index_map?
   auto & context_ = context_t::instance();
-  const int my_color = context_.color();
+  const auto & my_color = context_.color();
+  const auto & num_colors = context_.colors();
+
+  const auto mpi_size_t = coloring::mpi_typetraits_u<size_t>::type();
 
   for (auto& coloring_info_pair : context_.coloring_info_map()) {
     auto index_space = coloring_info_pair.first;
@@ -43,7 +47,6 @@ remap_shared_entities()
       my_color);
     auto &index_coloring = context_.coloring(index_space);
 
-    std::set<flecsi::coloring::entity_info_t> new_shared;
 
 //    for (auto& shared : index_coloring.shared) {
 //      clog_rank(warn, 0) << "myrank: " << my_color
@@ -53,27 +56,71 @@ remap_shared_entities()
 //                         << ", index: " << index << std::endl;
 //     }
 
-    // FIXME: does this cause deadlock?
+    // we are renumbering the entities such that the shared will be 
+    // gather the data to send into one buffer per rank
     size_t index = 0;
+    std::unordered_map< size_t, std::vector<size_t> > send_buffers;
+    std::set<flecsi::coloring::entity_info_t> new_shared;
+
     for (auto& shared : index_coloring.shared) {
       for (auto peer : shared.shared) {
-        MPI_Send(&index, 1, MPI_UNSIGNED_LONG_LONG, peer, 77, MPI_COMM_WORLD);
+        send_buffers[ peer ].emplace_back( index );
       }
       new_shared.insert(
         flecsi::coloring::entity_info_t(shared.id, shared.rank, index, shared.shared));
       index++;
     }
     context_t::instance().coloring(index_space).shared.swap(new_shared);
+    
+    // create storage for the requests
+    std::vector< MPI_Request > requests;
+    requests.reserve( 2*num_colors );
 
+    // figure out who i am receiving from
+    std::vector< size_t > counts( num_colors, 0 );
+    for (auto ghost : index_coloring.ghost) counts[ghost.rank]++;
 
-    MPI_Status status;
+    auto tag = 0;
+    
+    // post receives
+    std::unordered_map< size_t, std::vector<size_t> > recv_buffers;
+    for ( size_t i=0; i<num_colors; ++i ) {
+      auto n = counts[i];
+      if ( n > 0 ) {
+        auto rank = i;
+        auto & buf = recv_buffers[i];
+        buf.resize( n );
+        requests.resize( requests.size() + 1 );
+        auto & my_request = requests.back();
+        auto ret = MPI_Irecv(buf.data(), n, mpi_size_t, rank, tag,
+          MPI_COMM_WORLD, &my_request);
+      }
+    }
+
+    // send the data
+    for ( const auto & comm_pair : send_buffers ) {
+      const auto & rank = comm_pair.first;
+      const auto & buf = comm_pair.second;
+      requests.resize( requests.size() + 1 );
+      auto & my_request = requests.back();
+      auto ret = MPI_Isend( buf.data(), buf.size(), mpi_size_t, rank, tag,
+        MPI_COMM_WORLD, &my_request );
+    }
+
+    // wait for everything to complete
+    std::vector< MPI_Status > status( requests.size() );
+    MPI_Waitall( requests.size(), requests.data(), status.data() );
+
+    // now we can unpack the messages and reconstruct the ghost entities
     std::set<flecsi::coloring::entity_info_t> new_ghost;
+    std::fill( counts.begin(), counts.end(), 0 );
 
     for (auto ghost : index_coloring.ghost) {
-      MPI_Recv(&index, 1, MPI_UNSIGNED_LONG_LONG,
-               ghost.rank, 77, MPI_COMM_WORLD, &status);
+      auto & offset = counts[ghost.rank];
+      auto index = recv_buffers.at( ghost.rank ).at( offset );
       new_ghost.insert(
         flecsi::coloring::entity_info_t(ghost.id, ghost.rank, index, {}));
+      offset++;
     }
 //    for (auto ghost : index_coloring.ghost) {
 //      clog_rank(warn, 1) << "myrank: " << my_color
