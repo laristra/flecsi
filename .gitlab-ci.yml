@@ -67,7 +67,6 @@ variables:
         -DENABLE_PARMETIS=ON \
         -DENABLE_COLORING=ON \
         -DENABLE_DOXYGEN=ON \
-        #-DENABLE_SPHINX=ON \
         -DENABLE_DOCUMENTATION=OFF \
         ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} \
         ..
