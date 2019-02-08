@@ -44,7 +44,7 @@ variables:
     WERROR: "yes"
     BUILD_TYPE: "Debug"
     COVERAGE: "ON"
-    GIT_SUBMODULE_STRATEGY: none
+    GIT_SUBMODULE_STRATEGY: recursive
   image:    
     name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
   stage: Build
