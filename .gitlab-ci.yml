@@ -16,13 +16,6 @@ cache:
     - ${CI_PROJECT_DIR}/ccache/ #/builds/gitlab_account/flecsi/ccache
     - ${CI_PROJECT_DIR}/build/
     - ${CI_PROJECT_DIR}/install/
-artifacts:
-  #expire_in: 3 hour
-  paths:
-    - ${CI_PROJECT_DIR}/ccache/ #/builds/gitlab_account/flecsi/ccache
-    - ${CI_PROJECT_DIR}/build/
-    - ${CI_PROJECT_DIR}/install/
-  when: on_failure
 variables:
   GLOBAL_CI_VARIABLE: "global_ci_value"
   CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
@@ -55,6 +48,13 @@ variables:
   image:    
     name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
   stage: Build
+  artifacts:
+    #expire_in: 3 hour
+    paths:
+      - ${CI_PROJECT_DIR}/ccache/ #/builds/gitlab_account/flecsi/ccache
+      - ${CI_PROJECT_DIR}/build/
+      - ${CI_PROJECT_DIR}/install/
+    when: on_failure
   script:
     - ccache -z
     #- git submodule init
