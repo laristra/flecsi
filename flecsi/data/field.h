@@ -55,9 +55,9 @@ struct field_interface_u {
     @tparam DATA_TYPE      The data type, e.g., double. This may be
                            P.O.D. or a user-defined type that is
                            trivially-copyable.
-    @tparam NAMESPACE_HASH The namespace key. Namespaces allow separation
+    @tparam NAMESPACE      The namespace key. Namespaces allow separation
                            of attribute names to avoid collisions.
-    @tparam NAME_HASH      The attribute name.
+    @tparam NAME           The attribute name.
     @tparam VERSIONS       The number of versions that shall be associated
                            with this attribute.
     @tparam INDEX_SPACE    The index space identifier.
@@ -70,8 +70,8 @@ struct field_interface_u {
   template<typename CLIENT_TYPE,
     size_t STORAGE_CLASS,
     typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH,
+    size_t NAMESPACE,
+    size_t NAME,
     size_t VERSIONS,
     size_t INDEX_SPACE = 0>
   static bool register_field(std::string const & name) {
@@ -79,14 +79,14 @@ struct field_interface_u {
       "max field versions exceeded");
 
     using wrapper_t = field_registration_wrapper_u<CLIENT_TYPE, STORAGE_CLASS,
-      DATA_TYPE, NAMESPACE_HASH, NAME_HASH, VERSIONS, INDEX_SPACE>;
+      DATA_TYPE, NAMESPACE, NAME, VERSIONS, INDEX_SPACE>;
 
     const size_t client_type_key =
       typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
     for(size_t version(0); version < VERSIONS; ++version) {
       const size_t key =
-        utils::hash::field_hash<NAMESPACE_HASH, NAME_HASH>(version);
+        utils::hash::field_hash<NAMESPACE, NAME>(version);
 
       if(!execution::context_t::instance().register_field(
            client_type_key, key, wrapper_t::register_callback)) {
@@ -100,17 +100,17 @@ struct field_interface_u {
   /*!
     Return the handle associated with the given parameters and data client.
 
-    @tparam CLIENT_TYPE    The data client type on which the data
-                           attribute should be registered.
-    @tparam STORAGE_CLASS  The storage type for the data attribute.
-    @tparam DATA_TYPE      The data type, e.g., double. This may be
-                           P.O.D. or a user-defined type that is
-                           trivially-copyable.
-    @tparam NAMESPACE_HASH The namespace key. Namespaces allow separation
-                           of attribute names to avoid collisions.
-    @tparam NAME_HASH      The attribute name.
-    @tparam INDEX_SPACE    The index space identifier.
-    @tparam VERSION        The data version.
+    @tparam CLIENT_TYPE   The data client type on which the data
+                          attribute should be registered.
+    @tparam STORAGE_CLASS The storage type for the data attribute.
+    @tparam DATA_TYPE     The data type, e.g., double. This may be
+                          P.O.D. or a user-defined type that is
+                          trivially-copyable.
+    @tparam NAMESPACE     The namespace key. Namespaces allow separation
+                          of attribute names to avoid collisions.
+    @tparam NAME          The attribute name.
+    @tparam INDEX_SPACE   The index space identifier.
+    @tparam VERSION       The data version.
 
     @ingroup data
    */
@@ -118,8 +118,8 @@ struct field_interface_u {
   template<typename CLIENT_TYPE,
     size_t STORAGE_CLASS,
     typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH,
+    size_t NAMESPACE,
+    size_t NAME,
     size_t VERSION = 0,
     size_t PERMISSIONS>
   static decltype(auto) get_handle(
@@ -131,25 +131,25 @@ struct field_interface_u {
       typename DATA_POLICY::template storage_class_u<STORAGE_CLASS,
         CLIENT_TYPE>;
 
-    return storage_class_t::template get_handle<DATA_TYPE, NAMESPACE_HASH,
-      NAME_HASH, VERSION>(client_handle);
+    return storage_class_t::template get_handle<DATA_TYPE, NAMESPACE,
+      NAME, VERSION>(client_handle);
   } // get_handle
 
 #if 0
   /*!
     Return the mutator associated with the given parameters and data client.
 
-    @tparam CLIENT_TYPE    The data client type on which the data
-                           attribute should be registered.
-    @tparam STORAGE_CLASS  The storage type for the data attribute.
-    @tparam DATA_TYPE      The data type, e.g., double. This may be
-                           P.O.D. or a user-defined type that is
-                           trivially-copyable.
-    @tparam NAMESPACE_HASH The namespace key. Namespaces allow separation
-                           of attribute names to avoid collisions.
-    @tparam NAME_HASH      The attribute name.
-    @tparam INDEX_SPACE    The index space identifier.
-    @tparam VERSION        The data version.
+    @tparam CLIENT_TYPE   The data client type on which the data
+                          attribute should be registered.
+    @tparam STORAGE_CLASS The storage type for the data attribute.
+    @tparam DATA_TYPE     The data type, e.g., double. This may be
+                          P.O.D. or a user-defined type that is
+                          trivially-copyable.
+    @tparam NAMESPACE     The namespace key. Namespaces allow separation
+                          of attribute names to avoid collisions.
+    @tparam NAME          The attribute name.
+    @tparam INDEX_SPACE   The index space identifier.
+    @tparam VERSION       The data version.
 
     @ingroup data
    */
@@ -157,8 +157,8 @@ struct field_interface_u {
   template<typename CLIENT_TYPE,
     size_t STORAGE_CLASS,
     typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH,
+    size_t NAMESPACE,
+    size_t NAME,
     size_t VERSION = 0,
     size_t PERMISSIONS>
   static decltype(auto) get_mutator(
@@ -171,7 +171,7 @@ struct field_interface_u {
       typename DATA_POLICY::template storage_class_u<STORAGE_CLASS>;
 
     return storage_class_t::template get_mutator<CLIENT_TYPE, DATA_TYPE,
-      NAMESPACE_HASH, NAME_HASH, VERSION>(client_handle, slots);
+      NAMESPACE, NAME, VERSION>(client_handle, slots);
   } // get_mutator
 #endif
 

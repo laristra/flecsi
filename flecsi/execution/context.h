@@ -180,10 +180,10 @@ struct context_u : public CONTEXT_POLICY {
     In normal usage, the user should call this method with a derived
     type, and the \ref get_global_object method should be called with
     a base type (assuming a common base type for all global objects
-    added within the NAMESPACE_HASH).
+    added within the NAMESPACE).
 
-    @tparam NAMESPACE_HASH A unique hash that identifies the object.
-    @tparam OBJECT_TYPE    The C++ type of the object.
+    @tparam NAMESPACE   A unique hash that identifies the object.
+    @tparam OBJECT_TYPE The C++ type of the object.
 
     @param index The index of the global object within the given namespace.
     @param args  A variadic argument list to be passed to the constructor
@@ -195,9 +195,9 @@ struct context_u : public CONTEXT_POLICY {
           the runtime at shutdown.
    */
 
-  template<size_t NAMESPACE_HASH, typename OBJECT_TYPE, typename... ARGS>
+  template<size_t NAMESPACE, typename OBJECT_TYPE, typename... ARGS>
   OBJECT_TYPE * add_global_object(size_t index, ARGS &&... args) {
-    size_t KEY = NAMESPACE_HASH ^ index;
+    size_t KEY = NAMESPACE ^ index;
 
     flog_assert(
       task_depth() == 0, "you cannot add global objects from within a task");
@@ -210,7 +210,7 @@ struct context_u : public CONTEXT_POLICY {
 
     flog(internal) << "Adding global object" << std::endl
                    << "\tindex: " << index << std::endl
-                   << "\thash: " << NAMESPACE_HASH << std::endl
+                   << "\thash: " << NAMESPACE << std::endl
                    << "\ttype: " << utils::demangle(typeid(OBJECT_TYPE).name())
                    << std::endl
                    << "\taddress: " << ptr << std::endl;
@@ -227,17 +227,17 @@ struct context_u : public CONTEXT_POLICY {
   /*!
     Get a global object instance.
 
-    @tparam NAMESPACE_HASH A unique hash that identifies the object.
-    @tparam OBJECT_TYPE    The C++ type of the object.
+    @tparam NAMESPACE   A unique hash that identifies the object.
+    @tparam OBJECT_TYPE The C++ type of the object.
 
     @param index The index of the global object within the given namespace.
 
     @return A pointer to the object.
    */
 
-  template<size_t NAMESPACE_HASH, typename OBJECT_TYPE>
+  template<size_t NAMESPACE, typename OBJECT_TYPE>
   OBJECT_TYPE * get_global_object(size_t index) {
-    size_t KEY = NAMESPACE_HASH ^ index;
+    size_t KEY = NAMESPACE ^ index;
     flog_assert(
       global_object_registry_.find(KEY) != global_object_registry_.end(),
       "key does not exist");
@@ -247,7 +247,7 @@ struct context_u : public CONTEXT_POLICY {
 
     flog(internal) << "Getting global object" << std::endl
                    << "\tindex: " << index << std::endl
-                   << "\thash: " << NAMESPACE_HASH << std::endl
+                   << "\thash: " << NAMESPACE << std::endl
                    << "\ttype: " << utils::demangle(typeid(OBJECT_TYPE).name())
                    << std::endl
                    << "\taddress: " << ptr << std::endl;

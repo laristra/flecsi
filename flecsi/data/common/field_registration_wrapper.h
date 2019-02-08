@@ -39,9 +39,9 @@ namespace data {
   @tparam DATA_TYPE        The data type, e.g., double. This may be
                            P.O.D. or a user-defined type that is
                            trivially-copyable.
-  @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
+  @tparam NAMESPACE        The namespace key. Namespaces allow separation
                            of attribute names to avoid collisions.
-  @tparam NAME_HASH        The attribute name.
+  @tparam NAME             The attribute name.
   @tparam VERSIONS         The number of versions that shall be associated
                            with this attribute.
   @tparam INDEX_SPACE      The index space identifier.
@@ -50,8 +50,8 @@ namespace data {
 template<typename DATA_CLIENT_TYPE,
   size_t STORAGE_CLASS,
   typename DATA_TYPE,
-  size_t NAMESPACE_HASH,
-  size_t NAME_HASH,
+  size_t NAMESPACE,
+  size_t NAME,
   size_t VERSIONS,
   size_t INDEX_SPACE>
 struct field_registration_wrapper_u {
@@ -70,8 +70,8 @@ struct field_registration_wrapper_u {
 
     fi.storage_class = STORAGE_CLASS;
     fi.size = sizeof(DATA_TYPE);
-    fi.namespace_hash = NAMESPACE_HASH;
-    fi.name_hash = NAME_HASH;
+    fi.namespace_hash = NAMESPACE;
+    fi.name_hash = NAME;
     fi.versions = VERSIONS;
     fi.index_space = INDEX_SPACE;
     fi.fid = fid;

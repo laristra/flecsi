@@ -46,7 +46,7 @@ struct client_handler_u<topology::global_topology_t> {
 
   using client_t = topology::global_topology_t;
 
-  template<size_t NAMESPACE_HASH, size_t NAME_HASH>
+  template<size_t NAMESPACE, size_t NAME>
   static client_handle_u<client_t, 0> get_client_handle() {
     client_handle_u<client_t, 0> h;
     return h;
@@ -63,7 +63,7 @@ struct client_handler_u<topology::color_topology_t> {
 
   using client_t = topology::color_topology_t;
 
-  template<size_t NAMESPACE_HASH, size_t NAME_HASH>
+  template<size_t NAMESPACE, size_t NAME>
   static client_handle_u<client_t, 0> get_client_handle() {
     client_handle_u<client_t, 0> h;
     return h;
@@ -81,7 +81,7 @@ struct client_handler_u<topology::mesh_topology_t<MESH_POLICY>> {
 
   using client_t = topology::mesh_topology_t<MESH_POLICY>;
 
-  template<size_t NAMESPACE_HASH, size_t NAME_HASH>
+  template<size_t NAMESPACE, size_t NAME>
   static client_handle_u<client_t, 0> get_client_handle() {
     client_handle_u<client_t, 0> h;
     return h;

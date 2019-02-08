@@ -420,10 +420,10 @@ intermediate_hash(size_t dimension, size_t domain) {
 // Reduction hash interface.
 ////////////////////////////////////////////////////////////////////////////////
 
-template<size_t OPERATOR_HASH, size_t DATA_HASH>
+template<size_t OPERATOR, size_t DATA>
 inline constexpr size_t
 reduction_hash() {
-  return (OPERATOR_HASH << 32) ^ DATA_HASH;
+  return (OPERATOR << 32) ^ DATA;
 } // reduction_hash
 } // namespace hash
 

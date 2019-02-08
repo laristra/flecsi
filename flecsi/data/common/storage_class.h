@@ -24,7 +24,6 @@
  */
 
 #include <flecsi/data/common/client_handle.h>
-#include <flecsi/data/common/storage_label.h>
 
 #ifndef POLICY_NAMESPACE
 #error You must define a data policy namespace before including this file.
@@ -32,7 +31,28 @@
 
 namespace flecsi {
 namespace data {
+
+/*!
+  The storage_label_t type enumerates the available FleCSI storage classes.
+  A FleCSI storage class provides a specific interface for different
+  logical data layouts, e.g., dense vs. sparse. The actual data layout
+  is implementation dependent.
+ */
+
+enum storage_label_t : size_t {
+  global,
+  color,
+  dense,
+  sparse,
+  ragged,
+  subspace
+}; // enum storage_label_t
+
 namespace POLICY_NAMESPACE {
+
+/*!
+  Base storage class type for client-specific specializations.
+ */
 
 template<size_t STORAGE_CLASS, typename CLIENT_TYPE>
 struct storage_class_u {};
@@ -44,21 +64,52 @@ struct storage_class_u {};
 namespace global_topology {
 
 template<typename TYPE, size_t PRIVILEGES>
-struct dense_handle_u {
+struct handle_u {
 
-  dense_handle_u() {}
-  ~dense_handle_u() {}
+  handle_u() {}
+  ~handle_u() {}
 
-}; // struct dense_handle_u
+}; // struct handle_u
 
 } // namespace global_topology
 
 template<>
-struct storage_class_u<dense, flecsi::topology::global_topology_t> {
+struct storage_class_u<global, flecsi::topology::global_topology_t> {
 
   using client_t = flecsi::topology::global_topology_t;
   using client_handle_t = client_handle_u<client_t, 0>;
-  using handle_t = global_topology::dense_handle_u<client_t, 0>;
+  using handle_t = global_topology::handle_u<client_t, 0>;
+
+  template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
+  static handle_t get_handle(const client_handle_t & client_handle) {
+    handle_t h;
+    return h;
+  } // get_handle
+
+}; // struct storage_class_u
+
+/*----------------------------------------------------------------------------*
+  Color Topology.
+ *----------------------------------------------------------------------------*/
+
+namespace color_topology {
+
+template<typename TYPE, size_t PRIVILEGES>
+struct handle_u {
+
+  handle_u() {}
+  ~handle_u() {}
+
+}; // struct handle_u
+
+} // namespace color_topology
+
+template<>
+struct storage_class_u<color, flecsi::topology::color_topology_t> {
+
+  using client_t = flecsi::topology::global_topology_t;
+  using client_handle_t = client_handle_u<client_t, 0>;
+  using handle_t = color_topology::handle_u<client_t, 0>;
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
   static handle_t get_handle(const client_handle_t & client_handle) {

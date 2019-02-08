@@ -48,13 +48,13 @@ struct client_interface_u {
   /*!
     Register a data client with the FleCSI runtime.
 
-    @tparam CLIENT_TYPE    The data client type.
-    @tparam NAMESPACE_HASH The namespace key. Namespaces allow separation
-                           of attribute names to avoid collisions.
-    @tparam NAME_HASH      The attribute name.
+    @tparam CLIENT_TYPE The data client type.
+    @tparam NAMESPACE   The namespace key. Namespaces allow separation
+                        of attribute names to avoid collisions.
+    @tparam NAME        The attribute name.
    */
 
-  template<typename CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
+  template<typename CLIENT_TYPE, size_t NAMESPACE, size_t NAME>
   static bool register_client(std::string const & name) {
     static_assert(
       sizeof(CLIENT_TYPE) == sizeof(typename CLIENT_TYPE::type_identifier_t),
@@ -62,12 +62,12 @@ struct client_interface_u {
 
     using wrapper_t =
       client_registration_wrapper_u<typename CLIENT_TYPE::type_identifier_t,
-        NAMESPACE_HASH, NAME_HASH>;
+        NAMESPACE, NAME>;
 
     const size_t type_key =
       typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
-    const size_t key = utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
+    const size_t key = utils::hash::client_hash<NAMESPACE, NAME>();
 
     flog(internal) << "Registering data client" << std::endl
                    << "\tname: " << name << std::endl
@@ -87,16 +87,16 @@ struct client_interface_u {
   /*!
     Return a handle to a data client.
 
-    @tparam CLIENT_TYPE    The data client type.
-    @tparam NAMESPACE_HASH The namespace key. Namespaces allow separation
-                           of attribute names to avoid collisions.
-    @tparam NAME_HASH      The attribute name.
+    @tparam CLIENT_TYPE The data client type.
+    @tparam NAMESPACE   The namespace key. Namespaces allow separation
+                        of attribute names to avoid collisions.
+    @tparam NAME        The attribute name.
    */
 
-  template<typename CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
+  template<typename CLIENT_TYPE, size_t NAMESPACE, size_t NAME>
   static decltype(auto) get_client_handle() {
-    return DATA_POLICY::template get_client_handle<CLIENT_TYPE, NAMESPACE_HASH,
-      NAME_HASH>();
+    return DATA_POLICY::template get_client_handle<CLIENT_TYPE, NAMESPACE,
+      NAME>();
   } // get_client_handle
 
 }; // struct client_interface_u

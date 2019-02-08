@@ -18,11 +18,18 @@
 #include <flecsi/data/legion/client_handlers.h>
 
 #include <flecsi/data/legion/dense.h>
+//#include <flecsi/data/legion/ragged.h>
+//#include <flecsi/data/legion/sparse.h>
 
 namespace flecsi {
 namespace data {
 
 struct legion_data_policy_t {
+
+  /*
+    Capture the base storage class type. This is necessary as a place
+    holder in the field interface.
+   */
 
   template<size_t STORAGE_CLASS, typename CLIENT_TYPE>
   using storage_class_u = legion::storage_class_u<STORAGE_CLASS, CLIENT_TYPE>;
@@ -31,13 +38,12 @@ struct legion_data_policy_t {
     Documnetation for this interface is in the top-level client type.
    */
 
-  template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
+  template<typename DATA_CLIENT_TYPE, size_t NAMESPACE, size_t NAME>
   static client_handle_u<DATA_CLIENT_TYPE, 0> get_client_handle() {
     using client_handler_t =
-      legion::client_handler_u<typename DATA_CLIENT_TYPE::type_identifier>;
+      legion::client_handler_u<typename DATA_CLIENT_TYPE::type_identifier_t>;
 
-    return client_handler_t::template get_client_handle<NAMESPACE_HASH,
-      NAME_HASH>();
+    return client_handler_t::template get_client_handle<NAMESPACE, NAME>();
   } // get_client_handle
 
 }; // struct legion_data_policy_t
