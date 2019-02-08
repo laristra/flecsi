@@ -20,10 +20,10 @@
 set(data_HEADERS
   client.h
   common/client_handle.h
-  common/client_handler.h
-  common/client_registration_wrapper.h
+  common/client_handle_specialization.h
+  common/client_registration_specializations.h
   common/data_client.h
-  common/field_registration_wrapper.h
+  common/field_registration.h
   common/storage_class.h
   data.h
   field.h
@@ -35,9 +35,9 @@ set(data_SOURCES
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
-    legion/client_handlers.h
+    legion/client_handle_specializations.h
     legion/data_policy.h
-    legion/dense.h
+    legion/storage_class_specializations.h
     ${data_HEADERS}
   )
 
@@ -48,6 +48,9 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(data_HEADERS
+    mpi/client_handle_specializations.h
+    mpi/data_policy.h
+    mpi/storage_class_specializations.h
     ${data_HEADERS}
   )
 

@@ -37,7 +37,7 @@ namespace POLICY_NAMESPACE {
  */
 
 template<typename CLIENT_TYPE>
-struct client_handler_u {};
+struct client_handle_specialization_u {};
 
 } // namespace POLICY_NAMESPACE
 } // namespace data

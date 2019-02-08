@@ -16,7 +16,7 @@
 /*!
   @file
 
-  This file contains the \em field_registration_wrapper_u type. This type
+  This file contains the \em field_registration_u type. This type
   is currently used for all field registrations regardless of runtime or
   client type.
  */
@@ -29,7 +29,7 @@ namespace flecsi {
 namespace data {
 
 /*!
-  The field_registration_wrapper_u type uses a form of type erasure
+  The field_registration_u type uses a form of type erasure
   (by defining a generic callback type) that can be used to capture
   static type information at runtime.
 
@@ -54,7 +54,7 @@ template<typename DATA_CLIENT_TYPE,
   size_t NAME,
   size_t VERSIONS,
   size_t INDEX_SPACE>
-struct field_registration_wrapper_u {
+struct field_registration_u {
 
   /*!
     Callback method for capturing static type information during
@@ -81,7 +81,7 @@ struct field_registration_wrapper_u {
 #endif
   } // register_callback
 
-}; // class field_registration_wrapper_u
+}; // class field_registration_u
 
 } // namespace data
 } // namespace flecsi

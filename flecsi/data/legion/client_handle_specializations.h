@@ -16,7 +16,7 @@
 /*! @file */
 
 #define POLICY_NAMESPACE legion
-#include <flecsi/data/common/client_handler.h>
+#include <flecsi/data/common/client_handle_specialization.h>
 #undef POLICY_NAMESPACE
 
 #include <flecsi/data/common/client_handle.h>
@@ -42,7 +42,7 @@ namespace legion {
  *----------------------------------------------------------------------------*/
 
 template<>
-struct client_handler_u<topology::global_topology_t> {
+struct client_handle_specialization_u<topology::global_topology_t> {
 
   using client_t = topology::global_topology_t;
 
@@ -52,14 +52,14 @@ struct client_handler_u<topology::global_topology_t> {
     return h;
   } // get_client_handle
 
-}; // client_handler_u<topology::global_topology_t>
+}; // client_handle_specialization_u<topology::global_topology_t>
 
 /*----------------------------------------------------------------------------*
   Color Topology.
  *----------------------------------------------------------------------------*/
 
 template<>
-struct client_handler_u<topology::color_topology_t> {
+struct client_handle_specialization_u<topology::color_topology_t> {
 
   using client_t = topology::color_topology_t;
 
@@ -69,7 +69,7 @@ struct client_handler_u<topology::color_topology_t> {
     return h;
   } // get_client_handle
 
-}; // client_handler_u<topology::color_topology_t>
+}; // client_handle_specialization_u<topology::color_topology_t>
 
 /*----------------------------------------------------------------------------*
   Mesh Topology.
@@ -77,7 +77,7 @@ struct client_handler_u<topology::color_topology_t> {
 
 #if 0
 template<typename MESH_POLICY>
-struct client_handler_u<topology::mesh_topology_t<MESH_POLICY>> {
+struct client_handle_specialization_u<topology::mesh_topology_t<MESH_POLICY>> {
 
   using client_t = topology::mesh_topology_t<MESH_POLICY>;
 
@@ -87,7 +87,7 @@ struct client_handler_u<topology::mesh_topology_t<MESH_POLICY>> {
     return h;
   } // get_client_handle
 
-}; // client_handler_u<topology::mesh_topology_t<MESH_POLICY>>
+}; // client_handle_specialization_u<topology::mesh_topology_t<MESH_POLICY>>
 #endif
 
 } // namespace legion

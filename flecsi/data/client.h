@@ -23,7 +23,7 @@
   runtime policy that is selected at compile time.
  */
 
-#include <flecsi/data/common/client_registration_wrapper.h>
+#include <flecsi/data/common/client_registration_specializations.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/flog.h>
 #include <flecsi/utils/hash.h>
@@ -60,9 +60,9 @@ struct client_interface_u {
       sizeof(CLIENT_TYPE) == sizeof(typename CLIENT_TYPE::type_identifier_t),
       "Data clients may not add data members");
 
-    using wrapper_t =
-      client_registration_wrapper_u<typename CLIENT_TYPE::type_identifier_t,
-        NAMESPACE, NAME>;
+    using registration_t =
+      client_registration_u<typename CLIENT_TYPE::type_identifier_t, NAMESPACE,
+        NAME>;
 
     const size_t type_key =
       typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
@@ -77,7 +77,7 @@ struct client_interface_u {
                    << std::endl;
 
     if(!execution::context_t::instance().register_client(
-         type_key, key, wrapper_t::register_callback)) {
+         type_key, key, registration_t::register_callback)) {
       return false;
     } // if
 

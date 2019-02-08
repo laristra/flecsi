@@ -22,7 +22,7 @@
   policy that is selected at compile time.
  */
 
-#include <flecsi/data/common/field_registration_wrapper.h>
+#include <flecsi/data/common/field_registration.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/hash.h>
 
@@ -78,18 +78,17 @@ struct field_interface_u {
     static_assert(VERSIONS <= utils::hash::field_max_versions,
       "max field versions exceeded");
 
-    using wrapper_t = field_registration_wrapper_u<CLIENT_TYPE, STORAGE_CLASS,
+    using registration_t = field_registration_u<CLIENT_TYPE, STORAGE_CLASS,
       DATA_TYPE, NAMESPACE, NAME, VERSIONS, INDEX_SPACE>;
 
     const size_t client_type_key =
       typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
     for(size_t version(0); version < VERSIONS; ++version) {
-      const size_t key =
-        utils::hash::field_hash<NAMESPACE, NAME>(version);
+      const size_t key = utils::hash::field_hash<NAMESPACE, NAME>(version);
 
       if(!execution::context_t::instance().register_field(
-           client_type_key, key, wrapper_t::register_callback)) {
+           client_type_key, key, registration_t::register_callback)) {
         return false;
       } // if
     } // for
@@ -131,8 +130,8 @@ struct field_interface_u {
       typename DATA_POLICY::template storage_class_u<STORAGE_CLASS,
         CLIENT_TYPE>;
 
-    return storage_class_t::template get_handle<DATA_TYPE, NAMESPACE,
-      NAME, VERSION>(client_handle);
+    return storage_class_t::template get_handle<DATA_TYPE, NAMESPACE, NAME,
+      VERSION>(client_handle);
   } // get_handle
 
 #if 0
