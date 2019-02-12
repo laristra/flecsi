@@ -11,8 +11,8 @@
 
 #include <legion.h>
 
-#include <flecsi/runtime/types.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/runtime/types.h>
 
 //----------------------------------------------------------------------------//
 /// @file
@@ -56,8 +56,10 @@ struct legion_sparse_data_handle_policy_t {
   Legion::LogicalPartition entries_shared_lp;
   Legion::LogicalPartition entries_ghost_lp;
 
-  Legion::LogicalRegion offsets_entire_region;                                    Legion::LogicalPartition offsets_color_partition;                               Legion::LogicalPartition offsets_exclusive_lp;                     
-  Legion::LogicalPartition offsets_shared_lp;                            
+  Legion::LogicalRegion offsets_entire_region;
+  Legion::LogicalPartition offsets_color_partition;
+  Legion::LogicalPartition offsets_exclusive_lp;
+  Legion::LogicalPartition offsets_shared_lp;
   Legion::LogicalPartition offsets_ghost_lp;
 
   Legion::LogicalPartition ghost_owners_offsets_lp;
@@ -71,12 +73,10 @@ struct legion_sparse_data_handle_policy_t {
   Legion::Context context;
   Legion::Runtime * runtime;
 
-
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.
-  const Legion::STL::map<
-      LegionRuntime::Arrays::coord_t,
-      LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
+  const Legion::STL::map<LegionRuntime::Arrays::coord_t,
+    LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
 
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions

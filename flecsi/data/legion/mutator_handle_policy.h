@@ -12,8 +12,8 @@
 #include <legion.h>
 
 #include <flecsi/data/common/data_types.h>
-#include <flecsi/runtime/types.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/runtime/types.h>
 
 //----------------------------------------------------------------------------//
 /// @file
@@ -54,27 +54,27 @@ struct legion_mutator_handle_policy_t {
   Legion::LogicalPartition entries_shared_lp;
   Legion::LogicalPartition entries_ghost_lp;
 
-  Legion::LogicalRegion offsets_entire_region;                                    Legion::LogicalPartition offsets_color_partition;                               Legion::LogicalPartition offsets_exclusive_lp;
+  Legion::LogicalRegion offsets_entire_region;
+  Legion::LogicalPartition offsets_color_partition;
+  Legion::LogicalPartition offsets_exclusive_lp;
   Legion::LogicalPartition offsets_shared_lp;
   Legion::LogicalPartition offsets_ghost_lp;
 
   Legion::LogicalRegion metadata_entire_region;
   Legion::LogicalPartition metadata_lp;
- 
-  void * metadata; 
+
+  void * metadata;
 
   Legion::LogicalPartition ghost_owners_offsets_lp;
-//  std::vector<Legion::LogicalRegion> ghost_owners_offsets_subregions;
+  //  std::vector<Legion::LogicalRegion> ghost_owners_offsets_subregions;
 
   Legion::LogicalPartition ghost_owners_entries_lp;
-
 
   Legion::Context context;
   Legion::Runtime * runtime;
 
-  const Legion::STL::map<
-      LegionRuntime::Arrays::coord_t,
-      LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
+  const Legion::STL::map<LegionRuntime::Arrays::coord_t,
+    LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
 
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions

@@ -142,7 +142,7 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
   }; // struct entity_info_t
 
   struct entity_walker_t
-      : public flecsi::utils::tuple_walker_u<entity_walker_t> {
+    : public flecsi::utils::tuple_walker_u<entity_walker_t> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {
@@ -172,7 +172,7 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
 
   template<typename MESH_TYPE>
   struct connectivity_walker_u
-      : public flecsi::utils::tuple_walker_u<connectivity_walker_u<MESH_TYPE>> {
+    : public flecsi::utils::tuple_walker_u<connectivity_walker_u<MESH_TYPE>> {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
     template<typename TUPLE_ENTRY_TYPE>
@@ -214,7 +214,7 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
 
   template<typename MESH_TYPE>
   struct binding_walker_u
-      : public flecsi::utils::tuple_walker_u<binding_walker_u<MESH_TYPE>> {
+    : public flecsi::utils::tuple_walker_u<binding_walker_u<MESH_TYPE>> {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
     template<typename TUPLE_ENTRY_TYPE>
@@ -256,8 +256,8 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
   }; // struct binding_walker_u
 
   template<typename MESH_TYPE>
-  struct index_subspace_walker_u : public flecsi::utils::tuple_walker_u<
-                                       index_subspace_walker_u<MESH_TYPE>> {
+  struct index_subspace_walker_u
+    : public flecsi::utils::tuple_walker_u<index_subspace_walker_u<MESH_TYPE>> {
 
     using entity_types_t = typename MESH_TYPE::entity_types;
 
@@ -335,28 +335,18 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
       ent.size = ei.size;
 
       const field_info_t * fi = context.get_field_info_from_key(
-        h.type_hash,
-        utils::hash::client_internal_field_hash(
-          const_string_t("flecsi_internal_entity_data").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          ent.index_space
-        )
-      );
+        h.type_hash, utils::hash::client_internal_field_hash(
+                       const_string_t("flecsi_internal_entity_data").hash(),
+                       NAMESPACE_HASH, NAME_HASH, ent.index_space));
 
       if(fi) {
         ent.fid = fi->fid;
       }
 
       fi = context.get_field_info_from_key(
-        h.type_hash,
-        utils::hash::client_internal_field_hash(
-          const_string_t("flecsi_internal_entity_id").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          ent.index_space
-        )
-      );
+        h.type_hash, utils::hash::client_internal_field_hash(
+                       const_string_t("flecsi_internal_entity_id").hash(),
+                       NAMESPACE_HASH, NAME_HASH, ent.index_space));
 
       if(fi) {
         ent.id_fid = fi->fid;
@@ -403,29 +393,19 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
       adj.from_dim = hi.from_dim;
       adj.to_dim = hi.to_dim;
 
-      const field_info_t * fi = context.get_field_info_from_key(
-        h.type_hash,
+      const field_info_t * fi = context.get_field_info_from_key(h.type_hash,
         utils::hash::client_internal_field_hash(
           const_string_t("flecsi_internal_adjacency_offset").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          hi.index_space
-        )
-      );
+          NAMESPACE_HASH, NAME_HASH, hi.index_space));
 
       if(fi) {
         adj.offset_fid = fi->fid;
       }
 
       fi = context.get_field_info_from_key(
-        h.type_hash,
-        utils::hash::client_internal_field_hash(
-          const_string_t("flecsi_internal_adjacency_index").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          hi.index_space
-        )
-      );
+        h.type_hash, utils::hash::client_internal_field_hash(
+                       const_string_t("flecsi_internal_adjacency_index").hash(),
+                       NAMESPACE_HASH, NAME_HASH, hi.index_space));
 
       if(fi) {
         adj.index_fid = fi->fid;
@@ -470,15 +450,10 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
       iss.domain = si.domain;
       iss.dim = si.dim;
 
-      const field_info_t * fi = context.get_field_info_from_key(
-        h.type_hash,
+      const field_info_t * fi = context.get_field_info_from_key(h.type_hash,
         utils::hash::client_internal_field_hash(
           const_string_t("flecsi_internal_index_subspace_index").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          si.index_subspace
-        )
-      );
+          NAMESPACE_HASH, NAME_HASH, si.index_subspace));
 
       if(fi) {
         iss.index_fid = fi->fid;
@@ -517,7 +492,7 @@ struct data_client_policy_handler_u<topology::set_topology_u<POLICY_TYPE>> {
   }; // struct entity_info_t
 
   struct entity_walker_t
-      : public flecsi::utils::tuple_walker_u<entity_walker_t> {
+    : public flecsi::utils::tuple_walker_u<entity_walker_t> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {
@@ -552,7 +527,7 @@ struct data_client_policy_handler_u<topology::set_topology_u<POLICY_TYPE>> {
 
     auto & context = execution::context_t::instance();
 
-    //auto & ism = context.local_index_space_data_map();
+    // auto & ism = context.local_index_space_data_map();
     auto & ism = context.index_space_data_map();
 
     h.type_hash =
@@ -577,14 +552,9 @@ struct data_client_policy_handler_u<topology::set_topology_u<POLICY_TYPE>> {
       ent.size = ei.size;
 
       const field_info_t * fi = context.get_field_info_from_key(
-        h.type_hash,
-        utils::hash::client_internal_field_hash(
-          const_string_t("flecsi_internal_entity_data").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          ent.index_space
-        )
-      );
+        h.type_hash, utils::hash::client_internal_field_hash(
+                       const_string_t("flecsi_internal_entity_data").hash(),
+                       NAMESPACE_HASH, NAME_HASH, ent.index_space));
 
       if(fi) {
         ent.fid = fi->fid;
@@ -597,29 +567,19 @@ struct data_client_policy_handler_u<topology::set_topology_u<POLICY_TYPE>> {
       ent.entire_region = ritr->second.entire_region;
 #endif
 
-      fi = context.get_field_info_from_key(
-        h.type_hash,
+      fi = context.get_field_info_from_key(h.type_hash,
         utils::hash::client_internal_field_hash(
           const_string_t("flecsi_internal_active_entity_data").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          ent.index_space
-        )
-      );
+          NAMESPACE_HASH, NAME_HASH, ent.index_space));
 
       if(fi) {
         ent.fid2 = fi->fid;
       }
 
-      fi = context.get_field_info_from_key(
-        h.type_hash,
+      fi = context.get_field_info_from_key(h.type_hash,
         utils::hash::client_internal_field_hash(
           const_string_t("flecsi_internal_migrate_entity_data").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          ent.index_space
-        )
-      );
+          NAMESPACE_HASH, NAME_HASH, ent.index_space));
 
       if(fi) {
         ent.fid3 = fi->fid;
