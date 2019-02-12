@@ -8,6 +8,7 @@ stages:
   - Format
   - Deploy
 
+retry: 2
 variables:
   GIT_SUBMODULE_STRATEGY: none
   GLOBAL_CI_VARIABLE: "global_ci_value"
@@ -32,12 +33,6 @@ before_script:
 ###############
 
 .build:
-  retry:
-    max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
-      - unknown_failure
   variables:
     DISTRO: ""
     RUNTIME: ""
@@ -287,7 +282,6 @@ build:fedora_hpx_clang:
 ##############
 
 .test:
-  retry: 2
   variables:
     DISTRO: ""
     COVERAGE: "OFF"
@@ -575,7 +569,6 @@ test:fedora_hpx_ignoreNoCI:
 ################
 
 .format:
-  retry: 2
   variables:
     DISTRO: ""
   image: laristra/flecsi-third-party:${DISTRO} #user: flecsi
@@ -625,7 +618,6 @@ format:fedora_hpx:
     refs:
       - master
       - /^stable\/.*$/
-  retry: 2
   variables:
     DISTRO: ""
     RUNTIME: ""
