@@ -10,8 +10,9 @@ stages:
 
 before_script:
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
+  - docker image prune
 variables:
-  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_SUBMODULE_STRATEGY: none
   GLOBAL_CI_VARIABLE: "global_ci_value"
   CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
   #CI_DEBUG_TRACE: "true"
@@ -20,6 +21,8 @@ cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - ${CI_PROJECT_DIR}/ccache #/builds/next-generation-codes/laristra/flecsi/ccache
+script:
+  - git submodule update --init --recursive
 
 ###################
 ###################
