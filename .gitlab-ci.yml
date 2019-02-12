@@ -9,7 +9,10 @@ stages:
   - Deploy
 
 variables:
-  GIT_SUBMODULE_STRATEGY: none
+  GET_SOURCES_ATTEMPTS: 10
+  ARTIFACT_DOWNLOAD_ATTEMPTS: 10
+  RESTORE_CACHE_ATTEMPTS: 10
+  GIT_STRATEGY: fetch
   GLOBAL_CI_VARIABLE: "global_ci_value"
   CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
   #CI_DEBUG_TRACE: "true"
@@ -21,7 +24,6 @@ cache:
 before_script:
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
-  - git submodule update --init --recursive
 
 ###################
 ###################
@@ -34,6 +36,7 @@ before_script:
 .build:
   retry: 2
   variables:
+    GIT_SUBMODULE_STRATEGY: recursive
     DISTRO: ""
     RUNTIME: ""
     CC: "gcc"
@@ -47,11 +50,10 @@ before_script:
   artifacts:
     name: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
-      - ${CI_PROJECT_DIR}/build #/builds/next-generation-codes/laristra/flecsi/build
-      - ${CI_PROJECT_DIR}/install
-      - ${CI_PROJECT_DIR}/ccache
+      - ${CI_PROJECT_DIR} #/builds/next-generation-codes/laristra/flecsi
     when: always
     expire_in: 5 hour
+  dependencies: []
   script:
     #- git submodule init
     #- git config submodule.cinch.url https://github.com/laristra/cinch.git
@@ -74,6 +76,7 @@ before_script:
     - make -k VERBOSE=1 -j2
     - ccache -s
     - make doxygen
+    - mkdir ${CI_PROJECT_DIR}/install
     - make install DESTDIR=${CI_PROJECT_DIR}/install 
     - sudo make install 
 
