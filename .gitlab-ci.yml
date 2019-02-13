@@ -22,6 +22,7 @@ cache:
   paths:
     - ${CI_PROJECT_DIR}/ccache #/builds/next-generation-codes/laristra/flecsi/ccache
 before_script:
+  - nproc
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   - mkdir ${CI_PROJECT_DIR}/ccache
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
@@ -56,6 +57,7 @@ before_script:
     expire_in: 5 hour
   dependencies: []
   script:
+    - nproc
     #- git submodule init
     #- git config submodule.cinch.url https://github.com/laristra/cinch.git
     #- git submodule update --init --recursive
