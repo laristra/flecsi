@@ -24,7 +24,7 @@ cache:
 before_script:
   - nproc
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
-  - mkdir ${CI_PROJECT_DIR}/ccache
+  #- mkdir ${CI_PROJECT_DIR}/ccache
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
 
 ###################
