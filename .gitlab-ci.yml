@@ -15,7 +15,8 @@ variables:
   GIT_STRATEGY: fetch
   GLOBAL_CI_VARIABLE: "global_ci_value"
   CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
-  CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME#*:}
+  CI_JOB_NAME_TMP: ${CI_JOB_NAME}
+  CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME_TMP#*:}
   #CI_DEBUG_TRACE: "true"
 cache:
   #key: ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
@@ -297,7 +298,8 @@ build:fedora_hpx_clang:
   image: laristra/flecsi-third-party:${DISTRO} #user: flecsi
   stage: Test
   dependencies:
-    - build:${CI_JOB_NAME#*:}
+    #- "build:${CI_JOB_NAME#*:}"
+    - .build
   script:
     - cd ${CI_PROJECT_DIR}/build/
     - |
@@ -333,6 +335,8 @@ build:fedora_hpx_clang:
 
 test:ubuntu_mpi:
   extends: .test
+  dependencies:
+    - build:ubuntu_mpi
   variables:
     DISTRO: "ubuntu"
 
@@ -581,7 +585,8 @@ test:fedora_hpx.ignoreNoCI:
   image: laristra/flecsi-third-party:${DISTRO} #user: flecsi
   stage: Format
   dependencies:
-    - build:${CI_JOB_NAME#*:}
+    #- build:${CI_JOB_NAME#*:}
+    - .build
   script:
     - cd ${CI_PROJECT_DIR}/build/
     - make format-FleCSI && git diff --exit-code
@@ -635,7 +640,8 @@ format:fedora_hpx:
   image: gitlab/dind:latest #user: root
   stage: Deploy
   dependencies:
-    - build:${CI_JOB_NAME#*:}
+    #- build:${CI_JOB_NAME#*:}
+    - .build
   script:
     - |
       if [[ ${CC} != gcc ]];
