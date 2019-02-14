@@ -626,8 +626,9 @@ format:fedora_hpx:
   retry: 2
   only:
     refs:
-      - master
-      - /^stable\/.*$/
+      - merge_requests
+      #- master
+      #- /^stable\/.*$/
   variables:
     DISTRO: ""
     RUNTIME: ""
