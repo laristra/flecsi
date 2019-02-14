@@ -333,8 +333,6 @@ build:fedora_hpx_clang:
 
 test:ubuntu_mpi:
   extends: .test
-  #dependencies:
-  #  - build:ubuntu_mpi
   variables:
     DISTRO: "ubuntu"
 
@@ -594,8 +592,8 @@ test:fedora_hpx.ignoreNoCI:
 
 format:fedora_mpi:
   extends: .format
-  #dependencies:
-  #  - build:fedora_mpi
+  dependencies:
+    - build:fedora_mpi
   variables:
     DISTRO: "fedora"
 
