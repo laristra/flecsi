@@ -34,6 +34,14 @@ struct mpi_context_policy_t {
     Documnetation for this interface is in the top-level context type.
    */
 
+  static size_t task_depth() {
+    return 0;
+  } // task_depth
+
+  /*
+    Documnetation for this interface is in the top-level context type.
+   */
+
   size_t color() const {
     return color_;
   }
@@ -62,6 +70,26 @@ struct mpi_context_policy_t {
     colors_ = colors;
   }
 
+  //--------------------------------------------------------------------------//
+  // Reduction interface.
+  //--------------------------------------------------------------------------//
+
+  /*!
+    Return the map of registered reduction types.
+   */
+
+  std::map<size_t, MPI_Datatype> & reduction_types() {
+    return reduction_types_;
+  } // reduction_types
+
+  /*!
+    Return the map of registered reduction operations.
+   */
+
+  std::map<size_t, MPI_Op> & reduction_operations() {
+    return reduction_ops_;
+  } // reduction_types
+
 private:
   /*--------------------------------------------------------------------------*
     Runtime data members.
@@ -69,6 +97,13 @@ private:
 
   size_t color_ = std::numeric_limits<size_t>::max();
   size_t colors_ = std::numeric_limits<size_t>::max();
+
+  /*--------------------------------------------------------------------------*
+    Reduction data members.
+   *--------------------------------------------------------------------------*/
+
+  std::map<size_t, MPI_Datatype> reduction_types_;
+  std::map<size_t, MPI_Op> reduction_ops_;
 
 }; // struct mpi_context_policy_t
 

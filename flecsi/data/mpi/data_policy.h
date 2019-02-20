@@ -20,7 +20,7 @@
   specializations for data clients and storage classes.
  */
 
-#include <flecsi/data/mpi/client_specializations.h>
+#include <flecsi/data/mpi/client_handle_specializations.h>
 #include <flecsi/data/mpi/storage_class_specializations.h>
 
 namespace flecsi {

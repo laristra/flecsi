@@ -29,6 +29,7 @@ flog_register_tag(reduction_wrapper);
 
 namespace flecsi {
 namespace execution {
+namespace mpi {
 
 template<size_t HASH, typename TYPE>
 struct reduction_wrapper_u {
@@ -105,5 +106,6 @@ struct reduction_wrapper_u {
 
 }; // struct reduction_wrapper_u
 
+} // namespace mpi
 } // namespace execution
 } // namespace flecsi

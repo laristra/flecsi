@@ -29,6 +29,7 @@ flog_register_tag(reduction_wrapper);
 
 namespace flecsi {
 namespace execution {
+namespace legion {
 
 struct reduction_wrapper_unique_u {};
 
@@ -69,5 +70,6 @@ struct reduction_wrapper_u {
 
 }; // struct reduction_wrapper_u
 
+} // namespace legion
 } // namespace execution
 } // namespace flecsi

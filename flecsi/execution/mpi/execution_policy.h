@@ -17,10 +17,11 @@
 
 #if !defined(__FLECSI_PRIVATE__)
   #error Do not inlcude this file directly!
-#endif
-
+#else
 #include <flecsi/execution/context.h>
+#include <flecsi/execution/mpi/reduction_wrapper.h>
 #include <flecsi/utils/flog.h>
+#endif
 
 namespace flecsi {
 namespace execution {
@@ -56,6 +57,13 @@ struct mpi_execution_policy_t {
     return context_t::instance()
       .template register_function<TASK, RETURN, ARG_TUPLE, DELEGATE>();
   } // register_task
+
+  //--------------------------------------------------------------------------//
+  // Reduction interface.
+  //--------------------------------------------------------------------------//
+
+  template<size_t HASH, typename TYPE>
+  using reduction_wrapper_u = mpi::reduction_wrapper_u<HASH, TYPE>;
 
 }; // struct mpi_execution_policy_t
 

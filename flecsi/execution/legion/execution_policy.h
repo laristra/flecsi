@@ -97,18 +97,8 @@ struct legion_execution_policy_t {
   // Reduction interface.
   //------------------------------------------------------------------------//
 
-  /*!
-   Legion backend reduction registration. For documentation on this
-   method please see task_u::register_reduction_operation.
-   */
-
   template<size_t HASH, typename TYPE>
-  static bool register_reduction_operation() {
-    using wrapper_t = reduction_wrapper_u<HASH, TYPE>;
-
-    return context_t::instance().register_reduction_operation(
-      HASH, wrapper_t::registration_callback);
-  } // register_reduction_operation
+  using reduction_wrapper_u = legion::reduction_wrapper_u<HASH, TYPE>;
 
 }; // struct legion_execution_policy_t
 

@@ -100,8 +100,11 @@ struct task_interface_u {
 
   template<size_t HASH, typename TYPE>
   static decltype(auto) register_reduction_operation() {
-    return EXECUTION_POLICY::template register_reduction_operation<HASH,
-      TYPE>();
+    using wrapper_t =
+      typename EXECUTION_POLICY::template reduction_wrapper_u<HASH, TYPE>;
+
+    return context_t::instance().register_reduction_operation(
+      HASH, wrapper_t::registration_callback);
   } // register_reduction_operation
 
 }; // struct task_interface_u
