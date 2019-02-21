@@ -83,7 +83,7 @@ struct legion_execution_policy_t {
                    << "\tname: " << name << std::endl
                    << "\thash: " << TASK << std::endl;
 
-    using wrapper_t = pure_task_wrapper_u<RETURN, DELEGATE>;
+    using wrapper_t = legion::pure_task_wrapper_u<RETURN, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
       TASK, processor, launch, name, wrapper_t::registration_callback);

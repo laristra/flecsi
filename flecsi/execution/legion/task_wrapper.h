@@ -43,6 +43,7 @@ flog_register_tag(task_wrapper);
 
 namespace flecsi {
 namespace execution {
+namespace legion {
 
 /*!
   Pure Legion task wrapper.
@@ -265,5 +266,6 @@ struct task_wrapper_u {
 }; // struct task_wrapper_u
 #endif
 
+} // namespace legion
 } // namespace execution
 } // namespace flecsi
