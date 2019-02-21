@@ -170,17 +170,8 @@ set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/FleCSI)
 # Graphviz
 #------------------------------------------------------------------------------#
 
-option(ENABLE_GRAPHVIZ "Enable Graphviz Support" OFF)
-
 if(ENABLE_GRAPHVIZ)
-  find_package(Graphviz REQUIRED)
-
-  if(GRAPHVIZ_FOUND)
-    include_directories(${GRAPHVIZ_INCLUDE_DIRS})
-
-    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${GRAPHVIZ_INCLUDE_DIR})
-    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${GRAPHVIZ_LIBRARIES})
-  endif()
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Graphviz_LIBRARIES})
 endif()
 
 #------------------------------------------------------------------------------#
