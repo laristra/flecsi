@@ -16,10 +16,10 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not inlcude this file directly!
+#error Do not inlcude this file directly!
 //#else
-//FleCSI includes: remove this line when at least
-//one include is added
+// FleCSI includes: remove this line when at least
+// one include is added
 #endif
 
 #if !defined(FLECSI_ENABLE_MPI)

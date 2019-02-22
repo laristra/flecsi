@@ -86,17 +86,17 @@ square(const T & a) {
   return a * a;
 }
 
-  //----------------------------------------------------------------------------//
-  // Unique Identifier Utilities
-  //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// Unique Identifier Utilities
+//----------------------------------------------------------------------------//
 
-  //----------------------------------------------------------------------------//
-  // This value is used by the Legion runtime backend to automatically
-  // assign task and field ids. The current maximum value that is allowed
-  // in legion_config.h is 1<<20.
-  //
-  // We are reserving 4096 places for internal use.
-  //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// This value is used by the Legion runtime backend to automatically
+// assign task and field ids. The current maximum value that is allowed
+// in legion_config.h is 1<<20.
+//
+// We are reserving 4096 places for internal use.
+//----------------------------------------------------------------------------//
 
 #if !defined(FLECSI_GENERATED_ID_MAX)
 // 1044480 = (1<<20) - 4096
