@@ -78,11 +78,8 @@ before_script:
         -DFLECSI_RUNTIME_MODEL=$RUNTIME \
         ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
-        -DENABLE_UNIT_TESTS=ON \
-        -DENABLE_PARMETIS=ON \
-        -DENABLE_COLORING=ON \
+        -DENABLE_FLOG=ON \
         -DENABLE_DOXYGEN=ON \
-        -DENABLE_DOCUMENTATION=OFF \
         ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} \
         ..
     - make -k VERBOSE=1 -j2 -l80
