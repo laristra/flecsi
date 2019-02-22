@@ -67,6 +67,7 @@ before_script:
       then 
         echo 'ccache/ already exists'; 
       else 
+        echo 'creating ccache/';
         mkdir ${CI_PROJECT_DIR}/ccache; 
       fi
     - mkdir ${CI_PROJECT_DIR}/build
