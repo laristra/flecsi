@@ -17,7 +17,18 @@
 
 #if !defined(__FLECSI_PRIVATE__)
   #error Do not inlcude this file directly!
+//#else
+//FleCSI includes: remove this line when at least
+//one include is added
 #endif
+
+#if !defined(FLECSI_ENABLE_MPI)
+#error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
+#endif
+
+#include <mpi.h>
+
+#include <map>
 
 namespace flecsi {
 namespace execution {
