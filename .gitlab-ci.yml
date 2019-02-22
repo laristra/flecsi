@@ -62,7 +62,13 @@ before_script:
     #- git submodule init
     #- git config submodule.cinch.url https://github.com/laristra/cinch.git
     #- git submodule update --init --recursive
-    - mkdir ${CI_PROJECT_DIR}/ccache
+    - |
+      if [ -d ${CI_PROJECT_DIR}/ccache ];
+      then 
+        echo 'ccache/ already exists'; 
+      else 
+        mkdir ${CI_PROJECT_DIR}/ccache; 
+      fi
     - mkdir ${CI_PROJECT_DIR}/build
     - cd build
     - ccache -z
