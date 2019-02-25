@@ -217,7 +217,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(sparse_accessor<T,
+  void handle(ragged_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
@@ -261,22 +261,23 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
       privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.entries_entire_region);
     gh_rr2.add_field(h.fid);
     region_reqs.push_back(gh_rr2);
-  }
+  } // handle
 
   template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(ragged_accessor<T,
+  void handle(sparse_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
+    using base_t = typename sparse_accessor<
+            T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
+    handle(static_cast<base_t &>(a));
   } // handle
 
   template<typename T>
-  void handle(sparse_mutator<T> & m) {
+  void handle(ragged_mutator<T> & m) {
     auto & h = m.h_;
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
@@ -315,11 +316,12 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
       h.entries_ghost_lp, 0, READ_WRITE, EXCLUSIVE, h.entries_entire_region);
     gh_rr2.add_field(h.fid);
     region_reqs.push_back(gh_rr2);
-  }
+  } // handle
 
   template<typename T>
-  void handle(ragged_mutator<T> & m) {
-    handle(reinterpret_cast<sparse_mutator<T> &>(m));
+  void handle(sparse_mutator<T> & m) {
+    using base_t = typename sparse_mutator<T>::base_t;
+    handle(static_cast<base_t &>(m));
   }
 
   /*!
