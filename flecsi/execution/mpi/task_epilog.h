@@ -120,15 +120,17 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(sparse_accessor<T,
+  void handle(ragged_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    using offset_t = typename mutator_handle_u<T>::offset_t;
-    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
-    using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
+    using accessor_t = ragged_accessor<
+              T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+    using handle_t = typename accessor_t::handle_t;
+    using offset_t = typename handle_t::offset_t;
+    using value_t = T;
 
     // Skip Read Only handles
     if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
@@ -142,20 +144,20 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     auto & sparse_field_metadata =
       context.registered_sparse_field_metadata().at(h.fid);
 
-    entry_value_t * entries = h.entries;
+    value_t * entries = h.entries;
     auto offsets = &(h.offsets)[0];
     auto shared_data = entries + h.reserve;
     auto ghost_data = shared_data + h.num_shared_ * h.max_entries_per_index;
 
     // Get entry_values
     MPI_Datatype shared_ghost_type;
-    MPI_Type_contiguous(sizeof(entry_value_t), MPI_BYTE, &shared_ghost_type);
+    MPI_Type_contiguous(sizeof(value_t), MPI_BYTE, &shared_ghost_type);
     MPI_Type_commit(&shared_ghost_type);
 
     MPI_Win win;
     MPI_Win_create(shared_data,
-      sizeof(entry_value_t) * h.num_shared_ * h.max_entries_per_index,
-      sizeof(entry_value_t), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+      sizeof(value_t) * h.num_shared_ * h.max_entries_per_index,
+      sizeof(value_t), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
     MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
     MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
@@ -176,7 +178,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     MPI_Win_free(&win);
 
     for(int i = 0; i < h.num_ghost_ * h.max_entries_per_index; i++)
-      clog_rank(warn, 0) << "ghost after: " << ghost_data[i].value << std::endl;
+      clog_rank(warn, 0) << "ghost after: " << ghost_data[i] << std::endl;
 
     int send_count = 0;
     for(auto & shared : index_coloring.shared) {
@@ -224,13 +226,30 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     }
   } // handle
 
+  template<
+      typename T,
+      size_t EXCLUSIVE_PERMISSIONS,
+      size_t SHARED_PERMISSIONS,
+      size_t GHOST_PERMISSIONS>
+  void handle(sparse_accessor<
+              T,
+              EXCLUSIVE_PERMISSIONS,
+              SHARED_PERMISSIONS,
+              GHOST_PERMISSIONS> & a) {
+    using base_t = typename sparse_accessor<
+            T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
+    handle(static_cast<base_t &>(a));
+  } // handle
+
   template<typename T>
-  void handle(sparse_mutator<T> & m) {
+  void handle(ragged_mutator<T> & m) {
     auto & h = m.h_;
 
-    using offset_t = typename mutator_handle_u<T>::offset_t;
-    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
-    using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
+    using mutator_t = ragged_mutator_u<T>;
+    using handle_t = typename mutator_t::handle_t;
+    using offset_t = typename handle_t::offset_t;
+    using value_t = T;
+    using commit_info_t = typename handle_t::commit_info_t;
 
     clog_assert(*h.num_exclusive_insertions <= *h.reserve,
       "sparse exclusive reserve exceed");
@@ -238,8 +257,8 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     // this segfaults if we try to use a sparse mutator more than once
     // delete h.num_exclusive_insertions;
 
-    entry_value_t * entries =
-      reinterpret_cast<entry_value_t *>(&(*h.entries)[0]);
+    value_t * entries =
+      reinterpret_cast<value_t *>(&(*h.entries)[0]);
 
     commit_info_t ci;
     ci.offsets = &(*h.offsets)[0];
@@ -252,21 +271,10 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   } // handle
 
   template<typename T>
-  void handle(ragged_mutator<T> & m) {
-    handle(reinterpret_cast<sparse_mutator<T> &>(m));
+  void handle(sparse_mutator<T> & m) {
+    using base_t = typename sparse_mutator<T>::base_t;
+    handle(static_cast<base_t &>(m));
   }
-
-  template<typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-  void handle(ragged_accessor<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {
-    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
-  } // handle
 
   /*!
     This method is called on any task arguments that are not handles, e.g.
