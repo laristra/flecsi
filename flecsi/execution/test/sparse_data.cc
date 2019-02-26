@@ -66,6 +66,11 @@ mutate(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> sm) {
       for (size_t j = start; j < stop; j += 2) {
         sm(c, j) = rank * 10000 + gid * 100 + 50 + j;
       }
+      sm.erase(c, start - 4);
+      sm.erase(c, stop - 4);
+    }
+    else if (gid == 13) {
+      sm.erase(c, 9);
     }
     else if (parity) {
       sm(c, 6) = rank * 10000 + gid * 100 + 66;

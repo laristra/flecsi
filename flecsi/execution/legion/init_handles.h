@@ -526,7 +526,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(sparse_accessor<T,
+  void handle(ragged_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
@@ -534,7 +534,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     constexpr size_t num_regions = 3;
 
-    using entry_value_t = data::sparse_entry_value_u<T>;
+    using value_t = T;
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 
@@ -624,7 +624,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     region += num_regions;
 
     Legion::PhysicalRegion entries_prs[num_regions];
-    entry_value_t * entries_data[num_regions];
+    value_t * entries_data[num_regions];
     size_t entries_sizes[num_regions];
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
@@ -635,7 +635,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       auto ac = entries_prs[r]
                   .get_field_accessor(h.fid)
-                  .template typeify<entry_value_t>();
+                  .template typeify<value_t>();
 
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
 
@@ -649,13 +649,13 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     } // for
 
 #ifndef MAPPER_COMPACTION
-    entry_value_t * entries = new entry_value_t[h.entries_size];
+    value_t * entries = new value_t[h.entries_size];
 
     size_t pos = 0;
 
     for(size_t r{0}; r < num_regions; ++r) {
       std::memcpy(entries + pos, entries_data[r],
-        entries_sizes[r] * sizeof(entry_value_t));
+        entries_sizes[r] * sizeof(value_t));
       pos += entries_sizes[r];
     }
 
@@ -664,27 +664,28 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     h.entries = reinterpret_cast<entry_value_t *>(h.entries_data[0]);
 #endif
     region += num_regions;
-  }
+  } // handle
 
   template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(ragged_accessor<T,
+  void handle(sparse_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
+    using base_t = typename sparse_accessor<
+            T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
+    handle(static_cast<base_t &>(a));
   } // handle
 
   template<typename T>
-  void handle(sparse_mutator<T> & m) {
+  void handle(ragged_mutator<T> & m) {
     auto & h = m.h_;
 
     constexpr size_t num_regions = 3;
 
-    using entry_value_t = data::sparse_entry_value_u<T>;
+    using value_t = T;
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 
@@ -792,7 +793,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     region += num_regions;
 
     Legion::PhysicalRegion entries_prs[num_regions];
-    entry_value_t * entries_data[num_regions];
+    value_t * entries_data[num_regions];
     size_t entries_sizes[num_regions];
 
     // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
@@ -803,7 +804,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       auto ac = entries_prs[r]
                   .get_field_accessor(h.fid)
-                  .template typeify<entry_value_t>();
+                  .template typeify<value_t>();
 
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
 
@@ -817,16 +818,16 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     } // for
 
 #ifndef MAPPER_COMPACTION
-    entry_value_t * entries = new entry_value_t[h.entries_size];
+    value_t * entries = new value_t[h.entries_size];
 
     std::memcpy(entries, entries_data[0],
-      md->num_exclusive_filled * sizeof(entry_value_t));
+      md->num_exclusive_filled * sizeof(value_t));
 
     size_t pos = entries_sizes[0];
 
     for(size_t r{1}; r < num_regions; ++r) {
       std::memcpy(entries + pos, entries_data[r],
-        entries_sizes[r] * sizeof(entry_value_t));
+        entries_sizes[r] * sizeof(value_t));
       pos += entries_sizes[r];
     }
 
@@ -835,11 +836,15 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     h.entries = reinterpret_cast<uint8_t *>(h.entries_data[0]);
 #endif
     region += num_regions;
-  }
+
+    h.entries_ = entries;
+    h.offsets_ = h.offsets;
+  } // handle
 
   template<typename T>
-  void handle(ragged_mutator<T> & m) {
-    handle(reinterpret_cast<sparse_mutator<T> &>(m));
+  void handle(sparse_mutator<T> & m) {
+    using base_t = typename sparse_mutator<T>::base_t;
+    handle(static_cast<base_t &>(m));
   }
 
   Legion::Runtime * runtime;
