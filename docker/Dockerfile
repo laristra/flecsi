@@ -39,16 +39,15 @@ RUN cmake \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
 	  -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && \
                      echo OFF || echo ON) \
-          -DENABLE_UNIT_TESTS=ON \
-          -DENABLE_PARMETIS=ON \
-          -DENABLE_COLORING=ON \
+          -DENABLE_FLOG=ON \
           -DENABLE_DOXYGEN=ON \
-          -DENABLE_DOCUMENTATION=ON \
+          -DENABLE_SPHINX=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
 RUN make VERBOSE=1 -j2
 RUN ccache -s
 RUN make doxygen
+RUN make sphinx
 RUN if [ ${COVERAGE} ]; then \
       python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; \
       wget -O codecov.sh https://codecov.io/bash; \

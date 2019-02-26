@@ -30,11 +30,23 @@
 namespace flecsi {
 namespace control {
 
+/*!
+  The simulation_control_points_t type is part of the control
+  specialization for FleCSI's unit test fraemwork. It provides labels
+  for the available control points in a unit test.
+ */
+
 enum simulation_control_points_t : size_t {
   initialize,
   test,
   finalize
 }; // enum simulation_control_points_t
+
+/*!
+  The ftest_control_policy_t type defines the control policy for
+  the FleCSI unit test framework. It is a good example of a non-cycling
+  control flow that provides basic control points.
+ */
 
 struct ftest_control_policy_t {
 
