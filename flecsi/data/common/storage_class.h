@@ -17,7 +17,7 @@
   @file
 
   This file defines the base \em storage_class_u type that can be
-  specialized by specific storage class, and by data client type.
+  specialized by storage class, and by data client type.
 
   This file also defines the storage classes for the internal \em global
   and \em color client types.

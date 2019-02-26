@@ -17,7 +17,9 @@
   @file
 
   This file defines the base \em client_handler_u type that is customized
-  for each specific data client type using partial specialization.
+  for each specific data client type using explicit specialization. The
+  specialized types implement a get_handle interface that returns the
+  appropriate handle type for the given client.
  */
 
 #ifndef POLICY_NAMESPACE

@@ -30,20 +30,20 @@
 namespace flecsi {
 namespace control {
 
-enum simulation_phases_t : size_t {
+enum simulation_control_points_t : size_t {
   initialize,
   test,
   finalize
-}; // enum simulation_phases_t
+}; // enum simulation_control_points_t
 
 struct ftest_control_policy_t {
 
   using control_t = flecsi::control::control_u<ftest_control_policy_t>;
   using node_t = flecsi::utils::ftest::node_t;
 
-#define phase(name) flecsi::control::phase_<name>
+#define control_point(name) flecsi::control::control_point_<name>
 
-  using phases = std::tuple<phase(initialize), phase(test), phase(finalize)>;
+  using control_points = std::tuple<control_point(initialize), control_point(test), control_point(finalize)>;
 
 }; // struct ftest_control_policy_t
 
@@ -65,7 +65,7 @@ flecsi_register_control_options(control_t);
 #define ftest_register_initialize(action, ...)                                 \
   inline bool ftest_initialize_##action##_registered =                         \
     flecsi::control::control_t::instance()                                     \
-      .phase_map(flecsi::control::initialize,                                  \
+      .control_point_map(flecsi::control::initialize,                                  \
         EXPAND_AND_STRINGIFY(flecsi::control::initialize))                     \
       .initialize_node(                                                        \
         {flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(action)}.hash(),   \
@@ -74,7 +74,7 @@ flecsi_register_control_options(control_t);
 #define ftest_add_initialize_dependency(to, from)                              \
   inline bool ftest_registered_initialize_##to##from =                         \
     flecsi::control::control_t::instance()                                     \
-      .phase_map(flecsi::control::initialize)                                  \
+      .control_point_map(flecsi::control::initialize)                                  \
       .add_edge(                                                               \
         flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(),        \
         flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())
@@ -82,7 +82,7 @@ flecsi_register_control_options(control_t);
 #define ftest_register_test(action, ...)                                       \
   inline bool ftest_test_##action##_registered =                               \
     flecsi::control::control_t::instance()                                     \
-      .phase_map(                                                              \
+      .control_point_map(                                                              \
         flecsi::control::test, EXPAND_AND_STRINGIFY(flecsi::control::test))    \
       .initialize_node(                                                        \
         {flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(action)}.hash(),   \
@@ -91,7 +91,7 @@ flecsi_register_control_options(control_t);
 #define ftest_add_test_dependency(to, from)                                    \
   inline bool ftest_registered_test_##to##from =                               \
     flecsi::control::control_t::instance()                                     \
-      .phase_map(flecsi::control::test)                                        \
+      .control_point_map(flecsi::control::test)                                        \
       .add_edge(                                                               \
         flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(),        \
         flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())
@@ -99,7 +99,7 @@ flecsi_register_control_options(control_t);
 #define ftest_register_finalize(action, ...)                                   \
   inline bool ftest_finalize_##action##_registered =                           \
     flecsi::control::control_t::instance()                                     \
-      .phase_map(flecsi::control::finalize,                                    \
+      .control_point_map(flecsi::control::finalize,                                    \
         EXPAND_AND_STRINGIFY(flecsi::control::finalize))                       \
       .initialize_node(                                                        \
         {flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(action)}.hash(),   \
@@ -108,7 +108,7 @@ flecsi_register_control_options(control_t);
 #define ftest_add_finalize_dependency(to, from)                                \
   inline bool ftest_registered_finalize_##to##from =                           \
     flecsi::control::control_t::instance()                                     \
-      .phase_map(flecsi::control::finalize)                                    \
+      .control_point_map(flecsi::control::finalize)                                    \
       .add_edge(                                                               \
         flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(),        \
         flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())

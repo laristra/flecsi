@@ -21,7 +21,7 @@
  */
 
 #include <flecsi/data/mpi/client_handle_specializations.h>
-#include <flecsi/data/mpi/storage_class_specializations.h>
+#include <flecsi/data/mpi/storage_classes.h>
 
 namespace flecsi {
 namespace data {

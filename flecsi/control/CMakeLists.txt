@@ -15,7 +15,7 @@
 set(control_HEADERS
   control.h
   default_node.h
-  phase_walker.h
+  control_point_walker.h
 )
 
 set(control_SOURCES

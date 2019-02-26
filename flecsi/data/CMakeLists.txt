@@ -37,7 +37,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(data_HEADERS
     legion/client_handle_specializations.h
     legion/data_policy.h
-    legion/storage_class_specializations.h
+    legion/storage_classes.h
     ${data_HEADERS}
   )
 
@@ -50,7 +50,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(data_HEADERS
     mpi/client_handle_specializations.h
     mpi/data_policy.h
-    mpi/storage_class_specializations.h
+    mpi/storage_classes.h
     ${data_HEADERS}
   )
 

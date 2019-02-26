@@ -21,7 +21,7 @@
  */
 
 #include <flecsi/data/legion/client_handle_specializations.h>
-#include <flecsi/data/legion/storage_class_specializations.h>
+#include <flecsi/data/legion/storage_classes.h>
 
 namespace flecsi {
 namespace data {
