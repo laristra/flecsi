@@ -20,6 +20,7 @@
 set(geometry_HEADERS
   point.h
   space_vector.h
+  filling_curve.h
 )
 
 #------------------------------------------------------------------------------#
@@ -79,4 +80,8 @@ cinch_add_unit(point
 
 cinch_add_unit(space_vector
   SOURCES test/space_vector.cc
+)
+
+cinch_add_unit(filling_curve
+  SOURCES test/filling_curve.cc
 )
