@@ -5,6 +5,11 @@ sudo: required
 services:
 - docker
 
+stages:
+  - canary
+  - test
+  - deploy
+
 env:
   matrix:
     - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
@@ -59,6 +64,13 @@ matrix:
     - compiler: clang
       env: DISTRO=fedora RUNTIME=hpx    COVERAGE=ON
 
+jobs:
+    include:
+        - stage: canary
+          env: DISTRO=ubuntu RUNTIME=legion
+        - stage: deploy
+          env: DISTRO=ubuntu RUNTIME=legion
+
 before_install:
  - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
  - git fetch --unshallow && git fetch --tags #for versioning
@@ -90,7 +102,8 @@ script:
     docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
 
 after_success:
-  - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable) && ${DOCKERHUB} = true ]] && DEPLOY=yes
+  - test "${TRAVIS_BUILD_STAGE_NAME}" != "Deploy" || travis_terminate 0
+  - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable) ]] && DEPLOY=yes
   - if [[ ${DEPLOY} = yes && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false ]]; then
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}";
