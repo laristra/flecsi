@@ -69,6 +69,7 @@ jobs:
         - stage: canary
           env: DISTRO=ubuntu RUNTIME=legion
         - stage: deploy
+          if: type != pull_request
           env: DISTRO=ubuntu RUNTIME=legion
 
 before_install:
