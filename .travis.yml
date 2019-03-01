@@ -12,25 +12,25 @@ stages:
 
 env:
   matrix:
-    - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
-    - DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true WERROR=yes
-    - DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true
+    - DISTRO=ubuntu RUNTIME=legion
+    - DISTRO=ubuntu RUNTIME=mpi WERROR=yes
+    - DISTRO=ubuntu_mpich RUNTIME=legion
     - DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes
-    - DISTRO=ubuntu_mpich RUNTIME=mpi DOCKERHUB=true
+    - DISTRO=ubuntu_mpich RUNTIME=mpi
     - DISTRO=ubuntu_mpich RUNTIME=mpi WERROR=yes
 
-    - DISTRO=fedora RUNTIME=legion    DOCKERHUB=true
+    - DISTRO=fedora RUNTIME=legion
     - DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
     - DISTRO=fedora RUNTIME=legion    WERROR=yes
-    - DISTRO=fedora RUNTIME=mpi    DOCKERHUB=true
+    - DISTRO=fedora RUNTIME=mpi
     - DISTRO=fedora RUNTIME=mpi    IGNORE_NOCI=true
     - DISTRO=fedora RUNTIME=mpi    WERROR=yes
-#    - DISTRO=fedora RUNTIME=hpx    DOCKERHUB=true
+#    - DISTRO=fedora RUNTIME=hpx
 #    - DISTRO=fedora RUNTIME=hpx    WERROR=yes
-    - DISTRO=fedora_mpich RUNTIME=legion DOCKERHUB=true
+    - DISTRO=fedora_mpich RUNTIME=legion
     - DISTRO=fedora_mpich RUNTIME=legion IGNORE_NOCI=true
     - DISTRO=fedora_mpich RUNTIME=legion WERROR=yes
-    - DISTRO=fedora_mpich RUNTIME=mpi DOCKERHUB=true
+    - DISTRO=fedora_mpich RUNTIME=mpi
     - DISTRO=fedora_mpich RUNTIME=mpi IGNORE_NOCI=true
     - DISTRO=fedora_mpich RUNTIME=mpi WERROR=yes
 #    - DISTRO=fedora RUNTIME=legion COVERAGE=ON
@@ -40,7 +40,7 @@ env:
 matrix:
   allow_failures:
     - compiler: clang
-      env: DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true WERROR=yes 
+      env: DISTRO=ubuntu RUNTIME=mpi WERROR=yes 
     - compiler: clang
       env: DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes 
     - compiler: gcc
@@ -56,7 +56,7 @@ matrix:
     - compiler: clang
       env: DISTRO=fedora RUNTIME=mpi WERROR=yes
     - compiler: clang
-      env: DISTRO=fedora RUNTIME=hpx    DOCKERHUB=true
+      env: DISTRO=fedora RUNTIME=hpx
     - compiler: clang
       env: DISTRO=fedora RUNTIME=hpx    IGNORE_NOCI=true
     - compiler: clang
