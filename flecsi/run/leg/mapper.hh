@@ -137,6 +137,30 @@ public:
   }
 
   /*!
+   Specialization of the default_policy_select_instance_region methid for FleCSI
+
+   @param ctx Mapper Context
+   @param target_memory target memory for the instance to be allocated
+   @param req Reqion requirement for witch instance is going to be allocated
+   @layout_constraints Layout constraints
+  */
+  virtual Legion::LogicalRegion default_policy_select_instance_region(
+    Legion::Mapping::MapperContext,
+    Realm::Memory,
+    const Legion::RegionRequirement & req,
+    const Legion::LayoutConstraintSet &,
+    bool /* force_new_instances */,
+    bool meets_constraints) {
+    // If it is not something we are making a big region for just
+    // return the region that is actually needed
+    Legion::LogicalRegion result = req.region;
+    if(!meets_constraints || (req.privilege == REDUCE))
+      return result;
+
+    return result;
+  } // default_policy_select_instance_region
+
+  /*!
    Specialization of the map_task funtion for FLeCSI
    By default, map_task will execute Legions map_task from DefaultMapper.
    In the case the launcher has been tagged with the
