@@ -661,7 +661,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     h.entries = entries;
 #else
-    h.entries = reinterpret_cast<entry_value_t *>(h.entries_data[0]);
+    h.entries = reinterpret_cast<value_t *>(h.entries_data[0]);
 #endif
     region += num_regions;
   } // handle
@@ -832,12 +832,13 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     }
 
     h.entries = reinterpret_cast<uint8_t *>(entries);
+    h.entries_ = entries;
 #else
     h.entries = reinterpret_cast<uint8_t *>(h.entries_data[0]);
+    h.entries_ = reinterpret_cast<value_t *>(h.entries_data[0]);
 #endif
     region += num_regions;
 
-    h.entries_ = entries;
     h.offsets_ = h.offsets;
   } // handle
 
