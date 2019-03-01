@@ -104,7 +104,7 @@ ftest_add_unit(color
   SOURCES
     test/color.cc
   THREADS
-    4
+    4 # Warning: This number is hard-coded into the the test.
 )
 
 ftest_add_unit(global-object
