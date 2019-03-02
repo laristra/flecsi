@@ -29,8 +29,9 @@ jobs:
         matrix:
           - DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
           - DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
-          allow_failures:
-            - DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+      matrix:
+        allow_failures:
+          - DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
     - stage: deploy
       if: type != pull_request
       env:
@@ -44,8 +45,9 @@ jobs:
           - DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
           - DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
           - DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
-          allow_failures:
-            - DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+      matrix:
+        allow_failures:
+          - DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
 
 before_install:
   - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
