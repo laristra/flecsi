@@ -62,8 +62,7 @@ before_script:
     #- git submodule init
     #- git config submodule.cinch.url https://github.com/laristra/cinch.git
     #- git submodule update --init --recursive
-    - mkdir ${CI_PROJECT_DIR}/ccache
-    - mkdir ${CI_PROJECT_DIR}/build
+    - mkdir-p ${CI_PROJECT_DIR}/build
     - cd build
     - ccache -z
     - | 
@@ -81,7 +80,7 @@ before_script:
     - make -k VERBOSE=1 -j2 -l80
     - ccache -s
     - make doxygen
-    - mkdir ${CI_PROJECT_DIR}/install
+    - mkdir-p ${CI_PROJECT_DIR}/install
     - make install DESTDIR=${CI_PROJECT_DIR}/install 
     - sudo make install 
 
@@ -589,6 +588,7 @@ test:fedora_hpx.ignoreNoCI:
     - .build
   script:
     - cd ${CI_PROJECT_DIR}/build/
+    - clang-format -version
     - make format-FleCSI && git diff --exit-code
 
 ###############
