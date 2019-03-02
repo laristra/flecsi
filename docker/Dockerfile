@@ -2,6 +2,7 @@ FROM laristra/flecsi-third-party:fedora
 
 ARG MINIMAL
 ARG LEGION
+ARG BUILD_TYPE
 ARG RUNTIME
 ARG COVERAGE
 ARG CC
@@ -33,7 +34,7 @@ RUN mkdir build
 
 WORKDIR build
 RUN ccache -z
-RUN cmake \
+RUN cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DENABLE_LEGION=$LEGION \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
