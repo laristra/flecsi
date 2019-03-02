@@ -38,7 +38,7 @@ void color_raw(int argc, char ** argv) {
       "colors(raw): " << colors << std::endl;
   }
   
-  ASSERT_EQ(colors,4);
+  ASSERT_EQ(colors, 4);
   ASSERT_LT(color, colors);
 }
 
