@@ -62,7 +62,7 @@ before_script:
     #- git submodule init
     #- git config submodule.cinch.url https://github.com/laristra/cinch.git
     #- git submodule update --init --recursive
-    - mkdir-p ${CI_PROJECT_DIR}/build
+    - mkdir -p ${CI_PROJECT_DIR}/build
     - cd build
     - ccache -z
     - | 
@@ -80,7 +80,7 @@ before_script:
     - make -k VERBOSE=1 -j2 -l80
     - ccache -s
     - make doxygen
-    - mkdir-p ${CI_PROJECT_DIR}/install
+    - mkdir -p ${CI_PROJECT_DIR}/install
     - make install DESTDIR=${CI_PROJECT_DIR}/install 
     - sudo make install 
 
