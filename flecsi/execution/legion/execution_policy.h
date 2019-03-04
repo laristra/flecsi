@@ -93,6 +93,27 @@ struct legion_execution_policy_t {
     return true;
   } // register_legion_task
 
+  /*
+    Documentation for this interface is in the top-level context type.
+   */
+
+  template<size_t TASK,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*DELEGATE)(ARG_TUPLE)>
+  static bool
+  register_task(processor_type_t processor, launch_t launch, std::string name) {
+
+    using wrapper_t = task_wrapper_u<TASK, RETURN, ARG_TUPLE, DELEGATE>;
+
+    const bool success = context_t::instance().register_task(
+      TASK, processor, launch, name, wrapper_t::registration_callback);
+
+    flog_assert(success, "callback registration failed for " << name);
+
+    return true;
+  } // register_task
+
   //------------------------------------------------------------------------//
   // Reduction interface.
   //------------------------------------------------------------------------//
