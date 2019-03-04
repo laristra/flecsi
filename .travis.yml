@@ -18,7 +18,7 @@ compiler:
 stages:
   - canary
   - coverage
-  - deploy
+  - test
 
 jobs:
   include:
@@ -29,23 +29,25 @@ jobs:
     - stage: coverage
       env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
     - stage: coverage
-      allow_failures: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
-    - stage: deploy
+      env: 
+        allow_failures: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+    - stage: test
       if: type != pull_request
-      env:
-        matrix:
-          - DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
-          - DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
-          - DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
-          - DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
 
-          - DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
-          - DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
-          - DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
-          - DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
-      matrix:
-        allow_failures:
-          - DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+env:
+  matrix:
+    - DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
+    - DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
+
+    - DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
+    - DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
+matrix:
+  allow_failures:
+    - DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
 
 before_install:
   - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
