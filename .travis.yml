@@ -15,7 +15,7 @@ stages:
   - name: canary
   - name: coverage
   - name: test
-    #if: type != pull_request
+    if: type != pull_request
 
 jobs:
   include:
@@ -56,13 +56,11 @@ env:
 
 matrix:
   allow_failures:
-    - stage: coverage
-      env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+    - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
       compiler: gcc
     - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
       compiler: clang
-    - stage: test
-      env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+    - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
       compiler: gcc
     - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
       compiler: clang
