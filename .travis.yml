@@ -23,9 +23,10 @@ jobs:
       env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
 
     - stage: coverage
-      compiler:
-        - gcc
-        - clang
+      compiler: gcc
+      env: DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
+    - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
+    - compiler: clang
       env: DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
     - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
 
