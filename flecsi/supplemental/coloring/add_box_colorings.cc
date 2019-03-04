@@ -50,7 +50,7 @@ void add_box_colorings(coloring_map_t map) {
   size_t thru_dim = 0; 
 
   flecsi::coloring::box_coloring_t colored_cells;
-  flecsi::coloring::coloring_info_t colored_cells_aggregate;
+  flecsi::coloring::box_aggregate_info_t colored_cells_aggregate;
 
   // Create a colorer instance to generate the coloring.
   auto colorer = std::make_shared<flecsi::coloring::simple_box_colorer_t<2>>();
@@ -60,16 +60,25 @@ void add_box_colorings(coloring_map_t map) {
                                  ncolors);
 
   //Create the aggregate type for cells
-  colored_cells_aggregate = colorer->create_aggregate_color_info(colored_cells);
-
-   // Create a communicator instance to get coloring_info_t from other ranks 
-  auto communicator = std::make_shared<flecsi::coloring::mpi_communicator_t>();
-
-  // Gather the coloring info from all colors
-  auto cell_coloring_info = communicator->gather_coloring_info(colored_cells_aggregate);
+  colored_cells_aggregate = colorer->create_aggregate_info(colored_cells);
 
   //Add box coloring to context
-  context_.add_box_coloring(map.cells, colored_cells, cell_coloring_info);
+  context_.add_box_coloring(map.cells, colored_cells, colored_cells_aggregate);
+
+  //Obtain the coloring info for entities of dimension d = 0 to D-1 
+  auto colored_ents = colorer->color_dependent_entities(colored_cells);
+  
+  //Create the aggregate type for vertices
+  auto colored_verts_aggregate = colorer->create_aggregate_info(colored_ents[0]);
+
+  //Add box coloring for vertices to context
+  context_.add_box_coloring(map.vertices, colored_ents[0], colored_verts_aggregate);
+
+  //Create the aggregate type for edges
+  auto colored_edges_aggregate = colorer->create_aggregate_info(colored_ents[1]);
+
+  //Add box coloring for edges to context
+  context_.add_box_coloring(map.edges, colored_ents[1], colored_edges_aggregate);
 
 } // add_box_colorings
 

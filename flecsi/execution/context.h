@@ -52,6 +52,7 @@ template<class CONTEXT_POLICY>
 struct context__ : public CONTEXT_POLICY {
   using box_t = flecsi::coloring::box_t;
   using box_coloring_t = flecsi::coloring::box_coloring_t;
+  using box_aggregate_info_t = flecsi::coloring::box_aggregate_info_t;
   using index_coloring_t = flecsi::coloring::index_coloring_t;
   using coloring_info_t = flecsi::coloring::coloring_info_t;
   using set_coloring_info_t = flecsi::coloring::set_coloring_info_t;
@@ -625,40 +626,36 @@ struct context__ : public CONTEXT_POLICY {
   } // colorings
 
   //--------------------------------------------------------------------------//
-  // Box color interface and other maps
+  // Block start: Adding/Querying Maps for Box-based coloring for structured topologies
   //--------------------------------------------------------------------------//
   void add_box_coloring(
       size_t index_space,
       box_coloring_t & coloring,
-      std::unordered_map<size_t, coloring_info_t> & coloring_info) {
+      box_aggregate_info_t & aggregate_info) { 
     clog_assert(
         box_colorings_.find(index_space) == box_colorings_.end(),
         "color index already exists");
 
     box_colorings_[index_space] = coloring;
-    box_coloring_info_[index_space] = coloring_info;
+    box_aggregate_info_[index_space] = aggregate_info;
   } // add_box_coloring
 
-   box_coloring_t & box_coloring(size_t index_space) {
+  box_coloring_t & box_coloring(size_t index_space) {
     auto it = box_colorings_.find(index_space);
-   /* if (it == box_colorings_.end()) {
-      clog(fatal) << "invalid index_space " << index_space << std::endl;
-    } // if
-   */
+    clog_assert(it != box_colorings_.end(), "invalid index space: "<< index_space);
+
     return it->second;
   } // box_coloring
 
-  const std::unordered_map<size_t, coloring_info_t> &
-  box_coloring_info(size_t index_space) {
-    auto it = box_coloring_info_.find(index_space);
-   /* if (it == box_coloring_info_.end()) {
-      clog(fatal) << "invalid index space " << index_space << std::endl;
-    } // if
-   */
-    return it->second;
-  } // box_coloring_info
-  
+  const box_aggregate_info_t &
+  box_aggregate_info(size_t index_space) {
+    auto it = box_aggregate_info_.find(index_space);
+    clog_assert(it != box_aggregate_info_.end(), "invalid index space: "<< index_space);
 
+    return it->second;
+  } // box_aggregate_info
+  
+/*
   const std::map<size_t, box_coloring_t> & box_coloring_map() const {
     return box_colorings_;
   } // box_colorings
@@ -669,7 +666,7 @@ struct context__ : public CONTEXT_POLICY {
     return box_coloring_info_;
   } // box_colorings
 
-  /*
+  
   void add_box_map(size_t index_space, std::map<size_t, box_t> & box_map) {
     box_map_[index_space] = box_map;
 
@@ -722,6 +719,10 @@ struct context__ : public CONTEXT_POLICY {
     return it->second;
   } // reverse_box_map
   */
+
+  //--------------------------------------------------------------------------//
+  // Block end: Adding/Querying Maps for Box-based coloring for structured topologies
+  //--------------------------------------------------------------------------//
 
   /*!
     Add an adjacency/connectivity from one index space to another.
@@ -1095,13 +1096,10 @@ private:
   std::map<size_t, set_index_space_info_t> set_index_space_map_;
 
   //--------------------------------------------------------------------------//
-  // structured mesh maps
+  // Maps for Box-based coloring for structured topologies
   //--------------------------------------------------------------------------//
   std::map<size_t, box_coloring_t> box_colorings_;
-  std::map<size_t, std::unordered_map<size_t, coloring_info_t>> box_coloring_info_;
-  //std::map<size_t, std::map<size_t, box_t>> box_map_;
-  //std::map<size_t, std::map<box_t, size_t>> reverse_box_map_;//The inner map should 
-  //be unordered map
+  std::map<size_t, box_aggregate_info_t> box_aggregate_info_;
   
   //--------------------------------------------------------------------------//
   // Execution state

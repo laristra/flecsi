@@ -417,12 +417,12 @@ namespace execution {
         //auto& box_info = (context_.box_coloring(index_space)).at(color);
         
         auto& box_info = context_.box_coloring(index_space);
-        std::vector<std::vector<size_t>> strides(box_info.num_boxes);
-        for (size_t n = 0; n < box_info.num_boxes; n++)
-            strides[n] = box_info.partition[n].strides;
+       // std::vector<std::vector<size_t>> strides(box_info.num_boxes);
+      //  for (size_t n = 0; n < box_info.num_boxes; n++)
+      //      strides[n] = box_info.partition[n].strides;
 
         storage->init(domain, dim, box_info.primary, box_info.primary_dim, box_info.num_boxes,
-                     box_info.overlay, strides);   
+                     box_info.overlay, box_info.strides);   
        }
       }
       // h.initialize_storage();

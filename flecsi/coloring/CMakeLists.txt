@@ -126,13 +126,13 @@ cinch_add_devel_target(devel-dcrs
   THREADS 5
 )
 
-cinch_add_unit(boxcolor1d
-  SOURCES test/test_simple_box_colorer_1d.cc
-  INPUTS
-  LIBRARIES ${COLORING_LIBRARIES}
-  POLICY MPI
-  THREADS 3
-)
+#cinch_add_unit(boxcolor1d
+#  SOURCES test/test_simple_box_colorer_1d.cc
+#  INPUTS
+#  LIBRARIES ${COLORING_LIBRARIES}
+#  POLICY MPI
+#  THREADS 3
+#)
 cinch_add_unit(boxcolor2d
   SOURCES test/test_simple_box_colorer_2d.cc
   INPUTS
@@ -140,13 +140,13 @@ cinch_add_unit(boxcolor2d
   POLICY MPI
   THREADS 4
 )
-cinch_add_unit(boxcolor3d
-  SOURCES test/test_simple_box_colorer_3d.cc
-  INPUTS
-  LIBRARIES ${COLORING_LIBRARIES}
-  POLICY MPI
-  THREADS 4
-)
+#cinch_add_unit(boxcolor3d
+#  SOURCES test/test_simple_box_colorer_3d.cc
+#  INPUTS
+#  LIBRARIES ${COLORING_LIBRARIES}
+#  POLICY MPI
+#  THREADS 4
+#)
 # Both of these tests depend on ParMETIS.
 # This could change if we add more colorer types.
 if(ENABLE_PARMETIS)

@@ -8,6 +8,8 @@
 #include <flecsi/topology/structured_mesh_topology.h>
 #include <flecsi/topology/mesh_storage.h>
 
+clog_register_tag(coloring);
+
 using namespace std;
 
 namespace flecsi {
@@ -65,7 +67,7 @@ void task_tlt_init() {
   size_t thru_dim = 0;
 
   coloring::box_coloring_t colored_cells;
-  flecsi::coloring::coloring_info_t colored_cells_aggregate;
+  coloring::box_aggregate_info_t colored_cells_aggregate;
 
   // Create a colorer instance to generate the coloring.
   auto colorer = std::make_shared<flecsi::coloring::simple_box_colorer_t<2>>();
@@ -73,17 +75,11 @@ void task_tlt_init() {
   //Create the coloring info for cells
   colored_cells = colorer->color(grid_size, nhalo, nhalo_domain, thru_dim, ncolors);
 
-  //Create the aggregate type for cells
-  colored_cells_aggregate = colorer->create_aggregate_color_info(colored_cells);
-
- // Create a communicator instance to get coloring_info_t from other ranks
-  auto communicator = std::make_shared<flecsi::coloring::mpi_communicator_t>();
-
-  // Gather the coloring info from all colors
-  auto cell_coloring_info = communicator->gather_coloring_info(colored_cells_aggregate);
+ //Create the aggregate type for cells
+  colored_cells_aggregate = colorer->create_aggregate_info(colored_cells);
 
   //Add box coloring to context
-  context_.add_box_coloring(2, colored_cells, cell_coloring_info);
+  context_.add_box_coloring(2, colored_cells, colored_cells_aggregate);
 
 }
 

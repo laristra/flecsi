@@ -21,6 +21,8 @@ namespace supplemental {
 struct coloring_map_t
 {
   size_t cells;
+  size_t edges;
+  size_t vertices;
 }; // struct coloring_map_t
 
 void add_box_colorings(coloring_map_t map);

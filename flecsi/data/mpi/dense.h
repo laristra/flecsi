@@ -218,8 +218,7 @@ struct storage_class__<dense>
 	utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
 
       // get color_info for this field.
-      auto& color_info =
-	(context.coloring_info(field_info.index_space)).at(context.color());
+      auto& aggregate_info = context.box_aggregate_info(field_info.index_space);
       auto &box_coloring = context.box_coloring(field_info.index_space);
 
       auto& registered_field_data = context.registered_field_data();
@@ -236,7 +235,7 @@ struct storage_class__<dense>
 	context.register_field_data(field_info.fid,
 				    size);
 	context.register_field_metadata_stopo<DATA_TYPE>(field_info.fid,
-						   color_info,
+			 			   aggregate_info,
 						   box_coloring);
       }
 
@@ -248,20 +247,20 @@ struct storage_class__<dense>
       hb.index_space = field_info.index_space;
       hb.data_client_hash = field_info.data_client_hash;
 
-      hb.exclusive_size = color_info.exclusive;
+      hb.exclusive_size = aggregate_info.exclusive;
       hb.combined_data = hb.exclusive_buf = hb.exclusive_data =
 	reinterpret_cast<DATA_TYPE *>(data);
-      hb.combined_size = color_info.exclusive;
+      hb.combined_size = aggregate_info.exclusive;
 
-      hb.shared_size = color_info.shared;
+      hb.shared_size = aggregate_info.shared;
       hb.shared_data = hb.shared_buf = reinterpret_cast<DATA_TYPE *>(data);
       //hb.shared_data = hb.shared_buf = hb.exclusive_data + hb.exclusive_size;
-      hb.combined_size += color_info.shared;
+      hb.combined_size += aggregate_info.shared;
 
-      hb.ghost_size = color_info.ghost;
+      hb.ghost_size = aggregate_info.ghost;
       hb.ghost_data = hb.ghost_buf = reinterpret_cast<DATA_TYPE *>(data);
       //hb.ghost_data = hb.ghost_buf = hb.shared_data + hb.shared_size;
-      hb.combined_size += color_info.ghost;
+      hb.combined_size += aggregate_info.ghost;
 
       return h;
     }

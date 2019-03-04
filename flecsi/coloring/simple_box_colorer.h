@@ -40,7 +40,9 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
   //! Destructor
   ~simple_box_colorer_t() {}
 
-  // Coloring algo
+  // Simple partitioning algorithm for structured meshes. Partitions the highest
+  // dimensional entities in the  mesh into as many blocks as number of input 
+  // ranks.
   box_coloring_t color(
       size_t grid_size[D],
       size_t nhalo,
@@ -101,11 +103,12 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     colbox_cells.resize(); 
 
     colbox_cells.partition[0].box = pbox;
-    colbox_cells.partition[0].strides = strides;
     colbox_cells.partition[0].nhalo = nhalo;
     colbox_cells.partition[0].nhalo_domain = nhalo_domain;
     colbox_cells.partition[0].thru_dim = thru_dim;
     
+    colbox_cells.strides.push_back(strides);
+
     //Set the onbnd vector to false 
     for(size_t i = 0; i < 2*D; ++i)
      colbox_cells.partition[0].onbnd.push_back(false);
@@ -132,10 +135,26 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     return colbox_cells;
   } // color
 
-  
-  coloring_info_t create_aggregate_color_info(box_coloring_t &cbox)
+  // Coloring algorithm for coloring the intermediate entities
+  // from an input partition of the cells in the mesh 
+  auto color_dependent_entities(box_coloring_t &colored_cells)
   {
-    coloring_info_t colinfo; 
+     std::vector<box_coloring_t> colored_depents; 
+     
+     //Reorder ghost and shared boxes for colored cells
+     reorder_boxes(colored_cells); 
+
+     //Now color the intermediate entities
+     color_dependent_entities_(colored_cells, colored_depents); 
+  
+     return colored_depents; 
+  } //color_intermediate_entities
+
+
+  // Compute the aggregate information from a colored box. 
+  box_aggregate_info_t create_aggregate_info(box_coloring_t &cbox)
+  {
+    box_aggregate_info_t colinfo; 
  
     //#exclusive entities
     colinfo.exclusive = cbox.exclusive[0].box.size();
@@ -164,6 +183,9 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
 
    return colinfo;  
   }//create_aggregate_color_info 
+
+  
+
 
 private:
   auto create_primary_box(box_t & domain, size_t ncolors[D], size_t idx[D]) {
@@ -931,6 +953,291 @@ private:
       rem -= value * factor;
     }
   } // get_indices
+
+ /*******************************************************
+ *      Methods for coloring intermediate entities
+ ********************************************************/
+ 
+  void reorder_boxes(box_coloring_t& colcells)
+  { 
+    // Put the shared boxes in a predefined order 
+    size_t count = pow(3,D)-1; 
+    std::vector<box_color_t> reordered_shared(count);
+    std::cout<<"count = "<<count<<std::endl;
+    std::cout<<"reordered_shared.size = "<<reordered_shared.size()<<std::endl;
+    for (int i = 0; i < colcells.shared[0].size(); i++)
+    {
+      size_t id = find_box_neighbor_id(colcells.exclusive[0].box, 
+                  colcells.shared[0][i].box); 
+      std::cout<<"id = "<<id<<std::endl;
+      reordered_shared[id] = colcells.shared[0][i];
+    }
+    colcells.shared[0] = reordered_shared; 
+
+
+    // Put the ghost boxes in a predefined order 
+    std::vector<box_color_t> reordered_ghost; 
+    reordered_ghost.resize(count);  
+    for (int i = 0; i < colcells.ghost[0].size(); i++)
+    {
+      size_t id = find_box_neighbor_id(colcells.partition[0].box, 
+                  colcells.ghost[0][i].box); 
+      std::cout<<"id = "<<id<<std::endl;
+      reordered_ghost[id] = colcells.ghost[0][i];
+    }
+    colcells.ghost[0] = reordered_ghost; 
+   
+  } //reorder_boxes
+
+  size_t find_box_neighbor_id(box_t& center, box_t& neighbor)
+  {
+    size_t id; 
+    if (D==2) {
+
+      if ((neighbor.upperbnd[0]+1 == center.lowerbnd[0]) &&
+          (neighbor.upperbnd[1]+1 == center.lowerbnd[1]))
+         id = 0;
+      else if ((neighbor.upperbnd[1]+1 == center.lowerbnd[1]) &&
+               (neighbor.lowerbnd[0] == center.lowerbnd[0]) &&
+               (neighbor.upperbnd[0] == center.upperbnd[0]))  
+         id = 1; 
+      else if ((neighbor.upperbnd[1]+1 == center.lowerbnd[1]) &&
+               (neighbor.lowerbnd[0]-1 == center.upperbnd[0]))
+         id = 2; 
+      else if ((neighbor.upperbnd[0]+1 == center.lowerbnd[0]) &&
+               (neighbor.lowerbnd[1] == center.lowerbnd[1]) &&
+               (neighbor.upperbnd[1] == center.upperbnd[1]))  
+         id = 3; 
+      else if ((neighbor.lowerbnd[0]-1 == center.upperbnd[0]) &&
+               (neighbor.lowerbnd[1] == center.lowerbnd[1]) &&
+               (neighbor.upperbnd[1] == center.upperbnd[1]))  
+         id = 4; 
+      else if ((neighbor.upperbnd[0]+1 == center.lowerbnd[0]) &&
+               (neighbor.lowerbnd[1]-1 == center.upperbnd[1]))
+         id = 5; 
+      else if ((neighbor.lowerbnd[1]-1 == center.upperbnd[1]) &&
+               (neighbor.lowerbnd[0] == center.lowerbnd[0]) &&
+               (neighbor.upperbnd[0] == center.upperbnd[0]))  
+         id = 6; 
+      else if ((neighbor.lowerbnd[0]-1 == center.upperbnd[0]) &&
+               (neighbor.lowerbnd[1]-1 == center.upperbnd[1]))
+         id = 7; 
+     }
+
+   return id; 
+
+  } //find_box_neighbor_id 
+
+  void color_dependent_entities_(
+       box_coloring_t& col_cells, 
+       std::vector<box_coloring_t>& col_depents)
+  {
+     if (D==2){  
+       //Resize input vector
+        col_depents.resize(2); 
+    
+       //Define info needed for setting the correct bounds
+       //for the overlays 
+       std::vector<int> bnds_info[2] = {{1,1,1},{2,1,0,0,1}};
+ 
+       for (size_t d = 0; d < D; d++)
+       {
+         box_coloring_t col_ents; 
+
+        //Set primary info and resize vectors  
+        col_ents.primary = false; 
+        col_ents.primary_dim = D; 
+        col_ents.num_boxes = bnds_info[d][0];
+        col_ents.resize(D); 
+
+        size_t num_boxes = col_ents.num_boxes; 
+        //Compute the overlay bounds 
+        for (size_t k = 0; k < num_boxes; k++)
+        {
+          box_t overlay = col_cells.overlay[0]; 
+          for (size_t j = 0; j < D; j++)
+          overlay.upperbnd[j] += bnds_info[d][num_boxes*k+j+1]; 
+          col_ents.overlay[k] = overlay;  
+        }        
+   
+        //Compute the strides 
+        for (size_t k = 0; k < num_boxes; k++)
+        {
+          std::vector<size_t> strides = col_cells.strides[0]; 
+          for (size_t j = 0; j < D; j++)
+          strides[j] += bnds_info[d][num_boxes*k+j+1]; 
+          col_ents.strides[k] = strides;  
+        }        
+
+         //Compute the ghost boxes for entities of dimension d
+         for (size_t i = 0; i < 3^D-1; i++)
+         {
+          if (!col_cells.ghost[0][i].box.isempty())
+          { 
+              size_t current_rank = col_cells.ghost[0][i].colors[0]; 
+
+              //Compute the bounding boxes for the entities of dimension d from the
+              //ghost box of cell.
+             box_color_t ghost_boxes[num_boxes]; 
+
+             for (size_t k = 0; k <num_boxes; k++)
+             {
+               for (size_t j = 0; j < D; j++)
+              {
+                ghost_boxes[k].box.lowerbnd[j] = col_cells.ghost[0][i].box.lowerbnd[j]; 
+                ghost_boxes[k].box.upperbnd[j] = col_cells.ghost[0][i].box.upperbnd[j]
+                                             + bnds_info[d][num_boxes*k+j+1]; 
+              }
+          
+              //Loop over each direction
+              for (size_t j = 0; j < D; j++)
+              {
+                //Check the ghost neighbors along each side 
+                int opp_box_id_left = ghost2ghost_2d[i][2*j]; 
+                if ((opp_box_id_left != -1) && (!col_cells.ghost[0][opp_box_id_left].box.isempty()))
+                {
+                  size_t opp_rank = col_cells.ghost[0][opp_box_id_left].colors[0];
+                  if (opp_rank < current_rank)
+                    ghost_boxes[k].box.lowerbnd[j] += 1; 
+                } 
+
+                int opp_box_id_right = ghost2ghost_2d[i][2*j+1];
+                if ((opp_box_id_right != -1) && (!col_cells.ghost[0][opp_box_id_right].box.isempty()))
+                {
+                  size_t opp_rank = col_cells.ghost[0][opp_box_id_left].colors[0];
+                  if (opp_rank < current_rank)
+                    ghost_boxes[k].box.upperbnd[j] -= 1; 
+                }
+ 
+                //Check the shared neighbors along each side
+                int onpart_left = ghost2partition_2d[i][2*j]; 
+                if (onpart_left)
+                {
+                    size_t opp_rank = col_cells.exclusive[0].colors[0];
+                    if (opp_rank < current_rank)
+                      ghost_boxes[k].box.lowerbnd[j] += 1; 
+                }
+ 
+                int onpart_right = ghost2partition_2d[i][2*j+1]; 
+                if (onpart_right)
+                {
+                    size_t opp_rank = col_cells.exclusive[0].colors[0];
+                    if (opp_rank < current_rank)
+                      ghost_boxes[k].box.lowerbnd[j] -= 1; 
+                } 
+              }
+   
+              //Add ghost rank to the ghost boxes 
+              ghost_boxes[k].colors.push_back(current_rank); 
+              col_ents.ghost[k][i] = ghost_boxes[k];            
+            } // end loop over each sub-box 
+          }  
+         } // end loop over ghost boxes 
+ 
+       
+         //Compute the shared boxes for entities of dimension d
+         for (size_t i = 0; i < 3^D-1; i++)
+         {
+          if (!col_cells.shared[0][i].box.isempty())
+          { 
+             size_t current_rank = col_cells.exclusive[0].colors[0]; 
+             std::vector<size_t> shared_ranks = col_cells.shared[0][i].colors; 
+
+             //Compute the bounding boxes for the entities of dimension d from the
+             //ghost box of cell.
+             box_color_t shared_boxes[num_boxes]; 
+
+             for (size_t k = 0; k <num_boxes; k++)
+             {
+               for (size_t j = 0; j < D; j++)
+              {
+                shared_boxes[k].box.lowerbnd[j] = col_cells.shared[0][i].box.lowerbnd[j]; 
+                shared_boxes[k].box.upperbnd[j] = col_cells.shared[0][i].box.upperbnd[j]
+                                             + bnds_info[d][num_boxes*k+j+1]; 
+              }
+          
+              //Loop over each direction
+              for (size_t j = 0; j < D; j++)
+              {
+                int opp_box_id_left = shared2ghost_2d[i][2*j]; 
+                if (opp_box_id_left != -1)
+                {
+                  size_t opp_rank = col_cells.ghost[0][opp_box_id_left].colors[0];
+                  if (opp_rank < current_rank)
+                    shared_boxes[k].box.lowerbnd[j] += 1; 
+                } 
+
+                int opp_box_id_right = shared2ghost_2d[i][2*j+1];
+                if (opp_box_id_right != -1)
+                {
+                  size_t opp_rank = col_cells.ghost[0][opp_box_id_left].colors[0];
+                  if (opp_rank < current_rank)
+                    shared_boxes[k].box.upperbnd[j] -= 1; 
+                } 
+              }
+
+              //Add shared ranks to the shared boxes
+              shared_boxes[k].colors = shared_ranks; 
+              col_ents.shared[k][i] = shared_boxes[k];            
+            } // end loop over each sub-box 
+          } 
+         } // end loop over shared boxes
+
+       //Compute the exclusive box for entities of dimension d  
+       size_t current_rank = col_cells.exclusive[0].colors[0]; 
+       box_color_t exclusive_boxes[num_boxes]; 
+
+       for (size_t k = 0; k <num_boxes; k++)
+       {
+          for (size_t j = 0; j < D; j++)
+          {
+            exclusive_boxes[k].box.lowerbnd[j] = col_cells.exclusive[0].box.lowerbnd[j];
+            exclusive_boxes[k].box.upperbnd[j] = col_cells.exclusive[0].box.upperbnd[j]
+                                                 + bnds_info[d][num_boxes*k+j+1];
+
+            if (!col_cells.partition[0].onbnd[2*j] )
+              exclusive_boxes[k].box.lowerbnd[j] += col_cells.partition[0].nhalo; 
+            if (!col_cells.partition[0].onbnd[2*j+1] )
+              exclusive_boxes[k].box.upperbnd[j]  -= col_cells.partition[0].nhalo; 
+           }
+
+         exclusive_boxes[k].colors.push_back(current_rank); 
+         col_ents.exclusive[k] = exclusive_boxes[k]; 
+        } // end loop for exclusive boxes
+
+       //Compute the domain halo boxes for entities of dimension d  
+       for (size_t i = 0 ; i < col_cells.domain_halo[0].size(); i++){
+         box_t halo_boxes[num_boxes]; 
+
+         for (size_t k = 0; k <num_boxes; k++)
+         {
+            for (size_t j = 0; j < D; j++)
+            {
+              halo_boxes[k].lowerbnd[j] = col_cells.domain_halo[0][i].lowerbnd[j]; 
+              halo_boxes[k].upperbnd[j] = col_cells.domain_halo[0][i].upperbnd[j]
+                                            + bnds_info[d][num_boxes*k+j+1]; 
+            }
+
+            col_ents.domain_halo[k].push_back(halo_boxes[k]); 
+          }
+       } // end loop for domain halo boxes
+
+       col_depents[d] = col_ents;       
+ 
+       } // end loop over intermediate entities
+
+  } //dimension check
+  } //color_intermediate_entities_
+
+   int shared2ghost_2d[8][4] = {{-1,1,-1,3},{0,2,-1,-1},{1,-1,-1,4},{-1,-1,0,5},
+                                {-1,-1,2,7},{-1,6,3,-1},{5,7,-1,-1},{6,-1,4,-1}}; 
+
+   int ghost2ghost_2d[8][4] = {{3,-1,1,-1},{-1,-1,1,-1},{-1,4,1,-1},{3,-1,-1,-1},
+                               {-1,4,-1,-1},{3,-1,-1,6},{-1,-1,-1,6},{-1,4,-1,6}}; 
+
+   int ghost2partition_2d[8][4] = {{0,0,0,0},{0,0,0,1},{0,0,0,0},{0,1,0,0},
+                                   {1,0,0,0},{0,0,0,0},{0,0,1,0},{0,0,0,0}};
+ 
 
 }; // class simple_box_colorer_t
 

@@ -28,7 +28,11 @@
 
 #include <mpi.h>
 
+#include <flecsi/coloring/box_types.h>
 #include <flecsi/coloring/coloring_types.h>
+#include <flecsi/coloring/index_coloring.h>
+#include <flecsi/coloring/mpi_utils.h>
+#include <flecsi/data/common/data_types.h>
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/mpi/runtime_driver.h>
@@ -36,10 +40,6 @@
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/const_string.h>
-#include <flecsi/coloring/mpi_utils.h>
-#include <flecsi/coloring/coloring_types.h>
-#include <flecsi/coloring/index_coloring.h>
-#include <flecsi/data/common/data_types.h>
 
 namespace flecsi {
 namespace execution {
@@ -220,6 +220,7 @@ struct mpi_context_policy_t
   using coloring_info_t = flecsi::coloring::coloring_info_t;
   using index_coloring_t = flecsi::coloring::index_coloring_t;
   using box_coloring_t = flecsi::coloring::box_coloring_t;
+  using box_aggregate_info_t = flecsi::coloring::box_aggregate_info_t;
 
   /*!
    Field metadata is used maintain MPI information and data types for
@@ -316,7 +317,7 @@ struct mpi_context_policy_t
    */
   template <typename T>
   void register_field_metadata_stopo(const field_id_t fid,
-                               const coloring_info_t& coloring_info,
+                               const box_aggregate_info_t& box_aggregate,
                                const box_coloring_t& box_coloring) {
     std::map<int, std::vector<int>> compact_origin_lengs;
     std::map<int, std::vector<int>> compact_origin_disps;
@@ -326,11 +327,11 @@ struct mpi_context_policy_t
 
     field_metadata_t metadata;
 
-    register_field_metadata_stopo_<T>(metadata, fid, coloring_info, box_coloring,
+    register_field_metadata_stopo_<T>(metadata, fid, box_aggregate, box_coloring,
       compact_origin_lengs, compact_origin_disps, compact_target_lengs,
       compact_target_disps);
 
-    for (auto ghost_owner : coloring_info.ghost_owners) {
+    for (auto ghost_owner : box_aggregate.ghost_owners) {
       MPI_Datatype origin_type;
       MPI_Datatype target_type;
 
@@ -352,11 +353,11 @@ struct mpi_context_policy_t
     }
 
     auto shared_data = field_data[fid].data();
-    MPI_Win_create(shared_data, shared_data.size() * sizeof(T),
-                   sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD,
-                   &metadata.win);
+  //  MPI_Win_create(shared_data, shared_data.size() * sizeof(T),
+  //                 sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD,
+  //                 &metadata.win);
 
-    field_metadata.insert({fid, metadata});
+  //  field_metadata.insert({fid, metadata});
   } //register_field_metadata_stopo
 
   /*!
@@ -592,7 +593,7 @@ struct mpi_context_policy_t
   void register_field_metadata_stopo_(
     MD& metadata,
     const field_id_t fid,
-    const coloring_info_t& coloring_info,
+    const box_aggregate_info_t& aggregate_info,
     const box_coloring_t& box_coloring,
     std::map<int, std::vector<int>>& compact_origin_lengs,
     std::map<int, std::vector<int>>& compact_origin_disps,
@@ -609,141 +610,7 @@ struct mpi_context_policy_t
     // cells from. This is the set coloring_info_t::ghost_owners.
     // Since both shared_users and ghost_owners are std::set, we have copy
     // them to std::vector be passed to MPI.
-    std::vector<int> shared_users(coloring_info.shared_users.begin(),
-                                  coloring_info.shared_users.end());
-    std::vector<int> ghost_owners(coloring_info.ghost_owners.begin(),
-                                  coloring_info.ghost_owners.end());
-
-    MPI_Group comm_grp;
-    MPI_Comm_group(MPI_COMM_WORLD, &comm_grp);
-
-    MPI_Group_incl(comm_grp, shared_users.size(),
-                   shared_users.data(), &metadata.shared_users_grp);
-    MPI_Group_incl(comm_grp, ghost_owners.size(),
-                   ghost_owners.data(), &metadata.ghost_owners_grp);
-
-    std::map<int, std::vector<int>> origin_lens;
-    std::map<int, std::vector<int>> origin_disps;
-    std::map<int, std::vector<int>> target_lens;
-    std::map<int, std::vector<int>> target_disps;
-
-    for (auto ghost_owner : ghost_owners) {
-      origin_lens.insert({ghost_owner, {}});
-      origin_disps.insert({ghost_owner, {}});
-      target_lens.insert({ghost_owner, {}});
-      target_disps.insert({ghost_owner, {}});
-    }
-
-    int origin_index = 0;
-    for (const auto& ghost : index_coloring.ghost) {
-      origin_lens[ghost.rank].push_back(1);
-      origin_disps[ghost.rank].push_back(origin_index++);
-      target_lens[ghost.rank].push_back(1);
-      target_disps[ghost.rank].push_back(ghost.offset);
-    }
-
-    int my_color;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
-
-    if (my_color == 0) {
-      for (auto ghost_owner : ghost_owners) {
-        std::cout << "ghost owner: " << ghost_owner << std::endl;
-        std::cout << "\torigin length: ";
-        for (auto len : origin_lens[ghost_owner]) {
-          std::cout << len << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "\torigin disp: ";
-        for (auto len : origin_disps[ghost_owner]) {
-          std::cout << len << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "\ttarget length: ";
-        for (auto len : target_lens[ghost_owner]) {
-          std::cout << len << " ";
-        }
-        std::cout << std::endl;
-
-        std::cout << "\ttarget disp: ";
-        for (auto len : target_disps[ghost_owner]) {
-          std::cout << len << " ";
-        }
-        std::cout << std::endl;
-
-      }
-    }
-
-    for (auto ghost_owner : ghost_owners) {
-      if (origin_disps.size() == 0)
-        break;
-
-      int count = 0;
-      compact_origin_lengs[ghost_owner].push_back(1);
-      compact_origin_disps[ghost_owner].push_back(
-        origin_disps[ghost_owner][0]);
-
-      for (int i = 1; i < origin_disps[ghost_owner].size(); i++) {
-        if (origin_disps[ghost_owner][i] - origin_disps[ghost_owner][i - 1] ==
-            1) {
-          compact_origin_lengs[ghost_owner].back() = compact_origin_lengs[ghost_owner].back() + 1;
-        } else {
-          compact_origin_lengs[ghost_owner].push_back(1);
-          compact_origin_disps[ghost_owner].push_back(origin_disps[ghost_owner][i]);
-        }
-      }
-    }
-
-    if (my_color == 0) {
-      for (auto ghost_owner : ghost_owners) {
-        std::cout << "ghost owner: " << ghost_owner << std::endl;
-        std::cout << "source compacted length: ";
-        for (auto len : compact_origin_lengs[ghost_owner]) {
-          std::cout << len << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "source compacted disps: ";
-        for (auto disp : compact_origin_disps[ghost_owner]) {
-          std::cout << disp << " ";
-        }
-        std::cout << std::endl;
-      }
-    }
-
-    for (auto ghost_owner : ghost_owners) {
-      if (target_disps.size() == 0)
-        break;
-
-      int count = 0;
-      compact_target_lengs[ghost_owner].push_back(1);
-      compact_target_disps[ghost_owner].push_back(target_disps[ghost_owner][0]);
-
-      for (int i = 1; i < target_disps[ghost_owner].size(); i++) {
-        if (target_disps[ghost_owner][i] - target_disps[ghost_owner][i - 1] == 1) {
-          compact_target_lengs[ghost_owner].back() = compact_target_lengs[ghost_owner].back() + 1;
-        } else {
-          compact_target_lengs[ghost_owner].push_back(1);
-          compact_target_disps[ghost_owner].push_back(target_disps[ghost_owner][i]);
-        }
-      }
-    }
-
-    if (my_color == 0) {
-      for (auto ghost_owner : ghost_owners) {
-        std::cout << "ghost owner: " << ghost_owner << std::endl;
-
-        std::cout << "compacted target length: ";
-        for (auto len : compact_target_lengs[ghost_owner]) {
-          std::cout << len << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "compacted target disps: ";
-        for (auto disp : compact_target_disps[ghost_owner]) {
-          std::cout << disp << " ";
-        }
-        std::cout << std::endl;
-      }
-    }
- } //register_field_metadata_stopo_ 
+  } //register_field_metadata_stopo_ 
 
 
   std::map<field_id_t, field_metadata_t>&
