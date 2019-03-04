@@ -25,13 +25,9 @@ jobs:
     - stage: canary
       env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
     - stage: coverage
-      env:
-        matrix:
-          - DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
-          - DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
-      matrix:
-        allow_failures:
-          - DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+      env: DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
+      env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
+      allow_failures: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
     - stage: deploy
       if: type != pull_request
       env:
