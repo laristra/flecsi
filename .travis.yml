@@ -36,6 +36,12 @@ jobs:
       compiler: clang
     - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
       compiler: clang
+  allow_failures:
+    - stage: coverage
+      env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+      compiler: gcc
+    - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+      compiler: clang
 
 compiler:
   - gcc
@@ -55,11 +61,8 @@ env:
     - DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
 
 matrix:
+  fast_finish: true
   allow_failures:
-    - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
-      compiler: clang
     - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
       compiler: gcc
     - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
