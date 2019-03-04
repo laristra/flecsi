@@ -15,7 +15,7 @@ stages:
   - name: canary
   - name: coverage
   - name: test
-    if: type != pull_request
+    #if: type != pull_request
 
 jobs:
   include:
@@ -35,41 +35,6 @@ jobs:
     - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
       compiler: clang
     - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
-      compiler: clang
-
-    - stage: test
-      env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
-      compiler: gcc
-    
-    - env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
-      compiler: clang
-    - env: DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
-      compiler: clang
-    - env: DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
-      compiler: clang
-    - env: DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
-      compiler: clang
-    - env: DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
-      compiler: clang
-    - env: DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
-      compiler: clang
-    - env: DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
-      compiler: clang
-    - env: DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
       compiler: clang
 
 compiler:
