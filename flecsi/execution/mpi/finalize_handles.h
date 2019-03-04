@@ -62,8 +62,7 @@ struct finalize_handles_t
     auto & sparse_field_metadata =
       context.registered_sparse_field_metadata().at(h.fid);
 
-    value_t * entries =
-      reinterpret_cast<value_t *>(&(*h.entries)[0]);
+    value_t * entries = reinterpret_cast<value_t *>(&(*h.entries)[0]);
     auto offsets = &(*h.offsets)[0];
     auto shared_data = entries + *h.reserve; // ci.entries[1];
     auto ghost_data =

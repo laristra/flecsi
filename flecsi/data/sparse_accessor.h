@@ -22,8 +22,8 @@
 #include <cinchlog.h>
 
 #include <flecsi/data/accessor.h>
-#include <flecsi/data/sparse_data_handle.h>
 #include <flecsi/data/common/data_types.h>
+#include <flecsi/data/sparse_data_handle.h>
 #include <flecsi/topology/index_space.h>
 
 namespace flecsi {
@@ -78,10 +78,10 @@ struct accessor_u<data::sparse,
   using entry_value_t = data::sparse_entry_value_u<T>;
 
   using base_t = accessor_u<data::ragged,
-                            entry_value_t,
-                            EXCLUSIVE_PERMISSIONS,
-                            SHARED_PERMISSIONS,
-                            GHOST_PERMISSIONS>;
+    entry_value_t,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS>;
 
   using index_space_t =
     topology::index_space_u<topology::simple_entry_u<size_t>, true>;
@@ -97,8 +97,7 @@ struct accessor_u<data::sparse,
 
   T & operator()(size_t index, size_t entry) {
     auto itr = lower_bound(index, entry);
-    assert(itr && itr->entry == entry
-               && "sparse accessor: unmapped entry");
+    assert(itr && itr->entry == entry && "sparse accessor: unmapped entry");
 
     return itr->value;
   } // operator ()
@@ -141,10 +140,11 @@ struct accessor_u<data::sparse,
     const entry_value_t * end = start + oi.count();
 
     // find where entry should be
-    const entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
-      [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
-        return k1.entry < k2.entry;
-      });
+    const entry_value_t * itr =
+      std::lower_bound(start, end, entry_value_t(entry),
+        [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
+          return k1.entry < k2.entry;
+        });
 
     return (itr == end ? nullptr : itr);
 
@@ -266,7 +266,6 @@ struct accessor_u<data::sparse,
     auto & handle = base_t::handle;
     return handle.max_entries_per_index;
   }
-
 };
 
 template<typename T,

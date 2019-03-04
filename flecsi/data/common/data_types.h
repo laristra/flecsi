@@ -45,7 +45,8 @@ struct sparse_entry_value_u {
 
 template<typename T>
 std::ostream &
-operator<<(std::ostream & ostr, const flecsi::data::sparse_entry_value_u<T> & ev) {
+operator<<(std::ostream & ostr,
+  const flecsi::data::sparse_entry_value_u<T> & ev) {
   return ostr << "(" << ev.entry << ", " << ev.value << ")";
 } // operator<<
 

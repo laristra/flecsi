@@ -617,9 +617,8 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       Legion::LogicalRegion lr = entries_prs[r].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = entries_prs[r]
-                  .get_field_accessor(h.fid)
-                  .template typeify<value_t>();
+      auto ac =
+        entries_prs[r].get_field_accessor(h.fid).template typeify<value_t>();
 
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
 
@@ -637,8 +636,8 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     pos = 0;
 
     for(size_t r{0}; r < num_regions; ++r) {
-      std::memcpy(entries + pos, entries_data[r],
-        entries_sizes[r] * sizeof(value_t));
+      std::memcpy(
+        entries + pos, entries_data[r], entries_sizes[r] * sizeof(value_t));
       pos += entries_sizes[r];
     }
 
@@ -655,8 +654,8 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<
-            T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
+    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
     handle(static_cast<base_t &>(a));
   } // handle
 
@@ -760,9 +759,8 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       Legion::LogicalRegion lr = entries_prs[r].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = entries_prs[r]
-                  .get_field_accessor(h.fid)
-                  .template typeify<value_t>();
+      auto ac =
+        entries_prs[r].get_field_accessor(h.fid).template typeify<value_t>();
 
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
 
@@ -777,14 +775,14 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     value_t * entries = new value_t[h.entries_size];
 
-    std::memcpy(entries, entries_data[0],
-      md->num_exclusive_filled * sizeof(value_t));
+    std::memcpy(
+      entries, entries_data[0], md->num_exclusive_filled * sizeof(value_t));
 
     pos = entries_sizes[0];
 
     for(size_t r{1}; r < num_regions; ++r) {
-      std::memcpy(entries + pos, entries_data[r],
-        entries_sizes[r] * sizeof(value_t));
+      std::memcpy(
+        entries + pos, entries_data[r], entries_sizes[r] * sizeof(value_t));
       pos += entries_sizes[r];
     }
 
