@@ -122,6 +122,7 @@ branches:
   only:
   - master
   -  /^stable\/.*$/
+  - feature/refactor
 
 cache:
   ccache: true
