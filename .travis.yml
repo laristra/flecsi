@@ -21,34 +21,25 @@ jobs:
   include:
     - stage: canary
       env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
+
     - stage: coverage
       compiler:
         - gcc
         - clang
-      env: 
-        - DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
-        - DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
+      env: DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
+    - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
+
     - stage: deploy
-      env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
-    - stage: deploy
-      env: DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
-    - stage: deploy
-      env: DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
-    - stage: deploy
-      env: DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
-    - stage: deploy
-      env: DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
-    - stage: deploy
-      env: DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
-    - stage: deploy
-      env: DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
-    - stage: deploy
-      env: DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
+    - env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
+    - env: DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
+    - env: DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
+    - env: DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
+    - env: DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
+    - env: DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
+    - env: DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
+    - env: DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
   allow_failures:
     - stage: coverage
-      compiler:
-        - gcc
-        - clang
       env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
     - stage: deploy
       env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
