@@ -29,8 +29,8 @@ jobs:
     - stage: coverage
       env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
     - stage: coverage
-      env: 
-        allow_failures: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+      allow_failures:
+      env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
     - stage: test
       if: type != pull_request
 
