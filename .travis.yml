@@ -45,12 +45,13 @@ jobs:
       env: DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
     - stage: deploy
       env: DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
-    - stage: coverage
-      env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
-      allow_failures: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
-    - stage: deploy
-      env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
-      allow_failures: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+allow_failures: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+  jobs:
+    include:
+      - stage: coverage
+        env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+      - stage: deploy
+        env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
 
 before_install:
   - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
