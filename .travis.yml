@@ -16,9 +16,9 @@ compiler:
   - clang
 
 stages:
-  - canary
-  - coverage
-  - deploy
+  - name: canary
+  - name: coverage
+  - name: deploy
     if: type != pull_request
 
 jobs:
@@ -45,7 +45,6 @@ jobs:
       env: DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
     - stage: deploy
       env: DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
-jobs:
   allow_failures:
     include:
       - stage: coverage
