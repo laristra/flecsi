@@ -26,7 +26,9 @@ jobs:
       env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
     - stage: coverage
       env: DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
+    - stage: coverage
       env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
+    - stage: coverage
       allow_failures: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
     - stage: deploy
       if: type != pull_request
