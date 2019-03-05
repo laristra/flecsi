@@ -3,10 +3,10 @@
 ###################
 
 stages:
+  - Canary
   - Build
   - Test
   - Format
-  - Deploy
 
 variables:
   GET_SOURCES_ATTEMPTS: 10
@@ -14,7 +14,7 @@ variables:
   RESTORE_CACHE_ATTEMPTS: 10
   GIT_STRATEGY: fetch
   GLOBAL_CI_VARIABLE: "global_ci_value"
-  CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
+  #CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
   CI_JOB_NAME_TMP: ${CI_JOB_NAME}
   CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME_TMP#*:}
   #CI_DEBUG_TRACE: "true"
@@ -31,6 +31,72 @@ before_script:
 ###################
 ###################
 ###################
+
+################
+# Canary Stage #
+################
+
+.canary:
+  retry: 2
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    DISTRO: "fedora"
+    RUNTIME: ""
+    CC: "gcc"
+    CXX: "g++"
+    CXXFLAGS: "-Werror -Wno-deprecated-declarations"
+    BUILD_TYPE: "Debug"
+    IGNORE_NOCI: "FALSE"
+  image:
+    name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
+  stage: Canary
+  artifacts:
+    name: "${CI_COMMIT_REF_SLUG}"
+    paths:
+      - ${CI_PROJECT_DIR} #/builds/next-generation-codes/laristra/flecsi
+    when: always
+    expire_in: 5 hour
+  dependencies: []
+  script:
+    - |
+      if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Build" ]];
+      then
+        nproc;
+        mkdir -p ${CI_PROJECT_DIR}/build;
+        cd build;
+        ccache -z;
+        cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+          -DFLECSI_RUNTIME_MODEL=$RUNTIME \
+          ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
+          -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
+          -DENABLE_UNIT_TESTS=ON \
+          -DENABLE_PARMETIS=ON \
+          -DENABLE_COLORING=ON \
+          -DENABLE_DOXYGEN=ON \
+          -DENABLE_DOCUMENTATION=OFF \
+          -DENABLE_COVERAGE_BUILD=ON \
+          ..;
+        make -k VERBOSE=1 -j2 -l80;
+        ccache -s;
+        make doxygen;
+        mkdir -p ${CI_PROJECT_DIR}/install;
+        make install DESTDIR=${CI_PROJECT_DIR}/install;
+        sudo make install;
+      fi;
+    - |
+      if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Test" ]];
+      then
+        cd ${CI_PROJECT_DIR}/build/;
+        make test ARGS="-V";
+        $HOME/.local/bin/gcovr .;
+      fi;
+    - |
+      if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Format" ]];
+      then
+        cd ${CI_PROJECT_DIR}/build/;
+        clang-format -version;
+        make format-FleCSI && git diff --exit-code;
+      fi;
 
 ###############
 # Build Stage #
@@ -82,6 +148,65 @@ before_script:
     - mkdir -p ${CI_PROJECT_DIR}/install
     - make install DESTDIR=${CI_PROJECT_DIR}/install 
     - sudo make install 
+
+##############
+# Test Stage #
+##############
+
+.test:
+  retry: 2
+  variables:
+    DISTRO: ""
+    IGNORE_NOCI: "FALSE"
+  image: laristra/flecsi-third-party:${DISTRO} #user: flecsi
+  stage: Test
+  dependencies:
+    #- "build:${CI_JOB_NAME#*:}"
+    - .build
+  script:
+    - cd ${CI_PROJECT_DIR}/build/
+    - make test ARGS="-V"
+    - $HOME/.local/bin/gcovr .
+
+################
+# Format Stage #
+################
+
+.format:
+  retry: 2
+  variables:
+    DISTRO: ""
+  image: laristra/flecsi-third-party:${DISTRO} #user: flecsi
+  stage: Format
+  dependencies:
+    #- build:${CI_JOB_NAME#*:}
+    - .build
+  script:
+    - cd ${CI_PROJECT_DIR}/build/
+    - clang-format -version
+    - make format-FleCSI && git diff --exit-code
+
+################
+################
+################
+
+###############
+# Canary Jobs #
+###############
+
+canary:fedora_mpi:
+  extends: .canary
+  stage: Canary
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
+
+canary:fedora_legion:
+  extends: .canary
+  stage: Canary
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "legion"
 
 ##############
 # Build Jobs #
@@ -278,29 +403,6 @@ build:fedora_hpx_clang:
   variables:
     CC: clang
     CXX: clang++
-
-###############
-###############
-###############
-
-##############
-# Test Stage #
-##############
-
-.test:
-  retry: 2
-  variables:
-    DISTRO: ""
-    IGNORE_NOCI: "FALSE"
-  image: laristra/flecsi-third-party:${DISTRO} #user: flecsi
-  stage: Test
-  dependencies:
-    #- "build:${CI_JOB_NAME#*:}"
-    - .build
-  script:
-    - cd ${CI_PROJECT_DIR}/build/
-    - make test ARGS="-V"
-    - $HOME/.local/bin/gcovr .
 
 #############
 # Test Jobs #
@@ -519,28 +621,6 @@ test:fedora_hpx.ignoreNoCI:
     IGNORE_NOCI: "TRUE"
   allow_failure: true
 
-##############
-##############
-##############
-
-################
-# Format Stage #
-################
-
-.format:
-  retry: 2
-  variables:
-    DISTRO: ""
-  image: laristra/flecsi-third-party:${DISTRO} #user: flecsi
-  stage: Format
-  dependencies:
-    #- build:${CI_JOB_NAME#*:}
-    - .build
-  script:
-    - cd ${CI_PROJECT_DIR}/build/
-    - clang-format -version
-    - make format-FleCSI && git diff --exit-code
-
 ###############
 # Format Jobs #
 ###############
@@ -567,7 +647,7 @@ format:fedora_hpx:
     DISTRO: "fedora"
   allow_failure: true
 
-################
-################
-################
+###############
+###############
+###############
 
