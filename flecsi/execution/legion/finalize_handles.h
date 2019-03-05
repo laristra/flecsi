@@ -69,15 +69,14 @@ struct finalize_handles_t
     auto & h = a.handle;
     auto md = static_cast<sparse_field_data_t *>(h.metadata);
 
-    std::memcpy(h.entries_data[0], h.entries,
-      md->num_exclusive_filled * sizeof(value_t));
+    std::memcpy(
+      h.entries_data[0], h.entries, md->num_exclusive_filled * sizeof(value_t));
 
     std::memcpy(h.entries_data[1], h.entries + md->reserve,
       md->num_shared * sizeof(value_t) * md->max_entries_per_index);
   } // handle
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
@@ -85,8 +84,8 @@ struct finalize_handles_t
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<
-            T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
+    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
     handle(static_cast<base_t &>(a));
   } // handle
 
@@ -123,11 +122,10 @@ struct finalize_handles_t
         h.num_ghost() * sizeof(offset_t));
     }
 
-    std::memcpy(h.entries_data[0], h.entries,
-      md->num_exclusive_filled * sizeof(value_t));
+    std::memcpy(
+      h.entries_data[0], h.entries, md->num_exclusive_filled * sizeof(value_t));
 
-    std::memcpy(h.entries_data[1],
-      h.entries + h.reserve * sizeof(value_t),
+    std::memcpy(h.entries_data[1], h.entries + h.reserve * sizeof(value_t),
       h.num_shared() * sizeof(value_t) * h.max_entries_per_index());
 
     md->initialized = true;
