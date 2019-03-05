@@ -119,7 +119,6 @@ struct accessor_u<data::ragged,
   }
 
   handle_t handle;
-
 };
 
 template<typename T,

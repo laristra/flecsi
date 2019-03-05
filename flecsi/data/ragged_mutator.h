@@ -154,8 +154,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     // erase from base area
     auto eptr = h_.entries_ + offset.start();
     size_t ncopy = std::min(n, nnew);
-    std::copy(&eptr[ragged_index + 1], &eptr[ncopy],
-              &eptr[ragged_index]);
+    std::copy(&eptr[ragged_index + 1], &eptr[ncopy], &eptr[ragged_index]);
     if(nnew > n) {
       // shift out of overflow area, if needed
       auto & overflow = h_.overflow_map_->at(index);
@@ -174,7 +173,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
 
     h_.new_counts_[index] = nnew + 1;
 
-    if (nnew >= n) {
+    if(nnew >= n) {
       // add to overflow area
       auto & overflow = (*h_.overflow_map_)[index];
       overflow.push_back(value);
@@ -202,21 +201,19 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
       // insert in overflow area
       auto & overflow = (*h_.overflow_map_)[index];
       assert(ragged_index - n <= overflow.size());
-      auto itr = overflow.insert(
-              overflow.begin() + (ragged_index - n), value);
+      auto itr = overflow.insert(overflow.begin() + (ragged_index - n), value);
       return &(*itr);
     }
 
     // insert in base area
     auto eptr = h_.entries_ + offset.start();
-    if (nnew >= n) {
+    if(nnew >= n) {
       // shift into overflow area, if needed
       auto & overflow = (*h_.overflow_map_)[index];
       overflow.insert(overflow.begin(), eptr[n - 1]);
     }
     size_t ncopy = std::min(n - 1, nnew);
-    std::copy_backward(&eptr[ragged_index], &eptr[ncopy],
-                       &eptr[ncopy + 1]);
+    std::copy_backward(&eptr[ragged_index], &eptr[ncopy], &eptr[ncopy + 1]);
     eptr[ragged_index] = value;
     return &eptr[ragged_index];
   } // insert

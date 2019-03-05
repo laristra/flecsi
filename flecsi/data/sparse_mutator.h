@@ -52,8 +52,9 @@ struct sparse_mutator_base_t {};
 //----------------------------------------------------------------------------//
 
 template<typename T>
-struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_entry_value_u<T>>,
-                                    public sparse_mutator_base_t {
+struct mutator_u<data::sparse, T>
+  : public mutator_u<data::ragged, data::sparse_entry_value_u<T>>,
+    public sparse_mutator_base_t {
   using entry_value_t = data::sparse_entry_value_u<T>;
   using handle_t = mutator_handle_u<entry_value_t>;
   using offset_t = typename handle_t::offset_t;
@@ -114,17 +115,16 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
         size_t nbase = std::min(n, nnew);
         std::cout << "  index: " << i << std::endl;
         for(size_t j = 0; j < nbase; ++j) {
-          std::cout << "    " << h_.entries_[ostart + j].entry
-                    << " = " << h_.entries_[ostart + j].value
-                    << std::endl;
+          std::cout << "    " << h_.entries_[ostart + j].entry << " = "
+                    << h_.entries_[ostart + j].value << std::endl;
         }
 
-        if (nnew <= n) continue;
+        if(nnew <= n)
+          continue;
 
-        const auto& overflow = h_.overflow_map_->at(i);
-        for(const auto& ev : overflow) {
-          std::cout << "    +" << ev.entry
-                    << " = " << ev.value << std::endl;
+        const auto & overflow = h_.overflow_map_->at(i);
+        for(const auto & ev : overflow) {
+          std::cout << "    +" << ev.entry << " = " << ev.value << std::endl;
         }
       }
     }
@@ -148,7 +148,8 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
 
   // for row 'index', return pointer to first entry not less
   // than 'entry'
-  entry_value_t * lower_bound(size_t index, size_t entry, size_t * pos = nullptr) {
+  entry_value_t *
+  lower_bound(size_t index, size_t entry, size_t * pos = nullptr) {
     auto & h_ = base_t::h_;
     assert(h_.offsets_ && "uninitialized mutator");
     assert(index < h_.num_entries_);
@@ -162,8 +163,7 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
     entry_value_t * end = start + std::min(n, nnew);
 
     // try to find entry in overflow, if appropriate
-    bool use_overflow = (nnew > n &&
-            (n == 0 || entry > end[-1].entry));
+    bool use_overflow = (nnew > n && (n == 0 || entry > end[-1].entry));
     if(use_overflow) {
       auto & overflow = h_.overflow_map_->at(index);
       start = overflow.data();
@@ -178,7 +178,8 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
 
     if(pos) {
       size_t ragged_idx = itr - start;
-      if(use_overflow) ragged_idx += n;
+      if(use_overflow)
+        ragged_idx += n;
       *pos = ragged_idx;
     }
 
@@ -202,8 +203,7 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
     const entry_value_t * end = start + std::min(n, nnew);
 
     // try to find entry in overflow, if appropriate
-    bool use_overflow = (nnew > n &&
-            (n == 0 || entry > end[-1].entry));
+    bool use_overflow = (nnew > n && (n == 0 || entry > end[-1].entry));
     if(use_overflow) {
       auto & overflow = h_.overflow_map_->at(index);
       start = overflow.data();
@@ -211,10 +211,11 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
     }
 
     // find where entry should be
-    const entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
-      [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
-        return e1.entry < e2.entry;
-      });
+    const entry_value_t * itr =
+      std::lower_bound(start, end, entry_value_t(entry),
+        [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
+          return e1.entry < e2.entry;
+        });
 
     return (itr == end ? nullptr : itr);
 
@@ -252,10 +253,11 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
         }
         ++itr;
       }
-      if(nnew <= n) continue;
+      if(nnew <= n)
+        continue;
 
-      const auto& overflow = h_.overflow_map_->at(index);
-      for(const auto& ev : overflow) {
+      const auto & overflow = h_.overflow_map_->at(index);
+      for(const auto & ev : overflow) {
         size_t entry = ev.entry;
         if(found.find(entry) == found.end()) {
           is.push_back({id++, entry});
@@ -272,8 +274,7 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
   //-------------------------------------------------------------------------//
   index_space_t entries(size_t index) const {
     auto & h_ = base_t::h_;
-    clog_assert(
-      index < h_.num_total_, "sparse mutator: index out of bounds");
+    clog_assert(index < h_.num_total_, "sparse mutator: index out of bounds");
 
     const offset_t & oi = h_.offsets[index];
     size_t n = oi.count();
@@ -290,10 +291,11 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::ragged, data::sparse_
       is.push_back({id++, itr->entry});
       ++itr;
     }
-    if(nnew <= n) return is;
+    if(nnew <= n)
+      return is;
 
-    const auto& overflow = h_.overflow_map_->at(index);
-    for(const auto& ev : overflow) {
+    const auto & overflow = h_.overflow_map_->at(index);
+    for(const auto & ev : overflow) {
       is.push_back({id++, ev.entry});
     }
 
