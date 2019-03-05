@@ -8,6 +8,7 @@ ARG COVERAGE
 ARG CC
 ARG CXX
 ARG CXXFLAGS
+ARG CLANG_FORMAT
 
 #for coverage
 ARG CI
@@ -50,6 +51,9 @@ RUN cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
 RUN make VERBOSE=1 -j2
 RUN ccache -s
 RUN make doxygen
+RUN if [[ ${CLANG_FORMAT} ]]; then \
+      make format && git diff --exit-code; \
+    fi
 RUN if [ ${COVERAGE} ]; then \
       python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; \
       wget -O codecov.sh https://codecov.io/bash; \
