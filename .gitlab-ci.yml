@@ -33,7 +33,7 @@ before_script:
 .canary:
   retry: 2
   variables:
-    GIT_SUBMODULE_STRATEGY: none
+    GIT_SUBMODULE_STRATEGY: recursive
     CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
     DISTRO: ""
     RUNTIME: ""
@@ -47,29 +47,26 @@ before_script:
   stage: Canary
   cache:
     #key: ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
-    #key: ${CI_COMMIT_REF_SLUG}
+    key: ${CI_COMMIT_REF_SLUG}
     paths:
       - ccache/
   artifacts:
     name: "${CI_COMMIT_REF_SLUG}"
     paths:
-      - ${CI_PROJECT_DIR}/flecsi #/builds/next-generation-codes/laristra/flecsi/flecsi
+      - ${CI_PROJECT_DIR}/ #/builds/next-generation-codes/laristra/flecsi/
     when: always
   dependencies: []
   script:
     - |
       if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Build" ]];
       then
+        ccache -z;
         nproc;
-        rm -rf flecsi;
-        git clone https://github.com/laristra/flecsi.git;
-        cd flecsi;
         # git submodule init;
         # git config submodule.cinch.url https://github.com/laristra/cinch.git;
-        git submodule update --init --recursive;
+        # git submodule update --init --recursive;
         mkdir -p build;
         cd build;
-        ccache -z;
         cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
@@ -82,23 +79,23 @@ before_script:
           -DENABLE_COVERAGE_BUILD=ON \
           ..;
         make -k VERBOSE=1 -j2 -l80;
-        ccache -s;
         make doxygen;
         mkdir -p install;
-        make install DESTDIR=${CI_PROJECT_DIR}/install;
+        make install DESTDIR=install;
         sudo make install;
+        ccache -s;
       fi;
     - |
       if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Test" ]];
       then
-        cd ${CI_PROJECT_DIR}/flecsi/build/;
+        cd ${CI_PROJECT_DIR}/build/;
         make test ARGS="-V";
         $HOME/.local/bin/gcovr .;
       fi;
     - |
       if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Format" ]];
       then
-        cd ${CI_PROJECT_DIR}/flecsi/build/;
+        cd ${CI_PROJECT_DIR}/build/;
         clang-format -version;
         make format-FleCSI && git diff --exit-code;
       fi;
