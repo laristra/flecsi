@@ -31,9 +31,9 @@ jobs:
       compiler: gcc
     - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
+    - env: DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: clang
-    - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
+    - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: clang
     - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
       compiler: clang
@@ -53,8 +53,8 @@ env:
     - DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
     - DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
     - DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
-    - DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release CLANG_FORMAT=yes
-    - DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release CLANG_FORMAT=yes
+    - DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
     - DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
     - DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
 
