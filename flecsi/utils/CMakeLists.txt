@@ -21,6 +21,7 @@ set(utils_HEADERS
   array_ref.h
   bit_buffer.h
   checksum.h
+  common.h
   const_string.h
   dag.h
   debruijn.h
