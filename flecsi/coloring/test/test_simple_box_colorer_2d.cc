@@ -107,7 +107,7 @@ TEST(simple_colorer, simpletest2d)
   // Color dependent entities i.e., vertices and edges
   auto col_depents = sbc.color_dependent_entities(col_cells);
 
-  cout << "Rank="<<rank<<"::-----VERTICES-----"<<endl;
+  cout << "\n\nRank="<<rank<<"::-----VERTICES-----"<<endl;
   flecsi::coloring::box_color_t exclusive = col_depents[0].exclusive[0]; 
   cout<<"Rank-"<<rank<<"::Exclusive-Box:LBND  = { "<<exclusive.box.lowerbnd[0]<<", "
                                                    <<exclusive.box.lowerbnd[1]<<" } "<<endl;
@@ -119,6 +119,8 @@ TEST(simple_colorer, simpletest2d)
 
   for (auto s: col_depents[0].shared[0])
   {
+   if (!s.box.isempty())
+   {
     cout<<"Rank-"<<rank<<"::Shared-Boxes:LBND  = { "<<s.box.lowerbnd[0]<<", "
                                                     <<s.box.lowerbnd[1]<<" } "<<endl;
 
@@ -129,10 +131,13 @@ TEST(simple_colorer, simpletest2d)
     for (auto c: s.colors)
      cout<<"Rank-"<<rank<<"::Shared-Boxes:colors = "<<c<<endl;
     cout<<endl;
+   }
   }
 
   for (auto g: col_depents[0].ghost[0])
   {
+   if (!g.box.isempty())
+   {
     cout<<"Rank-"<<rank<<"::Ghost-Boxes:LBND  = { "<<g.box.lowerbnd[0]<<", "
                                                    <<g.box.lowerbnd[1]<<" } "<<endl;
 
@@ -143,6 +148,7 @@ TEST(simple_colorer, simpletest2d)
     for (auto c: g.colors)
      cout<<"Rank-"<<rank<<"::Ghost-Boxes:colors = "<<c<<endl;
     cout<<endl;
+   } 
   }
 
   for (auto d: col_depents[0].domain_halo[0])
@@ -168,8 +174,9 @@ TEST(simple_colorer, simpletest2d)
   }
 
 
-  cout << "Rank="<<rank<<"::-----EDGES-----"<<endl;
+  cout << "\n\nRank="<<rank<<"::-----EDGES-----"<<endl;
   for (size_t i = 0; i < 2; i++){ 
+      cout<<endl;
       flecsi::coloring::box_color_t exclusive = col_depents[1].exclusive[i]; 
       cout<<"Rank-"<<rank<<"::Exclusive-Box:LBND  = { "<<exclusive.box.lowerbnd[0]<<", "
                                                    <<exclusive.box.lowerbnd[1]<<" } "<<endl;
@@ -179,8 +186,11 @@ TEST(simple_colorer, simpletest2d)
 
       cout<<"Rank-"<<rank<<"::Exclusive-Box:colors = "<<exclusive.colors[0]<<endl;
 
+      cout<<endl;
       for (auto s: col_depents[1].shared[i])
       {
+        if (!s.box.isempty())
+        {
 	cout<<"Rank-"<<rank<<"::Shared-Boxes:LBND  = { "<<s.box.lowerbnd[0]<<", "
 							<<s.box.lowerbnd[1]<<" } "<<endl;
 
@@ -191,10 +201,13 @@ TEST(simple_colorer, simpletest2d)
 	for (auto c: s.colors)
 	 cout<<"Rank-"<<rank<<"::Shared-Boxes:colors = "<<c<<endl;
 	cout<<endl;
+        } 
       }
 
       for (auto g: col_depents[1].ghost[i])
       {
+        if (!g.box.isempty())
+        {
 	cout<<"Rank-"<<rank<<"::Ghost-Boxes:LBND  = { "<<g.box.lowerbnd[0]<<", "
 						       <<g.box.lowerbnd[1]<<" } "<<endl;
 
@@ -205,6 +218,7 @@ TEST(simple_colorer, simpletest2d)
 	for (auto c: g.colors)
 	 cout<<"Rank-"<<rank<<"::Ghost-Boxes:colors = "<<c<<endl;
 	cout<<endl;
+        } 
       }
 
       for (auto d: col_depents[1].domain_halo[i])
@@ -216,8 +230,9 @@ TEST(simple_colorer, simpletest2d)
 							    <<d.upperbnd[1]<<" } "<<endl;
       }
 
-      for (auto d: col_depents[1].overlay)
-      {
+    cout<<endl;
+    auto d = col_depents[1].overlay[i];
+    {
 	cout<<"Rank-"<<rank<<"::Overlay-Boxes:LBND  = { "<<d.lowerbnd[0]<<", "
 							    <<d.lowerbnd[1]<<" } "<<endl;
 
@@ -225,9 +240,10 @@ TEST(simple_colorer, simpletest2d)
 							    <<d.upperbnd[1]<<" } "<<endl;
       }
 
-      for (auto d: col_depents[1].strides){
-	cout<<"Rank-"<<rank<<"::Strides  = { "<<d[0]<<", "<<d[1]<<" } "<<endl;
-      }
-   }
+      cout<<endl;
+      auto str = col_depents[1].strides[i];
+      cout<<"Rank-"<<rank<<"::Strides  = { "<<str[0]<<", "<<str[1]<<" } "<<endl;
 
+   }  
+ 
 }

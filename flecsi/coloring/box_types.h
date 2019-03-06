@@ -26,45 +26,48 @@ namespace coloring {
  */
 
 struct box_t {
-  size_t dim_;  
+  size_t box_dim; 
+  size_t box_size = 0;  
   std::vector<size_t> lowerbnd;
   std::vector<size_t> upperbnd;
  
   box_t(){};   
   box_t(size_t dim)
   {
-    dim_ = dim; 
-    lowerbnd.resize(dim_,0);
-    upperbnd.resize(dim_,0);
+    box_dim = dim; 
+    lowerbnd.resize(box_dim,0);
+    upperbnd.resize(box_dim,0);
   }
-  /*
-  box_t (const box_t& box): 
-  dim_(box.dim_),
-  lowerbnd(box.lowerbnd),
-  upperbnd(box.upperbnd)
-  {}
-  */
- // box_t& operator = (const box_t &box)
  
-
   size_t dim()
   {
-    return dim_;
+    return box_dim;
   } 
 
   size_t size()
   {
     size_t count = 1;
-    for (size_t i = 0; i < dim_; i++)
+    for (size_t i = 0; i < box_dim; i++)
      count *= upperbnd[i]-lowerbnd[i]+1;
-    return count;
+    box_size = count; 
+    return box_size;
   }
 
   bool isempty()
   {
-    if (size() == 0)
-     return true; 
+    return (lowerbnd.empty() && upperbnd.empty()); 
+    //if (size() == 0)
+    // return true; 
   }
+ 
+  void resize(size_t dim)
+  {
+    box_dim = dim; 
+    lowerbnd.resize(box_dim,0);
+    upperbnd.resize(box_dim,0);
+  }
+  
+
   /*
   void print()
   {
@@ -159,7 +162,7 @@ struct box_coloring_t
     strides.resize(num_boxes); 
 
     // resize the inner vectors for ghost and shared
-    size_t sz = 3^dim - 1;
+    size_t sz = pow(3,dim) - 1;
     for (size_t i = 0; i < num_boxes; i++){ 
       ghost[i].resize(sz);
       shared[i].resize(sz);

@@ -1070,7 +1070,8 @@ private:
         }        
 
          //Compute the ghost boxes for entities of dimension d
-         for (size_t i = 0; i < 3^D-1; i++)
+        size_t count = pow(3,D)-1; 
+        for (size_t i = 0; i < count; i++)
          {
           if (!col_cells.ghost[0][i].box.isempty())
           { 
@@ -1082,6 +1083,8 @@ private:
 
              for (size_t k = 0; k <num_boxes; k++)
              {
+               ghost_boxes[k].box.resize(D); 
+
                for (size_t j = 0; j < D; j++)
               {
                 ghost_boxes[k].box.lowerbnd[j] = col_cells.ghost[0][i].box.lowerbnd[j]; 
@@ -1104,7 +1107,7 @@ private:
                 int opp_box_id_right = ghost2ghost_2d[i][2*j+1];
                 if ((opp_box_id_right != -1) && (!col_cells.ghost[0][opp_box_id_right].box.isempty()))
                 {
-                  size_t opp_rank = col_cells.ghost[0][opp_box_id_left].colors[0];
+                  size_t opp_rank = col_cells.ghost[0][opp_box_id_right].colors[0];
                   if (opp_rank < current_rank)
                     ghost_boxes[k].box.upperbnd[j] -= 1; 
                 }
@@ -1136,7 +1139,7 @@ private:
  
        
          //Compute the shared boxes for entities of dimension d
-         for (size_t i = 0; i < 3^D-1; i++)
+         for (size_t i = 0; i < count; i++)
          {
           if (!col_cells.shared[0][i].box.isempty())
           { 
@@ -1149,6 +1152,8 @@ private:
 
              for (size_t k = 0; k <num_boxes; k++)
              {
+               shared_boxes[k].box.resize(D); 
+
                for (size_t j = 0; j < D; j++)
               {
                 shared_boxes[k].box.lowerbnd[j] = col_cells.shared[0][i].box.lowerbnd[j]; 
@@ -1160,7 +1165,7 @@ private:
               for (size_t j = 0; j < D; j++)
               {
                 int opp_box_id_left = shared2ghost_2d[i][2*j]; 
-                if (opp_box_id_left != -1)
+                if ((opp_box_id_left != -1) && (!col_cells.ghost[0][opp_box_id_left].box.isempty()))
                 {
                   size_t opp_rank = col_cells.ghost[0][opp_box_id_left].colors[0];
                   if (opp_rank < current_rank)
@@ -1168,9 +1173,9 @@ private:
                 } 
 
                 int opp_box_id_right = shared2ghost_2d[i][2*j+1];
-                if (opp_box_id_right != -1)
+                if ((opp_box_id_right != -1) && (!col_cells.ghost[0][opp_box_id_right].box.isempty()))
                 {
-                  size_t opp_rank = col_cells.ghost[0][opp_box_id_left].colors[0];
+                  size_t opp_rank = col_cells.ghost[0][opp_box_id_right].colors[0];
                   if (opp_rank < current_rank)
                     shared_boxes[k].box.upperbnd[j] -= 1; 
                 } 
@@ -1184,21 +1189,28 @@ private:
          } // end loop over shared boxes
 
        //Compute the exclusive box for entities of dimension d  
+       std::vector<int> isconstant[2] = {{0,0},{0,1,1,0}};
        size_t current_rank = col_cells.exclusive[0].colors[0]; 
        box_color_t exclusive_boxes[num_boxes]; 
 
        for (size_t k = 0; k <num_boxes; k++)
        {
+          exclusive_boxes[k].box.resize(D);  
+   
           for (size_t j = 0; j < D; j++)
           {
             exclusive_boxes[k].box.lowerbnd[j] = col_cells.exclusive[0].box.lowerbnd[j];
             exclusive_boxes[k].box.upperbnd[j] = col_cells.exclusive[0].box.upperbnd[j]
                                                  + bnds_info[d][num_boxes*k+j+1];
 
-            if (!col_cells.partition[0].onbnd[2*j] )
-              exclusive_boxes[k].box.lowerbnd[j] += col_cells.partition[0].nhalo; 
-            if (!col_cells.partition[0].onbnd[2*j+1] )
-              exclusive_boxes[k].box.upperbnd[j]  -= col_cells.partition[0].nhalo; 
+            if ((!col_cells.partition[0].onbnd[2*j]) && (!isconstant[d][num_boxes*k+j]))
+              exclusive_boxes[k].box.lowerbnd[j] += 1; 
+            if ((!col_cells.partition[0].onbnd[2*j+1]) && (!isconstant[d][num_boxes*k+j]))
+              exclusive_boxes[k].box.upperbnd[j] -= 1;
+            // if (!col_cells.partition[0].onbnd[2*j] )
+            //  exclusive_boxes[k].box.lowerbnd[j] += col_cells.partition[0].nhalo; 
+            //if (!col_cells.partition[0].onbnd[2*j+1] )
+            //  exclusive_boxes[k].box.upperbnd[j]  -= col_cells.partition[0].nhalo; 
            }
 
          exclusive_boxes[k].colors.push_back(current_rank); 
@@ -1211,6 +1223,8 @@ private:
 
          for (size_t k = 0; k <num_boxes; k++)
          {
+            halo_boxes[k].resize(D); 
+
             for (size_t j = 0; j < D; j++)
             {
               halo_boxes[k].lowerbnd[j] = col_cells.domain_halo[0][i].lowerbnd[j]; 
@@ -1229,10 +1243,10 @@ private:
   } //dimension check
   } //color_intermediate_entities_
 
-   int shared2ghost_2d[8][4] = {{-1,1,-1,3},{0,2,-1,-1},{1,-1,-1,4},{-1,-1,0,5},
+   int ghost2ghost_2d[8][4] = {{-1,1,-1,3},{0,2,-1,-1},{1,-1,-1,4},{-1,-1,0,5},
                                 {-1,-1,2,7},{-1,6,3,-1},{5,7,-1,-1},{6,-1,4,-1}}; 
 
-   int ghost2ghost_2d[8][4] = {{3,-1,1,-1},{-1,-1,1,-1},{-1,4,1,-1},{3,-1,-1,-1},
+   int shared2ghost_2d[8][4] = {{3,-1,1,-1},{-1,-1,1,-1},{-1,4,1,-1},{3,-1,-1,-1},
                                {-1,4,-1,-1},{3,-1,-1,6},{-1,-1,-1,6},{-1,4,-1,6}}; 
 
    int ghost2partition_2d[8][4] = {{0,0,0,0},{0,0,0,1},{0,0,0,0},{0,1,0,0},
