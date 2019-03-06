@@ -149,22 +149,20 @@ public:
    @layout_constraints Layout constraints
   */
   virtual Legion::LogicalRegion default_policy_select_instance_region(
-                          Legion::Mapping::MapperContext ctx,
-                          Realm::Memory target_memory,
-                          const Legion::RegionRequirement &req,
-                          const Legion::LayoutConstraintSet &layout_constraints,
-                          bool force_new_instances,
-                          bool meets_constraints)
-  {
-      // If it is not something we are making a big region for just
-      // return the region that is actually needed
-      Legion::LogicalRegion result = req.region;
-      if (!meets_constraints || (req.privilege == REDUCE))
-        return result;
+    Legion::Mapping::MapperContext ctx,
+    Realm::Memory target_memory,
+    const Legion::RegionRequirement & req,
+    const Legion::LayoutConstraintSet & layout_constraints,
+    bool force_new_instances,
+    bool meets_constraints) {
+    // If it is not something we are making a big region for just
+    // return the region that is actually needed
+    Legion::LogicalRegion result = req.region;
+    if(!meets_constraints || (req.privilege == REDUCE))
+      return result;
 
-     return result;
-  }//default_policy_select_instance_region   
-
+    return result;
+  } // default_policy_select_instance_region
 
   /*!
    Specialization of the map_task funtion for FLeCSI
