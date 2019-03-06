@@ -51,7 +51,7 @@ before_script:
     paths:
       - ccache/
   artifacts:
-    name: "${CI_COMMIT_REF_SLUG}"
+    name: "${CI_COMMIT_REF_SLUG}_${CI_JOB_NAME}"
     paths:
       - ${CI_PROJECT_DIR}/ #/builds/next-generation-codes/laristra/flecsi/
     when: always
