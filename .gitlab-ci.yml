@@ -35,6 +35,7 @@ before_script:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
     CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
+    CCACHE_UMASK: 000
     DISTRO: ""
     RUNTIME: ""
     CC: "gcc"
@@ -53,7 +54,7 @@ before_script:
   artifacts:
     name: "${CI_COMMIT_REF_SLUG}-${CI_JOB_NAME}"
     paths:
-      - ${CI_PROJECT_DIR}/ #/builds/next-generation-codes/laristra/flecsi/
+      - ${CI_PROJECT_DIR}/build #/builds/next-generation-codes/laristra/flecsi/build
     when: always
   dependencies: []
   script:

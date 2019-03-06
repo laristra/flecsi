@@ -2,6 +2,7 @@
 
 usage="Usage: ${0##*/} [OPTIONS] path/to/artifacts.zip"
 tag="fedora"
+branch="master"
 dockername="flecsi_debug"
 
 die () {
@@ -14,14 +15,16 @@ show_help() {
 This script will start an environment to debug CI builds
 $usage
 OPTIONS:
-    --help          Show this help
--t, --tag TAG       Specify the docker tag of votca/buildenv to use
-                    Default: $tag
--n, --name NAME     Specify the name of docker build
-                    Default: $dockername
--c, --clean         Clean up temp dir and docker images 
+    --help           Show this help
+-t, --tag TAG        Specify the docker tag of laristra/flecsi-third-party to use
+                     Default: $tag
+-b, --branch BRANCH  Specify the branch of flecsi to use
+                     Default: $branch
+-n, --name NAME      Specify the name of docker build
+                     Default: $dockername
+-c, --clean          Clean up temp dir and docker images 
 
-Examples:  ${0##*/} --tag ubuntu ./storage/old_build.zip
+Examples:  ${0##*/} --tag ubuntu --branch feature/my/branch ./storage/old_build.zip
 
 Report bugs and comments at https://github.com/laristra/flecsi/issues
 eof
@@ -50,6 +53,9 @@ while [[ $# -gt 0 ]]; do
      dockername="$2"
      shift 2;;
    -t|--tag)
+     tag="$2"
+     shift 2;;
+   -b|--branch)
      tag="$2"
      shift 2;;
    -c|--clean)
@@ -82,13 +88,16 @@ set -e
 tmpdir=$(mktemp -d /tmp/${dockername}.XXXXXX)
 cd ${tmpdir}
 echo "Unzipping $zip to $tmpdir"
-unzip -q -d flecsi "$zip"
+unzip -q -d flecsi_build "$zip"
 docker pull laristra/flecsi-third-party:${tag}
 basedir=/builds/next-generation-codes/laristra/flecsi
 cat > Dockerfile <<EOF
 FROM laristra/flecsi-third-party:${tag}
+RUN git clone https://github.com/laristra/flecsi.git
+RUN git checkout ${branch}
+RUN git submodule update --init --recursive
 WORKDIR ${basedir}/build
 EOF
 docker build -t ${dockername} .
-echo "Use 'docker run -it -v ${tmpdir}/flecsi:${basedir} ${dockername} /bin/bash' to re-run this"
-docker run -it -v ${tmpdir}/flecsi:${basedir} ${dockername} /bin/bash
+echo "Use 'docker run -it -v ${tmpdir}/flecsi_build:${basedir}/build ${dockername} /bin/bash' to re-run this"
+docker run -it -v ${tmpdir}/flecsi_build:${basedir}/build ${dockername} /bin/bash
