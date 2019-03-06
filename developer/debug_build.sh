@@ -24,7 +24,7 @@ OPTIONS:
                      Default: $dockername
 -c, --clean          Clean up temp dir and docker images 
 
-Examples:  ${0##*/} --tag ubuntu --branch feature/my/branch ./storage/old_build.zip
+Examples:  ./${0##*/} --tag ubuntu --branch feature/my/branch ./storage/old_build.zip
 
 Report bugs and comments at https://github.com/laristra/flecsi/issues
 eof
@@ -56,7 +56,7 @@ while [[ $# -gt 0 ]]; do
      tag="$2"
      shift 2;;
    -b|--branch)
-     tag="$2"
+     branch="$2"
      shift 2;;
    -c|--clean)
      clean_up
@@ -82,7 +82,7 @@ zip="$1"
 [[ -f $zip ]] || die "Cannot read '$zip'"
 [[ $zip != /* ]] && zip="$PWD/$zip"
 
-[[ $tag = @(ubuntu|ubuntu_mpich|fedora|fedora_mpich) ]] || die "Unknown tag"
+[[ $tag = @(ubuntu|ubuntu_mpich|fedora|fedora_mpich) ]] || die "Unknown tag: ${tag}"
 
 set -e
 tmpdir=$(mktemp -d /tmp/${dockername}.XXXXXX)
