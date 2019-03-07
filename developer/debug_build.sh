@@ -88,8 +88,9 @@ set -e
 tmpdir=$(mktemp -d /tmp/${dockername}.XXXXXX)
 cd ${tmpdir}
 echo "Unzipping $zip to $tmpdir"
-unzip -q -d flecsi_build "$zip"
+unzip -q -d flecsi "$zip"
 docker pull laristra/flecsi-third-party:${tag}
+
 basedir=/builds/next-generation-codes/laristra
 cat > Dockerfile <<EOF
 FROM laristra/flecsi-third-party:${tag}
@@ -97,14 +98,11 @@ WORKDIR ${basedir}
 USER root
 RUN chown -R flecsi:flecsi ${basedir}
 USER flecsi
-RUN git clone https://github.com/laristra/flecsi.git
+RUN git clone --recursive --single-branch --branch ${branch} --depth 1 https://github.com/laristra/flecsi.git
 WORKDIR flecsi
-RUN git checkout ${branch}
-RUN git submodule update --init --recursive
 RUN mkdir build
 WORKDIR build
 EOF
 docker build -t ${dockername} .
-echo "Use 'docker run -it -v ${tmpdir}/flecsi_build:${basedir}/flecsi ${dockername} /bin/bash' to re-run this"
-docker run -it -v ${tmpdir}/flecsi_build:${basedir}/flecsi ${dockername} /bin/bash
-
+echo "Use 'docker run -it -v ${tmpdir}/flecsi/build:${basedir}/flecsi/build ${dockername} /bin/bash' to re-run this"
+docker run -it -v ${tmpdir}/flecsi/build:${basedir}/flecsi/build ${dockername} /bin/bash
