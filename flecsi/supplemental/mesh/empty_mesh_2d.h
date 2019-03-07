@@ -71,6 +71,7 @@ namespace supplemental {
         default:
           assert(false && "invalid domain");
       }
+      return nullptr;
     }
   };
 
