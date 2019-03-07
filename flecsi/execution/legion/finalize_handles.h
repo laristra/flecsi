@@ -128,9 +128,7 @@ struct finalize_handles_t
     std::memcpy(
       h.entries_data[0], h.entries, md->num_exclusive_filled * sizeof(value_t));
 
-    std::memcpy(h.entries_data[1],
-
-      h.entries + h.reserve * sizeof(value_t),
+    std::memcpy(h.entries_data[1], h.entries + h.reserve * sizeof(value_t),
       h.num_shared() * sizeof(value_t) * h.max_entries_per_index());
 #endif
 

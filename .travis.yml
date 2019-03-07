@@ -1,67 +1,76 @@
 language: cpp
-
 sudo: required
-
 services:
-- docker
+  - docker
+
+branches:
+  only:
+  - master
+  -  /^stable\/.*$/
+
+cache:
+  ccache: true
+
+stages:
+  - name: canary
+  - name: coverage
+  - name: test
+    if: type != pull_request
+
+jobs:
+  fast_finish: true
+  include:
+    - stage: canary
+      env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
+      compiler: gcc
+
+    - stage: coverage
+      env: DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
+      compiler: gcc
+    - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
+      compiler: gcc
+    - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+      compiler: gcc
+    - env: DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
+      compiler: clang
+    - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
+      compiler: clang
+    - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+      compiler: clang
+  allow_failures:
+    - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+      compiler: gcc
+    - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+      compiler: clang
+
+compiler:
+  - gcc
+  - clang
 
 env:
   matrix:
-    - DISTRO=ubuntu RUNTIME=legion DOCKERHUB=true
-    - DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true WERROR=yes
-    - DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true
-    - DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes
-    - DISTRO=ubuntu_mpich RUNTIME=mpi DOCKERHUB=true
-    - DISTRO=ubuntu_mpich RUNTIME=mpi WERROR=yes
+    - DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
+    - DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
+    - DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
+    - DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
 
-    - DISTRO=fedora RUNTIME=legion    DOCKERHUB=true
-    - DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
-    - DISTRO=fedora RUNTIME=legion    WERROR=yes
-    - DISTRO=fedora RUNTIME=mpi    DOCKERHUB=true
-    - DISTRO=fedora RUNTIME=mpi    IGNORE_NOCI=true
-    - DISTRO=fedora RUNTIME=mpi    WERROR=yes
-#    - DISTRO=fedora RUNTIME=hpx    DOCKERHUB=true
-#    - DISTRO=fedora RUNTIME=hpx    WERROR=yes
-    - DISTRO=fedora_mpich RUNTIME=legion DOCKERHUB=true
-    - DISTRO=fedora_mpich RUNTIME=legion IGNORE_NOCI=true
-    - DISTRO=fedora_mpich RUNTIME=legion WERROR=yes
-    - DISTRO=fedora_mpich RUNTIME=mpi DOCKERHUB=true
-    - DISTRO=fedora_mpich RUNTIME=mpi IGNORE_NOCI=true
-    - DISTRO=fedora_mpich RUNTIME=mpi WERROR=yes
-#    - DISTRO=fedora RUNTIME=legion COVERAGE=ON
-#    - DISTRO=fedora RUNTIME=mpi    COVERAGE=ON
-#    - DISTRO=fedora RUNTIME=hpx    COVERAGE=ON
+    - DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
 
 matrix:
+  fast_finish: true
   allow_failures:
-    - compiler: clang
-      env: DISTRO=ubuntu RUNTIME=mpi DOCKERHUB=true WERROR=yes 
-    - compiler: clang
-      env: DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes 
-    - compiler: gcc
-      env: DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
-    - compiler: clang
-      env: DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
-    - compiler: gcc
-      env: DISTRO=fedora_mpich RUNTIME=legion IGNORE_NOCI=true
-    - compiler: clang
-      env: DISTRO=fedora_mpich RUNTIME=legion IGNORE_NOCI=true
-    - compiler: clang
-      env: DISTRO=ubuntu_mpich RUNTIME=mpi WERROR=yes
-    - compiler: clang
-      env: DISTRO=fedora RUNTIME=mpi WERROR=yes
-    - compiler: clang
-      env: DISTRO=fedora RUNTIME=hpx    DOCKERHUB=true
-    - compiler: clang
-      env: DISTRO=fedora RUNTIME=hpx    IGNORE_NOCI=true
-    - compiler: clang
-      env: DISTRO=fedora RUNTIME=hpx    WERROR=yes
-    - compiler: clang
-      env: DISTRO=fedora RUNTIME=hpx    COVERAGE=ON
+    - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+      compiler: gcc
+    - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+      compiler: clang
 
 before_install:
- - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
- - git fetch --unshallow && git fetch --tags #for versioning
+  - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+  - git fetch --unshallow && git fetch --tags #for versioning
 
 script:
   - cp -vr docker ${HOME}/docker
@@ -74,9 +83,12 @@ script:
   - travis_retry timeout 540 docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
   - docker build 
                 --build-arg LEGION=${LEGION} 
+                --build-arg BUILD_TYPE=${BUILD_TYPE}
                 --build-arg RUNTIME=${RUNTIME} 
                 --build-arg CXXFLAGS="${WERROR:+-Werror} -Wno-deprecated-declarations"
-                --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
+                --build-arg COVERAGE=${COVERAGE}
+                --build-arg MINIMAL=${MINIMAL}
+                --build-arg CLANG_FORMAT=${CLANG_FORMAT}
                 --build-arg CC=${CC} --build-arg CXX=${CXX}
                 --build-arg CI=${CI} --build-arg TRAVIS=${TRAVIS} --build-arg TRAVIS_OS_NAME=${DISTRO}
                 --build-arg IGNORE_NOCI=${IGNORE_NOCI}
@@ -90,7 +102,8 @@ script:
     docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
 
 after_success:
-  - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable) && ${DOCKERHUB} = true ]] && DEPLOY=yes
+  - test "${TRAVIS_BUILD_STAGE_NAME}" != "Test" || travis_terminate 0
+  - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable) ]] && DEPLOY=yes
   - if [[ ${DEPLOY} = yes && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false ]]; then
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}";
@@ -120,22 +133,10 @@ after_success:
       fi;
     fi
 
-branches:
-  only:
-  - master
-  -  /^stable\/.*$/
-
-cache:
-  ccache: true
-
-compiler:
-  - gcc
-  - clang
-
 notifications:
   branches:
     only:
-      - stable
+      - master
   email:
     recipients:
       secure: OzppTS3kOkp5+052T8DMtXiNmUO5OttAY01kC1lDqwdPVAQiFvrnR3iqz/AJIJk5bNsI0vbmRtCBL4PnH3aUm7CUpXN3RF7vF0vpl0PxPMc/Ms4Trsrv96jqPyoJoACRqgk6W7/pdr8OXbYTh+7u2bO9/sUaZTDT/PbH9RQdKrDa2u+uebL9s0FTo/ObZSNXRAoXmSY46gDXzWbEVO2co6ETu4eXy/Bu0wvhB4jXneA+0sv8dXAmRmvL1tsxTeAEcV2MxLlaiVPAyvpCLzt3ZRvkohAjCeQaVTTo8hP0S7YdAMwUmAcMI8NASWVh8fcaFV72IsFkg7nD2Jiv7mRt52vwqDiJLw65LN9/+ltrK142F/nFUSeB9ynPBjbpXyEMl4nsBbO9hk5io4lKYQ/EJ2WJyCPaFtuy1fR9Gzrjj/LwKPw2WrxAlrlNYlIFdMDvltTXGegheVNePDHSOc6AS/32VW4A8fZh5gUAfB96XveRj0fGegCyFdIzErZg4fiZxOEDkqeB8sxuPnX+ylKr2gWsjpfs+etjnANVsgfPMOWaIsW8K2FqVIiTEoGGELoQHEe5uzOcXgtRQSbji2U28c5pRhNHdoitODwlTMVE/3WEiQksFGztR675LlPfF15+HyjWnAS/gN5vLIqmrQoZcp1+Pbr4ebxwTcL4JSGUaPs=

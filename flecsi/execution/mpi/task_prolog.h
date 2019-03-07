@@ -1,16 +1,16 @@
-    /*
-    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
-   /@@/////  /@@          @@////@@ @@////// /@@
-   /@@       /@@  @@@@@  @@    // /@@       /@@
-   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
-   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
-   /@@       /@@/@@//// //@@    @@       /@@/@@
-   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-   //       ///  //////   //////  ////////  //
+/*
+@@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+/@@/////  /@@          @@////@@ @@////// /@@
+/@@       /@@  @@@@@  @@    // /@@       /@@
+/@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+/@@////   /@@/@@@@@@@/@@       ////////@@/@@
+/@@       /@@/@@//// //@@    @@       /@@/@@
+/@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+//       ///  //////   //////  ////////  //
 
-   Copyright (c) 2016, Los Alamos National Security, LLC
-   All rights reserved.
-                                                                              */
+Copyright (c) 2016, Los Alamos National Security, LLC
+All rights reserved.
+                                                                          */
 #pragma once
 
 /*! @file */
@@ -131,8 +131,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<
-            T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
+    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
     handle(static_cast<base_t &>(a));
   } // handle
 
