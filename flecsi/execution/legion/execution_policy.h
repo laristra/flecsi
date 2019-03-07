@@ -104,7 +104,7 @@ struct legion_execution_policy_t {
   static bool
   register_task(processor_type_t processor, launch_t launch, std::string name) {
 
-    using wrapper_t = task_wrapper_u<TASK, RETURN, ARG_TUPLE, DELEGATE>;
+    using wrapper_t = legion::task_wrapper_u<TASK, RETURN, ARG_TUPLE, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
       TASK, processor, launch, name, wrapper_t::registration_callback);

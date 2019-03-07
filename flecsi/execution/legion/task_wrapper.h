@@ -209,27 +209,61 @@ struct task_wrapper_u {
     // Unpack task arguments
     ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
-    init_handles_t init_handles(runtime, context, regions, task->futures);
-    init_handles.walk(task_args);
-
-    context_t & context_ = context_t::instance();
-    context_.set_color(task->index_point.point_data[0]);
+// FIXME: Refactor
+    //init_handles_t init_handles(runtime, context, regions, task->futures);
+    //init_handles.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
       (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
-      finalize_handles_t finalize_handles;
-      finalize_handles.walk(task_args);
+// FIXME: Refactor
+      //finalize_handles_t finalize_handles;
+      //finalize_handles.walk(task_args);
     }
     else {
       RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
-      finalize_handles_t finalize_handles;
-      finalize_handles.walk(task_args);
+// FIXME: Refactor
+      //finalize_handles_t finalize_handles;
+      //finalize_handles.walk(task_args);
 
       return result;
     } // if
   } // execute_user_task
+
+  /*!
+    Execution wrapper method for MPI tasks.
+   */
+
+  static void execute_mpi_task(const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime) {
+// FIXME: Refactor
+//    {
+//      flog_tag_guard(task_wrapper);
+//      flog(info) << "In execute_mpi_task" << std::endl;
+//    }
+
+    // Unpack task arguments.
+    ARG_TUPLE & mpi_task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
+
+// FIXME: Refactor
+    //init_handles_t init_handles(runtime, context, regions, task->futures);
+    //init_handles.walk(mpi_task_args);
+
+    // Create bound function to pass to MPI runtime.
+    std::function<void()> bound_mpi_task = std::bind(DELEGATE, mpi_task_args);
+
+    // Set the MPI function and make the runtime active.
+    context_t::instance().set_mpi_task(bound_mpi_task);
+    context_t::instance().set_mpi_state(true);
+
+// FIXME: Refactor
+    //finalize_handles_t finalize_handles;
+    //finalize_handles.walk(mpi_task_args);
+
+  } // execute_mpi_task
 
 }; // struct task_wrapper_u
 

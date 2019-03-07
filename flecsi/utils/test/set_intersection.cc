@@ -52,4 +52,4 @@ void set_intersection(int argc, char ** argv) {
   EXPECT_EQ(intersects(e, f), false);
 }
 
-ftest_register_test(set_intersection)
+ftest_register_test(set_intersection);

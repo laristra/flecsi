@@ -74,56 +74,37 @@ flecsi_register_control_options(control_t);
 } // namespace control
 } // namespace flecsi
 
-#define ftest_register_initialize(action, ...)                                 \
+#define ftest_register_action(action, control_point, ...)                      \
   inline bool ftest_initialize_##action##_registered =                         \
     flecsi::control::control_t::instance()                                     \
-      .control_point_map(flecsi::control::initialize,                                  \
-        EXPAND_AND_STRINGIFY(flecsi::control::initialize))                     \
-      .initialize_node(                                                        \
-        {flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(action)}.hash(),   \
-          EXPAND_AND_STRINGIFY(action), action, ##__VA_ARGS__});
+      .control_point_map(flecsi::control::control_point,                       \
+        flecsi_internal_stringify(flecsi::control::control_point))             \
+      .initialize_node({flecsi_internal_hash(action),                          \
+        flecsi_internal_stringify(action), action, ##__VA_ARGS__})
 
-#define ftest_add_initialize_dependency(to, from)                              \
+#define ftest_add_dependency(control_point, to, from)                          \
   inline bool ftest_registered_initialize_##to##from =                         \
     flecsi::control::control_t::instance()                                     \
-      .control_point_map(flecsi::control::initialize)                                  \
-      .add_edge(                                                               \
-        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(),        \
-        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())
+      .control_point_map(flecsi::control::control_point)                       \
+      .add_edge(flecsi_internal_hash(to), flecsi_internal_hash(from))
+
+#define ftest_register_initialize(action, ...)                                 \
+  ftest_register_action(action, initialize, ##__VA_ARGS__)
+
+#define ftest_add_initialize_dependency(to, from)                              \
+  ftest_add_dependency(initialize, to, from)
 
 #define ftest_register_test(action, ...)                                       \
-  inline bool ftest_test_##action##_registered =                               \
-    flecsi::control::control_t::instance()                                     \
-      .control_point_map(                                                              \
-        flecsi::control::test, EXPAND_AND_STRINGIFY(flecsi::control::test))    \
-      .initialize_node(                                                        \
-        {flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(action)}.hash(),   \
-          EXPAND_AND_STRINGIFY(action), action, ##__VA_ARGS__});
+  ftest_register_action(action, test, ##__VA_ARGS__)
 
 #define ftest_add_test_dependency(to, from)                                    \
-  inline bool ftest_registered_test_##to##from =                               \
-    flecsi::control::control_t::instance()                                     \
-      .control_point_map(flecsi::control::test)                                        \
-      .add_edge(                                                               \
-        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(),        \
-        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())
+  ftest_add_dependency(test, to, from)
 
 #define ftest_register_finalize(action, ...)                                   \
-  inline bool ftest_finalize_##action##_registered =                           \
-    flecsi::control::control_t::instance()                                     \
-      .control_point_map(flecsi::control::finalize,                                    \
-        EXPAND_AND_STRINGIFY(flecsi::control::finalize))                       \
-      .initialize_node(                                                        \
-        {flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(action)}.hash(),   \
-          EXPAND_AND_STRINGIFY(action), action, ##__VA_ARGS__});
+  ftest_register_action(action, finalize, ##__VA_ARGS__)
 
 #define ftest_add_finalize_dependency(to, from)                                \
-  inline bool ftest_registered_finalize_##to##from =                           \
-    flecsi::control::control_t::instance()                                     \
-      .control_point_map(flecsi::control::finalize)                                    \
-      .add_edge(                                                               \
-        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(),        \
-        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())
+  ftest_add_dependency(finalize, to, from)
 
 #include <flecsi/execution/context.h>
 

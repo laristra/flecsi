@@ -16,13 +16,13 @@
 #include <flecsi/data/data.h>
 #include <flecsi/utils/ftest.h>
 
-flecsi_register_global(test, global, double, 2);
+flecsi_register_global("test", "global", double, 2);
 
 void global(int argc, char ** argv) {
 
   FTEST();
 
-  auto th = flecsi_get_global(test, global, double, 0);
+  auto th = flecsi_get_global("test", "global", double, 0);
 
 }
 
