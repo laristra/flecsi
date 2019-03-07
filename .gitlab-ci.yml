@@ -99,6 +99,7 @@ before_script:
       then
         cd ${CI_PROJECT_DIR}/build/;
         clang-format -version;
+        git -C ../cinch diff;
         make format-FleCSI && git diff --exit-code;
       fi;
 
