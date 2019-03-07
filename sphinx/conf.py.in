@@ -6,10 +6,6 @@
 
 import sys
 
-# Add the Breathe path
-# FIXME: This should be discovered during cmake configuration
-#sys.path.append("@CINCH_BREATHE_PACKAGE_DIR@")
-
 # Sphinx extensions as list of strings
 extensions = [
     'sphinx.ext.mathjax',
