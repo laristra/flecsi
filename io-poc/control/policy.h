@@ -50,16 +50,16 @@ struct control_policy_t {
 
   using evolve = flecsi::control::cycle_u<
     evolve_control, // stopping predicate
-    phase(advance),
-    phase(analyze),
-    phase(io),
-    phase(mesh)
+    control_point(advance),
+    control_point(analyze),
+    control_point(io),
+    control_point(mesh)
   >;
 
-  using phases = std::tuple<
-    phase(initialize),
+  using control_points = std::tuple<
+    control_point(initialize),
     evolve,
-    phase(finalize)
+    control_point(finalize)
   >;
 
   size_t & step() { return step_; }

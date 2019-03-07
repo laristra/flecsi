@@ -131,7 +131,7 @@ legion_context_policy_t::unset_call_mpi(Legion::Context & ctx,
   }
 
   const auto tid = context_t::instance()
-                     .task_id<flecsi_internal_task_key(unset_call_mpi_task)>();
+                     .task_id<flecsi_internal_hash(unset_call_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   // IRINA DEBUG check number of processors
@@ -152,7 +152,7 @@ void
 legion_context_policy_t::handoff_to_mpi(Legion::Context & ctx,
   Legion::Runtime * runtime) {
   const auto tid = context_t::instance()
-                     .task_id<flecsi_internal_task_key(handoff_to_mpi_task)>();
+                     .task_id<flecsi_internal_hash(handoff_to_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(tid,
@@ -173,7 +173,7 @@ Legion::FutureMap
 legion_context_policy_t::wait_on_mpi(Legion::Context & ctx,
   Legion::Runtime * runtime) {
   const auto tid =
-    context_t::instance().task_id<flecsi_internal_task_key(wait_on_mpi_task)>();
+    context_t::instance().task_id<flecsi_internal_hash(wait_on_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(tid,

@@ -125,6 +125,19 @@ struct const_string_hasher_t {
  *----------------------------------------------------------------------------*/
 
 /*!
+  @def flecsi_internal_string_hash
+
+  This macro returns the hash of constant string version of the given name.
+
+  @param name The string to hash.
+
+  @ingroup utils
+ */
+
+#define flecsi_internal_string_hash(name)                                      \
+  flecsi::utils::const_string_t{name}.hash()
+
+/*!
   @def flecsi_internal_hash
 
   This macro returns the hash of constant string version of the given name.
@@ -135,4 +148,4 @@ struct const_string_hasher_t {
  */
 
 #define flecsi_internal_hash(name)                                             \
-  flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
+  flecsi::utils::const_string_t{flecsi_internal_stringify(name)}.hash()

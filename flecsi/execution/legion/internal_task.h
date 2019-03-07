@@ -35,27 +35,6 @@
 #include <legion.h>
 
 /*!
-  @def flecsi_internal_task_key
-
-  Convenience macro to create a task key from Legion task information.
-
-  @param task      The Legion task to register.
-  @param processor The processor type \ref processor_t.
-  @param single    A boolean indicating whether this task can be run as a
-                   single task.
-  @param index     A boolean indicating whether this task can be run as an
-                   index space launch.
-
- @ingroup legion-execution
- */
-
-#define flecsi_internal_task_key(task)                                         \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  /* Use const_string_t interface to create the key */                         \
-  flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()
-
-/*!
   @def flecsi_internal_register_legion_task
 
   This macro registers an internal Legion task.
@@ -74,6 +53,6 @@
   /* Call the execution policy to register the task */                         \
   inline bool task##_task_registered =                                         \
     flecsi::execution::legion_execution_policy_t::register_legion_task<        \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+      flecsi_internal_hash(task),                                              \
       typename flecsi::utils::function_traits_u<decltype(task)>::return_type,  \
-      task>(processor, launch, {EXPAND_AND_STRINGIFY(task)})
+      task>(processor, launch, {flecsi_internal_stringify(task)})

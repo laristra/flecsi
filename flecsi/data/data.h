@@ -41,8 +41,8 @@
   likely be deferred.
 
   @param type   The \ref topology type.
-  @param nspace The namespace to use to register the variable.
-  @param name   The name to use to register the variable.
+  @param nspace The string namespace to use to register the variable.
+  @param name   The string name to use to register the variable.
 
   @ingroup data
  */
@@ -51,10 +51,10 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the client interface to register the data */                         \
-  inline bool client_type##_##nspace##_##name##_client_registered =            \
+  inline bool flecsi_internal_unique_name(client_registration_) =              \
     flecsi::data::client_interface_t::register_client<type,                    \
-      flecsi_internal_hash(nspace), flecsi_internal_hash(name)>(               \
-      {EXPAND_AND_STRINGIFY(name)})
+      flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name)>( \
+      {flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_get_topology_handle
@@ -62,8 +62,8 @@
   Access a topology.
 
   @param type   The topology type.
-  @param nspace The namespace to use to access the variable.
-  @param name   The name of the data variable to access.
+  @param nspace The string namespace to use to access the variable.
+  @param name   The string name of the data variable to access.
 
   @ingroup data
  */
@@ -73,7 +73,7 @@
                                                                                \
   /* Call the storage policy to get a handle to the data client */             \
   flecsi::data::client_interface_t::get_client_handle<type,                    \
-    flecsi_internal_hash(nspace), flecsi_internal_hash(name)>()
+    flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name)>()
 
 /*----------------------------------------------------------------------------*
   Field Interface.
@@ -104,8 +104,9 @@
   /* Call the storage policy to get a handle to the data */                    \
   flecsi::data::field_interface_t::get_handle<                                 \
     typename flecsi::client_type_u<decltype(topology)>::type,                  \
-    flecsi::data::storage_class, data_type, flecsi_internal_hash(nspace),      \
-    flecsi_internal_hash(name), version>(topology)
+    flecsi::data::storage_class, data_type,                                    \
+    flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name),    \
+    version>(topology)
 
 /*----------------------------------------------------------------------------*
   Global Topology Interface.
@@ -114,7 +115,7 @@
 namespace flecsi {
 namespace topology {
 
-flecsi_register_topology(global_topology_t, global_client, global_client);
+flecsi_register_topology(global_topology_t, "global_client", "global_client");
 
 } // namespace topology
 } // namespace flecsi
@@ -127,8 +128,8 @@ flecsi_register_topology(global_topology_t, global_client, global_client);
   primary function is to describe the field data to the runtime.
   Memory allocation will likely be deferred.
 
-  @param nspace        The namespace to use to register the variable.
-  @param name          The name of the data variable to register.
+  @param nspace        The string namespace to use to register the variable.
+  @param name          The string name of the data variable to register.
   @param data_type     The data type to store, e.g., double or my_type_t.
   @param storage_class The storage type for the data \ref storage_class_t.
   @param versions      The number of versions of the data to register. This
@@ -142,19 +143,20 @@ flecsi_register_topology(global_topology_t, global_client, global_client);
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
-  inline bool client_type##_##nspace##_##name##_data_registered =              \
+  inline bool flecsi_internal_unique_name(global_field) =                      \
     flecsi::data::field_interface_t::register_field<                           \
       flecsi::topology::global_topology_t, flecsi::data::global, data_type,    \
-      flecsi_internal_hash(nspace), flecsi_internal_hash(name), versions,      \
-      flecsi::topology::global_index_space>({EXPAND_AND_STRINGIFY(name)})
+      flecsi_internal_string_hash(nspace),                                     \
+      flecsi_internal_string_hash(name), versions,                             \
+      flecsi::topology::global_index_space>({flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_get_global
 
   Access global data
 
-  @param nspace        The namespace to use to access the variable.
-  @param name          The name of the data variable to access.
+  @param nspace        The string namespace to use to access the variable.
+  @param name          The string of the data variable to access.
   @param data_type     The data type to access, e.g., double or my_type_t.
   @param storage_class The storage type for the data \ref storage_class_t.
   @param version       The version number of the data to access. This
@@ -170,7 +172,7 @@ flecsi_register_topology(global_topology_t, global_client, global_client);
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_handle(                                                           \
     flecsi_get_topology_handle(                                                \
-      flecsi::topology::global_topology_t, global_client, global_client),      \
+      flecsi::topology::global_topology_t, "global_client", "global_client"),  \
     nspace, name, data_type, global, version)
 
 /*----------------------------------------------------------------------------*
@@ -180,7 +182,7 @@ flecsi_register_topology(global_topology_t, global_client, global_client);
 namespace flecsi {
 namespace topology {
 
-flecsi_register_topology(color_topology_t, color_client, color_client);
+flecsi_register_topology(color_topology_t, "color_client", "color_client");
 
 } // namespace topology
 } // namespace flecsi
@@ -212,3 +214,29 @@ flecsi_register_topology(color_topology_t, color_client, color_client);
       flecsi::topology::color_topology_t, flecsi::data::color, data_type,      \
       flecsi_internal_hash(nspace), flecsi_internal_hash(name), versions,      \
       flecsi::topology::color_index_space>({EXPAND_AND_STRINGIFY(name)})
+
+/*!
+  @def flecsi_get_color
+
+  Access color data
+
+  @param nspace        The string namespace to use to access the variable.
+  @param name          The string of the data variable to access.
+  @param data_type     The data type to access, e.g., double or my_type_t.
+  @param storage_class The storage type for the data \ref storage_class_t.
+  @param version       The version number of the data to access. This
+                       parameter can be used to manage multiple data versions,
+                       e.g., for new and old state.
+
+  @ingroup data
+ */
+
+#define flecsi_get_color(nspace, name, data_type, version)                     \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* WARNING: This macro returns a handle. Don't add terminations! */          \
+  flecsi_get_handle(                                                           \
+    flecsi_get_topology_handle(                                                \
+      flecsi::topology::color_topology_t, "color_client", "color_client"),  \
+    nspace, name, data_type, color, version)
+
