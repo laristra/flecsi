@@ -65,11 +65,11 @@ void global_object(int argc, char ** argv) {
 
   FTEST();
 
-  flecsi_add_global_object(0, objects, derived_a_t, 10);
-  flecsi_add_global_object(1, objects, derived_b_t, 20);
+  flecsi_add_global_object(0, "objects", derived_a_t, 10);
+  flecsi_add_global_object(1, "objects", derived_b_t, 20);
 
-  auto go_a = flecsi_get_global_object(0, objects, base_t);
-  auto go_b = flecsi_get_global_object(1, objects, base_t);
+  auto go_a = flecsi_get_global_object(0, "objects", base_t);
+  auto go_b = flecsi_get_global_object(1, "objects", base_t);
 
   ASSERT_EQ((*go_a)(), 10);
   ASSERT_EQ((*go_b)(), 100);

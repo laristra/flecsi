@@ -94,20 +94,20 @@
   Add a global object to the context. Global objects cannot be added
   from within a task. Attempts to do so will generate a runtime error.
 
-  @param index  The index of the global object within the given namespace.
-  @param nspace The namespace of the global object.
-  @param type   The type of the global object.
+  @param index  The size_t index of the global object within the given scope.
+  @param scope  The string scope of the global object.
+  @param type   The C++ type of the global object.
   @param ...    A variadic argument list of the runtime arguments to the
                 constructor.
 
   @ingroup execution
  */
 
-#define flecsi_add_global_object(index, nspace, type, ...)                     \
+#define flecsi_add_global_object(index, scope, type, ...)                      \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi::execution::context_t::instance()                                     \
-    .template add_global_object<flecsi_internal_hash(nspace), type>(           \
+    .template add_global_object<flecsi_internal_string_hash(scope), type>(     \
       index, ##__VA_ARGS__);
 
 /*!
@@ -115,18 +115,19 @@
 
   Get a global object instance.
 
-  @param index  The index of the global object within the given namespace.
-  @param nspace The namespace of the global object.
+  @param index  The size_t index of the global object within the given scope.
+  @param scope  The string scope of the global object.
   @param type   The type of the global object.
 
   @ingroup execution
  */
 
-#define flecsi_get_global_object(index, nspace, type)                          \
+#define flecsi_get_global_object(index, scope, type)                           \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi::execution::context_t::instance()                                     \
-    .template get_global_object<flecsi_internal_hash(nspace), type>(index);
+    .template get_global_object<flecsi_internal_string_hash(scope),            \
+      type>(index);
 
 //----------------------------------------------------------------------------//
 // Task Registration Interface
@@ -176,7 +177,7 @@
   avoid the possiblity of naming collisions.
 
   @param task      The task to register. This is normally just a function.
-  @param nspace    The enclosing namespace of the task.
+  @param nspace    The enclosing C++ namespace of the task.
   @param processor The \ref processor_type_t type.
   @param launch    The \ref launch_t type. This may be an \em or list of
                    supported launch types and configuration options.
@@ -240,7 +241,7 @@
   This macro executes a user task.
 
   @param task   The user task to execute.
-  @param nspace The enclosing namespace of the task.
+  @param nspace The enclosing C++ namespace of the task.
   @param launch The launch mode for the task.
   @param ...    The arguments to pass to the user task during execution.
 
