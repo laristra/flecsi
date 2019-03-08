@@ -320,7 +320,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   #
   # Compacted storage interface
   #
-  option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper compaction" OFF)
+  option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper compaction" ON)
 
   if(ENABLE_MAPPER_COMPACTION)
     add_definitions(-DMAPPER_COMPACTION)

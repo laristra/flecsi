@@ -46,7 +46,10 @@
   #if !defined(REALM_USE_CMAKE)
     #define REALM_USE_CMAKE
   #endif
-  #define ENABLE_LEGION_TLS
+  
+  #if !defined(ENABLE_LEGION_TLS)
+    #define ENABLE_LEGION_TLS
+  #endif
 
   #if !defined(MAPPER_COMPACTION)
     #cmakedefine MAPPER_COMPACTION

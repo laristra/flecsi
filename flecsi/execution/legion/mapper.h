@@ -141,6 +141,30 @@ public:
   }
 
   /*!
+   Specialization of the default_policy_select_instance_region methid for FleCSI
+
+   @param ctx Mapper Context
+   @param target_memory target memory for the instance to be allocated
+   @param req Reqion requirement for witch instance is going to be allocated
+   @layout_constraints Layout constraints
+  */
+  virtual Legion::LogicalRegion default_policy_select_instance_region(
+    Legion::Mapping::MapperContext ctx,
+    Realm::Memory target_memory,
+    const Legion::RegionRequirement & req,
+    const Legion::LayoutConstraintSet & layout_constraints,
+    bool force_new_instances,
+    bool meets_constraints) {
+    // If it is not something we are making a big region for just
+    // return the region that is actually needed
+    Legion::LogicalRegion result = req.region;
+    if(!meets_constraints || (req.privilege == REDUCE))
+      return result;
+
+    return result;
+  } // default_policy_select_instance_region
+
+  /*!
    Specialization of the map_task funtion for FLeCSI
    By default, map_task will execute Legions map_task from DefaultMapper.
    In the case the launcher has been tagged with the
@@ -159,31 +183,38 @@ public:
     Legion::Mapping::Mapper::MapTaskOutput & output) {
     DefaultMapper::map_task(ctx, task, input, output);
 
+#ifdef MAPPER_COMPACTION
     if((task.tag == MAPPER_COMPACTED_STORAGE) && (task.regions.size() > 0)) {
 
       Legion::Memory target_mem =
         DefaultMapper::default_policy_select_target_memory(
           ctx, task.target_proc, task.regions[0]);
 
-      // check if we get region requirements for "exclusive, shared and ghost"
-      // logical regions for each data handle
-
-      // Filling out "layout_constraints" with the defaults
-      Legion::LayoutConstraintSet layout_constraints;
-      // No specialization
-      layout_constraints.add_constraint(Legion::SpecializedConstraint());
-      layout_constraints.add_constraint(Legion::OrderingConstraint());
-      // Constrained for the target memory kind
-      layout_constraints.add_constraint(
-        Legion::MemoryConstraint(target_mem.kind()));
-      // Have all the field for the instance available
-      std::vector<Legion::FieldID> all_fields;
-      layout_constraints.add_constraint(Legion::FieldConstraint());
-
-      // FIXME:: add colocation_constraints
-      Legion::ColocationConstraint colocation_constraints;
+      // creating ordering constraint
+      std::vector<Legion::DimensionKind> ordering;
+      ordering.push_back(Legion::DimensionKind::DIM_Y);
+      ordering.push_back(Legion::DimensionKind::DIM_X);
+      ordering.push_back(Legion::DimensionKind::DIM_F); // SOA
+      Legion::OrderingConstraint ordering_constraint(
+        ordering, true /*contiguous*/);
 
       for(size_t indx = 0; indx < task.regions.size(); indx++) {
+
+        // Filling out "layout_constraints" with the defaults
+        Legion::LayoutConstraintSet layout_constraints;
+        // No specialization
+        layout_constraints.add_constraint(Legion::SpecializedConstraint());
+        layout_constraints.add_constraint(ordering_constraint);
+        // Constrained for the target memory kind
+        layout_constraints.add_constraint(
+          Legion::MemoryConstraint(target_mem.kind()));
+        // Have all the field for the instance available
+        std::vector<Legion::FieldID> all_fields;
+        for(auto fid : task.regions[indx].privilege_fields) {
+          all_fields.push_back(fid);
+        } // for
+        layout_constraints.add_constraint(
+          Legion::FieldConstraint(all_fields, true));
 
         Legion::Mapping::PhysicalInstance result;
         std::vector<Legion::LogicalRegion> regions;
@@ -195,19 +226,26 @@ public:
             "ERROR:: wrong number of regions passed to the task wirth \
                the  tag = MAPPER_COMPACTED_STORAGE");
 
-          clog_assert((!task.regions[indx].region.exists()),
+          clog_assert((task.regions[indx].region.exists()),
             "ERROR:: pasing not existing REGION to the mapper");
           regions.push_back(task.regions[indx].region);
           regions.push_back(task.regions[indx + 1].region);
           regions.push_back(task.regions[indx + 2].region);
 
+          //          runtime->find_or_create_physical_instance(ctx, target_mem,
+          //                        layout_constraints, regions, result,
+          //                        created, true /*acquire*/,
+          //                        GC_NEVER_PRIORITY);
+
           clog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
                         layout_constraints, regions, result, created,
                         true /*acquire*/, GC_NEVER_PRIORITY),
-            "FLeCSI mapper failed to allocate instance");
+            "ERROR: FleCSI mapper couldn't create an instance");
 
           for(size_t j = 0; j < 3; j++) {
+            output.chosen_instances[indx + j].clear();
             output.chosen_instances[indx + j].push_back(result);
+
           } // for
 
           indx = indx + 2;
@@ -227,6 +265,7 @@ public:
       } // end for
 
     } // end if
+#endif
 
   } // map_task
 
@@ -247,7 +286,8 @@ public:
       return;
     } // end if MAPPER_SUBRANK_LAUNCH
 
-    if(task.tag == MAPPER_FORCE_RANK_MATCH) {
+    if((task.tag == MAPPER_FORCE_RANK_MATCH) ||
+       (task.tag == MAPPER_COMPACTED_STORAGE)) {
       // expect a 1-D index domain - each point goes to the corresponding node
       assert(input.domain.get_dim() == 1);
       LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();
