@@ -16,7 +16,6 @@ stages:
   - name: coverage
   - name: test
     #if: type != pull_request
-    if: branch = debug_gitlab_ci
 
 jobs:
   fast_finish: true
@@ -59,7 +58,7 @@ env:
     - DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
     - DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
 
-#    - DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+    - DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
 
 matrix:
   fast_finish: true
