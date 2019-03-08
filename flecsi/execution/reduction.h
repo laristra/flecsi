@@ -35,7 +35,7 @@ struct min {
   using RHS = T;
   static constexpr T identity{ std::numeric_limits<T>::max()};
 
-  template<bool EXCLUSIVE >
+  template<bool EXCLUSIVE  = true>
   static void apply(LHS & lhs, RHS rhs) {
     if constexpr (EXCLUSIVE) {
       lhs = lhs < rhs ? lhs : rhs;
@@ -56,7 +56,7 @@ struct min {
 
   } // apply
 
-  template<bool EXCLUSIVE >
+  template<bool EXCLUSIVE  = true>
   static void fold(RHS & rhs1, RHS rhs2) {
 
     if constexpr (EXCLUSIVE) {
