@@ -127,7 +127,7 @@ flecsi_register_task(modify, flecsi::execution, loc, index);
 void
 specialization_tlt_init(int argc, char ** argv) {
   clog(info) << "In specialization top-level-task init" << std::endl;
-  //supplemental::do_test_mesh_2d_coloring();
+//  supplemental::do_test_mesh_2d_coloring();
   supplemental::do_test_mesh_2d_coloring_dp();
 } // specialization_tlt_init
 
