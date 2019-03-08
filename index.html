@@ -1,6 +1,5 @@
 
 
-
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -9,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Introduction &mdash; FleCSI 1.0 documentation</title>
+  <title>Introduction &mdash; FleCSI  documentation</title>
   
 
   
@@ -22,33 +21,35 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Building FleCSI" href="src/build.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -65,7 +66,7 @@
             
             
               <div class="version">
-                Version: 1.0
+                Version: 
               </div>
             
           
@@ -95,6 +96,7 @@
 <li class="toctree-l1"><a class="reference internal" href="src/tutorial.html">FleCSI Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="src/user-guide.html">FleCSI User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="src/developer-guide.html">FleCSI Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://flecsi.org/doxygen/index.html">FleCSI API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="src/team.html">FleCSI Team</a></li>
 </ul>
 
@@ -202,7 +204,9 @@ particular layouts or data structure representations.</p>
 <li class="toctree-l2"><a class="reference internal" href="src/build.html#flecsi-third-party-libraries-project">FleCSI Third Party Libraries Project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/build.html#build-environment">Build Environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/build.html#getting-the-code">Getting The Code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="src/build.html#configuration-build">Configuration &amp; Build</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/build.html#configuration-build">Configuration &amp; Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/build.html#building-the-unit-tests">Building the Unit Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/build.html#building-the-documentation">Building the Documentation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="src/build/options.html">CMake Configuration Options</a></li>
 </ul>
 </li>
@@ -215,44 +219,41 @@ particular layouts or data structure representations.</p>
 <li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#using-the-docker-container">Using the Docker Container</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#tutorial-examples">Tutorial Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="src/tutorial/flecsit.html">Building the Examples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/tutorial/driver.html">Driver Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/tutorial/specialization.html">Specialization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src/tutorial/topologies.html">FleCSI Topologies</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="src/tutorial/topologies/unstructured.html">Topology: Unstructured Mesh</a></li>
+<li class="toctree-l5"><a class="reference internal" href="src/tutorial/topologies/structured.html">Topology: Structured Mesh</a></li>
+<li class="toctree-l5"><a class="reference internal" href="src/tutorial/topologies/octree.html">Topology: Octree</a></li>
+<li class="toctree-l5"><a class="reference internal" href="src/tutorial/topologies/set.html">Topology: Set</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="src/tutorial/driver.html">Example 1: Driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/tutorial/tasks.html">Example 2: Tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/tutorial/index-spaces.html">Example 3: Index Spaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/tutorial/fields.html">Example 4: Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/tutorial/dense.html">Example 5: Dense Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/tutorial/sparse.html">Example 6: Sparse Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/tutorial/ragged.html">Example 7: Ragged Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/tutorial/mpi-interoperability.html">Example 8: MPI Interoperability</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="src/user-guide.html">FleCSI User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/user-guide/runtime.html">Runtime Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src/user-guide/runtime.html#custom-handlers">Custom Handlers</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="src/user-guide/control.html">Control Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/user-guide/data.html">Data Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/user-guide/execution.html">Execution Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/user-guide/flog.html">Logging Utility</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="src/developer-guide.html">FleCSI Developer Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="src/developer-guide/style-guide.html">Style Guide</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#guiding-principles">Guiding Principles</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#directory-structure">Directory Structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#names-and-order-of-includes">Names and Order of Includes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#struct-class-conventions">Struct &amp; Class Conventions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#structs-vs-classes">Structs vs. Classes</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#variable-names">Variable Names</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#formatting">Formatting</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#control-flow">Control Flow</a></li>
-<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#braced-initialization">Braced Initialization</a></li>
-<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#function-method-formatting">Function &amp; Method Formatting</a></li>
-<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#more-on-spaces">More on spaces…</a></li>
-<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#function-method-formatting-prototypes">Function &amp; Method Formatting (prototypes)</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#type-names">Type Names</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#template-type-naming">Template Type Naming</a></li>
-<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/style-guide.html#template-parameter-names">Template Parameter Names</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#error-exception-handling">Error &amp; Exception Handling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#summary">Summary</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="src/developer-guide/style-guide.html">Style Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/developer-guide/style-guide.html#appendix-a-style-examples">Appendix A: Style Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/developer-guide/patterns.html">FleCSI Design Patterns</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="src/developer-guide/patterns/meyers_singleton.html">Meyer’s Singleton</a></li>
@@ -262,8 +263,23 @@ particular layouts or data structure representations.</p>
 <li class="toctree-l3"><a class="reference internal" href="src/developer-guide/patterns/CRTP.html">Curiously Recurring Template Pattern (CRTP)</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="src/developer-guide/versioning.html">Branch Naming Conventions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/versioning.html#feature-branches">Feature Branches</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/versioning.html#creating">Creating</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/versioning.html#merging">Merging</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/versioning.html#release-branches">Release Branches</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/versioning.html#id1">Creating</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide/versioning.html#finishing">Finishing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="src/developer-guide/data.html">Data Model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="http://flecsi.org/doxygen/index.html">FleCSI API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="src/team.html">FleCSI Team</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="src/team/ben.html">Ben Bergen</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/team/christoph.html">Christoph Junghans</a></li>
@@ -278,6 +294,15 @@ particular layouts or data structure representations.</p>
 </ul>
 </li>
 </ul>
+</div>
+<a class="reference external image-reference" href="https://www.lanl.gov"><img alt="_images/lanl.png" class="align-center" src="_images/lanl.png" style="width: 270.0px; height: 144.0px;" /></a>
+<div class="twocol docutils container">
+<div class="leftside docutils container">
+<a class="reference external image-reference" href="https://www.energy.gov/nnsa/national-nuclear-security-administration"><img alt="_images/nnsa.png" class="align-left" src="_images/nnsa.png" style="width: 132.75px; height: 51.0px;" /></a>
+</div>
+<div class="rightside docutils container">
+<a class="reference external image-reference" href="https://www.exascaleproject.org"><img alt="_images/ecp.png" class="align-right" src="_images/ecp.png" style="width: 105.75px; height: 55.5px;" /></a>
+</div>
 </div>
 </div>
 
@@ -316,36 +341,16 @@ particular layouts or data structure representations.</p>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'1.0',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>  
+  </script>
+
+  
+  
+    
+    
 
   <style>
     /* Sidebar header (and topbar for mobile) */

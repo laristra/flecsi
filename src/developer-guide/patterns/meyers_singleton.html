@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Meyer’s Singleton &mdash; FleCSI 1.0 documentation</title>
+  <title>Meyer’s Singleton &mdash; FleCSI  documentation</title>
   
 
   
@@ -21,34 +21,36 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Object Factory" href="factory.html" />
     <link rel="prev" title="FleCSI Design Patterns" href="../patterns.html" /> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -65,7 +67,7 @@
             
             
               <div class="version">
-                Version: 1.0
+                Version: 
               </div>
             
           
@@ -105,8 +107,11 @@
 <li class="toctree-l3"><a class="reference internal" href="CRTP.html">Curiously Recurring Template Pattern (CRTP)</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../versioning.html">Branch Naming Conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data.html">Data Model</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference external" href="http://flecsi.org/doxygen/index.html">FleCSI API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../team.html">FleCSI Team</a></li>
 </ul>
 
@@ -163,7 +168,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../../_sources/src/developer-guide/patterns/meyers_singleton.md.txt" rel="nofollow"> View page source</a>
+            <a href="../../../_sources/src/developer-guide/patterns/meyers_singleton.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -177,10 +182,10 @@
            <div itemprop="articleBody">
             
   <div class="section" id="meyer-s-singleton">
-<span id="meyer-s-singleton"></span><h1>Meyer’s Singleton<a class="headerlink" href="#meyer-s-singleton" title="Permalink to this headline">¶</a></h1>
+<h1>Meyer’s Singleton<a class="headerlink" href="#meyer-s-singleton" title="Permalink to this headline">¶</a></h1>
 <p>A singleton is a type instance for which there is one, and only one,
 object in the system:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">singleton_t</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">singleton_t</span>
 <span class="p">{</span>
 
   <span class="k">static</span>
@@ -245,7 +250,7 @@ concurrently while the variable is being initialized, the concurrent
 execution shall wait for completion of the initialization. If control
 re-enters the declaration recursively while the variable is being
 initialized, the behavior is undefined.</em></p>
-<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : --></div>
+</div>
 
 
            </div>
@@ -258,7 +263,7 @@ initialized, the behavior is undefined.</em></p>
         <a href="factory.html" class="btn btn-neutral float-right" title="Object Factory" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../patterns.html" class="btn btn-neutral" title="FleCSI Design Patterns" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../patterns.html" class="btn btn-neutral float-left" title="FleCSI Design Patterns" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -284,36 +289,16 @@ initialized, the behavior is undefined.</em></p>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../',
-              VERSION:'1.0',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>  
+  </script>
+
+  
+  
+    
+    
 
   <style>
     /* Sidebar header (and topbar for mobile) */

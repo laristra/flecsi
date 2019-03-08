@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>FleCSI Tutorial &mdash; FleCSI 1.0 documentation</title>
+  <title>FleCSI Tutorial &mdash; FleCSI  documentation</title>
   
 
   
@@ -21,34 +21,36 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Building the Examples" href="tutorial/flecsit.html" />
     <link rel="prev" title="CMake Configuration Options" href="build/options.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -65,7 +67,7 @@
             
             
               <div class="version">
-                Version: 1.0
+                Version: 
               </div>
             
           
@@ -99,13 +101,22 @@
 <li class="toctree-l2"><a class="reference internal" href="#using-the-docker-container">Using the Docker Container</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tutorial-examples">Tutorial Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorial/flecsit.html">Building the Examples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/driver.html">Driver Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/specialization.html">Specialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/driver.html">Example 1: Driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/tasks.html">Example 2: Tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/index-spaces.html">Example 3: Index Spaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/fields.html">Example 4: Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/dense.html">Example 5: Dense Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/sparse.html">Example 6: Sparse Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/ragged.html">Example 7: Ragged Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/mpi-interoperability.html">Example 8: MPI Interoperability</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user-guide.html">FleCSI User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developer-guide.html">FleCSI Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://flecsi.org/doxygen/index.html">FleCSI API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="team.html">FleCSI Team</a></li>
 </ul>
 
@@ -235,8 +246,7 @@ subdirectory of this tutorial (The complete source code is in the
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
 <p>This tutorial assumes that you have successfully downloaded and built
 FleCSI, and that you have installed it somewhere on your system.
-Instructions for building FleCSI are available from the related pages
-[here](<a class="reference external" href="https://laristra.github.io/flecsi/assets/doxygen/md__home_flecsi_flecsi_auxiliary_markdown_01-Build.html">https://laristra.github.io/flecsi/assets/doxygen/md__home_flecsi_flecsi_auxiliary_markdown_01-Build.html</a>).</p>
+Instructions for building FleCSI are available here: <a class="reference internal" href="build.html#build"><span class="std std-ref">Building FleCSI</span></a></p>
 </div>
 <div class="section" id="using-the-docker-container">
 <h2>Using the Docker Container<a class="headerlink" href="#using-the-docker-container" title="Permalink to this headline">¶</a></h2>
@@ -244,25 +254,25 @@ Instructions for building FleCSI are available from the related pages
 getting and installing FleCSI and its dependencies. To use the Docker
 container, you should have the Docker daemon installed on your system.
 Docker is available for several different platforms from the
-[Docker Website](<a class="reference external" href="https://www.docker.com">https://www.docker.com</a>).</p>
-<p>To pull the tutorial image, do:
-<code class="docutils literal"><span class="pre">`bash</span>
-<span class="pre">$</span> <span class="pre">docker</span> <span class="pre">pull</span> <span class="pre">laristra/flecsi-tutorial:latest</span>
-<span class="pre">`</span></code>
-This will download the image to your machine. Once the pull is complete,
-you can run the image like:
-<code class="docutils literal"><span class="pre">`bash</span>
-<span class="pre">$</span> <span class="pre">docker</span> <span class="pre">run</span> <span class="pre">-it</span> <span class="pre">-h</span> <span class="pre">tutorialhost</span> <span class="pre">-u</span> <span class="pre">flecsi</span> <span class="pre">laristra/flecsi-tutorial:latest</span> <span class="pre">/bin/bash</span>
-<span class="pre">`</span></code>
-This will place you into a bash prompt, from which you can build and run
+<a class="reference external" href="https://www.docker.com">Docker Website</a>.</p>
+<p>To pull the tutorial image, do:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker pull laristra/flecsi-tutorial:latest
+</pre></div>
+</div>
+<p>This will download the image to your machine. Once the pull is complete,
+you can run the image like:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker run -it -h tutorialhost -u flecsi laristra/flecsi-tutorial:latest /bin/bash
+</pre></div>
+</div>
+<p>This will place you into a bash prompt, from which you can build and run
 the tutorial examples. The tutorials are in the <em>flecsi-tutorial</em>
 directory in the Docker container.</p>
 <p><strong>Note:</strong> You can also pull a Docker image for a specific runtime, e.g.,
 mpi or legion. The default image <em>latest</em> is built against the MPI
-backend. To pull the legion backend image do:
-<code class="docutils literal"><span class="pre">`</span>
-<span class="pre">$</span> <span class="pre">docker</span> <span class="pre">pull</span> <span class="pre">laristra/flecsi-tutorial:legion</span>
-<span class="pre">`</span></code></p>
+backend. To pull the legion backend image do:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker pull laristra/flecsi-tutorial:legion
+</pre></div>
+</div>
 </div>
 <div class="section" id="tutorial-examples">
 <h2>Tutorial Examples<a class="headerlink" href="#tutorial-examples" title="Permalink to this headline">¶</a></h2>
@@ -271,7 +281,24 @@ more advanced FleCSI concepts.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/flecsit.html">Building the Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/driver.html">Driver Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/specialization.html">Specialization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/topologies.html">FleCSI Topologies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/topologies/unstructured.html">Topology: Unstructured Mesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/topologies/structured.html">Topology: Structured Mesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/topologies/octree.html">Topology: Octree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/topologies/set.html">Topology: Set</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/driver.html">Example 1: Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/tasks.html">Example 2: Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/index-spaces.html">Example 3: Index Spaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/fields.html">Example 4: Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/dense.html">Example 5: Dense Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/sparse.html">Example 6: Sparse Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/ragged.html">Example 7: Ragged Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/mpi-interoperability.html">Example 8: MPI Interoperability</a></li>
 </ul>
 </div>
 </div>
@@ -288,7 +315,7 @@ more advanced FleCSI concepts.</p>
         <a href="tutorial/flecsit.html" class="btn btn-neutral float-right" title="Building the Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="build/options.html" class="btn btn-neutral" title="CMake Configuration Options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="build/options.html" class="btn btn-neutral float-left" title="CMake Configuration Options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -314,36 +341,16 @@ more advanced FleCSI concepts.</p>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../',
-              VERSION:'1.0',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>  
+  </script>
+
+  
+  
+    
+    
 
   <style>
     /* Sidebar header (and topbar for mobile) */

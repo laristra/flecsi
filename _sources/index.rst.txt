@@ -45,7 +45,29 @@ Introduction
   src/tutorial
   src/user-guide
   src/developer-guide
+  FleCSI API Reference <http://flecsi.org/doxygen/index.html>
   src/team
 
-.. .. doxygenindex::
-   This is broken right now.
+.. Not sure exactly why, but this seems to do what I want at the
+   bottom of the page...
+
+.. image:: _static/images/lanl.png
+   :align: center
+   :scale: 75%
+   :target: https://www.lanl.gov
+
+.. container:: twocol
+
+   .. container:: leftside
+
+      .. image:: _static/images/nnsa.png
+         :align: left
+         :scale: 75%
+         :target: https://www.energy.gov/nnsa/national-nuclear-security-administration
+
+   .. container:: rightside
+
+      .. image:: _static/images/ecp.png
+         :align: right
+         :scale: 75%
+         :target: https://www.exascaleproject.org

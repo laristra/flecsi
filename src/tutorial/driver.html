@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Driver Example &mdash; FleCSI 1.0 documentation</title>
+  <title>Example 1: Driver &mdash; FleCSI  documentation</title>
   
 
   
@@ -21,34 +21,36 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="FleCSI User Guide" href="../user-guide.html" />
-    <link rel="prev" title="Building the Examples" href="flecsit.html" /> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
+    <link rel="next" title="Example 2: Tasks" href="tasks.html" />
+    <link rel="prev" title="Topology: Set" href="topologies/set.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -65,7 +67,7 @@
             
             
               <div class="version">
-                Version: 1.0
+                Version: 
               </div>
             
           
@@ -97,15 +99,24 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorial.html#admonishment">Admonishment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial.html#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial.html#using-the-docker-container">Using the Docker Container</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../tutorial.html#examples">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../tutorial.html#tutorial-examples">Tutorial Examples</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="flecsit.html">Building the Examples</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Driver Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="specialization.html">Specialization</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Example 1: Driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tasks.html">Example 2: Tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index-spaces.html">Example 3: Index Spaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fields.html">Example 4: Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dense.html">Example 5: Dense Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sparse.html">Example 6: Sparse Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ragged.html">Example 7: Ragged Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mpi-interoperability.html">Example 8: MPI Interoperability</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide.html">FleCSI User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developer-guide.html">FleCSI Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://flecsi.org/doxygen/index.html">FleCSI API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../team.html">FleCSI Team</a></li>
 </ul>
 
@@ -154,13 +165,13 @@
         
           <li><a href="../tutorial.html">FleCSI Tutorial</a> &raquo;</li>
         
-      <li>Driver Example</li>
+      <li>Example 1: Driver</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/src/tutorial/driver.md.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/src/tutorial/driver.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -173,8 +184,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="driver-example">
-<span id="driver-example"></span><h1>Driver Example<a class="headerlink" href="#driver-example" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="example-1-driver">
+<h1>Example 1: Driver<a class="headerlink" href="#example-1-driver" title="Permalink to this headline">¶</a></h1>
 <p>As a runtime abstraction layer, FleCSI replaces the normal main
 function with a driver function. Like main, the driver is the most
 fundamental unit of execution, providing the top-level control logic
@@ -190,11 +201,11 @@ whatever arguments the user has passed to the command line.
 Command-line arguments are passed through the FleCSI runtime to the
 user’s driver as with a normal main function.</p>
 <p>Try compiling this example with flecsit:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ flecsit compile driver.cc
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> flecsit compile driver.cc
 </pre></div>
 </div>
 <p>You can run it like:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ./driver arg1 arg2
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./driver arg1 arg2
 </pre></div>
 </div>
 <p>You can experiment with changing the output or handling of the
@@ -204,7 +215,7 @@ command-line arguments.</p>
 <li>All drivers must be defined in the flecsi::execution namespace.</li>
 </ul>
 <p>The code for this example can be found in <em>driver.cc</em>:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
 
 <span class="k">namespace</span> <span class="n">flecsi</span> <span class="p">{</span>
 <span class="k">namespace</span> <span class="n">execution</span> <span class="p">{</span>
@@ -227,7 +238,7 @@ command-line arguments.</p>
 <span class="p">}</span> <span class="c1">// namespace flecsi</span>
 </pre></div>
 </div>
-<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : --></div>
+</div>
 
 
            </div>
@@ -237,10 +248,10 @@ command-line arguments.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../user-guide.html" class="btn btn-neutral float-right" title="FleCSI User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tasks.html" class="btn btn-neutral float-right" title="Example 2: Tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="flecsit.html" class="btn btn-neutral" title="Building the Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="topologies/set.html" class="btn btn-neutral float-left" title="Topology: Set" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -266,36 +277,16 @@ command-line arguments.</p>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'1.0',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>  
+  </script>
+
+  
+  
+    
+    
 
   <style>
     /* Sidebar header (and topbar for mobile) */

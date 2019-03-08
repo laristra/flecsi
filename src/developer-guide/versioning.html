@@ -1,0 +1,429 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Branch Naming Conventions &mdash; FleCSI  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/developer-guide/versioning.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Data Model" href="data.html" />
+    <link rel="prev" title="Curiously Recurring Template Pattern (CRTP)" href="patterns/CRTP.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: 
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">Building FleCSI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">FleCSI Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">FleCSI User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../developer-guide.html">FleCSI Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="style-guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style-guide.html#appendix-a-style-examples">Appendix A: Style Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patterns.html">FleCSI Design Patterns</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Branch Naming Conventions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#feature-branches">Feature Branches</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#creating">Creating</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#merging">Merging</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#release-branches">Release Branches</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Creating</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#finishing">Finishing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data Model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="http://flecsi.org/doxygen/index.html">FleCSI API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">FleCSI Team</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../developer-guide.html">FleCSI Developer Guide</a> &raquo;</li>
+        
+      <li>Branch Naming Conventions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/src/developer-guide/versioning.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="branch-naming-conventions">
+<h1>Branch Naming Conventions<a class="headerlink" href="#branch-naming-conventions" title="Permalink to this headline">¶</a></h1>
+<p>The <em>master</em> branch is the primary development branch for the
+proejct. Commits to master require that continuous integration tests
+pass before they may be merged.</p>
+<p>Please use the following naming conventions when creating branches:</p>
+<ul>
+<li><p class="first"><strong>release</strong>/<em>major.minor</em> <br />
+The <em>release</em> prefix is reserved for supported release
+branches. Actual releases and pre-releases will be identified using
+tags.</p>
+<p>Tagging conventions for the release branch:</p>
+<ul class="simple">
+<li>Patch numbers for a release will be specified in the tag, such
+that a given release will have the form <em>major.minor.patch</em>.</li>
+<li>Alpha, Beta, or Release Candidates <br />
+Any pre-release version should include the name of the pre-release,
+e.g., alpha, beta or rc, and the version of the pre-release at the
+end of the normal release version. Here are some examples:<ul>
+<li>Release candidate 2 of release 1.0.0 would be <em>1.0.0-rc.2</em>.</li>
+<li>Alpha release 1 of release 1.0.0 would be <em>1.0.0-alpha.1</em>.</li>
+</ul>
+</li>
+<li>Must branch from: <strong>master</strong></li>
+</ul>
+</li>
+<li><p class="first"><strong>stable</strong>/<em>branch_name</em> <br />
+A <em>stable</em> branch is a development or feature branch that is
+guaranteed to build and pass the FleCSI continuous integration test
+suite, but one which incorporates new features or capabilities that
+are not available in a release branch. This label should not be used
+for a branch that is intended to become a release candidate (Use
+<em>release</em> instead.)</p>
+</li>
+<li><p class="first"><strong>feature/username</strong>/<em>branch_name</em> or <strong>feature</strong>/<em>branch_name</em> <br />
+A <em>feature</em> branch is where new development is done. However, master
+should be merged periodically into a feature branch. If the branch is
+to primarily be developed by an individual, it should include the
+<em>username</em> as part of the branch.</p>
+<ul class="simple">
+<li>Must branch from: <strong>master</strong></li>
+<li>Must merge to: <strong>master</strong></li>
+</ul>
+</li>
+<li><p class="first"><strong>fix</strong>/<em>reference</em> <br />
+Bug-fix branches should use the <em>fix</em> prefix, and should include
+a reference number or name, e.g., issue number or the related release
+tag.</p>
+<ul class="simple">
+<li>Must branch from: <strong>release branch</strong></li>
+<li>Must merge to: <strong>master *and* release branch</strong></li>
+</ul>
+</li>
+</ul>
+<p># Managing Branches
+Please use the following sections as a guide to creating and managing
+branches.</p>
+<div class="section" id="feature-branches">
+<h2>Feature Branches<a class="headerlink" href="#feature-branches" title="Permalink to this headline">¶</a></h2>
+<p>All new development is done on a feature branch.</p>
+<div class="section" id="creating">
+<h3>Creating<a class="headerlink" href="#creating" title="Permalink to this headline">¶</a></h3>
+<p>To create a new feature branch:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> Make sure that you are up-to-date on the master branch
+<span class="gp">$</span> git checkout master
+<span class="gp">$</span> git pull
+
+<span class="gp">#</span> If the project uses submodules you should also make sure
+<span class="gp">#</span> that they are up-to-date
+<span class="gp">$</span> git submodule update --recursive
+
+<span class="gp">#</span> Create a new feature branch
+<span class="gp">$</span> git checkout -b feature/name
+</pre></div>
+</div>
+<p>Once you make a change to your feature branch, you can push it to the
+remote–<strong>after considering classification and export control
+implications</strong>–using the following:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git push --set-upstream origin feature/name</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="merging">
+<h3>Merging<a class="headerlink" href="#merging" title="Permalink to this headline">¶</a></h3>
+<p>When you are done developing a feature, you should merge your feature
+branch with master using the <em>no fast-forward (–no-ff)</em> flag to git:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> Make sure that you are up-to-date on the master branch
+<span class="gp">$</span> git checkout master
+<span class="gp">$</span> git pull
+
+<span class="gp">#</span> Merge your branch into master
+<span class="gp">$</span> git merge --no-ff feature/name
+</pre></div>
+</div>
+<p>The <em>–no-ff</em> flag preserves information about the existence of the
+feature branch after it is removed.</p>
+<p>After you have merged your changes into <strong>master</strong>, you should submit a
+pull request. This can be done on the [github
+website](<a class="reference external" href="https://github.com/laristra">https://github.com/laristra</a>).</p>
+<p>Once the pull request has been accepted, you can safetly remove the
+feature branch:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> Remove the <span class="nb">local</span> branch
+<span class="gp">$</span> git branch -d feature/name
+
+<span class="gp">#</span> Remove the remote branch
+<span class="gp">$</span> git push origin --delete feature/name
+</pre></div>
+</div>
+<p>After the feature branch is removed, it will no longer appear in the
+commit messages for the project. However, because we used <em>–no-ff</em>, the
+structure of the branch will be retained, e.g., try <em>git log –graph</em>.
+The name of the branch will also appear in the message at the merge
+point, provided that you used the default message provided by git.</p>
+</div>
+</div>
+<div class="section" id="release-branches">
+<h2>Release Branches<a class="headerlink" href="#release-branches" title="Permalink to this headline">¶</a></h2>
+<p>A release branch is used to prepare and maintain supported releases.</p>
+<div class="section" id="id1">
+<h3>Creating<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Creating a release branch is similar to creating a feature branch,
+except that the naming convention for release branches is more
+restrictive, i.e., the branch name must have the form
+<em>release/major.minor</em>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> Make sure that you are up-to-date on the master branch
+<span class="gp">$</span> git checkout master
+<span class="gp">$</span> git pull
+
+<span class="gp">#</span> If the project uses submodules you should also make sure
+<span class="gp">#</span> that they are up-to-date
+<span class="gp">$</span> git submodule update --recursive
+
+<span class="gp">#</span> Create a new release branch
+<span class="gp">$</span> git checkout -b release/major.minor
+</pre></div>
+</div>
+</div>
+<div class="section" id="finishing">
+<h3>Finishing<a class="headerlink" href="#finishing" title="Permalink to this headline">¶</a></h3>
+<p><strong>Properly completing work on a release branch in preparation for a
+supported release requires a combination of command-line and server-side
+operations. These instructions assume that the server is GitHub. These
+directions also assume that you have completed a *CHANGELOG* of the
+changes for the new release.</strong></p>
+<p>1. When you are ready to create an actual release on a release branch, you
+need to create an annotated tag with the release version:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git tag -a -m <span class="s2">&quot;Release major.minor.patch&quot;</span> major.minor.patch
+</pre></div>
+</div>
+<p>The <em>major.minor</em> part of the version must be consistent with the branch
+name. The patch level should be sequential, and should use the next
+integer value from the last tag on the branch, e.g.:</p>
+<ul class="simple">
+<li>1.0: Initial release tag</li>
+<li>1.0.1: First patch tag</li>
+<li>1.0.2: Second patch tag</li>
+</ul>
+<p><em>Tags should be consistent with the branch name, but they are unrelated
+to the number of commits on the branch.</em></p>
+<p>2. Once you have created the tag, you should go to the GitHub project site,
+and click on the <em>releases</em> link. This will take you to the release page
+for the project.</p>
+<p>3. Next, you should click on the <em>Draft a new release</em> button. This will
+bring up a page with several edit fields.</p>
+<p>4. In the <em>Tag version</em> edit field, enter the tag that you created in the
+previous steps.</p>
+<p>5. Create a release title of the form <em>Release major.minor.patch</em> (<em>patch</em>
+should only be used when appropriate.)</p>
+<p>6. Cut and paste the information from your <em>CHANGELOG</em> file into the
+<em>Describe this release</em> field, and make any other changes or additions
+that are appropriate.</p>
+<p>7. Once you have completed filling out the information, press the <em>Publish
+release</em> button.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="data.html" class="btn btn-neutral float-right" title="Data Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="patterns/CRTP.html" class="btn btn-neutral float-left" title="Curiously Recurring Template Pattern (CRTP)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+    /* Sidebar */
+    .wy-nav-side {
+      background: #6e808b;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>

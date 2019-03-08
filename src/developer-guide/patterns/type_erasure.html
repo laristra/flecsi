@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Type Erasure &mdash; FleCSI 1.0 documentation</title>
+  <title>Type Erasure &mdash; FleCSI  documentation</title>
   
 
   
@@ -21,34 +21,36 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Policy-Based Design" href="policies.html" />
     <link rel="prev" title="Object Factory" href="factory.html" /> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -65,7 +67,7 @@
             
             
               <div class="version">
-                Version: 1.0
+                Version: 
               </div>
             
           
@@ -105,8 +107,11 @@
 <li class="toctree-l3"><a class="reference internal" href="CRTP.html">Curiously Recurring Template Pattern (CRTP)</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../versioning.html">Branch Naming Conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data.html">Data Model</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference external" href="http://flecsi.org/doxygen/index.html">FleCSI API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../team.html">FleCSI Team</a></li>
 </ul>
 
@@ -163,7 +168,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../../_sources/src/developer-guide/patterns/type_erasure.md.txt" rel="nofollow"> View page source</a>
+            <a href="../../../_sources/src/developer-guide/patterns/type_erasure.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -177,13 +182,14 @@
            <div itemprop="articleBody">
             
   <div class="section" id="type-erasure">
-<span id="type-erasure"></span><h1>Type Erasure<a class="headerlink" href="#type-erasure" title="Permalink to this headline">¶</a></h1>
+<h1>Type Erasure<a class="headerlink" href="#type-erasure" title="Permalink to this headline">¶</a></h1>
 <p>Type erasure allows the creation of a gneneric container, i.e., one that
 contains instances of different types. This contravenes C++’s normal
 requirements of strict and static typing. This pattern is attributed to
 Kevlin Henney, <em>C++ Report 12(7)</em>, July/August 2000, entitled,
-<a class="reference external" href="http://www.two-sdg.demon.co.uk/curbralan/papers/ValuedConversions.pdf">Valued Conversions</a>. His definition of the <em>any</em> type follows:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">any</span>
+<a class="reference external" href="http://www.two-sdg.demon.co.uk/curbralan/papers/ValuedConversions.pdf">Valued Conversions</a>.
+His definition of the <em>any</em> type follows:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">any</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 
@@ -236,7 +242,7 @@ Kevlin Henney, <em>C++ Report 12(7)</em>, July/August 2000, entitled,
 </div>
 <p>Using this basic definition, we can add inward conversion interface from
 arbitrary types:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">any</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">any</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 
@@ -274,7 +280,7 @@ arbitrary types:</p>
 </pre></div>
 </div>
 <p>Recovering the typed value can be handled like:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">any</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">any</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 
@@ -321,7 +327,7 @@ arbitrary types:</p>
 type erasure through the definition of a common method interface for a
 set of parameterized types. For example, if several types define a
 method <em>erasure_method</em> like</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span>
   <span class="k">typename</span> <span class="p">...</span> <span class="n">PARAMS</span>
 <span class="o">&gt;</span>
 <span class="k">struct</span> <span class="n">type_t</span>
@@ -345,9 +351,9 @@ method. References to each type’s <em>erasure_method</em> function can be
 stored in a standard container because they are all of the same type.
 This pattern is used in several places in FleCSI. A specific example is
 in <em>flecsi/execution/legion/task_wrapper.h</em>. In particular,
-<em>task_wrapper__::registration_callback</em> and
-<em>task_wrapper__::execute_user_task</em> use this design pattern.</p>
-<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : --></div>
+<em>task_wrapper_u::registration_callback</em> and
+<em>task_wrapper_u::execute_user_task</em> use this design pattern.</p>
+</div>
 
 
            </div>
@@ -360,7 +366,7 @@ in <em>flecsi/execution/legion/task_wrapper.h</em>. In particular,
         <a href="policies.html" class="btn btn-neutral float-right" title="Policy-Based Design" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="factory.html" class="btn btn-neutral" title="Object Factory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="factory.html" class="btn btn-neutral float-left" title="Object Factory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -386,36 +392,16 @@ in <em>flecsi/execution/legion/task_wrapper.h</em>. In particular,
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../',
-              VERSION:'1.0',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>  
+  </script>
+
+  
+  
+    
+    
 
   <style>
     /* Sidebar header (and topbar for mobile) */

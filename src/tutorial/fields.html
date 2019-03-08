@@ -1,0 +1,419 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Example 4: Fields &mdash; FleCSI  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/tutorial/fields.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Example 5: Dense Data" href="dense.html" />
+    <link rel="prev" title="Example 3: Index Spaces" href="index-spaces.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: 
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">Building FleCSI</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">FleCSI Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#flecsi-design-philosophy">FleCSI Design Philosophy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#admonishment">Admonishment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#using-the-docker-container">Using the Docker Container</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../tutorial.html#tutorial-examples">Tutorial Examples</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="flecsit.html">Building the Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="specialization.html">Specialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="driver.html">Example 1: Driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tasks.html">Example 2: Tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index-spaces.html">Example 3: Index Spaces</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Example 4: Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dense.html">Example 5: Dense Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sparse.html">Example 6: Sparse Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ragged.html">Example 7: Ragged Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mpi-interoperability.html">Example 8: MPI Interoperability</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">FleCSI User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide.html">FleCSI Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://flecsi.org/doxygen/index.html">FleCSI API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">FleCSI Team</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../tutorial.html">FleCSI Tutorial</a> &raquo;</li>
+        
+      <li>Example 4: Fields</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/src/tutorial/fields.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="example-4-fields">
+<h1>Example 4: Fields<a class="headerlink" href="#example-4-fields" title="Permalink to this headline">¶</a></h1>
+<p>In FleCSI, a field is a logical array that is defined on an index space.
+The elements of the field are defined through a template argument, so
+that, with some restrictions, a field element can be any P.O.D. or
+user-defined type.</p>
+<p>Fields must be registered with the FleCSI runtime. This is somewhat
+analogous to defining a variable in C++, except that variables in FleCSI
+must be associated with an index space, i.e., they must be registered
+<em>against</em> a valid index space of a specific data client. Internally,
+this is similar to what one would do if they had a class or struct type
+(the data client) in C++ and wanted to add a data member (the field) to
+it. FleCSI uses some metaprogramming techniques and the FleCSI data
+model to define field data. Field registration must occur at file scope,
+i.e., outside of any executable code sections, and must specify a
+compile-time type and index space. The arguments to the field
+registration interface are:</p>
+<ol class="arabic simple">
+<li>The data client type. This must be a valid FleCSI data client (These
+are defined by the specialization layer.) In this example, the data
+client is <em>mesh_t</em>.</li>
+<li>The namespace of the field. This does not need to be an actual C++
+namespace. This parameter is used to avoid naming collisions. In this
+example, the namespace is <em>example</em>.</li>
+<li>The field name. This is an arbitrary name created by the user to
+identify the field. It can be any legal C++ variable name. In this
+example, the field name is <em>field</em>.</li>
+<li>The data type. As stated above, this can be a P.O.D. or user-defined
+type. The restrictions on this type are listed in the <em>NOTES</em> section
+below. In this example, the data type is <em>double</em>.</li>
+<li>The storage class of the field. Storage class identifiers give the
+FleCSI runtime additional information about the logical structure of a
+field. They also define the interface that is available to the user for
+accessing the field data. Storage classes are covered in additional
+detail in a later example. In this example, the storage class is
+<em>dense</em>. The dense storage class is logically a contiguous array with
+one entry per index in the associated index space.</li>
+<li>The number of versions to register. FleCSI field data support
+multiple versions of the data that are registered with a given
+namespace and name. This is useful for multi-step methods that
+require storage of multiple previous states, as well as other methods
+where it makes sense to store multiple copies of an array under a single
+name.</li>
+<li>The index space. This must be a valid index space that is exposed by
+the data client type passed in argument 1. In this example, the index
+space is <em>cells</em>.</li>
+</ol>
+<p>Users reference fields using a handle and an iterator of the
+corresponding index space on which the field was registered. The current
+interface is somewhat complicated and bears further discussion:</p>
+<p>Logically, users <em>define</em> a task with arguments that may be a mixture of
+by-value data, which are copied directly through the calling chain and
+do not need to be registered with the FleCSI runtime, and data
+accessors, which are types defined by the specialization or end-user
+that correspond to registered field types. Notice that <em>define</em> is
+emphasized in the previous sentence. This is to highlight the fact that
+the definition of the task interface takes <em>accessors</em>, while the
+<em>execution</em> of the task takes <em>handles</em>. Handles are opaque objects that
+are returned to the end-user by calls to the handle interface. These
+should generally use anonomous typeing, i.e., they should use the <em>auto</em>
+keyword. The closest analogue in C++ to this paradigm is the passage of
+variables <em>by-reference</em>, in which , a function or method is defined to
+take a reference, but the user simply passes a variable instance. The
+compiler automatically inserts logic to pass a reference to the variable
+rather than copying it. Similarly, handles that are passed to the FleCSI
+execution interface are automatically mapped to the associated accessor
+type by the runtime, such that, from the point of view of the executing
+task, the parameter is an accessor.</p>
+<p>The handle interface takes the following arguments:</p>
+<ol class="arabic simple">
+<li>An instance of the data client against which the field was
+registered. Recall that registering a field is logically similar to
+adding a data member to a type. Passing a data client instance tells
+the runtime for which type instance the field should be returned.
+Because fields are stateful, there must be one field instance for
+each data client instance of the associated client type. Nominally,
+allocation of field data is lazy, such that a client instance for
+which a particular field is never accessed, never allocates the
+field. In this example, the data client instance is <em>m</em>.</li>
+<li>The namespace of the field. In this example, the namespace is <em>example</em>.</li>
+<li>The field name. In this example, the field name is <em>field</em>.</li>
+<li>The data type. In this example, the data type is <em>double</em>.</li>
+<li>The storage class of the field. In this example, the storage class is
+<em>dense</em>.</li>
+<li>The version number of the field. This index is <em>zero-based</em>. In this
+example, the version is <em>0</em>.</li>
+</ol>
+<p>NOTES:</p>
+<ul class="simple">
+<li>Field types may not reference arbitrary data, i.e., they cannot
+contain pointers to other data. Another way of saying this, is that
+all subtypes of a field must have a size that can be statically
+determined.</li>
+<li>The data client handle <em>m</em> and the field handle <em>f</em> are passed to the
+execution interface in the same order that they appear in the task
+definition.</li>
+</ul>
+<p>The code for this example can be found in <em>fields.cc</em>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="cpf">&lt;flecsi-tutorial/specialization/mesh/mesh.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="cpf">&lt;flecsi/data/data.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="cpf">&lt;flecsi/execution/execution.h&gt;</span><span class="cp"></span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">flecsi</span><span class="p">;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">tutorial</span><span class="p">;</span>
+
+<span class="c1">// This call registers a field called &#39;field&#39; against a data client</span>
+<span class="c1">// with type &#39;mesh_t&#39; on the index space &#39;cells&#39;. The field is in the</span>
+<span class="c1">// namespace &#39;example&#39;, and is of type &#39;double&#39;. The field has storage</span>
+<span class="c1">// class &#39;dense&#39;, and has &#39;1&#39; version.</span>
+
+<span class="n">flecsi_register_field</span><span class="p">(</span><span class="n">mesh_t</span><span class="p">,</span> <span class="n">example</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span> <span class="n">dense</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cells</span><span class="p">);</span>
+
+<span class="k">namespace</span> <span class="n">example</span> <span class="p">{</span>
+
+<span class="c1">// This task takes mesh and field accessors and initializes the</span>
+<span class="c1">// field with the id of the cell on which it is defined.</span>
+
+<span class="kt">void</span> <span class="n">initialize_field</span><span class="p">(</span><span class="n">mesh</span><span class="o">&lt;</span><span class="n">ro</span><span class="o">&gt;</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">field</span><span class="o">&lt;</span><span class="n">rw</span><span class="o">&gt;</span> <span class="n">f</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="nl">c</span><span class="p">:</span> <span class="n">mesh</span><span class="p">.</span><span class="n">cells</span><span class="p">(</span><span class="n">owned</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">=</span> <span class="kt">double</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">id</span><span class="p">());</span>
+  <span class="p">}</span> <span class="c1">// for</span>
+<span class="p">}</span> <span class="c1">// initialize_field</span>
+
+<span class="c1">// Task registration is as usual...</span>
+
+<span class="n">flecsi_register_task</span><span class="p">(</span><span class="n">initialize_field</span><span class="p">,</span> <span class="n">example</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">single</span><span class="p">);</span>
+
+<span class="c1">// This task prints the field values.</span>
+
+<span class="kt">void</span> <span class="nf">print_field</span><span class="p">(</span><span class="n">mesh</span><span class="o">&lt;</span><span class="n">ro</span><span class="o">&gt;</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">field</span><span class="o">&lt;</span><span class="n">ro</span><span class="o">&gt;</span> <span class="n">f</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="nl">c</span><span class="p">:</span> <span class="n">mesh</span><span class="p">.</span><span class="n">cells</span><span class="p">(</span><span class="n">owned</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;cell id: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">id</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; has value &quot;</span> <span class="o">&lt;&lt;</span>
+      <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+  <span class="p">}</span> <span class="c1">// for</span>
+<span class="p">}</span> <span class="c1">// print_field</span>
+
+<span class="c1">// Task registration is as usual...</span>
+
+<span class="n">flecsi_register_task</span><span class="p">(</span><span class="n">print_field</span><span class="p">,</span> <span class="n">example</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">single</span><span class="p">);</span>
+
+<span class="p">}</span> <span class="c1">// namespace example</span>
+
+<span class="k">namespace</span> <span class="n">flecsi</span> <span class="p">{</span>
+<span class="k">namespace</span> <span class="n">execution</span> <span class="p">{</span>
+
+<span class="kt">void</span> <span class="n">driver</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="c1">// Get data handles to the client and field</span>
+
+  <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> <span class="n">flecsi_get_client_handle</span><span class="p">(</span><span class="n">mesh_t</span><span class="p">,</span> <span class="n">clients</span><span class="p">,</span> <span class="n">mesh</span><span class="p">);</span>
+  <span class="k">auto</span> <span class="n">f</span> <span class="o">=</span> <span class="n">flecsi_get_handle</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">example</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span> <span class="n">dense</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="c1">// Task execution is as usual...</span>
+
+  <span class="n">flecsi_execute_task</span><span class="p">(</span><span class="n">initialize_field</span><span class="p">,</span> <span class="n">example</span><span class="p">,</span> <span class="n">single</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+  <span class="n">flecsi_execute_task</span><span class="p">(</span><span class="n">print_field</span><span class="p">,</span> <span class="n">example</span><span class="p">,</span> <span class="n">single</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+
+<span class="p">}</span> <span class="c1">// driver</span>
+
+<span class="p">}</span> <span class="c1">// namespace execution</span>
+<span class="p">}</span> <span class="c1">// namespace flecsi</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dense.html" class="btn btn-neutral float-right" title="Example 5: Dense Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index-spaces.html" class="btn btn-neutral float-left" title="Example 3: Index Spaces" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+    /* Sidebar */
+    .wy-nav-side {
+      background: #6e808b;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>
