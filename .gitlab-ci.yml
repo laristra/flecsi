@@ -116,8 +116,6 @@ before_script:
 
 .test:
   extends: .canary
-  variables:
-    GIT_SUBMODULE_STRATEGY: none
   stage: Test
   dependencies:
     #- "build:${CI_JOB_NAME#*:}"
@@ -129,8 +127,6 @@ before_script:
 
 .format:
   extends: .canary
-  variables:
-    GIT_SUBMODULE_STRATEGY: none
   stage: Format
   dependencies:
     #- build:${CI_JOB_NAME#*:}
