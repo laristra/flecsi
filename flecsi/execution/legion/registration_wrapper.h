@@ -119,7 +119,8 @@ struct registration_wrapper_u<RETURN, TASK, 0> {
       Legion::OrderingConstraint ordering_constraint(ordering, true /*contiguous*/);
       Legion::LayoutConstraintRegistrar layout_constraint;
       layout_constraint.add_constraint(ordering_constraint);
-for (int i =0 ;i<24; i++)
+//FIXME replave 100 with the global variable
+for (int i =0 ;i<100; i++)
       registrar.add_layout_constraint_set(i, Legion::Runtime::preregister_layout(layout_constraint));
       Legion::Runtime::preregister_task_variant<RETURN, TASK>(
           registrar, task_name.c_str());
@@ -201,7 +202,8 @@ struct registration_wrapper_u<void, TASK, 0> {
       Legion::OrderingConstraint ordering_constraint(ordering, true /*contiguous*/);
       Legion::LayoutConstraintRegistrar layout_constraint;
       layout_constraint.add_constraint(ordering_constraint);
-for (int i =0 ;i<24; i++)
+//FIXME replave 100 with the global variable
+for (int i =0 ;i<100; i++)
       registrar.add_layout_constraint_set(i, Legion::Runtime::preregister_layout(layout_constraint));
 
       Legion::Runtime::preregister_task_variant<TASK>(
