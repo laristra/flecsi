@@ -15,7 +15,8 @@ stages:
   - name: canary
   - name: coverage
   - name: test
-    if: type != pull_request
+    #if: type != pull_request
+    if: branch = debug_gitlab_ci
 
 jobs:
   fast_finish: true
@@ -102,13 +103,12 @@ script:
     docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
 
 after_success:
-  - test "${TRAVIS_BUILD_STAGE_NAME}" != "Test" || travis_terminate 0
   - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable) ]] && DEPLOY=yes
-  - if [[ ${DEPLOY} = yes && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false ]]; then
+  - if [[ ${TRAVIS_BUILD_STAGE_NAME} = Test && ${DEPLOY} = yes && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false ]]; then
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}";
     fi
-  - if [[ ${TRAVIS_JOB_NUMBER} = *.1 ]]; then
+  - if [[ ${TRAVIS_BRANCH} = master && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_JOB_NUMBER} = *.1 ]]; then
       cd $HOME/docker/flecsi;
       rm -rf cinch;
       git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
@@ -120,7 +120,7 @@ after_success:
       mv doc/*.pdf assets;
       rm -rf doc;
       git add --all assets/doxygen assets/*.pdf;
-      if [[ ${TRAVIS_BRANCH} = master && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
+      if [[ ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} ]]; then
         git config --global user.name "Automatic Deployment (Travis CI)";
         git config --global user.email "flecsi-commit@lanl.gov";
         git commit -m "Documentation Update";
