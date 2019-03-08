@@ -43,6 +43,11 @@ jobs:
     - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
       compiler: clang
 
+    - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+      compiler: gcc
+    - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+      compiler: clang
+
 compiler:
   - gcc
   - clang
@@ -58,14 +63,6 @@ env:
     - DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
     - DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
     - DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
-
-matrix:
-  fast_finish: true
-  allow_failures:
-    - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
-      compiler: clang
 
 before_install:
   - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
@@ -114,7 +111,7 @@ after_success:
       rm -rf assets/doxygen doc;
       CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
       mv doc/doxygen/html assets/doxygen;
-      for i in doc/*.pdf; do mv ${i} ${i%-1.0*}.pdf; done;
+      for i in doc/*.pdf; do mv ${i} ${i%-0.1*}.pdf; done;
       mv doc/*.pdf assets;
       rm -rf doc;
       git add --all assets/doxygen assets/*.pdf;
