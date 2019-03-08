@@ -142,8 +142,10 @@ struct finalize_handles_t
       i++;
     }
 
-    MPI_Waitall(send_count, requests.data(), statuses.data());
+    auto ret = MPI_Waitall(send_count, requests.data(), statuses.data());
+    if ( ret != MPI_SUCCESS) clog_error( "MPI_Waitall returned " << ret );
     MPI_Waitall(h.num_ghost(), recv_requests.data(), recv_status.data());
+    if ( ret != MPI_SUCCESS) clog_error( "MPI_Waitall returned " << ret );
 
     for(int i = 0; i < h.num_ghost(); i++) {
       clog_rank(warn, 0) << recv_count_buf[i] << std::endl;

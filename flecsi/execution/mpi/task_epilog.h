@@ -215,7 +215,8 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       i++;
     }
 
-    MPI_Waitall(send_count + h.num_ghost_, requests.data(), statuses.data());
+    auto ret = MPI_Waitall(send_count + h.num_ghost_, requests.data(), statuses.data());
+    if ( ret != MPI_SUCCESS) clog_error( "MPI_Waitall returned " << ret );
 
     for(int i = 0; i < h.num_ghost_; i++) {
       clog_rank(warn, 0) << recv_count_buf[i] << std::endl;
