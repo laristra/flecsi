@@ -99,11 +99,9 @@ after_success:
       cd $HOME/docker/flecsi;
       rm -rf cinch;
       git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
-      mkdir -p assets;
-      rm -rf assets/* doc;
-      rm -rf doxygen;
+      rm -rf doxygen _images _sources _static src assets/doxygen;
       CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
-      for i in doc/*.pdf; do mv ${i} ${i%-0.0*}.pdf; done;
+      for i in doc/*.pdf; do mv ${i} ${i%-0.1*}.pdf; done;
       mv doc/*.pdf assets;
       mv doc/doxygen/html doxygen;
       mv doc/sphinx/* . ;
