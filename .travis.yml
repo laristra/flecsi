@@ -49,16 +49,17 @@ compiler:
 
 matrix:
   fast_finish: true
-  - DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
-  - DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
-  - DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
-  - DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
-  - DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
-  - DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
-  - DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
-  - DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
+  include:
+    - DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
+    - DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
+    - DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
+    - DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
 
-  - DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+    - DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
   allow_failures:
     - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
       compiler: gcc
