@@ -374,13 +374,9 @@ private:
     Singleton.
    *--------------------------------------------------------------------------*/
 
-  context_u() : CONTEXT_POLICY() {
-    std::cout << "constructor" << std::endl;
-  }
+  context_u() : CONTEXT_POLICY() {}
 
   ~context_u() {
-    std::cout << "destructor" << std::endl << std::flush;
-
     // Cleanup the global objects
     for(auto & go : global_object_registry_) {
       std::get<1>(go.second)(std::get<0>(go.second));
