@@ -13,6 +13,4 @@
                                                                               */
 /*! @file */
 
-namespace flecsi {
-
-} // namespace flecsi
+namespace flecsi {} // namespace flecsi

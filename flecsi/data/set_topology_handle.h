@@ -19,47 +19,32 @@
 
 namespace flecsi {
 
-enum class set_topology_buffer_t
-{
-  main,
-  active
-};
+enum class set_topology_buffer_t { main, active };
 
-template<
-  typename DATA_CLIENT_TYPE,
-  size_t PERMISSIONS
->
-struct set_topology_handle_base_u :
-public data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS>
-{
+template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS>
+struct set_topology_handle_base_u
+  : public data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> {
   set_topology_buffer_t buffer;
   bool pack;
   bool migrate;
 };
 
-template<
-  typename DATA_CLIENT_TYPE,
+template<typename DATA_CLIENT_TYPE,
   size_t PERMISSIONS,
-  typename INDEPENDENT_DATA_CLIENT_TYPE
->
-struct set_topology_handle_u :
-public set_topology_handle_base_u<DATA_CLIENT_TYPE, PERMISSIONS, PACK, MIGRATE>
-{
+  typename INDEPENDENT_DATA_CLIENT_TYPE>
+struct set_topology_handle_u
+  : public set_topology_handle_base_u<DATA_CLIENT_TYPE,
+      PERMISSIONS,
+      PACK,
+      MIGRATE> {
   using independent_data_client_handle_t =
     data_client_handle_u<INDEPENDENT_DATA_CLIENT_TYPE, PERMISSIONS>;
 
   independent_data_client_handle_t independent_handle;
-
 };
 
-template<
-  typename DATA_CLIENT_TYPE,
-  size_t PERMISSIONS
->
-struct set_topology_handle_u<DATA_CLIENT_TYPE, PERMISSIONS, void> :
-public set_topology_handle_base_u<DATA_CLIENT_TYPE, PERMISSIONS>
-{
-
-};
+template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS>
+struct set_topology_handle_u<DATA_CLIENT_TYPE, PERMISSIONS, void>
+  : public set_topology_handle_base_u<DATA_CLIENT_TYPE, PERMISSIONS> {};
 
 } // namespace flecsi

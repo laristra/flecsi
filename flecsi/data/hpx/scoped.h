@@ -37,8 +37,7 @@ namespace hpx {
 // FIXME: Scoped storage type.
 ///
 template<>
-struct storage_class_u<scoped> {
-}; // struct storage_class_u
+struct storage_class_u<scoped> {}; // struct storage_class_u
 
 } // namespace hpx
 } // namespace data

@@ -4,9 +4,9 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include <flecsi/utils/utility.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/test/print_type.h>
+#include <flecsi/utils/utility.h>
 
 // includes: C++
 #include <iostream>
@@ -21,8 +21,9 @@
 // TEST
 TEST(utility, all) {
   print_type<typename flecsi::utils::as_const<char, char>::type>();
-  print_type<typename flecsi::utils::as_const<char, int >::type>();
-  print_type<typename flecsi::utils::as_const<char, const volatile double>::type>();
+  print_type<typename flecsi::utils::as_const<char, int>::type>();
+  print_type<
+    typename flecsi::utils::as_const<char, const volatile double>::type>();
 
   // compare
 #ifdef __GNUG__

@@ -76,9 +76,7 @@ struct hpx_context_policy_t {
   ///
   /// Return the color for which the context was initialized.
   ///
-  FLECSI_EXPORT size_t
-  color()
-  const;
+  FLECSI_EXPORT size_t color() const;
 
   //------------------------------------------------------------------------//
   // Function registration.
@@ -92,15 +90,13 @@ struct hpx_context_policy_t {
   /// \return A boolean value that is true if the registration succeeded,
   ///         false otherwise.
   ///
-  template<
-      typename RETURN,
-      typename ARG_TUPLE,
-      RETURN (*FUNCTION)(ARG_TUPLE),
-      size_t KEY>
+  template<typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE),
+    size_t KEY>
   bool register_function() {
-    clog_assert(
-        function_registry_.find(KEY) == function_registry_.end(),
-        "function has already been registered");
+    clog_assert(function_registry_.find(KEY) == function_registry_.end(),
+      "function has already been registered");
 
     clog(info) << "Registering function: " << FUNCTION << std::endl;
 
@@ -127,18 +123,16 @@ struct hpx_context_policy_t {
     // TODO: to be defined.
   };
 
-   struct index_subspace_data_t {
+  struct index_subspace_data_t {
     size_t capacity;
   };
 
-  struct local_index_space_data_t{
+  struct local_index_space_data_t {
     size_t size;
     size_t capacity;
   };
 
-  auto&
-  index_space_data_map()
-  {
+  auto & index_space_data_map() {
     return index_space_data_map_;
   }
 
@@ -150,31 +144,27 @@ struct hpx_context_policy_t {
     return index_subspace_data_map_;
   }
 
-  auto&
-  local_index_space_data_map()
-  {
+  auto & local_index_space_data_map() {
     return local_index_space_data_map_;
   }
 
   struct field_metadata_t {
-    //TODO: to be defined
+    // TODO: to be defined
   };
 
   struct sparse_field_data_t {
-    //TODO: to be defined
+    // TODO: to be defined
   };
 
   struct sparse_field_metadata_t {
-    //TODO: to be defined
+    // TODO: to be defined
   };
 
   /*!
     return <double> max reduction
    */
 
-  auto&
-  max_reduction()
-  {
+  auto & max_reduction() {
     return max_reduction_;
   }
 
@@ -184,9 +174,7 @@ struct hpx_context_policy_t {
    @param double max_reduction
    */
 
-  void
-  set_max_reduction(double max_reduction)
-  {
+  void set_max_reduction(double max_reduction) {
     max_reduction_ = max_reduction;
   }
 
@@ -196,31 +184,26 @@ struct hpx_context_policy_t {
    @param
    */
 
-  template <typename T>
-  auto
-  reduce_max(hpx::shared_future<T>& local_future) -> hpx::shared_future<T>
-  {
+  template<typename T>
+  auto reduce_max(hpx::shared_future<T> & local_future)
+    -> hpx::shared_future<T> {
     auto gloabl_max_f = local_future.then(
-      mpi_exec_,
-      [](hpx::shared_future<T> && local_future) -> T {
+      mpi_exec_, [](hpx::shared_future<T> && local_future) -> T {
         T global_max{};
         T local_max = local_future.get();
         MPI_Allreduce(&local_max, &global_max, 1,
-           flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
-           MPI_COMM_WORLD);
+          flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
+          MPI_COMM_WORLD);
         return global_max;
       });
     return gloabl_max_f;
   }
 
-
   /*!
     return <double> min reduction
    */
 
-  auto&
-  min_reduction()
-  {
+  auto & min_reduction() {
     return min_reduction_;
   }
 
@@ -230,9 +213,7 @@ struct hpx_context_policy_t {
    @param double min_reduction
    */
 
-  void
-  set_min_reduction(double min_reduction)
-  {
+  void set_min_reduction(double min_reduction) {
     min_reduction_ = min_reduction;
   }
 
@@ -242,39 +223,37 @@ struct hpx_context_policy_t {
    @param
    */
 
-  template <typename T>
-  auto
-  reduce_min(hpx::shared_future<T> & local_future) -> hpx::shared_future<T>
-  {
+  template<typename T>
+  auto reduce_min(hpx::shared_future<T> & local_future)
+    -> hpx::shared_future<T> {
     auto global_min_f = local_future.then(
-      mpi_exec_,
-      [](hpx::shared_future<T> && local_future) -> T {
+      mpi_exec_, [](hpx::shared_future<T> && local_future) -> T {
         T global_min{};
         T local_min = local_future.get();
         MPI_Allreduce(&local_min, &global_min, 1,
-           flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
-           MPI_COMM_WORLD);
+          flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
+          MPI_COMM_WORLD);
         return global_min;
       });
     return global_min_f;
   }
 
-  hpx::threads::executors::pool_executor& get_default_executor() {
+  hpx::threads::executors::pool_executor & get_default_executor() {
     return exec_;
   }
 
-  hpx::threads::executors::pool_executor& get_mpi_executor() {
+  hpx::threads::executors::pool_executor & get_mpi_executor() {
     return mpi_exec_;
   }
 
 protected:
   // Helper function for HPX start-up and shutdown
   FLECSI_EXPORT int
-  hpx_main(int (*driver)(int, char * []), int argc, char * argv[]);
+  hpx_main(int (*driver)(int, char *[]), int argc, char * argv[]);
 
   // Start the HPX runtime system,
   FLECSI_EXPORT int
-  start_hpx(int (*driver)(int, char * []), int argc, char * argv[]);
+  start_hpx(int (*driver)(int, char *[]), int argc, char * argv[]);
 
 private:
   //--------------------------------------------------------------------------//

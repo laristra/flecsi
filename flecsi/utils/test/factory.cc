@@ -13,8 +13,8 @@
  *~--------------------------------------------------------------------------~*/
 
 // includes: flecsi
-#include <flecsi/utils/factory.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/factory.h>
 #include <flecsi/utils/test/print_type.h>
 
 // includes: C++
@@ -27,7 +27,8 @@
 // =============================================================================
 
 // base io class
-class io_base_t {
+class io_base_t
+{
 public:
   io_base_t(std::string & filename) : filename_(filename) {}
 
@@ -42,7 +43,7 @@ protected:
 
 // create factory type
 using io_factory_t =
-    flecsi::utils::Factory_<io_base_t, std::string, std::string &>;
+  flecsi::utils::Factory_<io_base_t, std::string, std::string &>;
 
 struct test_io_t : public io_base_t {
 
@@ -62,7 +63,7 @@ create_test_io(std::string & filename) {
 
 // register this io type with factory
 bool test_registered =
-    io_factory_t::instance().registerType("tst", create_test_io);
+  io_factory_t::instance().registerType("tst", create_test_io);
 
 /*
 TEST(factory, sanity) {
@@ -119,7 +120,7 @@ TEST(factory, all) {
 
   // one variant
   using factory_charkey_t = // return, key,  arguments...
-      flecsi::utils::Factory_<float, char, int, float, double>;
+    flecsi::utils::Factory_<float, char, int, float, double>;
   print_type<factory_charkey_t::createHandler>();
   print_type<factory_charkey_t::key_t>();
   print_type<factory_charkey_t::map_t>();
@@ -127,7 +128,7 @@ TEST(factory, all) {
 
   // another variant
   using factory_longkey_t = // return, key,  arguments...
-      flecsi::utils::Factory_<double, long, double, double>;
+    flecsi::utils::Factory_<double, long, double, double>;
   print_type<factory_longkey_t::createHandler>();
   print_type<factory_longkey_t::key_t>();
   print_type<factory_longkey_t::map_t>();
@@ -167,9 +168,9 @@ TEST(factory, all) {
   // 'b' can't re-associate...
   bool b2 = factory_charkey_t::instance().registerType('b', b_foo);
 
-  CINCH_CAPTURE() << int(a) << std::endl;  // true
-  CINCH_CAPTURE() << int(b) << std::endl;  // true
-  CINCH_CAPTURE() << int(c) << std::endl;  // true
+  CINCH_CAPTURE() << int(a) << std::endl; // true
+  CINCH_CAPTURE() << int(b) << std::endl; // true
+  CINCH_CAPTURE() << int(c) << std::endl; // true
   CINCH_CAPTURE() << int(b2) << std::endl; // false ('b' didn't re-associate)
   CINCH_CAPTURE() << std::endl;
 

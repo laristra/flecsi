@@ -18,9 +18,9 @@
 
 using namespace flecsi;
 
-using point_1d_t = point_u<double,1>;
-using point_2d_t = point_u<double,2>;
-using point_3d_t = point_u<double,3>;
+using point_1d_t = point_u<double, 1>;
+using point_2d_t = point_u<double, 2>;
+using point_3d_t = point_u<double, 3>;
 
 TEST(point, sanity) {
   point_1d_t a1{-1.0};
@@ -73,7 +73,6 @@ TEST(point, midpoint) {
   ASSERT_EQ(4.0, c3[1]) << "Midpoint calculation failed";
   ASSERT_EQ(-2.5, c3[2]) << "Midpoint calculation failed";
 } // TEST
-
 
 /*----------------------------------------------------------------------------*
  * Google Test Macros
