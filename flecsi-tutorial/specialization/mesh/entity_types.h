@@ -18,6 +18,8 @@
 #include <iostream>
 #include <vector>
 
+#include <flecsi/topology/mesh_types.h>
+
 namespace flecsi {
 namespace tutorial {
 
