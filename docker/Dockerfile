@@ -52,7 +52,7 @@ RUN make VERBOSE=1 -j2
 RUN ccache -s
 RUN make doxygen
 RUN if [[ ${CLANG_FORMAT} ]]; then \
-      make format && git diff --exit-code; \
+      make format && git diff --exit-code --ignore-submodules; \
     fi
 RUN if [ ${COVERAGE} ]; then \
       python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; \
