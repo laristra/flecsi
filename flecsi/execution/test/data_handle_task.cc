@@ -56,7 +56,7 @@ color_data_handle_dump(color_accessor<double, ro> x) {
 void
 exclusive_writer(dense_accessor<double, wo, na, na> x) {
   clog(info) << "exclusive writer write" << std::endl;
-  for (int i = 0; i < x.exclusive_size(); i++) {
+  for(int i = 0; i < x.exclusive_size(); i++) {
     x.exclusive(i) = static_cast<double>(i);
   }
 }
@@ -64,7 +64,7 @@ exclusive_writer(dense_accessor<double, wo, na, na> x) {
 void
 exclusive_reader(dense_accessor<double, ro, ro, ro> x) {
   clog(info) << "exclusive reader read: " << std::endl;
-  for (int i = 0; i < x.exclusive_size(); i++) {
+  for(int i = 0; i < x.exclusive_size(); i++) {
     ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
   }
 }
@@ -102,11 +102,10 @@ mpi_task(int val, global_accessor<double, ro> x) {
 void
 exclusive_mpi(dense_accessor<double, ro, na, na> x) {
   clog(info) << "exclusive reader read: " << std::endl;
-  for (int i = 0; i < x.exclusive_size(); i++) {
+  for(int i = 0; i < x.exclusive_size(); i++) {
     ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
   }
 }
-
 
 flecsi_register_task_simple(task1, loc, index);
 flecsi_register_task_simple(data_handle_dump, loc, index);
@@ -151,7 +150,7 @@ specialization_tlt_init(int argc, char ** argv) {
   auto & context = execution::context_t::instance();
 
   ASSERT_EQ(
-      context.execution_state(), static_cast<size_t>(SPECIALIZATION_TLT_INIT));
+    context.execution_state(), static_cast<size_t>(SPECIALIZATION_TLT_INIT));
 
   coloring_map_t map;
   map.vertices = 1;
@@ -163,7 +162,7 @@ specialization_tlt_init(int argc, char ** argv) {
   flecsi_execute_task_simple(global_writer, single, global_handle);
   flecsi_execute_task_simple(global_data_handle_dump, index, global_handle);
   flecsi_execute_task_simple(global_reader, index, global_handle);
-  flecsi_execute_task(mpi_task,, index, 10, global_handle);
+  flecsi_execute_task(mpi_task, , index, 10, global_handle);
   auto global_handle2 = flecsi_get_global(ns, time, double, 0);
   flecsi_execute_task_simple(global_writer, single, global_handle2);
   flecsi_execute_task(mpi_task, , index, 11, global_handle2);
@@ -180,7 +179,7 @@ driver(int argc, char ** argv) {
   auto & context = execution::context_t::instance();
   // There no longer is a separate state for driver and specialization_tlt_init
   // under control replication.
-  //ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
+  // ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
 
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -190,7 +189,7 @@ driver(int argc, char ** argv) {
 
   auto h = flecsi_get_handle(ch, ns, pressure, double, dense, 0);
 
-//  flecsi_execute_task_simple(task1, single, h, 128);
+  //  flecsi_execute_task_simple(task1, single, h, 128);
   flecsi_execute_task_simple(exclusive_writer, index, h);
   flecsi_execute_task_simple(exclusive_reader, index, h);
   flecsi_execute_task_simple(data_handle_dump, index, h);

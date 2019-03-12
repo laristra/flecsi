@@ -18,30 +18,31 @@
 
 #include <iostream>
 
-#include<flecsi-tutorial/specialization/mesh/mesh.h>
-#include<flecsi/data/data.h>
-#include<flecsi/execution/execution.h>
+#include <flecsi-tutorial/specialization/mesh/mesh.h>
+#include <flecsi/data/data.h>
+#include <flecsi/execution/execution.h>
 
 using namespace flecsi;
 using namespace flecsi::tutorial;
 
 namespace example {
 
-void simple(mesh<ro> mesh) {
+void
+simple(mesh<ro> mesh) {
 
   // Iterate over the vertices index space
 
-  for(auto v: mesh.vertices()) {
+  for(auto v : mesh.vertices()) {
     v->print("Hello World! I'm a vertex!");
   } // for
 
   // Iterate over the cells index space, and then over
   // the vertices index space.
 
-  for(auto c: mesh.cells(owned)) {
+  for(auto c : mesh.cells(owned)) {
     c->print("Hello World! I am a cell!");
 
-    for(auto v: mesh.vertices(c)) {
+    for(auto v : mesh.vertices(c)) {
       v->print("I'm a vertex!");
     } // for
   } // for
@@ -57,7 +58,8 @@ flecsi_register_task(simple, example, loc, single);
 namespace flecsi {
 namespace execution {
 
-void driver(int argc, char ** argv) {
+void
+driver(int argc, char ** argv) {
 
   // Get a data client handle as usual...
 

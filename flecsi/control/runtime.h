@@ -48,8 +48,12 @@ struct runtime_t {
     return r;
   } // instance
 
-  std::string const & program() const { return program_; }
-  std::string & program() { return program_; }
+  std::string const & program() const {
+    return program_;
+  }
+  std::string & program() {
+    return program_;
+  }
 
   bool register_driver(std::function<int(int, char **)> const & driver) {
     driver_ = driver;
@@ -82,7 +86,7 @@ struct runtime_t {
    */
 
   void initialize_runtimes(int argc, char ** argv) {
-    for(auto r: handlers_) {
+    for(auto r : handlers_) {
       r.initialize(argc, argv);
     } // for
   } // initialize_runtimes
@@ -94,7 +98,7 @@ struct runtime_t {
   int finalize_runtimes(int argc, char ** argv, runtime_exit_mode_t mode) {
     int result{0};
 
-    for(auto r: handlers_) {
+    for(auto r : handlers_) {
       result |= r.finalize(argc, argv, mode);
     } // for
 
@@ -109,7 +113,7 @@ struct runtime_t {
   bool participate_in_output(int argc, char ** argv) {
     bool result{true};
 
-    for(auto r: handlers_) {
+    for(auto r : handlers_) {
       result = r.output(argc, argv) ? result : false;
     } // for
 
@@ -117,7 +121,6 @@ struct runtime_t {
   } // participate_in_output
 
 private:
-
   // FIXME: Make the singleton safe.
   runtime_t() {}
 
@@ -127,8 +130,8 @@ private:
 
 }; // runtime_t
 
-} // namespace flecsi
 } // namespace control
+} // namespace flecsi
 
 /*!
   @def flecsi_register_runtime_driver(driver)
@@ -154,7 +157,7 @@ private:
   function has an additional argument that specifies the exit mode.
 
   @param handler A runtime_handler_t that references the appropriate
-                 initialize, finalize, and output functions.                
+                 initialize, finalize, and output functions.
  */
 
 #define flecsi_append_runtime_handler(handler)                                 \

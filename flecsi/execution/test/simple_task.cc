@@ -6,12 +6,12 @@
 #ifndef flecsi_task_driver_h
 #define flecsi_task_driver_h
 
-#include <iostream>
 #include <cinchtest.h>
+#include <iostream>
 
-#include <flecsi/utils/common.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/execution.h>
+#include <flecsi/utils/common.h>
 
 /*!
  * \file default_driver.h
@@ -26,27 +26,32 @@ namespace execution {
 // Task registration.
 //----------------------------------------------------------------------------//
 
-double task(double dval, int ival) {
+double
+task(double dval, int ival) {
   clog(info) << "Executing task" << std::endl;
   clog(info) << "Value(double): " << dval << std::endl;
   clog(info) << "Value(int): " << ival << std::endl;
   return dval;
 } // task1
 
-void single_task(void) {
+void
+single_task(void) {
   clog(info) << "This is a single task" << std::endl;
 }
 
-void index_task(void) {
+void
+index_task(void) {
   clog(info) << "This is an index task" << std::endl;
 }
 
-void taskvoid(void) {
+void
+taskvoid(void) {
   clog(info) << "This is a void(void) task" << std::endl;
 }
 
-void mpi_task(void){
- clog(info) << "This is an mpi task" << std::endl;
+void
+mpi_task(void) {
+  clog(info) << "This is an mpi task" << std::endl;
 }
 
 flecsi_register_task(task, flecsi::execution, loc, single | index);
@@ -59,7 +64,8 @@ flecsi_register_task(mpi_task, flecsi::execution, mpi, index);
 // Driver.
 //----------------------------------------------------------------------------//
 
-void driver(int argc, char ** argv) {
+void
+driver(int argc, char ** argv) {
   clog(info) << "Inside user driver" << std::endl;
 
   const double alpha{10.0};
@@ -88,16 +94,14 @@ void driver(int argc, char ** argv) {
 
   auto f6 = flecsi_execute_task(mpi_task, flecsi::execution, index);
 
-  //f6.wait();
+  // f6.wait();
 } // driver
 
 //----------------------------------------------------------------------------//
 // TEST.
 //----------------------------------------------------------------------------//
 
-TEST(simple_task, testname) {
-
-} // TEST
+TEST(simple_task, testname) {} // TEST
 
 } // namespace execution
 } // namespace flecsi

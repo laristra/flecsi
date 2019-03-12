@@ -46,8 +46,7 @@ namespace flecsi {
 namespace data {
 namespace hpx {
 
-
-//FIXME: sparce data was completely refactored in December 2017. 
+// FIXME: sparce data was completely refactored in December 2017.
 #if 0
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//

@@ -18,25 +18,27 @@ struct node_policy_t {
 
   node_policy_t() {}
 
-  node_policy_t(bitset_t const & bitset)
-    : bitset_(bitset) {}
+  node_policy_t(bitset_t const & bitset) : bitset_(bitset) {}
 
   bool initialize(node_policy_t const & node) {
     bitset_ = node.bitset_;
     return true;
   } // initialize
 
-  bitset_t const & bitset() const { return bitset_; }
-  bitset_t & bitset() { return bitset_; }
+  bitset_t const & bitset() const {
+    return bitset_;
+  }
+  bitset_t & bitset() {
+    return bitset_;
+  }
 
 private:
-
   bitset_t bitset_;
 
 }; // struct node_policy_t
 
 inline std::ostream &
-operator << (std::ostream & stream, node_policy_t const & node) {
+operator<<(std::ostream & stream, node_policy_t const & node) {
   stream << "bitset: " << node.bitset() << std::endl;
   return stream;
 } // operator <<
@@ -47,7 +49,7 @@ using dag_t = flecsi::utils::dag_u<node_policy_t>;
 using graphviz_t = flecsi::utils::graphviz_t;
 #endif
 
-#define flecsi_hash(name) \
+#define flecsi_hash(name)                                                      \
   flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
 
 const size_t a = flecsi_hash(a);
@@ -62,19 +64,19 @@ TEST(dag, sanity) {
 
   dag_t dag;
 
-  dag.initialize_node({ e, "e", 0x10 | 0x20 }); 
-  dag.initialize_node({ f, "f", 0x20 | 0x40 }); 
-  dag.initialize_node({ g, "g", 0x40 | 0x80 }); 
+  dag.initialize_node({e, "e", 0x10 | 0x20});
+  dag.initialize_node({f, "f", 0x20 | 0x40});
+  dag.initialize_node({g, "g", 0x40 | 0x80});
 
   dag.add_edge(b, a);
   dag.add_edge(c, a);
   dag.add_edge(c, b);
   dag.add_edge(e, d);
 
-  dag.initialize_node({ a, "a", 0x01 | 0x02 }); 
-  dag.initialize_node({ b, "b", 0x02 | 0x04 }); 
-  dag.initialize_node({ c, "c", 0x04 | 0x08 }); 
-  dag.initialize_node({ d, "d", 0x08 | 0x10 }); 
+  dag.initialize_node({a, "a", 0x01 | 0x02});
+  dag.initialize_node({b, "b", 0x02 | 0x04});
+  dag.initialize_node({c, "c", 0x04 | 0x08});
+  dag.initialize_node({d, "d", 0x08 | 0x10});
 
   dag.add_edge(e, b);
   dag.add_edge(e, f);

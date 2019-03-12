@@ -15,7 +15,7 @@ TEST(hash, all) {
 
   using flecsi::utils::string_hash;
 
-  if (sizeof(std::size_t) == 8) {
+  if(sizeof(std::size_t) == 8) {
     EXPECT_EQ(string_hash<std::size_t>("", 0), 0UL);
     EXPECT_EQ(string_hash<std::size_t>("a", 1), 579863930UL);
     EXPECT_EQ(string_hash<std::size_t>("bc", 2), 1804308674789032UL);
@@ -321,15 +321,15 @@ TEST(hash, all) {
   std::map<std::size_t, std::string> hashes;
   std::size_t num_collisions = 0;
 
-  for (auto s : strs) {
+  for(auto s : strs) {
     // compute hash of string s and check whether it's already in the list
     auto hash = flecsi::utils::string_hash<std::size_t>(s, s.size());
-    if (hashes.count(hash) > 0) {
-      printf(
-          "COLLISION: '%s' collides with '%s'\n", s.c_str(),
-          hashes.at(hash).c_str());
+    if(hashes.count(hash) > 0) {
+      printf("COLLISION: '%s' collides with '%s'\n", s.c_str(),
+        hashes.at(hash).c_str());
       ++num_collisions;
-    } else {
+    }
+    else {
       hashes.insert({hash, s});
     }
   }

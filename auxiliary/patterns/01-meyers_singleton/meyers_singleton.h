@@ -11,20 +11,14 @@
 class singleton_t
 {
 public:
-
   // Function static instance method with local static variable.
-  static
-  singleton_t &
-  instance()
-  {
+  static singleton_t & instance() {
     static singleton_t ms;
     return ms;
   } // instance
 
   // Trivial method to print "Hello World"
-  void
-  print()
-  {
+  void print() {
     std::cout << "Hello World" << std::endl;
   } // print
 
@@ -32,10 +26,9 @@ public:
   singleton_t(const singleton_t &) = delete;
 
   // Assignment operator (disabled)
-  singleton_t & operator = (const singleton_t &) = delete;
+  singleton_t & operator=(const singleton_t &) = delete;
 
 private:
-
   // Default constructor
   singleton_t() {}
 
