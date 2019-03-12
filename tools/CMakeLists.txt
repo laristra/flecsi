@@ -281,6 +281,11 @@ install(
     WORLD_READ
 )
 
+option(ENABLE_FLECSTAN "Build flecstan tools" OFF)
+if(ENABLE_FLECSTAN)
+  add_subdirectory(flecstan)
+endif(ENABLE_FLECSTAN)
+
 #~---------------------------------------------------------------------------~-#
 # Formatting options for emacs and vim.
 # vim: set tabstop=4 shiftwidth=4 expandtab :

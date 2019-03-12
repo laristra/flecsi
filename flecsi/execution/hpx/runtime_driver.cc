@@ -17,7 +17,8 @@ namespace execution {
 // Implementation of FleCSI runtime driver task.
 //----------------------------------------------------------------------------//
 
-int hpx_runtime_driver(int argc, char ** argv) {
+int
+hpx_runtime_driver(int argc, char ** argv) {
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   // Execute the specialization driver.

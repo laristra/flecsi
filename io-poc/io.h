@@ -15,7 +15,8 @@
 
 using namespace io_poc;
 
-int restart_dump(int argc, char ** argv) {
+int
+restart_dump(int argc, char ** argv) {
   usleep(200000);
   std::cout << "io: restart_dump" << std::endl;
   return 0;
@@ -25,7 +26,8 @@ register_action(io /* phase */,
   restart_dump /* name */,
   restart_dump /* action */);
 
-int output_final(int argc, char ** argv) {
+int
+output_final(int argc, char ** argv) {
 
 #if defined(RISTRA_UTILS_ENABLE_GRAPHVIZ)
   usleep(200000);

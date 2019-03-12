@@ -124,19 +124,20 @@ template<typename T,
   size_t SHARED_PERMISSIONS,
   size_t GHOST_PERMISSIONS,
   typename DATA_POLICY>
-struct sparse_data_handle_base_u : public ragged_data_handle_base_u<data::sparse_entry_value_u<T>,
-                                     EXCLUSIVE_PERMISSIONS,
-                                     SHARED_PERMISSIONS,
-                                     GHOST_PERMISSIONS,
-                                     FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY> {
+struct sparse_data_handle_base_u
+  : public ragged_data_handle_base_u<data::sparse_entry_value_u<T>,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS,
+      FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY> {
 
   using offset_t = data::sparse_data_offset_t;
   using entry_value_t = data::sparse_entry_value_u<T>;
   using base_t = ragged_data_handle_base_u<entry_value_t,
-                                           EXCLUSIVE_PERMISSIONS,
-                                           SHARED_PERMISSIONS,
-                                           GHOST_PERMISSIONS,
-                                           FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY>;
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS,
+    FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY>;
 
   /*!
     Capture the underlying data type.
@@ -158,8 +159,7 @@ struct sparse_data_handle_base_u : public ragged_data_handle_base_u<data::sparse
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  sparse_data_handle_base_u(const sparse_data_handle_base_u & b)
-    : base_t(b) {};
+  sparse_data_handle_base_u(const sparse_data_handle_base_u & b) : base_t(b){};
 
 }; // sparse_data_handle_base_u
 

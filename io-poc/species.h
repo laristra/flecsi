@@ -5,7 +5,8 @@
 
 using namespace io_poc;
 
-int init_species(int argc, char ** argv) {
+int
+init_species(int argc, char ** argv) {
   usleep(200000);
   std::cout << "initialize: init_species" << std::endl;
   std::cout << std::endl;

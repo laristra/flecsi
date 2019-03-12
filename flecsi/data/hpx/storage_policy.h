@@ -52,17 +52,16 @@ struct hpx_storage_policy_t {
   // Field and client registration interfaces are the same for now.
   using client_entry_t = field_entry_t;
 
-  bool register_field(
-      size_t client_key,
-      size_t key,
-      const registration_function_t & callback) {
+  bool register_field(size_t client_key,
+    size_t key,
+    const registration_function_t & callback) {
     // TODO:
     return true;
   }
 
   void register_all() {
-    for (auto & c : field_registry_) {
-      for (auto & d : c.second) {
+    for(auto & c : field_registry_) {
+      for(auto & d : c.second) {
         d.second.second(d.second.first);
       } // for
     } // for

@@ -11,22 +11,21 @@
 namespace flecsi {
 namespace execution {
 
-void specialization_tlt_init(int argc, char ** argv) {
-} // specialization_tlt_init
+void
+specialization_tlt_init(int argc, char ** argv) {} // specialization_tlt_init
 
-void driver(int argc, char ** argv) {
-} // driver
+void
+driver(int argc, char ** argv) {} // driver
 
-} // namespace flecsi
 } // namespace execution
+} // namespace flecsi
 
 using test_mesh_2d_t = flecsi::supplemental::test_mesh_2d_t;
 
 flecsi_register_data_client(test_mesh_2d_t, sovler, meshA);
 flecsi_register_data_client(test_mesh_2d_t, sovler, meshB);
 
-TEST(client_registration, sanity) {
-} // TEST
+TEST(client_registration, sanity) {} // TEST
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros

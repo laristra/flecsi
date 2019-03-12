@@ -5,7 +5,8 @@
 
 using namespace io_poc;
 
-int particle_special(int argc, char ** argv) {
+int
+particle_special(int argc, char ** argv) {
   usleep(200000);
   std::cout << "advance: particle_special" << std::endl;
   return 0;

@@ -5,7 +5,8 @@
 
 using namespace io_poc;
 
-int init_mesh(int argc, char ** argv) {
+int
+init_mesh(int argc, char ** argv) {
   usleep(200000);
   std::cout << "initialize: init_mesh" << std::endl;
   return 0;
@@ -13,7 +14,8 @@ int init_mesh(int argc, char ** argv) {
 
 register_action(initialize, init_mesh, init_mesh);
 
-int fixup_mesh(int argc, char ** argv) {
+int
+fixup_mesh(int argc, char ** argv) {
   usleep(200000);
   std::cout << "mesh: fixup_mesh" << std::endl;
   std::cout << std::endl;

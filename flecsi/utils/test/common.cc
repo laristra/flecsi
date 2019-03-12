@@ -71,7 +71,7 @@ TEST(common, all) {
 
   auto & c = flecsi::utils::unique_id_t<int>::instance();
   auto & d = flecsi::utils::unique_id_t<int>::instance();
-  EXPECT_EQ(&c, &d);                 // singleton again
+  EXPECT_EQ(&c, &d); // singleton again
   EXPECT_NE((void *)&c, (void *)&a); // != (different template specializations)
 
   CINCH_CAPTURE() << a.next() << std::endl;
@@ -93,11 +93,11 @@ TEST(common, all) {
   // ------------------------
 
 #ifdef __GNUG__
-  #ifdef __PPC64__
+#ifdef __PPC64__
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.ppc"));
-  #else
-    EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.gnug"));
-  #endif
+#else
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.gnug"));
+#endif
 #elif defined(_MSC_VER)
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.msvc"));
 #else

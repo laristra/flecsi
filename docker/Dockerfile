@@ -2,11 +2,13 @@ FROM laristra/flecsi-third-party:fedora
 
 ARG MINIMAL
 ARG LEGION
+ARG BUILD_TYPE
 ARG RUNTIME
 ARG COVERAGE
 ARG CC
 ARG CXX
 ARG CXXFLAGS
+ARG CLANG_FORMAT
 
 #for coverage
 ARG CI
@@ -33,7 +35,7 @@ RUN mkdir build
 
 WORKDIR build
 RUN ccache -z
-RUN cmake \
+RUN cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DENABLE_LEGION=$LEGION \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
@@ -44,11 +46,15 @@ RUN cmake \
           -DENABLE_COLORING=ON \
           -DENABLE_DOXYGEN=ON \
           -DENABLE_DOCUMENTATION=ON \
+	  -DENABLE_FLECSTAN=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
 RUN make VERBOSE=1 -j2
 RUN ccache -s
 RUN make doxygen
+RUN if [[ ${CLANG_FORMAT} ]]; then \
+      make format && git diff --exit-code --ignore-submodules; \
+    fi
 RUN if [ ${COVERAGE} ]; then \
       python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; \
       wget -O codecov.sh https://codecov.io/bash; \
