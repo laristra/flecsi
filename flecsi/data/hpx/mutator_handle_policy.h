@@ -24,8 +24,7 @@ namespace flecsi {
 struct hpx_mutator_handle_policy_t {
   hpx_mutator_handle_policy_t() {}
 
-  hpx_mutator_handle_policy_t(const hpx_mutator_handle_policy_t & p) =
-      default;
+  hpx_mutator_handle_policy_t(const hpx_mutator_handle_policy_t & p) = default;
 
 }; // class hpx_mutator_handle_policy_t
 

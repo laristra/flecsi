@@ -37,25 +37,23 @@ task1(client_handle_t<test_mesh_t, ro> mesh) {
 } // task1
 
 void
-fill_task(
-    client_handle_t<test_mesh_t, ro> mesh,
-    dense_accessor<double, rw, rw, na> pressure) {
+fill_task(client_handle_t<test_mesh_t, ro> mesh,
+  dense_accessor<double, rw, rw, na> pressure) {
   size_t count = 0;
-  for (auto c : mesh.cells()) {
+  for(auto c : mesh.cells()) {
     pressure(c) = count++;
   } // for
 } // fill_task
 
 void
-print_task(
-    client_handle_t<test_mesh_t, ro> mesh,
-    dense_accessor<double, ro, ro, ro> pressure) {
+print_task(client_handle_t<test_mesh_t, ro> mesh,
+  dense_accessor<double, ro, ro, ro> pressure) {
   CINCH_CAPTURE() << "IN PRINT_TASK" << std::endl;
 
-  for (auto c : mesh.entities<2, 0>()) {
+  for(auto c : mesh.entities<2, 0>()) {
     CINCH_CAPTURE() << "cell id: " << c->template id<0>() << std::endl;
 
-    for (auto v : mesh.entities<0, 0>(c)) {
+    for(auto v : mesh.entities<0, 0>(c)) {
       CINCH_CAPTURE() << "vertex id: " << v->template id<0>() << std::endl;
     } // for
 
@@ -73,14 +71,13 @@ flecsi_register_data_client(test_mesh_t, meshes, mesh1);
 
 flecsi_register_task_simple(task1, loc, index);
 
-flecsi_register_field(
-    test_mesh_t,
-    hydro,
-    pressure,
-    double,
-    dense,
-    1,
-    index_spaces::cells);
+flecsi_register_field(test_mesh_t,
+  hydro,
+  pressure,
+  double,
+  dense,
+  1,
+  index_spaces::cells);
 
 flecsi_register_task_simple(fill_task, loc, index);
 flecsi_register_task_simple(print_task, loc, index);
@@ -107,7 +104,6 @@ specialization_spmd_init(int argc, char ** argv) {
 // User driver.
 //----------------------------------------------------------------------------//
 
-
 void
 driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
@@ -118,7 +114,7 @@ driver(int argc, char ** argv) {
   future.wait(); // wait before comparing results
 
   auto & context = execution::context_t::instance();
-  if (context.color() == 0) {
+  if(context.color() == 0) {
     ASSERT_TRUE(CINCH_EQUAL_BLESSED("data_client_handle.blessed"));
   }
 } // scope

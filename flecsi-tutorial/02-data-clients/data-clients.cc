@@ -18,9 +18,9 @@
 
 #include <iostream>
 
-#include<flecsi-tutorial/specialization/mesh/mesh.h>
-#include<flecsi/data/data.h>
-#include<flecsi/execution/execution.h>
+#include <flecsi-tutorial/specialization/mesh/mesh.h>
+#include <flecsi/data/data.h>
+#include <flecsi/execution/execution.h>
 
 using namespace flecsi;
 using namespace flecsi::tutorial;
@@ -32,7 +32,8 @@ flecsi_register_data_client(mesh_t, clients, example_mesh);
 
 namespace hydro {
 
-void simple_task(mesh<ro> m) {
+void
+simple_task(mesh<ro> m) {
 
   // Our specialization mesh interface provides a "print" method. The
   // mechanism that allows a mesh handle to be passed to a task inherits
@@ -52,7 +53,8 @@ flecsi_register_task(simple_task, hydro, loc, single);
 namespace flecsi {
 namespace execution {
 
-void driver(int argc, char ** argv) {
+void
+driver(int argc, char ** argv) {
 
   // Here, we ask the runtime for a handle to the data client variable
   // that we defined above. This handle is an opaque reference to the

@@ -78,11 +78,10 @@ struct cell_t : public flecsi::topology::mesh_entity_u<2, 1> {
     neighbors_.fill(nullptr);
   }
 
-  std::vector<size_t> create_entities(
-      id_t cell_id,
-      size_t dim,
-      flecsi::topology::domain_connectivity_u<2> & c,
-      id_t * e) {
+  std::vector<size_t> create_entities(id_t cell_id,
+    size_t dim,
+    flecsi::topology::domain_connectivity_u<2> & c,
+    id_t * e) {
     clog_assert(false, "cell_t::create_entities is not implemented");
     return {};
   } // create_entities
@@ -142,29 +141,26 @@ struct test_mesh_2d_policy_t {
   flecsi_register_number_domains(1);
 
   flecsi_register_entity_types(
-      flecsi_entity_type(index_spaces::vertices, 0, vertex_t),
-      // flecsi_entity_type(index_spaces::edges, 0, edge_t),
-      flecsi_entity_type(index_spaces::cells, 0, cell_t));
+    flecsi_entity_type(index_spaces::vertices, 0, vertex_t),
+    // flecsi_entity_type(index_spaces::edges, 0, edge_t),
+    flecsi_entity_type(index_spaces::cells, 0, cell_t));
 
-  flecsi_register_connectivities(flecsi_connectivity(
-      index_spaces::cells_to_vertices,
-      0,
-      cell_t,
-      vertex_t));
+  flecsi_register_connectivities(
+    flecsi_connectivity(index_spaces::cells_to_vertices, 0, cell_t, vertex_t));
 
   flecsi_register_bindings();
 
 #ifdef FLECSI_TEST_MESH_INDEX_SUBSPACES
-  using index_subspaces = std::tuple<std::tuple<
-      flecsi::topology::index_space_<0>,
+  using index_subspaces =
+    std::tuple<std::tuple<flecsi::topology::index_space_<0>,
       flecsi::topology::index_subspace_<0>>>;
 #endif
 
   template<size_t M, size_t D, typename ST>
   static flecsi::topology::mesh_entity_base_u<num_domains> * create_entity(
-      flecsi::topology::mesh_topology_base_u<ST> * mesh,
-      size_t num_vertices,
-      id_t const & id) {
+    flecsi::topology::mesh_topology_base_u<ST> * mesh,
+    size_t num_vertices,
+    id_t const & id) {
 #if 0
     switch(M) {
 
@@ -194,7 +190,7 @@ struct test_mesh_2d_policy_t {
 //----------------------------------------------------------------------------//
 
 struct test_mesh_2d_t
-    : public flecsi::topology::mesh_topology_u<test_mesh_2d_policy_t> {
+  : public flecsi::topology::mesh_topology_u<test_mesh_2d_policy_t> {
 
   auto cells() {
     return entities<2, 0>();
@@ -248,7 +244,7 @@ do_test_mesh_2d_coloring() {
   ai.to_index_space = index_spaces::vertices;
   ai.color_sizes.resize(cinfo.size());
 
-  for (auto & itr : cinfo) {
+  for(auto & itr : cinfo) {
     size_t color{itr.first};
     const coloring::coloring_info_t & ci = itr.second;
     ai.color_sizes[color] = (ci.exclusive + ci.shared + ci.ghost) * 4;
@@ -302,7 +298,7 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
 #endif
 
   // make vertices
-  for (auto & vm : vertex_map) {
+  for(auto & vm : vertex_map) {
     const size_t mid{vm.second};
     const size_t row{mid / (width + 1)};
     const size_t column{mid % (width + 1)};
@@ -316,7 +312,7 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
   // make cells
   std::unordered_map<size_t, cell_t *> cells_vs_ids;
 
-  for (auto & cm : cell_map) {
+  for(auto & cm : cell_map) {
     const size_t mid{cm.second};
 
     const size_t row{mid / width};
@@ -335,7 +331,7 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
     auto c{mesh.make<cell_t>(index_t{{row, column}})};
     cells_vs_ids[mid] = c;
     mesh.init_cell<0>(
-        c, {vertices[lv0], vertices[lv1], vertices[lv2], vertices[lv3]});
+      c, {vertices[lv0], vertices[lv1], vertices[lv2], vertices[lv3]});
   } // for
 
   mesh.init<0>();
@@ -347,30 +343,30 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
 
   auto exclusive_and_shared = cell_coloring.exclusive;
   exclusive_and_shared.insert(
-      cell_coloring.shared.begin(), cell_coloring.shared.end());
+    cell_coloring.shared.begin(), cell_coloring.shared.end());
 
-  for (auto c : exclusive_and_shared) {
+  for(auto c : exclusive_and_shared) {
     auto this_cell = cells_vs_ids.at(c.id);
     size_t row = this_cell->index()[0];
     size_t column = this_cell->index()[1];
 
     // left
-    if (column > 0) {
+    if(column > 0) {
       size_t left_id = (column - 1) + row * width;
       this_cell->set_neighbor(left_, cells_vs_ids.at(left_id));
     }
     // right
-    if (column < width - 1) {
+    if(column < width - 1) {
       size_t right_id = (column + 1) + row * width;
       this_cell->set_neighbor(right_, cells_vs_ids.at(right_id));
     }
     // below
-    if (row > 0) {
+    if(row > 0) {
       size_t below_id = column + (row - 1) * width;
       this_cell->set_neighbor(below_, cells_vs_ids.at(below_id));
     }
     // above
-    if (row < width - 1) {
+    if(row < width - 1) {
       size_t above_id = column + (row + 1) * width;
       this_cell->set_neighbor(above_, cells_vs_ids.at(above_id));
     }

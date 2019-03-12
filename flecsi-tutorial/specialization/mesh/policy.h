@@ -14,9 +14,9 @@
 
 #pragma once
 
+#include <flecsi-tutorial/specialization/mesh/entity_types.h>
 #include <flecsi/topology/mesh.h>
 #include <flecsi/topology/mesh_topology.h>
-#include <flecsi-tutorial/specialization/mesh/entity_types.h>
 
 namespace flecsi {
 namespace tutorial {
@@ -29,8 +29,7 @@ enum index_spaces : size_t {
   cells_to_vertices
 }; // enum index_spaces
 
-struct specialization_mesh_policy_t
-{
+struct specialization_mesh_policy_t {
 
   using id_t = flecsi::utils::id_t;
 
@@ -39,27 +38,18 @@ struct specialization_mesh_policy_t
 
   flecsi_register_entity_types(
     flecsi_entity_type(index_spaces::vertices, 0, vertex_t),
-    flecsi_entity_type(index_spaces::cells, 0, cell_t)
-  );
+    flecsi_entity_type(index_spaces::cells, 0, cell_t));
 
   flecsi_register_connectivities(
-    flecsi_connectivity(index_spaces::cells_to_vertices, 0, cell_t, vertex_t)
-  );
+    flecsi_connectivity(index_spaces::cells_to_vertices, 0, cell_t, vertex_t));
 
   flecsi_register_bindings();
 
-  template<
-    size_t M,
-    size_t D,
-    typename ST
-  >
-  static flecsi::topology::mesh_entity_base_u<1> *
-  create_entity(
-    flecsi::topology::mesh_topology_base_u<ST>* mesh,
+  template<size_t M, size_t D, typename ST>
+  static flecsi::topology::mesh_entity_base_u<1> * create_entity(
+    flecsi::topology::mesh_topology_base_u<ST> * mesh,
     size_t num_vertices,
-    id_t const & id
-  )
-  {
+    id_t const & id) {
     return nullptr;
   } // create_entity
 

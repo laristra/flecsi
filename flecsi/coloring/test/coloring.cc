@@ -88,7 +88,7 @@ DEVEL(coloring) {
   {
     clog_tag_guard(coloring);
     clog_container_one(
-        info, "nearest neighbors", nearest_neighbors, clog::space);
+      info, "nearest neighbors", nearest_neighbors, clog::space);
   } // guard
 
   // Create a communicator instance to get neighbor information.
@@ -98,37 +98,36 @@ DEVEL(coloring) {
   // neighbors of other ranks. This map of sets will only be populated
   // with intersections that are non-empty
   auto closure_intersection_map =
-      communicator->get_intersection_info(nearest_neighbors);
+    communicator->get_intersection_info(nearest_neighbors);
 
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
-      flecsi::topology::entity_neighbors<2, 2, 0>(sd, nearest_neighbors);
+    flecsi::topology::entity_neighbors<2, 2, 0>(sd, nearest_neighbors);
 
   {
     clog_tag_guard(coloring);
     clog_container_one(
-        info, "nearest neighbor closure", nearest_neighbor_closure,
-        clog::space);
+      info, "nearest neighbor closure", nearest_neighbor_closure, clog::space);
   } // guard
 
   // Subtracting out the closure leaves just the
   // next nearest neighbors.
   auto next_nearest_neighbors =
-      flecsi::utils::set_difference(nearest_neighbor_closure, closure);
+    flecsi::utils::set_difference(nearest_neighbor_closure, closure);
 
   {
     clog_tag_guard(coloring);
     clog_container_one(
-        info, "next nearest neighbor", next_nearest_neighbors, clog::space);
+      info, "next nearest neighbor", next_nearest_neighbors, clog::space);
   } // guard
 
   // The union of the nearest and next-nearest neighbors gives us all
   // of the cells that might reference a vertex that we need.
   auto all_neighbors =
-      flecsi::utils::set_union(nearest_neighbors, next_nearest_neighbors);
+    flecsi::utils::set_union(nearest_neighbors, next_nearest_neighbors);
 
   {
     clog_tag_guard(coloring);
@@ -139,7 +138,7 @@ DEVEL(coloring) {
   // dependencies. This also gives information about the ranks
   // that access our shared cells.
   auto cell_nn_info =
-      communicator->get_primary_info(primary, nearest_neighbors);
+    communicator->get_primary_info(primary, nearest_neighbors);
 
   // Get the rank and offset information for all relevant neighbor
   // dependencies. This information will be necessary for determining
@@ -150,14 +149,14 @@ DEVEL(coloring) {
   std::unordered_map<size_t, size_t> primary_indices_map;
   {
     size_t offset(0);
-    for (auto i : primary) {
+    for(auto i : primary) {
       primary_indices_map[offset++] = i;
     } // for
-  }   // scope
+  } // scope
 
   // Create a map version of the remote info for lookups below.
   std::unordered_map<size_t, entry_info_t> remote_info_map;
-  for (auto i : std::get<1>(cell_all_info)) {
+  for(auto i : std::get<1>(cell_all_info)) {
     remote_info_map[i.id] = i;
   } // for
 
@@ -168,30 +167,31 @@ DEVEL(coloring) {
   // Populate exclusive and shared cell information.
   {
     size_t offset(0);
-    for (auto i : std::get<0>(cell_nn_info)) {
-      if (i.size()) {
+    for(auto i : std::get<0>(cell_nn_info)) {
+      if(i.size()) {
         shared_cells.insert(
-            entry_info_t(primary_indices_map[offset], rank, offset, i));
-      } else {
+          entry_info_t(primary_indices_map[offset], rank, offset, i));
+      }
+      else {
         exclusive_cells.insert(
-            entry_info_t(primary_indices_map[offset], rank, offset, i));
+          entry_info_t(primary_indices_map[offset], rank, offset, i));
       } // if
       ++offset;
     } // for
-  }   // scope
+  } // scope
 
   // Populate ghost cell information.
   {
     size_t offset(0);
-    for (auto i : std::get<1>(cell_nn_info)) {
+    for(auto i : std::get<1>(cell_nn_info)) {
       ghost_cells.insert(i);
     } // for
-  }   // scope
+  } // scope
 
   {
     clog_tag_guard(coloring);
     clog_container_one(
-        info, "exclusive cells ", exclusive_cells, clog::newline);
+      info, "exclusive cells ", exclusive_cells, clog::newline);
     clog_container_one(info, "shared cells ", shared_cells, clog::newline);
     clog_container_one(info, "ghost cells ", ghost_cells, clog::newline);
   } // guard
@@ -199,10 +199,10 @@ DEVEL(coloring) {
   // Create a map version for lookups below.
   std::unordered_map<size_t, entry_info_t> shared_cells_map;
   {
-    for (auto i : shared_cells) {
+    for(auto i : shared_cells) {
       shared_cells_map[i.id] = i;
     } // for
-  }   // scope
+  } // scope
 
   // Form the vertex closure
   auto vertex_closure = flecsi::topology::entity_closure<2, 0>(sd, closure);
@@ -212,7 +212,7 @@ DEVEL(coloring) {
   std::set<entry_info_t> vertex_info;
 
   size_t offset(0);
-  for (auto i : vertex_closure) {
+  for(auto i : vertex_closure) {
 
     // Get the set of cells that reference this vertex.
     auto referencers = flecsi::topology::entity_referencers<2, 0>(sd, i);
@@ -226,15 +226,16 @@ DEVEL(coloring) {
     std::set<size_t> shared_vertices;
 
     // Iterate the direct referencers to assign vertex ownership.
-    for (auto c : referencers) {
+    for(auto c : referencers) {
 
       // Check the remote info map to see if this cell is
       // off-color. If it is, compare it's rank for
       // the ownership logic below.
-      if (remote_info_map.find(c) != remote_info_map.end()) {
+      if(remote_info_map.find(c) != remote_info_map.end()) {
         min_rank = std::min(min_rank, remote_info_map[c].rank);
         shared_vertices.insert(remote_info_map[c].rank);
-      } else {
+      }
+      else {
         // If the referencing cell isn't in the remote info map
         // it is a local cell.
 
@@ -243,78 +244,77 @@ DEVEL(coloring) {
 
         // If the local cell is shared, we need to add all of
         // the ranks that reference it.
-        if (shared_cells_map.find(c) != shared_cells_map.end()) {
-          shared_vertices.insert(
-              shared_cells_map[c].shared.begin(),
-              shared_cells_map[c].shared.end());
+        if(shared_cells_map.find(c) != shared_cells_map.end()) {
+          shared_vertices.insert(shared_cells_map[c].shared.begin(),
+            shared_cells_map[c].shared.end());
         } // if
-      }   // if
+      } // if
 
       // Iterate through the closure intersection map to see if the
       // indirect reference is part of another rank's closure, i.e.,
       // that it is an indirect dependency.
-      for (auto ci : closure_intersection_map) {
-        if (ci.second.find(c) != ci.second.end()) {
+      for(auto ci : closure_intersection_map) {
+        if(ci.second.find(c) != ci.second.end()) {
           shared_vertices.insert(ci.first);
         } // if
-      }   // for
-    }     // for
+      } // for
+    } // for
 
-    if (min_rank == rank) {
+    if(min_rank == rank) {
       // This is a vertex that belongs to our rank.
       auto entry = entry_info_t(i, rank, offset, shared_vertices);
       vertex_info.insert(entry_info_t(i, rank, offset++, shared_vertices));
-    } else {
+    }
+    else {
       // Add remote vertex to the request for offset information.
       vertex_requests[min_rank].insert(i);
     } // if
-  }   // for
+  } // for
 
   auto vertex_offset_info =
-      communicator->get_entity_info(vertex_info, vertex_requests);
+    communicator->get_entity_info(vertex_info, vertex_requests);
 
   std::set<entry_info_t> exclusive_vertices;
   std::set<entry_info_t> shared_vertices;
   std::set<entry_info_t> ghost_vertices;
 
-  for (auto i : vertex_info) {
-    if (i.shared.size()) {
+  for(auto i : vertex_info) {
+    if(i.shared.size()) {
       shared_vertices.insert(i);
-    } else {
+    }
+    else {
       exclusive_vertices.insert(i);
     } // if
-  }   // for
+  } // for
 
   {
     size_t r(0);
-    for (auto i : vertex_requests) {
+    for(auto i : vertex_requests) {
 
       auto offset(vertex_offset_info[r].begin());
-      for (auto s : i) {
+      for(auto s : i) {
         ghost_vertices.insert(entry_info_t(s, r, *offset));
         ++offset;
       } // for
 
       ++r;
     } // for
-  }   // scope
+  } // scope
 
   {
     clog_tag_guard(coloring);
     clog_container_one(
-        info, "exclusive vertices ", exclusive_vertices, clog::newline);
+      info, "exclusive vertices ", exclusive_vertices, clog::newline);
     clog_container_one(
-        info, "shared vertices ", shared_vertices, clog::newline);
+      info, "shared vertices ", shared_vertices, clog::newline);
     clog_container_one(info, "ghost vertices ", ghost_vertices, clog::newline);
   } // guard
 
 #if 1
   std::vector<std::pair<std::string, std::string>> colors = {
-      {"blue", "blue!40!white"},
-      {"green!60!black", "green!60!white"},
-      {"black", "black!40!white"},
-      {"red", "red!40!white"},
-      {"violet", "violet!40!white"}};
+    {"blue", "blue!40!white"}, {"green!60!black", "green!60!white"},
+    {"black", "black!40!white"}, {"red", "red!40!white"},
+    {"violet", "violet!40!white"}};
 
   std::stringstream texname;
   texname << "simple2d-" << rank << "-" << M << "x" << N << ".tex";
@@ -335,19 +335,19 @@ DEVEL(coloring) {
 
   // maps
   std::unordered_map<size_t, entry_info_t> exclusive_cells_map;
-  for (auto i : exclusive_cells) {
+  for(auto i : exclusive_cells) {
     exclusive_cells_map[i.id] = i;
   } // for
 
   std::unordered_map<size_t, entry_info_t> ghost_cells_map;
-  for (auto i : ghost_cells) {
+  for(auto i : ghost_cells) {
     ghost_cells_map[i.id] = i;
   } // for
 
   size_t cell(0);
-  for (size_t j(0); j < M; ++j) {
+  for(size_t j(0); j < M; ++j) {
     double yoff(0.5 + j);
-    for (size_t i(0); i < M; ++i) {
+    for(size_t i(0); i < M; ++i) {
       double xoff(0.5 + i);
 
       // Cells
@@ -355,65 +355,71 @@ DEVEL(coloring) {
       auto scell = shared_cells_map.find(cell);
       auto gcell = ghost_cells_map.find(cell);
 
-      if (ecell != exclusive_cells_map.end()) {
+      if(ecell != exclusive_cells_map.end()) {
         tex << "\\node[" << std::get<0>(colors[rank]) << "] at (" << xoff
             << ", " << yoff << ") {" << cell++ << "};" << std::endl;
-      } else if (scell != shared_cells_map.end()) {
+      }
+      else if(scell != shared_cells_map.end()) {
         tex << "\\node[" << std::get<1>(colors[rank]) << "] at (" << xoff
             << ", " << yoff << ") {" << cell++ << "};" << std::endl;
-      } else if (gcell != ghost_cells_map.end()) {
+      }
+      else if(gcell != ghost_cells_map.end()) {
         tex << "\\node[" << std::get<1>(colors[gcell->second.rank]) << "] at ("
             << xoff << ", " << yoff << ") {" << cell++ << "};" << std::endl;
-      } else {
+      }
+      else {
         tex << "\\node[white] at (" << xoff << ", " << yoff << ") {" << cell++
             << "};" << std::endl;
       } // if
-    }   // for
-  }     // for
+    } // for
+  } // for
 
   std::unordered_map<size_t, entry_info_t> exclusive_vertices_map;
-  for (auto i : exclusive_vertices) {
+  for(auto i : exclusive_vertices) {
     exclusive_vertices_map[i.id] = i;
   } // for
 
   std::unordered_map<size_t, entry_info_t> shared_vertices_map;
-  for (auto i : shared_vertices) {
+  for(auto i : shared_vertices) {
     shared_vertices_map[i.id] = i;
   } // for
 
   std::unordered_map<size_t, entry_info_t> ghost_vertices_map;
-  for (auto i : ghost_vertices) {
+  for(auto i : ghost_vertices) {
     ghost_vertices_map[i.id] = i;
   } // for
 
   size_t vertex(0);
-  for (size_t j(0); j < M + 1; ++j) {
+  for(size_t j(0); j < M + 1; ++j) {
     double yoff(j - 0.15);
-    for (size_t i(0); i < N + 1; ++i) {
+    for(size_t i(0); i < N + 1; ++i) {
       double xoff(i - 0.2);
 
       auto evertex = exclusive_vertices_map.find(vertex);
       auto svertex = shared_vertices_map.find(vertex);
       auto gvertex = ghost_vertices_map.find(vertex);
 
-      if (evertex != exclusive_vertices_map.end()) {
+      if(evertex != exclusive_vertices_map.end()) {
         tex << "\\node[" << std::get<0>(colors[rank]) << "] at (" << xoff
             << ", " << yoff << ") { \\scriptsize " << vertex++ << "};"
             << std::endl;
-      } else if (svertex != shared_vertices_map.end()) {
+      }
+      else if(svertex != shared_vertices_map.end()) {
         tex << "\\node[" << std::get<1>(colors[rank]) << "] at (" << xoff
             << ", " << yoff << ") { \\scriptsize " << vertex++ << "};"
             << std::endl;
-      } else if (gvertex != ghost_vertices_map.end()) {
+      }
+      else if(gvertex != ghost_vertices_map.end()) {
         tex << "\\node[" << std::get<1>(colors[gvertex->second.rank])
             << "] at (" << xoff << ", " << yoff << ") { \\scriptsize "
             << vertex++ << "};" << std::endl;
-      } else {
+      }
+      else {
         tex << "\\node[white] at (" << xoff << ", " << yoff
             << ") { \\scriptsize " << vertex++ << "};" << std::endl;
       } // if
-    }   // for
-  }     // for
+    } // for
+  } // for
 
   tex << "\\end{tikzpicture}" << std::endl;
   tex << std::endl;

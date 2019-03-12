@@ -17,7 +17,7 @@ template<class T>
 void
 print_set(const char * const prefix, const std::set<T> & set) {
   CINCH_CAPTURE() << prefix << " == {";
-  for (auto i = set.begin(); i != set.end(); ++i)
+  for(auto i = set.begin(); i != set.end(); ++i)
     CINCH_CAPTURE() << " " << *i;
   CINCH_CAPTURE() << " }" << std::endl;
 }

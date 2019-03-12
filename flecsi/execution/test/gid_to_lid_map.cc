@@ -21,19 +21,19 @@
 
 clog_register_tag(gid_to_lid);
 
-class client_type : public flecsi::data::data_client_t {
+class client_type : public flecsi::data::data_client_t
+{
 public:
   using type_identifier_t = flecsi::data::data_client_t;
 };
 
-flecsi_register_field(
-    client_type,
-    name_space,
-    cell_ID,
-    size_t,
-    dense,
-    INDEX_ID,
-    VERSIONS);
+flecsi_register_field(client_type,
+  name_space,
+  cell_ID,
+  size_t,
+  dense,
+  INDEX_ID,
+  VERSIONS);
 
 namespace flecsi {
 namespace execution {
@@ -74,7 +74,7 @@ driver(int argc, char ** argv) {
   context_t & context_ = context_t::instance();
 
   const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map =
-      context_.coloring_map();
+    context_.coloring_map();
   auto index_coloring = coloring_map.find(INDEX_ID);
 
   std::map<size_t, size_t> gid_to_lid_map;
@@ -82,22 +82,22 @@ driver(int argc, char ** argv) {
   auto entries = index_coloring->second.exclusive;
 
   size_t lid = 0;
-  for (auto entity_itr = entries.begin(); entity_itr != entries.end();
-       ++entity_itr) {
+  for(auto entity_itr = entries.begin(); entity_itr != entries.end();
+      ++entity_itr) {
     flecsi::coloring::entity_info_t entity = *entity_itr;
     gid_to_lid_map[lid++] = entity.id;
   }
 
   entries = index_coloring->second.shared;
-  for (auto entity_itr = entries.begin(); entity_itr != entries.end();
-       ++entity_itr) {
+  for(auto entity_itr = entries.begin(); entity_itr != entries.end();
+      ++entity_itr) {
     flecsi::coloring::entity_info_t entity = *entity_itr;
     gid_to_lid_map[lid++] = entity.id;
   }
 
   entries = index_coloring->second.ghost;
-  for (auto entity_itr = entries.begin(); entity_itr != entries.end();
-       ++entity_itr) {
+  for(auto entity_itr = entries.begin(); entity_itr != entries.end();
+      ++entity_itr) {
     flecsi::coloring::entity_info_t entity = *entity_itr;
     gid_to_lid_map[lid++] = entity.id;
   }
@@ -105,7 +105,7 @@ driver(int argc, char ** argv) {
   std::map<size_t, size_t> index_map = context_.index_map(INDEX_ID);
 
   clog_assert(
-      gid_to_lid_map == index_map, "global to local ID mapping is incorrect");
+    gid_to_lid_map == index_map, "global to local ID mapping is incorrect");
 
 } // driver
 

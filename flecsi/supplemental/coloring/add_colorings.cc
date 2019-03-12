@@ -96,12 +96,12 @@ add_colorings(coloring_map_t map) {
   // neighbors. This is similar to the image of the adjacency
   // graph of the initial indices.
   auto nearest_neighbors =
-      flecsi::utils::set_difference(closure, cells.primary);
+    flecsi::utils::set_difference(closure, cells.primary);
 
   {
     clog_tag_guard(coloring);
     clog_container_one(
-        info, "nearest neighbors", nearest_neighbors, clog::space);
+      info, "nearest neighbors", nearest_neighbors, clog::space);
   } // guard
 
   // Create a communicator instance to get neighbor information.
@@ -111,15 +111,14 @@ add_colorings(coloring_map_t map) {
   // neighbors of other ranks. This map of sets will only be populated
   // with intersections that are non-empty
   auto closure_intersection_map =
-      communicator->get_intersection_info(nearest_neighbors);
+    communicator->get_intersection_info(nearest_neighbors);
 
   {
     clog_tag_guard(coloring);
 
-    for (auto ci : closure_intersection_map) {
-      clog_container_one(
-          info, "closure intersection color " << ci.first << ":", ci.second,
-          clog::space);
+    for(auto ci : closure_intersection_map) {
+      clog_container_one(info, "closure intersection color " << ci.first << ":",
+        ci.second, clog::space);
     } // for
   } // guard
 
@@ -128,30 +127,29 @@ add_colorings(coloring_map_t map) {
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
-      flecsi::topology::entity_neighbors<2, 2, 0>(sd, nearest_neighbors);
+    flecsi::topology::entity_neighbors<2, 2, 0>(sd, nearest_neighbors);
 
   {
     clog_tag_guard(coloring);
     clog_container_one(
-        info, "nearest neighbor closure", nearest_neighbor_closure,
-        clog::space);
+      info, "nearest neighbor closure", nearest_neighbor_closure, clog::space);
   } // guard
 
   // Subtracting out the closure leaves just the
   // next nearest neighbors.
   auto next_nearest_neighbors =
-      flecsi::utils::set_difference(nearest_neighbor_closure, closure);
+    flecsi::utils::set_difference(nearest_neighbor_closure, closure);
 
   {
     clog_tag_guard(coloring);
     clog_container_one(
-        info, "next nearest neighbor", next_nearest_neighbors, clog::space);
+      info, "next nearest neighbor", next_nearest_neighbors, clog::space);
   } // guard
 
   // The union of the nearest and next-nearest neighbors gives us all
   // of the cells that might reference a vertex that we need.
   auto all_neighbors =
-      flecsi::utils::set_union(nearest_neighbors, next_nearest_neighbors);
+    flecsi::utils::set_union(nearest_neighbors, next_nearest_neighbors);
 
   {
     clog_tag_guard(coloring);
@@ -162,44 +160,45 @@ add_colorings(coloring_map_t map) {
   // dependencies. This also gives information about the ranks
   // that access our shared cells.
   auto cell_nn_info =
-      communicator->get_primary_info(cells.primary, nearest_neighbors);
+    communicator->get_primary_info(cells.primary, nearest_neighbors);
 
   // Get the rank and offset information for all relevant neighbor
   // dependencies. This information will be necessary for determining
   // shared vertices.
   auto cell_all_info =
-      communicator->get_primary_info(cells.primary, all_neighbors);
+    communicator->get_primary_info(cells.primary, all_neighbors);
 
   // Create a map version of the local info for lookups below.
   std::unordered_map<size_t, size_t> primary_indices_map;
   {
     size_t offset(0);
-    for (auto i : cells.primary) {
+    for(auto i : cells.primary) {
       primary_indices_map[offset++] = i;
     } // for
   } // scope
 
   // Create a map version of the remote info for lookups below.
   std::unordered_map<size_t, flecsi::coloring::entity_info_t> remote_info_map;
-  for (auto i : std::get<1>(cell_all_info)) {
+  for(auto i : std::get<1>(cell_all_info)) {
     remote_info_map[i.id] = i;
   } // for
 
   // Populate exclusive and shared cell information.
   {
     size_t offset(0);
-    for (auto i : std::get<0>(cell_nn_info)) {
-      if (i.size()) {
+    for(auto i : std::get<0>(cell_nn_info)) {
+      if(i.size()) {
         cells.shared.insert(flecsi::coloring::entity_info_t(
-            primary_indices_map[offset], rank, offset, i));
+          primary_indices_map[offset], rank, offset, i));
 
         // Collect all colors with whom we require communication
         // to send shared information.
         cell_color_info.shared_users =
-            flecsi::utils::set_union(cell_color_info.shared_users, i);
-      } else {
+          flecsi::utils::set_union(cell_color_info.shared_users, i);
+      }
+      else {
         cells.exclusive.insert(flecsi::coloring::entity_info_t(
-            primary_indices_map[offset], rank, offset, i));
+          primary_indices_map[offset], rank, offset, i));
       } // if
       ++offset;
     } // for
@@ -208,7 +207,7 @@ add_colorings(coloring_map_t map) {
   // Populate ghost cell information.
   {
     size_t offset(0);
-    for (auto i : std::get<1>(cell_nn_info)) {
+    for(auto i : std::get<1>(cell_nn_info)) {
       cells.ghost.insert(i);
 
       // Collect all colors with whom we require communication
@@ -233,7 +232,7 @@ add_colorings(coloring_map_t map) {
   // Create a map version for lookups below.
   std::unordered_map<size_t, flecsi::coloring::entity_info_t> shared_cells_map;
   {
-    for (auto i : cells.shared) {
+    for(auto i : cells.shared) {
       shared_cells_map[i.id] = i;
     } // for
   } // scope
@@ -369,9 +368,8 @@ add_colorings(coloring_map_t map) {
   flecsi::coloring::index_coloring_t vertices;
   coloring::coloring_info_t vertex_color_info;
 
-  color_entity<2, 0>(
-      sd, communicator.get(), closure, remote_info_map, shared_cells_map,
-      closure_intersection_map, vertices, vertex_color_info);
+  color_entity<2, 0>(sd, communicator.get(), closure, remote_info_map,
+    shared_cells_map, closure_intersection_map, vertices, vertex_color_info);
 
   {
     clog_tag_guard(coloring);
@@ -382,7 +380,7 @@ add_colorings(coloring_map_t map) {
   // Gather the coloring info from all colors
   auto cell_coloring_info = communicator->gather_coloring_info(cell_color_info);
   auto vertex_coloring_info =
-      communicator->gather_coloring_info(vertex_color_info);
+    communicator->gather_coloring_info(vertex_color_info);
 
   {
     clog_tag_guard(coloring_output);
@@ -390,7 +388,7 @@ add_colorings(coloring_map_t map) {
     clog(info) << "vertex input coloring info color " << rank
                << vertex_color_info << std::endl;
 
-    for (auto ci : vertex_coloring_info) {
+    for(auto ci : vertex_coloring_info) {
       clog(info) << "vertex coloring info color " << ci.first << ci.second
                  << std::endl;
     } // for
@@ -408,33 +406,33 @@ add_colorings(coloring_map_t map) {
 
   // Maps for output
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>
-      exclusive_cells_map;
-  for (auto i : cells.exclusive) {
+    exclusive_cells_map;
+  for(auto i : cells.exclusive) {
     exclusive_cells_map[i.id] = i;
   } // for
 
   std::unordered_map<size_t, flecsi::coloring::entity_info_t> ghost_cells_map;
-  for (auto i : cells.ghost) {
+  for(auto i : cells.ghost) {
     ghost_cells_map[i.id] = i;
   } // for
 
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>
-      exclusive_vertices_map;
-  for (auto i : vertices.exclusive) {
+    exclusive_vertices_map;
+  for(auto i : vertices.exclusive) {
     exclusive_vertices_map[i.id] = i;
     vertices.primary.insert(i.id);
   } // for
 
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>
-      shared_vertices_map;
-  for (auto i : vertices.shared) {
+    shared_vertices_map;
+  for(auto i : vertices.shared) {
     shared_vertices_map[i.id] = i;
     vertices.primary.insert(i.id);
   } // for
 
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>
-      ghost_vertices_map;
-  for (auto i : vertices.ghost) {
+    ghost_vertices_map;
+  for(auto i : vertices.ghost) {
     ghost_vertices_map[i.id] = i;
   } // for
 
@@ -442,14 +440,14 @@ add_colorings(coloring_map_t map) {
   auto primary_cells = communicator->get_entity_reduction(cells.primary);
   auto primary_vertices = communicator->get_entity_reduction(vertices.primary);
 
-  if (rank == 0) {
+  if(rank == 0) {
     supplemental::tikz_writer_t::write_primary(
-        M, N, primary_cells, primary_vertices);
+      M, N, primary_cells, primary_vertices);
   } // if
 
-  supplemental::tikz_writer_t::write_color(
-      rank, M, N, exclusive_cells_map, shared_cells_map, ghost_cells_map,
-      exclusive_vertices_map, shared_vertices_map, ghost_vertices_map);
+  supplemental::tikz_writer_t::write_color(rank, M, N, exclusive_cells_map,
+    shared_cells_map, ghost_cells_map, exclusive_vertices_map,
+    shared_vertices_map, ghost_vertices_map);
 
 } // add_colorings
 

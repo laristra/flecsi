@@ -43,14 +43,13 @@ using field = dense_accessor<size_t, EP, SP, GP>;
 //----------------------------------------------------------------------------//
 
 flecsi_register_data_client(mesh_t, meshes, mesh1);
-flecsi_register_field(
-    mesh_t,
-    hydro,
-    pressure,
-    size_t,
-    dense,
-    1,
-    index_spaces::cells);
+flecsi_register_field(mesh_t,
+  hydro,
+  pressure,
+  size_t,
+  dense,
+  1,
+  index_spaces::cells);
 
 //----------------------------------------------------------------------------//
 // Init field
@@ -61,12 +60,12 @@ init(mesh<ro> mesh, field<rw, rw, na> h) {
   auto & context = execution::context_t::instance();
   auto rank = context.color();
 
-  for (auto c : mesh.cells(owned)) {
+  for(auto c : mesh.cells(owned)) {
     size_t val = c->index()[1] + 100 * (c->index()[0] + 100 * rank);
     h(c) = 1000000000 + val * 100;
   }
 
-  for (auto c : mesh.cells(shared)) {
+  for(auto c : mesh.cells(shared)) {
     h(c) += 5;
   }
 } // init
@@ -82,19 +81,19 @@ print(mesh<ro> mesh, field<ro, ro, ro> h) {
   auto & context = execution::context_t::instance();
   auto rank = context.color();
 
-  for (auto c : mesh.cells(exclusive)) {
+  for(auto c : mesh.cells(exclusive)) {
     CINCH_CAPTURE() << "[" << rank << "]: exclusive cell id " << c->id<0>()
                     << "(" << c->index()[0] << "," << c->index()[1]
                     << "): " << h(c) << std::endl;
   }
 
-  for (auto c : mesh.cells(shared)) {
+  for(auto c : mesh.cells(shared)) {
     CINCH_CAPTURE() << "[" << rank << "]:    shared cell id " << c->id<0>()
                     << "(" << c->index()[0] << "," << c->index()[1]
                     << "): " << h(c) << std::endl;
   }
 
-  for (auto c : mesh.cells(ghost)) {
+  for(auto c : mesh.cells(ghost)) {
     CINCH_CAPTURE() << "[" << rank << "]:     ghost cell id " << c->id<0>()
                     << "(" << c->index()[0] << "," << c->index()[1]
                     << "): " << h(c) << std::endl;
@@ -112,7 +111,7 @@ modify(mesh<ro> mesh, field<rw, rw, ro> h) {
   auto & context = execution::context_t::instance();
   auto rank = context.color();
 
-  for (auto c : mesh.cells(owned)) {
+  for(auto c : mesh.cells(owned)) {
     h(c) += 10 * (rank + 1);
   }
 
@@ -158,7 +157,7 @@ driver(int argc, char ** argv) {
   future.wait(); // wait before comparing results
 
   auto & context = execution::context_t::instance();
-  if (context.color() == 0) {
+  if(context.color() == 0) {
     ASSERT_TRUE(CINCH_EQUAL_BLESSED("dense_data.blessed"));
   }
 

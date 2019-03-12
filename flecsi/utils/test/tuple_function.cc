@@ -30,7 +30,8 @@ struct foo {
 
   // operator(), 3 arguments
   template<class A, class B, class C>
-  auto operator()(const A & a, const B & b, const C & c) const -> decltype(a + b + c) {
+  auto operator()(const A & a, const B & b, const C & c) const
+    -> decltype(a + b + c) {
     return a + b + c;
   }
 };
