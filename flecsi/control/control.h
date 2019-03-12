@@ -192,6 +192,9 @@ private:
       auto file =                                                              \
         flecsi::utils::flog::rstrip<'/'>(argv[0]) + "-control-model.dot";      \
       std::cout << "Writing control model to " << file << std::endl;           \
+      std::cout << "Execute:" << std::endl;                                    \
+      std::cout << "\t$ dot -Tpdf " << file << " > model.pdf" << std::endl;    \
+      std::cout << "to create a pdf image of the control model" << std::endl;  \
       gv.write(file.c_str());                                                  \
       return 1;                                                                \
     }                                                                          \
