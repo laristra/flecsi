@@ -24,6 +24,7 @@ set(execution_HEADERS
   context.h
   execution.h
   global_object_wrapper.h
+  reduction.h
   task.h
 )
 
@@ -38,6 +39,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/execution_policy.h
     legion/internal_task.h
     legion/mapper.h
+    legion/reduction_wrapper.h
     legion/runtime.h
     legion/task_wrapper.h
     legion/tasks.h
@@ -55,6 +57,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     ${execution_HEADERS}
     mpi/context_policy.h
     mpi/execution_policy.h
+    mpi/reduction_wrapper.h
     mpi/runtime.h
   )
 
