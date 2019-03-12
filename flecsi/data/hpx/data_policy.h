@@ -31,28 +31,25 @@ struct hpx_data_policy_t {
   template<size_t STORAGE_TYPE>
   using storage_class_u = hpx::storage_class_u<STORAGE_TYPE>;
 
-  template<
-      typename DATA_CLIENT_TYPE,
-      size_t STORAGE_TYPE,
-      typename DATA_TYPE,
-      size_t NAMESPACE_HASH,
-      size_t NAME_HASH,
-      size_t INDEX_SPACE,
-      size_t VERSIONS>
-  using field_wrapper_u = hpx_field_registration_wrapper_u<
-      DATA_CLIENT_TYPE,
-      STORAGE_TYPE,
-      DATA_TYPE,
-      NAMESPACE_HASH,
-      NAME_HASH,
-      INDEX_SPACE,
-      VERSIONS>;
+  template<typename DATA_CLIENT_TYPE,
+    size_t STORAGE_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH,
+    size_t INDEX_SPACE,
+    size_t VERSIONS>
+  using field_wrapper_u = hpx_field_registration_wrapper_u<DATA_CLIENT_TYPE,
+    STORAGE_TYPE,
+    DATA_TYPE,
+    NAMESPACE_HASH,
+    NAME_HASH,
+    INDEX_SPACE,
+    VERSIONS>;
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
-  using client_wrapper_u = hpx_client_registration_wrapper_u<
-      DATA_CLIENT_TYPE,
-      NAMESPACE_HASH,
-      NAME_HASH>;
+  using client_wrapper_u = hpx_client_registration_wrapper_u<DATA_CLIENT_TYPE,
+    NAMESPACE_HASH,
+    NAME_HASH>;
 
 }; // class hpx_data_policy_t
 

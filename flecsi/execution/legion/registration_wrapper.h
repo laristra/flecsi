@@ -36,13 +36,11 @@ namespace execution {
  @ingroup legion-execution
  */
 
-template<
-    typename RETURN,
-    RETURN (*TASK)(
-        const Legion::Task *,
-        const std::vector<Legion::PhysicalRegion> &,
-        Legion::Context,
-        Legion::Runtime *)>
+template<typename RETURN,
+  RETURN (*TASK)(const Legion::Task *,
+    const std::vector<Legion::PhysicalRegion> &,
+    Legion::Context,
+    Legion::Runtime *)>
 struct registration_wrapper_u {
 
   /*!
@@ -51,11 +49,10 @@ struct registration_wrapper_u {
    @tparam ARGS The variadic argument pack.
    */
 
-  static void register_task(
-      const Legion::TaskID tid,
-      const Legion::Processor::Kind & processor,
-      const Legion::TaskConfigOptions config_options,
-      std::string & task_name) {
+  static void register_task(const Legion::TaskID tid,
+    const Legion::Processor::Kind & processor,
+    const Legion::TaskConfigOptions config_options,
+    std::string & task_name) {
 
     {
       Legion::TaskVariantRegistrar registrar(tid, task_name.c_str());
@@ -66,15 +63,17 @@ struct registration_wrapper_u {
       std::vector<Legion::DimensionKind> ordering;
       ordering.push_back(Legion::DimensionKind::DIM_Y);
       ordering.push_back(Legion::DimensionKind::DIM_X);
-      ordering.push_back(Legion::DimensionKind::DIM_F);  // SOA
-      Legion::OrderingConstraint ordering_constraint(ordering, true /*contiguous*/);
+      ordering.push_back(Legion::DimensionKind::DIM_F); // SOA
+      Legion::OrderingConstraint ordering_constraint(
+        ordering, true /*contiguous*/);
       Legion::LayoutConstraintRegistrar layout_constraint;
       layout_constraint.add_constraint(ordering_constraint);
-//FIXME replave 100 with the global variable
-for (int i =0 ;i<100; i++)
-      registrar.add_layout_constraint_set(i, Legion::Runtime::preregister_layout(layout_constraint));
+      // FIXME replave 100 with the global variable
+      for(int i = 0; i < 100; i++)
+        registrar.add_layout_constraint_set(
+          i, Legion::Runtime::preregister_layout(layout_constraint));
       Legion::Runtime::preregister_task_variant<RETURN, TASK>(
-          registrar, task_name.c_str());
+        registrar, task_name.c_str());
     } // scope
 
   } // register_task
@@ -88,18 +87,16 @@ for (int i =0 ;i<100; i++)
  @ingroup legion-execution
  */
 
-template<void (*TASK)(
-    const Legion::Task *,
-    const std::vector<Legion::PhysicalRegion> &,
-    Legion::Context,
-    Legion::Runtime *)>
+template<void (*TASK)(const Legion::Task *,
+  const std::vector<Legion::PhysicalRegion> &,
+  Legion::Context,
+  Legion::Runtime *)>
 struct registration_wrapper_u<void, TASK> {
 
-  static void register_task(
-      const Legion::TaskID tid,
-      const Legion::Processor::Kind & processor,
-      const Legion::TaskConfigOptions config_options,
-      std::string & task_name) {
+  static void register_task(const Legion::TaskID tid,
+    const Legion::Processor::Kind & processor,
+    const Legion::TaskConfigOptions config_options,
+    std::string & task_name) {
 
     {
       Legion::TaskVariantRegistrar registrar(tid, task_name.c_str());
@@ -107,20 +104,22 @@ struct registration_wrapper_u<void, TASK> {
       registrar.set_leaf(config_options.leaf);
       registrar.set_inner(config_options.inner);
       registrar.set_idempotent(config_options.idempotent);
-       std::vector<Legion::DimensionKind> ordering;
-      //ordering.push_back(Legion::DimensionKind::DIM_X);
+      std::vector<Legion::DimensionKind> ordering;
+      // ordering.push_back(Legion::DimensionKind::DIM_X);
       ordering.push_back(Legion::DimensionKind::DIM_Y);
       ordering.push_back(Legion::DimensionKind::DIM_X);
-      ordering.push_back(Legion::DimensionKind::DIM_F);  // SOA
-      Legion::OrderingConstraint ordering_constraint(ordering, true /*contiguous*/);
+      ordering.push_back(Legion::DimensionKind::DIM_F); // SOA
+      Legion::OrderingConstraint ordering_constraint(
+        ordering, true /*contiguous*/);
       Legion::LayoutConstraintRegistrar layout_constraint;
       layout_constraint.add_constraint(ordering_constraint);
-//FIXME replave 100 with the global variable
-for (int i =0 ;i<100; i++)
-      registrar.add_layout_constraint_set(i, Legion::Runtime::preregister_layout(layout_constraint));
+      // FIXME replave 100 with the global variable
+      for(int i = 0; i < 100; i++)
+        registrar.add_layout_constraint_set(
+          i, Legion::Runtime::preregister_layout(layout_constraint));
 
       Legion::Runtime::preregister_task_variant<TASK>(
-          registrar, task_name.c_str());
+        registrar, task_name.c_str());
     } // scope
 
   } // register_task

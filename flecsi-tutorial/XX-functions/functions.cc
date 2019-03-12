@@ -13,9 +13,9 @@
                                                                               */
 #include <iostream>
 
-#include<flecsi-tutorial/specialization/mesh/mesh.h>
-#include<flecsi/data/data.h>
-#include<flecsi/execution/execution.h>
+#include <flecsi-tutorial/specialization/mesh/mesh.h>
+#include <flecsi/data/data.h>
+#include <flecsi/execution/execution.h>
 
 using namespace flecsi;
 using namespace flecsi::tutorial;
@@ -61,7 +61,7 @@ namespace example {
       (3-N) The arguments to the function signature.
 
   (3) ...
-  
+
   NOTE: If you do not require a function that can be passed as data, you
   do not need to use a FleCSI function! Invoking a function through the
   FleCSI interface incurs significant overhead over a normal function
@@ -69,8 +69,7 @@ namespace example {
 
  *----------------------------------------------------------------------------*/
 
-#define PRINT_MESSAGE(s) \
-  std::cout << "Executing " << s << std::endl;
+#define PRINT_MESSAGE(s) std::cout << "Executing " << s << std::endl;
 
 // Define a function type for a very simple function.
 // NOTE: For functions that do not take any arguments, it is only
@@ -79,7 +78,8 @@ namespace example {
 
 flecsi_define_function_type(simple_function_t, void);
 
-void simple_function() {
+void
+simple_function() {
 
   PRINT_MESSAGE(__FUNCTION__);
 
@@ -91,16 +91,18 @@ flecsi_register_function(simple_function, example);
 
 flecsi_define_function_type(argument_function_t, int, double);
 
-int argument_function(double arg) {
+int
+argument_function(double arg) {
   PRINT_MESSAGE(__FUNCTION__ << " with value " << arg);
   return 0;
 } // arugment_function
 
 flecsi_register_function(argument_function, example);
 
-int argument_task(mesh<ro> m, field<ro> p, argument_function_t fh) {
+int
+argument_task(mesh<ro> m, field<ro> p, argument_function_t fh) {
 
-  for(auto c: m.cells()) {
+  for(auto c : m.cells()) {
     if(flecsi_execute_function(fh, p(c))) {
       return 1;
     } // if
@@ -116,26 +118,27 @@ flecsi_register_task(argument_task, example, loc, single);
 namespace flecsi {
 namespace execution {
 
-void driver(int argc, char ** argv) {
+void
+driver(int argc, char ** argv) {
 
   {
-  // Get a handle to the simple function
-  auto fh = flecsi_function_handle(simple_function, example);
+    // Get a handle to the simple function
+    auto fh = flecsi_function_handle(simple_function, example);
 
-  // Invoke the simple function
-  flecsi_execute_function(fh);
+    // Invoke the simple function
+    flecsi_execute_function(fh);
   } // simple function scope
 
   {
-  auto fh = flecsi_function_handle(argument_function, example);
-  int retval = flecsi_execute_function(fh, 5.0);
+    auto fh = flecsi_function_handle(argument_function, example);
+    int retval = flecsi_execute_function(fh, 5.0);
   } // arguemnt function scope
 
   {
-  auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
-  auto fh = flecsi_function_handle(argument_function, example);
-  auto p = flecsi_get_handle(m, hydro, pressure, double, dense, 0);
-  auto retval = flecsi_execute_task(argument_task, example, single, m, p, fh);
+    auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
+    auto fh = flecsi_function_handle(argument_function, example);
+    auto p = flecsi_get_handle(m, hydro, pressure, double, dense, 0);
+    auto retval = flecsi_execute_task(argument_task, example, single, m, p, fh);
   } // argument function scope
 
 } // driver

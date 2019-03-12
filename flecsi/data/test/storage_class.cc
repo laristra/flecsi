@@ -5,8 +5,8 @@
 
 #include <cinchtest.h>
 
-#include <vector>
 #include <algorithm>
+#include <vector>
 
 #include <flecsi/data/data.h>
 
@@ -18,9 +18,7 @@
 
 using namespace flecsi;
 
-enum data_attributes_t : size_t {
-  flagged
-}; // enum data_attributes_t
+enum data_attributes_t : size_t { flagged }; // enum data_attributes_t
 
 enum mesh_index_spaces_t : size_t {
   vertices,
@@ -71,36 +69,36 @@ TEST(storage, dense) {
 
   // Initialize
   {
-  auto p0 = flecsi_get_accessor(m, hydro, pressure, double, dense, 0);
-  auto p1 = flecsi_get_accessor(m, hydro, pressure, double, dense, 1);
-  auto d = flecsi_get_accessor(m, hydro, density, double, dense, 0);
+    auto p0 = flecsi_get_accessor(m, hydro, pressure, double, dense, 0);
+    auto p1 = flecsi_get_accessor(m, hydro, pressure, double, dense, 1);
+    auto d = flecsi_get_accessor(m, hydro, density, double, dense, 0);
 
-  p0.attributes().set(flagged);
+    p0.attributes().set(flagged);
 
-  std::cout << "index space: " << p0.index_space() << std::endl;
+    std::cout << "index space: " << p0.index_space() << std::endl;
 
-  for(size_t i(0); i<100; ++i) {
-    p0[i] = i;
-    p1[i] = 1000 + i;
-    d[i] = -double(i);
-  } // for
+    for(size_t i(0); i < 100; ++i) {
+      p0[i] = i;
+      p1[i] = 1000 + i;
+      d[i] = -double(i);
+    } // for
   } // scope
 
   // Test
   {
-  auto p0 = flecsi_get_accessor(m, hydro, pressure, double, dense, 0);
-  auto p1 = flecsi_get_accessor(m, hydro, pressure, double, dense, 1);
-  auto d = flecsi_get_accessor(m, hydro, density, double, dense, 0);
+    auto p0 = flecsi_get_accessor(m, hydro, pressure, double, dense, 0);
+    auto p1 = flecsi_get_accessor(m, hydro, pressure, double, dense, 1);
+    auto d = flecsi_get_accessor(m, hydro, density, double, dense, 0);
 
-  ASSERT_TRUE(p0.attributes().test(flagged));
-  ASSERT_FALSE(p1.attributes().test(flagged));
-  ASSERT_FALSE(d.attributes().test(flagged));
+    ASSERT_TRUE(p0.attributes().test(flagged));
+    ASSERT_FALSE(p1.attributes().test(flagged));
+    ASSERT_FALSE(d.attributes().test(flagged));
 
-  for(size_t i(0); i<100; ++i) {
-    ASSERT_EQ(p0[i], i);
-    ASSERT_EQ(p1[i], 1000+p0[i]);
-    ASSERT_EQ(d[i], -p0[i]);
-  } // for
+    for(size_t i(0); i < 100; ++i) {
+      ASSERT_EQ(p0[i], i);
+      ASSERT_EQ(p1[i], 1000 + p0[i]);
+      ASSERT_EQ(d[i], -p0[i]);
+    } // for
   } // scope
 } // TEST
 
@@ -123,32 +121,32 @@ TEST(storage, global) {
 
   // initialize simulation data
   {
-  auto s0 = flecsi_get_accessor(
-    m, hydro, simulation_data, my_data_t, global, 0);
-  auto s1 = flecsi_get_accessor(
-    m, hydro, simulation_data, my_data_t, global, 1);
+    auto s0 =
+      flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 0);
+    auto s1 =
+      flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 1);
 
-  s0.attributes().set(flagged);
+    s0.attributes().set(flagged);
 
-  s0->t = 0.5;
-  s0->n = 100;
-  s1->t = 1.5;
-  s1->n = 200;
+    s0->t = 0.5;
+    s0->n = 100;
+    s1->t = 1.5;
+    s1->n = 200;
   } // scope
 
   {
-  auto s0 = flecsi_get_accessor(
-    m, hydro, simulation_data, my_data_t, global, 0);
-  auto s1 = flecsi_get_accessor(
-    m, hydro, simulation_data, my_data_t, global, 1);
+    auto s0 =
+      flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 0);
+    auto s1 =
+      flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 1);
 
-  ASSERT_TRUE(s0.attributes().test(flagged));
-  ASSERT_FALSE(s1.attributes().test(flagged));
+    ASSERT_TRUE(s0.attributes().test(flagged));
+    ASSERT_FALSE(s1.attributes().test(flagged));
 
-  ASSERT_EQ(s0->t, 0.5);
-  ASSERT_EQ(s0->n, 100);
-  ASSERT_EQ(s1->t, 1.0 + s0->t);
-  ASSERT_EQ(s1->n, 100 + s0->n);
+    ASSERT_EQ(s0->t, 0.5);
+    ASSERT_EQ(s0->n, 100);
+    ASSERT_EQ(s1->t, 1.0 + s0->t);
+    ASSERT_EQ(s1->n, 100 + s0->n);
   } // scope
 } // TEST
 
@@ -159,7 +157,7 @@ TEST(storage, global) {
 TEST(storage, sparse1) {
   using namespace flecsi::data;
 
-// TODO: sparse data changes in progress
+  // TODO: sparse data changes in progress
   mesh_t m;
 
   size_t num_indices = 100;
@@ -168,8 +166,8 @@ TEST(storage, sparse1) {
   flecsi_register_data(m, hydro, a, double, sparse, 1, cells, num_materials);
   auto am = flecsi_get_mutator(m, hydro, a, double, sparse, 0, 10);
 
-  for(size_t i = 0; i < num_indices; i += 2){
-    for(size_t j = 0; j < num_materials; j += 2){
+  for(size_t i = 0; i < num_indices; i += 2) {
+    for(size_t j = 0; j < num_materials; j += 2) {
       am(i, j) = i * 100 + j;
     }
   }
@@ -178,8 +176,8 @@ TEST(storage, sparse1) {
 
   auto a = flecsi_get_accessor(m, hydro, a, double, sparse, 0);
 
-  for(size_t i = 0; i < num_indices ; i += 2){
-    for(size_t j = 0; j < num_materials; j += 2){
+  for(size_t i = 0; i < num_indices; i += 2) {
+    for(size_t j = 0; j < num_materials; j += 2) {
       ASSERT_EQ(a(i, j), i * 100 + j);
     }
   }
@@ -206,7 +204,7 @@ TEST(storage, sparse1) {
 TEST(storage, sparse2) {
   using namespace flecsi::data;
 
-// TODO: sparse data changes in progress
+  // TODO: sparse data changes in progress
   mesh_t m;
 
   size_t num_indices = 100;
@@ -216,8 +214,8 @@ TEST(storage, sparse2) {
 
   std::vector<std::pair<size_t, size_t>> v;
 
-  for(size_t i = 0; i < num_indices; i += 2){
-    for(size_t j = 0; j < num_materials; j += 2){
+  for(size_t i = 0; i < num_indices; i += 2) {
+    for(size_t j = 0; j < num_materials; j += 2) {
       v.push_back({i, j});
     }
   }
@@ -226,7 +224,7 @@ TEST(storage, sparse2) {
 
   auto am = flecsi_get_mutator(m, hydro, a, double, sparse, 0, 30);
 
-  for(auto p : v){
+  for(auto p : v) {
     am(p.first, p.second) = p.first * 1000 + p.second;
   }
 
@@ -234,8 +232,8 @@ TEST(storage, sparse2) {
 
   auto a = flecsi_get_accessor(m, hydro, a, double, sparse, 0);
 
-  for(size_t i = 0; i < num_indices ; i += 2){
-    for(size_t j = 0; j < num_materials; j += 2){
+  for(size_t i = 0; i < num_indices; i += 2) {
+    for(size_t j = 0; j < num_materials; j += 2) {
       ASSERT_EQ(a(i, j), i * 1000 + j);
     }
   }
@@ -309,61 +307,52 @@ TEST(storage, dense_attributes) {
 
     // test is_at(cells)
     auto cell_vars = flecsi_get_handles(
-      m, hydro, double, dense, 0, flecsi_is_at(cells), /* sorted */ true
-    );
+      m, hydro, double, dense, 0, flecsi_is_at(cells), /* sorted */ true);
 
-    ASSERT_EQ( cell_vars.size(), 2 );
-    ASSERT_EQ( cell_vars[0].label(), "density" );
-    ASSERT_EQ( cell_vars[1].label(), "pressure" );
+    ASSERT_EQ(cell_vars.size(), 2);
+    ASSERT_EQ(cell_vars[0].label(), "density");
+    ASSERT_EQ(cell_vars[1].label(), "pressure");
 
     auto all_cell_vars = flecsi_get_handles_all(
-      m, double, dense, 0, flecsi_is_at(cells), /* sorted */ true
-    );
+      m, double, dense, 0, flecsi_is_at(cells), /* sorted */ true);
 
-    ASSERT_EQ( all_cell_vars.size(), 3 );
-    ASSERT_EQ( all_cell_vars[0].label(), "density" );
-    ASSERT_EQ( all_cell_vars[1].label(), "pressure" );
-    ASSERT_EQ( all_cell_vars[2].label(), "temperature" );
-
+    ASSERT_EQ(all_cell_vars.size(), 3);
+    ASSERT_EQ(all_cell_vars[0].label(), "density");
+    ASSERT_EQ(all_cell_vars[1].label(), "pressure");
+    ASSERT_EQ(all_cell_vars[2].label(), "temperature");
 
     // test has_attribute_at(flagge,cells)
-    auto flagged_vars = flecsi_get_handles(
-      m, hydro, double, dense, 0, flecsi_has_attribute_at(flagged, cells),
-      /* sorted */ true
-    );
+    auto flagged_vars = flecsi_get_handles(m, hydro, double, dense, 0,
+      flecsi_has_attribute_at(flagged, cells),
+      /* sorted */ true);
 
-    ASSERT_EQ( flagged_vars.size(), 1 );
-    ASSERT_EQ( flagged_vars[0].label(), "pressure" );
+    ASSERT_EQ(flagged_vars.size(), 1);
+    ASSERT_EQ(flagged_vars[0].label(), "pressure");
 
-    auto all_flagged_vars = flecsi_get_handles_all(
-      m, double, dense, 0,
-      flecsi_has_attribute_at(flagged, cells), /* sorted */ true
-    );
+    auto all_flagged_vars = flecsi_get_handles_all(m, double, dense, 0,
+      flecsi_has_attribute_at(flagged, cells), /* sorted */ true);
 
-    ASSERT_EQ( all_flagged_vars.size(), 2 );
-    ASSERT_EQ( all_flagged_vars[0].label(), "pressure" );
-    ASSERT_EQ( all_flagged_vars[1].label(), "temperature" );
+    ASSERT_EQ(all_flagged_vars.size(), 2);
+    ASSERT_EQ(all_flagged_vars[0].label(), "pressure");
+    ASSERT_EQ(all_flagged_vars[1].label(), "temperature");
 
     // test get by type=double
-    auto typed_vars = flecsi_get_handles(
-      m, hydro, double, dense, 0, /* sorted */ true
-    );
+    auto typed_vars =
+      flecsi_get_handles(m, hydro, double, dense, 0, /* sorted */ true);
 
-    ASSERT_EQ( typed_vars.size(), 3 );
-    ASSERT_EQ( typed_vars[0].label(), "density" );
-    ASSERT_EQ( typed_vars[1].label(), "pressure" );
-    ASSERT_EQ( typed_vars[2].label(), "speed" );
+    ASSERT_EQ(typed_vars.size(), 3);
+    ASSERT_EQ(typed_vars[0].label(), "density");
+    ASSERT_EQ(typed_vars[1].label(), "pressure");
+    ASSERT_EQ(typed_vars[2].label(), "speed");
 
-    auto all_typed_vars = flecsi_get_handles_all(
-      m, double, dense, 0, /* sorted */ true
-    );
+    auto all_typed_vars =
+      flecsi_get_handles_all(m, double, dense, 0, /* sorted */ true);
 
-    ASSERT_EQ( all_typed_vars.size(), 4 );
-    ASSERT_EQ( all_typed_vars[0].label(), "density" );
-    ASSERT_EQ( all_typed_vars[1].label(), "pressure" );
-    ASSERT_EQ( all_typed_vars[2].label(), "speed" );
-    ASSERT_EQ( all_typed_vars[3].label(), "temperature" );
-
+    ASSERT_EQ(all_typed_vars.size(), 4);
+    ASSERT_EQ(all_typed_vars[0].label(), "density");
+    ASSERT_EQ(all_typed_vars[1].label(), "pressure");
+    ASSERT_EQ(all_typed_vars[2].label(), "speed");
+    ASSERT_EQ(all_typed_vars[3].label(), "temperature");
 
   } // scope
 } // TEST
@@ -403,44 +392,38 @@ TEST(storage, global_attributes) {
     ASSERT_FALSE(d.attributes().test(flagged));
     ASSERT_TRUE(t.attributes().test(flagged));
 
-
     // test has_attribute(flagge)
-    auto flagged_vars = flecsi_get_handles(
-      m, hydro, double, global, 0, flecsi_has_attribute(flagged),
-      /* sorted */ true
-    );
+    auto flagged_vars = flecsi_get_handles(m, hydro, double, global, 0,
+      flecsi_has_attribute(flagged),
+      /* sorted */ true);
 
-    ASSERT_EQ( flagged_vars.size(), 1 );
-    ASSERT_EQ( flagged_vars[0].label(), "pressure" );
+    ASSERT_EQ(flagged_vars.size(), 1);
+    ASSERT_EQ(flagged_vars[0].label(), "pressure");
 
     auto all_flagged_vars = flecsi_get_handles_all(
-      m, double, global, 0, flecsi_has_attribute(flagged), /* sorted */ true
-    );
+      m, double, global, 0, flecsi_has_attribute(flagged), /* sorted */ true);
 
-    ASSERT_EQ( all_flagged_vars.size(), 2 );
-    ASSERT_EQ( all_flagged_vars[0].label(), "pressure" );
-    ASSERT_EQ( all_flagged_vars[1].label(), "temperature" );
+    ASSERT_EQ(all_flagged_vars.size(), 2);
+    ASSERT_EQ(all_flagged_vars[0].label(), "pressure");
+    ASSERT_EQ(all_flagged_vars[1].label(), "temperature");
 
     // test get by type=double
-    auto typed_vars = flecsi_get_handles(
-      m, hydro, double, global, 0, /* sorted */ true
-    );
+    auto typed_vars =
+      flecsi_get_handles(m, hydro, double, global, 0, /* sorted */ true);
 
-    ASSERT_EQ( typed_vars.size(), 3 );
-    ASSERT_EQ( typed_vars[0].label(), "density" );
-    ASSERT_EQ( typed_vars[1].label(), "pressure" );
-    ASSERT_EQ( typed_vars[2].label(), "speed" );
+    ASSERT_EQ(typed_vars.size(), 3);
+    ASSERT_EQ(typed_vars[0].label(), "density");
+    ASSERT_EQ(typed_vars[1].label(), "pressure");
+    ASSERT_EQ(typed_vars[2].label(), "speed");
 
-    auto all_typed_vars = flecsi_get_handles_all(
-      m, double, global, 0, /* sorted */ true
-    );
+    auto all_typed_vars =
+      flecsi_get_handles_all(m, double, global, 0, /* sorted */ true);
 
-    ASSERT_EQ( all_typed_vars.size(), 4 );
-    ASSERT_EQ( all_typed_vars[0].label(), "density" );
-    ASSERT_EQ( all_typed_vars[1].label(), "pressure" );
-    ASSERT_EQ( all_typed_vars[2].label(), "speed" );
-    ASSERT_EQ( all_typed_vars[3].label(), "temperature" );
-
+    ASSERT_EQ(all_typed_vars.size(), 4);
+    ASSERT_EQ(all_typed_vars[0].label(), "density");
+    ASSERT_EQ(all_typed_vars[1].label(), "pressure");
+    ASSERT_EQ(all_typed_vars[2].label(), "speed");
+    ASSERT_EQ(all_typed_vars[3].label(), "temperature");
 
   } // scope
 } // TEST

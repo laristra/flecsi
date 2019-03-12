@@ -71,14 +71,13 @@ flecsi_register_data_client(mesh_t, meshes, mesh1);
 flecsi_register_field(mesh_t, func, f, double, dense, 1, index_spaces::cells);
 flecsi_register_field(mesh_t, deriv, fx, double, dense, 1, index_spaces::cells);
 flecsi_register_field(mesh_t, deriv, fy, double, dense, 1, index_spaces::cells);
-flecsi_register_field(
-    mesh_t,
-    deriv,
-    fxy,
-    double,
-    dense,
-    1,
-    index_spaces::cells);
+flecsi_register_field(mesh_t,
+  deriv,
+  fxy,
+  double,
+  dense,
+  1,
+  index_spaces::cells);
 
 //----------------------------------------------------------------------------//
 // Init field
@@ -86,7 +85,7 @@ flecsi_register_field(
 
 void
 init(mesh<ro> mesh, field<rw, rw, na> f) {
-  for (auto c : mesh.cells(owned)) {
+  for(auto c : mesh.cells(owned)) {
     auto idx = c->index();
     // domain is 0..2*pi in both x and y
     double x = (double)idx[1] / (double)(N - 1) * 2.0 * pi;
@@ -107,13 +106,13 @@ check_results(mesh<ro> mesh, field<ro, ro, ro> values, size_t global_target) {
   auto target = flecsi_get_global_object(global_target, global, vec_2d_t);
   auto rank = context_t::instance().color();
 
-  for (auto c : mesh.cells(owned)) {
+  for(auto c : mesh.cells(owned)) {
     auto v = values(c);
     size_t i = c->index()[0];
     size_t j = c->index()[1];
     auto t = (*target)[i][j];
 
-    if (v != t) {
+    if(v != t) {
       printf("[Rank %lu] at [%lu,%lu] %.15e != %.15e\n", rank, i, j, v, t);
       throw std::runtime_error("Got wrong result");
     }
@@ -127,27 +126,27 @@ flecsi_register_task(check_results, flecsi::execution, loc, index);
 //----------------------------------------------------------------------------//
 
 void
-compute_deriv(
-    mesh<ro> mesh,
-    field<ro, ro, ro> f,
-    field<wo, wo, na> deriv,
-    bool div_x) {
+compute_deriv(mesh<ro> mesh,
+  field<ro, ro, ro> f,
+  field<wo, wo, na> deriv,
+  bool div_x) {
   double h = 2.0 * pi / (double)(N - 1);
 
-  for (auto c : mesh.cells(owned)) {
-    if (div_x) {
+  for(auto c : mesh.cells(owned)) {
+    if(div_x) {
       // central difference in x, backward or forward at boundaries
-      if (c->left() == nullptr)
+      if(c->left() == nullptr)
         deriv(c) = (f(c->right()) - f(c)) / h;
-      else if (c->right() == nullptr)
+      else if(c->right() == nullptr)
         deriv(c) = (f(c) - f(c->left())) / h;
       else
         deriv(c) = (f(c->right()) - f(c->left())) / (2.0 * h);
-    } else {
+    }
+    else {
       // central difference in y, backward or forward at boundaries
-      if (c->below() == nullptr)
+      if(c->below() == nullptr)
         deriv(c) = (f(c->above()) - f(c)) / h;
-      else if (c->above() == nullptr)
+      else if(c->above() == nullptr)
         deriv(c) = (f(c) - f(c->below())) / h;
       else
         deriv(c) = (f(c->above()) - f(c->below())) / (2.0 * h);
@@ -185,21 +184,22 @@ void
 derive(const vec_2d_t & f, vec_2d_t * deriv, bool div_x) {
   double h = 2.0 * pi / (double)(N - 1);
 
-  for (size_t i = 0; i < N; ++i) {
-    for (size_t j = 0; j < N; ++j) {
-      if (div_x) {
+  for(size_t i = 0; i < N; ++i) {
+    for(size_t j = 0; j < N; ++j) {
+      if(div_x) {
         // central difference in x, backward or forward at boundaries
-        if (j == 0)
+        if(j == 0)
           (*deriv)[i][j] = (f[i][j + 1] - f[i][j]) / h;
-        else if (j == N - 1)
+        else if(j == N - 1)
           (*deriv)[i][j] = (f[i][j] - f[i][j - 1]) / h;
         else
           (*deriv)[i][j] = (f[i][j + 1] - f[i][j - 1]) / (2.0 * h);
-      } else {
+      }
+      else {
         // central difference in y, backward or forward at boundaries
-        if (i == 0)
+        if(i == 0)
           (*deriv)[i][j] = (f[i + 1][j] - f[i][j]) / h;
-        else if (i == N - 1)
+        else if(i == N - 1)
           (*deriv)[i][j] = (f[i][j] - f[i - 1][j]) / h;
         else
           (*deriv)[i][j] = (f[i + 1][j] - f[i - 1][j]) / (2.0 * h);
@@ -222,8 +222,8 @@ driver(int argc, char ** argv) {
   vec_2d_t fy_target(N, std::vector<double>(N, 0.0));
   vec_2d_t fxy_target(N, std::vector<double>(N, 0.0));
 
-  for (size_t i = 0; i < N; ++i) {
-    for (size_t j = 0; j < N; ++j) {
+  for(size_t i = 0; i < N; ++i) {
+    for(size_t j = 0; j < N; ++j) {
       double x = (double)j / (double)(N - 1) * 2.0 * pi;
       double y = (double)i / (double)(N - 1) * 2.0 * pi;
       f_target[i][j] = sin(x) * y + 0.5 * cos(2.0 * y);
@@ -236,30 +236,30 @@ driver(int argc, char ** argv) {
 
   flecsi_initialize_global_object(global_f_target, global, vec_2d_t, f_target);
   flecsi_initialize_global_object(
-      global_fx_target, global, vec_2d_t, fx_target);
+    global_fx_target, global, vec_2d_t, fx_target);
   flecsi_initialize_global_object(
-      global_fy_target, global, vec_2d_t, fy_target);
+    global_fy_target, global, vec_2d_t, fy_target);
   flecsi_initialize_global_object(
-      global_fxy_target, global, vec_2d_t, fxy_target);
+    global_fxy_target, global, vec_2d_t, fxy_target);
 
   flecsi_execute_task(init, flecsi::execution, index, mh, fh);
   flecsi_execute_task(
-      check_results, flecsi::execution, index, mh, fh, global_f_target);
+    check_results, flecsi::execution, index, mh, fh, global_f_target);
 
   flecsi_execute_task(
-      compute_deriv, flecsi::execution, index, mh, fh, fxh, true);
+    compute_deriv, flecsi::execution, index, mh, fh, fxh, true);
   flecsi_execute_task(
-      check_results, flecsi::execution, index, mh, fxh, global_fx_target);
+    check_results, flecsi::execution, index, mh, fxh, global_fx_target);
 
   flecsi_execute_task(
-      compute_deriv, flecsi::execution, index, mh, fh, fyh, false);
+    compute_deriv, flecsi::execution, index, mh, fh, fyh, false);
   flecsi_execute_task(
-      check_results, flecsi::execution, index, mh, fyh, global_fy_target);
+    check_results, flecsi::execution, index, mh, fyh, global_fy_target);
 
   flecsi_execute_task(
-      compute_deriv, flecsi::execution, index, mh, fxh, fxyh, false);
+    compute_deriv, flecsi::execution, index, mh, fxh, fxyh, false);
   flecsi_execute_task(
-      check_results, flecsi::execution, index, mh, fxyh, global_fxy_target);
+    check_results, flecsi::execution, index, mh, fxyh, global_fxy_target);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//
