@@ -5,7 +5,8 @@
 
 using namespace io_poc;
 
-int poynting_flux(int argc, char ** argv) {
+int
+poynting_flux(int argc, char ** argv) {
   usleep(200000);
   std::cout << "analyze: poynting_flux" << std::endl;
   return 0;

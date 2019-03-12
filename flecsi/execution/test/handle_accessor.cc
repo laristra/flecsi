@@ -29,7 +29,7 @@ clog_register_tag(coloring);
 void
 writer(dense_accessor<double, wo, na, na> x) {
   std::cout << "exclusive writer write" << std::endl;
-  for (int i = 0; i < x.exclusive_size(); i++) {
+  for(int i = 0; i < x.exclusive_size(); i++) {
     x.exclusive(i) = static_cast<double>(i);
   }
 }
@@ -37,7 +37,7 @@ writer(dense_accessor<double, wo, na, na> x) {
 void
 reader(dense_accessor<double, ro, ro, ro> x) {
   std::cout << "exclusive reader read: " << std::endl;
-  for (int i = 0; i < x.exclusive_size(); i++) {
+  for(int i = 0; i < x.exclusive_size(); i++) {
     ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
   }
 }
@@ -63,7 +63,7 @@ specialization_tlt_init(int argc, char ** argv) {
   auto & context = execution::context_t::instance();
 
   ASSERT_EQ(
-      context.execution_state(), static_cast<size_t>(SPECIALIZATION_TLT_INIT));
+    context.execution_state(), static_cast<size_t>(SPECIALIZATION_TLT_INIT));
 
   coloring_map_t map;
   map.vertices = 1;
@@ -83,7 +83,7 @@ driver(int argc, char ** argv) {
   auto & context = execution::context_t::instance();
   // There no longer is a separate state for driver and specialization_tlt_init
   // under control replication.
-  //ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
+  // ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
 
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);

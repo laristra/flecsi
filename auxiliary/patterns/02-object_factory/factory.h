@@ -11,12 +11,8 @@
 class factory_t
 {
 public:
-
   // Function static instance method with local static variable.
-  static
-  factory_t &
-  instance()
-  {
+  static factory_t & instance() {
     static factory_t ms;
     return ms;
   } // instance
@@ -25,12 +21,7 @@ public:
   using callback_t = std::function<void(size_t)>;
 
   // Register a callback to an id.
-  bool
-  register_callback(
-    size_t id,
-    callback_t & callback
-  )
-  {
+  bool register_callback(size_t id, callback_t & callback) {
     if(registry_.find(id) == registry_.end()) {
       registry_[id] = callback;
     } // if
@@ -40,10 +31,9 @@ public:
   factory_t(const factory_t &) = delete;
 
   // Assignment operator (disabled)
-  factory_t & operator = (const factory_t &) = delete;
+  factory_t & operator=(const factory_t &) = delete;
 
 private:
-
   // Map to store callback funtions.
   std::unordered_map<size_t, callback_t> registry_;
 

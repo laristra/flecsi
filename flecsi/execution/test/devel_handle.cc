@@ -34,14 +34,13 @@ using field = dense_accessor<double, EP, SP, GP>;
 //----------------------------------------------------------------------------//
 
 flecsi_register_data_client(mesh_t, clients, m);
-flecsi_register_field(
-    mesh_t,
-    data,
-    pressure,
-    double,
-    dense,
-    1,
-    index_spaces::cells);
+flecsi_register_field(mesh_t,
+  data,
+  pressure,
+  double,
+  dense,
+  1,
+  index_spaces::cells);
 
 //----------------------------------------------------------------------------//
 // Initialize pressure
@@ -51,9 +50,9 @@ void
 initialize_pressure(mesh<ro> m, field<rw, rw, ro> p) {
   size_t count{0};
 
-  auto & context{ context_t::instance() };
+  auto & context{context_t::instance()};
 
-  for (auto c : m.cells(owned)) {
+  for(auto c : m.cells(owned)) {
     p(c) = (context.color() + 1) * 1000.0 + count++;
   } // for
 
@@ -69,7 +68,7 @@ void
 update_pressure(mesh<ro> m, field<rw, rw, ro> p) {
   size_t count{0};
 
-  for (auto c : m.cells(owned)) {
+  for(auto c : m.cells(owned)) {
     p(c) = 2.0 * p(c);
   } // for
 
@@ -92,7 +91,7 @@ print_mesh(mesh<ro> m, field<ro, ro, ro> p) {
   auto & vertex_map = context.index_map(index_spaces::vertices);
   auto & cell_map = context.index_map(index_spaces::cells);
 
-  for (auto c : m.cells(owned)) {
+  for(auto c : m.cells(owned)) {
     const size_t cid = c->template id<0>();
 
     {
@@ -104,7 +103,7 @@ print_mesh(mesh<ro> m, field<ro, ro, ro> p) {
     } // scope
 
     size_t vcount(0);
-    for (auto v : m.vertices(c)) {
+    for(auto v : m.vertices(c)) {
       const size_t vid = v->template id<0>();
 
       {

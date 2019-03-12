@@ -11,15 +11,10 @@
 /// \date Initial file creation: Apr 12, 2017
 ///
 
-
 namespace flecsi {
 namespace execution {
 
-enum class serial_processor_type_t : size_t {
-  loc,
-  toc,
-  mpi
-};
+enum class serial_processor_type_t : size_t { loc, toc, mpi };
 
 } // namespace execution
 } // namespace flecsi

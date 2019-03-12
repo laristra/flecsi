@@ -5,7 +5,8 @@
 
 using namespace io_poc;
 
-int advance_particles(int argc, char ** argv) {
+int
+advance_particles(int argc, char ** argv) {
   usleep(200000);
   std::cout << "advance: advance_particles" << std::endl;
   return 0;
