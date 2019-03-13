@@ -30,7 +30,7 @@ namespace legion {
 #if 0
 namespace unstructured_mesh_topology {
 
-template<typename TYPE, size_t PRIVILEGES>
+template<typename TYPE, size_t PRIVLEGES>
 struct dense_handle_u {
 
   dense_handle_u() {}
@@ -44,6 +44,9 @@ template<typename POLICY_TYPE>
 struct storage_class_u<dense, flecsi::topology::mesh_topology_u<POLICY_TYPE>> {
 
   using client_t = flecsi::topology::mesh_topology_u<POLICY_TYPE>;
+  template<typename DATA_TYPE, size_t PRIVLEGES>
+  using handle_t =
+    unstructured_mesh_topology::dense_handle_u<DATA_TYPE, PRIVLEGES>
 
   template<typename DATA_TYPE,
     size_t NAMESPACE,
