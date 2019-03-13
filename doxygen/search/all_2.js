@@ -39,6 +39,7 @@ var searchData=
   ['client_5ftype_5fu',['client_type_u',['../structflecsi_1_1client__type__u.html',1,'flecsi']]],
   ['client_5ftype_5fu_3c_20data_3a_3aclient_5fhandle_5fu_3c_20client_5ftype_2c_20privileges_20_3e_20_3e',['client_type_u&lt; data::client_handle_u&lt; CLIENT_TYPE, PRIVILEGES &gt; &gt;',['../structflecsi_1_1client__type__u_3_01data_1_1client__handle__u_3_01CLIENT__TYPE_00_01PRIVILEGES_01_4_01_4.html',1,'flecsi']]],
   ['color',['color',['../structflecsi_1_1execution_1_1context__u.html#abc22e5f9ca4f00cec2dedd48db3e3d4d',1,'flecsi::execution::context_u']]],
+  ['color_5faccessor_5fu',['color_accessor_u',['../field_8h.html#aa4524ba2a32a43338b291a4562a85a74',1,'flecsi::data']]],
   ['color_5ftopology_5ft',['color_topology_t',['../structflecsi_1_1topology_1_1color__topology__t.html',1,'flecsi::topology']]],
   ['colors',['colors',['../structflecsi_1_1execution_1_1context__u.html#ade6c89662f58fe1626acadaa7506c5eb',1,'flecsi::execution::context_u']]],
   ['common_2eh',['common.h',['../common_8h.html',1,'']]],

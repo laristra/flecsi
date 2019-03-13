@@ -4,7 +4,7 @@ var searchData=
   ['task_5fdepth',['task_depth',['../structflecsi_1_1execution_1_1context__u.html#ac8e9131172fd07944e6aec81e2072fe5',1,'flecsi::execution::context_u']]],
   ['task_5fepilogue_5ft',['task_epilogue_t',['../structflecsi_1_1execution_1_1task__epilogue__t.html#ae47423645a8c3da66a65f64c6335e103',1,'flecsi::execution::task_epilogue_t']]],
   ['task_5finfo',['task_info',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a3d2bd5ee16f6a046e4f2c33297da9009',1,'flecsi::execution::legion_context_policy_t::task_info()'],['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a6b93a5338f907beb89949ff4aa4cf83a',1,'flecsi::execution::legion_context_policy_t::task_info(size_t key)']]],
-  ['task_5fprolog_5ft',['task_prolog_t',['../structflecsi_1_1execution_1_1task__prologue__t.html#a1c1634b7883d193ec4c31d3e5fc69f33',1,'flecsi::execution::task_prologue_t']]],
+  ['task_5fprologue_5ft',['task_prologue_t',['../structflecsi_1_1execution_1_1legion_1_1task__prologue__t.html#acb9cf7ad9cf26fbe98f780c09a25c8cb',1,'flecsi::execution::legion::task_prologue_t']]],
   ['timestamp',['timestamp',['../utils_8h.html#a161c6bc8a99cd07acb324dfe825e5239',1,'flecsi::utils::flog']]],
   ['top_5flevel_5faction',['top_level_action',['../structflecsi_1_1execution_1_1context__u.html#a95d094e1720e352049446a374e74f6d1',1,'flecsi::execution::context_u']]],
   ['true_5fstate',['true_state',['../message_8h.html#aa4552b1c213b2363ef5527cbcb41a85c',1,'flecsi::utils::flog']]],
