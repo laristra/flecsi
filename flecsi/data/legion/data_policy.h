@@ -58,6 +58,18 @@ struct legion_data_policy_t {
   template<size_t STORAGE_CLASS, typename CLIENT_TYPE>
   using storage_class_u = legion::storage_class_u<STORAGE_CLASS, CLIENT_TYPE>;
 
+  /*--------------------------------------------------------------------------*
+    Accessor Interface.
+   *--------------------------------------------------------------------------*/
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  using global_accessor_u =
+    legion::global_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  using color_accessor_u =
+    legion::color_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
+
 }; // struct legion_data_policy_t
 
 } // namespace data

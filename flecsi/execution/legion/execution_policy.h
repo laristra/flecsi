@@ -20,6 +20,7 @@
 #else
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/reduction_wrapper.h>
+#include <flecsi/execution/legion/task_prologue.h>
 #include <flecsi/execution/legion/task_wrapper.h>
 #include <flecsi/utils/flog.h>
 #endif

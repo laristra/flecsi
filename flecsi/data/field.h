@@ -197,5 +197,23 @@ namespace data {
 
 using field_interface_t = field_interface_u<FLECSI_RUNTIME_DATA_POLICY>;
 
+/*!
+  The global_accessor_u type is the high-level accessor type for FleCSI
+  field data on the global topology.
+ */
+
+template<typename DATA_TYPE, size_t PRIVILEGES>
+using global_accessor_u =
+  typename FLECSI_RUNTIME_DATA_POLICY::global_accessor_u<DATA_TYPE, PRIVILEGES>;
+
+/*!
+  The color_accessor_u type is the high-level accessor type for FleCSI
+  field data on the color topology.
+ */
+
+template<typename DATA_TYPE, size_t PRIVILEGES>
+using color_accessor_u =
+  typename FLECSI_RUNTIME_DATA_POLICY::color_accessor_u<DATA_TYPE, PRIVILEGES>;
+
 } // namespace data
 } // namespace flecsi
