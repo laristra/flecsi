@@ -370,6 +370,7 @@ exit_status_t process_flags(
    // Bookkeeping
    const bool already = com.flags.set(); // previously set?
    com.flags.value().clear(); // clear
+   com.flags = std::vector<std::string>{}; // so set() is correct
 
    // Argument[s]?
    bool arguments = false;

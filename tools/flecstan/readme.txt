@@ -22,7 +22,7 @@ There are two ways to compile flecstan:
 With CMake:
 
    $ mkdir -p build
-   # cd build
+   $ cd build
    $ cmake ..
    $ make
 

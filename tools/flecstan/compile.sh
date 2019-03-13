@@ -4,10 +4,10 @@
 # Setup
 # ------------------------
 
-export COMPILE='
+COMPILE='
    g++ -Isrc -std=c++17 -pthread -fno-rtti -O3 -pedantic -Wall -s '
 
-export LIBRARIES='
+LIBRARIES='
  -Wl,--start-group
  -lclangAnalysis
  -lclangAST

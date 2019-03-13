@@ -82,6 +82,20 @@ namespace color {
    inline const std::string fatal   = lite::red;
    inline const std::string reset   = "\033[0m";
 
+   /*
+   // for output
+   inline const std::string debug   = "`textWhite ";
+   inline const std::string heading = "`textGray ";
+   inline const std::string file    = "`textMagenta ";
+   inline const std::string report1 = "`textBlueViolet ";
+   inline const std::string report2 = "`textCyan ";
+   inline const std::string note    = "`textGreen ";
+   inline const std::string warning = "`textYellow ";
+   inline const std::string error   = "`textRed ";
+   inline const std::string fatal   = "`textRed ";
+   inline const std::string reset   = "`textBlack";
+   */
+
 } // namespace color
 } // namespace flecstan
 
@@ -359,12 +373,14 @@ inline std::string quote(const std::string &str)
    return str == "" ? "\"\"" : str;
 }
 
+
 // endsin: helper
 // C++20 will have an ends_with(); I'll just do it directly for now
 inline bool endsin(const std::string &str, const std::string &end)
 {
    return str.size() >= end.size() && &str[str.size()-end.size()] == end;
 }
+
 
 // TokenName
 // Get a clang::Token's spelling
@@ -378,7 +394,6 @@ inline std::string TokenName(
       sema.getLangOpts()
    );
 }
-
 
 
 // getFileLineColumn
@@ -407,7 +422,6 @@ void getFileLineColumn(
       column
    );
 }
-
 
 
 // booland
