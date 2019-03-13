@@ -22,7 +22,7 @@ namespace utils {
 
 template<typename _Tuple, typename _Fn, size_t... _Idx>
 void
-tuple_visit_impl(_Tuple && t, _Fn && f, std::index_sequence<_Idx...>) {
+tuple_visitor_impl(_Tuple && t, _Fn && f, std::index_sequence<_Idx...>) {
   /*
     This creates an initializer list so that the index sequence is
     expanded properly. The (f(x), 0) uses the comma operator so
@@ -49,11 +49,11 @@ tuple_visit_impl(_Tuple && t, _Fn && f, std::index_sequence<_Idx...>) {
 
 template<typename _Tuple, typename _Fn>
 void
-tuple_visit(_Tuple && t, _Fn && f) {
+tuple_visitor(_Tuple && t, _Fn && f) {
   using _Indices =
     std::make_index_sequence<std::tuple_size_v<std::decay_t<_Tuple>>>;
 
-  tuple_visit_impl(std::forward<_Tuple>(t), std::forward<_Fn>(f), _Indices{});
+  tuple_visitor_impl(std::forward<_Tuple>(t), std::forward<_Fn>(f), _Indices{});
 }
 
 /*!
@@ -72,14 +72,14 @@ tuple_visit(_Tuple && t, _Fn && f) {
 
 template<typename _Tuple, typename _Fn>
 void
-tuple_visit(_Fn && f) {
+tuple_visitor(_Fn && f) {
   static_assert(std::is_default_constructible<_Tuple>::value,
     "tuple_vist tuple type is not default constructible");
 
   using _Indices =
     std::make_index_sequence<std::tuple_size_v<std::decay_t<_Tuple>>>;
 
-  tuple_visit_impl(std::forward<_Tuple>({}), std::forward<_Fn>(f), _Indices{});
+  tuple_visitor_impl(std::forward<_Tuple>({}), std::forward<_Fn>(f), _Indices{});
 }
 
 } // namespace utils

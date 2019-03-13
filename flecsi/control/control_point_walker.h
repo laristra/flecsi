@@ -81,11 +81,11 @@ struct control_point_walker_u
     @tparam ELEMENT_TYPE The tuple element type. This can either be a size_t
                          or a \em cycle. Cycles are defined by the
                          specialization and must conform to the interface used
-                         in the appropriate handle_type method.
+                         in the appropriate visit_type method.
    */
 
   template<typename ELEMENT_TYPE>
-  void handle_type() {
+  void visit_type() {
 
     if constexpr(std::is_same<typename ELEMENT_TYPE::TYPE, size_t>::value) {
 
@@ -108,7 +108,7 @@ struct control_point_walker_u
       } // while
     } // if
 
-  } // handle_type
+  } // visit_type
 
 private:
   int argc_;
@@ -138,13 +138,13 @@ struct control_point_writer_u
     @tparam ELEMENT_TYPE The tuple element type. This can either be a size_t
                          or a \em cycle. Cycles are defined by the
                          specialization and must conform to the interface used
-                         in the appropriate handle_type method.
+                         in the appropriate visit_type method.
    */
 
   template<typename ELEMENT_TYPE>
   typename std::enable_if<
     std::is_same<typename ELEMENT_TYPE::TYPE, size_t>::value>::type
-  handle_type() {
+  visit_type() {
     auto & control_point_map = CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::value);
 
     // Add the control point node to the graph
@@ -169,7 +169,7 @@ struct control_point_writer_u
       } // if
     } // for
 
-  } // handle_type
+  } // visit_type
 
   /*!
     Handle the tuple type \em ELEMENT_TYPE for type cycle_u.
@@ -177,13 +177,13 @@ struct control_point_writer_u
     @tparam ELEMENT_TYPE The tuple element type. This can either be a size_t
                          or a \em cycle. Cycles are defined by the
                          specialization and must conform to the interface used
-                         in the appropriate handle_type method.
+                         in the appropriate visit_type method.
    */
 
   template<typename ELEMENT_TYPE>
   typename std::enable_if<
     !std::is_same<typename ELEMENT_TYPE::TYPE, size_t>::value>::type
-  handle_type() {
+  visit_type() {
 
     control_point_writer_u control_point_writer(gv_);
     control_point_writer.template walk_types<typename ELEMENT_TYPE::TYPE>();
@@ -202,7 +202,7 @@ struct control_point_writer_u
       gv_.set_edge_attribute(edge, "headport", "e");
       gv_.set_edge_attribute(edge, "tailport", "e");
     } // if
-  } // handle_type
+  } // visit_type
 
 private:
   graphviz_t & gv_;

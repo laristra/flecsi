@@ -20,39 +20,8 @@
 #endif
 
 #include <flecsi/execution/context.h>
+#include <flecsi/execution/internal.h>
 #include <flecsi/execution/reduction.h>
-#include <flecsi/execution/task.h>
-#include <flecsi/utils/const_string.h>
-
-//----------------------------------------------------------------------------//
-// Helper Macros
-//----------------------------------------------------------------------------//
-
-/*!
-  @def flecsi_internal_return_type
-
-  This macro returns the inferred return type for a user task.
-
-  @param task The task to register. This is normally just a function.
-
-  @ingroup execution
- */
-
-#define flecsi_internal_return_type(task)                                      \
-  typename flecsi::utils::function_traits_u<decltype(task)>::return_type
-
-/*!
-  @def flecsi_internal_arguments_type
-
-  This macro returns the inferred argument type for a user task.
-
-  @param task The task to register. This is normally just a function.
-
-  @ingroup execution
- */
-
-#define flecsi_internal_arguments_type(task)                                   \
-  typename flecsi::utils::function_traits_u<decltype(task)>::arguments_type
 
 /*----------------------------------------------------------------------------*
   Basic runtime interface
@@ -134,42 +103,6 @@
 //----------------------------------------------------------------------------//
 
 /*!
-  @def flecsi_register_task_simple
-
-  This macro registers a user task with the FleCSI runtime. This is the
-  basic form without support for tasks that are defined within a namespace.
-  Best practice is to use the flecsi_register_task interface that requires
-  that the task be defined in a namespace to scope the task and avoid naming
-  collisions.
-
-  @param task      The task to register. This is normally just a function.
-  @param processor The \ref processor_type_t type.
-  @param launch    The \ref launch_t type. This may be an \em or list of
-                   supported launch types and configuration options.
-
-  @ingroup execution
- */
-
-#define flecsi_register_task_simple(task, processor, launch)                   \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  /* Define a delegate function to the user's function that takes a tuple */   \
-  /* of the arguments (as opposed to the raw argument pack). This is */        \
-  /* necessary because we cannot infer the argument type without using */      \
-  /* a tuple. */                                                               \
-  inline flecsi_internal_return_type(task)                                     \
-    task##_tuple_delegate(flecsi_internal_arguments_type(task) args) {         \
-    return flecsi::utils::tuple_function(task, args);                          \
-  } /* delegate task */                                                        \
-                                                                               \
-  /* Call the execution policy to register the task delegate */                \
-  inline bool task##_task_registered =                                         \
-    flecsi::execution::task_interface_t::register_task<                        \
-      flecsi_internal_hash(task), flecsi_internal_return_type(task),           \
-      flecsi_internal_arguments_type(task), task##_tuple_delegate>(            \
-      flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(task)})
-
-/*!
   @def flecsi_register_task
 
   This macro registers a user task with the FleCSI runtime. This interface
@@ -207,33 +140,6 @@
 //----------------------------------------------------------------------------//
 // Task Execution Interface
 //----------------------------------------------------------------------------//
-
-#define flecsi_internal_execute_task(task, launch, operation, ...)             \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  /* Execute the user task */                                                  \
-  /* WARNING: This macro returns a future. Don't add terminations! */          \
-  flecsi::execution::task_interface_t::execute_task<                           \
-    flecsi::execution::launch_type_t::launch, flecsi_internal_hash(task),      \
-    flecsi_internal_hash(operation), flecsi_internal_return_type(task),        \
-    flecsi_internal_arguments_type(task)>(__VA_ARGS__)
-
-/*!
-  @def flecsi_execute_task_simple
-
-  This macro executes a simple user task, i.e., one that is not scoped in
-  a namespace. Use of this interface is discouraged.
-
-  @param task   The user task to execute.
-  @param launch The launch mode for the task.
-  @param ...    The arguments to pass to the user task during execution.
-
-  @ingroup execution
- */
-
-#define flecsi_execute_task_simple(task, launch, ...)                          \
-  /* MACRO IMPLEMENTATION */                                                   \
-  flecsi_internal_execute_task(task, launch, 0, ##__VA_ARGS__)
 
 /*!
   @def flecsi_execute_task

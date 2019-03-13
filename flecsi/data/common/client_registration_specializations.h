@@ -73,7 +73,7 @@ struct client_registration_u<
     }
 
     template<typename TUPLE_ENTRY_TYPE>
-    void handle_type() {
+    void visit_type() {
       using INDEX_TYPE = typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
       using DOMAIN_TYPE =
         typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
@@ -127,7 +127,7 @@ struct client_registration_u<
       execution::context_t::instance().register_field(
         type_key, id_key, id_registration_t::register_callback);
 
-    } // handle_type
+    } // visit_type
 
   }; // struct entity_walker_t
 
@@ -140,7 +140,7 @@ struct client_registration_u<
     }
 
     template<typename TUPLE_ENTRY_TYPE>
-    void handle_type() {
+    void visit_type() {
       using INDEX_TYPE = typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
       using DOMAIN_TYPE =
         typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
@@ -202,7 +202,7 @@ struct client_registration_u<
 
       execution::context_t::instance().register_field(
         type_key, offset_key, offset_registration_t::register_callback);
-    } // handle_type
+    } // visit_type
 
   }; // struct connectivity_walker_u
 
@@ -210,7 +210,7 @@ struct client_registration_u<
       : public flecsi::utils::tuple_walker_u<binding_walker_u> {
 
     template<typename TUPLE_ENTRY_TYPE>
-    void handle_type() {
+    void visit_type() {
       using INDEX_TYPE = typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
       using FROM_DOMAIN_TYPE =
         typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
@@ -273,7 +273,7 @@ struct client_registration_u<
       execution::context_t::instance().register_field(
         type_key, offset_key, offset_registration_t::register_callback);
 
-    } // handle_type
+    } // visit_type
 
   }; // struct binding_walker_u
 
@@ -281,7 +281,7 @@ struct client_registration_u<
       : public flecsi::utils::tuple_walker_u<index_subspaces_walker_u> {
 
     template<typename TUPLE_ENTRY_TYPE>
-    void handle_type() {
+    void visit_type() {
       using INDEX_TYPE = typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
       using INDEX_SUBSPACE_TYPE =
         typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
@@ -309,7 +309,7 @@ struct client_registration_u<
       execution::context_t::instance().register_field(
         type_key, field_key, registration_t::register_callback);
 
-    } // handle_type
+    } // visit_type
 
   }; // struct index_subspaces_walker_u
 
@@ -374,7 +374,7 @@ struct client_registration_u<
     }
 
     template<typename TUPLE_ENTRY_TYPE>
-    void handle_type() {
+    void visit_type() {
       using INDEX_TYPE = typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
       using ENTITY_TYPE =
         typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
@@ -414,7 +414,7 @@ struct client_registration_u<
       execution::context_t::instance().register_field(
         type_key, migrate_key, registration_t::register_callback);
 
-    } // handle_type
+    } // visit_type
 
   }; // struct binding_walker_u
 

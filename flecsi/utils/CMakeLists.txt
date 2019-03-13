@@ -52,7 +52,7 @@ set(utils_HEADERS
   static_verify.h
   tuple_function.h
   tuple_type_converter.h
-  tuple_visit.h
+  tuple_visitor.h
   tuple_walker.h
   tuple_wrapper.h
   type_traits.h

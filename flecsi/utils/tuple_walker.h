@@ -20,26 +20,27 @@
 namespace flecsi {
 namespace utils {
 
-//----------------------------------------------------------------------------//
-//! Type for iterating through tuples. This type uses CRTP to expose handler
-//! methods for processing the tuple arguments as they are traversed.
-//!
-//! @tparam CRTP_TYPE  The Curiously Recurring Template Pattern (CRTP) type.
-//!
-//! @ingroup utils
-//----------------------------------------------------------------------------//
+/*!
+  Type for iterating through tuples. This type uses CRTP to expose
+  visitor methods for processing the tuple arguments as they are
+  traversed.
+
+  @tparam CRTP_TYPE  The Curiously Recurring Template Pattern (CRTP) type.
+
+  @ingroup utils
+ */
 
 template<typename CRTP_TYPE>
 struct tuple_walker_u {
 private:
   template<typename T>
   void dispatch(T & t) {
-    static_cast<CRTP_TYPE &>(*this).handle(t);
+    static_cast<CRTP_TYPE &>(*this).visit(t);
   }
 
   template<typename T>
   void dispatch() {
-    static_cast<CRTP_TYPE &>(*this).template handle_type<T>();
+    static_cast<CRTP_TYPE &>(*this).template visit_type<T>();
   }
 
   template<std::size_t index = 0, typename TUPLE_TYPE>
@@ -60,28 +61,28 @@ private:
   }
 
 public:
-  //--------------------------------------------------------------------------//
-  //! Walk the given tuple, applying the handler to each element.
-  //!
-  //! @tparam TUPLE_TYPE The tuple type.
-  //!
-  //! @param t An instance of the tuple.
-  //!
-  //! @ingroup utils
-  //--------------------------------------------------------------------------//
+  /*!
+    Walk the given tuple, applying the visit method to each element.
+
+    @tparam TUPLE_TYPE The tuple type.
+
+    @param t An instance of the tuple.
+
+    @ingroup utils
+   */
 
   template<typename TUPLE_TYPE>
   void walk(TUPLE_TYPE & t) {
     walk_impl(t);
   }
 
-  //--------------------------------------------------------------------------//
-  //! Walk the given tuple by type, applying the handler to each element.
-  //!
-  //! @tparam TUPLE_TYPE The tuple type.
-  //!
-  //! @ingroup utils
-  //--------------------------------------------------------------------------//
+  /*!
+    Walk the given tuple by type, applying the visit method to each element.
+
+    @tparam TUPLE_TYPE The tuple type.
+
+    @ingroup utils
+   */
 
   template<typename TUPLE_TYPE>
   void walk_types() {

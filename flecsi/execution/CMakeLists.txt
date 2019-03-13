@@ -22,6 +22,7 @@ set(execution_HEADERS
   common/launch.h
   common/processor.h
   context.h
+  internal.h
   execution.h
   global_object_wrapper.h
   reduction.h
