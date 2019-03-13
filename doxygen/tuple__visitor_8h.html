@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>Interface Documentation: /home/flecsi/flecsi/flecsi/utils/tuple_visit.h File Reference</title>
+<title>Interface Documentation: /home/flecsi/flecsi/flecsi/utils/tuple_visitor.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -68,29 +68,29 @@ $(function() {
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">tuple_visit.h File Reference</div>  </div>
+<div class="title">tuple_visitor.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;tuple&gt;</code><br />
 </div>
-<p><a href="tuple__visit_8h_source.html">Go to the source code of this file.</a></p>
+<p><a href="tuple__visitor_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a60c41ff1e5415a6b1bd8bd9552716d34"><td class="memTemplParams" colspan="2"><a id="a60c41ff1e5415a6b1bd8bd9552716d34"></a>
+<tr class="memitem:aa9f2adde0da647c238211d890579ef4a"><td class="memTemplParams" colspan="2"><a id="aa9f2adde0da647c238211d890579ef4a"></a>
 template&lt;typename _Tuple , typename _Fn , size_t... _Idx&gt; </td></tr>
-<tr class="memitem:a60c41ff1e5415a6b1bd8bd9552716d34"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::utils::tuple_visit_impl</b> (_Tuple &amp;&amp;t, _Fn &amp;&amp;f, std::index_sequence&lt; _Idx... &gt;)</td></tr>
-<tr class="separator:a60c41ff1e5415a6b1bd8bd9552716d34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a786c498e60f9458abec4128ee1b1413e"><td class="memTemplParams" colspan="2">template&lt;typename _Tuple , typename _Fn &gt; </td></tr>
-<tr class="memitem:a786c498e60f9458abec4128ee1b1413e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="tuple__visit_8h.html#a786c498e60f9458abec4128ee1b1413e">flecsi::utils::tuple_visit</a> (_Tuple &amp;&amp;t, _Fn &amp;&amp;f)</td></tr>
-<tr class="separator:a786c498e60f9458abec4128ee1b1413e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a236a56786a7eb122c72403abb740e2c0"><td class="memTemplParams" colspan="2">template&lt;typename _Tuple , typename _Fn &gt; </td></tr>
-<tr class="memitem:a236a56786a7eb122c72403abb740e2c0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="tuple__visit_8h.html#a236a56786a7eb122c72403abb740e2c0">flecsi::utils::tuple_visit</a> (_Fn &amp;&amp;f)</td></tr>
-<tr class="separator:a236a56786a7eb122c72403abb740e2c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9f2adde0da647c238211d890579ef4a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::utils::tuple_visitor_impl</b> (_Tuple &amp;&amp;t, _Fn &amp;&amp;f, std::index_sequence&lt; _Idx... &gt;)</td></tr>
+<tr class="separator:aa9f2adde0da647c238211d890579ef4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb73774f7fec514dd589c7f50f863652"><td class="memTemplParams" colspan="2">template&lt;typename _Tuple , typename _Fn &gt; </td></tr>
+<tr class="memitem:abb73774f7fec514dd589c7f50f863652"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="tuple__visitor_8h.html#abb73774f7fec514dd589c7f50f863652">flecsi::utils::tuple_visitor</a> (_Tuple &amp;&amp;t, _Fn &amp;&amp;f)</td></tr>
+<tr class="separator:abb73774f7fec514dd589c7f50f863652"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a572184309657a73dbf9a5e0fda14cf7f"><td class="memTemplParams" colspan="2">template&lt;typename _Tuple , typename _Fn &gt; </td></tr>
+<tr class="memitem:a572184309657a73dbf9a5e0fda14cf7f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="tuple__visitor_8h.html#a572184309657a73dbf9a5e0fda14cf7f">flecsi::utils::tuple_visitor</a> (_Fn &amp;&amp;f)</td></tr>
+<tr class="separator:a572184309657a73dbf9a5e0fda14cf7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="file_a786c498e60f9458abec4128ee1b1413e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a786c498e60f9458abec4128ee1b1413e">&#9670;&nbsp;</a></span>tuple_visit() <span class="overload">[1/2]</span></h2>
+<a id="file_abb73774f7fec514dd589c7f50f863652"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_abb73774f7fec514dd589c7f50f863652">&#9670;&nbsp;</a></span>tuple_visitor() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -98,7 +98,7 @@ template&lt;typename _Tuple , typename _Fn , size_t... _Idx&gt; </td></tr>
 template&lt;typename _Tuple , typename _Fn &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void flecsi::utils::tuple_visit </td>
+          <td class="memname">void flecsi::utils::tuple_visitor </td>
           <td>(</td>
           <td class="paramtype">_Tuple &amp;&amp;&#160;</td>
           <td class="paramname"><em>t</em>, </td>
@@ -135,8 +135,8 @@ template&lt;typename _Tuple , typename _Fn &gt; </div>
 
 </div>
 </div>
-<a id="file_a236a56786a7eb122c72403abb740e2c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a236a56786a7eb122c72403abb740e2c0">&#9670;&nbsp;</a></span>tuple_visit() <span class="overload">[2/2]</span></h2>
+<a id="file_a572184309657a73dbf9a5e0fda14cf7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a572184309657a73dbf9a5e0fda14cf7f">&#9670;&nbsp;</a></span>tuple_visitor() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -144,7 +144,7 @@ template&lt;typename _Tuple , typename _Fn &gt; </div>
 template&lt;typename _Tuple , typename _Fn &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void flecsi::utils::tuple_visit </td>
+          <td class="memname">void flecsi::utils::tuple_visitor </td>
           <td>(</td>
           <td class="paramtype">_Fn &amp;&amp;&#160;</td>
           <td class="paramname"><em>f</em></td><td>)</td>

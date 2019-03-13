@@ -83,15 +83,15 @@ Modules</h2></td></tr>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task__epilogue__t.html">flecsi::execution::task_epilogue_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task__prologue__t.html">flecsi::execution::task_prologue_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task__interface__u.html">flecsi::execution::task_interface_u&lt; EXECUTION_POLICY &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ga971abb9d38bbedf0c94c19a09302a669"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#ga971abb9d38bbedf0c94c19a09302a669">flecsi_internal_return_type</a>(task)&#160;&#160;&#160;typename <a class="el" href="structflecsi_1_1utils_1_1function__traits__u.html">flecsi::utils::function_traits_u</a>&lt;decltype(task)&gt;::return_type</td></tr>
-<tr class="separator:ga971abb9d38bbedf0c94c19a09302a669"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf383874efb57fca04be955a300bba6e4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#gaf383874efb57fca04be955a300bba6e4">flecsi_internal_arguments_type</a>(task)&#160;&#160;&#160;typename <a class="el" href="structflecsi_1_1utils_1_1function__traits__u.html">flecsi::utils::function_traits_u</a>&lt;decltype(task)&gt;::arguments_type</td></tr>
-<tr class="separator:gaf383874efb57fca04be955a300bba6e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6966be7c12f1ecdba54c0fb8a117c17a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#ga6966be7c12f1ecdba54c0fb8a117c17a">flecsi_color</a>()</td></tr>
 <tr class="separator:ga6966be7c12f1ecdba54c0fb8a117c17a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf8e62e394d682bd2e3a643ded0ed3d34"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#gaf8e62e394d682bd2e3a643ded0ed3d34">flecsi_colors</a>()</td></tr>
@@ -100,12 +100,8 @@ Macros</h2></td></tr>
 <tr class="separator:gad28a551ef10a4eb6a922156a903f2832"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga121ac03b7bc5e3870ffe7290e9d0d3be"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#ga121ac03b7bc5e3870ffe7290e9d0d3be">flecsi_get_global_object</a>(index,  scope,  type)</td></tr>
 <tr class="separator:ga121ac03b7bc5e3870ffe7290e9d0d3be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab6f878599630e07ba05b4b82b3c1aa89"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#gab6f878599630e07ba05b4b82b3c1aa89">flecsi_register_task_simple</a>(task,  processor,  launch)</td></tr>
-<tr class="separator:gab6f878599630e07ba05b4b82b3c1aa89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4dcd75ac370388c816b99672d589c4bc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#ga4dcd75ac370388c816b99672d589c4bc">flecsi_register_task</a>(task,  nspace,  processor,  launch)</td></tr>
 <tr class="separator:ga4dcd75ac370388c816b99672d589c4bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga95afc8b8db53561a70f152fcae24311e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#ga95afc8b8db53561a70f152fcae24311e">flecsi_execute_task_simple</a>(task,  launch, ...)</td></tr>
-<tr class="separator:ga95afc8b8db53561a70f152fcae24311e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafca967e833f6d2dffd7d326c5993964f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#gafca967e833f6d2dffd7d326c5993964f">flecsi_execute_task</a>(task,  nspace,  launch, ...)</td></tr>
 <tr class="separator:gafca967e833f6d2dffd7d326c5993964f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf0336dea27c9956f54bd4cc58b5cca0e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#gaf0336dea27c9956f54bd4cc58b5cca0e">flecsi_register_reduction_operation</a>(type,  datatype)</td></tr>
@@ -271,9 +267,7 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               <a class="code" href="structflecsi_1_1execution_1_1task__interface__u.html#a9e799a9ec0c8d740075099536193ac6c">\</a></div><div class="line"><a class="code" href="structflecsi_1_1execution_1_1task__interface__u.html#a9e799a9ec0c8d740075099536193ac6c">  flecsi::execution::task_interface_t::execute_task</a>&lt;                           \</div><div class="line">    flecsi::execution::launch_type_t::launch,                                  \</div><div class="line">    flecsi_internal_hash(nspace::task),                                        \</div><div class="line">    flecsi::utils::hash::reduction_hash&lt;<a class="code" href="group__utils.html#ga41398506ffdcc9ef7ef1aae859a3c4f8">flecsi_internal_hash</a>(<a class="code" href="group__utils.html#ga772d97c8cb5af2fc0f815a1b2449c6e6">type</a>),            \</div><div class="line">      flecsi_internal_hash(datatype)&gt;(),                                       \</div><div class="line">    <a class="code" href="group__execution.html#ga971abb9d38bbedf0c94c19a09302a669">flecsi_internal_return_type</a>(task), <a class="code" href="group__execution.html#gaf383874efb57fca04be955a300bba6e4">flecsi_internal_arguments_type</a>(task)&gt;(  \</div><div class="line">    __VA_ARGS__)</div><div class="ttc" id="group__utils_html_ga772d97c8cb5af2fc0f815a1b2449c6e6"><div class="ttname"><a href="group__utils.html#ga772d97c8cb5af2fc0f815a1b2449c6e6">flecsi::utils::type</a></div><div class="ttdeci">std::string type()</div><div class="ttdef"><b>Definition:</b> demangle.h:41</div></div>
-<div class="ttc" id="group__execution_html_ga971abb9d38bbedf0c94c19a09302a669"><div class="ttname"><a href="group__execution.html#ga971abb9d38bbedf0c94c19a09302a669">flecsi_internal_return_type</a></div><div class="ttdeci">#define flecsi_internal_return_type(task)</div><div class="ttdef"><b>Definition:</b> execution.h:41</div></div>
-<div class="ttc" id="group__execution_html_gaf383874efb57fca04be955a300bba6e4"><div class="ttname"><a href="group__execution.html#gaf383874efb57fca04be955a300bba6e4">flecsi_internal_arguments_type</a></div><div class="ttdeci">#define flecsi_internal_arguments_type(task)</div><div class="ttdef"><b>Definition:</b> execution.h:54</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               <a class="code" href="structflecsi_1_1execution_1_1task__interface__u.html#a9e799a9ec0c8d740075099536193ac6c">\</a></div><div class="line"><a class="code" href="structflecsi_1_1execution_1_1task__interface__u.html#a9e799a9ec0c8d740075099536193ac6c">  flecsi::execution::task_interface_t::execute_task</a>&lt;                           \</div><div class="line">    flecsi::execution::launch_type_t::launch,                                  \</div><div class="line">    flecsi_internal_hash(nspace::task),                                        \</div><div class="line">    flecsi::utils::hash::reduction_hash&lt;<a class="code" href="group__utils.html#ga41398506ffdcc9ef7ef1aae859a3c4f8">flecsi_internal_hash</a>(<a class="code" href="group__utils.html#ga772d97c8cb5af2fc0f815a1b2449c6e6">type</a>),            \</div><div class="line">      flecsi_internal_hash(datatype)&gt;(),                                       \</div><div class="line">    flecsi_internal_return_type(task), flecsi_internal_arguments_type(task)&gt;(  \</div><div class="line">    __VA_ARGS__)</div><div class="ttc" id="group__utils_html_ga772d97c8cb5af2fc0f815a1b2449c6e6"><div class="ttname"><a href="group__utils.html#ga772d97c8cb5af2fc0f815a1b2449c6e6">flecsi::utils::type</a></div><div class="ttdeci">std::string type()</div><div class="ttdef"><b>Definition:</b> demangle.h:41</div></div>
 <div class="ttc" id="structflecsi_1_1execution_1_1task__interface__u_html_a9e799a9ec0c8d740075099536193ac6c"><div class="ttname"><a href="structflecsi_1_1execution_1_1task__interface__u.html#a9e799a9ec0c8d740075099536193ac6c">flecsi::execution::task_interface_u::execute_task</a></div><div class="ttdeci">static decltype(auto) execute_task(ARGS &amp;&amp;... args)</div><div class="ttdef"><b>Definition:</b> task.h:88</div></div>
 <div class="ttc" id="group__utils_html_ga41398506ffdcc9ef7ef1aae859a3c4f8"><div class="ttname"><a href="group__utils.html#ga41398506ffdcc9ef7ef1aae859a3c4f8">flecsi_internal_hash</a></div><div class="ttdeci">#define flecsi_internal_hash(name)</div><div class="ttdef"><b>Definition:</b> const_string.h:150</div></div>
 </div><!-- fragment --><p>This macro executes a reduction task. </p><dl class="params"><dt>Parameters</dt><dd>
@@ -340,49 +334,6 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a id="ga95afc8b8db53561a70f152fcae24311e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga95afc8b8db53561a70f152fcae24311e">&#9670;&nbsp;</a></span>flecsi_execute_task_simple</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define flecsi_execute_task_simple</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">task, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">launch, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">  flecsi_internal_execute_task(task, launch, 0, ##__VA_ARGS__)</div></div><!-- fragment --><p>This macro executes a simple user task, i.e., one that is not scoped in a namespace. Use of this interface is discouraged.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">task</td><td>The user task to execute. </td></tr>
-    <tr><td class="paramname">launch</td><td>The launch mode for the task. </td></tr>
-    <tr><td class="paramname">...</td><td>The arguments to pass to the user task during execution. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="ga121ac03b7bc5e3870ffe7290e9d0d3be"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga121ac03b7bc5e3870ffe7290e9d0d3be">&#9670;&nbsp;</a></span>flecsi_get_global_object</h2>
 
@@ -422,56 +373,6 @@ Enumerations</h2></td></tr>
     <tr><td class="paramname">index</td><td>The size_t index of the global object within the given scope. </td></tr>
     <tr><td class="paramname">scope</td><td>The string scope of the global object. </td></tr>
     <tr><td class="paramname">type</td><td>The type of the global object. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gaf383874efb57fca04be955a300bba6e4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaf383874efb57fca04be955a300bba6e4">&#9670;&nbsp;</a></span>flecsi_internal_arguments_type</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define flecsi_internal_arguments_type</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">task</td><td>)</td>
-          <td>&#160;&#160;&#160;typename <a class="el" href="structflecsi_1_1utils_1_1function__traits__u.html">flecsi::utils::function_traits_u</a>&lt;decltype(task)&gt;::arguments_type</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>This macro returns the inferred argument type for a user task.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">task</td><td>The task to register. This is normally just a function. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga971abb9d38bbedf0c94c19a09302a669"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga971abb9d38bbedf0c94c19a09302a669">&#9670;&nbsp;</a></span>flecsi_internal_return_type</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define flecsi_internal_return_type</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">task</td><td>)</td>
-          <td>&#160;&#160;&#160;typename <a class="el" href="structflecsi_1_1utils_1_1function__traits__u.html">flecsi::utils::function_traits_u</a>&lt;decltype(task)&gt;::return_type</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>This macro returns the inferred return type for a user task.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">task</td><td>The task to register. This is normally just a function. </td></tr>
   </table>
   </dd>
 </dl>
@@ -554,60 +455,12 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Define a delegate function to the user&#39;s function that takes a tuple */</span>   \</div><div class="line">  <span class="comment">/* of the arguments (as opposed to the raw argument pack). This is */</span>        \</div><div class="line">  <span class="comment">/* necessary because we cannot infer the argument type without using */</span>      \</div><div class="line">  <span class="comment">/* a tuple. */</span>                                                               \</div><div class="line">  inline <a class="code" href="group__execution.html#ga971abb9d38bbedf0c94c19a09302a669">flecsi_internal_return_type</a>(task)                                     \</div><div class="line">    task##_tuple_delegate(<a class="code" href="group__execution.html#gaf383874efb57fca04be955a300bba6e4">flecsi_internal_arguments_type</a>(task) args) {         \</div><div class="line">    return flecsi::utils::tuple_function(task, args);                          \</div><div class="line">  } <span class="comment">/* delegate task */</span>                                                        \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the execution policy to register the task delegate */</span>                \</div><div class="line">  inline <span class="keywordtype">bool</span> task##_task_registered =                                         <a class="code" href="structflecsi_1_1execution_1_1task__interface__u.html#a32fb4a4374739ce3da5f4575c60d722c">\</a></div><div class="line"><a class="code" href="structflecsi_1_1execution_1_1task__interface__u.html#a32fb4a4374739ce3da5f4575c60d722c">    flecsi::execution::task_interface_t::register_task</a>&lt;                        \</div><div class="line">      flecsi_internal_hash(nspace::task), <a class="code" href="group__execution.html#ga971abb9d38bbedf0c94c19a09302a669">flecsi_internal_return_type</a>(task),   \</div><div class="line">      flecsi_internal_arguments_type(task), task##_tuple_delegate&gt;(            \</div><div class="line">      flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(nspace::task)})</div><div class="ttc" id="structflecsi_1_1execution_1_1task__interface__u_html_a32fb4a4374739ce3da5f4575c60d722c"><div class="ttname"><a href="structflecsi_1_1execution_1_1task__interface__u.html#a32fb4a4374739ce3da5f4575c60d722c">flecsi::execution::task_interface_u::register_task</a></div><div class="ttdeci">static decltype(auto) register_task(processor_type_t processor, launch_t launch, std::string name)</div><div class="ttdef"><b>Definition:</b> task.h:64</div></div>
-<div class="ttc" id="group__execution_html_ga971abb9d38bbedf0c94c19a09302a669"><div class="ttname"><a href="group__execution.html#ga971abb9d38bbedf0c94c19a09302a669">flecsi_internal_return_type</a></div><div class="ttdeci">#define flecsi_internal_return_type(task)</div><div class="ttdef"><b>Definition:</b> execution.h:41</div></div>
-<div class="ttc" id="group__execution_html_gaf383874efb57fca04be955a300bba6e4"><div class="ttname"><a href="group__execution.html#gaf383874efb57fca04be955a300bba6e4">flecsi_internal_arguments_type</a></div><div class="ttdeci">#define flecsi_internal_arguments_type(task)</div><div class="ttdef"><b>Definition:</b> execution.h:54</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Define a delegate function to the user&#39;s function that takes a tuple */</span>   \</div><div class="line">  <span class="comment">/* of the arguments (as opposed to the raw argument pack). This is */</span>        \</div><div class="line">  <span class="comment">/* necessary because we cannot infer the argument type without using */</span>      \</div><div class="line">  <span class="comment">/* a tuple. */</span>                                                               \</div><div class="line">  inline flecsi_internal_return_type(task)                                     \</div><div class="line">    task##_tuple_delegate(flecsi_internal_arguments_type(task) args) {         \</div><div class="line">    return flecsi::utils::tuple_function(task, args);                          \</div><div class="line">  } <span class="comment">/* delegate task */</span>                                                        \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the execution policy to register the task delegate */</span>                \</div><div class="line">  inline <span class="keywordtype">bool</span> task##_task_registered =                                         <a class="code" href="structflecsi_1_1execution_1_1task__interface__u.html#a32fb4a4374739ce3da5f4575c60d722c">\</a></div><div class="line"><a class="code" href="structflecsi_1_1execution_1_1task__interface__u.html#a32fb4a4374739ce3da5f4575c60d722c">    flecsi::execution::task_interface_t::register_task</a>&lt;                        \</div><div class="line">      flecsi_internal_hash(nspace::task), flecsi_internal_return_type(task),   \</div><div class="line">      flecsi_internal_arguments_type(task), task##_tuple_delegate&gt;(            \</div><div class="line">      flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(nspace::task)})</div><div class="ttc" id="structflecsi_1_1execution_1_1task__interface__u_html_a32fb4a4374739ce3da5f4575c60d722c"><div class="ttname"><a href="structflecsi_1_1execution_1_1task__interface__u.html#a32fb4a4374739ce3da5f4575c60d722c">flecsi::execution::task_interface_u::register_task</a></div><div class="ttdeci">static decltype(auto) register_task(processor_type_t processor, launch_t launch, std::string name)</div><div class="ttdef"><b>Definition:</b> task.h:64</div></div>
 </div><!-- fragment --><p>This macro registers a user task with the FleCSI runtime. This interface requires that the task be scoped in a namespace. This is best practice to avoid the possiblity of naming collisions.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">task</td><td>The task to register. This is normally just a function. </td></tr>
     <tr><td class="paramname">nspace</td><td>The enclosing C++ namespace of the task. </td></tr>
-    <tr><td class="paramname">processor</td><td>The processor_type_t type. </td></tr>
-    <tr><td class="paramname">launch</td><td>The launch_t type. This may be an <em>or</em> list of supported launch types and configuration options. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gab6f878599630e07ba05b4b82b3c1aa89"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab6f878599630e07ba05b4b82b3c1aa89">&#9670;&nbsp;</a></span>flecsi_register_task_simple</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define flecsi_register_task_simple</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">task, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">processor, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">launch&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Define a delegate function to the user&#39;s function that takes a tuple */</span>   \</div><div class="line">  <span class="comment">/* of the arguments (as opposed to the raw argument pack). This is */</span>        \</div><div class="line">  <span class="comment">/* necessary because we cannot infer the argument type without using */</span>      \</div><div class="line">  <span class="comment">/* a tuple. */</span>                                                               \</div><div class="line">  inline <a class="code" href="group__execution.html#ga971abb9d38bbedf0c94c19a09302a669">flecsi_internal_return_type</a>(task)                                     \</div><div class="line">    task##_tuple_delegate(<a class="code" href="group__execution.html#gaf383874efb57fca04be955a300bba6e4">flecsi_internal_arguments_type</a>(task) args) {         \</div><div class="line">    return flecsi::utils::tuple_function(task, args);                          \</div><div class="line">  } <span class="comment">/* delegate task */</span>                                                        \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the execution policy to register the task delegate */</span>                \</div><div class="line">  inline <span class="keywordtype">bool</span> task##_task_registered =                                         <a class="code" href="structflecsi_1_1execution_1_1task__interface__u.html#a32fb4a4374739ce3da5f4575c60d722c">\</a></div><div class="line"><a class="code" href="structflecsi_1_1execution_1_1task__interface__u.html#a32fb4a4374739ce3da5f4575c60d722c">    flecsi::execution::task_interface_t::register_task</a>&lt;                        \</div><div class="line">      flecsi_internal_hash(task), <a class="code" href="group__execution.html#ga971abb9d38bbedf0c94c19a09302a669">flecsi_internal_return_type</a>(task),           \</div><div class="line">      flecsi_internal_arguments_type(task), task##_tuple_delegate&gt;(            \</div><div class="line">      flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(task)})</div><div class="ttc" id="structflecsi_1_1execution_1_1task__interface__u_html_a32fb4a4374739ce3da5f4575c60d722c"><div class="ttname"><a href="structflecsi_1_1execution_1_1task__interface__u.html#a32fb4a4374739ce3da5f4575c60d722c">flecsi::execution::task_interface_u::register_task</a></div><div class="ttdeci">static decltype(auto) register_task(processor_type_t processor, launch_t launch, std::string name)</div><div class="ttdef"><b>Definition:</b> task.h:64</div></div>
-<div class="ttc" id="group__execution_html_ga971abb9d38bbedf0c94c19a09302a669"><div class="ttname"><a href="group__execution.html#ga971abb9d38bbedf0c94c19a09302a669">flecsi_internal_return_type</a></div><div class="ttdeci">#define flecsi_internal_return_type(task)</div><div class="ttdef"><b>Definition:</b> execution.h:41</div></div>
-<div class="ttc" id="group__execution_html_gaf383874efb57fca04be955a300bba6e4"><div class="ttname"><a href="group__execution.html#gaf383874efb57fca04be955a300bba6e4">flecsi_internal_arguments_type</a></div><div class="ttdeci">#define flecsi_internal_arguments_type(task)</div><div class="ttdef"><b>Definition:</b> execution.h:54</div></div>
-</div><!-- fragment --><p>This macro registers a user task with the FleCSI runtime. This is the basic form without support for tasks that are defined within a namespace. Best practice is to use the flecsi_register_task interface that requires that the task be defined in a namespace to scope the task and avoid naming collisions.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">task</td><td>The task to register. This is normally just a function. </td></tr>
     <tr><td class="paramname">processor</td><td>The processor_type_t type. </td></tr>
     <tr><td class="paramname">launch</td><td>The launch_t type. This may be an <em>or</em> list of supported launch types and configuration options. </td></tr>
   </table>
