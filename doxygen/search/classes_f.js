@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['task_5fepilogue_5ft',['task_epilogue_t',['../structflecsi_1_1execution_1_1task__epilogue__t.html',1,'flecsi::execution']]],
+  ['task_5fepilogue_5ft',['task_epilogue_t',['../structflecsi_1_1execution_1_1legion_1_1task__epilogue__t.html',1,'flecsi::execution::legion']]],
   ['task_5finterface_5fu',['task_interface_u',['../structflecsi_1_1execution_1_1task__interface__u.html',1,'flecsi::execution']]],
   ['task_5fprologue_5ft',['task_prologue_t',['../structflecsi_1_1execution_1_1legion_1_1task__prologue__t.html',1,'flecsi::execution::legion']]],
   ['task_5fwrapper_5fu',['task_wrapper_u',['../structflecsi_1_1execution_1_1legion_1_1task__wrapper__u.html',1,'flecsi::execution::legion']]],

@@ -2,7 +2,7 @@ var searchData=
 [
   ['tag_5fmap',['tag_map',['../classflecsi_1_1utils_1_1flog_1_1flog__t.html#a90bbf2cb5998a2a4b47efeb18ef164b2',1,'flecsi::utils::flog::flog_t']]],
   ['task_5fdepth',['task_depth',['../structflecsi_1_1execution_1_1context__u.html#ac8e9131172fd07944e6aec81e2072fe5',1,'flecsi::execution::context_u']]],
-  ['task_5fepilogue_5ft',['task_epilogue_t',['../structflecsi_1_1execution_1_1task__epilogue__t.html#ae47423645a8c3da66a65f64c6335e103',1,'flecsi::execution::task_epilogue_t']]],
+  ['task_5fepilogue_5ft',['task_epilogue_t',['../structflecsi_1_1execution_1_1legion_1_1task__epilogue__t.html#a5a95e1bf76b4556943d7a743a485f6ec',1,'flecsi::execution::legion::task_epilogue_t']]],
   ['task_5finfo',['task_info',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a3d2bd5ee16f6a046e4f2c33297da9009',1,'flecsi::execution::legion_context_policy_t::task_info()'],['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a6b93a5338f907beb89949ff4aa4cf83a',1,'flecsi::execution::legion_context_policy_t::task_info(size_t key)']]],
   ['task_5fprologue_5ft',['task_prologue_t',['../structflecsi_1_1execution_1_1legion_1_1task__prologue__t.html#acb9cf7ad9cf26fbe98f780c09a25c8cb',1,'flecsi::execution::legion::task_prologue_t']]],
   ['timestamp',['timestamp',['../utils_8h.html#a161c6bc8a99cd07acb324dfe825e5239',1,'flecsi::utils::flog']]],
