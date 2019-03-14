@@ -16,13 +16,13 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-#error Do not inlcude this file directly!
+  #error Do not include this file directly!
 #else
-#include <flecsi/execution/global_object_wrapper.h>
-#include <flecsi/runtime/types.h>
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/demangle.h>
-#include <flecsi/utils/flog.h>
+  #include <flecsi/execution/global_object_wrapper.h>
+  #include <flecsi/runtime/types.h>
+  #include <flecsi/utils/common.h>
+  #include <flecsi/utils/demangle.h>
+  #include <flecsi/utils/flog.h>
 #endif
 
 #include <cassert>

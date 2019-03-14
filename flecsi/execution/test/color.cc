@@ -27,6 +27,7 @@ flog_register_tag(color);
  */
 
 void color_raw(int argc, char ** argv) {
+
   FTEST();
 
   auto color = context_t::instance().color();
@@ -50,6 +51,7 @@ ftest_register_test(color_raw);
  */
 
 void color_ui(int argc, char ** argv) {
+
   FTEST();
 
   auto color = flecsi_color();

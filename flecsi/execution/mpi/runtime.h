@@ -19,7 +19,7 @@
 #include <flecsi-config.h>
 
 #if !defined(__FLECSI_PRIVATE__)
-#error Do not inlcude this file directly!
+#error Do not include this file directly!
 #else
 #if defined(FLECSI_ENABLE_FLOG)
 #include <flecsi/utils/flog.h>

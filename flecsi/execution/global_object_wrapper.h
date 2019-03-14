@@ -17,10 +17,11 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-#error Do not inlcude this file directly!
+  #error Do not include this file directly!
 #endif
 
 #include <cstdint>
+#include <type_traits>
 
 namespace flecsi {
 namespace execution {
@@ -40,7 +41,12 @@ struct global_object_wrapper_u {
    */
 
   static void cleanup(uintptr_t address) {
-    delete reinterpret_cast<OBJECT_TYPE *>(address);
+    if constexpr(std::is_array_v<OBJECT_TYPE>) {
+      delete[] reinterpret_cast<OBJECT_TYPE *>(address);
+    }
+    else {
+      delete reinterpret_cast<OBJECT_TYPE *>(address);
+    }
   } // cleanup
 
 }; // class global_object_wrapper_u

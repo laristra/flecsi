@@ -16,10 +16,11 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-#error Do not inlcude this file directly!
+#error Do not include this file directly!
 #else
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/reduction_wrapper.h>
+#include <flecsi/execution/legion/task_epilogue.h>
 #include <flecsi/execution/legion/task_prologue.h>
 #include <flecsi/execution/legion/task_wrapper.h>
 #include <flecsi/utils/flog.h>
