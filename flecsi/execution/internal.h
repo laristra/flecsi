@@ -20,6 +20,7 @@
 #else
   #include <flecsi/execution/task.h>
   #include <flecsi/utils/const_string.h>
+  #include <flecsi/utils/function_traits.h>
 #endif
 
 #define flecsi_internal_return_type(task)                                      \

@@ -44,7 +44,7 @@ struct handle_u {
 }; // struct handle_u
 
 template<typename DATA_TYPE, size_t PRIVLEGES>
-struct accessor_u {
+struct accessor_u : public data_reference_base_t {
 
   using handle_t = handle_u<DATA_TYPE, PRIVLEGES>;
 
@@ -110,7 +110,7 @@ struct handle_u {
 }; // struct handle_u
 
 template<typename DATA_TYPE, size_t PRIVLEGES>
-struct accessor_u {
+struct accessor_u : public data_reference_base_t {
 
   using handle_t = handle_u<DATA_TYPE, PRIVLEGES>;
 
@@ -176,7 +176,7 @@ struct dense_handle_u {
 }; // struct dense_handle_unstructured_mesh_u
 
 template<typename DATA_TYPE, size_t PRIVLEGES>
-struct dense_accessor_u {
+struct dense_accessor_u : public data_reference_base_t {
 
   using handle_t = dense_handle_u<DATA_TYPE, PRIVLEGES>;
 
@@ -218,7 +218,7 @@ struct sparse_handle_u {
 }; // struct sparse_handle_unstructured_mesh_u
 
 template<typename DATA_TYPE, size_t PRIVLEGES>
-struct sparse_accessor_u {
+struct sparse_accessor_u : public data_reference_base_t {
 
   using handle_t = sparse_handle_u<DATA_TYPE, PRIVLEGES>;
 
@@ -232,7 +232,7 @@ private:
 }; // struct sparse_accessor_u
 
 template<typename DATA_TYPE, size_t PRIVLEGES>
-struct sparse_mutator_u {
+struct sparse_mutator_u : public data_reference_base_t {
 
   using handle_t = sparse_handle_u<DATA_TYPE, PRIVLEGES>;
 

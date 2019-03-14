@@ -16,7 +16,7 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-#error Do not include this file directly!
+  #error Do not include this file directly!
 #else
   #include <flecsi/data/common/client_handle.h>
   #include <flecsi/data/legion/storage_classes.h>
@@ -24,7 +24,15 @@
   #include <flecsi/utils/tuple_walker.h>
 #endif
 
-flog_register_tag(epilogue);
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_LEGION)
+#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
+
+flog_register_tag(init_args);
 
 namespace flecsi {
 namespace execution {
@@ -33,24 +41,52 @@ namespace legion {
 using namespace flecsi::data::legion;
 
 /*!
+  The init_args_t type can be called to walk task args before the
+  task launcher is created. This allows us to gather region requirements
+  and to set state on the associated data handles \em before Legion gets
+  the task arguments tuple.
 
- @ingroup execution
- */
+  @ingroup execution
+*/
 
-struct task_epilogue_t : public flecsi::utils::tuple_walker_u<task_epilogue_t> {
+struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
   /*!
-   Construct a task_epilogue_t instance.
+    Construct an init_args_t instance.
 
-   @param runtime      The Legion task runtime.
-   @param context      The Legion task runtime context.
-   @param color_domain The Legion color domain.
+    @param runtime The Legion task runtime.
+    @param context The Legion task runtime context.
    */
 
-  task_epilogue_t(Legion::Runtime * runtime,
-    Legion::Context & context)
-    : runtime_(runtime), context_(context) {
-  } // task_epilogue_t
+  init_args_t(Legion::Runtime * runtime, Legion::Context & context)
+    : runtime_(runtime), context_(context) {}
+
+  /*!
+    Convert the template privileges to proper Legion privileges.
+
+    @param mode privilege
+   */
+
+  static Legion::PrivilegeMode privilege_mode(size_t mode) {
+#if 0
+    switch(mode) {
+      case size_t(reserved):
+        return NO_ACCESS;
+      case size_t(ro):
+        return READ_ONLY;
+      case size_t(wo):
+        return WRITE_DISCARD;
+      case size_t(rw):
+        return READ_WRITE;
+      default:
+        clog_fatal("invalid privilege mode");
+    } // switch
+    // should never get here, but this is needed
+    // to avoid compiler warnings
+    return NO_ACCESS;
+#endif
+    return READ_WRITE;
+  } // privilege_mode
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
     The following methods are specializations on storage class and client
@@ -61,8 +97,8 @@ struct task_epilogue_t : public flecsi::utils::tuple_walker_u<task_epilogue_t> {
     Global Topology
    *--------------------------------------------------------------------------*/
 
-  template<typename DATA_TYPE, size_t PRIVLEGES>
-  void visit(global_topology::accessor_u<DATA_TYPE, PRIVLEGES> & accessor) {
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -85,7 +121,7 @@ private:
   Legion::Runtime * runtime_;
   Legion::Context & context_;
 
-}; // task_epilogue_t
+}; // init_args_t
 
 } // namespace legion
 } // namespace execution

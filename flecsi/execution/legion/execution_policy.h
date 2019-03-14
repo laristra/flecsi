@@ -19,10 +19,12 @@
   #error Do not include this file directly!
 #else
   #include <flecsi/execution/context.h>
+  #include <flecsi/execution/legion/init_args.h>
   #include <flecsi/execution/legion/reduction_wrapper.h>
   #include <flecsi/execution/legion/task_epilogue.h>
   #include <flecsi/execution/legion/task_prologue.h>
   #include <flecsi/execution/legion/task_wrapper.h>
+  #include <flecsi/utils/const_string.h>
   #include <flecsi/utils/flog.h>
 #endif
 
@@ -37,6 +39,8 @@
 #endif
 
 #include <legion.h>
+
+flog_register_tag(execution);
 
 namespace flecsi {
 namespace execution {
@@ -115,6 +119,109 @@ struct legion_execution_policy_t {
 
     return true;
   } // register_task
+
+  /*
+    Documentation for this interface is in the top-level context type.
+   */
+
+  template<launch_type_t LAUNCH,
+    size_t TASK,
+    size_t REDUCTION,
+    typename RETURN,
+    typename ARG_TUPLE,
+    typename... ARGS>
+  static decltype(auto) execute_task(ARGS &&... args) {
+
+    using namespace Legion;
+
+    // This will guard the entire method
+    flog_tag_guard(execution);
+
+    // Make a tuple from the arugments passed by the user
+    ARG_TUPLE task_args = std::make_tuple(args...);
+
+    // Get the FleCSI runtime context
+    context_t & context_ = context_t::instance();
+
+    // Get the processor type.
+    auto processor_type = context_.processor_type<TASK>();
+
+    // Get the Legion runtime and context from the current task.
+    auto legion_runtime = Legion::Runtime::get_runtime();
+    auto legion_context = Legion::Runtime::get_context();
+
+    constexpr size_t ZERO = flecsi_internal_hash(0);
+
+    legion::init_args_t init_args(legion_runtime, legion_context);
+    init_args.walk(task_args);
+
+    //------------------------------------------------------------------------//
+    // Single launch
+    //------------------------------------------------------------------------//
+
+    if constexpr(LAUNCH == launch_type_t::single) {
+
+      {
+      flog_tag_guard(execution);
+      flog(internal) << "Executing single task" << std::endl;
+      }
+
+      switch(processor_type) {
+
+        case processor_type_t::loc: {
+          return 0;
+        } // case processor_type_t::loc
+
+        case processor_type_t::toc: {
+          flog_fatal("Invalid processor type (toc is un-implemented)");
+        } // case processor_type_t::toc
+
+        case processor_type_t::mpi: {
+          flog_fatal("Invalid launch type!"
+                     << std::endl
+                     << "Legion backend does not support 'single' launch"
+                     << " for MPI tasks yet");
+        } // case processor_type_t::mpi
+
+        default:
+          flog_fatal("Unknown processor type: " << processor_type);
+      } // switch
+    }
+
+    //------------------------------------------------------------------------//
+    // Index launch
+    //------------------------------------------------------------------------//
+
+    else {
+
+      {
+      flog_tag_guard(execution);
+      flog(internal) << "Executing index task" << std::endl;
+      }
+
+      switch(processor_type) {
+
+        case processor_type_t::loc: {
+          flog(info) << "Executing index launch on loc" << std::endl;
+          return 0;
+        } // case processor_type_t::loc
+
+        case processor_type_t::toc: {
+          flog_fatal("Invalid processor type (toc is un-implemented)");
+        } // case processor_type_t::toc
+
+        case processor_type_t::mpi: {
+          return 0;
+        } // case processor_type_t::mpi
+
+        default:
+          flog_fatal("Unknown processor type: " << processor_type);
+
+      } // switch
+    } // if constexpr
+
+    return 0;
+  } // execute_task
 
   //------------------------------------------------------------------------//
   // Reduction interface.

@@ -55,7 +55,10 @@ struct ftest_control_policy_t {
 
 #define control_point(name) flecsi::control::control_point_<name>
 
-  using control_points = std::tuple<control_point(initialize), control_point(test), control_point(finalize)>;
+  using control_points = std::tuple<
+    control_point(initialize),
+    control_point(test),
+    control_point(finalize)>;
 
 }; // struct ftest_control_policy_t
 

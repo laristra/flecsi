@@ -16,29 +16,28 @@
 /*!
   @file
 
-  This file defines the type identifier type \em client_handle_base_t, and
-  the basic client handle type \em client_handle_u, which is parameterized
-  on the \em data \em client type. These types provide the basic structure
-  for implementing handles to the various FleCSI data client types.
+  This file defines the the basic client handle type \em client_handle_u, which
+  is parameterized on the \em data \em client type. These types provide the
+  basic structure for implementing handles to the various FleCSI data client
+  types.
 
-  A handle is a cross-address-space-safe reference type (like a pointer)
-  that can be passed into a FleCSI task to allow access to a data client.
-  Data clients are types that expose one or more index spaces that can
-  have fields registered against them. Some examples are
-  \ref mesh_topology_u, and \ref tree_topology_u.
+  A handle is a cross-address-space-safe reference type (like a pointer) that
+  can be passed into a FleCSI task to allow access to a data client.  Data
+  clients are types that expose one or more index spaces that can have fields
+  registered against them. Some examples are \ref mesh_topology_u, and \ref
+  tree_topology_u.
  */
+
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not include this file directly!
+#else
+  #include <flecsi/data/common/data_reference.h>
+#endif
 
 #include <cstddef>
 
 namespace flecsi {
 namespace data {
-
-/*!
-  This empty base class is the base of all data client types, and is used
-  by the handle tuple walkers for type checking.
- */
-
-struct client_handle_base_t {};
 
 /*!
   This type bundles client handle information that is common to all
@@ -49,7 +48,7 @@ struct client_handle_base_t {};
  */
 
 template<typename CLIENT_TYPE, size_t PRIVILEGES>
-struct client_handle_u : public CLIENT_TYPE, public client_handle_base_t {
+struct client_handle_u : public CLIENT_TYPE, public data_reference_base_t {
 
   using type = CLIENT_TYPE;
 

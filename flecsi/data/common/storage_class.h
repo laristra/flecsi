@@ -23,7 +23,7 @@
   and \em color client types.
  */
 
-#include <flecsi/data/common/client_handle.h>
+#include <flecsi/data/common/data_reference.h>
 
 #ifndef POLICY_NAMESPACE
 #error You must define a data policy namespace before including this file.
@@ -56,6 +56,12 @@ namespace POLICY_NAMESPACE {
 
 template<size_t STORAGE_CLASS, typename CLIENT_TYPE>
 struct storage_class_u {};
+
+/*!
+  Base reference type for accessor and mutator types.
+ */
+
+struct data_reference_base_t {};
 
 } // namespace POLICY_NAMESPACE
 } // namespace data

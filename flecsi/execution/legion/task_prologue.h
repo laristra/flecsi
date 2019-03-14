@@ -18,7 +18,9 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+  #include <flecsi/data/common/client_handle.h>
   #include <flecsi/data/legion/storage_classes.h>
+  #include <flecsi/utils/demangle.h>
   #include <flecsi/utils/tuple_walker.h>
 #endif
 
@@ -86,6 +88,21 @@ struct task_prologue_t : public flecsi::utils::tuple_walker_u<task_prologue_t> {
       dense_unstructured_mesh_accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 #endif
+
+  /*--------------------------------------------------------------------------*
+    Non-FleCSI Data Types
+   *--------------------------------------------------------------------------*/
+
+  template<typename DATA_TYPE>
+  static typename std::enable_if_t<
+    !std::is_base_of_v<data_reference_base_t, DATA_TYPE>>
+  visit(DATA_TYPE &) {
+    {
+    flog_tag_guard(init_args);
+    flog(internal) << "Skipping argument with type " <<
+      flecsi::utils::type<DATA_TYPE>() << std::endl;
+    }
+  } // visit
 
 private:
 

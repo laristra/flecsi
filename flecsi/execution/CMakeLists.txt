@@ -115,3 +115,8 @@ ftest_add_unit(global-object
   SOURCES
     test/global-object.cc
 )
+
+ftest_add_unit(task
+  SOURCES
+    test/task.cc
+)

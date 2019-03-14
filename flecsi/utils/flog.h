@@ -26,6 +26,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <unistd.h>
+
 #if defined(FLECSI_ENABLE_FLOG)
 
 // Note that none of the tag interface is thread safe. This will have
@@ -308,6 +310,7 @@
              << FLOG_OUTPUT_YELLOW(flecsi::utils::flog::rstrip<'/'>(__FILE__)  \
                                    << ":" << __LINE__ << " ")                  \
              << FLOG_OUTPUT_LTRED(message) << std::endl;                       \
+    __flog_internal_wait_on_flusher();                                         \
     throw std::runtime_error(_sstream.str());                                  \
   } /* scope */
 

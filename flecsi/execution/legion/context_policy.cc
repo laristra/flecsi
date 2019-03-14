@@ -29,7 +29,7 @@ legion_context_policy_t::start(int argc, char ** argv) {
   using namespace Legion;
 
   /*
-    Setup top-level task.
+    Setup Legion top-level task.
    */
 
   Runtime::set_top_level_task_id(FLECSI_TOP_LEVEL_TASK_ID);

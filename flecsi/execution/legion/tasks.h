@@ -64,6 +64,11 @@ top_level_task(const Legion::Task * task,
   context_.wait_on_mpi(ctx, runtime);
 
   auto args = runtime->get_input_args();
+
+  /*
+    Invoke the FleCSI runtime top-level action.
+   */
+
   context_.top_level_action()(args.argc, args.argv);
 
   /*

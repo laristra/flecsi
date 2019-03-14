@@ -15,6 +15,10 @@
 
 /*! @file */
 
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not include this file directly!
+#endif
+
 namespace flecsi {
 namespace utils {
 
