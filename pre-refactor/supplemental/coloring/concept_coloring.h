@@ -281,7 +281,7 @@ void generic_coloring(
           flecsi::utils::set_union(aux_coloring_info[idx].shared_users,
           i.shared);
       }
-      // otherwise, its exclusive
+      // otherwise, it's exclusive
       else
         aux_coloring[idx].exclusive.insert(i);
     } // for
