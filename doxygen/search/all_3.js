@@ -8,6 +8,8 @@ var searchData=
   ['data_5fclient_2eh',['data_client.h',['../data__client_8h.html',1,'']]],
   ['data_5fclient_5ft',['data_client_t',['../structflecsi_1_1data_1_1data__client__t.html',1,'flecsi::data']]],
   ['data_5fpolicy_2eh',['data_policy.h',['../data_2legion_2data__policy_8h.html',1,'(Global Namespace)'],['../data_2mpi_2data__policy_8h.html',1,'(Global Namespace)'],['../runtime_2data__policy_8h.html',1,'(Global Namespace)']]],
+  ['data_5freference_2eh',['data_reference.h',['../data__reference_8h.html',1,'']]],
+  ['data_5freference_5fbase_5ft',['data_reference_base_t',['../structflecsi_1_1data_1_1POLICY__NAMESPACE_1_1data__reference__base__t.html',1,'flecsi::data::POLICY_NAMESPACE::data_reference_base_t'],['../structflecsi_1_1data_1_1data__reference__base__t.html',1,'flecsi::data::data_reference_base_t']]],
   ['debruijn_2ecc',['debruijn.cc',['../debruijn_8cc.html',1,'']]],
   ['debruijn_2eh',['debruijn.h',['../debruijn_8h.html',1,'']]],
   ['debruijn32_5ft',['debruijn32_t',['../classflecsi_1_1utils_1_1debruijn32__t.html',1,'flecsi::utils']]],

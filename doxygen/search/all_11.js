@@ -34,6 +34,7 @@ var searchData=
   ['tuple_5fwalker_2eh',['tuple_walker.h',['../tuple__walker_8h.html',1,'']]],
   ['tuple_5fwalker_5fu',['tuple_walker_u',['../structflecsi_1_1utils_1_1tuple__walker__u.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5fu_3c_20control_5fpoint_5fwalker_5fu_3c_20control_5fpolicy_20_3e_20_3e',['tuple_walker_u&lt; control_point_walker_u&lt; CONTROL_POLICY &gt; &gt;',['../structflecsi_1_1utils_1_1tuple__walker__u.html',1,'flecsi::utils']]],
+  ['tuple_5fwalker_5fu_3c_20init_5fargs_5ft_20_3e',['tuple_walker_u&lt; init_args_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker__u.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5fu_3c_20task_5fepilogue_5ft_20_3e',['tuple_walker_u&lt; task_epilogue_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker__u.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5fu_3c_20task_5fprologue_5ft_20_3e',['tuple_walker_u&lt; task_prologue_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker__u.html',1,'flecsi::utils']]],
   ['tuple_5fwrapper_2eh',['tuple_wrapper.h',['../tuple__wrapper_8h.html',1,'']]],
