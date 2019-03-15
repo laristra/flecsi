@@ -37,6 +37,7 @@
 #include <flecsi/topology/mesh_types.h>
 #include <flecsi/topology/set_types.h>
 
+#include <flecsi/utils/list.h>
 #include <flecsi/utils/tuple_walker.h>
 
 namespace flecsi {
@@ -374,6 +375,14 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     } // for
   }
 
+
+  /*!
+   Handle individual list items
+   */
+  template< typename T >
+  void handle( utils::list<T> & list ) {
+    for ( auto & item : list ) handle(item);
+  }
   //-----------------------------------------------------------------------//
   // If this is not a data handle, then simply skip it.
   //-----------------------------------------------------------------------//

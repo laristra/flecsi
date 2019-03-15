@@ -274,6 +274,14 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   }
 
   /*!
+   Handle individual list items
+   */
+  template< typename T >
+  void handle( utils::list<T> & list ) {
+    for ( auto & item : list ) handle(item);
+  }
+
+  /*!
     This method is called on any task arguments that are not handles, e.g.
     scalars or those that did not need any special handling.
    */

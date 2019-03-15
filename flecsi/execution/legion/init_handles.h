@@ -39,6 +39,7 @@
 #include <flecsi/topology/mesh_types.h>
 #include <flecsi/topology/set_topology.h>
 
+#include <flecsi/utils/list.h>
 #include <flecsi/utils/tuple_walker.h>
 
 namespace flecsi {
@@ -840,10 +841,19 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     h.offsets_ = h.offsets;
   } // handle
 
+
   template<typename T>
   void handle(sparse_mutator<T> & m) {
     using base_t = typename sparse_mutator<T>::base_t;
     handle(static_cast<base_t &>(m));
+  }
+
+  /*!
+   Handle individual list items
+   */
+  template< typename T >
+  void handle( utils::list<T> & list ) {
+    for ( auto & item : list ) handle(item);
   }
 
   Legion::Runtime * runtime;

@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <flecsi/utils/list.h>
 #include <flecsi/utils/tuple_walker.h>
 
 namespace flecsi {
@@ -178,6 +179,14 @@ struct finalize_handles_t
   handle(data_client_handle_u<T, PERMISSIONS> & h) {
     h.delete_storage();
   } // handle
+
+  /*!
+   Handle individual list items
+   */
+  template< typename T >
+  void handle( utils::list<T> & list ) {
+    for ( auto & item : list ) handle(item);
+  }
 
   /*!
     If this is not a data handle, then simply skip it.

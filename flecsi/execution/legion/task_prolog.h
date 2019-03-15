@@ -30,6 +30,7 @@
 #include <flecsi/execution/legion/internal_field.h>
 
 #include <flecsi/utils/const_string.h>
+#include <flecsi/utils/list.h>
 #include <flecsi/utils/tuple_walker.h>
 
 clog_register_tag(prolog);
@@ -453,6 +454,15 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     using base_t = typename sparse_mutator<T>::base_t;
     handle(static_cast<base_t &>(m));
   }
+  
+  /*!
+   Handle individual list items
+   */
+  template< typename T >
+  void handle( utils::list<T> & list ) {
+    for ( auto & item : list ) handle(item);
+  }
+
 
   /*!
     Don't do anything with flecsi task argument that are not data handles.

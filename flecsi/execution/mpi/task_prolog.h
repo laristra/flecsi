@@ -333,6 +333,14 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     }
   }
 
+  /*!
+   Handle individual list items
+   */
+  template< typename T >
+  void handle( utils::list<T> & list ) {
+    for ( auto & item : list ) handle(item);
+  }
+
   template<typename T>
   static typename std::enable_if_t<
     !std::is_base_of<dense_data_handle_base_t, T>::value>

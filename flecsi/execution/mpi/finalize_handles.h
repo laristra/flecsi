@@ -213,6 +213,15 @@ struct finalize_handles_t
     h.delete_storage();
   } // handle
 
+
+  /*!
+   Handle individual list items
+   */
+  template< typename T >
+  void handle( utils::list<T> & list ) {
+    for ( auto & item : list ) handle(item);
+  }
+
   //-----------------------------------------------------------------------//
   // If this is not a data handle, then simply skip it.
   //-----------------------------------------------------------------------//

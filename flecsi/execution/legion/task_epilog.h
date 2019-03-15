@@ -26,6 +26,7 @@
 
 #include <legion.h>
 
+#include <flecsi/utils/list.h>
 #include <flecsi/utils/tuple_walker.h>
 
 clog_register_tag(epilog);
@@ -145,6 +146,14 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   void handle(sparse_mutator<T> & m) {
     using base_t = typename sparse_mutator<T>::base_t;
     handle(static_cast<base_t &>(m));
+  }
+
+  /*!
+   Handle individual list items
+   */
+  template< typename T >
+  void handle( utils::list<T> & list ) {
+    for ( auto & item : list ) handle(item);
   }
 
   /*!
