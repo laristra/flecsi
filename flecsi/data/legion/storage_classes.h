@@ -35,21 +35,18 @@ namespace legion {
 
 namespace global_topology {
 
-template<typename DATA_TYPE, size_t PRIVLEGES>
-struct handle_u {
+struct handle_t {
 
-  handle_u() {}
-  ~handle_u() {}
+  handle_t() {}
+  ~handle_t() {}
 
-}; // struct handle_u
+}; // struct handle_t
 
 template<typename DATA_TYPE, size_t PRIVLEGES>
 struct accessor_u : public data_reference_base_t {
 
-  using handle_t = handle_u<DATA_TYPE, PRIVLEGES>;
-
-  accessor_u(const handle_u<DATA_TYPE, 0> & handle)
-    : handle_(reinterpret_cast<const handle_t &>(handle)) {}
+  accessor_u(const handle_t & handle)
+    : handle_(handle) {}
 
   /*!
     Provide logical array-based access to the data referenced by this
@@ -85,11 +82,11 @@ struct storage_class_u<global, flecsi::topology::global_topology_t> {
   using client_t = flecsi::topology::global_topology_t;
   using client_handle_t = client_handle_u<client_t, 0>;
   template<typename DATA_TYPE, size_t PRIVLEGES>
-  using handle_t = global_topology::handle_u<DATA_TYPE, PRIVLEGES>;
+  using handle_t = global_topology::handle_t;
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
-  static handle_t<DATA_TYPE, 0> get_handle(const client_handle_t & client_handle) {
-    handle_t<DATA_TYPE, 0> h;
+  static handle_t get_handle(const client_handle_t & client_handle) {
+    handle_t h;
     return h;
   } // get_handle
 
@@ -102,19 +99,19 @@ struct storage_class_u<global, flecsi::topology::global_topology_t> {
 namespace color_topology {
 
 template<typename TYPE, size_t PRIVLEGES>
-struct handle_u {
+struct handle_t {
 
-  handle_u() {}
-  ~handle_u() {}
+  handle_t() {}
+  ~handle_t() {}
 
-}; // struct handle_u
+}; // struct handle_t
 
 template<typename DATA_TYPE, size_t PRIVLEGES>
 struct accessor_u : public data_reference_base_t {
 
-  using handle_t = handle_u<DATA_TYPE, PRIVLEGES>;
+  using handle_t = handle_t<DATA_TYPE, PRIVLEGES>;
 
-  accessor_u(const handle_u<DATA_TYPE, 0> & handle)
+  accessor_u(const handle_t<DATA_TYPE, 0> & handle)
     : handle_(reinterpret_cast<const handle_t &>(handle)) {}
 
   /*!
@@ -151,7 +148,7 @@ struct storage_class_u<color, flecsi::topology::color_topology_t> {
   using client_t = flecsi::topology::global_topology_t;
   using client_handle_t = client_handle_u<client_t, 0>;
   template<typename DATA_TYPE, size_t PRIVLEGES>
-  using handle_t = color_topology::handle_u<DATA_TYPE, PRIVLEGES>;
+  using handle_t = color_topology::handle_t<DATA_TYPE, PRIVLEGES>;
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
   static handle_t<DATA_TYPE, 0> get_handle(const client_handle_t & client_handle) {
@@ -168,20 +165,18 @@ struct storage_class_u<color, flecsi::topology::color_topology_t> {
 namespace unstructured_mesh_topology {
 
 template<typename TYPE, size_t PRIVLEGES>
-struct dense_handle_u {
+struct dense_handle_t {
 
-  dense_handle_u() {}
-  ~dense_handle_u() {}
+  dense_handle_t() {}
+  ~dense_handle_t() {}
 
-}; // struct dense_handle_unstructured_mesh_u
+}; // struct dense_handle_t
 
 template<typename DATA_TYPE, size_t PRIVLEGES>
 struct dense_accessor_u : public data_reference_base_t {
 
-  using handle_t = dense_handle_u<DATA_TYPE, PRIVLEGES>;
-
-  dense_accessor_u(const dense_handle_u<DATA_TYPE, 0> & handle)
-    : handle_(reinterpret_cast<const handle_t &>(handle)) {}
+  dense_accessor_u(const dense_handle_t & handle)
+    : handle_(handle) {}
 
   /*!
     Provide logical array-based access to the data referenced by this
@@ -209,35 +204,30 @@ private:
 
 }; // struct dense_accessor_u
 
-template<typename TYPE, size_t PRIVLEGES>
-struct sparse_handle_u {
+struct sparse_handle_t {
 
-  sparse_handle_u() {}
-  ~sparse_handle_u() {}
+  sparse_handle_t() {}
+  ~sparse_handle_t() {}
 
-}; // struct sparse_handle_unstructured_mesh_u
+}; // struct sparse_handle_t
 
 template<typename DATA_TYPE, size_t PRIVLEGES>
 struct sparse_accessor_u : public data_reference_base_t {
 
-  using handle_t = sparse_handle_u<DATA_TYPE, PRIVLEGES>;
-
-  sparse_accessor_u(const sparse_handle_u<DATA_TYPE, 0> & handle)
-    : handle_(reinterpret_cast<const handle_t &>(handle)) {}
+  sparse_accessor_u(const sparse_handle_t & handle)
+    : handle_(handle) {}
 
 private:
 
-  handle_t handle_;
+  sparse_handle_t handle_;
 
 }; // struct sparse_accessor_u
 
 template<typename DATA_TYPE, size_t PRIVLEGES>
 struct sparse_mutator_u : public data_reference_base_t {
 
-  using handle_t = sparse_handle_u<DATA_TYPE, PRIVLEGES>;
-
-  sparse_mutator_u(const sparse_handle_u<DATA_TYPE, 0> & handle)
-    : handle_(reinterpret_cast<const handle_t &>(handle)) {}
+  sparse_mutator_u(const sparse_handle_t & handle)
+    : handle_(handle) {}
 
 private:
 
