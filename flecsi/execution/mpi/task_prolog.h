@@ -19,6 +19,7 @@ All rights reserved.
 
 #include "mpi.h"
 #include <flecsi/coloring/mpi_utils.h>
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/data.h>
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/data/global_accessor.h>
@@ -49,31 +50,6 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   task_prolog_t() = default;
 
-  /*!
-   FIXME: Need a description.
-
-   @tparam T                     The data type referenced by the handle.
-   @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
-                                 indices of the index partition.
-   @tparam SHARED_PERMISSIONS    The permissions required on the shared
-                                 indices of the index partition.
-   @tparam GHOST_PERMISSIONS     The permissions required on the ghost
-                                 indices of the index partition.
-
-   @param runtime The Legion task runtime.
-   */
-
-  template<typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor_u<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {
-    // TODO: move field data allocation here?
-  } // handle
-
   template<typename T, size_t PERMISSIONS>
   void handle(global_accessor_u<T, PERMISSIONS> & a) {
     if(a.handle.state >= SPECIALIZATION_SPMD_INIT) {
@@ -81,46 +57,6 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         "you are not allowed "
         "to modify global data in specialization_spmd_init or driver");
     }
-  } // handle
-
-  template<typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-  void handle(ragged_accessor<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {
-//      // TODO: move field data allocation here?
-//      auto& context = context_t::instance();
-//      const int my_color = context.color();
-//      auto& my_coloring_info =
-//        context.coloring_info(h.index_space).at(my_color);
-//
-//      auto& sparse_field_metadata =
-//        context.registered_sparse_field_metadata().at(h.fid);
-//
-//     for (auto i = my_coloring_info.exclusive;
-//          i < my_coloring_info.exclusive + my_coloring_info.shared; ++i) {
-//       h()
-//     }
-#if 0
-      MPI_Win win = sparse_field_metadata.win;
-
-      MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
-      MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
-
-      for (auto ghost_owner : my_coloring_info.ghost_owners) {
-        MPI_Get(h.ghost_entries, 1,
-                sparse_field_metadata.origin_types[ghost_owner],
-                ghost_owner, 0, 1,
-                sparse_field_metadata.target_types[ghost_owner],
-                win);
-      }
-
-      MPI_Win_complete(win);
-      MPI_Win_wait(win);
-#endif
   } // handle
 
   template<typename T,
@@ -336,15 +272,16 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
   /*!
    Handle individual list items
    */
-  template< typename T >
+  template<
+    typename T,
+    typename = std::enable_if_t< std::is_base_of<data::data_reference_base_t, T>::value >
+  >
   void handle( utils::list<T> & list ) {
     for ( auto & item : list ) handle(item);
   }
 
   template<typename T>
-  static typename std::enable_if_t<
-    !std::is_base_of<dense_data_handle_base_t, T>::value>
-  handle(T &) {} // handle
+  void handle(T &) {} // handle
 
 }; // struct task_prolog_t
 

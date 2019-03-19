@@ -29,7 +29,7 @@ using mesh_t = flecsi::supplemental::test_mesh_2d_t;
 
 void write_task(
   data_client_handle_u<mesh_t, ro> mesh,
-  list< dense_accessor<int, wo, na, na> > fs
+  list< dense_accessor<int, rw, rw, na> > fs
 ) {
   auto & context = execution::context_t::instance();
   const auto & map = context.index_map(cells); 
@@ -46,7 +46,7 @@ void read_task(
 ) {
   auto & context = execution::context_t::instance();
   const auto & map = context.index_map(cells); 
-  for ( auto c : mesh.cells(flecsi::owned) ) {
+  for ( auto c : mesh.cells() ) {
     EXPECT_EQ( fs[0](c), map.at(c.id()) );
     EXPECT_EQ( fs[1](c), 2 * map.at(c.id()) );
   }
@@ -63,8 +63,8 @@ flecsi_register_data_client(mesh_t, meshes, mesh1);
 //---------------------------------------------------------------------------//
 // Fields
 //---------------------------------------------------------------------------//
-flecsi_register_field(mesh_t, fields, x, int, dense, 1, 0);
-flecsi_register_field(mesh_t, fields, y, int, dense, 1, 0);
+flecsi_register_field(mesh_t, fields, x, int, dense, 1, cells);
+flecsi_register_field(mesh_t, fields, y, int, dense, 1, cells);
 
 //----------------------------------------------------------------------------//
 // Specialization driver.

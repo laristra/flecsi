@@ -26,6 +26,7 @@
 #include <legion.h>
 
 #include <flecsi/data/data.h>
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_field.h>
 
@@ -458,7 +459,10 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
   /*!
    Handle individual list items
    */
-  template< typename T >
+  template<
+    typename T,
+    typename = std::enable_if_t< std::is_base_of<data::data_reference_base_t, T>::value >
+  >
   void handle( utils::list<T> & list ) {
     for ( auto & item : list ) handle(item);
   }

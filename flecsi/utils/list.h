@@ -58,7 +58,7 @@ public:
     typename U,
     typename = std::enable_if_t< !std::is_same_v< list<U>, list<T> > >
   >
-  list( list<U> && other ) : data_( other.begin(), other.end() )
+  list( list<U> && other ) : data_( std::forward<list<U>>(other).begin(), std::forward<list<U>>(other).end() )
   {}
   
   //! Implicit conversion constructor

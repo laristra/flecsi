@@ -152,7 +152,7 @@ struct mpi_execution_policy_t {
     task_prolog.walk(task_args);
 
     auto future = executor_u<RETURN, ARG_TUPLE>::execute(
-      function, std::forward<ARG_TUPLE>(task_args));
+      function, task_args);
 
     task_epilog_t task_epilog;
     task_epilog.walk(task_args);

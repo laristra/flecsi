@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/data/ragged_accessor.h>
 #include <flecsi/data/ragged_mutator.h>
@@ -276,7 +277,10 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   /*!
    Handle individual list items
    */
-  template< typename T >
+  template<
+    typename T,
+    typename = std::enable_if_t< std::is_base_of<data::data_reference_base_t, T>::value >
+  >
   void handle( utils::list<T> & list ) {
     for ( auto & item : list ) handle(item);
   }
@@ -286,9 +290,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     scalars or those that did not need any special handling.
    */
   template<typename T>
-  static
-    typename std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
-    handle(T &) {} // handle
+  void handle(T &) {} // handle
 
 }; // struct task_epilog_t
 

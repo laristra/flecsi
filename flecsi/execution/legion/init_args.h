@@ -25,6 +25,7 @@
 
 #include <legion.h>
 
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
@@ -379,10 +380,14 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   /*!
    Handle individual list items
    */
-  template< typename T >
+  template<
+    typename T,
+    typename = std::enable_if_t< std::is_base_of<data::data_reference_base_t, T>::value >
+  >
   void handle( utils::list<T> & list ) {
     for ( auto & item : list ) handle(item);
   }
+
   //-----------------------------------------------------------------------//
   // If this is not a data handle, then simply skip it.
   //-----------------------------------------------------------------------//

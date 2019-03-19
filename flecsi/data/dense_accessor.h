@@ -18,6 +18,7 @@
 #include <flecsi/data/accessor.h>
 #include <flecsi/data/data_constants.h>
 #include <flecsi/data/dense_data_handle.h>
+#include <flecsi/data/common/data_reference.h>
 
 /*!
  @file
