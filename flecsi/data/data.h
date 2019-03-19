@@ -20,8 +20,8 @@
   data model.
  */
 
-#include <flecsi/data/client.h>
-#include <flecsi/data/field.h>
+#include <flecsi/data/topology_interface.h>
+#include <flecsi/data/field_interface.h>
 #include <flecsi/topology/internal.h>
 #include <flecsi/utils/const_string.h>
 
@@ -35,9 +35,9 @@
   Declare a variable of type \em type with namespace \em nspace
   and name \em name.
 
-  This macro registers a data client with the FleCSI runtime. This call
+  This macro registers a topology with the FleCSI runtime. This call
   does not necessarily cause memory to be allocated. It's primary function
-  is to describe the client type to the runtime. Memory allocation will
+  is to describe the topology type to the runtime. Memory allocation will
   likely be deferred.
 
   @param type   The \ref topology type.
@@ -50,14 +50,14 @@
 #define flecsi_register_topology(type, nspace, name)                           \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  /* Call the client interface to register the data */                         \
-  inline bool flecsi_internal_unique_name(client_registration_) =              \
-    flecsi::data::client_interface_t::register_client<type,                    \
+  /* Call the topology interface to register the topology */                   \
+  inline bool flecsi_internal_unique_name(topology_registration_) =            \
+    flecsi::data::topology_interface_t::register_topology<type,                \
       flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name)>( \
       {flecsi_internal_stringify(name)})
 
 /*!
-  @def flecsi_get_topology_handle
+  @def flecsi_get_topology
 
   Access a topology.
 
@@ -68,11 +68,11 @@
   @ingroup data
  */
 
-#define flecsi_get_topology_handle(type, nspace, name)                         \
+#define flecsi_get_topology(type, nspace, name)                                \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  /* Call the storage policy to get a handle to the data client */             \
-  flecsi::data::client_interface_t::get_client_handle<type,                    \
+  /* Call the storage policy to get a handle to the topology */                \
+  flecsi::data::topology_interface_t::get_topology_handle<type,                \
     flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name)>()
 
 /*----------------------------------------------------------------------------*
@@ -80,7 +80,7 @@
  *----------------------------------------------------------------------------*/
 
 /*!
-  @def flecsi_get_handle
+  @def flecsi_get_field
 
   Access data with a topology instance.
 
@@ -97,16 +97,15 @@
   @ingroup data
  */
 
-#define flecsi_get_handle(                                                     \
+#define flecsi_get_field(                                                      \
   topology, nspace, name, data_type, storage_class, version)                   \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
   flecsi::data::field_interface_t::get_handle<                                 \
-    typename flecsi::client_type_u<decltype(topology)>::type,                  \
-    flecsi::data::storage_class, data_type,                                    \
-    flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name),    \
-    version>(topology)
+    decltype(topology)::topology_type_t, flecsi::data::storage_class,          \
+    data_type, flecsi_internal_string_hash(nspace),                            \
+    flecsi_internal_string_hash(name), version>(topology)
 
 /*----------------------------------------------------------------------------*
   Global Topology Interface.
@@ -170,8 +169,8 @@ flecsi_register_topology(global_topology_t, "global_client", "global_client");
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
-  flecsi_get_handle(                                                           \
-    flecsi_get_topology_handle(                                                \
+  flecsi_get_field(                                                            \
+    flecsi_get_topology(                                                       \
       flecsi::topology::global_topology_t, "global_client", "global_client"),  \
     nspace, name, data_type, global, version)
 
@@ -236,7 +235,6 @@ flecsi_register_topology(color_topology_t, "color_client", "color_client");
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_handle(                                                           \
-    flecsi_get_topology_handle(                                                \
-      flecsi::topology::color_topology_t, "color_client", "color_client"),  \
+    flecsi_get_topology(                                                       \
+      flecsi::topology::color_topology_t, "color_client", "color_client"),     \
     nspace, name, data_type, color, version)
-

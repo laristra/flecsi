@@ -15,8 +15,6 @@
 
 /*! @file */
 
-#include <flecsi/data/common/data_client.h>
-
 namespace flecsi {
 namespace topology {
 
@@ -37,7 +35,7 @@ constexpr size_t color_index_space = 4097;
   @ingroup topology
  */
 
-struct global_topology_t : public data::data_client_t {
+struct global_topology_t {
   using type_identifier_t = global_topology_t;
 }; // struct global_topology_u
 
@@ -49,7 +47,7 @@ struct global_topology_t : public data::data_client_t {
   @ingroup topology
  */
 
-struct color_topology_t : public data::data_client_t {
+struct color_topology_t {
   using type_identifier_t = color_topology_t;
 }; // struct color_topology_u
 

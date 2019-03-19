@@ -16,45 +16,45 @@
 /*!
   @file
 
-  This file contains the \em field_registration_u type. This type
+  This file contains the \em storage_class_registration_u type. This type
   is currently used for all field registrations regardless of runtime or
   client type.
  */
 
 #include <flecsi/runtime/types.h>
 
-flog_register_tag(field_registration);
+flog_register_tag(storage_class_registration);
 
 namespace flecsi {
 namespace data {
 
 /*!
-  The field_registration_u type uses a form of type erasure
+  The storage_class_registration_u type uses a form of type erasure
   (by defining a generic callback type) that can be used to capture
   static type information at runtime.
 
-  @tparam DATA_CLIENT_TYPE The data client type on which the data
-                           attribute should be registered.
-  @tparam STORAGE_CLASS    The storage type for the data attribute.
-  @tparam DATA_TYPE        The data type, e.g., double. This may be
-                           P.O.D. or a user-defined type that is
-                           trivially-copyable.
-  @tparam NAMESPACE        The namespace key. Namespaces allow separation
-                           of attribute names to avoid collisions.
-  @tparam NAME             The attribute name.
-  @tparam VERSIONS         The number of versions that shall be associated
-                           with this attribute.
-  @tparam INDEX_SPACE      The index space identifier.
+  @tparam TOPOLOGY_TYPE The data client type on which the data
+                        attribute should be registered.
+  @tparam STORAGE_CLASS The storage type for the data attribute.
+  @tparam DATA_TYPE     The data type, e.g., double. This may be
+                        P.O.D. or a user-defined type that is
+                        trivially-copyable.
+  @tparam NAMESPACE     The namespace key. Namespaces allow separation
+                        of attribute names to avoid collisions.
+  @tparam NAME          The attribute name.
+  @tparam VERSIONS      The number of versions that shall be associated
+                        with this attribute.
+  @tparam INDEX_SPACE   The index space identifier.
 */
 
-template<typename DATA_CLIENT_TYPE,
+template<typename TOPOLOGY_TYPE,
   size_t STORAGE_CLASS,
   typename DATA_TYPE,
   size_t NAMESPACE,
   size_t NAME,
   size_t VERSIONS,
   size_t INDEX_SPACE>
-struct field_registration_u {
+struct storage_class_registration_u {
 
   /*!
     Callback method for capturing static type information during
@@ -81,7 +81,7 @@ struct field_registration_u {
 #endif
   } // register_callback
 
-}; // class field_registration_u
+}; // class storage_class_registration_u
 
 } // namespace data
 } // namespace flecsi

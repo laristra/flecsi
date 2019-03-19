@@ -18,7 +18,6 @@
 #if !defined(__FLECSI_PRIVATE__)
   #error Do not include this file directly!
 #else
-  #include <flecsi/data/common/client_handle.h>
   #include <flecsi/data/legion/storage_classes.h>
   #include <flecsi/utils/demangle.h>
   #include <flecsi/utils/tuple_walker.h>
@@ -107,7 +106,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
   template<typename DATA_TYPE>
   static typename std::enable_if_t<
-    !std::is_base_of_v<data_reference_base_t, DATA_TYPE>>
+    !std::is_base_of_v<data::data_reference_base_t, DATA_TYPE>>
   visit(DATA_TYPE &) {
     {
     flog_tag_guard(init_args);

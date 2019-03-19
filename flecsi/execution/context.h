@@ -53,9 +53,10 @@ struct context_u : public CONTEXT_POLICY {
     Public types.
    *--------------------------------------------------------------------------*/
 
-  using client_registration_function_t = std::function<void(size_t)>;
-  using client_value_t = std::pair<field_id_t, client_registration_function_t>;
-  using client_entry_t = std::unordered_map<size_t, client_value_t>;
+  using topology_registration_function_t = std::function<void(size_t)>;
+  using topology_value_t =
+    std::pair<field_id_t, topology_registration_function_t>;
+  using topology_entry_t = std::unordered_map<size_t, topology_value_t>;
 
   using field_registration_function_t = std::function<void(size_t, size_t)>;
   using field_value_t = std::pair<field_id_t, field_registration_function_t>;
@@ -294,46 +295,46 @@ struct context_u : public CONTEXT_POLICY {
   } // register_function
 
   /*--------------------------------------------------------------------------*
-    Client interface.
+    Topology interface.
    *--------------------------------------------------------------------------*/
 
   /*!
-    Register a data client with the runtime.
+    Register a topology with the runtime.
 
-    @param type_hash  The data client indentifier hash.
+    @param type_hash  The topology indentifier hash.
     @param key        The identifier hash.
     @param callback   The registration call back function.
    */
 
-  bool register_client(size_t type_hash,
+  bool register_topology(size_t type_hash,
     size_t key,
-    const client_registration_function_t & callback) {
-    if(client_registry_.find(type_hash) != client_registry_.end()) {
-      flog_assert(client_registry_[type_hash].find(key) ==
-                    client_registry_[type_hash].end(),
-        "client key already exists");
+    const topology_registration_function_t & callback) {
+    if(topology_registry_.find(type_hash) != topology_registry_.end()) {
+      flog_assert(topology_registry_[type_hash].find(key) ==
+                    topology_registry_[type_hash].end(),
+        "topology key already exists");
     } // if
 
-    client_registry_[type_hash][key] =
+    topology_registry_[type_hash][key] =
       std::make_pair(unique_fid_t::instance().next(), callback);
 
     return true;
-  } // register_client
+  } // register_topology
 
   /*!
     Return a boolean indicating whether or not the given instance of
-    a data client has had its internal fields registered with the
+    a data topology has had its internal fields registered with the
     data model.
 
-    @param type_key     The hash key for the data client type.
-    @param instance_key The hash key for the data client instance.
+    @param type_key     The hash key for the topology type.
+    @param instance_key The hash key for the topology instance.
    */
 
-  bool client_fields_registered(size_t type_key, size_t instance_key) {
-    return !registered_client_fields_
+  bool topology_fields_registered(size_t type_key, size_t instance_key) {
+    return !registered_topology_fields_
               .insert(std::make_pair(type_key, instance_key))
               .second;
-  } // client_fields_registered
+  } // topology_fields_registered
 
   /*--------------------------------------------------------------------------*
     Field interface.
@@ -342,22 +343,22 @@ struct context_u : public CONTEXT_POLICY {
   /*!
     Register a field with the runtime.
 
-    @param client_type_key The data client indentifier hash.
+    @param topology_type_key The topology indentifier hash.
     @param key             The identifier hash.
     @param callback        The registration call back function.
    */
 
-  bool register_field(size_t client_type_key,
+  bool register_field(size_t topology_type_key,
     size_t key,
     const field_registration_function_t & callback) {
-    if(field_registry_.find(client_type_key) != field_registry_.end()) {
-      if(field_registry_[client_type_key].find(key) !=
-         field_registry_[client_type_key].end()) {
+    if(field_registry_.find(topology_type_key) != field_registry_.end()) {
+      if(field_registry_[topology_type_key].find(key) !=
+         field_registry_[topology_type_key].end()) {
         flog(warn) << "field key already exists" << std::endl;
       } // if
     } // if
 
-    field_registry_[client_type_key][key] =
+    field_registry_[topology_type_key][key] =
       std::make_pair(unique_fid_t::instance().next(), callback);
 
     return true;
@@ -416,8 +417,8 @@ private:
     Client members.
    *--------------------------------------------------------------------------*/
 
-  std::unordered_map<size_t, client_entry_t> client_registry_;
-  std::set<std::pair<size_t, size_t>> registered_client_fields_;
+  std::unordered_map<size_t, topology_entry_t> topology_registry_;
+  std::set<std::pair<size_t, size_t>> registered_topology_fields_;
 
   /*--------------------------------------------------------------------------*
     Field members.

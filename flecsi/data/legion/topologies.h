@@ -16,10 +16,8 @@
 /*! @file */
 
 #define POLICY_NAMESPACE legion
-#include <flecsi/data/common/client_handle_specialization.h>
+#include <flecsi/data/common/topology.h>
 #undef POLICY_NAMESPACE
-
-#include <flecsi/data/common/client_handle.h>
 
 namespace flecsi {
 
@@ -28,10 +26,13 @@ namespace flecsi {
  *----------------------------------------------------------------------------*/
 
 namespace topology {
+
 struct global_topology_t;
 struct color_topology_t;
+
 template<typename>
 class mesh_topology_u;
+
 } // namespace topology
 
 namespace data {
@@ -41,39 +42,58 @@ namespace legion {
   Global Topology.
  *----------------------------------------------------------------------------*/
 
-template<>
-struct client_handle_specialization_u<topology::global_topology_t> {
+namespace global_topology {
 
-  using client_t = topology::global_topology_t;
+  struct topology_handle_t {
+    using topology_type_t = topology::global_topology_t;
+  }; // struct topology_handle_t
+
+} // namespace global_topology
+
+template<>
+struct topology_u<topology::global_topology_t> {
+
+  using topology_handle_t = global_topology::topology_handle_t;
 
   template<size_t NAMESPACE, size_t NAME>
-  static client_handle_u<client_t, 0> get_client_handle() {
-    client_handle_u<client_t, 0> h;
+  static topology_handle_t get_topology_handle() {
+    topology_handle_t h;
     return h;
-  } // get_client_handle
+  } // get_topology_handle
 
-}; // client_handle_specialization_u<topology::global_topology_t>
+}; // topology_u<topology::global_topology_t>
 
 /*----------------------------------------------------------------------------*
   Color Topology.
  *----------------------------------------------------------------------------*/
 
-template<>
-struct client_handle_specialization_u<topology::color_topology_t> {
+namespace color_topology {
 
-  using client_t = topology::color_topology_t;
+  struct topology_handle_t {
+    using topology_type_t = topology::color_topology_t;
+  }; // struct topology_handle_t
+
+} // namespace color_topology
+
+template<>
+struct topology_u<topology::color_topology_t> {
+
+  using topology_handle_t = color_topology::topology_handle_t;
 
   template<size_t NAMESPACE, size_t NAME>
-  static client_handle_u<client_t, 0> get_client_handle() {
-    client_handle_u<client_t, 0> h;
+  static topology_handle_t get_topology_handle() {
+    topology_handle_t h;
     return h;
-  } // get_client_handle
+  } // get_topology_handle
 
-}; // client_handle_specialization_u<topology::color_topology_t>
+}; // topology_u<topology::color_topology_t>
 
 /*----------------------------------------------------------------------------*
   Mesh Topology.
  *----------------------------------------------------------------------------*/
+
+// NOTE THAT THE HANDLE TYPE FOR THIS TYPE WILL NEED TO CAPTURE THE
+// UNDERLYING TOPOLOGY TYPE, i.e., topology::mesh_topology_t<MESH_POLICY>
 
 #if 0
 template<typename MESH_POLICY>

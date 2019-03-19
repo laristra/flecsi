@@ -20,7 +20,7 @@
   specializations for data clients and storage classes.
  */
 
-#include <flecsi/data/legion/client_handle_specializations.h>
+#include <flecsi/data/legion/topologies.h>
 #include <flecsi/data/legion/storage_classes.h>
 
 namespace flecsi {
@@ -29,22 +29,27 @@ namespace data {
 struct legion_data_policy_t {
 
   /*--------------------------------------------------------------------------*
-    Client Interface.
+    Topology Interface.
    *--------------------------------------------------------------------------*/
 
   /*
     Documentation for this interface is in the top-level client type.
    */
 
-  template<typename CLIENT_TYPE, size_t NAMESPACE, size_t NAME>
-  static client_handle_u<CLIENT_TYPE, 0> get_client_handle() {
-    using client_handle_specialization_t =
-      legion::client_handle_specialization_u<
-        typename CLIENT_TYPE::type_identifier_t>;
+  template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
+  static decltype(auto) get_topology_handle() {
+    using topology_t =
+      legion::topology_u<typename TOPOLOGY_TYPE::type_identifier_t>;
 
-    return client_handle_specialization_t::template get_client_handle<NAMESPACE,
-      NAME>();
+    return topology_t::template get_topology_handle<NAMESPACE, NAME>();
   } // get_client_handle
+
+  /*
+    Capture the handle type for the given topology type.
+   */
+
+  template<typename TOPOLOGY_TYPE>
+  using topology_handle_u = typename legion::topology_u<typename TOPOLOGY_TYPE::type_identifier_t>::topology_handle_t;
 
   /*--------------------------------------------------------------------------*
     Storage Class Interface.
@@ -55,8 +60,8 @@ struct legion_data_policy_t {
     holder in the field interface.
    */
 
-  template<size_t STORAGE_CLASS, typename CLIENT_TYPE>
-  using storage_class_u = legion::storage_class_u<STORAGE_CLASS, CLIENT_TYPE>;
+  template<size_t STORAGE_CLASS, typename TOPOLOGY_TYPE>
+  using storage_class_u = legion::storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>;
 
   /*--------------------------------------------------------------------------*
     Accessor Interface.

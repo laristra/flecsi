@@ -16,11 +16,9 @@
 /*!
   @file
 
-  This file defines the base \em client_handler_u type that is customized
-  for each specific data client type using explicit specialization. The
-  specialized types implement a get_handle interface that returns the
-  appropriate handle type for the given client.
  */
+
+#include <flecsi/data/common/data_reference.h>
 
 #ifndef POLICY_NAMESPACE
 #error You must define a data policy namespace before including this file.
@@ -31,15 +29,12 @@ namespace data {
 namespace POLICY_NAMESPACE {
 
 /*!
-  The client policy handler type is responsible for extracting
-  compile-time information from various data client types, e.g.,
-  mesh or tree topologies, for obtaining a client handle and
-  populating required fields on the client handle. This class
-  should be specialized on the specific client type.
+  Base topology type for topology-specific specializations. Specializations of
+  this type must implement a get_topology_handle method.
  */
 
 template<typename CLIENT_TYPE>
-struct client_handle_specialization_u {};
+struct topology_u {};
 
 } // namespace POLICY_NAMESPACE
 } // namespace data

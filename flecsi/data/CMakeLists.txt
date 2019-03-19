@@ -19,12 +19,11 @@
 
 set(data_HEADERS
   client.h
-  common/client_handle.h
-  common/client_handle_specialization.h
-  common/client_registration_specializations.h
-  common/data_client.h
-  common/field_registration.h
+  common/data_reference.h
   common/storage_class.h
+  common/storage_class_registration.h
+  common/topology.h
+  common/topology_registration.h
   data.h
   field.h
 )
@@ -35,9 +34,9 @@ set(data_SOURCES
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
-    legion/client_handle_specializations.h
     legion/data_policy.h
     legion/storage_classes.h
+    legion/topologies.h
     ${data_HEADERS}
   )
 
@@ -48,9 +47,9 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(data_HEADERS
-    mpi/client_handle_specializations.h
     mpi/data_policy.h
     mpi/storage_classes.h
+    mpi/topologies.h
     ${data_HEADERS}
   )
 

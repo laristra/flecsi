@@ -36,7 +36,7 @@ namespace data {
   The storage_label_t type enumerates the available FleCSI storage classes.
   A FleCSI storage class provides a specific interface for different
   logical data layouts, e.g., dense vs. sparse. The actual data layout
-  is implementation dependent.
+  is implementation-dependent.
  */
 
 enum storage_label_t : size_t {
@@ -51,17 +51,12 @@ enum storage_label_t : size_t {
 namespace POLICY_NAMESPACE {
 
 /*!
-  Base storage class type for client-specific specializations.
+  Base storage class type for client-specific specializations. Specializations
+  of this type must implement a get_handle method that takes a client handle.
  */
 
 template<size_t STORAGE_CLASS, typename CLIENT_TYPE>
 struct storage_class_u {};
-
-/*!
-  Base reference type for accessor and mutator types.
- */
-
-struct data_reference_base_t {};
 
 } // namespace POLICY_NAMESPACE
 } // namespace data

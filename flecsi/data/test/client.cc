@@ -15,6 +15,7 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/data/data.h>
 #include <flecsi/utils/ftest.h>
+#include <flecsi/utils/demangle.h>
 
 flecsi_register_global("test", "global", double, 2);
 

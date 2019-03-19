@@ -16,9 +16,9 @@
 /*!
   @file
 
-  This file contains specializations of the \em client_registration_u
+  This file contains specializations of the \em topology_registration_u
   type for the various FleCSI topology types. In general, the registration
-  type provides a mechanism for data clients to register meta data with
+  type provides a mechanism for topologies to register meta data with
   the runtime.
  */
 
@@ -45,8 +45,8 @@ namespace data {
 
  */
 
-template<typename DATA_CLIENT_TYPE, size_t NAMESPACE, size_t NAME>
-struct client_registration_u {};
+template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
+struct topology_registration_u {};
 
 #if 0
 /*!
@@ -54,7 +54,7 @@ struct client_registration_u {};
  */
 
 template<typename POLICY_TYPE, size_t NAMESPACE, size_t NAME>
-struct client_registration_u<
+struct topology_registration_u<
   flecsi::topology::mesh_topology_u<POLICY_TYPE>,
   NAMESPACE,
   NAME> {
@@ -348,14 +348,14 @@ struct client_registration_u<
 
   } // register_callback
 
-}; // class client_registration_u
+}; // class topology_registration_u
 
 /*!
 
  */
 
 template<typename POLICY_TYPE, size_t NAMESPACE, size_t NAME>
-struct client_registration_u<
+struct topology_registration_u<
   flecsi::topology::set_topology_u<POLICY_TYPE>,
   NAMESPACE,
   NAME> {
@@ -431,7 +431,7 @@ struct client_registration_u<
     entity_walker.template walk_types<entity_types_t>();
   } // register_callback
 
-}; // class client_registration_u
+}; // class topology_registration_u
 #endif
 
 //----------------------------------------------------------------------------//
@@ -443,15 +443,15 @@ struct client_registration_u<
  */
 
 template<size_t NAMESPACE, size_t NAME>
-struct client_registration_u<flecsi::topology::global_topology_t,
+struct topology_registration_u<flecsi::topology::global_topology_t,
   NAMESPACE,
   NAME> {
 
-  using CLIENT_TYPE = flecsi::topology::global_topology_t;
+  using TOPOLOGY_TYPE = flecsi::topology::global_topology_t;
 
   static void register_callback(field_id_t fid) {}
 
-}; // class client_registration_u
+}; // class topology_registration_u
 
 //----------------------------------------------------------------------------//
 // Color.
@@ -462,15 +462,15 @@ struct client_registration_u<flecsi::topology::global_topology_t,
  */
 
 template<size_t NAMESPACE, size_t NAME>
-struct client_registration_u<flecsi::topology::color_topology_t,
+struct topology_registration_u<flecsi::topology::color_topology_t,
   NAMESPACE,
   NAME> {
 
-  using CLIENT_TYPE = flecsi::topology::color_topology_t;
+  using TOPOLOGY_TYPE = flecsi::topology::color_topology_t;
 
   static void register_callback(field_id_t fid) {}
 
-}; // class client_registration_u
+}; // class topology_registration_u
 
 } // namespace data
 } // namespace flecsi

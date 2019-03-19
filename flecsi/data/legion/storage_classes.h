@@ -18,6 +18,8 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+  #include <flecsi/data/common/data_reference.h>
+  #include <flecsi/data/legion/topologies.h>
   #include <flecsi/topology/internal.h>
 #endif
 
@@ -80,8 +82,7 @@ template<>
 struct storage_class_u<global, flecsi::topology::global_topology_t> {
 
   using client_t = flecsi::topology::global_topology_t;
-  using client_handle_t = client_handle_u<client_t, 0>;
-  template<typename DATA_TYPE, size_t PRIVLEGES>
+  using client_handle_t = global_topology::topology_handle_t;
   using handle_t = global_topology::handle_t;
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
@@ -98,7 +99,6 @@ struct storage_class_u<global, flecsi::topology::global_topology_t> {
 
 namespace color_topology {
 
-template<typename TYPE, size_t PRIVLEGES>
 struct handle_t {
 
   handle_t() {}
@@ -109,10 +109,8 @@ struct handle_t {
 template<typename DATA_TYPE, size_t PRIVLEGES>
 struct accessor_u : public data_reference_base_t {
 
-  using handle_t = handle_t<DATA_TYPE, PRIVLEGES>;
-
-  accessor_u(const handle_t<DATA_TYPE, 0> & handle)
-    : handle_(reinterpret_cast<const handle_t &>(handle)) {}
+  accessor_u(const handle_t & handle)
+    : handle_(handle) {}
 
   /*!
     Provide logical array-based access to the data referenced by this
@@ -146,13 +144,12 @@ template<>
 struct storage_class_u<color, flecsi::topology::color_topology_t> {
 
   using client_t = flecsi::topology::global_topology_t;
-  using client_handle_t = client_handle_u<client_t, 0>;
-  template<typename DATA_TYPE, size_t PRIVLEGES>
-  using handle_t = color_topology::handle_t<DATA_TYPE, PRIVLEGES>;
+  using client_handle_t = color_topology::topology_handle_t;
+  using handle_t = color_topology::handle_t;
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
-  static handle_t<DATA_TYPE, 0> get_handle(const client_handle_t & client_handle) {
-    handle_t<DATA_TYPE, 0> h;
+  static handle_t get_handle(const client_handle_t & client_handle) {
+    handle_t h;
     return h;
   } // get_handle
 
@@ -164,7 +161,6 @@ struct storage_class_u<color, flecsi::topology::color_topology_t> {
 
 namespace unstructured_mesh_topology {
 
-template<typename TYPE, size_t PRIVLEGES>
 struct dense_handle_t {
 
   dense_handle_t() {}
@@ -200,7 +196,7 @@ struct dense_accessor_u : public data_reference_base_t {
 
 private:
 
-  handle_t handle_;
+  dense_handle_t handle_;
 
 }; // struct dense_accessor_u
 
@@ -231,7 +227,7 @@ struct sparse_mutator_u : public data_reference_base_t {
 
 private:
 
-  handle_t handle_;
+  sparse_handle_t handle_;
 
 }; // struct sparse_mutator_u
 
