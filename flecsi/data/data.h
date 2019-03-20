@@ -40,7 +40,7 @@
   is to describe the topology type to the runtime. Memory allocation will
   likely be deferred.
 
-  @param type   The \ref topology type.
+  @param type   The topology type.
   @param nspace The string namespace to use to register the variable.
   @param name   The string name to use to register the variable.
 
@@ -80,14 +80,47 @@
  *----------------------------------------------------------------------------*/
 
 /*!
+  @def flecsi_register_field
+
+  This macro registers field data with a data_client_t type. Data
+  registration creates a data attribute for the given topology type.
+  This call does not necessarily cause memory to be allocated. Its
+  primary function is to describe the field data to the runtime.
+  Memory allocation will likely be deferred.
+
+  @param topology_type The topology type.
+  @param nspace        The string namespace to use to register the variable.
+  @param name          The string name of the data variable to register.
+  @param data_type     The data type to store, e.g., double or my_type_t.
+  @param storage_class The storage type for the data \ref storage_class_t.
+  @param versions      The number of versions of the data to register. This
+                       parameter can be used to manage multiple data versions,
+                       e.g., for new and old state.
+
+  @ingroup data
+ */
+
+#define flecsi_register_field(                                                 \
+  client_type, nspace, name, data_type, storage_class, versions, ...)          \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* Call the storage policy to register the data */                           \
+  inline bool flecsi_internal_unique_name(field) =                             \
+    flecsi::data::field_interface_t::register_field<client_type,               \
+      flecsi::data::storage_class, data_type,                                  \
+      flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name),  \
+      versions, ##__VA_ARGS__>(                                                \
+        {flecsi_internal_stringify(name)})
+
+/*!
   @def flecsi_get_field
 
   Access data with a topology instance.
 
   @param topology      The topology instance with which to access
                        the data.
-  @param nspace        The namespace to use to access the variable.
-  @param name          The name of the data variable to access.
+  @param nspace        The string namespace to use to access the variable.
+  @param name          The string name of the data variable to access.
   @param data_type     The data type to access, e.g., double or my_type_t.
   @param storage_class The storage type for the data \ref storage_class_t.
   @param version       The version number of the data to access. This
@@ -145,9 +178,9 @@ flecsi_register_topology(global_topology_t, "global_client", "global_client");
   inline bool flecsi_internal_unique_name(global_field) =                      \
     flecsi::data::field_interface_t::register_field<                           \
       flecsi::topology::global_topology_t, flecsi::data::global, data_type,    \
-      flecsi_internal_string_hash(nspace),                                     \
-      flecsi_internal_string_hash(name), versions,                             \
-      flecsi::topology::global_index_space>({flecsi_internal_stringify(name)})
+      flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name),  \
+      versions, flecsi::topology::global_index_space>(                         \
+        {flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_get_global
@@ -208,11 +241,12 @@ flecsi_register_topology(color_topology_t, "color_client", "color_client");
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
-  inline bool client_type##_##nspace##_##name##_data_registered =              \
+  inline bool flecsi_internal_unique_name(color_field) =                       \
     flecsi::data::field_interface_t::register_field<                           \
       flecsi::topology::color_topology_t, flecsi::data::color, data_type,      \
-      flecsi_internal_hash(nspace), flecsi_internal_hash(name), versions,      \
-      flecsi::topology::color_index_space>({EXPAND_AND_STRINGIFY(name)})
+      flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name),  \
+      versions, flecsi::topology::color_index_space>(                          \
+        {flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_get_color
