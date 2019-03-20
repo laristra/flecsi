@@ -33,7 +33,7 @@ namespace POLICY_NAMESPACE {
   this type must implement a get_topology_handle method.
  */
 
-template<typename CLIENT_TYPE>
+template<typename TOPOLOGY_TYPE>
 struct topology_u {};
 
 } // namespace POLICY_NAMESPACE

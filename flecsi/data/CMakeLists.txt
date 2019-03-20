@@ -18,14 +18,14 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
-  client.h
   common/data_reference.h
   common/storage_class.h
   common/storage_class_registration.h
   common/topology.h
   common/topology_registration.h
   data.h
-  field.h
+  field_interface.h
+  topology_interface.h
 )
 
 set(data_SOURCES
