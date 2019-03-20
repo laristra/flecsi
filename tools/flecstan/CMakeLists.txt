@@ -1,10 +1,12 @@
+# -*- CMake -*-
+
 project(flecstan LANGUAGES CXX)
 cmake_minimum_required(VERSION 3.8)
 
 # C++
 set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -pedantic -Wall -s")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -pedantic -Wall -O2 -s")
 
 # Packages
 find_package(Clang   REQUIRED)
@@ -13,7 +15,7 @@ find_package(Threads REQUIRED)
 find_package(ZLIB    REQUIRED)
 
 # Include directories
-include_directories(src)
+include_directories(src ${CLANG_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
 
 # Source files
 set(flecstan_SOURCES
