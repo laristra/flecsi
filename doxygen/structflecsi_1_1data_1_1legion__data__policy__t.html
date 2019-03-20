@@ -76,10 +76,14 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aaeb5d9979587d6b1b36b5824613f2757"><td class="memTemplParams" colspan="2"><a id="aaeb5d9979587d6b1b36b5824613f2757"></a>
-template&lt;size_t STORAGE_CLASS, typename CLIENT_TYPE &gt; </td></tr>
-<tr class="memitem:aaeb5d9979587d6b1b36b5824613f2757"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>storage_class_u</b> = legion::storage_class_u&lt; STORAGE_CLASS, CLIENT_TYPE &gt;</td></tr>
-<tr class="separator:aaeb5d9979587d6b1b36b5824613f2757"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a343ed008b8c40e442b8e8225fb704cde"><td class="memTemplParams" colspan="2"><a id="a343ed008b8c40e442b8e8225fb704cde"></a>
+template&lt;typename TOPOLOGY_TYPE &gt; </td></tr>
+<tr class="memitem:a343ed008b8c40e442b8e8225fb704cde"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>topology_handle_u</b> = typename legion::topology_u&lt; typename TOPOLOGY_TYPE::type_identifier_t &gt;::topology_handle_t</td></tr>
+<tr class="separator:a343ed008b8c40e442b8e8225fb704cde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f6d6e6dc7ebf526d9772a4d08cf17fc"><td class="memTemplParams" colspan="2"><a id="a1f6d6e6dc7ebf526d9772a4d08cf17fc"></a>
+template&lt;size_t STORAGE_CLASS, typename TOPOLOGY_TYPE &gt; </td></tr>
+<tr class="memitem:a1f6d6e6dc7ebf526d9772a4d08cf17fc"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>storage_class_u</b> = legion::storage_class_u&lt; STORAGE_CLASS, TOPOLOGY_TYPE &gt;</td></tr>
+<tr class="separator:a1f6d6e6dc7ebf526d9772a4d08cf17fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade3a652500bbd8330b41240cfa55881a"><td class="memTemplParams" colspan="2"><a id="ade3a652500bbd8330b41240cfa55881a"></a>
 template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
 <tr class="memitem:ade3a652500bbd8330b41240cfa55881a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>global_accessor_u</b> = <a class="el" href="structflecsi_1_1data_1_1legion_1_1global__topology_1_1accessor__u.html">legion::global_topology::accessor_u</a>&lt; DATA_TYPE, PRIVILEGES &gt;</td></tr>
@@ -91,10 +95,10 @@ template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ad9f54a904ab2f3a74f1e0b97d6c85f48"><td class="memTemplParams" colspan="2"><a id="ad9f54a904ab2f3a74f1e0b97d6c85f48"></a>
-template&lt;typename CLIENT_TYPE , size_t NAMESPACE, size_t NAME&gt; </td></tr>
-<tr class="memitem:ad9f54a904ab2f3a74f1e0b97d6c85f48"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1client__handle__u.html">client_handle_u</a>&lt; CLIENT_TYPE, 0 &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_client_handle</b> ()</td></tr>
-<tr class="separator:ad9f54a904ab2f3a74f1e0b97d6c85f48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a918d45c4be66ed7dc2df31f6bf8f3f68"><td class="memTemplParams" colspan="2"><a id="a918d45c4be66ed7dc2df31f6bf8f3f68"></a>
+template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME&gt; </td></tr>
+<tr class="memitem:a918d45c4be66ed7dc2df31f6bf8f3f68"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_topology_handle</b> ()</td></tr>
+<tr class="separator:a918d45c4be66ed7dc2df31f6bf8f3f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/data/legion/<a class="el" href="data_2legion_2data__policy_8h_source.html">data_policy.h</a></li>

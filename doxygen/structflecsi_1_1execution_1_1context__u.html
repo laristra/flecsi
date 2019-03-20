@@ -87,15 +87,15 @@ Inheritance diagram for flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;:</d
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ab6e3bdd5e0deb31e992e86ea918ce19b"><td class="memItemLeft" align="right" valign="top"><a id="ab6e3bdd5e0deb31e992e86ea918ce19b"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>client_registration_function_t</b> = std::function&lt; void(size_t)&gt;</td></tr>
-<tr class="separator:ab6e3bdd5e0deb31e992e86ea918ce19b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02c8dfd906d7c5f34e75b2042af2dd8a"><td class="memItemLeft" align="right" valign="top"><a id="a02c8dfd906d7c5f34e75b2042af2dd8a"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>client_value_t</b> = std::pair&lt; field_id_t, client_registration_function_t &gt;</td></tr>
-<tr class="separator:a02c8dfd906d7c5f34e75b2042af2dd8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9dc49cfec600e0c24af41f3809d84c7"><td class="memItemLeft" align="right" valign="top"><a id="ac9dc49cfec600e0c24af41f3809d84c7"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>client_entry_t</b> = std::unordered_map&lt; size_t, client_value_t &gt;</td></tr>
-<tr class="separator:ac9dc49cfec600e0c24af41f3809d84c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17f60ffa2b457f9a0f3aeacaa2ea8885"><td class="memItemLeft" align="right" valign="top"><a id="a17f60ffa2b457f9a0f3aeacaa2ea8885"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>topology_registration_function_t</b> = std::function&lt; void(size_t)&gt;</td></tr>
+<tr class="separator:a17f60ffa2b457f9a0f3aeacaa2ea8885"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66689818a2d3de7527da6f9cfc53633a"><td class="memItemLeft" align="right" valign="top"><a id="a66689818a2d3de7527da6f9cfc53633a"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>topology_value_t</b> = std::pair&lt; field_id_t, topology_registration_function_t &gt;</td></tr>
+<tr class="separator:a66689818a2d3de7527da6f9cfc53633a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43301e527a8b6c7b9675d915623e9edd"><td class="memItemLeft" align="right" valign="top"><a id="a43301e527a8b6c7b9675d915623e9edd"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>topology_entry_t</b> = std::unordered_map&lt; size_t, topology_value_t &gt;</td></tr>
+<tr class="separator:a43301e527a8b6c7b9675d915623e9edd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac85332931e4270af1ea9aee94d9ce47d"><td class="memItemLeft" align="right" valign="top"><a id="ac85332931e4270af1ea9aee94d9ce47d"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>field_registration_function_t</b> = std::function&lt; void(size_t, size_t)&gt;</td></tr>
 <tr class="separator:ac85332931e4270af1ea9aee94d9ce47d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -148,12 +148,12 @@ std::map&lt; size_t, std::function&lt; void()&gt; &gt; &amp;&#160;</td><td class
 <tr class="memitem:a44e98bd98dd97f4e16d7329cb0b9d9ff"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) FUNCTION&gt; </td></tr>
 <tr class="memitem:a44e98bd98dd97f4e16d7329cb0b9d9ff"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a44e98bd98dd97f4e16d7329cb0b9d9ff">register_function</a> ()</td></tr>
 <tr class="separator:a44e98bd98dd97f4e16d7329cb0b9d9ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7be60ec1d095a848fd8044ab0cd0a55"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#af7be60ec1d095a848fd8044ab0cd0a55">register_client</a> (size_t type_hash, size_t key, const client_registration_function_t &amp;callback)</td></tr>
-<tr class="separator:af7be60ec1d095a848fd8044ab0cd0a55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a640ecd9e6a410202c541459682cd9bab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a640ecd9e6a410202c541459682cd9bab">client_fields_registered</a> (size_t type_key, size_t instance_key)</td></tr>
-<tr class="separator:a640ecd9e6a410202c541459682cd9bab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92ee7a52f3a3271fa94856153c7bd301"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a92ee7a52f3a3271fa94856153c7bd301">register_field</a> (size_t client_type_key, size_t key, const field_registration_function_t &amp;callback)</td></tr>
-<tr class="separator:a92ee7a52f3a3271fa94856153c7bd301"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7340ae36c07ca5b680cfcf3b28ab90ef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a7340ae36c07ca5b680cfcf3b28ab90ef">register_topology</a> (size_t type_hash, size_t key, const topology_registration_function_t &amp;callback)</td></tr>
+<tr class="separator:a7340ae36c07ca5b680cfcf3b28ab90ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20d6ec33f925c5fbbfb44452c35b2363"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a20d6ec33f925c5fbbfb44452c35b2363">topology_fields_registered</a> (size_t type_key, size_t instance_key)</td></tr>
+<tr class="separator:a20d6ec33f925c5fbbfb44452c35b2363"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2fb4498ef76d3125eed46982cf51cba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#aa2fb4498ef76d3125eed46982cf51cba">register_field</a> (size_t topology_type_key, size_t key, const field_registration_function_t &amp;callback)</td></tr>
+<tr class="separator:aa2fb4498ef76d3125eed46982cf51cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -230,52 +230,6 @@ template&lt;size_t NAMESPACE, typename OBJECT_TYPE , typename... ARGS&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A pointer to the newly allocated object.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>The global object instance will automatically be deleted by the runtime at shutdown. </dd></dl>
-
-</div>
-</div>
-<a id="a640ecd9e6a410202c541459682cd9bab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a640ecd9e6a410202c541459682cd9bab">&#9670;&nbsp;</a></span>client_fields_registered()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class CONTEXT_POLICY &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::client_fields_registered </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>type_key</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>instance_key</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Return a boolean indicating whether or not the given instance of a data client has had its internal fields registered with the data model.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">type_key</td><td>The hash key for the data client type. </td></tr>
-    <tr><td class="paramname">instance_key</td><td>The hash key for the data client instance. </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>
@@ -408,61 +362,8 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 
 </div>
 </div>
-<a id="af7be60ec1d095a848fd8044ab0cd0a55"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af7be60ec1d095a848fd8044ab0cd0a55">&#9670;&nbsp;</a></span>register_client()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class CONTEXT_POLICY &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::register_client </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>type_hash</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const client_registration_function_t &amp;&#160;</td>
-          <td class="paramname"><em>callback</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Register a data client with the runtime.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">type_hash</td><td>The data client indentifier hash. </td></tr>
-    <tr><td class="paramname">key</td><td>The identifier hash. </td></tr>
-    <tr><td class="paramname">callback</td><td>The registration call back function. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a92ee7a52f3a3271fa94856153c7bd301"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a92ee7a52f3a3271fa94856153c7bd301">&#9670;&nbsp;</a></span>register_field()</h2>
+<a id="aa2fb4498ef76d3125eed46982cf51cba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2fb4498ef76d3125eed46982cf51cba">&#9670;&nbsp;</a></span>register_field()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -476,7 +377,7 @@ template&lt;class CONTEXT_POLICY &gt; </div>
           <td class="memname">bool <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::register_field </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>client_type_key</em>, </td>
+          <td class="paramname"><em>topology_type_key</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -505,7 +406,7 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 <p>Register a field with the runtime.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">client_type_key</td><td>The data client indentifier hash. </td></tr>
+    <tr><td class="paramname">topology_type_key</td><td>The topology indentifier hash. </td></tr>
     <tr><td class="paramname">key</td><td>The identifier hash. </td></tr>
     <tr><td class="paramname">callback</td><td>The registration call back function. </td></tr>
   </table>
@@ -580,6 +481,59 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Set the top-level action. </p>
+
+</div>
+</div>
+<a id="a7340ae36c07ca5b680cfcf3b28ab90ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7340ae36c07ca5b680cfcf3b28ab90ef">&#9670;&nbsp;</a></span>register_topology()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class CONTEXT_POLICY &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::register_topology </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>type_hash</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const topology_registration_function_t &amp;&#160;</td>
+          <td class="paramname"><em>callback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Register a topology with the runtime.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type_hash</td><td>The topology indentifier hash. </td></tr>
+    <tr><td class="paramname">key</td><td>The identifier hash. </td></tr>
+    <tr><td class="paramname">callback</td><td>The registration call back function. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -684,6 +638,52 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Return the top-level action. </p>
+
+</div>
+</div>
+<a id="a20d6ec33f925c5fbbfb44452c35b2363"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20d6ec33f925c5fbbfb44452c35b2363">&#9670;&nbsp;</a></span>topology_fields_registered()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class CONTEXT_POLICY &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::topology_fields_registered </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>type_key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>instance_key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return a boolean indicating whether or not the given instance of a data topology has had its internal fields registered with the data model.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type_key</td><td>The hash key for the topology type. </td></tr>
+    <tr><td class="paramname">instance_key</td><td>The hash key for the topology instance. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

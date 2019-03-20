@@ -103,12 +103,6 @@ $(function() {
 <li>clear()
 : <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a03cc486c185e6745abdd67d412de1692">flecsi::utils::array_ref&lt; T &gt;</a>
 </li>
-<li>client_fields_registered()
-: <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a640ecd9e6a410202c541459682cd9bab">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
-</li>
-<li>client_handle_u()
-: <a class="el" href="structflecsi_1_1data_1_1client__handle__u.html#ab81d585dc94ca6c80d6a63c52db6a360">flecsi::data::client_handle_u&lt; CLIENT_TYPE, PRIVILEGES &gt;</a>
-</li>
 <li>color()
 : <a class="el" href="structflecsi_1_1execution_1_1context__u.html#abc22e5f9ca4f00cec2dedd48db3e3d4d">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
 </li>
@@ -196,17 +190,17 @@ $(function() {
 
 
 <h3><a id="index_g"></a>- g -</h3><ul>
-<li>get_client_handle()
-: <a class="el" href="structflecsi_1_1data_1_1client__interface__u.html#adbc838b3d4ee68995399a77c37722efd">flecsi::data::client_interface_u&lt; DATA_POLICY &gt;</a>
-</li>
 <li>get_global_object()
 : <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a633e50761926527caa97c54489ebaaf2">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
 </li>
 <li>get_handle()
-: <a class="el" href="group__data.html#gac2bd42bfb7d248f976b538c2552886a5">flecsi::data::field_interface_u&lt; DATA_POLICY &gt;</a>
+: <a class="el" href="group__data.html#ga775bac3478d3729d3303f2475f31c022">flecsi::data::field_interface_u&lt; DATA_POLICY &gt;</a>
 </li>
 <li>get_key()
 : <a class="el" href="structflecsi_1_1execution_1_1function__handle__u.html#aac917664eda0ed2decd1255beb7ac2f1">flecsi::execution::function_handle_u&lt; RETURN, ARG_TUPLE &gt;</a>
+</li>
+<li>get_topology_handle()
+: <a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html#aed966e2e198ed845c5d0032cf523151e">flecsi::data::topology_interface_u&lt; DATA_POLICY &gt;</a>
 </li>
 </ul>
 
@@ -368,15 +362,11 @@ $(function() {
 : <a class="el" href="structflecsi_1_1execution_1_1mpi__context__policy__t.html#ae2469955b98d9afa2340e65189e71db1">flecsi::execution::mpi_context_policy_t</a>
 </li>
 <li>register_callback()
-: <a class="el" href="structflecsi_1_1data_1_1field__registration__u.html#af8e8cb8e2960b26c125dd5810e69967a">flecsi::data::field_registration_u&lt; DATA_CLIENT_TYPE, STORAGE_CLASS, DATA_TYPE, NAMESPACE, NAME, VERSIONS, INDEX_SPACE &gt;</a>
-</li>
-<li>register_client()
-: <a class="el" href="structflecsi_1_1data_1_1client__interface__u.html#a9e584e2f76bd066b01beb9d430667398">flecsi::data::client_interface_u&lt; DATA_POLICY &gt;</a>
-, <a class="el" href="structflecsi_1_1execution_1_1context__u.html#af7be60ec1d095a848fd8044ab0cd0a55">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
+: <a class="el" href="structflecsi_1_1data_1_1storage__class__registration__u.html#a3ef91a830fa63653954da2105fffb495">flecsi::data::storage_class_registration_u&lt; TOPOLOGY_TYPE, STORAGE_CLASS, DATA_TYPE, NAMESPACE, NAME, VERSIONS, INDEX_SPACE &gt;</a>
 </li>
 <li>register_field()
 : <a class="el" href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">flecsi::data::field_interface_u&lt; DATA_POLICY &gt;</a>
-, <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a92ee7a52f3a3271fa94856153c7bd301">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
+, <a class="el" href="structflecsi_1_1execution_1_1context__u.html#aa2fb4498ef76d3125eed46982cf51cba">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
 </li>
 <li>register_function()
 : <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a44e98bd98dd97f4e16d7329cb0b9d9ff">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
@@ -397,6 +387,10 @@ $(function() {
 </li>
 <li>register_top_level_action()
 : <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a46dc2abe2eaeb4ddc6453e8afcf54b3a">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
+</li>
+<li>register_topology()
+: <a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html#ad5e8be5b9566ee494fe0cadc79525228">flecsi::data::topology_interface_u&lt; DATA_POLICY &gt;</a>
+, <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a7340ae36c07ca5b680cfcf3b28ab90ef">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
 </li>
 <li>registerType()
 : <a class="el" href="classflecsi_1_1utils_1_1Factory__.html#a4882a57e2e1f7200230995ab79be0b2a">flecsi::utils::Factory_&lt; RETURN, KEY, Args &gt;</a>
@@ -500,6 +494,9 @@ $(function() {
 </li>
 <li>top_level_action()
 : <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a95d094e1720e352049446a374e74f6d1">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
+</li>
+<li>topology_fields_registered()
+: <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a20d6ec33f925c5fbbfb44452c35b2363">flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</a>
 </li>
 </ul>
 

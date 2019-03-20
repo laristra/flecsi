@@ -3,7 +3,6 @@ var searchData=
   ['factory_5f',['Factory_',['../classflecsi_1_1utils_1_1Factory__.html',1,'flecsi::utils']]],
   ['fatal_5fhandler_5ft',['fatal_handler_t',['../structflecsi_1_1utils_1_1ftest_1_1fatal__handler__t.html',1,'flecsi::utils::ftest']]],
   ['field_5finterface_5fu',['field_interface_u',['../structflecsi_1_1data_1_1field__interface__u.html',1,'flecsi::data']]],
-  ['field_5fregistration_5fu',['field_registration_u',['../structflecsi_1_1data_1_1field__registration__u.html',1,'flecsi::data']]],
   ['flog_5ft',['flog_t',['../classflecsi_1_1utils_1_1flog_1_1flog__t.html',1,'flecsi::utils::flog']]],
   ['flog_5ftag_5fscope_5ft',['flog_tag_scope_t',['../structflecsi_1_1utils_1_1flog_1_1flog__tag__scope__t.html',1,'flecsi::utils::flog']]],
   ['ftest_5fcontrol_5fpolicy_5ft',['ftest_control_policy_t',['../structflecsi_1_1control_1_1ftest__control__policy__t.html',1,'flecsi::control']]],

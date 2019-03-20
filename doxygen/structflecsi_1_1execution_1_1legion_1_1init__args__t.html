@@ -103,10 +103,10 @@ template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a1ba66ddfc54050f189740587200b67a6"><td class="memItemLeft" align="right" valign="top">static Legion::PrivilegeMode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1init__args__t.html#a1ba66ddfc54050f189740587200b67a6">privilege_mode</a> (size_t mode)</td></tr>
 <tr class="separator:a1ba66ddfc54050f189740587200b67a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5cae008a67503e47435703a82950efd8"><td class="memTemplParams" colspan="2"><a id="a5cae008a67503e47435703a82950efd8"></a>
+<tr class="memitem:a31f793f39ac6ee900ba158b61fad3e03"><td class="memTemplParams" colspan="2"><a id="a31f793f39ac6ee900ba158b61fad3e03"></a>
 template&lt;typename DATA_TYPE &gt; </td></tr>
-<tr class="memitem:a5cae008a67503e47435703a82950efd8"><td class="memTemplItemLeft" align="right" valign="top">static std::enable_if_t&lt; !std::is_base_of_v&lt; data_reference_base_t, DATA_TYPE &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (DATA_TYPE &amp;)</td></tr>
-<tr class="separator:a5cae008a67503e47435703a82950efd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31f793f39ac6ee900ba158b61fad3e03"><td class="memTemplItemLeft" align="right" valign="top">static std::enable_if_t&lt; !std::is_base_of_v&lt; <a class="el" href="structflecsi_1_1data_1_1data__reference__base__t.html">data::data_reference_base_t</a>, DATA_TYPE &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (DATA_TYPE &amp;)</td></tr>
+<tr class="separator:a31f793f39ac6ee900ba158b61fad3e03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="structflecsi_1_1execution_1_1legion_1_1init__args__t.html">init_args_t</a> type can be called to walk task args before the task launcher is created. This allows us to gather region requirements and to set state on the associated data handles <em>before</em> Legion gets the task arguments tuple. </p>
