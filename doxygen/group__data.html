@@ -92,6 +92,8 @@ Macros</h2></td></tr>
 <tr class="separator:ga6c82a5185730b53971264d1209dfd506"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad75f3da49d10c611d85c7fe587a95c95"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#gad75f3da49d10c611d85c7fe587a95c95">flecsi_get_topology</a>(type,  nspace,  name)</td></tr>
 <tr class="separator:gad75f3da49d10c611d85c7fe587a95c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2b4044d26a3b4814de0522084754dfb4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga2b4044d26a3b4814de0522084754dfb4">flecsi_register_field</a>( client_type,  nspace,  name,  data_type,  storage_class,  versions, ...)</td></tr>
+<tr class="separator:ga2b4044d26a3b4814de0522084754dfb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gabc1c07e1641a9c7beb6536f043989255"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#gabc1c07e1641a9c7beb6536f043989255">flecsi_get_field</a>( topology,  nspace,  name,  data_type,  storage_class,  version)</td></tr>
 <tr class="separator:gabc1c07e1641a9c7beb6536f043989255"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7a93057192cb77748dbddeba3ba9d255"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga7a93057192cb77748dbddeba3ba9d255">flecsi_register_global</a>(nspace,  name,  data_type,  versions)</td></tr>
@@ -235,8 +237,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">topology</td><td>The topology instance with which to access the data. </td></tr>
-    <tr><td class="paramname">nspace</td><td>The namespace to use to access the variable. </td></tr>
-    <tr><td class="paramname">name</td><td>The name of the data variable to access. </td></tr>
+    <tr><td class="paramname">nspace</td><td>The string namespace to use to access the variable. </td></tr>
+    <tr><td class="paramname">name</td><td>The string name of the data variable to access. </td></tr>
     <tr><td class="paramname">data_type</td><td>The data type to access, e.g., double or my_type_t. </td></tr>
     <tr><td class="paramname">storage_class</td><td>The storage type for the data storage_class_t. </td></tr>
     <tr><td class="paramname">version</td><td>The version number of the data to access. This parameter can be used to manage multiple data versions, e.g., for new and old state. </td></tr>
@@ -382,14 +384,86 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  inline <span class="keywordtype">bool</span> client_type##_##nspace##_##name##_data_registered =              <a class="code" href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">\</a></div><div class="line"><a class="code" href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">    flecsi::data::field_interface_t::register_field</a>&lt;                           \</div><div class="line">      flecsi::topology::color_topology_t, flecsi::data::color, data_type,      \</div><div class="line">      flecsi_internal_hash(nspace), <a class="code" href="group__utils.html#ga41398506ffdcc9ef7ef1aae859a3c4f8">flecsi_internal_hash</a>(name), versions,      \</div><div class="line">      flecsi::topology::color_index_space&gt;({EXPAND_AND_STRINGIFY(name)})</div><div class="ttc" id="group__data_html_ga49c8b1ccbead983c122e380b5aa0fe75"><div class="ttname"><a href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">flecsi::data::field_interface_u::register_field</a></div><div class="ttdeci">static bool register_field(std::string const &amp;name)</div><div class="ttdef"><b>Definition:</b> field_interface.h:85</div></div>
-<div class="ttc" id="group__utils_html_ga41398506ffdcc9ef7ef1aae859a3c4f8"><div class="ttname"><a href="group__utils.html#ga41398506ffdcc9ef7ef1aae859a3c4f8">flecsi_internal_hash</a></div><div class="ttdeci">#define flecsi_internal_hash(name)</div><div class="ttdef"><b>Definition:</b> const_string.h:150</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  inline <span class="keywordtype">bool</span> flecsi_internal_unique_name(color_field) =                       <a class="code" href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">\</a></div><div class="line"><a class="code" href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">    flecsi::data::field_interface_t::register_field</a>&lt;                           \</div><div class="line">      flecsi::topology::color_topology_t, flecsi::data::color, data_type,      \</div><div class="line">      flecsi_internal_string_hash(nspace), <a class="code" href="group__utils.html#gac96b31c3919e7cd7c2bcdc964ffdfb12">flecsi_internal_string_hash</a>(name),  \</div><div class="line">      versions, flecsi::topology::color_index_space&gt;(                          \</div><div class="line">        {flecsi_internal_stringify(name)})</div><div class="ttc" id="group__utils_html_gac96b31c3919e7cd7c2bcdc964ffdfb12"><div class="ttname"><a href="group__utils.html#gac96b31c3919e7cd7c2bcdc964ffdfb12">flecsi_internal_string_hash</a></div><div class="ttdeci">#define flecsi_internal_string_hash(name)</div><div class="ttdef"><b>Definition:</b> const_string.h:137</div></div>
+<div class="ttc" id="group__data_html_ga49c8b1ccbead983c122e380b5aa0fe75"><div class="ttname"><a href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">flecsi::data::field_interface_u::register_field</a></div><div class="ttdeci">static bool register_field(std::string const &amp;name)</div><div class="ttdef"><b>Definition:</b> field_interface.h:85</div></div>
 </div><!-- fragment --><p>This macro registers color field data. This call does not necessarily cause memory to be allocated. Its primary function is to describe the field data to the runtime. Memory allocation will likely be deferred.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">nspace</td><td>The namespace to use to register the variable. </td></tr>
     <tr><td class="paramname">name</td><td>The name of the data variable to register. </td></tr>
     <tr><td class="paramname">data_type</td><td>The data type to store, e.g., double or my_type_t. </td></tr>
+    <tr><td class="paramname">versions</td><td>The number of versions of the data to register. This parameter can be used to manage multiple data versions, e.g., for new and old state. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga2b4044d26a3b4814de0522084754dfb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga2b4044d26a3b4814de0522084754dfb4">&#9670;&nbsp;</a></span>flecsi_register_field</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define flecsi_register_field</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">client_type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">nspace, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">data_type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">storage_class, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">versions, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  inline <span class="keywordtype">bool</span> flecsi_internal_unique_name(field) =                             <a class="code" href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">\</a></div><div class="line"><a class="code" href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">    flecsi::data::field_interface_t::register_field</a>&lt;client_type,               \</div><div class="line">      flecsi::data::storage_class, data_type,                                  \</div><div class="line">      flecsi_internal_string_hash(nspace), <a class="code" href="group__utils.html#gac96b31c3919e7cd7c2bcdc964ffdfb12">flecsi_internal_string_hash</a>(name),  \</div><div class="line">      versions, ##__VA_ARGS__&gt;(                                                \</div><div class="line">        {flecsi_internal_stringify(name)})</div><div class="ttc" id="group__utils_html_gac96b31c3919e7cd7c2bcdc964ffdfb12"><div class="ttname"><a href="group__utils.html#gac96b31c3919e7cd7c2bcdc964ffdfb12">flecsi_internal_string_hash</a></div><div class="ttdeci">#define flecsi_internal_string_hash(name)</div><div class="ttdef"><b>Definition:</b> const_string.h:137</div></div>
+<div class="ttc" id="group__data_html_ga49c8b1ccbead983c122e380b5aa0fe75"><div class="ttname"><a href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">flecsi::data::field_interface_u::register_field</a></div><div class="ttdeci">static bool register_field(std::string const &amp;name)</div><div class="ttdef"><b>Definition:</b> field_interface.h:85</div></div>
+</div><!-- fragment --><p>This macro registers field data with a data_client_t type. Data registration creates a data attribute for the given topology type. This call does not necessarily cause memory to be allocated. Its primary function is to describe the field data to the runtime. Memory allocation will likely be deferred.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">topology_type</td><td>The topology type. </td></tr>
+    <tr><td class="paramname">nspace</td><td>The string namespace to use to register the variable. </td></tr>
+    <tr><td class="paramname">name</td><td>The string name of the data variable to register. </td></tr>
+    <tr><td class="paramname">data_type</td><td>The data type to store, e.g., double or my_type_t. </td></tr>
+    <tr><td class="paramname">storage_class</td><td>The storage type for the data storage_class_t. </td></tr>
     <tr><td class="paramname">versions</td><td>The number of versions of the data to register. This parameter can be used to manage multiple data versions, e.g., for new and old state. </td></tr>
   </table>
   </dd>
@@ -434,7 +508,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  inline <span class="keywordtype">bool</span> flecsi_internal_unique_name(global_field) =                      <a class="code" href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">\</a></div><div class="line"><a class="code" href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">    flecsi::data::field_interface_t::register_field</a>&lt;                           \</div><div class="line">      flecsi::topology::global_topology_t, flecsi::data::global, data_type,    \</div><div class="line">      flecsi_internal_string_hash(nspace),                                     \</div><div class="line">      flecsi_internal_string_hash(name), versions,                             \</div><div class="line">      flecsi::topology::global_index_space&gt;({flecsi_internal_stringify(name)})</div><div class="ttc" id="group__data_html_ga49c8b1ccbead983c122e380b5aa0fe75"><div class="ttname"><a href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">flecsi::data::field_interface_u::register_field</a></div><div class="ttdeci">static bool register_field(std::string const &amp;name)</div><div class="ttdef"><b>Definition:</b> field_interface.h:85</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  inline <span class="keywordtype">bool</span> flecsi_internal_unique_name(global_field) =                      <a class="code" href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">\</a></div><div class="line"><a class="code" href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">    flecsi::data::field_interface_t::register_field</a>&lt;                           \</div><div class="line">      flecsi::topology::global_topology_t, flecsi::data::global, data_type,    \</div><div class="line">      flecsi_internal_string_hash(nspace), <a class="code" href="group__utils.html#gac96b31c3919e7cd7c2bcdc964ffdfb12">flecsi_internal_string_hash</a>(name),  \</div><div class="line">      versions, <a class="code" href="topology_2internal_8h.html#ad03d9a95a14f832cc082af3c06d8b849">flecsi::topology::global_index_space</a>&gt;(                         \</div><div class="line">        {flecsi_internal_stringify(name)})</div><div class="ttc" id="group__utils_html_gac96b31c3919e7cd7c2bcdc964ffdfb12"><div class="ttname"><a href="group__utils.html#gac96b31c3919e7cd7c2bcdc964ffdfb12">flecsi_internal_string_hash</a></div><div class="ttdeci">#define flecsi_internal_string_hash(name)</div><div class="ttdef"><b>Definition:</b> const_string.h:137</div></div>
+<div class="ttc" id="group__data_html_ga49c8b1ccbead983c122e380b5aa0fe75"><div class="ttname"><a href="group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75">flecsi::data::field_interface_u::register_field</a></div><div class="ttdeci">static bool register_field(std::string const &amp;name)</div><div class="ttdef"><b>Definition:</b> field_interface.h:85</div></div>
+<div class="ttc" id="topology_2internal_8h_html_ad03d9a95a14f832cc082af3c06d8b849"><div class="ttname"><a href="topology_2internal_8h.html#ad03d9a95a14f832cc082af3c06d8b849">flecsi::topology::global_index_space</a></div><div class="ttdeci">constexpr size_t global_index_space</div><div class="ttdef"><b>Definition:</b> internal.h:27</div></div>
 </div><!-- fragment --><p>This macro registers global field data. This call does not necessarily cause memory to be allocated. Its primary function is to describe the field data to the runtime. Memory allocation will likely be deferred.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -515,7 +591,7 @@ Functions</h2></td></tr>
 <p>This macro registers a topology with the FleCSI runtime. This call does not necessarily cause memory to be allocated. It's primary function is to describe the topology type to the runtime. Memory allocation will likely be deferred.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">type</td><td>The <a class="el" href="group__topology.html">Topology Interface</a> type. </td></tr>
+    <tr><td class="paramname">type</td><td>The topology type. </td></tr>
     <tr><td class="paramname">nspace</td><td>The string namespace to use to register the variable. </td></tr>
     <tr><td class="paramname">name</td><td>The string name to use to register the variable. </td></tr>
   </table>
