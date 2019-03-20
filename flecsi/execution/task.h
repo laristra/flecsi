@@ -16,10 +16,10 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly!
+#error Do not include this file directly!
 #else
-  #include <flecsi/execution/common/launch.h>
-  #include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/common/processor.h>
 #endif
 
 #include <iostream>

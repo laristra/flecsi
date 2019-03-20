@@ -71,8 +71,8 @@ struct cycle_u {
  */
 
 template<typename CONTROL_POLICY>
-struct control_point_walker_u
-  : public flecsi::utils::tuple_walker_u<control_point_walker_u<CONTROL_POLICY>> {
+struct control_point_walker_u : public flecsi::utils::tuple_walker_u<
+                                  control_point_walker_u<CONTROL_POLICY>> {
   control_point_walker_u(int argc, char ** argv) : argc_(argc), argv_(argv) {}
 
   /*!
@@ -91,8 +91,8 @@ struct control_point_walker_u
 
       // This is not a cycle -> execute each control action for this
       // control point.
-      auto & sorted =
-        CONTROL_POLICY::instance().sorted_control_point_map(ELEMENT_TYPE::value);
+      auto & sorted = CONTROL_POLICY::instance().sorted_control_point_map(
+        ELEMENT_TYPE::value);
 
       for(auto & node : sorted) {
         node.action()(argc_, argv_);
@@ -126,8 +126,8 @@ private:
  */
 
 template<typename CONTROL_POLICY>
-struct control_point_writer_u
-  : public flecsi::utils::tuple_walker_u<control_point_writer_u<CONTROL_POLICY>> {
+struct control_point_writer_u : public flecsi::utils::tuple_walker_u<
+                                  control_point_writer_u<CONTROL_POLICY>> {
   using graphviz_t = flecsi::utils::graphviz_t;
 
   control_point_writer_u(graphviz_t & gv) : gv_(gv) {}
@@ -145,15 +145,17 @@ struct control_point_writer_u
   typename std::enable_if<
     std::is_same<typename ELEMENT_TYPE::TYPE, size_t>::value>::type
   visit_type() {
-    auto & control_point_map = CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::value);
+    auto & control_point_map =
+      CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::value);
 
     // Add the control point node to the graph
-    auto * root =
-      gv_.add_node(control_point_map.label().c_str(), control_point_map.label().c_str());
+    auto * root = gv_.add_node(
+      control_point_map.label().c_str(), control_point_map.label().c_str());
 
     // Add edge dependency to last control point
     if(ELEMENT_TYPE::value > 0) {
-      auto & last = CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::value - 1);
+      auto & last =
+        CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::value - 1);
       auto * last_node = gv_.node(last.label().c_str());
       gv_.add_edge(last_node, root);
     } // if
@@ -191,8 +193,10 @@ struct control_point_writer_u
     // Add edges for cycles and beautify them...
 
     if(ELEMENT_TYPE::begin != ELEMENT_TYPE::end) {
-      auto & begin = CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::begin);
-      auto & end = CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::end);
+      auto & begin =
+        CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::begin);
+      auto & end =
+        CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::end);
       auto * edge = gv_.add_edge(
         gv_.node(end.label().c_str()), gv_.node(begin.label().c_str()));
       gv_.set_edge_attribute(edge, "label", "cycle");

@@ -34,25 +34,32 @@ using field = dense_accessor<double, EP, SP, GP>;
 //----------------------------------------------------------------------------//
 flecsi_register_data_client(mesh_t, meshes, m);
 
-flecsi_register_field(mesh_t, data, double_values, double, dense, 1,
+flecsi_register_field(mesh_t,
+  data,
+  double_values,
+  double,
+  dense,
+  1,
   index_spaces::cells);
 
 //----------------------------------------------------------------------------//
 // Double
 //----------------------------------------------------------------------------//
 
-void double_init(mesh<ro> m, field<rw, rw, na> v) {
-  for(auto c: m.cells(owned)) {
+void
+double_init(mesh<ro> m, field<rw, rw, na> v) {
+  for(auto c : m.cells(owned)) {
     v(c) = 1.0;
   } // for
 } // double_init
 
 flecsi_register_task(double_init, flecsi::execution, loc, index);
 
-double double_task(mesh<ro> m, field<rw, rw, ro> v) {
-  double sum{ 0.0 };
+double
+double_task(mesh<ro> m, field<rw, rw, ro> v) {
+  double sum{0.0};
 
-  for(auto c: m.cells(owned)) {
+  for(auto c : m.cells(owned)) {
     sum += v(c);
   } // for
 
@@ -94,7 +101,8 @@ specialization_spmd_init(int argc, char ** argv) {
 // User driver.
 //----------------------------------------------------------------------------//
 
-void driver(int argc, char ** argv) {
+void
+driver(int argc, char ** argv) {
 
   clog_tag_guard(reduction_interface);
 
@@ -104,31 +112,31 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task(double_init, flecsi::execution, index, mh, vh);
 
   {
-  auto f = flecsi_execute_reduction_task(double_task, flecsi::execution,
-    index, min, double, mh, vh);
+    auto f = flecsi_execute_reduction_task(
+      double_task, flecsi::execution, index, min, double, mh, vh);
 
-  clog(info) << "reduction min: " << f.get() << std::endl;
+    clog(info) << "reduction min: " << f.get() << std::endl;
   } // scope
 
   {
-  auto f = flecsi_execute_reduction_task(double_task, flecsi::execution,
-    index, max, double, mh, vh);
+    auto f = flecsi_execute_reduction_task(
+      double_task, flecsi::execution, index, max, double, mh, vh);
 
-  clog(info) << "reduction max: " << f.get() << std::endl;
+    clog(info) << "reduction max: " << f.get() << std::endl;
   } // scope
 
   {
-  auto f = flecsi_execute_reduction_task(double_task, flecsi::execution,
-    index, sum, double, mh, vh);
+    auto f = flecsi_execute_reduction_task(
+      double_task, flecsi::execution, index, sum, double, mh, vh);
 
-  clog(info) << "reduction sum: " << f.get() << std::endl;
+    clog(info) << "reduction sum: " << f.get() << std::endl;
   } // scope
 
   {
-  auto f = flecsi_execute_reduction_task(double_task, flecsi::execution,
-    index, product, double, mh, vh);
+    auto f = flecsi_execute_reduction_task(
+      double_task, flecsi::execution, index, product, double, mh, vh);
 
-  clog(info) << "reduction product: " << f.get() << std::endl;
+    clog(info) << "reduction product: " << f.get() << std::endl;
   } // scope
 } // driver
 

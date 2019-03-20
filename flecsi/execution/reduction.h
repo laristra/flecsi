@@ -16,11 +16,11 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly!
+#error Do not include this file directly!
 #else
-  #include <flecsi/execution/task.h>
-  #include <flecsi/utils/const_string.h>
-  #include <flecsi/utils/hash.h>
+#include <flecsi/execution/task.h>
+#include <flecsi/utils/const_string.h>
+#include <flecsi/utils/hash.h>
 #endif
 
 #include <limits>
@@ -99,11 +99,11 @@ struct min {
 
   using LHS = T;
   using RHS = T;
-  static constexpr T identity{ std::numeric_limits<T>::max()};
+  static constexpr T identity{std::numeric_limits<T>::max()};
 
-  template<bool EXCLUSIVE >
+  template<bool EXCLUSIVE>
   static void apply(LHS & lhs, RHS rhs) {
-    if constexpr (EXCLUSIVE) {
+    if constexpr(EXCLUSIVE) {
       lhs = lhs < rhs ? lhs : rhs;
     }
     else {
@@ -116,15 +116,15 @@ struct min {
       do {
         oldval.as_int = *target;
         newval.as_T = std::min(oldval.as_T, rhs);
-      } while(!__sync_bool_compare_and_swap(target, oldval.as_int,
-        newval.as_int));
+      } while(
+        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
     } // if
   } // apply
 
-  template<bool EXCLUSIVE >
+  template<bool EXCLUSIVE>
   static void fold(RHS & rhs1, RHS rhs2) {
 
-    if constexpr (EXCLUSIVE) {
+    if constexpr(EXCLUSIVE) {
       rhs1 = std::min(rhs1, rhs2);
     }
     else {
@@ -137,8 +137,8 @@ struct min {
       do {
         oldval.as_int = *target;
         newval.as_T = std::min(oldval.as_T, rhs2);
-      } while(!__sync_bool_compare_and_swap(target, oldval.as_int,
-        newval.as_int));
+      } while(
+        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
     } // if
   } // fold
 
@@ -160,7 +160,7 @@ struct max {
   template<bool EXCLUSIVE = true>
   static void apply(LHS & lhs, RHS rhs) {
 
-    if constexpr (EXCLUSIVE) {
+    if constexpr(EXCLUSIVE) {
       lhs = lhs > rhs ? lhs : rhs;
     }
     else {
@@ -171,7 +171,7 @@ struct max {
   template<bool EXCLUSIVE = true>
   static void fold(LHS & lhs, RHS rhs) {
 
-    if constexpr (EXCLUSIVE) {
+    if constexpr(EXCLUSIVE) {
       lhs = lhs > rhs ? lhs : rhs;
     }
     else {
@@ -201,7 +201,7 @@ struct sum {
   template<bool EXCLUSIVE = true>
   static void apply(LHS & lhs, RHS rhs) {
 
-    if constexpr (EXCLUSIVE) {
+    if constexpr(EXCLUSIVE) {
       lhs += rhs;
     }
     else {
@@ -212,7 +212,7 @@ struct sum {
   template<bool EXCLUSIVE = true>
   static void fold(LHS & lhs, RHS rhs) {
 
-    if constexpr (EXCLUSIVE) {
+    if constexpr(EXCLUSIVE) {
       lhs += rhs;
     }
     else {
@@ -238,7 +238,7 @@ struct product {
   template<bool EXCLUSIVE = true>
   static void apply(LHS & lhs, RHS rhs) {
 
-    if constexpr (EXCLUSIVE) {
+    if constexpr(EXCLUSIVE) {
       lhs *= rhs;
     }
     else {
@@ -249,7 +249,7 @@ struct product {
   template<bool EXCLUSIVE = true>
   static void fold(LHS & lhs, RHS rhs) {
 
-    if constexpr (EXCLUSIVE) {
+    if constexpr(EXCLUSIVE) {
       lhs *= rhs;
     }
     else {

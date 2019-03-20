@@ -12,11 +12,12 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/ftest.h>
 
-void const_string(int argc, char ** argv) {
+void
+const_string(int argc, char ** argv) {
 
   FTEST();
 
@@ -49,7 +50,8 @@ void const_string(int argc, char ** argv) {
   std::string x = "no exception";
   try {
     (void)a[9]; // considered to be out-of-range (not the \0)
-  } catch (...) {
+  }
+  catch(...) {
     x = "caught an exception";
   }
   EXPECT_EQ(x, "caught an exception");
@@ -76,7 +78,6 @@ void const_string(int argc, char ** argv) {
 
   const flecsi::utils::const_string_hasher_t hasher{};
   EXPECT_EQ(const_string_t("abc").hash(), hasher(const_string_t("abc")));
-
 }
 
 ftest_register_test(const_string);

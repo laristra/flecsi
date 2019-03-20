@@ -18,9 +18,9 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-  #include <flecsi/data/legion/storage_classes.h>
-  #include <flecsi/utils/demangle.h>
-  #include <flecsi/utils/tuple_walker.h>
+#include <flecsi/data/legion/storage_classes.h>
+#include <flecsi/utils/demangle.h>
+#include <flecsi/utils/tuple_walker.h>
 #endif
 
 flog_register_tag(prologue);
@@ -97,14 +97,13 @@ struct task_prologue_t : public flecsi::utils::tuple_walker_u<task_prologue_t> {
     !std::is_base_of_v<data::data_reference_base_t, DATA_TYPE>>
   visit(DATA_TYPE &) {
     {
-    flog_tag_guard(init_args);
-    flog(internal) << "Skipping argument with type " <<
-      flecsi::utils::type<DATA_TYPE>() << std::endl;
+      flog_tag_guard(init_args);
+      flog(internal) << "Skipping argument with type "
+                     << flecsi::utils::type<DATA_TYPE>() << std::endl;
     }
   } // visit
 
 private:
-
   Legion::Runtime * runtime_;
   Legion::Context & context_;
   Legion::Domain & color_domain_;

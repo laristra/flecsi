@@ -79,7 +79,8 @@ tuple_visitor(_Fn && f) {
   using _Indices =
     std::make_index_sequence<std::tuple_size_v<std::decay_t<_Tuple>>>;
 
-  tuple_visitor_impl(std::forward<_Tuple>({}), std::forward<_Fn>(f), _Indices{});
+  tuple_visitor_impl(
+    std::forward<_Tuple>({}), std::forward<_Fn>(f), _Indices{});
 }
 
 } // namespace utils

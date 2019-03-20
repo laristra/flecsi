@@ -18,9 +18,9 @@
 
 #include <iostream>
 
-#include<flecsi-tutorial/specialization/mesh/mesh.h>
-#include<flecsi/data/data.h>
-#include<flecsi/execution/execution.h>
+#include <flecsi-tutorial/specialization/mesh/mesh.h>
+#include <flecsi/data/data.h>
+#include <flecsi/execution/execution.h>
 
 #include "types.h"
 
@@ -36,13 +36,14 @@ namespace example {
 // nothing has changed about the iteration logic over the mesh. The only
 // difference is that now the dereferenced values are struct instances.
 
-void initialize_field(mesh<ro> mesh, struct_field<rw> f) {
-  for(auto c: mesh.cells(owned)) {
-    f(c).a = double(c->id())*1000.0;
+void
+initialize_field(mesh<ro> mesh, struct_field<rw> f) {
+  for(auto c : mesh.cells(owned)) {
+    f(c).a = double(c->id()) * 1000.0;
     f(c).b = c->id();
     f(c).v[0] = double(c->id());
-    f(c).v[1] = double(c->id())+1.0;
-    f(c).v[2] = double(c->id())+2.0;
+    f(c).v[1] = double(c->id()) + 1.0;
+    f(c).v[2] = double(c->id()) + 2.0;
   } // for
 } // initialize_field
 
@@ -50,8 +51,9 @@ flecsi_register_task(initialize_field, example, loc, single);
 
 // This task prints the struct values.
 
-void print_field(mesh<ro> mesh, struct_field<ro> f) {
-  for(auto c: mesh.cells(owned)) {
+void
+print_field(mesh<ro> mesh, struct_field<ro> f) {
+  for(auto c : mesh.cells(owned)) {
     std::cout << "cell id: " << c->id() << " has value: " << std::endl;
     std::cout << "\ta: " << f(c).a << std::endl;
     std::cout << "\tb: " << f(c).b << std::endl;
@@ -68,7 +70,8 @@ flecsi_register_task(print_field, example, loc, single);
 namespace flecsi {
 namespace execution {
 
-void driver(int argc, char ** argv) {
+void
+driver(int argc, char ** argv) {
 
   auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
 

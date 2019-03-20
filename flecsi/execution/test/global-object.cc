@@ -26,33 +26,33 @@ struct base_t {
 };
 
 struct derived_a_t : public base_t {
-  derived_a_t(int value)
-    : value_(value) {}
+  derived_a_t(int value) : value_(value) {}
 
-  ~derived_a_t() { std::cout << "desctructor derived_a_t" << std::endl; }
+  ~derived_a_t() {
+    std::cout << "desctructor derived_a_t" << std::endl;
+  }
 
   int operator()() override {
     return value_;
   } // print
 
 private:
-
   int value_;
 
 }; // struct derived_a_t
 
 struct derived_b_t : public base_t {
-  derived_b_t(int value)
-    : value_(value) {}
+  derived_b_t(int value) : value_(value) {}
 
-  ~derived_b_t() { std::cout << "desctructor derived_b_t" << std::endl; }
+  ~derived_b_t() {
+    std::cout << "desctructor derived_b_t" << std::endl;
+  }
 
   int operator()() override {
-    return 5*value_;
+    return 5 * value_;
   } // print
 
 private:
-
   int value_;
 
 }; // struct derived_b_t
@@ -61,7 +61,8 @@ private:
 
  */
 
-void global_object(int argc, char ** argv) {
+void
+global_object(int argc, char ** argv) {
 
   FTEST();
 

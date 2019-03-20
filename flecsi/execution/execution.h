@@ -16,7 +16,7 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #define __FLECSI_PRIVATE__
+#define __FLECSI_PRIVATE__
 #endif
 
 #include <flecsi/execution/context.h>
@@ -95,8 +95,8 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi::execution::context_t::instance()                                     \
-    .template get_global_object<flecsi_internal_string_hash(scope),            \
-      type>(index);
+    .template get_global_object<flecsi_internal_string_hash(scope), type>(     \
+      index);
 
 //----------------------------------------------------------------------------//
 // Task Registration Interface

@@ -16,9 +16,9 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly
+#error Do not include this file directly
 #else
-  #include <flecsi/utils/tuple_function.h>
+#include <flecsi/utils/tuple_function.h>
 #endif
 
 #include <functional>

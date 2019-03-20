@@ -16,9 +16,9 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly
+#error Do not include this file directly
 #else
-  #include <flecsi/utils/debruijn.h>
+#include <flecsi/utils/debruijn.h>
 #endif
 
 #include <bitset>

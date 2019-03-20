@@ -3,7 +3,8 @@
 
 #include <random>
 
-void debruijn(int argc, char ** argv) {
+void
+debruijn(int argc, char ** argv) {
 
   FTEST();
 
@@ -22,7 +23,7 @@ void debruijn(int argc, char ** argv) {
   //    00000000000000000000000000000100
   //    ...
   //    10000000000000000000000000000000
-  for (uint32_t i = 0; i < 32; ++i) {
+  for(uint32_t i = 0; i < 32; ++i) {
     EXPECT_EQ(debruijn32_t::index(1 << i), i);
   } // for
 
@@ -31,12 +32,11 @@ void debruijn(int argc, char ** argv) {
   // the left (never to the right) of the existing 1
   std::mt19937 random;
   random.seed(12345);
-  for (int count = 0; count < 10000; ++count) {
-    for (uint32_t i = 0; i < 32; ++i) {
+  for(int count = 0; count < 10000; ++count) {
+    for(uint32_t i = 0; i < 32; ++i) {
       EXPECT_EQ(debruijn32_t::index(uint32_t(random() << i) | (1 << i)), i);
     } // for
   } // for
-
 }
 
 ftest_register_test(debruijn);

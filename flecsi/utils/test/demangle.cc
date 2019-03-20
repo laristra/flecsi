@@ -14,7 +14,8 @@
 
 #include <flecsi/utils/ftest.h>
 
-void demangle(int argc, char ** argv) {
+void
+demangle(int argc, char ** argv) {
 
   FTEST();
 
@@ -29,7 +30,6 @@ void demangle(int argc, char ** argv) {
   EXPECT_NE(str_demangle, "");
   EXPECT_NE(str_type, "");
   EXPECT_EQ(str_demangle, str_type);
-
 }
 
 ftest_register_test(demangle);

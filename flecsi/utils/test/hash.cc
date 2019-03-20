@@ -15,7 +15,8 @@
 #include <flecsi/utils/ftest.h>
 #include <flecsi/utils/hash.h>
 
-void hash(int argc, char ** argv) {
+void
+hash(int argc, char ** argv) {
 
   FTEST();
 
@@ -327,13 +328,12 @@ void hash(int argc, char ** argv) {
   std::map<std::size_t, std::string> hashes;
   std::size_t num_collisions = 0;
 
-  for (auto s : strs) {
+  for(auto s : strs) {
     // compute hash of string s and check whether it's already in the list
     auto hash = flecsi::utils::string_hash<std::size_t>(s, s.size());
-    if (hashes.count(hash) > 0) {
-      printf(
-          "COLLISION: '%s' collides with '%s'\n", s.c_str(),
-          hashes.at(hash).c_str());
+    if(hashes.count(hash) > 0) {
+      printf("COLLISION: '%s' collides with '%s'\n", s.c_str(),
+        hashes.at(hash).c_str());
       ++num_collisions;
     }
     else {

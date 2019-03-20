@@ -21,32 +21,32 @@ TEST(simple_definition, simple) {
   CINCH_ASSERT(TRUE, sd.num_entities(0) == 81);
   CINCH_ASSERT(TRUE, sd.num_entities(2) == 64);
 
-  for(size_t c(0); c<sd.num_entities(2); ++c) {
-    size_t row = c/M;
-    size_t col = c%M;
+  for(size_t c(0); c < sd.num_entities(2); ++c) {
+    size_t row = c / M;
+    size_t col = c % M;
 
-    size_t r0 = col + row*(M+1);
-    size_t r1 = r0 + M+1;
+    size_t r0 = col + row * (M + 1);
+    size_t r1 = r0 + M + 1;
 
     auto ids = sd.entities(2, 0, c);
 
     CINCH_ASSERT(EQ, ids[0], r0);
-    CINCH_ASSERT(EQ, ids[1], (r0+1));
-    CINCH_ASSERT(EQ, ids[2], (r1+1));
+    CINCH_ASSERT(EQ, ids[1], (r0 + 1));
+    CINCH_ASSERT(EQ, ids[2], (r1 + 1));
     CINCH_ASSERT(EQ, ids[3], r1);
   } // for
 
-  double xinc = 1.0/N;
-  double yinc = 1.0/M;
+  double xinc = 1.0 / N;
+  double yinc = 1.0 / M;
 
-  for(size_t v(0); v<sd.num_entities(2); ++v) {
-    size_t row = v/(M+1);
-    size_t col = v%(M+1);
+  for(size_t v(0); v < sd.num_entities(2); ++v) {
+    size_t row = v / (M + 1);
+    size_t col = v % (M + 1);
 
     auto coords = sd.vertex(v);
 
-    CINCH_ASSERT(EQ, coords[0], col*xinc);
-    CINCH_ASSERT(EQ, coords[1], row*yinc);
+    CINCH_ASSERT(EQ, coords[0], col * xinc);
+    CINCH_ASSERT(EQ, coords[1], row * yinc);
   } // for
 
 } // TEST
@@ -56,16 +56,16 @@ TEST(simple_definition, neighbors) {
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
 
   // Primary partititon
-  std::set<size_t> partition = { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19 };
+  std::set<size_t> partition = {0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19};
 
   // The closure captures any cell that is adjacent to a cell in the
   // set of indices passed to the method. The closure includes the
   // initial set of indices.
-  auto closure = flecsi::topology::entity_neighbors<2,2,1>(sd, partition);
+  auto closure = flecsi::topology::entity_neighbors<2, 2, 1>(sd, partition);
 
-  CINCH_ASSERT(EQ, closure, std::set<size_t>({0, 1, 2, 3, 4, 8, 9, 10, 11,
-                                             12, 16, 17, 18, 19, 20, 24,
-                                             25, 26, 27}));
+  CINCH_ASSERT(EQ, closure,
+    std::set<size_t>(
+      {0, 1, 2, 3, 4, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 24, 25, 26, 27}));
 
   // Subtracting out the initial set leaves just the nearest
   // neighbors. This is similar to the image of the adjacency
@@ -77,7 +77,7 @@ TEST(simple_definition, neighbors) {
   // The closure of the nearest neighbors intersected with
   // the initial indeces gives the shared indices. This is similar to
   // the preimage of the nearest neighbors.
-  auto nnclosure = flecsi::topology::entity_neighbors<2,2,1>(sd, nn);
+  auto nnclosure = flecsi::topology::entity_neighbors<2, 2, 1>(sd, nn);
   auto shared = flecsi::utils::set_intersection(nnclosure, partition);
 
   CINCH_ASSERT(EQ, shared, std::set<size_t>({3, 11, 16, 17, 18, 19}));

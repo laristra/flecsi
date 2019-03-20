@@ -7,12 +7,13 @@
 // Prints an array_ref<char>, as a character string
 inline void
 print_refc(const flecsi::utils::array_ref<char> & arr) {
-  for (auto c = arr.begin(); c != arr.end(); ++c)
+  for(auto c = arr.begin(); c != arr.end(); ++c)
     FTEST_CAPTURE() << *c;
   FTEST_CAPTURE() << std::endl;
 }
 
-void array_ref(int argc, char ** argv) {
+void
+array_ref(int argc, char ** argv) {
 
   FTEST();
 
@@ -109,7 +110,7 @@ void array_ref(int argc, char ** argv) {
   print_refc(refc(abc).substr(2));
   print_refc(refc(abc).substr(7));
   print_refc(refc(abc).substr(8));
-  print_refc(refc(abc).substr(9));   // blank
+  print_refc(refc(abc).substr(9)); // blank
   print_refc(refc(abc).substr(100)); // blank
   FTEST_CAPTURE() << std::endl;
 
@@ -118,7 +119,7 @@ void array_ref(int argc, char ** argv) {
   print_refc(refc(abc).substr(2, 3));
   print_refc(refc(abc).substr(7, 5));
   print_refc(refc(abc).substr(8, 1));
-  print_refc(refc(abc).substr(9, 1));   // blank
+  print_refc(refc(abc).substr(9, 1)); // blank
   print_refc(refc(abc).substr(100, 1)); // blank
   FTEST_CAPTURE() << std::endl;
 
@@ -126,16 +127,16 @@ void array_ref(int argc, char ** argv) {
   // iterators
   // ------------------------
 
-  for (auto it = abc.begin(); it != abc.end(); ++it)
+  for(auto it = abc.begin(); it != abc.end(); ++it)
     FTEST_CAPTURE() << *it;
   FTEST_CAPTURE() << std::endl;
-  for (auto it = abc.cbegin(); it != abc.cend(); ++it)
+  for(auto it = abc.cbegin(); it != abc.cend(); ++it)
     FTEST_CAPTURE() << *it;
   FTEST_CAPTURE() << std::endl;
-  for (auto it = abc.rbegin(); it != abc.rend(); ++it)
+  for(auto it = abc.rbegin(); it != abc.rend(); ++it)
     FTEST_CAPTURE() << *it;
   FTEST_CAPTURE() << std::endl;
-  for (auto it = abc.crbegin(); it != abc.crend(); ++it)
+  for(auto it = abc.crbegin(); it != abc.crend(); ++it)
     FTEST_CAPTURE() << *it;
   FTEST_CAPTURE() << std::endl;
 
@@ -177,7 +178,8 @@ void array_ref(int argc, char ** argv) {
   // test at() exception
   try {
     FTEST_CAPTURE() << cap3.at(3) << std::endl;
-  } catch (...) {
+  }
+  catch(...) {
     FTEST_CAPTURE() << "Caught an (intentionally generated!) test exception";
   }
   FTEST_CAPTURE() << std::endl;
@@ -233,7 +235,7 @@ void array_ref(int argc, char ** argv) {
 
     f.remove_prefix(1); // ==> nothing left!
     EXPECT_EQ(f.size(), 0);
-    for (auto it = f.begin(); it != f.end(); ++it)
+    for(auto it = f.begin(); it != f.end(); ++it)
       assert(false);
 
     // pop_*()
@@ -286,7 +288,6 @@ void array_ref(int argc, char ** argv) {
 #else
   EXPECT_TRUE(FTEST_EQUAL_BLESSED("array_ref.blessed"));
 #endif
-
 }
 
 ftest_register_test(array_ref);

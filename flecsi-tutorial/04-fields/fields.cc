@@ -18,9 +18,9 @@
 
 #include <iostream>
 
-#include<flecsi-tutorial/specialization/mesh/mesh.h>
-#include<flecsi/data/data.h>
-#include<flecsi/execution/execution.h>
+#include <flecsi-tutorial/specialization/mesh/mesh.h>
+#include <flecsi/data/data.h>
+#include <flecsi/execution/execution.h>
 
 using namespace flecsi;
 using namespace flecsi::tutorial;
@@ -37,8 +37,9 @@ namespace example {
 // This task takes mesh and field accessors and initializes the
 // field with the id of the cell on which it is defined.
 
-void initialize_field(mesh<ro> mesh, field<rw> f) {
-  for(auto c: mesh.cells(owned)) {
+void
+initialize_field(mesh<ro> mesh, field<rw> f) {
+  for(auto c : mesh.cells(owned)) {
     f(c) = double(c->id());
   } // for
 } // initialize_field
@@ -49,10 +50,10 @@ flecsi_register_task(initialize_field, example, loc, single);
 
 // This task prints the field values.
 
-void print_field(mesh<ro> mesh, field<ro> f) {
-  for(auto c: mesh.cells(owned)) {
-    clog(info) << "cell id: " << c->id() << " has value " <<
-      f(c) << std::endl;
+void
+print_field(mesh<ro> mesh, field<ro> f) {
+  for(auto c : mesh.cells(owned)) {
+    clog(info) << "cell id: " << c->id() << " has value " << f(c) << std::endl;
   } // for
 } // print_field
 
@@ -65,7 +66,8 @@ flecsi_register_task(print_field, example, loc, single);
 namespace flecsi {
 namespace execution {
 
-void driver(int argc, char ** argv) {
+void
+driver(int argc, char ** argv) {
 
   // Get data handles to the client and field
 

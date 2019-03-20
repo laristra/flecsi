@@ -16,12 +16,14 @@
 #include <flecsi/utils/set_intersection.h>
 
 template<class CONTAINER>
-inline bool intersects(const CONTAINER & one, const CONTAINER & two) {
-  return flecsi::utils::intersects(one.begin(), one.end(), two.begin(),
-    two.end());
+inline bool
+intersects(const CONTAINER & one, const CONTAINER & two) {
+  return flecsi::utils::intersects(
+    one.begin(), one.end(), two.begin(), two.end());
 }
 
-void set_intersection(int argc, char ** argv) {
+void
+set_intersection(int argc, char ** argv) {
 
   FTEST();
 

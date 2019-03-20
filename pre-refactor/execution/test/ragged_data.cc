@@ -27,26 +27,26 @@ void
 init(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
   auto rank = execution::context_t::instance().color();
 
-  for (auto c : mesh.cells(owned)) {
+  for(auto c : mesh.cells(owned)) {
     auto gid = c->gid();
     // for most cells, do a checkerboard pattern
     bool parity = (gid / 8 + gid % 8) & 1;
     int count = (parity ? 3 : 2);
     // make a few cells overflow
-    if (gid >= 11 && gid <= 13) count = 8;
+    if(gid >= 11 && gid <= 13)
+      count = 8;
     rm.resize(c, count);
-    for (size_t j = 0; j < count; ++j) {
+    for(size_t j = 0; j < count; ++j) {
       rm(c, j) = rank * 10000 + gid * 100 + j;
     }
   }
 } // init
 
 void
-modify(
-    client_handle_t<test_mesh_t, ro> mesh,
-    ragged_accessor<double, rw, rw, ro> rh) {
-  for (auto c : mesh.cells(owned)) {
-    for (auto entry : rh.entries(c)) {
+modify(client_handle_t<test_mesh_t, ro> mesh,
+  ragged_accessor<double, rw, rw, ro> rh) {
+  for(auto c : mesh.cells(owned)) {
+    for(auto entry : rh.entries(c)) {
       rh(c, entry) = -rh(c, entry);
     }
   }
@@ -56,19 +56,19 @@ void
 mutate(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
   auto rank = execution::context_t::instance().color();
 
-  for (auto c : mesh.cells(owned)) {
+  for(auto c : mesh.cells(owned)) {
     auto gid = c->gid();
     bool parity = (gid / 8 + gid % 8) & 1;
     // make some cells overflow
-    if (gid == 11 || gid == 14) {
+    if(gid == 11 || gid == 14) {
       rm.resize(c, 10);
-      for (size_t j = 3; j < 10; ++j) {
+      for(size_t j = 3; j < 10; ++j) {
         rm(c, j) = rank * 10000 + gid * 100 + 50 + j;
       }
     }
     // flip the checkerboard:  entries that had 3 entries will now
     // have 2, and vice-versa
-    else if (parity) {
+    else if(parity) {
       rm.resize(c, 2);
       rm(c, 1) = rank * 10000 + gid * 100 + 66;
     }
@@ -80,11 +80,10 @@ mutate(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
 } // mutate
 
 void
-print(
-    client_handle_t<test_mesh_t, ro> mesh,
-    ragged_accessor<double, ro, ro, ro> rh) {
-  for (auto c : mesh.cells()) {
-    for (auto entry : rh.entries(c)) {
+print(client_handle_t<test_mesh_t, ro> mesh,
+  ragged_accessor<double, ro, ro, ro> rh) {
+  for(auto c : mesh.cells()) {
+    for(auto entry : rh.entries(c)) {
       CINCH_CAPTURE() << c->id() << ":" << entry << ": " << rh(c, entry)
                       << std::endl;
     }
@@ -98,14 +97,13 @@ flecsi_register_task_simple(modify, loc, index);
 flecsi_register_task_simple(mutate, loc, index);
 flecsi_register_task_simple(print, loc, index);
 
-flecsi_register_field(
-    test_mesh_t,
-    hydro,
-    pressure,
-    double,
-    ragged,
-    1,
-    index_spaces::cells);
+flecsi_register_field(test_mesh_t,
+  hydro,
+  pressure,
+  double,
+  ragged,
+  1,
+  index_spaces::cells);
 
 //----------------------------------------------------------------------------//
 // Specialization driver.
@@ -150,7 +148,7 @@ driver(int argc, char ** argv) {
   future.wait(); // wait before comparing results
 
   auto & context = execution::context_t::instance();
-  if (context.color() == 0) {
+  if(context.color() == 0) {
     ASSERT_TRUE(CINCH_EQUAL_BLESSED("ragged_data.blessed"));
   }
 
@@ -169,4 +167,3 @@ TEST(ragged_data, testname) {} // TEST
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~------------------------------------------------------------------------~--*/
-

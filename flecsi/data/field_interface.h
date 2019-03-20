@@ -86,9 +86,8 @@ struct field_interface_u {
     static_assert(VERSIONS <= utils::hash::field_max_versions,
       "max field versions exceeded");
 
-    using registration_t =
-      storage_class_registration_u<TOPOLOGY_TYPE, STORAGE_CLASS,
-      DATA_TYPE, NAMESPACE, NAME, VERSIONS, INDEX_SPACE>;
+    using registration_t = storage_class_registration_u<TOPOLOGY_TYPE,
+      STORAGE_CLASS, DATA_TYPE, NAMESPACE, NAME, VERSIONS, INDEX_SPACE>;
 
     const size_t client_type_key =
       typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();

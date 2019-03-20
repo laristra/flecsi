@@ -469,7 +469,7 @@ struct legion_context_policy_t {
   struct index_space_data_t {
     std::map<field_id_t, bool> ghost_is_readable;
     std::map<field_id_t, bool> write_phase_started;
-    Legion::IndexPartition ghost_owners_ip;  // prevent Destructor call
+    Legion::IndexPartition ghost_owners_ip; // prevent Destructor call
     Legion::LogicalPartition ghost_owners_lp;
     Legion::LogicalRegion entire_region;
     Legion::LogicalPartition color_partition;
@@ -477,9 +477,9 @@ struct legion_context_policy_t {
     Legion::LogicalPartition exclusive_lp;
     Legion::LogicalPartition shared_lp;
     Legion::LogicalPartition ghost_lp;
-    Legion::STL::
-        map<LegionRuntime::Arrays::coord_t, LegionRuntime::Arrays::coord_t>
-            global_to_local_color_map;
+    Legion::STL::map<LegionRuntime::Arrays::coord_t,
+      LegionRuntime::Arrays::coord_t>
+      global_to_local_color_map;
   };
 
   struct index_subspace_data_t {
@@ -487,7 +487,7 @@ struct legion_context_policy_t {
     Legion::LogicalPartition logical_partition;
   };
 
-  struct sparse_metadata_t{
+  struct sparse_metadata_t {
     Legion::LogicalPartition color_partition;
     Legion::LogicalRegion entire_region;
   };
@@ -496,8 +496,8 @@ struct legion_context_policy_t {
     sparse_metadata_ = sparse_metadata;
   }
 
-  sparse_metadata_t& sparse_metadata(){
-    return sparse_metadata_;    
+  sparse_metadata_t & sparse_metadata() {
+    return sparse_metadata_;
   }
 
   /*!
@@ -516,10 +516,9 @@ struct legion_context_policy_t {
     return index_subspace_data_map_;
   }
 
-
-    /*! Perform reduction of the maximum value
-    @param task future
-   */
+  /*! Perform reduction of the maximum value
+  @param task future
+ */
 
   template<typename T, launch_type_t launch>
   auto reduce_max(legion_future_u<T, launch> & global_future) {
@@ -534,7 +533,7 @@ struct legion_context_policy_t {
     @param task future
    */
 
-  template<typename T,  launch_type_t launch>
+  template<typename T, launch_type_t launch>
   auto reduce_min(legion_future_u<T, launch> & global_future) {
 
     auto global_min_ = global_future.get();
@@ -565,7 +564,6 @@ struct legion_context_policy_t {
   }
 
 private:
-
   size_t color_ = 0;
   size_t colors_ = 0;
 

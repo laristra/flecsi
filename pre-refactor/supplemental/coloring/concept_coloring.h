@@ -16,11 +16,11 @@
 /*! @file */
 
 #include <flecsi/coloring/concept.h>
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/coloring/mpi_communicator.h>
+#include <flecsi/coloring/parmetis_colorer.h>
 #include <flecsi/execution/execution.h>
 #include <flecsi/io/simple_definition.h>
-#include <flecsi/coloring/dcrs_utils.h>
-#include <flecsi/coloring/parmetis_colorer.h>
-#include <flecsi/coloring/mpi_communicator.h>
 
 #include <flecsi/utils/tuple_visit.h>
 
@@ -39,8 +39,8 @@ namespace execution {
 //----------------------------------------------------------------------------//
 
 template<typename COLORING_POLICY>
-void generic_coloring(
-  typename COLORING_POLICY::mesh_definition_t & md,
+void
+generic_coloring(typename COLORING_POLICY::mesh_definition_t & md,
   std::set<size_t> const & primary) {
 
   using namespace flecsi::topology;
@@ -69,18 +69,18 @@ void generic_coloring(
   auto core = primary;
 
   // Collect neighbors up to depth deep
-  for(size_t i{0}; i<depth; ++i) {
-    
+  for(size_t i{0}; i < depth; ++i) {
+
     // Form the closure of the current core
-    auto closure = entity_neighbors<dimension, dimension, thru_dimension>(
-      md, core);
+    auto closure =
+      entity_neighbors<dimension, dimension, thru_dimension>(md, core);
 
     // Subtract off just the new nearest neighbors
     auto nearest_neighbors = set_difference(closure, core);
 
     // Add these to the aggregate
-    aggregate_near_neighbors = set_union(aggregate_near_neighbors,
-      nearest_neighbors);
+    aggregate_near_neighbors =
+      set_union(aggregate_near_neighbors, nearest_neighbors);
 
     // Update the core set
     core = set_union(core, nearest_neighbors);
@@ -92,17 +92,16 @@ void generic_coloring(
       md, aggregate_near_neighbors);
 
   // Clean primaries from closure to get all neighbors
-  auto aggregate_neighbors =
-    set_difference(near_neighbor_closure, primary);
+  auto aggregate_neighbors = set_difference(near_neighbor_closure, primary);
 
   if(rank == 0) {
     std::cout << "aggregate near neighbors" << std::endl;
-    for(auto n: aggregate_near_neighbors) {
+    for(auto n : aggregate_near_neighbors) {
       std::cout << n << std::endl;
     } // for
 
     std::cout << "aggregate neighbors" << std::endl;
-    for(auto n: aggregate_neighbors) {
+    for(auto n : aggregate_neighbors) {
       std::cout << n << std::endl;
     } // for
 
@@ -115,7 +114,7 @@ void generic_coloring(
    */
   auto closure_intersection_map =
     communicator->get_intersection_info(aggregate_near_neighbors);
-  
+
   /*
     Get the rank and offset information for our near neighbor
     dependencies. This also gives information about the ranks
@@ -135,41 +134,39 @@ void generic_coloring(
   // Create a map version of the local info for lookups below.
   std::unordered_map<size_t, size_t> primary_indices_map;
   {
-  size_t offset{0};
-  for(auto i: primary) {
-    primary_indices_map[offset++] = i;
-  } // for
+    size_t offset{0};
+    for(auto i : primary) {
+      primary_indices_map[offset++] = i;
+    } // for
   } // scope
-  
+
   // Create a map version of the remote info for lookups below.
   std::unordered_map<size_t, flecsi::coloring::entity_info_t> remote_info_map;
-  for(auto i: std::get<1>(primary_all_info)) {
+  for(auto i : std::get<1>(primary_all_info)) {
     remote_info_map[i.id] = i;
   } // for
 
   // Populate exclusive and shared primary information
   {
-  size_t offset{0};
+    size_t offset{0};
 
-  for(auto i: std::get<0>(primary_nn_info)) {
-    if(i.size()) {
-      primary_coloring.shared.insert(
-        flecsi::coloring::entity_info_t(primary_indices_map[offset],
-        rank, offset, i));
+    for(auto i : std::get<0>(primary_nn_info)) {
+      if(i.size()) {
+        primary_coloring.shared.insert(flecsi::coloring::entity_info_t(
+          primary_indices_map[offset], rank, offset, i));
 
-      // Collect all colors with whom we require communication
-      // to send shared information.
-      primary_coloring_info.shared_users = flecsi::utils::set_union(
-        primary_coloring_info.shared_users, i);
-    }
-    else {
-      primary_coloring.exclusive.insert(
-        flecsi::coloring::entity_info_t(primary_indices_map[offset],
-        rank, offset, i));
-    } // if
+        // Collect all colors with whom we require communication
+        // to send shared information.
+        primary_coloring_info.shared_users =
+          flecsi::utils::set_union(primary_coloring_info.shared_users, i);
+      }
+      else {
+        primary_coloring.exclusive.insert(flecsi::coloring::entity_info_t(
+          primary_indices_map[offset], rank, offset, i));
+      } // if
 
-    ++offset;
-  } // for  
+      ++offset;
+    } // for
   } // scope
 
   primary_coloring_info.exclusive = primary_coloring.exclusive.size();
@@ -179,9 +176,9 @@ void generic_coloring(
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>
     shared_primary_map;
   {
-  for(auto i: primary_coloring.shared) {
-    shared_primary_map[i.id] = i;
-  } // for
+    for(auto i : primary_coloring.shared) {
+      shared_primary_map[i.id] = i;
+    } // for
   } // scope
 
   //--------------------------------------------------------------------------//
@@ -211,75 +208,72 @@ void generic_coloring(
     std::set<entity_info_t> entity_info;
 
     {
-    size_t offset{0};
-    for(auto i: auxiliary_closure) {
-      auto referencers =
-        entity_referencers<primary_dimension, dimension>(md, i);
+      size_t offset{0};
+      for(auto i : auxiliary_closure) {
+        auto referencers =
+          entity_referencers<primary_dimension, dimension>(md, i);
 
-      size_t min_rank(std::numeric_limits<size_t>::max());
-      std::set<size_t> shared_entities;
+        size_t min_rank(std::numeric_limits<size_t>::max());
+        std::set<size_t> shared_entities;
 
-      // Iterate the direct referencers to assign entity ownership
-      for(auto c: referencers) {
+        // Iterate the direct referencers to assign entity ownership
+        for(auto c : referencers) {
 
-        // Check the remote info map to see if this primary is
-        // off-color. If it is, compare it's rank for
-        // the ownership logic below.
-        if(remote_info_map.find(c) != remote_info_map.end()) {
-          min_rank = std::min(min_rank, remote_info_map.at(c).rank);
-          shared_entities.insert(remote_info_map.at(c).rank);
-        }
-        else {
-          // If the referencing primary isn't in the remote info map
-          // it is a local primary.
+          // Check the remote info map to see if this primary is
+          // off-color. If it is, compare it's rank for
+          // the ownership logic below.
+          if(remote_info_map.find(c) != remote_info_map.end()) {
+            min_rank = std::min(min_rank, remote_info_map.at(c).rank);
+            shared_entities.insert(remote_info_map.at(c).rank);
+          }
+          else {
+            // If the referencing primary isn't in the remote info map
+            // it is a local primary.
 
-          // Add our rank to compare for ownership.
-          min_rank = std::min(min_rank, size_t(rank));
+            // Add our rank to compare for ownership.
+            min_rank = std::min(min_rank, size_t(rank));
 
-          // If the local primary is shared, we need to add all of
-          // the ranks that reference it.
-          if(shared_primary_map.find(c) != shared_primary_map.end())
-            shared_entities.insert(
-              shared_primary_map.at(c).shared.begin(),
-              shared_primary_map.at(c).shared.end()
-            );
-        } // if
+            // If the local primary is shared, we need to add all of
+            // the ranks that reference it.
+            if(shared_primary_map.find(c) != shared_primary_map.end())
+              shared_entities.insert(shared_primary_map.at(c).shared.begin(),
+                shared_primary_map.at(c).shared.end());
+          } // if
 
-        // Iterate through the closure intersection map to see if the
-        // indirect reference is part of another rank's closure, i.e.,
-        // that it is an indirect dependency.
-        for(auto ci: closure_intersection_map) {
-          if(ci.second.find(c) != ci.second.end()) {
-            shared_entities.insert(ci.first);
+          // Iterate through the closure intersection map to see if the
+          // indirect reference is part of another rank's closure, i.e.,
+          // that it is an indirect dependency.
+          for(auto ci : closure_intersection_map) {
+            if(ci.second.find(c) != ci.second.end()) {
+              shared_entities.insert(ci.first);
+            } // if
+          } // for
+
+          if(min_rank == rank) {
+            // This is a entity that belongs to our rank.
+            auto entry = entity_info_t(i, rank, offset++, shared_entities);
+            entity_info.insert(entry);
+          }
+          else {
+            // Add remote entity to the request for offset information.
+            entity_requests[min_rank].insert(i);
           } // if
         } // for
-
-        if(min_rank == rank) {
-          // This is a entity that belongs to our rank.
-          auto entry = entity_info_t(i, rank, offset++, shared_entities);
-          entity_info.insert(entry);
-        }
-        else {
-          // Add remote entity to the request for offset information.
-          entity_requests[min_rank].insert(i);
-        } // if
       } // for
-    } // for
     } // scope
 
     auto entity_offset_info =
       communicator->get_entity_info(entity_info, entity_requests);
 
     // Vertices index coloring.
-    for(auto i: entity_info) {
+    for(auto i : entity_info) {
       // if it belongs to other colors, its a shared entity
       if(i.shared.size()) {
         aux_coloring[idx].shared.insert(i);
         // Collect all colors with whom we require communication
         // to send shared information.
-        aux_coloring_info[idx].shared_users =
-          flecsi::utils::set_union(aux_coloring_info[idx].shared_users,
-          i.shared);
+        aux_coloring_info[idx].shared_users = flecsi::utils::set_union(
+          aux_coloring_info[idx].shared_users, i.shared);
       }
       // otherwise, it's exclusive
       else
@@ -287,23 +281,22 @@ void generic_coloring(
     } // for
 
     {
-    size_t r(0);
-    for(auto i: entity_requests) {
+      size_t r(0);
+      for(auto i : entity_requests) {
 
-      auto offset(entity_offset_info[r].begin());
-      for(auto s: i) {
-        aux_coloring[idx].ghost.insert(entity_info_t(s, r, *offset));
-        // Collect all colors with whom we require communication
-        // to receive ghost information.
-        aux_coloring_info[idx].ghost_owners.insert(r);
-        // increment counter
-        ++offset;
+        auto offset(entity_offset_info[r].begin());
+        for(auto s : i) {
+          aux_coloring[idx].ghost.insert(entity_info_t(s, r, *offset));
+          // Collect all colors with whom we require communication
+          // to receive ghost information.
+          aux_coloring_info[idx].ghost_owners.insert(r);
+          // increment counter
+          ++offset;
+        } // for
+
+        ++r;
       } // for
-
-      ++r;
-    } // for
     } // scope
-
   }; // color_entity
 
   //--------------------------------------------------------------------------//
@@ -326,10 +319,8 @@ struct coloring_policy_t {
   // depth are dependent information.
   using primary = primary_independent_u<0, 2, 0, 2>;
 
-  using auxiliary = std::tuple<
-    auxiliary_independent_u<1, 0, 2>,
-    auxiliary_independent_u<2, 1, 2>
-  >;
+  using auxiliary = std::tuple<auxiliary_independent_u<1, 0, 2>,
+    auxiliary_independent_u<2, 1, 2>>;
 
   static constexpr size_t auxiliary_colorings =
     std::tuple_size<auxiliary>::value;
@@ -338,7 +329,8 @@ struct coloring_policy_t {
 
 }; // coloring_policy_t
 
-inline void concept_coloring() {
+inline void
+concept_coloring() {
 
   // Read the mesh definition from file.
 #ifdef FLECSI_8_8_MESH

@@ -2,12 +2,14 @@
 #include <flecsi/utils/ftest.h>
 #include <flecsi/utils/index_space.h>
 
-void index_space(int argc, char ** argv) {
+void
+index_space(int argc, char ** argv) {
 
   FTEST();
 
-  FTEST_CAPTURE() << FTEST_TTYPE(flecsi::utils::index_space_t::iterator_t) <<
-    std::endl << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(flecsi::utils::index_space_t::iterator_t)
+                  << std::endl
+                  << std::endl;
 
   // default constructor
   flecsi::utils::index_space_t a;
@@ -32,15 +34,15 @@ void index_space(int argc, char ** argv) {
 
   // operator[], non-const
   b[2]; // changes index_ to 2, and returns & to _index (== 2)
-  for (auto iter = b.begin(); iter != b.end(); ++iter)
+  for(auto iter = b.begin(); iter != b.end(); ++iter)
     FTEST_CAPTURE() << *iter << std::endl;
   FTEST_CAPTURE() << std::endl;
 
   b[2] = 4; // ??? but the 4 isn't accessible, or used for anything
-  for (auto iter = b.begin(); iter != b.end(); ++iter)
+  for(auto iter = b.begin(); iter != b.end(); ++iter)
     FTEST_CAPTURE() << *iter << std::endl;
 
-  // compare
+    // compare
 #ifdef __GNUG__
   EXPECT_TRUE(FTEST_EQUAL_BLESSED("index_space.blessed.gnug"));
 #elif defined(_MSC_VER)

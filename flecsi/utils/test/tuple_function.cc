@@ -27,7 +27,8 @@ struct foo {
   }
 };
 
-void tuple_function(int argc, char ** argv) {
+void
+tuple_function(int argc, char ** argv) {
 
   FTEST();
 

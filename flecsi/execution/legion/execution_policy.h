@@ -16,16 +16,16 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly!
+#error Do not include this file directly!
 #else
-  #include <flecsi/execution/context.h>
-  #include <flecsi/execution/legion/init_args.h>
-  #include <flecsi/execution/legion/reduction_wrapper.h>
-  #include <flecsi/execution/legion/task_epilogue.h>
-  #include <flecsi/execution/legion/task_prologue.h>
-  #include <flecsi/execution/legion/task_wrapper.h>
-  #include <flecsi/utils/const_string.h>
-  #include <flecsi/utils/flog.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/legion/init_args.h>
+#include <flecsi/execution/legion/reduction_wrapper.h>
+#include <flecsi/execution/legion/task_epilogue.h>
+#include <flecsi/execution/legion/task_prologue.h>
+#include <flecsi/execution/legion/task_wrapper.h>
+#include <flecsi/utils/const_string.h>
+#include <flecsi/utils/flog.h>
 #endif
 
 #include <functional>
@@ -162,8 +162,8 @@ struct legion_execution_policy_t {
     if constexpr(LAUNCH == launch_type_t::single) {
 
       {
-      flog_tag_guard(execution);
-      flog(internal) << "Executing single task" << std::endl;
+        flog_tag_guard(execution);
+        flog(internal) << "Executing single task" << std::endl;
       }
 
       switch(processor_type) {
@@ -195,8 +195,8 @@ struct legion_execution_policy_t {
     else {
 
       {
-      flog_tag_guard(execution);
-      flog(internal) << "Executing index task" << std::endl;
+        flog_tag_guard(execution);
+        flog(internal) << "Executing index task" << std::endl;
       }
 
       switch(processor_type) {

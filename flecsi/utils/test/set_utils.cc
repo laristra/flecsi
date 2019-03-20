@@ -17,15 +17,17 @@
 
 #include <iostream>
 
-template<class T> void print_set(const char * const prefix,
-  const std::set<T> & set) {
+template<class T>
+void
+print_set(const char * const prefix, const std::set<T> & set) {
   FTEST_CAPTURE() << prefix << " == {";
-  for (auto i = set.begin(); i != set.end(); ++i)
+  for(auto i = set.begin(); i != set.end(); ++i)
     FTEST_CAPTURE() << " " << *i;
   FTEST_CAPTURE() << " }" << std::endl;
 }
 
-void set_utils(int argc, char ** argv) {
+void
+set_utils(int argc, char ** argv) {
 
   FTEST();
 

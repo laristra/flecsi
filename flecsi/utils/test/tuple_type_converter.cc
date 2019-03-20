@@ -1,13 +1,22 @@
-#include <flecsi/utils/tuple_type_converter.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/ftest.h>
+#include <flecsi/utils/tuple_type_converter.h>
 
-class base {};
-class derived : public base {};
-class further : public derived {};
-class thing {};
+class base
+{
+};
+class derived : public base
+{
+};
+class further : public derived
+{
+};
+class thing
+{
+};
 
-void tuple_type_converter(int argc, char ** argv) {
+void
+tuple_type_converter(int argc, char ** argv) {
 
   FTEST();
 
@@ -28,7 +37,7 @@ void tuple_type_converter(int argc, char ** argv) {
     typename flecsi::utils::convert_tuple_type<std::tuple<char>>::type;
   FTEST_CAPTURE() << FTEST_TTYPE(tuple_char_t) << std::endl;
   using tuple_int_double_t =
-    typename flecsi::utils::convert_tuple_type<std::tuple<int,double>>::type;
+    typename flecsi::utils::convert_tuple_type<std::tuple<int, double>>::type;
   FTEST_CAPTURE() << FTEST_TTYPE(tuple_int_double_t) << std::endl;
 
   FTEST_CAPTURE() << std::endl;
@@ -44,23 +53,20 @@ void tuple_type_converter(int argc, char ** argv) {
   FTEST_CAPTURE() << std::endl;
 
   // base_convert_tuple_type
-  using double_tuple_t =
-    typename flecsi::utils::base_convert_tuple_type<base, double,
-      std::tuple<>>::type;
+  using double_tuple_t = typename flecsi::utils::base_convert_tuple_type<base,
+    double, std::tuple<>>::type;
   FTEST_CAPTURE() << FTEST_TTYPE(double_tuple_t) << std::endl;
 
   using catchall_t =
-    typename flecsi::utils::base_convert_tuple_type<
-      base,   // use this by default...
+    typename flecsi::utils::base_convert_tuple_type<base, // use this by
+                                                          // default...
       double, // but use this where base is base of tuple element...
-      std::tuple<
-        int,
-        base,    // base is considered to be base
+      std::tuple<int,
+        base, // base is considered to be base
         derived, // base is base
         char, thing,
         further // base is base
-      >
-    >::type;
+        >>::type;
   FTEST_CAPTURE() << FTEST_TTYPE(catchall_t) << std::endl;
 
   // compare

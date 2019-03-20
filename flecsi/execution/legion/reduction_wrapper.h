@@ -16,11 +16,11 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly!
+#error Do not include this file directly!
 #else
-  #include <flecsi/execution/context.h>
-  #include <flecsi/utils/common.h>
-  #include <flecsi/utils/flog.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/flog.h>
 #endif
 
 #include <legion.h>
@@ -54,8 +54,8 @@ struct reduction_wrapper_u {
       typeid(TYPE).name() << " has already been registered with this name");
 
     {
-    flog_tag_guard(reduction_wrapper);
-    flog(info) << "registering reduction operation " << HASH << std::endl;
+      flog_tag_guard(reduction_wrapper);
+      flog(info) << "registering reduction operation " << HASH << std::endl;
     }
 
     const size_t id = oid_t::instance().next();

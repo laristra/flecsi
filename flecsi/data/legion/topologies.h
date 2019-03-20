@@ -44,9 +44,9 @@ namespace legion {
 
 namespace global_topology {
 
-  struct topology_handle_t {
-    using topology_type_t = topology::global_topology_t;
-  }; // struct topology_handle_t
+struct topology_handle_t {
+  using topology_type_t = topology::global_topology_t;
+}; // struct topology_handle_t
 
 } // namespace global_topology
 
@@ -69,9 +69,9 @@ struct topology_u<topology::global_topology_t> {
 
 namespace color_topology {
 
-  struct topology_handle_t {
-    using topology_type_t = topology::color_topology_t;
-  }; // struct topology_handle_t
+struct topology_handle_t {
+  using topology_type_t = topology::color_topology_t;
+}; // struct topology_handle_t
 
 } // namespace color_topology
 

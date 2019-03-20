@@ -20,8 +20,8 @@
   specializations for data clients and storage classes.
  */
 
-#include <flecsi/data/legion/topologies.h>
 #include <flecsi/data/legion/storage_classes.h>
+#include <flecsi/data/legion/topologies.h>
 
 namespace flecsi {
 namespace data {
@@ -49,7 +49,8 @@ struct legion_data_policy_t {
    */
 
   template<typename TOPOLOGY_TYPE>
-  using topology_handle_u = typename legion::topology_u<typename TOPOLOGY_TYPE::type_identifier_t>::topology_handle_t;
+  using topology_handle_u = typename legion::topology_u<
+    typename TOPOLOGY_TYPE::type_identifier_t>::topology_handle_t;
 
   /*--------------------------------------------------------------------------*
     Storage Class Interface.

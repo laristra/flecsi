@@ -18,15 +18,15 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-  #include <flecsi/execution/common/launch.h>
-  #include <flecsi/execution/common/processor.h>
-  #include <flecsi/execution/context.h>
-  //#include <flecsi/execution/legion/finalize_handles.h>
-  //#include <flecsi/execution/legion/init_handles.h>
-  #include <flecsi/utils/common.h>
-  #include <flecsi/utils/flog.h>
-  #include <flecsi/utils/tuple_function.h>
-  #include <flecsi/utils/tuple_type_converter.h>
+#include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/context.h>
+//#include <flecsi/execution/legion/finalize_handles.h>
+//#include <flecsi/execution/legion/init_handles.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/flog.h>
+#include <flecsi/utils/tuple_function.h>
+#include <flecsi/utils/tuple_type_converter.h>
 #endif
 
 #include <flecsi-config.h>
@@ -162,8 +162,9 @@ struct task_wrapper_u {
     }
 
     Legion::TaskVariantRegistrar registrar(tid, name.c_str());
-    Legion::Processor::Kind kind = processor_type == processor_type_t::toc ?
-      Legion::Processor::TOC_PROC : Legion::Processor::LOC_PROC;
+    Legion::Processor::Kind kind = processor_type == processor_type_t::toc
+                                     ? Legion::Processor::TOC_PROC
+                                     : Legion::Processor::LOC_PROC;
     registrar.add_constraint(Legion::ProcessorConstraint(kind));
     registrar.set_leaf(launch_leaf(launch));
     registrar.set_inner(launch_inner(launch));
@@ -209,23 +210,23 @@ struct task_wrapper_u {
     // Unpack task arguments
     ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
-// FIXME: Refactor
-    //init_handles_t init_handles(runtime, context, regions, task->futures);
-    //init_handles.walk(task_args);
+    // FIXME: Refactor
+    // init_handles_t init_handles(runtime, context, regions, task->futures);
+    // init_handles.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
       (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
-// FIXME: Refactor
-      //finalize_handles_t finalize_handles;
-      //finalize_handles.walk(task_args);
+      // FIXME: Refactor
+      // finalize_handles_t finalize_handles;
+      // finalize_handles.walk(task_args);
     }
     else {
       RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
-// FIXME: Refactor
-      //finalize_handles_t finalize_handles;
-      //finalize_handles.walk(task_args);
+      // FIXME: Refactor
+      // finalize_handles_t finalize_handles;
+      // finalize_handles.walk(task_args);
 
       return result;
     } // if
@@ -239,18 +240,18 @@ struct task_wrapper_u {
     const std::vector<Legion::PhysicalRegion> & regions,
     Legion::Context context,
     Legion::Runtime * runtime) {
-// FIXME: Refactor
-//    {
-//      flog_tag_guard(task_wrapper);
-//      flog(info) << "In execute_mpi_task" << std::endl;
-//    }
+    // FIXME: Refactor
+    //    {
+    //      flog_tag_guard(task_wrapper);
+    //      flog(info) << "In execute_mpi_task" << std::endl;
+    //    }
 
     // Unpack task arguments.
     ARG_TUPLE & mpi_task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
-// FIXME: Refactor
-    //init_handles_t init_handles(runtime, context, regions, task->futures);
-    //init_handles.walk(mpi_task_args);
+    // FIXME: Refactor
+    // init_handles_t init_handles(runtime, context, regions, task->futures);
+    // init_handles.walk(mpi_task_args);
 
     // Create bound function to pass to MPI runtime.
     std::function<void()> bound_mpi_task = std::bind(DELEGATE, mpi_task_args);
@@ -259,9 +260,9 @@ struct task_wrapper_u {
     context_t::instance().set_mpi_task(bound_mpi_task);
     context_t::instance().set_mpi_state(true);
 
-// FIXME: Refactor
-    //finalize_handles_t finalize_handles;
-    //finalize_handles.walk(mpi_task_args);
+    // FIXME: Refactor
+    // finalize_handles_t finalize_handles;
+    // finalize_handles.walk(mpi_task_args);
 
   } // execute_mpi_task
 

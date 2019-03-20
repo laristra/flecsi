@@ -51,7 +51,8 @@ struct control_u : public CONTROL_POLICY {
 
   using dag_t = flecsi::utils::dag_u<typename CONTROL_POLICY::node_t>;
   using node_t = typename dag_t::node_t;
-  using control_point_walker_t = control_point_walker_u<control_u<CONTROL_POLICY>>;
+  using control_point_walker_t =
+    control_point_walker_u<control_u<CONTROL_POLICY>>;
 
   /*!
     Meyer's singleton.
@@ -89,7 +90,8 @@ struct control_u : public CONTROL_POLICY {
   } // execute
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-  using control_point_writer_t = control_point_writer_u<control_u<CONTROL_POLICY>>;
+  using control_point_writer_t =
+    control_point_writer_u<control_u<CONTROL_POLICY>>;
   using graphviz_t = flecsi::utils::graphviz_t;
 
   /*!
@@ -114,7 +116,8 @@ struct control_u : public CONTROL_POLICY {
                          points are defined by the specialization.
    */
 
-  dag_t & control_point_map(size_t control_point, std::string const & label = "default") {
+  dag_t & control_point_map(size_t control_point,
+    std::string const & label = "default") {
     if(registry_.find(control_point) == registry_.end()) {
       registry_[control_point].label() = label;
     } // if

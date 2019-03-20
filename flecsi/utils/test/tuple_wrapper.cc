@@ -1,7 +1,8 @@
 #include <flecsi/utils/ftest.h>
 #include <flecsi/utils/tuple_wrapper.h>
 
-void tuple_wrapper(int argc, char ** argv) {
+void
+tuple_wrapper(int argc, char ** argv) {
 
   FTEST();
 
@@ -19,9 +20,9 @@ void tuple_wrapper(int argc, char ** argv) {
   // tuple_wrapper_::tuple_t
 #ifdef __GNUG__
   EXPECT_EQ(
-     (flecsi::utils::type<
-        typename flecsi::utils::tuple_wrapper_<float,char,int>::tuple_t>()),
-     "std::tuple<float, char, int>");
+    (flecsi::utils::type<
+      typename flecsi::utils::tuple_wrapper_<float, char, int>::tuple_t>()),
+    "std::tuple<float, char, int>");
 #endif
 
   // tuple_wrapper_::get
@@ -31,7 +32,6 @@ void tuple_wrapper(int argc, char ** argv) {
   EXPECT_EQ(e.get<0>(), 1.0f);
   EXPECT_EQ(e.get<1>(), 'x');
   EXPECT_EQ(e.get<2>(), 2);
-
 }
 
 ftest_register_test(tuple_wrapper);

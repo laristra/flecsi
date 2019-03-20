@@ -1,8 +1,9 @@
+#include <flecsi/utils/common.h>
 #include <flecsi/utils/factory.h>
 #include <flecsi/utils/ftest.h>
-#include <flecsi/utils/common.h>
 
-class io_base_t {
+class io_base_t
+{
 public:
   io_base_t(std::string & filename) : filename_(filename) {}
 
@@ -16,7 +17,7 @@ protected:
 }; // struct io_base_t
 
 using io_factory_t =
-    flecsi::utils::Factory_<io_base_t, std::string, std::string &>;
+  flecsi::utils::Factory_<io_base_t, std::string, std::string &>;
 
 struct test_io_t : public io_base_t {
 
@@ -28,7 +29,8 @@ struct test_io_t : public io_base_t {
 
 }; // struct test_io_t
 
-io_base_t * create_test_io(std::string & filename) {
+io_base_t *
+create_test_io(std::string & filename) {
   return new test_io_t(filename);
 } // create_test_io
 
@@ -39,33 +41,40 @@ bool test_registered =
 // accept the arguments as given in those types, and return pointers to the
 // return types as given. Keys play no role here.
 
-float * a_foo(int, float, double) {
+float *
+a_foo(int, float, double) {
   return new float(1.2f);
 }
 
-float * b_foo(int, float, double) {
+float *
+b_foo(int, float, double) {
   return new float(3.4f);
 }
 
-double * bar_1(double, double) {
+double *
+bar_1(double, double) {
   return new double(5.6);
 }
 
-double * bar_2(double, double) {
+double *
+bar_2(double, double) {
   return new double(8.9);
 }
 
 // These handlers do something slightly more interesting. Well, less boring.
 
-float * add_ifd(int i, float f, double d) {
+float *
+add_ifd(int i, float f, double d) {
   return new float(i + f + float(d));
 }
 
-double * add_dd(double d1, double d2) {
+double *
+add_dd(double d1, double d2) {
   return new double(d1 + d2);
 }
 
-int factory(int argc, char ** argv) {
+int
+factory(int argc, char ** argv) {
 
   FTEST();
 
@@ -125,9 +134,9 @@ int factory(int argc, char ** argv) {
   // 'b' can't re-associate...
   bool b2 = factory_charkey_t::instance().registerType('b', b_foo);
 
-  FTEST_CAPTURE() << int(a) << std::endl;  // true
-  FTEST_CAPTURE() << int(b) << std::endl;  // true
-  FTEST_CAPTURE() << int(c) << std::endl;  // true
+  FTEST_CAPTURE() << int(a) << std::endl; // true
+  FTEST_CAPTURE() << int(b) << std::endl; // true
+  FTEST_CAPTURE() << int(c) << std::endl; // true
   FTEST_CAPTURE() << int(b2) << std::endl; // false ('b' didn't re-associate)
   FTEST_CAPTURE() << std::endl;
 

@@ -18,10 +18,10 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-  #include <flecsi/execution/common/launch.h>
-  #include <flecsi/execution/common/processor.h>
-  #include <flecsi/runtime/types.h>
-  #include <flecsi/utils/common.h>
+#include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
 #endif
 
 #if !defined(FLECSI_ENABLE_LEGION)

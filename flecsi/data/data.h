@@ -20,8 +20,8 @@
   data model.
  */
 
-#include <flecsi/data/topology_interface.h>
 #include <flecsi/data/field_interface.h>
+#include <flecsi/data/topology_interface.h>
 #include <flecsi/topology/internal.h>
 #include <flecsi/utils/const_string.h>
 
@@ -109,8 +109,7 @@
     flecsi::data::field_interface_t::register_field<client_type,               \
       flecsi::data::storage_class, data_type,                                  \
       flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name),  \
-      versions, ##__VA_ARGS__>(                                                \
-        {flecsi_internal_stringify(name)})
+      versions, ##__VA_ARGS__>({flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_get_field
@@ -180,7 +179,7 @@ flecsi_register_topology(global_topology_t, "global_client", "global_client");
       flecsi::topology::global_topology_t, flecsi::data::global, data_type,    \
       flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name),  \
       versions, flecsi::topology::global_index_space>(                         \
-        {flecsi_internal_stringify(name)})
+      {flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_get_global
@@ -202,9 +201,8 @@ flecsi_register_topology(global_topology_t, "global_client", "global_client");
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
-  flecsi_get_field(                                                            \
-    flecsi_get_topology(                                                       \
-      flecsi::topology::global_topology_t, "global_client", "global_client"),  \
+  flecsi_get_field(flecsi_get_topology(flecsi::topology::global_topology_t,    \
+                     "global_client", "global_client"),                        \
     nspace, name, data_type, global, version)
 
 /*----------------------------------------------------------------------------*
@@ -246,7 +244,7 @@ flecsi_register_topology(color_topology_t, "color_client", "color_client");
       flecsi::topology::color_topology_t, flecsi::data::color, data_type,      \
       flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name),  \
       versions, flecsi::topology::color_index_space>(                          \
-        {flecsi_internal_stringify(name)})
+      {flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_get_color
@@ -268,7 +266,6 @@ flecsi_register_topology(color_topology_t, "color_client", "color_client");
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
-  flecsi_get_handle(                                                           \
-    flecsi_get_topology(                                                       \
-      flecsi::topology::color_topology_t, "color_client", "color_client"),     \
+  flecsi_get_handle(flecsi_get_topology(flecsi::topology::color_topology_t,    \
+                      "color_client", "color_client"),                         \
     nspace, name, data_type, color, version)

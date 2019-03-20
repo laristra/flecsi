@@ -55,8 +55,7 @@ struct ftest_control_policy_t {
 
 #define control_point(name) flecsi::control::control_point_<name>
 
-  using control_points = std::tuple<
-    control_point(initialize),
+  using control_points = std::tuple<control_point(initialize),
     control_point(test),
     control_point(finalize)>;
 
@@ -100,8 +99,7 @@ flecsi_register_control_options(control_t);
 #define ftest_register_test(action, ...)                                       \
   ftest_register_action(action, test, ##__VA_ARGS__)
 
-#define ftest_add_test_dependency(to, from)                                    \
-  ftest_add_dependency(test, to, from)
+#define ftest_add_test_dependency(to, from) ftest_add_dependency(test, to, from)
 
 #define ftest_register_finalize(action, ...)                                   \
   ftest_register_action(action, finalize, ##__VA_ARGS__)

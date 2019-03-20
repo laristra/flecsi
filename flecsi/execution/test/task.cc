@@ -27,23 +27,25 @@ namespace task {
   A simple task with no arguments.
  */
 
-void simple(int value) {
+void
+simple(int value) {
   {
-  flog_tag_guard(task);
-  flog(info) << "Hello World!" << std::endl;
-  flog(info) << "value = " << value << std::endl;
+    flog_tag_guard(task);
+    flog(info) << "Hello World!" << std::endl;
+    flog(info) << "value = " << value << std::endl;
   }
 } // simple
 
 flecsi_register_task(simple, task, loc, index);
 
-} // namespace
+} // namespace task
 
 /*
   Test driver.
  */
 
-void test_driver(int argc, char ** argv) {
+void
+test_driver(int argc, char ** argv) {
 
   FTEST();
 

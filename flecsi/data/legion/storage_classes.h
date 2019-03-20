@@ -18,9 +18,9 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-  #include <flecsi/data/common/data_reference.h>
-  #include <flecsi/data/legion/topologies.h>
-  #include <flecsi/topology/internal.h>
+#include <flecsi/data/common/data_reference.h>
+#include <flecsi/data/legion/topologies.h>
+#include <flecsi/topology/internal.h>
 #endif
 
 #define POLICY_NAMESPACE legion
@@ -47,8 +47,7 @@ struct handle_t {
 template<typename DATA_TYPE, size_t PRIVLEGES>
 struct accessor_u : public data_reference_base_t {
 
-  accessor_u(const handle_t & handle)
-    : handle_(handle) {}
+  accessor_u(const handle_t & handle) : handle_(handle) {}
 
   /*!
     Provide logical array-based access to the data referenced by this
@@ -57,8 +56,7 @@ struct accessor_u : public data_reference_base_t {
     @param index The index of the logical array to access.
    */
 
-  const DATA_TYPE & operator()(size_t index) const {
-  } // operator()
+  const DATA_TYPE & operator()(size_t index) const {} // operator()
 
   /*!
     Provide logical array-based access to the data referenced by this
@@ -67,11 +65,9 @@ struct accessor_u : public data_reference_base_t {
     @param index The index of the logical array to access.
    */
 
-  DATA_TYPE & operator()(size_t index) {
-  } // operator()
+  DATA_TYPE & operator()(size_t index) {} // operator()
 
 private:
-
   handle_t handle_;
 
 }; // struct accessor_u
@@ -109,8 +105,7 @@ struct handle_t {
 template<typename DATA_TYPE, size_t PRIVLEGES>
 struct accessor_u : public data_reference_base_t {
 
-  accessor_u(const handle_t & handle)
-    : handle_(handle) {}
+  accessor_u(const handle_t & handle) : handle_(handle) {}
 
   /*!
     Provide logical array-based access to the data referenced by this
@@ -119,8 +114,7 @@ struct accessor_u : public data_reference_base_t {
     @param index The index of the logical array to access.
    */
 
-  const DATA_TYPE & operator()(size_t index) const {
-  } // operator()
+  const DATA_TYPE & operator()(size_t index) const {} // operator()
 
   /*!
     Provide logical array-based access to the data referenced by this
@@ -129,11 +123,9 @@ struct accessor_u : public data_reference_base_t {
     @param index The index of the logical array to access.
    */
 
-  DATA_TYPE & operator()(size_t index) {
-  } // operator()
+  DATA_TYPE & operator()(size_t index) {} // operator()
 
 private:
-
   handle_t handle_;
 
 }; // struct accessor_u
@@ -171,8 +163,7 @@ struct dense_handle_t {
 template<typename DATA_TYPE, size_t PRIVLEGES>
 struct dense_accessor_u : public data_reference_base_t {
 
-  dense_accessor_u(const dense_handle_t & handle)
-    : handle_(handle) {}
+  dense_accessor_u(const dense_handle_t & handle) : handle_(handle) {}
 
   /*!
     Provide logical array-based access to the data referenced by this
@@ -181,8 +172,7 @@ struct dense_accessor_u : public data_reference_base_t {
     @param index The index of the logical array to access.
    */
 
-  const DATA_TYPE & operator()(size_t index) const {
-  } // operator()
+  const DATA_TYPE & operator()(size_t index) const {} // operator()
 
   /*!
     Provide logical array-based access to the data referenced by this
@@ -191,11 +181,9 @@ struct dense_accessor_u : public data_reference_base_t {
     @param index The index of the logical array to access.
    */
 
-  DATA_TYPE & operator()(size_t index) {
-  } // operator()
+  DATA_TYPE & operator()(size_t index) {} // operator()
 
 private:
-
   dense_handle_t handle_;
 
 }; // struct dense_accessor_u
@@ -210,11 +198,9 @@ struct sparse_handle_t {
 template<typename DATA_TYPE, size_t PRIVLEGES>
 struct sparse_accessor_u : public data_reference_base_t {
 
-  sparse_accessor_u(const sparse_handle_t & handle)
-    : handle_(handle) {}
+  sparse_accessor_u(const sparse_handle_t & handle) : handle_(handle) {}
 
 private:
-
   sparse_handle_t handle_;
 
 }; // struct sparse_accessor_u
@@ -222,11 +208,9 @@ private:
 template<typename DATA_TYPE, size_t PRIVLEGES>
 struct sparse_mutator_u : public data_reference_base_t {
 
-  sparse_mutator_u(const sparse_handle_t & handle)
-    : handle_(handle) {}
+  sparse_mutator_u(const sparse_handle_t & handle) : handle_(handle) {}
 
 private:
-
   sparse_handle_t handle_;
 
 }; // struct sparse_mutator_u

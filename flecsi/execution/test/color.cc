@@ -26,7 +26,8 @@ flog_register_tag(color);
   the FleCSI runtime.
  */
 
-void color_raw(int argc, char ** argv) {
+void
+color_raw(int argc, char ** argv) {
 
   FTEST();
 
@@ -35,10 +36,10 @@ void color_raw(int argc, char ** argv) {
 
   {
     flog_tag_guard(color);
-    flog(info) << "color(raw): " << color << std::endl <<
-      "colors(raw): " << colors << std::endl;
+    flog(info) << "color(raw): " << color << std::endl
+               << "colors(raw): " << colors << std::endl;
   }
-  
+
   ASSERT_EQ(colors, 4);
   ASSERT_LT(color, colors);
 }
@@ -50,7 +51,8 @@ ftest_register_test(color_raw);
   the FleCSI runtime.
  */
 
-void color_ui(int argc, char ** argv) {
+void
+color_ui(int argc, char ** argv) {
 
   FTEST();
 
@@ -59,11 +61,11 @@ void color_ui(int argc, char ** argv) {
 
   {
     flog_tag_guard(color);
-    flog(info) << "color(macro): " << color << std::endl <<
-      "colors(macro): " << colors << std::endl;
+    flog(info) << "color(macro): " << color << std::endl
+               << "colors(macro): " << colors << std::endl;
   }
-  
-  ASSERT_EQ(colors,4);
+
+  ASSERT_EQ(colors, 4);
   ASSERT_LT(color, colors);
 }
 

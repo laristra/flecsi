@@ -68,9 +68,10 @@ bool const is_tuple<std::tuple<T...>>::value;
 } // namespace utils
 } // namespace flecsi
 
-void static_verify(int argc, char ** argv) {
+void
+static_verify(int argc, char ** argv) {
 
-  FTEST(); 
+  FTEST();
 
   // first{} has foo only
   EXPECT_EQ(has_member_foo<first>::value, true);
