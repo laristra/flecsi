@@ -25,8 +25,8 @@
 
 #include <legion.h>
 
-#include <flecsi/data/data.h>
 #include <flecsi/data/common/data_reference.h>
+#include <flecsi/data/data.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_field.h>
 
@@ -454,20 +454,20 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     using base_t = typename sparse_mutator<T>::base_t;
     handle(static_cast<base_t &>(m));
   }
-  
+
   /*!
    Handle individual list items
    */
-  template<
-    typename T,
+  template<typename T,
     std::size_t N,
-    template<typename, std::size_t> typename Container,
-    typename = std::enable_if_t< std::is_base_of<data::data_reference_base_t, T>::value >
-  >
-  void handle( Container<T, N> & list ) {
-    for ( auto & item : list ) handle(item);
+    template<typename, std::size_t>
+    typename Container,
+    typename =
+      std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
+  void handle(Container<T, N> & list) {
+    for(auto & item : list)
+      handle(item);
   }
-
 
   /*!
     Don't do anything with flecsi task argument that are not data handles.

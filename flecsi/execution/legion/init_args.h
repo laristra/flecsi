@@ -375,18 +375,18 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     } // for
   }
 
-
   /*!
    Handle individual list items
    */
-  template<
-    typename T,
+  template<typename T,
     std::size_t N,
-    template<typename, std::size_t> typename Container,
-    typename = std::enable_if_t< std::is_base_of<data::data_reference_base_t, T>::value >
-  >
-  void handle( Container<T, N> & list ) {
-    for ( auto & item : list ) handle(item);
+    template<typename, std::size_t>
+    typename Container,
+    typename =
+      std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
+  void handle(Container<T, N> & list) {
+    for(auto & item : list)
+      handle(item);
   }
 
   //-----------------------------------------------------------------------//

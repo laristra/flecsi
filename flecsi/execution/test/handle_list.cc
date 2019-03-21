@@ -29,28 +29,25 @@ using handle_list = flecsi::utils::fixed_vector<T, 2>;
 // FleCSI tasks
 //---------------------------------------------------------------------------//
 
-void write_task(
-  data_client_handle_u<mesh_t, ro> mesh,
-  handle_list< dense_accessor<int, rw, rw, na> > fs
-) {
+void
+write_task(data_client_handle_u<mesh_t, ro> mesh,
+  handle_list<dense_accessor<int, rw, rw, na>> fs) {
   auto & context = execution::context_t::instance();
-  const auto & map = context.index_map(cells); 
-  for ( auto c : mesh.cells(flecsi::owned) ) {
+  const auto & map = context.index_map(cells);
+  for(auto c : mesh.cells(flecsi::owned)) {
     fs[0](c) = map.at(c.id());
     fs[1](c) = 2 * map.at(c.id());
   }
 } // task1
 
-
-void read_task(
-  data_client_handle_u<mesh_t, ro> mesh,
-  handle_list< dense_accessor<int, ro, ro, ro> > fs
-) {
+void
+read_task(data_client_handle_u<mesh_t, ro> mesh,
+  handle_list<dense_accessor<int, ro, ro, ro>> fs) {
   auto & context = execution::context_t::instance();
-  const auto & map = context.index_map(cells); 
-  for ( auto c : mesh.cells() ) {
-    EXPECT_EQ( fs[0](c), map.at(c.id()) );
-    EXPECT_EQ( fs[1](c), 2 * map.at(c.id()) );
+  const auto & map = context.index_map(cells);
+  for(auto c : mesh.cells()) {
+    EXPECT_EQ(fs[0](c), map.at(c.id()));
+    EXPECT_EQ(fs[1](c), 2 * map.at(c.id()));
   }
 } // task1
 
@@ -75,11 +72,13 @@ flecsi_register_field(mesh_t, fields, y, int, dense, 1, cells);
 namespace flecsi {
 namespace execution {
 
-void specialization_tlt_init(int argc, char ** argv) {
+void
+specialization_tlt_init(int argc, char ** argv) {
   supplemental::do_test_mesh_2d_coloring();
 } // specialization_tlt_init
 
-void specialization_spmd_init(int argc, char ** argv) {
+void
+specialization_spmd_init(int argc, char ** argv) {
   auto mh = flecsi_get_client_handle(mesh_t, meshes, mesh1);
   flecsi_execute_task(initialize_mesh, flecsi::supplemental, index, mh);
 } // specialization_spmd_init
@@ -94,7 +93,7 @@ driver(int argc, char ** argv) {
 
   auto hx = flecsi_get_handle(ch, fields, x, int, dense, 0);
   auto hy = flecsi_get_handle(ch, fields, y, int, dense, 0);
-  auto hs = handle_list< decltype(hx)>{ hx, hy };
+  auto hs = handle_list<decltype(hx)>{hx, hy};
 
   flecsi_execute_task_simple(write_task, index, ch, hs);
   flecsi_execute_task_simple(read_task, index, ch, hs);

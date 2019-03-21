@@ -277,14 +277,14 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   /*!
    Handle individual list items
    */
-  template<
-    typename T,
+  template<typename T,
     std::size_t N,
-    template<typename, std::size_t> typename Container,
-    typename = std::enable_if_t< std::is_base_of<data::data_reference_base_t, T>::value >
-  >
-  void handle( Container<T, N> & list ) {
-    for ( auto & item : list ) {
+    template<typename, std::size_t>
+    typename Container,
+    typename =
+      std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
+  void handle(Container<T, N> & list) {
+    for(auto & item : list) {
       handle(item);
     }
   }
