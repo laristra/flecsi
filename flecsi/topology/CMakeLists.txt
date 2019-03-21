@@ -38,7 +38,10 @@ set(topology_HEADERS
   set_types.h
   set_utils.h
   structured_mesh_topology.h
-  tree_topology.h
+  tree/tree_topology.h
+  tree/tree_storage.h
+  tree/tree_types.h
+  tree/tree_utils.h
   types.h
 )
 
@@ -135,16 +138,23 @@ cinch_add_unit(dual
 #------------------------------------------------------------------------------#
 # N-Tree unit tests.
 #------------------------------------------------------------------------------#
+set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)
 
-#cinch_add_unit(tree
-#  SOURCES
-#    test/tree.cc
-#    test/pseudo_random.h
-#  INPUTS
-#    test/tree.blessed
-#  LIBRARIES
-#    FleCSI
-#)
+cinch_add_unit(tree
+  SOURCES
+    test/tree.cc
+    test/pseudo_random.h
+    #${DRIVER_INITIALIZATION}
+    #${RUNTIME_DRIVER}
+  LIBRARIES
+    FleCSI
+    #${CINCH_RUNTIME_LIBRARIES}
+  #DEFINES
+    #-DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+    #-DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+    #-DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+  #POLICY MPI
+)
 
 #cinch_add_unit(tree1d
 #  SOURCES
@@ -212,4 +222,3 @@ cinch_add_unit(devel-closure
 #  SOURCES
 #    test/index-space.cc test/pseudo_random.h
 #)
-
