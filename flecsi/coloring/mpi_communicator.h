@@ -72,15 +72,14 @@ public:
     MPI_Comm_rank(MPI_COMM_WORLD, &rk);
     return rk;
   }
-  
+
   /*!
    Set a barrier.
    */
 
   void barrier() const override {
-    auto ret = MPI_Barrier( MPI_COMM_WORLD );
+    auto ret = MPI_Barrier(MPI_COMM_WORLD);
   };
-
 
   /*!
    Reduces info_indices from all MPI ranks

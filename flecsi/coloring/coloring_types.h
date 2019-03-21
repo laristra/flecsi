@@ -90,7 +90,7 @@ struct entity_info_t {
     size_t offset_ = 0,
     std::set<size_t> shared_ = {})
     : id(id_), rank(rank_), offset(offset_), shared(shared_) {}
-  
+
   /*!
    Constructor.
 
@@ -101,13 +101,10 @@ struct entity_info_t {
    \param shared_ The rank that shares this entity.
    */
 
-  entity_info_t(size_t id_,
-    size_t rank_,
-    size_t offset_,
-    size_t shared_)
-    : id(id_), rank(rank_), offset(offset_)
-  { shared.emplace(shared_); }
-
+  entity_info_t(size_t id_, size_t rank_, size_t offset_, size_t shared_)
+    : id(id_), rank(rank_), offset(offset_) {
+    shared.emplace(shared_);
+  }
 
   /*!
    Comparison operator for container insertion. This sorts by the
