@@ -25,7 +25,7 @@ TEST(humble, all) {
   // test: here_func()
   flecsi::utils::here_func(__FILE__, __FUNCTION__, __LINE__, "here again");
   flecsi::utils::here_func(
-      "some file", "some function", __LINE__, "and yet again");
+    "some file", "some function", __LINE__, "and yet again");
 
 } // TEST
 

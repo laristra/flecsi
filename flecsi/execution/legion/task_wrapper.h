@@ -81,8 +81,9 @@ struct pure_task_wrapper_u {
     }
 
     Legion::TaskVariantRegistrar registrar(tid, name.c_str());
-    Legion::Processor::Kind kind = processor_type == processor_type_t::toc ?
-      Legion::Processor::TOC_PROC : Legion::Processor::LOC_PROC;
+    Legion::Processor::Kind kind = processor_type == processor_type_t::toc
+                                     ? Legion::Processor::TOC_PROC
+                                     : Legion::Processor::LOC_PROC;
     registrar.add_constraint(Legion::ProcessorConstraint(kind));
     registrar.set_leaf(launch_leaf(launch));
     registrar.set_inner(launch_inner(launch));
@@ -101,13 +102,13 @@ struct pure_task_wrapper_u {
         clog_fatal("MPI type passed to pure task registration");
       }
       else {
-        Legion::Runtime::preregister_task_variant<TASK>(registrar,
-          name.c_str());
+        Legion::Runtime::preregister_task_variant<TASK>(
+          registrar, name.c_str());
       } // if
     }
     else {
-      Legion::Runtime::preregister_task_variant<RETURN, TASK>(registrar,
-        name.c_str());
+      Legion::Runtime::preregister_task_variant<RETURN, TASK>(
+        registrar, name.c_str());
     } // if
   } // registration_callback
 
@@ -155,9 +156,14 @@ struct task_wrapper_u {
       clog(info) << "registering task " << name << std::endl;
     }
 
-    Legion::TaskVariantRegistrar registrar(tid, name.c_str());
-    Legion::Processor::Kind kind = processor_type == processor_type_t::toc ?
-      Legion::Processor::TOC_PROC : Legion::Processor::LOC_PROC;
+    std::string short_name = name;
+    for(int i = 0; i < 4; i++)
+      short_name = short_name.erase(0, short_name.find(":") + 2);
+
+    Legion::TaskVariantRegistrar registrar(tid, short_name.c_str());
+    Legion::Processor::Kind kind = processor_type == processor_type_t::toc
+                                     ? Legion::Processor::TOC_PROC
+                                     : Legion::Processor::LOC_PROC;
     registrar.add_constraint(Legion::ProcessorConstraint(kind));
     registrar.set_leaf(launch_leaf(launch));
     registrar.set_inner(launch_inner(launch));
@@ -174,16 +180,16 @@ struct task_wrapper_u {
     if constexpr(std::is_same_v<RETURN, void>) {
       if(processor_type == processor_type_t::mpi) {
         Legion::Runtime::preregister_task_variant<execute_mpi_task>(
-          registrar, name.c_str());
+          registrar, short_name.c_str());
       }
       else {
         Legion::Runtime::preregister_task_variant<execute_user_task>(
-          registrar, name.c_str());
+          registrar, short_name.c_str());
       } // if
     }
     else {
       Legion::Runtime::preregister_task_variant<RETURN, execute_user_task>(
-        registrar, name.c_str());
+        registrar, short_name.c_str());
     } // if
   } // registration_callback
 

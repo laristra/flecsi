@@ -21,6 +21,7 @@
 //!
 //----------------------------------------------------------------------------//
 
-int driver_initialization(int argc, char ** argv) {
+int
+driver_initialization(int argc, char ** argv) {
   return flecsi::execution::context_t::instance().initialize(argc, argv);
 } // driver_initialization

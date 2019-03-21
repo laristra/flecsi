@@ -4,8 +4,8 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include <flecsi/utils/index_space.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/index_space.h>
 #include <flecsi/utils/test/print_type.h>
 
 // includes: C++
@@ -46,15 +46,15 @@ TEST(index_space, all) {
 
   // operator[], non-const
   b[2]; // changes index_ to 2, and returns & to _index (== 2)
-  for (auto iter = b.begin(); iter != b.end(); ++iter)
+  for(auto iter = b.begin(); iter != b.end(); ++iter)
     CINCH_CAPTURE() << *iter << std::endl;
   CINCH_CAPTURE() << std::endl;
 
   b[2] = 4; // ??? but the 4 isn't accessible, or used for anything
-  for (auto iter = b.begin(); iter != b.end(); ++iter)
+  for(auto iter = b.begin(); iter != b.end(); ++iter)
     CINCH_CAPTURE() << *iter << std::endl;
 
-  // compare
+    // compare
 #ifdef __GNUG__
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("index_space.blessed.gnug"));
 #elif defined(_MSC_VER)

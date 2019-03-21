@@ -3,7 +3,6 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-
 #include <iostream>
 
 #include <cinchtest.h>

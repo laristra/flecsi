@@ -40,7 +40,7 @@ struct mpi_typetraits_u {
   inline static MPI_Datatype type() {
     static MPI_Datatype data_type = MPI_DATATYPE_NULL;
 
-    if (data_type == MPI_DATATYPE_NULL) {
+    if(data_type == MPI_DATATYPE_NULL) {
       MPI_Type_contiguous(sizeof(TYPE), MPI_BYTE, &data_type);
       MPI_Type_commit(&data_type);
     }
@@ -51,9 +51,10 @@ struct mpi_typetraits_u {
 template<>
 struct mpi_typetraits_u<size_t> {
   inline static MPI_Datatype type() {
-    if (sizeof(size_t) == 8) {
+    if(sizeof(size_t) == 8) {
       return MPI_UNSIGNED_LONG_LONG;
-    } else {
+    }
+    else {
       return MPI_UNSIGNED;
     } // if
   }

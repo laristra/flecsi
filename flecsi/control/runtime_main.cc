@@ -23,8 +23,8 @@
 #include <string>
 
 #if defined(FLECSI_ENABLE_BOOST)
-  #include <boost/program_options.hpp>
-  using namespace boost::program_options;
+#include <boost/program_options.hpp>
+using namespace boost::program_options;
 #endif
 
 using namespace flecsi::control;
@@ -35,7 +35,8 @@ using namespace flecsi::control;
   additional command-line options.
  */
 
-int main(int argc, char ** argv) {
+int
+main(int argc, char ** argv) {
 
   runtime_t & runtime_ = runtime_t::instance();
 
@@ -47,15 +48,13 @@ int main(int argc, char ** argv) {
 
 #if defined(FLECSI_ENABLE_BOOST)
   std::string program(argv[0]);
-  options_description desc(program.substr(program.find('/')+1).c_str());
+  options_description desc(program.substr(program.find('/') + 1).c_str());
 
-    // Add command-line options
-  desc.add_options()
-    ("help,h", "Print this message and exit.")
-    ("tags,t", value(&tags)->implicit_value("0"),
-     "Enable the specified output tags, e.g., --tags=tag1,tag2."
-     " Passing --tags by itself will print the available tags.")
-    ;
+  // Add command-line options
+  desc.add_options()("help,h", "Print this message and exit.")("tags,t",
+    value(&tags)->implicit_value("0"),
+    "Enable the specified output tags, e.g., --tags=tag1,tag2."
+    " Passing --tags by itself will print the available tags.");
   variables_map vm;
   parsed_options parsed =
     command_line_parser(argc, argv).options(desc).allow_unregistered().run();
@@ -71,14 +70,14 @@ int main(int argc, char ** argv) {
   if(unrecog_options.size()) {
     if(runtime_.participate_in_output(argc, argv)) {
       std::cout << std::endl << "Unrecognized options: ";
-      for ( int i=0; i<unrecog_options.size(); ++i ) {
+      for(int i = 0; i < unrecog_options.size(); ++i) {
         std::cout << unrecog_options[i] << " ";
       }
       std::cout << std::endl << std::endl << desc << std::endl;
     } // if
 
-    return runtime_.finalize_runtimes(argc, argv,
-      runtime_exit_mode_t::unrecognized_option);
+    return runtime_.finalize_runtimes(
+      argc, argv, runtime_exit_mode_t::unrecognized_option);
   } // if
 
   if(vm.count("help")) {
@@ -86,8 +85,7 @@ int main(int argc, char ** argv) {
       std::cout << desc << std::endl;
     } // if
 
-    return runtime_.finalize_runtimes(argc, argv,
-      runtime_exit_mode_t::help);
+    return runtime_.finalize_runtimes(argc, argv, runtime_exit_mode_t::help);
   } // if
 #endif
 
@@ -97,7 +95,7 @@ int main(int argc, char ** argv) {
     if(runtime_.participate_in_output(argc, argv)) {
       std::cout << "Available tags (CLOG): " << std::endl;
 
-      for(auto t: clog_tag_map()) {
+      for(auto t : clog_tag_map()) {
         std::cout << "  " << t.first << std::endl;
       } // for
     } // if

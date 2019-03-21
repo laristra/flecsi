@@ -12,9 +12,9 @@
    All rights reserved.
                                                                               */
 
-#include<flecsi/execution/execution.h>
+#include <flecsi/execution/execution.h>
 
-#include<flecsi-tutorial/specialization/mesh/tasks.h>
+#include <flecsi-tutorial/specialization/mesh/tasks.h>
 
 namespace flecsi {
 namespace tutorial {

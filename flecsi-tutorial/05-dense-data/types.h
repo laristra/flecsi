@@ -34,8 +34,7 @@ struct struct_type_t {
 // the associated index space. The other three parameters specify the
 // privileges with which the corresponding data will be accessed.
 
-template<
-  size_t SHARED_PRIVILEGES>
+template<size_t SHARED_PRIVILEGES>
 using struct_field = dense_accessor<struct_type_t, rw, SHARED_PRIVILEGES, ro>;
 
 } // namespace types
