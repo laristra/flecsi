@@ -13,33 +13,29 @@
                                                                               */
 #pragma once
 
-/*!
-  @file
+/*! @file */
 
- */
-
-#if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly!
-#else
-  #include <flecsi/data/common/data_reference.h>
-#endif
-
-#ifndef POLICY_NAMESPACE
-#error You must define a data policy namespace before including this file.
-#endif
+#include <cstddef>
 
 namespace flecsi {
-namespace data {
-namespace POLICY_NAMESPACE {
 
 /*!
-  Base topology type for topology-specific specializations. Specializations of
-  this type must implement a get_topology_handle method.
+  Enumeration for specifying access privleges for data that are passed
+  to FleCSI tasks.
+
+  @param reserved Reserved for internal use.
+  @param ro Read-Only access.
+  @param wo Write-Only access.
+  @param rw Read-Write access.
+  @param na No-Access access.
  */
 
-template<typename TOPOLOGY_TYPE>
-struct topology_u {};
+enum privilege_t : size_t {
+  reserved = 0,
+  ro = 1,
+  wo = 2,
+  rw = 3,
+  na = 2
+}; // enum privilege_t
 
-} // namespace POLICY_NAMESPACE
-} // namespace data
 } // namespace flecsi

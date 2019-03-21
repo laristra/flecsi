@@ -280,6 +280,16 @@
 #endif // FLECSI_ENABLE_FLOG
 
 /*!
+  @def fixme
+
+  Alias for severity level warn.
+
+  @ingroup flog
+ */
+
+#define fixme() flog(warn)
+
+/*!
   @def flog_fatal(message)
 
   Throw a runtime exception with the provided message.

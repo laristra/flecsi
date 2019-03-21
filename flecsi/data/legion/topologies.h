@@ -45,8 +45,21 @@ namespace legion {
 namespace global_topology {
 
 struct topology_handle_t {
+
   using topology_type_t = topology::global_topology_t;
+
 }; // struct topology_handle_t
+
+template<size_t PRIVILEGES>
+struct topology_accessor_t {
+  topology_accessor_t(topology_handle_t & handle)
+    : handle_(handle) {}
+
+private:
+
+  topology_handle_t & handle_;
+
+}; // struct topology_accessor_t
 
 } // namespace global_topology
 

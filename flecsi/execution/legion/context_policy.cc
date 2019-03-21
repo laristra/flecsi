@@ -76,13 +76,8 @@ legion_context_policy_t::start(int argc, char ** argv) {
     Configure interoperability layer.
    */
 
-  int rank, size;
+  int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-  // FIXME: This needs to change to use the point ID from task.
-  color_ = rank;
-  colors_ = size;
 
   Legion::Runtime::configure_MPI_interoperability(rank);
 

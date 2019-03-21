@@ -21,7 +21,12 @@
   client type.
  */
 
-#include <flecsi/runtime/types.h>
+#if !defined(__FLECSI_PRIVATE__)
+  #error Do not include this file directly!
+#else
+  #include <flecsi/runtime/types.h>
+  #include <flecsi/utils/flog.h>
+#endif
 
 flog_register_tag(storage_class_registration);
 

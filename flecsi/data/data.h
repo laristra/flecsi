@@ -20,9 +20,11 @@
   data model.
  */
 
+#include <flecsi/data/common/privilege.h>
 #include <flecsi/data/field_interface.h>
 #include <flecsi/data/topology_interface.h>
-#include <flecsi/topology/internal.h>
+#include <flecsi/topology/internal/color.h>
+#include <flecsi/topology/internal/global.h>
 #include <flecsi/utils/const_string.h>
 
 /*----------------------------------------------------------------------------*

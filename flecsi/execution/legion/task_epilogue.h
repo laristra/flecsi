@@ -58,8 +58,8 @@ struct task_epilogue_t : public flecsi::utils::tuple_walker_u<task_epilogue_t> {
     Global Topology
    *--------------------------------------------------------------------------*/
 
-  template<typename DATA_TYPE, size_t PRIVLEGES>
-  void visit(global_topology::accessor_u<DATA_TYPE, PRIVLEGES> & accessor) {
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*

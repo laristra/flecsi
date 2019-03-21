@@ -65,7 +65,11 @@ struct legion_data_policy_t {
   using storage_class_u = legion::storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>;
 
   /*--------------------------------------------------------------------------*
-    Accessor Interface.
+    Topology Accessor Interface.
+   *--------------------------------------------------------------------------*/
+
+  /*--------------------------------------------------------------------------*
+    Field Accessor Interface.
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>

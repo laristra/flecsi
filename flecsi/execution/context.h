@@ -322,6 +322,14 @@ struct context_u : public CONTEXT_POLICY {
   } // register_topology
 
   /*!
+    Return the topology registry.
+   */
+
+  std::unordered_map<size_t, topology_entry_t> & topology_registry() {
+    return topology_registry_;
+  } // topology_registry
+
+  /*!
     Return a boolean indicating whether or not the given instance of
     a data topology has had its internal fields registered with the
     data model.
@@ -331,6 +339,7 @@ struct context_u : public CONTEXT_POLICY {
    */
 
   bool topology_fields_registered(size_t type_key, size_t instance_key) {
+    fixme() << "Do we really need this method?" << std::endl;
     return !registered_topology_fields_
               .insert(std::make_pair(type_key, instance_key))
               .second;
@@ -364,6 +373,14 @@ struct context_u : public CONTEXT_POLICY {
     return true;
   } // register_field
 
+  /*!
+    Return the field registry.
+   */
+
+  std::unordered_map<size_t, field_entry_t> & field_registry() {
+    return field_registry_;
+  } // field_registry
+
 private:
   /*--------------------------------------------------------------------------*
     Private types.
@@ -388,8 +405,6 @@ private:
     Basic runtime data members.
    *--------------------------------------------------------------------------*/
 
-  size_t color_ = 0;
-  size_t colors_ = 0;
   top_level_action_t top_level_action_ = {};
 
   /*--------------------------------------------------------------------------*
@@ -414,7 +429,7 @@ private:
   std::unordered_map<size_t, void *> function_registry_;
 
   /*--------------------------------------------------------------------------*
-    Client members.
+    Topology members.
    *--------------------------------------------------------------------------*/
 
   std::unordered_map<size_t, topology_entry_t> topology_registry_;

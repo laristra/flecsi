@@ -63,6 +63,34 @@ top_level_task(const Legion::Task * task,
   context_.connect_with_mpi(ctx, runtime);
   context_.wait_on_mpi(ctx, runtime);
 
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for entries in the topology registry.
+  //
+  // NOTE: This needs to be called before the field registry below because
+  //       The topology callbacks register field callbacks with the field
+  //       registry.
+  //--------------------------------------------------------------------------//
+
+  auto & topology_registry = context_.topology_registry();
+
+  for(auto & c : topology_registry) {
+    for(auto & d : c.second) {
+      d.second.second(d.second.first);
+    } // for
+  } // for
+
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for entries in the field registry.
+  //--------------------------------------------------------------------------//
+
+  auto & field_registry = context_.field_registry();
+
+  for(auto & c : field_registry) {
+    for(auto & f : c.second) {
+      f.second.second(f.first, f.second.first);
+    } // for
+  } // for
+
   auto args = runtime->get_input_args();
 
   /*

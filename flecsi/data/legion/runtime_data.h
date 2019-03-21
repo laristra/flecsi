@@ -13,33 +13,20 @@
                                                                               */
 #pragma once
 
-/*!
-  @file
-
- */
-
-#if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly!
-#else
-  #include <flecsi/data/common/data_reference.h>
-#endif
-
-#ifndef POLICY_NAMESPACE
-#error You must define a data policy namespace before including this file.
-#endif
+/*!  @file */
 
 namespace flecsi {
 namespace data {
-namespace POLICY_NAMESPACE {
+namespace legion {
 
-/*!
-  Base topology type for topology-specific specializations. Specializations of
-  this type must implement a get_topology_handle method.
- */
+struct runtime_data_t {
 
-template<typename TOPOLOGY_TYPE>
-struct topology_u {};
+  void initialize() {}
 
-} // namespace POLICY_NAMESPACE
+private:
+
+}; // struct runtime_data_t
+
+} // namespace legion
 } // namespace data
 } // namespace flecsi

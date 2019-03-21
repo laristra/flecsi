@@ -19,6 +19,7 @@
 
 set(data_HEADERS
   common/data_reference.h
+  common/privilege.h
   common/storage_class.h
   common/storage_class_registration.h
   common/topology.h
@@ -35,6 +36,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
     legion/data_policy.h
+    legion/runtime_data.h
     legion/storage_classes.h
     legion/topologies.h
     ${data_HEADERS}

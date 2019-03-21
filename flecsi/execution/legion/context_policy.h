@@ -20,6 +20,7 @@
 #else
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
+#include <flecsi/data/legion/runtime_data.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
 #endif
@@ -107,9 +108,13 @@ struct legion_context_policy_t {
    */
 
   size_t colors() const {
-    return colors_;
+    fixme() << "What does colors mean for Legion backend?" << std::endl;
+    return Legion::Runtime::get_runtime()
+      ->get_current_task(Legion::Runtime::get_context())
+      ->index_domain.get_volume();
   }
 
+#if 0
   /*
     Documentation for this interface is in the top-level context type.
    */
@@ -117,6 +122,7 @@ struct legion_context_policy_t {
   void set_colors(size_t colors) {
     colors_ = colors;
   }
+#endif
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
@@ -387,11 +393,15 @@ struct legion_context_policy_t {
 
 private:
   /*--------------------------------------------------------------------------*
+    Runtime data.
+   *--------------------------------------------------------------------------*/
+
+  data::legion::runtime_data_t runtime_data_;
+
+  /*--------------------------------------------------------------------------*
     Interoperability data members.
    *--------------------------------------------------------------------------*/
 
-  // FIXME: This needs to change to use the point ID from task.
-  size_t color_ = std::numeric_limits<size_t>::max();
   size_t colors_ = std::numeric_limits<size_t>::max();
 
   std::function<void()> mpi_task_;
