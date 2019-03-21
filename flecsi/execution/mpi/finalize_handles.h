@@ -192,15 +192,16 @@ struct finalize_handles_t
     h.delete_storage();
   } // handle
 
-
   /*!
    Handle individual list items
    */
   template<
     typename T,
+    std::size_t N,
+    template<typename, std::size_t> typename Container,
     typename = std::enable_if_t< std::is_base_of<data::data_reference_base_t, T>::value >
   >
-  void handle( utils::list<T> & list ) {
+  void handle( Container<T, N> & list ) {
     for ( auto & item : list ) handle(item);
   }
 

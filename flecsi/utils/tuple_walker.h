@@ -15,7 +15,6 @@
 
 /*! @file */
 
-#include <flecsi/utils/list.h>
 #include <iostream>
 #include <tuple>
 

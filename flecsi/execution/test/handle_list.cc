@@ -16,12 +16,14 @@
 #include <flecsi/io/simple_definition.h>
 #include <flecsi/supplemental/coloring/add_colorings.h>
 #include <flecsi/supplemental/mesh/test_mesh_2d.h>
-#include <flecsi/utils/list.h>
+#include <flecsi/utils/fixed_vector.h>
 
 using namespace flecsi;
 using namespace supplemental;
-using flecsi::utils::list;
 using mesh_t = flecsi::supplemental::test_mesh_2d_t;
+
+template<typename T>
+using handle_list = flecsi::utils::fixed_vector<T, 2>;
 
 //---------------------------------------------------------------------------//
 // FleCSI tasks
@@ -29,7 +31,7 @@ using mesh_t = flecsi::supplemental::test_mesh_2d_t;
 
 void write_task(
   data_client_handle_u<mesh_t, ro> mesh,
-  list< dense_accessor<int, rw, rw, na> > fs
+  handle_list< dense_accessor<int, rw, rw, na> > fs
 ) {
   auto & context = execution::context_t::instance();
   const auto & map = context.index_map(cells); 
@@ -42,7 +44,7 @@ void write_task(
 
 void read_task(
   data_client_handle_u<mesh_t, ro> mesh,
-  list< dense_accessor<int, ro, ro, ro> > fs
+  handle_list< dense_accessor<int, ro, ro, ro> > fs
 ) {
   auto & context = execution::context_t::instance();
   const auto & map = context.index_map(cells); 
@@ -92,10 +94,10 @@ driver(int argc, char ** argv) {
 
   auto hx = flecsi_get_handle(ch, fields, x, int, dense, 0);
   auto hy = flecsi_get_handle(ch, fields, y, int, dense, 0);
-  auto hs = list< decltype(hx) >{ hx, hy };
+  auto hs = handle_list< decltype(hx)>{ hx, hy };
 
-  flecsi_execute_task_simple(write_task, single, ch, hs);
-  flecsi_execute_task_simple(read_task, single, ch, hs);
+  flecsi_execute_task_simple(write_task, index, ch, hs);
+  flecsi_execute_task_simple(read_task, index, ch, hs);
 
 } // driver
 
