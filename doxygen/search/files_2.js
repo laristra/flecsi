@@ -2,6 +2,7 @@ var searchData=
 [
   ['checksum_2eh',['checksum.h',['../checksum_8h.html',1,'']]],
   ['client_5fhandle_5fspecializations_2eh',['client_handle_specializations.h',['../client__handle__specializations_8h.html',1,'']]],
+  ['color_2eh',['color.h',['../color_8h.html',1,'']]],
   ['common_2eh',['common.h',['../common_8h.html',1,'']]],
   ['const_5fstring_2eh',['const_string.h',['../const__string_8h.html',1,'']]],
   ['context_2eh',['context.h',['../context_8h.html',1,'']]],

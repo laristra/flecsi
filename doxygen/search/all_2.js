@@ -10,6 +10,7 @@ var searchData=
   ['client_5fhandle_5fspecialization_5fu_3c_20topology_3a_3aglobal_5ftopology_5ft_20_3e',['client_handle_specialization_u&lt; topology::global_topology_t &gt;',['../structflecsi_1_1data_1_1mpi_1_1client__handle__specialization__u_3_01topology_1_1global__topology__t_01_4.html',1,'flecsi::data::mpi']]],
   ['client_5fhandle_5fspecializations_2eh',['client_handle_specializations.h',['../client__handle__specializations_8h.html',1,'']]],
   ['color',['color',['../structflecsi_1_1execution_1_1context__u.html#abc22e5f9ca4f00cec2dedd48db3e3d4d',1,'flecsi::execution::context_u']]],
+  ['color_2eh',['color.h',['../color_8h.html',1,'']]],
   ['color_5faccessor_5fu',['color_accessor_u',['../field__interface_8h.html#aa4524ba2a32a43338b291a4562a85a74',1,'flecsi::data']]],
   ['color_5ftopology_5ft',['color_topology_t',['../structflecsi_1_1topology_1_1color__topology__t.html',1,'flecsi::topology']]],
   ['colors',['colors',['../structflecsi_1_1execution_1_1context__u.html#ade6c89662f58fe1626acadaa7506c5eb',1,'flecsi::execution::context_u']]],

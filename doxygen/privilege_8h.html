@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>Interface Documentation: Member List</title>
+<title>Interface Documentation: /home/flecsi/flecsi/flecsi/data/common/privilege.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,21 +61,60 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>utils</b></li><li class="navelem"><b>ftest</b></li><li class="navelem"><a class="el" href="structflecsi_1_1utils_1_1ftest_1_1nonfatal__handler__t.html">nonfatal_handler_t</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_688c864b7b93022ab3a371d21adf78fb.html">flecsi</a></li><li class="navelem"><a class="el" href="dir_e37f8bb81981d72df6422a26362081de.html">data</a></li><li class="navelem"><a class="el" href="dir_92d94b0176e9f004565c3118f7275431.html">common</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::utils::ftest::nonfatal_handler_t Member List</div>  </div>
+<div class="title">privilege.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><code>#include &lt;cstddef&gt;</code><br />
+</div>
+<p><a href="privilege_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a283345ffc8feea6af77f385d4a5f645f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="privilege_8h.html#a283345ffc8feea6af77f385d4a5f645f">flecsi::privilege_t</a> : size_t { <br />
+&#160;&#160;<b>reserved</b> = 0, 
+<b>ro</b> = 1, 
+<b>wo</b> = 2, 
+<b>rw</b> = 3, 
+<br />
+&#160;&#160;<b>na</b> = 2
+<br />
+ }</td></tr>
+<tr class="separator:a283345ffc8feea6af77f385d4a5f645f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="file_a283345ffc8feea6af77f385d4a5f645f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a283345ffc8feea6af77f385d4a5f645f">&#9670;&nbsp;</a></span>privilege_t</h2>
 
-<p>This is the complete list of members for <a class="el" href="structflecsi_1_1utils_1_1ftest_1_1nonfatal__handler__t.html">flecsi::utils::ftest::nonfatal_handler_t</a>, including all inherited members.</p>
-<table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>nonfatal_handler_t</b>(const char *condition, const char *file, int line, state_t &amp;runtime) (defined in <a class="el" href="structflecsi_1_1utils_1_1ftest_1_1nonfatal__handler__t.html">flecsi::utils::ftest::nonfatal_handler_t</a>)</td><td class="entry"><a class="el" href="structflecsi_1_1utils_1_1ftest_1_1nonfatal__handler__t.html">flecsi::utils::ftest::nonfatal_handler_t</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>stream</b>() (defined in <a class="el" href="structflecsi_1_1utils_1_1ftest_1_1nonfatal__handler__t.html">flecsi::utils::ftest::nonfatal_handler_t</a>)</td><td class="entry"><a class="el" href="structflecsi_1_1utils_1_1ftest_1_1nonfatal__handler__t.html">flecsi::utils::ftest::nonfatal_handler_t</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>~nonfatal_handler_t</b>() (defined in <a class="el" href="structflecsi_1_1utils_1_1ftest_1_1nonfatal__handler__t.html">flecsi::utils::ftest::nonfatal_handler_t</a>)</td><td class="entry"><a class="el" href="structflecsi_1_1utils_1_1ftest_1_1nonfatal__handler__t.html">flecsi::utils::ftest::nonfatal_handler_t</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-</table></div><!-- contents -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="privilege_8h.html#a283345ffc8feea6af77f385d4a5f645f">flecsi::privilege_t</a> : size_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Enumeration for specifying access privleges for data that are passed to FleCSI tasks.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reserved</td><td>Reserved for internal use. </td></tr>
+    <tr><td class="paramname">ro</td><td>Read-Only access. </td></tr>
+    <tr><td class="paramname">wo</td><td>Write-Only access. </td></tr>
+    <tr><td class="paramname">rw</td><td>Read-Write access. </td></tr>
+    <tr><td class="paramname">na</td><td>No-Access access. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

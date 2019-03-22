@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['accessor_5fu',['accessor_u',['../structflecsi_1_1data_1_1legion_1_1global__topology_1_1accessor__u.html',1,'flecsi::data::legion::global_topology::accessor_u&lt; DATA_TYPE, PRIVLEGES &gt;'],['../structflecsi_1_1data_1_1legion_1_1color__topology_1_1accessor__u.html',1,'flecsi::data::legion::color_topology::accessor_u&lt; DATA_TYPE, PRIVLEGES &gt;']]],
+  ['accessor_5fu',['accessor_u',['../structflecsi_1_1data_1_1legion_1_1global__topology_1_1accessor__u.html',1,'flecsi::data::legion::global_topology::accessor_u&lt; DATA_TYPE, PRIVILEGES &gt;'],['../structflecsi_1_1data_1_1legion_1_1color__topology_1_1accessor__u.html',1,'flecsi::data::legion::color_topology::accessor_u&lt; DATA_TYPE, PRIVILEGES &gt;']]],
   ['active_5ftag',['active_tag',['../classflecsi_1_1utils_1_1flog_1_1flog__t.html#a2378586a68906f71344f65a8ee7c99b4',1,'flecsi::utils::flog::flog_t::active_tag() const'],['../classflecsi_1_1utils_1_1flog_1_1flog__t.html#ab9611ec644ba9a12611da9594948aed6',1,'flecsi::utils::flog::flog_t::active_tag()']]],
   ['add_5fbuffer',['add_buffer',['../classflecsi_1_1utils_1_1flog_1_1tee__buffer__t.html#a2452aedb2e271495013f9745c8b68d02',1,'flecsi::utils::flog::tee_buffer_t::add_buffer()'],['../structflecsi_1_1utils_1_1flog_1_1tee__stream__t.html#a9021aed79ca2341f15fb799d97297063',1,'flecsi::utils::flog::tee_stream_t::add_buffer()']]],
   ['add_5fedge',['add_edge',['../structflecsi_1_1utils_1_1dag__u.html#ad8ee0810ed4465224ecaed365a9cd72c',1,'flecsi::utils::dag_u']]],
@@ -11,5 +11,6 @@ var searchData=
   ['are_5fintegral_5fv',['are_integral_v',['../simple__id_8h.html#a57b3055f41910f3cfe00688605d1e1dd',1,'flecsi::utils::detail']]],
   ['array_5fref',['array_ref',['../classflecsi_1_1utils_1_1array__ref.html',1,'flecsi::utils::array_ref&lt; T &gt;'],['../classflecsi_1_1utils_1_1array__ref.html#ab1a31a06325b1ac319ca71a0ebd3d29d',1,'flecsi::utils::array_ref::array_ref()'],['../classflecsi_1_1utils_1_1array__ref.html#a75091e53095aff11d9f764b0b80e0a76',1,'flecsi::utils::array_ref::array_ref(const std::vector&lt; T, Allocator &gt; &amp;v)'],['../classflecsi_1_1utils_1_1array__ref.html#a291bda96c312b39454590578d2ffa519',1,'flecsi::utils::array_ref::array_ref(const std::array&lt; T, N &gt; &amp;a)']]],
   ['array_5fref_2eh',['array_ref.h',['../array__ref_8h.html',1,'']]],
-  ['array_5fref_3c_20t_20_3e',['array_ref&lt; T &gt;',['../classarray__ref_3_01T_01_4.html',1,'']]]
+  ['array_5fref_3c_20t_20_3e',['array_ref&lt; T &gt;',['../classarray__ref_3_01T_01_4.html',1,'']]],
+  ['assert_5fhandler_5ft',['assert_handler_t',['../structflecsi_1_1utils_1_1ftest_1_1assert__handler__t.html',1,'flecsi::utils::ftest']]]
 ];

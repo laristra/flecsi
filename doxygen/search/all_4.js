@@ -9,5 +9,6 @@ var searchData=
   ['execute_5fuser_5ftask',['execute_user_task',['../structflecsi_1_1execution_1_1legion_1_1task__wrapper__u.html#aebf9b6053429e823c9efc984d265b8f8',1,'flecsi::execution::legion::task_wrapper_u']]],
   ['execution_20interface',['Execution Interface',['../group__execution.html',1,'']]],
   ['execution_2eh',['execution.h',['../execution_8h.html',1,'']]],
-  ['execution_5fpolicy_2eh',['execution_policy.h',['../execution_2legion_2execution__policy_8h.html',1,'(Global Namespace)'],['../execution_2mpi_2execution__policy_8h.html',1,'(Global Namespace)'],['../runtime_2execution__policy_8h.html',1,'(Global Namespace)']]]
+  ['execution_5fpolicy_2eh',['execution_policy.h',['../execution_2legion_2execution__policy_8h.html',1,'(Global Namespace)'],['../execution_2mpi_2execution__policy_8h.html',1,'(Global Namespace)'],['../runtime_2execution__policy_8h.html',1,'(Global Namespace)']]],
+  ['expect_5fhandler_5ft',['expect_handler_t',['../structflecsi_1_1utils_1_1ftest_1_1expect__handler__t.html',1,'flecsi::utils::ftest']]]
 ];

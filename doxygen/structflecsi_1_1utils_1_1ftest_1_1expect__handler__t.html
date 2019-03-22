@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>Interface Documentation: flecsi::utils::ftest::fatal_handler_t Struct Reference</title>
+<title>Interface Documentation: flecsi::utils::ftest::expect_handler_t Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,26 +61,33 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>utils</b></li><li class="navelem"><b>ftest</b></li><li class="navelem"><a class="el" href="structflecsi_1_1utils_1_1ftest_1_1fatal__handler__t.html">fatal_handler_t</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>utils</b></li><li class="navelem"><b>ftest</b></li><li class="navelem"><a class="el" href="structflecsi_1_1utils_1_1ftest_1_1expect__handler__t.html">expect_handler_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="structflecsi_1_1utils_1_1ftest_1_1fatal__handler__t-members.html">List of all members</a>  </div>
+<a href="structflecsi_1_1utils_1_1ftest_1_1expect__handler__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::utils::ftest::fatal_handler_t Struct Reference</div>  </div>
+<div class="title">flecsi::utils::ftest::expect_handler_t Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a36ab3580cd260ea47181c6c0128b4b4d"><td class="memItemLeft" align="right" valign="top"><a id="a36ab3580cd260ea47181c6c0128b4b4d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>fatal_handler_t</b> (const char *condition, const char *file, int line, <a class="el" href="structflecsi_1_1utils_1_1ftest_1_1state__t.html">state_t</a> &amp;runtime)</td></tr>
-<tr class="separator:a36ab3580cd260ea47181c6c0128b4b4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9276bc95fc56fbd71df5c0edec9504ef"><td class="memItemLeft" align="right" valign="top"><a id="a9276bc95fc56fbd71df5c0edec9504ef"></a>
-std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>stream</b> ()</td></tr>
-<tr class="separator:a9276bc95fc56fbd71df5c0edec9504ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedbf7abc0c9d698c3e22f6ff2c2ffb09"><td class="memItemLeft" align="right" valign="top"><a id="aedbf7abc0c9d698c3e22f6ff2c2ffb09"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>expect_handler_t</b> (const char *condition, const char *file, int line, <a class="el" href="structflecsi_1_1utils_1_1ftest_1_1state__t.html">state_t</a> &amp;runtime)</td></tr>
+<tr class="separator:aedbf7abc0c9d698c3e22f6ff2c2ffb09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85d25c451efe5059d93d41b5dd4715e2"><td class="memTemplParams" colspan="2"><a id="a85d25c451efe5059d93d41b5dd4715e2"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a85d25c451efe5059d93d41b5dd4715e2"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1utils_1_1ftest_1_1expect__handler__t.html">expect_handler_t</a> &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator&lt;&lt;</b> (const T &amp;value)</td></tr>
+<tr class="separator:a85d25c451efe5059d93d41b5dd4715e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49b4cbf47dd7b8de670a4f35b86b20e8"><td class="memItemLeft" align="right" valign="top"><a id="a49b4cbf47dd7b8de670a4f35b86b20e8"></a>
+<a class="el" href="structflecsi_1_1utils_1_1ftest_1_1expect__handler__t.html">expect_handler_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (::std::ostream &amp;(*basic_manipulator)(::std::ostream &amp;stream))</td></tr>
+<tr class="separator:a49b4cbf47dd7b8de670a4f35b86b20e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5effc3bc7da29796e967caf85e9be4f4"><td class="memItemLeft" align="right" valign="top"><a id="a5effc3bc7da29796e967caf85e9be4f4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>operator int</b> ()</td></tr>
+<tr class="separator:a5effc3bc7da29796e967caf85e9be4f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/utils/ftest/<a class="el" href="utils_2ftest_2types_8h_source.html">types.h</a></li>

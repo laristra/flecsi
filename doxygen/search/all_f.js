@@ -13,6 +13,7 @@ var searchData=
   ['register_5ffunction',['register_function',['../structflecsi_1_1execution_1_1context__u.html#a44e98bd98dd97f4e16d7329cb0b9d9ff',1,'flecsi::execution::context_u']]],
   ['register_5flegion_5ftask',['register_legion_task',['../structflecsi_1_1execution_1_1legion__execution__policy__t.html#add29e134e1d6a5e3114a46fc4c340e6a',1,'flecsi::execution::legion_execution_policy_t']]],
   ['register_5freduction_5foperation',['register_reduction_operation',['../structflecsi_1_1execution_1_1task__interface__u.html#aeaf202aa44f15e71954297061bfdef36',1,'flecsi::execution::task_interface_u']]],
+  ['register_5fruntime_5ffield_5finfo',['register_runtime_field_info',['../structflecsi_1_1execution_1_1context__u.html#a39bd7c61cfc032931a82ccb6b40e622c',1,'flecsi::execution::context_u']]],
   ['register_5ftag',['register_tag',['../classflecsi_1_1utils_1_1flog_1_1flog__t.html#aee270052dd871e28f8fe5ecc89617d2f',1,'flecsi::utils::flog::flog_t']]],
   ['register_5ftask',['register_task',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a2685a1ad3028601bb21a7fd7b80ac045',1,'flecsi::execution::legion_context_policy_t::register_task()'],['../structflecsi_1_1execution_1_1mpi__execution__policy__t.html#acf6112937ca416aaec7f1260e24af160',1,'flecsi::execution::mpi_execution_policy_t::register_task()'],['../structflecsi_1_1execution_1_1task__interface__u.html#a32fb4a4374739ce3da5f4575c60d722c',1,'flecsi::execution::task_interface_u::register_task()']]],
   ['register_5ftop_5flevel_5faction',['register_top_level_action',['../structflecsi_1_1execution_1_1context__u.html#a46dc2abe2eaeb4ddc6453e8afcf54b3a',1,'flecsi::execution::context_u']]],
@@ -24,5 +25,7 @@ var searchData=
   ['remove_5fsuffix',['remove_suffix',['../classflecsi_1_1utils_1_1array__ref.html#afffcdd4341c9aa512f7924dcfa615037',1,'flecsi::utils::array_ref']]],
   ['rstrip',['rstrip',['../utils_8h.html#a48d4542fd73523e0c98b60bfcc717117',1,'flecsi::utils::flog']]],
   ['runtime_2ecc',['runtime.cc',['../legion_2runtime_8cc.html',1,'(Global Namespace)'],['../mpi_2runtime_8cc.html',1,'(Global Namespace)']]],
-  ['runtime_2eh',['runtime.h',['../legion_2runtime_8h.html',1,'(Global Namespace)'],['../mpi_2runtime_8h.html',1,'(Global Namespace)']]]
+  ['runtime_2eh',['runtime.h',['../legion_2runtime_8h.html',1,'(Global Namespace)'],['../mpi_2runtime_8h.html',1,'(Global Namespace)']]],
+  ['runtime_5fdata_2eh',['runtime_data.h',['../runtime__data_8h.html',1,'']]],
+  ['runtime_5fdata_5ft',['runtime_data_t',['../structflecsi_1_1data_1_1legion_1_1runtime__data__t.html',1,'flecsi::data::legion']]]
 ];
