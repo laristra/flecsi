@@ -56,8 +56,6 @@ struct box_t {
   bool isempty()
   {
     return (lowerbnd.empty() && upperbnd.empty()); 
-    //if (size() == 0)
-    // return true; 
   }
  
   void resize(size_t dim)
@@ -66,35 +64,28 @@ struct box_t {
     lowerbnd.resize(box_dim,0);
     upperbnd.resize(box_dim,0);
   }
-  
-
-  /*
-  void print()
-  {
-    bool emp = isempty(); 
-    std::cout<<"isemtpy = "<<emp<<std::endl; 
-    if (!emp)
-    {
-      std::cout<<"BOUNDS = [ "<<lowerbnd[0];
-      for (size_t i = 1; i < dim_; i++)
-       std::cout<<","<<lowerbnd[i];
-      std::cout<<"] x ";
-      std::cout<<"[ "<<upperbnd[0];
-      for (size_t i = 1; i < dim_; i++)
-       std::cout<<","<<upperbnd[i];
-      std::cout<<"]";
-    } 
-  } //print 
-  */
 }; // class box_t
+
+/*!
+   Type for a tagged box: this allows tagging the region 
+   boundaries of the box to specify if they satisfy a certain
+   condition or not.
+   The size of the tag array is fixed at 26, which is the maximum
+   number of region boundaries(faces, edges, vertices) of a box in 3D. 
+   Making this a vector will need  properly setting the size of the 
+   vector depending on the dimension of the mesh.
+ */
+struct box_tag_t {
+  box_t box;
+  std::vector<bool> tag(26, true);
+}; // class box_tag_t
 
 /*!
    Type for a colored box
  */
 struct box_color_t {
-  box_t box;
+  box_tag_t domain;
   std::vector<size_t> colors;
-
 }; // class box_color_t
 
 /*!
@@ -133,7 +124,7 @@ struct box_coloring_t
   std::vector<std::vector<box_color_t>> ghost;
 
   //! The aggregate of domain-halo boxes
-  std::vector<std::vector<box_t>> domain_halo;
+  std::vector<std::vector<box_tag_t>> domain_halo;
   
   //! The bounding box covering exclusive+shared+ghost+domain-halo boxes
   std::vector<box_t> overlay;
@@ -162,7 +153,7 @@ struct box_coloring_t
     strides.resize(num_boxes); 
 
     // resize the inner vectors for ghost and shared
-    size_t sz = pow(3,dim) - 1;
+    size_t sz = pow(3,dim);
     for (size_t i = 0; i < num_boxes; i++){ 
       ghost[i].resize(sz);
       shared[i].resize(sz);
