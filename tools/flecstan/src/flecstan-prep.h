@@ -20,7 +20,7 @@ class Preprocessor : public clang::PPCallbacks
    // FleCSI macros that we'll recognize
    static const std::set<std::string> macros;
 
-   // Compiler instance
+   // CompilerInstance, Yaml
    clang::CompilerInstance &ci;
    Yaml &yaml;
 

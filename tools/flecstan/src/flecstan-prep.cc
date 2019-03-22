@@ -2,6 +2,8 @@
 
 #include "flecstan-prep.h"
 
+namespace flecstan {
+
 
 
 // -----------------------------------------------------------------------------
@@ -9,25 +11,20 @@
 // Initialization
 // -----------------------------------------------------------------------------
 
-namespace flecstan {
-
 // macros
+// A set of all the macro names we care about
 const std::set<std::string> Preprocessor::macros {
    #define flecstan_quote(name) #name,
    flecstan_expand(flecstan_quote,)
    #undef flecstan_quote
 };
 
-} // namespace flecstan
-
 
 
 // -----------------------------------------------------------------------------
-// Preprocessor
+// Preprocessor::
 // Constructor and destructor
 // -----------------------------------------------------------------------------
-
-namespace flecstan {
 
 Preprocessor::Preprocessor(clang::CompilerInstance &_ci, Yaml &_yaml)
  : ci(_ci), yaml(_yaml)
@@ -41,16 +38,12 @@ Preprocessor::~Preprocessor()
    debug("dtor: Preprocessor");
 }
 
-} // namespace flecstan
-
 
 
 // -----------------------------------------------------------------------------
-// Preprocessor
+// Preprocessor::
 // MacroExpands
 // -----------------------------------------------------------------------------
-
-namespace flecstan {
 
 void Preprocessor::MacroExpands(
    const clang::Token &token,
@@ -64,11 +57,9 @@ void Preprocessor::MacroExpands(
    clang::Sema &sema = ci.getSema();
    clang::SourceManager &sman = sema.getSourceManager();
 
-   // Macro's IdentifierInfo
+   // Macro: IdentifierInfo, name
    const clang::IdentifierInfo *const ii = token.getIdentifierInfo();
    if (!ii) return;
-
-   // Macro's name
    const std::string name = ii->getName().str();
 
    // If name isn't one we're looking for, we're done here
@@ -77,7 +68,7 @@ void Preprocessor::MacroExpands(
 
    // OK, we've recognized one of our macros.
    // Create a MacroInvocation object for this particular macro call.
-   MacroInvocation m(token,range,sman,name);
+   MacroInvocation mi(token,range,sman,name);
 
    // Number of arguments to the macro
    const std::size_t narg = arguments->getNumMacroArguments();
@@ -88,12 +79,12 @@ void Preprocessor::MacroExpands(
       const clang::Token *const tokbegin = arguments->getUnexpArgument(a);
 
       // Initialize argument; then push tokens below...
-      m.arguments.push_back(std::vector<clang::Token>{});
+      mi.arguments.push_back(std::vector<clang::Token>{});
 
       // For each token of the current macro argument
       const clang::Token *tok; // outside for-loop in case we use it below
       for (tok = tokbegin;  tok->isNot(clang::tok::eof);  ++tok)
-         m.arguments.back().push_back(*tok);
+         mi.arguments.back().push_back(*tok);
 
       /*
       // Here's a way we can get the original spelling (including white space!)
@@ -115,7 +106,7 @@ void Preprocessor::MacroExpands(
    const clang::FileID fileid = pos.first;
    const unsigned offset = pos.second;
 
-   auto pair = sourceMap[fileid].insert(std::make_pair(offset,m));
+   auto pair = sourceMap[fileid].insert(std::make_pair(offset,mi));
    const bool direct = pair.second; // direct (true) or nested (false) macro?
    if (!direct) return;
 
@@ -144,21 +135,17 @@ void Preprocessor::MacroExpands(
    // Record, for the YAML document, the basics of this macro invocation
    #define flecstan_invoked(mac) \
       if (name == #mac) \
-         yaml.mac.invoked.push_back(InvocationInfo(sema,m))
+         yaml.mac.invoked.push_back(InvocationInfo(sema,mi))
    flecstan_expand(flecstan_invoked,;)
    #undef flecstan_invoked
 }
 
-} // namespace flecstan
-
 
 
 // -----------------------------------------------------------------------------
-// Preprocessor
+// Preprocessor::
 // invocation
 // -----------------------------------------------------------------------------
-
-namespace flecstan {
 
 const MacroInvocation *Preprocessor::invocation(
    const clang::SourceLocation &loc
@@ -208,9 +195,9 @@ const MacroInvocation *Preprocessor::invocation(
    }
 
    // MacroInvocation for the desired (FileID,offset)
-   const MacroInvocation &m = mitr->second;
+   const MacroInvocation &mi = mitr->second;
    const std::size_t begin = mitr->first;
-   const std::size_t end   = m.end;
+   const std::size_t end   = mi.end;
    if (begin <= offset && offset <= end)
       return &mitr->second;
 
