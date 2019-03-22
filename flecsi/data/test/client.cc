@@ -35,7 +35,7 @@ flecsi_register_task(global_task, global_test, loc, single);
 
 } // namespace global_test
 
-void
+int
 global(int argc, char ** argv) {
 
   FTEST();
@@ -44,6 +44,8 @@ global(int argc, char ** argv) {
   double value{10.0};
 
   flecsi_execute_task(global_task, global_test, single, th, value);
+
+  return 0;
 }
 
 ftest_register_test(global);

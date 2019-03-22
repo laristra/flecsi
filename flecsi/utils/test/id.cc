@@ -69,7 +69,7 @@ identical(const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & lhs,
 #define FBITS 4 /* for flags     */
 #define GBITS 60 /* for global    */
 
-void
+int
 id(int argc, char ** argv) {
 
   FTEST();
@@ -298,6 +298,8 @@ id(int argc, char ** argv) {
 #else
   EXPECT_TRUE(FTEST_EQUAL_BLESSED("id.blessed"));
 #endif
+
+  return 0;
 }
 
 ftest_register_test(id);

@@ -22,7 +22,7 @@ intersects(const CONTAINER & one, const CONTAINER & two) {
     one.begin(), one.end(), two.begin(), two.end());
 }
 
-void
+int
 set_intersection(int argc, char ** argv) {
 
   FTEST();
@@ -52,6 +52,8 @@ set_intersection(int argc, char ** argv) {
   EXPECT_EQ(intersects(d, d), true);
   EXPECT_EQ(intersects(a, e), false);
   EXPECT_EQ(intersects(e, f), false);
+
+  return 0;
 }
 
 ftest_register_test(set_intersection);

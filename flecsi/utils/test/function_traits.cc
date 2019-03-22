@@ -18,7 +18,7 @@ test_function(double, int, long) {
   return float(0);
 }
 
-void
+int
 function_traits(int argc, char ** argv) {
 
   FTEST();
@@ -162,6 +162,8 @@ function_traits(int argc, char ** argv) {
 #else
   EXPECT_TRUE(FTEST_EQUAL_BLESSED("function_traits.blessed"));
 #endif
+
+  return 0;
 }
 
 ftest_register_test(function_traits);

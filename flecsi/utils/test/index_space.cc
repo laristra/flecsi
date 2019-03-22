@@ -2,7 +2,7 @@
 #include <flecsi/utils/ftest.h>
 #include <flecsi/utils/index_space.h>
 
-void
+int
 index_space(int argc, char ** argv) {
 
   FTEST();
@@ -50,6 +50,8 @@ index_space(int argc, char ** argv) {
 #else
   EXPECT_TRUE(FTEST_EQUAL_BLESSED("index_space.blessed"));
 #endif
+
+  return 0;
 }
 
 ftest_register_test(index_space);

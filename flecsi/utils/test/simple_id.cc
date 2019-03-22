@@ -20,7 +20,7 @@ using namespace flecsi::utils;
 using id_types_t = std::tuple<int, int, int>;
 using my_id_t = simple_id_t<id_types_t, lexical_comparison<id_types_t>>;
 
-void
+int
 simple_id(int argc, char ** argv) {
 
   FTEST();
@@ -44,6 +44,7 @@ simple_id(int argc, char ** argv) {
   EXPECT_TRUE((d < c));
   EXPECT_TRUE((d < e));
 
-} // simple_id
+  return 0;
+}
 
 ftest_register_test(simple_id);

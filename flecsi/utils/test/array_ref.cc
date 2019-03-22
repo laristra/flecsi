@@ -12,7 +12,7 @@ print_refc(const flecsi::utils::array_ref<char> & arr) {
   FTEST_CAPTURE() << std::endl;
 }
 
-void
+int
 array_ref(int argc, char ** argv) {
 
   FTEST();
@@ -288,6 +288,8 @@ array_ref(int argc, char ** argv) {
 #else
   EXPECT_TRUE(FTEST_EQUAL_BLESSED("array_ref.blessed"));
 #endif
+
+  return 0;
 }
 
 ftest_register_test(array_ref);

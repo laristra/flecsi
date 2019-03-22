@@ -44,12 +44,14 @@ flecsi_register_task(simple, task, loc, index);
   Test driver.
  */
 
-void
+int
 test_driver(int argc, char ** argv) {
 
   FTEST();
 
   flecsi_execute_task(simple, task, index, 10);
+
+  return 0;
 }
 
 ftest_register_test(test_driver);

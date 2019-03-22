@@ -31,7 +31,7 @@ MyFun(double, int, long) {
   return float(0);
 }
 
-void
+int
 common(int argc, char ** argv) {
 
   FTEST();
@@ -102,6 +102,8 @@ common(int argc, char ** argv) {
 #else
   EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed"));
 #endif
+
+  return 0;
 }
 
 ftest_register_test(common);

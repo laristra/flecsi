@@ -14,7 +14,7 @@
 
 #include <flecsi/utils/ftest.h>
 
-void
+int
 init_a(int argc, char ** argv) {
   flog_tag_guard(ftest);
   flog(info) << "init a" << std::endl;
@@ -23,20 +23,22 @@ init_a(int argc, char ** argv) {
   flog(info) << "info (strip level " << FLOG_STRIP_LEVEL << ")" << std::endl;
   flog(warn) << "warn (strip level " << FLOG_STRIP_LEVEL << ")" << std::endl;
   flog(error) << "error (strip level " << FLOG_STRIP_LEVEL << ")" << std::endl;
+  return 0;
 }
 
 ftest_register_initialize(init_a);
 
-void
+int
 init_b(int argc, char ** argv) {
   flog_tag_guard(ftest);
   flog(info) << "init b" << std::endl;
+  return 0;
 }
 
 ftest_register_initialize(init_b);
 ftest_add_initialize_dependency(init_b, init_a);
 
-void
+int
 test1(int argc, char ** argv) {
   FTEST();
   ASSERT_EQ(0, 0);
@@ -44,22 +46,25 @@ test1(int argc, char ** argv) {
 
   flog_tag_guard(ftest);
   flog(info) << "THIS IS SOME LOG INFO FOR A TEST" << std::endl;
+  return 0;
 }
 
 ftest_register_test(test1);
 
-void
+int
 test2(int argc, char ** argv) {
   FTEST();
   ASSERT_EQ(0, 0);
+  return 0;
 }
 
 ftest_register_test(test2);
 
-void
+int
 finalize(int argc, char ** argv) {
   flog_tag_guard(ftest);
   flog(info) << "finalize" << std::endl;
+  return 0;
 }
 
 ftest_register_finalize(finalize);

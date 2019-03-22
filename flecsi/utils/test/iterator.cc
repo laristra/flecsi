@@ -23,7 +23,7 @@
 /*
    Test various aspects of flecsi::utils::iterator
  */
-void
+int
 iterator(int argc, char ** argv) {
 
   FTEST();
@@ -91,6 +91,8 @@ iterator(int argc, char ** argv) {
 #else
   EXPECT_TRUE(FTEST_EQUAL_BLESSED("iterator.blessed"));
 #endif
+
+  return 0;
 } // TEST
 
 ftest_register_test(iterator);

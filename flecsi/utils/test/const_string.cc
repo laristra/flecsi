@@ -16,7 +16,7 @@
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/ftest.h>
 
-void
+int
 const_string(int argc, char ** argv) {
 
   FTEST();
@@ -78,6 +78,8 @@ const_string(int argc, char ** argv) {
 
   const flecsi::utils::const_string_hasher_t hasher{};
   EXPECT_EQ(const_string_t("abc").hash(), hasher(const_string_t("abc")));
+
+  return 0;
 }
 
 ftest_register_test(const_string);

@@ -20,6 +20,8 @@ checksum(int argc, char ** argv) {
   clog(info) << "checksum: " << cs.strvalue << std::endl;
 
   ASSERT_STREQ(cs.strvalue, "c0baaf0be574247df89245cd37228336");
+
+  return 0;
 }
 
 ftest_register_test(checksum);

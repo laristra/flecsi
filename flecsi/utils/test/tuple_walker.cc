@@ -21,7 +21,7 @@ struct thrice : public flecsi::utils::tuple_walker_u<thrice> {
   }
 };
 
-void
+int
 tuple_walker(int argc, char ** argv) {
 
   FTEST();
@@ -48,6 +48,8 @@ tuple_walker(int argc, char ** argv) {
 
   // compare
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("tuple_walker.blessed"));
+
+  return 0;
 }
 
 ftest_register_test(tuple_walker);

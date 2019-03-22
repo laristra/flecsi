@@ -26,7 +26,7 @@ print_set(const char * const prefix, const std::set<T> & set) {
   FTEST_CAPTURE() << " }" << std::endl;
 }
 
-void
+int
 set_utils(int argc, char ** argv) {
 
   FTEST();
@@ -96,6 +96,8 @@ set_utils(int argc, char ** argv) {
 
   // compare
   EXPECT_TRUE(FTEST_EQUAL_BLESSED("set_utils.blessed"));
+
+  return 0;
 }
 
 ftest_register_test(set_utils);

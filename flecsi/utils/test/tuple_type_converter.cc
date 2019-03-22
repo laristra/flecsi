@@ -15,7 +15,7 @@ class thing
 {
 };
 
-void
+int
 tuple_type_converter(int argc, char ** argv) {
 
   FTEST();
@@ -75,6 +75,8 @@ tuple_type_converter(int argc, char ** argv) {
 #elif defined(_MSC_VER)
   EXPECT_TRUE(FTEST_EQUAL_BLESSED("tuple_type_converter.blessed.msvc"));
 #endif
+
+  return 0;
 }
 
 ftest_register_test(tuple_type_converter);

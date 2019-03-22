@@ -15,7 +15,7 @@
 #include <flecsi/utils/ftest.h>
 #include <flecsi/utils/hash.h>
 
-void
+int
 hash(int argc, char ** argv) {
 
   FTEST();
@@ -342,6 +342,8 @@ hash(int argc, char ** argv) {
   } // for
 
   ASSERT_EQ(num_collisions, 0);
+
+  return 0;
 }
 
 ftest_register_test(hash);

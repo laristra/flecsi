@@ -68,7 +68,7 @@ bool const is_tuple<std::tuple<T...>>::value;
 } // namespace utils
 } // namespace flecsi
 
-void
+int
 static_verify(int argc, char ** argv) {
 
   FTEST();
@@ -106,6 +106,7 @@ static_verify(int argc, char ** argv) {
   EXPECT_EQ((flecsi::utils::is_tuple<std::tuple<int, char>>::value), true);
   // the last line needed () because of ,
 
-} // static_verify
+  return 0;
+}
 
 ftest_register_test(static_verify);

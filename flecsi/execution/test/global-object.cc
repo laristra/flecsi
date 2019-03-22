@@ -61,7 +61,7 @@ private:
 
  */
 
-void
+int
 global_object(int argc, char ** argv) {
 
   FTEST();
@@ -74,6 +74,8 @@ global_object(int argc, char ** argv) {
 
   ASSERT_EQ((*go_a)(), 10);
   ASSERT_EQ((*go_b)(), 100);
+
+  return 0;
 }
 
 ftest_register_test(global_object);

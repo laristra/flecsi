@@ -27,7 +27,7 @@ struct foo {
   }
 };
 
-void
+int
 tuple_function(int argc, char ** argv) {
 
   FTEST();
@@ -42,6 +42,8 @@ tuple_function(int argc, char ** argv) {
   EXPECT_EQ(flecsi::utils::tuple_function(f, one), 11);
   EXPECT_EQ(flecsi::utils::tuple_function(f, two), 3);
   EXPECT_EQ(flecsi::utils::tuple_function(f, three), 6);
+
+  return 0;
 }
 
 ftest_register_test(tuple_function);

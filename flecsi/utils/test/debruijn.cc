@@ -3,7 +3,7 @@
 
 #include <random>
 
-void
+int
 debruijn(int argc, char ** argv) {
 
   FTEST();
@@ -37,6 +37,8 @@ debruijn(int argc, char ** argv) {
       EXPECT_EQ(debruijn32_t::index(uint32_t(random() << i) | (1 << i)), i);
     } // for
   } // for
+
+  return 0;
 }
 
 ftest_register_test(debruijn);

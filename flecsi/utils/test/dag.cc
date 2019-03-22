@@ -53,7 +53,7 @@ const size_t e = flecsi_hash(e);
 const size_t f = flecsi_hash(f);
 const size_t g = flecsi_hash(g);
 
-void
+int
 dag(int argc, char ** argv) {
 
   FTEST();
@@ -88,6 +88,8 @@ dag(int argc, char ** argv) {
   dag.add(gv);
   gv.write("dag.gv");
 #endif
+
+  return 0;
 }
 
 ftest_register_test(dag);

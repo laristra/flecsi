@@ -1,7 +1,7 @@
 #include <flecsi/utils/ftest.h>
 #include <flecsi/utils/tuple_wrapper.h>
 
-void
+int
 tuple_wrapper(int argc, char ** argv) {
 
   FTEST();
@@ -32,6 +32,8 @@ tuple_wrapper(int argc, char ** argv) {
   EXPECT_EQ(e.get<0>(), 1.0f);
   EXPECT_EQ(e.get<1>(), 'x');
   EXPECT_EQ(e.get<2>(), 2);
+
+  return 0;
 }
 
 ftest_register_test(tuple_wrapper);
