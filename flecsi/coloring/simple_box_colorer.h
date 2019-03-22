@@ -132,6 +132,12 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     //Step 6: Compute the overlaying bounding box
     compute_overlaying_bounding_box(colbox_cells);
 
+    //Step 7: Reorder ghost and shared boxes for colored cells
+    reorder_boxes(colbox_cells); 
+
+    //Step 8: Tag box bounds
+    compute_bounding_box_tags(colbox_cells); 
+
     return colbox_cells;
   } // color
 
@@ -142,10 +148,10 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
      std::vector<box_coloring_t> colored_depents; 
      
      //Reorder ghost and shared boxes for colored cells
-     reorder_boxes(colored_cells); 
+     //reorder_boxes(colored_cells); 
 
      //Tag box bounds
-     compute_bounding_box_tags(colbox_cells); 
+     //compute_bounding_box_tags(colbox_cells); 
 
      //Now color the intermediate entities
      color_dependent_entities(colored_cells, colored_depents); 
@@ -160,14 +166,14 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     box_aggregate_info_t colinfo; 
  
     //#exclusive entities
-    colinfo.exclusive = cbox.exclusive[0].box.size();
+    colinfo.exclusive = cbox.exclusive[0].domain.box.size();
 
     //#shared entities
     colinfo.shared = 0; 
     std::set<size_t> shared_ranks; 
     for (size_t i = 0; i < cbox.shared[0].size(); i++)
     {
-      colinfo.shared += cbox.shared[0][i].box.size();
+      colinfo.shared += cbox.shared[0][i].domain.box.size();
       for (size_t j = 0; j < cbox.shared[0][i].colors.size(); j++)
          shared_ranks.insert(cbox.shared[0][i].colors[j]);
     }
@@ -178,7 +184,7 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     std::set<size_t> ghost_ranks; 
     for (size_t i = 0; i < cbox.ghost[0].size(); i++)
     {
-      colinfo.ghost += cbox.ghost[0][i].box.size();
+      colinfo.ghost += cbox.ghost[0][i].domain.box.size();
       for (size_t j = 0; j < cbox.ghost[0][i].colors.size(); j++)
          ghost_ranks.insert(cbox.ghost[0][i].colors[j]);
     }
@@ -867,7 +873,8 @@ private:
       IM[i][3] = dbox.upperbnd[i];
     }
 
-    box_tag_t dhbox(D);
+    box_tag_t dhbox;
+    dhbox.box.resize(D);
 
     if (D == 2) {
       for (size_t j = 0; j < 3; ++j)
@@ -1116,7 +1123,7 @@ private:
     }
 
    //Compute the boundary tags for the shared boxes 
-    size_t count = pow(3,D); 
+    count = pow(3,D); 
     for (size_t i = 0; i < count; i++)
     {
       if (!col_cells.shared[0][i].domain.box.isempty())
@@ -1124,9 +1131,9 @@ private:
         //Loop over all the boundary types 
         for (size_t bid = 0; bid <num_bids[D-2]; bid++)
         {
+          std::set<int> ngbranks; 
           std::vector<int> gids = shared2ghost(i, bid); 
           if (gids.size() > 0){
-            std::set<int> ngbranks; 
             for (size_t j = 0; j<gids.size(); j++)
             {
               if (!col_cells.ghost[0][gids[j]].domain.box.isempty())
@@ -1157,7 +1164,7 @@ private:
    //   compute_bounding_box_tags(pbox, col_cells.domain_halo[0][i]);
   }//compute_bounding_box_tags
 
-  void color_dependent_entities_(
+  void color_dependent_entities(
        box_coloring_t& col_cells, 
        std::vector<box_coloring_t>& col_depents)
   {
@@ -1171,7 +1178,7 @@ private:
        int bid_bnd[2] = {4,8};
  
        //Loop over intermediate dimensions
-       for (size_t d = D-1; d >= 0 D; d--)
+       for (size_t d = D-1; d >= 0; d--)
        {
         size_t owner_rank = col_cells.exclusive[0].colors[0]; 
         box_coloring_t col_ents; 
@@ -1229,14 +1236,14 @@ private:
                 ghosts[k].domain.tag[cbids[b]] = col_cells.ghost[0][i].domain.tag[cbids[b]];
 
               //Add rank of ghost rank to the intermediate ghost domain
-              ghosts[k].colors = col_cells.ghost[0][i].colors[0];  
-              col_ents.ghost[k][i] = ghost_boxes[k]; 
+              ghosts[k].colors = col_cells.ghost[0][i].colors;  
+              col_ents.ghost[k][i] = ghosts[k]; 
             }
           }// end loop over each sub-box 
         } // end loop over ghost boxes 
 
        //Compute the shared boxes for entities of dimension d
-        size_t count = pow(3,D); 
+        count = pow(3,D); 
         for (size_t i = 0; i < count; i++)
         {
           if (!col_cells.shared[0][i].domain.box.isempty())
@@ -1272,12 +1279,12 @@ private:
        box_color_t exclusive[num_boxes]; 
        for (size_t k = 0; k <num_boxes; k++)
        {
-          exclusive_boxes[k].box.resize(D);  
+          exclusive[k].domain.box.resize(D);  
    
           for (size_t j = 0; j < D; j++)
           {
-            exclusive[k].box.lowerbnd[j] = col_cells.exclusive[0].box.lowerbnd[j];
-            exclusive[k].box.upperbnd[j] = col_cells.exclusive[0].box.upperbnd[j]
+            exclusive[k].domain.box.lowerbnd[j] = col_cells.exclusive[0].domain.box.lowerbnd[j];
+            exclusive[k].domain.box.upperbnd[j] = col_cells.exclusive[0].domain.box.upperbnd[j]
                                                  + bnds_info[d][num_boxes*k+j+1];
           }
 
@@ -1292,12 +1299,12 @@ private:
         } // end loop for exclusive boxes
 
        //Compute the domain halo boxes for entities of dimension d  
-       /for (size_t i = 0 ; i < col_cells.domain_halo[0].size(); i++){
+       for (size_t i = 0 ; i < col_cells.domain_halo[0].size(); i++){
          box_tag_t halos[num_boxes]; 
 
          for (size_t k = 0; k <num_boxes; k++)
          {
-            halos[k].resize(D); 
+            halos[k].box.resize(D); 
 
             for (size_t j = 0; j < D; j++)
             {
@@ -1335,7 +1342,7 @@ private:
                                 {0,0},{2,0},{0,2},{2,2}};
 
 
-   std::vector<int> E2S_bid_map_2d[8] = {{3},{4},{1},{6},{0,1,3},,{1,2,4},{3,5,6},{4,6,7}};
+   std::vector<int> E2S_bid_map_2d[8] = {{3},{4},{1},{6},{0,1,3},{1,2,4},{3,5,6},{4,6,7}};
 
    std::vector<int> D2CBIDS_2d[2] = {{2,2,0,1,2,3},{1,8,0,1,2,3,4,5,6,7}};
 
@@ -1441,10 +1448,10 @@ private:
    auto depent2cellbids(int dim, int sub_bid)
    {
     std::vector<int> ids; 
-    int nb = D2CBIDS_2d[d][0];
-    int cnt = D2CBIDS_2d[d][1];
+    int nb = D2CBIDS_2d[dim][0];
+    int cnt = D2CBIDS_2d[dim][1];
     for (size_t i = 0; i < cnt; i++)
-      ids.push_back(D2CBIDS_2d[d][cnt*sub_bid+i+2])
+      ids.push_back(D2CBIDS_2d[dim][cnt*sub_bid+i+2]);
     return ids; 
    }
 

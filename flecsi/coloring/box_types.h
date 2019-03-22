@@ -77,7 +77,7 @@ struct box_t {
  */
 struct box_tag_t {
   box_t box;
-  std::vector<bool> tag(26, true);
+  std::vector<bool> tag{std::vector<bool>(26,true)};
 }; // class box_tag_t
 
 /*!
