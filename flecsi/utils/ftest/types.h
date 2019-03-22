@@ -44,6 +44,7 @@ struct state_t {
              << std::endl;
       stream << error_stream_.str();
       flog(utility) << stream.str();
+      __flog_internal_wait_on_flusher();
       std::exit(1);
     }
     else {
@@ -66,9 +67,9 @@ private:
 
 }; // struct state_t
 
-struct fatal_handler_t {
+struct assert_handler_t {
 
-  fatal_handler_t(const char * condition,
+  assert_handler_t(const char * condition,
     const char * file,
     int line,
     state_t & runtime)
@@ -77,9 +78,9 @@ struct fatal_handler_t {
       << FLOG_OUTPUT_LTRED("ASSERT FAILED") << ": assertion '" << condition
       << "' failed in " << FLOG_OUTPUT_BROWN(file << ":" << line)
       << FLOG_COLOR_BROWN << " ";
-  } // fatal_handler_t
+  } // assert_handler_t
 
-  ~fatal_handler_t() {
+  ~assert_handler_t() {
     flog_tag_guard(ftest);
     runtime_.stringstream() << FLOG_COLOR_PLAIN << std::endl;
     std::stringstream stream;
@@ -87,8 +88,7 @@ struct fatal_handler_t {
            << FLOG_COLOR_PLAIN << std::endl;
     stream << runtime_.stringstream().str();
     flog(utility) << stream.str();
-    std::exit(1);
-  } // ~fatal_handler_t
+  } // ~assert_handler_t
 
   std::ostream & stream() {
     return runtime_.stringstream();
@@ -97,11 +97,11 @@ struct fatal_handler_t {
 private:
   state_t & runtime_;
 
-}; // fatal_handler_t
+}; // assert_handler_t
 
-struct nonfatal_handler_t {
+struct expect_handler_t {
 
-  nonfatal_handler_t(const char * condition,
+  expect_handler_t(const char * condition,
     const char * file,
     int line,
     state_t & runtime)
@@ -110,11 +110,11 @@ struct nonfatal_handler_t {
       << FLOG_OUTPUT_YELLOW("EXPECT FAILED") << ": unexpected '" << condition
       << "' occurred in " << FLOG_OUTPUT_BROWN(file << ":" << line)
       << FLOG_COLOR_BROWN << " ";
-  } // nonfatal_handler_t
+  } // expect_handler_t
 
-  ~nonfatal_handler_t() {
+  ~expect_handler_t() {
     runtime_.stringstream() << FLOG_COLOR_PLAIN << std::endl;
-  } // ~nonfatal_handler_t
+  } // ~expect_handler_t
 
   std::ostream & stream() {
     return runtime_.stringstream();
@@ -123,7 +123,7 @@ struct nonfatal_handler_t {
 private:
   state_t & runtime_;
 
-}; // nonfatal_handler_t
+}; // expect_handler_t
 
 inline bool
 string_compare(const char * lhs, const char * rhs) {
@@ -161,22 +161,22 @@ string_case_compare(const char * lhs, const char * rhs) {
 #define FTEST_TTYPE(type) flecsi::utils::demangle(typeid(type).name())
 
 #define EXPECT_TRUE(condition)                                                 \
-  (condition) || flecsi::utils::ftest::nonfatal_handler_t(                     \
+  (condition) || flecsi::utils::ftest::expect_handler_t(                       \
                    #condition, __FILE__, __LINE__, __ftest_state_instance)     \
                    .stream()
 
 #define EXPECT_FALSE(condition)                                                \
-  !(condition) || flecsi::utils::ftest::nonfatal_handler_t(                    \
+  !(condition) || flecsi::utils::ftest::expect_handler_t(                      \
                     #condition, __FILE__, __LINE__, __ftest_state_instance)    \
                     .stream()
 
 #define ASSERT_TRUE(condition)                                                 \
-  (condition) || flecsi::utils::ftest::fatal_handler_t(                        \
+  (condition) || flecsi::utils::ftest::assert_handler_t(                       \
                    #condition, __FILE__, __LINE__, __ftest_state_instance)     \
                    .stream()
 
 #define ASSERT_FALSE(condition)                                                \
-  !(condition) || flecsi::utils::ftest::fatal_handler_t(                       \
+  !(condition) || flecsi::utils::ftest::assert_handler_t(                      \
                     #condition, __FILE__, __LINE__, __ftest_state_instance)    \
                     .stream()
 
@@ -206,49 +206,49 @@ string_case_compare(const char * lhs, const char * rhs) {
 
 #define ASSERT_STREQ(str1, str2)                                               \
   flecsi::utils::ftest::string_compare(str1, str2) ||                          \
-    flecsi::utils::ftest::fatal_handler_t(                                     \
+    flecsi::utils::ftest::assert_handler_t(                                    \
       str1 " == " str2, __FILE__, __LINE__)                                    \
       .stream()
 
 #define EXPECT_STREQ(str1, str2)                                               \
   flecsi::utils::ftest::string_compare(str1, str2) ||                          \
-    flecsi::utils::ftest::nonfatal_handler_t(                                  \
+    flecsi::utils::ftest::expect_handler_t(                                    \
       str1 " == " str2, __FILE__, __LINE__)                                    \
       .stream()
 
 #define ASSERT_STRNE(str1, str2)                                               \
   !flecsi::utils::ftest::string_compare(str1, str2) ||                         \
-    flecsi::utils::ftest::fatal_handler_t(                                     \
+    flecsi::utils::ftest::assert_handler_t(                                    \
       str1 " != " str2, __FILE__, __LINE__)                                    \
       .stream()
 
 #define EXPECT_STRNE(str1, str2)                                               \
   !flecsi::utils::ftest::string_compare(str1, str2) ||                         \
-    flecsi::utils::ftest::nonfatal_handler_t(                                  \
+    flecsi::utils::ftest::expect_handler_t(                                    \
       str1 " != " str2, __FILE__, __LINE__)                                    \
       .stream()
 
 #define ASSERT_STRCASEEQ(str1, str2)                                           \
   flecsi::utils::ftest::string_case_compare(str1, str2) ||                     \
-    flecsi::utils::ftest::fatal_handler_t(                                     \
+    flecsi::utils::ftest::assert_handler_t(                                    \
       str1 " == " str2 " (case insensitive)", __FILE__, __LINE__)              \
       .stream()
 
 #define EXPECT_STRCASEEQ(str1, str2)                                           \
   flecsi::utils::ftest::string_case_compare(str1, str2) ||                     \
-    flecsi::utils::ftest::nonfatal_handler_t(                                  \
+    flecsi::utils::ftest::expect_handler_t(                                    \
       str1 " == " str2 " (case insensitive)", __FILE__, __LINE__)              \
       .stream()
 
 #define ASSERT_STRCASENE(str1, str2)                                           \
   !flecsi::utils::ftest::string_case_compare(str1, str2) ||                    \
-    flecsi::utils::ftest::fatal_handler_t(                                     \
+    flecsi::utils::ftest::assert_handler_t(                                    \
       str1 " != " str2 " (case insensitive)", __FILE__, __LINE__)              \
       .stream()
 
 #define EXPECT_STRCASENE(str1, str2)                                           \
   !flecsi::utils::ftest::string_case_compare(str1, str2) ||                    \
-    flecsi::utils::ftest::nonfatal_handler_t(                                  \
+    flecsi::utils::ftest::expect_handler_t(                                    \
       str1 " != " str2 " (case insensitive)", __FILE__, __LINE__)              \
       .stream()
 

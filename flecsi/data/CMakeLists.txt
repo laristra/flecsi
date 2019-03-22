@@ -19,6 +19,7 @@
 
 set(data_HEADERS
   common/data_reference.h
+  common/field_info.h
   common/privilege.h
   common/storage_class.h
   common/storage_class_registration.h

@@ -18,11 +18,12 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/global_object_wrapper.h>
-#include <flecsi/runtime/types.h>
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/demangle.h>
-#include <flecsi/utils/flog.h>
+  #include <flecsi/data/common/field_info.h>
+  #include <flecsi/execution/global_object_wrapper.h>
+  #include <flecsi/runtime/types.h>
+  #include <flecsi/utils/common.h>
+  #include <flecsi/utils/demangle.h>
+  #include <flecsi/utils/flog.h>
 #endif
 
 #include <cassert>
@@ -381,6 +382,15 @@ struct context_u : public CONTEXT_POLICY {
     return field_registry_;
   } // field_registry
 
+  /*!
+    Register runtime field information.
+   */
+
+  void register_runtime_field_info(size_t topology_type_key,
+    size_t storage_class, const data::field_info_t & fi) {
+      runtime_field_info_[topology_type_key][storage_class].emplace_back(fi);
+  } // register_runtime_field_information
+
 private:
   /*--------------------------------------------------------------------------*
     Private types.
@@ -429,17 +439,43 @@ private:
   std::unordered_map<size_t, void *> function_registry_;
 
   /*--------------------------------------------------------------------------*
-    Topology members.
+    Topology data members.
    *--------------------------------------------------------------------------*/
 
   std::unordered_map<size_t, topology_entry_t> topology_registry_;
+  // FIXME?
   std::set<std::pair<size_t, size_t>> registered_topology_fields_;
 
   /*--------------------------------------------------------------------------*
-    Field members.
+    Field data members.
    *--------------------------------------------------------------------------*/
 
+  /*!
+    Field callback registry. This map is used to implement an object factory
+    style data structure so that field registrations can be collected at file
+    scope before the FleCSI runtime is initialized. The size_t key is a hash
+    that depends on the specific field purpose. Normal user-registered fields
+    use the name and namespace of the field to create the key. Topology
+    registered fields use some combination of an internal name and type hashes
+    to create the key. The key is arbitrary, provided that keys do not collide.
+   */
+
   std::unordered_map<size_t, field_entry_t> field_registry_;
+
+  /*!
+    This type allows the storage of field information per storage class. The
+    size_t key is the storage class.
+   */
+
+  using field_info_v = std::vector<data::field_info_t>;
+  using runtime_field_info_t = std::unordered_map<size_t, field_info_v>;
+
+  /*!
+    This type allows storage of runtime field information per topology type.
+    The size_t key is the topology type hash.
+   */
+
+  std::unordered_map<size_t, runtime_field_info_t> runtime_field_info_;
 
 }; // struct context_u
 

@@ -24,6 +24,7 @@
 #if !defined(__FLECSI_PRIVATE__)
   #error Do not include this file directly!
 #else
+  #include <flecsi/execution/context.h>
   #include <flecsi/runtime/types.h>
   #include <flecsi/utils/flog.h>
 #endif
@@ -67,23 +68,21 @@ struct storage_class_registration_u {
    */
 
   static void register_callback(size_t key, field_id_t fid) {
-#if 0    
-    execution::context_t::field_info_t fi;
+    field_info_t fi;
 
-    fi.data_client_hash =
-      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+      typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
 
-    fi.storage_class = STORAGE_CLASS;
-    fi.size = sizeof(DATA_TYPE);
     fi.namespace_hash = NAMESPACE;
     fi.name_hash = NAME;
+    fi.type_size = sizeof(DATA_TYPE);
     fi.versions = VERSIONS;
-    fi.index_space = INDEX_SPACE;
     fi.fid = fid;
+    fi.index_space = INDEX_SPACE;
     fi.key = key;
 
-    execution::context_t::instance().register_field_info(fi);
-#endif
+    execution::context_t::instance().register_runtime_field_info(
+      typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code(),
+      STORAGE_CLASS, fi);
   } // register_callback
 
 }; // class storage_class_registration_u

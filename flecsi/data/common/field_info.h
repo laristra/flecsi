@@ -13,25 +13,31 @@
                                                                               */
 #pragma once
 
-/*!
-  @file
-
-  This file defines the type identifier type \em data_reference_base_t.
- */
+/*!  @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-#error Do not include this file directly!
+  #error Do not include this file directly!
 #endif
+
+#include <cstddef>
+#include <limits>
 
 namespace flecsi {
 namespace data {
 
 /*!
-  This empty base class is the base of all FleCSI data model types. It is used
-  to identify FleCSI data model types.
+
  */
 
-struct data_reference_base_t {};
+struct field_info_t {
+  size_t namespace_hash = std::numeric_limits<size_t>::max();
+  size_t name_hash = std::numeric_limits<size_t>::max();
+  size_t type_size = std::numeric_limits<size_t>::max();
+  size_t versions = std::numeric_limits<size_t>::max();
+  size_t fid = std::numeric_limits<size_t>::max();
+  size_t index_space = std::numeric_limits<size_t>::max();
+  size_t key = std::numeric_limits<size_t>::max();
+}; // struct field_info_t
 
 } // namespace data
 } // namespace flecsi
