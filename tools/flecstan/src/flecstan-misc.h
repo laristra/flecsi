@@ -75,7 +75,7 @@ namespace color {
    inline const std::string heading = bold::black;
    inline const std::string file    = lite::magenta;
    inline const std::string report1 = bold::blue;
-   inline const std::string report2 = lite::cyan;
+   inline const std::string report2 = bold::cyan;
    inline const std::string note    = lite::green;
    inline const std::string warning = bold::yellow;
    inline const std::string error   = lite::red;
@@ -121,10 +121,10 @@ void diagnostic(
 // ------------------------
 
 // re: sections
-inline bool emit_section_arguments = true;
-inline bool emit_section_compilation = true;
+inline bool emit_section_command  = true;
+inline bool emit_section_compile  = true;
 inline bool emit_section_analysis = true;
-inline bool emit_section_summary = true;
+inline bool emit_section_summary  = true;
 
 // re: types of printing
 inline bool emit_debug   = false;
@@ -137,6 +137,7 @@ inline bool emit_error   = true;
 
 // re: certain extra printing
 inline bool emit_color    = true;
+inline bool emit_trace    = true;
 inline bool emit_column   = false;
 inline bool emit_ccline   = false;
 inline bool emit_formfeed = false;
@@ -341,7 +342,9 @@ inline exit_status_t interr(const std::ostringstream &oss)
 inline void print_version()
 {
    // absolutely plain old printing; no colorization
-   std::cout << "flecstan version " << version << std::endl;
+   std::cout
+      << "flecstan (FleCSI Static Analyzer) version " << version
+      <<  std::endl;
 }
 
 inline void print_help()
@@ -477,6 +480,13 @@ public:
    std::string file;
    std::string line;
    std::string column;
+
+   struct {
+      std::string file;
+      std::string line;
+      std::string column;
+   } spelling;
+
    std::string name;
 
    // Offset of the invocation's end: the ")" in "macro(foo,bar,...)"
@@ -499,15 +509,21 @@ public:
    MacroInvocation(
       const clang::Token &token,
       const clang::SourceRange &range,
-      const clang::SourceManager &man,
+      const clang::SourceManager &sman,
       const std::string &_name
    ) {
       getFileLineColumn(
-         &man, token.getLocation(),
+         &sman, token.getLocation(),
          file, line, column
       );
+
+      getFileLineColumn(
+         &sman, sman.getSpellingLoc(token.getLocation()),
+         spelling.file, spelling.line, spelling.column
+      );
+
       name = _name;
-      end  = man.getDecomposedExpansionLoc(range.getEnd()).second;
+      end  = sman.getDecomposedExpansionLoc(range.getEnd()).second;
    }
 
 

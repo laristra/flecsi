@@ -29,6 +29,7 @@ namespace flecstan {
    flecsi_execute_task                   VisitCallExpr()
    flecsi_execute_mpi_task_simple        VisitCallExpr()
    flecsi_execute_mpi_task               VisitCallExpr()
+   flecsi_execute_reduction_task         VisitCallExpr()
 -----------------------------------------------------------------
    flecsi_register_reduction_operation   VisitVarDecl()
 -----------------------------------------------------------------
@@ -378,6 +379,7 @@ bool Visitor::VisitVarDecl(const clang::VarDecl *const var)
 // flecsi_execute_task
 // flecsi_execute_mpi_task_simple
 // flecsi_execute_mpi_task
+// flecsi_execute_reduction_task
 // flecsi_execute_function
 // flecsi_function_handle
 // flecsi_get_handle
@@ -556,6 +558,22 @@ bool Visitor::VisitCallExpr(const clang::CallExpr *const expr)
       getVarArgsFunction(expr, c.varargs);
       m.index = yaml.flecsi_execute_mpi_task.matched.size();
       c.hash = m.hash;
+      yaml.push(c);
+   }
+
+   // flecsi_execute_reduction_task(task, nspace, launch, type, datatype, ...)
+   if (match(call, expr, m, "flecsi_execute_reduction_task",
+      "flecsi::execution::task_interface_u", "execute_task")) {
+      flecsi_execute_reduction_task c(m);
+      c.task     = m.str(sema,pos++);
+      c.nspace   = m.str(sema,pos++);
+      c.launch   = m.str(sema,pos++);
+      c.type     = m.str(sema,pos++);
+      c.datatype = m.str(sema,pos++);
+      getVarArgsFunction(expr, c.varargs);
+      // m.index = yaml.flecsi_execute_reduction_task.matched.size();
+      // c.hash = m.hash;
+      c.hash = c.nspace + "::" + c.task; // for now, easier than the hacky crap
       yaml.push(c);
    }
 
@@ -775,19 +793,15 @@ bool Visitor::VisitCXXConstructExpr(const clang::CXXConstructExpr *const cons)
    if (!iptr) return true;
    const MacroInvocation &m = *iptr;
 
-   // I believe that FleCSI's four task execution macros are, at present,
-   // defined in such a way that we'll get to this point (having passed
-   // the MacroInvocation test above) only if the present CXXConstructExpr
-   // is for a flecsi::utils::const_string_t construction, and not for any
-   // other type of construction. However, we can presumably get here while
-   // visiting AST nodes for other FleCSI macros, as the prep.invocation()
-   // call, above, succeeds if we're in an AST node produced by ANY FleCSI
-   // macro (not just the task execution macros). With this in mind, and
-   // for general safety and robustness, the various and sundry upcoming
-   // tests should guarantee that we're actually dealing with a call to
-   // const_string_t's constructor - and not, somehow, with something else.
-   // This way, we won't inadvertently extract some non-hash-string-related
-   // nonsense and somehow think it's associated with a hash string.
+   // I believe that FleCSI's task execution macros are, at present, defined
+   // in such a way that we'll get to this point (having passed the invocation
+   // test above) only if the present CXXConstructExpr is for a flecsi::utils::
+   // const_string_t construction, not any other type of construction. For
+   // general safety and robustness, however, I'm including various tests below,
+   // which should help to guarantee that we're actually dealing with a call
+   // to const_string_t's constructor - not, somehow, with something else. This
+   // way, we won't inadvertently extract some non-hash-string-related nonsense
+   // and somehow think it's associated with a hash string.
 
    // Update, 2019-02-25. We're doing this process for flecsi_register_function
    // and flecsi_function_handle too.
@@ -860,6 +874,7 @@ bool Visitor::VisitCXXConstructExpr(const clang::CXXConstructExpr *const cons)
       flecsi_finalize_hash(flecsi_execute_task);
       flecsi_finalize_hash(flecsi_execute_mpi_task_simple);
       flecsi_finalize_hash(flecsi_execute_mpi_task);
+      // flecsi_finalize_hash(flecsi_execute_reduction_task); // did another way
 
       flecsi_finalize_hash(flecsi_register_function);
       flecsi_finalize_hash(flecsi_function_handle);

@@ -15,16 +15,16 @@ namespace flecstan {
 // doing. For whatever reason, the other methodology was less robust than this
 // one. Specifically, it reliably obtained file/line/column in most contexts,
 // but didn't do so in the particular case of extracting those values from clang
-// diagnostics *when* the diagnostics were associated with macro-inserted code
-// that was being compiled. Outside of the diagnostics context (in other places
-// where we want file name etc.), or for diagnostics that weren't triggered by
-// macro-inserted code, the old scheme worked. :-/ We're not sure why there
-// apparently isn't a single (and simpler!) way to get the desired information.
+// diagnostics *when* the diagnostics were associated with macro-inserted code.
+// Outside of the diagnostics context (in other places where we want file name
+// etc.), or for diagnostics that weren't triggered by macro-inserted code, the
+// old scheme worked. :-/ We're not sure why there apparently isn't a single
+// (and simpler!) way to get the desired information.
 // -----------------------------------------------------------------------------
 
 void getFileLineColumn(
    // input
-   const clang::SourceManager *const man,
+   const clang::SourceManager *const sman,
    const clang::SourceLocation &loc,
 
    // output
@@ -34,9 +34,9 @@ void getFileLineColumn(
    std::string &line,
    std::string &column
 ) {
-   if (man != nullptr && loc.isValid()) {
+   if (sman != nullptr && loc.isValid()) {
       if (loc.isFileID()) {
-         clang::PresumedLoc pre = man->getPresumedLoc(loc);
+         clang::PresumedLoc pre = sman->getPresumedLoc(loc);
          if (pre.isValid()) {
             file   = pre.getFilename();
             line   = std::to_string(pre.getLine  ());
@@ -52,7 +52,7 @@ void getFileLineColumn(
          // as, "the inputs (source manager and location) are entirely valid,
          // but the location isn't a file [id]." Presumably, in this situation,
          // getExpansionLoc() below gets us into a different state of affairs.
-         getFileLineColumn(man, man->getExpansionLoc(loc), file, line, column);
+         getFileLineColumn(sman,sman->getExpansionLoc(loc), file,line,column);
          return;
       }
    }
@@ -77,7 +77,7 @@ void getFileLineColumn(
 //    flecstan ... | grep foo
 //
 // Well, grep isn't the best example, because, depending on how it's configured,
-// it may mess with color codes or insert its own. You may, however, be able to
+// it may mess with color codes or use its own. You may, however, be able to
 // switch that off, for example with:
 //
 //    flecstan ... | grep --color=never foo
@@ -172,12 +172,6 @@ void diagnostic(
    std::string textcolor,
    const bool keep_long_form // override short-form flag?
 ) {
-   /*
-   // spacing
-   if (!short_form)
-      std::cout << (first_print ? "" : "\n");
-   */
-
    // spacing
    if (!short_form && !first_print)
       std::cout << "\n";

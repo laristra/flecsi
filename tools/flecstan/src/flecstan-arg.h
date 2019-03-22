@@ -47,7 +47,7 @@ public:
    booland<std::string> clang; // expects one argument
    booland<std::vector<std::string>> flags; // expects zero or more arguments
    booland<std::string> dir;   // expects one argument
-   booland<std::string> yaml;  // expects one argument
+   booland<std::string> yout;  // expects one argument
 
    // Concept/usage sketch
    //
@@ -56,7 +56,8 @@ public:
    // dir
    //    json
    //    cc
-   // yaml
+   //    yaml (yaml, as input)
+   // yout (yaml, as output)
    //
    // database = f(dir,json)
    // commands = f(clang,flags,dir,cc)

@@ -15,7 +15,7 @@ void Diagnostic::HandleDiagnostic(
    clang::DiagnosticsEngine::Level level,
    const clang::Diagnostic &diag
 ) {
-   // Construct our own message about Clang finding something...
+   // Construct our own message about Clang++ finding something...
 
 
    // ------------------------
@@ -23,7 +23,7 @@ void Diagnostic::HandleDiagnostic(
    // ------------------------
 
    std::ostringstream oss;
-   oss << "Clang reports ";
+   oss << "Clang++ reports ";
 
    switch (level) {
       case clang::DiagnosticsEngine::Ignored :
@@ -67,7 +67,7 @@ void Diagnostic::HandleDiagnostic(
 
    // Extract any expansion trace information. Remark: clang++'s output might
    // lead someone to believe that this information would be placed into clang
-   // Notes and sent to the present function override (HandleDiagnostic()) as
+   // notes and sent to the present function override (HandleDiagnostic()) as
    // such. Alas, the information is actually embedded elsewhere. So, below,
    // I've basically followed what clang does in DiagnosticRenderer.cpp, and
    // specifically in the emitSingleMacroExpansion() and emitMacroExpansions()
@@ -135,7 +135,8 @@ void Diagnostic::HandleDiagnostic(
       << "\nFile: " << file
       << "\nLine: " << line
       << (emit_column     ? ("\nColumn: "         + column   ) : "")
-      << (expansion != "" ? ("\nExpansion trace:" + expansion) : "")
+      << (emit_trace &&
+          expansion != "" ? ("\nExpansion trace:" + expansion) : "")
    ;
 
    // emit

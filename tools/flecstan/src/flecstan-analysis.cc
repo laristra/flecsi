@@ -540,6 +540,22 @@ analyze_flecsi_execute_mpi_task(const flecstan::Yaml &yaml)
 
 
 
+// flecsi_execute_reduction_task
+// ...string task
+// ...string nspace
+// ...string launch
+// ...string type
+// ...string datatype
+// ...vector<VarArgTypeValue> varargs
+static exit_status_t
+analyze_flecsi_execute_reduction_task(const flecstan::Yaml &yaml)
+{
+   flecstan_im(flecsi_execute_reduction_task);
+   return status;
+}
+
+
+
 // -----------------------------------------------------------------------------
 // Task registration/execution
 // -----------------------------------------------------------------------------
@@ -601,7 +617,7 @@ static exit_status_t task_reg_without_exe(
          status = warning(
            "The task, as registered with hash \"" +
             reg.first + "\" here:\n   " + flcc(reg.second) + "\n"
-           "is never invoked with a flecsi_execute_*() macro call.\n"
+           "is never invoked with any of FleCSI's task execution macros.\n"
            "Is this intentional?"
          );
          summary_task_reg_without_exe += flcc(reg.second) + "\n";
@@ -625,8 +641,8 @@ static exit_status_t task_exe_without_reg(
          status = error(
            "The task, as executed with hash \"" +
             exe.first + "\" here:\n   " + flcc(exe.second,false) + "\n"
-           "was not registered with a flecsi_register_*() macro call,\n"
-           "or not registered with that hash.\n"
+           "was not registered with any of FleCSI's task registration macros,\n"
+           "or was not registered with that hash.\n"
            "This will trigger a run-time error if this line is reached."
          );
          summary_task_exe_without_reg += flcc(exe.second,false) + "\n";
@@ -659,6 +675,7 @@ static exit_status_t analyze_flecsi_task(const flecstan::Yaml &yaml)
    flecstan_insert(exes, flecsi_execute_task);
    flecstan_insert(exes, flecsi_execute_mpi_task_simple);
    flecstan_insert(exes, flecsi_execute_mpi_task);
+   flecstan_insert(exes, flecsi_execute_reduction_task);
 
    #undef flecstan_insert
 
@@ -764,7 +781,7 @@ static exit_status_t function_hand_without_reg(
            "The function whose handle is retrieved with hash \"" +
             hand.first + "\" here:\n   " + flcc(hand.second,false) + "\n"
            "was not registered with a flecsi_register_function() macro call,\n"
-           "or not registered with that hash.\n"
+           "or was not registered with that hash.\n"
            "This will trigger a run-time error if this line is reached."
          );
          summary_function_hand_without_reg += flcc(hand.second,false) + "\n";

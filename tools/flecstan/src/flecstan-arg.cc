@@ -8,7 +8,7 @@ namespace flecstan {
 // This file arguably has some redundancies and maintenance headaches, with
 // regards to the bookkeeping and such that's involved in handling command-
 // line arguments. Think about how to improve the situation. There are various
-// ways that this could be done, e.g. string-to-function pointer map to deal
+// ways that this could be done, e.g. string to function-pointer map to deal
 // with the various command arguments.
 
 
@@ -154,6 +154,7 @@ flecstan_toggle(warning)
 flecstan_toggle(error)
 flecstan_toggle(column)
 flecstan_toggle(color)
+flecstan_toggle(trace)
 
 
 // compilation command line
@@ -175,14 +176,14 @@ inline bool option_no_ccline(const std::string &opt)
 
 
 // sections
-inline bool option_arguments(const std::string &opt)
-   { flecstan_setnfind("-arguments", "--arguments"); }
-inline bool option_no_arguments(const std::string &opt)
-   { flecstan_setnfind("-no-arguments", "--no-arguments"); }
+inline bool option_command(const std::string &opt)
+   { flecstan_setnfind("-command", "--command"); }
+inline bool option_no_command(const std::string &opt)
+   { flecstan_setnfind("-no-command", "--no-command"); }
 
-inline bool option_compilation(const std::string &opt)
+inline bool option_compile(const std::string &opt)
    { flecstan_setnfind("-compilation", "--compilation"); }
-inline bool option_no_compilation(const std::string &opt)
+inline bool option_no_compile(const std::string &opt)
    { flecstan_setnfind("-no-compilation", "--no-compilation"); }
 
 inline bool option_analysis(const std::string &opt)
@@ -249,6 +250,13 @@ inline bool option_yaml(const std::string &opt)
    );
 }
 
+inline bool option_yout(const std::string &opt)
+{
+   flecstan_setnfind(
+      "-yout", "--yout"
+   );
+}
+
 // cleanup
 #undef flecstan_paste
 #undef flecstan_toggle
@@ -280,12 +288,13 @@ inline bool option_any(const std::string &opt)
       option_warning  (opt) || option_no_warning  (opt) ||
       option_error    (opt) || option_no_error    (opt) ||
       option_color    (opt) || option_no_color    (opt) ||
+      option_trace    (opt) || option_no_trace    (opt) ||
 
       option_ccline   (opt) || option_no_ccline   (opt) ||
       option_column   (opt) || option_no_column   (opt) ||
 
-      option_arguments(opt) || option_no_arguments(opt) ||
-      option_compilation  (opt) || option_no_compilation  (opt) ||
+      option_command  (opt) || option_no_command  (opt) ||
+      option_compile  (opt) || option_no_compile  (opt) ||
       option_analysis (opt) || option_no_analysis (opt) ||
       option_summary  (opt) || option_no_summary  (opt) ||
 
@@ -294,7 +303,8 @@ inline bool option_any(const std::string &opt)
       option_dir      (opt) ||
       option_json     (opt) ||
       option_cc       (opt) ||
-      option_yaml     (opt);
+      option_yaml     (opt) ||
+      option_yout     (opt);
 }
 
 
@@ -670,41 +680,56 @@ exit_status_t process_cc(
 
 
 // -----------------------------------------------------------------------------
-// one_yaml
 // process_yaml
 // -----------------------------------------------------------------------------
-
-exit_status_t one_yaml(
-   const char *const *const argv,
-   const std::size_t i, CmdArgs &com
-) {
-   debug("one_yaml()");
-
-   const std::string file = endsin_yaml(argv[i])
-      ? argv[i]
-      : argv[i] + std::string(".yaml");
-
-   // Warning, if already given.
-   // Note (before Save, so com.yaml.set() is correct).
-   if (com.yaml.set())
-      warning("YAML file was previously set to " +
-               quote(com.yaml.value()) + ".\n"
-              "Only the newest value will be used.");
-   note(std::string(com.yaml.set() ? "Changing " : "Setting ") +
-       "YAML file to " + quote(file) + ".");
-
-   // Save
-   com.yaml = file;
-   return exit_clean;
-}
-
-
 
 exit_status_t process_yaml(
    const int argc, const char *const *const argv,
    std::size_t &i, const std::string &opt, CmdArgs &com
 ) {
    debug("process_yaml()");
+   error("Unfortunately, " + opt + " isn't implemented yet. Sorry.");
+   return exit_fatal;
+}
+
+
+
+// -----------------------------------------------------------------------------
+// one_yout
+// process_yout
+// -----------------------------------------------------------------------------
+
+exit_status_t one_yout(
+   const char *const *const argv,
+   const std::size_t i, CmdArgs &com
+) {
+   debug("one_yout()");
+
+   const std::string file = endsin_yaml(argv[i])
+      ? argv[i]
+      : argv[i] + std::string(".yaml");
+
+   // Warning, if already given.
+   // Note (before Save, so com.yout.set() is correct).
+   if (com.yout.set())
+      warning("YAML output file was previously set to " +
+               quote(com.yout.value()) + ".\n"
+              "Only the newest value will be used.");
+   note(std::string(com.yout.set() ? "Changing " : "Setting ") +
+       "YAML output file to " + quote(file) + ".");
+
+   // Save
+   com.yout = file;
+   return exit_clean;
+}
+
+
+
+exit_status_t process_yout(
+   const int argc, const char *const *const argv,
+   std::size_t &i, const std::string &opt, CmdArgs &com
+) {
+   debug("process_yout()");
 
    // Argument?
    if (int(++i) == argc ||
@@ -712,12 +737,12 @@ exit_status_t process_yaml(
        endsin_json(argv[i]) || endsin_cc(argv[i])
    ) {
       i--;
-      return error("The " + opt + " option (YAML file) "
+      return error("The " + opt + " option (YAML output file) "
                    "expects an argument.\n"
                    "Example: " + opt + " foo.yaml");
    }
 
-   return one_yaml(argv,i,com);
+   return one_yout(argv,i,com);
 }
 
 
@@ -789,9 +814,9 @@ bool option_toggle(const std::string &opt)
       emit_heading = false;
       emit_note    = false;
       emit_warning = false;
-      emit_section_arguments   = false;
-      emit_section_compilation = false;
-      emit_section_summary     = false;
+      emit_section_command = false;
+      emit_section_compile = false;
+      emit_section_summary = false;
       // Make no changes, yea or nay, regarding:
       //    - printing of the analysis section
       //    - printing of file names
@@ -809,10 +834,10 @@ bool option_toggle(const std::string &opt)
       emit_note    = true;
       emit_warning = true;
       emit_error   = true;
-      emit_section_arguments   = true;
-      emit_section_compilation = true;
-      emit_section_analysis    = true;
-      emit_section_summary     = true;
+      emit_section_command  = true;
+      emit_section_compile  = true;
+      emit_section_analysis = true;
+      emit_section_summary  = true;
    }
 
    // short, long
@@ -840,10 +865,10 @@ bool option_toggle(const std::string &opt)
    else if (option_error      (opt)) { emit_error   = true;  }
    else if (option_no_error   (opt)) { emit_error   = false; }
 
-   else if (option_arguments  (opt)) { emit_section_arguments = true;  }
-   else if (option_no_arguments(opt)) { emit_section_arguments  = false; }
-   else if (option_compilation   (opt)) { emit_section_compilation  = true;  }
-   else if (option_no_compilation(opt)) { emit_section_compilation  = false; }
+   else if (option_command    (opt)) { emit_section_command  = true;  }
+   else if (option_no_command (opt)) { emit_section_command  = false; }
+   else if (option_compile    (opt)) { emit_section_compile  = true;  }
+   else if (option_no_compile (opt)) { emit_section_compile  = false; }
    else if (option_analysis   (opt)) { emit_section_analysis = true;  }
    else if (option_no_analysis(opt)) { emit_section_analysis = false; }
    else if (option_summary    (opt)) { emit_section_summary  = true;  }
@@ -856,6 +881,8 @@ bool option_toggle(const std::string &opt)
 
    else if (option_color      (opt)) { emit_color = true;  }
    else if (option_no_color   (opt)) { emit_color = false; }
+   else if (option_trace      (opt)) { emit_trace = true;  }
+   else if (option_no_trace   (opt)) { emit_trace = false; }
 
    else
       return false;
@@ -925,36 +952,54 @@ exit_status_t arguments(
    while (int(++i) < argc) {
       const std::string opt = argv[i];
 
-      // simple option?
+      // Simple option?
       if (option_toggle(opt)) {
          // work already done
       }
 
-      // more-complex option?
+      // More-complex option?
       #define ARGS argc,argv,i,opt,com
       else if (option_dir  (opt))
          { if (process_dir  (ARGS) == exit_fatal) return bail(); }
+
       else if (option_json (opt))
          { if (process_json (ARGS) == exit_fatal) return bail(); }
+
       else if (option_cc   (opt))
          { if (process_cc   (ARGS) == exit_fatal) return bail(); }
-      else if (option_clang(opt))
-         { if (process_clang(ARGS) == exit_fatal) return bail(); }
-      else if (option_flags(opt))
-         { if (process_flags(ARGS) == exit_fatal) return bail(); }
+
       else if (option_yaml (opt))
          { if (process_yaml (ARGS) == exit_fatal) return bail(); }
+
+      else if (option_clang(opt))
+         { if (process_clang(ARGS) == exit_fatal) return bail(); }
+
+      else if (option_flags(opt))
+         { if (process_flags(ARGS) == exit_fatal) return bail(); }
+
+      else if (option_yout (opt))
+         { if (process_yout (ARGS) == exit_fatal) return bail(); }
       #undef ARGS
 
-      // direct-specified file?
+      // Direct-specified JSON or C++ file?
       else if (endsin_json (opt))
          { if (one_json(argv,i,com) == exit_fatal) return bail(); }
       else if (endsin_cc   (opt))
          { if (one_cc  (argv,i,com) == exit_fatal) return bail(); }
-      else if (endsin_yaml (opt))
-         { if (one_yaml(argv,i,com) == exit_fatal) return bail(); }
 
-      // who knows?
+      // Direct-specified YAML file? This is an error, actually, because
+      // we wouldn't know if it's an input or output YAML file. (Contrast
+      // this with JSON and C++ files, which can only be input.)
+      else if (endsin_yaml (opt)) {
+         error("Ambiguous command-line argument: " + quote(opt) + "."
+               "\nYAML files can be either input or output."
+               "\nPrefix with -yaml if INPUT."
+               "\nPrefix with -yout if OUTPUT."
+         );
+         return bail();
+      }
+
+      // Who knows?
       else {
          status = std::max(status,
             opt == ""
@@ -965,7 +1010,9 @@ exit_status_t arguments(
                 "\nIf a JSON file, use -json or suffix file with .json."
                 "\nIf a C++ file, use -cc "
                   "or suffix file with .cc, .cpp, .cxx, or .C."
-                "\nIf a YAML file, use -yaml or suffix file with .yaml.")
+                "\nIf a YAML input file, use -yaml."
+                "\nIf a YAML output file, use -yout."
+            )
          );
       }
    }

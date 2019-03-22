@@ -138,6 +138,7 @@ public:
    apply_macro ( flecsi_execute_task ) sym \
    apply_macro ( flecsi_execute_mpi_task_simple ) sym \
    apply_macro ( flecsi_execute_mpi_task ) sym \
+   apply_macro ( flecsi_execute_reduction_task ) sym \
    \
    apply_macro ( flecsi_register_reduction_operation ) sym \
    \
@@ -434,6 +435,29 @@ flecstan_class_done
 flecstan_maptraits(flecsi_execute_mpi_task)
    flecstan_map(task);
    flecstan_map(nspace);
+   flecstan_map(varargs);
+   flecstan_map(hash);
+flecstan_maptraits_done
+
+
+
+// flecsi_execute_reduction_task ( task, nspace, launch, type, datatype, ... )
+flecstan_class(flecsi_execute_reduction_task)
+   std::string task;
+   std::string nspace;
+   std::string launch;
+   std::string type;
+   std::string datatype;
+   std::vector<VarArgTypeValue> varargs;
+   std::string hash;
+flecstan_class_done
+
+flecstan_maptraits(flecsi_execute_reduction_task)
+   flecstan_map(task);
+   flecstan_map(nspace);
+   flecstan_map(launch);
+   flecstan_map(type);
+   flecstan_map(datatype);
    flecstan_map(varargs);
    flecstan_map(hash);
 flecstan_maptraits_done

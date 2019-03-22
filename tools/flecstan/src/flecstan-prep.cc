@@ -57,12 +57,12 @@ void Preprocessor::MacroExpands(
    const clang::MacroDefinition &def,
    const clang::SourceRange range,
    const clang::MacroArgs *const arguments
-) {
+) /* override */ {
    debug("Preprocessor::MacroExpands()");
 
    // Sema, SourceManager
    clang::Sema &sema = ci.getSema();
-   clang::SourceManager &man = sema.getSourceManager();
+   clang::SourceManager &sman = sema.getSourceManager();
 
    // Macro's IdentifierInfo
    const clang::IdentifierInfo *const ii = token.getIdentifierInfo();
@@ -77,7 +77,7 @@ void Preprocessor::MacroExpands(
 
    // OK, we've recognized one of our macros.
    // Create a MacroInvocation object for this particular macro call.
-   MacroInvocation m(token,range,man,name);
+   MacroInvocation m(token,range,sman,name);
 
    // Number of arguments to the macro
    const std::size_t narg = arguments->getNumMacroArguments();
@@ -103,7 +103,7 @@ void Preprocessor::MacroExpands(
       range.setBegin(tokbegin->getLocation());
       range.setEnd(tok->getLocation()); // the eof from the above for-loop
       llvm::StringRef ref = clang::Lexer::getSourceText(
-         range, man, sema.getLangOpts());
+         range, sman, sema.getLangOpts());
       std::cout << "ref = \"" << ref.str() << "\"" << std::endl;
       */
    }
@@ -111,7 +111,7 @@ void Preprocessor::MacroExpands(
    // Enter the new MacroInvocation object into our "source map" structure,
    // essentially a map(FileID,map(Offset,MacroInvocation)).
    const std::pair<clang::FileID, unsigned> &pos =
-      man.getDecomposedExpansionLoc(token.getLocation());
+      sman.getDecomposedExpansionLoc(token.getLocation());
    const clang::FileID fileid = pos.first;
    const unsigned offset = pos.second;
 
@@ -140,7 +140,6 @@ void Preprocessor::MacroExpands(
    // below code (basic) should go before the above code (full info), and the
    // classes InvocationInfo and macrobase should go together. (Not sure about
    // YAML mapping issues, though.) Think about all this.
-   // Record, for the YAML document, the basics of this macro invocation
 
    // Record, for the YAML document, the basics of this macro invocation
    #define flecstan_invoked(mac) \
@@ -168,7 +167,7 @@ const MacroInvocation *Preprocessor::invocation(
 
    // Sema, SourceManager
    clang::Sema &sema = ci.getSema();
-   clang::SourceManager &man = sema.getSourceManager();
+   clang::SourceManager &sman = sema.getSourceManager();
 
    // For the construct (declaration, expression, etc.) we're examining, get
    // its File ID and offset. We'll then see if it's associated with a macro.
@@ -185,7 +184,7 @@ const MacroInvocation *Preprocessor::invocation(
    // in "flecsi_macro" - just as we want it to be. Without getFileLoc(), we
    // were actually getting the location for the 'p' in print!
    const std::pair<clang::FileID,unsigned>
-      pos = man.getDecomposedExpansionLoc(man.getFileLoc(loc));
+      pos = sman.getDecomposedExpansionLoc(sman.getFileLoc(loc));
    const clang::FileID fileid = pos.first;
    const unsigned offset = pos.second;
 
