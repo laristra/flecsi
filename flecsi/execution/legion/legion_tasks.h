@@ -460,10 +460,10 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
         ghost_offset_acc(regions[1], fid, sizeof(offset_t));
       const Legion::FieldAccessor<READ_ONLY, char, 2, Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
-        owner_acc(regions[2], fid, field_info.size + sizeof(size_t));
+        owner_acc(regions[2], fid, field_info.size);
       const Legion::FieldAccessor<READ_WRITE, char, 2, Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
-        ghost_acc(regions[3], fid, field_info.size + sizeof(size_t));
+        ghost_acc(regions[3], fid, field_info.size);
 
       for(Legion::Domain::DomainPointIterator itr(ghost_entries_domain); itr;
           itr++) {
@@ -474,7 +474,7 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
 
         char * ptr_ghost_acc = (char *)(ghost_acc.ptr(ghost_ptr));
         char * ptr_owner_acc = (char *)(owner_acc.ptr(owner_ptr));
-        size_t size = field_info.size + sizeof(size_t);
+        size_t size = field_info.size;
         size_t chunk = size; // * args.max_entries_per_index;
         memcpy(ptr_ghost_acc, ptr_owner_acc, chunk);
       } // for ghost_entries_domain
