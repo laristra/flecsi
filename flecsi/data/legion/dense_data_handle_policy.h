@@ -36,13 +36,13 @@ namespace flecsi {
  */
 
 struct legion_dense_data_handle_policy_t {
-  legion_dense_data_handle_policy_t() {}
+  //legion_dense_data_handle_policy_t() {}
 
-  legion_dense_data_handle_policy_t(
-    const legion_dense_data_handle_policy_t & p) = default;
+  //legion_dense_data_handle_policy_t(
+  //  const legion_dense_data_handle_policy_t & p) = default;
 
-  bool * ghost_is_readable;
-  bool * write_phase_started;
+  bool ghost_is_readable = false;
+  bool write_phase_started = false;
 
   // +++ The following fields are set from get_handle(), reading
   // information from the context which is data that is the same
@@ -50,8 +50,8 @@ struct legion_dense_data_handle_policy_t {
 
   field_id_t fid;
   field_id_t id_fid;
-  size_t index_space;
-  size_t data_client_hash;
+  size_t index_space = 0;
+  size_t data_client_hash = 0;
 
   // These depend on color but are only used in specifying
   // the region requirements
@@ -70,13 +70,13 @@ struct legion_dense_data_handle_policy_t {
   // inside the actual Legion task once we have the physical regions
 
   Legion::Context context;
-  Legion::Runtime * runtime;
+  Legion::Runtime * runtime = nullptr;
   Legion::PhysicalRegion exclusive_pr;
   Legion::PhysicalRegion shared_pr;
   Legion::PhysicalRegion ghost_pr;
-  size_t exclusive_priv;
-  size_t shared_priv;
-  size_t ghost_priv;
+  size_t exclusive_priv = 0;
+  size_t shared_priv = 0;
+  size_t ghost_priv = 0;
 }; // class legion_dense_data_handle_policy_t
 
 } // namespace flecsi

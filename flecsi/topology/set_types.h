@@ -47,18 +47,18 @@ public:
   // Don't allow the set to be copied or copy constructed
   set_topology_base_u(const set_topology_base_u & s) : ss_(s.ss_) {}
 
-  set_topology_base_u & operator=(const set_topology_base_u &) = delete;
+  //set_topology_base_u & operator=(const set_topology_base_u &) = delete;
 
   /// Allow move operations
-  set_topology_base_u(set_topology_base_u &&) = default;
+  //set_topology_base_u(set_topology_base_u &&) = default;
 
   //! override default move assignement
-  set_topology_base_u & operator=(set_topology_base_u && o) {
-    // call base_t move operator
-    data::data_client_t::operator=(std::move(o));
-    // return a reference to the object
-    return *this;
-  };
+  //set_topology_base_u & operator=(set_topology_base_u && o) {
+  //  // call base_t move operator
+  //  data::data_client_t::operator=(std::move(o));
+  //  // return a reference to the object
+  //  return *this;
+  //};
 
   STORAGE_TYPE * set_storage(STORAGE_TYPE * ss) {
     ss_ = ss;

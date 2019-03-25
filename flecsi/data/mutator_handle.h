@@ -56,6 +56,8 @@ public:
   //! Default constructor.
   //--------------------------------------------------------------------------//
 
+  mutator_handle_base_u() = default;
+
   mutator_handle_base_u(size_t num_exclusive,
     size_t num_shared,
     size_t num_ghost,

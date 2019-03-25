@@ -77,7 +77,8 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    auto & h = a.handle;
+
+    auto & h = a.mapped_handle();
 
     constexpr size_t num_regions = 3;
 

@@ -28,18 +28,18 @@ class FLECSI_EXPORT data_client_t
 {
 public:
   /// Copy constructor (disabled)
-  data_client_t(const data_client_t &) = delete;
+  //data_client_t(const data_client_t &) = delete;
 
   /// Assignment operator (disabled)
-  data_client_t & operator=(const data_client_t &) = delete;
+  //data_client_t & operator=(const data_client_t &) = delete;
 
   /// Allow move construction
-  data_client_t(data_client_t && dc) {}
+  //data_client_t(data_client_t && dc) {}
 
   /// Allow move assignment
-  data_client_t & operator=(data_client_t && dc) {
-    return *this;
-  }
+  //data_client_t & operator=(data_client_t && dc) {
+  //  return *this;
+  //}
 
   //--------------------------------------------------------------------------//
   //! Return a unique runtime identifier for namespace access to the

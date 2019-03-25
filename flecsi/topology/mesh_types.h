@@ -302,18 +302,18 @@ public:
   // Don't allow the mesh to be copied or copy constructed
   mesh_topology_base_u(const mesh_topology_base_u & m) : ms_(m.ms_) {}
 
-  mesh_topology_base_u & operator=(const mesh_topology_base_u &) = delete;
+  //mesh_topology_base_u & operator=(const mesh_topology_base_u &) = delete;
 
   /// Allow move operations
-  mesh_topology_base_u(mesh_topology_base_u &&) = default;
+  //mesh_topology_base_u(mesh_topology_base_u &&) = default;
 
   //! override default move assignement
-  mesh_topology_base_u & operator=(mesh_topology_base_u && o) {
-    // call base_t move operator
-    data::data_client_t::operator=(std::move(o));
-    // return a reference to the object
-    return *this;
-  };
+  //mesh_topology_base_u & operator=(mesh_topology_base_u && o) {
+  //  // call base_t move operator
+  //  data::data_client_t::operator=(std::move(o));
+  //  // return a reference to the object
+  //  return *this;
+  //};
 
   STORAGE_TYPE * set_storage(STORAGE_TYPE * ms) {
     ms_ = ms;

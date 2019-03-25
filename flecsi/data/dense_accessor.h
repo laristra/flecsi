@@ -77,8 +77,11 @@ struct accessor_u<data::dense,
 
   accessor_u() = default;
 
-  accessor_u(const dense_data_handle_u<T, 0, 0, 0> & h)
-    : handle(reinterpret_cast<const handle_t &>(h)) {}
+  accessor_u(dense_data_handle_u<T, 0, 0, 0> & h) :
+    handle_ptr_(&reinterpret_cast<handle_t &>(h)),
+    mapped_handle_(reinterpret_cast<handle_t &>(h))
+  {
+  }
 
   /*!
    \brief Provide logical array-based access to the data for this
@@ -88,15 +91,15 @@ struct accessor_u<data::dense,
    */
 
   T & operator()(size_t index) {
-    assert(index < handle.combined_size && "index out of range");
+    assert(index < mapped_handle_.combined_size && "index out of range");
 #ifndef MAPPER_COMPACTION
 #ifndef COMPACTED_STORAGE_SORT
-    return handle.combined_data[index];
+    return mapped_handle_.combined_data[index];
 #else
-    return handle.combined_data_sort[index];
+    return mapped_handle_.combined_data_sort[index];
 #endif
 #else
-    return *(handle.combined_data + index);
+    return *(mapped_handle_.combined_data + index);
 #endif
   }
 
@@ -116,7 +119,7 @@ struct accessor_u<data::dense,
           referenced by this handle.
    */
   size_t size() const {
-    return handle.combined_size;
+    return mapped_handle_.combined_size;
   }
 
   /*!
@@ -124,7 +127,7 @@ struct accessor_u<data::dense,
           referenced by this handle.
    */
   size_t exclusive_size() const {
-    return handle.exclusive_size;
+    return mapped_handle_.exclusive_size;
   } // size
 
   /*!
@@ -132,7 +135,7 @@ struct accessor_u<data::dense,
           referenced by this handle.
    */
   size_t shared_size() const {
-    return handle.shared_size;
+    return mapped_handle_.shared_size;
   } // size
 
   /*!
@@ -140,7 +143,7 @@ struct accessor_u<data::dense,
           referenced by this handle.
    */
   size_t ghost_size() const {
-    return handle.ghost_size;
+    return mapped_handle_.ghost_size;
   } // size
 
   //--------------------------------------------------------------------------//
@@ -154,8 +157,8 @@ struct accessor_u<data::dense,
    \param index The index of the data variable to return.
    */
   const T & exclusive(size_t index) const {
-    assert(index < handle.exclusive_size && "index out of range");
-    return handle.exclusive_data[index];
+    assert(index < mapped_handle_.exclusive_size && "index out of range");
+    return mapped_handle_.exclusive_data[index];
   } // operator []
 
   /*!
@@ -165,8 +168,8 @@ struct accessor_u<data::dense,
    \param index The index of the data variable to return.
    */
   T & exclusive(size_t index) {
-    assert(index < handle.exclusive_size && "index out of range");
-    return handle.exclusive_data[index];
+    assert(index < mapped_handle_.exclusive_size && "index out of range");
+    return mapped_handle_.exclusive_data[index];
   } // operator []
 
   /*!
@@ -176,8 +179,8 @@ struct accessor_u<data::dense,
    \param index The index of the data variable to return.
    */
   const T & shared(size_t index) const {
-    assert(index < handle.shared_size && "index out of range");
-    return handle.shared_data[index];
+    assert(index < mapped_handle_.shared_size && "index out of range");
+    return mapped_handle_.shared_data[index];
   } // operator []
 
   /*!
@@ -187,8 +190,8 @@ struct accessor_u<data::dense,
    \param index The index of the data variable to return.
   */
   T & shared(size_t index) {
-    assert(index < handle.shared_size && "index out of range");
-    return handle.shared_data[index];
+    assert(index < mapped_handle_.shared_size && "index out of range");
+    return mapped_handle_.shared_data[index];
   } // operator []
 
   /*
@@ -198,8 +201,8 @@ struct accessor_u<data::dense,
    \param index The index of the data variable to return.
   */
   const T & ghost(size_t index) const {
-    assert(index < handle.ghost_size && "index out of range");
-    return handle.ghost_data[index];
+    assert(index < mapped_handle_.ghost_size && "index out of range");
+    return mapped_handle_.ghost_data[index];
   } // operator []
 
   /*
@@ -209,8 +212,8 @@ struct accessor_u<data::dense,
    \param index The index of the data variable to return.
   */
   T & ghost(size_t index) {
-    assert(index < handle.ghost_size && "index out of range");
-    return handle.ghost_data[index];
+    assert(index < mapped_handle_.ghost_size && "index out of range");
+    return mapped_handle_.ghost_data[index];
   } // operator []
 
   /*!
@@ -241,7 +244,15 @@ struct accessor_u<data::dense,
     return this->operator()(e->template id<0>());
   } // operator ()
 
-  handle_t handle;
+
+  auto & driver_handle() { return *handle_ptr_; }
+
+  auto & mapped_handle() { return mapped_handle_; }
+  const auto & mapped_handle() const { return mapped_handle_; }
+
+protected:
+  handle_t * handle_ptr_ = nullptr;
+  handle_t mapped_handle_;
 };
 
 template<typename T,

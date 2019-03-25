@@ -55,8 +55,16 @@ struct accessor_u<data::global, T, PERMISSIONS, 0, 0>
 
   using handle_t = global_data_handle_u<T, PERMISSIONS>;
 
+  accessor_u() = default;
+
   accessor_u(const global_data_handle_u<T, 0> & h)
     : handle(reinterpret_cast<const handle_t &>(h)) {}
+
+  // needed because of ambiguous overload otherwise
+  accessor_u & operator=(const global_data_handle_u<T, 0>& h)
+  {
+    handle = reinterpret_cast<const handle_t &>(h);
+  };
 
   operator T &() {
     return data();
@@ -126,8 +134,16 @@ struct accessor_u<data::color, T, PERMISSIONS, 0, 0>
 
   using handle_t = global_data_handle_u<T, PERMISSIONS>;
 
+  accessor_u() = default;
+
   accessor_u(const global_data_handle_u<T, 0> & h)
     : handle(reinterpret_cast<const handle_t &>(h)) {}
+
+  // needed because of ambiguous overload otherwise
+  accessor_u & operator=(const global_data_handle_u<T, 0>& h)
+  {
+    handle = reinterpret_cast<const handle_t &>(h);
+  };
 
   operator T &() {
     return data();

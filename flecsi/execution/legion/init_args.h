@@ -99,7 +99,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    auto & h = a.handle;
+    const auto & h = a.driver_handle();
 
     clog_assert(h.state > SPECIALIZATION_TLT_INIT,
       "accessing  data "

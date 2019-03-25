@@ -79,6 +79,8 @@ struct legion_future_u {};
 template<typename RETURN>
 struct legion_future_u<RETURN, launch_type_t::single> : public future_base_t {
 
+  legion_future_u() = default;
+
   legion_future_u(const legion_future_u & f) {
     data_ = f.data_;
     initialized_ = f.initialized_;

@@ -59,6 +59,8 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   //--------------------------------------------------------------------------//
   //! Constructor from handle.
   //--------------------------------------------------------------------------//
+  
+  mutator_u() = default;
 
   mutator_u(const mutator_handle_u<T> & h) : h_(h) {
     assert(!h_.overflow_map_ && "expected null overflow map");

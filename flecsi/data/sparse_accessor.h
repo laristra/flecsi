@@ -90,6 +90,8 @@ struct accessor_u<data::sparse,
   //! Copy constructor.
   //-------------------------------------------------------------------------//
 
+  accessor_u() = default;
+
   accessor_u(const accessor_u & a) : base_t(a) {}
 
   accessor_u(const typename sparse_data_handle_u<T, 0, 0, 0>::base_t & h)

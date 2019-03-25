@@ -23,9 +23,9 @@ namespace flecsi {
 struct mpi_mutator_handle_policy_t {
   using offset_t = data::sparse_data_offset_t;
 
-  mpi_mutator_handle_policy_t() {}
+  //mpi_mutator_handle_policy_t() {}
 
-  mpi_mutator_handle_policy_t(const mpi_mutator_handle_policy_t & p) = default;
+  //mpi_mutator_handle_policy_t(const mpi_mutator_handle_policy_t & p) = default;
 
   field_id_t fid;
   size_t index_space;

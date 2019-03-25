@@ -75,6 +75,8 @@ struct accessor_u<data::ragged,
   //! Constructor from handle.
   //--------------------------------------------------------------------------//
 
+  accessor_u() = default;
+
   accessor_u(const ragged_data_handle_u<T, 0, 0, 0> & h)
     : handle(reinterpret_cast<const handle_t &>(h)) {}
 

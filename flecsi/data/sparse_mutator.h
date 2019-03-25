@@ -68,6 +68,8 @@ struct mutator_u<data::sparse, T>
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
+  mutator_u() = default;
+
   mutator_u(const handle_t & h) : base_t(h) {}
 
   T & operator()(size_t index, size_t entry) {

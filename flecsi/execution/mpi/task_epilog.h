@@ -77,30 +77,12 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    auto & h = a.handle;
+    auto & h = a.driver_handle();
 
     // Skip Read Only handles
     if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
       return;
-
-    auto & context = context_t::instance();
-    const int my_color = context.color();
-    auto & my_coloring_info = context.coloring_info(h.index_space).at(my_color);
-
-    auto & field_metadata = context.registered_field_metadata().at(h.fid);
-
-    MPI_Win win = field_metadata.win;
-
-    MPI_Win_post(field_metadata.shared_users_grp, 0, win);
-    MPI_Win_start(field_metadata.ghost_owners_grp, 0, win);
-
-    for(auto ghost_owner : my_coloring_info.ghost_owners) {
-      MPI_Get(h.ghost_data, 1, field_metadata.origin_types[ghost_owner],
-        ghost_owner, 0, 1, field_metadata.target_types[ghost_owner], win);
-    }
-
-    MPI_Win_complete(win);
-    MPI_Win_wait(win);
+    h.dirty = true;
   } // handle
 
   template<typename T, size_t PERMISSIONS>

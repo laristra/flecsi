@@ -176,13 +176,13 @@ public:
   // Don't allow the mesh to be copied or copy constructed
 
   //! don't allow mesh to be assigned
-  mesh_topology_u & operator=(const mesh_topology_u &) = delete;
+  //mesh_topology_u & operator=(const mesh_topology_u &) = delete;
 
   //! Allow move operations
-  mesh_topology_u(mesh_topology_u && o) = default;
+  //mesh_topology_u(mesh_topology_u && o) = default;
 
   //! override default move assignement
-  mesh_topology_u & operator=(mesh_topology_u && o) = default;
+  //mesh_topology_u & operator=(mesh_topology_u && o) = default;
 
   //! Constructor, takes as input a mesh storage or storage can later be set
   mesh_topology_u(storage_t * ms = nullptr) : base_t(ms) {

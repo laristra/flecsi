@@ -166,6 +166,7 @@ struct storage_class_u<dense> {
     hb.fid = field_info.fid;
     hb.index_space = field_info.index_space;
     hb.data_client_hash = field_info.data_client_hash;
+    hb.dirty = false;
 
     hb.exclusive_size = color_info.exclusive;
     hb.combined_data = hb.exclusive_buf = hb.exclusive_data =

@@ -44,7 +44,7 @@ struct finalize_handles_t
     GHOST_PERMISSIONS> & a) {
 #ifndef MAPPER_COMPACTION
 
-    auto & h = a.handle;
+    auto & h = a.mapped_handle();
 
     if((EXCLUSIVE_PERMISSIONS == rw) || (EXCLUSIVE_PERMISSIONS == wo))
       std::memcpy(
