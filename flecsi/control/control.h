@@ -64,10 +64,16 @@ struct control_u : public CONTROL_POLICY {
   } // instance
 
   /*!
-    Allow control points to set return status for execution.    
+    Allow control points to set the exit status for execution.    
    */
 
-  int & result() { return result_; }
+  int exit_status() const { return exit_status_; }
+
+  /*!
+    Allow control points to set the exit status for execution.    
+   */
+
+  int & exit_status() { return exit_status_; }
 
   /*!
     Execute the control flow graph.
@@ -92,7 +98,7 @@ struct control_u : public CONTROL_POLICY {
     instance().sort_control_points();
     control_point_walker_t pw(argc, argv);
     pw.template walk_types<typename CONTROL_POLICY::control_points>();
-    return instance().result();
+    return instance().exit_status();
   } // execute
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
@@ -159,7 +165,7 @@ private:
     Data members.
    *--------------------------------------------------------------------------*/
 
-  int result_ = 0;
+  int exit_status_ = 0;
   std::map<size_t, dag_t> registry_;
   std::map<size_t, std::vector<node_t>> sorted_;
 

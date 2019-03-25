@@ -146,6 +146,12 @@ struct context_u : public CONTEXT_POLICY {
     return CONTEXT_POLICY::task_depth();
   } // task_level
 
+  /*!
+    Return the exit status of the FleCSI runtime.
+   */
+
+  int & exit_status() { return exit_status_; }
+
   /*--------------------------------------------------------------------------*
     Reduction interface.
    *--------------------------------------------------------------------------*/
@@ -415,6 +421,7 @@ private:
     Basic runtime data members.
    *--------------------------------------------------------------------------*/
 
+  int exit_status_ = 0;
   top_level_action_t top_level_action_ = {};
 
   /*--------------------------------------------------------------------------*

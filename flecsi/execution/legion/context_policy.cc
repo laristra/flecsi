@@ -111,7 +111,7 @@ legion_context_policy_t::start(int argc, char ** argv) {
 
   Legion::Runtime::wait_for_shutdown();
 
-  return 0;
+  return context_t::instance().exit_status();
 } // legion_context_policy_t::start
 
 //----------------------------------------------------------------------------//

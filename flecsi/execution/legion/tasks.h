@@ -16,9 +16,9 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-#error Do not include this file directly!
+  #error Do not include this file directly!
 #else
-#include <flecsi/execution/context.h>
+  #include <flecsi/execution/context.h>
 #endif
 
 /*!
@@ -48,7 +48,7 @@ namespace execution {
   Legion top-level task.
  *----------------------------------------------------------------------------*/
 
-int
+void
 top_level_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
@@ -97,7 +97,7 @@ top_level_task(const Legion::Task * task,
     Invoke the FleCSI runtime top-level action.
    */
 
-  context_.result() = context_.top_level_action()(args.argc, args.argv);
+  context_.exit_status() = context_.top_level_action()(args.argc, args.argv);
 
   /*
     Finish up Legion runtime and fall back out to MPI.
@@ -105,8 +105,6 @@ top_level_task(const Legion::Task * task,
 
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);
-
-  return result;
 } // top_level_task
 
 /*----------------------------------------------------------------------------*

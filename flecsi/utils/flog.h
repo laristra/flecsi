@@ -20,7 +20,7 @@
 #include "flog/utils.h"
 
 #if defined(FLECSI_ENABLE_FLOG)
-#include "flog/message.h"
+  #include "flog/message.h"
 #endif
 
 #include <iostream>
@@ -289,6 +289,38 @@
 
 #define fixme() flog(warn)
 
+namespace flecsi {
+namespace utils {
+namespace flog {
+
+#if defined FLECSI_ENABLE_BOOST
+inline void dumpstack() {
+#if !defined(NDEBUG)
+  std::cerr << FLOG_OUTPUT_RED("FleCSI Runtime: std::abort called.") <<
+    std::endl << FLOG_OUTPUT_GREEN("Dumping stacktrace...") << std::endl;
+  std::cerr << boost::stacktrace::stacktrace() << std::endl;
+#else
+  std::cerr << FLOG_OUTPUT_RED("FleCSI Runtime: std::abort called.") <<
+    std::endl <<
+    FLOG_OUTPUT_BROWN("Build with '-DCMAKE_BUILD_TYPE=Debug'" <<
+      " to enable FleCSI runtime stacktrace.") <<
+    std::endl;
+#endif
+}
+#else
+inline void dumpstack() {
+  std::cerr << FLOG_OUTPUT_RED("FleCSI Runtime: std::abort called.") <<
+    std::endl <<
+    FLOG_OUTPUT_BROWN("Build with '-DCMAKE_BUILD_TYPE=Debug' and" <<
+      "'-DENABLE_BOOST=On' to enable FleCSI runtime stacktrace.") <<
+    std::endl;
+}
+#endif
+
+} // namespace flog
+} // namespace utils
+} // namespace flecsi
+
 /*!
   @def flog_fatal(message)
 
@@ -321,7 +353,9 @@
                                    << ":" << __LINE__ << " ")                  \
              << FLOG_OUTPUT_LTRED(message) << std::endl;                       \
     __flog_internal_wait_on_flusher();                                         \
-    throw std::runtime_error(_sstream.str());                                  \
+    std::cerr << _sstream.str() << std::endl;                                  \
+    flecsi::utils::flog::dumpstack();                                          \
+    std::abort();                                                              \
   } /* scope */
 
 /*!

@@ -92,13 +92,13 @@ struct control_point_walker_u : public flecsi::utils::tuple_walker_u<
       // This is not a cycle -> execute each action for this control point.
       auto & sorted = CONTROL_POLICY::instance().sorted_control_point_map(
         ELEMENT_TYPE::value);
-      int result{0};
+      int status{0};
 
       for(auto & node : sorted) {
-        result |= node.action()(argc_, argv_);
+        status |= node.action()(argc_, argv_);
       } // for
 
-      CONTROL_POLICY::instance().result() |= result;
+      CONTROL_POLICY::instance().exit_status() |= status;
     }
     else {
 
