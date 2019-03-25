@@ -89,14 +89,16 @@ struct control_point_walker_u : public flecsi::utils::tuple_walker_u<
 
     if constexpr(std::is_same<typename ELEMENT_TYPE::TYPE, size_t>::value) {
 
-      // This is not a cycle -> execute each control action for this
-      // control point.
+      // This is not a cycle -> execute each action for this control point.
       auto & sorted = CONTROL_POLICY::instance().sorted_control_point_map(
         ELEMENT_TYPE::value);
+      int result{0};
 
       for(auto & node : sorted) {
-        node.action()(argc_, argv_);
+        result |= node.action()(argc_, argv_);
       } // for
+
+      CONTROL_POLICY::instance().result() |= result;
     }
     else {
 

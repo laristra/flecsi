@@ -64,6 +64,12 @@ struct control_u : public CONTROL_POLICY {
   } // instance
 
   /*!
+    Allow control points to set return status for execution.    
+   */
+
+  int & result() { return result_; }
+
+  /*!
     Execute the control flow graph.
 
     @param argc The number of command-line arguments.
@@ -86,7 +92,7 @@ struct control_u : public CONTROL_POLICY {
     instance().sort_control_points();
     control_point_walker_t pw(argc, argv);
     pw.template walk_types<typename CONTROL_POLICY::control_points>();
-    return 0;
+    return instance().result();
   } // execute
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
@@ -153,6 +159,7 @@ private:
     Data members.
    *--------------------------------------------------------------------------*/
 
+  int result_ = 0;
   std::map<size_t, dag_t> registry_;
   std::map<size_t, std::vector<node_t>> sorted_;
 

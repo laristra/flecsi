@@ -24,7 +24,7 @@ namespace ftest {
 struct node_t {
 
   using bitset_t = std::bitset<8>;
-  using action_t = std::function<void(int, char **)>;
+  using action_t = std::function<int(int, char **)>;
 
   node_t(action_t const & action = {}, bitset_t const & bitset = {})
     : action_(action), bitset_(bitset) {}
