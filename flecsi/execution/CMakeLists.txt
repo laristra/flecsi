@@ -337,6 +337,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       SOURCES
         test/handle_list.cc
         ../supplemental/coloring/add_colorings.cc
+        ../supplemental/coloring/add_colorings_unified.cc
         ${DRIVER_INITIALIZATION}
         ${RUNTIME_DRIVER}
       INPUTS
