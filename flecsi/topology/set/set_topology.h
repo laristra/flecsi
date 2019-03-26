@@ -15,9 +15,9 @@
 
 /*! @file */
 
-#include <flecsi/topology/set_storage.h>
-#include <flecsi/topology/set_types.h>
-#include <flecsi/topology/set_utils.h>
+#include <flecsi/topology/set/set_storage.h>
+#include <flecsi/topology/set/set_types.h>
+#include <flecsi/topology/set/set_utils.h>
 
 namespace flecsi {
 namespace topology {

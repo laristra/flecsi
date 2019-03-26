@@ -24,8 +24,8 @@
 #include <flecsi/runtime/types.h>
 #include <flecsi/topology/color_topology.h>
 #include <flecsi/topology/global_topology.h>
-#include <flecsi/topology/mesh_types.h>
-#include <flecsi/topology/mesh_utils.h>
+#include <flecsi/topology/mesh/mesh_types.h>
+#include <flecsi/topology/mesh/mesh_utils.h>
 
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/tuple_walker.h>

@@ -25,9 +25,9 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/topology/common/entity_storage.h>
 #include <flecsi/topology/index_space.h>
-#include <flecsi/topology/mesh_storage.h>
-#include <flecsi/topology/mesh_types.h>
-#include <flecsi/topology/mesh_utils.h>
+#include <flecsi/topology/mesh/mesh_storage.h>
+#include <flecsi/topology/mesh/mesh_types.h>
+#include <flecsi/topology/mesh/mesh_utils.h>
 
 namespace flecsi {
 namespace topology {

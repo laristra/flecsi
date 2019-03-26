@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include <flecsi/data/data.h>
-#include <flecsi/topology/mesh_topology.h>
+#include <flecsi/topology/mesh/mesh_topology.h>
 #include <flecsi/utils/common.h>
 
 using namespace std;

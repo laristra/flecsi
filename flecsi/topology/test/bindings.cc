@@ -1,8 +1,8 @@
 #include <cinchtest.h>
 #include <iostream>
 
-#include <flecsi/topology/mesh_topology.h>
-#include <flecsi/topology/mesh_types.h>
+#include <flecsi/topology/mesh/mesh_topology.h>
+#include <flecsi/topology/mesh/mesh_types.h>
 #include <flecsi/utils/common.h>
 
 using namespace std;

@@ -24,7 +24,7 @@
 #include <flecsi/data/data_client.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/topology/connectivity.h>
-#include <flecsi/topology/mesh_utils.h>
+#include <flecsi/topology/mesh/mesh_utils.h>
 #include <flecsi/topology/partition.h>
 #include <flecsi/topology/types.h>
 

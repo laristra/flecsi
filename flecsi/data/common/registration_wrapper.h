@@ -26,8 +26,8 @@
 #include <flecsi/runtime/types.h>
 #include <flecsi/topology/color_topology.h>
 #include <flecsi/topology/global_topology.h>
-#include <flecsi/topology/mesh_topology.h>
-#include <flecsi/topology/set_topology.h>
+#include <flecsi/topology/mesh/mesh_topology.h>
+#include <flecsi/topology/set/set_topology.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
 

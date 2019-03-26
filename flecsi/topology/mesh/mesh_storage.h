@@ -15,7 +15,7 @@
 
 /*! @file */
 
-#include <flecsi/runtime/flecsi_runtime_topology_policy.h>
+#include <flecsi/runtime/flecsi_runtime_mesh_topology_policy.h>
 
 //----------------------------------------------------------------------------//
 //! @file

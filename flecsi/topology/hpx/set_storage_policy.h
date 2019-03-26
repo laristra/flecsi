@@ -18,8 +18,8 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/topology/common/entity_storage.h>
 #include <flecsi/topology/index_space.h>
-#include <flecsi/topology/set_types.h>
-#include <flecsi/topology/set_utils.h>
+#include <flecsi/topology/set/set_types.h>
+#include <flecsi/topology/set/set_utils.h>
 #include <flecsi/topology/types.h>
 
 namespace flecsi {

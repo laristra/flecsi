@@ -34,8 +34,8 @@
 #include <flecsi/data/sparse_accessor.h>
 #include <flecsi/data/sparse_mutator.h>
 #include <flecsi/execution/common/execution_state.h>
-#include <flecsi/topology/mesh_types.h>
-#include <flecsi/topology/set_types.h>
+#include <flecsi/topology/mesh/mesh_types.h>
+#include <flecsi/topology/set/set_types.h>
 
 #include <flecsi/utils/tuple_walker.h>
 

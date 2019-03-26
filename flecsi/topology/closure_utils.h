@@ -15,7 +15,7 @@
 
 /*! @file */
 
-#include <flecsi/topology/mesh_definition.h>
+#include <flecsi/topology/mesh/mesh_definition.h>
 #include <flecsi/utils/logging.h>
 #include <flecsi/utils/set_utils.h>
 #include <flecsi/utils/type_traits.h>

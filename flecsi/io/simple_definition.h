@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <flecsi/topology/mesh_definition.h>
+#include <flecsi/topology/mesh/mesh_definition.h>
 
 #include <fstream>
 #include <string>

@@ -14,7 +14,7 @@
 #include <cinchlog.h>
 
 #include "flecsi/execution/context.h"
-#include "flecsi/topology/mesh_topology.h"
+#include "flecsi/topology/mesh/mesh_topology.h"
 
 #include "flecsi/utils/tuple_walker.h"
 

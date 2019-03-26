@@ -29,8 +29,8 @@
 #include <vector>
 
 #include <flecsi/execution/context.h>
-#include <flecsi/topology/mesh_storage.h>
-#include <flecsi/topology/mesh_types.h>
+#include <flecsi/topology/mesh/mesh_storage.h>
+#include <flecsi/topology/mesh/mesh_types.h>
 #include <flecsi/topology/partition.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/set_intersection.h>

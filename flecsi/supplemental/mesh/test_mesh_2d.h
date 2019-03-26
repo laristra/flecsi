@@ -22,8 +22,8 @@
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/execution/execution.h>
 #include <flecsi/supplemental/coloring/add_colorings.h>
-#include <flecsi/topology/mesh.h>
-#include <flecsi/topology/mesh_topology.h>
+#include <flecsi/topology/mesh/mesh.h>
+#include <flecsi/topology/mesh/mesh_topology.h>
 
 //----------------------------------------------------------------------------//
 // Enumeration to name index spaces

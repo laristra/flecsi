@@ -2,7 +2,7 @@
 #include <cmath>
 #include <iostream>
 
-#include <flecsi/topology/tree_topology.h>
+#include <flecsi/topology/tree/tree_topology.h>
 
 using namespace std;
 using namespace flecsi;

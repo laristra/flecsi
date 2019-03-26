@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include <flecsi/concurrency/thread_pool.h>
-#include <flecsi/topology/tree_topology.h>
+#include <flecsi/topology/tree/tree_topology.h>
 #include "pseudo_random.h"
 
 using namespace std;
