@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
@@ -34,17 +35,6 @@ namespace execution {
 
 struct finalize_handles_t
   : public flecsi::utils::tuple_walker_u<finalize_handles_t> {
-  /*!
-  Nothing needs to be done to finalize a dense data handle.
-   */
-  template<typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-  void handle(dense_data_handle_u<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & h) {} // handle
 
   template<typename T>
   void handle(ragged_mutator<T> & m) {
@@ -172,18 +162,6 @@ struct finalize_handles_t
   } // handle
 
   /*!
-   No special handling is currently needed here. No-op.
-   */
-  template<typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-  void handle(ragged_accessor<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {} // handle
-
-  /*!
    The finalize_handles_t type can be called to walk task args after task
    execution. This allows us to free memory allocated during the task.
 
@@ -213,15 +191,26 @@ struct finalize_handles_t
     h.delete_storage();
   } // handle
 
+  /*!
+   Handle individual list items
+   */
+  template<typename T,
+    std::size_t N,
+    template<typename, std::size_t>
+    typename Container,
+    typename =
+      std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
+  void handle(Container<T, N> & list) {
+    for(auto & item : list)
+      handle(item);
+  }
+
   //-----------------------------------------------------------------------//
   // If this is not a data handle, then simply skip it.
   //-----------------------------------------------------------------------//
 
   template<typename T>
-  static typename std::enable_if_t<
-    !std::is_base_of<dense_data_handle_base_t, T>::value &&
-    !std::is_base_of<data_client_handle_base_t, T>::value>
-  handle(T &) {} // handle
+  void handle(T &) {} // handle
 
 }; // struct finalize_handles_t
 

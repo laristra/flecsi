@@ -145,14 +145,13 @@ struct mpi_execution_policy_t {
     auto function = context_.function(TASK);
 
     // Make a tuple from the task arguments.
-    ARG_TUPLE task_args = std::make_tuple(args...);
+    ARG_TUPLE task_args = std::make_tuple(std::forward<ARGS>(args)...);
 
     // run task_prolog to copy ghost cells.
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
 
-    auto future = executor_u<RETURN, ARG_TUPLE>::execute(
-      function, std::forward<ARG_TUPLE>(task_args));
+    auto future = executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
 
     task_epilog_t task_epilog;
     task_epilog.walk(task_args);
