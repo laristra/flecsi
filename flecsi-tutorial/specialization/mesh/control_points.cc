@@ -14,12 +14,12 @@
 
 #include <flecsi-config.h>
 
-#include <flecsi/execution/execution.h>
-#include <flecsi/execution/context.h>
 #include <flecsi-tutorial/specialization/mesh/coloring.h>
 #include <flecsi-tutorial/specialization/mesh/mesh.h>
 #include <flecsi-tutorial/specialization/mesh/policy.h>
 #include <flecsi-tutorial/specialization/mesh/tasks.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/execution.h>
 
 namespace flecsi {
 namespace execution {
@@ -28,18 +28,19 @@ namespace execution {
 // Top-Level Specialization Initialization
 //----------------------------------------------------------------------------//
 
-void specialization_tlt_init(int argc, char ** argv) {
+void
+specialization_tlt_init(int argc, char ** argv) {
 
   using namespace tutorial;
 
-  coloring_map_t map { index_spaces::vertices, index_spaces::cells };
+  coloring_map_t map{index_spaces::vertices, index_spaces::cells};
 
   flecsi_execute_mpi_task(add_colorings, flecsi::tutorial, map);
 
-  auto & context { execution::context_t::instance() };
+  auto & context{execution::context_t::instance()};
 
-  auto & vinfo { context.coloring_info(index_spaces::vertices) };
-  auto & cinfo { context.coloring_info(index_spaces::cells) };
+  auto & vinfo{context.coloring_info(index_spaces::vertices)};
+  auto & cinfo{context.coloring_info(index_spaces::cells)};
 
   coloring::adjacency_info_t ai;
 
@@ -49,7 +50,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   ai.to_index_space = index_spaces::vertices;
   ai.color_sizes.resize(cinfo.size());
 
-  for(auto & itr : cinfo){
+  for(auto & itr : cinfo) {
     size_t color{itr.first};
     const coloring::coloring_info_t & ci = itr.second;
     ai.color_sizes[color] = (ci.exclusive + ci.shared + ci.ghost) * 4;
@@ -70,7 +71,8 @@ void specialization_tlt_init(int argc, char ** argv) {
 // SPMD Specialization Initialization
 //----------------------------------------------------------------------------//
 
-void specialization_spmd_init(int argc, char ** argv) {
+void
+specialization_spmd_init(int argc, char ** argv) {
 
   using namespace tutorial;
 

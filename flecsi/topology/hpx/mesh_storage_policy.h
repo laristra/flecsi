@@ -45,44 +45,38 @@ struct hpx_topology_storage_policy_u {
   static constexpr size_t num_partitions = 5;
   using id_t = utils::id_t;
 
-  using index_spaces_t = std::array<
-      index_space_u<
-          mesh_entity_base_ *,
-          true,
-          true,
-          true,
-          void,
-          topology_storage_u>,
-      NUM_DIMS + 1>;
+  using index_spaces_t = std::array<index_space_u<mesh_entity_base_ *,
+                                      true,
+                                      true,
+                                      true,
+                                      void,
+                                      topology_storage_u>,
+    NUM_DIMS + 1>;
 
-  using index_subspaces_t = std::array<
-      index_space_u<
-          mesh_entity_base_ *,
-          false,
-          true,
-          false,
-          void,
-          topology_storage_u>,
-      NUM_INDEX_SUBSPACES>;
+  using index_subspaces_t = std::array<index_space_u<mesh_entity_base_ *,
+                                         false,
+                                         true,
+                                         false,
+                                         void,
+                                         topology_storage_u>,
+    NUM_INDEX_SUBSPACES>;
 
-  using partition_index_spaces_t = std::array<
-      index_space_u<
-          mesh_entity_base_ *,
-          false,
-          false,
-          true,
-          void,
-          topology_storage_u>,
-      NUM_DIMS + 1>;
+  using partition_index_spaces_t = std::array<index_space_u<mesh_entity_base_ *,
+                                                false,
+                                                false,
+                                                true,
+                                                void,
+                                                topology_storage_u>,
+    NUM_DIMS + 1>;
 
   // array of array of domain_connectivity_u
-  std::array<std::array<domain_connectivity_u<NUM_DIMS>, NUM_DOMS>,
-    NUM_DOMS> topology;
+  std::array<std::array<domain_connectivity_u<NUM_DIMS>, NUM_DOMS>, NUM_DOMS>
+    topology;
 
   std::array<index_spaces_t, NUM_DOMS> index_spaces;
 
   std::array<std::array<partition_index_spaces_t, NUM_DOMS>, num_partitions>
-      partition_index_spaces;
+    partition_index_spaces;
 
   size_t color;
 
@@ -104,7 +98,7 @@ struct hpx_topology_storage_policy_u {
     size_t entity = is.size();
 
     auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
-    auto ent = new (placement_ptr) T(std::forward<ARG_TYPES>(args)...);
+    auto ent = new(placement_ptr) T(std::forward<ARG_TYPES>(args)...);
 
     id_t global_id = id_t::make<T::dimension, DOM>(entity, color);
     ent->template set_global_id<DOM>(global_id);
@@ -127,7 +121,7 @@ struct hpx_topology_storage_policy_u {
     size_t entity = id.entity();
 
     auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
-    auto ent = new (placement_ptr) T(std::forward<ARG_TYPES>(args)...);
+    auto ent = new(placement_ptr) T(std::forward<ARG_TYPES>(args)...);
 
     ent->template set_global_id<DOM>(id);
 

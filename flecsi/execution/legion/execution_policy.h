@@ -162,7 +162,7 @@ struct legion_execution_policy_t {
     clog_tag_guard(execution);
 
     // Make a tuple from the arugments passed by the user
-    ARG_TUPLE task_args = std::make_tuple(args...);
+    ARG_TUPLE task_args = std::make_tuple(std::forward<ARGS>(args)...);
 
     // Get the FleCSI runtime context
     context_t & context_ = context_t::instance();
@@ -295,10 +295,10 @@ struct legion_execution_policy_t {
             launch_domain, TaskArgument(&task_args, sizeof(ARG_TUPLE)),
             arg_map);
 
+          launcher.tag = MAPPER_FORCE_RANK_MATCH;
 #ifdef MAPPER_COMPACTION
           launcher.tag = MAPPER_COMPACTED_STORAGE;
 #endif
-          launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
           // Add region requirements and future dependencies to the
           // task launcher
@@ -384,6 +384,9 @@ struct legion_execution_policy_t {
             TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
 
           launcher.tag = MAPPER_FORCE_RANK_MATCH;
+#ifdef MAPPER_COMPACTION
+          launcher.tag = MAPPER_COMPACTED_STORAGE;
+#endif
 
           // Add region requirements and future dependencies to the
           // task launcher

@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/data/ragged_accessor.h>
 #include <flecsi/data/ragged_mutator.h>
@@ -126,8 +127,8 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    using accessor_t = ragged_accessor<
-              T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
+    using accessor_t = ragged_accessor<T, EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
     using handle_t = typename accessor_t::handle_t;
     using offset_t = typename handle_t::offset_t;
     using value_t = T;
@@ -226,18 +227,16 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     }
   } // handle
 
-  template<
-      typename T,
-      size_t EXCLUSIVE_PERMISSIONS,
-      size_t SHARED_PERMISSIONS,
-      size_t GHOST_PERMISSIONS>
-  void handle(sparse_accessor<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<
-            T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(sparse_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
     handle(static_cast<base_t &>(a));
   } // handle
 
@@ -257,8 +256,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     // this segfaults if we try to use a sparse mutator more than once
     // delete h.num_exclusive_insertions;
 
-    value_t * entries =
-      reinterpret_cast<value_t *>(&(*h.entries)[0]);
+    value_t * entries = reinterpret_cast<value_t *>(&(*h.entries)[0]);
 
     commit_info_t ci;
     ci.offsets = &(*h.offsets)[0];
@@ -277,13 +275,26 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   }
 
   /*!
+   Handle individual list items
+   */
+  template<typename T,
+    std::size_t N,
+    template<typename, std::size_t>
+    typename Container,
+    typename =
+      std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
+  void handle(Container<T, N> & list) {
+    for(auto & item : list) {
+      handle(item);
+    }
+  }
+
+  /*!
     This method is called on any task arguments that are not handles, e.g.
     scalars or those that did not need any special handling.
    */
   template<typename T>
-  static
-    typename std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
-    handle(T &) {} // handle
+  void handle(T &) {} // handle
 
 }; // struct task_epilog_t
 

@@ -13,8 +13,8 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include <flecsi/utils/id.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/id.h>
 #include <flecsi/utils/test/print_type.h>
 
 // includes: C++
@@ -49,7 +49,7 @@ template<class T>
 std::string
 binary(const T value, const std::size_t nbit = sizeof(T) * CHAR_BIT) {
   std::string s;
-  for (std::size_t i = nbit; i--;)
+  for(std::size_t i = nbit; i--;)
     s += value >> i & T(1) ? '1' : '0';
   return s;
 }
@@ -58,15 +58,13 @@ binary(const T value, const std::size_t nbit = sizeof(T) * CHAR_BIT) {
 // Check that the two id_s have identical content.
 // This isn't equivalent to id_'s operator==, which at the time of this
 // writing does the comparison by using local_id() and FLAGS_UNMASK.
-template<
-    std::size_t PBITS,
-    std::size_t EBITS,
-    std::size_t FBITS,
-    std::size_t GBITS>
+template<std::size_t PBITS,
+  std::size_t EBITS,
+  std::size_t FBITS,
+  std::size_t GBITS>
 inline bool
-identical(
-    const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & lhs,
-    const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & rhs) {
+identical(const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & lhs,
+  const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & rhs) {
   return lhs.dimension() == rhs.dimension() && lhs.domain() == rhs.domain() &&
          lhs.partition() == rhs.partition() && lhs.entity() == rhs.entity() &&
          lhs.flags() == rhs.flags() && lhs.global() == rhs.global();
@@ -80,7 +78,7 @@ identical(
 // Note: we really should test with far more than just one set of these.
 #define PBITS 20 /* for partition */
 #define EBITS 40 /* for entity    */
-#define FBITS 4  /* for flags     */
+#define FBITS 4 /* for flags     */
 #define GBITS 60 /* for global    */
 
 // TEST

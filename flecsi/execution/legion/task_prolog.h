@@ -25,6 +25,7 @@
 
 #include <legion.h>
 
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/data.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_field.h>
@@ -386,8 +387,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<
-            T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
+    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
     handle(static_cast<base_t &>(a));
   } // handle
 
@@ -452,6 +453,20 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
   void handle(sparse_mutator<T> & m) {
     using base_t = typename sparse_mutator<T>::base_t;
     handle(static_cast<base_t &>(m));
+  }
+
+  /*!
+   Handle individual list items
+   */
+  template<typename T,
+    std::size_t N,
+    template<typename, std::size_t>
+    typename Container,
+    typename =
+      std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
+  void handle(Container<T, N> & list) {
+    for(auto & item : list)
+      handle(item);
   }
 
   /*!

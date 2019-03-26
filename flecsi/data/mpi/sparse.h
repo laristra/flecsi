@@ -160,8 +160,7 @@ struct storage_class_u<ragged> {
     hb.index_space = field_info.index_space;
     hb.data_client_hash = field_info.data_client_hash;
 
-    hb.entries =
-      reinterpret_cast<DATA_TYPE *>(&fd.entries[0]);
+    hb.entries = reinterpret_cast<DATA_TYPE *>(&fd.entries[0]);
 
     hb.offsets = &fd.offsets[0];
     hb.max_entries_per_index = fd.max_entries_per_index;
@@ -253,8 +252,8 @@ struct storage_class_u<sparse> {
     size_t NAME,
     size_t VERSION>
   static auto get_handle(const data_client_t & data_client) {
-    return storage_class_u<ragged>::get_handle<DATA_CLIENT_TYPE, entry_value_u<DATA_TYPE>,
-      NAMESPACE, NAME, VERSION>(data_client);
+    return storage_class_u<ragged>::get_handle<DATA_CLIENT_TYPE,
+      entry_value_u<DATA_TYPE>, NAMESPACE, NAME, VERSION>(data_client);
   }
 
   template<typename DATA_CLIENT_TYPE,
@@ -263,8 +262,8 @@ struct storage_class_u<sparse> {
     size_t NAME,
     size_t VERSION>
   static auto get_mutator(const data_client_t & data_client, size_t slots) {
-    return storage_class_u<ragged>::get_mutator<DATA_CLIENT_TYPE, entry_value_u<DATA_TYPE>,
-      NAMESPACE, NAME, VERSION>(data_client, slots);
+    return storage_class_u<ragged>::get_mutator<DATA_CLIENT_TYPE,
+      entry_value_u<DATA_TYPE>, NAMESPACE, NAME, VERSION>(data_client, slots);
   }
 }; // struct storage_class_t
 

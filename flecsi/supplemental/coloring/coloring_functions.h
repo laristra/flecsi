@@ -32,26 +32,27 @@ namespace execution {
 //! @tparam
 //----------------------------------------------------------------------------//
 
+<<<<<<< HEAD
 template <
   size_t DIMENSION,
+=======
+template<size_t DIMENSION,
+>>>>>>> master
   size_t ENTITY_DIM,
   typename CLOSURE_SET,
   typename ENTITY_MAP,
   typename INTERSECTION_MAP,
   typename INDEX_COLOR,
-  typename COLOR_INFO
->
-void color_entity(
-  topology::mesh_definition_u<DIMENSION> const & md,
+  typename COLOR_INFO>
+void
+color_entity(topology::mesh_definition_u<DIMENSION> const & md,
   coloring::communicator_t * communicator,
   CLOSURE_SET const & closure,
   ENTITY_MAP const & remote_info_map,
   ENTITY_MAP const & shared_cells_map,
   INTERSECTION_MAP const & closure_intersection_map,
   INDEX_COLOR & entities,
-  COLOR_INFO & entity_color_info
-)
-{
+  COLOR_INFO & entity_color_info) {
   // some compile time constants
   constexpr auto cell_dim = DIMENSION;
 
@@ -72,7 +73,7 @@ void color_entity(
 
   {
     size_t offset(0);
-    for(auto i: entity_closure) {
+    for(auto i : entity_closure) {
 
       // Get the set of cells that reference this entity.
       auto referencers =
@@ -89,7 +90,7 @@ void color_entity(
       std::set<size_t> shared_entities;
 
       // Iterate the direct referencers to assign entity ownership.
-      for(auto c: referencers) {
+      for(auto c : referencers) {
 
         // Check the remote info map to see if this cell is
         // off-color. If it is, compare it's rank for
@@ -108,16 +109,25 @@ void color_entity(
           // If the local cell is shared, we need to add all of
           // the ranks that reference it.
           if(shared_cells_map.find(c) != shared_cells_map.end())
+<<<<<<< HEAD
             shared_entities.insert(
               shared_cells_map.at(c).shared.begin(),
               shared_cells_map.at(c).shared.end()
             );
+=======
+            shared_entities.insert(shared_cells_map.at(c).shared.begin(),
+              shared_cells_map.at(c).shared.end());
+>>>>>>> master
         } // if
 
         // Iterate through the closure intersection map to see if the
         // indirect reference is part of another rank's closure, i.e.,
         // that it is an indirect dependency.
+<<<<<<< HEAD
         for(auto ci: closure_intersection_map)
+=======
+        for(auto ci : closure_intersection_map)
+>>>>>>> master
           if(ci.second.find(c) != ci.second.end())
             shared_entities.insert(ci.first);
       } // for
@@ -125,7 +135,7 @@ void color_entity(
       if(min_rank == rank) {
         // This is a entity that belongs to our rank.
         auto entry = entity_info_t(i, rank, offset++, shared_entities);
-        entity_info.insert( entry );
+        entity_info.insert(entry);
       }
       else {
         // Add remote entity to the request for offset information.
@@ -138,7 +148,7 @@ void color_entity(
     communicator->get_entity_info(entity_info, entity_requests);
 
   // Vertices index coloring.
-  for(auto i: entity_info) {
+  for(auto i : entity_info) {
     // if it belongs to other colors, its a shared entity
     if(i.shared.size()) {
       entities.shared.insert(i);
@@ -154,10 +164,10 @@ void color_entity(
 
   {
     size_t r(0);
-    for(auto i: entity_requests) {
+    for(auto i : entity_requests) {
 
       auto offset(entity_offset_info[r].begin());
-      for(auto s: i) {
+      for(auto s : i) {
         entities.ghost.insert(entity_info_t(s, r, *offset));
         // Collect all colors with whom we require communication
         // to receive ghost information.

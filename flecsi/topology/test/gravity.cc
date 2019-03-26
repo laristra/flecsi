@@ -1,9 +1,14 @@
 #include <cinchtest.h>
 #include <iostream>
 
+#include "pseudo_random.h"
 #include <flecsi/concurrency/thread_pool.h>
+<<<<<<< HEAD
 #include <flecsi/topology/tree/tree_topology.h>
 #include "pseudo_random.h"
+=======
+#include <flecsi/topology/tree_topology.h>
+>>>>>>> master
 
 using namespace std;
 using namespace flecsi;
@@ -18,7 +23,8 @@ struct Aggregate {
   point<double, 2> center;
 };
 
-class tree_policy {
+class tree_policy
+{
 public:
   using tree_t = topology::tree_topology<tree_policy>;
 
@@ -30,10 +36,11 @@ public:
 
   using point_t = point<element_t, dimension>;
 
-  class body : public topology::tree_entity<branch_int_t, dimension> {
+  class body : public topology::tree_entity<branch_int_t, dimension>
+  {
   public:
     body(double mass, const point_t & position, const point_t & velocity)
-        : mass_(mass), position_(position), velocity_(velocity) {}
+      : mass_(mass), position_(position), velocity_(velocity) {}
 
     const point_t & coordinates() const {
       return position_;
@@ -56,15 +63,17 @@ public:
     void update() {
       position_ += velocity_;
 
-      if (position_[0] > 1.0) {
+      if(position_[0] > 1.0) {
         position_[0] = 0;
-      } else if (position_[0] < 0.0) {
+      }
+      else if(position_[0] < 0.0) {
         position_[0] = 1.0;
       }
 
-      if (position_[1] > 1.0) {
+      if(position_[1] > 1.0) {
         position_[1] = 0;
-      } else if (position_[1] < 0.0) {
+      }
+      else if(position_[1] < 0.0) {
         position_[1] = 1.0;
       }
     }
@@ -77,14 +86,15 @@ public:
 
   using entity_t = body;
 
-  class branch : public topology::tree_branch_u<branch_int_t, dimension> {
+  class branch : public topology::tree_branch_u<branch_int_t, dimension>
+  {
   public:
     branch() {}
 
     void insert(body * ent) {
       ents_.push_back(ent);
 
-      if (ents_.size() > 100) {
+      if(ents_.size() > 100) {
         refine();
       }
     }
@@ -94,7 +104,7 @@ public:
       assert(itr != ents_.end());
       ents_.erase(itr);
 
-      if (ents_.empty()) {
+      if(ents_.empty()) {
         coarsen();
       }
     }
@@ -116,7 +126,7 @@ public:
     }
 
     point_t coordinates(
-        const std::array<point<element_t, dimension>, 2> & range) const {
+      const std::array<point<element_t, dimension>, 2> & range) const {
       point_t p;
       branch_id_t bid = id();
       bid.coordinates(range, p);
@@ -152,7 +162,7 @@ TEST(tree_topology, gravity) {
   pseudo_random rng;
 
   vector<body *> bodies;
-  for (size_t i = 0; i < N; ++i) {
+  for(size_t i = 0; i < N; ++i) {
     double m = rng.uniform(0.1, 0.5);
     point_t p = {rng.uniform(0.0, 1.0), rng.uniform(0.0, 1.0)};
     point_t v = {rng.uniform(0.0, 0.001), rng.uniform(0.0, 0.001)};
@@ -178,7 +188,7 @@ TEST(tree_topology, gravity) {
   std::mutex mtx;
 
   auto g = [&](branch_t * b, size_t depth, vector<Aggregate> & aggs) -> bool {
-    if (depth > 4 || b->is_leaf()) {
+    if(depth > 4 || b->is_leaf()) {
       auto h = [&](body * bi, Aggregate & agg) {
         agg.center += bi->mass() * bi->coordinates();
         agg.mass += bi->mass();
@@ -196,26 +206,26 @@ TEST(tree_topology, gravity) {
     return false;
   };
 
-  for (size_t ts = 0; ts < TS; ++ts) {
+  for(size_t ts = 0; ts < TS; ++ts) {
     // cout << "---- ts = " << ts << endl;
 
     vector<Aggregate> aggs;
     t.visit(pool, t.root(), g, aggs);
 
-    for (size_t i = 0; i < N; ++i) {
+    for(size_t i = 0; i < N; ++i) {
       auto bi = bodies[i];
       auto ents = t.find_in_radius(pool, bi->coordinates(), 0.01);
-      for (auto e : ents) {
-        if (bi != e) {
+      for(auto e : ents) {
+        if(bi != e) {
           bi->interact(e);
         }
       }
     }
 
-    for (size_t i = 0; i < N; ++i) {
+    for(size_t i = 0; i < N; ++i) {
       auto bi = bodies[i];
 
-      for (auto & agg : aggs) {
+      for(auto & agg : aggs) {
         bi->interact(agg);
       }
 

@@ -25,14 +25,13 @@ namespace data {
 //!
 //----------------------------------------------------------------------------//
 
-template<
-    typename DATA_CLIENT_TYPE,
-    size_t STORAGE_TYPE,
-    typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH,
-    size_t INDEX_SPACE,
-    size_t VERSIONS>
+template<typename DATA_CLIENT_TYPE,
+  size_t STORAGE_TYPE,
+  typename DATA_TYPE,
+  size_t NAMESPACE_HASH,
+  size_t NAME_HASH,
+  size_t INDEX_SPACE,
+  size_t VERSIONS>
 struct hpx_field_registration_wrapper_u {
   using field_id_t = size_t;
 
@@ -53,9 +52,9 @@ struct hpx_client_registration_wrapper_u {
 
 template<typename POLICY_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
 struct hpx_client_registration_wrapper_u<
-    flecsi::topology::mesh_topology_u<POLICY_TYPE>,
-    NAMESPACE_HASH,
-    NAME_HASH> {
+  flecsi::topology::mesh_topology_u<POLICY_TYPE>,
+  NAMESPACE_HASH,
+  NAME_HASH> {
   using field_id_t = size_t;
   // using mesh_topology_t = flecsi::topology::mesh_topology_t<POLICY_TYPE>;
 
@@ -67,7 +66,7 @@ struct hpx_client_registration_wrapper_u<
 
   template<typename TUPLE_ENTRY_TYPE>
   struct type_walker_u
-      : public flecsi::utils::tuple_walker_u<type_walker_u<TUPLE_ENTRY_TYPE>> {
+    : public flecsi::utils::tuple_walker_u<type_walker_u<TUPLE_ENTRY_TYPE>> {
     void handle(TUPLE_ENTRY_TYPE const & entry) {
       std::cout << "adding with domain: " << std::get<1>(entry) << std::endl;
     } // handle

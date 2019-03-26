@@ -32,11 +32,11 @@ constexpr size_t input_mesh_dimension_y = 8;
 // by the user. It is intedended to allow different installation paths for
 // FleCSI.
 
-inline char * input_mesh_file() {
+inline char *
+input_mesh_file() {
   char * tmp = getenv("FLECSI_TUTORIAL_INPUT_MESH");
   if(tmp == nullptr) {
-    std::cerr << "FLECSI_TUTORIAL_INPUT_MESH unset in environment"
-      << std::endl;
+    std::cerr << "FLECSI_TUTORIAL_INPUT_MESH unset in environment" << std::endl;
     std::exit(1);
   } // if
 

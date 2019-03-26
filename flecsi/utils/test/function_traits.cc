@@ -56,8 +56,8 @@ TEST(common, all) {
   print_type<function_traits_u<decltype(&type_t::memcv)>::owner_type>();
   CINCH_CAPTURE() << std::endl;
 
-  print_type<function_traits_u<
-    std::function<decltype(test_function)>>::return_type>();
+  print_type<
+    function_traits_u<std::function<decltype(test_function)>>::return_type>();
   print_type<function_traits_u<
     std::function<decltype(test_function)>>::arguments_type>();
   CINCH_CAPTURE() << std::endl;
@@ -93,11 +93,11 @@ TEST(common, all) {
   CINCH_CAPTURE() << std::endl;
 
 #ifdef __GNUG__
-  #ifdef __PPC64__
+#ifdef __PPC64__
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.ppc"));
-  #else
-    EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.gnug"));
-  #endif
+#else
+  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.gnug"));
+#endif
 #elif defined(_MSC_VER)
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.msvc"));
 #else

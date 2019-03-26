@@ -46,26 +46,21 @@ struct control_policy_t {
     return control_t::instance().step()++ < 5;
   } // evolve
 
-  #define phase(name) flecsi::control::phase_<name>
+#define phase(name) flecsi::control::phase_<name>
 
-  using evolve = flecsi::control::cycle_u<
-    evolve_control, // stopping predicate
+  using evolve = flecsi::control::cycle_u<evolve_control, // stopping predicate
     phase(advance),
     phase(analyze),
     phase(io),
-    phase(mesh)
-  >;
+    phase(mesh)>;
 
-  using phases = std::tuple<
-    phase(initialize),
-    evolve,
-    phase(finalize)
-  >;
+  using phases = std::tuple<phase(initialize), evolve, phase(finalize)>;
 
-  size_t & step() { return step_; }
+  size_t & step() {
+    return step_;
+  }
 
 private:
-
   size_t step_;
 
 }; // struct control_policy_t

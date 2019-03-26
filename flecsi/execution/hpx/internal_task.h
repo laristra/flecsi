@@ -33,8 +33,8 @@
 //! @ingroup hpx-execution
 //----------------------------------------------------------------------------//
 
-#define flecsi_internal_task_key(task)                                       \
-/* MACRO IMPLEMENTATION */                                                     \
+#define flecsi_internal_task_key(task)                                         \
+  /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Use const_string_t interface to create the key */                         \
   flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()
@@ -52,14 +52,12 @@
 //! @ingroup hpx-execution
 //----------------------------------------------------------------------------//
 
-#define flecsi_internal_register_hpx_task(task, processor, launch)           \
-/* MACRO IMPLEMENTATION */                                                     \
+#define flecsi_internal_register_hpx_task(task, processor, launch)             \
+  /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the execution policy to register the task */                         \
-  inline bool task ## _task_registered =                                       \
+  inline bool task##_task_registered =                                         \
     flecsi::execution::hpx_execution_policy_t::register_hpx_task<              \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       typename flecsi::utils::function_traits_u<decltype(task)>::return_type,  \
-      task                                                                     \
-    >                                                                          \
-    (processor, launch, { EXPAND_AND_STRINGIFY(task) })
+      task>(processor, launch, {EXPAND_AND_STRINGIFY(task)})

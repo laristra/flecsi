@@ -1,8 +1,12 @@
 #include <cinchtest.h>
 #include <iostream>
 
+<<<<<<< HEAD
 #include <flecsi/topology/tree/tree_topology.h>
+=======
+>>>>>>> master
 #include "pseudo_random.h"
+#include <flecsi/topology/tree_topology.h>
 
 using namespace std;
 using namespace flecsi;
@@ -24,7 +28,8 @@ struct Aggregate {
   point<double, 2> center;
 };
 
-class tree_policy {
+class tree_policy
+{
 public:
   using tree_t = topology::tree_topology<tree_policy>;
 
@@ -38,7 +43,8 @@ public:
 
   using vector_t = point<element_t, dimension>;
 
-  class body : public topology::tree_entity<branch_int_t, dimension> {
+  class body : public topology::tree_entity<branch_int_t, dimension>
+  {
   public:
     body() {}
 
@@ -105,15 +111,17 @@ public:
 
       p += v;
 
-      if (p[0] > 1.0) {
+      if(p[0] > 1.0) {
         p[0] = 0;
-      } else if (p[0] < 0.0) {
+      }
+      else if(p[0] < 0.0) {
         p[0] = 1.0;
       }
 
-      if (p[1] > 1.0) {
+      if(p[1] > 1.0) {
         p[1] = 0;
-      } else if (p[1] < 0.0) {
+      }
+      else if(p[1] < 0.0) {
         p[1] = 1.0;
       }
     }
@@ -121,14 +129,15 @@ public:
 
   using entity_t = body;
 
-  class branch : public topology::tree_branch_u<branch_int_t, dimension> {
+  class branch : public topology::tree_branch_u<branch_int_t, dimension>
+  {
   public:
     branch() {}
 
     void insert(body * ent) {
       ents_.push_back(ent);
 
-      if (ents_.size() > 100) {
+      if(ents_.size() > 100) {
         refine();
       }
     }
@@ -138,7 +147,7 @@ public:
       assert(itr != ents_.end());
       ents_.erase(itr);
 
-      if (ents_.empty()) {
+      if(ents_.empty()) {
         coarsen();
       }
     }
@@ -160,7 +169,7 @@ public:
     }
 
     point_t coordinates(
-        const std::array<point<element_t, dimension>, 2> & range) const {
+      const std::array<point<element_t, dimension>, 2> & range) const {
       point_t p;
       id().coordinates(range, p);
       return p;
@@ -199,7 +208,7 @@ TEST(tree_topology, gravity) {
   state.register_state<vector_t, flecsi_internal>("position", N, 0);
 
   vector<body *> bodies;
-  for (size_t i = 0; i < N; ++i) {
+  for(size_t i = 0; i < N; ++i) {
     double m = rng.uniform(0.1, 0.5);
     point_t p = {rng.uniform(0.0, 1.0), rng.uniform(0.0, 1.0)};
     point_t v = {rng.uniform(0.0, 0.001), rng.uniform(0.0, 0.001)};
@@ -212,7 +221,7 @@ TEST(tree_topology, gravity) {
   size_t ix = 0;
 
   auto f = [&](body * b, body * b0) {
-    if (b0 == b) {
+    if(b0 == b) {
       return;
     }
 
@@ -221,7 +230,7 @@ TEST(tree_topology, gravity) {
   };
 
   auto g = [&](branch_t * b, size_t depth, vector<Aggregate> & aggs) -> bool {
-    if (depth > 4 || b->is_leaf()) {
+    if(depth > 4 || b->is_leaf()) {
       auto h = [&](body * bi, Aggregate & agg) {
         agg.center += bi->mass() * bi->coordinates();
         agg.mass += bi->mass();
@@ -237,21 +246,21 @@ TEST(tree_topology, gravity) {
     return false;
   };
 
-  for (size_t ts = 0; ts < TS; ++ts) {
+  for(size_t ts = 0; ts < TS; ++ts) {
     // cout << "---- ts = " << ts << endl;
 
     vector<Aggregate> aggs;
     t.visit(t.root(), g, aggs);
 
-    for (size_t i = 0; i < N; ++i) {
+    for(size_t i = 0; i < N; ++i) {
       auto bi = bodies[i];
       t.apply_in_radius(bi->coordinates(), 0.01, f, bi);
     }
 
-    for (size_t i = 0; i < N; ++i) {
+    for(size_t i = 0; i < N; ++i) {
       auto bi = bodies[i];
 
-      for (auto & agg : aggs) {
+      for(auto & agg : aggs) {
         bi->interact(agg);
       }
 

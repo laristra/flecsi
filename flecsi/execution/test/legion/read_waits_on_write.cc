@@ -28,36 +28,34 @@ using namespace supplemental;
 clog_register_tag(read_waits_on_write);
 
 void read_task(
-    dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
-    const int my_color,
-    const size_t cycle);
+  dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
+  const int my_color,
+  const size_t cycle);
 flecsi_register_task_simple(read_task, loc, index);
 
 void write_task(
-    dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::na> cell_ID,
-    const int my_color,
-    const size_t cycle,
-    const bool delay);
+  dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::na> cell_ID,
+  const int my_color,
+  const size_t cycle,
+  const bool delay);
 flecsi_register_task_simple(write_task, loc, index);
 
 flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
 
-flecsi_register_field(
-    empty_mesh_2d_t,
-    name_space,
-    field1,
-    size_t,
-    dense,
-    VERSIONS,
-    INDEX_ID);
-flecsi_register_field(
-    empty_mesh_2d_t,
-    name_space,
-    field2,
-    size_t,
-    dense,
-    VERSIONS,
-    INDEX_ID);
+flecsi_register_field(empty_mesh_2d_t,
+  name_space,
+  field1,
+  size_t,
+  dense,
+  VERSIONS,
+  INDEX_ID);
+flecsi_register_field(empty_mesh_2d_t,
+  name_space,
+  field2,
+  size_t,
+  dense,
+  VERSIONS,
+  INDEX_ID);
 
 namespace flecsi {
 namespace execution {
@@ -91,18 +89,18 @@ driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(empty_mesh_2d_t, meshes, mesh1);
 
   auto handle1 =
-      flecsi_get_handle(ch, name_space, field1, size_t, dense, INDEX_ID);
+    flecsi_get_handle(ch, name_space, field1, size_t, dense, INDEX_ID);
   auto handle2 =
-      flecsi_get_handle(ch, name_space, field2, size_t, dense, INDEX_ID);
+    flecsi_get_handle(ch, name_space, field2, size_t, dense, INDEX_ID);
 
-  for (size_t cycle = 0; cycle < 3; cycle++) {
+  for(size_t cycle = 0; cycle < 3; cycle++) {
     bool delay = false;
     flecsi_execute_task_simple(
-        write_task, index, handle1, my_color, cycle, delay);
+      write_task, index, handle1, my_color, cycle, delay);
 
     delay = true;
     flecsi_execute_task_simple(
-        write_task, index, handle2, my_color, cycle, delay);
+      write_task, index, handle2, my_color, cycle, delay);
 
     flecsi_execute_task_simple(read_task, index, handle2, my_color, cycle);
 
@@ -132,33 +130,32 @@ driver(int argc, char ** argv) {
 } // namespace flecsi
 
 void
-write_task(
-    dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::na> cell_ID,
-    const int my_color,
-    const size_t cycle,
-    const bool delay) {
+write_task(dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::na> cell_ID,
+  const int my_color,
+  const size_t cycle,
+  const bool delay) {
 
-  if (delay)
+  if(delay)
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   flecsi::execution::context_t & context_ =
-      flecsi::execution::context_t::instance();
+    flecsi::execution::context_t::instance();
   const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map =
-      context_.coloring_map();
+    context_.coloring_map();
   auto index_coloring = coloring_map.find(INDEX_ID);
 
   size_t index = 0;
-  for (auto exclusive_itr = index_coloring->second.exclusive.begin();
-       exclusive_itr != index_coloring->second.exclusive.end();
-       ++exclusive_itr) {
+  for(auto exclusive_itr = index_coloring->second.exclusive.begin();
+      exclusive_itr != index_coloring->second.exclusive.end();
+      ++exclusive_itr) {
     flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
     cell_ID.exclusive(index) = exclusive.id + cycle;
     index++;
   } // exclusive_itr
 
   index = 0;
-  for (auto shared_itr = index_coloring->second.shared.begin();
-       shared_itr != index_coloring->second.shared.end(); ++shared_itr) {
+  for(auto shared_itr = index_coloring->second.shared.begin();
+      shared_itr != index_coloring->second.shared.end(); ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
     cell_ID.shared(index) = shared.id + cycle;
     index++;
@@ -166,37 +163,36 @@ write_task(
 } // write_task
 
 void
-read_task(
-    dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
-    const int my_color,
-    const size_t cycle) {
+read_task(dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
+  const int my_color,
+  const size_t cycle) {
 
   flecsi::execution::context_t & context_ =
-      flecsi::execution::context_t::instance();
+    flecsi::execution::context_t::instance();
   const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map =
-      context_.coloring_map();
+    context_.coloring_map();
   auto index_coloring = coloring_map.find(INDEX_ID);
 
   size_t index = 0;
-  for (auto exclusive_itr = index_coloring->second.exclusive.begin();
-       exclusive_itr != index_coloring->second.exclusive.end();
-       ++exclusive_itr) {
+  for(auto exclusive_itr = index_coloring->second.exclusive.begin();
+      exclusive_itr != index_coloring->second.exclusive.end();
+      ++exclusive_itr) {
     flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
     assert(cell_ID.exclusive(index) == exclusive.id + cycle);
     index++;
   } // exclusive_itr
 
   index = 0;
-  for (auto shared_itr = index_coloring->second.shared.begin();
-       shared_itr != index_coloring->second.shared.end(); ++shared_itr) {
+  for(auto shared_itr = index_coloring->second.shared.begin();
+      shared_itr != index_coloring->second.shared.end(); ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
     assert(cell_ID.shared(index) == shared.id + cycle);
     index++;
   } // shared_itr
 
   index = 0;
-  for (auto ghost_itr = index_coloring->second.ghost.begin();
-       ghost_itr != index_coloring->second.ghost.end(); ++ghost_itr) {
+  for(auto ghost_itr = index_coloring->second.ghost.begin();
+      ghost_itr != index_coloring->second.ghost.end(); ++ghost_itr) {
     flecsi::coloring::entity_info_t ghost = *ghost_itr;
     assert(cell_ID.ghost(index) == ghost.id + cycle);
     index++;

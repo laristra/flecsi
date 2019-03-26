@@ -17,12 +17,12 @@ namespace flecsi {
 //----------------------------------------------------------------------------//
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
-struct data_client_handle_entity_t
-{
-  //FIXME check context
+struct data_client_handle_entity_t {
+  // FIXME check context
   using field_id_t = std::size_t;
 
-  data_client_handle_entity_t() : index_space(0), dim(0), domain(0), size(0), fid(0) {}
+  data_client_handle_entity_t()
+    : index_space(0), dim(0), domain(0), size(0), fid(0) {}
 
   std::size_t index_space;
   std::size_t index_space2;
@@ -43,8 +43,7 @@ struct data_client_handle_entity_t
 //! mesh topology, traversing the data client adjacency specifications,
 //! which is then passed the data client handle.
 //----------------------------------------------------------------------------//
-struct data_client_handle_adjacency_t
-{
+struct data_client_handle_adjacency_t {
   std::size_t adj_index_space;
   std::size_t from_index_space;
   std::size_t to_index_space;
@@ -74,7 +73,8 @@ struct data_client_handle_index_subspace_t {
 //----------------------------------------------------------------------------//
 
 struct hpx_data_client_handle_policy_t {}; // struct data_client_handle_policy_t
-//data_client_handle_index_subspace_t handle_index_subspaces[MAX_INDEX_SUBSPACES];
+// data_client_handle_index_subspace_t
+// handle_index_subspaces[MAX_INDEX_SUBSPACES];
 
 } // namespace flecsi
 

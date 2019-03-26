@@ -9,7 +9,8 @@ using namespace std;
 using namespace flecsi;
 using namespace topology;
 
-class Vertex : public mesh_entity_u<0, 1> {
+class Vertex : public mesh_entity_u<0, 1>
+{
 public:
   template<size_t M>
   uint64_t precedence() const {
@@ -21,19 +22,22 @@ public:
   Vertex(mesh_topology_base_u<ST> &) {}
 };
 
-class Edge : public mesh_entity_u<1, 1> {
+class Edge : public mesh_entity_u<1, 1>
+{
 public:
   template<typename ST>
   Edge(mesh_topology_base_u<ST> &) {}
 };
 
-class Face : public mesh_entity_u<1, 1> {
+class Face : public mesh_entity_u<1, 1>
+{
 public:
   template<typename ST>
   Face(mesh_topology_base_u<ST> &) {}
 };
 
-class Cell : public mesh_entity_u<2, 1> {
+class Cell : public mesh_entity_u<2, 1>
+{
 public:
   using id_t = flecsi::utils::id_t;
 
@@ -41,11 +45,10 @@ public:
 
   void set_precedence(size_t dim, uint64_t precedence) {}
 
-  std::vector<size_t> create_entities(
-      id_t cell_id,
-      size_t dim,
-      domain_connectivity_u<2> & c,
-      id_t * e) {
+  std::vector<size_t> create_entities(id_t cell_id,
+    size_t dim,
+    domain_connectivity_u<2> & c,
+    id_t * e) {
     id_t * v = c.get_entities(cell_id, 0);
 
     e[0] = v[0];
@@ -66,33 +69,32 @@ public:
   void traverse();
 };
 
-class TestMesh2dType {
+class TestMesh2dType
+{
 public:
   static constexpr size_t num_dimensions = 2;
 
   static constexpr size_t num_domains = 1;
 
-  using entity_types = std::tuple<
-      std::pair<domain_<0>, Vertex>,
-      std::pair<domain_<0>, Edge>,
-      std::pair<domain_<0>, Cell>>;
+  using entity_types = std::tuple<std::pair<domain_<0>, Vertex>,
+    std::pair<domain_<0>, Edge>,
+    std::pair<domain_<0>, Cell>>;
 
-  using connectivities = std::tuple<
-      std::tuple<domain_<0>, Vertex, Edge>,
-      std::tuple<domain_<0>, Vertex, Cell>,
-      std::tuple<domain_<0>, Edge, Vertex>,
-      std::tuple<domain_<0>, Edge, Cell>,
-      std::tuple<domain_<0>, Cell, Vertex>,
-      std::tuple<domain_<0>, Cell, Edge>>;
+  using connectivities = std::tuple<std::tuple<domain_<0>, Vertex, Edge>,
+    std::tuple<domain_<0>, Vertex, Cell>,
+    std::tuple<domain_<0>, Edge, Vertex>,
+    std::tuple<domain_<0>, Edge, Cell>,
+    std::tuple<domain_<0>, Cell, Vertex>,
+    std::tuple<domain_<0>, Cell, Edge>>;
 
   using bindings = std::tuple<>;
 
   template<size_t M, size_t D, typename ST>
   static mesh_entity_base_u<num_domains> *
   create_entity(mesh_topology_base_u<ST> * mesh, size_t num_vertices) {
-    switch (M) {
+    switch(M) {
       case 0: {
-        switch (D) {
+        switch(D) {
           case 1:
             return mesh->template make<Edge>(*mesh);
           default:
@@ -118,8 +120,8 @@ TEST(mesh_topology, traversal) {
   vector<Vertex *> vs;
 
   size_t id = 0;
-  for (size_t j = 0; j < height + 1; ++j) {
-    for (size_t i = 0; i < width + 1; ++i) {
+  for(size_t j = 0; j < height + 1; ++j) {
+    for(size_t i = 0; i < width + 1; ++i) {
       auto v = mesh->make<Vertex>();
       vs.push_back(v);
     }
@@ -127,13 +129,13 @@ TEST(mesh_topology, traversal) {
 
   id = 0;
   size_t width1 = width + 1;
-  for (size_t j = 0; j < height; ++j) {
-    for (size_t i = 0; i < width; ++i) {
+  for(size_t j = 0; j < height; ++j) {
+    for(size_t i = 0; i < width; ++i) {
       auto c = mesh->template make<Cell>();
 
       mesh->init_cell<0>(
-          c, {vs[i + j * width1], vs[i + (j + 1) * width1],
-              vs[i + 1 + j * width1], vs[i + 1 + (j + 1) * width1]});
+        c, {vs[i + j * width1], vs[i + (j + 1) * width1],
+             vs[i + 1 + j * width1], vs[i + 1 + (j + 1) * width1]});
     }
   }
 
@@ -142,11 +144,11 @@ TEST(mesh_topology, traversal) {
 
   CINCH_CAPTURE() << "------------- forall cells, vertices" << endl;
 
-  for (auto cell : mesh->entities<2>()) {
+  for(auto cell : mesh->entities<2>()) {
     CINCH_CAPTURE() << "------------- cell id: " << cell.id() << endl;
-    for (auto vertex : mesh->entities<0>(cell)) {
+    for(auto vertex : mesh->entities<0>(cell)) {
       CINCH_CAPTURE() << "--- vertex id: " << vertex.id() << endl;
-      for (auto cell2 : mesh->entities<2>(vertex)) {
+      for(auto cell2 : mesh->entities<2>(vertex)) {
         CINCH_CAPTURE() << "+ cell2 id: " << cell2.id() << endl;
       }
     }
@@ -154,45 +156,45 @@ TEST(mesh_topology, traversal) {
 
   CINCH_CAPTURE() << "------------- forall cells, edges" << endl;
 
-  for (auto cell : mesh->entities<2>()) {
+  for(auto cell : mesh->entities<2>()) {
     CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
-    for (auto edge : mesh->entities<1>(cell)) {
+    for(auto edge : mesh->entities<1>(cell)) {
       CINCH_CAPTURE() << "--- edge id: " << edge.id() << endl;
     }
   }
 
   CINCH_CAPTURE() << "------------- forall vertices, edges" << endl;
 
-  for (auto vertex : mesh->entities<0>()) {
+  for(auto vertex : mesh->entities<0>()) {
     CINCH_CAPTURE() << "------- vertex id: " << vertex.id() << endl;
-    for (auto edge : mesh->entities<1>(vertex)) {
+    for(auto edge : mesh->entities<1>(vertex)) {
       CINCH_CAPTURE() << "--- edge id: " << edge.id() << endl;
     }
   }
 
   CINCH_CAPTURE() << "------------- forall vertices, cells" << endl;
 
-  for (auto vertex : mesh->entities<0>()) {
+  for(auto vertex : mesh->entities<0>()) {
     CINCH_CAPTURE() << "------- vertex id: " << vertex.id() << endl;
-    for (auto cell : mesh->entities<2>(vertex)) {
+    for(auto cell : mesh->entities<2>(vertex)) {
       CINCH_CAPTURE() << "--- cell id: " << cell.id() << endl;
     }
   }
 
   CINCH_CAPTURE() << "------------- forall edges, cells" << endl;
 
-  for (auto edge : mesh->entities<1>()) {
+  for(auto edge : mesh->entities<1>()) {
     CINCH_CAPTURE() << "------- edge id: " << edge.id() << endl;
-    for (auto cell : mesh->entities<2>(edge)) {
+    for(auto cell : mesh->entities<2>(edge)) {
       CINCH_CAPTURE() << "--- cell id: " << cell.id() << endl;
     }
   }
 
   CINCH_CAPTURE() << "------------- forall edges, vertices" << endl;
 
-  for (auto edge : mesh->entities<1>()) {
+  for(auto edge : mesh->entities<1>()) {
     CINCH_CAPTURE() << "------- edge id: " << edge.id() << endl;
-    for (auto vertex : mesh->entities<0>(edge)) {
+    for(auto vertex : mesh->entities<0>(edge)) {
       CINCH_CAPTURE() << "--- vertex id: " << vertex.id() << endl;
     }
   }
@@ -200,7 +202,7 @@ TEST(mesh_topology, traversal) {
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("traversal.blessed"));
 }
 
-  // TODO: Reenable after fixing to use new data interface
+// TODO: Reenable after fixing to use new data interface
 
 #if 0
 //! \brief Tests the mesh_topology's destructor

@@ -3,10 +3,10 @@
 ###################
 
 stages:
+  - Canary
   - Build
   - Test
   - Format
-  - Deploy
 
 variables:
   GET_SOURCES_ATTEMPTS: 10
@@ -14,15 +14,9 @@ variables:
   RESTORE_CACHE_ATTEMPTS: 10
   GIT_STRATEGY: fetch
   GLOBAL_CI_VARIABLE: "global_ci_value"
-  CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
   CI_JOB_NAME_TMP: ${CI_JOB_NAME}
   CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME_TMP#*:}
   #CI_DEBUG_TRACE: "true"
-cache:
-  #key: ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - ${CI_PROJECT_DIR}/ccache #/builds/next-generation-codes/laristra/flecsi/ccache
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
@@ -32,58 +26,131 @@ before_script:
 ###################
 ###################
 
+################
+# Canary Stage #
+################
+
+.canary:
+  retry: 2
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
+    CCACHE_UMASK: 000
+    DISTRO: ""
+    RUNTIME: ""
+    CC: "gcc"
+    CXX: "g++"
+    CXXFLAGS: "-Werror -Wno-deprecated-declarations"
+    BUILD_TYPE: "Debug"
+    IGNORE_NOCI: "FALSE"
+  image:
+    name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
+  stage: Canary
+  cache:
+    #key: ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
+    #key: ${CI_COMMIT_REF_SLUG}
+    key: ${DISTRO}-${RUNTIME}-${CC}
+    paths:
+      - ccache/
+  artifacts:
+    name: "${CI_COMMIT_REF_SLUG}-${CI_JOB_NAME}"
+    paths:
+      - ${CI_PROJECT_DIR}/build #/builds/next-generation-codes/laristra/flecsi/build
+    when: always
+  dependencies: []
+  script:
+    - |
+      if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Build" ]];
+      then
+        ccache -z;
+        nproc;
+        # git submodule init;
+        # git config submodule.cinch.url https://github.com/laristra/cinch.git;
+        # git submodule update --init --recursive;
+        mkdir -p build;
+        cd build;
+        cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+          -DFLECSI_RUNTIME_MODEL=$RUNTIME \
+          ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
+          -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
+          -DENABLE_UNIT_TESTS=ON \
+          -DENABLE_PARMETIS=ON \
+          -DENABLE_COLORING=ON \
+          -DENABLE_DOXYGEN=ON \
+          -DENABLE_DOCUMENTATION=OFF \
+          -DENABLE_COVERAGE_BUILD=ON \
+          ..;
+        make -k VERBOSE=1 -j2 -l80;
+        make doxygen;
+        mkdir -p install;
+        make install DESTDIR=install;
+        sudo make install;
+        ccache -s;
+      fi;
+    - |
+      if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Test" ]];
+      then
+        cd ${CI_PROJECT_DIR}/build/;
+        make test ARGS="-V";
+        $HOME/.local/bin/gcovr .;
+      fi;
+    - |
+      if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Format" ]];
+      then
+        cd ${CI_PROJECT_DIR}/build/;
+        clang-format -version;
+        make format && git diff --exit-code --ignore-submodules;
+      fi;
+
 ###############
 # Build Stage #
 ###############
 
 .build:
-  retry: 2
-  variables:
-    GIT_SUBMODULE_STRATEGY: recursive
-    DISTRO: ""
-    RUNTIME: ""
-    CC: "gcc"
-    CXX: "g++"
-    WERROR: "yes"
-    BUILD_TYPE: "Debug"
-    COVERAGE: "ON"
-  image:    
-    name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
+  extends: .canary
   stage: Build
-  artifacts:
-    name: "${CI_COMMIT_REF_SLUG}"
-    paths:
-      - ${CI_PROJECT_DIR} #/builds/next-generation-codes/laristra/flecsi
-    when: always
-    expire_in: 5 hour
-  dependencies: []
-  script:
-    - nproc
-    #- git submodule init
-    #- git config submodule.cinch.url https://github.com/laristra/cinch.git
-    #- git submodule update --init --recursive
-    - mkdir ${CI_PROJECT_DIR}/ccache
-    - mkdir ${CI_PROJECT_DIR}/build
-    - cd build
-    - ccache -z
-    - | 
-      cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-        -DFLECSI_RUNTIME_MODEL=$RUNTIME \
-        ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
-        -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
-        -DENABLE_UNIT_TESTS=ON \
-        -DENABLE_PARMETIS=ON \
-        -DENABLE_COLORING=ON \
-        -DENABLE_DOXYGEN=ON \
-        -DENABLE_DOCUMENTATION=OFF \
-        ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} \
-        ..
-    - make -k VERBOSE=1 -j2 -l80
-    - ccache -s
-    - make doxygen
-    - mkdir ${CI_PROJECT_DIR}/install
-    - make install DESTDIR=${CI_PROJECT_DIR}/install 
-    - sudo make install 
+
+##############
+# Test Stage #
+##############
+
+.test:
+  extends: .canary
+  stage: Test
+  dependencies:
+    #- "build:${CI_JOB_NAME#*:}"
+    - .build
+
+################
+# Format Stage #
+################
+
+.format:
+  extends: .canary
+  stage: Format
+  dependencies:
+    #- build:${CI_JOB_NAME#*:}
+    - .build
+
+################
+################
+################
+
+###############
+# Canary Jobs #
+###############
+
+canary:fedora_mpi:
+  extends: .canary
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
+
+canary:fedora_legion:
+  extends: .canary
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "legion"
 
 ##############
 # Build Jobs #
@@ -281,54 +348,6 @@ build:fedora_hpx_clang:
     CC: clang
     CXX: clang++
 
-###############
-###############
-###############
-
-##############
-# Test Stage #
-##############
-
-.test:
-  retry: 2
-  variables:
-    DISTRO: ""
-    COVERAGE: "OFF"
-    IGNORE_NOCI: "FALSE"
-  image: laristra/flecsi-third-party:${DISTRO} #user: flecsi
-  stage: Test
-  dependencies:
-    #- "build:${CI_JOB_NAME#*:}"
-    - .build
-  script:
-    - cd ${CI_PROJECT_DIR}/build/
-    - |
-      if [ ${COVERAGE} ];
-      then 
-        python -m coverxygen --xml-dir doc/doxygen/xml/ \
-          --src-dir .. \
-          --output doxygen.coverage.info;
-        wget -O codecov.sh https://codecov.io/bash;
-        bash codecov.sh -X gcov \
-          -f doxygen.coverage.info \
-          -F documentation;
-        doxy-coverage --threshold 24 doc/doxygen/xml/;
-      fi
-    - make test ARGS="-V"
-    - $HOME/.local/bin/gcovr .
-    - cd ..
-    - |
-      if [ ${COVERAGE} ];
-      then 
-        if [ ${CC} = clang ];
-        then 
-          $HOME/.local/bin/codecov -F "${CC}" \
-            --gcov-exec "llvm-cov gcov";
-        else 
-          $HOME/.local/bin/codecov -F "${CC}";
-        fi;
-      fi
-
 #############
 # Test Jobs #
 #############
@@ -522,30 +541,6 @@ test:fedora_hpx_clang:
   dependencies:
     - build:fedora_hpx_clang
 
-test:fedora_mpi.coverage:
-  extends: test:fedora_mpi
-  dependencies:
-    - build:fedora_mpi
-  variables:
-    COVERAGE: "ON"
-  allow_failure: true
-
-test:fedora_legion.coverage:
-  extends: test:fedora_legion
-  dependencies:
-    - build:fedora_legion
-  variables:
-    COVERAGE: "ON"
-  allow_failure: true
-
-test:fedora_hpx.coverage:
-  extends: test:fedora_hpx
-  dependencies:
-    - build:fedora_hpx
-  variables:
-    COVERAGE: "ON"
-  allow_failure: true
-
 test:fedora_mpi.ignoreNoCI:
   extends: test:fedora_mpi
   dependencies:
@@ -569,27 +564,6 @@ test:fedora_hpx.ignoreNoCI:
   variables:
     IGNORE_NOCI: "TRUE"
   allow_failure: true
-
-##############
-##############
-##############
-
-################
-# Format Stage #
-################
-
-.format:
-  retry: 2
-  variables:
-    DISTRO: ""
-  image: laristra/flecsi-third-party:${DISTRO} #user: flecsi
-  stage: Format
-  dependencies:
-    #- build:${CI_JOB_NAME#*:}
-    - .build
-  script:
-    - cd ${CI_PROJECT_DIR}/build/
-    - make format-FleCSI && git diff --exit-code
 
 ###############
 # Format Jobs #
@@ -617,266 +591,7 @@ format:fedora_hpx:
     DISTRO: "fedora"
   allow_failure: true
 
-################
-################
-################
-
-################
-# Deploy Stage #
-################
-
-.deploy:
-  retry: 2
-  only:
-    refs:
-      - merge_requests
-      #- master
-      #- /^stable\/.*$/
-  variables:
-    DISTRO: ""
-    RUNTIME: ""
-  #services:
-  #  - docker:dind
-  image: gitlab/dind:latest #user: root
-  stage: Deploy
-  dependencies:
-    #- build:${CI_JOB_NAME#*:}
-    - .build
-  script:
-    - |
-      if [[ ${CC} != gcc ]];
-      then TAG="_${CC}";
-      fi
-    - |
-      if [[ ${CI_COMMIT_REF_NAME} != stable ]];
-      #then TAG="${TAG}_${CI_COMMIT_REF_NAME//[^a-zA-Z0-9]/_}";
-      then TAG="${TAG}_${CI_COMMIT_REF_SLUG}";
-      fi
-    - docker pull laristra/flecsi-third-party:${DISTRO}
-    - CON=$(docker run -d laristra/flecsi-third-party:${DISTRO} /bin/bash)
-    - docker cp ${CI_PROJECT_DIR}/install ${CON}:/usr/local
-    - docker cp ${CI_PROJECT_DIR} ${CON}:/home/flecsi
-    #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-    #- docker push "${CI_COMMIT_REF_SLUG}:${DISTRO}_${RUNTIME}${TAG}
-    - |
-      if [[ ${CI_JOB_NAME} = "deploy:ubuntu_mpi" ]];
-      then 
-        rm -rf cinch;
-        git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
-        mkdir -p assets;
-        rm -rf assets/doxygen doc;
-        cp ${CI_PROJECT_DIR}/flecsi/build/doc .;
-        mv doc/doxygen/html assets/doxygen;
-        for i in doc/*.pdf;
-        do
-          mv ${i} ${i%-1.0*}.pdf;
-        done;
-        mv doc/*.pdf assets;
-        rm -rf doc;
-        git add --all assets/doxygen assets/*.pdf;
-        if [[ ${CI_COMMIT_REF_NAME} == master && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} ]];
-        then 
-          git config --global user.name "Automatic Deployment (Gitlab CI)";
-          git config --global user.email "flecsi-commit@lanl.gov";
-          git commit -m "Documentation Update";
-          openssl aes-256-cbc -K $encrypted_5669a181ba27_key -iv $encrypted_5669a181ba27_iv -in deploy.enc -out ~/.ssh/id_rsa -d;
-          chmod 600 ~/.ssh/id_rsa;
-          git push git@github.com:${TRAVIS_REPO_SLUG} gh-pages:gh-pages;
-        else
-          git status;
-          git diff --cached --no-color | head -n 500;
-        fi;
-      fi
-
 ###############
-# Deploy Jobs #
 ###############
-
-deploy:ubuntu_mpi:
-  extends: .deploy
-  dependencies:
-    - build:ubuntu_mpi
-  variables:
-    DISTRO: "ubuntu"
-    RUNTIME: "mpi"
-
-deploy:ubuntu_mpi_release:
-  extends: deploy:ubuntu_mpi
-  dependencies:
-    - build:ubuntu_mpi_release
-
-deploy:ubuntu_mpi_clang:
-  extends: deploy:ubuntu_mpi
-  dependencies:
-    - build:ubuntu_mpi_clang
-
-deploy:ubuntu_mpi_clang_release:
-  extends: deploy:ubuntu_mpi_clang
-  dependencies:
-    - build:ubuntu_mpi_clang_release
-
-deploy:ubuntu_mpich_mpi:
-  extends: .deploy
-  dependencies:
-    - build:ubuntu_mpich_mpi
-  variables:
-    DISTRO: "ubuntu_mpich"
-    RUNTIME: "mpi"
-
-deploy:ubuntu_mpich_mpi_release:
-  extends: deploy:ubuntu_mpich_mpi
-  dependencies:
-    - build:ubuntu_mpich_mpi_release
-
-deploy:ubuntu_mpich_mpi_clang:
-  extends: deploy:ubuntu_mpich_mpi
-  dependencies:
-    - build:ubuntu_mpich_mpi_clang
-
-deploy:ubuntu_mpich_mpi_clang_release:
-  extends: deploy:ubuntu_mpich_mpi_clang
-  dependencies:
-    - build:ubuntu_mpich_mpi_clang_release
-
-deploy:fedora_mpi:
-  extends: .deploy
-  dependencies:
-    - build:fedora_mpi
-  variables:
-    DISTRO: "fedora"
-    RUNTIME: "mpi"
-
-deploy:fedora_mpi_release:
-  extends: deploy:fedora_mpi
-  dependencies:
-    - build:fedora_mpi_release
-
-deploy:fedora_mpi_clang:
-  extends: deploy:fedora_mpi
-  dependencies:
-    - build:fedora_mpi_clang
-
-deploy:fedora_mpi_clang_release:
-  extends: deploy:fedora_mpi_clang
-  dependencies:
-    - build:fedora_mpi_clang_release
-
-deploy:fedora_mpich_mpi:
-  extends: .deploy
-  dependencies:
-    - build:fedora_mpich_mpi
-  variables:
-    DISTRO: "fedora_mpich"
-    RUNTIME: "mpi"
-
-deploy:fedora_mpich_mpi_release:
-  extends: deploy:fedora_mpich_mpi
-  dependencies:
-    - build:fedora_mpich_mpi_release
-
-deploy:fedora_mpich_mpi_clang:
-  extends: deploy:fedora_mpich_mpi
-  dependencies:
-    - build:fedora_mpich_mpi_clang
-
-deploy:fedora_mpich_mpi_clang_release:
-  extends: deploy:fedora_mpich_mpi_clang
-  dependencies:
-    - build:fedora_mpich_mpi_clang_release
-
-deploy:ubuntu_legion:
-  extends: .deploy
-  dependencies:
-    - build:ubuntu_legion
-  variables:
-    DISTRO: "ubuntu"
-    RUNTIME: "legion"
-
-deploy:ubuntu_legion_release:
-  extends: deploy:ubuntu_legion
-  dependencies:
-    - build:ubuntu_legion_release
-
-deploy:ubuntu_legion_clang:
-  extends: deploy:ubuntu_legion
-  dependencies:
-    - build:ubuntu_legion_clang
-
-deploy:ubuntu_legion_clang_release:
-  extends: deploy:ubuntu_legion_clang
-  dependencies:
-    - build:ubuntu_legion_clang_release
-
-deploy:ubuntu_mpich_legion:
-  extends: .deploy
-  dependencies:
-    - build:ubuntu_mpich_legion
-  variables:
-    DISTRO: "ubuntu_mpich"
-    RUNTIME: "legion"
-
-deploy:ubuntu_mpich_legion_release:
-  extends: deploy:ubuntu_mpich_legion
-  dependencies:
-    - build:ubuntu_mpich_legion_release
-
-deploy:ubuntu_mpich_legion_clang:
-  extends: deploy:ubuntu_mpich_legion
-  dependencies:
-    - build:ubuntu_mpich_legion_clang
-
-deploy:ubuntu_mpich_legion_clang_release:
-  extends: deploy:ubuntu_mpich_legion_clang
-  dependencies:
-    - build:ubuntu_mpich_legion_clang_release
-
-deploy:fedora_legion:
-  extends: .deploy
-  dependencies:
-    - build:fedora_legion
-  variables:
-    DISTRO: "fedora"
-    RUNTIME: "legion"
-
-deploy:fedora_legion_release:
-  extends: deploy:fedora_legion
-  dependencies:
-    - build:fedora_legion_release
-
-deploy:fedora_legion_clang:
-  extends: deploy:fedora_legion
-  dependencies:
-    - build:fedora_legion_clang
-
-deploy:fedora_legion_clang_release:
-  extends: deploy:fedora_legion_clang
-  dependencies:
-    - build:fedora_legion_clang_release
-
-deploy:fedora_mpich_legion:
-  extends: .deploy
-  dependencies:
-    - build:fedora_mpich_legion
-  variables:
-    DISTRO: "fedora_mpich"
-    RUNTIME: "legion"
-
-deploy:fedora_mpich_legion_release:
-  extends: deploy:fedora_mpich_legion
-  dependencies:
-    - build:fedora_mpich_legion_release
-
-deploy:fedora_mpich_legion_clang:
-  extends: deploy:fedora_mpich_legion
-  dependencies:
-    - build:fedora_mpich_legion_clang
-
-deploy:fedora_mpich_legion_clang_release:
-  extends: deploy:fedora_mpich_legion_clang
-  dependencies:
-    - build:fedora_mpich_legion_clang_release
-
-################
-################
-################
+###############
 

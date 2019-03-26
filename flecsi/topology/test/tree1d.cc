@@ -8,7 +8,8 @@ using namespace std;
 using namespace flecsi;
 using namespace topology;
 
-class tree_policy {
+class tree_policy
+{
 public:
   using tree_t = tree_topology<tree_policy>;
 
@@ -20,7 +21,8 @@ public:
 
   using point_t = point<element_t, dimension>;
 
-  class entity : public tree_entity<branch_int_t, dimension> {
+  class entity : public tree_entity<branch_int_t, dimension>
+  {
   public:
     entity(const point_t & p) : coordinates_(p) {}
 
@@ -38,14 +40,15 @@ public:
 
   using entity_t = entity;
 
-  class branch : public tree_branch_u<branch_int_t, dimension> {
+  class branch : public tree_branch_u<branch_int_t, dimension>
+  {
   public:
     branch() {}
 
     void insert(entity_t * ent) {
       ents_.push_back(ent);
 
-      if (ents_.size() > 1) {
+      if(ents_.size() > 1) {
         refine();
       }
     }
@@ -55,7 +58,7 @@ public:
       assert(itr != ents_.end());
       ents_.erase(itr);
 
-      if (ents_.empty()) {
+      if(ents_.empty()) {
         coarsen();
       }
     }
@@ -77,7 +80,7 @@ public:
     }
 
     point_t coordinates(
-        const std::array<point<element_t, dimension>, 2> & range) const {
+      const std::array<point<element_t, dimension>, 2> & range) const {
       point_t p;
       id().coordinates(range, p);
       return p;
@@ -125,14 +128,14 @@ TEST(tree_topology, neighbors) {
   point_t p = {0.1};
   branch_id_t bid({0.0, 1.0}, p, 2);
 
-  for (size_t i = 0; i < n; ++i) {
+  for(size_t i = 0; i < n; ++i) {
     point_t p = {uniform(0, 1)};
     auto e = t.make_entity(p);
     t.insert(e);
     ents.push_back(e);
   }
 
-  for (size_t i = 0; i < n; ++i) {
+  for(size_t i = 0; i < n; ++i) {
     auto ent = ents[i];
 
     auto ns = t.find_in_radius(ent->coordinates(), 0.05);
@@ -142,10 +145,10 @@ TEST(tree_topology, neighbors) {
 
     set<entity_t *> s2;
 
-    for (size_t j = 0; j < n; ++j) {
+    for(size_t j = 0; j < n; ++j) {
       auto ej = ents[j];
 
-      if (distance(ent->coordinates(), ej->coordinates()) < 0.05) {
+      if(distance(ent->coordinates(), ej->coordinates()) < 0.05) {
         s2.insert(ej);
       }
     }

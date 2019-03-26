@@ -14,7 +14,7 @@ template<class CONTAINER>
 inline bool
 intersects(const CONTAINER & one, const CONTAINER & two) {
   return flecsi::utils::intersects(
-      one.begin(), one.end(), two.begin(), two.end());
+    one.begin(), one.end(), two.begin(), two.end());
 }
 
 // =============================================================================

@@ -63,7 +63,8 @@ struct field_registration_wrapper_u {
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
 
     fi.storage_class = STORAGE_CLASS;
-    fi.size = sizeof(DATA_TYPE);
+    fi.size = (STORAGE_CLASS == sparse ? sizeof(DATA_TYPE) + sizeof(size_t)
+                                       : sizeof(DATA_TYPE));
     fi.namespace_hash = NAMESPACE_HASH;
     fi.name_hash = NAME_HASH;
     fi.versions = VERSIONS;
