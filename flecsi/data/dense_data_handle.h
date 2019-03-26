@@ -55,38 +55,6 @@ struct dense_data_handle_base_u : public DATA_POLICY,
    */
   using value_type = T;
 
-  /*!
-   Default constructor.
-   */
-
-  dense_data_handle_base_u() {}
-
-  /*!
-    Copy constructor.
-   */
-
-  dense_data_handle_base_u(const dense_data_handle_base_u & b)
-    : DATA_POLICY(b) {
-    exclusive_data = b.exclusive_data;
-    shared_data = b.shared_data;
-    ghost_data = b.ghost_data;
-    combined_data = b.combined_data;
-#ifdef COMPACTED_STORAGE_SORT
-    combined_data_sort = b.combined_data_sort;
-#endif
-    exclusive_size = b.exclusive_size;
-    shared_size = b.shared_size;
-    ghost_size = b.ghost_size;
-    combined_size = b.combined_size;
-    exclusive_buf = b.exclusive_buf;
-    shared_buf = b.shared_buf;
-    ghost_buf = b.ghost_buf;
-    master = false;
-    state = b.state;
-    global = b.global;
-    color = b.color;
-  }
-
   T * exclusive_data = nullptr;
   T * exclusive_buf = nullptr;
   size_t exclusive_size = 0;
@@ -104,7 +72,6 @@ struct dense_data_handle_base_u : public DATA_POLICY,
   T * combined_data_sort = nullptr;
 #endif
   size_t combined_size = 0;
-  bool master = true;
 
   size_t state = 0;
   bool global = false;

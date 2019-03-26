@@ -80,12 +80,6 @@ struct dense_handle_t : public dense_data_handle_u<T, EP, SP, GP> {
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  // FIXME: calling to base class constructor?
-  ///
-  /// Default constructor.
-  ///
-  dense_handle_t() {}
-
   template<typename, size_t, size_t, size_t>
   friend class dense_handle_t;
 }; // struct dense_handle_t

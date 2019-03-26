@@ -63,12 +63,6 @@ struct ragged_handle_u : public ragged_data_handle_u<T, EP, SP, GP> {
 
   using base = ragged_data_handle_u<T, EP, SP, GP>;
 
-  //--------------------------------------------------------------------------//
-  // Constructors.
-  //--------------------------------------------------------------------------//
-
-  ragged_handle_u() {}
-
   template<typename, size_t, size_t, size_t>
   friend class ragged_handle_u;
 }; // struct ragged_handle_u

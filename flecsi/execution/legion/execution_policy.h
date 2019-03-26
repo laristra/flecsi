@@ -162,8 +162,8 @@ struct legion_execution_policy_t {
     clog_tag_guard(execution);
 
     // Make a tuple from the arugments passed by the user
-    ARG_TUPLE task_args;
-    task_args = std::forward_as_tuple(std::forward<ARGS>(args)...);
+    ARG_TUPLE task_args(
+      std::forward_as_tuple(std::forward<ARGS>(args)...) );
 
     // Get the FleCSI runtime context
     context_t & context_ = context_t::instance();

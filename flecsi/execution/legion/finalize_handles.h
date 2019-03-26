@@ -53,7 +53,14 @@ struct finalize_handles_t
     if((SHARED_PERMISSIONS == rw) || (SHARED_PERMISSIONS == wo))
       std::memcpy(h.shared_buf, h.shared_data, h.shared_size * sizeof(T));
 
+    // ghost is never mapped with write permissions
+
+    if(h.combined_data) delete[] h.combined_data;
+#ifdef COMPACTED_STORAGE_SORT
+    if(h.combined_data_sort) delete[] h.combined_data_sort;
 #endif
+#endif
+
   } // handle
 
   template<typename T,
