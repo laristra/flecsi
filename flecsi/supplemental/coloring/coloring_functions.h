@@ -32,12 +32,7 @@ namespace execution {
 //! @tparam
 //----------------------------------------------------------------------------//
 
-<<<<<<< HEAD
-template <
-  size_t DIMENSION,
-=======
 template<size_t DIMENSION,
->>>>>>> master
   size_t ENTITY_DIM,
   typename CLOSURE_SET,
   typename ENTITY_MAP,
@@ -109,25 +104,14 @@ color_entity(topology::mesh_definition_u<DIMENSION> const & md,
           // If the local cell is shared, we need to add all of
           // the ranks that reference it.
           if(shared_cells_map.find(c) != shared_cells_map.end())
-<<<<<<< HEAD
-            shared_entities.insert(
-              shared_cells_map.at(c).shared.begin(),
-              shared_cells_map.at(c).shared.end()
-            );
-=======
             shared_entities.insert(shared_cells_map.at(c).shared.begin(),
               shared_cells_map.at(c).shared.end());
->>>>>>> master
         } // if
 
         // Iterate through the closure intersection map to see if the
         // indirect reference is part of another rank's closure, i.e.,
         // that it is an indirect dependency.
-<<<<<<< HEAD
-        for(auto ci: closure_intersection_map)
-=======
         for(auto ci : closure_intersection_map)
->>>>>>> master
           if(ci.second.find(c) != ci.second.end())
             shared_entities.insert(ci.first);
       } // for

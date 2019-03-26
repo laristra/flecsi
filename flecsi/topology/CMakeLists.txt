@@ -25,18 +25,18 @@ set(topology_HEADERS
   connectivity.h
   entity_storage.h
   index_space.h
-  mesh_definition.h
-  mesh.h
-  mesh_storage.h
-  mesh_topology.h
+  mesh/mesh_definition.h
+  mesh/mesh.h
+  mesh/mesh_storage.h
+  mesh/mesh_topology.h
   global_topology.h
-  mesh_types.h
-  mesh_utils.h
+  mesh/mesh_types.h
+  mesh/mesh_utils.h
   partition.h
-  set_storage.h
-  set_topology.h
-  set_types.h
-  set_utils.h
+  set/set_storage.h
+  set/set_topology.h
+  set/set_types.h
+  set/set_utils.h
   structured_mesh_topology.h
   tree/tree_topology.h
   tree/tree_storage.h
@@ -59,14 +59,14 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(topology_HEADERS
     ${topology_HEADERS}
     legion/set_storage_policy.h
-    legion/storage_policy.h
+    legion/mesh_storage_policy.h
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(topology_HEADERS
     ${topology_HEADERS}
     mpi/set_storage_policy.h
-    mpi/storage_policy.h
+    mpi/mesh_storage_policy.h
     )
 
   set(UNIT_POLICY MPI)

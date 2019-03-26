@@ -1,10 +1,7 @@
 #include <cinchtest.h>
 #include <iostream>
 
-<<<<<<< HEAD
 #include <flecsi/topology/tree/tree_topology.h>
-=======
->>>>>>> master
 #include "pseudo_random.h"
 #include <flecsi/topology/tree_topology.h>
 

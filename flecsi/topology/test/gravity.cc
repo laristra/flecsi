@@ -3,12 +3,8 @@
 
 #include "pseudo_random.h"
 #include <flecsi/concurrency/thread_pool.h>
-<<<<<<< HEAD
 #include <flecsi/topology/tree/tree_topology.h>
 #include "pseudo_random.h"
-=======
-#include <flecsi/topology/tree_topology.h>
->>>>>>> master
 
 using namespace std;
 using namespace flecsi;
