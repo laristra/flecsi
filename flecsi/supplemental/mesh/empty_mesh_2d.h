@@ -24,10 +24,6 @@ namespace supplemental {
 class vertex : public topology::mesh_entity_u<0, 1>
 {
 public:
-  template<size_t M>
-  uint64_t precedence() const {
-    return 0;
-  }
   vertex() = default;
 };
 

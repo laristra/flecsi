@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <flecsi/data/accessor.h>
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/data_constants.h>
 #include <flecsi/data/dense_data_handle.h>
 
@@ -73,6 +74,8 @@ struct accessor_u<data::dense,
   /*!
    Copy constructor.
    */
+
+  accessor_u() = default;
 
   accessor_u(const dense_data_handle_u<T, 0, 0, 0> & h)
     : handle(reinterpret_cast<const handle_t &>(h)) {}

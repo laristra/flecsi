@@ -13,21 +13,20 @@
                                                                               */
 #pragma once
 
-/*! @file */
+/*!
+  @file
 
-#include <flecsi/data/common/data_reference.h>
-#include <flecsi/data/data_constants.h>
+  This file defines the type identifier type \em data_reference_base_t.
+ */
 
 namespace flecsi {
+namespace data {
 
-// this empty base class which is the base of all accessors is used by the
-// handle tuple walkers for type checking
-struct mutator_base_t : public data::data_reference_base_t {};
+/*!
+  This empty base class is the base of all FleCSI data model types.
+ */
 
-template<data::storage_label_type_t, typename T>
-struct mutator_u {};
+struct data_reference_base_t {};
 
-template<typename T>
-struct mutator_u<data::base, T> : public mutator_base_t {}; // struct mutator_u
-
+} // namespace data
 } // namespace flecsi
