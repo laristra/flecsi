@@ -51,7 +51,7 @@ struct global_accessor_base_t {};
 template<typename T, size_t PERMISSIONS>
 struct accessor_u<data::global, T, PERMISSIONS, 0, 0>
   : public accessor_u<data::base, T, PERMISSIONS, 0, 0>,
-    global_accessor_base_t {
+    public global_accessor_base_t {
 
   using handle_t = global_data_handle_u<T, PERMISSIONS>;
 
