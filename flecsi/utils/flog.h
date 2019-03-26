@@ -289,6 +289,10 @@
 
 #define fixme() flog(warn)
 
+#if defined FLECSI_ENABLE_BOOST
+  #include <boost/stacktrace.hpp>
+#endif
+
 namespace flecsi {
 namespace utils {
 namespace flog {
