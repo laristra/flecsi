@@ -9,14 +9,12 @@ namespace flecstan {
 Contents of each of our classes that correspond to FleCSI macros:
 
 vector invoked
-   string file
-   string line
-   string column
+   FileLineColumn location
+   FileLineColumn spelling
 
 vector matched
-   string file
-   string line
-   string column
+   FileLineColumn location
+   FileLineColumn spelling
    vector<string> context
    Plus macro-specific data; see below
 */
@@ -55,17 +53,16 @@ std::string flcc(const macrobase &info, bool print_context)
 {
    std::ostringstream oss;
 
-   // file, line
-   oss << "file " << info.file << ", ";
-   oss << "line " << info.line;
-
-   // column, if appropriate
-   if (emit_column)
-      oss << ", column " << info.column;
+   oss << print_flc(
+     "file ", ", line ", ", column ",
+      info.location, info.spelling
+   );
 
    // context, if appropriate
    if (print_context) {
-      std::string ctx = (info.file == "" ? "<file>" : info.file);
+      std::string ctx = info.location.file == ""
+         ? "<file>"
+         : info.location.file;
       for (std::size_t c = info.context.size();  c--; )
          ctx += "::" +
             (info.context[c] == "" ? "<namespace>" : info.context[c]);
@@ -592,9 +589,8 @@ static exit_status_t task_reg_dup(
          // finish diagnostic
          str +=
            "This may have caused a (possibly cryptic) compile-time error.\n"
-           "If not, a duplicate hash will still trigger a run-time error.\n"
-           "Check your task registrations for incorrect task and/or "
-           "namespace names.";
+           "If it didn't, a duplicate hash will still trigger a run-time error."
+         ;
          status = error(str);
       }
    }
@@ -730,9 +726,8 @@ static exit_status_t function_reg_dup(
          // finish diagnostic
          str +=
            "This may have caused a (possibly cryptic) compile-time error.\n"
-           "If not, a duplicate hash will still trigger a run-time error.\n"
-           "Check your function registrations for incorrect task and/or "
-           "namespace names.";
+           "If it didn't, a duplicate hash will still trigger a run-time error."
+         ;
          status = error(str);
       }
    }

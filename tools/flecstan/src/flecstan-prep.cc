@@ -1,6 +1,7 @@
 /* -*- C++ -*- */
 
 #include "flecstan-prep.h"
+#include <queue>
 
 namespace flecstan {
 
@@ -22,8 +23,7 @@ const std::set<std::string> Preprocessor::macros {
 
 
 // -----------------------------------------------------------------------------
-// Preprocessor::
-// Constructor and destructor
+// Preprocessor::ctor,dtor
 // -----------------------------------------------------------------------------
 
 Preprocessor::Preprocessor(clang::CompilerInstance &_ci, Yaml &_yaml)
@@ -41,8 +41,49 @@ Preprocessor::~Preprocessor()
 
 
 // -----------------------------------------------------------------------------
-// Preprocessor::
-// MacroExpands
+// Re: nested macros
+// Eventually, combine this with Preprocessor::macros
+// -----------------------------------------------------------------------------
+
+#define nested_mac(outer,...) \
+   std::make_pair(std::string(outer), std::queue<std::string>{{__VA_ARGS__}})
+
+static std::map<std::string, std::queue<std::string>> nested_macros
+{
+   nested_mac(
+      "flecsi_register_mpi_task_simple",
+      "flecsi_register_task_simple"
+   ),
+   nested_mac(
+      "flecsi_register_mpi_task",
+      "flecsi_register_task"
+   ),
+   nested_mac(
+      "flecsi_execute_mpi_task_simple",
+      "flecsi_execute_task_simple"
+   ),
+   nested_mac(
+      "flecsi_execute_mpi_task",
+      "flecsi_execute_task"
+   ),
+   nested_mac(
+      "flecsi_get_global",
+      "flecsi_get_handle",
+      "flecsi_get_client_handle"
+   ),
+   nested_mac(
+      "flecsi_get_color",
+      "flecsi_get_handle",
+      "flecsi_get_client_handle"
+   )
+};
+
+#undef nested_mac
+
+
+
+// -----------------------------------------------------------------------------
+// Preprocessor::MacroExpands
 // -----------------------------------------------------------------------------
 
 void Preprocessor::MacroExpands(
@@ -62,12 +103,33 @@ void Preprocessor::MacroExpands(
    if (!ii) return;
    const std::string name = ii->getName().str();
 
-   // If name isn't one we're looking for, we're done here
+   // If macro name isn't one we're looking for, we're done here
    if (macros.find(name) == macros.end())
       return;
 
-   // OK, we've recognized one of our macros.
-   // Create a MacroInvocation object for this particular macro call.
+   // Deal with the fact that the current FleCSI macro may have been called
+   // by the user, or may have appeared here simply because another FleCSI
+   // macro called it.
+   static std::queue<std::string> expect;
+   if (expect.empty()) {
+      // Either it's the first call to MacroExpands(); or else no nested FleCSI
+      // macro is expected, based on the one that was seen on the previous call.
+      // Insert and retrieve an empty queue of expected upcoming nested macros
+      // for the current macro, or retrieve its existing empty or non-empty one
+      // for use on the next MacroExpands() call.
+      expect = nested_macros.insert(
+         std::make_pair(name, std::queue<std::string>{})
+      ).first->second;
+   } else {
+      // Based on the previous call to MacroExpands(), we expect to see some
+      // particular macro name.
+      assert(name == expect.front()); /// <== make into a real diagnostic
+      expect.pop();
+      return;
+   }
+
+   // OK, a user called a FleCSI macro.
+   // Create a MacroInvocation object for this call.
    MacroInvocation mi(token,range,sman,name);
 
    // Number of arguments to the macro
@@ -81,8 +143,8 @@ void Preprocessor::MacroExpands(
       // Initialize argument; then push tokens below...
       mi.arguments.push_back(std::vector<clang::Token>{});
 
-      // For each token of the current macro argument
-      const clang::Token *tok; // outside for-loop in case we use it below
+      // For each token of the current argument
+      const clang::Token *tok; // outside the for-loop, in case we use it below
       for (tok = tokbegin;  tok->isNot(clang::tok::eof);  ++tok)
          mi.arguments.back().push_back(*tok);
 
@@ -90,6 +152,7 @@ void Preprocessor::MacroExpands(
       // Here's a way we can get the original spelling (including white space!)
       // of the full, original argument (not the argument broken into tokens).
       // I'll include this here, in case we end up wanting it for anything.
+
       clang::CharSourceRange range;
       range.setBegin(tokbegin->getLocation());
       range.setEnd(tok->getLocation()); // the eof from the above for-loop
@@ -99,16 +162,14 @@ void Preprocessor::MacroExpands(
       */
    }
 
-   // Enter the new MacroInvocation object into our "source map" structure,
-   // essentially a map(FileID,map(Offset,MacroInvocation)).
-   const std::pair<clang::FileID, unsigned> &pos =
-      sman.getDecomposedExpansionLoc(token.getLocation());
-   const clang::FileID fileid = pos.first;
-   const unsigned offset = pos.second;
-
-   auto pair = sourceMap[fileid].insert(std::make_pair(offset,mi));
-   const bool direct = pair.second; // direct (true) or nested (false) macro?
-   if (!direct) return;
+   // Enter the new MacroInvocation object into our position-to-macro structure.
+   pos2macro[
+      std::make_tuple(
+         mi.location.file,
+         mi.location.line,
+         mi.location.column
+      )
+   ].push_back(mi);
 
    // 2019-01-16.
    // Remark to self. There's some apparent convolutedness here that deserves
@@ -143,8 +204,7 @@ void Preprocessor::MacroExpands(
 
 
 // -----------------------------------------------------------------------------
-// Preprocessor::
-// invocation
+// Preprocessor::invocation
 // -----------------------------------------------------------------------------
 
 const MacroInvocation *Preprocessor::invocation(
@@ -157,51 +217,41 @@ const MacroInvocation *Preprocessor::invocation(
    clang::SourceManager &sman = sema.getSourceManager();
 
    // For the construct (declaration, expression, etc.) we're examining, get
-   // its File ID and offset. We'll then see if it's associated with a macro.
+   // its file, line, and column. We'll then see if it's associated with one
+   // of our macros.
    //
-   // Remark: The getFileLoc() call (in contrast to just sending loc directly
-   // to getDecomposedExpansionLoc()) was necessary in order to extract the
-   // correct location in the event that one of our macros is invoked within
-   // another macro. For example, consider this code:
-   //     #define print(x) ...
-   //     ...
-   //     print(flecsi_macro(stuff))
-   // Using getFileLoc(), the location of constructs in "stuff" (as sent via
-   // the parameter "loc" to the present function) is associated with the 'f'
-   // in "flecsi_macro" - just as we want it to be. Without getFileLoc(), we
-   // were actually getting the location for the 'p' in print!
-   const std::pair<clang::FileID,unsigned>
-      pos = sman.getDecomposedExpansionLoc(sman.getFileLoc(loc));
-   const clang::FileID fileid = pos.first;
-   const unsigned offset = pos.second;
+   // Remark: Consider something like this:
+   //     #define something(x) ...
+   //     something(flecsi_macro(parameters))
+   // When flecsi_macro expands into constructs in the abstract syntax tree,
+   // we want to associate those constructs with the 'f' in "flecsi_macro",
+   // not with the 's' in "something". In order for this to happen, we needed
+   // to use sman.getFileLoc(loc), below, in place of loc.
+   FileLineColumn flc;
+   getFileLineColumn(&sman, sman.getFileLoc(loc), flc);
 
-   // Look for File ID in our map of macro information
-   auto itr = sourceMap.find(fileid);
-   if (itr == sourceMap.end()) { // find failed
+   // Does {file,line,column} match with a macro position we saved earlier...?
+   const std::tuple<std::string,std::string,std::string> key(
+      flc.file,
+      flc.line,
+      flc.column
+   );
+   auto iter = pos2macro.find(key);
+   if (iter == pos2macro.end()) {
+      // ...No, but that's OK; we just don't care about the AST construct
       debug("invocation(): failure 1");
       return nullptr;
    }
 
-   // Submap (offset --> MacroInvocation) for the File ID.
-   // Keys of this submap are offsets of the starts of macro invocations.
-   const std::map<std::size_t, MacroInvocation> &sub = itr->second;
+   // ...Yes, so look in the (possibly many) macros at this location
+   const std::vector<MacroInvocation> &vec = iter->second;
+   for (auto &mi : vec)
+      if (!mi.ast) // then hasn't already been matched
+         return &mi;
 
-   // Look for the largest submap entry <= offset. That macro would
-   // be responsible for the present construct, if *any* macro is.
-   auto mitr = gleq(sub,offset);
-   if (mitr == sub.end()) { // find failed; offset must be before any macro
-      debug("invocation(): failure 2");
-      return nullptr;
-   }
-
-   // MacroInvocation for the desired (FileID,offset)
-   const MacroInvocation &mi = mitr->second;
-   const std::size_t begin = mitr->first;
-   const std::size_t end   = mi.end;
-   if (begin <= offset && offset <= end)
-      return &mitr->second;
-
-   debug("invocation(): failure 3");
+   // No, but that still can be OK; maybe it isn't an AST construct that
+   // we'd be needing to match.
+   debug("invocation(): failure 2");
    return nullptr;
 }
 

@@ -97,9 +97,8 @@ exit_status_t multiple(
 class treg : public macrobase {
 public:
    // from macrobase:
-   // ...string file
-   // ...string line
-   // ...string column
+   // ...FileLineColumn location
+   // ...FileLineColumn spelling
    // ...vector<string> context
 
    std::string task;
@@ -149,9 +148,8 @@ public:
 class texe : public macrobase {
 public:
    // from macrobase:
-   // ...string file
-   // ...string line
-   // ...string column
+   // ...FileLineColumn location
+   // ...FileLineColumn spelling
    // ...vector<string> context
 
    std::string task;

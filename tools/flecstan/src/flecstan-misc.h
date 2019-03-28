@@ -81,9 +81,7 @@ namespace color {
    inline const std::string error   = lite::red;
    inline const std::string fatal   = lite::red;
    inline const std::string reset   = "\033[0m";
-
    /*
-   // for output
    inline const std::string debug   = "`textWhite ";
    inline const std::string heading = "`textGray ";
    inline const std::string file    = "`textMagenta ";
@@ -355,8 +353,6 @@ inline void print_help()
    );
 }
 
-
-
 } // namespace flecstan
 
 
@@ -399,34 +395,6 @@ inline std::string TokenName(
 }
 
 
-// getFileLineColumn
-void getFileLineColumn(
-   const clang::SourceManager *const,
-   const clang::SourceLocation &,
-   std::string &,
-   std::string &,
-   std::string &
-);
-
-template<class OBJ>
-void getFileLineColumn(
-   // obj must have hasSourceManager(), getSourceManager(), and getLocation()
-   const OBJ &obj,
-   std::string &file,
-   std::string &line,
-   std::string &column
-) {
-   const bool hasman = obj.hasSourceManager();
-   getFileLineColumn(
-      hasman ? &obj.getSourceManager() : nullptr,
-      obj.getLocation(),
-      file,
-      line,
-      column
-   );
-}
-
-
 // booland
 template<class T>
 class booland {
@@ -462,6 +430,123 @@ public:
 
 
 // -----------------------------------------------------------------------------
+// FileLineColumn
+// File, line, and column, all as strings (can be, e.g., "unknown")
+// -----------------------------------------------------------------------------
+
+namespace flecstan {
+
+// FileLineColumn
+class FileLineColumn {
+public:
+   std::string file, line, column;
+
+   FileLineColumn() :
+      file  (""),
+      line  (""),
+      column("")
+   { }
+
+   FileLineColumn(
+      const std::string &f,
+      const std::string &l,
+      const std::string &c
+   ) :
+      file  (f),
+      line  (l),
+      column(c)
+   { }
+};
+
+
+
+// print_flc
+// Helper function
+inline std::string print_flc(
+   // labels
+   const std::string &labf,
+   const std::string &labl,
+   const std::string &labc,
+
+   // (file,line,column)s
+   const FileLineColumn &location,
+   const FileLineColumn &spelling
+) {
+   std::ostringstream oss;
+
+   const bool fsame = location.file   == spelling.file;
+   const bool lsame = location.line   == spelling.line;
+   const bool csame = location.column == spelling.column;
+
+   // file
+   oss << labf << location.file;
+   if (!fsame)
+      oss << "[" << spelling.file << "]";
+
+   // line
+   // Remark: morally, the same numeric line, in a different file, is different
+   oss << labl << location.line;
+   if (!fsame || !lsame)
+      oss << "[" << spelling.line << "]";
+
+   // column
+   // Remark as above
+   if (emit_column) {
+      oss << labc << location.column;
+      if (!fsame || !lsame || !csame)
+         oss << "[" << spelling.column << "]";
+   }
+
+   return oss.str();
+}
+
+
+
+// getFileLineColumn
+void getFileLineColumn(
+   const clang::SourceManager *const,
+   const clang::SourceLocation &,
+   FileLineColumn &
+);
+
+template<class OBJ>
+void getFileLineColumn(
+   // obj needs hasSourceManager(), getSourceManager(), and getLocation()
+   const OBJ &obj,
+   FileLineColumn &flc
+) {
+   getFileLineColumn(
+      obj.hasSourceManager() ? &obj.getSourceManager() : nullptr,
+      obj.getLocation(),
+      flc
+   );
+}
+
+} // namespace flecstan
+
+
+
+namespace llvm {
+namespace yaml {
+
+// MappingTraits<FileLineColumn>
+template<>
+class MappingTraits<flecstan::FileLineColumn> {
+public:
+   static void mapping(IO &io, flecstan::FileLineColumn &c)
+   {
+      io.mapRequired("file",   c.file);
+      io.mapRequired("line",   c.line);
+      io.mapRequired("column", c.column);
+   }
+};
+
+} // namespace yaml
+} // namespace llvm
+
+
+
+// -----------------------------------------------------------------------------
 // MacroInvocation
 // Contains information regarding an invocation of any of the various FleCSI
 // macros we'll be looking for.
@@ -476,30 +561,14 @@ public:
    // Data
    // ------------------------
 
-   // Basics
-   std::string file;
-   std::string line;
-   std::string column;
-
-   struct {
-      std::string file;
-      std::string line;
-      std::string column;
-   } spelling;
-
    std::string name;
-
-   // Offset of the invocation's end: the ")" in "macro(foo,bar,...)"
-   std::size_t end;
+   FileLineColumn location;
+   FileLineColumn spelling;
+   mutable bool ast; // AST matched?
 
    // Arguments
    // Each argument consists of some number of tokens
    std::vector<std::vector<clang::Token>> arguments;
-
-   // Sort of a hack, through which our VisitCallExpr() function
-   // can communicate with our VisitCXXConstructExpr() function
-   mutable int index = -1; // so the default is not a valid vector index
-   mutable std::string hash;
 
 
    // ------------------------
@@ -511,19 +580,12 @@ public:
       const clang::SourceRange &range,
       const clang::SourceManager &sman,
       const std::string &_name
-   ) {
-      getFileLineColumn(
-         &sman, token.getLocation(),
-         file, line, column
-      );
-
-      getFileLineColumn(
-         &sman, sman.getSpellingLoc(token.getLocation()),
-         spelling.file, spelling.line, spelling.column
-      );
-
-      name = _name;
-      end  = sman.getDecomposedExpansionLoc(range.getEnd()).second;
+   ) :
+      name(_name), ast(false)
+   {
+      const clang::SourceLocation tloc = token.getLocation();
+      getFileLineColumn(&sman, tloc, location);
+      getFileLineColumn(&sman, sman.getSpellingLoc(tloc), spelling);
    }
 
 
@@ -573,15 +635,10 @@ public:
    }
 
    // flc
-   // file, line, column
+   // print file, line, column
    std::string flc() const
    {
-      std::ostringstream oss;
-      oss << "file " << file << ", ";
-      oss << "line " << line;
-      if (emit_column)
-         oss << ", column " << column;
-      return oss.str();
+      return print_flc("file ", ", line ", ", column ", location, spelling);
    }
 };
 
@@ -598,27 +655,28 @@ namespace flecstan {
 class InvocationInfo {
 public:
    // data
-   std::string file;
-   std::string line;
-   std::string column;
+   FileLineColumn location;
+   FileLineColumn spelling;
 
    // ctor: Sema, MacroInvocation
    InvocationInfo(
       const clang::Sema  &sema,
-      const MacroInvocation &m
+      const MacroInvocation &mi
    ) :
-      file(m.file), line(m.line), column(m.column)
+      location(mi.location),
+      spelling(mi.spelling)
    {
       std::ostringstream oss;
-      oss << "Name: " << m.name
+      oss << "Name: " << mi.name
           << "\nArgs:";
-      for (std::size_t arg = 0;  arg < m.size();  ++arg)
-         oss << (arg ? ", " : " ") << m.str(sema,arg);
-      oss << "\nFile: " << file
-          << "\nLine: " << line;
-      if (emit_column)
-         oss << "\nColumn: " << column;
-      report("Macro",oss);
+      for (std::size_t arg = 0;  arg < mi.size();  ++arg)
+         oss << (arg ? ", " : " ") << mi.str(sema,arg);
+
+      report(
+        "Macro",
+         oss.str() +
+         print_flc("\nFile: ", "\nLine: ", "\nColumn: ", location, spelling)
+      );
    }
 };
 
@@ -635,9 +693,8 @@ class MappingTraits<flecstan::InvocationInfo> {
 public:
    static void mapping(IO &io, flecstan::InvocationInfo &c)
    {
-      io.mapRequired("file",   c.file);
-      io.mapRequired("line",   c.line);
-      io.mapRequired("column", c.column);
+      io.mapRequired("location", c.location);
+      io.mapRequired("spelling", c.spelling);
    }
 };
 
