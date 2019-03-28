@@ -190,12 +190,72 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     }
     colinfo.ghost_owners = ghost_ranks;
 
+    //Send the overlay boxes on the current rank to all the shared ranks
+    size_t sz = 2*D*cbox.num_boxes; 
+    int sbuf[sz], count = 0; 
+    for (size_t i = 0; i < cbox.num_boxes; i++){
+      for (size_t d = 0; d < D; d++){
+        sbuf[count] = cbox.overlay[i].lowerbnd[d];
+        count += 1; 
+      }
+      for (size_t d = 0; d < D; d++){
+        sbuf[count] = cbox.overlay[i].upperbnd[d];
+        count += 1; 
+      }
+    }
+
+    //Post receives
+    int size, rank;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    std::vector<int> rbuf[size]; 
+  
+    std::vector<MPI_Request> requests;
+    for (size_t i = 0; i < size; i++)
+    {
+        if (i != rank){
+          MPI_Request request; 
+          MPI_Irecv((void*)&(rbuf[i]), sz, MPI_INT, i, 0, MPI_COMM_WORLD, &request);
+          requests.push_back(request);
+       } 
+    }
+
+    //Post isends 
+    std::set<size_t>::iterator it; 
+    for (it = shared_ranks.begin(); it != shared_ranks.end(); ++it)
+    {
+        MPI_Request request; 
+        MPI_Isend((void*)&(sbuf), sz, MPI_INT, *it, 0, MPI_COMM_WORLD, &request);
+    }
+
+    // Wait for all receives to complete
+    if (requests.size() > 0)
+    {
+      std::vector<MPI_Status> statuses(requests.size());
+      MPI_Waitall(requests.size(), &(requests[0]), &(statuses[0]));
+    }
+
+    //Add received data to map
+    for (size_t i = 0; i < size; ++i)
+    {
+      if (rbuf[i].size() > 0){
+       for (size_t n = 0; n < cbox.num_boxes; ++n){
+          box_t ob(D); 
+ 
+          for (size_t d = 0; d < D; d++){
+           ob.lowerbnd[d]= rbuf[i][2*D*n+d];
+           ob.upperbnd[d]= rbuf[i][2*D*n+d+D];
+        }
+        colinfo.ghost_overlays[i].push_back(ob);      
+      }
+     }
+    }
+ 
    return colinfo;  
   }//create_aggregate_color_info 
 
   
-
-
 private:
   auto create_primary_box(box_t & domain, size_t ncolors[D], size_t idx[D]) {
     box_t pbox(D);

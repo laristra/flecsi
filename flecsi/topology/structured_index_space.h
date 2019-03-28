@@ -43,6 +43,8 @@ public:
                              MESH_DIMENSION,
                              MESH_DIMENSION+1>;
   using box_t              = flecsi::coloring::box_t;  
+  using box_tag_t          = flecsi::coloring::box_tag_t;  
+  using box_color_t        = flecsi::coloring::box_color_t;  
 
  /******************************************************************************
  *               Constructors/Destructors/Initializations                      *    
@@ -278,15 +280,19 @@ public:
   void init(bool primary,
             size_t primary_dim,
             size_t num_boxes,
-            std::vector<box_t> &global_boxes,
-            std::vector<std::vector<size_t>> &global_strides  
+            std::vector<box_t> &global_overlays,
+            std::vector<std::vector<size_t>> &global_strides,
+            std::vector<box_color_t> exclusive,
+            std::vector<std::vector<box_color_t>> shared,
+            std::vector<std::vector<box_color_t>> ghost,
+            std::vector<std::vector<box_tag_t>> domain_halo  
             )
   {
     // Check that the primary IS doesn't have multiple boxes
     if (primary) 
     {
       assert (num_boxes==1);
-      assert(global_boxes.size()==1); 
+      assert(global_overlays.size()==1); 
       assert(global_strides.size()==1); 
     }
 
@@ -307,8 +313,8 @@ public:
 
       for (size_t j = 0; j < MESH_DIMENSION; j++)
       {
-         global_low[j] = global_boxes[i].lowerbnd[j];
-         global_up[j]  = global_boxes[i].upperbnd[j];
+         global_low[j] = global_overlays[i].lowerbnd[j];
+         global_up[j]  = global_overlays[i].upperbnd[j];
          global_str[j] = global_strides[i][j];
          global_count *= global_str[j];
 
