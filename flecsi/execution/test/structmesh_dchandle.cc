@@ -48,7 +48,7 @@ public:
   std::tuple<index_space_<2>, domain_<0>, cell>>;
 };
 
-struct test_mesh_t : public mesh_topology__<test_mesh_type_t> {};
+struct test_mesh_t : public structured_mesh_topology__<test_mesh_type_t> {};
 
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;

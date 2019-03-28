@@ -14,6 +14,7 @@ void print_colored_info(flecsi::coloring::box_coloring_t &colbox)
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+  cout<<"\n\n"<<endl;
   //Print out partition info: need a proper check against a blessed file. 
   if (colbox.primary)
   {
@@ -50,7 +51,7 @@ void print_colored_info(flecsi::coloring::box_coloring_t &colbox)
        <<s.domain.tag[7]<<" ], colors = { ";
        for (auto c: s.colors)
 	cout<<c<<" ";
-       cout<<endl;
+       cout<<" }"<<endl;
       }
     }
 
@@ -66,10 +67,11 @@ void print_colored_info(flecsi::coloring::box_coloring_t &colbox)
        <<g.domain.tag[7]<<" ], colors = { ";
        for (auto c: g.colors)
 	cout<<c<<" ";
-       cout<<endl;
+       cout<<" }"<<endl;
       }
     }
 
+    /*
     for (auto d: colbox.domain_halo[i])
     {
        cout<<"Rank-"<<rank<<":: DomainHalo = { "<<d.box.lowerbnd[0]<<", "
@@ -78,13 +80,14 @@ void print_colored_info(flecsi::coloring::box_coloring_t &colbox)
        <<d.tag[1]<<" "<<d.tag[2]<<" "<<d.tag[3]<<" "
        <<d.tag[4]<<" "<<d.tag[5]<<" "<<d.tag[6]<<" "
        <<d.tag[7]<<" ]"<<endl;
-    }
+    }*/
 
     cout<<"Rank-"<<rank<<":: Overlay = { "<<colbox.overlay[i].lowerbnd[0]<<", "
     <<colbox.overlay[i].lowerbnd[1]<<" } - { "<<colbox.overlay[i].upperbnd[0]<<", "
     <<colbox.overlay[i].upperbnd[1]<<" }, Strides = { "<<colbox.strides[i][0]<<", "
     <<colbox.strides[i][1]<<" }"<<endl;  
 
+    cout<<"\n"<<endl;
    }
 };
 
@@ -99,7 +102,7 @@ TEST(simple_colorer, simpletest2d)
 
   // Input parameters
   size_t grid_size[2] = {10,10};
-  size_t ncolors[2]={2,1};
+  size_t ncolors[4]={2,2};
   size_t nhalo = 1;
   size_t nhalo_domain = 1;
   size_t thru_dim = 0;

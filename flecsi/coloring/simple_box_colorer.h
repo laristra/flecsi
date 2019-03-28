@@ -1104,6 +1104,7 @@ private:
         for (size_t bid = 0; bid <num_bids[D-2]; bid++)
         {
           std::set<int> ngbranks; 
+          ngbranks.insert(current_rank); 
           if (ghost2partition(i,bid))
             ngbranks.insert(owner_rank);
 
@@ -1132,6 +1133,7 @@ private:
         for (size_t bid = 0; bid <num_bids[D-2]; bid++)
         {
           std::set<int> ngbranks; 
+          ngbranks.insert(owner_rank); 
           std::vector<int> gids = shared2ghost(i, bid); 
           if (gids.size() > 0){
             for (size_t j = 0; j<gids.size(); j++)
@@ -1150,10 +1152,10 @@ private:
     //Loop over all the boundary types 
     for (size_t bid = 0; bid <num_bids[D-2]; bid++)
     {
-      std::vector<int> gids = exclusive2shared(bid);  
-      for (size_t j = 0; j<gids.size(); j++)
+      std::vector<int> sids = exclusive2shared(bid);  
+      for (size_t j = 0; j<sids.size(); j++)
       {
-        if (!col_cells.shared[0][gids[j]].domain.box.isempty())
+        if (!col_cells.shared[0][sids[j]].domain.box.isempty())
           col_cells.exclusive[0].domain.tag[bid] = false; 
       }     
     }
@@ -1178,7 +1180,7 @@ private:
        int bid_bnd[2] = {4,8};
  
        //Loop over intermediate dimensions
-       for (size_t d = D-1; d >= 0; d--)
+       for (int d = D-1; d >= 0; d--)
        {
         size_t owner_rank = col_cells.exclusive[0].colors[0]; 
         box_coloring_t col_ents; 
@@ -1186,7 +1188,7 @@ private:
         //Set primary info and resize vectors  
         col_ents.primary = false; 
         col_ents.primary_dim = D; 
-        col_ents.num_boxes = bnds_info[d][0];
+        col_ents.num_boxes = bnds_info[D-d-1][0];
         col_ents.resize(D); 
 
         size_t num_boxes = col_ents.num_boxes; 
@@ -1196,7 +1198,7 @@ private:
         {
           box_t overlay = col_cells.overlay[0]; 
           for (size_t j = 0; j < D; j++)
-          overlay.upperbnd[j] += bnds_info[d][num_boxes*k+j+1]; 
+            overlay.upperbnd[j] += bnds_info[D-d-1][num_boxes*k+j+1]; 
           col_ents.overlay[k] = overlay;  
         }        
    
@@ -1205,7 +1207,7 @@ private:
         {
           std::vector<size_t> strides = col_cells.strides[0]; 
           for (size_t j = 0; j < D; j++)
-          strides[j] += bnds_info[d][num_boxes*k+j+1]; 
+            strides[j] += bnds_info[D-d-1][num_boxes*k+j+1]; 
           col_ents.strides[k] = strides;  
         }        
 
@@ -1226,7 +1228,7 @@ private:
               {
                 ghosts[k].domain.box.lowerbnd[j] = col_cells.ghost[0][i].domain.box.lowerbnd[j]; 
                 ghosts[k].domain.box.upperbnd[j] = col_cells.ghost[0][i].domain.box.upperbnd[j]
-                                           + bnds_info[d][num_boxes*k+j+1]; 
+                                           + bnds_info[D-d-1][num_boxes*k+j+1]; 
                }
         
               //Obtain the tags from the ghost cell box to tag the boundary entities
@@ -1259,7 +1261,7 @@ private:
               {
                 shared[k].domain.box.lowerbnd[j] = col_cells.shared[0][i].domain.box.lowerbnd[j]; 
                 shared[k].domain.box.upperbnd[j] = col_cells.shared[0][i].domain.box.upperbnd[j]
-                                           + bnds_info[d][num_boxes*k+j+1]; 
+                                           + bnds_info[D-d-1][num_boxes*k+j+1]; 
                }
 
               //Obtain the tags from the shared cell box to tag the boundary entities
@@ -1285,7 +1287,7 @@ private:
           {
             exclusive[k].domain.box.lowerbnd[j] = col_cells.exclusive[0].domain.box.lowerbnd[j];
             exclusive[k].domain.box.upperbnd[j] = col_cells.exclusive[0].domain.box.upperbnd[j]
-                                                 + bnds_info[d][num_boxes*k+j+1];
+                                                 + bnds_info[D-d-1][num_boxes*k+j+1];
           }
 
           //Obtain the tags from the exclusive cell box to tag the boundary entities
@@ -1310,7 +1312,7 @@ private:
             {
               halos[k].box.lowerbnd[j] = col_cells.domain_halo[0][i].box.lowerbnd[j]; 
               halos[k].box.upperbnd[j] = col_cells.domain_halo[0][i].box.upperbnd[j]
-                                            + bnds_info[d][num_boxes*k+j+1]; 
+                                            + bnds_info[D-d-1][num_boxes*k+j+1]; 
             }
 
            //Obtain the tags from the domain halo cell box to tag the boundary entities
@@ -1337,12 +1339,14 @@ private:
                                          {-1,-1,-1,0,0,-1},{0,-1,1,-1,1,0},
                                          {-1,1,-1,0,0,1},{1,0,1,1,0,1}};
 
+   std::vector<int> S2G_bid_map_2d[9] = {{0,0,2,2,4,4,5,2,6,0},{2,2,4,2,5,2},
+                                         {1,1,2,2,4,2,5,5,7,1},{0,0,4,0,6,0},
+                                         {},
+                                         {1,1,5,1,7,1},{0,0,3,3,4,0,6,6,7,3},
+                                         {3,3,6,3,7,3},{1,1,3,3,5,1,6,3,7,7}}; 
 
-   int S2G_bid_map_2d[8][2] = {{0,-1},{2,-1},{-1,0},{-1,2},
-                                {0,0},{2,0},{0,2},{2,2}};
 
-
-   std::vector<int> E2S_bid_map_2d[8] = {{3},{4},{1},{6},{0,1,3},{1,2,4},{3,5,6},{4,6,7}};
+   std::vector<int> E2S_bid_map_2d[8] = {{3},{5},{1},{7},{0,1,3},{1,2,5},{3,6,7},{5,7,8}};
 
    std::vector<int> D2CBIDS_2d[2] = {{2,2,0,1,2,3},{1,8,0,1,2,3,4,5,6,7}};
 
@@ -1355,17 +1359,16 @@ private:
       size_t nc = vals.size()/2; 
       size_t I, J, Ig, Jg;
       
-      Jg = index % 3;
+      Jg = index / 3;
       Ig = index - 3*Jg;
       
       for (size_t i = 0; i < nc; i++)
       {
         I = Ig+vals[i*2];
         J = Jg+vals[i*2+1];
-        if ((I>0 && I<3) && (J>0 && J<3))
+        if ((I>=0 && I<3) && (J>=0 && J<3))
           gids.push_back(3*J+I);
       }
-      
     }
     return gids; 
    }      
@@ -1381,14 +1384,14 @@ private:
       size_t nc = vals.size()/2; 
       size_t I, J, Ig, Jg;
       
-      Jg = index % 3;
+      Jg = index / 3;
       Ig = index - 3*Jg;
       
       for (size_t i = 0; i < nc; i++)
       {
         I = Ig+vals[i*2];
         J = Jg+vals[i*2+1];
-        if ((I>0 && I<3) && (J>0 && J<3))
+        if ((I>=0 && I<3) && (J>=0 && J<3))
           gids.push_back(3*J+I);
       }
     }
@@ -1399,17 +1402,17 @@ private:
     std::vector<int> gids;
     if (D==2)
     {
-      size_t I, J, Is, Js; 
-
-      I = S2G_bid_map_2d[bnd_id][0];
-      J = S2G_bid_map_2d[bnd_id][1];
-
-      Js = index % 3;
-      Is = index - 3*Js;
-
-      if ((I==Is && J==-1) || (I==-1 && J==Js) || (I==Is && J==Js))
-         ghost2ghost(4, bnd_id, gids);
-    }
+      std::vector<int> sids = S2G_bid_map_2d[index];
+      int nc = sids.size()/2; 
+      for (size_t i = 0; i < nc; i++)
+      {
+        if (sids[2*i]==bnd_id)
+         { 
+          ghost2ghost(4,sids[2*i+1],gids);
+          break;
+         }
+      } 
+     }
     return gids; 
    }  
 
@@ -1423,7 +1426,7 @@ private:
       size_t nc = vals.size()/2; 
       size_t I, J, Ig, Jg;
       
-      Jg = index % 3;
+      Jg = index / 3;
       Ig = index - 3*Jg;
       
       for (size_t i = 0; i < nc; i++)
@@ -1445,13 +1448,13 @@ private:
     return E2S_bid_map_2d[bnd_id]; 
    } 
 
-   auto depent2cellbids(int dim, int sub_bid)
+   auto depent2cellbids(int dim, int sub_box)
    {
     std::vector<int> ids; 
-    int nb = D2CBIDS_2d[dim][0];
-    int cnt = D2CBIDS_2d[dim][1];
+    int nb = D2CBIDS_2d[D-dim-1][0];
+    int cnt = D2CBIDS_2d[D-dim-1][1];
     for (size_t i = 0; i < cnt; i++)
-      ids.push_back(D2CBIDS_2d[dim][cnt*sub_bid+i+2]);
+      ids.push_back(D2CBIDS_2d[D-dim-1][nb*sub_box+i+2]);
     return ids; 
    }
 

@@ -626,8 +626,16 @@ struct context__ : public CONTEXT_POLICY {
   } // colorings
 
   //--------------------------------------------------------------------------//
-  // Block start: Adding/Querying Maps for Box-based coloring for structured topologies
+  // Adding/Querying box-based coloring types for structured topologies
   //--------------------------------------------------------------------------//
+  /*!
+    Add box_coloring_t and aggregate types for an index space.
+
+    @param index_space The index space id of the entities for which the coloring
+ 		       info needs to be added 
+    @param coloring The type with coloring info for the entity
+    @param aggregate_info The type with aggregate coloring info for the entity
+   */
   void add_box_coloring(
       size_t index_space,
       box_coloring_t & coloring,
@@ -654,75 +662,6 @@ struct context__ : public CONTEXT_POLICY {
 
     return it->second;
   } // box_aggregate_info
-  
-/*
-  const std::map<size_t, box_coloring_t> & box_coloring_map() const {
-    return box_colorings_;
-  } // box_colorings
-  
-
-  const std::map<size_t, std::unordered_map<size_t, coloring_info_t>> &
-  box_coloring_info_map() const {
-    return box_coloring_info_;
-  } // box_colorings
-
-  
-  void add_box_map(size_t index_space, std::map<size_t, box_t> & box_map) {
-    box_map_[index_space] = box_map;
-
-    for (auto i : box_map) {
-      // TO BE FIXED: Add operators and hashing for the box_t type
-      //reverse_box_map_[index_space][i.second] = i.first;
-    } // for
-  } // add_box_map
-  */
-  /*!
-    Return the index map associated with the given index space.
-
-    @param index_space The map key.
-   */
-  /*
-  auto & box_map(size_t index_space) {
-    auto it = box_map_.find(index_space);
-    clog_assert(it != box_map_.end(), "invalid index space");
-
-    return it->second;
-  } // box_map
-
-   */
-  /*!
-    \todo DOCUMENT!
-   */
-  /*
-  const auto & box_map(size_t index_space) const {
-    auto it = box_map_.find(index_space);
-    clog_assert(it != box_map_.end(), "invalid index space");
-
-    return it->second;
-  } // box_map
-
-  auto & reverse_box_map(size_t index_space) {
-    auto it = reverse_box_map_.find(index_space);
-    clog_assert(it != reverse_box_map_.end(), "invalid index space");
-
-    return it->second;
-  } // reverse_box_map
-  */
-  /*!
-    \todo DOCUMENT!
-   */
-  /*
-  const auto & reverse_box_map(size_t index_space) const {
-    auto it = reverse_box_map_.find(index_space);
-    clog_assert(it != reverse_box_map_.end(), "invalid index space");
-
-    return it->second;
-  } // reverse_box_map
-  */
-
-  //--------------------------------------------------------------------------//
-  // Block end: Adding/Querying Maps for Box-based coloring for structured topologies
-  //--------------------------------------------------------------------------//
 
   /*!
     Add an adjacency/connectivity from one index space to another.
