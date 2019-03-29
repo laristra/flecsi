@@ -41,8 +41,8 @@ struct legion_dense_data_handle_policy_t {
   //legion_dense_data_handle_policy_t(
   //  const legion_dense_data_handle_policy_t & p) = default;
 
-  bool ghost_is_readable = false;
-  bool write_phase_started = false;
+  bool * ghost_is_readable = nullptr;
+  bool * write_phase_started = nullptr;
 
   // +++ The following fields are set from get_handle(), reading
   // information from the context which is data that is the same

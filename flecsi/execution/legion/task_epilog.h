@@ -83,7 +83,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       bool write_phase{
         (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw)};
 
-      if(write_phase && h.write_phase_started) {
+      if(write_phase && (*h.write_phase_started)) {
 
         {
           clog(trace) << " WRITE PHASE EPILOGUE" << std::endl;
@@ -91,7 +91,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
         // As user
         // Phase READ
-        h.write_phase_started = false;
+        *(h.write_phase_started) = false;
         // better to move copy here than in prolog
       } // if write phase
 

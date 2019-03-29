@@ -102,7 +102,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       write_phase = (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw);
 
       if(read_phase) {
-        if(!h.ghost_is_readable) {
+        if(!*(h.ghost_is_readable)) {
           {
             clog_tag_guard(prolog);
             clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
@@ -122,14 +122,14 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
           local_args.sparse = false;
           args.push_back(local_args);
 
-          h.ghost_is_readable = true;
+          *h.ghost_is_readable = true;
 
         } // !ghost_is_readable
       } // read_phase
 
-      if(write_phase && h.ghost_is_readable) {
-        h.ghost_is_readable = false;
-        h.write_phase_started = true;
+      if(write_phase && *(h.ghost_is_readable)) {
+        *h.ghost_is_readable = false;
+        *h.write_phase_started = true;
       } // if
     } // end if
 
