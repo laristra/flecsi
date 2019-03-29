@@ -704,7 +704,7 @@ public:
               //        it's also added manually, and remove those too.
               if(fi.index_space == is.index_space_id) {
                 if(!utils::hash::is_internal(fi.key)) {
-                  allocator.allocate_field(fi.size + sizeof(size_t), fi.fid);
+                  allocator.allocate_field(fi.size, fi.fid);
                 }
               }
               break;

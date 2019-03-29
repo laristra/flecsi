@@ -235,10 +235,10 @@ public:
   using overflow_map_t = std::unordered_map<size_t, std::vector<value_t>>;
 
   partition_info_t pi_;
-  size_t num_exclusive_;
-  size_t max_entries_per_index_;
-  size_t num_slots_;
-  size_t num_entries_;
+  size_t num_exclusive_ = 0;
+  size_t max_entries_per_index_ = 0;
+  size_t num_slots_ = 0;
+  size_t num_entries_ = 0;
   offset_t * offsets_ = nullptr;
   value_t * entries_ = nullptr;
   int32_t * new_counts_ = nullptr;

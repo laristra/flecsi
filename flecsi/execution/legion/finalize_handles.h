@@ -138,6 +138,10 @@ struct finalize_handles_t
 
     std::memcpy(h.entries_data[1], h.entries + h.reserve * sizeof(value_t),
       h.num_shared() * sizeof(value_t) * h.max_entries_per_index());
+
+    delete[] h.offsets;
+    delete[] h.entries;
+
 #endif
 
     md->initialized = true;
