@@ -15,6 +15,8 @@
 
 /*! @file */
 
+#include <flecsi/data/common/data_reference.h>
+
 namespace flecsi {
 
 /*!
@@ -22,7 +24,7 @@ namespace flecsi {
   handle tuple walkers for type checking.
  */
 
-struct data_client_handle_base_t {};
+struct data_client_handle_base_t : public data::data_reference_base_t {};
 
 /*!
   This class provides template parameters for data client type

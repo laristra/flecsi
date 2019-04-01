@@ -92,6 +92,21 @@ struct entity_info_t {
     : id(id_), rank(rank_), offset(offset_), shared(shared_) {}
 
   /*!
+   Constructor.
+
+   \param id_     The entity id. This is generally specified by the
+                  mesh definition.
+   \param rank_   The rank that owns this entity.
+   \param offset_ The local id or offset of the entity.
+   \param shared_ The rank that shares this entity.
+   */
+
+  entity_info_t(size_t id_, size_t rank_, size_t offset_, size_t shared_)
+    : id(id_), rank(rank_), offset(offset_) {
+    shared.emplace(shared_);
+  }
+
+  /*!
    Comparison operator for container insertion. This sorts by the
    entity id, e.g., as set by the id_ parameter to the constructor.
    */
