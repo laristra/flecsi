@@ -101,28 +101,17 @@ struct legion_context_policy_t {
     return Legion::Runtime::get_runtime()
       ->get_current_task(Legion::Runtime::get_context())
       ->index_point.point_data[0];
-  }
+  } // color
 
   /*
     Documentation for this interface is in the top-level context type.
    */
 
   size_t colors() const {
-    fixme() << "What does colors mean for Legion backend?" << std::endl;
     return Legion::Runtime::get_runtime()
       ->get_current_task(Legion::Runtime::get_context())
       ->index_domain.get_volume();
-  }
-
-#if 0
-  /*
-    Documentation for this interface is in the top-level context type.
-   */
-
-  void set_colors(size_t colors) {
-    colors_ = colors;
-  }
-#endif
+  } // colors
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
