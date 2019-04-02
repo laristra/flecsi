@@ -7,6 +7,7 @@ stages:
   - Build
   - Test
   - Format
+  - Apps
 
 variables:
   GET_SOURCES_ATTEMPTS: 10
@@ -100,6 +101,21 @@ before_script:
         cd ${CI_PROJECT_DIR}/build/;
         clang-format -version;
         make format && git diff --exit-code --ignore-submodules;
+      fi;
+    - |
+      if [[ ${CI_JOB_STAGE} = "Canary" ]];
+      then
+        git clone https://github.com/laristra/flecsale.git;
+        cd flecsale/flecsi;
+        git pull origin master;
+        cd ../;
+        mkdir build;
+        cd build;
+        cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          -DFLECSI_RUNTIME_MODEL=mpi \
+          -DENABLE_UNIT_TESTS=ON \
+          ..;
+        make -j2 || make VERBOSE=1;
       fi;
 
 ###############
