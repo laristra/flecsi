@@ -19,11 +19,11 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/execution/context.h>
-#include <flecsi/execution/legion/init_args.h>
+#include <flecsi/execution/legion/invocation/init_args.h>
 #include <flecsi/execution/legion/reduction_wrapper.h>
-#include <flecsi/execution/legion/task_epilogue.h>
-#include <flecsi/execution/legion/task_prologue.h>
-#include <flecsi/execution/legion/task_wrapper.h>
+#include <flecsi/execution/legion/invocation/task_epilogue.h>
+#include <flecsi/execution/legion/invocation/task_prologue.h>
+#include <flecsi/execution/legion/execution/task_wrapper.h>
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/flog.h>
 #endif
@@ -138,8 +138,7 @@ struct legion_execution_policy_t {
     flog_tag_guard(execution);
 
     // Make a tuple from the arugments passed by the user
-    ARG_TUPLE task_args = std::make_tuple(args...);
-    // task_args = std::forward_as_tuple(std::forward(args)...);
+    ARG_TUPLE task_args = std::forward_as_tuple(args...);
 
     // Get the FleCSI runtime context
     context_t & context_ = context_t::instance();

@@ -33,16 +33,23 @@ struct legion_data_policy_t {
    *--------------------------------------------------------------------------*/
 
   /*
-    Documentation for this interface is in the top-level client type.
+    Capture the base topology type. This is necessary as a place holder in the
+    field interface.
    */
 
+  template<typename TOPOLOGY_TYPE>
+  using topology_u =
+    legion::topology_u<typename TOPOLOGY_TYPE::type_identifier_t>;
+
+#if 0
   template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
-  static decltype(auto) get_topology_handle() {
+  static decltype(auto) get_topology() {
     using topology_t =
       legion::topology_u<typename TOPOLOGY_TYPE::type_identifier_t>;
 
-    return topology_t::template get_topology_handle<NAMESPACE, NAME>();
+    return topology_t::template get_handle<NAMESPACE, NAME>();
   } // get_client_handle
+#endif
 
   /*
     Capture the handle type for the given topology type.
@@ -57,8 +64,8 @@ struct legion_data_policy_t {
    *--------------------------------------------------------------------------*/
 
   /*
-    Capture the base storage class type. This is necessary as a place
-    holder in the field interface.
+    Capture the base storage class type. This is necessary as a place holder in
+    the field interface.
    */
 
   template<size_t STORAGE_CLASS, typename TOPOLOGY_TYPE>

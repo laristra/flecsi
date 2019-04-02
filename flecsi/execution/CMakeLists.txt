@@ -42,7 +42,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/mapper.h
     legion/reduction_wrapper.h
     legion/runtime.h
-    legion/task_wrapper.h
+    legion/execution/task_wrapper.h
     legion/tasks.h
   )
 

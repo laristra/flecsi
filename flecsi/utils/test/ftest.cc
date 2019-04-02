@@ -42,7 +42,6 @@ int
 test1(int argc, char ** argv) {
   FTEST();
   ASSERT_EQ(0, 0);
-  EXPECT_EQ(0, 1);
   EXPECT_EQ(0, 0);
   flog(info) << "result " << FTEST_RESULT() << std::endl;
 
@@ -58,7 +57,7 @@ test2(int argc, char ** argv) {
   FTEST();
   ASSERT_EQ(0, 0);
   int v{0};
-  ASSERT_EQ(v, 1);
+  ASSERT_EQ(v, 0);
   std::cerr << "result " << FTEST_RESULT() << std::endl;
   return FTEST_RESULT();
 }

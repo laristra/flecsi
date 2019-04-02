@@ -128,8 +128,8 @@ struct field_interface_u {
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION = 0>
-  static decltype(auto) get_handle(
-    const topology_handle_u<TOPOLOGY_TYPE> & topology_handle) {
+  static decltype(auto) get_field(
+    const topology_handle_u<TOPOLOGY_TYPE> & topology) {
 
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
@@ -139,8 +139,8 @@ struct field_interface_u {
         TOPOLOGY_TYPE>;
 
     return storage_class_t::template get_handle<DATA_TYPE, NAMESPACE, NAME,
-      VERSION>(topology_handle);
-  } // get_handle
+      VERSION>(topology);
+  } // get_field
 
 #if 0
   /*!

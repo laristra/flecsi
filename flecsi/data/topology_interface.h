@@ -98,10 +98,12 @@ struct topology_interface_u {
    */
 
   template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
-  static decltype(auto) get_topology_handle() {
-    return DATA_POLICY::template get_topology_handle<TOPOLOGY_TYPE, NAMESPACE,
-      NAME>();
-  } // get_topology_handle
+  static decltype(auto) get_topology() {
+
+    using topology_t = typename DATA_POLICY::template topology_u<TOPOLOGY_TYPE>;
+
+    return topology_t::template get_handle<NAMESPACE, NAME>();
+  } // get_topology
 
 }; // struct topology_interface_u
 

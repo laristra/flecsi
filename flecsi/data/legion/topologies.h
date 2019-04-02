@@ -69,10 +69,10 @@ struct topology_u<topology::global_topology_t> {
   using topology_handle_t = global_topology::topology_handle_t;
 
   template<size_t NAMESPACE, size_t NAME>
-  static topology_handle_t get_topology_handle() {
+  static topology_handle_t get_handle() {
     topology_handle_t h;
     return h;
-  } // get_topology_handle
+  } // get_handle
 
 }; // topology_u<topology::global_topology_t>
 
@@ -94,10 +94,10 @@ struct topology_u<topology::color_topology_t> {
   using topology_handle_t = color_topology::topology_handle_t;
 
   template<size_t NAMESPACE, size_t NAME>
-  static topology_handle_t get_topology_handle() {
+  static topology_handle_t get_handle() {
     topology_handle_t h;
     return h;
-  } // get_topology_handle
+  } // get_handle
 
 }; // topology_u<topology::color_topology_t>
 

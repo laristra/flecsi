@@ -43,6 +43,11 @@ struct handle_t {
   handle_t() {}
   ~handle_t() {}
 
+//  size_t name;
+//  size_t name_space;
+//  size_t topology_name;
+//  size_t topology_name_space;
+
 }; // struct handle_t
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
@@ -98,12 +103,11 @@ private:
 template<>
 struct storage_class_u<global, flecsi::topology::global_topology_t> {
 
-  using client_t = flecsi::topology::global_topology_t;
-  using client_handle_t = global_topology::topology_handle_t;
+  using topology_handle_t = global_topology::topology_handle_t;
   using handle_t = global_topology::handle_t;
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
-  static handle_t get_handle(const client_handle_t & client_handle) {
+  static handle_t get_handle(const topology_handle_t & topology) {
     handle_t h;
     return h;
   } // get_handle
@@ -156,12 +160,11 @@ private:
 template<>
 struct storage_class_u<color, flecsi::topology::color_topology_t> {
 
-  using client_t = flecsi::topology::global_topology_t;
-  using client_handle_t = color_topology::topology_handle_t;
+  using topology_handle_t = color_topology::topology_handle_t;
   using handle_t = color_topology::handle_t;
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
-  static handle_t get_handle(const client_handle_t & client_handle) {
+  static handle_t get_handle(const topology_handle_t & topology) {
     handle_t h;
     return h;
   } // get_handle
@@ -242,7 +245,6 @@ private:
 template<typename POLICY_TYPE>
 struct storage_class_u<dense, flecsi::topology::mesh_topology_u<POLICY_TYPE>> {
 
-  using client_t = flecsi::topology::mesh_topology_u<POLICY_TYPE>;
   template<typename DATA_TYPE, size_t PRIVILEGES>
   using handle_t =
     unstructured_mesh_topology::dense_handle_u<DATA_TYPE, PRIVILEGES>

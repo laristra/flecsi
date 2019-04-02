@@ -64,4 +64,16 @@ Data Model
   file also defines the storage classes for the internal *global* and
   *color* client types.
 
+.. csv-table:: Field Call Path
+   :header: "High-Level", "C++", "Backend"
+   :widths: 30, 30, 30
+
+   "get_field", "DATA_POLICY::get_handle", "storage_class_t::get_handle"
+
+.. csv-table:: Topology Call Path
+   :header: "High-Level", "C++", "Backend"
+   :widths: 30, 30, 30
+
+   "get_topology", "DATA_POLICY::get_topology", "topology_t::get_handle"
+
 .. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :

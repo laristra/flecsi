@@ -74,7 +74,7 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the topology */                \
-  flecsi::data::topology_interface_t::get_topology_handle<type,                \
+  flecsi::data::topology_interface_t::get_topology<type,                       \
     flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name)>()
 
 /*----------------------------------------------------------------------------*
@@ -136,7 +136,7 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
-  flecsi::data::field_interface_t::get_handle<                                 \
+  flecsi::data::field_interface_t::get_field<                                  \
     decltype(topology)::topology_type_t, flecsi::data::storage_class,          \
     data_type, flecsi_internal_string_hash(nspace),                            \
     flecsi_internal_string_hash(name), version>(topology)
@@ -268,6 +268,6 @@ flecsi_register_topology(color_topology_t, "color_client", "color_client");
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
-  flecsi_get_handle(flecsi_get_topology(flecsi::topology::color_topology_t,    \
+  flecsi_get_field(flecsi_get_topology(flecsi::topology::color_topology_t,     \
                       "color_client", "color_client"),                         \
     nspace, name, data_type, color, version)
