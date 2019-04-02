@@ -108,6 +108,7 @@ before_script:
         git clone https://github.com/laristra/flecsale.git;
         cd flecsale/flecsi;
         git pull origin master;
+        git submodule update --init --recursive;
         cd ../;
         mkdir build;
         cd build;
