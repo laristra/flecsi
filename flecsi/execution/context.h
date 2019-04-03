@@ -55,13 +55,16 @@ struct context_u : public CONTEXT_POLICY {
    *--------------------------------------------------------------------------*/
 
   using topology_registration_function_t = std::function<void(size_t)>;
-  using topology_value_t =
+  using topology_registration_entry_t =
     std::pair<field_id_t, topology_registration_function_t>;
-  using topology_entry_t = std::unordered_map<size_t, topology_value_t>;
+  using topology_registration_map_t =
+    std::unordered_map<size_t, topology_registration_entry_t>;
 
   using field_registration_function_t = std::function<void(size_t, size_t)>;
-  using field_value_t = std::pair<field_id_t, field_registration_function_t>;
-  using field_entry_t = std::unordered_map<size_t, field_value_t>;
+  using field_registration_entry_t =
+    std::pair<field_id_t, field_registration_function_t>;
+  using field_registration_map_t =
+    std::unordered_map<size_t, field_registration_entry_t>;
 
   /*--------------------------------------------------------------------------*
     Deleted contructor and assignment interfaces.
@@ -308,21 +311,22 @@ struct context_u : public CONTEXT_POLICY {
   /*!
     Register a topology with the runtime.
 
-    @param type_hash  The topology indentifier hash.
-    @param key        The identifier hash.
-    @param callback   The registration call back function.
+    @param topology_identifier The topology type indentifier.
+    @param instance_identifier The topology instance identifier.
+    @param callback            The registration call back function.
    */
 
-  bool register_topology(size_t type_hash,
-    size_t key,
-    const topology_registration_function_t & callback) {
-    if(topology_registry_.find(type_hash) != topology_registry_.end()) {
-      flog_assert(topology_registry_[type_hash].find(key) ==
-                    topology_registry_[type_hash].end(),
-        "topology key already exists");
+  bool register_topology(
+    size_t topology_identifier,
+    size_t instance_identifier,
+    const topology_registration_function_t & callback
+  ) {
+    if(topology_callback_registry_.find(topology_identifier) !=
+      topology_callback_registry_.end()) {
+      flog_assert(topology_callback_registry_[topology_identifier].find(instance_identifier) == topology_callback_registry_[topology_identifier].end(), "topology key already exists");
     } // if
 
-    topology_registry_[type_hash][key] =
+    topology_callback_registry_[topology_identifier][instance_identifier] =
       std::make_pair(unique_fid_t::instance().next(), callback);
 
     return true;
@@ -332,8 +336,8 @@ struct context_u : public CONTEXT_POLICY {
     Return the topology registry.
    */
 
-  std::unordered_map<size_t, topology_entry_t> & topology_registry() {
-    return topology_registry_;
+  std::unordered_map<size_t, topology_registration_map_t> & topology_registry() {
+    return topology_callback_registry_;
   } // topology_registry
 
   /*!
@@ -357,44 +361,49 @@ struct context_u : public CONTEXT_POLICY {
    *--------------------------------------------------------------------------*/
 
   /*!
-    Register a field with the runtime.
+    Register a field callback with the runtime.
 
-    @param topology_type_key The topology indentifier hash.
-    @param key             The identifier hash.
-    @param callback        The registration call back function.
+    @param topology_identifier The topology type indentifier hash.
+    @param field_identifier    The field type identifier hash.
+    @param callback            The registration call back function.
    */
 
-  bool register_field(size_t topology_type_key,
-    size_t key,
-    const field_registration_function_t & callback) {
-    if(field_registry_.find(topology_type_key) != field_registry_.end()) {
-      if(field_registry_[topology_type_key].find(key) !=
-         field_registry_[topology_type_key].end()) {
-        flog(warn) << "field key already exists" << std::endl;
+  bool register_field(
+    size_t topology_identifier,
+    size_t field_identifier,
+    const field_registration_function_t & callback
+  )
+  {
+    if(field_callback_registry_.find(topology_identifier) !=
+      field_callback_registry_.end()) {
+      if(field_callback_registry_[topology_identifier].find(field_identifier) !=
+        field_callback_registry_[topology_identifier].end()) {
+        flog(warn) << "field callback key already exists" << std::endl;
       } // if
     } // if
 
-    field_registry_[topology_type_key][key] =
+    field_callback_registry_[topology_identifier][field_identifier] =
       std::make_pair(unique_fid_t::instance().next(), callback);
 
     return true;
   } // register_field
 
   /*!
-    Return the field registry.
+    Return the field callback registry.
    */
 
-  std::unordered_map<size_t, field_entry_t> & field_registry() {
-    return field_registry_;
+  std::unordered_map<size_t, field_registration_map_t> & field_registry() {
+    return field_callback_registry_;
   } // field_registry
 
   /*!
     Register runtime field information.
    */
 
-  void register_runtime_field_info(size_t topology_type_key,
+  void register_runtime_field_info(size_t topology_type_identifier,
     size_t storage_class, const data::field_info_t & fi) {
-      runtime_field_info_[topology_type_key][storage_class].emplace_back(fi);
+    fixme() << "This needs to be renamed";
+      runtime_field_info_[topology_type_identifier][storage_class].emplace_back(fi);
   } // register_runtime_field_information
 
 private:
@@ -449,7 +458,9 @@ private:
     Topology data members.
    *--------------------------------------------------------------------------*/
 
-  std::unordered_map<size_t, topology_entry_t> topology_registry_;
+  std::unordered_map<size_t, topology_registration_map_t>
+    topology_callback_registry_;
+
   // FIXME?
   std::set<std::pair<size_t, size_t>> registered_topology_fields_;
 
@@ -458,24 +469,19 @@ private:
    *--------------------------------------------------------------------------*/
 
   /*!
-    Field callback registry. This map is used to implement an object factory
-    style data structure so that field registrations can be collected at file
-    scope before the FleCSI runtime is initialized. The size_t key is a hash
-    that depends on the specific field purpose. Normal user-registered fields
-    use the name and namespace of the field to create the key. Topology
-    registered fields use some combination of an internal name and type hashes
-    to create the key. The key is arbitrary, provided that keys do not collide.
+    This is the map of registration callback functions for fields. The map is
+    keyed off of topology type.
    */
 
-  std::unordered_map<size_t, field_entry_t> field_registry_;
+  std::unordered_map<size_t, field_registration_map_t> field_callback_registry_;
 
   /*!
     This type allows the storage of field information per storage class. The
     size_t key is the storage class.
    */
 
-  using field_info_v = std::vector<data::field_info_t>;
-  using runtime_field_info_t = std::unordered_map<size_t, field_info_v>;
+  using field_info_vector_t = std::vector<data::field_info_t>;
+  using runtime_field_info_t = std::unordered_map<size_t, field_info_vector_t>;
 
   /*!
     This type allows storage of runtime field information per topology type.
