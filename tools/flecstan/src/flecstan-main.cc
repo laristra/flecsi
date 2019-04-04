@@ -352,42 +352,42 @@ exit_status_t yamlout(bool &written, bool &already)
 {
    debug("yamlout()");
 
-   // No YAML file was specified; that's fine, we just won't create one.
-   if (!com.yaml.set())
+   // No YAML output file was specified. That's fine, we won't create one.
+   if (!com.yout.set())
       return exit_clean;
 
-   // A YAML file was specified. Let's be intelligent, so that we're unlikely
-   // to clobber an existing non-YAML file. Specifically, we'll ensure that the
-   // file name ends with ".yaml" - a reasonable action, and one that disallows
-   // someone from, say, accidentally overwriting a .cc or .json file! And, as
-   // elsewhere, we'll emit appropriate diagnostics.
+   // A YAML output file was specified. Let's be intelligent, so that we're
+   // unlikely to clobber an existing non-YAML file. Specifically, we'll ensure
+   // that the file name ends with ".yaml" - a reasonable action, and one that
+   // disallows someone from, say, accidentally overwriting a .cc or .json file!
+   // And, as elsewhere, we'll emit appropriate diagnostics.
 
-   // Ensure .yaml
+   // Ensure .yaml extension
    // We may no longer need this; it's done during command-line processing.
    // Won't do any harm, though.
-   const std::string file = com.yaml.value();
+   const std::string file = com.yout.value();
    if (!endsin(file, ".yaml"))
-      com.yaml = file + ".yaml";
+      com.yout = file + ".yaml";
 
    // There already?
-   std::ifstream ifs(com.yaml.value().c_str());
+   std::ifstream ifs(com.yout.value().c_str());
    already = false;
    if (ifs) {
-      note("Existing YAML file " +
-            quote(com.yaml.value()) + " will be replaced.");
+      note("Existing YAML output file " +
+            quote(com.yout.value()) + " will be replaced.");
       already = true;
    }
    ifs.close(); // so no weirdnesses with opening for output below
 
-   // Print YAML to string
+   // Print our internal YAML structure to a string
    std::string str;
    llvm::raw_string_ostream raw(str);
-   llvm::yaml::Output yout(raw);
-   yout << yaml;
+   llvm::yaml::Output yamlout(raw);
+   yamlout << yaml;
    raw.flush(); // <-- necessary :-/
 
    // Open file
-   std::ofstream ofs(com.yaml.value().c_str());
+   std::ofstream ofs(com.yout.value().c_str());
    if (ofs) {
       // Print string to file
       ofs << raw.str();
@@ -396,9 +396,9 @@ exit_status_t yamlout(bool &written, bool &already)
          return exit_clean;
       } else
          error("Problem writing YAML output to " +
-                quote(com.yaml.value()) + ".");
+                quote(com.yout.value()) + ".");
    } else
-      error("Could not open " + quote(com.yaml.value()) + " for YAML output.");
+      error("Could not open " + quote(com.yout.value()) + " for YAML output.");
 
    return exit_error;
 }
@@ -447,7 +447,7 @@ exit_status_t summary()
    if (status == exit_fatal)
       return exit_fatal;
    if (written)
-      status = note("YAML file " + quote(com.yaml.value()) +
+      status = note("YAML output file " + quote(com.yout.value()) +
                     (already ? " replaced." : " created."));
 
    return status;
@@ -498,13 +498,13 @@ int main(const int argc, const char *const *const argv)
    // Sections
    // ------------------------
 
-   // Arguments
-   heading("Arguments", emit_section_arguments);
+   // Command
+   heading("Command", emit_section_command);
    if ((status = std::max(status, arguments(arg,argc,argv,com))) == exit_fatal)
       return exit_fatal;
 
    // Compilation
-   heading("Compilation", emit_section_compilation);
+   heading("Compilation", emit_section_compile);
    if ((status = std::max(status, compilation())) == exit_fatal)
       return exit_fatal;
 

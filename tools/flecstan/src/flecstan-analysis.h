@@ -45,7 +45,8 @@ exit_status_t invoked_matched(
          status,
          intwarn(
             "Re: macro \"" + name + "\".\n"
-            "Detected invocation count != detected C++ syntax tree count."
+            "Detected invocation count != "
+            "detected C++ abstract syntax tree count."
             "\n   Invocations: " + std::to_string(isize) +
             "\n   Syntax Tree: " + std::to_string(msize),
             true // <== flag: might have been triggered by compilation errors
@@ -96,9 +97,8 @@ exit_status_t multiple(
 class treg : public macrobase {
 public:
    // from macrobase:
-   // ...string file
-   // ...string line
-   // ...string column
+   // ...FileLineColumn location
+   // ...FileLineColumn spelling
    // ...vector<string> context
 
    std::string task;
@@ -148,14 +148,15 @@ public:
 class texe : public macrobase {
 public:
    // from macrobase:
-   // ...string file
-   // ...string line
-   // ...string column
+   // ...FileLineColumn location
+   // ...FileLineColumn spelling
    // ...vector<string> context
 
    std::string task;
    booland<std::string> nspace;
    booland<std::string> launch;
+   booland<std::string> type;
+   booland<std::string> datatype;
    std::string hash;
 
    // ctor: flecsi_execute_task_simple
@@ -183,6 +184,16 @@ public:
    texe(const flecsi_execute_mpi_task &obj) : macrobase(obj),
       task     (obj.task),
       nspace   (obj.nspace),
+      hash     (obj.hash)
+   { }
+
+   // ctor: flecsi_execute_reduction_task
+   texe(const flecsi_execute_reduction_task &obj) : macrobase(obj),
+      task     (obj.task),
+      nspace   (obj.nspace),
+      launch   (obj.launch),
+      type     (obj.type),
+      datatype (obj.datatype),
       hash     (obj.hash)
    { }
 };

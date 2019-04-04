@@ -20,20 +20,16 @@ class Preprocessor : public clang::PPCallbacks
    // FleCSI macros that we'll recognize
    static const std::set<std::string> macros;
 
-   // Compiler instance
+   // CompilerInstance, Yaml
    clang::CompilerInstance &ci;
    Yaml &yaml;
 
    // FleCSI macro information
-   // Idea: For some file, at some location, we'll store
-   // information about the invocation of a FleCSI macro
+   // Map from {file,line,column} to a particular macro invocation
    std::map<
-      clang::FileID,
-      std::map<
-         std::size_t,
-         MacroInvocation
-      >
-   > sourceMap;
+      std::tuple<std::string,std::string,std::string>,
+      std::vector<MacroInvocation>
+   > pos2macro;
 
 public:
 
@@ -50,42 +46,9 @@ public:
       const clang::MacroArgs *const
    ) override;
 
-   // accessors
-   const MacroInvocation *invocation(
-      const clang::SourceLocation &
-   ) const;
+   // invocation
+   const MacroInvocation *invocation(const clang::SourceLocation &) const;
 };
-
-} // namespace flecstan
-
-
-
-// -----------------------------------------------------------------------------
-// Helper: gleq
-// Greatest less than or equal to
-// -----------------------------------------------------------------------------
-
-namespace flecstan {
-
-// const
-template<class MAP>
-inline typename MAP::const_iterator gleq(
-   const MAP &m,
-   const typename MAP::key_type &k
-) {
-    typename MAP::const_iterator it = m.upper_bound(k);
-    return it == m.begin() ? m.end() : --it;
-}
-
-// non-const
-template<class MAP>
-inline typename MAP::iterator gleq(
-   MAP &m,
-   const typename MAP::key_type &k
-) {
-    typename MAP::iterator it = m.upper_bound(k);
-    return it == m.begin() ? m.end() : --it;
-}
 
 } // namespace flecstan
 

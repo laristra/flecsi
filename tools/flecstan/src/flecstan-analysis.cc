@@ -9,14 +9,12 @@ namespace flecstan {
 Contents of each of our classes that correspond to FleCSI macros:
 
 vector invoked
-   string file
-   string line
-   string column
+   FileLineColumn location
+   FileLineColumn spelling
 
 vector matched
-   string file
-   string line
-   string column
+   FileLineColumn location
+   FileLineColumn spelling
    vector<string> context
    Plus macro-specific data; see below
 */
@@ -55,17 +53,16 @@ std::string flcc(const macrobase &info, bool print_context)
 {
    std::ostringstream oss;
 
-   // file, line
-   oss << "file " << info.file << ", ";
-   oss << "line " << info.line;
-
-   // column, if appropriate
-   if (emit_column)
-      oss << ", column " << info.column;
+   oss << print_flc(
+     "file ", ", line ", ", column ",
+      info.location, info.spelling
+   );
 
    // context, if appropriate
    if (print_context) {
-      std::string ctx = (info.file == "" ? "<file>" : info.file);
+      std::string ctx = info.location.file == ""
+         ? "<file>"
+         : info.location.file;
       for (std::size_t c = info.context.size();  c--; )
          ctx += "::" +
             (info.context[c] == "" ? "<namespace>" : info.context[c]);
@@ -540,6 +537,22 @@ analyze_flecsi_execute_mpi_task(const flecstan::Yaml &yaml)
 
 
 
+// flecsi_execute_reduction_task
+// ...string task
+// ...string nspace
+// ...string launch
+// ...string type
+// ...string datatype
+// ...vector<VarArgTypeValue> varargs
+static exit_status_t
+analyze_flecsi_execute_reduction_task(const flecstan::Yaml &yaml)
+{
+   flecstan_im(flecsi_execute_reduction_task);
+   return status;
+}
+
+
+
 // -----------------------------------------------------------------------------
 // Task registration/execution
 // -----------------------------------------------------------------------------
@@ -576,9 +589,8 @@ static exit_status_t task_reg_dup(
          // finish diagnostic
          str +=
            "This may have caused a (possibly cryptic) compile-time error.\n"
-           "If not, a duplicate hash will still trigger a run-time error.\n"
-           "Check your task registrations for incorrect task and/or "
-           "namespace names.";
+           "If it didn't, a duplicate hash will still trigger a run-time error."
+         ;
          status = error(str);
       }
    }
@@ -601,7 +613,7 @@ static exit_status_t task_reg_without_exe(
          status = warning(
            "The task, as registered with hash \"" +
             reg.first + "\" here:\n   " + flcc(reg.second) + "\n"
-           "is never invoked with a flecsi_execute_*() macro call.\n"
+           "is never invoked with any of FleCSI's task execution macros.\n"
            "Is this intentional?"
          );
          summary_task_reg_without_exe += flcc(reg.second) + "\n";
@@ -625,8 +637,8 @@ static exit_status_t task_exe_without_reg(
          status = error(
            "The task, as executed with hash \"" +
             exe.first + "\" here:\n   " + flcc(exe.second,false) + "\n"
-           "was not registered with a flecsi_register_*() macro call,\n"
-           "or not registered with that hash.\n"
+           "was not registered with any of FleCSI's task registration macros,\n"
+           "or was not registered with that hash.\n"
            "This will trigger a run-time error if this line is reached."
          );
          summary_task_exe_without_reg += flcc(exe.second,false) + "\n";
@@ -659,6 +671,7 @@ static exit_status_t analyze_flecsi_task(const flecstan::Yaml &yaml)
    flecstan_insert(exes, flecsi_execute_task);
    flecstan_insert(exes, flecsi_execute_mpi_task_simple);
    flecstan_insert(exes, flecsi_execute_mpi_task);
+   flecstan_insert(exes, flecsi_execute_reduction_task);
 
    #undef flecstan_insert
 
@@ -713,9 +726,8 @@ static exit_status_t function_reg_dup(
          // finish diagnostic
          str +=
            "This may have caused a (possibly cryptic) compile-time error.\n"
-           "If not, a duplicate hash will still trigger a run-time error.\n"
-           "Check your function registrations for incorrect task and/or "
-           "namespace names.";
+           "If it didn't, a duplicate hash will still trigger a run-time error."
+         ;
          status = error(str);
       }
    }
@@ -764,7 +776,7 @@ static exit_status_t function_hand_without_reg(
            "The function whose handle is retrieved with hash \"" +
             hand.first + "\" here:\n   " + flcc(hand.second,false) + "\n"
            "was not registered with a flecsi_register_function() macro call,\n"
-           "or not registered with that hash.\n"
+           "or was not registered with that hash.\n"
            "This will trigger a run-time error if this line is reached."
          );
          summary_function_hand_without_reg += flcc(hand.second,false) + "\n";

@@ -24,6 +24,7 @@ public:
   ~Diagnostic()
       { debug("dtor: Diagnostic"); }
 
+   // override w.r.t. DiagnosticConsumer
    void HandleDiagnostic(
       clang::DiagnosticsEngine::Level,
       const clang::Diagnostic &

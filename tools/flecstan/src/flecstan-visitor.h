@@ -37,10 +37,9 @@ public:
    }
 
    // callbacks for clang::RecursiveASTVisitor; definitions are in .cpp
-   bool VisitVarDecl         (const clang::VarDecl          *const);
-   bool VisitCallExpr        (const clang::CallExpr         *const);
-   bool VisitTypeAliasDecl   (const clang::TypeAliasDecl    *const);
-   bool VisitCXXConstructExpr(const clang::CXXConstructExpr *const);
+   bool VisitVarDecl      (const clang::VarDecl       *const);
+   bool VisitCallExpr     (const clang::CallExpr      *const);
+   bool VisitTypeAliasDecl(const clang::TypeAliasDecl *const);
 };
 
 } // namespace flecstan

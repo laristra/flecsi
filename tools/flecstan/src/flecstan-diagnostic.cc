@@ -15,7 +15,7 @@ void Diagnostic::HandleDiagnostic(
    clang::DiagnosticsEngine::Level level,
    const clang::Diagnostic &diag
 ) {
-   // Construct our own message about Clang finding something...
+   // Construct our own message about Clang++ finding something...
 
 
    // ------------------------
@@ -23,7 +23,7 @@ void Diagnostic::HandleDiagnostic(
    // ------------------------
 
    std::ostringstream oss;
-   oss << "Clang reports ";
+   oss << "Clang++ reports ";
 
    switch (level) {
       case clang::DiagnosticsEngine::Ignored :
@@ -67,23 +67,23 @@ void Diagnostic::HandleDiagnostic(
 
    // Extract any expansion trace information. Remark: clang++'s output might
    // lead someone to believe that this information would be placed into clang
-   // Notes and sent to the present function override (HandleDiagnostic()) as
+   // notes and sent to the present function override (HandleDiagnostic()) as
    // such. Alas, the information is actually embedded elsewhere. So, below,
    // I've basically followed what clang does in DiagnosticRenderer.cpp, and
    // specifically in the emitSingleMacroExpansion() and emitMacroExpansions()
    // member functions of the DiagnosticRenderer class. For now I've simplified,
-   // and don't deal with concepts like "ignored" and "macro depth/limit" and
-   // such that those functions deal with. At some point I may study their code
-   // more carefully to see exactly how and why that's done. Presumably, it's
-   // an issue of respecting things like certain diagnostic-emitting limits that
-   // someone might set on a command line.
+   // and don't deal with concepts like "ignored" and "macro depth/limit" that
+   // those functions deal with. At some point I may study their code carefully
+   // to see exactly how and why that's done. Presumably, it's an issue of
+   // respecting things like certain diagnostic-emitting limits that somebody
+   // might set on a command line.
    std::string expansion;
    static clang::LangOptions LangOpts;
    LangOpts.CPlusPlus = true;
 
-   // Let's do the expansion trace only for Clang warnings, errors, and fatal
-   // errors. Otherwise, I've noticed that the trace can end up being repeated,
-   // e.g. for both an original error as well as a later error-related note.
+   // Let's do the expansion trace only for Clang warnings, errors, and fatals.
+   // Otherwise, I've noticed that the trace can end up being repeated, e.g. for
+   // both an original error as well as a later error-related note.
    if (level == clang::DiagnosticsEngine::Warning ||
        level == clang::DiagnosticsEngine::Error ||
        level == clang::DiagnosticsEngine::Fatal
@@ -98,20 +98,19 @@ void Diagnostic::HandleDiagnostic(
                clang::Lexer::getImmediateMacroNameForDiagnostics(
                   floc, floc.getManager(), LangOpts);
 
-            std::string efile, eline, ecolumn   ;
+            FileLineColumn exp;
             getFileLineColumn(
-               &diag.getSourceManager(),floc.getSpellingLoc(),
-               efile,eline,ecolumn);
-   
+               &diag.getSourceManager(), floc.getSpellingLoc(), exp);
+
             expansion +=
                "\n   " +
               (MacroName.empty()
                  ?  "from"
                  : ("from macro \"" + MacroName.str() + "\"")
                ) +
-               " (file " + efile +
-               ", line " + eline +
-              (emit_column ? (", column " + ecolumn) : "") + ")";
+               " (file " + exp.file +
+               ", line " + exp.line +
+              (emit_column ? (", column " + exp.column) : "") + ")";
          }
       }
    }
@@ -121,8 +120,8 @@ void Diagnostic::HandleDiagnostic(
    // File, line, column
    // ------------------------
 
-   std::string file, line, column;
-   getFileLineColumn(diag,file,line,column);
+   FileLineColumn flc;
+   getFileLineColumn(diag,flc);
 
 
    // ------------------------
@@ -132,10 +131,11 @@ void Diagnostic::HandleDiagnostic(
    // create
    oss
       << "\n   " << text
-      << "\nFile: " << file
-      << "\nLine: " << line
-      << (emit_column     ? ("\nColumn: "         + column   ) : "")
-      << (expansion != "" ? ("\nExpansion trace:" + expansion) : "")
+      << "\nFile: " << flc.file
+      << "\nLine: " << flc.line
+      << (emit_column     ? ("\nColumn: "         + flc.column) : "")
+      << (emit_trace &&
+          expansion != "" ? ("\nExpansion trace:" + expansion ) : "")
    ;
 
    // emit

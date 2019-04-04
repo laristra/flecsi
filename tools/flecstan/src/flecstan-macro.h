@@ -19,21 +19,22 @@ namespace flecstan {
 class macrobase {
 public:
    // data
-   std::string file;   // file name
-   std::string line;   // line number
-   std::string column; // column number
+   FileLineColumn location;
+   FileLineColumn spelling;
    std::vector<std::string> context; // file/namespace context
 
    // ctor: default
    // File, line, and column are defaulted
-   macrobase()
-    : file(""), line("0"), column("0")
+   macrobase() :
+      location("", "0", "0"),
+      spelling("", "0", "0")
    { }
 
    // ctor: MacroInvocation
    // File, line, and column are extracted from the MacroInvocation
-   macrobase(const MacroInvocation &m)
-    : file(m.file), line(m.line), column(m.column)
+   macrobase(const MacroInvocation &mi) :
+      location(mi.location),
+      spelling(mi.spelling)
    { }
 
    // map
@@ -42,10 +43,9 @@ public:
    // derive from macrobase.
    void map(llvm::yaml::IO &io)
    {
-      io.mapRequired("file",    file);
-      io.mapRequired("line",    line);
-      io.mapRequired("column",  column);
-      io.mapRequired("context", context);
+      io.mapRequired("location", location);
+      io.mapRequired("spelling", spelling);
+      io.mapRequired("context",  context );
    }
 };
 
@@ -77,7 +77,7 @@ public:
       class name : public macrobase { \
       public: \
          name() { } \
-         name(const MacroInvocation &m) : macrobase(m) { }
+         name(const MacroInvocation &mi) : macrobase(mi) { }
 
 #define flecstan_class_done \
       }; \
@@ -138,6 +138,7 @@ public:
    apply_macro ( flecsi_execute_task ) sym \
    apply_macro ( flecsi_execute_mpi_task_simple ) sym \
    apply_macro ( flecsi_execute_mpi_task ) sym \
+   apply_macro ( flecsi_execute_reduction_task ) sym \
    \
    apply_macro ( flecsi_register_reduction_operation ) sym \
    \
@@ -434,6 +435,29 @@ flecstan_class_done
 flecstan_maptraits(flecsi_execute_mpi_task)
    flecstan_map(task);
    flecstan_map(nspace);
+   flecstan_map(varargs);
+   flecstan_map(hash);
+flecstan_maptraits_done
+
+
+
+// flecsi_execute_reduction_task ( task, nspace, launch, type, datatype, ... )
+flecstan_class(flecsi_execute_reduction_task)
+   std::string task;
+   std::string nspace;
+   std::string launch;
+   std::string type;
+   std::string datatype;
+   std::vector<VarArgTypeValue> varargs;
+   std::string hash;
+flecstan_class_done
+
+flecstan_maptraits(flecsi_execute_reduction_task)
+   flecstan_map(task);
+   flecstan_map(nspace);
+   flecstan_map(launch);
+   flecstan_map(type);
+   flecstan_map(datatype);
    flecstan_map(varargs);
    flecstan_map(hash);
 flecstan_maptraits_done
