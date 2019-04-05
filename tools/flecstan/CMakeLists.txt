@@ -4,9 +4,9 @@ project(flecstan LANGUAGES CXX)
 cmake_minimum_required(VERSION 3.8)
 
 # C++
-set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -pedantic -Wall -O2 -s")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -O2 -s")
 
 # Packages
 find_package(Clang   REQUIRED)
@@ -39,6 +39,5 @@ target_link_libraries(
    flecstan
    ${CMAKE_THREAD_LIBS_INIT}
    ${ZLIB_LIBRARIES}
-   clangAnalysis clangAST clangBasic clangDriver clangEdit clangFrontend
-   clangLex clangParse clangSema clangSerialization clangTooling
+   clangTooling
 )
