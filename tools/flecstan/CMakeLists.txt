@@ -43,4 +43,5 @@ target_link_libraries(
    ${CMAKE_THREAD_LIBS_INIT}
    ${ZLIB_LIBRARIES}
    ${CLANG_LIBRARIES}
+   ${LLVM_LIBRARIES}
 )
