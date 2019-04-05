@@ -12,8 +12,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -pedantic -Wall -O2 -s")
 
 # Packages
-find_package(Clang   REQUIRED COMPONENTS Analysis AST Basic Driver Edit Frontend Lex Parse Sema Serialization Tooling)
 find_package(LLVM    REQUIRED)
+find_package(Clang   REQUIRED COMPONENTS Analysis AST Basic Driver Edit Frontend Lex Parse Sema Serialization Tooling)
 find_package(Threads REQUIRED)
 find_package(ZLIB    REQUIRED)
 
