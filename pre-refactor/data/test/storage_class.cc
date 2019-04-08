@@ -322,15 +322,23 @@ TEST(storage, dense_attributes) {
     ASSERT_EQ(all_cell_vars[2].label(), "temperature");
 
     // test has_attribute_at(flagge,cells)
-    auto flagged_vars = flecsi_get_handles(m, hydro, double, dense, 0,
+    auto flagged_vars = flecsi_get_handles(m,
+      hydro,
+      double,
+      dense,
+      0,
       flecsi_has_attribute_at(flagged, cells),
       /* sorted */ true);
 
     ASSERT_EQ(flagged_vars.size(), 1);
     ASSERT_EQ(flagged_vars[0].label(), "pressure");
 
-    auto all_flagged_vars = flecsi_get_handles_all(m, double, dense, 0,
-      flecsi_has_attribute_at(flagged, cells), /* sorted */ true);
+    auto all_flagged_vars = flecsi_get_handles_all(m,
+      double,
+      dense,
+      0,
+      flecsi_has_attribute_at(flagged, cells),
+      /* sorted */ true);
 
     ASSERT_EQ(all_flagged_vars.size(), 2);
     ASSERT_EQ(all_flagged_vars[0].label(), "pressure");
@@ -393,7 +401,11 @@ TEST(storage, global_attributes) {
     ASSERT_TRUE(t.attributes().test(flagged));
 
     // test has_attribute(flagge)
-    auto flagged_vars = flecsi_get_handles(m, hydro, double, global, 0,
+    auto flagged_vars = flecsi_get_handles(m,
+      hydro,
+      double,
+      global,
+      0,
       flecsi_has_attribute(flagged),
       /* sorted */ true);
 

@@ -55,7 +55,8 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
   // Register tasks
   for(auto & t : task_registry_) {
     std::get<4>(t.second)(std::get<0>(t.second) /* tid */,
-      std::get<1>(t.second) /* processor */, std::get<2>(t.second) /* launch */,
+      std::get<1>(t.second) /* processor */,
+      std::get<2>(t.second) /* launch */,
       std::get<3>(t.second) /* name */);
   } // for
 
@@ -129,7 +130,8 @@ legion_context_policy_t::unset_call_mpi(Legion::Context & ctx,
   // IRINA DEBUG check number of processors
   Legion::IndexLauncher launcher(tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(NULL, 0), arg_map);
+    Legion::TaskArgument(NULL, 0),
+    arg_map);
 
   // Legion::MustEpochLauncher must_epoch_launcher;
   // must_epoch_launcher.launch_domain =
@@ -157,7 +159,8 @@ legion_context_policy_t::unset_call_mpi_index(Legion::Context & ctx,
   Legion::ArgumentMap arg_map;
 
   Legion::IndexLauncher task_launcher(tid,
-    Legion::Domain::from_rect<1>(launch_bounds), Legion::TaskArgument(NULL, 0),
+    Legion::Domain::from_rect<1>(launch_bounds),
+    Legion::TaskArgument(NULL, 0),
     arg_map);
   auto future = runtime->execute_index_space(ctx, task_launcher);
 
@@ -178,7 +181,8 @@ legion_context_policy_t::handoff_to_mpi(Legion::Context & ctx,
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(NULL, 0), arg_map);
+    Legion::TaskArgument(NULL, 0),
+    arg_map);
 
   // Legion::MustEpochLauncher must_epoch_launcher;
   // must_epoch_launcher.launch_domain =
@@ -204,7 +208,8 @@ legion_context_policy_t::wait_on_mpi(Legion::Context & ctx,
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(NULL, 0), arg_map);
+    Legion::TaskArgument(NULL, 0),
+    arg_map);
 
   // Legion::MustEpochLauncher must_epoch_launcher;
   // must_epoch_launcher.launch_domain =
@@ -244,7 +249,8 @@ legion_context_policy_t::connect_with_mpi(Legion::Context & ctx,
 
   for(std::map<int, Legion::AddressSpace>::const_iterator it =
         forward_mapping.begin();
-      it != forward_mapping.end(); it++)
+      it != forward_mapping.end();
+      it++)
     printf(
       "MPI Rank %d maps to Legion Address Space %d\n", it->first, it->second);
 

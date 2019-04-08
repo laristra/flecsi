@@ -106,18 +106,28 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
 
-    Legion::RegionRequirement ex_rr(h.exclusive_lp, 0 /*projection ID*/,
-      privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.entire_region, tag);
+    Legion::RegionRequirement ex_rr(h.exclusive_lp,
+      0 /*projection ID*/,
+      privilege_mode(EXCLUSIVE_PERMISSIONS),
+      EXCLUSIVE,
+      h.entire_region,
+      tag);
     ex_rr.add_field(h.fid);
     region_reqs.push_back(ex_rr);
 
-    Legion::RegionRequirement sh_rr(h.shared_lp, 0 /*projection ID*/,
-      privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.entire_region);
+    Legion::RegionRequirement sh_rr(h.shared_lp,
+      0 /*projection ID*/,
+      privilege_mode(SHARED_PERMISSIONS),
+      EXCLUSIVE,
+      h.entire_region);
     sh_rr.add_field(h.fid);
     region_reqs.push_back(sh_rr);
 
-    Legion::RegionRequirement gh_rr(h.ghost_lp, 0 /*projection ID*/,
-      privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.entire_region);
+    Legion::RegionRequirement gh_rr(h.ghost_lp,
+      0 /*projection ID*/,
+      privilege_mode(GHOST_PERMISSIONS),
+      EXCLUSIVE,
+      h.entire_region);
     gh_rr.add_field(h.fid);
     region_reqs.push_back(gh_rr);
   } // handle
@@ -128,8 +138,10 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
     // FIXME this no longer does anything under control replication
     if(h.state < SPECIALIZATION_SPMD_INIT) {
-      Legion::RegionRequirement rr(h.entire_region, privilege_mode(PERMISSIONS),
-        EXCLUSIVE, h.entire_region);
+      Legion::RegionRequirement rr(h.entire_region,
+        privilege_mode(PERMISSIONS),
+        EXCLUSIVE,
+        h.entire_region);
       rr.add_field(h.fid);
       region_reqs.push_back(rr);
     }
@@ -146,8 +158,11 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   template<typename T, size_t PERMISSIONS>
   void handle(color_accessor_u<T, PERMISSIONS> & a) {
     auto & h = a.handle;
-    Legion::RegionRequirement rr(h.color_partition, 0 /*projection ID*/,
-      privilege_mode(PERMISSIONS), EXCLUSIVE, h.entire_region);
+    Legion::RegionRequirement rr(h.color_partition,
+      0 /*projection ID*/,
+      privilege_mode(PERMISSIONS),
+      EXCLUSIVE,
+      h.entire_region);
 
     rr.add_field(h.fid);
     region_reqs.push_back(rr);
@@ -169,8 +184,11 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
       region_map[ent.index_space] = region_reqs.size();
 
-      Legion::RegionRequirement rr(ent.color_partition, 0 /*PROJECTION*/,
-        privilege_mode(PERMISSIONS), EXCLUSIVE, ent.entire_region);
+      Legion::RegionRequirement rr(ent.color_partition,
+        0 /*PROJECTION*/,
+        privilege_mode(PERMISSIONS),
+        EXCLUSIVE,
+        ent.entire_region);
 
       rr.add_field(ent.fid);
       rr.add_field(ent.id_fid);
@@ -183,7 +201,9 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
       region_reqs[region_map[adj.from_index_space]].add_field(adj.offset_fid);
 
       Legion::RegionRequirement adj_rr(adj.adj_color_partition,
-        0 /*PROJECTION*/, privilege_mode(PERMISSIONS), EXCLUSIVE,
+        0 /*PROJECTION*/,
+        privilege_mode(PERMISSIONS),
+        EXCLUSIVE,
         adj.adj_region);
 
       adj_rr.add_field(adj.index_fid);
@@ -194,8 +214,11 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     for(size_t i{0}; i < h.num_index_subspaces; ++i) {
       data_client_handle_index_subspace_t & iss = h.handle_index_subspaces[i];
 
-      Legion::RegionRequirement iss_rr(iss.logical_partition, 0 /*PROJECTION*/,
-        privilege_mode(PERMISSIONS), EXCLUSIVE, iss.logical_region);
+      Legion::RegionRequirement iss_rr(iss.logical_partition,
+        0 /*PROJECTION*/,
+        privilege_mode(PERMISSIONS),
+        EXCLUSIVE,
+        iss.logical_region);
 
       iss_rr.add_field(iss.index_fid);
 
@@ -230,35 +253,53 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     md_rr.add_field(h.fid);
     region_reqs.push_back(md_rr);
 
-    Legion::RegionRequirement ex_rr(h.offsets_exclusive_lp, 0,
-      privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.offsets_entire_region,
+    Legion::RegionRequirement ex_rr(h.offsets_exclusive_lp,
+      0,
+      privilege_mode(EXCLUSIVE_PERMISSIONS),
+      EXCLUSIVE,
+      h.offsets_entire_region,
       tag);
     ex_rr.add_field(h.fid);
     region_reqs.push_back(ex_rr);
 
-    Legion::RegionRequirement sh_rr(h.offsets_shared_lp, 0,
-      privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.offsets_entire_region);
+    Legion::RegionRequirement sh_rr(h.offsets_shared_lp,
+      0,
+      privilege_mode(SHARED_PERMISSIONS),
+      EXCLUSIVE,
+      h.offsets_entire_region);
     sh_rr.add_field(h.fid);
     region_reqs.push_back(sh_rr);
 
-    Legion::RegionRequirement gh_rr(h.offsets_ghost_lp, 0,
-      privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.offsets_entire_region);
+    Legion::RegionRequirement gh_rr(h.offsets_ghost_lp,
+      0,
+      privilege_mode(GHOST_PERMISSIONS),
+      EXCLUSIVE,
+      h.offsets_entire_region);
     gh_rr.add_field(h.fid);
     region_reqs.push_back(gh_rr);
 
-    Legion::RegionRequirement ex_rr2(h.entries_exclusive_lp, 0,
-      privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.entries_entire_region,
+    Legion::RegionRequirement ex_rr2(h.entries_exclusive_lp,
+      0,
+      privilege_mode(EXCLUSIVE_PERMISSIONS),
+      EXCLUSIVE,
+      h.entries_entire_region,
       tag);
     ex_rr2.add_field(h.fid);
     region_reqs.push_back(ex_rr2);
 
-    Legion::RegionRequirement sh_rr2(h.entries_shared_lp, 0,
-      privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.entries_entire_region);
+    Legion::RegionRequirement sh_rr2(h.entries_shared_lp,
+      0,
+      privilege_mode(SHARED_PERMISSIONS),
+      EXCLUSIVE,
+      h.entries_entire_region);
     sh_rr2.add_field(h.fid);
     region_reqs.push_back(sh_rr2);
 
-    Legion::RegionRequirement gh_rr2(h.entries_ghost_lp, 0,
-      privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.entries_entire_region);
+    Legion::RegionRequirement gh_rr2(h.entries_ghost_lp,
+      0,
+      privilege_mode(GHOST_PERMISSIONS),
+      EXCLUSIVE,
+      h.entries_entire_region);
     gh_rr2.add_field(h.fid);
     region_reqs.push_back(gh_rr2);
   }
@@ -271,8 +312,10 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
+    handle(reinterpret_cast<sparse_accessor<T,
+        EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS,
+        GHOST_PERMISSIONS> &>(a));
   } // handle
 
   template<typename T>
@@ -286,8 +329,12 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     md_rr.add_field(h.fid);
     region_reqs.push_back(md_rr);
 
-    Legion::RegionRequirement ex_rr(h.offsets_exclusive_lp, 0, READ_WRITE,
-      EXCLUSIVE, h.offsets_entire_region, tag);
+    Legion::RegionRequirement ex_rr(h.offsets_exclusive_lp,
+      0,
+      READ_WRITE,
+      EXCLUSIVE,
+      h.offsets_entire_region,
+      tag);
     ex_rr.add_field(h.fid);
     region_reqs.push_back(ex_rr);
 
@@ -301,8 +348,12 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     gh_rr.add_field(h.fid);
     region_reqs.push_back(gh_rr);
 
-    Legion::RegionRequirement ex_rr2(h.entries_exclusive_lp, 0, READ_WRITE,
-      EXCLUSIVE, h.entries_entire_region, tag);
+    Legion::RegionRequirement ex_rr2(h.entries_exclusive_lp,
+      0,
+      READ_WRITE,
+      EXCLUSIVE,
+      h.entries_entire_region,
+      tag);
     ex_rr2.add_field(h.fid);
     region_reqs.push_back(ex_rr2);
 
@@ -334,8 +385,11 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     for(size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
-      Legion::RegionRequirement rr(ent.color_partition, 0 /*PROJECTION*/,
-        privilege_mode(PERMISSIONS), EXCLUSIVE, ent.entire_region);
+      Legion::RegionRequirement rr(ent.color_partition,
+        0 /*PROJECTION*/,
+        privilege_mode(PERMISSIONS),
+        EXCLUSIVE,
+        ent.entire_region);
       rr.add_field(ent.fid);
       region_reqs.push_back(rr);
     } // for

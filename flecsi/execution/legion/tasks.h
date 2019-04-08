@@ -16,9 +16,9 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly!
+#error Do not include this file directly!
 #else
-  #include <flecsi/execution/context.h>
+#include <flecsi/execution/context.h>
 #endif
 
 /*!
@@ -38,7 +38,8 @@
                                                                                \
   /* Legion task template */                                                   \
   inline return_type task_name(const Legion::Task * task,                      \
-    const std::vector<Legion::PhysicalRegion> & regions, Legion::Context ctx,  \
+    const std::vector<Legion::PhysicalRegion> & regions,                       \
+    Legion::Context ctx,                                                       \
     Legion::Runtime * runtime)
 
 namespace flecsi {

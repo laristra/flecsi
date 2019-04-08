@@ -121,9 +121,21 @@ struct parmetis_colorer_t : public colorer_t {
     std::vector<idx_t> adjncy = dcrs.indices_as<idx_t>();
 
     // Actual call to ParMETIS.
-    int result = ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0],
-      nullptr, nullptr, &wgtflag, &numflag, &ncon, &size, &tpwgts[0], &ubvec,
-      &options, &edgecut, &part[0], &comm);
+    int result = ParMETIS_V3_PartKway(&vtxdist[0],
+      &xadj[0],
+      &adjncy[0],
+      nullptr,
+      nullptr,
+      &wgtflag,
+      &numflag,
+      &ncon,
+      &size,
+      &tpwgts[0],
+      &ubvec,
+      &options,
+      &edgecut,
+      &part[0],
+      &comm);
 
 #if 0
     std::cout << "rank " << rank << ": ";
@@ -176,9 +188,13 @@ struct parmetis_colorer_t : public colorer_t {
 
     // Do all-to-all to find out where everything belongs.
     std::vector<idx_t> recv_cnts(size);
-    result = MPI_Alltoall(&send_cnts[0], 1,
-      utils::mpi_typetraits_u<idx_t>::type(), &recv_cnts[0], 1,
-      utils::mpi_typetraits_u<idx_t>::type(), MPI_COMM_WORLD);
+    result = MPI_Alltoall(&send_cnts[0],
+      1,
+      utils::mpi_typetraits_u<idx_t>::type(),
+      &recv_cnts[0],
+      1,
+      utils::mpi_typetraits_u<idx_t>::type(),
+      MPI_COMM_WORLD);
 
 #if 0
     if(rank == 0) {
@@ -199,8 +215,12 @@ struct parmetis_colorer_t : public colorer_t {
       if(recv_cnts[r]) {
         rbuffers[r].resize(recv_cnts[r]);
         requests.push_back({});
-        MPI_Irecv(&rbuffers[r][0], recv_cnts[r],
-          utils::mpi_typetraits_u<idx_t>::type(), r, 0, MPI_COMM_WORLD,
+        MPI_Irecv(&rbuffers[r][0],
+          recv_cnts[r],
+          utils::mpi_typetraits_u<idx_t>::type(),
+          r,
+          0,
+          MPI_COMM_WORLD,
           &requests[requests.size() - 1]);
       } // if
     } // for
@@ -209,8 +229,12 @@ struct parmetis_colorer_t : public colorer_t {
     for(size_t r(0); r < size; ++r) {
       if(send_cnts[r]) {
         sbuffers[r].resize(send_cnts[r]);
-        MPI_Send(&sbuffers[r][0], send_cnts[r],
-          utils::mpi_typetraits_u<idx_t>::type(), r, 0, MPI_COMM_WORLD);
+        MPI_Send(&sbuffers[r][0],
+          send_cnts[r],
+          utils::mpi_typetraits_u<idx_t>::type(),
+          r,
+          0,
+          MPI_COMM_WORLD);
       } // if
     } // for
 

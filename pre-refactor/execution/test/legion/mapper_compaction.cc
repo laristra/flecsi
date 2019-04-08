@@ -187,7 +187,8 @@ driver(int argc, char ** argv) {
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher index_launcher(context_t::instance().task_id(key_1),
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(0, 0), arg_map);
+    Legion::TaskArgument(0, 0),
+    arg_map);
 
   index_launcher.add_region_requirement(RegionRequirement(
     ex_lp, 0 /*projection ID*/, READ_WRITE, EXCLUSIVE, stencil_lr));

@@ -82,7 +82,9 @@ flecsi_register_control_options(control_t);
       .control_point_map(flecsi::control::control_point,                       \
         flecsi_internal_stringify(flecsi::control::control_point))             \
       .initialize_node({flecsi_internal_hash(action),                          \
-        flecsi_internal_stringify(action), action, ##__VA_ARGS__})
+        flecsi_internal_stringify(action),                                     \
+        action,                                                                \
+        ##__VA_ARGS__})
 
 #define ftest_add_dependency(control_point, to, from)                          \
   inline bool ftest_registered_initialize_##to##from =                         \

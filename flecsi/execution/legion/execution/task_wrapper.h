@@ -18,15 +18,15 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-  #include <flecsi/execution/common/launch.h>
-  #include <flecsi/execution/common/processor.h>
-  #include <flecsi/execution/context.h>
-  //#include <flecsi/execution/legion/finalize_handles.h>
-  //#include <flecsi/execution/legion/init_handles.h>
-  #include <flecsi/utils/common.h>
-  #include <flecsi/utils/flog.h>
-  #include <flecsi/utils/tuple_function.h>
-  #include <flecsi/utils/tuple_type_converter.h>
+#include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/context.h>
+//#include <flecsi/execution/legion/finalize_handles.h>
+//#include <flecsi/execution/legion/init_handles.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/flog.h>
+#include <flecsi/utils/tuple_function.h>
+#include <flecsi/utils/tuple_type_converter.h>
 #endif
 
 #include <flecsi-config.h>

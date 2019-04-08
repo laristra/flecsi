@@ -143,7 +143,8 @@ clog_register_tag(execution);
                                                                                \
   inline bool registered_global_object_##nspace##_##index =                    \
     flecsi::execution::context_t::instance()                                   \
-      .template register_global_object<flecsi_internal_hash(nspace), index,    \
+      .template register_global_object<flecsi_internal_hash(nspace),           \
+        index,                                                                 \
         type>();
 
 /*!
@@ -245,9 +246,11 @@ clog_register_tag(execution);
                                                                                \
   /* Call the execution policy to register the task delegate */                \
   inline bool task##_task_registered =                                         \
-    flecsi::execution::task_interface_t::register_task<                        \
-      flecsi_internal_hash(task), flecsi_internal_return_type(task),           \
-      flecsi_internal_arguments_type(task), task##_tuple_delegate>(            \
+    flecsi::execution::task_interface_t::register_task<flecsi_internal_hash(   \
+                                                         task),                \
+      flecsi_internal_return_type(task),                                       \
+      flecsi_internal_arguments_type(task),                                    \
+      task##_tuple_delegate>(                                                  \
       flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(task)})
 
 /*!
@@ -280,9 +283,11 @@ clog_register_tag(execution);
                                                                                \
   /* Call the execution policy to register the task delegate */                \
   inline bool task##_task_registered =                                         \
-    flecsi::execution::task_interface_t::register_task<                        \
-      flecsi_internal_hash(nspace::task), flecsi_internal_return_type(task),   \
-      flecsi_internal_arguments_type(task), task##_tuple_delegate>(            \
+    flecsi::execution::task_interface_t::register_task<flecsi_internal_hash(   \
+                                                         nspace::task),        \
+      flecsi_internal_return_type(task),                                       \
+      flecsi_internal_arguments_type(task),                                    \
+      task##_tuple_delegate>(                                                  \
       flecsi::processor, flecsi::launch, {EXPAND_AND_STRINGIFY(nspace::task)})
 
 /*!
@@ -356,8 +361,10 @@ clog_register_tag(execution);
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_interface_t::execute_task<                           \
-    flecsi::execution::launch_type_t::launch, flecsi_internal_hash(task),      \
-    flecsi_internal_hash(operation), flecsi_internal_return_type(task),        \
+    flecsi::execution::launch_type_t::launch,                                  \
+    flecsi_internal_hash(task),                                                \
+    flecsi_internal_hash(operation),                                           \
+    flecsi_internal_return_type(task),                                         \
     flecsi_internal_arguments_type(task)>(__VA_ARGS__)
 
 /*!
@@ -479,8 +486,8 @@ clog_register_tag(execution);
     flecsi_internal_hash(nspace::task),                                        \
     flecsi::utils::hash::reduction_hash<flecsi_internal_hash(type),            \
       flecsi_internal_hash(datatype)>(),                                       \
-    flecsi_internal_return_type(task), flecsi_internal_arguments_type(task)>(  \
-    __VA_ARGS__)
+    flecsi_internal_return_type(task),                                         \
+    flecsi_internal_arguments_type(task)>(__VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Function Interface
@@ -516,8 +523,10 @@ clog_register_tag(execution);
   /* Call the execution policy to register the function delegate */            \
   inline bool func##_func_registered =                                         \
     flecsi::execution::function_interface_t::register_function<                \
-      flecsi_internal_hash(nspace::func), flecsi_internal_return_type(func),   \
-      flecsi_internal_arguments_type(func), func##_tuple_delegate>()
+      flecsi_internal_hash(nspace::func),                                      \
+      flecsi_internal_return_type(func),                                       \
+      flecsi_internal_arguments_type(func),                                    \
+      func##_tuple_delegate>()
 
 /*!
   @def flecsi_execute_function

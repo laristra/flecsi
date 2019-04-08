@@ -18,12 +18,12 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-  #include <flecsi/data/common/field_info.h>
-  #include <flecsi/execution/global_object_wrapper.h>
-  #include <flecsi/runtime/types.h>
-  #include <flecsi/utils/common.h>
-  #include <flecsi/utils/demangle.h>
-  #include <flecsi/utils/flog.h>
+#include <flecsi/data/common/field_info.h>
+#include <flecsi/execution/global_object_wrapper.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/demangle.h>
+#include <flecsi/utils/flog.h>
 #endif
 
 #include <cassert>
@@ -153,7 +153,9 @@ struct context_u : public CONTEXT_POLICY {
     Return the exit status of the FleCSI runtime.
    */
 
-  int & exit_status() { return exit_status_; }
+  int & exit_status() {
+    return exit_status_;
+  }
 
   /*--------------------------------------------------------------------------*
     Reduction interface.
@@ -316,14 +318,15 @@ struct context_u : public CONTEXT_POLICY {
     @param callback            The registration call back function.
    */
 
-  bool register_topology(
-    size_t topology_identifier,
+  bool register_topology(size_t topology_identifier,
     size_t instance_identifier,
-    const topology_registration_function_t & callback
-  ) {
+    const topology_registration_function_t & callback) {
     if(topology_callback_registry_.find(topology_identifier) !=
-      topology_callback_registry_.end()) {
-      flog_assert(topology_callback_registry_[topology_identifier].find(instance_identifier) == topology_callback_registry_[topology_identifier].end(), "topology key already exists");
+       topology_callback_registry_.end()) {
+      flog_assert(topology_callback_registry_[topology_identifier].find(
+                    instance_identifier) ==
+                    topology_callback_registry_[topology_identifier].end(),
+        "topology key already exists");
     } // if
 
     topology_callback_registry_[topology_identifier][instance_identifier] =
@@ -336,7 +339,8 @@ struct context_u : public CONTEXT_POLICY {
     Return the topology registry.
    */
 
-  std::unordered_map<size_t, topology_registration_map_t> & topology_registry() {
+  std::unordered_map<size_t, topology_registration_map_t> &
+  topology_registry() {
     return topology_callback_registry_;
   } // topology_registry
 
@@ -368,16 +372,13 @@ struct context_u : public CONTEXT_POLICY {
     @param callback            The registration call back function.
    */
 
-  bool register_field(
-    size_t topology_identifier,
+  bool register_field(size_t topology_identifier,
     size_t field_identifier,
-    const field_registration_function_t & callback
-  )
-  {
+    const field_registration_function_t & callback) {
     if(field_callback_registry_.find(topology_identifier) !=
-      field_callback_registry_.end()) {
+       field_callback_registry_.end()) {
       if(field_callback_registry_[topology_identifier].find(field_identifier) !=
-        field_callback_registry_[topology_identifier].end()) {
+         field_callback_registry_[topology_identifier].end()) {
         flog(warn) << "field callback key already exists" << std::endl;
       } // if
     } // if
@@ -401,9 +402,11 @@ struct context_u : public CONTEXT_POLICY {
    */
 
   void register_runtime_field_info(size_t topology_type_identifier,
-    size_t storage_class, const data::field_info_t & fi) {
+    size_t storage_class,
+    const data::field_info_t & fi) {
     fixme() << "This needs to be renamed";
-      runtime_field_info_[topology_type_identifier][storage_class].emplace_back(fi);
+    runtime_field_info_[topology_type_identifier][storage_class].emplace_back(
+      fi);
   } // register_runtime_field_information
 
 private:

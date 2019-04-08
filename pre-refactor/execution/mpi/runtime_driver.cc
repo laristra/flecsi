@@ -66,8 +66,13 @@ remap_shared_entities() {
     std::set<flecsi::coloring::entity_info_t> new_ghost;
 
     for(auto ghost : index_coloring.ghost) {
-      MPI_Recv(&index, 1, MPI_UNSIGNED_LONG_LONG, ghost.rank, 77,
-        MPI_COMM_WORLD, &status);
+      MPI_Recv(&index,
+        1,
+        MPI_UNSIGNED_LONG_LONG,
+        ghost.rank,
+        77,
+        MPI_COMM_WORLD,
+        &status);
       new_ghost.insert(
         flecsi::coloring::entity_info_t(ghost.id, ghost.rank, index, {}));
     }

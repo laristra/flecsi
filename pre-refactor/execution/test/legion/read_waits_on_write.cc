@@ -155,7 +155,8 @@ write_task(dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::na> cell_ID,
 
   index = 0;
   for(auto shared_itr = index_coloring->second.shared.begin();
-      shared_itr != index_coloring->second.shared.end(); ++shared_itr) {
+      shared_itr != index_coloring->second.shared.end();
+      ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
     cell_ID.shared(index) = shared.id + cycle;
     index++;
@@ -184,7 +185,8 @@ read_task(dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
 
   index = 0;
   for(auto shared_itr = index_coloring->second.shared.begin();
-      shared_itr != index_coloring->second.shared.end(); ++shared_itr) {
+      shared_itr != index_coloring->second.shared.end();
+      ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
     assert(cell_ID.shared(index) == shared.id + cycle);
     index++;
@@ -192,7 +194,8 @@ read_task(dense_accessor<size_t, flecsi::ro, flecsi::ro, flecsi::ro> cell_ID,
 
   index = 0;
   for(auto ghost_itr = index_coloring->second.ghost.begin();
-      ghost_itr != index_coloring->second.ghost.end(); ++ghost_itr) {
+      ghost_itr != index_coloring->second.ghost.end();
+      ++ghost_itr) {
     flecsi::coloring::entity_info_t ghost = *ghost_itr;
     assert(cell_ID.ghost(index) == ghost.id + cycle);
     index++;

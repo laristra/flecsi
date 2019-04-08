@@ -133,7 +133,8 @@ legion_context_policy_t::unset_call_mpi(Legion::Context & ctx,
   // IRINA DEBUG check number of processors
   Legion::IndexLauncher launcher(tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(NULL, 0), arg_map);
+    Legion::TaskArgument(NULL, 0),
+    arg_map);
 
   launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
   auto fm = runtime->execute_index_space(ctx, launcher);
@@ -153,7 +154,8 @@ legion_context_policy_t::handoff_to_mpi(Legion::Context & ctx,
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(NULL, 0), arg_map);
+    Legion::TaskArgument(NULL, 0),
+    arg_map);
 
   handoff_to_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
   auto fm = runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
@@ -174,7 +176,8 @@ legion_context_policy_t::wait_on_mpi(Legion::Context & ctx,
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(NULL, 0), arg_map);
+    Legion::TaskArgument(NULL, 0),
+    arg_map);
 
   wait_on_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
   auto fm = runtime->execute_index_space(ctx, wait_on_mpi_launcher);

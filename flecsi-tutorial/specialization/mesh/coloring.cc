@@ -375,8 +375,14 @@ add_colorings(coloring_map_t map) {
   flecsi::coloring::index_coloring_t vertices;
   coloring::coloring_info_t vertex_color_info;
 
-  color_entity<2, 0>(sd, communicator.get(), closure, remote_info_map,
-    shared_cells_map, closure_intersection_map, vertices, vertex_color_info);
+  color_entity<2, 0>(sd,
+    communicator.get(),
+    closure,
+    remote_info_map,
+    shared_cells_map,
+    closure_intersection_map,
+    vertices,
+    vertex_color_info);
 
   {
     clog_tag_guard(coloring);
@@ -452,9 +458,15 @@ add_colorings(coloring_map_t map) {
       M, N, primary_cells, primary_vertices);
   } // if
 
-  supplemental::tikz_writer_t::write_color(rank, M, N, exclusive_cells_map,
-    shared_cells_map, ghost_cells_map, exclusive_vertices_map,
-    shared_vertices_map, ghost_vertices_map);
+  supplemental::tikz_writer_t::write_color(rank,
+    M,
+    N,
+    exclusive_cells_map,
+    shared_cells_map,
+    ghost_cells_map,
+    exclusive_vertices_map,
+    shared_vertices_map,
+    ghost_vertices_map);
 
 } // add_colorings
 

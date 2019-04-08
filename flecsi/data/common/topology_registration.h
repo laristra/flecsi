@@ -23,19 +23,19 @@
  */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly!
+#error Do not include this file directly!
 #else
-  #include <flecsi/execution/context.h>
-  #include <flecsi/runtime/types.h>
-  #include <flecsi/topology/internal/color.h>
-  #include <flecsi/topology/internal/global.h>
-  //#include <flecsi/topology/mesh_topology.h>
-  #include <flecsi/utils/common.h>
-  #include <flecsi/utils/const_string.h>
-  #include <flecsi/utils/demangle.h>
-  #include <flecsi/utils/flog.h>
-  #include <flecsi/utils/hash.h>
-  #include <flecsi/utils/tuple_walker.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/topology/internal/color.h>
+#include <flecsi/topology/internal/global.h>
+//#include <flecsi/topology/mesh_topology.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/const_string.h>
+#include <flecsi/utils/demangle.h>
+#include <flecsi/utils/flog.h>
+#include <flecsi/utils/hash.h>
+#include <flecsi/utils/tuple_walker.h>
 #endif
 
 #include <string>

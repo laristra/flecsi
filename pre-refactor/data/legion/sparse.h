@@ -273,8 +273,9 @@ struct storage_class_u<ragged> {
     size_t NAME,
     size_t VERSION>
   static auto get_handle(const data_client_t & data_client) {
-    return storage_class_u<sparse>::get_handle<DATA_CLIENT_TYPE, DATA_TYPE,
-      NAMESPACE, NAME, VERSION>(data_client);
+    return storage_class_u<sparse>::
+      get_handle<DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE, NAME, VERSION>(
+        data_client);
   }
 
   template<typename DATA_CLIENT_TYPE,
@@ -283,8 +284,9 @@ struct storage_class_u<ragged> {
     size_t NAME,
     size_t VERSION>
   static auto get_mutator(const data_client_t & data_client, size_t slots) {
-    return storage_class_u<sparse>::get_mutator<DATA_CLIENT_TYPE, DATA_TYPE,
-      NAMESPACE, NAME, VERSION>(data_client, slots);
+    return storage_class_u<sparse>::
+      get_mutator<DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE, NAME, VERSION>(
+        data_client, slots);
   }
 }; // struct storage_class_t
 

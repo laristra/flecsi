@@ -58,7 +58,8 @@ struct legion_set_topology_storage_policy_u {
     color = context_.color();
 
     map_set_index_spaces_u<std::tuple_size<entity_types_t>::value,
-      entity_types_t, index_space_map_t>::map(index_space_map);
+      entity_types_t,
+      index_space_map_t>::map(index_space_map);
   }
 
   void init_entities(size_t index_space,

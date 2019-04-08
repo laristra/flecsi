@@ -27,7 +27,8 @@ update_fields(int argc, char ** argv) {
   usleep(200000);
   std::cout << "advance: update_fields" << std::endl;
 
-  if(check_attribute(advance /* phase */, accumulate_currents /* action */,
+  if(check_attribute(advance /* phase */,
+       accumulate_currents /* action */,
        time_advance_half /* attribute */)) {
     std::cout << "\tadvancing half" << std::endl;
   }

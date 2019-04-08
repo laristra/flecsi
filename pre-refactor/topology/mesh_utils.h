@@ -186,8 +186,8 @@ struct find_index_space_from_dimension_u {
     // Check match for dimension and return if matched, recurse otherwise.
     return (DIM == ELEMENT_ENTITY::dimension && DOM == ENTITY_DOMAIN::value)
              ? INDEX_SPACE::value
-             : find_index_space_from_dimension_u<INDEX - 1, TUPLE, DIM,
-                 DOM>::find();
+             : find_index_space_from_dimension_u<INDEX - 1, TUPLE, DIM, DOM>::
+                 find();
   } // find
 
 }; // find_index_space_from_dimension_u
@@ -319,7 +319,9 @@ void
 find_all_index_spaces_in_domain_u(Array && index_spaces) {
   std::forward<Array>(index_spaces)[I] = find_index_space_from_dimension_u<
     std::tuple_size<typename MESH_TYPE::entity_types>::value,
-    typename MESH_TYPE::entity_types, I, DOM>::find();
+    typename MESH_TYPE::entity_types,
+    I,
+    DOM>::find();
 }
 
 template<size_t I,
@@ -332,7 +334,9 @@ void
 find_all_index_spaces_in_domain_u(Array && index_spaces) {
   std::forward<Array>(index_spaces)[I] = find_index_space_from_dimension_u<
     std::tuple_size<typename MESH_TYPE::entity_types>::value,
-    typename MESH_TYPE::entity_types, I, DOM>::find();
+    typename MESH_TYPE::entity_types,
+    I,
+    DOM>::find();
   find_all_index_spaces_in_domain_u<I + 1, MESH_TYPE, DOM>(index_spaces);
 }
 
@@ -376,7 +380,8 @@ struct compute_connectivity_u {
     using T2 = typename std::tuple_element<3, T>::type;
 
     if(D1::value == FIND_DOM) {
-      mesh.template compute_connectivity<FIND_DOM, T1::dimension,
+      mesh.template compute_connectivity<FIND_DOM,
+        T1::dimension,
         T2::dimension>();
     }
 
@@ -438,7 +443,9 @@ struct compute_bindings_u {
     using T2 = typename std::tuple_element<4, T>::type;
 
     if(M1::value == FIND_DOM) {
-      mesh.template compute_bindings<M1::value, M2::value, T1::dimension,
+      mesh.template compute_bindings<M1::value,
+        M2::value,
+        T1::dimension,
         T2::dimension>();
     } // if
 

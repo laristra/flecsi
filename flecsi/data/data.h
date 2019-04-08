@@ -55,8 +55,8 @@
   /* Call the topology interface to register the topology */                   \
   inline bool flecsi_internal_unique_name(topology_registration_) =            \
     flecsi::data::topology_interface_t::register_topology<type,                \
-      flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name)>( \
-      {flecsi_internal_stringify(name)})
+      flecsi_internal_string_hash(nspace),                                     \
+      flecsi_internal_string_hash(name)>({flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_get_topology
@@ -75,7 +75,8 @@
                                                                                \
   /* Call the storage policy to get a handle to the topology */                \
   flecsi::data::topology_interface_t::get_topology<type,                       \
-    flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name)>()
+    flecsi_internal_string_hash(nspace),                                       \
+    flecsi_internal_string_hash(name)>()
 
 /*----------------------------------------------------------------------------*
   Field Interface.
@@ -109,9 +110,12 @@
   /* Call the storage policy to register the data */                           \
   inline bool flecsi_internal_unique_name(field) =                             \
     flecsi::data::field_interface_t::register_field<client_type,               \
-      flecsi::data::storage_class, data_type,                                  \
-      flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name),  \
-      versions, ##__VA_ARGS__>({flecsi_internal_stringify(name)})
+      flecsi::data::storage_class,                                             \
+      data_type,                                                               \
+      flecsi_internal_string_hash(nspace),                                     \
+      flecsi_internal_string_hash(name),                                       \
+      versions,                                                                \
+      ##__VA_ARGS__>({flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_get_field
@@ -136,10 +140,13 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
-  flecsi::data::field_interface_t::get_field<                                  \
-    decltype(topology)::topology_type_t, flecsi::data::storage_class,          \
-    data_type, flecsi_internal_string_hash(nspace),                            \
-    flecsi_internal_string_hash(name), version>(topology)
+  flecsi::data::field_interface_t::get_field<decltype(                         \
+                                               topology)::topology_type_t,     \
+    flecsi::data::storage_class,                                               \
+    data_type,                                                                 \
+    flecsi_internal_string_hash(nspace),                                       \
+    flecsi_internal_string_hash(name),                                         \
+    version>(topology)
 
 /*----------------------------------------------------------------------------*
   Global Topology Interface.
@@ -178,10 +185,13 @@ flecsi_register_topology(global_topology_t, "global_client", "global_client");
   /* Call the storage policy to register the data */                           \
   inline bool flecsi_internal_unique_name(global_field) =                      \
     flecsi::data::field_interface_t::register_field<                           \
-      flecsi::topology::global_topology_t, flecsi::data::global, data_type,    \
-      flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name),  \
-      versions, flecsi::topology::global_index_space>(                         \
-      {flecsi_internal_stringify(name)})
+      flecsi::topology::global_topology_t,                                     \
+      flecsi::data::global,                                                    \
+      data_type,                                                               \
+      flecsi_internal_string_hash(nspace),                                     \
+      flecsi_internal_string_hash(name),                                       \
+      versions,                                                                \
+      flecsi::topology::global_index_space>({flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_get_global
@@ -203,9 +213,14 @@ flecsi_register_topology(global_topology_t, "global_client", "global_client");
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
-  flecsi_get_field(flecsi_get_topology(flecsi::topology::global_topology_t,    \
-                     "global_client", "global_client"),                        \
-    nspace, name, data_type, global, version)
+  flecsi_get_field(                                                            \
+    flecsi_get_topology(                                                       \
+      flecsi::topology::global_topology_t, "global_client", "global_client"),  \
+    nspace,                                                                    \
+    name,                                                                      \
+    data_type,                                                                 \
+    global,                                                                    \
+    version)
 
 /*----------------------------------------------------------------------------*
   Color Topology Interface.
@@ -243,10 +258,13 @@ flecsi_register_topology(color_topology_t, "color_client", "color_client");
   /* Call the storage policy to register the data */                           \
   inline bool flecsi_internal_unique_name(color_field) =                       \
     flecsi::data::field_interface_t::register_field<                           \
-      flecsi::topology::color_topology_t, flecsi::data::color, data_type,      \
-      flecsi_internal_string_hash(nspace), flecsi_internal_string_hash(name),  \
-      versions, flecsi::topology::color_index_space>(                          \
-      {flecsi_internal_stringify(name)})
+      flecsi::topology::color_topology_t,                                      \
+      flecsi::data::color,                                                     \
+      data_type,                                                               \
+      flecsi_internal_string_hash(nspace),                                     \
+      flecsi_internal_string_hash(name),                                       \
+      versions,                                                                \
+      flecsi::topology::color_index_space>({flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_get_color
@@ -268,6 +286,11 @@ flecsi_register_topology(color_topology_t, "color_client", "color_client");
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
-  flecsi_get_field(flecsi_get_topology(flecsi::topology::color_topology_t,     \
-                      "color_client", "color_client"),                         \
-    nspace, name, data_type, color, version)
+  flecsi_get_field(                                                            \
+    flecsi_get_topology(                                                       \
+      flecsi::topology::color_topology_t, "color_client", "color_client"),     \
+    nspace,                                                                    \
+    name,                                                                      \
+    data_type,                                                                 \
+    color,                                                                     \
+    version)

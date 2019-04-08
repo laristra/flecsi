@@ -294,9 +294,21 @@ driver(int argc, char ** argv) {
     check_results, flecsi::execution, index, mh, fh, 7777777, global_fx_target);
 
   // overwrite g[1111111] with y derivative of f[7777777], so it will be fxy
-  flecsi_execute_task(compute_deriv, flecsi::execution, index, mh, fh, 7777777,
-    gh, 1111111, false);
-  flecsi_execute_task(check_results, flecsi::execution, index, mh, gh, 1111111,
+  flecsi_execute_task(compute_deriv,
+    flecsi::execution,
+    index,
+    mh,
+    fh,
+    7777777,
+    gh,
+    1111111,
+    false);
+  flecsi_execute_task(check_results,
+    flecsi::execution,
+    index,
+    mh,
+    gh,
+    1111111,
     global_fxy_target);
 } // specialization_driver
 

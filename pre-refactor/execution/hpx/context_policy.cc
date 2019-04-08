@@ -74,8 +74,10 @@ hpx_context_policy_t::start_hpx(int (*driver)(int, char *[]),
     "hpx.commandline.aliasing!=0"};
 
   hpx::resource::partitioner rp{
-    hpx::util::bind_front(&hpx_context_policy_t::hpx_main, this, driver), argc,
-    argv, cfg};
+    hpx::util::bind_front(&hpx_context_policy_t::hpx_main, this, driver),
+    argc,
+    argv,
+    cfg};
 
   // Create a thread pool encapsulating the default scheduler
   rp.create_thread_pool("default", hpx::resource::local_priority_fifo);

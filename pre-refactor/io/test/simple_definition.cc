@@ -63,7 +63,8 @@ TEST(simple_definition, neighbors) {
   // initial set of indices.
   auto closure = flecsi::topology::entity_neighbors<2, 2, 1>(sd, partition);
 
-  CINCH_ASSERT(EQ, closure,
+  CINCH_ASSERT(EQ,
+    closure,
     std::set<size_t>(
       {0, 1, 2, 3, 4, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 24, 25, 26, 27}));
 

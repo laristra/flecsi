@@ -19,9 +19,9 @@
  */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly!
+#error Do not include this file directly!
 #else
-  #include <flecsi/data/common/data_reference.h>
+#include <flecsi/data/common/data_reference.h>
 #endif
 
 #ifndef POLICY_NAMESPACE

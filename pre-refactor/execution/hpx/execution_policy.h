@@ -148,7 +148,8 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     // FIXME add logic for reduction
 
     return executor_u<RETURN, ARG_TUPLE>::execute(
-      context_t::instance().get_default_executor(), std::move(fun),
+      context_t::instance().get_default_executor(),
+      std::move(fun),
       std::forward_as_tuple(std::forward<ARGS>(args)...));
   } // execute_task
 

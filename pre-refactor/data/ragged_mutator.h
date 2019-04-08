@@ -89,11 +89,12 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::sparse, T>,
     entry_value_t * start = base_t::h_.entries_ + index * base_t::h_.num_slots_;
     entry_value_t * end = start + n;
 
-    entry_value_t * itr =
-      std::lower_bound(start, end, entry_value_t(ragged_index),
-        [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
-          return e1.entry < e2.entry;
-        });
+    entry_value_t * itr = std::lower_bound(start,
+      end,
+      entry_value_t(ragged_index),
+      [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
+        return e1.entry < e2.entry;
+      });
 
     // if we are attempting to create an entry that already exists
     // just over-write the value and exit.

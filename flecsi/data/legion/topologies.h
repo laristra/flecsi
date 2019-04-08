@@ -52,11 +52,9 @@ struct topology_handle_t {
 
 template<size_t PRIVILEGES>
 struct topology_accessor_t {
-  topology_accessor_t(topology_handle_t & handle)
-    : handle_(handle) {}
+  topology_accessor_t(topology_handle_t & handle) : handle_(handle) {}
 
 private:
-
   topology_handle_t & handle_;
 
 }; // struct topology_accessor_t

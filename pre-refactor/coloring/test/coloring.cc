@@ -312,8 +312,10 @@ DEVEL(coloring) {
 
 #if 1
   std::vector<std::pair<std::string, std::string>> colors = {
-    {"blue", "blue!40!white"}, {"green!60!black", "green!60!white"},
-    {"black", "black!40!white"}, {"red", "red!40!white"},
+    {"blue", "blue!40!white"},
+    {"green!60!black", "green!60!white"},
+    {"black", "black!40!white"},
+    {"red", "red!40!white"},
     {"violet", "violet!40!white"}};
 
   std::stringstream texname;

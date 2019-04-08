@@ -16,12 +16,12 @@
 /*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly!
+#error Do not include this file directly!
 #else
-  #include <flecsi/data/common/data_reference.h>
-  #include <flecsi/data/legion/topologies.h>
-  #include <flecsi/topology/internal/color.h>
-  #include <flecsi/topology/internal/global.h>
+#include <flecsi/data/common/data_reference.h>
+#include <flecsi/data/legion/topologies.h>
+#include <flecsi/topology/internal/color.h>
+#include <flecsi/topology/internal/global.h>
 #endif
 
 #define POLICY_NAMESPACE legion
@@ -43,10 +43,10 @@ struct handle_t {
   handle_t() {}
   ~handle_t() {}
 
-//  size_t name;
-//  size_t name_space;
-//  size_t topology_name;
-//  size_t topology_name_space;
+  //  size_t name;
+  //  size_t name_space;
+  //  size_t topology_name;
+  //  size_t topology_name_space;
 
 }; // struct handle_t
 

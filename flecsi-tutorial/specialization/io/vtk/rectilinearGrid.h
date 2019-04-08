@@ -264,8 +264,12 @@ RectilinearGrid::write(std::string fileName, int parallel) {
 
     vtkNew<vtkTrivialProducer> tp;
     tp->SetOutput(strucGrid);
-    tp->SetWholeExtent(wholeExtents[0], wholeExtents[1], wholeExtents[2],
-      wholeExtents[3], wholeExtents[4], wholeExtents[5]);
+    tp->SetWholeExtent(wholeExtents[0],
+      wholeExtents[1],
+      wholeExtents[2],
+      wholeExtents[3],
+      wholeExtents[4],
+      wholeExtents[5]);
 
     writer->SetInputConnection(tp->GetOutputPort());
   }

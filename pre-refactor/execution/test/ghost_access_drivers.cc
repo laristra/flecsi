@@ -126,7 +126,8 @@ set_primary_cells_task(
 
   index = 0;
   for(auto shared_itr = index_coloring->second.shared.begin();
-      shared_itr != index_coloring->second.shared.end(); ++shared_itr) {
+      shared_itr != index_coloring->second.shared.end();
+      ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
     cell_ID.shared(index) = shared.id + cycle;
     test.shared(index) = double(shared.id + cycle);
@@ -134,7 +135,8 @@ set_primary_cells_task(
   } // shared_itr
 
   for(auto ghost_itr = index_coloring->second.ghost.begin();
-      ghost_itr != index_coloring->second.ghost.end(); ++ghost_itr) {
+      ghost_itr != index_coloring->second.ghost.end();
+      ++ghost_itr) {
     flecsi::coloring::entity_info_t ghost = *ghost_itr;
   } // ghost_itr
 
@@ -164,7 +166,8 @@ check_all_cells_task(
 
   index = 0;
   for(auto shared_itr = index_coloring->second.shared.begin();
-      shared_itr != index_coloring->second.shared.end(); ++shared_itr) {
+      shared_itr != index_coloring->second.shared.end();
+      ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
     ASSERT_EQ(cell_ID.shared(index), shared.id + cycle);
     ASSERT_EQ(test.shared(index), double(shared.id + cycle));
@@ -173,7 +176,8 @@ check_all_cells_task(
 
   index = 0;
   for(auto ghost_itr = index_coloring->second.ghost.begin();
-      ghost_itr != index_coloring->second.ghost.end(); ++ghost_itr) {
+      ghost_itr != index_coloring->second.ghost.end();
+      ++ghost_itr) {
     flecsi::coloring::entity_info_t ghost = *ghost_itr;
     ASSERT_EQ(cell_ID.ghost(index), ghost.id + cycle);
     ASSERT_EQ(test.ghost(index), double(ghost.id + cycle));

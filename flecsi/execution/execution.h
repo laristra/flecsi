@@ -132,10 +132,12 @@
                                                                                \
   /* Call the execution policy to register the task delegate */                \
   inline bool task##_task_registered =                                         \
-    flecsi::execution::task_interface_t::register_task<                        \
-      flecsi_internal_hash(nspace::task), flecsi_internal_return_type(task),   \
-      flecsi_internal_arguments_type(task), task##_tuple_delegate>(            \
-      flecsi::processor, flecsi::launch,                                       \
+    flecsi::execution::task_interface_t::register_task<flecsi_internal_hash(   \
+                                                         nspace::task),        \
+      flecsi_internal_return_type(task),                                       \
+      flecsi_internal_arguments_type(task),                                    \
+      task##_tuple_delegate>(flecsi::processor,                                \
+      flecsi::launch,                                                          \
       {flecsi_internal_stringify(nspace::task)})
 
 //----------------------------------------------------------------------------//

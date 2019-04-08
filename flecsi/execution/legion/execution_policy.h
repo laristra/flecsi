@@ -19,11 +19,11 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/execution/context.h>
+#include <flecsi/execution/legion/execution/task_wrapper.h>
 #include <flecsi/execution/legion/invocation/init_args.h>
-#include <flecsi/execution/legion/reduction_wrapper.h>
 #include <flecsi/execution/legion/invocation/task_epilogue.h>
 #include <flecsi/execution/legion/invocation/task_prologue.h>
-#include <flecsi/execution/legion/execution/task_wrapper.h>
+#include <flecsi/execution/legion/reduction_wrapper.h>
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/flog.h>
 #endif

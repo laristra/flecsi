@@ -74,7 +74,8 @@ driver(int argc, char ** argv) {
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher index_launcher(context_t::instance().task_id(key_2),
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(0, 0), arg_map);
+    Legion::TaskArgument(0, 0),
+    arg_map);
 
   // index_launcher.tag=MAPPER_FORCE_RANK_MATCH;
   auto fm = runtime->execute_index_space(context, index_launcher);

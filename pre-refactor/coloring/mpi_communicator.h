@@ -111,9 +111,13 @@ public:
       flecsi::utils::mpi_typetraits_u<size_t>::type();
 
     // Send the request indices to all other ranks.
-    int result =
-      MPI_Alltoall(&input_indices[0], max_request_indices, mpi_size_t_type,
-        &info_indices[0], max_request_indices, mpi_size_t_type, MPI_COMM_WORLD);
+    int result = MPI_Alltoall(&input_indices[0],
+      max_request_indices,
+      mpi_size_t_type,
+      &info_indices[0],
+      max_request_indices,
+      mpi_size_t_type,
+      MPI_COMM_WORLD);
 
     return info_indices;
   } // get_info_indices
@@ -167,7 +171,8 @@ public:
     std::vector<size_t> info_offsets(colors * max_request_indices);
 
     // Reset input indices to use to send back information
-    std::fill(input_indices.begin(), input_indices.end(),
+    std::fill(input_indices.begin(),
+      input_indices.end(),
       std::numeric_limits<size_t>::max());
 
     // For the primary coloring, provide rank and entity information
@@ -206,14 +211,22 @@ public:
     } // for
 
     // Send the indices information back to all ranks.
-    int result =
-      MPI_Alltoall(&input_indices[0], max_request_indices, mpi_size_t_type,
-        &info_indices[0], max_request_indices, mpi_size_t_type, MPI_COMM_WORLD);
+    int result = MPI_Alltoall(&input_indices[0],
+      max_request_indices,
+      mpi_size_t_type,
+      &info_indices[0],
+      max_request_indices,
+      mpi_size_t_type,
+      MPI_COMM_WORLD);
 
     // Send the offsets information back to all ranks.
-    result =
-      MPI_Alltoall(&input_offsets[0], max_request_indices, mpi_size_t_type,
-        &info_offsets[0], max_request_indices, mpi_size_t_type, MPI_COMM_WORLD);
+    result = MPI_Alltoall(&input_offsets[0],
+      max_request_indices,
+      mpi_size_t_type,
+      &info_offsets[0],
+      max_request_indices,
+      mpi_size_t_type,
+      MPI_COMM_WORLD);
 
     std::set<entity_info_t> remote;
 
@@ -278,7 +291,8 @@ public:
       get_info_indices(request_indices, max_request_indices, colors);
 
     // Reset input indices to use to send back information
-    std::fill(input_indices.begin(), input_indices.end(),
+    std::fill(input_indices.begin(),
+      input_indices.end(),
       std::numeric_limits<size_t>::max());
 
     {
@@ -401,9 +415,13 @@ public:
 
     // Send the request size (in indices) to each rank.
     std::vector<size_t> recv_cnts(colors);
-    int result = MPI_Alltoall(&send_cnts[0], 1,
-      utils::mpi_typetraits_u<size_t>::type(), &recv_cnts[0], 1,
-      utils::mpi_typetraits_u<size_t>::type(), MPI_COMM_WORLD);
+    int result = MPI_Alltoall(&send_cnts[0],
+      1,
+      utils::mpi_typetraits_u<size_t>::type(),
+      &recv_cnts[0],
+      1,
+      utils::mpi_typetraits_u<size_t>::type(),
+      MPI_COMM_WORLD);
 
     // Start receive operations (non-blocking).
     std::vector<std::vector<size_t>> rbuffers(colors);
@@ -412,8 +430,12 @@ public:
       if(recv_cnts[r]) {
         rbuffers[r].resize(recv_cnts[r]);
         requests.push_back({});
-        MPI_Irecv(&rbuffers[r][0], recv_cnts[r],
-          utils::mpi_typetraits_u<size_t>::type(), r, 0, MPI_COMM_WORLD,
+        MPI_Irecv(&rbuffers[r][0],
+          recv_cnts[r],
+          utils::mpi_typetraits_u<size_t>::type(),
+          r,
+          0,
+          MPI_COMM_WORLD,
           &requests[requests.size() - 1]);
       } // if
     } // for
@@ -422,11 +444,16 @@ public:
     std::vector<std::vector<size_t>> sbuffers(colors);
     for(size_t r(0); r < colors; ++r) {
       if(send_cnts[r]) {
-        std::copy(request_indices[r].begin(), request_indices[r].end(),
+        std::copy(request_indices[r].begin(),
+          request_indices[r].end(),
           std::back_inserter(sbuffers[r]));
 
-        MPI_Send(&sbuffers[r][0], send_cnts[r],
-          utils::mpi_typetraits_u<size_t>::type(), r, 0, MPI_COMM_WORLD);
+        MPI_Send(&sbuffers[r][0],
+          send_cnts[r],
+          utils::mpi_typetraits_u<size_t>::type(),
+          r,
+          0,
+          MPI_COMM_WORLD);
       } // if
     } // for
 
@@ -462,8 +489,12 @@ public:
         // We're done with our receive buffers, so we can re-use them.
         rbuffers[r].resize(send_cnts[r], 0);
         requests.push_back({});
-        MPI_Irecv(&rbuffers[r][0], send_cnts[r],
-          utils::mpi_typetraits_u<size_t>::type(), r, 0, MPI_COMM_WORLD,
+        MPI_Irecv(&rbuffers[r][0],
+          send_cnts[r],
+          utils::mpi_typetraits_u<size_t>::type(),
+          r,
+          0,
+          MPI_COMM_WORLD,
           &requests[requests.size() - 1]);
       } // if
     } // for
@@ -472,8 +503,12 @@ public:
     for(size_t r(0); r < colors; ++r) {
       // If we received a request, prepare to send an answer.
       if(recv_cnts[r]) {
-        MPI_Send(&sbuffers[r][0], recv_cnts[r],
-          utils::mpi_typetraits_u<size_t>::type(), r, 0, MPI_COMM_WORLD);
+        MPI_Send(&sbuffers[r][0],
+          recv_cnts[r],
+          utils::mpi_typetraits_u<size_t>::type(),
+          r,
+          0,
+          MPI_COMM_WORLD);
       } // if
     } // for
 
@@ -512,8 +547,13 @@ public:
     const auto mpi_size_t_type =
       flecsi::utils::mpi_typetraits_u<size_t>::type();
 
-    int result = MPI_Allgather(&size, 1, mpi_size_t_type, buffer.data(), 1,
-      mpi_size_t_type, MPI_COMM_WORLD);
+    int result = MPI_Allgather(&size,
+      1,
+      mpi_size_t_type,
+      buffer.data(),
+      1,
+      mpi_size_t_type,
+      MPI_COMM_WORLD);
 
     return buffer;
   } // gather_sizes
@@ -624,8 +664,12 @@ public:
     // This may be inefficient, but this call is doing a reduction
     // to determine the maximum number of indices requested by any rank
     // so that we can pad out the all-to-all communication below.
-    int result = MPI_Allreduce(&request_indices, &max_request_indices, 1,
-      mpi_size_t_type, MPI_MAX, MPI_COMM_WORLD);
+    int result = MPI_Allreduce(&request_indices,
+      &max_request_indices,
+      1,
+      mpi_size_t_type,
+      MPI_MAX,
+      MPI_COMM_WORLD);
 
     return max_request_indices;
   } // get_max_request_size

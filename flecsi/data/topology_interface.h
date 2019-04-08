@@ -65,7 +65,8 @@ struct topology_interface_u {
 
     using registration_t =
       topology_registration_u<typename TOPOLOGY_TYPE::type_identifier_t,
-        NAMESPACE, NAME>;
+        NAMESPACE,
+        NAME>;
 
     const size_t type_key =
       typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();

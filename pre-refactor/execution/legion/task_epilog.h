@@ -126,8 +126,10 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
+    handle(reinterpret_cast<sparse_accessor<T,
+        EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS,
+        GHOST_PERMISSIONS> &>(a));
   } // handle
 
   template<typename T>

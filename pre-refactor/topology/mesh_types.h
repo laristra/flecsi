@@ -438,7 +438,11 @@ struct unserialize_dimensions_ {
     uint64_t & pos) {
     unserialize_dimension_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, DOM, DIM>(
       mesh, buf, pos);
-    unserialize_dimensions_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS, DOM,
+    unserialize_dimensions_<STORAGE_TYPE,
+      MESH_TYPE,
+      NUM_DOMAINS,
+      NUM_DIMS,
+      DOM,
       DIM + 1>::unserialize(mesh, buf, pos);
   }
 };
@@ -473,9 +477,16 @@ struct unserialize_domains_ {
   static void unserialize(mesh_topology_base_u<STORAGE_TYPE> & mesh,
     char * buf,
     uint64_t & pos) {
-    unserialize_dimensions_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS, DOM,
+    unserialize_dimensions_<STORAGE_TYPE,
+      MESH_TYPE,
+      NUM_DOMAINS,
+      NUM_DIMS,
+      DOM,
       0>::unserialize(mesh, buf, pos);
-    unserialize_domains_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS,
+    unserialize_domains_<STORAGE_TYPE,
+      MESH_TYPE,
+      NUM_DOMAINS,
+      NUM_DIMS,
       DOM + 1>::unserialize(mesh, buf, pos);
   }
 };

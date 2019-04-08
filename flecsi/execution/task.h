@@ -62,8 +62,9 @@ struct task_interface_u {
     RETURN (*DELEGATE)(ARG_TUPLE)>
   static decltype(auto)
   register_task(processor_type_t processor, launch_t launch, std::string name) {
-    return EXECUTION_POLICY::template register_task<KEY, RETURN, ARG_TUPLE,
-      DELEGATE>(processor, launch, name);
+    return EXECUTION_POLICY::
+      template register_task<KEY, RETURN, ARG_TUPLE, DELEGATE>(
+        processor, launch, name);
   } // register_task
 
   /*!
@@ -86,8 +87,9 @@ struct task_interface_u {
     typename ARG_TUPLE,
     typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
-    return EXECUTION_POLICY::template execute_task<LAUNCH, TASK, REDUCTION,
-      RETURN, ARG_TUPLE>(std::forward<ARGS>(args)...);
+    return EXECUTION_POLICY::
+      template execute_task<LAUNCH, TASK, REDUCTION, RETURN, ARG_TUPLE>(
+        std::forward<ARGS>(args)...);
   } // execute_task
 
   /*!

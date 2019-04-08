@@ -256,8 +256,13 @@ struct mpi_context_policy_t {
 
     field_metadata_t metadata;
 
-    register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
-      compact_origin_lengs, compact_origin_disps, compact_target_lengs,
+    register_field_metadata_<T>(metadata,
+      fid,
+      coloring_info,
+      index_coloring,
+      compact_origin_lengs,
+      compact_origin_disps,
+      compact_target_lengs,
       compact_target_disps);
 
     for(auto ghost_owner : coloring_info.ghost_owners) {
@@ -267,22 +272,28 @@ struct mpi_context_policy_t {
       MPI_Type_indexed(compact_origin_lengs[ghost_owner].size(),
         compact_origin_lengs[ghost_owner].data(),
         compact_origin_disps[ghost_owner].data(),
-        flecsi::utils::mpi_typetraits_u<T>::type(), &origin_type);
+        flecsi::utils::mpi_typetraits_u<T>::type(),
+        &origin_type);
       MPI_Type_commit(&origin_type);
       metadata.origin_types.insert({ghost_owner, origin_type});
 
       MPI_Type_indexed(compact_target_lengs[ghost_owner].size(),
         compact_target_lengs[ghost_owner].data(),
         compact_target_disps[ghost_owner].data(),
-        flecsi::utils::mpi_typetraits_u<T>::type(), &target_type);
+        flecsi::utils::mpi_typetraits_u<T>::type(),
+        &target_type);
       MPI_Type_commit(&target_type);
       metadata.target_types.insert({ghost_owner, target_type});
     }
 
     auto data = field_data[fid].data();
     auto shared_data = data + coloring_info.exclusive * sizeof(T);
-    MPI_Win_create(shared_data, coloring_info.shared * sizeof(T), sizeof(T),
-      MPI_INFO_NULL, MPI_COMM_WORLD, &metadata.win);
+    MPI_Win_create(shared_data,
+      coloring_info.shared * sizeof(T),
+      sizeof(T),
+      MPI_INFO_NULL,
+      MPI_COMM_WORLD,
+      &metadata.win);
 
     field_metadata.insert({fid, metadata});
   }
@@ -298,9 +309,14 @@ struct mpi_context_policy_t {
     const index_coloring_t & index_coloring) {
     sparse_field_metadata_t metadata;
 
-    register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
-      metadata.compact_origin_lengs, metadata.compact_origin_disps,
-      metadata.compact_target_lengs, metadata.compact_target_disps);
+    register_field_metadata_<T>(metadata,
+      fid,
+      coloring_info,
+      index_coloring,
+      metadata.compact_origin_lengs,
+      metadata.compact_origin_disps,
+      metadata.compact_target_lengs,
+      metadata.compact_target_disps);
 
     // Each shared and ghost cells element is an array of max_entries_per_index
     // of entry_value_t
@@ -316,7 +332,8 @@ struct mpi_context_policy_t {
         metadata.compact_origin_lengs[ghost_owner].data(),
         metadata.compact_origin_disps[ghost_owner].data(),
         // flecsi::utils::mpi_typetraits_u<T>::type(),
-        shared_ghost_type, &origin_type);
+        shared_ghost_type,
+        &origin_type);
       MPI_Type_commit(&origin_type);
       metadata.origin_types.insert({ghost_owner, origin_type});
 
@@ -324,7 +341,8 @@ struct mpi_context_policy_t {
         metadata.compact_target_lengs[ghost_owner].data(),
         metadata.compact_target_disps[ghost_owner].data(),
         // flecsi::utils::mpi_typetraits_u<T>::type(),
-        shared_ghost_type, &target_type);
+        shared_ghost_type,
+        &target_type);
       MPI_Type_commit(&target_type);
       metadata.target_types.insert({ghost_owner, target_type});
     }
@@ -375,9 +393,13 @@ struct mpi_context_policy_t {
     MPI_Group comm_grp;
     MPI_Comm_group(MPI_COMM_WORLD, &comm_grp);
 
-    MPI_Group_incl(comm_grp, shared_users.size(), shared_users.data(),
+    MPI_Group_incl(comm_grp,
+      shared_users.size(),
+      shared_users.data(),
       &metadata.shared_users_grp);
-    MPI_Group_incl(comm_grp, ghost_owners.size(), ghost_owners.data(),
+    MPI_Group_incl(comm_grp,
+      ghost_owners.size(),
+      ghost_owners.data(),
       &metadata.ghost_owners_grp);
 
     std::map<int, std::vector<int>> origin_lens;
@@ -546,10 +568,13 @@ struct mpi_context_policy_t {
     size_t max_entries_per_index,
     size_t exclusive_reserve) {
     // TODO: VERSIONS
-    sparse_field_data.emplace(
-      fid, sparse_field_data_t(type_size, coloring_info.exclusive,
-             coloring_info.shared, coloring_info.ghost, max_entries_per_index,
-             exclusive_reserve));
+    sparse_field_data.emplace(fid,
+      sparse_field_data_t(type_size,
+        coloring_info.exclusive,
+        coloring_info.shared,
+        coloring_info.ghost,
+        max_entries_per_index,
+        exclusive_reserve));
   }
 
   std::map<field_id_t, sparse_field_data_t> & registered_sparse_field_data() {

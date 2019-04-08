@@ -318,15 +318,23 @@ specialization_tlt_init(int argc, char ** argv) {
       clog_assert((all_cell_vars[2].label() == "temperature"), "");
 
       // test has_attribute_at(flagge,cells)
-      auto flagged_vars = flecsi_get_handles(m, hydro, double, dense, 0,
+      auto flagged_vars = flecsi_get_handles(m,
+        hydro,
+        double,
+        dense,
+        0,
         flecsi_has_attribute_at(flagged, cells),
         /* sorted */ true);
 
       clog_assert((flagged_vars.size() == 1), "");
       clog_assert((flagged_vars[0].label() == "pressure"), "");
 
-      auto all_flagged_vars = flecsi_get_handles_all(m, double, dense, 0,
-        flecsi_has_attribute_at(flagged, cells), /* sorted */ true);
+      auto all_flagged_vars = flecsi_get_handles_all(m,
+        double,
+        dense,
+        0,
+        flecsi_has_attribute_at(flagged, cells),
+        /* sorted */ true);
 
       clog_assert((all_flagged_vars.size() == 2), "");
       clog_assert((all_flagged_vars[0].label() == "pressure"), "");
@@ -390,7 +398,11 @@ specialization_tlt_init(int argc, char ** argv) {
       clog_assert((t.attributes().test(flagged)), "");
 
       // test has_attribute(flagge)
-      auto flagged_vars = flecsi_get_handles(m, hydro, double, global, 0,
+      auto flagged_vars = flecsi_get_handles(m,
+        hydro,
+        double,
+        global,
+        0,
         flecsi_has_attribute(flagged),
         /* sorted */ true);
 

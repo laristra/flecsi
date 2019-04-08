@@ -50,7 +50,8 @@ inline std::string __flecsi_tags = "all";
 inline void
 flecsi_mpi_add_options(options_description & desc) {
 #if defined(FLECSI_ENABLE_FLOG)
-  desc.add_options()("tags,t", value(&__flecsi_tags)->implicit_value("0"),
+  desc.add_options()("tags,t",
+    value(&__flecsi_tags)->implicit_value("0"),
     "Enable the specified output tags, e.g., --tags=tag1,tag2."
     " Passing --tags by itself will print the available tags.");
 #endif

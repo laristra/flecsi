@@ -36,7 +36,10 @@ inline std::set<T>
 set_intersection(const std::set<T> & s1, const std::set<T> & s2) {
   std::set<T> intersection;
 
-  std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(),
+  std::set_intersection(s1.begin(),
+    s1.end(),
+    s2.begin(),
+    s2.end(),
     std::inserter(intersection, intersection.begin()));
 
   return intersection;
@@ -57,7 +60,10 @@ inline std::set<T>
 set_union(const std::set<T> & s1, const std::set<T> & s2) {
   std::set<T> sunion;
 
-  std::set_union(s1.begin(), s1.end(), s2.begin(), s2.end(),
+  std::set_union(s1.begin(),
+    s1.end(),
+    s2.begin(),
+    s2.end(),
     std::inserter(sunion, sunion.begin()));
 
   return sunion;
@@ -78,7 +84,10 @@ inline std::set<T>
 set_difference(const std::set<T> & s1, const std::set<T> & s2) {
   std::set<T> difference;
 
-  std::set_difference(s1.begin(), s1.end(), s2.begin(), s2.end(),
+  std::set_difference(s1.begin(),
+    s1.end(),
+    s2.begin(),
+    s2.end(),
     std::inserter(difference, difference.begin()));
 
   return difference;

@@ -155,23 +155,34 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     const auto sparse_set_pos_id = context_.task_id<key>();
 
-    Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id, color_domain,
-      Legion::TaskArgument(nullptr, 0), Legion::ArgumentMap());
+    Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id,
+      color_domain,
+      Legion::TaskArgument(nullptr, 0),
+      Legion::ArgumentMap());
 
     sparse_pos_launcher
-      .add_region_requirement(Legion::RegionRequirement(
-        ispace_dmap[idx_space].ghost_lp, 0 /*projection ID*/, READ_ONLY,
-        EXCLUSIVE, ispace_dmap[idx_space].entire_region))
+      .add_region_requirement(
+        Legion::RegionRequirement(ispace_dmap[idx_space].ghost_lp,
+          0 /*projection ID*/,
+          READ_ONLY,
+          EXCLUSIVE,
+          ispace_dmap[idx_space].entire_region))
       .add_field(ghost_owner_pos_fid);
     sparse_pos_launcher
-      .add_region_requirement(Legion::RegionRequirement(
-        ispace_dmap[idx_space].ghost_owners_lp, 0 /*projection ID*/, READ_ONLY,
-        EXCLUSIVE, ispace_dmap[idx_space].entire_region))
+      .add_region_requirement(
+        Legion::RegionRequirement(ispace_dmap[idx_space].ghost_owners_lp,
+          0 /*projection ID*/,
+          READ_ONLY,
+          EXCLUSIVE,
+          ispace_dmap[idx_space].entire_region))
       .add_field(fid);
     sparse_pos_launcher
-      .add_region_requirement(Legion::RegionRequirement(
-        ispace_dmap[sparse_idx_space].ghost_lp, 0 /*projection ID*/,
-        WRITE_DISCARD, EXCLUSIVE, ispace_dmap[sparse_idx_space].entire_region))
+      .add_region_requirement(
+        Legion::RegionRequirement(ispace_dmap[sparse_idx_space].ghost_lp,
+          0 /*projection ID*/,
+          WRITE_DISCARD,
+          EXCLUSIVE,
+          ispace_dmap[sparse_idx_space].entire_region))
       .add_field(ghost_owner_pos_fid);
 
     sparse_pos_launcher.tag = MAPPER_FORCE_RANK_MATCH;
@@ -189,7 +200,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       runtime->create_partition_by_image(context,
         sis_primary_lr.get_index_space(),
         ispace_dmap[sparse_idx_space].ghost_lp,
-        ispace_dmap[sparse_idx_space].entire_region, ghost_owner_pos_fid,
+        ispace_dmap[sparse_idx_space].entire_region,
+        ghost_owner_pos_fid,
         is_of_colors);
 
     runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_owners_ip,
@@ -243,9 +255,15 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       size_t first = *first_itr;
 
       Legion::RegionRequirement rr_owners(ghost_owners_partitions[first],
-        0 /*projection ID*/, READ_ONLY, EXCLUSIVE, entire_regions[first]);
+        0 /*projection ID*/,
+        READ_ONLY,
+        EXCLUSIVE,
+        entire_regions[first]);
       Legion::RegionRequirement rr_ghost(ghost_partitions[first],
-        0 /*projection ID*/, READ_WRITE, EXCLUSIVE, entire_regions[first]);
+        0 /*projection ID*/,
+        READ_WRITE,
+        EXCLUSIVE,
+        entire_regions[first]);
 
       Legion::RegionRequirement rr_entries_shared;
 
@@ -253,12 +271,18 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       if(is_sparse) {
         rr_entries_shared =
-          Legion::RegionRequirement(ghost_owner_entries_partitions[first], 0,
-            READ_ONLY, SIMULTANEOUS, entries_regions[first]);
+          Legion::RegionRequirement(ghost_owner_entries_partitions[first],
+            0,
+            READ_ONLY,
+            SIMULTANEOUS,
+            entries_regions[first]);
 
         rr_entries_ghost =
-          Legion::RegionRequirement(ghost_entries_partitions[first], 0,
-            READ_WRITE, SIMULTANEOUS, entries_regions[first]);
+          Legion::RegionRequirement(ghost_entries_partitions[first],
+            0,
+            READ_WRITE,
+            SIMULTANEOUS,
+            entries_regions[first]);
       }
 
       auto ghost_owner_pos_fid =
@@ -274,12 +298,14 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       const auto ghost_copy_tid = flecsi_context.task_id<key>();
 
-      Legion::IndexLauncher ghost_launcher(ghost_copy_tid, color_domain,
+      Legion::IndexLauncher ghost_launcher(ghost_copy_tid,
+        color_domain,
         Legion::TaskArgument(&args[first], sizeof(args[first])),
         Legion::ArgumentMap());
 
       for(auto handle_itr = handle_groups[group].begin();
-          handle_itr != handle_groups[group].end(); handle_itr++) {
+          handle_itr != handle_groups[group].end();
+          handle_itr++) {
         size_t handle = *handle_itr;
 
         rr_owners.add_field(fids[handle]);
@@ -386,8 +412,10 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
+    handle(reinterpret_cast<sparse_accessor<T,
+        EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS,
+        GHOST_PERMISSIONS> &>(a));
   } // handle
 
   template<typename T>

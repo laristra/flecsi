@@ -332,7 +332,8 @@ hash(int argc, char ** argv) {
     // compute hash of string s and check whether it's already in the list
     auto hash = flecsi::utils::string_hash<std::size_t>(s, s.size());
     if(hashes.count(hash) > 0) {
-      printf("COLLISION: '%s' collides with '%s'\n", s.c_str(),
+      printf("COLLISION: '%s' collides with '%s'\n",
+        s.c_str(),
         hashes.at(hash).c_str());
       ++num_collisions;
     }

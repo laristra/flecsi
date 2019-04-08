@@ -22,11 +22,11 @@
  */
 
 #if !defined(__FLECSI_PRIVATE__)
-  #error Do not include this file directly!
+#error Do not include this file directly!
 #else
-  #include <flecsi/execution/context.h>
-  #include <flecsi/runtime/types.h>
-  #include <flecsi/utils/flog.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/flog.h>
 #endif
 
 flog_register_tag(storage_class_registration);
@@ -70,7 +70,7 @@ struct storage_class_registration_u {
   static void register_callback(size_t key, field_id_t fid) {
     field_info_t fi;
 
-      typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
+    typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
 
     fi.namespace_hash = NAMESPACE;
     fi.name_hash = NAME;
@@ -82,7 +82,8 @@ struct storage_class_registration_u {
 
     execution::context_t::instance().register_runtime_field_info(
       typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code(),
-      STORAGE_CLASS, fi);
+      STORAGE_CLASS,
+      fi);
   } // register_callback
 
 }; // class storage_class_registration_u

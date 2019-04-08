@@ -33,7 +33,9 @@ using control_t = flecsi::control::control_u<control_policy_t>;
       .phase_map(phase, EXPAND_AND_STRINGIFY(phase))                           \
       .initialize_node(                                                        \
         {flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),     \
-          EXPAND_AND_STRINGIFY(name), action, ##__VA_ARGS__});
+          EXPAND_AND_STRINGIFY(name),                                          \
+          action,                                                              \
+          ##__VA_ARGS__});
 
 #define add_dependency(phase, to, from)                                        \
   bool registered_##to##from =                                                 \

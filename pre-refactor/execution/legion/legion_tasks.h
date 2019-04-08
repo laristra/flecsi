@@ -86,7 +86,8 @@ void specialization_spmd_init(int argc, char ** argv);
                                                                                \
   /* Legion task template */                                                   \
   inline return_type task_name(const Legion::Task * task,                      \
-    const std::vector<Legion::PhysicalRegion> & regions, Legion::Context ctx,  \
+    const std::vector<Legion::PhysicalRegion> & regions,                       \
+    Legion::Context ctx,                                                       \
     Legion::Runtime * runtime)
 
 /*!
@@ -143,7 +144,8 @@ flecsi_internal_legion_task(owner_pos_correction_task, void) {
     region_idx++;
 
     for(LegionRuntime::Arrays::GenericPointInRectIterator<2> itr(ghost_rect);
-        itr; itr++) {
+        itr;
+        itr++) {
       auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
       LegionRuntime::Arrays::Point<2> old_location =
         ghost_ref_acc.read(ghost_ptr);
@@ -252,14 +254,16 @@ flecsi_internal_legion_task(owner_pos_compaction_task, void) {
       LegionRuntime::Arrays::GenericPointInRectIterator<2> expanded_itr(rect);
 
       for(auto exclusive_itr = idx_space.second.exclusive.begin();
-          exclusive_itr != idx_space.second.exclusive.end(); ++exclusive_itr) {
+          exclusive_itr != idx_space.second.exclusive.end();
+          ++exclusive_itr) {
         clog(trace) << my_color << " key " << idx_space.first << " exclusive "
                     << " " << *exclusive_itr << std::endl;
         expanded_itr++;
       } // exclusive_itr
 
       for(auto shared_itr = idx_space.second.shared.begin();
-          shared_itr != idx_space.second.shared.end(); ++shared_itr) {
+          shared_itr != idx_space.second.shared.end();
+          ++shared_itr) {
         const flecsi::coloring::entity_info_t shared = *shared_itr;
         const LegionRuntime::Arrays::Point<2> reference =
           LegionRuntime::Arrays::make_point(shared.rank, shared.offset);
@@ -275,7 +279,8 @@ flecsi_internal_legion_task(owner_pos_compaction_task, void) {
       } // shared_itr
 
       for(auto ghost_itr = idx_space.second.ghost.begin();
-          ghost_itr != idx_space.second.ghost.end(); ++ghost_itr) {
+          ghost_itr != idx_space.second.ghost.end();
+          ++ghost_itr) {
         const flecsi::coloring::entity_info_t ghost = *ghost_itr;
         const LegionRuntime::Arrays::Point<2> reference =
           LegionRuntime::Arrays::make_point(ghost.rank, ghost.offset);
@@ -357,10 +362,16 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
       clog_assert(fitr != iitr->second.end(), "invalid fid");
       const context_t::field_info_t & field_info = fitr->second;
 
-      const Legion::FieldAccessor<READ_ONLY, char, 2, Legion::coord_t,
+      const Legion::FieldAccessor<READ_ONLY,
+        char,
+        2,
+        Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         owner_acc(regions[0], fid, field_info.size);
-      const Legion::FieldAccessor<READ_WRITE, char, 2, Legion::coord_t,
+      const Legion::FieldAccessor<READ_WRITE,
+        char,
+        2,
+        Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         ghost_acc(regions[1], fid, field_info.size);
 
@@ -399,16 +410,28 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
       clog_assert(fitr != iitr->second.end(), "invalid fid");
       const context_t::field_info_t & field_info = fitr->second;
 
-      const Legion::FieldAccessor<READ_ONLY, char, 2, Legion::coord_t,
+      const Legion::FieldAccessor<READ_ONLY,
+        char,
+        2,
+        Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         owner_offset_acc(regions[0], fid, sizeof(offset_t));
-      const Legion::FieldAccessor<READ_WRITE, char, 2, Legion::coord_t,
+      const Legion::FieldAccessor<READ_WRITE,
+        char,
+        2,
+        Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         ghost_offset_acc(regions[1], fid, sizeof(offset_t));
-      const Legion::FieldAccessor<READ_ONLY, char, 2, Legion::coord_t,
+      const Legion::FieldAccessor<READ_ONLY,
+        char,
+        2,
+        Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         owner_acc(regions[2], fid, field_info.size + sizeof(size_t));
-      const Legion::FieldAccessor<READ_WRITE, char, 2, Legion::coord_t,
+      const Legion::FieldAccessor<READ_WRITE,
+        char,
+        2,
+        Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         ghost_acc(regions[3], fid, field_info.size + sizeof(size_t));
 
@@ -482,15 +505,21 @@ flecsi_internal_legion_task(sparse_set_owner_position_task, void) {
 
     Legion::FieldID fid = *(task->regions[1].privilege_fields.begin());
 
-    const Legion::FieldAccessor<READ_ONLY, offset_t, 2, Legion::coord_t,
+    const Legion::FieldAccessor<READ_ONLY,
+      offset_t,
+      2,
+      Legion::coord_t,
       Realm::AffineAccessor<offset_t, 2, Legion::coord_t>>
       owner_offset_acc(regions[1], fid, sizeof(offset_t));
 
-    Legion::FieldAccessor<READ_WRITE, LegionRuntime::Arrays::Point<2>, 2,
+    Legion::FieldAccessor<READ_WRITE,
+      LegionRuntime::Arrays::Point<2>,
+      2,
       Legion::coord_t,
-      Realm::AffineAccessor<LegionRuntime::Arrays::Point<2>, 2,
-        Legion::coord_t>>
-      ghost_entries_acc(regions[2], ghost_owner_pos_fid,
+      Realm::
+        AffineAccessor<LegionRuntime::Arrays::Point<2>, 2, Legion::coord_t>>
+      ghost_entries_acc(regions[2],
+        ghost_owner_pos_fid,
         sizeof(LegionRuntime::Arrays::Point<2>));
 
     std::vector<LegionRuntime::Arrays::Point<2>> owner_points;

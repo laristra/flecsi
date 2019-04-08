@@ -91,14 +91,16 @@ struct dense_handle_t : public dense_data_handle_u<T,
 
     if(base_t::exclusive_data) {
       if(base_t::exclusive_priv > privilege_t::ro) {
-        std::memcpy(base_t::exclusive_buf, base_t::exclusive_data,
+        std::memcpy(base_t::exclusive_buf,
+          base_t::exclusive_data,
           base_t::exclusive_size * sizeof(T));
       }
     }
 
     if(base_t::shared_data) {
       if(base_t::shared_priv > privilege_t::ro) {
-        std::memcpy(base_t::shared_buf, base_t::shared_data,
+        std::memcpy(base_t::shared_buf,
+          base_t::shared_data,
           base_t::shared_size * sizeof(T));
       }
     }

@@ -123,15 +123,35 @@ driver(int argc, char ** argv) {
     flecsi_get_handle(ch, name_space, vert_test, double, dense, VERT_ID);
 
   for(size_t cycle = 0; cycle < 3; cycle++) {
-    flecsi_execute_task_simple(set_primary_entities_task, index, handle,
-      test_handle, my_color, cycle, CELL_ID);
-    flecsi_execute_task_simple(check_entities_task, index, handle, test_handle,
-      my_color, cycle, CELL_ID);
+    flecsi_execute_task_simple(set_primary_entities_task,
+      index,
+      handle,
+      test_handle,
+      my_color,
+      cycle,
+      CELL_ID);
+    flecsi_execute_task_simple(check_entities_task,
+      index,
+      handle,
+      test_handle,
+      my_color,
+      cycle,
+      CELL_ID);
 
-    flecsi_execute_task_simple(set_primary_entities_task, index, vert_handle,
-      vtest_handle, my_color, cycle, VERT_ID);
-    flecsi_execute_task_simple(check_entities_task, index, vert_handle,
-      vtest_handle, my_color, cycle, VERT_ID);
+    flecsi_execute_task_simple(set_primary_entities_task,
+      index,
+      vert_handle,
+      vtest_handle,
+      my_color,
+      cycle,
+      VERT_ID);
+    flecsi_execute_task_simple(check_entities_task,
+      index,
+      vert_handle,
+      vtest_handle,
+      my_color,
+      cycle,
+      VERT_ID);
   }
 } // driver
 
@@ -216,8 +236,10 @@ add_colorings(int dummy) {
     clog_tag_guard(coloring);
 
     for(auto ci : closure_intersection_map) {
-      clog_container_one(info, "closure intersection color " << ci.first << ":",
-        ci.second, clog::space);
+      clog_container_one(info,
+        "closure intersection color " << ci.first << ":",
+        ci.second,
+        clog::space);
     } // for
   } // guard
 
@@ -568,7 +590,8 @@ set_primary_entities_task(
 
   index = 0;
   for(auto shared_itr = index_coloring->second.shared.begin();
-      shared_itr != index_coloring->second.shared.end(); ++shared_itr) {
+      shared_itr != index_coloring->second.shared.end();
+      ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
     clog(trace) << "Rank " << my_color << " shared " << shared.id << std::endl;
     cell_ID.shared(index) = shared.id + cycle;
@@ -577,7 +600,8 @@ set_primary_entities_task(
   } // shared_itr
 
   for(auto ghost_itr = index_coloring->second.ghost.begin();
-      ghost_itr != index_coloring->second.ghost.end(); ++ghost_itr) {
+      ghost_itr != index_coloring->second.ghost.end();
+      ++ghost_itr) {
     flecsi::coloring::entity_info_t ghost = *ghost_itr;
     clog(trace) << "Rank " << my_color << " ghost " << ghost.id << std::endl;
   } // ghost_itr
@@ -615,7 +639,8 @@ check_entities_task(
 
   index = 0;
   for(auto shared_itr = index_coloring->second.shared.begin();
-      shared_itr != index_coloring->second.shared.end(); ++shared_itr) {
+      shared_itr != index_coloring->second.shared.end();
+      ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
     ASSERT_EQ(cell_ID.shared(index), shared.id + cycle);
     ASSERT_EQ(test.shared(index), double(shared.id + cycle));
@@ -632,7 +657,8 @@ check_entities_task(
 
   index = 0;
   for(auto ghost_itr = index_coloring->second.ghost.begin();
-      ghost_itr != index_coloring->second.ghost.end(); ++ghost_itr) {
+      ghost_itr != index_coloring->second.ghost.end();
+      ++ghost_itr) {
     flecsi::coloring::entity_info_t ghost = *ghost_itr;
     ASSERT_EQ(cell_ID.ghost(index), ghost.id + cycle);
     ASSERT_EQ(test.ghost(index), double(ghost.id + cycle));

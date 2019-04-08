@@ -777,8 +777,13 @@ public:
   auto & cast() {
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
-    auto res = reinterpret_cast<index_space_u<S, STORAGE2, OWNED2, SORTED2, F2,
-      ID_STORAGE_TYPE2, STORAGE_TYPE2> *>(this);
+    auto res = reinterpret_cast<index_space_u<S,
+      STORAGE2,
+      OWNED2,
+      SORTED2,
+      F2,
+      ID_STORAGE_TYPE2,
+      STORAGE_TYPE2> *>(this);
     assert(res != nullptr && "invalid cast");
     return *res;
   }
@@ -798,8 +803,13 @@ public:
   auto & cast() const {
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
-    auto res = reinterpret_cast<index_space_u<S, STORAGE2, OWNED2, SORTED2, F2,
-      ID_STORAGE_TYPE2, STORAGE_TYPE2> *>(this);
+    auto res = reinterpret_cast<index_space_u<S,
+      STORAGE2,
+      OWNED2,
+      SORTED2,
+      F2,
+      ID_STORAGE_TYPE2,
+      STORAGE_TYPE2> *>(this);
     assert(res != nullptr && "invalid cast");
     return *res;
   }
@@ -890,7 +900,12 @@ public:
   //-----------------------------------------------------------------//
   template<class S = T>
   auto slice(size_t begin, size_t end) const {
-    return index_space_u<S, false, false, SORTED, F, ID_STORAGE_TYPE,
+    return index_space_u<S,
+      false,
+      false,
+      SORTED,
+      F,
+      ID_STORAGE_TYPE,
       STORAGE_TYPE>(*this, begin, end);
   }
 
@@ -904,7 +919,12 @@ public:
   //-----------------------------------------------------------------//
   template<class S = T>
   auto slice(const std::pair<size_t, size_t> & range) const {
-    return index_space_u<S, false, false, SORTED, F, ID_STORAGE_TYPE,
+    return index_space_u<S,
+      false,
+      false,
+      SORTED,
+      F,
+      ID_STORAGE_TYPE,
       STORAGE_TYPE>(*this, range.first, range.second);
   }
 
@@ -917,7 +937,12 @@ public:
   //-----------------------------------------------------------------//
   template<class S = T>
   auto slice() const {
-    return index_space_u<S, false, false, SORTED, F, ID_STORAGE_TYPE,
+    return index_space_u<S,
+      false,
+      false,
+      SORTED,
+      F,
+      ID_STORAGE_TYPE,
       STORAGE_TYPE>(*this, begin_, end_);
   }
 
@@ -1061,8 +1086,13 @@ public:
     F2,
     INDEX_STORAGE_TYPE2,
     STORAGE_TYPE2> & master) {
-    set_master(const_cast<index_space_u<T, STORAGE2, OWNED2, SORTED2, F2,
-        INDEX_STORAGE_TYPE2, STORAGE_TYPE2> &>(master));
+    set_master(const_cast<index_space_u<T,
+        STORAGE2,
+        OWNED2,
+        SORTED2,
+        F2,
+        INDEX_STORAGE_TYPE2,
+        STORAGE_TYPE2> &>(master));
   }
 
   //-----------------------------------------------------------------//

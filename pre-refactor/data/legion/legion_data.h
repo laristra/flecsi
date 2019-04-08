@@ -185,13 +185,15 @@ public:
     Domain dom(Domain::from_rect<1>(bounds));
 
     global_index_space_.index_space = runtime_->create_index_space(ctx_, dom);
-    attach_name(global_index_space_, global_index_space_.index_space,
+    attach_name(global_index_space_,
+      global_index_space_.index_space,
       "global index space");
 
     // Read user + FleCSI registered field spaces
     global_index_space_.field_space = runtime_->create_field_space(ctx_);
 
-    attach_name(global_index_space_, global_index_space_.field_space,
+    attach_name(global_index_space_,
+      global_index_space_.field_space,
       "global field space");
 
     FieldAllocator allocator =
@@ -207,7 +209,8 @@ public:
 
     global_index_space_.logical_region = runtime_->create_logical_region(
       ctx_, global_index_space_.index_space, global_index_space_.field_space);
-    attach_name(global_index_space_, global_index_space_.logical_region,
+    attach_name(global_index_space_,
+      global_index_space_.logical_region,
       "global logical region");
 
   } // init_global_handles
@@ -244,13 +247,15 @@ public:
 
       color_index_space_.index_space =
         runtime_->create_index_space(ctx_, color_domain_);
-      attach_name(color_index_space_, color_index_space_.index_space,
+      attach_name(color_index_space_,
+        color_index_space_.index_space,
         "color index space");
 
       // Read user + FleCSI registered field spaces
       color_index_space_.field_space = runtime_->create_field_space(ctx_);
 
-      attach_name(color_index_space_, color_index_space_.field_space,
+      attach_name(color_index_space_,
+        color_index_space_.field_space,
         "color field space");
     } // scope
 
@@ -436,8 +441,11 @@ public:
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
 
-    c.index_partition = runtime_->create_index_partition(ctx_, c.index_space,
-      color_domain_, color_partitioning, true /*disjoint*/);
+    c.index_partition = runtime_->create_index_partition(ctx_,
+      c.index_space,
+      color_domain_,
+      color_partitioning,
+      true /*disjoint*/);
     attach_name(c, c.index_partition, "color partitioning");
 
     adjacency_map_.emplace(adjacency_info.index_space, std::move(c));
@@ -492,8 +500,11 @@ public:
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
 
-    is.index_partition = runtime_->create_index_partition(ctx_, is.index_space,
-      color_domain_, color_partitioning, true /*disjoint*/);
+    is.index_partition = runtime_->create_index_partition(ctx_,
+      is.index_space,
+      color_domain_,
+      color_partitioning,
+      true /*disjoint*/);
 
     index_subspace_map_.emplace(info.index_subspace, std::move(is));
   }
@@ -622,7 +633,10 @@ public:
       { // scope
 
         is.color_partition = runtime_->create_index_partition(ctx_,
-          is.index_space, color_domain_, color_partitioning, true /*disjoint*/);
+          is.index_space,
+          color_domain_,
+          color_partitioning,
+          true /*disjoint*/);
         attach_name(is, is.color_partition, "color partitioning");
 
         LegionRuntime::Arrays::Rect<1> access_bounds(
@@ -630,9 +644,11 @@ public:
         Legion::Domain access_domain(
           Legion::Domain::from_rect<1>(access_bounds));
 
-        is.access_partition =
-          runtime_->create_index_partition(ctx_, is.index_space, access_domain,
-            access_partitioning, true /*disjoint*/);
+        is.access_partition = runtime_->create_index_partition(ctx_,
+          is.index_space,
+          access_domain,
+          access_partitioning,
+          true /*disjoint*/);
         attach_name(is, is.access_partition, "access partitioning");
 
         LogicalPartition access_lp = runtime_->get_logical_partition(
@@ -654,7 +670,9 @@ public:
         Legion::Domain owner_domain(Legion::Domain::from_rect<1>(owner_bounds));
 
         IndexPartition owner_partition = runtime_->create_index_partition(ctx_,
-          primary_region.get_index_space(), owner_domain, owner_partitioning,
+          primary_region.get_index_space(),
+          owner_domain,
+          owner_partitioning,
           true /*disjoint*/);
         attach_name(is, owner_partition, "owner partitioning");
 
@@ -663,23 +681,31 @@ public:
 
         IndexSpace primary_is = primary_region.get_index_space();
         is.primary_partition = runtime_->create_index_partition(ctx_,
-          primary_is, color_domain_, primary_partitioning, true /*disjoint*/);
+          primary_is,
+          color_domain_,
+          primary_partitioning,
+          true /*disjoint*/);
         attach_name(is, is.primary_partition, "primary partitioning");
 
         IndexSpace exclusive_is =
           runtime_
             ->get_logical_subregion_by_color(ctx_, owner_lp, EXCLUSIVE_OWNER)
             .get_index_space();
-        is.exclusive_partition =
-          runtime_->create_index_partition(ctx_, exclusive_is, color_domain_,
-            exclusive_partitioning, true /*disjoint*/);
+        is.exclusive_partition = runtime_->create_index_partition(ctx_,
+          exclusive_is,
+          color_domain_,
+          exclusive_partitioning,
+          true /*disjoint*/);
         attach_name(is, is.exclusive_partition, "exclusive partitioning");
 
         IndexSpace shared_is =
           runtime_->get_logical_subregion_by_color(ctx_, owner_lp, SHARED_OWNER)
             .get_index_space();
-        is.shared_partition = runtime_->create_index_partition(ctx_, shared_is,
-          color_domain_, shared_partitioning, true /*disjoint*/);
+        is.shared_partition = runtime_->create_index_partition(ctx_,
+          shared_is,
+          color_domain_,
+          shared_partitioning,
+          true /*disjoint*/);
         attach_name(is, is.shared_partition, "shared partitioning");
       } // scope
       if(sis) {
@@ -784,9 +810,11 @@ public:
             Domain::from_rect<2>(all_shared_rect);
         }
 
-        sis->color_partition =
-          runtime_->create_index_partition(ctx_, sis->index_space,
-            color_domain_, sis_color_partitioning, true /*disjoint*/);
+        sis->color_partition = runtime_->create_index_partition(ctx_,
+          sis->index_space,
+          color_domain_,
+          sis_color_partitioning,
+          true /*disjoint*/);
         attach_name(*sis, sis->color_partition, "color partitioning");
 
         LegionRuntime::Arrays::Rect<1> sis_access_bounds(
@@ -794,9 +822,11 @@ public:
         Legion::Domain sis_access_domain(
           Legion::Domain::from_rect<1>(sis_access_bounds));
 
-        sis->access_partition =
-          runtime_->create_index_partition(ctx_, sis->index_space,
-            sis_access_domain, sis_access_partitioning, true /*disjoint*/);
+        sis->access_partition = runtime_->create_index_partition(ctx_,
+          sis->index_space,
+          sis_access_domain,
+          sis_access_partitioning,
+          true /*disjoint*/);
         attach_name(*sis, sis->access_partition, "access partitioning");
 
         LogicalPartition sis_access_lp = runtime_->get_logical_partition(
@@ -811,9 +841,11 @@ public:
             ->get_logical_subregion_by_color(ctx_, sis_access_lp, GHOST_ACCESS)
             .get_index_space();
 
-        sis->ghost_partition =
-          runtime_->create_index_partition(ctx_, sis_ghost_is, color_domain_,
-            sis_ghost_partitioning, true /*disjoint*/);
+        sis->ghost_partition = runtime_->create_index_partition(ctx_,
+          sis_ghost_is,
+          color_domain_,
+          sis_ghost_partitioning,
+          true /*disjoint*/);
         attach_name(*sis, sis->ghost_partition, "ghost partitioning");
 
         LegionRuntime::Arrays::Rect<1> sis_owner_bounds(
@@ -821,45 +853,56 @@ public:
         Legion::Domain sis_owner_domain(
           Legion::Domain::from_rect<1>(sis_owner_bounds));
 
-        IndexPartition sis_owner_partition = runtime_->create_index_partition(
-          ctx_, sis_primary_region.get_index_space(), sis_owner_domain,
-          sis_owner_partitioning, true /*disjoint*/);
+        IndexPartition sis_owner_partition =
+          runtime_->create_index_partition(ctx_,
+            sis_primary_region.get_index_space(),
+            sis_owner_domain,
+            sis_owner_partitioning,
+            true /*disjoint*/);
         attach_name(*sis, sis_owner_partition, "owner partitioning");
 
         LogicalPartition sis_owner_lp = runtime_->get_logical_partition(
           ctx_, sis_primary_region, sis_owner_partition);
 
         IndexSpace sis_primary_is = sis_primary_region.get_index_space();
-        sis->primary_partition =
-          runtime_->create_index_partition(ctx_, sis_primary_is, color_domain_,
-            sis_primary_partitioning, true /*disjoint*/);
+        sis->primary_partition = runtime_->create_index_partition(ctx_,
+          sis_primary_is,
+          color_domain_,
+          sis_primary_partitioning,
+          true /*disjoint*/);
         attach_name(*sis, sis->primary_partition, "primary partitioning");
 
         IndexSpace sis_exclusive_is = runtime_
                                         ->get_logical_subregion_by_color(
                                           ctx_, sis_owner_lp, EXCLUSIVE_OWNER)
                                         .get_index_space();
-        sis->exclusive_partition =
-          runtime_->create_index_partition(ctx_, sis_exclusive_is,
-            color_domain_, sis_exclusive_partitioning, true /*disjoint*/);
+        sis->exclusive_partition = runtime_->create_index_partition(ctx_,
+          sis_exclusive_is,
+          color_domain_,
+          sis_exclusive_partitioning,
+          true /*disjoint*/);
         attach_name(*sis, sis->exclusive_partition, "exclusive partitioning");
 
         IndexSpace sis_shared_is =
           runtime_
             ->get_logical_subregion_by_color(ctx_, sis_owner_lp, SHARED_OWNER)
             .get_index_space();
-        sis->shared_partition =
-          runtime_->create_index_partition(ctx_, sis_shared_is, color_domain_,
-            sis_shared_partitioning, true /*disjoint*/);
+        sis->shared_partition = runtime_->create_index_partition(ctx_,
+          sis_shared_is,
+          color_domain_,
+          sis_shared_partitioning,
+          true /*disjoint*/);
         attach_name(*sis, sis->shared_partition, "shared partitioning");
 
         IndexSpace sis_all_shared_is =
           runtime_
             ->get_logical_subregion_by_color(ctx_, sis_owner_lp, SHARED_OWNER)
             .get_index_space();
-        sis->all_shared_partition =
-          runtime_->create_index_partition(ctx_, sis->index_space,
-            color_domain_, sis_all_shared_partitioning, false /*alias*/);
+        sis->all_shared_partition = runtime_->create_index_partition(ctx_,
+          sis->index_space,
+          color_domain_,
+          sis_all_shared_partitioning,
+          false /*alias*/);
         attach_name(*sis, sis->shared_partition, "shared partitioning");
       }
     }
@@ -878,14 +921,16 @@ public:
       } // for
       color_index_space_.logical_region = runtime_->create_logical_region(
         ctx_, color_index_space_.index_space, color_index_space_.field_space);
-      attach_name(color_index_space_, color_index_space_.logical_region,
+      attach_name(color_index_space_,
+        color_index_space_.logical_region,
         "color logical region");
 
       LegionRuntime::Arrays::Blockify<1> coloring(1);
       color_index_space_.color_partition = runtime_->create_index_partition(
         ctx_, color_index_space_.index_space, coloring);
 
-      attach_name(color_index_space_, color_index_space_.color_partition,
+      attach_name(color_index_space_,
+        color_index_space_.color_partition,
         "color partitioning");
     } // scope
 
@@ -958,13 +1003,15 @@ public:
 
     sparse_metadata_.index_space =
       runtime_->create_index_space(ctx_, expanded_dom);
-    attach_name(sparse_metadata_, sparse_metadata_.index_space,
+    attach_name(sparse_metadata_,
+      sparse_metadata_.index_space,
       "expanded sparse metadata index space");
 
     // Read user + FleCSI registered field spaces
     sparse_metadata_.field_space = runtime_->create_field_space(ctx_);
 
-    attach_name(sparse_metadata_, sparse_metadata_.field_space,
+    attach_name(sparse_metadata_,
+      sparse_metadata_.field_space,
       "expanded sparse metadata field space");
 
     FieldAllocator allocator =
@@ -980,7 +1027,8 @@ public:
     sparse_metadata_.logical_region = runtime_->create_logical_region(
       ctx_, sparse_metadata_.index_space, sparse_metadata_.field_space);
 
-    attach_name(sparse_metadata_, sparse_metadata_.logical_region,
+    attach_name(sparse_metadata_,
+      sparse_metadata_.logical_region,
       "expanded sparse metadata logical region");
 
     DomainColoring color_partitioning;
@@ -991,11 +1039,14 @@ public:
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
 
-    sparse_metadata_.index_partition =
-      runtime_->create_index_partition(ctx_, sparse_metadata_.index_space,
-        color_domain_, color_partitioning, true /*disjoint*/);
+    sparse_metadata_.index_partition = runtime_->create_index_partition(ctx_,
+      sparse_metadata_.index_space,
+      color_domain_,
+      color_partitioning,
+      true /*disjoint*/);
 
-    attach_name(sparse_metadata_, sparse_metadata_.index_partition,
+    attach_name(sparse_metadata_,
+      sparse_metadata_.index_partition,
       "sparse metadata color partitioning");
 
     sparse_metadata_.logical_partition = runtime_->get_logical_partition(

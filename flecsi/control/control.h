@@ -64,16 +64,20 @@ struct control_u : public CONTROL_POLICY {
   } // instance
 
   /*!
-    Allow control points to set the exit status for execution.    
+    Allow control points to set the exit status for execution.
    */
 
-  int exit_status() const { return exit_status_; }
+  int exit_status() const {
+    return exit_status_;
+  }
 
   /*!
-    Allow control points to set the exit status for execution.    
+    Allow control points to set the exit status for execution.
    */
 
-  int & exit_status() { return exit_status_; }
+  int & exit_status() {
+    return exit_status_;
+  }
 
   /*!
     Execute the control flow graph.
@@ -224,7 +228,8 @@ private:
   }                                                                            \
                                                                                \
   inline cinch::runtime_handler_t flecsi_control_handler{                      \
-    flecsi_control_initialize, flecsi_control_finalize,                        \
+    flecsi_control_initialize,                                                 \
+    flecsi_control_finalize,                                                   \
     flecsi_control_add_options};                                               \
                                                                                \
   cinch_append_runtime_handler(flecsi_control_handler);

@@ -94,8 +94,14 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     MPI_Win_start(field_metadata.ghost_owners_grp, 0, win);
 
     for(auto ghost_owner : my_coloring_info.ghost_owners) {
-      MPI_Get(h.ghost_data, 1, field_metadata.origin_types[ghost_owner],
-        ghost_owner, 0, 1, field_metadata.target_types[ghost_owner], win);
+      MPI_Get(h.ghost_data,
+        1,
+        field_metadata.origin_types[ghost_owner],
+        ghost_owner,
+        0,
+        1,
+        field_metadata.target_types[ghost_owner],
+        win);
     }
 
     MPI_Win_complete(win);
@@ -112,7 +118,10 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
     auto & context = context_t::instance();
     const int my_color = context.color();
-    MPI_Bcast(&a.data(), 1, flecsi::coloring::mpi_typetraits_u<T>::type(), 0,
+    MPI_Bcast(&a.data(),
+      1,
+      flecsi::coloring::mpi_typetraits_u<T>::type(),
+      0,
       MPI_COMM_WORLD);
   } // handle
 
@@ -155,7 +164,10 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     MPI_Win win;
     MPI_Win_create(shared_data,
       sizeof(entry_value_t) * h.num_shared_ * h.max_entries_per_index,
-      sizeof(entry_value_t), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+      sizeof(entry_value_t),
+      MPI_INFO_NULL,
+      MPI_COMM_WORLD,
+      &win);
 
     MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
     MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
@@ -164,9 +176,14 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     for(auto & ghost : index_coloring.ghost) {
       clog_rank(warn, 0) << "ghost id: " << ghost.id << ", rank: " << ghost.rank
                          << ", offset: " << ghost.offset << std::endl;
-      MPI_Get(&ghost_data[i * h.max_entries_per_index], h.max_entries_per_index,
-        shared_ghost_type, ghost.rank, ghost.offset * h.max_entries_per_index,
-        h.max_entries_per_index, shared_ghost_type, win);
+      MPI_Get(&ghost_data[i * h.max_entries_per_index],
+        h.max_entries_per_index,
+        shared_ghost_type,
+        ghost.rank,
+        ghost.offset * h.max_entries_per_index,
+        h.max_entries_per_index,
+        shared_ghost_type,
+        win);
       i++;
     }
 
@@ -198,9 +215,13 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     i = 0;
     for(auto & shared : index_coloring.shared) {
       for(auto peer : shared.shared) {
-        MPI_Isend(&send_count_buf[i], 1,
-          flecsi::coloring::mpi_typetraits_u<uint32_t>::type(), peer, shared.id,
-          MPI_COMM_WORLD, &requests[i]);
+        MPI_Isend(&send_count_buf[i],
+          1,
+          flecsi::coloring::mpi_typetraits_u<uint32_t>::type(),
+          peer,
+          shared.id,
+          MPI_COMM_WORLD,
+          &requests[i]);
         i++;
       }
     }
@@ -209,9 +230,13 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     i = 0;
     for(auto & ghost : index_coloring.ghost) {
       MPI_Status status;
-      MPI_Irecv(&recv_count_buf[i], 1,
-        flecsi::coloring::mpi_typetraits_u<uint32_t>::type(), ghost.rank,
-        ghost.id, MPI_COMM_WORLD, &requests[i + send_count]);
+      MPI_Irecv(&recv_count_buf[i],
+        1,
+        flecsi::coloring::mpi_typetraits_u<uint32_t>::type(),
+        ghost.rank,
+        ghost.id,
+        MPI_COMM_WORLD,
+        &requests[i + send_count]);
       i++;
     }
 
@@ -264,8 +289,10 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
+    handle(reinterpret_cast<sparse_accessor<T,
+        EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS,
+        GHOST_PERMISSIONS> &>(a));
   } // handle
 
   /*!

@@ -18,9 +18,9 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include <flecsi/data/legion/runtime_data.h>
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
-#include <flecsi/data/legion/runtime_data.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
 #endif

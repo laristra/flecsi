@@ -68,7 +68,8 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   std::tuple<flecsi::topology::index_space_<index>,                            \
-    flecsi::topology::domain_<domain>, type>
+    flecsi::topology::domain_<domain>,                                         \
+    type>
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_entity_types
@@ -97,7 +98,9 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   std::tuple<flecsi::topology::index_space_<index>,                            \
-    flecsi::topology::domain_<domain>, from_type, to_type>
+    flecsi::topology::domain_<domain>,                                         \
+    from_type,                                                                 \
+    to_type>
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_bindings
@@ -127,4 +130,6 @@
                                                                                \
   std::tuple<flecsi::topology::index_space_<index>,                            \
     flecsi::topology::domain_<from_domain>,                                    \
-    flecsi::topology::domain_<to_domain>, from_type, to_type>
+    flecsi::topology::domain_<to_domain>,                                      \
+    from_type,                                                                 \
+    to_type>

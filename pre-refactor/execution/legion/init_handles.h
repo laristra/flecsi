@@ -388,8 +388,16 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       ent.num_shared = coloring.shared.size();
       ent.num_ghost = coloring.ghost.size();
 
-      storage->init_entities(ent.domain, ent.dim, ents, ids, ent.size, num_ents,
-        ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
+      storage->init_entities(ent.domain,
+        ent.dim,
+        ents,
+        ids,
+        ent.size,
+        num_ents,
+        ent.num_exclusive,
+        ent.num_shared,
+        ent.num_ghost,
+        _read);
 
       ++region;
     } // for
@@ -438,8 +446,15 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       adj.num_indices = num_indices;
 
-      storage->init_connectivity(adj.from_domain, adj.to_domain, adj.from_dim,
-        adj.to_dim, offsets, num_offsets, indices, num_indices, _read);
+      storage->init_connectivity(adj.from_domain,
+        adj.to_domain,
+        adj.from_dim,
+        adj.to_dim,
+        offsets,
+        num_offsets,
+        indices,
+        num_indices,
+        _read);
 
       ++region;
     } // for
@@ -463,8 +478,13 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
-      storage->init_index_subspace(iss.index_space, iss.index_subspace,
-        iss.domain, iss.dim, ids, num_indices, _read);
+      storage->init_index_subspace(iss.index_space,
+        iss.index_subspace,
+        iss.domain,
+        iss.dim,
+        ids,
+        num_indices,
+        _read);
 
       ++region;
     }
@@ -637,7 +657,8 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     pos = 0;
 
     for(size_t r{0}; r < num_regions; ++r) {
-      std::memcpy(entries + pos, entries_data[r],
+      std::memcpy(entries + pos,
+        entries_data[r],
         entries_sizes[r] * sizeof(entry_value_t));
       pos += entries_sizes[r];
     }
@@ -655,8 +676,10 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
+    handle(reinterpret_cast<sparse_accessor<T,
+        EXCLUSIVE_PERMISSIONS,
+        SHARED_PERMISSIONS,
+        GHOST_PERMISSIONS> &>(a));
   } // handle
 
   template<typename T>
@@ -690,7 +713,8 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       h.metadata = md;
       h.reserve = md->reserve;
 
-      h.init(md->num_exclusive, md->num_shared,
+      h.init(md->num_exclusive,
+        md->num_shared,
         md->num_ghost); //, md->max_entries_per_index, h.slots);
     }
 
@@ -733,7 +757,8 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     if(md->initialized) {
       for(size_t r{0}; r < num_regions; ++r) {
-        std::memcpy(h.offsets + pos, offsets_data[r],
+        std::memcpy(h.offsets + pos,
+          offsets_data[r],
           offsets_sizes[r] * sizeof(offset_t));
         pos += offsets_sizes[r];
       }
@@ -776,13 +801,15 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     entry_value_t * entries = new entry_value_t[h.entries_size];
 
-    std::memcpy(entries, entries_data[0],
+    std::memcpy(entries,
+      entries_data[0],
       md->num_exclusive_filled * sizeof(entry_value_t));
 
     pos = entries_sizes[0];
 
     for(size_t r{1}; r < num_regions; ++r) {
-      std::memcpy(entries + pos, entries_data[r],
+      std::memcpy(entries + pos,
+        entries_data[r],
         entries_sizes[r] * sizeof(entry_value_t));
       pos += entries_sizes[r];
     }

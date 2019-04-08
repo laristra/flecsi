@@ -94,7 +94,9 @@ struct accessor_u<data::sparse,
     entry_value_t * start = handle.entries + oi.start();
     entry_value_t * end = start + oi.count();
 
-    entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
+    entry_value_t * itr = std::lower_bound(start,
+      end,
+      entry_value_t(entry),
       [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
         return k1.entry < k2.entry;
       });
@@ -190,7 +192,9 @@ struct accessor_u<data::sparse,
       entry_value_t * start = handle.entries + oi.start();
       entry_value_t * end = start + oi.count();
 
-      if(std::binary_search(start, end, entry_value_t(entry),
+      if(std::binary_search(start,
+           end,
+           entry_value_t(entry),
            [](const auto & k1, const auto & k2) -> bool {
              return k1.entry < k2.entry;
            })) {

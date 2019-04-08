@@ -991,8 +991,11 @@ public:
     assert(
       num_dimensions == MESH_TYPE::num_dimensions && "dimension size mismatch");
 
-    unserialize_domains_<storage_t, MESH_TYPE, MESH_TYPE::num_domains,
-      MESH_TYPE::num_dimensions, 0>::unserialize(*this, buf, pos);
+    unserialize_domains_<storage_t,
+      MESH_TYPE,
+      MESH_TYPE::num_domains,
+      MESH_TYPE::num_dimensions,
+      0>::unserialize(*this, buf, pos);
 
     for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
         ++from_domain) {
@@ -1047,7 +1050,8 @@ public:
 
     constexpr size_t subspace_index =
       find_index_subspace_from_id_u<std::tuple_size<index_subspaces>::value,
-        index_subspaces, INDEX_SUBSPACE>::find();
+        index_subspaces,
+        INDEX_SUBSPACE>::find();
 
     static_assert(subspace_index != -1, "invalid index subspace");
 
@@ -1059,7 +1063,8 @@ public:
 
     constexpr size_t index =
       find_index_space_from_id_u<std::tuple_size<entity_types_t>::value,
-        entity_types_t, index_space_t::value>::find();
+        entity_types_t,
+        index_space_t::value>::find();
 
     // never gonna happen since index is a size_t, and cant be negative
     static_assert(index != -1, "invalid index space");
@@ -1082,7 +1087,8 @@ public:
 
     constexpr size_t subspace_index =
       find_index_subspace_from_id_u<std::tuple_size<index_subspaces>::value,
-        index_subspaces, INDEX_SUBSPACE>::find();
+        index_subspaces,
+        INDEX_SUBSPACE>::find();
 
     static_assert(subspace_index != -1, "invalid index subspace");
 
@@ -1094,7 +1100,8 @@ public:
 
     constexpr size_t index =
       find_index_space_from_id_u<std::tuple_size<entity_types_t>::value,
-        entity_types_t, index_space_t::value>::find();
+        entity_types_t,
+        index_space_t::value>::find();
 
     // never gonna happen since index is a size_t, and cant be negative
     static_assert(index != -1, "invalid index space");
@@ -1245,18 +1252,24 @@ private:
     // Lookup the index space for the entity type being created.
     constexpr size_t cell_index_space = find_index_space_from_dimension_u<
       std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types, UsingDimension, Domain>::find();
+      typename MESH_TYPE::entity_types,
+      UsingDimension,
+      Domain>::find();
 
     // Lookup the index space for the vertices from the mesh
     // specialization.
     constexpr size_t vertex_index_space = find_index_space_from_dimension_u<
       std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types, 0, Domain>::find();
+      typename MESH_TYPE::entity_types,
+      0,
+      Domain>::find();
 
     // Lookup the index space for the entity type being created.
     constexpr size_t entity_index_space = find_index_space_from_dimension_u<
       std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types, DimensionToBuild, Domain>::find();
+      typename MESH_TYPE::entity_types,
+      DimensionToBuild,
+      Domain>::find();
 
     // get the global to local index space map
     auto & context_ = flecsi::execution::context_t::instance();
@@ -1466,7 +1479,9 @@ private:
     // find the from index space and get the mapping from global to local
     constexpr size_t to_index_space = find_index_space_from_dimension_u<
       std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types, TO_DIM, TO_DOM>::find();
+      typename MESH_TYPE::entity_types,
+      TO_DIM,
+      TO_DOM>::find();
 
     const auto & to_cis_to_gis = context_.index_map(to_index_space);
 
@@ -1481,11 +1496,13 @@ private:
         return std::make_pair(to_cis_to_gis.at(id.entity()), id);
       });
       // sort via global id
-      std::sort(gids.begin(), gids.end(),
-        [](auto a, auto b) { return a.first < b.first; });
+      std::sort(gids.begin(), gids.end(), [](auto a, auto b) {
+        return a.first < b.first;
+      });
       // upack the results
-      std::transform(gids.begin(), gids.end(), conn,
-        [](auto id_pair) { return id_pair.second; });
+      std::transform(gids.begin(), gids.end(), conn, [](auto id_pair) {
+        return id_pair.second;
+      });
     }
   } // transpose
 
@@ -1587,16 +1604,20 @@ private:
             // If from vertices contains the to vertices add to id
             // to this connection set
             if(DIM < TO_DIM) {
-              if(std::includes(from_verts.begin(), from_verts.end(),
-                   to_verts.begin(), to_verts.end()))
+              if(std::includes(from_verts.begin(),
+                   from_verts.end(),
+                   to_verts.begin(),
+                   to_verts.end()))
                 ents.emplace_back(to_id);
             }
             // If we are going through a higher level, then set
             // intersection is sufficient. i.e. one set does not need to
             // be a subset of the other
             else {
-              if(utils::intersects(from_verts.begin(), from_verts.end(),
-                   to_verts.begin(), to_verts.end()))
+              if(utils::intersects(from_verts.begin(),
+                   from_verts.end(),
+                   to_verts.begin(),
+                   to_verts.end()))
                 ents.emplace_back(to_id);
             } // if
 
@@ -1642,12 +1663,17 @@ private:
         !get_connectivity_(DOM, MESH_TYPE::num_dimensions - 1, 0).empty() &&
         " need at least edges(2d)/faces(3) -> vertex connectivity");
       // assume we have cell -> faces, so invert it to get faces -> cells
-      transpose<DOM, DOM, MESH_TYPE::num_dimensions - 1,
+      transpose<DOM,
+        DOM,
+        MESH_TYPE::num_dimensions - 1,
         MESH_TYPE::num_dimensions>();
       // invert faces -> vertices to get vertices -> faces
       transpose<DOM, DOM, 0, MESH_TYPE::num_dimensions - 1>();
       // build cells -> vertices via intersections with faces
-      intersect<DOM, DOM, MESH_TYPE::num_dimensions, 0,
+      intersect<DOM,
+        DOM,
+        MESH_TYPE::num_dimensions,
+        0,
         MESH_TYPE::num_dimensions - 1>();
     }
 
@@ -1828,7 +1854,9 @@ private:
     // Lookup the index space for the cell type.
     constexpr auto cell_index_space = find_index_space_from_dimension_u<
       std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types, cell_dim, FROM_DOM>::find();
+      typename MESH_TYPE::entity_types,
+      cell_dim,
+      FROM_DOM>::find();
 
     // lookup all primal index spaces in the FROM_DOM
     auto entity_index_spaces =
@@ -1837,7 +1865,9 @@ private:
     // Lookup the index space for the entity type being created.
     constexpr auto binding_index_space = find_index_space_from_dimension_u<
       std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types, TO_DIM, TO_DOM>::find();
+      typename MESH_TYPE::entity_types,
+      TO_DIM,
+      TO_DOM>::find();
 
     // get the primal mesh connectivity and the domain connectivity
     domain_connectivity_u<num_dims> & primal_conn =
@@ -1907,9 +1937,13 @@ private:
       // new_entity_connection_ids:   A std::vector of id_t containing
       //                              the ids of the entities that define
       //                              the bound entity.
-      auto new_binding_connection_sizes =
-        cell->create_bound_entities(FROM_DOM, TO_DOM, TO_DIM, cell_id,
-          primal_conn, domain_conn, new_binding_connection_ids.data());
+      auto new_binding_connection_sizes = cell->create_bound_entities(FROM_DOM,
+        TO_DOM,
+        TO_DIM,
+        cell_id,
+        primal_conn,
+        domain_conn,
+        new_binding_connection_ids.data());
 
       auto num_new_bindings = new_binding_connection_sizes.size();
 

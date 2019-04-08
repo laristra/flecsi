@@ -87,7 +87,12 @@ struct field_interface_u {
       "max field versions exceeded");
 
     using registration_t = storage_class_registration_u<TOPOLOGY_TYPE,
-      STORAGE_CLASS, DATA_TYPE, NAMESPACE, NAME, VERSIONS, INDEX_SPACE>;
+      STORAGE_CLASS,
+      DATA_TYPE,
+      NAMESPACE,
+      NAME,
+      VERSIONS,
+      INDEX_SPACE>;
 
     const size_t client_type_key =
       typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
@@ -138,8 +143,8 @@ struct field_interface_u {
       typename DATA_POLICY::template storage_class_u<STORAGE_CLASS,
         TOPOLOGY_TYPE>;
 
-    return storage_class_t::template get_handle<DATA_TYPE, NAMESPACE, NAME,
-      VERSION>(topology);
+    return storage_class_t::
+      template get_handle<DATA_TYPE, NAMESPACE, NAME, VERSION>(topology);
   } // get_field
 
 #if 0

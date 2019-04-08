@@ -635,8 +635,14 @@ private:
                         ? new packet_t[mpi_state_t::instance().size()]         \
                         : nullptr;                                             \
                                                                                \
-    MPI_Gather(pkt.data(), pkt.bytes(), MPI_BYTE, pkts, pkt.bytes(), MPI_BYTE, \
-      0, MPI_COMM_WORLD);                                                      \
+    MPI_Gather(pkt.data(),                                                     \
+      pkt.bytes(),                                                             \
+      MPI_BYTE,                                                                \
+      pkts,                                                                    \
+      pkt.bytes(),                                                             \
+      MPI_BYTE,                                                                \
+      0,                                                                       \
+      MPI_COMM_WORLD);                                                         \
                                                                                \
     if(mpi_state_t::instance().rank() == 0) {                                  \
                                                                                \

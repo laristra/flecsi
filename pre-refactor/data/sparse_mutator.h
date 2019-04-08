@@ -71,7 +71,9 @@ struct mutator_u<data::sparse, T> : public mutator_u<data::base, T>,
     entry_value_t * start = h_.entries_ + index * h_.num_slots_;
     entry_value_t * end = start + n;
 
-    entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
+    entry_value_t * itr = std::lower_bound(start,
+      end,
+      entry_value_t(entry),
       [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
         return e1.entry < e2.entry;
       });

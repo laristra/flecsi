@@ -133,9 +133,11 @@ TEST(mesh_topology, traversal) {
     for(size_t i = 0; i < width; ++i) {
       auto c = mesh->template make<Cell>();
 
-      mesh->init_cell<0>(
-        c, {vs[i + j * width1], vs[i + (j + 1) * width1],
-             vs[i + 1 + j * width1], vs[i + 1 + (j + 1) * width1]});
+      mesh->init_cell<0>(c,
+        {vs[i + j * width1],
+          vs[i + (j + 1) * width1],
+          vs[i + 1 + j * width1],
+          vs[i + 1 + (j + 1) * width1]});
     }
   }
 

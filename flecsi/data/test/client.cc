@@ -13,8 +13,8 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/execution.h>
 #include <flecsi/data/data.h>
+#include <flecsi/execution/execution.h>
 #include <flecsi/utils/demangle.h>
 #include <flecsi/utils/ftest.h>
 
@@ -27,7 +27,8 @@ using global_accessor_u = flecsi::data::global_accessor_u<double, PRIVILEGES>;
 
 namespace global_test {
 
-void global_task(global_accessor_u<rw> ga, double value) {
+void
+global_task(global_accessor_u<rw> ga, double value) {
   ga = value;
 } // global_task
 

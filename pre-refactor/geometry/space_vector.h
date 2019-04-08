@@ -151,7 +151,8 @@ normal(const point_u<T, 2> & a, const point_u<T, 2> & b) {
 template<typename T>
 space_vector<T, 3>
 normal(const space_vector<T, 3> & a, const space_vector<T, 3> & b) {
-  space_vector<T, 3> tmp(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2],
+  space_vector<T, 3> tmp(a[1] * b[2] - a[2] * b[1],
+    a[2] * b[0] - a[0] * b[2],
     a[0] * b[1] - a[1] * b[0]);
   return tmp;
 } // normal

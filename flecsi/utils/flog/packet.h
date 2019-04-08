@@ -71,7 +71,8 @@ struct packet_t {
     } // if
 
     strncpy(data_, reinterpret_cast<const char *>(&stamp.tv_sec), sec_bytes);
-    strncpy(data_ + sec_bytes, reinterpret_cast<const char *>(&stamp.tv_usec),
+    strncpy(data_ + sec_bytes,
+      reinterpret_cast<const char *>(&stamp.tv_usec),
       usec_bytes);
 
     std::ostringstream oss;

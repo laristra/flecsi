@@ -20,7 +20,7 @@
 #include "flog/utils.h"
 
 #if defined(FLECSI_ENABLE_FLOG)
-  #include "flog/message.h"
+#include "flog/message.h"
 #endif
 
 #include <iostream>
@@ -290,7 +290,7 @@
 #define fixme() flog(warn)
 
 #if defined FLECSI_ENABLE_BOOST
-  #include <boost/stacktrace.hpp>
+#include <boost/stacktrace.hpp>
 #endif
 
 namespace flecsi {
@@ -298,26 +298,30 @@ namespace utils {
 namespace flog {
 
 #if defined FLECSI_ENABLE_BOOST
-inline void dumpstack() {
+inline void
+dumpstack() {
 #if !defined(NDEBUG)
-  std::cerr << FLOG_OUTPUT_RED("FleCSI Runtime: std::abort called.") <<
-    std::endl << FLOG_OUTPUT_GREEN("Dumping stacktrace...") << std::endl;
+  std::cerr << FLOG_OUTPUT_RED("FleCSI Runtime: std::abort called.")
+            << std::endl
+            << FLOG_OUTPUT_GREEN("Dumping stacktrace...") << std::endl;
   std::cerr << boost::stacktrace::stacktrace() << std::endl;
 #else
-  std::cerr << FLOG_OUTPUT_RED("FleCSI Runtime: std::abort called.") <<
-    std::endl <<
-    FLOG_OUTPUT_BROWN("Build with '-DCMAKE_BUILD_TYPE=Debug'" <<
-      " to enable FleCSI runtime stacktrace.") <<
-    std::endl;
+  std::cerr << FLOG_OUTPUT_RED("FleCSI Runtime: std::abort called.")
+            << std::endl
+            << FLOG_OUTPUT_BROWN("Build with '-DCMAKE_BUILD_TYPE=Debug'"
+                                 << " to enable FleCSI runtime stacktrace.")
+            << std::endl;
 #endif
 }
 #else
-inline void dumpstack() {
-  std::cerr << FLOG_OUTPUT_RED("FleCSI Runtime: std::abort called.") <<
-    std::endl <<
-    FLOG_OUTPUT_BROWN("Build with '-DCMAKE_BUILD_TYPE=Debug' and" <<
-      "'-DENABLE_BOOST=On' to enable FleCSI runtime stacktrace.") <<
-    std::endl;
+inline void
+dumpstack() {
+  std::cerr << FLOG_OUTPUT_RED("FleCSI Runtime: std::abort called.")
+            << std::endl
+            << FLOG_OUTPUT_BROWN(
+                 "Build with '-DCMAKE_BUILD_TYPE=Debug' and"
+                 << "'-DENABLE_BOOST=On' to enable FleCSI runtime stacktrace.")
+            << std::endl;
 }
 #endif
 

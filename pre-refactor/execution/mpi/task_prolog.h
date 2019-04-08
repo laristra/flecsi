@@ -182,8 +182,16 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         registered_field_data[ent.id_fid].data());
 
       // new allocation every time.
-      storage->init_entities(ent.domain, ent.dim, ents, ids, ent.size,
-        num_entities, ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
+      storage->init_entities(ent.domain,
+        ent.dim,
+        ents,
+        ids,
+        ent.size,
+        num_entities,
+        ent.num_exclusive,
+        ent.num_shared,
+        ent.num_ghost,
+        _read);
     } // for
 
     for(size_t i{0}; i < h.num_handle_adjacencies; ++i) {
@@ -219,10 +227,15 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       adj.indices_buf =
         reinterpret_cast<id_t *>(registered_field_data[adj.index_fid].data());
 
-      storage->init_connectivity(adj.from_domain, adj.to_domain, adj.from_dim,
-        adj.to_dim, reinterpret_cast<utils::offset_t *>(adj.offsets_buf),
-        adj.num_offsets, reinterpret_cast<utils::id_t *>(adj.indices_buf),
-        adj.num_indices, _read);
+      storage->init_connectivity(adj.from_domain,
+        adj.to_domain,
+        adj.from_dim,
+        adj.to_dim,
+        reinterpret_cast<utils::offset_t *>(adj.offsets_buf),
+        adj.num_offsets,
+        reinterpret_cast<utils::id_t *>(adj.indices_buf),
+        adj.num_indices,
+        _read);
     }
 
     for(size_t i{0}; i < h.num_index_subspaces; ++i) {
@@ -243,9 +256,13 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       iss.indices_buf =
         reinterpret_cast<id_t *>(registered_field_data[iss.index_fid].data());
       // now initialize the index subspace
-      storage->init_index_subspace(iss.index_space, iss.index_subspace,
-        iss.domain, iss.dim, reinterpret_cast<utils::id_t *>(iss.indices_buf),
-        num_indices, _read);
+      storage->init_index_subspace(iss.index_space,
+        iss.index_subspace,
+        iss.domain,
+        iss.dim,
+        reinterpret_cast<utils::id_t *>(iss.indices_buf),
+        num_indices,
+        _read);
     }
 
     if(!_read) {
@@ -308,8 +325,16 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       auto migrate_ents = reinterpret_cast<topology::set_entity_t *>(
         registered_field_data[ent.fid3].data());
 
-      storage->init_entities(ent.index_space, ent.index_space2, ents, 0,
-        active_ents, 0, migrate_ents, 0, ent.size, _read);
+      storage->init_entities(ent.index_space,
+        ent.index_space2,
+        ents,
+        0,
+        active_ents,
+        0,
+        migrate_ents,
+        0,
+        ent.size,
+        _read);
     }
   }
 

@@ -78,7 +78,10 @@ struct finalize_handles_t
     MPI_Win win;
     MPI_Win_create(shared_data,
       sizeof(entry_value_t) * h.num_shared() * h.max_entries_per_index(),
-      sizeof(entry_value_t), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+      sizeof(entry_value_t),
+      MPI_INFO_NULL,
+      MPI_COMM_WORLD,
+      &win);
 
     MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
     MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
@@ -88,9 +91,13 @@ struct finalize_handles_t
       clog_rank(warn, 0) << "ghost id: " << ghost.id << ", rank: " << ghost.rank
                          << ", offset: " << ghost.offset << std::endl;
       MPI_Get(&ghost_data[i * h.max_entries_per_index()],
-        h.max_entries_per_index(), shared_ghost_type, ghost.rank,
-        ghost.offset * h.max_entries_per_index(), h.max_entries_per_index(),
-        shared_ghost_type, win);
+        h.max_entries_per_index(),
+        shared_ghost_type,
+        ghost.rank,
+        ghost.offset * h.max_entries_per_index(),
+        h.max_entries_per_index(),
+        shared_ghost_type,
+        win);
       i++;
     }
 
@@ -125,9 +132,13 @@ struct finalize_handles_t
     i = 0;
     for(auto & shared : index_coloring.shared) {
       for(auto peer : shared.shared) {
-        MPI_Isend(&send_count_buf[i], 1,
-          flecsi::utils::mpi_typetraits_u<uint32_t>::type(), peer, 99,
-          MPI_COMM_WORLD, &requests[i]);
+        MPI_Isend(&send_count_buf[i],
+          1,
+          flecsi::utils::mpi_typetraits_u<uint32_t>::type(),
+          peer,
+          99,
+          MPI_COMM_WORLD,
+          &requests[i]);
         i++;
       }
     }
@@ -136,9 +147,13 @@ struct finalize_handles_t
     i = 0;
     for(auto & ghost : index_coloring.ghost) {
       MPI_Status status;
-      MPI_Irecv(&recv_count_buf[i], 1,
-        flecsi::utils::mpi_typetraits_u<uint32_t>::type(), ghost.rank, 99,
-        MPI_COMM_WORLD, &recv_requests[i]);
+      MPI_Irecv(&recv_count_buf[i],
+        1,
+        flecsi::utils::mpi_typetraits_u<uint32_t>::type(),
+        ghost.rank,
+        99,
+        MPI_COMM_WORLD,
+        &recv_requests[i]);
       i++;
     }
 

@@ -53,8 +53,8 @@ tuple_type_converter(int argc, char ** argv) {
   FTEST_CAPTURE() << std::endl;
 
   // base_convert_tuple_type
-  using double_tuple_t = typename flecsi::utils::base_convert_tuple_type<base,
-    double, std::tuple<>>::type;
+  using double_tuple_t = typename flecsi::utils::
+    base_convert_tuple_type<base, double, std::tuple<>>::type;
   FTEST_CAPTURE() << FTEST_TTYPE(double_tuple_t) << std::endl;
 
   using catchall_t =
@@ -64,7 +64,8 @@ tuple_type_converter(int argc, char ** argv) {
       std::tuple<int,
         base, // base is considered to be base
         derived, // base is base
-        char, thing,
+        char,
+        thing,
         further // base is base
         >>::type;
   FTEST_CAPTURE() << FTEST_TTYPE(catchall_t) << std::endl;

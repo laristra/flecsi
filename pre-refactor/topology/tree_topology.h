@@ -811,8 +811,8 @@ public:
     subentity_space_t ents;
     ents.set_master(entities_);
 
-    auto ef = [&](entity_t * ent, const point_t & center,
-                element_t radius) -> bool {
+    auto ef =
+      [&](entity_t * ent, const point_t & center, element_t radius) -> bool {
       return geometry_t::within(ent->coordinates(), center, radius);
     };
 
@@ -835,8 +835,8 @@ public:
     size_t queue_depth = get_queue_depth(pool);
     size_t m = branch_int_t(1) << queue_depth * P::dimension;
 
-    auto ef = [&](entity_t * ent, const point_t & center,
-                element_t radius) -> bool {
+    auto ef =
+      [&](entity_t * ent, const point_t & center, element_t radius) -> bool {
       return geometry_t::within(ent->coordinates(), center, radius);
     };
 
@@ -851,8 +851,18 @@ public:
     branch_t * b = find_start_(center, radius, depth, size);
     queue_depth += depth;
 
-    find_(pool, sem, mtx, queue_depth, depth, b, size, ents, ef,
-      geometry_t::intersects, center, radius);
+    find_(pool,
+      sem,
+      mtx,
+      queue_depth,
+      depth,
+      b,
+      size,
+      ents,
+      ef,
+      geometry_t::intersects,
+      center,
+      radius);
 
     sem.acquire();
 
@@ -867,8 +877,8 @@ public:
     subentity_space_t ents;
     ents.set_master(entities_);
 
-    auto ef = [&](entity_t * ent, const point_t & min,
-                const point_t & max) -> bool {
+    auto ef =
+      [&](entity_t * ent, const point_t & min, const point_t & max) -> bool {
       return geometry_t::within_box(ent->coordinates(), min, max);
     };
 
@@ -901,8 +911,8 @@ public:
     size_t queue_depth = get_queue_depth(pool);
     size_t m = branch_int_t(1) << queue_depth * P::dimension;
 
-    auto ef = [&](entity_t * ent, const point_t & min,
-                const point_t & max) -> bool {
+    auto ef =
+      [&](entity_t * ent, const point_t & min, const point_t & max) -> bool {
       return geometry_t::within_box(ent->coordinates(), min, max);
     };
 
@@ -929,8 +939,18 @@ public:
     virtual_semaphore sem(1 - int(m));
     std::mutex mtx;
 
-    find_(pool, sem, mtx, queue_depth, depth, b, size, ents, ef,
-      geometry_t::intersects_box, min, max);
+    find_(pool,
+      sem,
+      mtx,
+      queue_depth,
+      depth,
+      b,
+      size,
+      ents,
+      ef,
+      geometry_t::intersects_box,
+      min,
+      max);
 
     sem.acquire();
 
@@ -987,8 +1007,16 @@ public:
 
     virtual_semaphore sem(1 - int(m));
 
-    apply_(pool, sem, queue_depth, depth, b, size, f, geometry_t::intersects,
-      center, radius);
+    apply_(pool,
+      sem,
+      queue_depth,
+      depth,
+      b,
+      size,
+      f,
+      geometry_t::intersects,
+      center,
+      radius);
 
     sem.acquire();
   }
@@ -1031,8 +1059,16 @@ public:
 
     virtual_semaphore sem(1 - int(m));
 
-    apply_(pool, sem, queue_depth, depth, b, size, f,
-      geometry_t::intersects_box, min, max);
+    apply_(pool,
+      sem,
+      queue_depth,
+      depth,
+      b,
+      size,
+      f,
+      geometry_t::intersects_box,
+      min,
+      max);
 
     sem.acquire();
   }
@@ -1131,7 +1167,12 @@ public:
 
     virtual_semaphore sem(1 - int(m));
 
-    visit_(pool, sem, b, 0, queue_depth, std::forward<F>(f),
+    visit_(pool,
+      sem,
+      b,
+      0,
+      queue_depth,
+      std::forward<F>(f),
       std::forward<ARGS>(args)...);
 
     sem.acquire();
@@ -1168,7 +1209,12 @@ public:
 
     virtual_semaphore sem(1 - int(m));
 
-    visit_children_(pool, sem, 0, queue_depth, b, std::forward<F>(f),
+    visit_children_(pool,
+      sem,
+      0,
+      queue_depth,
+      b,
+      std::forward<F>(f),
       std::forward<ARGS>(args)...);
 
     sem.acquire();
@@ -1437,9 +1483,14 @@ private:
     for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * ci = b->template child_<branch_t>(i);
 
-      if(bf(ci->coordinates(range_), size, scale_,
+      if(bf(ci->coordinates(range_),
+           size,
+           scale_,
            std::forward<ARGS>(args)...)) {
-        apply_(ci, size, std::forward<EF>(ef), std::forward<BF>(bf),
+        apply_(ci,
+          size,
+          std::forward<EF>(ef),
+          std::forward<BF>(bf),
           std::forward<ARGS>(args)...);
       }
     }
@@ -1476,12 +1527,17 @@ private:
     for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * ci = b->template child_<branch_t>(i);
 
-      if(bf(ci->coordinates(range_), size, scale_,
+      if(bf(ci->coordinates(range_),
+           size,
+           scale_,
            std::forward<ARGS>(args)...)) {
         if(depth == queue_depth) {
 
           auto f = [&, size, ci]() {
-            apply_(ci, size, std::forward<EF>(ef), std::forward<BF>(bf),
+            apply_(ci,
+              size,
+              std::forward<EF>(ef),
+              std::forward<BF>(bf),
               std::forward<ARGS>(args)...);
 
             sem.release();
@@ -1490,8 +1546,15 @@ private:
           pool.queue(f);
         }
         else {
-          apply_(pool, sem, queue_depth, depth, ci, size, std::forward<EF>(ef),
-            std::forward<BF>(bf), std::forward<ARGS>(args)...);
+          apply_(pool,
+            sem,
+            queue_depth,
+            depth,
+            ci,
+            size,
+            std::forward<EF>(ef),
+            std::forward<BF>(bf),
+            std::forward<ARGS>(args)...);
         }
       }
       else {
@@ -1530,9 +1593,15 @@ private:
     for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * ci = b->template child_<branch_t>(i);
 
-      if(bf(ci->coordinates(range_), size, scale_,
+      if(bf(ci->coordinates(range_),
+           size,
+           scale_,
            std::forward<ARGS>(args)...)) {
-        find_(ci, size, ents, std::forward<EF>(ef), std::forward<BF>(bf),
+        find_(ci,
+          size,
+          ents,
+          std::forward<EF>(ef),
+          std::forward<BF>(bf),
           std::forward<ARGS>(args)...);
       }
     }
@@ -1575,15 +1644,21 @@ private:
     for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * ci = b->template child_<branch_t>(i);
 
-      if(bf(ci->coordinates(range_), size, scale_,
+      if(bf(ci->coordinates(range_),
+           size,
+           scale_,
            std::forward<ARGS>(args)...)) {
         if(depth == queue_depth) {
 
           auto f = [&, size, ci]() {
             subentity_space_t branch_ents;
 
-            find_(ci, size, branch_ents, std::forward<EF>(ef),
-              std::forward<BF>(bf), std::forward<ARGS>(args)...);
+            find_(ci,
+              size,
+              branch_ents,
+              std::forward<EF>(ef),
+              std::forward<BF>(bf),
+              std::forward<ARGS>(args)...);
 
             mtx.lock();
             ents.append(branch_ents);
@@ -1595,8 +1670,16 @@ private:
           pool.queue(f);
         }
         else {
-          find_(pool, sem, mtx, queue_depth, depth, ci, size, ents,
-            std::forward<EF>(ef), std::forward<BF>(bf),
+          find_(pool,
+            sem,
+            mtx,
+            queue_depth,
+            depth,
+            ci,
+            size,
+            ents,
+            std::forward<EF>(ef),
+            std::forward<BF>(bf),
             std::forward<ARGS>(args)...);
         }
       }
@@ -1672,7 +1755,12 @@ private:
     for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * bi = b->template child_<branch_t>(i);
 
-      visit_(pool, sem, bi, depth + 1, queue_depth, std::forward<F>(f),
+      visit_(pool,
+        sem,
+        bi,
+        depth + 1,
+        queue_depth,
+        std::forward<F>(f),
         std::forward<ARGS>(args)...);
     }
   }
@@ -1712,7 +1800,12 @@ private:
 
     for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * bi = b->template child_<branch_t>(i);
-      visit_children_(pool, sem, depth + 1, queue_depth, bi, std::forward<F>(f),
+      visit_children_(pool,
+        sem,
+        depth + 1,
+        queue_depth,
+        bi,
+        std::forward<F>(f),
         std::forward<ARGS>(args)...);
     }
   }

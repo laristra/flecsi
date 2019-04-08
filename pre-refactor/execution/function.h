@@ -48,8 +48,8 @@ struct function_interface_u {
     typename ARG_TUPLE,
     RETURN (*FUNCTION)(ARG_TUPLE)>
   static decltype(auto) register_function() {
-    return EXECUTION_POLICY::template register_function<KEY, RETURN, ARG_TUPLE,
-      FUNCTION>();
+    return EXECUTION_POLICY::
+      template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
   } // register_function
 
   /*!

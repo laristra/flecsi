@@ -81,7 +81,8 @@ public:
     legion_machine::ProcessorQuery pq =
       legion_machine::ProcessorQuery(machine).same_address_space_as(local);
     for(legion_machine::ProcessorQuery::iterator pqi = pq.begin();
-        pqi != pq.end(); ++pqi) {
+        pqi != pq.end();
+        ++pqi) {
       legion_proc p = *pqi;
       if(p.kind() == legion_proc::LOC_PROC)
         local_cpus.push_back(p);
@@ -95,7 +96,8 @@ public:
       legion_machine::MemoryQuery mq =
         legion_machine::MemoryQuery(machine).has_affinity_to(p);
       for(legion_machine::MemoryQuery::iterator mqi = mq.begin();
-          mqi != mq.end(); ++mqi) {
+          mqi != mq.end();
+          ++mqi) {
         Realm::Memory m = *mqi;
         mem_map[m.kind()] = m;
 
@@ -207,9 +209,14 @@ public:
           regions.push_back(task.regions[indx + 1].region);
           regions.push_back(task.regions[indx + 2].region);
 
-          flog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
-                        layout_constraints, regions, result, created,
-                        true /*acquire*/, GC_NEVER_PRIORITY),
+          flog_assert(runtime->find_or_create_physical_instance(ctx,
+                        target_mem,
+                        layout_constraints,
+                        regions,
+                        result,
+                        created,
+                        true /*acquire*/,
+                        GC_NEVER_PRIORITY),
             "FLeCSI mapper failed to allocate instance");
 
           for(size_t j = 0; j < 3; j++) {
@@ -222,9 +229,14 @@ public:
 
           regions.push_back(task.regions[indx].region);
 
-          flog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
-                        layout_constraints, regions, result, created,
-                        true /*acquire*/, GC_NEVER_PRIORITY),
+          flog_assert(runtime->find_or_create_physical_instance(ctx,
+                        target_mem,
+                        layout_constraints,
+                        regions,
+                        result,
+                        created,
+                        true /*acquire*/,
+                        GC_NEVER_PRIORITY),
             "FLeCSI mapper failed to allocate instance");
 
           output.chosen_instances[indx].push_back(result);
@@ -266,7 +278,8 @@ public:
         Legion::Machine::ProcessorQuery(machine).only_kind(
           Legion::Processor::LOC_PROC);
       for(Legion::Machine::ProcessorQuery::iterator it = pq.begin();
-          it != pq.end(); ++it) {
+          it != pq.end();
+          ++it) {
         Legion::Processor p = *it;
         int a = p.address_space();
         if(targets.count(a) == 0)
@@ -306,7 +319,8 @@ mapper_registration(Legion::Machine machine,
   Legion::HighLevelRuntime * rt,
   const std::set<Legion::Processor> & local_procs) {
   for(std::set<Legion::Processor>::const_iterator it = local_procs.begin();
-      it != local_procs.end(); it++) {
+      it != local_procs.end();
+      it++) {
     mpi_mapper_t * mapper = new mpi_mapper_t(machine, rt, *it);
     rt->replace_default_mapper(mapper, *it);
   }

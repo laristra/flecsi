@@ -142,8 +142,11 @@ struct storage_class_u<sparse> {
       const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
       // TODO: deal with VERSION
-      context.register_sparse_field_data(field_info.fid, field_info.size,
-        color_info, max_entries_per_index, exclusive_reserve);
+      context.register_sparse_field_data(field_info.fid,
+        field_info.size,
+        color_info,
+        max_entries_per_index,
+        exclusive_reserve);
 
       context.register_sparse_field_metadata<DATA_TYPE>(
         field_info.fid, color_info, index_coloring);
@@ -207,8 +210,11 @@ struct storage_class_u<sparse> {
       const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
       // TODO: deal with VERSION
-      context.register_sparse_field_data(field_info.fid, field_info.size,
-        color_info, max_entries_per_index, exclusive_reserve);
+      context.register_sparse_field_data(field_info.fid,
+        field_info.size,
+        color_info,
+        max_entries_per_index,
+        exclusive_reserve);
 
       context.register_sparse_field_metadata<DATA_TYPE>(
         field_info.fid, color_info, index_coloring);
@@ -216,8 +222,11 @@ struct storage_class_u<sparse> {
 
     auto & fd = registered_sparse_field_data[field_info.fid];
 
-    mutator_handle_u<DATA_TYPE> h(fd.num_exclusive, fd.num_shared, fd.num_ghost,
-      fd.max_entries_per_index, slots);
+    mutator_handle_u<DATA_TYPE> h(fd.num_exclusive,
+      fd.num_shared,
+      fd.num_ghost,
+      fd.max_entries_per_index,
+      slots);
 
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
@@ -250,8 +259,9 @@ struct storage_class_u<ragged> {
     size_t NAME,
     size_t VERSION>
   static auto get_handle(const data_client_t & data_client) {
-    return storage_class_u<sparse>::get_handle<DATA_CLIENT_TYPE, DATA_TYPE,
-      NAMESPACE, NAME, VERSION>(data_client);
+    return storage_class_u<sparse>::
+      get_handle<DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE, NAME, VERSION>(
+        data_client);
   }
 
   template<typename DATA_CLIENT_TYPE,
@@ -260,8 +270,9 @@ struct storage_class_u<ragged> {
     size_t NAME,
     size_t VERSION>
   static auto get_mutator(const data_client_t & data_client, size_t slots) {
-    return storage_class_u<sparse>::get_mutator<DATA_CLIENT_TYPE, DATA_TYPE,
-      NAMESPACE, NAME, VERSION>(data_client, slots);
+    return storage_class_u<sparse>::
+      get_mutator<DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE, NAME, VERSION>(
+        data_client, slots);
   }
 }; // struct storage_class_t
 

@@ -33,9 +33,43 @@ TEST(dcrs, simple2d_8x8) {
     const std::vector<size_t> offsets = {
       0, 2, 5, 8, 11, 14, 17, 20, 22, 25, 29, 33, 37};
 
-    const std::vector<size_t> indices = {1, 8, 0, 2, 9, 1, 3, 10, 2, 4, 11, 3,
-      5, 12, 4, 6, 13, 5, 7, 14, 6, 15, 0, 9, 16, 1, 8, 10, 17, 2, 9, 11, 18, 3,
-      10, 12, 19};
+    const std::vector<size_t> indices = {1,
+      8,
+      0,
+      2,
+      9,
+      1,
+      3,
+      10,
+      2,
+      4,
+      11,
+      3,
+      5,
+      12,
+      4,
+      6,
+      13,
+      5,
+      7,
+      14,
+      6,
+      15,
+      0,
+      9,
+      16,
+      1,
+      8,
+      10,
+      17,
+      2,
+      9,
+      11,
+      18,
+      3,
+      10,
+      12,
+      19};
 
     CINCH_ASSERT(EQ, dcrs.offsets, offsets);
     CINCH_ASSERT(EQ, dcrs.indices, indices);
