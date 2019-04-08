@@ -234,6 +234,7 @@ public:
           //                        created, true /*acquire*/,
           //                        GC_NEVER_PRIORITY);
 
+          size_t instance_size = 0;
           flog_assert(runtime->find_or_create_physical_instance(ctx,
                         target_mem,
                         layout_constraints,
@@ -241,8 +242,22 @@ public:
                         result,
                         created,
                         true /*acquire*/,
-                        GC_NEVER_PRIORITY),
+                        GC_NEVER_PRIORITY,
+                        true,
+                        &instance_size),
             "ERROR: FleCSI mapper couldn't create an instance");
+
+          clog(info) << "task " << task.get_task_name()
+                     << " allocates physical instance with size "
+                     << instance_size << " for the region requirement #" << indx
+                     << std::endl;
+
+          if(instance_size > 1e-9) {
+            clog(error) << "task" << task.get_task_name()
+                        << " is trying to allocate physical instance with the "
+                           "size > than 1 Gb"
+                        << " for the region requirement #" << indx << std::endl;
+          }
 
           for(size_t j = 0; j < 3; j++) {
             output.chosen_instances[indx + j].clear();
@@ -256,6 +271,7 @@ public:
 
           regions.push_back(task.regions[indx].region);
 
+          size_t instance_size = 0;
           flog_assert(runtime->find_or_create_physical_instance(ctx,
                         target_mem,
                         layout_constraints,
@@ -263,9 +279,25 @@ public:
                         result,
                         created,
                         true /*acquire*/,
-                        GC_NEVER_PRIORITY),
+                        GC_NEVER_PRIORITY,
+                        true,
+                        &instance_size),
             "FLeCSI mapper failed to allocate instance");
 
+          clog(info) << "task " << task.get_task_name()
+                     << " allocates physical instance with size "
+                     << instance_size << " for the region requirement #" << indx
+                     << std::endl;
+
+          // clog_assert ( instance_size<1e-9, "task is trying to allocate
+          // physical instance with the size > than 1 Gb");
+
+          if(instance_size > 1e-9) {
+            clog(error) << "task" << task.get_task_name()
+                        << " is trying to allocate physical instance with the "
+                           "size > than 1 Gb"
+                        << " for the region requirement #" << indx << std::endl;
+          }
           output.chosen_instances[indx].push_back(result);
 
         } // end if
