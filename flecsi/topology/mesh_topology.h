@@ -36,6 +36,12 @@
 #include <flecsi/utils/set_intersection.h>
 #include <flecsi/utils/static_verify.h>
 
+#ifndef __CUDACC__
+#define FLECSI_FUNC 
+#else
+#define FLECSI_FUNC __device__ __host__ inline
+#endif
+
 // static verification for required mesh type members such as entity types
 // tuple, connectivities, bindings, etc.
 
@@ -634,7 +640,7 @@ public:
   //! @tparam DIM to topological dimension
   //--------------------------------------------------------------------------//
   template<size_t DIM, size_t DOM = 0>
-  auto entities() const {
+  FLECSI_FUNC auto entities() const {
     using etype = entity_type<DIM, DOM>;
     using dtype = domain_entity_u<DOM, etype>;
     return base_t::ms_->index_spaces[DOM][DIM].template slice<dtype>();
@@ -818,7 +824,7 @@ public:
   //! @tparam INDEX_SUBSPACE index subspace id
   //--------------------------------------------------------------------------//
   template<size_t INDEX_SUBSPACE>
-  auto & subentities() {
+  FLECSI_FUNC auto & subentities() {
     return get_index_subspace<INDEX_SUBSPACE>();
   }
 
@@ -828,7 +834,7 @@ public:
   //! @tparam INDEX_SUBSPACE index subspace id
   //--------------------------------------------------------------------------//
   template<size_t INDEX_SUBSPACE>
-  const auto & subentities() const {
+  FLECSI_FUNC const auto & subentities() const {
     return get_index_subspace<INDEX_SUBSPACE>();
   }
 
@@ -1040,7 +1046,7 @@ public:
   }
 
   template<size_t INDEX_SUBSPACE>
-  auto & get_index_subspace() {
+  FLECSI_FUNC auto & get_index_subspace() {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
     using index_subspaces = typename get_index_subspaces_u<MESH_TYPE>::type;
@@ -1075,7 +1081,7 @@ public:
   }
 
   template<size_t INDEX_SUBSPACE>
-  const auto & get_index_subspace() const {
+  FLECSI_FUNC const auto & get_index_subspace() const {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
     using index_subspaces = typename get_index_subspaces_u<MESH_TYPE>::type;

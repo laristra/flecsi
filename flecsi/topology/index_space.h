@@ -21,6 +21,11 @@
 #include <type_traits>
 #include <vector>
 
+#ifndef __CUDACC__
+#define FLECSI_FUNC 
+#else
+#define FLECSI_FUNC __device__ __host__ inline
+#endif
 namespace flecsi {
 namespace topology {
 
@@ -190,13 +195,13 @@ public:
     //-----------------------------------------------------------------//
     //! Copy constructor
     //-----------------------------------------------------------------//
-    iterator_base_(const iterator_base_ & itr)
+    FLECSI_FUNC iterator_base_(const iterator_base_ & itr)
       : items_(itr.items_), index_(itr.index_), end_(itr.end_), s_(itr.s_) {}
 
     //-----------------------------------------------------------------//
     //! Initialize iterator from items and range
     //-----------------------------------------------------------------//
-    iterator_base_(storage_t * s,
+    FLECSI_FUNC iterator_base_(storage_t * s,
       const id_storage_t & items,
       size_t index,
       size_t end)
@@ -472,12 +477,12 @@ public:
     //-----------------------------------------------------------------//
     //! Copy constructor
     //-----------------------------------------------------------------//
-    iterator_(const iterator_ & itr) : B(itr) {}
+    FLECSI_FUNC iterator_(const iterator_ & itr) : B(itr) {}
 
     //-----------------------------------------------------------------//
     //! Initialize iterator from items and range
     //-----------------------------------------------------------------//
-    iterator_(storage_t * s,
+    FLECSI_FUNC iterator_(storage_t * s,
       const id_storage_t & items,
       size_t index,
       size_t end)
@@ -529,7 +534,7 @@ public:
     //-----------------------------------------------------------------//
     //! Plus offset operator
     //-----------------------------------------------------------------//
-    iterator_ operator+(size_t offset) const {
+    FLECSI_FUNC iterator_ operator+(size_t offset) const {
       iterator_ itr(*this);
       itr.B::index_ += offset;
       return itr;
@@ -623,7 +628,7 @@ public:
     class ID_STORAGE_TYPE2,
     template<typename, typename...>
     class STORAGE_TYPE2>
-  index_space_u(const index_space_u<S,
+  FLECSI_FUNC index_space_u(const index_space_u<S,
                   STORAGE2,
                   OWNED2,
                   SORTED2,
@@ -678,7 +683,7 @@ public:
   //-----------------------------------------------------------------//
   //! Destructor.
   //-----------------------------------------------------------------//
-  ~index_space_u() {
+  FLECSI_FUNC ~index_space_u() {
     if(OWNED || owned_) {
       delete v_;
     }
@@ -774,7 +779,7 @@ public:
     template<typename, typename...>
     class ID_STORAGE_TYPE2 = id_storage_type_arg,
     template<typename, typename...> class STORAGE_TYPE2 = storage_type_arg>
-  auto & cast() {
+  FLECSI_FUNC auto & cast() {
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
     auto res = reinterpret_cast<index_space_u<S, STORAGE2, OWNED2, SORTED2, F2,
@@ -807,14 +812,14 @@ public:
   //-----------------------------------------------------------------//
   //! Return begin iterator
   //-----------------------------------------------------------------//
-  auto begin() {
+  FLECSI_FUNC auto begin() {
     return iterator_<T, F>(s_, *v_, begin_, end_);
   }
 
   //-----------------------------------------------------------------//
   //! Return begin iterator
   //-----------------------------------------------------------------//
-  auto begin() const {
+  FLECSI_FUNC auto begin() const {
     return iterator_<const T, F>(s_, *v_, begin_, end_);
   }
 
@@ -916,7 +921,7 @@ public:
   //! @tparam S class to cast to
   //-----------------------------------------------------------------//
   template<class S = T>
-  auto slice() const {
+  FLECSI_FUNC auto slice() const {
     return index_space_u<S, false, false, SORTED, F, ID_STORAGE_TYPE,
       STORAGE_TYPE>(*this, begin_, end_);
   }
