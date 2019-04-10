@@ -58,6 +58,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
   set(topology_HEADERS
     ${topology_HEADERS}
+    legion/tree_storage_policy.h
     legion/set_storage_policy.h
     legion/mesh_storage_policy.h
   )
@@ -65,6 +66,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(topology_HEADERS
     ${topology_HEADERS}
+    mpi/tree_storage_policy.h
     mpi/set_storage_policy.h
     mpi/mesh_storage_policy.h
     )
@@ -135,62 +137,28 @@ cinch_add_unit(dual
     test/dual.blessed
 )
 
+cinch_add_unit(structured
+  SOURCES
+    test/structured.cc
+)
+
+
 #------------------------------------------------------------------------------#
 # N-Tree unit tests.
 #------------------------------------------------------------------------------#
 set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)
 
-cinch_add_unit(tree
-  SOURCES
-    test/tree.cc
-    test/pseudo_random.h
-    #${DRIVER_INITIALIZATION}
-    #${RUNTIME_DRIVER}
-  LIBRARIES
-    FleCSI
-    #${CINCH_RUNTIME_LIBRARIES}
-  #DEFINES
-    #-DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-    #-DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-    #-DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-  #POLICY MPI
-)
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
-#cinch_add_unit(tree1d
-#  SOURCES
-#    test/tree1d.cc
-#  LIBRARIES
-#    FleCSI
-#)
+  cinch_add_unit(tree
+    SOURCES
+      test/tree.cc
+      test/pseudo_random.h
+    LIBRARIES
+      FleCSI
+  )
 
-#cinch_add_unit(tree3d
-#  SOURCES
-#    test/tree3d.cc
-#  LIBRARIES
-#    FleCSI
-#)
-
-#cinch_add_unit(gravity
-#  SOURCES
-#    test/gravity.cc test/pseudo_random.h
-#  LIBRARIES
-#    FleCSI
-#)
-
-# FIXME: Broken by refactor
-#cinch_add_unit(gravity-state
-#  SOURCES
-#    test/gravity-state.cc
-#    test/pseudo_random.h
-#  LIBRARIES
-#    FleCSI
-#    ${CINCH_RUNTIME_LIBRARIES}
-#)
-
-cinch_add_unit(structured
-  SOURCES
-    test/structured.cc
-)
+endif()
 
 #------------------------------------------------------------------------------#
 # Set unit tests.
