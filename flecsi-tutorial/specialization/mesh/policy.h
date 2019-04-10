@@ -15,8 +15,8 @@
 #pragma once
 
 #include <flecsi-tutorial/specialization/mesh/entity_types.h>
-#include <flecsi/topology/mesh.h>
-#include <flecsi/topology/mesh_topology.h>
+#include <flecsi/topology/mesh/mesh.h>
+#include <flecsi/topology/mesh/mesh_topology.h>
 
 namespace flecsi {
 namespace tutorial {

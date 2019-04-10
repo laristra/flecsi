@@ -34,7 +34,7 @@ namespace flecsi {
 namespace topology {
 
 template<class TREE_TYPE>
-struct mpi_tree_topology_storage_policy_u {
+struct legion_tree_topology_storage_policy_u {
 
   using id_t = utils::id_t;
   static constexpr size_t num_partitions = 5;
@@ -90,7 +90,7 @@ struct mpi_tree_topology_storage_policy_u {
   std::array<branch_partition_index_spaces_t, num_partitions>
     branch_partition_index_spaces;
 
-  mpi_tree_topology_storage_policy_u() {
+  legion_tree_topology_storage_policy_u() {
     std::cout << "Constructor storage policy" << std::endl;
     auto & context_ = flecsi::execution::context_t::instance();
   }
@@ -142,7 +142,7 @@ struct mpi_tree_topology_storage_policy_u {
     return ent;
   } // make
 
-}; // class mpi_topology_storage_policy_u
+}; // class legion_topology_storage_policy_u
 
 } // namespace topology
 } // namespace flecsi
