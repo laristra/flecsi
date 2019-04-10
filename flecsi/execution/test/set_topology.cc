@@ -15,7 +15,7 @@
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/execution/execution.h>
-#include <flecsi/topology/set_topology.h>
+#include <flecsi/topology/set/set_topology.h>
 #include <flecsi/topology/types.h>
 
 using namespace std;
