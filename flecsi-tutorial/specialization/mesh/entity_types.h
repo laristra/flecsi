@@ -18,7 +18,7 @@
 #include <iostream>
 #include <vector>
 
-#include <flecsi/topology/mesh_types.h>
+#include <flecsi/topology/mesh/mesh_types.h>
 
 namespace flecsi {
 namespace tutorial {
