@@ -36,12 +36,15 @@
 #endif
 
 #include <mpi.h>
+#include <boost/program_options.hpp>
 
 #include <map>
 #include <unordered_map>
 
 namespace flecsi {
 namespace execution {
+
+using namespace boost::program_options;
 
 const size_t FLECSI_TOP_LEVEL_TASK_ID = 0;
 const size_t FLECSI_MAPPER_FORCE_RANK_MATCH = 0x00001000;
@@ -81,7 +84,23 @@ struct legion_context_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  int start(int argc, char ** argv);
+  int start(int argc, char ** argv, variables_map & vm);
+
+  /*
+    Documentation for this interface is in the top-level context type.
+   */
+
+  size_t rank() const {
+    return rank_;
+  } // rank
+
+  /*
+    Documentation for this interface is in the top-level context type.
+   */
+
+  size_t size() const {
+    return size_;
+  } // rank
 
   /*
     Documentation for this interface is in the top-level context type.
@@ -97,7 +116,9 @@ struct legion_context_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  size_t color() const {
+  static size_t color() {
+    flog_assert(task_depth() > 0,
+      "this method can only be called from within a task");
     return Legion::Runtime::get_runtime()
       ->get_current_task(Legion::Runtime::get_context())
       ->index_point.point_data[0];
@@ -107,11 +128,17 @@ struct legion_context_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  size_t colors() const {
+  static size_t colors() {
+    flog_assert(task_depth() > 0,
+      "this method can only be called from within a task");
     return Legion::Runtime::get_runtime()
       ->get_current_task(Legion::Runtime::get_context())
       ->index_domain.get_volume();
   } // colors
+
+  size_t colors_per_rank() const {
+    return colors_per_rank_;
+  } // colors_per_rank
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
@@ -387,11 +414,13 @@ private:
 
   data::legion::runtime_data_t runtime_data_;
 
+  size_t rank_ = std::numeric_limits<size_t>::max();
+  size_t size_ = std::numeric_limits<size_t>::max();
+  size_t colors_per_rank_ = std::numeric_limits<size_t>::max();
+
   /*--------------------------------------------------------------------------*
     Interoperability data members.
    *--------------------------------------------------------------------------*/
-
-  size_t colors_ = std::numeric_limits<size_t>::max();
 
   std::function<void()> mpi_task_;
   bool mpi_active_ = false;

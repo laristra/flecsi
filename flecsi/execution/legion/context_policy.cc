@@ -25,7 +25,7 @@ namespace flecsi {
 namespace execution {
 
 int
-legion_context_policy_t::start(int argc, char ** argv) {
+legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
   using namespace Legion;
 
   /*
@@ -76,8 +76,12 @@ legion_context_policy_t::start(int argc, char ** argv) {
     Configure interoperability layer.
    */
 
-  int rank;
+  int rank, size;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+  rank_ = rank;
+  size_ = size;
 
   Legion::Runtime::configure_MPI_interoperability(rank);
 
@@ -89,7 +93,25 @@ legion_context_policy_t::start(int argc, char ** argv) {
     ro.second();
   } // for
 
-  Runtime::start(argc, argv, true);
+  /*
+    Handle command-line arguments.
+   */
+
+  std::vector<char *> largv;
+  largv.push_back(argv[0]);
+
+  colors_per_rank_ = vm["colors-per-rank"].as<size_t>();
+  
+  if(colors_per_rank_ > 1) {
+    std::string lcpr = "-ll:cpu=" + std::to_string(colors_per_rank_);
+    largv.push_back(const_cast<char *>(lcpr.c_str()));
+  } // if
+
+  /*
+    Start Legion runtime.
+   */
+
+  Runtime::start(largv.size(), largv.data(), true);
 
   {
     flog_tag_guard(context);

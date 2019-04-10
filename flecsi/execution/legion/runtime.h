@@ -15,7 +15,6 @@
 
 /*! @file */
 
-#include <cinch-config.h>
 #include <flecsi-config.h>
 
 #if !defined(__FLECSI_PRIVATE__)
@@ -26,6 +25,7 @@
 #endif
 
 #include <flecsi/execution/context.h>
+#include <flecsi/execution/common/command_line_options.h>
 #endif
 
 #include <cinch/runtime.h>
@@ -39,32 +39,24 @@
 #include <cstdlib>
 #include <iostream>
 
-#if defined(CINCH_ENABLE_BOOST)
 #include <boost/program_options.hpp>
 using namespace boost::program_options;
-#endif
 
-inline std::string __flecsi_tags = "all";
-
-#if defined(CINCH_ENABLE_BOOST)
 inline void
 flecsi_legion_add_options(options_description & desc) {
+  options_description flecsi("FleCSI Runtime Options");
+  flecsi.add_options()
 #if defined(FLECSI_ENABLE_FLOG)
-  desc.add_options()("tags,t",
-    value(&__flecsi_tags)->implicit_value("0"),
-    "Enable the specified output tags, e.g., --tags=tag1,tag2."
-    " Passing --tags by itself will print the available tags.");
+    FLECSI_FLOG_TAG_OPTION
 #endif
-} // add_options
-#endif
+    FLECSI_COLORS_PER_RANK_OPTION
+  ;
 
-#if defined(CINCH_ENABLE_BOOST)
+  desc.add(flecsi);
+} // add_options
+
 inline int
 flecsi_legion_initialize(int argc, char ** argv, variables_map & vm) {
-#else
-inline int
-flecsi_legion_initialize(int argc, char ** argv) {
-#endif
 
 #if defined(FLECSI_ENABLE_FLOG)
   if(__flecsi_tags == "0") {
@@ -125,18 +117,14 @@ flecsi_legion_finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
 } // initialize
 
 inline cinch::runtime_handler_t flecsi_legion_handler {
-  flecsi_legion_initialize, flecsi_legion_finalize
-#if defined(CINCH_ENABLE_BOOST)
-    ,
-    flecsi_legion_add_options
-#endif
+  flecsi_legion_initialize, flecsi_legion_finalize, flecsi_legion_add_options
 };
 
 cinch_append_runtime_handler(flecsi_legion_handler);
 
 inline int
-flecsi_legion_runtime_driver(int argc, char ** argv) {
-  return flecsi::execution::context_t::instance().start(argc, argv);
+flecsi_legion_runtime_driver(int argc, char ** argv, variables_map & vm) {
+  return flecsi::execution::context_t::instance().start(argc, argv, vm);
 } // runtime_driver
 
 cinch_register_runtime_driver(flecsi_legion_runtime_driver);

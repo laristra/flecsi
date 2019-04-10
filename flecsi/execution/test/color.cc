@@ -31,23 +31,27 @@ color_raw(int argc, char ** argv) {
 
   FTEST();
 
-  auto color = context_t::instance().color();
-  auto colors = context_t::instance().colors();
+  auto depth = context_t::instance().task_depth();
+  auto rank = context_t::instance().rank();
+  auto size = context_t::instance().size();
+  auto cpr = context_t::instance().colors_per_rank();
 
   {
     flog_tag_guard(color);
-    flog(info) << "color(raw): " << color << std::endl
-               << "colors(raw): " << colors << std::endl;
+    flog(info) << "color(raw): " << rank << std::endl
+               << "colors(raw): " << size << std::endl
+               << "colors_per_rank(raw): " << cpr << std::endl;
   }
 
-  ASSERT_EQ(colors, 4);
-  ASSERT_LT(color, colors);
+  ASSERT_EQ(size, 4);
+  ASSERT_LT(rank, size);
 
   return 0;
 }
 
 ftest_register_test(color_raw);
 
+#if 0
 /*
   Test the macro interface for gettting color information from
   the FleCSI runtime.
@@ -74,3 +78,4 @@ color_ui(int argc, char ** argv) {
 }
 
 ftest_register_test(color_ui);
+#endif

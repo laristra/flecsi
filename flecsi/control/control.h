@@ -178,7 +178,7 @@ private:
 } // namespace control
 } // namespace flecsi
 
-#if defined(FLECSI_ENABLE_GRAPHVIZ) && defined(FLECSI_ENABLE_BOOST)
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
 #include <cinch/runtime.h>
 
 /*!
@@ -238,4 +238,4 @@ private:
 
 #define flecsi_register_control_options(control_type)
 
-#endif // FLECSI_ENABLE_GRAPHVIZ && FLECSI_ENABLE_BOOST
+#endif // FLECSI_ENABLE_GRAPHVIZ

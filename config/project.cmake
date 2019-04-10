@@ -31,6 +31,14 @@ else()
 endif()
 
 #------------------------------------------------------------------------------#
+# Boost
+#------------------------------------------------------------------------------#
+
+set(ENABLE_BOOST)
+mark_as_advanced(ENABLE_BOOST)
+list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
+
+#------------------------------------------------------------------------------#
 # Set the FleCSI top-level source directory
 #------------------------------------------------------------------------------#
 
@@ -198,14 +206,6 @@ endif()
 
 if(ENABLE_CALIPER)
   list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Caliper_LIBRARIES})
-endif()
-
-#------------------------------------------------------------------------------#
-# Boost Program Options
-#------------------------------------------------------------------------------#
-
-if(ENABLE_BOOST)
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
 endif()
 
 #------------------------------------------------------------------------------#
@@ -614,7 +614,6 @@ summary_option("ENABLE_UNIT_TESTS" ${ENABLE_UNIT_TESTS} "")
 summary_option("ENABLE_FLECSI_TUTORIAL" ${ENABLE_FLECSI_TUTORIAL} "")
 summary_option("ENABLE_FLECSIT" ${ENABLE_FLECSIT} "")
 string(APPEND _summary "\n")
-summary_option("ENABLE_BOOST" ${ENABLE_BOOST} "")
 summary_option("ENABLE_CUDA" ${ENABLE_CUDA} "")
 summary_option("ENABLE_DOXYGEN" ${ENABLE_DOXYGEN} "")
 summary_option("ENABLE_GRAPHVIZ" ${ENABLE_GRAPHVIZ} "")

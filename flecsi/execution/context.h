@@ -26,17 +26,22 @@
 #include <flecsi/utils/flog.h>
 #endif
 
+#include <boost/program_options.hpp>
+
 #include <cassert>
 #include <cstddef>
 #include <functional>
 #include <map>
 #include <set>
 #include <unordered_map>
+#include <utility>
 
 flog_register_tag(context);
 
 namespace flecsi {
 namespace execution {
+
+using namespace boost::program_options;
 
 /*!
   The context_u type provides a high-level execution context interface that
@@ -98,9 +103,37 @@ struct context_u : public CONTEXT_POLICY {
             being failure.
    */
 
-  int start(int argc, char ** argv) {
-    return CONTEXT_POLICY::start(argc, argv);
+  int start(int argc, char ** argv, variables_map & vm) {
+    return CONTEXT_POLICY::start(argc, argv, vm);
   } // start
+
+  // FIXME
+
+  size_t rank() const {
+    return CONTEXT_POLICY::rank();
+  }
+
+  // FIXME
+
+  size_t size() const {
+    return CONTEXT_POLICY::size();
+  }
+
+  // FIXME
+
+  size_t colors_per_rank() const {
+    return CONTEXT_POLICY::colors_per_rank();
+  } // colors_per_shared
+
+  /*!
+    Return the current task depth within the execution hierarchy. The
+    top-level task has depth \em 0. This interface is primarily intended
+    for FleCSI developers to use in enforcing runtime constraints.
+   */
+
+  static size_t task_depth() {
+    return CONTEXT_POLICY::task_depth();
+  } // task_level
 
   /*!
     Get the color of this process.
@@ -116,7 +149,7 @@ struct context_u : public CONTEXT_POLICY {
 
   size_t colors() const {
     return CONTEXT_POLICY::colors();
-  } // color
+  } // colors
 
   using top_level_action_t = std::function<int(int, char **)>;
 
@@ -136,18 +169,6 @@ struct context_u : public CONTEXT_POLICY {
   top_level_action_t & top_level_action() {
     return top_level_action_;
   } // top_level_action
-
-  /*!
-    Return the current task depth within the execution hierarchy. The
-    top-level task has depth \em 0. This interface is primarily intended
-    for FleCSI developers to use in enforcing runtime constraints.
-
-    @return A size_t with the current task level.
-   */
-
-  static size_t task_depth() {
-    return CONTEXT_POLICY::task_depth();
-  } // task_level
 
   /*!
     Return the exit status of the FleCSI runtime.
@@ -492,6 +513,8 @@ private:
    */
 
   std::unordered_map<size_t, runtime_field_info_t> runtime_field_info_;
+
+  //std::unordered_map<std::pair<size_t, size_t>, runtime_handle_info_t> 
 
 }; // struct context_u
 

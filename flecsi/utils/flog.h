@@ -289,15 +289,12 @@
 
 #define fixme() flog(warn)
 
-#if defined FLECSI_ENABLE_BOOST
 #include <boost/stacktrace.hpp>
-#endif
 
 namespace flecsi {
 namespace utils {
 namespace flog {
 
-#if defined FLECSI_ENABLE_BOOST
 inline void
 dumpstack() {
 #if !defined(NDEBUG)
@@ -309,21 +306,10 @@ dumpstack() {
   std::cerr << FLOG_OUTPUT_RED("FleCSI Runtime: std::abort called.")
             << std::endl
             << FLOG_OUTPUT_BROWN("Build with '-DCMAKE_BUILD_TYPE=Debug'"
-                                 << " to enable FleCSI runtime stacktrace.")
+            << " to enable FleCSI runtime stacktrace.")
             << std::endl;
 #endif
 }
-#else
-inline void
-dumpstack() {
-  std::cerr << FLOG_OUTPUT_RED("FleCSI Runtime: std::abort called.")
-            << std::endl
-            << FLOG_OUTPUT_BROWN(
-                 "Build with '-DCMAKE_BUILD_TYPE=Debug' and"
-                 << "'-DENABLE_BOOST=On' to enable FleCSI runtime stacktrace.")
-            << std::endl;
-}
-#endif
 
 } // namespace flog
 } // namespace utils

@@ -19,6 +19,7 @@
 
 set(execution_HEADERS
   common/function_handle.h
+  common/command_line_options.h
   common/launch.h
   common/processor.h
   context.h
