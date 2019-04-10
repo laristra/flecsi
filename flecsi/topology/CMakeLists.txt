@@ -148,7 +148,7 @@ cinch_add_unit(structured
 #------------------------------------------------------------------------------#
 set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   cinch_add_unit(tree
     SOURCES
