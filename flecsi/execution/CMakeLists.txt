@@ -667,6 +667,17 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       NOCI
     )
 
+    cinch_add_unit(serdez
+      SOURCES
+        test/legion/serdez.cc
+      DEFINES
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+      POLICY
+        ${UNIT_POLICY}
+      THREADS 4
+      NOCI
+    )
+
     if(ENABLE_PARMETIS)
 
       cinch_add_unit(read_waits_on_write
