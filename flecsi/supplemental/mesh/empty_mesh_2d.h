@@ -59,17 +59,7 @@ public:
   static topology::mesh_entity_base_u<num_domains> * create_entity(
     topology::mesh_topology_base_u<ST> * mesh,
     size_t num_vertices) {
-    switch(M) {
-      case 0: {
-        switch(D) {
-          default:
-            assert(false && "invalid topological dimension");
-        }
-        break;
-      }
-      default:
-        assert(false && "invalid domain");
-    }
+    clog_fatal("Should not get here!");
     return nullptr;
   }
 };
