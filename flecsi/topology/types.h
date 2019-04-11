@@ -21,6 +21,12 @@
 
 #include <flecsi/utils/id.h>
 
+#ifndef __CUDACC__
+#define FLECSI_FUNC 
+#else
+#define FLECSI_FUNC __device__ __host__ inline
+#endif
+
 namespace flecsi {
 namespace topology {
 
@@ -110,7 +116,7 @@ public:
   } // id
 
   template<size_t DOM = 0>
-  size_t id() const {
+  FLECSI_FUNC size_t id() const {
     return ids_[DOM].entity();
   } // id
 
