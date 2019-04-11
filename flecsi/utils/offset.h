@@ -20,6 +20,12 @@
 #include <cstdint>
 #include <utility>
 
+#ifndef __CUDACC__
+#define FLECSI_FUNC 
+#else
+#define FLECSI_FUNC __device__ __host__ inline
+#endif
+
 namespace flecsi {
 namespace utils {
 
@@ -63,7 +69,7 @@ public:
    * @param start Start index of the offset range
    * @param count The count (number) of elements
    */
-  offset_u(uint64_t start, uint32_t count) : o_(start << COUNT_BITS | count) {
+  FLECSI_FUNC offset_u(uint64_t start, uint32_t count) : o_(start << COUNT_BITS | count) {
     assert(count <= count_mask);
     assert(start <= start_max);
   }
@@ -77,7 +83,7 @@ public:
    *              the previous offset range.
    * @param count The count (number) of elements
    */
-  offset_u(const offset_u & prev, uint32_t count)
+  FLECSI_FUNC offset_u(const offset_u & prev, uint32_t count)
     : offset_u(prev.end(), count) {}
 
   /**
@@ -85,7 +91,7 @@ public:
    *
    * @return uint64_t Start index
    */
-  uint64_t start() const {
+  FLECSI_FUNC uint64_t start() const {
     return o_ >> COUNT_BITS;
   }
 
@@ -94,7 +100,7 @@ public:
    *
    * @return uint32_t Number of elements
    */
-  uint32_t count() const {
+  FLECSI_FUNC uint32_t count() const {
     return o_ & count_mask;
   }
 
@@ -105,7 +111,7 @@ public:
    * @return uint64_t End index pointing to the first element past the last
    *                  element in this offset range
    */
-  uint64_t end() const {
+  FLECSI_FUNC uint64_t end() const {
     return start() + count();
   }
 
@@ -114,7 +120,7 @@ public:
    *
    * @param count New count value
    */
-  void set_count(uint32_t count) {
+  FLECSI_FUNC void set_count(uint32_t count) {
     assert(count <= count_mask);
     o_ = (o_ & ~count_mask) | count;
   }
@@ -124,7 +130,7 @@ public:
    *
    * @param start New start index value
    */
-  void set_offset(uint64_t start) {
+  FLECSI_FUNC void set_offset(uint64_t start) {
     assert(start <= start_max);
     o_ = (o_ & count_mask) | (start << COUNT_BITS);
   }
@@ -135,7 +141,7 @@ public:
    *
    * @return std::pair<size_t, size_t> Range of this offset range
    */
-  std::pair<size_t, size_t> range() const {
+  FLECSI_FUNC std::pair<size_t, size_t> range() const {
     uint64_t s = start();
     return {s, s + count()};
   }

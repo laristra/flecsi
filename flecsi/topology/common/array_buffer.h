@@ -17,6 +17,12 @@
 
 #include <flecsi/utils/id.h>
 
+#ifndef __CUDACC__
+#define FLECSI_FUNC 
+#else
+#define FLECSI_FUNC __device__ __host__ inline
+#endif
+
 namespace flecsi {
 namespace topology {
 
@@ -55,14 +61,14 @@ struct array_buf_ref_type_u<domain_entity_u<M, E>> {
 
 template<typename T, bool B>
 struct array_buf_ref_get_u {
-  static T get(T a, size_t i) {
+  FLECSI_FUNC static T get(T a, size_t i) {
     return &a[i];
   }
 };
 
 template<typename T>
 struct array_buf_ref_get_u<T, false> {
-  static auto get(T a, size_t i) -> decltype(a[i]) {
+  FLECSI_FUNC static auto get(T a, size_t i) -> decltype(a[i]) {
     return a[i];
   }
 };
@@ -81,12 +87,12 @@ public:
 
   array_buffer_u() : buf_(nullptr), size_(0), capacity_(0) {}
 
-  ref_t operator[](size_t index) {
+  FLECSI_FUNC ref_t operator[](size_t index) {
     return array_buf_ref_get_u<item_t, std::is_pointer<ref_t>::value>::get(
       buf_, index);
   }
 
-  const ref_t operator[](size_t index) const {
+  FLECSI_FUNC const ref_t operator[](size_t index) const {
     return array_buf_ref_get_u<const item_t,
       std::is_pointer<ref_t>::value>::get(buf_, index);
   }

@@ -280,7 +280,7 @@ public:
     //-----------------------------------------------------------------//
     //! Helper method. Get item at index
     //-----------------------------------------------------------------//
-    auto get_(size_t index) {
+    FLECSI_FUNC auto get_(size_t index) {
       return static_cast<cast_t>((*s_)[(*items_)[index].index_space_index()]);
     }
 
@@ -586,7 +586,7 @@ public:
     //-----------------------------------------------------------------//
     //! Dereference operator
     //-----------------------------------------------------------------//
-    S operator*() {
+    FLECSI_FUNC S operator*() {
       return B::get_(B::index_);
     }
 
@@ -908,7 +908,7 @@ public:
   //! @param r offset range
   //-----------------------------------------------------------------//
   template<class S = T>
-  auto slice(const std::pair<size_t, size_t> & range) const {
+  FLECSI_FUNC auto slice(const std::pair<size_t, size_t> & range) const {
     return index_space_u<S, false, false, SORTED, F, ID_STORAGE_TYPE,
       STORAGE_TYPE>(*this, range.first, range.second);
   }
@@ -1019,14 +1019,14 @@ public:
   //-----------------------------------------------------------------//
   //! Get the size of the index space
   //-----------------------------------------------------------------//
-  size_t size() const {
+  FLECSI_FUNC size_t size() const {
     return end_ - begin_;
   }
 
   //-----------------------------------------------------------------//
   //! Return if the index space is empty, i.e. has no indices
   //-----------------------------------------------------------------//
-  bool empty() const {
+  FLECSI_FUNC bool empty() const {
     return begin_ == end_;
   }
 

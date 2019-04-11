@@ -24,6 +24,12 @@
 #include <cstdint>
 #include <iostream>
 
+#ifndef __CUDACC__
+#define FLECSI_FUNC 
+#else
+#define FLECSI_FUNC __device__ __host__ inline
+#endif
+
 namespace flecsi {
 namespace utils {
 
@@ -58,7 +64,7 @@ public:
       global_(0) {}
 
   template<std::size_t D, std::size_t M>
-  static id_ make(const std::size_t local_id,
+  FLECSI_FUNC static id_ make(const std::size_t local_id,
     const std::size_t partition_id = 0,
     const std::size_t flags = 0,
     const std::size_t global = 0) {
@@ -74,7 +80,7 @@ public:
   }
 
   template<std::size_t M>
-  static id_ make(const std::size_t dim,
+  FLECSI_FUNC static id_ make(const std::size_t dim,
     const std::size_t local_id,
     const std::size_t partition_id = 0,
     const std::size_t flags = 0,
@@ -90,7 +96,7 @@ public:
     return global_id;
   }
 
-  static id_ make(const std::size_t dim,
+  FLECSI_FUNC static id_ make(const std::size_t dim,
     const std::size_t local_id,
     const std::size_t partition_id = 0,
     const std::size_t flags = 0,
@@ -107,7 +113,7 @@ public:
     return global_id;
   }
 
-  local_id_t local_id() const {
+  FLECSI_FUNC local_id_t local_id() const {
     local_id_t r = dimension_;
     r |= local_id_t(domain_) << 2;
     r |= local_id_t(partition_) << 4;
@@ -115,26 +121,26 @@ public:
     return r;
   }
 
-  std::size_t global_id() const {
+  FLECSI_FUNC std::size_t global_id() const {
     constexpr std::size_t unmask = ~((std::size_t(1) << EBITS) - 1);
     return static_cast<std::size_t>((local_id() & unmask) | global_);
   }
 
-  void set_global(const std::size_t global) {
+  FLECSI_FUNC void set_global(const std::size_t global) {
     global_ = global;
   }
 
-  std::size_t global() const {
+  FLECSI_FUNC std::size_t global() const {
     return global_;
   }
 
-  void set_partition(const std::size_t partition) {
+  FLECSI_FUNC void set_partition(const std::size_t partition) {
     partition_ = partition;
   }
 
   id_ & operator=(id_ &&) = default;
 
-  id_ & operator=(const id_ & id) {
+  FLECSI_FUNC id_ & operator=(const id_ & id) {
     dimension_ = id.dimension_;
     domain_ = id.domain_;
     partition_ = id.partition_;
@@ -145,44 +151,44 @@ public:
     return *this;
   }
 
-  std::size_t dimension() const {
+  FLECSI_FUNC std::size_t dimension() const {
     return dimension_;
   }
 
-  std::size_t domain() const {
+  FLECSI_FUNC std::size_t domain() const {
     return domain_;
   }
 
-  std::size_t partition() const {
+  FLECSI_FUNC std::size_t partition() const {
     return partition_;
   }
 
-  std::size_t entity() const {
+  FLECSI_FUNC std::size_t entity() const {
     return entity_;
   }
 
-  std::size_t index_space_index() const {
+  FLECSI_FUNC std::size_t index_space_index() const {
     return entity_;
   }
 
-  std::size_t flags() const {
+  FLECSI_FUNC std::size_t flags() const {
     return flags_;
   }
 
-  void set_flags(const std::size_t flags) {
+  FLECSI_FUNC void set_flags(const std::size_t flags) {
     assert(flags < 1 << FBITS && "flag bits exceeded");
     flags_ = flags;
   }
 
-  bool operator<(const id_ & id) const {
+  FLECSI_FUNC bool operator<(const id_ & id) const {
     return local_id() < id.local_id();
   }
 
-  bool operator==(const id_ & id) const {
+  FLECSI_FUNC bool operator==(const id_ & id) const {
     return (local_id() & FLAGS_UNMASK) == (id.local_id() & FLAGS_UNMASK);
   }
 
-  bool operator!=(const id_ & id) const {
+  FLECSI_FUNC bool operator!=(const id_ & id) const {
     return !(local_id() == id.local_id());
   }
 
