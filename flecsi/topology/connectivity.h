@@ -25,6 +25,12 @@
 #include <flecsi/utils/array_ref.h>
 #include <flecsi/utils/reorder.h>
 
+#ifndef __CUDACC__
+#define FLECSI_FUNC 
+#else
+#define FLECSI_FUNC __device__ __host__ inline
+#endif
+
 namespace flecsi {
 namespace topology {
 
@@ -53,7 +59,7 @@ public:
   connectivity_t & operator=(connectivity_t &&) = default;
 
   //! Constructor.
-  connectivity_t() : index_space_(false) {}
+  FLECSI_FUNC connectivity_t() : index_space_(false) {}
 
   auto entity_storage() {
     return index_space_.storage();
@@ -218,7 +224,7 @@ public:
   //-----------------------------------------------------------------//
   //! True if the connectivity is empty (hasn't been populated).
   //-----------------------------------------------------------------//
-  bool empty() const {
+  FLECSI_FUNC bool empty() const {
     return index_space_.empty();
   }
 
@@ -280,15 +286,15 @@ public:
     return index_space_.id_storage_();
   }
 
-  auto & get_index_space() {
+  FLECSI_FUNC auto & get_index_space() {
     return index_space_;
   }
 
-  auto & get_index_space() const {
+  FLECSI_FUNC auto & get_index_space() const {
     return index_space_;
   }
 
-  auto range(size_t i) const {
+  FLECSI_FUNC auto range(size_t i) const {
     return offsets_.range(i);
   }
 

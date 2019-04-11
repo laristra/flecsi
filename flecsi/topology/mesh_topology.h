@@ -374,7 +374,7 @@ public:
   //! Get the connectivity of the specified from/to domain and from/to
   //! topological dimensions.
   //--------------------------------------------------------------------------//
-  const connectivity_t & get_connectivity(size_t from_domain,
+  FLECSI_FUNC const connectivity_t & get_connectivity(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
     size_t to_dim) const override {
@@ -385,7 +385,7 @@ public:
   //! Get the connectivity of the specified from/to domain and from/to
   //! topological dimensions.
   //--------------------------------------------------------------------------//
-  connectivity_t & get_connectivity(size_t from_domain,
+  FLECSI_FUNC connectivity_t & get_connectivity(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
     size_t to_dim) override {
@@ -396,7 +396,7 @@ public:
   //! Get the connectivity of the specified domain and from/to topological
   //! dimensions.
   //--------------------------------------------------------------------------//
-  const connectivity_t & get_connectivity(size_t domain,
+  FLECSI_FUNC const connectivity_t & get_connectivity(size_t domain,
     size_t from_dim,
     size_t to_dim) const override {
     return get_connectivity_(domain, domain, from_dim, to_dim);
@@ -406,7 +406,7 @@ public:
   //! Get the connectivity of the specified domain and from/to topological
   //! dimensions.
   //--------------------------------------------------------------------------//
-  connectivity_t &
+  FLECSI_FUNC connectivity_t &
   get_connectivity(size_t domain, size_t from_dim, size_t to_dim) override {
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
@@ -554,7 +554,7 @@ public:
     size_t FROM_DOM,
     size_t TO_DOM = FROM_DOM,
     class ENT_TYPE>
-  const auto entities(const ENT_TYPE * e) const {
+  FLECSI_FUNC const auto entities(const ENT_TYPE * e) const {
 
     const connectivity_t & c =
       get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
@@ -2076,7 +2076,7 @@ private:
   //! Implementation of get_connectivity for various get_connectivity
   //! convenience methods.
   //--------------------------------------------------------------------------//
-  const connectivity_t & get_connectivity_(size_t from_domain,
+  FLECSI_FUNC const connectivity_t & get_connectivity_(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
     size_t to_dim) const {
@@ -2089,7 +2089,7 @@ private:
   //! Implementation of get_connectivity for various get_connectivity
   //! convenience methods.
   //--------------------------------------------------------------------------//
-  connectivity_t & get_connectivity_(size_t from_domain,
+  FLECSI_FUNC connectivity_t & get_connectivity_(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
     size_t to_dim) {

@@ -28,6 +28,11 @@
 #include <flecsi/topology/partition.h>
 #include <flecsi/topology/types.h>
 
+#ifndef __CUDACC__
+#define FLECSI_FUNC 
+#else
+#define FLECSI_FUNC __device__ __host__ inline
+#endif
 namespace flecsi {
 namespace topology {
 
@@ -94,65 +99,65 @@ public:
 
   // implicit type conversions are evil.  This one tries to convert
   // all pointers to domain_entities
-  explicit domain_entity_u(ENTITY_TYPE * entity) : entity_(entity) {}
-  domain_entity_u & operator=(const domain_entity_u & e) {
+  FLECSI_FUNC explicit domain_entity_u(ENTITY_TYPE * entity) : entity_(entity) {}
+  FLECSI_FUNC domain_entity_u & operator=(const domain_entity_u & e) {
     entity_ = e.entity_;
     return *this;
   }
 
-  ENTITY_TYPE * entity() {
+  FLECSI_FUNC ENTITY_TYPE * entity() {
     return entity_;
   }
 
-  const ENTITY_TYPE * entity() const {
+  FLECSI_FUNC const ENTITY_TYPE * entity() const {
     return entity_;
   }
 
-  operator ENTITY_TYPE *() {
+  FLECSI_FUNC operator ENTITY_TYPE *() {
     return entity_;
   }
 
-  ENTITY_TYPE * operator->() {
+  FLECSI_FUNC ENTITY_TYPE * operator->() {
     return entity_;
   }
 
-  const ENTITY_TYPE * operator->() const {
+  FLECSI_FUNC const ENTITY_TYPE * operator->() const {
     return entity_;
   }
 
-  ENTITY_TYPE * operator*() {
+  FLECSI_FUNC ENTITY_TYPE * operator*() {
     return entity_;
   }
 
-  const ENTITY_TYPE * operator*() const {
+  FLECSI_FUNC const ENTITY_TYPE * operator*() const {
     return entity_;
   }
 
-  operator size_t() const {
+  FLECSI_FUNC operator size_t() const {
     return entity_->template id<DOM>();
   }
 
-  id_t global_id() const {
+  FLECSI_FUNC id_t global_id() const {
     return entity_->template global_id<DOM>();
   }
 
-  size_t id() const {
+  FLECSI_FUNC size_t id() const {
     return entity_->template id<DOM>();
   }
 
-  bool operator==(domain_entity_u e) const {
+  FLECSI_FUNC bool operator==(domain_entity_u e) const {
     return entity_ == e.entity_;
   }
 
-  bool operator!=(domain_entity_u e) const {
+  FLECSI_FUNC bool operator!=(domain_entity_u e) const {
     return entity_ != e.entity_;
   }
 
-  bool operator<(domain_entity_u e) const {
+  FLECSI_FUNC bool operator<(domain_entity_u e) const {
     return entity_ < e.entity_;
   }
 
-  id_t index_space_id() const {
+  FLECSI_FUNC id_t index_space_id() const {
     return entity_->template global_id<DOM>();
   }
 
@@ -204,7 +209,7 @@ public:
     return conns_[FROM_DIM][to_dim];
   }
 
-  connectivity_t & get(size_t from_dim, size_t to_dim) {
+  FLECSI_FUNC connectivity_t & get(size_t from_dim, size_t to_dim) {
     assert(from_dim <= DIM && "invalid from dimension");
     assert(to_dim <= DIM && "invalid to dimension");
     return conns_[from_dim][to_dim];
@@ -345,19 +350,19 @@ public:
   //-----------------------------------------------------------------//
   //! Get the normal (non-binding) connectivity of a domain.
   //-----------------------------------------------------------------//
-  virtual const connectivity_t &
+  FLECSI_FUNC virtual const connectivity_t &
   get_connectivity(size_t domain, size_t from_dim, size_t to_dim) const = 0;
 
   //-----------------------------------------------------------------//
   //! Get the normal (non-binding) connectivity of a domain.
   //-----------------------------------------------------------------//
-  virtual connectivity_t &
+  FLECSI_FUNC virtual connectivity_t &
   get_connectivity(size_t domain, size_t from_dim, size_t to_dim) = 0;
 
   //-----------------------------------------------------------------//
   //! Get the binding connectivity of specified domains.
   //-----------------------------------------------------------------//
-  virtual const connectivity_t & get_connectivity(size_t from_domain,
+  FLECSI_FUNC virtual const connectivity_t & get_connectivity(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
     size_t to_dim) const = 0;
@@ -365,7 +370,7 @@ public:
   //-----------------------------------------------------------------//
   //! Get the binding connectivity of specified domains.
   //-----------------------------------------------------------------//
-  virtual connectivity_t & get_connectivity(size_t from_domain,
+  FLECSI_FUNC virtual connectivity_t & get_connectivity(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
     size_t to_dim) = 0;

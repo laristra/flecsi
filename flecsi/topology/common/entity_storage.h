@@ -19,6 +19,12 @@
 #include <flecsi/topology/index_space.h>
 #include <flecsi/utils/offset.h>
 
+#ifndef __CUDACC__
+#define FLECSI_FUNC 
+#else
+#define FLECSI_FUNC __device__ __host__ inline
+#endif
+
 namespace flecsi {
 namespace topology {
 
@@ -45,7 +51,7 @@ public:
     add_count(static_cast<uint32_t>(end - start_));
   }
 
-  std::pair<size_t, size_t> range(size_t i) const {
+  FLECSI_FUNC std::pair<size_t, size_t> range(size_t i) const {
     return s_[i].range();
   }
 
