@@ -60,18 +60,13 @@ struct topology_interface_u {
   template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
   static bool register_topology(std::string const & name) {
     static_assert(sizeof(TOPOLOGY_TYPE) ==
-                    sizeof(typename TOPOLOGY_TYPE::type_identifier_t),
+      sizeof(typename TOPOLOGY_TYPE::type_identifier_t),
       "Topologies may not add data members");
 
     using registration_t =
       topology_registration_u<typename TOPOLOGY_TYPE::type_identifier_t,
         NAMESPACE,
         NAME>;
-
-    const size_t type_key =
-      typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
-
-    const size_t key = utils::hash::topology_hash<NAMESPACE, NAME>();
 
     flog(internal)
       << "Registering topology" << std::endl
@@ -81,12 +76,7 @@ struct topology_interface_u {
            typeid(typename TOPOLOGY_TYPE::type_identifier_t).name())
       << std::endl;
 
-    if(!execution::context_t::instance().register_topology(
-         type_key, key, registration_t::register_callback)) {
-      return false;
-    } // if
-
-    return true;
+    return registration_t::register_fields();
   } // register_topology
 
   /*!

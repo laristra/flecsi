@@ -104,12 +104,12 @@
  */
 
 #define flecsi_register_field(                                                 \
-  client_type, nspace, name, data_type, storage_class, versions, ...)          \
+  topology_type, nspace, name, data_type, storage_class, versions, ...)        \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
   inline bool flecsi_internal_unique_name(field) =                             \
-    flecsi::data::field_interface_t::register_field<client_type,               \
+    flecsi::data::field_interface_t::register_field<topology_type,             \
       flecsi::data::storage_class,                                             \
       data_type,                                                               \
       flecsi_internal_string_hash(nspace),                                     \

@@ -70,8 +70,6 @@ struct storage_class_registration_u {
   static void register_callback(size_t key, field_id_t fid) {
     field_info_t fi;
 
-    typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
-
     fi.namespace_hash = NAMESPACE;
     fi.name_hash = NAME;
     fi.type_size = sizeof(DATA_TYPE);
@@ -80,7 +78,7 @@ struct storage_class_registration_u {
     fi.index_space = INDEX_SPACE;
     fi.key = key;
 
-    execution::context_t::instance().register_runtime_field_info(
+    execution::context_t::instance().register_field_info(
       typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code(),
       STORAGE_CLASS,
       fi);

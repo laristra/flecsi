@@ -24,6 +24,7 @@
 
 #include <flecsi/data/common/storage_class_registration.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
 
 namespace flecsi {
@@ -86,24 +87,33 @@ struct field_interface_u {
     static_assert(VERSIONS <= utils::hash::field_max_versions,
       "max field versions exceeded");
 
-    using registration_t = storage_class_registration_u<TOPOLOGY_TYPE,
-      STORAGE_CLASS,
-      DATA_TYPE,
-      NAMESPACE,
-      NAME,
-      VERSIONS,
-      INDEX_SPACE>;
+    using unique_fid_t =
+      utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
 
-    const size_t client_type_key =
+    const size_t topology_type_key =
       typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
 
-    for(size_t version(0); version < VERSIONS; ++version) {
-      const size_t key = utils::hash::field_hash<NAMESPACE, NAME>(version);
+    field_info_t fi;
 
-      if(!execution::context_t::instance().register_field(
-           client_type_key, key, registration_t::register_callback)) {
-        return false;
-      } // if
+    fi.namespace_hash = NAMESPACE;
+    fi.name_hash = NAME;
+    fi.type_size = sizeof(DATA_TYPE);
+    fi.versions = VERSIONS;
+    fi.index_space = INDEX_SPACE;
+
+    flog(internal)
+      << "Registering field" << std::endl
+      << "\tname: " << name << std::endl
+      << "\ttype: "
+      << utils::demangle(typeid(DATA_TYPE).name())
+      << std::endl;
+
+    for(size_t version(0); version < VERSIONS; ++version) {
+      fi.fid = unique_fid_t::instance().next();
+      fi.key = utils::hash::field_hash<NAMESPACE, NAME>(version);
+
+      execution::context_t::instance().register_field_info(topology_type_key,
+        STORAGE_CLASS, fi);
     } // for
 
     return true;

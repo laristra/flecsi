@@ -80,6 +80,7 @@ top_level_task(const Legion::Task * task,
     } // for
   } // for
 
+#if 0
   //--------------------------------------------------------------------------//
   // Invoke callbacks for entries in the field registry.
   //--------------------------------------------------------------------------//
@@ -91,6 +92,7 @@ top_level_task(const Legion::Task * task,
       f.second.second(f.first, f.second.first);
     } // for
   } // for
+#endif
 
   auto args = runtime->get_input_args();
 

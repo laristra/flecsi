@@ -103,8 +103,9 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
   colors_per_rank_ = vm["colors-per-rank"].as<size_t>();
   
   if(colors_per_rank_ > 1) {
-    std::string lcpr = "-ll:cpu=" + std::to_string(colors_per_rank_);
-    largv.push_back(const_cast<char *>(lcpr.c_str()));
+    largv.push_back(const_cast<char *>(std::string("-ll:cpu").c_str()));
+    largv.push_back(const_cast<char *>(
+      std::to_string(colors_per_rank_).c_str()));
   } // if
 
   /*

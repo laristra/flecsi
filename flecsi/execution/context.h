@@ -21,7 +21,6 @@
 #include <flecsi/data/common/field_info.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
-#include <flecsi/utils/common.h>
 #include <flecsi/utils/demangle.h>
 #include <flecsi/utils/flog.h>
 #endif
@@ -342,6 +341,7 @@ struct context_u : public CONTEXT_POLICY {
   bool register_topology(size_t topology_identifier,
     size_t instance_identifier,
     const topology_registration_function_t & callback) {
+#if 0
     if(topology_callback_registry_.find(topology_identifier) !=
        topology_callback_registry_.end()) {
       flog_assert(topology_callback_registry_[topology_identifier].find(
@@ -353,6 +353,7 @@ struct context_u : public CONTEXT_POLICY {
     topology_callback_registry_[topology_identifier][instance_identifier] =
       std::make_pair(unique_fid_t::instance().next(), callback);
 
+#endif
     return true;
   } // register_topology
 
@@ -386,57 +387,20 @@ struct context_u : public CONTEXT_POLICY {
    *--------------------------------------------------------------------------*/
 
   /*!
-    Register a field callback with the runtime.
+    Register field information.
 
-    @param topology_identifier The topology type indentifier hash.
-    @param field_identifier    The field type identifier hash.
-    @param callback            The registration call back function.
+    @param topology_type_identifier Topology type identifier.
+    @param storage_class            Storage class identifier.
+    @param fi                       Field information.
    */
 
-  bool register_field(size_t topology_identifier,
-    size_t field_identifier,
-    const field_registration_function_t & callback) {
-    if(field_callback_registry_.find(topology_identifier) !=
-       field_callback_registry_.end()) {
-      if(field_callback_registry_[topology_identifier].find(field_identifier) !=
-         field_callback_registry_[topology_identifier].end()) {
-        flog(warn) << "field callback key already exists" << std::endl;
-      } // if
-    } // if
-
-    field_callback_registry_[topology_identifier][field_identifier] =
-      std::make_pair(unique_fid_t::instance().next(), callback);
-
-    return true;
-  } // register_field
-
-  /*!
-    Return the field callback registry.
-   */
-
-  std::unordered_map<size_t, field_registration_map_t> & field_registry() {
-    return field_callback_registry_;
-  } // field_registry
-
-  /*!
-    Register runtime field information.
-   */
-
-  void register_runtime_field_info(size_t topology_type_identifier,
+  void register_field_info(size_t topology_type_identifier,
     size_t storage_class,
     const data::field_info_t & fi) {
-    fixme() << "This needs to be renamed";
-    runtime_field_info_[topology_type_identifier][storage_class].emplace_back(
-      fi);
-  } // register_runtime_field_information
+    field_info_map_[topology_type_identifier][storage_class].emplace_back(fi);
+  } // register_field_information
 
 private:
-  /*--------------------------------------------------------------------------*
-    Private types.
-   *--------------------------------------------------------------------------*/
-
-  using unique_fid_t = utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
-
   /*--------------------------------------------------------------------------*
     Singleton.
    *--------------------------------------------------------------------------*/
@@ -505,17 +469,22 @@ private:
    */
 
   using field_info_vector_t = std::vector<data::field_info_t>;
-  using runtime_field_info_t = std::unordered_map<size_t, field_info_vector_t>;
+  using field_info_t = std::unordered_map<size_t, field_info_vector_t>;
 
   /*!
     This type allows storage of runtime field information per topology type.
     The size_t key is the topology type hash.
    */
 
-  std::unordered_map<size_t, runtime_field_info_t> runtime_field_info_;
+  std::unordered_map<size_t, field_info_t> field_info_map_;
 
-  //std::unordered_map<std::pair<size_t, size_t>, runtime_handle_info_t> 
+#if 0
+  // handle state
+  using data_reference_map_t = std::unordered_map<size_t, data_reference_state_t>;
+  std::unordered_map<std::pair<size_t, size_t>, std::unordered_map<size_t, data_reference_map_t>>
 
+  std::unordered_map<std::pair<size_t, size_t>, std::unordered_map<std::pair<size_t, size_t>, data_reference_state_t>>;
+#endif
 }; // struct context_u
 
 } // namespace execution

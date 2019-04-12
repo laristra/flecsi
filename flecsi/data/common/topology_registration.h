@@ -454,7 +454,13 @@ struct topology_registration_u<flecsi::topology::global_topology_t,
 
   using TOPOLOGY_TYPE = flecsi::topology::global_topology_t;
 
-  static void register_callback(field_id_t fid) {}
+  static bool register_fields() {
+    const size_t type_key =
+      typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
+    const size_t key = utils::hash::topology_hash<NAMESPACE, NAME>();
+
+    return true;
+  } // register_fields
 
 }; // class topology_registration_u
 
@@ -473,7 +479,13 @@ struct topology_registration_u<flecsi::topology::color_topology_t,
 
   using TOPOLOGY_TYPE = flecsi::topology::color_topology_t;
 
-  static void register_callback(field_id_t fid) {}
+  static bool register_fields() {
+    const size_t type_key =
+      typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
+    const size_t key = utils::hash::topology_hash<NAMESPACE, NAME>();
+
+    return true;
+  } // register_fields
 
 }; // class topology_registration_u
 

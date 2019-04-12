@@ -41,6 +41,7 @@ struct runtime_data_t {
   void initialize() {}
 
 private:
+
 }; // struct runtime_data_t
 
 } // namespace legion
