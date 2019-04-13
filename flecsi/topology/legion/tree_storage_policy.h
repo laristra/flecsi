@@ -91,7 +91,6 @@ struct legion_tree_topology_storage_policy_u {
     branch_partition_index_spaces;
 
   legion_tree_topology_storage_policy_u() {
-    std::cout << "Constructor storage policy" << std::endl;
     auto & context_ = flecsi::execution::context_t::instance();
   }
 
@@ -119,10 +118,7 @@ struct legion_tree_topology_storage_policy_u {
    * Initilize the branch index space
    */
   void init_branches(branch_t * buf, size_t num_branches) {
-    std::cout << "Init branches: " << num_branches << " " << buf << std::endl
-              << std::flush;
     branch_index_space.storage()->set_buffer(buf, num_branches);
-    std::cout << "End" << std::endl << std::flush;
   }
 
   /**

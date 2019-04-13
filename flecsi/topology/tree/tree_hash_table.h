@@ -44,7 +44,6 @@ struct hash_table_u {
       h += modulo;
       h = h >= hash_capacity_ ? h % hash_capacity_ : h;
       ptr = index_space.storage()->begin() + h;
-      std::cout << "Find collision" << std::endl;
     }
     if(ptr->key() != key) {
       return nullptr;
@@ -66,7 +65,6 @@ struct hash_table_u {
       h = h >= hash_capacity_ ? h % hash_capacity_ : h;
       ptr = index_space.storage()->begin() + h;
       ++collision;
-      std::cout << "Collision: " << key << std::endl;
     }
     auto b = new(ptr) type_t(key, std::forward<ARGS>(args)...);
     return ptr;

@@ -376,7 +376,6 @@ public:
   //-----------------------------------------------------------------/
   template<class T, class... S>
   T * make(S &&... args) {
-    std::cout << "Calling make: " << ms_ << std::endl;
     return ms_->template make<T>(std::forward<S>(args)...);
   } // make
 
