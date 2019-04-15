@@ -266,7 +266,7 @@ endif()
 #------------------------------------------------------------------------------#
 
 if(ENABLE_BOOST)
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES Boost::program_options)
 endif()
 
 #------------------------------------------------------------------------------#
