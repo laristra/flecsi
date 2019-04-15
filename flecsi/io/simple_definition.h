@@ -8,11 +8,11 @@
 #include <flecsi/topology/mesh_definition.h>
 
 #include <fstream>
-#include <string>
 #include <iterator>
 #include <sstream>
-#include <vector>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <flecsi/utils/logging.h>
 
@@ -77,8 +77,8 @@ public:
   /// return the set of vertices that make up all cells
   /// \param [in] from_dim the entity dimension to query
   /// \param [in] to_dim the dimension of entities we wish to return
-  std::vector<std::vector<size_t>>
-  entities(size_t from_dim, size_t to_dim) const override {
+  std::vector<std::vector<size_t>> entities(size_t from_dim,
+    size_t to_dim) const override {
     clog_assert(from_dim == 2, "invalid dimension " << from_dim);
     clog_assert(to_dim == 0, "invalid dimension " << to_dim);
 
@@ -87,11 +87,11 @@ public:
 
     // Go to the start of the cells.
     file_.seekg(cell_start_);
-    for (size_t l(0); l < num_cells_; ++l) {
+    for(size_t l(0); l < num_cells_; ++l) {
       std::getline(file_, line);
       std::istringstream iss(line);
-      ids.push_back(std::vector<size_t>(std::istream_iterator<size_t>(iss),
-                                        std::istream_iterator<size_t>()));
+      ids.push_back(std::vector<size_t>(
+        std::istream_iterator<size_t>(iss), std::istream_iterator<size_t>()));
     }
 
     return ids;

@@ -85,8 +85,8 @@ public:
   //! @param to_dimension   The dimension of the entities of the definition.
   //--------------------------------------------------------------------------//
 
-  virtual std::vector<std::vector<size_t>>
-  entities(size_t from_dimension, size_t to_dimension) const = 0;
+  virtual std::vector<std::vector<size_t>> entities(size_t from_dimension,
+    size_t to_dimension) const = 0;
 
   //--------------------------------------------------------------------------//
   //! Abstract interface to get the entities of dimension \em to that define
