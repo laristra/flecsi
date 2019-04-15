@@ -93,6 +93,8 @@ public:
       ids.push_back(std::vector<size_t>(std::istream_iterator<size_t>(iss),
                                         std::istream_iterator<size_t>()));
     }
+
+    return ids;
   }
 
   /// return the set of vertices of a particular entity.
