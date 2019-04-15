@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include<vector>
+
 #include <flecsi/geometry/point.h>
 #include <flecsi/utils/logging.h>
 
@@ -74,6 +76,19 @@ public:
 
     return ids;
   } // vertices
+
+  std::vector<std::vector<size_t>> entities(
+      size_t from_dim,
+      size_t to_dim) const override {
+    assert(from_dim == 2);
+    assert(to_dim == 0);
+    std::vector<std::vector<size_t>> ids(num_entities(2));
+
+    for (size_t c(0); c < num_entities(2); ++c)
+      ids.push_back(std::vector<size_t>(cells_[c], cells_[c] + 4));
+
+    return ids;
+  }  // entities
 
   point_t vertex(size_t vertex_id) const {
     return point_t(vertices_[vertex_id][0], vertices_[vertex_id][1]);
