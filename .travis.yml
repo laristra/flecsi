@@ -121,7 +121,7 @@ after_success:
         git commit -m "Documentation Update";
         openssl aes-256-cbc -K $encrypted_5669a181ba27_key -iv $encrypted_5669a181ba27_iv -in deploy.enc -out ~/.ssh/id_rsa -d;
         chmod 600 ~/.ssh/id_rsa;
-        git push git@github.com:${TRAVIS_REPO_SLUG} gh-pages:gh-pages;
+        #git push git@github.com:${TRAVIS_REPO_SLUG} gh-pages:gh-pages;
       else
         git status;
         git diff --cached --no-color | head -n 500;
