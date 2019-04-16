@@ -112,19 +112,29 @@ struct context_u : public CONTEXT_POLICY {
     return CONTEXT_POLICY::shard();
   }
 
-  // FIXME
+  /*!
+
+   */
 
   size_t shards() const {
     return CONTEXT_POLICY::shards();
   }
 
-  // FIXME
+  /*!
+
+   */
 
   size_t threads_per_shard() const {
     return CONTEXT_POLICY::threads_per_shard();
   } // threads_per_shard
 
-  // FIXME
+  /*!
+    Return the number of execution instances with which the runtime was
+    invoked. In this context a \em thread is defined as an instance of
+    execution, and does not imply any other properties. This interface can be
+    used to determine the full subscription of the execution instances of the
+    running process that invokded the FleCSI runtime.
+   */
 
   size_t threads() const {
     return CONTEXT_POLICY::threads();
