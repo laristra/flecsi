@@ -80,8 +80,8 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  rank_ = rank;
-  size_ = size;
+  shard_ = rank;
+  shards_ = size;
 
   Legion::Runtime::configure_MPI_interoperability(rank);
 
@@ -100,12 +100,12 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
   std::vector<char *> largv;
   largv.push_back(argv[0]);
 
-  colors_per_rank_ = vm["colors-per-rank"].as<size_t>();
+  colors_per_shard_ = vm["colors-per-rank"].as<size_t>();
   
-  if(colors_per_rank_ > 1) {
+  if(colors_per_shard_ > 1) {
     largv.push_back(const_cast<char *>(std::string("-ll:cpu").c_str()));
     largv.push_back(const_cast<char *>(
-      std::to_string(colors_per_rank_).c_str()));
+      std::to_string(colors_per_shard_).c_str()));
   } // if
 
   /*

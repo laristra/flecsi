@@ -32,19 +32,19 @@ color_raw(int argc, char ** argv) {
   FTEST();
 
   auto depth = context_t::instance().task_depth();
-  auto rank = context_t::instance().rank();
-  auto size = context_t::instance().size();
-  auto cpr = context_t::instance().colors_per_rank();
+  auto shard = context_t::instance().shard();
+  auto shards = context_t::instance().shards();
+  auto cps = context_t::instance().colors_per_shard();
 
   {
     flog_tag_guard(color);
-    flog(info) << "color(raw): " << rank << std::endl
-               << "colors(raw): " << size << std::endl
-               << "colors_per_rank(raw): " << cpr << std::endl;
+    flog(info) << "color(raw): " << shard << std::endl
+               << "colors(raw): " << shards << std::endl
+               << "colors_per_shard(raw): " << cps << std::endl;
   }
 
-  ASSERT_EQ(size, 4);
-  ASSERT_LT(rank, size);
+  ASSERT_EQ(shards, 4);
+  ASSERT_LT(shard, shards);
 
   return 0;
 }

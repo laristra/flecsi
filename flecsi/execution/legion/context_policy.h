@@ -90,17 +90,17 @@ struct legion_context_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  size_t rank() const {
-    return rank_;
-  } // rank
+  size_t shard() const {
+    return shard_;
+  } // shard
 
   /*
     Documentation for this interface is in the top-level context type.
    */
 
-  size_t size() const {
-    return size_;
-  } // rank
+  size_t shards() const {
+    return shards_;
+  } // shards
 
   /*
     Documentation for this interface is in the top-level context type.
@@ -136,9 +136,9 @@ struct legion_context_policy_t {
       ->index_domain.get_volume();
   } // colors
 
-  size_t colors_per_rank() const {
-    return colors_per_rank_;
-  } // colors_per_rank
+  size_t colors_per_shard() const {
+    return colors_per_shard_;
+  } // colors_per_shard
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
@@ -414,9 +414,9 @@ private:
 
   data::legion::runtime_data_t runtime_data_;
 
-  size_t rank_ = std::numeric_limits<size_t>::max();
-  size_t size_ = std::numeric_limits<size_t>::max();
-  size_t colors_per_rank_ = std::numeric_limits<size_t>::max();
+  size_t shard_ = std::numeric_limits<size_t>::max();
+  size_t shards_ = std::numeric_limits<size_t>::max();
+  size_t colors_per_shard_ = std::numeric_limits<size_t>::max();
 
   /*--------------------------------------------------------------------------*
     Interoperability data members.

@@ -108,21 +108,21 @@ struct context_u : public CONTEXT_POLICY {
 
   // FIXME
 
-  size_t rank() const {
-    return CONTEXT_POLICY::rank();
+  size_t shard() const {
+    return CONTEXT_POLICY::shard();
   }
 
   // FIXME
 
-  size_t size() const {
-    return CONTEXT_POLICY::size();
+  size_t shards() const {
+    return CONTEXT_POLICY::shards();
   }
 
   // FIXME
 
-  size_t colors_per_rank() const {
-    return CONTEXT_POLICY::colors_per_rank();
-  } // colors_per_shared
+  size_t colors_per_shard() const {
+    return CONTEXT_POLICY::colors_per_shard();
+  } // colors_per_shard
 
   /*!
     Return the current task depth within the execution hierarchy. The
@@ -455,13 +455,6 @@ private:
   /*--------------------------------------------------------------------------*
     Field data members.
    *--------------------------------------------------------------------------*/
-
-  /*!
-    This is the map of registration callback functions for fields. The map is
-    keyed off of topology type.
-   */
-
-  std::unordered_map<size_t, field_registration_map_t> field_callback_registry_;
 
   /*!
     This type allows the storage of field information per storage class. The
