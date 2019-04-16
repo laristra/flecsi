@@ -30,7 +30,7 @@ inline std::string __flecsi_tags = "all";
   "Enable the specified output tags, e.g., --flog-tags=tag1,tag2."             \
   " Passing --flog-tags by itself will print the available tags.")
 
-#define FLECSI_COLORS_PER_RANK_OPTION                                          \
-  ("colors-per-rank",                                                          \
+#define FLECSI_THREADS_PER_SHARD_OPTION                                        \
+  ("threads-per-shard",                                                        \
   value<size_t>()->default_value(1),                                           \
-  "Specify the number of colors per rank.")
+  "Specify the number of threads per shard.")

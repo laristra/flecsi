@@ -102,6 +102,14 @@ struct legion_context_policy_t {
     return shards_;
   } // shards
 
+  size_t threads_per_shard() const {
+    return threads_per_shard_;
+  } // threads_per_shard
+
+  size_t threads() const {
+    return threads_;
+  } // threads
+
   /*
     Documentation for this interface is in the top-level context type.
    */
@@ -135,10 +143,6 @@ struct legion_context_policy_t {
       ->get_current_task(Legion::Runtime::get_context())
       ->index_domain.get_volume();
   } // colors
-
-  size_t colors_per_shard() const {
-    return colors_per_shard_;
-  } // colors_per_shard
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
@@ -416,7 +420,8 @@ private:
 
   size_t shard_ = std::numeric_limits<size_t>::max();
   size_t shards_ = std::numeric_limits<size_t>::max();
-  size_t colors_per_shard_ = std::numeric_limits<size_t>::max();
+  size_t threads_per_shard_ = std::numeric_limits<size_t>::max();
+  size_t threads_ = std::numeric_limits<size_t>::max();
 
   /*--------------------------------------------------------------------------*
     Interoperability data members.

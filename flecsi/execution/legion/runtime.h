@@ -49,7 +49,7 @@ flecsi_legion_add_options(options_description & desc) {
 #if defined(FLECSI_ENABLE_FLOG)
     FLECSI_FLOG_TAG_OPTION
 #endif
-    FLECSI_COLORS_PER_RANK_OPTION
+    FLECSI_THREADS_PER_SHARD_OPTION
   ;
 
   desc.add(flecsi);

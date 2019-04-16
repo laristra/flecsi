@@ -120,9 +120,15 @@ struct context_u : public CONTEXT_POLICY {
 
   // FIXME
 
-  size_t colors_per_shard() const {
-    return CONTEXT_POLICY::colors_per_shard();
-  } // colors_per_shard
+  size_t threads_per_shard() const {
+    return CONTEXT_POLICY::threads_per_shard();
+  } // threads_per_shard
+
+  // FIXME
+
+  size_t threads() const {
+    return CONTEXT_POLICY::threads();
+  } // threads
 
   /*!
     Return the current task depth within the execution hierarchy. The
