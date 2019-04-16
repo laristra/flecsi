@@ -77,7 +77,7 @@ public:
   /// return the set of vertices that make up all cells
   /// \param [in] from_dim the entity dimension to query
   /// \param [in] to_dim the dimension of entities we wish to return
-  std::vector<std::vector<size_t>> entities(size_t from_dim,
+  std::vector<std::vector<size_t>> entities_weifix(size_t from_dim,
     size_t to_dim) const override {
     clog_assert(from_dim == 2, "invalid dimension " << from_dim);
     clog_assert(to_dim == 0, "invalid dimension " << to_dim);
