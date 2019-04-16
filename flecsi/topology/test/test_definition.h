@@ -77,7 +77,7 @@ public:
     return ids;
   } // vertices
 
-  std::vector<std::vector<size_t>> entities(size_t from_dim,
+  std::vector<std::vector<size_t>> entities_weifix(size_t from_dim,
     size_t to_dim) const override {
     assert(from_dim == 2);
     assert(to_dim == 0);
