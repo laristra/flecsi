@@ -21,6 +21,7 @@ set(data_HEADERS
   accessor.h
   client.h
   common/data_hash.h
+  common/data_reference.h
   common/data_types.h
   common/privilege.h
   common/registration_wrapper.h
