@@ -8,8 +8,11 @@
 #include <flecsi/topology/mesh_definition.h>
 
 #include <fstream>
+#include <iterator>
+#include <sstream>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <flecsi/utils/logging.h>
 
@@ -24,7 +27,7 @@ namespace io {
 ///
 /// \class simple_definition_t simple_definition.h
 /// \brief simple_definition_t provides a very basic implementation of
-///        the mesh_definition_t interface.
+///        the mesh_definition_u interface.
 ///
 class simple_definition_t : public topology::mesh_definition_u<2>
 {
@@ -70,6 +73,29 @@ public:
   size_t num_entities(size_t dimension) const override {
     return dimension == 0 ? num_vertices_ : num_cells_;
   } // num_entities
+
+  /// return the set of vertices that make up all cells
+  /// \param [in] from_dim the entity dimension to query
+  /// \param [in] to_dim the dimension of entities we wish to return
+  std::vector<std::vector<size_t>> entities(size_t from_dim,
+    size_t to_dim) const override {
+    clog_assert(from_dim == 2, "invalid dimension " << from_dim);
+    clog_assert(to_dim == 0, "invalid dimension " << to_dim);
+
+    std::string line;
+    std::vector<std::vector<size_t>> ids;
+
+    // Go to the start of the cells.
+    file_.seekg(cell_start_);
+    for(size_t l(0); l < num_cells_; ++l) {
+      std::getline(file_, line);
+      std::istringstream iss(line);
+      ids.push_back(std::vector<size_t>(
+        std::istream_iterator<size_t>(iss), std::istream_iterator<size_t>()));
+    }
+
+    return ids;
+  }
 
   /// return the set of vertices of a particular entity.
   /// \param [in] dimension  the entity dimension to query.
