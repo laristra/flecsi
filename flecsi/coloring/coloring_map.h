@@ -36,6 +36,11 @@ struct coloring_map_u {
 
   bool register_coloring(size_t instance_identifier,
     size_t coloring_identifier) {
+
+    flog_assert(instances_[instance_identifier].find(coloring_identifier) ==
+      instances_[instance_identifier].end(),
+      "coloring " << coloring_identifier << " already exists");
+
     instances_[instance_identifier][coloring_identifier] = {};
     return true;
   } // register_coloring

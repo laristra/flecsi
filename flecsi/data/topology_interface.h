@@ -60,7 +60,7 @@ struct topology_interface_u {
   template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
   static bool register_topology(std::string const & name) {
     static_assert(sizeof(TOPOLOGY_TYPE) ==
-      sizeof(typename TOPOLOGY_TYPE::type_identifier_t),
+                    sizeof(typename TOPOLOGY_TYPE::type_identifier_t),
       "Topologies may not add data members");
 
     using registration_t =

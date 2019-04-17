@@ -306,7 +306,7 @@ dumpstack() {
   std::cerr << FLOG_OUTPUT_RED("FleCSI Runtime: std::abort called.")
             << std::endl
             << FLOG_OUTPUT_BROWN("Build with '-DCMAKE_BUILD_TYPE=Debug'"
-            << " to enable FleCSI runtime stacktrace.")
+                                 << " to enable FleCSI runtime stacktrace.")
             << std::endl;
 #endif
 }

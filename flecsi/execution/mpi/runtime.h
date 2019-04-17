@@ -25,8 +25,8 @@
 #include <flecsi/utils/flog.h>
 #endif
 
-#include <flecsi/execution/context.h>
 #include <flecsi/execution/common/command_line_options.h>
+#include <flecsi/execution/context.h>
 #endif
 
 #include <cinch/runtime.h>
@@ -50,7 +50,7 @@ flecsi_mpi_add_options(options_description & desc) {
 #if defined(FLECSI_ENABLE_FLOG)
     FLECSI_FLOG_TAG_OPTION
 #endif
-  ;
+    ;
 
   desc.add(flecsi);
 } // add_options
@@ -98,9 +98,9 @@ flecsi_mpi_finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
   return 0;
 } // initialize
 
-inline cinch::runtime_handler_t flecsi_mpi_handler {
-  flecsi_mpi_initialize, flecsi_mpi_finalize, flecsi_mpi_add_options
-};
+inline cinch::runtime_handler_t flecsi_mpi_handler{flecsi_mpi_initialize,
+  flecsi_mpi_finalize,
+  flecsi_mpi_add_options};
 
 cinch_append_runtime_handler(flecsi_mpi_handler);
 

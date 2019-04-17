@@ -35,8 +35,8 @@
 #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
-#include <mpi.h>
 #include <boost/program_options.hpp>
+#include <mpi.h>
 
 #include <map>
 #include <unordered_map>
@@ -125,8 +125,8 @@ struct legion_context_policy_t {
    */
 
   static size_t color() {
-    flog_assert(task_depth() > 0,
-      "this method can only be called from within a task");
+    flog_assert(
+      task_depth() > 0, "this method can only be called from within a task");
     return Legion::Runtime::get_runtime()
       ->get_current_task(Legion::Runtime::get_context())
       ->index_point.point_data[0];
@@ -137,8 +137,8 @@ struct legion_context_policy_t {
    */
 
   static size_t colors() {
-    flog_assert(task_depth() > 0,
-      "this method can only be called from within a task");
+    flog_assert(
+      task_depth() > 0, "this method can only be called from within a task");
     return Legion::Runtime::get_runtime()
       ->get_current_task(Legion::Runtime::get_context())
       ->index_domain.get_volume();

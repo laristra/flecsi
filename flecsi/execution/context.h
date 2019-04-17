@@ -80,10 +80,8 @@ struct context_u : public CONTEXT_POLICY {
     coloring_map_u<unstructured_mesh_topology_base_t>;
   using structured_mesh_coloring_map_t =
     coloring_map_u<structured_mesh_topology_base_t>;
-  using ntree_coloring_map_t =
-    coloring_map_u<ntree_topology_base_t>;
-  using set_coloring_map_t =
-    coloring_map_u<set_topology_base_t>;
+  using ntree_coloring_map_t = coloring_map_u<ntree_topology_base_t>;
+  using set_coloring_map_t = coloring_map_u<set_topology_base_t>;
 
   /*--------------------------------------------------------------------------*
     Deleted contructor and assignment interfaces.
@@ -435,8 +433,7 @@ struct context_u : public CONTEXT_POLICY {
   template<typename TOPOLOGY_TYPE,
     size_t TOPOLOGY_NAMESPACE,
     size_t TOPOLOGY_NAME,
-    size_t NAME
-  >
+    size_t NAME>
   bool register_coloring(std::string & name) {
 
     constexpr bool unstructured_mesh =
@@ -455,10 +452,12 @@ struct context_u : public CONTEXT_POLICY {
       utils::hash::topology_hash<TOPOLOGY_NAMESPACE, TOPOLOGY_NAME>();
 
     if constexpr(unstructured_mesh) {
-      return unstructured_mesh_coloring_map_.register_coloring(topology_identifier, NAME);
+      return unstructured_mesh_coloring_map_.register_coloring(
+        topology_identifier, NAME);
     }
     else if(structured_mesh) {
-      return structured_mesh_coloring_map_.register_coloring(topology_identifier, NAME);
+      return structured_mesh_coloring_map_.register_coloring(
+        topology_identifier, NAME);
     }
     else if(ntree) {
       return ntree_coloring_map_.register_coloring(topology_identifier, NAME);

@@ -101,19 +101,17 @@ struct field_interface_u {
     fi.versions = VERSIONS;
     fi.index_space = INDEX_SPACE;
 
-    flog(internal)
-      << "Registering field" << std::endl
-      << "\tname: " << name << std::endl
-      << "\ttype: "
-      << utils::demangle(typeid(DATA_TYPE).name())
-      << std::endl;
+    flog(internal) << "Registering field" << std::endl
+                   << "\tname: " << name << std::endl
+                   << "\ttype: " << utils::demangle(typeid(DATA_TYPE).name())
+                   << std::endl;
 
     for(size_t version(0); version < VERSIONS; ++version) {
       fi.fid = unique_fid_t::instance().next();
       fi.key = utils::hash::field_hash<NAMESPACE, NAME>(version);
 
-      execution::context_t::instance().register_field_info(topology_type_key,
-        STORAGE_CLASS, fi);
+      execution::context_t::instance().register_field_info(
+        topology_type_key, STORAGE_CLASS, fi);
     } // for
 
     return true;
