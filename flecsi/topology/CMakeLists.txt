@@ -18,6 +18,7 @@
 #------------------------------------------------------------------------------#
 
 set(topology_HEADERS
+  base_types.h
   internal/color.h
   internal/global.h
 )

@@ -18,11 +18,14 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include <flecsi/coloring/coloring_map.h>
 #include <flecsi/data/common/field_info.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
+#include <flecsi/topology/base_types.h>
 #include <flecsi/utils/demangle.h>
 #include <flecsi/utils/flog.h>
+#include <flecsi/utils/hash.h>
 #endif
 
 #include <boost/program_options.hpp>
@@ -32,6 +35,7 @@
 #include <functional>
 #include <map>
 #include <set>
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
 
@@ -41,6 +45,8 @@ namespace flecsi {
 namespace execution {
 
 using namespace boost::program_options;
+using namespace topology;
+using namespace coloring;
 
 /*!
   The context_u type provides a high-level execution context interface that
@@ -69,6 +75,15 @@ struct context_u : public CONTEXT_POLICY {
     std::pair<field_id_t, field_registration_function_t>;
   using field_registration_map_t =
     std::unordered_map<size_t, field_registration_entry_t>;
+
+  using unstructured_mesh_coloring_map_t =
+    coloring_map_u<unstructured_mesh_topology_base_t>;
+  using structured_mesh_coloring_map_t =
+    coloring_map_u<structured_mesh_topology_base_t>;
+  using ntree_coloring_map_t =
+    coloring_map_u<ntree_topology_base_t>;
+  using set_coloring_map_t =
+    coloring_map_u<set_topology_base_t>;
 
   /*--------------------------------------------------------------------------*
     Deleted contructor and assignment interfaces.
@@ -399,6 +414,113 @@ struct context_u : public CONTEXT_POLICY {
   } // topology_fields_registered
 
   /*--------------------------------------------------------------------------*
+    Coloring interface.
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    Register a named coloring with the FleCSI runtime.
+
+    @tparam TOPOLOGY_TYPE      The topology type, which must be derived from
+                               one of the FleCSI core topology types, e.g.,
+                               unstructure_mesh_topology_base_t,
+                               structured_topology_base_t,
+                               ntree_topology_base_t, or set_topology_base_t.
+    @tparam TOPOLOGY_NAMESPACE The namespace of the topology instance for which
+                               to add a coloring.
+    @tparam TOPOLOGY_NAME      The name of the topology instance for which
+                               to add a coloring.
+    @tparam NAME               The name of the coloring to add.
+   */
+
+  template<typename TOPOLOGY_TYPE,
+    size_t TOPOLOGY_NAMESPACE,
+    size_t TOPOLOGY_NAME,
+    size_t NAME
+  >
+  bool register_coloring(std::string & name) {
+
+    constexpr bool unstructured_mesh =
+      std::is_base_of<unstructured_mesh_topology_base_t, TOPOLOGY_TYPE>::value;
+    constexpr bool structured_mesh =
+      std::is_base_of<structured_mesh_topology_base_t, TOPOLOGY_TYPE>::value;
+    constexpr bool ntree =
+      std::is_base_of<ntree_topology_base_t, TOPOLOGY_TYPE>::value;
+    constexpr bool set =
+      std::is_base_of<set_topology_base_t, TOPOLOGY_TYPE>::value;
+
+    static_assert(unstructured_mesh || structured_mesh || ntree || set,
+      "unsupported topology type");
+
+    constexpr size_t topology_identifier =
+      utils::hash::topology_hash<TOPOLOGY_NAMESPACE, TOPOLOGY_NAME>();
+
+    if constexpr(unstructured_mesh) {
+      return unstructured_mesh_coloring_map_.register_coloring(topology_identifier, NAME);
+    }
+    else if(structured_mesh) {
+      return structured_mesh_coloring_map_.register_coloring(topology_identifier, NAME);
+    }
+    else if(ntree) {
+      return ntree_coloring_map_.register_coloring(topology_identifier, NAME);
+    }
+    else if(set) {
+      return set_coloring_map_.register_coloring(topology_identifier, NAME);
+    } // if constexpr
+  } // register_coloring
+
+  /*!
+    Get a named coloring from the FleCSI runtime.
+
+    @tparam TOPOLOGY_TYPE      The topology type, which must be derived from
+                               one of the FleCSI core topology types, e.g.,
+                               unstructure_mesh_topology_base_t,
+                               structured_topology_base_t,
+                               ntree_topology_base_t, or set_topology_base_t.
+    @tparam TOPOLOGY_NAMESPACE The namespace of the topology instance for which
+                               to add a coloring.
+    @tparam TOPOLOGY_NAME      The name of the topology instance for which
+                               to add a coloring.
+    @tparam NAME               The name of the coloring to add.
+   */
+
+  template<typename TOPOLOGY_TYPE,
+    size_t TOPOLOGY_NAMESPACE,
+    size_t TOPOLOGY_NAME,
+    size_t NAME>
+  decltype(auto) get_coloring() {
+
+    constexpr bool unstructured_mesh =
+      std::is_base_of<unstructured_mesh_topology_base_t, TOPOLOGY_TYPE>::value;
+    constexpr bool structured_mesh =
+      std::is_base_of<structured_mesh_topology_base_t, TOPOLOGY_TYPE>::value;
+    constexpr bool ntree =
+      std::is_base_of<ntree_topology_base_t, TOPOLOGY_TYPE>::value;
+    constexpr bool set =
+      std::is_base_of<set_topology_base_t, TOPOLOGY_TYPE>::value;
+
+    static_assert(unstructured_mesh || structured_mesh || ntree || set,
+      "unsupported topology type");
+
+    constexpr size_t topology_identifier =
+      utils::hash::topology_hash<TOPOLOGY_NAMESPACE, TOPOLOGY_NAME>();
+
+    if constexpr(unstructured_mesh) {
+      return unstructured_mesh_coloring_map_.get_coloring(
+        topology_identifier, NAME);
+    }
+    else if(structured_mesh) {
+      return structured_mesh_coloring_map_.get_coloring(
+        topology_identifier, NAME);
+    }
+    else if(ntree) {
+      return ntree_coloring_map_.get_coloring(topology_identifier, NAME);
+    }
+    else if(set) {
+      return set_coloring_map_.get_coloring(topology_identifier, NAME);
+    } // if constexpr
+  } // get_coloring
+
+  /*--------------------------------------------------------------------------*
     Field interface.
    *--------------------------------------------------------------------------*/
 
@@ -467,6 +589,15 @@ private:
 
   // FIXME?
   std::set<std::pair<size_t, size_t>> registered_topology_fields_;
+
+  /*--------------------------------------------------------------------------*
+    Coloring data members.
+   *--------------------------------------------------------------------------*/
+
+  unstructured_mesh_coloring_map_t unstructured_mesh_coloring_map_;
+  structured_mesh_coloring_map_t structured_mesh_coloring_map_;
+  ntree_coloring_map_t ntree_coloring_map_;
+  set_coloring_map_t set_coloring_map_;
 
   /*--------------------------------------------------------------------------*
     Field data members.
