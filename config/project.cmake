@@ -34,7 +34,7 @@ endif()
 # Boost
 #------------------------------------------------------------------------------#
 
-set(ENABLE_BOOST)
+set(ENABLE_BOOST ON)
 mark_as_advanced(ENABLE_BOOST)
 list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
 

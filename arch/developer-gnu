@@ -68,7 +68,6 @@ $cmake_mode \
   -DCMAKE_C_COMPILER=gcc \
   -DCMAKE_C_FLAGS="-fmax-errors=5 -fdiagnostics-color=always" \
   -DFLECSI_RUNTIME_MODEL=$runtime \
-  -DENABLE_BOOST=ON \
   -DENABLE_FLOG=ON \
   -DENABLE_UNIT_TESTS=ON \
   -DENABLE_FLECSIT=ON \
