@@ -78,6 +78,18 @@ public:
 
   //--------------------------------------------------------------------------//
   //! Abstract interface to get the entities of dimension \em to that define
+  //! the entity of dimension \em from.
+  //!
+  //! @param from_dimension The dimension of the entity for which the
+  //!                       definition is being requested.
+  //! @param to_dimension   The dimension of the entities of the definition.
+  //--------------------------------------------------------------------------//
+
+  virtual std::vector<std::vector<size_t>> entities(size_t from_dimension,
+    size_t to_dimension) const = 0;
+
+  //--------------------------------------------------------------------------//
+  //! Abstract interface to get the entities of dimension \em to that define
   //! the entity of dimension \em from with the given identifier \em id.
   //!
   //! @param from_dimension The dimension of the entity for which the
