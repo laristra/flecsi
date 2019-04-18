@@ -124,6 +124,7 @@ branches:
   only:
   - master
   -  /^stable\/.*$/
+  - release/0.1
 
 cache:
   ccache: true
