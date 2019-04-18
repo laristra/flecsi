@@ -95,12 +95,55 @@ struct accessor_u<data::sparse,
   accessor_u(const typename sparse_data_handle_u<T, 0, 0, 0>::base_t & h)
     : base_t(h) {}
 
+  //-------------------------------------------------------------------------//
+  //! Main accessor 
+  //! 
+  //! Access a sparse element.  The element has to exist because we
+  //! return a reference to it.
+  //-------------------------------------------------------------------------//
   T & operator()(size_t index, size_t entry) {
     auto itr = lower_bound(index, entry);
     assert(itr && itr->entry == entry && "sparse accessor: unmapped entry");
 
     return itr->value;
   } // operator ()
+
+  //-------------------------------------------------------------------------//
+  //! Main accessor (const version)
+  //! 
+  //! Access a sparse element.  Return an emtpy value if not found.  The empty
+  //! value is specified by the default constructor of the underlying type.
+  //-------------------------------------------------------------------------//
+  const T & operator()(size_t index, size_t entry) const {
+    auto itr = lower_bound(index, entry);
+    assert(itr && itr->entry == entry && "sparse accessor: unmapped entry");
+
+    if (itr && itr->entry == entry)
+      return itr->value;
+    else
+      return T{};
+  } // operator ()
+  
+  //! a struct used for accessing elements.
+  struct result_t {
+    const T * value_ptr = nullptr; //!< a pointer to the element
+    bool exists = false; //!< a boolean, true if element exists
+  };
+
+  //-------------------------------------------------------------------------//
+  //! Accessor with boolean
+  //! 
+  //! Access a sparse element.  Returns a pointer to the element (null if not
+  //! found), and a boolean specifying whether the element existed.
+  //-------------------------------------------------------------------------//
+  result_t at(size_t index, size_t entry) const {
+    auto itr = lower_bound(index, entry);
+
+    if (itr && itr->entry == entry)
+      return result_t{&itr->value, true};
+    else
+      return result_t{nullptr, false};
+  } // at()
 
   template<typename E>
   T & operator()(E * e, size_t entry) {
