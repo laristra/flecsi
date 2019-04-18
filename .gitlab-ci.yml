@@ -107,10 +107,10 @@ before_script:
     - |
       if [[ ${CI_JOB_STAGE} = "Canary" ]];
       then
-        git clone https://github.com/laristra/flecsale.git;
+        git clone --recursive https://github.com/laristra/flecsale.git;
         cd flecsale/flecsi;
         git fetch;
-        git checkout origin ${CI_COMMIT_REF_NAME};
+        git checkout ${CI_COMMIT_REF_NAME};
         git submodule update --init --recursive;
         cd ../;
         mkdir build;
