@@ -86,8 +86,7 @@ public:
   //--------------------------------------------------------------------------//
 
   virtual const std::vector<std::vector<size_t>> &
-  entities(size_t from_dimension,
-    size_t to_dimension) const = 0;
+  entities(size_t from_dimension, size_t to_dimension) const = 0;
 
   //--------------------------------------------------------------------------//
   //! Abstract interface to get the entities of dimension \em to that define

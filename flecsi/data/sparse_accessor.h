@@ -96,8 +96,8 @@ struct accessor_u<data::sparse,
     : base_t(h) {}
 
   //-------------------------------------------------------------------------//
-  //! Main accessor 
-  //! 
+  //! Main accessor
+  //!
   //! Access a sparse element.  The element has to exist because we
   //! return a reference to it.
   //-------------------------------------------------------------------------//
@@ -110,7 +110,7 @@ struct accessor_u<data::sparse,
 
   //-------------------------------------------------------------------------//
   //! Main accessor (const version)
-  //! 
+  //!
   //! Access a sparse element.  Return an emtpy value if not found.  The empty
   //! value is specified by the default constructor of the underlying type.
   //-------------------------------------------------------------------------//
@@ -118,12 +118,12 @@ struct accessor_u<data::sparse,
     auto itr = lower_bound(index, entry);
     assert(itr && itr->entry == entry && "sparse accessor: unmapped entry");
 
-    if (itr && itr->entry == entry)
+    if(itr && itr->entry == entry)
       return itr->value;
     else
       return T{};
   } // operator ()
-  
+
   //! a struct used for accessing elements.
   struct result_t {
     const T * value_ptr = nullptr; //!< a pointer to the element
@@ -132,14 +132,14 @@ struct accessor_u<data::sparse,
 
   //-------------------------------------------------------------------------//
   //! Accessor with boolean
-  //! 
+  //!
   //! Access a sparse element.  Returns a pointer to the element (null if not
   //! found), and a boolean specifying whether the element existed.
   //-------------------------------------------------------------------------//
   result_t at(size_t index, size_t entry) const {
     auto itr = lower_bound(index, entry);
 
-    if (itr && itr->entry == entry)
+    if(itr && itr->entry == entry)
       return result_t{&itr->value, true};
     else
       return result_t{nullptr, false};
