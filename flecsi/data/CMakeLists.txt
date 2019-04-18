@@ -23,6 +23,7 @@ set(data_HEADERS
   common/data_hash.h
   common/data_reference.h
   common/data_types.h
+  common/data_reference.h
   common/privilege.h
   common/registration_wrapper.h
   data.h
