@@ -18,6 +18,13 @@ variables:
   CI_JOB_NAME_TMP: ${CI_JOB_NAME}
   CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME_TMP#*:}
   #CI_DEBUG_TRACE: "true"
+  http_proxy: "http://proxyout.lanl.gov:8080"
+  https_proxy: "http://proxyout.lanl.gov:8080"
+  ftp_proxy: "http://proxyout.lanl.gov:8080"
+  no_proxy: "lanl.gov"
+  SPACK_ROOT: /builds/next-generation-codes/laristra/flecsi/build
+  DEPS_LOCK: /builds/next-generation-codes/laristra/flecsi/build/deps.pid
+  lock_fd: 314
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
@@ -31,7 +38,7 @@ before_script:
 # Canary Stage #
 ################
 
-.canary:
+.canary-docker:
   retry: 2
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
@@ -96,7 +103,121 @@ before_script:
         $HOME/.local/bin/gcovr .;
       fi;
     - |
-      if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Format" ]];
+      if [[ ${CI_JOB_STAGE} = "Format" ]];
+      then
+        cd ${CI_PROJECT_DIR}/build/;
+        clang-format -version;
+        make format && git diff --exit-code --ignore-submodules;
+      fi;
+    - |
+      if [[ ${CI_JOB_STAGE} = "Canary" ]];
+      then
+        git clone https://github.com/laristra/flecsale.git;
+        cd flecsale/flecsi;
+        git pull origin master;
+        git submodule update --init --recursive;
+        cd ../;
+        mkdir build;
+        cd build;
+        cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          -DFLECSI_RUNTIME_MODEL=mpi \
+          -DENABLE_UNIT_TESTS=ON \
+          ..;
+        make -j2 || make VERBOSE=1;
+        if [[ ${RUNTIME} = "mpi" ]];
+        then
+          make test ARGS="CTEST_OUTPUT_ON_FAILURE=1";
+        fi;
+      fi;
+
+.canary-shell:
+  retry: 2
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
+    CCACHE_UMASK: 000
+    DISTRO: ""
+    RUNTIME: ""
+    CC: "gcc"
+    CXX: "g++"
+    CXXFLAGS: "-Werror -Wno-deprecated-declarations"
+    BUILD_TYPE: "Debug"
+    IGNORE_NOCI: "FALSE"
+  stage: Canary
+  tags:
+    - shell
+  cache:
+    #key: ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
+    #key: ${CI_COMMIT_REF_SLUG}
+    key: ${DISTRO}-${RUNTIME}-${CC}
+    paths:
+      - ccache/
+  artifacts:
+    name: "${CI_COMMIT_REF_SLUG}-${CI_JOB_NAME}"
+    paths:
+      - ${CI_PROJECT_DIR}/build #/builds/next-generation-codes/laristra/flecsi/build
+    when: always
+  dependencies: []
+  script:
+    - |
+      if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Env" ]];
+      then
+        mkdir -p build;
+        cd build;
+        cp ../spack/repo_env.yaml ./spack.yaml;
+        exec {lock_fd}>${DEPS_LOCK};
+        if [[ ${I_WANT_TO_CLEAN_UP} ]]; 
+        then
+          rm -f ${SPACK_ROOT};
+        fi;
+        flock -n "${lock_fd}";
+        if [[ ! -d ${SPACK_ROOT} ]]; 
+        then
+          git init --shared=group ${SPACK_ROOT} &&
+          git -C ${SPACK_ROOT} pull https://github.com/spack/spack v0.12.1;
+        fi;
+        source ${SPACK_ROOT}/share/spack/setup-env.sh;
+        spack concretize -f;
+        spack install;
+        flock -u "${lock_fd}";
+        export BOOST_ROOT=`spack find -p boost`;
+      fi;
+    - |
+      if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Build" ]];
+      then
+        ccache -z;
+        nproc;
+        # git submodule init;
+        # git config submodule.cinch.url https://github.com/laristra/cinch.git;
+        # git submodule update --init --recursive;
+        mkdir -p build;
+        cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+          -DFLECSI_RUNTIME_MODEL=$RUNTIME \
+          ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
+          -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
+          -DENABLE_UNIT_TESTS=ON \
+          -DENABLE_PARMETIS=ON \
+          -DENABLE_COLORING=ON \
+          -DENABLE_DOXYGEN=ON \
+          -DENABLE_DOCUMENTATION=OFF \
+          -DENABLE_COVERAGE_BUILD=ON \
+          ..;
+        make -k VERBOSE=1 -j2 -l80;
+        make doxygen;
+        mkdir -p install;
+        make install DESTDIR=install;
+        sudo make install;
+        ccache -s;
+      fi;
+    - |
+      if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Test" ]];
+      then
+        cd ${CI_PROJECT_DIR}/build/;
+        make test ARGS="-V";
+        $HOME/.local/bin/gcovr .;
+      fi;
+    - |
+      if [[ ${CI_JOB_STAGE} = "Format" ]];
       then
         cd ${CI_PROJECT_DIR}/build/;
         clang-format -version;
@@ -127,31 +248,31 @@ before_script:
 # Build Stage #
 ###############
 
-.build:
-  extends: .canary
+.build-docker:
+  extends: .canary-docker
   stage: Build
 
 ##############
 # Test Stage #
 ##############
 
-.test:
-  extends: .canary
+.test-docker:
+  extends: .canary-docker
   stage: Test
   dependencies:
     #- "build:${CI_JOB_NAME#*:}"
-    - .build
+    - .build-docker
 
 ################
 # Format Stage #
 ################
 
-.format:
-  extends: .canary
+.format-docker:
+  extends: .canary-docker
   stage: Format
   dependencies:
     #- build:${CI_JOB_NAME#*:}
-    - .build
+    - .build-docker
 
 ################
 ################
@@ -162,23 +283,29 @@ before_script:
 ###############
 
 canary:fedora_mpi:
-  extends: .canary
+  extends: .canary-docker
   variables:
     DISTRO: "fedora"
     RUNTIME: "mpi"
 
 canary:fedora_legion:
-  extends: .canary
+  extends: .canary-docker
   variables:
     DISTRO: "fedora"
     RUNTIME: "legion"
+
+canary:fedora_shell:
+  extends: .canary-shell
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
 
 ##############
 # Build Jobs #
 ##############
 
 build:ubuntu_mpi:
-  extends: .build
+  extends: .build-docker
   variables:
     DISTRO: "ubuntu"
     RUNTIME: "mpi"
@@ -203,7 +330,7 @@ build:ubuntu_mpi_clang_release:
     BUILD_TYPE: "Release"
 
 build:ubuntu_mpich_mpi:
-  extends: .build
+  extends: .build-docker
   variables:
     DISTRO: "ubuntu_mpich"
     RUNTIME: "mpi"
@@ -225,7 +352,7 @@ build:ubuntu_mpich_mpi_clang_release:
     BUILD_TYPE: "Release"
 
 build:fedora_mpi:
-  extends: .build
+  extends: .build-docker
   variables:
     DISTRO: "fedora"
     RUNTIME: "mpi"
@@ -247,7 +374,7 @@ build:fedora_mpi_clang_release:
     BUILD_TYPE: "Release"
 
 build:fedora_mpich_mpi:
-  extends: .build
+  extends: .build-docker
   variables:
     DISTRO: "fedora_mpich"
     RUNTIME: "mpi"
@@ -269,7 +396,7 @@ build:fedora_mpich_mpi_clang_release:
     BUILD_TYPE: "Release"
 
 build:ubuntu_legion:
-  extends: .build
+  extends: .build-docker
   variables:
     DISTRO: "ubuntu"
     RUNTIME: "legion"
@@ -291,7 +418,7 @@ build:ubuntu_legion_clang_release:
     BUILD_TYPE: "Release"
 
 build:ubuntu_mpich_legion:
-  extends: .build
+  extends: .build-docker
   variables:
     DISTRO: "ubuntu_mpich"
     RUNTIME: "legion"
@@ -313,7 +440,7 @@ build:ubuntu_mpich_legion_clang_release:
     BUILD_TYPE: "Release"
 
 build:fedora_legion:
-  extends: .build
+  extends: .build-docker
   variables:
     DISTRO: "fedora"
     RUNTIME: "legion"
@@ -335,7 +462,7 @@ build:fedora_legion_clang_release:
     BUILD_TYPE: "Release"
 
 build:fedora_mpich_legion:
-  extends: .build
+  extends: .build-docker
   variables:
     DISTRO: "fedora_mpich"
     RUNTIME: "legion"
@@ -357,7 +484,7 @@ build:fedora_mpich_legion_clang_release:
     BUILD_TYPE: "Release"
 
 build:fedora_hpx:
-  extends: .build
+  extends: .build-docker
   variables:
     DISTRO: "fedora"
     RUNTIME: "hpx"
@@ -374,7 +501,7 @@ build:fedora_hpx_clang:
 #############
 
 test:ubuntu_mpi:
-  extends: .test
+  extends: .test-docker
   dependencies:
     - build:ubuntu_mpi
   variables:
@@ -396,7 +523,7 @@ test:ubuntu_mpi_clang_release:
     - build:ubuntu_mpi_clang_release
 
 test:ubuntu_mpich_mpi:
-  extends: .test
+  extends: .test-docker
   dependencies:
     - build:ubuntu_mpich_mpi
   variables:
@@ -418,7 +545,7 @@ test:ubuntu_mpich_mpi_clang_release:
     - build:ubuntu_mpich_mpi_clang_release
 
 test:fedora_mpi:
-  extends: .test
+  extends: .test-docker
   dependencies:
     - build:fedora_mpi
   variables:
@@ -440,7 +567,7 @@ test:fedora_mpi_clang_release:
     - build:fedora_mpi_clang_release
 
 test:fedora_mpich_mpi:
-  extends: .test
+  extends: .test-docker
   dependencies:
     - build:fedora_mpich_mpi
   variables:
@@ -462,7 +589,7 @@ test:fedora_mpich_mpi_clang_release:
     - build:fedora_mpich_mpi_clang_release
 
 test:ubuntu_legion:
-  extends: .test
+  extends: .test-docker
   dependencies:
     - build:ubuntu_legion
   variables:
@@ -484,7 +611,7 @@ test:ubuntu_legion_clang_release:
     - build:ubuntu_legion_clang_release
 
 test:ubuntu_mpich_legion:
-  extends: .test
+  extends: .test-docker
   dependencies:
     - build:ubuntu_mpich_legion
   variables:
@@ -506,7 +633,7 @@ test:ubuntu_mpich_legion_clang_release:
     - build:ubuntu_mpich_legion_clang_release
 
 test:fedora_legion:
-  extends: .test
+  extends: .test-docker
   dependencies:
     - build:fedora_legion
   variables:
@@ -528,7 +655,7 @@ test:fedora_legion_clang_release:
     - build:fedora_legion_clang_release
 
 test:fedora_mpich_legion:
-  extends: .test
+  extends: .test-docker
   dependencies:
     - build:fedora_mpich_legion
   variables:
@@ -550,7 +677,7 @@ test:fedora_mpich_legion_clang_release:
     - build:fedora_mpich_legion_clang_release
 
 test:fedora_hpx:
-  extends: .test
+  extends: .test-docker
   dependencies:
     - build:fedora_hpx
   variables:
@@ -590,27 +717,12 @@ test:fedora_hpx.ignoreNoCI:
 # Format Jobs #
 ###############
 
-format:fedora_mpi:
-  extends: .format
+format:fedora:
+  extends: .format-docker
   dependencies:
     - build:fedora_mpi
   variables:
     DISTRO: "fedora"
-
-format:fedora_legion:
-  extends: .format
-  dependencies:
-    - build:fedora_legion
-  variables:
-    DISTRO: "fedora"
-
-format:fedora_hpx:
-  extends: .format
-  dependencies:
-    - build:fedora_hpx
-  variables:
-    DISTRO: "fedora"
-  allow_failure: true
 
 ###############
 ###############
