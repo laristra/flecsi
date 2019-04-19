@@ -73,7 +73,7 @@ struct mpi_data_client_handle_policy_t {
 
   // maximum number of adjacencies to read, this limits the size of the
   // serialize struct passed to Legion
-  //static constexpr size_t MAX_ADJACENCIES = 32;
+  // static constexpr size_t MAX_ADJACENCIES = 32;
   static constexpr size_t MAX_ADJACENCIES = 64;
 
   // maximum number of handle entities
