@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/data/legion/runtime_data.h>
+#include <flecsi/data/legion/runtime_data_types.h>
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/runtime/types.h>
@@ -52,7 +52,42 @@ const size_t FLECSI_MAPPER_COMPACTED_STORAGE = 0x00002000;
 const size_t FLECSI_MAPPER_SUBRANK_LAUNCH = 0x00003000;
 const size_t FLECSI_MAPPER_EXCLUSIVE_LR = 0x00004000;
 
+// Forward declarations
+void top_level_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime);
+void handoff_to_mpi_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime);
+void wait_on_mpi_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime);
+void unset_call_mpi_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime);
+
 struct legion_context_policy_t {
+
+  friend void top_level_task(const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context ctx,
+    Legion::Runtime * runtime);
+  friend void handoff_to_mpi_task(const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context ctx,
+    Legion::Runtime * runtime);
+  friend void wait_on_mpi_task(const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context ctx,
+    Legion::Runtime * runtime);
+  friend void unset_call_mpi_task(const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context ctx,
+    Legion::Runtime * runtime);
 
   /*!
      The registration_function_t type defines a function type for
@@ -143,6 +178,13 @@ struct legion_context_policy_t {
       ->get_current_task(Legion::Runtime::get_context())
       ->index_domain.get_volume();
   } // colors
+
+  /*!
+   */
+
+  data::legion::global_runtime_data_t & global_runtime_data() {
+    return global_runtime_data_;
+  } // global_runtime_data
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
@@ -413,10 +455,18 @@ struct legion_context_policy_t {
 
 private:
   /*--------------------------------------------------------------------------*
+    Backend initialization.
+   *--------------------------------------------------------------------------*/
+
+  void initialize_global_topology();
+  void initialize_color_topology();
+
+  /*--------------------------------------------------------------------------*
     Runtime data.
    *--------------------------------------------------------------------------*/
 
-  data::legion::runtime_data_t runtime_data_;
+  data::legion::global_runtime_data_t global_runtime_data_;
+  data::legion::color_runtime_data_t color_runtime_data_;
 
   size_t shard_ = std::numeric_limits<size_t>::max();
   size_t shards_ = std::numeric_limits<size_t>::max();

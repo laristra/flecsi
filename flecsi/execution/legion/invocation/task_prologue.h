@@ -103,6 +103,12 @@ struct task_prologue_t : public flecsi::utils::tuple_walker_u<task_prologue_t> {
     }
   } // visit
 
+  /*--------------------------------------------------------------------------*
+    Launch Copies
+   *--------------------------------------------------------------------------*/
+
+  void update_state() {} // update
+
 private:
   Legion::Runtime * runtime_;
   Legion::Context & context_;

@@ -38,7 +38,7 @@ struct coloring_map_u {
     size_t coloring_identifier) {
 
     flog_assert(instances_[instance_identifier].find(coloring_identifier) ==
-      instances_[instance_identifier].end(),
+                  instances_[instance_identifier].end(),
       "coloring " << coloring_identifier << " already exists");
 
     instances_[instance_identifier][coloring_identifier] = {};
@@ -52,7 +52,7 @@ struct coloring_map_u {
       "topology instance " << instance_identifier << " does not exist");
 
     flog_assert(instances_[instance_identifier].find(coloring_identifier) !=
-      instances_[instance_identifier].end(),
+                  instances_[instance_identifier].end(),
       "coloring " << coloring_identifier << " does not exist");
 
     return instances_[instance_identifier][coloring_identifier];
@@ -74,5 +74,5 @@ register_coloring(typename TOPLO... & coloring) {
   }
 #endif
 
-} // namespace coloring 
-} // namespace flecsi 
+} // namespace coloring
+} // namespace flecsi

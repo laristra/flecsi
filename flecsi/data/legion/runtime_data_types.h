@@ -21,9 +21,13 @@
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#else
+#include <flecsi/data/common/field_info.h>
 #endif
 
 #include <legion.h>
+
+#include <unordered_map>
 
 namespace flecsi {
 namespace data {
@@ -36,12 +40,19 @@ struct base_data_t {
   Legion::LogicalRegion logical_region;
 }; // isbase_t
 
-struct runtime_data_t {
+/*----------------------------------------------------------------------------*
+  Global Topology.
+ *----------------------------------------------------------------------------*/
 
-  void initialize() {}
+struct global_runtime_data_t : public base_data_t {};
 
-private:
-}; // struct runtime_data_t
+/*----------------------------------------------------------------------------*
+  Color Topology.
+ *----------------------------------------------------------------------------*/
+
+struct color_runtime_data_t : public base_data_t {
+  Legion::IndexPartition color_partition;
+}; // struct color_runtime_data_t
 
 } // namespace legion
 } // namespace data

@@ -18,6 +18,8 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include <flecsi/execution/context.h>
+#include <flecsi/data/common/privilege.h>
 #include <flecsi/data/legion/storage_classes.h>
 #include <flecsi/utils/demangle.h>
 #include <flecsi/utils/tuple_walker.h>
@@ -57,8 +59,10 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     @param context The Legion task runtime context.
    */
 
-  init_args_t(Legion::Runtime * runtime, Legion::Context & context)
-    : runtime_(runtime), context_(context) {}
+  init_args_t(Legion::Runtime * runtime,
+    Legion::Context & context,
+    const launch_type_t & launch)
+    : runtime_(runtime), context_(context), launch_(launch) {}
 
   /*!
     Convert the template privileges to proper Legion privileges.
@@ -67,10 +71,9 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
    */
 
   static Legion::PrivilegeMode privilege_mode(size_t mode) {
-#if 0
     switch(mode) {
-      case size_t(reserved):
-        return NO_ACCESS;
+      case size_t(nu):
+        return WRITE_DISCARD;
       case size_t(ro):
         return READ_ONLY;
       case size_t(wo):
@@ -78,13 +81,10 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
       case size_t(rw):
         return READ_WRITE;
       default:
-        clog_fatal("invalid privilege mode");
+        flog_fatal("invalid privilege mode");
     } // switch
-    // should never get here, but this is needed
-    // to avoid compiler warnings
+
     return NO_ACCESS;
-#endif
-    return READ_WRITE;
   } // privilege_mode
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
@@ -98,6 +98,22 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+    if constexpr(to_global<PRIVILEGES>() > privilege_t::ro) {
+      flog_assert(launch_ == launch_type_t::single,
+      "global can only be modified from within single launch task");
+
+      Legion::LogicalRegion region =
+        context_t::instance().global_runtime_data().logical_region; 
+      Legion::RegionRequirement rr(region, privilege_mode(PRIVILEGES),
+        EXCLUSIVE, region);
+      region_reqs_.push_back(rr);
+    }
+    else {
+      Legion::LogicalRegion region =
+        context_t::instance().global_runtime_data().logical_region; 
+      Legion::RegionRequirement rr(region, READ_ONLY, EXCLUSIVE, region);
+      region_reqs_.push_back(rr);
+    } // if
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -118,6 +134,9 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 private:
   Legion::Runtime * runtime_;
   Legion::Context & context_;
+  launch_type_t launch_;
+
+  std::vector<Legion::RegionRequirement> region_reqs_;
 
 }; // init_args_t
 

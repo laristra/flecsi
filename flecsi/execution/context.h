@@ -83,6 +83,15 @@ struct context_u : public CONTEXT_POLICY {
   using ntree_coloring_map_t = coloring_map_u<ntree_topology_base_t>;
   using set_coloring_map_t = coloring_map_u<set_topology_base_t>;
 
+  using field_info_vector_t = std::vector<data::field_info_t>;
+
+  /*!
+    This type allows the storage of field information per storage class. The
+    size_t key is the storage class.
+   */
+
+  using field_info_map_t = std::unordered_map<size_t, field_info_vector_t>;
+
   /*--------------------------------------------------------------------------*
     Deleted contructor and assignment interfaces.
    *--------------------------------------------------------------------------*/
@@ -534,8 +543,17 @@ struct context_u : public CONTEXT_POLICY {
   void register_field_info(size_t topology_type_identifier,
     size_t storage_class,
     const data::field_info_t & fi) {
-    field_info_map_[topology_type_identifier][storage_class].emplace_back(fi);
+    topology_field_info_map_[topology_type_identifier][storage_class]
+      .emplace_back(fi);
   } // register_field_information
+
+  /*!
+    Return the field info map.
+   */
+
+  std::unordered_map<size_t, field_info_map_t> & topology_field_info_map() {
+    return topology_field_info_map_;
+  } // field_info_map
 
 private:
   /*--------------------------------------------------------------------------*
@@ -603,19 +621,11 @@ private:
    *--------------------------------------------------------------------------*/
 
   /*!
-    This type allows the storage of field information per storage class. The
-    size_t key is the storage class.
-   */
-
-  using field_info_vector_t = std::vector<data::field_info_t>;
-  using field_info_t = std::unordered_map<size_t, field_info_vector_t>;
-
-  /*!
     This type allows storage of runtime field information per topology type.
     The size_t key is the topology type hash.
    */
 
-  std::unordered_map<size_t, field_info_t> field_info_map_;
+  std::unordered_map<size_t, field_info_map_t> topology_field_info_map_;
 
 #if 0
   // handle state

@@ -94,6 +94,9 @@ top_level_task(const Legion::Task * task,
   } // for
 #endif
 
+  context_.initialize_global_topology();
+  context_.initialize_color_topology();
+
   auto args = runtime->get_input_args();
 
   /*

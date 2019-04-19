@@ -20,6 +20,7 @@
 #include <flecsi/execution/legion/internal_task.h>
 #include <flecsi/execution/legion/mapper.h>
 #include <flecsi/execution/legion/tasks.h>
+#include <flecsi/utils/const_string.h>
 
 namespace flecsi {
 namespace execution {
@@ -239,6 +240,60 @@ legion_context_policy_t::connect_with_mpi(Legion::Context & ctx,
       "MPI Rank %d maps to Legion Address Space %d\n", it->first, it->second);
 #endif
 } // legion_context_policy_t::connect_with_mpi
+
+//----------------------------------------------------------------------------//
+// Implementation of initialize_global_topology.
+//----------------------------------------------------------------------------//
+
+constexpr size_t flecsi_global_topology_hash =
+  flecsi_internal_hash(global_topology_t);
+
+void
+legion_context_policy_t::initialize_global_topology() {
+  using namespace Legion;
+
+  global_runtime_data_.id = 4096;
+
+  auto legion_runtime_ = Legion::Runtime::get_runtime();
+  auto legion_context_ = Legion::Runtime::get_context();
+
+  LegionRuntime::Arrays::Rect<1> bounds(
+    LegionRuntime::Arrays::Point<1>(0), LegionRuntime::Arrays::Point<1>(1));
+
+  Domain dom(Domain::from_rect<1>(bounds));
+
+  global_runtime_data_.index_space =
+    legion_runtime_->create_index_space(legion_context_, dom);
+
+  global_runtime_data_.field_space =
+    legion_runtime_->create_field_space(legion_context_);
+
+  FieldAllocator allocator = legion_runtime_->create_field_allocator(
+    legion_context_, global_runtime_data_.field_space);
+
+  using field_info_vector_t = context_t::field_info_vector_t;
+  auto & field_vector =
+    context_t::instance()
+      .topology_field_info_map()[flecsi_global_topology_hash]
+                                [flecsi::data::storage_label_t::global];
+
+  for(const data::field_info_t & fi : field_vector) {
+    allocator.allocate_field(fi.type_size, fi.fid);
+  } // for
+
+  global_runtime_data_.logical_region =
+    legion_runtime_->create_logical_region(legion_context_,
+      global_runtime_data_.index_space,
+      global_runtime_data_.field_space);
+} // legion_context_policy_t::initialize_global_topology
+
+//----------------------------------------------------------------------------//
+// Implementation of initialize_color_topology.
+//----------------------------------------------------------------------------//
+
+void
+legion_context_policy_t::initialize_color_topology() {
+} // legion_context_policy_t::initialize_color_topology
 
 } // namespace execution
 } // namespace flecsi

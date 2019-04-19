@@ -152,7 +152,7 @@ struct legion_execution_policy_t {
 
     constexpr size_t ZERO = flecsi_internal_hash(0);
 
-    legion::init_args_t init_args(legion_runtime, legion_context);
+    legion::init_args_t init_args(legion_runtime, legion_context, LAUNCH);
     init_args.walk(task_args);
 
     //------------------------------------------------------------------------//
@@ -165,6 +165,14 @@ struct legion_execution_policy_t {
         flog_tag_guard(execution);
         flog(internal) << "Executing single task" << std::endl;
       }
+
+      LegionRuntime::Arrays::Rect<1> launch_bounds(0, 1);
+      Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+
+      legion::task_prologue_t prologue(
+        legion_runtime, legion_context, launch_domain);
+      prologue.walk(task_args);
+      prologue.update_state();
 
       switch(processor_type) {
 
@@ -186,6 +194,9 @@ struct legion_execution_policy_t {
         default:
           flog_fatal("Unknown processor type: " << processor_type);
       } // switch
+
+      legion::task_epilogue_t epilogue(legion_runtime, legion_context);
+      epilogue.walk(task_args);
     }
 
     //------------------------------------------------------------------------//
