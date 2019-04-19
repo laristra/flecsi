@@ -1,0 +1,12 @@
+spack:
+  specs:
+  - cmake
+  - mpi
+  - legion
+  - boost@1.59.0 cxxstd=11 +program_options
+  - metis@5.1.0
+  - parmetis@4.0.3
+  - caliper
+  - gotcha
+  - graphviz
+  - gasnet
