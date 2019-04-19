@@ -167,8 +167,7 @@ before_script:
         mkdir -p build;
         cd build;
         cp ../spack/repo_env.yaml ./spack.yaml;
-        touch ${DEPS_LOCK};
-        exec {lock_fd}>${DEPS_LOCK};
+        exec ${lock_fd}>${DEPS_LOCK};
         if [[ ${I_WANT_TO_CLEAN_UP} ]]; 
         then
           rm -f ${SPACK_ROOT};
