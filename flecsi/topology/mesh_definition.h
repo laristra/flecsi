@@ -63,8 +63,8 @@ namespace topology {
       //! @param to_dimension   The dimension of the entities of the definition.
       //--------------------------------------------------------------------------//
 
-      virtual std::vector<std::vector<size_t>> entities_weifix(size_t from_dimension,
-        size_t to_dimension) const = 0;
+      virtual std::vector<std::vector<size_t>> &
+      entities(size_t from_dimension, size_t to_dimension) const = 0;
       //--------------------------------------------------------------------------//
       //! Abstract interface to get the entities of dimension \em to that define
       //! the entity of dimension \em from with the given identifier \em id.
@@ -115,7 +115,6 @@ public:
   size_t get_dimension() const  {
     return DIMENSION;
   }
-
 
 }; // class mesh_definition_u
 
