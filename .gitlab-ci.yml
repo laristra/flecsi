@@ -67,27 +67,27 @@ before_script:
     # when: always
   dependencies: []
   script:
-    - mkdir -p ${CI_PROJECT_DIR}/../ci-spack;
-    - cd ${CI_PROJECT_DIR}/../ci-spack;
-    - cp ${CI_PROJECT_DIR}/spack/repo_env.yaml ./spack.yaml;
-    - exec ${lock_fd}>${DEPS_LOCK};
+    - mkdir -p ${CI_PROJECT_DIR}/../ci-spack
+    - cd ${CI_PROJECT_DIR}/../ci-spack
+    - cp ${CI_PROJECT_DIR}/spack/repo_env.yaml ./spack.yaml
+    - exec {lock_fd}>${DEPS_LOCK}
     - |
       if [[ ${I_WANT_TO_CLEAN_UP} ]];
       then
         rm -f ${SPACK_ROOT};
-      fi;
-    - flock -n "${lock_fd}";
+      fi
+    - flock -n "${lock_fd}"
     - |
       if [[ ! -d ${SPACK_ROOT} ]];
       then
         git init --shared=group ${SPACK_ROOT} &&
         git -C ${SPACK_ROOT} pull https://github.com/spack/spack v0.12.1;
-      fi;
-    - source ${SPACK_ROOT}/share/spack/setup-env.sh;
-    - spack concretize -f;
-    - spack install;
-    - flock -u "${lock_fd}";
-    - export BOOST_ROOT=`spack find -p boost`;
+      fi
+    - source ${SPACK_ROOT}/share/spack/setup-env.sh
+    - spack concretize -f
+    - spack install
+    - flock -u "${lock_fd}"
+    - export BOOST_ROOT=`spack find -p boost`
 
 
 ################
