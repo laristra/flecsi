@@ -253,7 +253,7 @@ before_script:
 
 .env-shell:
   extends: .canary-shell
-    stage: Env
+  stage: Env
 
 ###############
 # Build Stage #
