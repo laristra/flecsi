@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include <flecsi/geometry/point.h>
 #include <flecsi/utils/logging.h>
 
@@ -39,7 +41,12 @@ public:
     {18, 19, 23, 24}}; // cells_
 
   /// Default constructor
-  test_definition_t() {}
+  test_definition_t() {
+    ids_.resize(num_entities(2));
+
+    for(size_t c(0); c < num_entities(2); ++c)
+      ids_.push_back(std::vector<size_t>(cells_[c], cells_[c] + 4));
+  }
 
   /// Copy constructor (disabled)
   test_definition_t(const test_definition_t &) = delete;
@@ -75,11 +82,20 @@ public:
     return ids;
   } // vertices
 
+  const std::vector<std::vector<size_t>> & entities(size_t from_dim,
+    size_t to_dim) const override {
+    assert(from_dim == 2);
+    assert(to_dim == 0);
+
+    return ids_;
+  } // entities
+
   point_t vertex(size_t vertex_id) const {
     return point_t(vertices_[vertex_id][0], vertices_[vertex_id][1]);
   } // vertex
 
 private:
+  std::vector<std::vector<size_t>> ids_;
 }; // class test_definition_t
 
 } // namespace topology

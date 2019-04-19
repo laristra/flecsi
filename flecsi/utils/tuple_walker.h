@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <iostream>
 #include <tuple>
 
 namespace flecsi {
@@ -31,6 +32,7 @@ namespace utils {
 
 template<typename CRTP_TYPE>
 struct tuple_walker_u {
+
 private:
   template<typename T>
   void dispatch(T & t) {

@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/utils/tuple_walker.h>
 
 namespace flecsi {
@@ -178,6 +179,20 @@ struct finalize_handles_t
   handle(data_client_handle_u<T, PERMISSIONS> & h) {
     h.delete_storage();
   } // handle
+
+  /*!
+   Handle individual list items
+   */
+  template<typename T,
+    std::size_t N,
+    template<typename, std::size_t>
+    typename Container,
+    typename =
+      std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
+  void handle(Container<T, N> & list) {
+    for(auto & item : list)
+      handle(item);
+  }
 
   /*!
     If this is not a data handle, then simply skip it.
