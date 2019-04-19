@@ -57,6 +57,7 @@ public:
       clog_fatal("failed opening " << filename);
     } // if
 
+
     // Go to the start of the cells.
     std::string line;
     file_.seekg(cell_start_);
