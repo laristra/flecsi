@@ -22,8 +22,8 @@ variables:
   https_proxy: "http://proxyout.lanl.gov:8080"
   ftp_proxy: "http://proxyout.lanl.gov:8080"
   no_proxy: "lanl.gov"
-  SPACK_ROOT: /builds/next-generation-codes/laristra/ci-spack/spack
-  DEPS_LOCK: /builds/next-generation-codes/laristra/ci-spack/deps.pid
+  SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
+  DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
   lock_fd: 314
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
@@ -67,8 +67,9 @@ before_script:
     # when: always
   dependencies: []
   script:
-    - mkdir -p ${CI_PROJECT_DIR}/../ci-spack
-    - cd ${CI_PROJECT_DIR}/../ci-spack
+    - mkdir -p ${SPACK_ROOT}
+    - mkdir -p build
+    - cd ${CI_PROJECT_DIR}/build/;
     - cp ${CI_PROJECT_DIR}/spack/repo_env.yaml ./spack.yaml
     - exec {lock_fd}>${DEPS_LOCK}
     - |
@@ -134,7 +135,7 @@ before_script:
         # git config submodule.cinch.url https://github.com/laristra/cinch.git;
         # git submodule update --init --recursive;
         mkdir -p build;
-        cd build;
+        cd ${CI_PROJECT_DIR}/build/;
         cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
