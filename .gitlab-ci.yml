@@ -249,7 +249,8 @@ canary:fedora_shell:
   extends: .canary
   tags:
     - shell
-  dependencies: env
+  dependencies: 
+    - env
   variables:
     DISTRO: "shell"
     RUNTIME: "mpi"
