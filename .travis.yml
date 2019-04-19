@@ -16,7 +16,7 @@ stages:
   - name: canary
   - name: coverage
   - name: test
-    if: type != pull_request
+    if: type != pull_request && branch != feature/refactor
 
 jobs:
   fast_finish: true
