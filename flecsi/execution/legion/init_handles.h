@@ -651,7 +651,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 #ifndef MAPPER_COMPACTION
     value_t * entries = new value_t[h.entries_size];
 
-    size_t pos = 0;
+    pos = 0;
 
     for(size_t r{0}; r < num_regions; ++r) {
       std::memcpy(
@@ -822,7 +822,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     std::memcpy(
       entries, entries_data[0], md->num_exclusive_filled * sizeof(value_t));
 
-    size_t pos = entries_sizes[0];
+    pos = entries_sizes[0];
 
     for(size_t r{1}; r < num_regions; ++r) {
       std::memcpy(
