@@ -138,11 +138,11 @@ before_script:
 # Canary Jobs #
 ###############
 
-canary:fedora_mpi:
-  extends: .canary
-  variables:
-    DISTRO: "fedora"
-    RUNTIME: "mpi"
+      # canary:fedora_mpi:
+      #   extends: .canary
+      #   variables:
+      #     DISTRO: "fedora"
+      #     RUNTIME: "mpi"
 
 canary:fedora_legion:
   extends: .canary
@@ -154,96 +154,96 @@ canary:fedora_legion:
 # Build Jobs #
 ##############
 
-build:ubuntu_mpi:
-  extends: .build
-  variables:
-    DISTRO: "ubuntu"
-    RUNTIME: "mpi"
-
-build:ubuntu_mpi_release:
-  extends: build:ubuntu_mpi
-  variables:
-    BUILD_TYPE: "Release"
-
-build:ubuntu_mpi_clang:
-  extends: build:ubuntu_mpi
-  #before_script:
-  #  - export CC=clang
-  #  - export CXX=clang++
-  variables:
-    CC: clang
-    CXX: clang++
-
-build:ubuntu_mpi_clang_release:
-  extends: build:ubuntu_mpi_clang
-  variables:
-    BUILD_TYPE: "Release"
-
-build:ubuntu_mpich_mpi:
-  extends: .build
-  variables:
-    DISTRO: "ubuntu_mpich"
-    RUNTIME: "mpi"
-
-build:ubuntu_mpich_mpi_release:
-  extends: build:ubuntu_mpich_mpi
-  variables:
-    BUILD_TYPE: "Release"
-
-build:ubuntu_mpich_mpi_clang:
-  extends: build:ubuntu_mpich_mpi
-  variables:
-    CC: clang
-    CXX: clang++
-
-build:ubuntu_mpich_mpi_clang_release:
-  extends: build:ubuntu_mpich_mpi_clang
-  variables:
-    BUILD_TYPE: "Release"
-
-build:fedora_mpi:
-  extends: .build
-  variables:
-    DISTRO: "fedora"
-    RUNTIME: "mpi"
-
-build:fedora_mpi_release:
-  extends: build:fedora_mpi
-  variables:
-    BUILD_TYPE: "Release"
-
-build:fedora_mpi_clang:
-  extends: build:fedora_mpi
-  variables:
-    CC: clang
-    CXX: clang++
-
-build:fedora_mpi_clang_release:
-  extends: build:fedora_mpi_clang
-  variables:
-    BUILD_TYPE: "Release"
-
-build:fedora_mpich_mpi:
-  extends: .build
-  variables:
-    DISTRO: "fedora_mpich"
-    RUNTIME: "mpi"
-
-build:fedora_mpich_mpi_release:
-  extends: build:fedora_mpich_mpi
-  variables:
-    BUILD_TYPE: "Release"
-
-build:fedora_mpich_mpi_clang:
-  extends: build:fedora_mpich_mpi
-  variables:
-    CC: clang
-    CXX: clang++
-
-build:fedora_mpich_mpi_clang_release:
-  extends: build:fedora_mpich_mpi_clang
-  variables:
-    BUILD_TYPE: "Release"
+    # build:ubuntu_mpi:
+    #   extends: .build
+    #   variables:
+    #     DISTRO: "ubuntu"
+    #     RUNTIME: "mpi"
+    # 
+    # build:ubuntu_mpi_release:
+    #   extends: build:ubuntu_mpi
+    #   variables:
+    #     BUILD_TYPE: "Release"
+    # 
+    # build:ubuntu_mpi_clang:
+    #   extends: build:ubuntu_mpi
+    #   #before_script:
+    #   #  - export CC=clang
+    #   #  - export CXX=clang++
+    #   variables:
+    #     CC: clang
+    #     CXX: clang++
+    # 
+    # build:ubuntu_mpi_clang_release:
+    #   extends: build:ubuntu_mpi_clang
+    #   variables:
+    #     BUILD_TYPE: "Release"
+    # 
+    # build:ubuntu_mpich_mpi:
+    #   extends: .build
+    #   variables:
+    #     DISTRO: "ubuntu_mpich"
+    #     RUNTIME: "mpi"
+    # 
+    # build:ubuntu_mpich_mpi_release:
+    #   extends: build:ubuntu_mpich_mpi
+    #   variables:
+    #     BUILD_TYPE: "Release"
+    # 
+    # build:ubuntu_mpich_mpi_clang:
+    #   extends: build:ubuntu_mpich_mpi
+    #   variables:
+    #     CC: clang
+    #     CXX: clang++
+    # 
+    # build:ubuntu_mpich_mpi_clang_release:
+    #   extends: build:ubuntu_mpich_mpi_clang
+    #   variables:
+    #     BUILD_TYPE: "Release"
+    # 
+    # build:fedora_mpi:
+    #   extends: .build
+    #   variables:
+    #     DISTRO: "fedora"
+    #     RUNTIME: "mpi"
+    # 
+    # build:fedora_mpi_release:
+    #   extends: build:fedora_mpi
+    #   variables:
+    #     BUILD_TYPE: "Release"
+    # 
+    # build:fedora_mpi_clang:
+    #   extends: build:fedora_mpi
+    #   variables:
+    #     CC: clang
+    #     CXX: clang++
+    # 
+    # build:fedora_mpi_clang_release:
+    #   extends: build:fedora_mpi_clang
+    #   variables:
+    #     BUILD_TYPE: "Release"
+    # 
+    # build:fedora_mpich_mpi:
+    #   extends: .build
+    #   variables:
+    #     DISTRO: "fedora_mpich"
+    #     RUNTIME: "mpi"
+    # 
+    # build:fedora_mpich_mpi_release:
+    #   extends: build:fedora_mpich_mpi
+    #   variables:
+    #     BUILD_TYPE: "Release"
+    # 
+    # build:fedora_mpich_mpi_clang:
+    #   extends: build:fedora_mpich_mpi
+    #   variables:
+    #     CC: clang
+    #     CXX: clang++
+    # 
+    # build:fedora_mpich_mpi_clang_release:
+    #   extends: build:fedora_mpich_mpi_clang
+    #   variables:
+    #     BUILD_TYPE: "Release"
 
 build:ubuntu_legion:
   extends: .build
@@ -333,110 +333,110 @@ build:fedora_mpich_legion_clang_release:
   variables:
     BUILD_TYPE: "Release"
 
-build:fedora_hpx:
-  extends: .build
-  variables:
-    DISTRO: "fedora"
-    RUNTIME: "hpx"
-  allow_failure: true
-
-build:fedora_hpx_clang:
-  extends: build:fedora_hpx
-  variables:
-    CC: clang
-    CXX: clang++
+    # build:fedora_hpx:
+    #   extends: .build
+    #   variables:
+    #     DISTRO: "fedora"
+    #     RUNTIME: "hpx"
+    #   allow_failure: true
+    # 
+    # build:fedora_hpx_clang:
+    #   extends: build:fedora_hpx
+    #   variables:
+    #     CC: clang
+    #     CXX: clang++
 
 #############
 # Test Jobs #
 #############
 
-test:ubuntu_mpi:
-  extends: .test
-  dependencies:
-    - build:ubuntu_mpi
-  variables:
-    DISTRO: "ubuntu"
-
-test:ubuntu_mpi_release:
-  extends: test:ubuntu_mpi
-  dependencies:
-    - build:ubuntu_mpi_release
-
-test:ubuntu_mpi_clang:
-  extends: test:ubuntu_mpi
-  dependencies:
-    - build:ubuntu_mpi_clang
-
-test:ubuntu_mpi_clang_release:
-  extends: test:ubuntu_mpi_clang
-  dependencies:
-    - build:ubuntu_mpi_clang_release
-
-test:ubuntu_mpich_mpi:
-  extends: .test
-  dependencies:
-    - build:ubuntu_mpich_mpi
-  variables:
-    DISTRO: "ubuntu_mpich"
-
-test:ubuntu_mpich_mpi_release:
-  extends: test:ubuntu_mpich_mpi
-  dependencies:
-    - build:ubuntu_mpich_mpi_release
-
-test:ubuntu_mpich_mpi_clang:
-  extends: test:ubuntu_mpich_mpi
-  dependencies:
-    - build:ubuntu_mpich_mpi_clang
-
-test:ubuntu_mpich_mpi_clang_release:
-  extends: test:ubuntu_mpich_mpi_clang
-  dependencies:
-    - build:ubuntu_mpich_mpi_clang_release
-
-test:fedora_mpi:
-  extends: .test
-  dependencies:
-    - build:fedora_mpi
-  variables:
-    DISTRO: "fedora"
-
-test:fedora_mpi_release:
-  extends: test:fedora_mpi
-  dependencies:
-    - build:fedora_mpi_release
-
-test:fedora_mpi_clang:
-  extends: test:fedora_mpi
-  dependencies:
-    - build:fedora_mpi_clang
-
-test:fedora_mpi_clang_release:
-  extends: test:fedora_mpi_clang
-  dependencies:
-    - build:fedora_mpi_clang_release
-
-test:fedora_mpich_mpi:
-  extends: .test
-  dependencies:
-    - build:fedora_mpich_mpi
-  variables:
-    DISTRO: "fedora_mpich"
-
-test:fedora_mpich_mpi_release:
-  extends: test:fedora_mpich_mpi
-  dependencies:
-    - build:fedora_mpich_mpi_release
-
-test:fedora_mpich_mpi_clang:
-  extends: test:fedora_mpich_mpi
-  dependencies:
-    - build:fedora_mpich_mpi_clang
-
-test:fedora_mpich_mpi_clang_release:
-  extends: test:fedora_mpich_mpi_clang
-  dependencies:
-    - build:fedora_mpich_mpi_clang_release
+    # test:ubuntu_mpi:
+    #   extends: .test
+    #   dependencies:
+    #     - build:ubuntu_mpi
+    #   variables:
+    #     DISTRO: "ubuntu"
+    # 
+    # test:ubuntu_mpi_release:
+    #   extends: test:ubuntu_mpi
+    #   dependencies:
+    #     - build:ubuntu_mpi_release
+    # 
+    # test:ubuntu_mpi_clang:
+    #   extends: test:ubuntu_mpi
+    #   dependencies:
+    #     - build:ubuntu_mpi_clang
+    # 
+    # test:ubuntu_mpi_clang_release:
+    #   extends: test:ubuntu_mpi_clang
+    #   dependencies:
+    #     - build:ubuntu_mpi_clang_release
+    # 
+    # test:ubuntu_mpich_mpi:
+    #   extends: .test
+    #   dependencies:
+    #     - build:ubuntu_mpich_mpi
+    #   variables:
+    #     DISTRO: "ubuntu_mpich"
+    # 
+    # test:ubuntu_mpich_mpi_release:
+    #   extends: test:ubuntu_mpich_mpi
+    #   dependencies:
+    #     - build:ubuntu_mpich_mpi_release
+    # 
+    # test:ubuntu_mpich_mpi_clang:
+    #   extends: test:ubuntu_mpich_mpi
+    #   dependencies:
+    #     - build:ubuntu_mpich_mpi_clang
+    # 
+    # test:ubuntu_mpich_mpi_clang_release:
+    #   extends: test:ubuntu_mpich_mpi_clang
+    #   dependencies:
+    #     - build:ubuntu_mpich_mpi_clang_release
+    # 
+    # test:fedora_mpi:
+    #   extends: .test
+    #   dependencies:
+    #     - build:fedora_mpi
+    #   variables:
+    #     DISTRO: "fedora"
+    # 
+    # test:fedora_mpi_release:
+    #   extends: test:fedora_mpi
+    #   dependencies:
+    #     - build:fedora_mpi_release
+    # 
+    # test:fedora_mpi_clang:
+    #   extends: test:fedora_mpi
+    #   dependencies:
+    #     - build:fedora_mpi_clang
+    # 
+    # test:fedora_mpi_clang_release:
+    #   extends: test:fedora_mpi_clang
+    #   dependencies:
+    #     - build:fedora_mpi_clang_release
+    # 
+    # test:fedora_mpich_mpi:
+    #   extends: .test
+    #   dependencies:
+    #     - build:fedora_mpich_mpi
+    #   variables:
+    #     DISTRO: "fedora_mpich"
+    # 
+    # test:fedora_mpich_mpi_release:
+    #   extends: test:fedora_mpich_mpi
+    #   dependencies:
+    #     - build:fedora_mpich_mpi_release
+    # 
+    # test:fedora_mpich_mpi_clang:
+    #   extends: test:fedora_mpich_mpi
+    #   dependencies:
+    #     - build:fedora_mpich_mpi_clang
+    # 
+    # test:fedora_mpich_mpi_clang_release:
+    #   extends: test:fedora_mpich_mpi_clang
+    #   dependencies:
+    #     - build:fedora_mpich_mpi_clang_release
 
 test:ubuntu_legion:
   extends: .test
@@ -526,18 +526,18 @@ test:fedora_mpich_legion_clang_release:
   dependencies:
     - build:fedora_mpich_legion_clang_release
 
-test:fedora_hpx:
-  extends: .test
-  dependencies:
-    - build:fedora_hpx
-  variables:
-    DISTRO: "fedora"
-  allow_failure: true
-
-test:fedora_hpx_clang:
-  extends: test:fedora_hpx
-  dependencies:
-    - build:fedora_hpx_clang
+      # test:fedora_hpx:
+      #   extends: .test
+      #   dependencies:
+      #     - build:fedora_hpx
+      #   variables:
+      #     DISTRO: "fedora"
+      #   allow_failure: true
+      # 
+      # test:fedora_hpx_clang:
+      #   extends: test:fedora_hpx
+      #   dependencies:
+      #     - build:fedora_hpx_clang
 
 test:fedora_mpi.ignoreNoCI:
   extends: test:fedora_mpi
@@ -567,12 +567,12 @@ test:fedora_hpx.ignoreNoCI:
 # Format Jobs #
 ###############
 
-format:fedora_mpi:
-  extends: .format
-  dependencies:
-    - build:fedora_mpi
-  variables:
-    DISTRO: "fedora"
+  # format:fedora_mpi:
+  #   extends: .format
+  #   dependencies:
+  #     - build:fedora_mpi
+  #   variables:
+  #     DISTRO: "fedora"
 
 format:fedora_legion:
   extends: .format
@@ -581,13 +581,13 @@ format:fedora_legion:
   variables:
     DISTRO: "fedora"
 
-format:fedora_hpx:
-  extends: .format
-  dependencies:
-    - build:fedora_hpx
-  variables:
-    DISTRO: "fedora"
-  allow_failure: true
+    # format:fedora_hpx:
+    #   extends: .format
+    #   dependencies:
+    #     - build:fedora_hpx
+    #   variables:
+    #     DISTRO: "fedora"
+    #   allow_failure: true
 
 ###############
 ###############
