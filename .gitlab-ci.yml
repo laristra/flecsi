@@ -67,7 +67,6 @@ before_script:
     # when: always
   dependencies: []
   script:
-    - mkdir -p ${SPACK_ROOT}
     - mkdir -p build
     - cd ${CI_PROJECT_DIR}/build/;
     - cp ${CI_PROJECT_DIR}/spack/repo_env.yaml ./spack.yaml
@@ -75,14 +74,14 @@ before_script:
     - |
       if [[ ${I_WANT_TO_CLEAN_UP} ]];
       then
-        rm -f ${SPACK_ROOT};
+        rm -rf ${SPACK_ROOT}/*;
       fi
     - flock -n "${lock_fd}"
     - |
       if [[ ! -d ${SPACK_ROOT} ]];
       then
-        git init --shared=group ${SPACK_ROOT} &&
-        git -C ${SPACK_ROOT} pull https://github.com/spack/spack v0.12.1;
+        git init --shared=group ${SPACK_ROOT};
+        git -c ${SPACK_ROOT} pull https://github.com/spack/spack v0.12.1;
       fi
     - source ${SPACK_ROOT}/share/spack/setup-env.sh
     - spack concretize -f
