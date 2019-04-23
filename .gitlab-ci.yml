@@ -100,7 +100,7 @@ before_script:
         make format && git diff --exit-code --ignore-submodules;
       fi;
     - |
-      if [[ ${CI_JOB_STAGE} = "Canary" ]];
+      if [[ ${CI_JOB_STAGE} = "Apps" ]];
       then
         cd ${CI_PROJECT_DIR}/build/;
         git clone --recursive https://github.com/laristra/flecsale.git;             
