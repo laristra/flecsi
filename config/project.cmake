@@ -34,7 +34,7 @@ endif()
 # Boost
 #------------------------------------------------------------------------------#
 
-set(ENABLE_BOOST ON)
+set(ENABLE_BOOST ON CACHE BOOL "Enable Boost (required by FleCSI)" FORCE)
 mark_as_advanced(ENABLE_BOOST)
 list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
 
