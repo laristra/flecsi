@@ -159,11 +159,11 @@ before_script:
 # Canary Jobs #
 ###############
 
-      # canary:fedora_mpi:
-      #   extends: .canary
-      #   variables:
-      #     DISTRO: "fedora"
-      #     RUNTIME: "mpi"
+canary:fedora_mpi:
+  extends: .canary
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
 
 canary:fedora_legion:
   extends: .canary
