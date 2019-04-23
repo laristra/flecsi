@@ -72,38 +72,38 @@ $(function() {
 <div class="title">runtime.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;cinch-config.h&gt;</code><br />
-<code>#include &lt;flecsi-config.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;flecsi-config.h&gt;</code><br />
 <code>#include &lt;cinch/runtime.h&gt;</code><br />
 <code>#include &lt;mpi.h&gt;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;boost/program_options.hpp&gt;</code><br />
 </div>
 <p><a href="legion_2runtime_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a519e5b77ed74079edc23531f2fba89ed"><td class="memItemLeft" align="right" valign="top"><a id="a519e5b77ed74079edc23531f2fba89ed"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_legion_initialize</b> (int argc, char **argv)</td></tr>
-<tr class="separator:a519e5b77ed74079edc23531f2fba89ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8793047a58623de08962a0ec94107d84"><td class="memItemLeft" align="right" valign="top"><a id="a8793047a58623de08962a0ec94107d84"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_legion_add_options</b> (options_description &amp;desc)</td></tr>
+<tr class="separator:a8793047a58623de08962a0ec94107d84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba966069b9169832af2a9abeaed83bc1"><td class="memItemLeft" align="right" valign="top"><a id="aba966069b9169832af2a9abeaed83bc1"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_legion_initialize</b> (int argc, char **argv, variables_map &amp;vm)</td></tr>
+<tr class="separator:aba966069b9169832af2a9abeaed83bc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf9735582c62b91ea951d62c0b3df344"><td class="memItemLeft" align="right" valign="top"><a id="aaf9735582c62b91ea951d62c0b3df344"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_legion_finalize</b> (int argc, char **argv, cinch::exit_mode_t mode)</td></tr>
 <tr class="separator:aaf9735582c62b91ea951d62c0b3df344"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab422bf1c32e1759db2643be17c5781cf"><td class="memItemLeft" align="right" valign="top"><a id="ab422bf1c32e1759db2643be17c5781cf"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>cinch_append_runtime_handler</b> (flecsi_legion_handler)</td></tr>
 <tr class="separator:ab422bf1c32e1759db2643be17c5781cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a950b9e25a593658834a05be090fd4bf5"><td class="memItemLeft" align="right" valign="top"><a id="a950b9e25a593658834a05be090fd4bf5"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_legion_runtime_driver</b> (int argc, char **argv)</td></tr>
-<tr class="separator:a950b9e25a593658834a05be090fd4bf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a551bdc7850574f3b81d3fb9a7b0b4a96"><td class="memItemLeft" align="right" valign="top"><a id="a551bdc7850574f3b81d3fb9a7b0b4a96"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_legion_runtime_driver</b> (int argc, char **argv, variables_map &amp;vm)</td></tr>
+<tr class="separator:a551bdc7850574f3b81d3fb9a7b0b4a96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53bdaf471ed5337070ed30c17a7f2625"><td class="memItemLeft" align="right" valign="top"><a id="a53bdaf471ed5337070ed30c17a7f2625"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>cinch_register_runtime_driver</b> (flecsi_legion_runtime_driver)</td></tr>
 <tr class="separator:a53bdaf471ed5337070ed30c17a7f2625"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a45481ec00d0c628ddf597616c64c8df8"><td class="memItemLeft" align="right" valign="top"><a id="a45481ec00d0c628ddf597616c64c8df8"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>__flecsi_tags</b> = &quot;all&quot;</td></tr>
-<tr class="separator:a45481ec00d0c628ddf597616c64c8df8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab9fbc660ea74a3282f1da4b6ce351d9"><td class="memItemLeft" align="right" valign="top">cinch::runtime_handler_t&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_legion_handler</b></td></tr>
 <tr class="separator:aab9fbc660ea74a3282f1da4b6ce351d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -127,7 +127,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>__flecsi_tags<
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">{</div><div class="line">  flecsi_legion_initialize, flecsi_legion_finalize</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">}</div></div><!-- fragment -->
+<b>Initial value:</b><div class="fragment"><div class="line">{flecsi_legion_initialize,</div><div class="line">  flecsi_legion_finalize,</div><div class="line">  flecsi_legion_add_options}</div></div><!-- fragment -->
 </div>
 </div>
 </div><!-- contents -->

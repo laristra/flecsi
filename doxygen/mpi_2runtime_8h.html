@@ -78,14 +78,18 @@ $(function() {
 <code>#include &lt;mpi.h&gt;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;boost/program_options.hpp&gt;</code><br />
 </div>
 <p><a href="mpi_2runtime_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:afa8ca56bfb594a7339ab3d69ef68e3f2"><td class="memItemLeft" align="right" valign="top"><a id="afa8ca56bfb594a7339ab3d69ef68e3f2"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_mpi_initialize</b> (int argc, char **argv)</td></tr>
-<tr class="separator:afa8ca56bfb594a7339ab3d69ef68e3f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc71c78c690b972124aefeeaf1813598"><td class="memItemLeft" align="right" valign="top"><a id="adc71c78c690b972124aefeeaf1813598"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_mpi_add_options</b> (options_description &amp;desc)</td></tr>
+<tr class="separator:adc71c78c690b972124aefeeaf1813598"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace17584125c7a5dc62f89d3976b3e8bc"><td class="memItemLeft" align="right" valign="top"><a id="ace17584125c7a5dc62f89d3976b3e8bc"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_mpi_initialize</b> (int argc, char **argv, variables_map &amp;vm)</td></tr>
+<tr class="separator:ace17584125c7a5dc62f89d3976b3e8bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aecebc6edbeb83a7947f5d42ca63973a0"><td class="memItemLeft" align="right" valign="top"><a id="aecebc6edbeb83a7947f5d42ca63973a0"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_mpi_finalize</b> (int argc, char **argv, cinch::exit_mode_t mode)</td></tr>
 <tr class="separator:aecebc6edbeb83a7947f5d42ca63973a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -101,9 +105,6 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_mpi_runtime_dri
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a45481ec00d0c628ddf597616c64c8df8"><td class="memItemLeft" align="right" valign="top"><a id="a45481ec00d0c628ddf597616c64c8df8"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>__flecsi_tags</b> = &quot;all&quot;</td></tr>
-<tr class="separator:a45481ec00d0c628ddf597616c64c8df8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a714b39488a154c5e0914c65e803103ed"><td class="memItemLeft" align="right" valign="top">cinch::runtime_handler_t&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_mpi_handler</b></td></tr>
 <tr class="separator:a714b39488a154c5e0914c65e803103ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -127,7 +128,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>__flecsi_tags<
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">{</div><div class="line">  flecsi_mpi_initialize, flecsi_mpi_finalize</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">}</div></div><!-- fragment -->
+<b>Initial value:</b><div class="fragment"><div class="line">{flecsi_mpi_initialize,</div><div class="line">  flecsi_mpi_finalize,</div><div class="line">  flecsi_mpi_add_options}</div></div><!-- fragment -->
 </div>
 </div>
 </div><!-- contents -->

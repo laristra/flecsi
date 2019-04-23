@@ -10,5 +10,6 @@ var searchData=
   ['execution_20interface',['Execution Interface',['../group__execution.html',1,'']]],
   ['execution_2eh',['execution.h',['../execution_8h.html',1,'']]],
   ['execution_5fpolicy_2eh',['execution_policy.h',['../execution_2legion_2execution__policy_8h.html',1,'(Global Namespace)'],['../execution_2mpi_2execution__policy_8h.html',1,'(Global Namespace)'],['../runtime_2execution__policy_8h.html',1,'(Global Namespace)']]],
+  ['exit_5fstatus',['exit_status',['../structflecsi_1_1control_1_1control__u.html#abea1079bd5860176682e447994cfaedf',1,'flecsi::control::control_u::exit_status() const'],['../structflecsi_1_1control_1_1control__u.html#ad0568c229577bd74d22ff1a03490a3ad',1,'flecsi::control::control_u::exit_status()'],['../structflecsi_1_1execution_1_1context__u.html#a455cf87f1307626ffc26b540af005373',1,'flecsi::execution::context_u::exit_status()']]],
   ['expect_5fhandler_5ft',['expect_handler_t',['../structflecsi_1_1utils_1_1ftest_1_1expect__handler__t.html',1,'flecsi::utils::ftest']]]
 ];

@@ -68,12 +68,14 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">context_policy.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;legion.h&gt;</code><br />
+<code>#include &lt;boost/program_options.hpp&gt;</code><br />
 <code>#include &lt;mpi.h&gt;</code><br />
 <code>#include &lt;map&gt;</code><br />
 <code>#include &lt;unordered_map&gt;</code><br />
@@ -91,6 +93,18 @@ Macros</h2></td></tr>
 <tr class="separator:ae81b650819e8d5c1a097b653067469c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32ba78e7904da74fa6347d17b38cb13f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="execution_2legion_2context__policy_8h.html#a32ba78e7904da74fa6347d17b38cb13f">task_info_method</a>(name,  return_type,  index)</td></tr>
 <tr class="separator:a32ba78e7904da74fa6347d17b38cb13f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a6aa30d6fd073b5d3d16e9a1f7bdb4f9f"><td class="memItemLeft" align="right" valign="top"><a id="a6aa30d6fd073b5d3d16e9a1f7bdb4f9f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::execution::top_level_task</b> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="separator:a6aa30d6fd073b5d3d16e9a1f7bdb4f9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5ed0d7d2d3cd6a5a5efca4409cd77aeb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__legion-execution.html#ga5ed0d7d2d3cd6a5a5efca4409cd77aeb">flecsi::execution::handoff_to_mpi_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="separator:ga5ed0d7d2d3cd6a5a5efca4409cd77aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga526354e0eabaddad27fcbbb2f8dd3883"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__legion-execution.html#ga526354e0eabaddad27fcbbb2f8dd3883">flecsi::execution::wait_on_mpi_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="separator:ga526354e0eabaddad27fcbbb2f8dd3883"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga308971ffd990f8315edde5d49580009c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__legion-execution.html#ga308971ffd990f8315edde5d49580009c">flecsi::execution::unset_call_mpi_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="separator:ga308971ffd990f8315edde5d49580009c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>

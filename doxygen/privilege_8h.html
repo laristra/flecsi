@@ -66,7 +66,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">privilege.h File Reference</div>  </div>
 </div><!--header-->
@@ -77,16 +78,19 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a283345ffc8feea6af77f385d4a5f645f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="privilege_8h.html#a283345ffc8feea6af77f385d4a5f645f">flecsi::privilege_t</a> : size_t { <br />
-&#160;&#160;<b>reserved</b> = 0, 
+<tr class="memitem:a283345ffc8feea6af77f385d4a5f645f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="privilege_8h.html#a283345ffc8feea6af77f385d4a5f645f">flecsi::privilege_t</a> : size_t { <b>nu</b> = 0, 
 <b>ro</b> = 1, 
 <b>wo</b> = 2, 
-<b>rw</b> = 3, 
-<br />
-&#160;&#160;<b>na</b> = 2
-<br />
+<b>rw</b> = 3
  }</td></tr>
 <tr class="separator:a283345ffc8feea6af77f385d4a5f645f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:af769b135d3d292f84be5dac6bf015a3f"><td class="memTemplParams" colspan="2"><a id="af769b135d3d292f84be5dac6bf015a3f"></a>
+template&lt;size_t PRIVILEGES&gt; </td></tr>
+<tr class="memitem:af769b135d3d292f84be5dac6bf015a3f"><td class="memTemplItemLeft" align="right" valign="top">constexpr privilege_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::to_global</b> ()</td></tr>
+<tr class="separator:af769b135d3d292f84be5dac6bf015a3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="file_a283345ffc8feea6af77f385d4a5f645f"></a>
@@ -103,11 +107,10 @@ Enumerations</h2></td></tr>
 <p>Enumeration for specifying access privleges for data that are passed to FleCSI tasks.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">reserved</td><td>Reserved for internal use. </td></tr>
-    <tr><td class="paramname">ro</td><td>Read-Only access. </td></tr>
-    <tr><td class="paramname">wo</td><td>Write-Only access. </td></tr>
-    <tr><td class="paramname">rw</td><td>Read-Write access. </td></tr>
-    <tr><td class="paramname">na</td><td>No-Access access. </td></tr>
+    <tr><td class="paramname">nu</td><td>No-Update access: data are mapped, no updates are done to the state. This privilege is basically <em>as</em> <em>is</em>. </td></tr>
+    <tr><td class="paramname">ro</td><td>Read-Only access: data are mapped, updates are performed for consistency, but the data are read-only. </td></tr>
+    <tr><td class="paramname">wo</td><td>Write-Only access: data are mapped, no updates are done to the state, and the data can be written. </td></tr>
+    <tr><td class="paramname">rw</td><td>Read-Write access: data are mapped, updated are performend for consistency, and the data are read-write. </td></tr>
   </table>
   </dd>
 </dl>

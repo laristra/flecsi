@@ -69,6 +69,7 @@ $(function() {
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#friends">Friends</a> &#124;
 <a href="structflecsi_1_1execution_1_1legion__context__policy__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">flecsi::execution::legion_context_policy_t Struct Reference</div>  </div>
@@ -86,15 +87,24 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae8ab32334f79e31326573b811f551527"><td class="memItemLeft" align="right" valign="top"><a id="ae8ab32334f79e31326573b811f551527"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>start</b> (int argc, char **argv)</td></tr>
-<tr class="separator:ae8ab32334f79e31326573b811f551527"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a718f9d156fbacef4591f801c58c7c14f"><td class="memItemLeft" align="right" valign="top"><a id="a718f9d156fbacef4591f801c58c7c14f"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>color</b> () const</td></tr>
-<tr class="separator:a718f9d156fbacef4591f801c58c7c14f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75dfaf2e514b87654265d2ca3f8e8e57"><td class="memItemLeft" align="right" valign="top"><a id="a75dfaf2e514b87654265d2ca3f8e8e57"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>colors</b> () const</td></tr>
-<tr class="separator:a75dfaf2e514b87654265d2ca3f8e8e57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d900149abe6694ea5566423baaa3554"><td class="memItemLeft" align="right" valign="top"><a id="a7d900149abe6694ea5566423baaa3554"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>start</b> (int argc, char **argv, variables_map &amp;vm)</td></tr>
+<tr class="separator:a7d900149abe6694ea5566423baaa3554"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3d58761c74ac14361dbc431b66201b8"><td class="memItemLeft" align="right" valign="top"><a id="ae3d58761c74ac14361dbc431b66201b8"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>shard</b> () const</td></tr>
+<tr class="separator:ae3d58761c74ac14361dbc431b66201b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca59629e42b032fc984f417eccd7665c"><td class="memItemLeft" align="right" valign="top"><a id="aca59629e42b032fc984f417eccd7665c"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>shards</b> () const</td></tr>
+<tr class="separator:aca59629e42b032fc984f417eccd7665c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae47e17626514c272a7881787b07173ba"><td class="memItemLeft" align="right" valign="top"><a id="ae47e17626514c272a7881787b07173ba"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>threads_per_shard</b> () const</td></tr>
+<tr class="separator:ae47e17626514c272a7881787b07173ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d9749c32b8d08d29e90b967a13f62c3"><td class="memItemLeft" align="right" valign="top"><a id="a6d9749c32b8d08d29e90b967a13f62c3"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>threads</b> () const</td></tr>
+<tr class="separator:a6d9749c32b8d08d29e90b967a13f62c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21b34bb7be5d3ff16856955ad2946ecf"><td class="memItemLeft" align="right" valign="top"><a id="a21b34bb7be5d3ff16856955ad2946ecf"></a>
+<a class="el" href="structflecsi_1_1data_1_1legion_1_1global__runtime__data__t.html">data::legion::global_runtime_data_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>global_runtime_data</b> ()</td></tr>
+<tr class="separator:a21b34bb7be5d3ff16856955ad2946ecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a592ff8f5dbf2f8e6cf496282d4fb51a9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a592ff8f5dbf2f8e6cf496282d4fb51a9">set_mpi_state</a> (bool active)</td></tr>
 <tr class="separator:a592ff8f5dbf2f8e6cf496282d4fb51a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b91a3c955cd1572cdee39b1339d7563"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b91a3c955cd1572cdee39b1339d7563">set_mpi_task</a> (std::function&lt; void()&gt; &amp;mpi_task)</td></tr>
@@ -148,6 +158,24 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a32aa36867ff45c482d418c0ca999ed63"><td class="memItemLeft" align="right" valign="top"><a id="a32aa36867ff45c482d418c0ca999ed63"></a>
 static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>task_depth</b> ()</td></tr>
 <tr class="separator:a32aa36867ff45c482d418c0ca999ed63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32b78c0aa81274113420d9bb3e4e9145"><td class="memItemLeft" align="right" valign="top"><a id="a32b78c0aa81274113420d9bb3e4e9145"></a>
+static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>color</b> ()</td></tr>
+<tr class="separator:a32b78c0aa81274113420d9bb3e4e9145"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a0db21ae4ea06bd25d3b7c2848b1218"><td class="memItemLeft" align="right" valign="top"><a id="a4a0db21ae4ea06bd25d3b7c2848b1218"></a>
+static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>colors</b> ()</td></tr>
+<tr class="separator:a4a0db21ae4ea06bd25d3b7c2848b1218"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:afc30d937cdb80bfa0c75243fd17d58f1"><td class="memItemLeft" align="right" valign="top"><a id="afc30d937cdb80bfa0c75243fd17d58f1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>top_level_task</b> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="separator:afc30d937cdb80bfa0c75243fd17d58f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15aa374005a11974e3aec997c1e3a636"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a15aa374005a11974e3aec997c1e3a636">handoff_to_mpi_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="separator:a15aa374005a11974e3aec997c1e3a636"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae869e874df6a1a560d4af19619796be6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ae869e874df6a1a560d4af19619796be6">wait_on_mpi_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="separator:ae869e874df6a1a560d4af19619796be6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4430a9fd39c03df1cba2d4ef4a3cd27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#aa4430a9fd39c03df1cba2d4ef4a3cd27">unset_call_mpi_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="separator:aa4430a9fd39c03df1cba2d4ef4a3cd27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a8cacf5c5d7f491b8326b8160ccdcf12c"></a>
@@ -732,6 +760,154 @@ template&lt;size_t KEY&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A future map with the result of the task execution. </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="a15aa374005a11974e3aec997c1e3a636"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15aa374005a11974e3aec997c1e3a636">&#9670;&nbsp;</a></span>handoff_to_mpi_task</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void handoff_to_mpi_task </td>
+          <td>(</td>
+          <td class="paramtype">const Legion::Task *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Legion::PhysicalRegion &gt; &amp;&#160;</td>
+          <td class="paramname"><em>regions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Context&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Interprocess communication to pass control to MPI runtime. </p>
+
+</div>
+</div>
+<a id="aa4430a9fd39c03df1cba2d4ef4a3cd27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4430a9fd39c03df1cba2d4ef4a3cd27">&#9670;&nbsp;</a></span>unset_call_mpi_task</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void unset_call_mpi_task </td>
+          <td>(</td>
+          <td class="paramtype">const Legion::Task *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Legion::PhysicalRegion &gt; &amp;&#160;</td>
+          <td class="paramname"><em>regions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Context&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Interprocess communication to unset mpi execute state. </p>
+
+</div>
+</div>
+<a id="ae869e874df6a1a560d4af19619796be6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae869e874df6a1a560d4af19619796be6">&#9670;&nbsp;</a></span>wait_on_mpi_task</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void wait_on_mpi_task </td>
+          <td>(</td>
+          <td class="paramtype">const Legion::Task *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Legion::PhysicalRegion &gt; &amp;&#160;</td>
+          <td class="paramname"><em>regions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Context&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Interprocess communication to wait for control to pass back to the Legion runtime. </p>
 
 </div>
 </div>

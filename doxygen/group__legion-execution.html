@@ -73,11 +73,11 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html">flecsi::execution::legion_execution_policy_t</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1pure__task__wrapper__u.html">flecsi::execution::legion::pure_task_wrapper_u&lt; RETURN, TASK &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1task__wrapper__u.html">flecsi::execution::legion::task_wrapper_u&lt; KEY, RETURN, ARG_TUPLE, DELEGATE &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html">flecsi::execution::legion_execution_policy_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classarray__ref_3_01T_01_4.html">array_ref&lt; T &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -134,7 +134,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Legion task template */</span>                                                   \</div><div class="line">  inline return_type task_name(<span class="keyword">const</span> Legion::Task * task,                      \</div><div class="line">    <span class="keyword">const</span> std::vector&lt;Legion::PhysicalRegion&gt; &amp; regions, Legion::Context ctx,  \</div><div class="line">    Legion::Runtime * runtime)</div></div><!-- fragment --><p>This macro simplifies pure Legion task definitions by filling in the boiler-plate function arguments.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Legion task template */</span>                                                   \</div><div class="line">  inline return_type task_name(<span class="keyword">const</span> Legion::Task * task,                      \</div><div class="line">    <span class="keyword">const</span> std::vector&lt;Legion::PhysicalRegion&gt; &amp; regions,                       \</div><div class="line">    Legion::Context ctx,                                                       \</div><div class="line">    Legion::Runtime * runtime)</div></div><!-- fragment --><p>This macro simplifies pure Legion task definitions by filling in the boiler-plate function arguments.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">task_name</td><td>The plain-text task name. </td></tr>

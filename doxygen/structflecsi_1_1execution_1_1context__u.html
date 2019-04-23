@@ -90,21 +90,38 @@ Public Types</h2></td></tr>
 <tr class="memitem:a17f60ffa2b457f9a0f3aeacaa2ea8885"><td class="memItemLeft" align="right" valign="top"><a id="a17f60ffa2b457f9a0f3aeacaa2ea8885"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>topology_registration_function_t</b> = std::function&lt; void(size_t)&gt;</td></tr>
 <tr class="separator:a17f60ffa2b457f9a0f3aeacaa2ea8885"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66689818a2d3de7527da6f9cfc53633a"><td class="memItemLeft" align="right" valign="top"><a id="a66689818a2d3de7527da6f9cfc53633a"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>topology_value_t</b> = std::pair&lt; field_id_t, topology_registration_function_t &gt;</td></tr>
-<tr class="separator:a66689818a2d3de7527da6f9cfc53633a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43301e527a8b6c7b9675d915623e9edd"><td class="memItemLeft" align="right" valign="top"><a id="a43301e527a8b6c7b9675d915623e9edd"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>topology_entry_t</b> = std::unordered_map&lt; size_t, topology_value_t &gt;</td></tr>
-<tr class="separator:a43301e527a8b6c7b9675d915623e9edd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f41edf73d1cac7ba884f727dd1ce9ba"><td class="memItemLeft" align="right" valign="top"><a id="a3f41edf73d1cac7ba884f727dd1ce9ba"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>topology_registration_entry_t</b> = std::pair&lt; field_id_t, topology_registration_function_t &gt;</td></tr>
+<tr class="separator:a3f41edf73d1cac7ba884f727dd1ce9ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad18d2033d274b1f4950488e963d923a6"><td class="memItemLeft" align="right" valign="top"><a id="ad18d2033d274b1f4950488e963d923a6"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>topology_registration_map_t</b> = std::unordered_map&lt; size_t, topology_registration_entry_t &gt;</td></tr>
+<tr class="separator:ad18d2033d274b1f4950488e963d923a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac85332931e4270af1ea9aee94d9ce47d"><td class="memItemLeft" align="right" valign="top"><a id="ac85332931e4270af1ea9aee94d9ce47d"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>field_registration_function_t</b> = std::function&lt; void(size_t, size_t)&gt;</td></tr>
 <tr class="separator:ac85332931e4270af1ea9aee94d9ce47d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ddd2f59537e8b57db9a099875142a04"><td class="memItemLeft" align="right" valign="top"><a id="a6ddd2f59537e8b57db9a099875142a04"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>field_value_t</b> = std::pair&lt; field_id_t, field_registration_function_t &gt;</td></tr>
-<tr class="separator:a6ddd2f59537e8b57db9a099875142a04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb01a8c21e78c44ab25ad786c296d04b"><td class="memItemLeft" align="right" valign="top"><a id="adb01a8c21e78c44ab25ad786c296d04b"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>field_entry_t</b> = std::unordered_map&lt; size_t, field_value_t &gt;</td></tr>
-<tr class="separator:adb01a8c21e78c44ab25ad786c296d04b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a155e854e354b2ac23073186b25076b3e"><td class="memItemLeft" align="right" valign="top"><a id="a155e854e354b2ac23073186b25076b3e"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>field_registration_entry_t</b> = std::pair&lt; field_id_t, field_registration_function_t &gt;</td></tr>
+<tr class="separator:a155e854e354b2ac23073186b25076b3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b7d5dcc0ebd15cb7f476dfaf062fd56"><td class="memItemLeft" align="right" valign="top"><a id="a8b7d5dcc0ebd15cb7f476dfaf062fd56"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>field_registration_map_t</b> = std::unordered_map&lt; size_t, field_registration_entry_t &gt;</td></tr>
+<tr class="separator:a8b7d5dcc0ebd15cb7f476dfaf062fd56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8c73d30e2736f3d251ee178b7f3bdd0"><td class="memItemLeft" align="right" valign="top"><a id="ab8c73d30e2736f3d251ee178b7f3bdd0"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>unstructured_mesh_coloring_map_t</b> = <a class="el" href="structflecsi_1_1coloring_1_1coloring__map__u.html">coloring_map_u</a>&lt; <a class="el" href="structflecsi_1_1topology_1_1unstructured__mesh__topology__base__t.html">unstructured_mesh_topology_base_t</a> &gt;</td></tr>
+<tr class="separator:ab8c73d30e2736f3d251ee178b7f3bdd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e6368e0f56d50fb312efca7dc7f1594"><td class="memItemLeft" align="right" valign="top"><a id="a2e6368e0f56d50fb312efca7dc7f1594"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>structured_mesh_coloring_map_t</b> = <a class="el" href="structflecsi_1_1coloring_1_1coloring__map__u.html">coloring_map_u</a>&lt; <a class="el" href="structflecsi_1_1topology_1_1structured__mesh__topology__base__t.html">structured_mesh_topology_base_t</a> &gt;</td></tr>
+<tr class="separator:a2e6368e0f56d50fb312efca7dc7f1594"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2d215f6d8629d9e99d5561301fac63c"><td class="memItemLeft" align="right" valign="top"><a id="ac2d215f6d8629d9e99d5561301fac63c"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ntree_coloring_map_t</b> = <a class="el" href="structflecsi_1_1coloring_1_1coloring__map__u.html">coloring_map_u</a>&lt; <a class="el" href="structflecsi_1_1topology_1_1ntree__topology__base__t.html">ntree_topology_base_t</a> &gt;</td></tr>
+<tr class="separator:ac2d215f6d8629d9e99d5561301fac63c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22597cf7b0fec38efb70b0783b6b554b"><td class="memItemLeft" align="right" valign="top"><a id="a22597cf7b0fec38efb70b0783b6b554b"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>set_coloring_map_t</b> = <a class="el" href="structflecsi_1_1coloring_1_1coloring__map__u.html">coloring_map_u</a>&lt; <a class="el" href="structflecsi_1_1topology_1_1set__topology__base__t.html">set_topology_base_t</a> &gt;</td></tr>
+<tr class="separator:a22597cf7b0fec38efb70b0783b6b554b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e3272954f2fe54e04b841547744e058"><td class="memItemLeft" align="right" valign="top"><a id="a4e3272954f2fe54e04b841547744e058"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>field_info_vector_t</b> = std::vector&lt; <a class="el" href="structflecsi_1_1data_1_1field__info__t.html">data::field_info_t</a> &gt;</td></tr>
+<tr class="separator:a4e3272954f2fe54e04b841547744e058"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cc84d629d8f90dad7f03b5c38db8266"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a2cc84d629d8f90dad7f03b5c38db8266">field_info_map_t</a> = std::unordered_map&lt; size_t, field_info_vector_t &gt;</td></tr>
+<tr class="separator:a2cc84d629d8f90dad7f03b5c38db8266"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a190d64c50b4b010f703dc463b37c9d59"><td class="memItemLeft" align="right" valign="top"><a id="a190d64c50b4b010f703dc463b37c9d59"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>top_level_action_t</b> = std::function&lt; int(int, char **)&gt;</td></tr>
 <tr class="separator:a190d64c50b4b010f703dc463b37c9d59"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -123,8 +140,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a95ad78a0d91f051bc90ed20c86e41028"><td class="memItemLeft" align="right" valign="top"><a id="a95ad78a0d91f051bc90ed20c86e41028"></a>
 <a class="el" href="structflecsi_1_1execution_1_1context__u.html">context_u</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="structflecsi_1_1execution_1_1context__u.html">context_u</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:a95ad78a0d91f051bc90ed20c86e41028"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b006ae2aa2e86953c01daf49b6fbd54"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a2b006ae2aa2e86953c01daf49b6fbd54">start</a> (int argc, char **argv)</td></tr>
-<tr class="separator:a2b006ae2aa2e86953c01daf49b6fbd54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ee7044dcdbd26e19ed3e6c3dea8d76e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a5ee7044dcdbd26e19ed3e6c3dea8d76e">start</a> (int argc, char **argv, variables_map &amp;vm)</td></tr>
+<tr class="separator:a5ee7044dcdbd26e19ed3e6c3dea8d76e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb3343b8d79d772b258b36a8d54a5bc4"><td class="memItemLeft" align="right" valign="top"><a id="abb3343b8d79d772b258b36a8d54a5bc4"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>shard</b> () const</td></tr>
+<tr class="separator:abb3343b8d79d772b258b36a8d54a5bc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86416672d8d79f0169b215b457a8f92f"><td class="memItemLeft" align="right" valign="top"><a id="a86416672d8d79f0169b215b457a8f92f"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>shards</b> () const</td></tr>
+<tr class="separator:a86416672d8d79f0169b215b457a8f92f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9729402dc17edbd09236632c355c610"><td class="memItemLeft" align="right" valign="top"><a id="ae9729402dc17edbd09236632c355c610"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>threads_per_shard</b> () const</td></tr>
+<tr class="separator:ae9729402dc17edbd09236632c355c610"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ad86e90ece6c7006eeb06e3978901aa"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a4ad86e90ece6c7006eeb06e3978901aa">threads</a> () const</td></tr>
+<tr class="separator:a4ad86e90ece6c7006eeb06e3978901aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc22e5f9ca4f00cec2dedd48db3e3d4d"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#abc22e5f9ca4f00cec2dedd48db3e3d4d">color</a> () const</td></tr>
 <tr class="separator:abc22e5f9ca4f00cec2dedd48db3e3d4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade6c89662f58fe1626acadaa7506c5eb"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#ade6c89662f58fe1626acadaa7506c5eb">colors</a> () const</td></tr>
@@ -133,6 +161,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a46dc2abe2eaeb4ddc6453e8afcf54b3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95d094e1720e352049446a374e74f6d1"><td class="memItemLeft" align="right" valign="top">top_level_action_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a95d094e1720e352049446a374e74f6d1">top_level_action</a> ()</td></tr>
 <tr class="separator:a95d094e1720e352049446a374e74f6d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a455cf87f1307626ffc26b540af005373"><td class="memItemLeft" align="right" valign="top">int &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a455cf87f1307626ffc26b540af005373">exit_status</a> ()</td></tr>
+<tr class="separator:a455cf87f1307626ffc26b540af005373"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70058159f870d7badc5b0e5571b1cc9a"><td class="memItemLeft" align="right" valign="top"><a id="a70058159f870d7badc5b0e5571b1cc9a"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>register_reduction_operation</b> (size_t key, const std::function&lt; void()&gt; &amp;callback)</td></tr>
 <tr class="separator:a70058159f870d7badc5b0e5571b1cc9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -148,18 +178,22 @@ std::map&lt; size_t, std::function&lt; void()&gt; &gt; &amp;&#160;</td><td class
 <tr class="memitem:a44e98bd98dd97f4e16d7329cb0b9d9ff"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) FUNCTION&gt; </td></tr>
 <tr class="memitem:a44e98bd98dd97f4e16d7329cb0b9d9ff"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a44e98bd98dd97f4e16d7329cb0b9d9ff">register_function</a> ()</td></tr>
 <tr class="separator:a44e98bd98dd97f4e16d7329cb0b9d9ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7340ae36c07ca5b680cfcf3b28ab90ef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a7340ae36c07ca5b680cfcf3b28ab90ef">register_topology</a> (size_t type_hash, size_t key, const topology_registration_function_t &amp;callback)</td></tr>
-<tr class="separator:a7340ae36c07ca5b680cfcf3b28ab90ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1d6e5c87102f919d81179592c6cfb6f"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, topology_entry_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#ae1d6e5c87102f919d81179592c6cfb6f">topology_registry</a> ()</td></tr>
-<tr class="separator:ae1d6e5c87102f919d81179592c6cfb6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5d126f7d14c6bc9782873c8672a1ef8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#ac5d126f7d14c6bc9782873c8672a1ef8">register_topology</a> (size_t topology_identifier, size_t instance_identifier, const topology_registration_function_t &amp;callback)</td></tr>
+<tr class="separator:ac5d126f7d14c6bc9782873c8672a1ef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d85e14354574168024bab644b8505a7"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, topology_registration_map_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a7d85e14354574168024bab644b8505a7">topology_registry</a> ()</td></tr>
+<tr class="separator:a7d85e14354574168024bab644b8505a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20d6ec33f925c5fbbfb44452c35b2363"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a20d6ec33f925c5fbbfb44452c35b2363">topology_fields_registered</a> (size_t type_key, size_t instance_key)</td></tr>
 <tr class="separator:a20d6ec33f925c5fbbfb44452c35b2363"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa2fb4498ef76d3125eed46982cf51cba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#aa2fb4498ef76d3125eed46982cf51cba">register_field</a> (size_t topology_type_key, size_t key, const field_registration_function_t &amp;callback)</td></tr>
-<tr class="separator:aa2fb4498ef76d3125eed46982cf51cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5d6257ab045612704af564b4dcd4fe9"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, field_entry_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#ac5d6257ab045612704af564b4dcd4fe9">field_registry</a> ()</td></tr>
-<tr class="separator:ac5d6257ab045612704af564b4dcd4fe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39bd7c61cfc032931a82ccb6b40e622c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a39bd7c61cfc032931a82ccb6b40e622c">register_runtime_field_info</a> (size_t topology_type_key, size_t storage_class, const <a class="el" href="structflecsi_1_1data_1_1field__info__t.html">data::field_info_t</a> &amp;fi)</td></tr>
-<tr class="separator:a39bd7c61cfc032931a82ccb6b40e622c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a381bbc23a154e2a14aa809046cccb2a3"><td class="memTemplParams" colspan="2">template&lt;typename TOPOLOGY_TYPE , size_t TOPOLOGY_NAMESPACE, size_t TOPOLOGY_NAME, size_t NAME&gt; </td></tr>
+<tr class="memitem:a381bbc23a154e2a14aa809046cccb2a3"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a381bbc23a154e2a14aa809046cccb2a3">register_coloring</a> (std::string &amp;name)</td></tr>
+<tr class="separator:a381bbc23a154e2a14aa809046cccb2a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a968501d23da6a7464d01f69437259b0a"><td class="memTemplParams" colspan="2">template&lt;typename TOPOLOGY_TYPE , size_t TOPOLOGY_NAMESPACE, size_t TOPOLOGY_NAME, size_t NAME&gt; </td></tr>
+<tr class="memitem:a968501d23da6a7464d01f69437259b0a"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a968501d23da6a7464d01f69437259b0a">get_coloring</a> ()</td></tr>
+<tr class="separator:a968501d23da6a7464d01f69437259b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada88cbde8ea0cf03e38096c69709326d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#ada88cbde8ea0cf03e38096c69709326d">register_field_info</a> (size_t topology_type_identifier, size_t storage_class, const <a class="el" href="structflecsi_1_1data_1_1field__info__t.html">data::field_info_t</a> &amp;fi)</td></tr>
+<tr class="separator:ada88cbde8ea0cf03e38096c69709326d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1911f56bf3d0a05942e2f51b42fe81f6"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a2cc84d629d8f90dad7f03b5c38db8266">field_info_map_t</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a1911f56bf3d0a05942e2f51b42fe81f6">topology_field_info_map</a> ()</td></tr>
+<tr class="separator:a1911f56bf3d0a05942e2f51b42fe81f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -179,7 +213,25 @@ struct flecsi::execution::context_u&lt; CONTEXT_POLICY &gt;</h3>
   </table>
   </dd>
 </dl>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a2cc84d629d8f90dad7f03b5c38db8266"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cc84d629d8f90dad7f03b5c38db8266">&#9670;&nbsp;</a></span>field_info_map_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class CONTEXT_POLICY &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::<a class="el" href="structflecsi_1_1execution_1_1context__u.html#a2cc84d629d8f90dad7f03b5c38db8266">field_info_map_t</a> =  std::unordered_map&lt;size_t, field_info_vector_t&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>This type allows the storage of field information per storage class. The size_t key is the storage class. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="a047eb7c6a7dfeb85744908589b776a11"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a047eb7c6a7dfeb85744908589b776a11">&#9670;&nbsp;</a></span>add_global_object()</h2>
 
@@ -295,8 +347,8 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 
 </div>
 </div>
-<a id="ac5d6257ab045612704af564b4dcd4fe9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac5d6257ab045612704af564b4dcd4fe9">&#9670;&nbsp;</a></span>field_registry()</h2>
+<a id="a455cf87f1307626ffc26b540af005373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a455cf87f1307626ffc26b540af005373">&#9670;&nbsp;</a></span>exit_status()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -307,7 +359,7 @@ template&lt;class CONTEXT_POLICY &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_map&lt;size_t, field_entry_t&gt;&amp; <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::field_registry </td>
+          <td class="memname">int&amp; <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::exit_status </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -319,7 +371,46 @@ template&lt;class CONTEXT_POLICY &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Return the field registry. </p>
+<p>Return the exit status of the FleCSI runtime. </p>
+
+</div>
+</div>
+<a id="a968501d23da6a7464d01f69437259b0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a968501d23da6a7464d01f69437259b0a">&#9670;&nbsp;</a></span>get_coloring()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class CONTEXT_POLICY &gt; </div>
+<div class="memtemplate">
+template&lt;typename TOPOLOGY_TYPE , size_t TOPOLOGY_NAMESPACE, size_t TOPOLOGY_NAME, size_t NAME&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">decltype(auto) <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::get_coloring </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get a named coloring from the FleCSI runtime.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">TOPOLOGY_TYPE</td><td>The topology type, which must be derived from one of the FleCSI core topology types, e.g., unstructure_mesh_topology_base_t, structured_topology_base_t, ntree_topology_base_t, or set_topology_base_t. </td></tr>
+    <tr><td class="paramname">TOPOLOGY_NAMESPACE</td><td>The namespace of the topology instance for which to add a coloring. </td></tr>
+    <tr><td class="paramname">TOPOLOGY_NAME</td><td>The name of the topology instance for which to add a coloring. </td></tr>
+    <tr><td class="paramname">NAME</td><td>The name of the coloring to add. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -396,8 +487,48 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 
 </div>
 </div>
-<a id="aa2fb4498ef76d3125eed46982cf51cba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa2fb4498ef76d3125eed46982cf51cba">&#9670;&nbsp;</a></span>register_field()</h2>
+<a id="a381bbc23a154e2a14aa809046cccb2a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a381bbc23a154e2a14aa809046cccb2a3">&#9670;&nbsp;</a></span>register_coloring()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class CONTEXT_POLICY &gt; </div>
+<div class="memtemplate">
+template&lt;typename TOPOLOGY_TYPE , size_t TOPOLOGY_NAMESPACE, size_t TOPOLOGY_NAME, size_t NAME&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::register_coloring </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Register a named coloring with the FleCSI runtime.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">TOPOLOGY_TYPE</td><td>The topology type, which must be derived from one of the FleCSI core topology types, e.g., unstructure_mesh_topology_base_t, structured_topology_base_t, ntree_topology_base_t, or set_topology_base_t. </td></tr>
+    <tr><td class="paramname">TOPOLOGY_NAMESPACE</td><td>The namespace of the topology instance for which to add a coloring. </td></tr>
+    <tr><td class="paramname">TOPOLOGY_NAME</td><td>The name of the topology instance for which to add a coloring. </td></tr>
+    <tr><td class="paramname">NAME</td><td>The name of the coloring to add. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ada88cbde8ea0cf03e38096c69709326d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada88cbde8ea0cf03e38096c69709326d">&#9670;&nbsp;</a></span>register_field_info()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -408,22 +539,22 @@ template&lt;class CONTEXT_POLICY &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::register_field </td>
+          <td class="memname">void <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::register_field_info </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>topology_type_key</em>, </td>
+          <td class="paramname"><em>topology_type_identifier</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em>, </td>
+          <td class="paramname"><em>storage_class</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const field_registration_function_t &amp;&#160;</td>
-          <td class="paramname"><em>callback</em>&#160;</td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1data_1_1field__info__t.html">data::field_info_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>fi</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -437,12 +568,12 @@ template&lt;class CONTEXT_POLICY &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Register a field with the runtime.</p>
+<p>Register field information.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">topology_type_key</td><td>The topology indentifier hash. </td></tr>
-    <tr><td class="paramname">key</td><td>The identifier hash. </td></tr>
-    <tr><td class="paramname">callback</td><td>The registration call back function. </td></tr>
+    <tr><td class="paramname">topology_type_identifier</td><td>Topology type identifier. </td></tr>
+    <tr><td class="paramname">storage_class</td><td>Storage class identifier. </td></tr>
+    <tr><td class="paramname">fi</td><td>Field information. </td></tr>
   </table>
   </dd>
 </dl>
@@ -489,51 +620,6 @@ template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUP
 
 </div>
 </div>
-<a id="a39bd7c61cfc032931a82ccb6b40e622c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a39bd7c61cfc032931a82ccb6b40e622c">&#9670;&nbsp;</a></span>register_runtime_field_info()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class CONTEXT_POLICY &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::register_runtime_field_info </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>topology_type_key</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>storage_class</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structflecsi_1_1data_1_1field__info__t.html">data::field_info_t</a> &amp;&#160;</td>
-          <td class="paramname"><em>fi</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Register runtime field information. </p>
-
-</div>
-</div>
 <a id="a46dc2abe2eaeb4ddc6453e8afcf54b3a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a46dc2abe2eaeb4ddc6453e8afcf54b3a">&#9670;&nbsp;</a></span>register_top_level_action()</h2>
 
@@ -563,8 +649,8 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 
 </div>
 </div>
-<a id="a7340ae36c07ca5b680cfcf3b28ab90ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7340ae36c07ca5b680cfcf3b28ab90ef">&#9670;&nbsp;</a></span>register_topology()</h2>
+<a id="ac5d126f7d14c6bc9782873c8672a1ef8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5d126f7d14c6bc9782873c8672a1ef8">&#9670;&nbsp;</a></span>register_topology()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -578,13 +664,13 @@ template&lt;class CONTEXT_POLICY &gt; </div>
           <td class="memname">bool <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::register_topology </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>type_hash</em>, </td>
+          <td class="paramname"><em>topology_identifier</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em>, </td>
+          <td class="paramname"><em>instance_identifier</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -607,8 +693,8 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 <p>Register a topology with the runtime.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">type_hash</td><td>The topology indentifier hash. </td></tr>
-    <tr><td class="paramname">key</td><td>The identifier hash. </td></tr>
+    <tr><td class="paramname">topology_identifier</td><td>The topology type indentifier. </td></tr>
+    <tr><td class="paramname">instance_identifier</td><td>The topology instance identifier. </td></tr>
     <tr><td class="paramname">callback</td><td>The registration call back function. </td></tr>
   </table>
   </dd>
@@ -616,8 +702,8 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 
 </div>
 </div>
-<a id="a2b006ae2aa2e86953c01daf49b6fbd54"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b006ae2aa2e86953c01daf49b6fbd54">&#9670;&nbsp;</a></span>start()</h2>
+<a id="a5ee7044dcdbd26e19ed3e6c3dea8d76e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ee7044dcdbd26e19ed3e6c3dea8d76e">&#9670;&nbsp;</a></span>start()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -637,7 +723,13 @@ template&lt;class CONTEXT_POLICY &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">char **&#160;</td>
-          <td class="paramname"><em>argv</em>&#160;</td>
+          <td class="paramname"><em>argv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">variables_map &amp;&#160;</td>
+          <td class="paramname"><em>vm</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -687,8 +779,35 @@ template&lt;class CONTEXT_POLICY &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Return the current task depth within the execution hierarchy. The top-level task has depth <em>0</em>. This interface is primarily intended for FleCSI developers to use in enforcing runtime constraints.</p>
-<dl class="section return"><dt>Returns</dt><dd>A size_t with the current task level. </dd></dl>
+<p>Return the current task depth within the execution hierarchy. The top-level task has depth <em>0</em>. This interface is primarily intended for FleCSI developers to use in enforcing runtime constraints. </p>
+
+</div>
+</div>
+<a id="a4ad86e90ece6c7006eeb06e3978901aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ad86e90ece6c7006eeb06e3978901aa">&#9670;&nbsp;</a></span>threads()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class CONTEXT_POLICY &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::threads </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the number of execution instances with which the runtime was invoked. In this context a <em>thread</em> is defined as an instance of execution, and does not imply any other properties. This interface can be used to determine the full subscription of the execution instances of the running process that invokded the FleCSI runtime. </p>
 
 </div>
 </div>
@@ -717,6 +836,34 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Return the top-level action. </p>
+
+</div>
+</div>
+<a id="a1911f56bf3d0a05942e2f51b42fe81f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1911f56bf3d0a05942e2f51b42fe81f6">&#9670;&nbsp;</a></span>topology_field_info_map()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class CONTEXT_POLICY &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, <a class="el" href="structflecsi_1_1execution_1_1context__u.html#a2cc84d629d8f90dad7f03b5c38db8266">field_info_map_t</a>&gt;&amp; <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::topology_field_info_map </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the field info map. </p>
 
 </div>
 </div>
@@ -766,8 +913,8 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 
 </div>
 </div>
-<a id="ae1d6e5c87102f919d81179592c6cfb6f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae1d6e5c87102f919d81179592c6cfb6f">&#9670;&nbsp;</a></span>topology_registry()</h2>
+<a id="a7d85e14354574168024bab644b8505a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d85e14354574168024bab644b8505a7">&#9670;&nbsp;</a></span>topology_registry()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -778,7 +925,7 @@ template&lt;class CONTEXT_POLICY &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_map&lt;size_t, topology_entry_t&gt;&amp; <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::topology_registry </td>
+          <td class="memname">std::unordered_map&lt;size_t, topology_registration_map_t&gt;&amp; <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::topology_registry </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
