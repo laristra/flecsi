@@ -19,5 +19,6 @@ var searchData=
   ['demangle_2eh',['demangle.h',['../demangle_8h.html',1,'']]],
   ['dense_5faccessor_5fu',['dense_accessor_u',['../structflecsi_1_1data_1_1legion_1_1unstructured__mesh__topology_1_1dense__accessor__u.html',1,'flecsi::data::legion::unstructured_mesh_topology']]],
   ['dense_5fhandle_5ft',['dense_handle_t',['../structflecsi_1_1data_1_1legion_1_1unstructured__mesh__topology_1_1dense__handle__t.html',1,'flecsi::data::legion::unstructured_mesh_topology']]],
-  ['disable_5fbuffer',['disable_buffer',['../classflecsi_1_1utils_1_1flog_1_1tee__buffer__t.html#ab17d8a34a6ca2de1869760082f7e281e',1,'flecsi::utils::flog::tee_buffer_t::disable_buffer()'],['../structflecsi_1_1utils_1_1flog_1_1tee__stream__t.html#a0f51d0f1f913254bd556d1751b00f4cb',1,'flecsi::utils::flog::tee_stream_t::disable_buffer()']]]
+  ['disable_5fbuffer',['disable_buffer',['../classflecsi_1_1utils_1_1flog_1_1tee__buffer__t.html#ab17d8a34a6ca2de1869760082f7e281e',1,'flecsi::utils::flog::tee_buffer_t::disable_buffer()'],['../structflecsi_1_1utils_1_1flog_1_1tee__stream__t.html#a0f51d0f1f913254bd556d1751b00f4cb',1,'flecsi::utils::flog::tee_stream_t::disable_buffer()']]],
+  ['dump',['dump',['../classflecsi_1_1topology_1_1mesh__topology__u.html#a6a72f7a90142bb646a5f182370ad754a',1,'flecsi::topology::mesh_topology_u::dump(std::ostream &amp;stream)'],['../classflecsi_1_1topology_1_1mesh__topology__u.html#aa7ae192543404bce7ea19408fd177a43',1,'flecsi::topology::mesh_topology_u::dump()']]]
 ];

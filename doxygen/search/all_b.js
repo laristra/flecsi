@@ -8,7 +8,7 @@ var searchData=
   ['mask_5fto_5ftype',['mask_to_type',['../launch_8h.html#a486eab13b901985cbc8a7f14a5114b43',1,'flecsi::execution']]],
   ['max',['max',['../structflecsi_1_1execution_1_1reduction_1_1max.html',1,'flecsi::execution::reduction']]],
   ['mesh_20toplogy_20interface',['Mesh Toplogy Interface',['../group__mesh-topology.html',1,'']]],
-  ['mesh_5ftopology_5fu',['mesh_topology_u',['../classflecsi_1_1topology_1_1mesh__topology__u.html',1,'flecsi::topology']]],
+  ['mesh_5ftopology_5fu',['mesh_topology_u',['../classflecsi_1_1topology_1_1mesh__topology__u.html',1,'flecsi::topology::mesh_topology_u&lt; MESH_TYPE &gt;'],['../classflecsi_1_1topology_1_1mesh__topology__u.html#a380abc23fdc52a08ac3ef86135744ac2',1,'flecsi::topology::mesh_topology_u::mesh_topology_u(mesh_topology_u &amp;&amp;o)=default'],['../classflecsi_1_1topology_1_1mesh__topology__u.html#ad78c750c163aad9e5926f51dfd0bb27c',1,'flecsi::topology::mesh_topology_u::mesh_topology_u(storage_t *ms=nullptr)'],['../classflecsi_1_1topology_1_1mesh__topology__u.html#ac14c3f452cf2a14ac01a840ea2b9a836',1,'flecsi::topology::mesh_topology_u::mesh_topology_u(const mesh_topology_u &amp;m)']]],
   ['message_2eh',['message.h',['../message_8h.html',1,'']]],
   ['min',['min',['../structflecsi_1_1execution_1_1reduction_1_1min.html',1,'flecsi::execution::reduction']]],
   ['mpi_5fcontext_5fpolicy_5ft',['mpi_context_policy_t',['../structflecsi_1_1execution_1_1mpi__context__policy__t.html',1,'flecsi::execution']]],
