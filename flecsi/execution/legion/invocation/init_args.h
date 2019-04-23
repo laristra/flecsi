@@ -18,9 +18,9 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/context.h>
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/legion/storage_classes.h>
+#include <flecsi/execution/context.h>
 #include <flecsi/utils/demangle.h>
 #include <flecsi/utils/tuple_walker.h>
 #endif
@@ -100,17 +100,17 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
     if constexpr(to_global<PRIVILEGES>() > privilege_t::ro) {
       flog_assert(launch_ == launch_type_t::single,
-      "global can only be modified from within single launch task");
+        "global can only be modified from within single launch task");
 
       Legion::LogicalRegion region =
-        context_t::instance().global_runtime_data().logical_region; 
-      Legion::RegionRequirement rr(region, privilege_mode(PRIVILEGES),
-        EXCLUSIVE, region);
+        context_t::instance().global_runtime_data().logical_region;
+      Legion::RegionRequirement rr(
+        region, privilege_mode(PRIVILEGES), EXCLUSIVE, region);
       region_reqs_.push_back(rr);
     }
     else {
       Legion::LogicalRegion region =
-        context_t::instance().global_runtime_data().logical_region; 
+        context_t::instance().global_runtime_data().logical_region;
       Legion::RegionRequirement rr(region, READ_ONLY, EXCLUSIVE, region);
       region_reqs_.push_back(rr);
     } // if

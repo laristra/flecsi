@@ -62,7 +62,8 @@ auto to<PRIVILEGES>.global();
 // FIXME: This probably needs to move
 
 template<size_t PRIVILEGES>
-constexpr privilege_t to_global() {
+constexpr privilege_t
+to_global() {
   return static_cast<privilege_t>(PRIVILEGES & 0x03);
 } // to_global
 
