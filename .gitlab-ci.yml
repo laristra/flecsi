@@ -612,14 +612,6 @@ format:fedora_legion:
   variables:
     DISTRO: "fedora"
 
-format:fedora_hpx:
-  extends: .format
-  dependencies:
-    - build:fedora_hpx
-  variables:
-    DISTRO: "fedora"
-  allow_failure: true
-
 ###############
 ###############
 ###############
