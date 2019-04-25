@@ -40,6 +40,23 @@ enum privilege_t : size_t {
   rw = 3
 }; // enum privilege_t
 
+template<typename ... PRIVILEGES>
+struct privilege_pack_u {
+  using tuple_t = std::tuple<PRIVILEGES ...>;
+  static constexpr size_t value = utils::shift_or<0, tuple_t, 2>();
+}; // struct privilege_pack_u
+
+template<size_t INDEX, size_t PACK>
+constexpr privilege_t get_privilege() {
+  return PACK >> INDEX*2 & 0x03; 
+} // get_privilege
+
+#if 0
+template<size_t EXCLUSIVE, size_t SHARED, size_t GHOST>
+using unstructured_mesh_privileges_t =
+  privilege_pack_u<EXCLUSIVE, SHARED, GHOST>;
+#endif
+
 #if 0
 template<size_t PRIVILEGES>
 struct perm {
