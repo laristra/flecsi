@@ -15,18 +15,23 @@
 
 /*! @file */
 
-#include <array>
-#include <cassert>
-#include <cstdint>
-#include <iostream>
-#include <vector>
-
+#if !defined(__FLECSI_PRIVATE__)
+#error Do not include this file directly!
+#else
 #include <flecsi/data/data_client.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/topology/connectivity.h>
 #include <flecsi/topology/mesh_utils.h>
 #include <flecsi/topology/partition.h>
 #include <flecsi/topology/types.h>
+#endif
+
+
+#include <array>
+#include <cassert>
+#include <cstdint>
+#include <iostream>
+#include <vector>
 
 namespace flecsi {
 namespace topology {

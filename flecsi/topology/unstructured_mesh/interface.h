@@ -15,6 +15,18 @@
 
 /*! @file */
 
+#if !defined(__FLECSI_PRIVATE__)
+#error Do not include this file directly!
+#else
+#include <flecsi/execution/context.h>
+#include <flecsi/topology/unstructured_mesh/storage.h>
+#include <flecsi/topology/unstructured_mesh/types.h>
+#include <flecsi/topology/unstructured_mesh/partition.h>
+#include <flecsi/utils/common.h>
+#include <flecsi/utils/set_intersection.h>
+#include <flecsi/utils/static_verify.h>
+#endif
+
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -27,14 +39,6 @@
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
-
-#include <flecsi/execution/context.h>
-#include <flecsi/topology/mesh_storage.h>
-#include <flecsi/topology/mesh_types.h>
-#include <flecsi/topology/partition.h>
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/set_intersection.h>
-#include <flecsi/utils/static_verify.h>
 
 // static verification for required mesh type members such as entity types
 // tuple, connectivities, bindings, etc.

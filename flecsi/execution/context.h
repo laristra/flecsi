@@ -22,7 +22,7 @@
 #include <flecsi/data/common/field_info.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
-#include <flecsi/topology/base_types.h>
+#include <flecsi/topology/base_topology_types.h>
 #include <flecsi/utils/demangle.h>
 #include <flecsi/utils/flog.h>
 #include <flecsi/utils/hash.h>
@@ -615,6 +615,10 @@ private:
   structured_mesh_coloring_map_t structured_mesh_coloring_map_;
   ntree_coloring_map_t ntree_coloring_map_;
   set_coloring_map_t set_coloring_map_;
+
+  // We want a mapping from a coloring to a launch domain
+  
+
 
   /*--------------------------------------------------------------------------*
     Field data members.

@@ -98,7 +98,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
-    if constexpr(to_global<PRIVILEGES>() > privilege_t::ro) {
+    if constexpr(get_privilege<0, PRIVILEGES, 1>() > privilege_t::ro) {
       flog_assert(launch_ == launch_type_t::single,
         "global can only be modified from within single launch task");
 

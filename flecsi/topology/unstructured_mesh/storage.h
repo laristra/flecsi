@@ -17,11 +17,6 @@
 
 #include <flecsi/runtime/flecsi_runtime_topology_policy.h>
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 01, 2016
-//----------------------------------------------------------------------------//
-
 namespace flecsi {
 namespace topology {
 

@@ -39,6 +39,10 @@ jobs:
     - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
       compiler: clang
   allow_failures:
+    - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
+      compiler: gcc
+    - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
+      compiler: clang
     - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
       compiler: gcc
     - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
@@ -110,7 +114,6 @@ after_success:
       rm -rf doxygen _images _sources _static src assets/doxygen;
       CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
       for i in doc/*.pdf; do mv ${i} ${i%-0.1*}.pdf; done;
-      mv doc/*.pdf assets;
       mv doc/doxygen/html doxygen;
       mv doc/sphinx/* . ;
       rm -rf doc;

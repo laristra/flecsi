@@ -52,7 +52,7 @@ RUN ccache -s
 RUN make doxygen
 RUN make sphinx
 RUN if [[ ${CLANG_FORMAT} ]]; then \
-      make format-FleCSI && git diff --exit-code; \
+      make format && git diff --exit-code; \
     fi
 RUN if [ ${COVERAGE} ]; then \
       python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; \
