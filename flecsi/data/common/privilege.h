@@ -40,26 +40,7 @@ enum privilege_t : size_t {
   rw = 3
 }; // enum privilege_t
 
-#if 0
-template<size_t PRIVILEGES>
-struct perm {
-  template<typename TYPE>
-  decltype(auto)
-  to() {
-    if constexpr(std::is_same_v<TYPE, global>) {
-      return PRIVILEGES & 0x03;
-    }
-    else if(std::is_same_v<TYPE, mesh>) {
-      return std::make_tuple(PRIVILEGES >> 4 & 0x03,
-        PRIVILEGES >> 2 & 0x03, PRIVILEGES & 0x03);
-    }
-  }
-}
-
-auto to<PRIVILEGES>.global();
-#endif
-
-// FIXME: This probably needs to move
+// FIXME: This needs to be generalized
 
 template<size_t PRIVILEGES>
 constexpr privilege_t
