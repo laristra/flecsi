@@ -58,7 +58,7 @@
   This macro executes a reduction task.
   @param task      The user task to execute.
   @param nspace    The enclosing namespace of the task.
-  @param launch    The launch mode for the task.
+  @param domain    The launch doman for the task.
   @param type      The reduction operation type.
   @param datatype  The reduction operation data type.
   @param ...       The arguments to pass to the user task during execution.
@@ -70,12 +70,12 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi::execution::task_interface_t::execute_task<                           \
-    flecsi::execution::launch_type_t::launch,                                  \
     flecsi_internal_hash(nspace::task),                                        \
     flecsi::utils::hash::reduction_hash<flecsi_internal_hash(type),            \
       flecsi_internal_hash(datatype)>(),                                       \
     flecsi_internal_return_type(task),                                         \
-    flecsi_internal_arguments_type(task)>(__VA_ARGS__)
+    flecsi_internal_arguments_type(task)>(                                     \
+    flecsi::execution::launch_doamin_t domain, #__VA_ARGS__)
 
 namespace flecsi {
 namespace execution {

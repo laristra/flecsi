@@ -42,12 +42,13 @@
   @param task      The Legion task to register.
   @param processor A processor_mask_t specifying the supported processor
                   types.
-  @param launch    A launch_t specifying the launch options.
+  @param execution A task_execution_type_t specifying the task execution 
+									 options
 
   @ingroup legion-execution
 */
 
-#define flecsi_internal_register_legion_task(task, processor, launch)          \
+#define flecsi_internal_register_legion_task(task, processor, execution)       \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the execution policy to register the task */                         \
@@ -55,4 +56,5 @@
     flecsi::execution::legion_execution_policy_t::register_legion_task<        \
       flecsi_internal_hash(task),                                              \
       typename flecsi::utils::function_traits_u<decltype(task)>::return_type,  \
-      task>(processor, launch, {flecsi_internal_stringify(task)})
+      task>(processor, execution,         \
+      {flecsi_internal_stringify(task)})

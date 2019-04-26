@@ -112,13 +112,14 @@
   @param task      The task to register. This is normally just a function.
   @param nspace    The enclosing C++ namespace of the task.
   @param processor The \ref processor_type_t type.
-  @param launch    The \ref launch_t type. This may be an \em or list of
-                   supported launch types and configuration options.
+  @param task_execution_type The \ref task_execution_type_t type.
+									 This may be an \em or list of supported task types and
+									 configuration options.
 
   @ingroup execution
  */
 
-#define flecsi_register_task(task, nspace, processor, launch)                  \
+#define flecsi_register_task(task, nspace, processor, task_execution_type)           \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Define a delegate function to the user's function that takes a tuple */   \
@@ -137,7 +138,7 @@
       flecsi_internal_return_type(task),                                       \
       flecsi_internal_arguments_type(task),                                    \
       task##_tuple_delegate>(flecsi::processor,                                \
-      flecsi::launch,                                                          \
+      flecsi::task_execution_type,                                             \
       {flecsi_internal_stringify(nspace::task)})
 
 //----------------------------------------------------------------------------//
@@ -149,16 +150,16 @@
 
   This macro executes a user task.
 
-  @param task   The user task to execute.
-  @param nspace The enclosing C++ namespace of the task.
-  @param launch The launch mode for the task.
-  @param ...    The arguments to pass to the user task during execution.
+  @param task          The user task to execute.
+  @param nspace        The enclosing C++ namespace of the task.
+  @param launch_domain The launch domain type for the task
+  @param ...           The arguments to pass to the user task during execution.
 
   @ingroup execution
  */
 
-#define flecsi_execute_task(task, nspace, launch, ...)                         \
+#define flecsi_execute_task(task, nspace, launch_domain, ...)                         \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Execute the user task */                                                  \
-  flecsi_internal_execute_task(nspace::task, launch, 0, ##__VA_ARGS__)
+  flecsi_internal_execute_task(nspace::task, launch_domain, 0, ##__VA_ARGS__)

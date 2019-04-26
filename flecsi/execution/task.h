@@ -49,7 +49,7 @@ struct task_interface_u {
     @tparam DELEGATE  The delegate function that invokes the user task.
 
     @param processor The processor type.
-    @param launch    The launch flags.
+    @param execution The task execution type flags.
     @param name      The string identifier of the task.
 
     @return The return type for task registration is determined by
@@ -61,10 +61,11 @@ struct task_interface_u {
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
   static decltype(auto)
-  register_task(processor_type_t processor, launch_t launch, std::string name) {
+  register_task(processor_type_t processor, task_execution_type_t execution,
+			std::string name) {
     return EXECUTION_POLICY::
       template register_task<KEY, RETURN, ARG_TUPLE, DELEGATE>(
-        processor, launch, name);
+        processor, execution, name);
   } // register_task
 
   /*!
@@ -80,16 +81,16 @@ struct task_interface_u {
     @param args   The arguments to pass to the user task during execution.
    */
 
-  template<launch_type_t LAUNCH,
-    size_t TASK,
+  template<size_t TASK,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(ARGS &&... args) {
+  static decltype(auto) execute_task(launch_domain_t &domain,
+				ARGS &&... args) {
     return EXECUTION_POLICY::
-      template execute_task<LAUNCH, TASK, REDUCTION, RETURN, ARG_TUPLE>(
-        std::forward<ARGS>(args)...);
+      template execute_task<TASK, REDUCTION, RETURN, ARG_TUPLE>(
+				domain, std::forward<ARGS>(args)...);
   } // execute_task
 
   /*!

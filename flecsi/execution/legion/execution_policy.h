@@ -83,7 +83,7 @@ struct legion_execution_policy_t {
       Legion::Context,
       Legion::Runtime *)>
   static bool register_legion_task(processor_type_t processor,
-    launch_t launch,
+    task_execution_type_t execution,
     std::string name) {
     flog(internal) << "Registering legion task" << std::endl
                    << "\tname: " << name << std::endl
@@ -92,7 +92,7 @@ struct legion_execution_policy_t {
     using wrapper_t = legion::pure_task_wrapper_u<RETURN, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
-      TASK, processor, launch, name, wrapper_t::registration_callback);
+      TASK, processor, execution, name, wrapper_t::registration_callback);
 
     flog_assert(success, "callback registration failed for " << name);
 
@@ -108,12 +108,13 @@ struct legion_execution_policy_t {
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
   static bool
-  register_task(processor_type_t processor, launch_t launch, std::string name) {
+  register_task(processor_type_t processor, task_execution_type_t execution,
+		std::string name) {
 
     using wrapper_t = legion::task_wrapper_u<TASK, RETURN, ARG_TUPLE, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
-      TASK, processor, launch, name, wrapper_t::registration_callback);
+      TASK, processor, execution, name, wrapper_t::registration_callback);
 
     flog_assert(success, "callback registration failed for " << name);
 
@@ -124,13 +125,14 @@ struct legion_execution_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  template<launch_type_t LAUNCH,
+  template<
     size_t TASK,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(ARGS &&... args) {
+  static decltype(auto) execute_task(launch_domain_t &domain,
+			ARGS &&... args) {
 
     using namespace Legion;
 
@@ -152,14 +154,14 @@ struct legion_execution_policy_t {
 
     constexpr size_t ZERO = flecsi_internal_hash(0);
 
-    legion::init_args_t init_args(legion_runtime, legion_context, LAUNCH);
+    legion::init_args_t init_args(legion_runtime, legion_context, domain);
     init_args.walk(task_args);
 
     //------------------------------------------------------------------------//
     // Single launch
     //------------------------------------------------------------------------//
 
-    if constexpr(LAUNCH == launch_type_t::single) {
+    if (domain.launch_type == launch_type_t::single) {
 
       {
         flog_tag_guard(execution);
