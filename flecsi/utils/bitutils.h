@@ -30,6 +30,10 @@ namespace utils {
                 integer type.
   @tparam _Idx  The index counter for the recursion.
   @tparam _Bits The bit field.
+
+  This utility is a static implementation of part of the highestOneBit method
+  in Java. The runtime version has constant time complexity. I guess this
+  has O(0) time complexity, since it is computed by the compiler... ;-)
  */
 
 template<typename TYPE, TYPE _Idx, TYPE _Bits>
@@ -73,7 +77,7 @@ constexpr size_t msb() {
 
 /*!
   Recursively return or'd bit fields shifted by the width of the field. This
-  method is useful for constructing static bit masks.
+  method is useful for constructing static bit packs.
 
   @tparam _Idx   Index counter.
   @tparam _Tuple A tuple of size_t bit fields created with
