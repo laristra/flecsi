@@ -26,10 +26,10 @@ namespace utils {
   utility computes the following reccurance relation
   \f$n^{k+1} = n^k | n^k >> 2^k$\f.
 
-  \tparam TYPE  The underlying type of the bit field. This must be an unsigned
+  @tparam TYPE  The underlying type of the bit field. This must be an unsigned
                 integer type.
-  \tparam _Idx  The index counter for the recursion.
-  \tparam _Bits The bit field.
+  @tparam _Idx  The index counter for the recursion.
+  @tparam _Bits The bit field.
  */
 
 template<typename TYPE, TYPE _Idx, TYPE _Bits>
@@ -47,7 +47,7 @@ constexpr size_t msb_shift() {
   Utility to find the bit offset of the set bit. This method assumes that
   there is one, and only one, set bit in the field.
 
-  \tparam _Bits The bit field.
+  @tparam _Bits The bit field.
  */
 
 template<size_t _Bits>
@@ -62,7 +62,7 @@ constexpr size_t msb_place() {
 /*!
   Return the most-significant-bit of the given _Bits argument.
 
-  \tparam _Bits The bit field.
+  @tparam _Bits The bit field.
  */
 
 template<size_t _Bits>
