@@ -71,7 +71,7 @@ struct privilege_pack_u {
   Get a privilege out of a pack for the specified id.
 
   @tparam INDEX The index of the privilege to get.
-  @tparam PACK  A valid privilege_pack_u type.
+  @tparam PACK  A valid size_t from a privilege_pack_u type.
  */
 
 template<size_t INDEX, size_t PACK>
