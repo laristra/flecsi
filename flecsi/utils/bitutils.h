@@ -8,7 +8,7 @@
    /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
    //       ///  //////   //////  ////////  //
 
-   Copyright (c) 2016, Los Alamos National Security, LLC
+   Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
 #pragma once
@@ -37,8 +37,8 @@ namespace utils {
  */
 
 template<typename TYPE, TYPE _Idx, TYPE _Bits>
-constexpr size_t msb_shift() {
-  constexpr size_t shift = 1 << _Idx;
+constexpr TYPE msb_shift() {
+  constexpr TYPE shift = 1 << _Idx;
   if constexpr(shift < sizeof(TYPE)*8) {
     return msb_shift<TYPE, _Idx + 1, _Bits>() |
       msb_shift<TYPE, _Idx + 1, _Bits>() >> shift;
