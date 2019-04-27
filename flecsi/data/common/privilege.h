@@ -18,7 +18,8 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/utils/shift_or.h>
+#include <flecsi/utils/bitutils.h>
+#include <flecsi/utils/typeify.h>
 #endif
 
 #include <cstddef>
@@ -41,25 +42,28 @@ namespace flecsi {
             consistency, and the data are read-write.
  */
 
-enum privilege_t : size_t {
+enum partition_privilege_t : size_t {
   nu = 0,
   ro = 1,
   wo = 2,
   rw = 3
-}; // enum privilege_t
+}; // enum partition_privilege_t
 
 /*!
   Utility type to allow general privilege components that will match the old
   style of specifying permissions, e.g., <EX, SH, GH> (The old approach was
   only valid for mesh type topologies, and didn't make sense for all topology
-  types).
+  types). A terminator with value 0x02 is appended to the privileges provided
+  in the template pararmeter so that a count can be determined.
 
-  @tparam PRIVILEGES A variadic list of typeified privilege_t elements.
+  @tparam PRIVILEGES A variadic list of partition_privilege_t elements.
  */
 
-template<typename ... PRIVILEGES>
+template<size_t ... PRIVILEGES>
 struct privilege_pack_u {
-  using tuple_t = std::tuple<PRIVILEGES ...>;
+  using terminator_t = utils::typeify_u<size_t, 0x02>;
+  using tuple_t = std::tuple<terminator_t,
+    utils::typeify_u<size_t, PRIVILEGES> ...>;
   static constexpr size_t value = utils::shift_or<0, tuple_t, 2>();
 }; // struct privilege_pack_u
 
@@ -68,18 +72,12 @@ struct privilege_pack_u {
 
   @tparam INDEX The index of the privilege to get.
   @tparam PACK  A valid privilege_pack_u type.
-  @tparam COUNT The number of privileges stored in the pack.
  */
 
-template<size_t INDEX, size_t PACK, size_t COUNT>
-constexpr privilege_t get_privilege() {
-  return privilege_t(PACK >> (COUNT - 1 - INDEX)*2 & 0x03);
+template<size_t INDEX, size_t PACK>
+constexpr partition_privilege_t get_privilege() {
+  constexpr size_t count = (utils::msb<PACK>() - 1) >> 1;
+  return partition_privilege_t(PACK >> ((count - 1 - INDEX) * 2) & 0x03);
 } // get_privilege
-
-template<size_t PRIVILEGES>
-constexpr privilege_t
-to_global() {
-  return static_cast<privilege_t>(PRIVILEGES & 0x03);
-} // to_global
 
 } // namespace flecsi

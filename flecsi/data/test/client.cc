@@ -23,7 +23,8 @@ using namespace flecsi;
 flecsi_register_global("test", "global", double, 2);
 
 template<size_t PRIVILEGES>
-using global_accessor_u = flecsi::data::global_accessor_u<double, PRIVILEGES>;
+using global_accessor_u = flecsi::data::global_accessor_u<double,
+  privilege_pack_u<PRIVILEGES>::value>;
 
 namespace global_test {
 

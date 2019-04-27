@@ -20,6 +20,7 @@
 set(utils_HEADERS
   array_ref.h
   bit_buffer.h
+  bitutils.h
   checksum.h
   common.h
   const_string.h
@@ -48,7 +49,6 @@ set(utils_HEADERS
   offset.h
   set_intersection.h
   set_utils.h
-  shift_or.h
   simple_id.h
   static_verify.h
   tuple_function.h
