@@ -137,12 +137,12 @@ struct legion_context_policy_t {
     return shards_;
   } // shards
 
-  size_t threads_per_shard() const {
-    return threads_per_shard_;
-  } // threads_per_shard
+  size_t runtime_threads_per_shard() const {
+    return runtime_threads_per_shard_;
+  } // runtime_threads_per_shard
 
-  size_t threads() const {
-    return threads_;
+  size_t runtime_threads() const {
+    return runtime_threads_;
   } // threads
 
   /*
@@ -470,8 +470,8 @@ private:
 
   size_t shard_ = std::numeric_limits<size_t>::max();
   size_t shards_ = std::numeric_limits<size_t>::max();
-  size_t threads_per_shard_ = std::numeric_limits<size_t>::max();
-  size_t threads_ = std::numeric_limits<size_t>::max();
+  size_t runtime_threads_per_shard_ = std::numeric_limits<size_t>::max();
+  size_t runtime_threads_ = std::numeric_limits<size_t>::max();
 
   /*--------------------------------------------------------------------------*
     Interoperability data members.

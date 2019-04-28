@@ -31,6 +31,6 @@ inline std::string __flecsi_tags = "all";
     " Passing --flog-tags by itself will print the available tags.")
 
 #define FLECSI_THREADS_PER_SHARD_OPTION                                        \
-  ("threads-per-shard",                                                        \
+  ("runtime-threads-per-shard",                                                \
     value<size_t>()->default_value(1),                                         \
     "Specify the number of threads per shard.")

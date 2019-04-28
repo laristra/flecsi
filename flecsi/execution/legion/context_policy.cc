@@ -101,15 +101,15 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
   std::vector<char *> largv;
   largv.push_back(argv[0]);
 
-  threads_per_shard_ = vm["threads-per-shard"].as<size_t>();
+  runtime_threads_per_shard_ = vm["threads-per-shard"].as<size_t>();
 
-  if(threads_per_shard_ > 1) {
+  if(runtime_threads_per_shard_ > 1) {
     largv.push_back(const_cast<char *>(std::string("-ll:cpu").c_str()));
     largv.push_back(
-      const_cast<char *>(std::to_string(threads_per_shard_).c_str()));
+      const_cast<char *>(std::to_string(runtime_threads_per_shard_).c_str()));
   } // if
 
-  threads_ = shards_ * threads_per_shard_;
+  runtime_threads_ = shards_ * runtime_threads_per_shard_;
 
   /*
     Start Legion runtime.

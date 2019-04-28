@@ -146,9 +146,9 @@ struct context_u : public CONTEXT_POLICY {
 
    */
 
-  size_t threads_per_shard() const {
-    return CONTEXT_POLICY::threads_per_shard();
-  } // threads_per_shard
+  size_t runtime_threads_per_shard() const {
+    return CONTEXT_POLICY::runtime_threads_per_shard();
+  } // runtime_threads_per_shard
 
   /*!
     Return the number of execution instances with which the runtime was
@@ -158,9 +158,9 @@ struct context_u : public CONTEXT_POLICY {
     running process that invokded the FleCSI runtime.
    */
 
-  size_t threads() const {
-    return CONTEXT_POLICY::threads();
-  } // threads
+  size_t runtime_threads() const {
+    return CONTEXT_POLICY::runtime_threads();
+  } // runtime_threads
 
   /*!
     Return the current task depth within the execution hierarchy. The
