@@ -8,7 +8,7 @@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
 # //       ///  //////   //////  ////////  //
 #
-# Copyright (c) 2016 Los Alamos National Laboratory, LLC
+# Copyright (c) 2016, Triad National Security, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
 
@@ -62,8 +62,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
-  set(data_HEADERS
-    ${data_HEADERS}
+  set(data_HEADERS ${data_HEADERS}
   )
 
   set(data_SOURCES
@@ -97,4 +96,9 @@ set(data_SOURCES
 ftest_add_unit(client
   SOURCES
     test/client.cc
+)
+
+ftest_add_unit(privilege
+  SOURCES
+    test/privilege.cc
 )

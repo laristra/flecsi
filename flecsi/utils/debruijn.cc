@@ -5,7 +5,7 @@
   _  _, _/_  / _(__  )/ /_ _  /   / /_/ // /_/ / / /_ _  / _  / _(__  )
   /_/ |_| /_/  /____/ \__/ /_/    \__,_/ \____/  \__/ /_/  /_/  /____/
 
-  Copyright (c) 2018 Los Alamos National Security, LLC
+  Copyright (c) 2016, Triad National Security, LLC
   All rights reserved.
                                                                               */
 
