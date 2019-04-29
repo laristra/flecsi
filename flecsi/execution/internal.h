@@ -38,5 +38,4 @@
     flecsi_internal_hash(task),                                                \
     flecsi_internal_hash(operation),                                           \
     flecsi_internal_return_type(task),                                         \
-    flecsi_internal_arguments_type(task)>(                                     \
-		flecsi::execution::launch_domain_t launch_domain, #__VA_ARGS__)
+    flecsi_internal_arguments_type(task)>(launch_domain, #__VA_ARGS__)

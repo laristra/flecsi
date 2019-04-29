@@ -130,7 +130,7 @@ flecsi_internal_legion_task(handoff_to_mpi_task, void) {
 
 flecsi_internal_register_legion_task(handoff_to_mpi_task,
   processor_type_t::loc,
-  task_execution_type_mask_t::leaf);
+  leaf);
 
 /*!
  Interprocess communication to wait for control to pass back to the Legion

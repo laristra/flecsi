@@ -138,7 +138,7 @@
       flecsi_internal_return_type(task),                                       \
       flecsi_internal_arguments_type(task),                                    \
       task##_tuple_delegate>(flecsi::processor,                                \
-      flecsi::task_execution_type,                                             \
+      flecsi::task_execution_type,                                   \
       {flecsi_internal_stringify(nspace::task)})
 
 //----------------------------------------------------------------------------//

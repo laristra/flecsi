@@ -48,7 +48,7 @@
   @ingroup legion-execution
 */
 
-#define flecsi_internal_register_legion_task(task, processor, execution)       \
+#define flecsi_internal_register_legion_task(task, processor, execution_type)       \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the execution policy to register the task */                         \
@@ -56,5 +56,5 @@
     flecsi::execution::legion_execution_policy_t::register_legion_task<        \
       flecsi_internal_hash(task),                                              \
       typename flecsi::utils::function_traits_u<decltype(task)>::return_type,  \
-      task>(processor, execution,         \
+      task>(processor, execution_type,         \
       {flecsi_internal_stringify(task)})

@@ -49,7 +49,9 @@ test_driver(int argc, char ** argv) {
 
   FTEST();
 
-  flecsi_execute_task(simple, task, index, 10);
+  flecsi::execution::launch_domain_t dom(flecsi::launch_type_t::index, 2);
+
+  flecsi_execute_task(simple, task, dom, 10);
 
   return 0;
 }

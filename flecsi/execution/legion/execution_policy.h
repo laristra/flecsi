@@ -131,7 +131,7 @@ struct legion_execution_policy_t {
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(launch_domain_t &domain,
+  static decltype(auto) execute_task(launch_domain_t domain,
 			ARGS &&... args) {
 
     using namespace Legion;
@@ -161,7 +161,7 @@ struct legion_execution_policy_t {
     // Single launch
     //------------------------------------------------------------------------//
 
-    if (domain.launch_type == launch_type_t::single) {
+    if (domain.launch_type_ == launch_type_t::single) {
 
       {
         flog_tag_guard(execution);
