@@ -32,19 +32,19 @@ color_raw(int argc, char ** argv) {
   FTEST();
 
   auto depth = context_t::instance().task_depth();
-  auto shard = context_t::instance().shard();
-  auto shards = context_t::instance().shards();
-  auto tps = context_t::instance().runtime_threads_per_shard();
+  auto process = context_t::instance().process();
+  auto processes = context_t::instance().processes();
+  auto tpp = context_t::instance().threads_per_process();
 
   {
     flog_tag_guard(color);
-    flog(info) << "color(raw): " << shard << std::endl
-               << "colors(raw): " << shards << std::endl
-               << "runtime_threads_per_shard(raw): " << tps << std::endl;
+    flog(info) << "color(raw): " << process << std::endl
+               << "colors(raw): " << processes << std::endl
+               << "threads_per_process(raw): " << tpp << std::endl;
   }
 
-  ASSERT_EQ(shards, 4);
-  ASSERT_LT(shard, shards);
+  ASSERT_EQ(processes, 4);
+  ASSERT_LT(process, processes);
 
   return 0;
 }

@@ -16,6 +16,7 @@
 #define __FLECSI_PRIVATE__
 #endif
 
+#include <flecsi/execution/common/command_line_options.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_task.h>
 #include <flecsi/execution/legion/mapper.h>
@@ -81,8 +82,8 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  shard_ = rank;
-  shards_ = size;
+  process_ = rank;
+  processes_ = size;
 
   Legion::Runtime::configure_MPI_interoperability(rank);
 
@@ -101,15 +102,15 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
   std::vector<char *> largv;
   largv.push_back(argv[0]);
 
-  runtime_threads_per_shard_ = vm["threads-per-shard"].as<size_t>();
+  threads_per_process_ = vm[FLECSI_TPP_OPTION_STRING].as<size_t>();
 
-  if(runtime_threads_per_shard_ > 1) {
+  if(threads_per_process_ > 1) {
     largv.push_back(const_cast<char *>(std::string("-ll:cpu").c_str()));
     largv.push_back(
-      const_cast<char *>(std::to_string(runtime_threads_per_shard_).c_str()));
+      const_cast<char *>(std::to_string(threads_per_process_).c_str()));
   } // if
 
-  runtime_threads_ = shards_ * runtime_threads_per_shard_;
+  threads_ = processes_ * threads_per_process_;
 
   /*
     Start Legion runtime.

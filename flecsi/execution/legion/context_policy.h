@@ -125,24 +125,24 @@ struct legion_context_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  size_t shard() const {
-    return shard_;
-  } // shard
+  size_t process() const {
+    return process_;
+  } // process
 
   /*
     Documentation for this interface is in the top-level context type.
    */
 
-  size_t shards() const {
-    return shards_;
-  } // shards
+  size_t processes() const {
+    return processes_;
+  } // processes
 
-  size_t runtime_threads_per_shard() const {
-    return runtime_threads_per_shard_;
-  } // runtime_threads_per_shard
+  size_t threads_per_process() const {
+    return threads_per_process_;
+  } // threads_per_process
 
-  size_t runtime_threads() const {
-    return runtime_threads_;
+  size_t threads() const {
+    return threads_;
   } // threads
 
   /*
@@ -468,10 +468,10 @@ private:
   data::legion::global_runtime_data_t global_runtime_data_;
   data::legion::color_runtime_data_t color_runtime_data_;
 
-  size_t shard_ = std::numeric_limits<size_t>::max();
-  size_t shards_ = std::numeric_limits<size_t>::max();
-  size_t runtime_threads_per_shard_ = std::numeric_limits<size_t>::max();
-  size_t runtime_threads_ = std::numeric_limits<size_t>::max();
+  size_t process_ = std::numeric_limits<size_t>::max();
+  size_t processes_ = std::numeric_limits<size_t>::max();
+  size_t threads_per_process_ = std::numeric_limits<size_t>::max();
+  size_t threads_ = std::numeric_limits<size_t>::max();
 
   /*--------------------------------------------------------------------------*
     Interoperability data members.

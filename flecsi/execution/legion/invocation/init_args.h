@@ -105,7 +105,8 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
       Legion::LogicalRegion region =
         context_t::instance().global_runtime_data().logical_region;
       Legion::RegionRequirement rr(
-        region, privilege_mode(PRIVILEGES), EXCLUSIVE, region);
+        region, privilege_mode(get_privilege<0, PRIVILEGES>()),
+        EXCLUSIVE, region);
       region_reqs_.push_back(rr);
     }
     else {

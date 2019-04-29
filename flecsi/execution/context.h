@@ -130,25 +130,25 @@ struct context_u : public CONTEXT_POLICY {
 
   // FIXME
 
-  size_t shard() const {
-    return CONTEXT_POLICY::shard();
+  size_t process() const {
+    return CONTEXT_POLICY::process();
   }
 
   /*!
 
    */
 
-  size_t shards() const {
-    return CONTEXT_POLICY::shards();
+  size_t processes() const {
+    return CONTEXT_POLICY::processes();
   }
 
   /*!
 
    */
 
-  size_t runtime_threads_per_shard() const {
-    return CONTEXT_POLICY::runtime_threads_per_shard();
-  } // runtime_threads_per_shard
+  size_t threads_per_process() const {
+    return CONTEXT_POLICY::threads_per_process();
+  } // threads_per_process
 
   /*!
     Return the number of execution instances with which the runtime was
