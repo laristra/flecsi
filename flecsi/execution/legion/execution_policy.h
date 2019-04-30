@@ -214,7 +214,7 @@ struct legion_execution_policy_t {
 
       LegionRuntime::Arrays::Rect<1> launch_bounds(
         LegionRuntime::Arrays::Point<1>(0),
-        LegionRuntime::Arrays::Point<1>(context_.colors() - 1));
+        LegionRuntime::Arrays::Point<1>(domain.domain_size_ - 1));
       Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
       Legion::ArgumentMap arg_map;

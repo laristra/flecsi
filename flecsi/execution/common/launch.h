@@ -113,6 +113,7 @@ struct launch_domain_t
   {
     launch_type_ = launch_type;
     domain_size_=1;
+    return *this;
   } 
 
   launch_type_t launch_type_;
