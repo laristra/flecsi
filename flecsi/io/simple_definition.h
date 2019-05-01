@@ -56,6 +56,18 @@ public:
     else {
       clog_fatal("failed opening " << filename);
     } // if
+
+
+    // Go to the start of the cells.
+    std::string line;
+    file_.seekg(cell_start_);
+    for(size_t l(0); l < num_cells_; ++l) {
+      std::getline(file_, line);
+      std::istringstream iss(line);
+      ids_.push_back(std::vector<size_t>(
+        std::istream_iterator<size_t>(iss), std::istream_iterator<size_t>()));
+    }
+
   } // simple_definition_t
 
   /// Copy constructor (disabled)
@@ -77,24 +89,11 @@ public:
   /// return the set of vertices that make up all cells
   /// \param [in] from_dim the entity dimension to query
   /// \param [in] to_dim the dimension of entities we wish to return
-  std::vector<std::vector<size_t>> entities(size_t from_dim,
+  const std::vector<std::vector<size_t>> & entities(size_t from_dim,
     size_t to_dim) const override {
     clog_assert(from_dim == 2, "invalid dimension " << from_dim);
     clog_assert(to_dim == 0, "invalid dimension " << to_dim);
-
-    std::string line;
-    std::vector<std::vector<size_t>> ids;
-
-    // Go to the start of the cells.
-    file_.seekg(cell_start_);
-    for(size_t l(0); l < num_cells_; ++l) {
-      std::getline(file_, line);
-      std::istringstream iss(line);
-      ids.push_back(std::vector<size_t>(
-        std::istream_iterator<size_t>(iss), std::istream_iterator<size_t>()));
-    }
-
-    return ids;
+    return ids_;
   }
 
   /// return the set of vertices of a particular entity.
@@ -160,6 +159,7 @@ public:
 
 private:
   mutable std::ifstream file_;
+  std::vector<std::vector<size_t>> ids_;
 
   size_t num_vertices_;
   size_t num_cells_;
