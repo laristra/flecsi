@@ -214,9 +214,16 @@ struct legion_execution_policy_t {
         flog(internal) << "Executing index task" << std::endl;
       }
 
+      size_t domain_size = 0;
+      if (domain.domain_size_ == 0)
+        domain_size=context_t::instance().shards()*
+					context_t::instance().threads_per_shard();
+      else 
+        domain_size = domain.domain_size_;
+
       LegionRuntime::Arrays::Rect<1> launch_bounds(
         LegionRuntime::Arrays::Point<1>(0),
-        LegionRuntime::Arrays::Point<1>(domain.domain_size_ - 1));
+        LegionRuntime::Arrays::Point<1>(domain_size - 1));
       Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
       Legion::ArgumentMap arg_map;

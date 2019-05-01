@@ -52,6 +52,8 @@ test_driver(int argc, char ** argv) {
 
   flecsi_execute_task(simple, task, single, 10);
 
+  flecsi_execute_task(simple, task, index, 8);
+
   return 0;
 }
 
