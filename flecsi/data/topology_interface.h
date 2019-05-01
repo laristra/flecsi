@@ -24,6 +24,7 @@
 
 #include <flecsi/data/common/topology_registration.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/topology/base_topology_types.h>
 #include <flecsi/utils/flog.h>
 #include <flecsi/utils/hash.h>
 
@@ -95,6 +96,72 @@ struct topology_interface_u {
 
     return topology_t::template get_handle<NAMESPACE, NAME>();
   } // get_topology
+
+  /*!
+    Add a coloring.
+
+    @tparam TOPOLOGY_TYPE The topology type, which must be derived from
+                          one of the FleCSI core topology types, e.g.,
+                          unstructure_mesh_topology_base_t,
+                          structured_topology_base_t,
+                          ntree_topology_base_t, or set_topology_base_t.
+    @tparam NAMESPACE     The namespace of the topology instance for which
+                          to add a coloring.
+    @tparam NAME          The name of the topology instance for which
+                          to add a coloring.
+    @tparam COLORING_NAME The name of the coloring to add.
+
+    @param name     The unhashed name of the coloring for debugging purposes.
+                    In general, this interface is not meant to be called
+                    directly.
+    @param coloring A valid coloring instance for the given topology type.
+   */
+
+  template<typename TOPOLOGY_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t COLORING_NAME>
+  void add_coloring(std::string const & name,
+    typename TOPOLOGY_TYPE::coloring_t & coloring) {
+
+    auto & context_ = execution::context_t::instance();
+
+    constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
+
+    context_.add_coloring<TOPOLOGY_TYPE, identifier, COLORING_NAME>(coloring);
+  } // add_coloring
+
+  /*!
+    Remove a coloring.
+
+    @tparam TOPOLOGY_TYPE The topology type, which must be derived from
+                          one of the FleCSI core topology types, e.g.,
+                          unstructure_mesh_topology_base_t,
+                          structured_topology_base_t,
+                          ntree_topology_base_t, or set_topology_base_t.
+    @tparam NAMESPACE     The namespace of the topology instance for which
+                          to add a coloring.
+    @tparam NAME          The name of the topology instance for which
+                          to add a coloring.
+    @tparam COLORING_NAME The name of the coloring to add.
+
+    @param name     The unhashed name of the coloring for debugging purposes.
+                    In general, this interface is not meant to be called
+                    directly.
+   */
+
+  template<typename TOPOLOGY_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t COLORING_NAME>
+  void remove_coloring(std::string const & name) {
+
+    auto & context_ = execution::context_t::instance();
+
+    constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
+
+    context_.remove_coloring<TOPOLOGY_TYPE, identifier, COLORING_NAME>();
+  } // add_coloring
 
 }; // struct topology_interface_u
 
