@@ -146,20 +146,43 @@
 //----------------------------------------------------------------------------//
 
 /*!
+  @def flecsi_register_domain
+
+  Declare a domain of launch type (single, index) and domain size (for index)
+
+  This macro registers a launch domain that can be used when executing
+  FleCSI tasks. 
+
+  @param type   The string namespace to use to register the domain.
+  @param nspace The launch type (single or index).
+  @param name   The domain size.
+
+  @ingroup execution
+ */
+
+#define flecsi_register_launch_domain(name, launch_type, size)                 \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* Call the task interface to register the domain */                         \
+  inline bool flecsi_internal_unique_name(domain_registration_) =              \
+    flecsi::execution::task_interface_t::register_domain<                      \
+      flecsi_internal_hash(name), launch_type, size>()                                      
+
+/*!
   @def flecsi_execute_task
 
   This macro executes a user task.
 
   @param task          The user task to execute.
   @param nspace        The enclosing C++ namespace of the task.
-  @param launch_domain The launch domain type for the task
+  @param launch_domain The launch domain name for the task
   @param ...           The arguments to pass to the user task during execution.
 
   @ingroup execution
  */
 
-#define flecsi_execute_task(task, nspace, launch_domain, ...)                         \
+#define flecsi_execute_task(task, nspace, domain, ...)                         \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Execute the user task */                                                  \
-  flecsi_internal_execute_task(nspace::task, launch_domain, 0, ##__VA_ARGS__)
+  flecsi_internal_execute_task(nspace::task, domain, 0, ##__VA_ARGS__)

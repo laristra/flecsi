@@ -93,32 +93,10 @@ enum execution_type_t : size_t {
     for index launch
  */
 
-//FIXME do we need single and index types at all? should we always use single task launcher when domain size=1?
 struct launch_domain_t
 {
-  launch_domain_t(const launch_type_t &launch_type):
-		launch_type_(launch_type)
-   {
-		  if (launch_type == launch_type_t::single)
-				domain_size_=1;
-//FIXME      else
-//        domain_size_ = flecsi_colors(); 
-    };
-
-  launch_domain_t(const launch_type_t &launch_type, size_t size):
-		launch_type_(launch_type),
-    domain_size_(size){};
-
-  launch_domain_t& operator = (const launch_type_t &launch_type)
-  {
-    launch_type_ = launch_type;
-    domain_size_=1;
-    return *this;
-  } 
-
   launch_type_t launch_type_;
   size_t domain_size_=1;
-
 };
 
 #if 1

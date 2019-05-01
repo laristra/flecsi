@@ -44,9 +44,8 @@ global(int argc, char ** argv) {
   auto th = flecsi_get_global("test", "global", double, 0);
   double value{10.0};
 
-  flecsi::execution::launch_domain_t dom(launch_type_t::single);
-
-  flecsi_execute_task(global_task, global_test, dom, th, value);
+  flecsi_execute_task(global_task, global_test, single, th, value);
+  //flecsi_execute_task(global_task, global_test, index, th, value);
 
   return 0;
 }

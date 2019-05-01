@@ -29,7 +29,7 @@
 #define flecsi_internal_arguments_type(task)                                   \
   typename flecsi::utils::function_traits_u<decltype(task)>::arguments_type
 
-#define flecsi_internal_execute_task(task, launch_domain, operation, ...)       \
+#define flecsi_internal_execute_task(task, domain, operation, ...)             \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Execute the user task */                                                  \
@@ -38,4 +38,5 @@
     flecsi_internal_hash(task),                                                \
     flecsi_internal_hash(operation),                                           \
     flecsi_internal_return_type(task),                                         \
-    flecsi_internal_arguments_type(task)>(launch_domain, ##__VA_ARGS__)
+    flecsi_internal_arguments_type(task)>(flecsi_internal_hash(domain),        \
+      ##__VA_ARGS__)

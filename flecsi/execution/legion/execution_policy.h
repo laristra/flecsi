@@ -131,10 +131,12 @@ struct legion_execution_policy_t {
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(launch_domain_t domain,
+  static decltype(auto) execute_task(size_t domain_key,
 			ARGS &&... args) {
 
     using namespace Legion;
+  
+    launch_domain_t domain= context_t::instance().get_domain(domain_key);
 
     // This will guard the entire method
     flog_tag_guard(execution);
