@@ -37,11 +37,12 @@ namespace utils {
  */
 
 template<typename TYPE, TYPE _Idx, TYPE _Bits>
-constexpr TYPE msb_shift() {
+constexpr TYPE
+msb_shift() {
   constexpr TYPE shift = 1 << _Idx;
-  if constexpr(shift < sizeof(TYPE)*8) {
+  if constexpr(shift < sizeof(TYPE) * 8) {
     return msb_shift<TYPE, _Idx + 1, _Bits>() |
-      msb_shift<TYPE, _Idx + 1, _Bits>() >> shift;
+           msb_shift<TYPE, _Idx + 1, _Bits>() >> shift;
   } // if
 
   return _Bits;
@@ -55,7 +56,8 @@ constexpr TYPE msb_shift() {
  */
 
 template<size_t _Bits>
-constexpr size_t msb_place() {
+constexpr size_t
+msb_place() {
   if constexpr(_Bits > 1) {
     return 1 + msb_place<(_Bits >> 1)>();
   } // if
@@ -70,7 +72,8 @@ constexpr size_t msb_place() {
  */
 
 template<size_t _Bits>
-constexpr size_t msb() {
+constexpr size_t
+msb() {
   constexpr size_t msb_bit = msb_shift<size_t, 0, _Bits>();
   return msb_place<((msb_bit + 1) >> 1)>();
 } // msb
@@ -86,7 +89,8 @@ constexpr size_t msb() {
  */
 
 template<size_t _Idx, typename _Tuple, size_t _Width>
-constexpr size_t shift_or() {
+constexpr size_t
+shift_or() {
   if constexpr(_Idx < std::tuple_size_v<_Tuple>) {
     using bit_type_t = typename std::tuple_element<_Idx, _Tuple>::type;
 

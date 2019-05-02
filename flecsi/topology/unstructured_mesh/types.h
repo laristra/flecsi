@@ -26,7 +26,6 @@
 #include <flecsi/topology/types.h>
 #endif
 
-
 #include <array>
 #include <cassert>
 #include <cstdint>

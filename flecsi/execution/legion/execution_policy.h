@@ -217,7 +217,8 @@ struct legion_execution_policy_t {
 
       Legion::ArgumentMap arg_map;
       Legion::IndexLauncher launcher(context_.task_id<TASK>(),
-        launch_domain, TaskArgument(&task_args, sizeof(ARG_TUPLE)),
+        launch_domain,
+        TaskArgument(&task_args, sizeof(ARG_TUPLE)),
         arg_map);
 
       switch(processor_type) {

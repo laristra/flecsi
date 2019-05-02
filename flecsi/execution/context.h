@@ -461,19 +461,21 @@ struct context_u : public CONTEXT_POLICY {
 
       // Check to make sure that the instance exists
       flog_assert(unstructured_mesh_instances_.find(TOPOLOGY_IDENTIFIER) !=
-        unstructured_mesh_instances_.end(),
+                    unstructured_mesh_instances_.end(),
         "topology " << TOPOLOGY_IDENTIFIER << " not registered");
 
-      unstructured_mesh_instances_[TOPOLOGY_IDENTIFIER].add_coloring<COLORING_NAME>(coloring);
+      unstructured_mesh_instances_[TOPOLOGY_IDENTIFIER]
+        .add_coloring<COLORING_NAME>(coloring);
     }
     else if(structured_mesh) {
 
       // Check to make sure that the instance exists
       flog_assert(structured_mesh_instances_.find(TOPOLOGY_IDENTIFIER) !=
-        structured_mesh_instances_.end(),
+                    structured_mesh_instances_.end(),
         "topology " << TOPOLOGY_IDENTIFIER << " not registered");
 
-      structured_mesh_instances_[TOPOLOGY_IDENTIFIER].add_coloring<COLORING_NAME>(coloring);
+      structured_mesh_instances_[TOPOLOGY_IDENTIFIER]
+        .add_coloring<COLORING_NAME>(coloring);
     }
     else if(ntree) {
     }
