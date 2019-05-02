@@ -195,6 +195,9 @@ public:
     const Legion::Mapping::Mapper::MapTaskInput &,
     Legion::Mapping::Mapper::MapTaskOutput & output) {
 
+    using namespace Legion;
+    using namespace Legion::Mapping;
+
     output.chosen_variant = find_cpu_variant(ctx, task.task_id);
     output.target_procs = local_cpus;
     output.chosen_instances.resize(task.regions.size());
@@ -271,6 +274,9 @@ public:
         }
         else if(task.regions[indx].tag == FLECSI_MAPPER_EXCLUSIVE_LR) {
 
+          const std::pair<Legion::LogicalRegion, Legion::Memory> key_ex(
+            task.regions[indx].region, target_mem);
+
           // creating physical instance for the compacted storaged
 
           flog_assert((task.regions.size() >= (indx + 2)),
@@ -318,10 +324,13 @@ public:
             output.chosen_instances[indx + j].push_back(result);
 
           } // for
-
+          local_instances_[key_ex] = result;
           indx = indx + 2;
         }
         else {
+
+          const std::pair<Legion::LogicalRegion, Legion::Memory> key(
+            task.regions[indx].region, target_mem);
 
           regions.push_back(task.regions[indx].region);
 
@@ -352,7 +361,7 @@ public:
               << " for the region requirement # " << indx << std::endl;
           }
           output.chosen_instances[indx].push_back(result);
-
+          local_instances_[key] = result;
         } // end if
       } // end for
 
@@ -419,6 +428,13 @@ private:
     proc_mem_map;
   Realm::Memory local_sysmem;
   Realm::Machine machine;
+
+  // the map of the locac intances that have been already created
+  // the first key is the pair of Logical region and Memory that is
+  // used as an identifier for the instance
+  std::map<std::pair<Legion::LogicalRegion, Legion::Memory>,
+    Legion::Mapping::PhysicalInstance>
+    local_instances_;
 
 protected:
   std::map<Legion::TaskID, Legion::VariantID> cpu_variants;
