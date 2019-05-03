@@ -19,10 +19,12 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/field_info.h>
+#include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/topology_instance.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/topology/base_topology_types.h>
+#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/demangle.h>
 #include <flecsi/utils/flog.h>
 #include <flecsi/utils/hash.h>
@@ -99,6 +101,12 @@ struct context_u : public CONTEXT_POLICY {
    */
 
   using field_info_map_t = std::unordered_map<size_t, field_info_vector_t>;
+
+  /*!
+   this types allows storing launch_domains, key is a hash from the domain
+   name
+   */
+  using launch_domain_map_t = std::unordered_map<size_t, launch_domain_t>;
 
   /*--------------------------------------------------------------------------*
     Deleted contructor and assignment interfaces.
@@ -547,6 +555,30 @@ struct context_u : public CONTEXT_POLICY {
     return topology_field_info_map_;
   } // field_info_map
 
+  /*--------------------------------------------------------------------------*
+    Task Launch iterface.
+   *--------------------------------------------------------------------------*/
+
+	/*!
+    Register launch domains
+
+    @param key      Domain key
+    @param launch   Launch type (single, index)
+    @param size     Launch domain size
+   */
+  void register_domain(size_t key, launch_type_t launch, size_t size)
+  {
+    launch_domain_map_[key] = {launch, size};
+  }
+
+  /*!
+    Returns domain information from the domain key
+   */
+  launch_domain_t & get_domain(size_t key)
+  {
+    return launch_domain_map_[key]; 
+  }
+
 private:
   /*--------------------------------------------------------------------------*
     Singleton.
@@ -566,7 +598,7 @@ private:
    *--------------------------------------------------------------------------*/
 
   int exit_status_ = 0;
-  top_level_action_t top_level_action_ = {};
+  top_level_action_t top_level_action_ = {};  
 
   /*--------------------------------------------------------------------------*
     Reduction data members.
@@ -612,6 +644,12 @@ private:
    */
 
   std::unordered_map<size_t, field_info_map_t> topology_field_info_map_;
+
+  /*--------------------------------------------------------------------------*
+    Launch data members.
+   *--------------------------------------------------------------------------*/
+
+  launch_domain_map_t launch_domain_map_;
 
 #if 0
   // handle state

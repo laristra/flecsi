@@ -19,7 +19,8 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/execution/context.h>
-#include <flecsi/execution/legion/execution/task_wrapper.h>
+#include <flecsi/execution/legion/future.h>
+#include <flecsi/execution/legion/enactment/task_wrapper.h>
 #include <flecsi/execution/legion/invocation/init_args.h>
 #include <flecsi/execution/legion/invocation/task_epilogue.h>
 #include <flecsi/execution/legion/invocation/task_prologue.h>
@@ -83,7 +84,7 @@ struct legion_execution_policy_t {
       Legion::Context,
       Legion::Runtime *)>
   static bool register_legion_task(processor_type_t processor,
-    launch_t launch,
+    task_execution_type_t execution,
     std::string name) {
     flog(internal) << "Registering legion task" << std::endl
                    << "\tname: " << name << std::endl
@@ -92,7 +93,7 @@ struct legion_execution_policy_t {
     using wrapper_t = legion::pure_task_wrapper_u<RETURN, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
-      TASK, processor, launch, name, wrapper_t::registration_callback);
+      TASK, processor, execution, name, wrapper_t::registration_callback);
 
     flog_assert(success, "callback registration failed for " << name);
 
@@ -108,12 +109,13 @@ struct legion_execution_policy_t {
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
   static bool
-  register_task(processor_type_t processor, launch_t launch, std::string name) {
+  register_task(processor_type_t processor, task_execution_type_t execution,
+		std::string name) {
 
     using wrapper_t = legion::task_wrapper_u<TASK, RETURN, ARG_TUPLE, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
-      TASK, processor, launch, name, wrapper_t::registration_callback);
+      TASK, processor, execution, name, wrapper_t::registration_callback);
 
     flog_assert(success, "callback registration failed for " << name);
 
@@ -124,15 +126,18 @@ struct legion_execution_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  template<launch_type_t LAUNCH,
+  template<
     size_t TASK,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(ARGS &&... args) {
+  static decltype(auto) execute_task(size_t domain_key,
+			ARGS &&... args) {
 
     using namespace Legion;
+  
+    launch_domain_t domain= context_t::instance().get_domain(domain_key);
 
     // This will guard the entire method
     flog_tag_guard(execution);
@@ -152,19 +157,29 @@ struct legion_execution_policy_t {
 
     constexpr size_t ZERO = flecsi_internal_hash(0);
 
-    legion::init_args_t init_args(legion_runtime, legion_context, LAUNCH);
+    legion::init_args_t init_args(legion_runtime, legion_context, domain);
     init_args.walk(task_args);
 
     //------------------------------------------------------------------------//
     // Single launch
     //------------------------------------------------------------------------//
 
-    if constexpr(LAUNCH == launch_type_t::single) {
+    if (domain.launch_type_ == launch_type_t::single) {
+
+      static_assert(REDUCTION == ZERO,
+        "reductions are not supported for single tasks");
 
       {
         flog_tag_guard(execution);
         flog(internal) << "Executing single task" << std::endl;
       }
+
+      TaskLauncher launcher(context_.task_id<TASK>(),
+        TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+
+      for(auto & req : init_args.region_requirements()) {
+        launcher.add_region_requirement(req);
+      } // for
 
       LegionRuntime::Arrays::Rect<1> launch_bounds(0, 1);
       Domain launch_domain = Domain::from_rect<1>(launch_bounds);
@@ -177,7 +192,9 @@ struct legion_execution_policy_t {
       switch(processor_type) {
 
         case processor_type_t::loc: {
-          return 0;
+          auto future = legion_runtime->execute_task(legion_context, launcher);
+
+          return legion_future_u<RETURN, launch_type_t::single>(future);
         } // case processor_type_t::loc
 
         case processor_type_t::toc: {
@@ -210,9 +227,16 @@ struct legion_execution_policy_t {
         flog(internal) << "Executing index task" << std::endl;
       }
 
+      size_t domain_size = 0;
+      if (domain.domain_size_ == 0)
+        domain_size=context_t::instance().processes()*
+					context_t::instance().threads_per_process();
+      else 
+        domain_size = domain.domain_size_;
+
       LegionRuntime::Arrays::Rect<1> launch_bounds(
         LegionRuntime::Arrays::Point<1>(0),
-        LegionRuntime::Arrays::Point<1>(context_.colors() - 1));
+        LegionRuntime::Arrays::Point<1>(domain_size - 1));
       Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
       Legion::ArgumentMap arg_map;
@@ -225,7 +249,7 @@ struct legion_execution_policy_t {
 
         case processor_type_t::loc: {
           flog(info) << "Executing index launch on loc" << std::endl;
-          return 0;
+          //return 0;
         } // case processor_type_t::loc
 
         case processor_type_t::toc: {
@@ -233,7 +257,7 @@ struct legion_execution_policy_t {
         } // case processor_type_t::toc
 
         case processor_type_t::mpi: {
-          return 0;
+          //return 0;
         } // case processor_type_t::mpi
 
         default:
@@ -241,8 +265,6 @@ struct legion_execution_policy_t {
 
       } // switch
     } // if constexpr
-
-    return 0;
   } // execute_task
 
   //------------------------------------------------------------------------//

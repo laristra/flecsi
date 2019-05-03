@@ -32,6 +32,7 @@ set(execution_HEADERS
 )
 
 set(execution_SOURCES
+  common/launch.cc
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")

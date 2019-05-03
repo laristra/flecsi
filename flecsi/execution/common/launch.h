@@ -25,77 +25,101 @@
 
 namespace flecsi {
 
+
 /*!
-  Bitmasks for launch types.
+  Bitmasks for task types.
 
   \note This enumeration is not scoped so that users can do things
         like:
         \code
-        launch_t l(single | leaf);
+        task_type_t l(inner | idempotent);
         \endcode
  */
 
-enum launch_mask_t : size_t {
-  single = 1 << 0,
-  index = 1 << 1,
-  leaf = 1 << 2,
-  inner = 1 << 3,
-  idempotent = 1 << 4
-}; // enum launch_mask_t
+enum task_execution_type_mask_t : size_t {
+  leaf = 1 << 0,
+  inner = 1 << 1,
+  idempotent = 1 << 2
+}; // enum task_type_mask_t
+
+#if 0
+enum execution_type_t : size_t {
+  leaf,
+  inner,
+  ldempotent
+}; 
+#endif
+
+/*!
+  Enumeration for launch types.
+
+  \note This enumeration difines 2 different lounch types for the task:
+        single and index
+ */
+enum launch_type_t : size_t {
+  single,
+  index 
+}; // enum launch_type_t
+
+
 
 namespace execution {
 
 // This will be used by the task_hash_t type to create hash keys for
-// task registration. If you add more launch flags below, you will need
-// to increase the launch_bits accordingly, i.e., launch_bits must
+// task registration. If you add more task_type flags below, you will need
+// to increase the task_type_bits accordingly, i.e., task_type_bits must
 // be greater than or equal to the number of bits in the bitset for
-// launch_t below.
+// task_type_t below.
 
-constexpr size_t launch_bits = 5;
-
-/*!
-  Use a std::bitset to store launch information.
-
-  @note This will most likely use 4 bytes of data for efficiency.
- */
-
-using launch_t = std::bitset<launch_bits>;
+constexpr size_t task_execution_type_bits = 3;
 
 /*!
-  Enumeration of various task launch types. Not all of these may be
-  supported by all runtimes. Unsupported launch information will be
-  ignored.
+  Use a std::bitset to store task_type information.
+
+  @note This will most likely use 3 bytes of data for efficiency.
  */
 
-enum class launch_type_t : size_t {
-  single,
-  index,
+using task_execution_type_t = std::bitset<task_execution_type_bits>;
+
+enum execution_type_t : size_t {
   leaf,
   inner,
   idempotent
-}; // enum launch_type_t
+};
 
+/*!
+    launch_domain type is used in flecsi_execute_task to specify a
+    launch type of the task (single or index) and # of index points 
+    for index launch
+ */
+
+struct launch_domain_t
+{
+  launch_type_t launch_type_;
+  size_t domain_size_=1;
+};
+
+#if 1
 /*!
   Convert a processor mask to a processor type.
  */
 
-inline launch_type_t
-mask_to_type(launch_mask_t m) {
-  return static_cast<launch_type_t>(flecsi::utils::debruijn32_t::index(m));
+inline execution_type_t
+mask_to_type(execution_type_t m) {
+  return static_cast<execution_type_t>(flecsi::utils::debruijn32_t::index(m));
 } // mask_to_type
 
 /*!
   Macro to create repetitive interfaces.
  */
+#endif
 
 #define test_boolean_interface(name)                                           \
-  inline bool launch_##name(const launch_t & l) {                              \
-    return l.test(static_cast<size_t>(launch_type_t::name));                   \
+  inline bool task_##name(const task_execution_type_t & l) {                              \
+    return l.test(static_cast<size_t>(execution_type_t::name));                   \
   }
 
 // clang-format off
-test_boolean_interface(single)
-test_boolean_interface(index)
 test_boolean_interface(leaf)
 test_boolean_interface(inner)
 test_boolean_interface(idempotent)

@@ -49,7 +49,7 @@ struct task_interface_u {
     @tparam DELEGATE  The delegate function that invokes the user task.
 
     @param processor The processor type.
-    @param launch    The launch flags.
+    @param execution The task execution type flags.
     @param name      The string identifier of the task.
 
     @return The return type for task registration is determined by
@@ -61,11 +61,29 @@ struct task_interface_u {
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
   static decltype(auto)
-  register_task(processor_type_t processor, launch_t launch, std::string name) {
+  register_task(processor_type_t processor, task_execution_type_t execution,
+			std::string name) {
     return EXECUTION_POLICY::
       template register_task<KEY, RETURN, ARG_TUPLE, DELEGATE>(
-        processor, launch, name);
+        processor, execution, name);
   } // register_task
+
+  /*!
+    Register a launch domain with the FleCSI runtime.
+
+    @tparam KEY       A hash key identifying the domain.
+    @tparam LAUNCH    The launch type (single, index).
+    @tparam SIZE      A domain size
+   */
+
+  template<size_t KEY,
+    launch_type_t LAUNCH,
+    size_t SIZE>
+  static decltype(auto)
+  register_domain() {
+    execution::context_t::instance().register_domain(KEY, LAUNCH, SIZE);
+    return true;
+  } // register_domain
 
   /*!
     Execute a task.
@@ -77,19 +95,20 @@ struct task_interface_u {
     @tparam ARG_TUPLE A std::tuple of the user task argument types.
     @tparam ARGS      The task arguments.
 
+    @param domain_key A hash from the domain name
     @param args   The arguments to pass to the user task during execution.
    */
 
-  template<launch_type_t LAUNCH,
-    size_t TASK,
+  template<size_t TASK,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(ARGS &&... args) {
+  static decltype(auto) execute_task(size_t domain_key,
+				ARGS &&... args) {
     return EXECUTION_POLICY::
-      template execute_task<LAUNCH, TASK, REDUCTION, RETURN, ARG_TUPLE>(
-        std::forward<ARGS>(args)...);
+      template execute_task<TASK, REDUCTION, RETURN, ARG_TUPLE>(
+				domain_key, std::forward<ARGS>(args)...);
   } // execute_task
 
   /*!

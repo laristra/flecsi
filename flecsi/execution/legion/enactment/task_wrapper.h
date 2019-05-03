@@ -72,13 +72,14 @@ struct pure_task_wrapper_u {
 
    @param tid The task id to assign to the task.
    @param processor_type A valid Legion processor type.
-   @param launch A \ref launch_t with the launch parameters.
+   @param execution  A \ref task_execution_type_t with the task 
+							execution type parameters.
    @param A std::string containing the task name.
    */
 
   static void registration_callback(task_id_t tid,
     processor_type_t processor_type,
-    launch_t launch,
+    task_execution_type_t execution,
     std::string & name) {
     {
       flog_tag_guard(task_wrapper);
@@ -90,9 +91,9 @@ struct pure_task_wrapper_u {
                                      ? Legion::Processor::TOC_PROC
                                      : Legion::Processor::LOC_PROC;
     registrar.add_constraint(Legion::ProcessorConstraint(kind));
-    registrar.set_leaf(launch_leaf(launch));
-    registrar.set_inner(launch_inner(launch));
-    registrar.set_idempotent(launch_idempotent(launch));
+    registrar.set_leaf(task_leaf(execution));
+    registrar.set_inner(task_inner(execution));
+    registrar.set_idempotent(task_idempotent(execution));
 
     /*
       This section of conditionals is necessary because there is still
@@ -148,13 +149,14 @@ struct task_wrapper_u {
 
    @param tid            The task id to assign to the task.
    @param processor_type A \ref processor_type_t with the processor type.
-   @param launch         A \ref launch_t with the launch parameters.
+   @param execution      A \ref task_executin_type_t with the task
+													execution type parameters.
    @param name           A std::string containing the task name.
    */
 
   static void registration_callback(task_id_t tid,
     processor_type_t processor_type,
-    launch_t launch,
+    task_execution_type_t execution,
     std::string & name) {
     {
       flog_tag_guard(task_wrapper);
@@ -166,9 +168,9 @@ struct task_wrapper_u {
                                      ? Legion::Processor::TOC_PROC
                                      : Legion::Processor::LOC_PROC;
     registrar.add_constraint(Legion::ProcessorConstraint(kind));
-    registrar.set_leaf(launch_leaf(launch));
-    registrar.set_inner(launch_inner(launch));
-    registrar.set_idempotent(launch_idempotent(launch));
+    registrar.set_leaf(task_leaf(execution));
+    registrar.set_inner(task_inner(execution));
+    registrar.set_idempotent(task_idempotent(execution));
 
     /*
       This section of conditionals is necessary because there is still

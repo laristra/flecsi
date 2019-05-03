@@ -95,7 +95,8 @@ struct legion_context_policy_t {
    */
 
   using registration_function_t =
-    std::function<void(task_id_t, processor_type_t, launch_t, std::string &)>;
+    std::function<void(task_id_t, processor_type_t,
+			task_execution_type_t, std::string &)>;
 
   /*!
    The unique_tid_t type create a unique id generator for registering
@@ -111,7 +112,7 @@ struct legion_context_policy_t {
 
   using task_info_t = std::tuple<task_id_t,
     processor_type_t,
-    launch_t,
+    task_execution_type_t,
     std::string,
     registration_function_t>;
 
@@ -352,7 +353,7 @@ struct legion_context_policy_t {
 
   bool register_task(size_t key,
     processor_type_t processor,
-    launch_t launch,
+    task_execution_type_t execution,
     std::string & name,
     const registration_function_t & callback) {
     flog(internal) << "Registering task callback" << std::endl
@@ -363,7 +364,7 @@ struct legion_context_policy_t {
       "task key already exists");
 
     task_registry_[key] = std::make_tuple(
-      unique_tid_t::instance().next(), processor, launch, name, callback);
+      unique_tid_t::instance().next(), processor, execution, name, callback);
 
     return true;
   } // register_task

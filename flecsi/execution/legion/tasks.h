@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/execution/context.h>
+#include <flecsi/execution/common/launch.h>
 #endif
 
 /*!
@@ -129,7 +130,7 @@ flecsi_internal_legion_task(handoff_to_mpi_task, void) {
 
 flecsi_internal_register_legion_task(handoff_to_mpi_task,
   processor_type_t::loc,
-  index | leaf);
+  leaf);
 
 /*!
  Interprocess communication to wait for control to pass back to the Legion
@@ -144,7 +145,7 @@ flecsi_internal_legion_task(wait_on_mpi_task, void) {
 
 flecsi_internal_register_legion_task(wait_on_mpi_task,
   processor_type_t::loc,
-  index | leaf);
+  leaf);
 
 /*!
  Interprocess communication to unset mpi execute state.
@@ -158,7 +159,7 @@ flecsi_internal_legion_task(unset_call_mpi_task, void) {
 
 flecsi_internal_register_legion_task(unset_call_mpi_task,
   processor_type_t::loc,
-  index | leaf);
+  leaf);
 
 } // namespace execution
 } // namespace flecsi

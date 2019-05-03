@@ -16,6 +16,7 @@
 
 #define __FLECSI_PRIVATE__
 #include <flecsi/execution/execution.h>
+#include <flecsi/execution/common/launch.h>
 
 using namespace flecsi::execution;
 
@@ -49,7 +50,9 @@ test_driver(int argc, char ** argv) {
 
   FTEST();
 
-  flecsi_execute_task(simple, task, index, 10);
+  flecsi_execute_task(simple, task, single, 10);
+
+  flecsi_execute_task(simple, task, index, 8);
 
   return 0;
 }

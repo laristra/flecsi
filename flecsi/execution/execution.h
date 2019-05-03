@@ -112,13 +112,14 @@
   @param task      The task to register. This is normally just a function.
   @param nspace    The enclosing C++ namespace of the task.
   @param processor The \ref processor_type_t type.
-  @param launch    The \ref launch_t type. This may be an \em or list of
-                   supported launch types and configuration options.
+  @param task_execution_type The \ref task_execution_type_t type.
+									 This may be an \em or list of supported task types and
+									 configuration options.
 
   @ingroup execution
  */
 
-#define flecsi_register_task(task, nspace, processor, launch)                  \
+#define flecsi_register_task(task, nspace, processor, task_execution_type)           \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Define a delegate function to the user's function that takes a tuple */   \
@@ -137,7 +138,7 @@
       flecsi_internal_return_type(task),                                       \
       flecsi_internal_arguments_type(task),                                    \
       task##_tuple_delegate>(flecsi::processor,                                \
-      flecsi::launch,                                                          \
+      flecsi::task_execution_type,                                   \
       {flecsi_internal_stringify(nspace::task)})
 
 //----------------------------------------------------------------------------//
@@ -145,20 +146,43 @@
 //----------------------------------------------------------------------------//
 
 /*!
-  @def flecsi_execute_task
+  @def flecsi_register_domain
 
-  This macro executes a user task.
+  Declare a domain of launch type (single, index) and domain size (for index)
 
-  @param task   The user task to execute.
-  @param nspace The enclosing C++ namespace of the task.
-  @param launch The launch mode for the task.
-  @param ...    The arguments to pass to the user task during execution.
+  This macro registers a launch domain that can be used when executing
+  FleCSI tasks. 
+
+  @param type   The string namespace to use to register the domain.
+  @param nspace The launch type (single or index).
+  @param name   The domain size.
 
   @ingroup execution
  */
 
-#define flecsi_execute_task(task, nspace, launch, ...)                         \
+#define flecsi_register_launch_domain(name, launch_type, size)                 \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  /* Call the task interface to register the domain */                         \
+  inline bool flecsi_internal_unique_name(domain_registration_) =              \
+    flecsi::execution::task_interface_t::register_domain<                      \
+      flecsi_internal_hash(name), launch_type, size>()                                      
+
+/*!
+  @def flecsi_execute_task
+
+  This macro executes a user task.
+
+  @param task          The user task to execute.
+  @param nspace        The enclosing C++ namespace of the task.
+  @param launch_domain The launch domain name for the task
+  @param ...           The arguments to pass to the user task during execution.
+
+  @ingroup execution
+ */
+
+#define flecsi_execute_task(task, nspace, domain, ...)                         \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Execute the user task */                                                  \
-  flecsi_internal_execute_task(nspace::task, launch, 0, ##__VA_ARGS__)
+  flecsi_internal_execute_task(nspace::task, domain, 0, ##__VA_ARGS__)

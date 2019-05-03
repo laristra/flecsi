@@ -61,8 +61,12 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
   init_args_t(Legion::Runtime * runtime,
     Legion::Context & context,
-    const launch_type_t & launch)
-    : runtime_(runtime), context_(context), launch_(launch) {}
+    const launch_domain_t & domain)
+    : runtime_(runtime), context_(context), domain_(domain) {}
+
+  std::vector<Legion::RegionRequirement> const & region_requirements() {
+    return region_reqs_;
+  } // region_requirements
 
   /*!
     Convert the template privileges to proper Legion privileges.
@@ -99,7 +103,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
     if constexpr(get_privilege<0, PRIVILEGES>() > partition_privilege_t::ro) {
-      flog_assert(launch_ == launch_type_t::single,
+      flog_assert(domain_.launch_type_ == launch_type_t::single,
         "global can only be modified from within single launch task");
 
       Legion::LogicalRegion region =
@@ -136,7 +140,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 private:
   Legion::Runtime * runtime_;
   Legion::Context & context_;
-  launch_type_t launch_;
+  launch_domain_t domain_;
 
   std::vector<Legion::RegionRequirement> region_reqs_;
 
