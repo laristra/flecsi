@@ -4,10 +4,10 @@
 
 namespace flecstan {
 
-// FIXME
+// fixme
 // This file arguably has some redundancies and maintenance headaches, with
-// regards to the bookkeeping and such that's involved in handling command-
-// line arguments. Think about how to improve the situation. There are various
+// regards to the bookkeeping and such that's involved in handling command
+// arguments. Think about how to improve the situation. There are various
 // ways that this could be done, e.g. string to function-pointer map to deal
 // with the various command arguments.
 
@@ -267,7 +267,7 @@ inline bool option_yout(const std::string &opt)
 // Any of the above
 // ------------------------
 
-// FIXME
+// fixme
 // This is part of the aforementioned maintenance headache.
 inline bool option_any(const std::string &opt)
 {
@@ -615,7 +615,7 @@ exit_status_t one_cc(
       ctcc.CommandLine.push_back(com.flags.value()[s]);
    // ...command file
    ctcc.CommandLine.push_back(plain);
-   // ...filename
+   // ...file name
    ctcc.Filename = plain;
 
    com.commands.push_back(std::make_pair(ctcc,found));
@@ -784,7 +784,7 @@ bool default_json(CmdArgs &com)
    }
 
    // Still not found
-   if (!ifs) // not the same test as before; look carefully!
+   if (!ifs) // not necessarily the same test as above; notice the ifs.open()
       return false;
 
    // Save
@@ -800,7 +800,7 @@ bool default_json(CmdArgs &com)
 // option_toggle - helper
 // -----------------------------------------------------------------------------
 
-// FIXME
+// fixme
 // Another part of the maintenance headache.
 bool option_toggle(const std::string &opt)
 {
@@ -919,7 +919,7 @@ exit_status_t initial(
    if (argv == nullptr)
       return interr("argv == nullptr. This shouldn't happen.");
 
-   // Program name
+   // Executable name
    com.exe = argv[0];
 
    // Arguments

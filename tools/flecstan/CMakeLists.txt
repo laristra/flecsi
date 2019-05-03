@@ -12,10 +12,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -O2 -s")
 
 # Packages
-find_package(LLVM    REQUIRED)
-find_package(Clang   REQUIRED COMPONENTS Analysis AST Basic Driver Edit Frontend Lex Parse Sema Serialization Tooling)
-find_package(Threads REQUIRED)
-find_package(ZLIB    REQUIRED)
+find_package(Clang REQUIRED COMPONENTS Tooling)
 
 # Include directories
 include_directories(src ${CLANG_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
@@ -39,9 +36,5 @@ add_executable(flecstan ${flecstan_SOURCES})
 
 # Libraries
 target_link_libraries(
-   flecstan
-   ${CMAKE_THREAD_LIBS_INIT}
-   ${ZLIB_LIBRARIES}
-   ${CLANG_LIBRARIES}
-   ${LLVM_LIBRARIES}
+   flecstan clangTooling
 )

@@ -1,6 +1,5 @@
 /* -*- C++ -*- */
 
-#include "flecstan-misc.h"
 #include "flecstan-diagnostic.h"
 
 
@@ -14,7 +13,7 @@ namespace flecstan {
 void Diagnostic::HandleDiagnostic(
    clang::DiagnosticsEngine::Level level,
    const clang::Diagnostic &diag
-) {
+) /* override */ {
    // Construct our own message about Clang++ finding something...
 
 

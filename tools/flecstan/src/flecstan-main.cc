@@ -39,10 +39,9 @@ public:
    Consumer(clang::CompilerInstance &ref, Preprocessor &p, exit_status_t &s)
     : ci(ref), prep(p), status(s)
    {
-      debug("ctor: Consumer {");
+      debug("ctor: Consumer");
       flecstan_debug(ci.hasSema()); // false
       flecstan_debug((void *)&ci);
-      debug("}");
    }
 
   ~Consumer()
@@ -52,7 +51,7 @@ public:
 
    // HandleTranslationUnit
    // override w.r.t. ASTConsumer
-   void HandleTranslationUnit(clang::ASTContext &context) override
+   void HandleTranslationUnit(clang::ASTContext &astcontext) override
    {
       debug("Consumer::HandleTranslationUnit() {");
       flecstan_debug((void *)&ci);
@@ -69,7 +68,8 @@ public:
       }
 
       Visitor visitor(ci.getSema(), prep, yaml);
-      visitor.TraverseDecl(context.getTranslationUnitDecl());
+      visitor.TraverseDecl(astcontext.getTranslationUnitDecl());
+      prep.map2yaml(); // see remarks in class Preprocessor's map2yaml()
    }
 };
 
@@ -125,7 +125,7 @@ public:
       ci.getDiagnostics().setClient(new Diagnostic(status));
 
       // Preprocessor
-      Preprocessor *const p = new Preprocessor(ci,yaml);
+      Preprocessor *const p = new Preprocessor(file.str(),ci,yaml);
       ci.getPreprocessor().addPPCallbacks(std::unique_ptr<Preprocessor>(p));
 
       // AST Consumer

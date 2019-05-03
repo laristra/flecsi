@@ -3,6 +3,7 @@
 #ifndef flecstan_diagnostic
 #define flecstan_diagnostic
 
+#include "flecstan-misc.h"
 #include "clang/Tooling/Tooling.h"
 
 

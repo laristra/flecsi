@@ -15,76 +15,45 @@ inline std::string summary_function_reg_dup;
 inline std::string summary_function_reg_without_hand;
 inline std::string summary_function_hand_without_reg;
 
-std::string flcc(const macrobase &info, bool print_context = true);
+std::string uflcs(const flecsi_base &info, bool print_scope = true);
 
 
 
 // -----------------------------------------------------------------------------
-// Helper functions
+// called_matched
+// Helper function
 // -----------------------------------------------------------------------------
 
-// invoked_matched
 template<class T>
-exit_status_t invoked_matched(
-   const std::vector<InvocationInfo> &inv,
+exit_status_t called_matched(
+   const std::vector<MacroCall> &call,
    const std::vector<T> &mat,
-   const std::string &name // of FleCSI macro
+   const std::string &macname
 ) {
    exit_status_t status = exit_clean;
 
    // Sizes
-   const std::size_t isize = inv.size();
-   const std::size_t msize = mat.size();
+   const std::size_t csize = call.size();
+   const std::size_t msize = mat .size();
 
    // Consistent?
    // Remark: I'm not absolutely certain, right now, that inconsistent sizes
    // between preprocessor-macro detections, and AST matches, is necessarily
    // a problem in all cases. Keep an eye on this.
-   if (msize != isize) {
+   if (msize != csize)
       status = std::max(
          status,
          intwarn(
-            "Re: macro \"" + name + "\".\n"
-            "Detected invocation count != "
+            "Re: macro \"" + macname + "\".\n"
+            "Detected call count != "
             "detected C++ abstract syntax tree count."
-            "\n   Invocations: " + std::to_string(isize) +
+            "\n   Macro Calls: " + std::to_string(csize) +
             "\n   Syntax Tree: " + std::to_string(msize),
             true // <== flag: might have been triggered by compilation errors
          )
       );
-   }
 
    return status;
-}
-
-
-
-// multiple
-// Is a FleCSI macro called multiple times?
-// Remark: It's perfectly normal for certain FleCSI macros to be called multiple
-// times in a code. This is true, for example, of the task registration and task
-// execution macros. Some, however, e.g. flecsi_register_program, are presumably
-// intended to be called at most once, although it would appear that multiple
-// such calls don't necessarily cause problems. The following function can be
-// called regarding macros that we believe are intended to be invoked <= once.
-template<class T>
-exit_status_t multiple(
-   const std::vector<T> &mat,
-   const std::string &name
-) {
-   if (mat.size() <= 1)
-      return exit_clean;
-
-   std::ostringstream oss;
-   oss << "Macro " + name + " is called more than once.\n";
-   std::size_t count = 0;
-   for (auto m : mat)
-      oss << "   Call #" << ++count << ": " << flcc(m) << "\n";
-   oss <<
-      "This is not currently a problem, unless it caused compilation errors.\n"
-      "However, multiple calls go against the intention of the macro."
-   ;
-   return warning(oss);
 }
 
 
@@ -94,12 +63,13 @@ exit_status_t multiple(
 // Task registration helper class
 // -----------------------------------------------------------------------------
 
-class treg : public macrobase {
+class treg : public flecsi_base {
 public:
-   // from macrobase:
+   // from flecsi_base:
+   // ...string         unit
    // ...FileLineColumn location
    // ...FileLineColumn spelling
-   // ...vector<string> context
+   // ...vector<string> scope
 
    std::string task;
    booland<std::string> nspace;
@@ -108,7 +78,7 @@ public:
    std::string hash;
 
    // ctor: flecsi_register_task_simple
-   treg(const flecsi_register_task_simple &obj) : macrobase(obj),
+   treg(const flecsi_register_task_simple &obj) : flecsi_base(obj),
       task     (obj.task),
       processor(obj.processor),
       launch   (obj.launch),
@@ -116,7 +86,7 @@ public:
    { }
 
    // ctor: flecsi_register_task
-   treg(const flecsi_register_task &obj) : macrobase(obj),
+   treg(const flecsi_register_task &obj) : flecsi_base(obj),
       task     (obj.task),
       nspace   (obj.nspace),
       processor(obj.processor),
@@ -125,13 +95,13 @@ public:
    { }
 
    // ctor: flecsi_register_mpi_task_simple
-   treg(const flecsi_register_mpi_task_simple &obj) : macrobase(obj),
+   treg(const flecsi_register_mpi_task_simple &obj) : flecsi_base(obj),
       task     (obj.task),
       hash     (obj.hash)
    { }
 
    // ctor: flecsi_register_mpi_task
-   treg(const flecsi_register_mpi_task &obj) : macrobase(obj),
+   treg(const flecsi_register_mpi_task &obj) : flecsi_base(obj),
       task     (obj.task),
       nspace   (obj.nspace),
       hash     (obj.hash)
@@ -145,12 +115,13 @@ public:
 // Task execution helper class
 // -----------------------------------------------------------------------------
 
-class texe : public macrobase {
+class texe : public flecsi_base {
 public:
-   // from macrobase:
+   // from flecsi_base:
+   // ...string         unit
    // ...FileLineColumn location
    // ...FileLineColumn spelling
-   // ...vector<string> context
+   // ...vector<string> scope
 
    std::string task;
    booland<std::string> nspace;
@@ -160,14 +131,14 @@ public:
    std::string hash;
 
    // ctor: flecsi_execute_task_simple
-   texe(const flecsi_execute_task_simple &obj) : macrobase(obj),
+   texe(const flecsi_execute_task_simple &obj) : flecsi_base(obj),
       task     (obj.task),
       launch   (obj.launch),
       hash     (obj.hash)
    { }
 
    // ctor: flecsi_execute_task
-   texe(const flecsi_execute_task &obj) : macrobase(obj),
+   texe(const flecsi_execute_task &obj) : flecsi_base(obj),
       task     (obj.task),
       nspace   (obj.nspace),
       launch   (obj.launch),
@@ -175,20 +146,20 @@ public:
    { }
 
    // ctor: flecsi_execute_mpi_task_simple
-   texe(const flecsi_execute_mpi_task_simple &obj) : macrobase(obj),
+   texe(const flecsi_execute_mpi_task_simple &obj) : flecsi_base(obj),
       task     (obj.task),
       hash     (obj.hash)
    { }
 
    // ctor: flecsi_execute_mpi_task
-   texe(const flecsi_execute_mpi_task &obj) : macrobase(obj),
+   texe(const flecsi_execute_mpi_task &obj) : flecsi_base(obj),
       task     (obj.task),
       nspace   (obj.nspace),
       hash     (obj.hash)
    { }
 
    // ctor: flecsi_execute_reduction_task
-   texe(const flecsi_execute_reduction_task &obj) : macrobase(obj),
+   texe(const flecsi_execute_reduction_task &obj) : flecsi_base(obj),
       task     (obj.task),
       nspace   (obj.nspace),
       launch   (obj.launch),

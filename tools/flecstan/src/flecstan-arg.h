@@ -40,7 +40,7 @@ inline std::string fullfile(
 
 class CmdArgs {
 public:
-   // Analyzer's (from *this* source code!) executable file name
+   // Analyzer's executable file name
    std::string exe;
 
    // Used while parsing the command-line arguments
