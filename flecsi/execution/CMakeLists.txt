@@ -40,12 +40,18 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(execution_HEADERS
     ${execution_HEADERS}
     legion/context_policy.h
+    legion/enactment/finalize_views.h
+    legion/enactment/init_views.h
+    legion/enactment/task_wrapper.h
     legion/execution_policy.h
+    legion/future.h
     legion/internal_task.h
+    legion/invocation/init_args.h
+    legion/invocation/task_epilogue.h
+    legion/invocation/task_prologue.h
     legion/mapper.h
     legion/reduction_wrapper.h
     legion/runtime.h
-    legion/execution/task_wrapper.h
     legion/tasks.h
   )
 

@@ -21,8 +21,8 @@
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/execution/legion/finalize_views.h>
-#include <flecsi/execution/legion/init_views.h>
+#include <flecsi/execution/legion/enactment/finalize_views.h>
+#include <flecsi/execution/legion/enactment/init_views.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/flog.h>
 #include <flecsi/utils/tuple_function.h>
