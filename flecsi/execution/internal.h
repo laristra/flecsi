@@ -39,4 +39,4 @@
     flecsi_internal_hash(domain),                                              \
     flecsi_internal_hash(operation),                                           \
     flecsi_internal_return_type(task),                                         \
-    flecsi_internal_arguments_type(task)>(flecsi_internal_hash(__VA_ARGS__)
+    flecsi_internal_arguments_type(task)>(__VA_ARGS__)

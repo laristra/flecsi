@@ -39,6 +39,8 @@ namespace flecsi {
 namespace execution {
 namespace legion {
 
+using namespace flecsi::data::legion;
+
 /*!
   The finalize_views_t type is called to walk the user task arguments inside of
   an executing legion task to properly complete the users accessors, i.e., by
