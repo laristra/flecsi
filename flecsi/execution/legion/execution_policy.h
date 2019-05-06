@@ -128,17 +128,15 @@ struct legion_execution_policy_t {
 
   template<
     size_t TASK,
+    size_t LAUNCH_DOMAIN,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(size_t domain_key,
-			ARGS &&... args) {
+  static decltype(auto) execute_task(ARGS &&... args) {
 
     using namespace Legion;
   
-    launch_domain_t domain= context_t::instance().get_domain(domain_key);
-
     // This will guard the entire method
     flog_tag_guard(execution);
 
@@ -157,14 +155,15 @@ struct legion_execution_policy_t {
 
     constexpr size_t ZERO = flecsi_internal_hash(0);
 
-    legion::init_args_t init_args(legion_runtime, legion_context, domain);
+    legion::init_args_t init_args(legion_runtime, legion_context,
+			LAUNCH_DOMAIN);
     init_args.walk(task_args);
 
     //------------------------------------------------------------------------//
     // Single launch
     //------------------------------------------------------------------------//
 
-    if (domain.launch_type_ == launch_type_t::single) {
+    if constexpr(flecsi_internal_hash(single) == LAUNCH_DOMAIN) {
 
       static_assert(REDUCTION == ZERO,
         "reductions are not supported for single tasks");
@@ -227,12 +226,11 @@ struct legion_execution_policy_t {
         flog(internal) << "Executing index task" << std::endl;
       }
 
-      size_t domain_size = 0;
-      if (domain.domain_size_ == 0)
+      size_t domain_size= context_t::instance().get_domain(LAUNCH_DOMAIN);
+      size_t domain_size_new = 0;
+      if (domain_size == 0)
         domain_size=context_t::instance().processes()*
 					context_t::instance().threads_per_process();
-      else 
-        domain_size = domain.domain_size_;
 
       LegionRuntime::Arrays::Rect<1> launch_bounds(
         LegionRuntime::Arrays::Point<1>(0),

@@ -25,7 +25,7 @@
 #include <flecsi/utils/tuple_walker.h>
 #endif
 
-#include <flecsi-config.h>
+//#include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!

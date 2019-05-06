@@ -104,9 +104,9 @@ struct context_u : public CONTEXT_POLICY {
 
   /*!
    this types allows storing launch_domains, key is a hash from the domain
-   name
+   name, value is # of index points
    */
-  using launch_domain_map_t = std::unordered_map<size_t, launch_domain_t>;
+  using launch_domain_map_t = std::unordered_map<size_t, size_t>;
 
   /*--------------------------------------------------------------------------*
     Deleted contructor and assignment interfaces.
@@ -566,15 +566,15 @@ struct context_u : public CONTEXT_POLICY {
     @param launch   Launch type (single, index)
     @param size     Launch domain size
    */
-  void register_domain(size_t key, launch_type_t launch, size_t size)
+  void register_index_domain(size_t key,  size_t size)
   {
-    launch_domain_map_[key] = {launch, size};
+    launch_domain_map_[key] = size;
   }
 
   /*!
     Returns domain information from the domain key
    */
-  launch_domain_t & get_domain(size_t key)
+  size_t get_domain(size_t key)
   {
     return launch_domain_map_[key]; 
   }
