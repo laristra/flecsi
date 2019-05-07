@@ -76,7 +76,7 @@ TEST(reorder, both) {
   using random_t = decltype(random());
 
   // ntimes times
-  for (std::size_t t = ntimes; t--;) {
+  for(std::size_t t = ntimes; t--;) {
 
     // ------------------------
     // Initialize
@@ -84,16 +84,16 @@ TEST(reorder, both) {
 
     // Compute random size ( <= maxlen ) for vector
     std::size_t len = std::size_t(random()) % (maxlen + 1);
-    while (len == 0)
-        len = std::size_t(random()) % (maxlen + 1);
+    while(len == 0)
+      len = std::size_t(random()) % (maxlen + 1);
 
     // Make an initial vector of the above-computed random size,
     // and set up a random ordering specification for the vector
     std::vector<random_t> initial(len);
     std::vector<std::size_t> order(len);
-    for (std::size_t i = 0; i < len; ++i) {
+    for(std::size_t i = 0; i < len; ++i) {
       initial[i] = random(); // random values
-      order[i] = i;          // unique indices
+      order[i] = i; // unique indices
     }
     std::random_shuffle(order.begin(), order.end()); // still unique indices
 
@@ -107,7 +107,7 @@ TEST(reorder, both) {
     flecsi::utils::reorder(order.begin(), order.end(), copy.begin());
 
     // direct check if copy equals order-reordered initial
-    for (std::size_t i = 0; i < len; ++i)
+    for(std::size_t i = 0; i < len; ++i)
       EXPECT_EQ(copy[order[i]], initial[i]);
 
     // ------------------------
@@ -118,11 +118,11 @@ TEST(reorder, both) {
     // reorder a copy of the initial vector
     copy = initial;
     std::vector<std::size_t> original_order = order; // because we'll wreck it
-    flecsi::utils::reorder_destructive               // destructive!
-        (order.begin(), order.end(), copy.begin());
+    flecsi::utils::reorder_destructive // destructive!
+      (order.begin(), order.end(), copy.begin());
 
     // direct check if copy equals order-reordered initial
-    for (std::size_t i = 0; i < len; ++i)
+    for(std::size_t i = 0; i < len; ++i)
       EXPECT_EQ(copy[original_order[i]], initial[i]);
   } // for
 

@@ -8,8 +8,11 @@
 #include <flecsi/topology/mesh_definition.h>
 
 #include <fstream>
+#include <iterator>
+#include <sstream>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <flecsi/utils/logging.h>
 
@@ -24,15 +27,16 @@ namespace io {
 ///
 /// \class simple_definition_t simple_definition.h
 /// \brief simple_definition_t provides a very basic implementation of
-///        the mesh_definition_t interface.
+///        the mesh_definition_u interface.
 ///
-class simple_definition_t : public topology::mesh_definition__<2> {
+class simple_definition_t : public topology::mesh_definition_u<2>
+{
 public:
   /// Default constructor
   simple_definition_t(const char * filename) {
     file_.open(filename, std::ifstream::in);
 
-    if (file_.good()) {
+    if(file_.good()) {
       std::string line;
       std::getline(file_, line);
       std::istringstream iss(line);
@@ -43,14 +47,26 @@ public:
       // Get the offset to the beginning of the vertices
       vertex_start_ = file_.tellg();
 
-      for (size_t i(0); i < num_vertices_; ++i) {
+      for(size_t i(0); i < num_vertices_; ++i) {
         std::getline(file_, line);
       } // for
 
       cell_start_ = file_.tellg();
-    } else {
+    }
+    else {
       clog_fatal("failed opening " << filename);
     } // if
+
+    // Go to the start of the cells.
+    std::string line;
+    file_.seekg(cell_start_);
+    for(size_t l(0); l < num_cells_; ++l) {
+      std::getline(file_, line);
+      std::istringstream iss(line);
+      ids_.push_back(std::vector<size_t>(
+        std::istream_iterator<size_t>(iss), std::istream_iterator<size_t>()));
+    }
+
   } // simple_definition_t
 
   /// Copy constructor (disabled)
@@ -69,6 +85,16 @@ public:
     return dimension == 0 ? num_vertices_ : num_cells_;
   } // num_entities
 
+  /// return the set of vertices that make up all cells
+  /// \param [in] from_dim the entity dimension to query
+  /// \param [in] to_dim the dimension of entities we wish to return
+  const std::vector<std::vector<size_t>> & entities(size_t from_dim,
+    size_t to_dim) const override {
+    clog_assert(from_dim == 2, "invalid dimension " << from_dim);
+    clog_assert(to_dim == 0, "invalid dimension " << to_dim);
+    return ids_;
+  }
+
   /// return the set of vertices of a particular entity.
   /// \param [in] dimension  the entity dimension to query.
   /// \param [in] entity_id  the id of the entity in question.
@@ -86,7 +112,7 @@ public:
     file_.seekg(cell_start_);
 
     // Walk to the line with the requested id.
-    for (size_t l(0); l < entity_id; ++l) {
+    for(size_t l(0); l < entity_id; ++l) {
       std::getline(file_, line);
     } // for
 
@@ -116,7 +142,7 @@ public:
     file_.seekg(vertex_start_);
 
     // Walk to the line with the requested id.
-    for (size_t l(0); l < vertex_id; ++l) {
+    for(size_t l(0); l < vertex_id; ++l) {
       std::getline(file_, line);
     } // for
 
@@ -131,8 +157,8 @@ public:
   } // vertex
 
 private:
-
   mutable std::ifstream file_;
+  std::vector<std::vector<size_t>> ids_;
 
   size_t num_vertices_;
   size_t num_cells_;

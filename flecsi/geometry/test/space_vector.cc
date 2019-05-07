@@ -18,21 +18,21 @@
 
 using namespace flecsi;
 
-using vector_1d_t = space_vector<double,1>;
-using vector_2d_t = space_vector<double,2>;
-using vector_3d_t = space_vector<double,3>;
+using vector_1d_t = space_vector<double, 1>;
+using vector_2d_t = space_vector<double, 2>;
+using vector_3d_t = space_vector<double, 3>;
 
 TEST(space_vector, plus) {
   vector_1d_t a1(1.0), b1(2.0);
   vector_1d_t c1 = a1 + b1;
   ASSERT_EQ(3.0, c1[0]);
 
-  vector_2d_t a2(1.0,1.0), b2(2.0,2.0);
+  vector_2d_t a2(1.0, 1.0), b2(2.0, 2.0);
   vector_2d_t c2 = a2 + b2;
   ASSERT_EQ(3.0, c2[0]);
   ASSERT_EQ(3.0, c2[1]);
 
-  vector_3d_t a3(1.0,1.0,1.0), b3(2.0,2.0,2.0);
+  vector_3d_t a3(1.0, 1.0, 1.0), b3(2.0, 2.0, 2.0);
   vector_3d_t c3 = a3 + b3;
   ASSERT_EQ(3.0, c3[0]);
   ASSERT_EQ(3.0, c3[1]);
@@ -44,12 +44,12 @@ TEST(space_vector, plusequal) {
   a1 += b1;
   ASSERT_EQ(3.0, a1[0]);
 
-  vector_2d_t a2(1.0,1.0), b2(2.0,2.0);
+  vector_2d_t a2(1.0, 1.0), b2(2.0, 2.0);
   a2 += b2;
   ASSERT_EQ(3.0, a2[0]);
   ASSERT_EQ(3.0, a2[1]);
 
-  vector_3d_t a3(1.0,1.0,1.0), b3(2.0,2.0,2.0);
+  vector_3d_t a3(1.0, 1.0, 1.0), b3(2.0, 2.0, 2.0);
   a3 += b3;
   ASSERT_EQ(3.0, a3[0]);
   ASSERT_EQ(3.0, a3[1]);
@@ -61,12 +61,12 @@ TEST(space_vector, minus) {
   vector_1d_t c1 = a1 - b1;
   ASSERT_EQ(-1.0, c1[0]);
 
-  vector_2d_t a2(1.0,1.0), b2(2.0,2.0);
+  vector_2d_t a2(1.0, 1.0), b2(2.0, 2.0);
   vector_2d_t c2 = a2 - b2;
   ASSERT_EQ(-1.0, c2[0]);
   ASSERT_EQ(-1.0, c2[1]);
 
-  vector_3d_t a3(1.0,1.0,1.0), b3(2.0,2.0,2.0);
+  vector_3d_t a3(1.0, 1.0, 1.0), b3(2.0, 2.0, 2.0);
   vector_3d_t c3 = a3 - b3;
   ASSERT_EQ(-1.0, c3[0]);
   ASSERT_EQ(-1.0, c3[1]);
@@ -78,12 +78,12 @@ TEST(space_vector, minusequal) {
   a1 -= b1;
   ASSERT_EQ(-1.0, a1[0]);
 
-  vector_2d_t a2(1.0,1.0), b2(2.0,2.0);
+  vector_2d_t a2(1.0, 1.0), b2(2.0, 2.0);
   a2 -= b2;
   ASSERT_EQ(-1.0, a2[0]);
   ASSERT_EQ(-1.0, a2[1]);
 
-  vector_3d_t a3(1.0,1.0,1.0), b3(2.0,2.0,2.0);
+  vector_3d_t a3(1.0, 1.0, 1.0), b3(2.0, 2.0, 2.0);
   a3 -= b3;
   ASSERT_EQ(-1.0, a3[0]);
   ASSERT_EQ(-1.0, a3[1]);
@@ -95,21 +95,21 @@ TEST(space_vector, operator_times) {
 
   // 1d scalar vector multiply
   vector_1d_t a(4.0);
-  vector_1d_t as = a*s;
+  vector_1d_t as = a * s;
   ASSERT_EQ(8.0, as[0]);
 
   // 2d scalar vector multiply
   vector_2d_t b(4.0, -5.0);
-  vector_2d_t bs = b*s;
-  ASSERT_EQ(  8.0, bs[0]);
+  vector_2d_t bs = b * s;
+  ASSERT_EQ(8.0, bs[0]);
   ASSERT_EQ(-10.0, bs[1]);
 
   // 3d scalar vector multiply
   vector_3d_t c(4.0, -5.0, 6.0);
-  vector_3d_t cs = c*s;
-  ASSERT_EQ(  8.0, cs[0]);
+  vector_3d_t cs = c * s;
+  ASSERT_EQ(8.0, cs[0]);
   ASSERT_EQ(-10.0, cs[1]);
-  ASSERT_EQ( 12.0, cs[2]);
+  ASSERT_EQ(12.0, cs[2]);
 
 } // TEST
 
@@ -169,19 +169,19 @@ TEST(space_vector, cross_magnitude) {
   ASSERT_EQ(0.0, c1);
 
   vector_2d_t a2(1.0, 3.0);
-  vector_2d_t b2(2.0,-5.0);
+  vector_2d_t b2(2.0, -5.0);
   double c2 = cross_magnitude(a2, b2);
   ASSERT_EQ(11.0, c2);
 
   vector_3d_t a3(1.0, 3.0, -2.0);
-  vector_3d_t b3(2.0,-5.0, 10.0);
+  vector_3d_t b3(2.0, -5.0, 10.0);
   double c3 = cross_magnitude(a3, b3);
-  ASSERT_EQ(sqrt(20.0*20.0 + 14.0*14.0 + 11.0*11.0), c3);
+  ASSERT_EQ(sqrt(20.0 * 20.0 + 14.0 * 14.0 + 11.0 * 11.0), c3);
 
 } // TEST
 
-using point_2d_t = point__<double,2>;
-using point_3d_t = point__<double,3>;
+using point_2d_t = point_u<double, 2>;
+using point_3d_t = point_u<double, 3>;
 
 TEST(space_vector, normal) {
 
@@ -191,9 +191,9 @@ TEST(space_vector, normal) {
   point_2d_t a2(1.0, 1.0);
   point_2d_t b2(3.0, 4.0);
 
-  vector_2d_t v2 = normal(a2,b2);
+  vector_2d_t v2 = normal(a2, b2);
   ASSERT_EQ(-3.0, v2[0]);
-  ASSERT_EQ( 2.0, v2[1]);
+  ASSERT_EQ(2.0, v2[1]);
 
   // 3d normal
   vector_3d_t a3(1.0, 1.0, 1.0);
@@ -201,9 +201,7 @@ TEST(space_vector, normal) {
 
   vector_3d_t v3 = normal(a3, b3);
 
-
 } // TEST
-
 
 /*----------------------------------------------------------------------------*
  * Google Test Macros

@@ -16,7 +16,7 @@
 # Set the minimum Cinch version
 #------------------------------------------------------------------------------#
 
-cinch_minimum_required(1.0)
+cinch_minimum_required(VERSION v1.0)
 
 #------------------------------------------------------------------------------#
 # Set the project name
@@ -31,39 +31,91 @@ else()
 endif()
 
 #------------------------------------------------------------------------------#
+# Automatic version creation.
+#------------------------------------------------------------------------------#
+
+include(version)
+
+#------------------------------------------------------------------------------#
 # Set header suffix regular expression
 #------------------------------------------------------------------------------#
 
 set(CINCH_HEADER_SUFFIXES "\\.h")
 
 #------------------------------------------------------------------------------#
-# If a C++14 compiler is available, then set the appropriate flags
+# Set required C++ standard
 #------------------------------------------------------------------------------#
 
-include(cxx17)
-
-check_for_cxx17_compiler(CXX17_COMPILER)
-
-if(CXX17_COMPILER)
-    enable_cxx17()
-else()
-    message(FATAL_ERROR "C++17 compatible compiler not found")
-endif()
+set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
 
 #------------------------------------------------------------------------------#
-# This variable is used to collect library and include dependencies for
-# the FleCSIConfig file below.
+# Create user guide header with version information
+#------------------------------------------------------------------------------#
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/flecsi_ug_header.tex.in
+    ${CMAKE_BINARY_DIR}/doc/flecsi_ug_header.tex)
+
+#------------------------------------------------------------------------------#
+# Pandoc options for user guide
+#------------------------------------------------------------------------------#
+
+set(ug_pandoc_options
+    "--toc"
+    "--include-in-header=${CMAKE_SOURCE_DIR}/cinch/tex/addtolength.tex"
+    "--include-in-header=${CMAKE_BINARY_DIR}/doc/flecsi_ug_header.tex"
+    "--include-in-header=${CMAKE_CURRENT_SOURCE_DIR}/doc/flecsi_ug_title.tex"
+    "--include-before-body=${CMAKE_SOURCE_DIR}/cinch/tex/firstpageempty.tex"
+)
+
+#------------------------------------------------------------------------------#
+# Add user guide target
+#------------------------------------------------------------------------------#
+
+cinch_add_doc(flecsi-user-guide flecsi_ug.py "flecsi;auxiliary"
+    flecsi-user-guide-${${PROJECT_NAME}_VERSION}.pdf
+    PANDOC_OPTIONS ${ug_pandoc_options} IMAGE_GLOB "*.pdf"
+)
+
+#------------------------------------------------------------------------------#
+# Create developer guide header with version information
+#------------------------------------------------------------------------------#
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/flecsi_dg_header.tex.in
+    ${CMAKE_BINARY_DIR}/doc/flecsi_dg_header.tex
+)
+
+#------------------------------------------------------------------------------#
+# Pandoc options for developer guide
+#------------------------------------------------------------------------------#
+
+set(dg_pandoc_options
+    "--toc"
+    "--include-in-header=${CMAKE_SOURCE_DIR}/cinch/tex/addtolength.tex"
+    "--include-in-header=${CMAKE_BINARY_DIR}/doc/flecsi_dg_header.tex"
+    "--include-before-body=${CMAKE_CURRENT_SOURCE_DIR}/doc/flecsi_dg_title.tex"
+    "--include-before-body=${CMAKE_SOURCE_DIR}/cinch/tex/firstpageempty.tex"
+)
+
+set(dg_image_list "${CMAKE_SOURCE_DIR}/doc/medium-flecsi.png")
+
+#------------------------------------------------------------------------------#
+# Add developer guide target
+#------------------------------------------------------------------------------#
+
+cinch_add_doc(flecsi-developer-guide flecsi_dg.py "flecsi;auxiliary"
+    flecsi-developer-guide-${${PROJECT_NAME}_VERSION}.pdf
+    PANDOC_OPTIONS ${dg_pandoc_options} IMAGE_GLOB "*.pdf"
+    IMAGE_LIST ${dg_image_list}
+)
+
+#------------------------------------------------------------------------------#
+# These variables are used to collect library and include dependencies
+# for the FleCSIConfig file below.
 #------------------------------------------------------------------------------#
 
 set(FLECSI_INCLUDE_DEPENDENCIES)
 set(FLECSI_LIBRARY_DEPENDENCIES)
-
-#------------------------------------------------------------------------------#
-# Enable Boost.Preprocessor
-#------------------------------------------------------------------------------#
-
-# This changes the Cinch default
-set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 
 #------------------------------------------------------------------------------#
 # Add options for runtime selection
@@ -103,6 +155,8 @@ mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
 # Load the cinch extras
 #------------------------------------------------------------------------------#
 
+cinch_load_extras(MPI LEGION HPX)
+
 # After we load the cinch options, we need to capture the configuration
 # state for the particular Cinch build configuration and set variables that
 # are local to this project. FleCSI should never directly use the raw
@@ -110,10 +164,18 @@ mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
 # and used as such in the code. This will handle collisions between nested
 # projects that use Cinch.
 
-cinch_load_extras(MPI LEGION HPX)
-
+# ENABLE options from Cinch
 get_cmake_property(_variableNames VARIABLES)
 string (REGEX MATCHALL "(^|;)ENABLE_[A-Za-z0-9_]*"
+  _matchedVars "${_variableNames}")
+
+foreach(_variableName ${_matchedVars})
+  set(FLECSI_${_variableName} ${${_variableName}})
+endforeach()
+
+# CLOG options from Cinch
+get_cmake_property(_variableNames VARIABLES)
+string (REGEX MATCHALL "(^|;)CLOG_[A-Za-z0-9_]*"
   _matchedVars "${_variableNames}")
 
 foreach(_variableName ${_matchedVars})
@@ -154,23 +216,6 @@ option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" ON)
 #------------------------------------------------------------------------------#
 
 set(FLECSI_SHARE_DIR ${CMAKE_INSTALL_PREFIX}/share/FleCSI)
-
-#------------------------------------------------------------------------------#
-# RistraLL
-#------------------------------------------------------------------------------#
-
-option(ENABLE_RISTRALL "Enable Ristra Low-Level Library Support" OFF)
-
-if(ENABLE_RISTRALL)
-  find_package(RistraLL REQUIRED)
-
-  if(RistraLL_FOUND)
-    include_directories(${RistraLL_INCLUDE_DIRS})
-
-    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${RistraLL_INCLUDE_DIRS})
-    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${RistraLL_LIBRARIES})
-  endif()
-endif()
 
 #------------------------------------------------------------------------------#
 # Graphviz
@@ -220,7 +265,7 @@ endif()
 # Boost Program Options
 #------------------------------------------------------------------------------#
 
-if(ENABLE_BOOST_PROGRAM_OPTIONS)
+if(ENABLE_BOOST)
   list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
 endif()
 
@@ -281,7 +326,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     add_definitions(-DMAPPER_COMPACTION)
     set (MAPPER_COMPACTION TRUE)
   else()
-    option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" ON)
+    option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" OFF)
 
     if(COMPACTED_STORAGE_SORT)
       add_definitions(-DCOMPACTED_STORAGE_SORT)
@@ -357,11 +402,6 @@ if(PARMETIS_FOUND)
   list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${PARMETIS_INCLUDE_DIRS})
 endif()
 
-if(NOT COLORING_LIBRARIES)
-  MESSAGE(FATAL_ERROR
-    "You need parmetis to enable partitioning" )
-endif()
-
 list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${COLORING_LIBRARIES})
 
 #------------------------------------------------------------------------------#
@@ -420,6 +460,12 @@ install(
 )
 
 #------------------------------------------------------------------------------#
+# Add IO-POC subdirectory
+#------------------------------------------------------------------------------#
+
+add_subdirectory(io-poc)
+
+#------------------------------------------------------------------------------#
 # Add library targets
 #------------------------------------------------------------------------------#
 
@@ -427,7 +473,7 @@ cinch_add_library_target(FleCSI flecsi EXPORT_TARGET FleCSITargets)
 
 set_target_properties(FleCSI PROPERTIES FOLDER "Core")
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+if(FLECSI_RUNTIME_MODEL STREQUAL "hpx" OR NOT ENABLE_PARMETIS)
   option(ENABLE_FLECSI_TUTORIAL
     "Enable library support for the FleCSI tutorial" OFF)
 else()
@@ -471,21 +517,12 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   hpx_setup_target(FleCSI NONAMEPREFIX)
 
 endif()
+
 #------------------------------------------------------------------------------#
 # Set application directory
 #------------------------------------------------------------------------------#
 
-cinch_add_application_directory("examples")
-cinch_add_application_directory("examples/00_simple_drivers")
-cinch_add_application_directory("examples/lax_wendroff")
-cinch_add_application_directory("examples/02_tasks_and_drivers")
 cinch_add_application_directory("tools")
-
-#------------------------------------------------------------------------------#
-# Add distclean target
-#------------------------------------------------------------------------------#
-
-add_custom_target(distclean rm -rf ${CMAKE_BINARY_DIR}/*)
 
 #------------------------------------------------------------------------------#
 # Prepare variables for FleCSIConfig file.

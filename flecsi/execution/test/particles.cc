@@ -12,12 +12,12 @@
 
 #include <cinchtest.h>
 
-#include <flecsi/execution/execution.h>
-#include <flecsi/topology/set_topology.h>
-#include <flecsi/topology/types.h>
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/data/data_client_handle.h>
+#include <flecsi/execution/execution.h>
 #include <flecsi/supplemental/mesh/test_mesh_2d.h>
+#include <flecsi/topology/set_topology.h>
+#include <flecsi/topology/types.h>
 
 using namespace std;
 using namespace flecsi;
@@ -26,51 +26,52 @@ using namespace coloring;
 using namespace execution;
 using namespace supplemental;
 
-class entity1 : public set_entity_t{
+class entity1 : public set_entity_t
+{
 public:
   double x;
 };
 
-class set_types{
+class set_types
+{
 public:
-  using entity_types = std::tuple<
-    std::tuple<index_space_<0>, entity1>
-    >;
+  using entity_types = std::tuple<std::tuple<index_space_<0>, entity1>>;
 
   using independent_t = test_mesh_2d_t;
 
-  size_t color(const entity1& e1, independent_t& dt){
+  size_t color(const entity1 & e1, independent_t & dt) {
     return 0;
   }
 
-  size_t bin(const entity1& e1, independent_t& dt){
+  size_t bin(const entity1 & e1, independent_t & dt) {
     return 0;
   }
 };
 
-using set_t = set_topology__<set_types>;
+using set_t = set_topology_u<set_types>;
 
 template<typename DC, size_t PS>
-using client_handle_t = data_client_handle__<DC, PS>;
+using client_handle_t = data_client_handle_u<DC, PS>;
 
-flecsi_register_data_client(set_t, sets, set1); 
+flecsi_register_data_client(set_t, sets, set1);
 
 namespace flecsi {
 namespace execution {
 
-struct set_topology_index_space_t{
+struct set_topology_index_space_t {
   size_t main_capacity;
   size_t active_migrate_capacity;
 };
 
-struct set_topology_info_t{
+struct set_topology_info_t {
   using index_space_map_t =
     std::unordered_map<size_t, set_topology_index_space_t>;
 
   index_space_map_t index_space_map;
 };
 
-void specialization_tlt_init(int argc, char ** argv) {
+void
+specialization_tlt_init(int argc, char ** argv) {
   auto & context = context_t::instance();
 
   context_t::set_topology_info_t info;
@@ -84,17 +85,13 @@ void specialization_tlt_init(int argc, char ** argv) {
   context.add_set_topology(info);
 }
 
-void specialization_spmd_init(int argc, char ** argv) {
+void
+specialization_spmd_init(int argc, char ** argv) {}
 
-}
-
-void driver(int argc, char ** argv) {
-
-}
+void
+driver(int argc, char ** argv) {}
 
 } // namespace execution
 } // namespace flecsi
 
-TEST(set_topology, test1) {
-  
-} // TEST
+TEST(set_topology, test1) {} // TEST

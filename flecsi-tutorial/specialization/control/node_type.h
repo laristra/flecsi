@@ -35,21 +35,28 @@ struct node_t {
     return true;
   } // initialize
 
-  action_t const & action() const { return action_; }
-  action_t & action() { return action_; }
+  action_t const & action() const {
+    return action_;
+  }
+  action_t & action() {
+    return action_;
+  }
 
-  bitset_t const & bitset() const { return bitset_; }
-  bitset_t & bitset() { return bitset_; }
+  bitset_t const & bitset() const {
+    return bitset_;
+  }
+  bitset_t & bitset() {
+    return bitset_;
+  }
 
 private:
-
   action_t action_;
   bitset_t bitset_;
 
 }; // struct node_t
 
 std::ostream &
-operator << (std::ostream & stream, node_t const & node) {
+operator<<(std::ostream & stream, node_t const & node) {
   stream << "bitset: " << node.bitset() << std::endl;
   stream << "action: " << &node.action() << std::endl;
   return stream;

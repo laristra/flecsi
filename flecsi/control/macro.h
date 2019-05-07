@@ -29,7 +29,7 @@
   @param action The action to execute.
   @param ...    A variadic list of arguments to pass to the node that is
                 created by the call. These are defined by the user's
-                dag__ specialization type.
+                dag_u specialization type.
 
   @ingroup control
  */
@@ -38,10 +38,11 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   bool name##phase##_registered =                                              \
-    flecsi::execution::context_t::instance().control_phase_map(phase).         \
-      initialize_node(                                                         \
-        { flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),    \
-        action, ##__VA_ARGS__ })
+    flecsi::execution::context_t::instance()                                   \
+      .control_phase_map(phase)                                                \
+      .initialize_node(                                                        \
+        {flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),     \
+          action, ##__VA_ARGS__})
 
 /*!
   @def flecsi_register_control_action_edge
@@ -65,6 +66,8 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   bool registered_##to##from =                                                 \
-    flecsi::execution::context_t::instance().control_phase_map(phase).         \
-      add_edge(flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(), \
+    flecsi::execution::context_t::instance()                                   \
+      .control_phase_map(phase)                                                \
+      .add_edge(                                                               \
+        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(to)}.hash(),        \
         flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(from)}.hash())

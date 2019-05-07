@@ -3,12 +3,10 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-// includes: flecsi
-#include <flecsi/utils/tuple_wrapper.h>
-#include <flecsi/utils/common.h>
-
-// includes: other
 #include <cinchtest.h>
+
+#include <flecsi/utils/demangle.h>
+#include <flecsi/utils/tuple_wrapper.h>
 
 // =============================================================================
 // Test various constructs in tuple_wrapper.h
@@ -30,9 +28,9 @@ TEST(tuple_wrapper, all) {
   // tuple_wrapper_::tuple_t
 #ifdef __GNUG__
   EXPECT_EQ(
-     (flecsi::utils::
-      type<typename flecsi::utils::tuple_wrapper_<float,char,int>::tuple_t>()),
-     "std::tuple<float, char, int>");
+    (flecsi::utils::type<
+      typename flecsi::utils::tuple_wrapper_<float, char, int>::tuple_t>()),
+    "std::tuple<float, char, int>");
 #endif
 
   // tuple_wrapper_::get

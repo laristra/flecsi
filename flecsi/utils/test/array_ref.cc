@@ -18,7 +18,7 @@
 // Prints an array_ref<char>, as a character string
 inline void
 print_refc(const flecsi::utils::array_ref<char> & arr) {
-  for (auto c = arr.begin(); c != arr.end(); ++c)
+  for(auto c = arr.begin(); c != arr.end(); ++c)
     CINCH_CAPTURE() << *c;
   CINCH_CAPTURE() << std::endl;
 }
@@ -124,7 +124,7 @@ TEST(array_ref, all) {
   print_refc(refc(abc).substr(2));
   print_refc(refc(abc).substr(7));
   print_refc(refc(abc).substr(8));
-  print_refc(refc(abc).substr(9));   // blank
+  print_refc(refc(abc).substr(9)); // blank
   print_refc(refc(abc).substr(100)); // blank
   CINCH_CAPTURE() << std::endl;
 
@@ -133,7 +133,7 @@ TEST(array_ref, all) {
   print_refc(refc(abc).substr(2, 3));
   print_refc(refc(abc).substr(7, 5));
   print_refc(refc(abc).substr(8, 1));
-  print_refc(refc(abc).substr(9, 1));   // blank
+  print_refc(refc(abc).substr(9, 1)); // blank
   print_refc(refc(abc).substr(100, 1)); // blank
   CINCH_CAPTURE() << std::endl;
 
@@ -141,16 +141,16 @@ TEST(array_ref, all) {
   // iterators
   // ------------------------
 
-  for (auto it = abc.begin(); it != abc.end(); ++it)
+  for(auto it = abc.begin(); it != abc.end(); ++it)
     CINCH_CAPTURE() << *it;
   CINCH_CAPTURE() << std::endl;
-  for (auto it = abc.cbegin(); it != abc.cend(); ++it)
+  for(auto it = abc.cbegin(); it != abc.cend(); ++it)
     CINCH_CAPTURE() << *it;
   CINCH_CAPTURE() << std::endl;
-  for (auto it = abc.rbegin(); it != abc.rend(); ++it)
+  for(auto it = abc.rbegin(); it != abc.rend(); ++it)
     CINCH_CAPTURE() << *it;
   CINCH_CAPTURE() << std::endl;
-  for (auto it = abc.crbegin(); it != abc.crend(); ++it)
+  for(auto it = abc.crbegin(); it != abc.crend(); ++it)
     CINCH_CAPTURE() << *it;
   CINCH_CAPTURE() << std::endl;
 
@@ -192,7 +192,8 @@ TEST(array_ref, all) {
   // test at() exception
   try {
     CINCH_CAPTURE() << cap3.at(3) << std::endl;
-  } catch (...) {
+  }
+  catch(...) {
     CINCH_CAPTURE() << "Caught an (intentionally generated!) test exception";
   }
   CINCH_CAPTURE() << std::endl;
@@ -248,7 +249,7 @@ TEST(array_ref, all) {
 
     f.remove_prefix(1); // ==> nothing left!
     EXPECT_EQ(f.size(), 0);
-    for (auto it = f.begin(); it != f.end(); ++it)
+    for(auto it = f.begin(); it != f.end(); ++it)
       assert(false);
 
     // pop_*()

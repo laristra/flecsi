@@ -12,8 +12,8 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/execution/context.h>
 #include <flecsi-tutorial/specialization/control/control.h>
+#include <flecsi/execution/context.h>
 
 namespace flecsi {
 namespace tutorial {

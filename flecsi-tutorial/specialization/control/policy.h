@@ -16,9 +16,9 @@
 
 #include <tuple>
 
-#include <flecsi/control/control.h>
-#include <flecsi/utils/common.h>
 #include <flecsi-tutorial/specialization/control/node_type.h>
+#include <flecsi/control/control.h>
+#include <flecsi/utils/typeify.h>
 
 namespace flecsi {
 namespace tutorial {
@@ -52,7 +52,7 @@ enum action_attributes_t : size_t {
 
 struct control_policy_t {
 
-  using control_t = flecsi::control::control__<control_policy_t>;
+  using control_t = flecsi::control::control_u<control_policy_t>;
 
   using node_t = flecsi::tutorial::node_t;
 
@@ -60,26 +60,21 @@ struct control_policy_t {
     return control_t::instance().step()++ < 5;
   } // evolve
 
-  #define phase(name) flecsi::control::phase_<name>
+#define phase(name) flecsi::control::phase_<name>
 
-  using evolve = flecsi::control::cycle__<
-    evolve_control, // stopping predicate
+  using evolve = flecsi::control::cycle_u<evolve_control, // stopping predicate
     phase(advance),
     phase(analyze),
     phase(io),
-    phase(mesh)
-  >;
+    phase(mesh)>;
 
-  using phases = std::tuple<
-    phase(initialize),
-    evolve,
-    phase(finalize)
-  >;
+  using phases = std::tuple<phase(initialize), evolve, phase(finalize)>;
 
-  size_t & step() { return step_; }
+  size_t & step() {
+    return step_;
+  }
 
 private:
-
   size_t step_;
 
 }; // struct control_policy_t

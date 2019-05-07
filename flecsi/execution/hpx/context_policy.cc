@@ -27,26 +27,23 @@ namespace flecsi {
 namespace execution {
 
 hpx_context_policy_t::hpx_context_policy_t()
-  : min_reduction_{0}
-  , max_reduction_{0}
-{
+  : min_reduction_{0}, max_reduction_{0} {
 #if defined(_MSC_VER)
   hpx::detail::init_winsocket();
 #endif
 }
 
 // Return the color for which the context was initialized.
-size_t hpx_context_policy_t::color() const
-{
+size_t
+hpx_context_policy_t::color() const {
   return hpx::get_locality_id();
 }
 
 // Main HPX thread, does nothing but wait for the application to exit
 int
-hpx_context_policy_t::hpx_main(
-    int (*driver)(int, char * []),
-    int argc,
-    char * argv[]) {
+hpx_context_policy_t::hpx_main(int (*driver)(int, char *[]),
+  int argc,
+  char * argv[]) {
 
   // initialize executors (possible only after runtime is active)
   exec_ = hpx::threads::executors::pool_executor{"default"};
@@ -62,26 +59,23 @@ hpx_context_policy_t::hpx_main(
 }
 
 int
-hpx_context_policy_t::start_hpx(
-    int (*driver)(int, char * []),
-    int argc,
-    char * argv[]) {
+hpx_context_policy_t::start_hpx(int (*driver)(int, char *[]),
+  int argc,
+  char * argv[]) {
 
   // Create the resource partitioner
-  std::vector<std::string> const cfg = {
-      // allocate at least two cores
-      "hpx.force_min_os_threads!=2",
-      // make sure hpx_main is always executed
-      "hpx.run_hpx_main!=1",
-      // allow for unknown command line options
-      "hpx.commandline.allow_unknown!=1",
-      // disable HPX' short options
-      "hpx.commandline.aliasing!=0"
-  };
+  std::vector<std::string> const cfg = {// allocate at least two cores
+    "hpx.force_min_os_threads!=2",
+    // make sure hpx_main is always executed
+    "hpx.run_hpx_main!=1",
+    // allow for unknown command line options
+    "hpx.commandline.allow_unknown!=1",
+    // disable HPX' short options
+    "hpx.commandline.aliasing!=0"};
 
   hpx::resource::partitioner rp{
-      hpx::util::bind_front(&hpx_context_policy_t::hpx_main, this, driver),
-      argc, argv, cfg};
+    hpx::util::bind_front(&hpx_context_policy_t::hpx_main, this, driver), argc,
+    argv, cfg};
 
   // Create a thread pool encapsulating the default scheduler
   rp.create_thread_pool("default", hpx::resource::local_priority_fifo);

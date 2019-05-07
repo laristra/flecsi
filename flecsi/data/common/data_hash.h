@@ -31,7 +31,7 @@ namespace data {
 ///
 struct data_hash_key_t : public std::pair<size_t, size_t> {
   data_hash_key_t(const std::pair<size_t, size_t> & key)
-      : std::pair<size_t, size_t>(key) {}
+    : std::pair<size_t, size_t>(key) {}
 
   ///
   /// Return the hash of the namespace.

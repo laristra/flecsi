@@ -31,7 +31,7 @@ using adjacency_info_t = flecsi::coloring::adjacency_info_t;
 template<
   size_t PS
 >
-using mesh = data_client_handle__<mesh_t, PS>;
+using mesh = data_client_handle_u<mesh_t, PS>;
 
 template<
   size_t EP,
@@ -106,7 +106,7 @@ void initialize_mesh(mesh<wo> m) {
 
 } // initialize_mesh
 
-flecsi_register_task(initialize_mesh, flecsi::execution, loc, single);
+flecsi_register_task(initialize_mesh, flecsi::execution, loc, index );
 
 //----------------------------------------------------------------------------//
 // Initialize pressure
@@ -123,7 +123,7 @@ void initialize_pressure(mesh<ro> m, field<rw, rw, ro> p) {
 
 } // initialize_pressure
 
-flecsi_register_task(initialize_pressure, flecsi::execution, loc, single);
+flecsi_register_task(initialize_pressure, flecsi::execution, loc, index);
 
 void print_pressure(mesh<ro> m, field<rw, rw, ro> p) {
   auto & context { execution::context_t::instance() };
@@ -136,7 +136,7 @@ void print_pressure(mesh<ro> m, field<rw, rw, ro> p) {
 
 } // initialize_pressure
 
-flecsi_register_task(print_pressure, flecsi::execution, loc, single);
+flecsi_register_task(print_pressure, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Top-Level Specialization Initialization
@@ -191,7 +191,7 @@ void specialization_spmd_init(int argc, char ** argv) {
   } // scope
 
   auto mh = flecsi_get_client_handle(mesh_t, clients, m);
-  flecsi_execute_task(initialize_mesh, flecsi::execution, single, mh);
+  flecsi_execute_task(initialize_mesh, flecsi::execution, index, mh);
 
 } // specialization_spmd_ini
 
@@ -204,8 +204,8 @@ void driver(int argc, char ** argv) {
   auto mh = flecsi_get_client_handle(mesh_t, clients, m);
   auto ph = flecsi_get_handle(mh, data, pressure, double, dense, 0);
 
-  flecsi_execute_task(initialize_pressure, flecsi::execution, single, mh, ph);
-  flecsi_execute_task(print_pressure, flecsi::execution, single, mh, ph);
+  flecsi_execute_task(initialize_pressure, flecsi::execution, index, mh, ph);
+  flecsi_execute_task(print_pressure, flecsi::execution, index, mh, ph);
 
 } // driver
 

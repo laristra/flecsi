@@ -30,12 +30,8 @@ namespace execution {
 
  @ingroup legion-execution
  */
-template<
-  typename R,
-  launch_type_t launch = launch_type_t::single
->
-struct mpi_future__
-{
+template<typename R, launch_type_t launch = launch_type_t::single>
+struct mpi_future_u {
   using result_t = R;
 
   /*!
@@ -46,46 +42,45 @@ struct mpi_future__
   /*!
     get() mothod
    */
-  const result_t & get(size_t index = 0) const { return result_; }
+  const result_t & get(size_t index = 0) const {
+    return result_;
+  }
 
-//private:
+  // private:
 
   /*!
     set method
    */
-  void set(const result_t & result) { result_ = result; }
+  void set(const result_t & result) {
+    result_ = result;
+  }
 
   operator R &() {
     return result_;
   }
 
-  operator const R  &() const {
+  operator const R &() const {
     return result_;
   }
 
   result_t result_;
 
-}; // struct mpi_future__
+}; // struct mpi_future_u
 
 /*!
  FIXME documentation
  */
 template<launch_type_t launch>
-struct mpi_future__<void, launch>
-{
+struct mpi_future_u<void, launch> {
   /*!
    FIXME documentation
    */
   void wait() {}
 
-}; // struct mpi_future__
+}; // struct mpi_future_u
 
-template<
-    typename RETURN,
-    launch_type_t launch>
-using flecsi_future = mpi_future__<
-    RETURN,
-    launch>;
+template<typename RETURN, launch_type_t launch>
+using flecsi_future = mpi_future_u<RETURN, launch>;
 
 } // namespace execution
 } // namespace flecsi

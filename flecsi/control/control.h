@@ -15,12 +15,12 @@
 
 /*! @file */
 
+#include <flecsi/control/phase_walker.h>
+#include <flecsi/utils/dag.h>
+
 #include <functional>
 #include <map>
 #include <vector>
-
-#include <flecsi/control/phase_walker.h>
-#include <flecsi/utils/dag.h>
 
 #include <flecsi-config.h>
 
@@ -31,16 +31,16 @@ namespace control {
  */
 
 template<typename CONTROL_POLICY>
-struct control__ : public CONTROL_POLICY {
+struct control_u : public CONTROL_POLICY {
 
-  static control__ & instance() {
-    static control__ c;
+  using dag_t = flecsi::utils::dag_u<typename CONTROL_POLICY::node_t>;
+  using node_t = typename dag_t::node_t;
+  using phase_walker_t = phase_walker_u<control_u<CONTROL_POLICY>>;
+
+  static control_u & instance() {
+    static control_u c;
     return c;
   } // instance
-
-  using dag_t = flecsi::utils::dag__<typename CONTROL_POLICY::node_t>;
-  using node_t = typename dag_t::node_t;
-  using phase_walker_t = phase_walker__<control__<CONTROL_POLICY>>;
 
   static int execute(int argc, char ** argv) {
     instance().sort_phases();
@@ -50,7 +50,7 @@ struct control__ : public CONTROL_POLICY {
   } // execute
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-  using phase_writer_t = phase_writer__<control__<CONTROL_POLICY>>;
+  using phase_writer_t = phase_writer_u<control_u<CONTROL_POLICY>>;
   using graphviz_t = flecsi::utils::graphviz_t;
 
   void write(graphviz_t & gv) {
@@ -66,7 +66,7 @@ struct control__ : public CONTROL_POLICY {
     @param phase The control point id or \em phase. Phases are defined
                  by the specialization.
    */
-  
+
   dag_t & phase_map(size_t phase, std::string const & label = "default") {
     if(registry_.find(phase) == registry_.end()) {
       registry_[phase].label() = label;
@@ -87,10 +87,9 @@ struct control__ : public CONTROL_POLICY {
   } // sorted_phase_map
 
 private:
-
   void sort_phases() {
     if(sorted_.size() == 0) {
-      for(auto & d: registry_) {
+      for(auto & d : registry_) {
         sorted_[d.first] = d.second.sort();
       } // for
     } // if
@@ -99,7 +98,7 @@ private:
   std::map<size_t, dag_t> registry_;
   std::map<size_t, std::vector<node_t>> sorted_;
 
-}; // control__
+}; // control_u
 
-} // namespace flecsi
 } // namespace control
+} // namespace flecsi

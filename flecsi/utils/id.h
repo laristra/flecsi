@@ -29,43 +29,39 @@ namespace utils {
 
 using local_id_t = __uint128_t;
 
-template<
-    std::size_t PBITS,
-    std::size_t EBITS,
-    std::size_t FBITS,
-    std::size_t GBITS>
-class id_ {
+template<std::size_t PBITS,
+  std::size_t EBITS,
+  std::size_t FBITS,
+  std::size_t GBITS>
+class id_
+{
 public:
   static constexpr std::size_t FLAGS_UNMASK =
-      ~(((std::size_t(1) << FBITS) - std::size_t(1)) << 59);
+    ~(((std::size_t(1) << FBITS) - std::size_t(1)) << 59);
 
-  static_assert(
-      PBITS + EBITS + FBITS + GBITS + 4 == 128,
-      "invalid id bit configuration");
+  static_assert(PBITS + EBITS + FBITS + GBITS + 4 == 128,
+    "invalid id bit configuration");
 
   // FLAGS_UNMASK's "<< 59" would seem to require this... - martin
-  static_assert(
-      sizeof(std::size_t) * CHAR_BIT >= 64,
-      "need std::size_t >= 64 bit");
+  static_assert(sizeof(std::size_t) * CHAR_BIT >= 64,
+    "need std::size_t >= 64 bit");
 
   id_() = default;
   id_(id_ &&) = default;
 
   id_(const id_ & id)
-      : dimension_(id.dimension_), domain_(id.domain_),
-        partition_(id.partition_), entity_(id.entity_), flags_(id.flags_),
-        global_(id.global_) {}
+    : dimension_(id.dimension_), domain_(id.domain_), partition_(id.partition_),
+      entity_(id.entity_), flags_(id.flags_), global_(id.global_) {}
 
   explicit id_(const std::size_t local_id)
-      : dimension_(0), domain_(0), partition_(0), entity_(local_id), flags_(0),
-        global_(0) {}
+    : dimension_(0), domain_(0), partition_(0), entity_(local_id), flags_(0),
+      global_(0) {}
 
   template<std::size_t D, std::size_t M>
-  static id_ make(
-      const std::size_t local_id,
-      const std::size_t partition_id = 0,
-      const std::size_t flags = 0,
-      const std::size_t global = 0) {
+  static id_ make(const std::size_t local_id,
+    const std::size_t partition_id = 0,
+    const std::size_t flags = 0,
+    const std::size_t global = 0) {
     id_ global_id;
     global_id.dimension_ = D;
     global_id.domain_ = M;
@@ -78,12 +74,11 @@ public:
   }
 
   template<std::size_t M>
-  static id_ make(
-      const std::size_t dim,
-      const std::size_t local_id,
-      const std::size_t partition_id = 0,
-      const std::size_t flags = 0,
-      const std::size_t global = 0) {
+  static id_ make(const std::size_t dim,
+    const std::size_t local_id,
+    const std::size_t partition_id = 0,
+    const std::size_t flags = 0,
+    const std::size_t global = 0) {
     id_ global_id;
     global_id.dimension_ = dim;
     global_id.domain_ = M;
@@ -95,13 +90,12 @@ public:
     return global_id;
   }
 
-  static id_ make(
-      const std::size_t dim,
-      const std::size_t local_id,
-      const std::size_t partition_id = 0,
-      const std::size_t flags = 0,
-      const std::size_t global = 0,
-      const std::size_t domain = 0) {
+  static id_ make(const std::size_t dim,
+    const std::size_t local_id,
+    const std::size_t partition_id = 0,
+    const std::size_t flags = 0,
+    const std::size_t global = 0,
+    const std::size_t domain = 0) {
     id_ global_id;
     global_id.dimension_ = dim;
     global_id.domain_ = domain;

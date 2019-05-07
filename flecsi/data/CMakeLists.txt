@@ -22,6 +22,7 @@ set(data_HEADERS
   client.h
   common/data_hash.h
   common/data_types.h
+  common/data_reference.h
   common/privilege.h
   common/registration_wrapper.h
   data.h
@@ -245,8 +246,7 @@ if(ENABLE_PARMETIS)
     POLICY ${UNIT_POLICY}
     THREADS 2
     NOCI
-    FOLDER "Tests/Data"
-    )
+  )
 
 endif()
 

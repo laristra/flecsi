@@ -47,10 +47,10 @@ TEST(index_space, index_space) {
 
   pseudo_random rng;
 
-  using index_space_t = index_space__<object *, true, true, false>;
+  using index_space_t = index_space_u<object *, true, true, false>;
   index_space_t is;
 
-  for (size_t i = 0; i < 10000; ++i) {
+  for(size_t i = 0; i < 10000; ++i) {
     is << new object(i);
     is[i]->mass = rng.uniform(0.0, 1.0);
   }
@@ -87,13 +87,13 @@ TEST(index_space, index_space) {
 TEST(index_space, bin) {
 
   // create an index space object for testing
-  using index_space_t = index_space__<object, true, true, false>;
+  using index_space_t = index_space_u<object, true, true, false>;
   index_space_t is;
 
   constexpr size_t num_objects = 10;
 
   // initialize it
-  for (size_t i = 0; i < num_objects; ++i) {
+  for(size_t i = 0; i < num_objects; ++i) {
     is.push_back(object(i));
     is[i].tag = (i < num_objects / 2) ? 0 : 1;
   }
@@ -108,11 +108,12 @@ TEST(index_space, bin) {
   ASSERT_EQ(bins.at(1).size(), num_objects / 2);
 
   // make sure what is in the bins is correct.
-  for (size_t i = 0; i < num_objects; ++i) {
-    if (i < num_objects / 2) {
+  for(size_t i = 0; i < num_objects; ++i) {
+    if(i < num_objects / 2) {
       ASSERT_EQ(bins.at(0)[i].id.index_space_index(), i);
       ASSERT_EQ(bins.at(0)[i].tag, 0);
-    } else {
+    }
+    else {
       auto j = i - num_objects / 2;
       ASSERT_EQ(bins.at(1)[j].id.index_space_index(), i);
       ASSERT_EQ(bins.at(1)[j].tag, 1);
