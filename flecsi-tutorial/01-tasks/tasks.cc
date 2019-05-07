@@ -18,13 +18,14 @@
 
 #include <iostream>
 
-#include<flecsi/execution/execution.h>
+#include <flecsi/execution/execution.h>
 
 namespace example {
 
 // This is the definition of simple_task
 
-void simple_task() {
+void
+simple_task() {
 
   // Print message from inside of the task
 
@@ -45,7 +46,8 @@ flecsi_register_task(simple_task, example, loc, single);
 namespace flecsi {
 namespace execution {
 
-void driver(int argc, char ** argv) {
+void
+driver(int argc, char ** argv) {
 
   // This time, the driver executes a task to do the output
 

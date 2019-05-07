@@ -26,6 +26,7 @@
 
 #include <legion.h>
 
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/utils/tuple_walker.h>
 
 clog_register_tag(epilog);
@@ -82,15 +83,14 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       bool write_phase{
         (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw)};
 
-      if (write_phase && (*h.write_phase_started)) {
+      if(write_phase && (*h.write_phase_started)) {
 
         {
-          clog(trace) << " WRITE PHASE EPILOGUE"
-                      << std::endl;
+          clog(trace) << " WRITE PHASE EPILOGUE" << std::endl;
         } // scope
 
         // As user
-          // Phase READ
+        // Phase READ
         *(h.write_phase_started) = false;
         // better to move copy here than in prolog
       } // if write phase
@@ -103,7 +103,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(sparse_accessor<T,
+  void handle(ragged_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
@@ -111,40 +111,55 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
     bool write_phase{(SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw)};
 
-    if (write_phase && (*h.write_phase_started)) {
+    if(write_phase && (*h.write_phase_started)) {
 
-        clog(trace) << " WRITE PHASE EPILOGUE"
-                    << std::endl;
+      clog(trace) << " WRITE PHASE EPILOGUE" << std::endl;
 
       *(h.write_phase_started) = false;
     } // if write phase
-  }
+  } // handle
 
   template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(ragged_accessor<T,
+  void handle(sparse_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    handle(reinterpret_cast<sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-        SHARED_PERMISSIONS, GHOST_PERMISSIONS> &>(a));
+    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
+    handle(static_cast<base_t &>(a));
   } // handle
 
   template<typename T>
-  void handle(sparse_mutator<T> & m) {
+  void handle(ragged_mutator<T> & m) {
     auto & h = m.h_;
 
-    if ((*h.write_phase_started)){ 
-        clog(trace) << " WRITE PHASE EPILOGUE"<<std::endl;
+    if((*h.write_phase_started)) {
+      clog(trace) << " WRITE PHASE EPILOGUE" << std::endl;
       *(h.write_phase_started) = false;
     } // if write phase
   }
 
   template<typename T>
-  void handle(ragged_mutator<T> & m) {
-    handle(reinterpret_cast<sparse_mutator<T> &>(m));
+  void handle(sparse_mutator<T> & m) {
+    using base_t = typename sparse_mutator<T>::base_t;
+    handle(static_cast<base_t &>(m));
+  }
+
+  /*!
+   Handle individual list items
+   */
+  template<typename T,
+    std::size_t N,
+    template<typename, std::size_t>
+    typename Container,
+    typename =
+      std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
+  void handle(Container<T, N> & list) {
+    for(auto & item : list)
+      handle(item);
   }
 
   /*!

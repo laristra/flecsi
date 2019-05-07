@@ -619,8 +619,10 @@ public:
     bool OWNED2,
     bool SORTED2,
     class F2,
-    template<typename, typename...> class ID_STORAGE_TYPE2,
-    template<typename, typename...> class STORAGE_TYPE2>
+    template<typename, typename...>
+    class ID_STORAGE_TYPE2,
+    template<typename, typename...>
+    class STORAGE_TYPE2>
   index_space_u(const index_space_u<S,
                   STORAGE2,
                   OWNED2,
@@ -1048,8 +1050,10 @@ public:
     bool OWNED2,
     bool SORTED2,
     class F2,
-    template<typename, typename...> class INDEX_STORAGE_TYPE2,
-    template<typename, typename...> class STORAGE_TYPE2>
+    template<typename, typename...>
+    class INDEX_STORAGE_TYPE2,
+    template<typename, typename...>
+    class STORAGE_TYPE2>
   void set_master(const index_space_u<T,
     STORAGE2,
     OWNED2,
@@ -1069,8 +1073,10 @@ public:
     bool OWNED2,
     bool SORTED2,
     class F2,
-    template<typename, typename...> class INDEX_STORAGE_TYPE2,
-    template<typename, typename...> class STORAGE_TYPE2>
+    template<typename, typename...>
+    class INDEX_STORAGE_TYPE2,
+    template<typename, typename...>
+    class STORAGE_TYPE2>
   void set_master(index_space_u<T,
     STORAGE2,
     OWNED2,
@@ -1628,8 +1634,10 @@ private:
     bool,
     bool,
     class,
-    template<class, class...> class,
-    template<class, class...> class>
+    template<class, class...>
+    class,
+    template<class, class...>
+    class>
   friend class index_space_u;
 
   friend class connectivity_t;

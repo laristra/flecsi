@@ -13,7 +13,8 @@
 
 //! \brief A simple, portable random number generator that should yield the
 //!        reproduceable results accross all platforms.
-class pseudo_random {
+class pseudo_random
+{
 public:
   //! \brief The main constructor.
   //! \param [in] seed  The seed to use on constructon.

@@ -15,11 +15,14 @@
 
 /*! @file */
 
+#include <algorithm>
+#include <iostream>
 #include <unordered_set>
 
 #include <cinchlog.h>
 
 #include <flecsi/data/accessor.h>
+#include <flecsi/data/common/data_types.h>
 #include <flecsi/data/sparse_data_handle.h>
 #include <flecsi/topology/index_space.h>
 
@@ -60,8 +63,8 @@ struct accessor_u<data::sparse,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS> : public accessor_u<data::base,
-                         T,
+  GHOST_PERMISSIONS> : public accessor_u<data::ragged,
+                         data::sparse_entry_value_u<T>,
                          EXCLUSIVE_PERMISSIONS,
                          SHARED_PERMISSIONS,
                          GHOST_PERMISSIONS>,
@@ -72,7 +75,13 @@ struct accessor_u<data::sparse,
     GHOST_PERMISSIONS>;
 
   using offset_t = typename handle_t::offset_t;
-  using entry_value_t = typename handle_t::entry_value_t;
+  using entry_value_t = data::sparse_entry_value_u<T>;
+
+  using base_t = accessor_u<data::ragged,
+    entry_value_t,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS>;
 
   using index_space_t =
     topology::index_space_u<topology::simple_entry_u<size_t>, true>;
@@ -81,12 +90,70 @@ struct accessor_u<data::sparse,
   //! Copy constructor.
   //-------------------------------------------------------------------------//
 
-  accessor_u(const accessor_u & a) : handle(a.handle) {}
+  accessor_u(const accessor_u & a) : base_t(a) {}
 
-  accessor_u(const sparse_data_handle_u<T, 0, 0, 0> & h)
-    : handle(reinterpret_cast<const handle_t &>(h)) {}
+  accessor_u(const typename sparse_data_handle_u<T, 0, 0, 0>::base_t & h)
+    : base_t(h) {}
 
+  //-------------------------------------------------------------------------//
+  //! Main accessor
+  //!
+  //! Access a sparse element.  The element has to exist because we
+  //! return a reference to it.
+  //-------------------------------------------------------------------------//
   T & operator()(size_t index, size_t entry) {
+    auto itr = lower_bound(index, entry);
+    assert(itr && itr->entry == entry && "sparse accessor: unmapped entry");
+
+    return itr->value;
+  } // operator ()
+
+  //-------------------------------------------------------------------------//
+  //! Main accessor (const version)
+  //!
+  //! Access a sparse element.  Return an emtpy value if not found.  The empty
+  //! value is specified by the default constructor of the underlying type.
+  //-------------------------------------------------------------------------//
+  const T & operator()(size_t index, size_t entry) const {
+    auto itr = lower_bound(index, entry);
+    assert(itr && itr->entry == entry && "sparse accessor: unmapped entry");
+
+    if(itr && itr->entry == entry)
+      return itr->value;
+    else
+      return T{};
+  } // operator ()
+
+  //! a struct used for accessing elements.
+  struct result_t {
+    const T * value_ptr = nullptr; //!< a pointer to the element
+    bool exists = false; //!< a boolean, true if element exists
+  };
+
+  //-------------------------------------------------------------------------//
+  //! Accessor with boolean
+  //!
+  //! Access a sparse element.  Returns a pointer to the element (null if not
+  //! found), and a boolean specifying whether the element existed.
+  //-------------------------------------------------------------------------//
+  result_t at(size_t index, size_t entry) const {
+    auto itr = lower_bound(index, entry);
+
+    if(itr && itr->entry == entry)
+      return result_t{&itr->value, true};
+    else
+      return result_t{nullptr, false};
+  } // at()
+
+  template<typename E>
+  T & operator()(E * e, size_t entry) {
+    return this->operator()(e->template id<0>(), entry);
+  } // operator ()
+
+  // for row 'index', return pointer to first entry not less
+  // than 'entry'
+  entry_value_t * lower_bound(size_t index, size_t entry) {
+    auto & handle = base_t::handle;
     assert(index < handle.num_total_ && "sparse accessor: index out of bounds");
 
     const offset_t & oi = handle.offsets[index];
@@ -94,25 +161,49 @@ struct accessor_u<data::sparse,
     entry_value_t * start = handle.entries + oi.start();
     entry_value_t * end = start + oi.count();
 
+    // find where entry should be
     entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
       [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
         return k1.entry < k2.entry;
       });
 
-    assert(itr != end && "sparse accessor: unmapped entry");
+    return (itr == end ? nullptr : itr);
 
-    return itr->value;
-  } // operator ()
+  } // lower_bound
 
-  template<typename E>
-  T & operator()(E * e, size_t entry) {
-    return this->operator()(e->template id<0>(), entry);
-  } // operator ()
+  // for row 'index', return pointer to first entry not less
+  // than 'entry'
+  const entry_value_t * lower_bound(size_t index, size_t entry) const {
+    auto & handle = base_t::handle;
+    assert(index < handle.num_total_ && "sparse accessor: index out of bounds");
+
+    const offset_t & oi = handle.offsets[index];
+
+    const entry_value_t * start = handle.entries + oi.start();
+    const entry_value_t * end = start + oi.count();
+
+    // find where entry should be
+    const entry_value_t * itr =
+      std::lower_bound(start, end, entry_value_t(entry),
+        [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
+          return k1.entry < k2.entry;
+        });
+
+    return (itr == end ? nullptr : itr);
+
+  } // lower_bound
+
+  // for row 'index', test whether entry 'entry' is present
+  bool contains(size_t index, size_t entry) const {
+    auto itr = lower_bound(index, entry);
+    return (itr && itr->entry == entry);
+  } // contains
 
   //-------------------------------------------------------------------------//
   //! Return all entries used over all indices.
   //-------------------------------------------------------------------------//
   index_space_t entries() const {
+    auto & handle = base_t::handle;
     size_t id = 0;
     index_space_t is;
     std::unordered_set<size_t> found;
@@ -140,6 +231,7 @@ struct accessor_u<data::sparse,
   //! Return all entries used over the specified index.
   //-------------------------------------------------------------------------//
   index_space_t entries(size_t index) const {
+    auto & handle = base_t::handle;
     clog_assert(
       index < handle.num_total_, "sparse accessor: index out of bounds");
 
@@ -163,6 +255,7 @@ struct accessor_u<data::sparse,
   //! Return all indices allocated.
   //-------------------------------------------------------------------------//
   index_space_t indices() const {
+    auto & handle = base_t::handle;
     index_space_t is;
     size_t id = 0;
 
@@ -181,19 +274,13 @@ struct accessor_u<data::sparse,
   //! Return all indices allocated for a given entry.
   //-------------------------------------------------------------------------//
   index_space_t indices(size_t entry) const {
+    auto & handle = base_t::handle;
     index_space_t is;
     size_t id = 0;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
-      const offset_t & oi = handle.offsets[index];
-
-      entry_value_t * start = handle.entries + oi.start();
-      entry_value_t * end = start + oi.count();
-
-      if(std::binary_search(start, end, entry_value_t(entry),
-           [](const auto & k1, const auto & k2) -> bool {
-             return k1.entry < k2.entry;
-           })) {
+      auto itr = lower_bound(index, entry);
+      if(itr && itr->entry == entry) {
         is.push_back({id++, index});
       }
     }
@@ -202,6 +289,7 @@ struct accessor_u<data::sparse,
   }
 
   void dump() const {
+    auto & handle = base_t::handle;
     for(size_t i = 0; i < handle.num_total_; ++i) {
       const offset_t & offset = handle.offsets[i];
       std::cout << "index: " << i << std::endl;
@@ -218,10 +306,9 @@ struct accessor_u<data::sparse,
   //! Return the maximum possible entries
   //-------------------------------------------------------------------------//
   auto max_entries() const noexcept {
+    auto & handle = base_t::handle;
     return handle.max_entries_per_index;
   }
-
-  handle_t handle;
 };
 
 template<typename T,

@@ -145,14 +145,13 @@ struct mpi_execution_policy_t {
     auto function = context_.function(TASK);
 
     // Make a tuple from the task arguments.
-    ARG_TUPLE task_args = std::make_tuple(args...);
+    ARG_TUPLE task_args = std::make_tuple(std::forward<ARGS>(args)...);
 
     // run task_prolog to copy ghost cells.
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
 
-    auto future = executor_u<RETURN, ARG_TUPLE>::execute(
-      function, std::forward<ARG_TUPLE>(task_args));
+    auto future = executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
 
     task_epilog_t task_epilog;
     task_epilog.walk(task_args);
@@ -164,7 +163,7 @@ struct mpi_execution_policy_t {
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
 
     if constexpr(REDUCTION != ZERO) {
-      
+
       MPI_Datatype datatype;
 
       if constexpr(!std::is_pod_v<RETURN>) {
@@ -189,8 +188,8 @@ struct mpi_execution_policy_t {
       const RETURN sendbuf = future.get();
       RETURN recvbuf;
 
-      MPI_Allreduce(&sendbuf, &recvbuf, 1, datatype, reduction_op->second,
-        MPI_COMM_WORLD);
+      MPI_Allreduce(
+        &sendbuf, &recvbuf, 1, datatype, reduction_op->second, MPI_COMM_WORLD);
 
       mpi_future_u<RETURN> gfuture;
       gfuture.set(recvbuf);

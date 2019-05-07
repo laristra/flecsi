@@ -70,8 +70,7 @@ struct reduction_wrapper_u {
 
     // Check if operator has already been registered
     clog_assert(reduction_ops.find(HASH) == reduction_ops.end(),
-      typeid(TYPE).name()
-        << " has already been registered with this name");
+      typeid(TYPE).name() << " has already been registered with this name");
 
     // Create the MPI data type if it isn't P.O.D.
     if constexpr(!std::is_pod_v<lhs_t>) {

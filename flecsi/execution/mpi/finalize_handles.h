@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
@@ -33,26 +34,14 @@ namespace flecsi {
 namespace execution {
 
 struct finalize_handles_t
-  : public flecsi::utils::tuple_walker_u<finalize_handles_t>
-{
-  /*!
-  Nothing needs to be done to finalize a dense data handle.
-   */
-  template<typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-  void handle(dense_data_handle_u<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & h) {} // handle
+  : public flecsi::utils::tuple_walker_u<finalize_handles_t> {
 
   template<typename T>
-  void handle(sparse_mutator<T> & m) {
+  void handle(ragged_mutator<T> & m) {
     auto & h = m.h_;
 
     using offset_t = typename mutator_handle_u<T>::offset_t;
-    using entry_value_t = typename mutator_handle_u<T>::entry_value_t;
+    using value_t = typename mutator_handle_u<T>::value_t;
     using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
 
     auto & context = context_t::instance();
@@ -63,8 +52,7 @@ struct finalize_handles_t
     auto & sparse_field_metadata =
       context.registered_sparse_field_metadata().at(h.fid);
 
-    entry_value_t * entries =
-      reinterpret_cast<entry_value_t *>(&(*h.entries)[0]);
+    value_t * entries = reinterpret_cast<value_t *>(&(*h.entries)[0]);
     auto offsets = &(*h.offsets)[0];
     auto shared_data = entries + *h.reserve; // ci.entries[1];
     auto ghost_data =
@@ -73,13 +61,13 @@ struct finalize_handles_t
 
     // Get entry_values
     MPI_Datatype shared_ghost_type;
-    MPI_Type_contiguous(sizeof(entry_value_t), MPI_BYTE, &shared_ghost_type);
+    MPI_Type_contiguous(sizeof(value_t), MPI_BYTE, &shared_ghost_type);
     MPI_Type_commit(&shared_ghost_type);
 
     MPI_Win win;
     MPI_Win_create(shared_data,
-      sizeof(entry_value_t) * h.num_shared() * h.max_entries_per_index(),
-      sizeof(entry_value_t), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+      sizeof(value_t) * h.num_shared() * h.max_entries_per_index(),
+      sizeof(value_t), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
     MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
     MPI_Win_start(sparse_field_metadata.ghost_owners_grp, 0, win);
@@ -153,6 +141,12 @@ struct finalize_handles_t
     }
   } // handle
 
+  template<typename T>
+  void handle(sparse_mutator<T> & m) {
+    using base_t = typename sparse_mutator<T>::base_t;
+    handle(static_cast<base_t &>(m));
+  }
+
   /*!
     Finalize set topology storage. This inspects index based sizes and
     writes out appropriate metadata.
@@ -166,18 +160,6 @@ struct finalize_handles_t
     auto storage = h.storage();
     storage->finalize_storage();
   } // handle
-
-  /*!
-   No special handling is currently needed here. No-op.
-   */
-  template<typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-  void handle(ragged_accessor<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {} // handle
 
   /*!
    The finalize_handles_t type can be called to walk task args after task
@@ -209,10 +191,18 @@ struct finalize_handles_t
     h.delete_storage();
   } // handle
 
-  template<typename T>
-  void handle(ragged_mutator<T> & m) {
-    // TODO: fix
-    handle(reinterpret_cast<sparse_mutator<T> &>(m));
+  /*!
+   Handle individual list items
+   */
+  template<typename T,
+    std::size_t N,
+    template<typename, std::size_t>
+    typename Container,
+    typename =
+      std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
+  void handle(Container<T, N> & list) {
+    for(auto & item : list)
+      handle(item);
   }
 
   //-----------------------------------------------------------------------//
@@ -220,10 +210,7 @@ struct finalize_handles_t
   //-----------------------------------------------------------------------//
 
   template<typename T>
-  static typename std::enable_if_t<
-    !std::is_base_of<dense_data_handle_base_t, T>::value &&
-    !std::is_base_of<data_client_handle_base_t, T>::value>
-  handle(T &) {} // handle
+  void handle(T &) {} // handle
 
 }; // struct finalize_handles_t
 

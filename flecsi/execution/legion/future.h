@@ -46,11 +46,11 @@ public:
 
   virtual void wait(bool silence_warnings = false) = 0;
 
-//  /*!
-//    Abstract interface to get a task result.
-//   */
+  //  /*!
+  //    Abstract interface to get a task result.
+  //   */
 
-//  virtual RETURN get(size_t index = 0, bool silence_warnings = false) = 0;
+  //  virtual RETURN get(size_t index = 0, bool silence_warnings = false) = 0;
 
   virtual void init_future(void) = 0;
 
@@ -79,15 +79,14 @@ struct legion_future_u {};
 template<typename RETURN>
 struct legion_future_u<RETURN, launch_type_t::single> : public future_base_t {
 
-  legion_future_u(const legion_future_u &f)
-  {
-    data_=f.data_;
-    initialized_=f.initialized_;
+  legion_future_u(const legion_future_u & f) {
+    data_ = f.data_;
+    initialized_ = f.initialized_;
     auto legion_runtime = Legion::Runtime::get_runtime();
-    if (initialized_)
+    if(initialized_)
       legion_future_ = Legion::Future::from_value(legion_runtime, data_);
     else
-      legion_future_=f.legion_future_;
+      legion_future_ = f.legion_future_;
   }
 
   /*!
@@ -131,11 +130,11 @@ struct legion_future_u<RETURN, launch_type_t::single> : public future_base_t {
     launcher.add_future(legion_future_);
   }
 
-  void init_future(void){
+  void init_future(void) {
     initialized_ = true;
   }
 
-  void finalize_future(void){
+  void finalize_future(void) {
     initialized_ = false;
   }
 
@@ -157,7 +156,9 @@ struct legion_future_u<RETURN, launch_type_t::single> : public future_base_t {
     return stream;
   } // switch
 
-  Legion::Future & raw_future() { return legion_future_; }
+  Legion::Future & raw_future() {
+    return legion_future_;
+  }
 
   RETURN data_;
 
@@ -191,7 +192,6 @@ struct legion_future_u<void, launch_type_t::single> : public future_base_t {
     legion_future_.get_void_result(silence_warnings);
   } // wait
 
-
   /*!
     Add Legion Future to the task launcher
    */
@@ -203,8 +203,9 @@ struct legion_future_u<void, launch_type_t::single> : public future_base_t {
     launcher.add_future(legion_future_);
   }
 
-  void init_future(void){}
-  void finalize_future(void){}
+  void init_future(void) {}
+  void finalize_future(void) {}
+
 private:
   Legion::Future legion_future_;
 }; // legion_future
@@ -228,15 +229,14 @@ struct legion_future_u<RETURN, launch_type_t::index> : public future_base_t {
   legion_future_u(const Legion::FutureMap & legion_future)
     : legion_future_(legion_future) {}
 
-   /*!
-    Construct a future from a Legion future.
+  /*!
+   Construct a future from a Legion future.
 
-    @param legion_future The Legion future instance.
-   */
+   @param legion_future The Legion future instance.
+  */
 
-  legion_future_u(const Legion::Future &legion_future)
-  {
-    legion_future_[0]=legion_future;
+  legion_future_u(const Legion::Future & legion_future) {
+    legion_future_[0] = legion_future;
   }
 
   /*!
@@ -274,8 +274,8 @@ struct legion_future_u<RETURN, launch_type_t::index> : public future_base_t {
     assert(false && "you can't pass future handle from index task to any task");
   }
 
-  void init_future(void){}
-  void finalize_future(void){}
+  void init_future(void) {}
+  void finalize_future(void) {}
 
 private:
   Legion::FutureMap legion_future_;
@@ -302,10 +302,8 @@ struct legion_future_u<void, launch_type_t::index> : public future_base_t {
   legion_future_u(const Legion::FutureMap & legion_future)
     : legion_future_(legion_future) {}
 
-
-  legion_future_u(const Legion::Future &legion_future)
-  {
-    legion_future_[0]=legion_future;
+  legion_future_u(const Legion::Future & legion_future) {
+    legion_future_[0] = legion_future;
   }
 
   /*!
@@ -327,8 +325,9 @@ struct legion_future_u<void, launch_type_t::index> : public future_base_t {
     assert(false && "you can't pass future handle from index task to any task");
   }
 
-  void init_future(void){}
-  void finalize_future(void){}
+  void init_future(void) {}
+  void finalize_future(void) {}
+
 private:
   Legion::FutureMap legion_future_;
 

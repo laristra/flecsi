@@ -1,6 +1,6 @@
 ![logo](doc/flecsi.png)
 
-[![Build Status](https://travis-ci.org/laristra/flecsi.svg?branch=master)](https://travis-ci.org/laristra/flecsi)
+[![Build Status](https://travis-ci.com/laristra/flecsi.svg?branch=master)](https://travis-ci.com/laristra/flecsi)
 [![codecov.io](https://codecov.io/github/laristra/flecsi/coverage.svg?branch=master)](https://codecov.io/github/laristra/flecsi?branch=master)
 
 # Introduction
@@ -158,7 +158,7 @@ $ cmake .. \
     -DCMAKE_PREFIX_PATH=$HOME/flecsi-third-party-debug/ \
     -DENABLE_UNIT_TESTS=ON \
     -DFLECSI_RUNTIME_MODEL=legion \
-    -DENABLE_DOCUMENTATION=ON \
+    -DENABLE_SPHINX=ON \
     -DENABLE_DOXYGEN=ON
 $ make
 ```
@@ -167,7 +167,8 @@ This will build the User and Developer Guides in the *doc* subdirectory.
 In order to build the Doxygen interface documentation, you will need to
 execute:
 ```
-$ make doxygen
+$ make doxygen 
+$ make sphinx
 ```
 which will build the interface documentation (also under the *doc*
 subdirectory).

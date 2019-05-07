@@ -1,5 +1,5 @@
-case $DOMAIN:{
-  switch(D){
+case $DOMAIN: {
+  switch(D) {
     case 1:
       return mesh->make<Edge_$DOMAIN>(*mesh);
     default:

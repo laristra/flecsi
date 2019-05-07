@@ -63,7 +63,8 @@ struct field_registration_wrapper_u {
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
 
     fi.storage_class = STORAGE_CLASS;
-    fi.size = sizeof(DATA_TYPE);
+    fi.size = (STORAGE_CLASS == sparse ? sizeof(DATA_TYPE) + sizeof(size_t)
+                                       : sizeof(DATA_TYPE));
     fi.namespace_hash = NAMESPACE_HASH;
     fi.name_hash = NAME_HASH;
     fi.versions = VERSIONS;
@@ -99,7 +100,7 @@ struct client_registration_wrapper_u<
   //--------------------------------------------------------------------------//
 
   struct entity_walker_t
-      : public flecsi::utils::tuple_walker_u<entity_walker_t> {
+    : public flecsi::utils::tuple_walker_u<entity_walker_t> {
 
     template<typename T, T V>
     T value(topology::typeify<T, V>) {
@@ -125,25 +126,24 @@ struct client_registration_wrapper_u<
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
       using flecsi::utils::const_string_t;
-      const size_t field_key =
-        utils::hash::client_internal_field_hash<
-          const_string_t("flecsi_internal_entity_data").hash(),
-          NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value
-        >();
+      const size_t field_key = utils::hash::client_internal_field_hash<
+        const_string_t("flecsi_internal_entity_data").hash(), NAMESPACE_HASH,
+        NAME_HASH, INDEX_TYPE::value>();
 
       {
-      clog_tag_guard(registration);
-      clog(info) << "registering field for type id: " <<
-        flecsi::utils::demangle(
-          typeid(typename CLIENT_TYPE::type_identifier_t).name()
-        ) << std::endl <<
-        " index: " << INDEX_TYPE::value << std::endl <<
-        " namespace: " << NAMESPACE_HASH << std::endl <<
-        " name: " << NAME_HASH << std::endl;
-      clog(info) << "new key: " <<
-        utils::hash::client_internal_field_hash<
-          const_string_t("flecsi_internal_entity_data").hash(),
-          NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value>() << std::endl;
+        clog_tag_guard(registration);
+        clog(info) << "registering field for type id: "
+                   << flecsi::utils::demangle(
+                        typeid(typename CLIENT_TYPE::type_identifier_t).name())
+                   << std::endl
+                   << " index: " << INDEX_TYPE::value << std::endl
+                   << " namespace: " << NAMESPACE_HASH << std::endl
+                   << " name: " << NAME_HASH << std::endl;
+        clog(info) << "new key: "
+                   << utils::hash::client_internal_field_hash<
+                        const_string_t("flecsi_internal_entity_data").hash(),
+                        NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value>()
+                   << std::endl;
       } // scope
 
       storage_t::instance().register_field(
@@ -152,11 +152,9 @@ struct client_registration_wrapper_u<
       using id_wrapper_t = field_registration_wrapper_u<CLIENT_TYPE,
         flecsi::data::dense, utils::id_t, entity_hash, 0, 1, INDEX_TYPE::value>;
 
-      const size_t id_key =
-        utils::hash::client_internal_field_hash<
-          const_string_t("flecsi_internal_entity_id").hash(),
-          NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value
-        >();
+      const size_t id_key = utils::hash::client_internal_field_hash<
+        const_string_t("flecsi_internal_entity_id").hash(), NAMESPACE_HASH,
+        NAME_HASH, INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
         type_key, id_key, id_wrapper_t::register_callback);
@@ -166,7 +164,7 @@ struct client_registration_wrapper_u<
   }; // struct entity_walker_t
 
   struct connectivity_walker_u
-      : public flecsi::utils::tuple_walker_u<connectivity_walker_u> {
+    : public flecsi::utils::tuple_walker_u<connectivity_walker_u> {
 
     template<typename T, T V>
     T value(topology::typeify<T, V>) {
@@ -208,13 +206,9 @@ struct client_registration_wrapper_u<
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
       using flecsi::utils::const_string_t;
-      const size_t index_key =
-        utils::hash::client_internal_field_hash<
-          const_string_t("flecsi_internal_adjacency_index").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          INDEX_TYPE::value
-        >();
+      const size_t index_key = utils::hash::client_internal_field_hash<
+        const_string_t("flecsi_internal_adjacency_index").hash(),
+        NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value>();
       int ispace = INDEX_TYPE::value;
       storage_t::instance().register_field(
         type_key, index_key, index_wrapper_t::register_callback);
@@ -226,13 +220,9 @@ struct client_registration_wrapper_u<
       // This field resides in the main entities (BLIS) index space, but
       // is unique to an adjacency, so it is registered using the
       // adjacency hash.
-      const size_t offset_key =
-        utils::hash::client_internal_field_hash<
-          const_string_t("flecsi_internal_adjacency_offset").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          INDEX_TYPE::value
-        >();
+      const size_t offset_key = utils::hash::client_internal_field_hash<
+        const_string_t("flecsi_internal_adjacency_offset").hash(),
+        NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
         type_key, offset_key, offset_wrapper_t::register_callback);
@@ -241,7 +231,7 @@ struct client_registration_wrapper_u<
   }; // struct connectivity_walker_u
 
   struct binding_walker_u
-      : public flecsi::utils::tuple_walker_u<binding_walker_u> {
+    : public flecsi::utils::tuple_walker_u<binding_walker_u> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {
@@ -278,13 +268,9 @@ struct client_registration_wrapper_u<
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
       using flecsi::utils::const_string_t;
-      const size_t index_key =
-        utils::hash::client_internal_field_hash<
-          const_string_t("flecsi_internal_adjacency_index").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          INDEX_TYPE::value
-        >();
+      const size_t index_key = utils::hash::client_internal_field_hash<
+        const_string_t("flecsi_internal_adjacency_index").hash(),
+        NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value>();
       int ispace = INDEX_TYPE::value;
       storage_t::instance().register_field(
         type_key, index_key, index_wrapper_t::register_callback);
@@ -296,13 +282,9 @@ struct client_registration_wrapper_u<
       // This field resides in the main entities (BLIS) index space, but
       // is unique to an adjacency, so it is registered using the
       // adjacency hash.
-      const size_t offset_key =
-        utils::hash::client_internal_field_hash<
-          const_string_t("flecsi_internal_adjacency_offset").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          INDEX_TYPE::value
-        >();
+      const size_t offset_key = utils::hash::client_internal_field_hash<
+        const_string_t("flecsi_internal_adjacency_offset").hash(),
+        NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
         type_key, offset_key, offset_wrapper_t::register_callback);
@@ -312,7 +294,7 @@ struct client_registration_wrapper_u<
   }; // struct binding_walker_u
 
   struct index_subspaces_walker_u
-      : public flecsi::utils::tuple_walker_u<index_subspaces_walker_u> {
+    : public flecsi::utils::tuple_walker_u<index_subspaces_walker_u> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void handle_type() {
@@ -332,13 +314,9 @@ struct client_registration_wrapper_u<
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
       using flecsi::utils::const_string_t;
-      const size_t field_key =
-        utils::hash::client_internal_field_hash<
-          const_string_t("flecsi_internal_index_subspace_index").hash(),
-          NAMESPACE_HASH,
-          NAME_HASH,
-          INDEX_SUBSPACE_TYPE::value
-        >();
+      const size_t field_key = utils::hash::client_internal_field_hash<
+        const_string_t("flecsi_internal_index_subspace_index").hash(),
+        NAMESPACE_HASH, NAME_HASH, INDEX_SUBSPACE_TYPE::value>();
 
       storage_t::instance().register_field(
         type_key, field_key, wrapper_t::register_callback);
@@ -403,7 +381,7 @@ struct client_registration_wrapper_u<
   //--------------------------------------------------------------------------//
 
   struct entity_walker_t
-      : public flecsi::utils::tuple_walker_u<entity_walker_t> {
+    : public flecsi::utils::tuple_walker_u<entity_walker_t> {
 
     template<typename T, T V>
     T value(topology::typeify<T, V>) {
@@ -416,37 +394,34 @@ struct client_registration_wrapper_u<
       using ENTITY_TYPE =
         typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
 
-      constexpr size_t entity_hash = utils::hash::client_entity_hash<
-        NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value, 0, 0>();
+      constexpr size_t entity_hash =
+        utils::hash::client_entity_hash<NAMESPACE_HASH, NAME_HASH,
+          INDEX_TYPE::value, 0, 0>();
 
-      using wrapper_t = field_registration_wrapper_u<
-        CLIENT_TYPE, flecsi::data::local, ENTITY_TYPE, entity_hash, 0, 1,
-        INDEX_TYPE::value>;
+      using wrapper_t = field_registration_wrapper_u<CLIENT_TYPE,
+        flecsi::data::local, ENTITY_TYPE, entity_hash, 0, 1, INDEX_TYPE::value>;
 
       const size_t type_key =
         typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
       using flecsi::utils::const_string_t;
       const size_t field_key = utils::hash::client_internal_field_hash<
-          const_string_t("flecsi_internal_entity_data").hash(),
-          NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value
-        >();
+        const_string_t("flecsi_internal_entity_data").hash(), NAMESPACE_HASH,
+        NAME_HASH, INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
         type_key, field_key, wrapper_t::register_callback);
 
       const size_t active_key = utils::hash::client_internal_field_hash<
-          const_string_t("flecsi_internal_active_entity_data").hash(),
-          NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value
-        >();
+        const_string_t("flecsi_internal_active_entity_data").hash(),
+        NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
         type_key, active_key, wrapper_t::register_callback);
 
       const size_t migrate_key = utils::hash::client_internal_field_hash<
-          const_string_t("flecsi_internal_migrate_entity_data").hash(),
-          NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value
-        >();
+        const_string_t("flecsi_internal_migrate_entity_data").hash(),
+        NAMESPACE_HASH, NAME_HASH, INDEX_TYPE::value>();
 
       storage_t::instance().register_field(
         type_key, migrate_key, wrapper_t::register_callback);

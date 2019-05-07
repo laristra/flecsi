@@ -109,8 +109,8 @@ struct task_interface_u {
 
   template<size_t HASH, typename TYPE>
   static decltype(auto) register_reduction_operation() {
-    return EXECUTION_POLICY::template register_reduction_operation<
-      HASH, TYPE>();
+    return EXECUTION_POLICY::template register_reduction_operation<HASH,
+      TYPE>();
   } // register_reduction_operation
 
 }; // struct task_interface_u

@@ -320,7 +320,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   #
   # Compacted storage interface
   #
-  option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper compaction" OFF)
+  option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper compaction" ON)
 
   if(ENABLE_MAPPER_COMPACTION)
     add_definitions(-DMAPPER_COMPACTION)
@@ -402,11 +402,6 @@ if(PARMETIS_FOUND)
   list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${PARMETIS_INCLUDE_DIRS})
 endif()
 
-if(NOT COLORING_LIBRARIES)
-  MESSAGE(FATAL_ERROR
-    "You need parmetis to enable partitioning" )
-endif()
-
 list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${COLORING_LIBRARIES})
 
 #------------------------------------------------------------------------------#
@@ -478,7 +473,7 @@ cinch_add_library_target(FleCSI flecsi EXPORT_TARGET FleCSITargets)
 
 set_target_properties(FleCSI PROPERTIES FOLDER "Core")
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+if(FLECSI_RUNTIME_MODEL STREQUAL "hpx" OR NOT ENABLE_PARMETIS)
   option(ENABLE_FLECSI_TUTORIAL
     "Enable library support for the FleCSI tutorial" OFF)
 else()

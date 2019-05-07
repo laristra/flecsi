@@ -21,6 +21,7 @@ set(utils_HEADERS
   array_ref.h
   bit_buffer.h
   checksum.h
+  common.h
   const_string.h
   dag.h
   debruijn.h
@@ -28,6 +29,7 @@ set(utils_HEADERS
   dimensioned_array.h
   export_definitions.h
   factory.h
+  fixed_vector.h
   function_traits.h
   graphviz.h
   hash.h
@@ -138,6 +140,12 @@ cinch_add_unit(factory
     test/factory.blessed
     ${factory_blessed_input}
 )
+
+cinch_add_unit(fixed_vector
+  SOURCES
+    test/fixed_vector.cc
+)
+
 
 cinch_add_unit(reorder
   SOURCES

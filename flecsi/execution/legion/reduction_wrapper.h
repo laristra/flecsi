@@ -50,8 +50,8 @@ struct reduction_wrapper_u {
       typeid(TYPE).name() << " has already been registered with this name");
 
     {
-    clog_tag_guard(reduction_interface);
-    clog(info) << "registering reduction operation " << HASH << std::endl;
+      clog_tag_guard(reduction_interface);
+      clog(info) << "registering reduction operation " << HASH << std::endl;
     }
 
     const size_t id = oid_t::instance().next();

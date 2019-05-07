@@ -215,7 +215,7 @@ private:
 
 template<typename T, size_t PS>
 struct global_handle_u : public global_data_handle_u<T, PS> {};
- // struct global_handle_t
+// struct global_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -235,16 +235,16 @@ struct storage_class_u<global> {
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-//  using data_store_t = DS;
-//  using meta_data_t = MD;
+  //  using data_store_t = DS;
+  //  using meta_data_t = MD;
 
-//  template<typename T>
-//  using accessor_t = global_accessor_t<T, MD>;
+  //  template<typename T>
+  //  using accessor_t = global_accessor_t<T, MD>;
 
   template<typename T, size_t PS>
   using handle_t = global_handle_u<T, PS>;
 
-//  using st_t = storage_class_u<global>;
+  //  using st_t = storage_class_u<global>;
 
 #if 0
   //--------------------------------------------------------------------------//
@@ -592,16 +592,14 @@ struct storage_class_u<global> {
   ///
   ///
   ///
-  template<
-      typename DATA_CLIENT_TYPE,
-      typename DATA_TYPE,
-      size_t NAMESPACE,
-      size_t NAME,
-      size_t VERSION,
-      size_t PERMISSIONS>
-  static handle_t<DATA_TYPE, 0>
-  get_handle(const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> &
-                 client_handle) {
+  template<typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION,
+    size_t PERMISSIONS>
+  static handle_t<DATA_TYPE, 0> get_handle(
+    const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
     handle_t<DATA_TYPE, 0> h;
     return {};
   } // get_handle

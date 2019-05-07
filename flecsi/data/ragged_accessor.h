@@ -15,6 +15,11 @@
 
 /*! @file */
 
+#include <algorithm>
+
+#include <cinchlog.h>
+
+#include <flecsi/data/accessor.h>
 #include <flecsi/data/sparse_data_handle.h>
 
 namespace flecsi {
@@ -52,34 +57,68 @@ struct accessor_u<data::ragged,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS> : public accessor_u<data::sparse,
+  GHOST_PERMISSIONS> : public accessor_u<data::base,
                          T,
                          EXCLUSIVE_PERMISSIONS,
                          SHARED_PERMISSIONS,
                          GHOST_PERMISSIONS>,
                        public ragged_accessor_base_t {
-
-  using base_t = accessor_u<data::sparse,
-    T,
+  using handle_t = ragged_data_handle_u<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS>;
 
-  using offset_t = typename base_t::offset_t;
+  using offset_t = typename handle_t::offset_t;
+  using value_t = T;
 
   //--------------------------------------------------------------------------//
-  //! Copy constructor.
+  //! Constructor from handle.
   //--------------------------------------------------------------------------//
 
-  accessor_u(const sparse_data_handle_u<T, 0, 0, 0> & h) : base_t(h) {}
+  accessor_u(const ragged_data_handle_u<T, 0, 0, 0> & h)
+    : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   T & operator()(size_t index, size_t ragged_index) {
-    const offset_t & offset = base_t::handle.offsets[index];
+    const offset_t & offset = handle.offsets[index];
     assert(
       ragged_index < offset.count() && "ragged accessor: index out of range");
 
-    return (base_t::handle.entries + offset.start() + ragged_index)->value;
+    return handle.entries[offset.start() + ragged_index];
   } // operator ()
+
+  //-------------------------------------------------------------------------//
+  //! Return max number of entries used over all indices.
+  //-------------------------------------------------------------------------//
+  size_t size() const {
+    size_t max_so_far = 0;
+
+    for(size_t index = 0; index < handle.num_total_; ++index) {
+      const offset_t & oi = handle.offsets[index];
+      max_so_far = std::max(max_so_far, oi.count());
+    }
+
+    return max_so_far;
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return number of entries used over the specified index.
+  //-------------------------------------------------------------------------//
+  size_t size(size_t index) const {
+    clog_assert(
+      index < handle.num_total_, "ragged accessor: index out of bounds");
+
+    const offset_t & oi = handle.offsets[index];
+    return oi.count();
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return the maximum possible number of entries
+  //-------------------------------------------------------------------------//
+  auto max_size() const noexcept {
+    return handle.max_entries_per_index;
+  }
+
+  handle_t handle;
 };
 
 template<typename T,

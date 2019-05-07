@@ -74,11 +74,10 @@ void runtime_driver(const Legion::Task * task,
  @ingroup legion-execution
  */
 
-void setup_rank_context_task(
-    const Legion::Task * task,
-    const std::vector<Legion::PhysicalRegion> & regions,
-    Legion::Context ctx,
-    Legion::Runtime * runtime);
+void setup_rank_context_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime);
 
 } // namespace execution
 } // namespace flecsi
