@@ -164,24 +164,160 @@ public:
     return result;
   } // default_policy_select_instance_region
 
-
   /*!
    THis function will find a CPU variat for the task
   */
- Legion::VariantID find_cpu_variant(const Legion::Mapping::MapperContext ctx,
-		Legion::TaskID task_id)
-{
-  std::map<Legion::TaskID,Legion::VariantID>::const_iterator finder = 
-    cpu_variants.find(task_id);
-  if (finder != cpu_variants.end())
-    return finder->second;
-  std::vector<Legion::VariantID> variants;
-  runtime->find_valid_variants(ctx, task_id, variants, 
-		Legion::Processor::LOC_PROC);
-  assert(variants.size() == 1); // should be exactly one for pennant 
-  cpu_variants[task_id] = variants[0];
-  return variants[0];
-}
+  Legion::VariantID find_cpu_variant(const Legion::Mapping::MapperContext ctx,
+    Legion::TaskID task_id) {
+    std::map<Legion::TaskID, Legion::VariantID>::const_iterator finder =
+      cpu_variants.find(task_id);
+    if(finder != cpu_variants.end())
+      return finder->second;
+    std::vector<Legion::VariantID> variants;
+    runtime->find_valid_variants(
+      ctx, task_id, variants, Legion::Processor::LOC_PROC);
+    assert(variants.size() == 1); // should be exactly one for pennant
+    cpu_variants[task_id] = variants[0];
+    return variants[0];
+  }
+
+  void creade_reduction_instance(const Legion::Mapping::MapperContext ctx,
+    const Legion::Task & task,
+    Legion::Mapping::Mapper::MapTaskOutput & output,
+    const Legion::Memory & target_mem,
+    const size_t & indx) {
+    // using dummy constraints for REDUCTION
+    std::set<Legion::FieldID> dummy_fields;
+    Legion::TaskLayoutConstraintSet dummy_constraints;
+
+    size_t instance_size = 0;
+    clog_assert(
+      default_create_custom_instances(ctx, task.target_proc, target_mem,
+        task.regions[indx], indx, dummy_fields, dummy_constraints,
+        false /*need check*/, output.chosen_instances[indx], &instance_size),
+      " ERROR: FleCSI mapper failed to allocate reduction instance");
+
+    clog(info) << "task " << task.get_task_name()
+               << " allocates physical instance with size " << instance_size
+               << " for the region requirement #" << indx << std::endl;
+
+    if(instance_size > 1000000000) {
+      clog(error) << "task " << task.get_task_name()
+                  << " is trying to allocate physical instance with \
+           the size > than 1 Gb("
+                  << instance_size << " )"
+                  << " for the region requirement # " << indx << std::endl;
+    }//if
+  }//create reduction instance
+
+  void create_compacted_instance(const Legion::Mapping::MapperContext ctx,
+    const Legion::Task & task,
+    Legion::Mapping::Mapper::MapTaskOutput & output,
+    const Legion::Memory & target_mem,
+    const Legion::LayoutConstraintSet & layout_constraints,
+    const size_t & indx) {
+    using namespace Legion;
+    using namespace Legion::Mapping;
+    const std::pair<Legion::LogicalRegion, Legion::Memory> key(
+      task.regions[indx].region, target_mem);
+    std::map<std::pair<LogicalRegion, Memory>, PhysicalInstance>::const_iterator
+      finder = local_instances_.find(key);
+    if(finder != local_instances_.end()) {
+      for(size_t j = 0; j < 3; j++) {
+        output.chosen_instances[indx + j].clear();
+        output.chosen_instances[indx + j].push_back(finder->second);
+      } // for
+      return;
+    } // if instance already created in this memory
+
+    Legion::Mapping::PhysicalInstance result;
+    std::vector<Legion::LogicalRegion> regions;
+    bool created;
+
+    // creating physical instance for the compacted storaged
+
+    clog_assert((task.regions.size() >= (indx + 2)),
+      "ERROR:: wrong number of regions passed to the task wirth \
+               the  tag = MAPPER_COMPACTED_STORAGE");
+
+    clog_assert((task.regions[indx].region.exists()),
+      "ERROR:: pasing not existing REGION to the mapper");
+
+    // compacting region requirements for exclusive, shared and ghost into one
+    // instance
+    regions.push_back(task.regions[indx].region);
+    regions.push_back(task.regions[indx + 1].region);
+    regions.push_back(task.regions[indx + 2].region);
+
+    size_t instance_size = 0;
+    clog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
+                  layout_constraints, regions, result, created,
+                  true /*acquire*/, GC_NEVER_PRIORITY, true, &instance_size),
+      "ERROR: FleCSI mapper couldn't create an instance");
+
+    clog(info) << "task " << task.get_task_name()
+               << " allocates physical instance with size " << instance_size
+               << " for the region requirement #" << indx << std::endl;
+
+    if(instance_size > 1000000000) {
+      clog(error) << "task " << task.get_task_name()
+                  << " is trying to allocate physical compacted instance with \
+                the size > than 1 Gb("
+                  << instance_size << " )"
+                  << " for the region requirement # " << indx << std::endl;
+    }
+
+    for(size_t j = 0; j < 3; j++) {
+      output.chosen_instances[indx + j].clear();
+      output.chosen_instances[indx + j].push_back(result);
+    } // for
+    local_instances_[key] = result;
+  } // create_compacted_instance
+
+  void create_instance(const Legion::Mapping::MapperContext ctx,
+    const Legion::Task & task,
+    Legion::Mapping::Mapper::MapTaskOutput & output,
+    const Legion::Memory & target_mem,
+    const Legion::LayoutConstraintSet & layout_constraints,
+    const size_t & indx) {
+    using namespace Legion;
+    using namespace Legion::Mapping;
+    const std::pair<Legion::LogicalRegion, Legion::Memory> key(
+      task.regions[indx].region, target_mem);
+    std::map<std::pair<LogicalRegion, Memory>, PhysicalInstance>::const_iterator
+      finder = local_instances_.find(key);
+    if(finder != local_instances_.end()) {
+      output.chosen_instances[indx].clear();
+      output.chosen_instances[indx].push_back(finder->second);
+      return;
+    }
+    Legion::Mapping::PhysicalInstance result;
+    std::vector<Legion::LogicalRegion> regions;
+    bool created;
+
+    regions.push_back(task.regions[indx].region);
+
+    size_t instance_size = 0;
+    clog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
+                  layout_constraints, regions, result, created,
+                  true /*acquire*/, GC_NEVER_PRIORITY, true, &instance_size),
+      "FLeCSI mapper failed to allocate instance");
+
+    clog(info) << "task " << task.get_task_name()
+               << " allocates physical instance with size " << instance_size
+               << " for the region requirement #" << indx << std::endl;
+
+    if(instance_size > 1000000000) {
+      clog(error)
+        << "task " << task.get_task_name()
+        << " is trying to allocate physical instance with the size > than 1 Gb("
+        << instance_size << " )"
+        << " for the region requirement # " << indx << std::endl;
+    }//if 
+
+    output.chosen_instances[indx].push_back(result);
+    local_instances_[key] = result;
+  } // create_instance
 
   /*!
    Specialization of the map_task funtion for FLeCSI
@@ -207,7 +343,6 @@ public:
     output.chosen_variant = find_cpu_variant(ctx, task.task_id);
     output.target_procs = local_cpus;
     output.chosen_instances.resize(task.regions.size());
- 
 
     if(task.regions.size() > 0) {
 
@@ -245,131 +380,23 @@ public:
         std::vector<Legion::LogicalRegion> regions;
         bool created;
 
-        //creating physical instance for the reduction task
-        if (task.regions[indx].privilege == REDUCE){
+        // creating physical instance for the reduction task
+        if(task.regions[indx].privilege == REDUCE) {
+          creade_reduction_instance(ctx, task, output, target_mem, indx);
+        }
+        else if(task.regions[indx].tag == EXCLUSIVE_LR) {
 
-          //using dummy constraints for REDUCTION
-          std::set<Legion::FieldID> dummy_fields;
-          Legion::TaskLayoutConstraintSet dummy_constraints;
-          
-          size_t instance_size = 0;
-          clog_assert(default_create_custom_instances(ctx,
-						task.target_proc, target_mem,
-						task.regions[indx], indx, dummy_fields,
-						dummy_constraints, false/*need check*/,
-						output.chosen_instances[indx], &instance_size),
-            " ERROR: FleCSI mapper failed to allocate reduction instance");
-
-          clog(info) << "task " <<task.get_task_name()<<
-          " allocates physical instance with size " << instance_size<<
-          " for the region requirement #" <<indx<<std::endl;
-
-          if (instance_size>1000000000){
-            clog(error)<< "task "<<task.get_task_name()<<
-           " is trying to allocate physical instance with \
-              the size > than 1 Gb("
-            << instance_size<<" )"
-            << " for the region requirement # "<<indx<<std::endl;
-          }
-         
-
-       }
-       else if(task.regions[indx].tag == EXCLUSIVE_LR) {
-
-         const std::pair<Legion::LogicalRegion, Legion::Memory>
-          key_ex(task.regions[indx].region, target_mem);
-          std::map<std::pair<LogicalRegion,Memory>,
-						PhysicalInstance>::const_iterator  finder =
-							local_instances_.find(key_ex);
-         if (finder != local_instances_.end()) {
-            for(size_t j = 0; j < 3; j++) {
-              output.chosen_instances[indx + j].clear();
-              output.chosen_instances[indx + j].push_back(finder->second);
-            } // for
-         }else {
-
-            //creating physical instance for the compacted storaged
-
-            clog_assert((task.regions.size() >= (indx + 2)),
-              "ERROR:: wrong number of regions passed to the task wirth \
-                 the  tag = MAPPER_COMPACTED_STORAGE");
-
-            clog_assert((task.regions[indx].region.exists()),
-              "ERROR:: pasing not existing REGION to the mapper");
-
-            //compacting region requirements for exclusive, shared and ghost into one instance
-            regions.push_back(task.regions[indx].region);
-            regions.push_back(task.regions[indx + 1].region);
-            regions.push_back(task.regions[indx + 2].region);
-
-            size_t instance_size = 0;
-            clog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
-                        layout_constraints, regions, result, created,
-                        true /*acquire*/, GC_NEVER_PRIORITY, true, 
-												&instance_size),
-              "ERROR: FleCSI mapper couldn't create an instance");
-
-            clog(info) << "task " <<task.get_task_name()<<
-				  	" allocates physical instance with size " << instance_size<<
-					  " for the region requirement #" <<indx<<std::endl;
-
-            if (instance_size>1000000000){
-              clog(error)<< "task "<<task.get_task_name()<<
-             " is trying to allocate physical compacted instance with \
-			  				the size > than 1 Gb("
-              << instance_size<<" )"
-					  	<< " for the region requirement # "<<indx<<std::endl;
-            }
- 
-            for(size_t j = 0; j < 3; j++) {
-              output.chosen_instances[indx + j].clear();
-              output.chosen_instances[indx + j].push_back(result);
-
-            } // for
-				  	local_instances_[key_ex]=result;
-          }//else for instance already being created
-            indx = indx + 2;
+          create_compacted_instance(
+            ctx, task, output, target_mem, layout_constraints, indx);
+          indx = indx + 2;
         }
         else {
-
-					const std::pair<Legion::LogicalRegion, Legion::Memory>
-            key(task.regions[indx].region, target_mem);
-          std::map<std::pair<LogicalRegion,Memory>,
-						PhysicalInstance>::const_iterator  finder =
-							local_instances_.find(key);
-          if (finder != local_instances_.end()) {
-             output.chosen_instances[indx].clear();
-             output.chosen_instances[indx].push_back(finder->second);
-          }
-          else{
-
-            regions.push_back(task.regions[indx].region);
-
-            size_t instance_size = 0;
-            clog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
-                          layout_constraints, regions, result, created,
-                          true /*acquire*/, GC_NEVER_PRIORITY, true,
-                          &instance_size),
-              "FLeCSI mapper failed to allocate instance");
-
-            clog(info) << "task " <<task.get_task_name()<<
-            " allocates physical instance with size " << instance_size<<
-            " for the region requirement #" <<indx<<std::endl;
-
-            if (instance_size>1000000000){
-              clog(error)<< "task "<<task.get_task_name()<<
-             " is trying to allocate physical instance with the size > than 1 Gb("
-              << instance_size<<" )"
-              << " for the region requirement # "<<indx<<std::endl;
-            }
-            output.chosen_instances[indx].push_back(result);
-				  	local_instances_[key]=result;
-         }//else
+          create_instance(
+            ctx, task, output, target_mem, layout_constraints, indx);
         } // end if
       } // end for
 
     } // end if
-
 
     runtime->acquire_instances(ctx, output.chosen_instances);
 
@@ -433,14 +460,15 @@ private:
   Realm::Memory local_sysmem;
   Realm::Machine machine;
 
-  //the map of the locac intances that have been already created
-  //the first key is the pair of Logical region and Memory that is
-  //used as an identifier for the instance
-  std::map<std::pair<Legion::LogicalRegion,Legion::Memory>,
-    Legion::Mapping::PhysicalInstance> local_instances_;
+  // the map of the locac intances that have been already created
+  // the first key is the pair of Logical region and Memory that is
+  // used as an identifier for the instance
+  std::map<std::pair<Legion::LogicalRegion, Legion::Memory>,
+    Legion::Mapping::PhysicalInstance>
+    local_instances_;
 
 protected:
-  std::map<Legion::TaskID,Legion::VariantID> cpu_variants;
+  std::map<Legion::TaskID, Legion::VariantID> cpu_variants;
 };
 
 /*!
