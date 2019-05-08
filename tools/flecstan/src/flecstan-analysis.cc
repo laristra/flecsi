@@ -788,7 +788,7 @@ static bool same_scope(const flecsi_base &a, const flecsi_base &b)
 
 
 
-// Helper: Duplicate registrations?
+// Helper: Duplicate task registrations?
 // These are errors
 static exit_status_t task_reg_dup(
    const std::multimap<std::string,treg> &regs
@@ -833,7 +833,7 @@ static exit_status_t task_reg_dup(
    // in turn means that none of the code constructs from (2) end up in the AST!
    // The data we're looking at here (in tmp, based on parameter regs, based on
    // data from the *AST-matched* parts of the invoked task-registration FleCSI
-   // macros) thus doesn't contain anything about (2). That's fine; the compiler
+   // macros) thus don't contain anything about (2). That's fine; the compiler
    // will already have produced an error. Perhaps, however, we could eventually
    // base the present code on the macro invocations themselves, not on their
    // resulting (or not!) AST constructs, and thereby detect the same C++ error
@@ -913,7 +913,7 @@ static exit_status_t task_reg_dup(
 
 
 
-// Helper: Registrations without executions?
+// Helper: Task registrations without executions?
 // These are warnings
 static exit_status_t task_reg_without_exe(
    const std::multimap<std::string,treg> &regs,
@@ -924,7 +924,7 @@ static exit_status_t task_reg_without_exe(
    for (auto reg : regs)
       if (exes.find(reg.first) == exes.end()) {
          status = warning(
-           "The task, as registered with hash \"" +
+           "The task registered with hash \"" +
             reg.first + "\" here:\n   " + uflcs(reg.second) + "\n"
            "is never invoked with any of FleCSI's task execution macros.\n"
            "Is this intentional?"
@@ -937,7 +937,7 @@ static exit_status_t task_reg_without_exe(
 
 
 
-// Helper: Executions without registrations?
+// Helper: Task executions without registrations?
 // These are errors
 static exit_status_t task_exe_without_reg(
    const std::multimap<std::string,treg> &regs,
@@ -948,7 +948,7 @@ static exit_status_t task_exe_without_reg(
    for (auto exe : exes)
       if (regs.find(exe.first) == regs.end()) {
          status = error(
-           "The task, as executed with hash \"" +
+           "The task executed with hash \"" +
             exe.first + "\" here:\n   " + uflcs(exe.second,false) + "\n"
            "was not registered with any of FleCSI's task registration macros,\n"
            "or was not registered with that hash.\n"
@@ -1004,47 +1004,120 @@ static exit_status_t analyze_flecsi_task(const flecstan::Yaml &yaml)
 
 // -----------------------------------------------------------------------------
 // Function interface, as a whole
+// Similar overall to the task registration/execution analysis above;
+// see the large comment there for more information.
 // -----------------------------------------------------------------------------
 
-// qqq and modify this function...
-
-// Helper: Duplicate registrations?
-// These are warnings
+// Helper: Duplicate function registrations?
+// These are errors
 static exit_status_t function_reg_dup(
    const std::multimap<std::string, flecsi_register_function> &regs
 ) {
    exit_status_t status = exit_clean;
 
-   for (auto a = regs.cbegin(), b = a;  a != regs.cend();  a = b) {
-      bool unique = true; // so far
+   // flecsi_register_function has:
+   // unit, location, spelling, scope, func, nspace, hash
+
+   // fixme
+   // Much of the following is similar enough to the task registration material
+   // that the two could, with a bit of work, be combined into common code.
+
+   // Function registrations, in vector form
+   std::vector<flecsi_register_function> tmp;
+   for (auto r : regs)
+      tmp.push_back(r.second);
+   const std::size_t size = tmp.size();
+
+   // Order by:
+   //    hash (primary)
+   //    unit (secondary)
+   sort(
+      tmp.begin(),
+      tmp.end(),
+      [](
+         const flecsi_register_function &a,
+         const flecsi_register_function &b
+      ) -> bool {
+         return
+            a.hash <  b.hash || (
+            a.hash == b.hash && (
+            a.unit <  b.unit
+         ));
+      }
+   );
+
+
+   // ------------------------
+   // Duplicate same-file
+   // scope-independent hashes
+   // ------------------------
+
+   for (std::size_t i = 0, j = 0;  i < size;  i = j) {
       std::string str;
 
-      while (++b != regs.cend() && b->first == a->first) {
-         if (unique) {
-            // then no longer; begin diagnostic
-            str = "Hash string \"" + a->first + "\" was created "
-                  "by multiple function registrations:\n   " +
-                   uflcs(a->second) + "\n";
-            unique = false;
-         }
+      while (
+         ++j < size &&
+         tmp[j].hash == tmp[i].hash &&
+         tmp[j].unit == tmp[i].unit
+      ) {
+         // begin diagnostic
+         if (str == "")
+            str = "Hash string \"" + tmp[i].hash + "\" was created by multiple "
+                  "function registrations\nin one file:\n   " +
+                   uflcs(tmp[i]) + "\n";
 
          // (next) duplicate
-         str += "   " + uflcs(b->second) + "\n";
+         str += "   " + uflcs(tmp[j]) + "\n";
 
          // for summary
          summary_function_reg_dup +=
-            "(" + uflcs(b->second,false) + ") dups "
-            "(" + uflcs(a->second,false) + ")\n";
+            "(" + uflcs(tmp[j],false) + ") dups "
+            "(" + uflcs(tmp[i],false) + ")\n";
       }
 
-      if (!unique) {
+      if (str != "")
          // finish diagnostic
-         str +=
+         status = error(str +=
            "This may have caused a (possibly cryptic) compile-time error.\n"
            "If it didn't, a duplicate hash will still trigger a run-time error."
-         ;
-         status = error(str);
+         );
+   }
+
+
+   // ------------------------
+   // Duplicate across-file
+   // different-scoped hashes
+   // ------------------------
+
+   for (std::size_t i = 0, j = 0;  i < size;  i = j) {
+      std::string str;
+
+      while (
+         ++j < size &&
+         tmp[j].hash == tmp[i].hash
+      ) {
+         if (tmp[j].unit != tmp[i].unit && !same_scope(tmp[j],tmp[i])) {
+            // begin diagnostic
+            if (str == "")
+               str = "Hash string \"" + tmp[i].hash + "\" was created "
+                     "by multiple function registrations\n"
+                     "in different scopes in different files:\n   " +
+                      uflcs(tmp[i]) + "\n";
+
+            // (next) duplicate
+            str += "   " + uflcs(tmp[j]) + "\n";
+
+            // for summary
+            summary_function_reg_dup +=
+               "(" + uflcs(tmp[j],false) + ") dups "
+               "(" + uflcs(tmp[i],false) + ")\n";
+         }
       }
+
+      if (str != "")
+         // finish diagnostic
+         status = error(
+            str += "A duplicate hash will trigger a run-time error.");
    }
 
    return status;
@@ -1052,7 +1125,7 @@ static exit_status_t function_reg_dup(
 
 
 
-// Helper: Registrations without handle retrievals?
+// Helper: Function registrations without handle retrievals?
 // These are warnings
 static exit_status_t function_reg_without_hand(
    const std::multimap<std::string, flecsi_register_function> &regs,
@@ -1077,7 +1150,7 @@ static exit_status_t function_reg_without_hand(
 
 
 
-// Helper: Handle retrievals without registrations?
+// Helper: Handle retrievals without function registrations?
 // These are errors
 static exit_status_t function_hand_without_reg(
    const std::multimap<std::string,flecsi_register_function> &regs,
@@ -1112,9 +1185,9 @@ static exit_status_t analyze_flecsi_function(const flecstan::Yaml &yaml)
    std::multimap<std::string, flecsi_function_handle  > hands;
 
    for (auto val : yaml.flecsi_register_function.matched)
-      regs .insert(std::pair(val.hash, val));
+      regs .insert(std::pair(val.hash,val));
    for (auto val : yaml.flecsi_function_handle  .matched)
-      hands.insert(std::pair(val.hash, val));
+      hands.insert(std::pair(val.hash,val));
 
    // Duplicate registrations?
    // Registrations without handle retrievals?

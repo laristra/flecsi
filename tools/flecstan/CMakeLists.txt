@@ -2,6 +2,7 @@
 
 project(flecstan LANGUAGES CXX)
 cmake_minimum_required(VERSION 3.8)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY /usr/local/bin)
 
 # Use cmake modules from cinch
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cinch/cmake)
@@ -37,4 +38,5 @@ add_executable(flecstan ${flecstan_SOURCES})
 # Libraries
 target_link_libraries(
    flecstan clangTooling
+   ${CLANG_LIBRARIES}
 )
