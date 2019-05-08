@@ -276,92 +276,112 @@ public:
 
           const std::pair<Legion::LogicalRegion, Legion::Memory> key_ex(
             task.regions[indx].region, target_mem);
-
-          // creating physical instance for the compacted storaged
-
-          flog_assert((task.regions.size() >= (indx + 2)),
-            "ERROR:: wrong number of regions passed to the task wirth \
-               the  tag = FLECSI_MAPPER_COMPACTED_STORAGE");
-
-          flog_assert((task.regions[indx].region.exists()),
-            "ERROR:: pasing not existing REGION to the mapper");
-
-          // compacting region requirements for exclusive, shared and ghost into
-          // one instance
-          regions.push_back(task.regions[indx].region);
-          regions.push_back(task.regions[indx + 1].region);
-          regions.push_back(task.regions[indx + 2].region);
-
-          size_t instance_size = 0;
-          flog_assert(runtime->find_or_create_physical_instance(ctx,
-                        target_mem,
-                        layout_constraints,
-                        regions,
-                        result,
-                        created,
-                        true /*acquire*/,
-                        GC_NEVER_PRIORITY,
-                        true,
-                        &instance_size),
-            "ERROR: FleCSI mapper couldn't create an instance");
-
-          flog_devel(info) << "task " << task.get_task_name()
-                           << " allocates physical instance with size "
-                           << instance_size << " for the region requirement #"
-                           << indx << std::endl;
-
-          if(instance_size > 1000000000) {
-            flog_devel(error)
-              << "task " << task.get_task_name()
-              << " is trying to allocate physical compacted instance with \
-							the size > than 1 Gb("
-              << instance_size << " )"
-              << " for the region requirement # " << indx << std::endl;
+          std::map<std::pair<LogicalRegion, Memory>,
+            PhysicalInstance>::const_iterator finder =
+            local_instances_.find(key_ex);
+          if(finder != local_instances_.end()) {
+            for(size_t j = 0; j < 3; j++) {
+              output.chosen_instances[indx + j].clear();
+              output.chosen_instances[indx + j].push_back(finder->second);
+            } // for
           }
+          else {
 
-          for(size_t j = 0; j < 3; j++) {
-            output.chosen_instances[indx + j].clear();
-            output.chosen_instances[indx + j].push_back(result);
+            // creating physical instance for the compacted storaged
 
-          } // for
-          local_instances_[key_ex] = result;
+            flog_assert((task.regions.size() >= (indx + 2)),
+              "ERROR:: wrong number of regions passed to the task wirth \
+                 the  tag = FLECSI_MAPPER_COMPACTED_STORAGE");
+
+            flog_assert((task.regions[indx].region.exists()),
+              "ERROR:: pasing not existing REGION to the mapper");
+
+            // compacting region requirements for exclusive, shared and ghost
+            // into one instance
+            regions.push_back(task.regions[indx].region);
+            regions.push_back(task.regions[indx + 1].region);
+            regions.push_back(task.regions[indx + 2].region);
+
+            size_t instance_size = 0;
+            flog_assert(runtime->find_or_create_physical_instance(ctx,
+                          target_mem,
+                          layout_constraints,
+                          regions,
+                          result,
+                          created,
+                          true /*acquire*/,
+                          GC_NEVER_PRIORITY,
+                          true,
+                          &instance_size),
+              "ERROR: FleCSI mapper couldn't create an instance");
+
+            flog_devel(info)
+              << "task " << task.get_task_name()
+              << " allocates physical instance with size " << instance_size
+              << " for the region requirement #" << indx << std::endl;
+
+            if(instance_size > 1000000000) {
+              flog_devel(error)
+                << "task " << task.get_task_name()
+                << " is trying to allocate physical compacted instance with \
+			  				the size > than 1 Gb("
+                << instance_size << " )"
+                << " for the region requirement # " << indx << std::endl;
+            }
+
+            for(size_t j = 0; j < 3; j++) {
+              output.chosen_instances[indx + j].clear();
+              output.chosen_instances[indx + j].push_back(result);
+
+            } // for
+            local_instances_[key_ex] = result;
+          } // else for instance already being created
           indx = indx + 2;
         }
         else {
 
           const std::pair<Legion::LogicalRegion, Legion::Memory> key(
             task.regions[indx].region, target_mem);
-
-          regions.push_back(task.regions[indx].region);
-
-          size_t instance_size = 0;
-          flog_assert(runtime->find_or_create_physical_instance(ctx,
-                        target_mem,
-                        layout_constraints,
-                        regions,
-                        result,
-                        created,
-                        true /*acquire*/,
-                        GC_NEVER_PRIORITY,
-                        true,
-                        &instance_size),
-            "FLeCSI mapper failed to allocate instance");
-
-          flog_devel(info) << "task " << task.get_task_name()
-                           << " allocates physical instance with size "
-                           << instance_size << " for the region requirement #"
-                           << indx << std::endl;
-
-          if(instance_size > 1000000000) {
-            flog_devel(error)
-              << "task " << task.get_task_name()
-              << " is trying to allocate physical instance with the "
-                 "size > than 1 Gb("
-              << instance_size << " )"
-              << " for the region requirement # " << indx << std::endl;
+          std::map<std::pair<LogicalRegion, Memory>,
+            PhysicalInstance>::const_iterator finder =
+            local_instances_.find(key);
+          if(finder != local_instances_.end()) {
+            output.chosen_instances[indx].clear();
+            output.chosen_instances[indx].push_back(finder->second);
           }
-          output.chosen_instances[indx].push_back(result);
-          local_instances_[key] = result;
+          else {
+
+            regions.push_back(task.regions[indx].region);
+
+            size_t instance_size = 0;
+            flog_assert(runtime->find_or_create_physical_instance(ctx,
+                          target_mem,
+                          layout_constraints,
+                          regions,
+                          result,
+                          created,
+                          true /*acquire*/,
+                          GC_NEVER_PRIORITY,
+                          true,
+                          &instance_size),
+              "FLeCSI mapper failed to allocate instance");
+
+            flog_devel(info)
+              << "task " << task.get_task_name()
+              << " allocates physical instance with size " << instance_size
+              << " for the region requirement #" << indx << std::endl;
+
+            if(instance_size > 1000000000) {
+              flog_devel(error)
+                << "task " << task.get_task_name()
+                << " is trying to allocate physical instance with "
+                   "the size > than 1 Gb("
+                << instance_size << " )"
+                << " for the region requirement # " << indx << std::endl;
+            }
+            output.chosen_instances[indx].push_back(result);
+            local_instances_[key] = result;
+          } // else
         } // end if
       } // end for
 
