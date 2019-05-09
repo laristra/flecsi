@@ -50,9 +50,14 @@ if (_Otwo)
 endif()
 
 # Packages
+
+# need clang/llvm 7
+# specifying the versioning in config mode does not work
 find_package(Clang CONFIG COMPONENTS Tooling QUIET)
+
 if (NOT Clang_FOUND)
-  find_package(Clang MODULE REQUIRED COMPONENTS
+  # specifying the version here works
+  find_package(Clang 7 MODULE REQUIRED COMPONENTS
     Tooling
     ASTMatchers
     Format
