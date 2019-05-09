@@ -61,7 +61,8 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
     Legion::Context & context,
     std::vector<Legion::PhysicalRegion> const & regions,
     std::vector<Legion::Future> const & futures)
-    : runtime_(runtime), context_(context), regions_(regions), futures_(futures) {}
+    : runtime_(runtime), context_(context), regions_(regions),
+      futures_(futures) {}
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
     The following methods are specializations on storage class and client

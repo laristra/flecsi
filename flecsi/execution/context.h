@@ -99,8 +99,7 @@ struct context_u : public CONTEXT_POLICY {
    */
 
   using field_info_store_t = data::field_info_store_t;
-  using field_info_map_t =
-    std::unordered_map<size_t, field_info_store_t>;
+  using field_info_map_t = std::unordered_map<size_t, field_info_store_t>;
 
   /*!
    this types allows storing launch_domains, key is a hash from the domain
@@ -524,8 +523,7 @@ struct context_u : public CONTEXT_POLICY {
     size_t topology_type_identifier,
     size_t storage_class) const {
 
-    auto const & tita =
-      topology_field_info_map_.find(topology_type_identifier);
+    auto const & tita = topology_field_info_map_.find(topology_type_identifier);
     flog_assert(tita != topology_field_info_map_.end(),
       "topology lookup failed for " << topology_type_identifier);
 
@@ -533,7 +531,7 @@ struct context_u : public CONTEXT_POLICY {
     flog_assert(sita != tita->second.end(),
       "storage class lookup failed for " << storage_class);
 
-    //FIXME check
+    // FIXME check
     return sita->second;
   } // get_field_info_store
 
@@ -549,24 +547,22 @@ struct context_u : public CONTEXT_POLICY {
     Task Launch iterface.
    *--------------------------------------------------------------------------*/
 
-	/*!
+  /*!
     Register launch domains
 
     @param key      Domain key
     @param launch   Launch type (single, index)
     @param size     Launch domain size
    */
-  void register_index_domain(size_t key,  size_t size)
-  {
+  void register_index_domain(size_t key, size_t size) {
     launch_domain_map_[key] = size;
   }
 
   /*!
     Returns domain information from the domain key
    */
-  size_t get_domain(size_t key)
-  {
-    return launch_domain_map_[key]; 
+  size_t get_domain(size_t key) {
+    return launch_domain_map_[key];
   }
 
 private:
@@ -588,7 +584,7 @@ private:
    *--------------------------------------------------------------------------*/
 
   int exit_status_ = 0;
-  top_level_action_t top_level_action_ = {};  
+  top_level_action_t top_level_action_ = {};
 
   /*--------------------------------------------------------------------------*
     Reduction data members.

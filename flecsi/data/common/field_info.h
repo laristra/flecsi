@@ -97,8 +97,8 @@ struct field_info_store_t {
   field_info_t const & get_field_info() const {
 
     const auto ita = key_lookup_.find(IDENTIFIER);
-    flog_assert(ita != key_lookup_.end(),
-      "identifier lookup failed for " << IDENTIFIER);
+    flog_assert(
+      ita != key_lookup_.end(), "identifier lookup failed for " << IDENTIFIER);
 
     return data_[ita->second];
   } // get_field_info

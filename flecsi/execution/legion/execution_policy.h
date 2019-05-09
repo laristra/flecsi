@@ -19,8 +19,8 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/execution/context.h>
-#include <flecsi/execution/legion/future.h>
 #include <flecsi/execution/legion/enactment/task_wrapper.h>
+#include <flecsi/execution/legion/future.h>
 #include <flecsi/execution/legion/invocation/init_args.h>
 #include <flecsi/execution/legion/invocation/task_epilogue.h>
 #include <flecsi/execution/legion/invocation/task_prologue.h>
@@ -108,9 +108,9 @@ struct legion_execution_policy_t {
     typename RETURN,
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool
-  register_task(processor_type_t processor, task_execution_type_t execution,
-		std::string name) {
+  static bool register_task(processor_type_t processor,
+    task_execution_type_t execution,
+    std::string name) {
 
     using wrapper_t = legion::task_wrapper_u<TASK, RETURN, ARG_TUPLE, DELEGATE>;
 
@@ -126,8 +126,7 @@ struct legion_execution_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  template<
-    size_t TASK,
+  template<size_t TASK,
     size_t LAUNCH_DOMAIN,
     size_t REDUCTION,
     typename RETURN,
@@ -136,7 +135,7 @@ struct legion_execution_policy_t {
   static decltype(auto) execute_task(ARGS &&... args) {
 
     using namespace Legion;
-  
+
     // This will guard the entire method
     flog_tag_guard(execution);
 
@@ -155,8 +154,8 @@ struct legion_execution_policy_t {
 
     constexpr size_t ZERO = flecsi_internal_hash(0);
 
-    legion::init_args_t init_args(legion_runtime, legion_context,
-			LAUNCH_DOMAIN);
+    legion::init_args_t init_args(
+      legion_runtime, legion_context, LAUNCH_DOMAIN);
     init_args.walk(task_args);
 
     //------------------------------------------------------------------------//
@@ -165,16 +164,16 @@ struct legion_execution_policy_t {
 
     if constexpr(flecsi_internal_hash(single) == LAUNCH_DOMAIN) {
 
-      static_assert(REDUCTION == ZERO,
-        "reductions are not supported for single tasks");
+      static_assert(
+        REDUCTION == ZERO, "reductions are not supported for single tasks");
 
       {
         flog_tag_guard(execution);
         flog(internal) << "Executing single task" << std::endl;
       }
 
-      TaskLauncher launcher(context_.task_id<TASK>(),
-        TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+      TaskLauncher launcher(
+        context_.task_id<TASK>(), TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
       for(auto & req : init_args.region_requirements()) {
         launcher.add_region_requirement(req);
@@ -226,11 +225,11 @@ struct legion_execution_policy_t {
         flog(internal) << "Executing index task" << std::endl;
       }
 
-      size_t domain_size= context_t::instance().get_domain(LAUNCH_DOMAIN);
+      size_t domain_size = context_t::instance().get_domain(LAUNCH_DOMAIN);
       size_t domain_size_new = 0;
-      if (domain_size == 0)
-        domain_size=context_t::instance().processes()*
-					context_t::instance().threads_per_process();
+      if(domain_size == 0)
+        domain_size = context_t::instance().processes() *
+                      context_t::instance().threads_per_process();
 
       LegionRuntime::Arrays::Rect<1> launch_bounds(
         LegionRuntime::Arrays::Point<1>(0),
@@ -263,13 +262,13 @@ struct legion_execution_policy_t {
               legion_context, launcher, reduction_id);
 
             // Enqueue the epilog.
-            legion::task_epilogue_t task_epilogue(legion_runtime,
-              legion_context);
+            legion::task_epilogue_t task_epilogue(
+              legion_runtime, legion_context);
             task_epilogue.walk(task_args);
-          return 0;
+            return 0;
 
-          //FIXME
-            //return legion_future_u<RETURN, launch_type_t::single>(future);
+            // FIXME
+            // return legion_future_u<RETURN, launch_type_t::single>(future);
             return 0;
           }
           else {
@@ -279,12 +278,12 @@ struct legion_execution_policy_t {
 
             // Execute a tuple walker that applies the task epilog operations
             // on the mapped handles
-            legion::task_epilogue_t task_epilogue(legion_runtime,
-              legion_context);
+            legion::task_epilogue_t task_epilogue(
+              legion_runtime, legion_context);
             task_epilogue.walk(task_args);
 
-            //FIXME
-            //return legion_future_u<RETURN, launch_type_t::index>(future_map);
+            // FIXME
+            // return legion_future_u<RETURN, launch_type_t::index>(future_map);
             return 0;
           } // else
 
@@ -295,7 +294,7 @@ struct legion_execution_policy_t {
         } // case processor_type_t::toc
 
         case processor_type_t::mpi: {
-           launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
+          launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
 
           // Launch the MPI task
           auto future =
@@ -318,14 +317,14 @@ struct legion_execution_policy_t {
           task_epilogue.walk(task_args);
 
           if constexpr(REDUCTION != ZERO) {
-            //FIXME implement logic for reduction MPI task
+            // FIXME implement logic for reduction MPI task
             flog_fatal("there is no implementation for the mpi"
                        " reduction task");
           }
           else {
-           //FIXME
-           // return legion_future_u<RETURN, launch_type_t::index>(future);
-           return 0;
+            // FIXME
+            // return legion_future_u<RETURN, launch_type_t::index>(future);
+            return 0;
           }
 
         } // case processor_type_t::mpi

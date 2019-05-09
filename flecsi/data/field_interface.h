@@ -152,7 +152,9 @@ struct field_interface_u {
       typename DATA_POLICY::template storage_class_u<STORAGE_CLASS,
         TOPOLOGY_TYPE>;
 
-    return storage_class_t:: template get_reference<DATA_TYPE, NAMESPACE, NAME, VERSION>(topology_reference);
+    return storage_class_t::
+      template get_reference<DATA_TYPE, NAMESPACE, NAME, VERSION>(
+        topology_reference);
   } // get_field
 
 #if 0

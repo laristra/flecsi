@@ -94,9 +94,8 @@ struct legion_context_policy_t {
      registration callbacks.
    */
 
-  using registration_function_t =
-    std::function<void(task_id_t, processor_type_t,
-			task_execution_type_t, std::string &)>;
+  using registration_function_t = std::function<
+    void(task_id_t, processor_type_t, task_execution_type_t, std::string &)>;
 
   /*!
    The unique_tid_t type create a unique id generator for registering

@@ -81,7 +81,8 @@ struct topology_reference_u : public data_reference_base_t {
 
 struct field_reference_t : public data_reference_base_t {
 
-  field_reference_t(field_id_t fid, size_t identifier,
+  field_reference_t(field_id_t fid,
+    size_t identifier,
     size_t topology_identifier)
     : data_reference_base_t(fid, identifier),
       topology_identifier_(topology_identifier) {}

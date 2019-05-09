@@ -140,8 +140,7 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
-  flecsi::data::field_interface_t::get_field<                                  \
-    decltype(topology)::topology_t,                                            \
+  flecsi::data::field_interface_t::get_field<decltype(topology)::topology_t,   \
     flecsi::data::storage_class,                                               \
     data_type,                                                                 \
     flecsi_internal_string_hash(nspace),                                       \

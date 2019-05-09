@@ -60,9 +60,9 @@ struct task_interface_u {
     typename RETURN,
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
-  static decltype(auto)
-  register_task(processor_type_t processor, task_execution_type_t execution,
-			std::string name) {
+  static decltype(auto) register_task(processor_type_t processor,
+    task_execution_type_t execution,
+    std::string name) {
     return EXECUTION_POLICY::
       template register_task<KEY, RETURN, ARG_TUPLE, DELEGATE>(
         processor, execution, name);
@@ -75,10 +75,8 @@ struct task_interface_u {
     @tparam SIZE      A domain size
    */
 
-  template<size_t KEY,
-    size_t SIZE>
-  static decltype(auto)
-  register_domain() {
+  template<size_t KEY, size_t SIZE>
+  static decltype(auto) register_domain() {
     execution::context_t::instance().register_index_domain(KEY, SIZE);
     return true;
   } // register_domain
@@ -105,9 +103,8 @@ struct task_interface_u {
     typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
     return EXECUTION_POLICY::
-      template execute_task<TASK, LAUNCH_DOMAIN, REDUCTION, RETURN,
-				ARG_TUPLE>(
-				std::forward<ARGS>(args)...);
+      template execute_task<TASK, LAUNCH_DOMAIN, REDUCTION, RETURN, ARG_TUPLE>(
+        std::forward<ARGS>(args)...);
   } // execute_task
 
   /*!

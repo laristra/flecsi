@@ -272,9 +272,8 @@ legion_context_policy_t::initialize_global_topology() {
   FieldAllocator allocator = legion_runtime_->create_field_allocator(
     legion_context_, global_runtime_data_.field_space);
 
-  auto const & field_store =
-    context_t::instance().get_field_info_store(flecsi_global_topology_hash,
-      flecsi::data::storage_label_t::global);
+  auto const & field_store = context_t::instance().get_field_info_store(
+    flecsi_global_topology_hash, flecsi::data::storage_label_t::global);
 
   for(auto const & fi : field_store.data()) {
     allocator.allocate_field(fi.type_size, fi.fid);

@@ -42,8 +42,7 @@ namespace global_topology {
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor_u : public field_reference_t {
 
-  accessor_u(field_reference_t const & ref)
-    : field_reference_t(ref) {}
+  accessor_u(field_reference_t const & ref) : field_reference_t(ref) {}
 
   /*!
     Return a raw reference to the data of this accessor.
@@ -78,14 +77,17 @@ struct storage_class_u<global, flecsi::topology::global_topology_t> {
   using topology_reference_t = topology_reference_u<global_topology_t>;
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
-  static field_reference_t get_reference(topology_reference_t const & topology) {
+  static field_reference_t get_reference(
+    topology_reference_t const & topology) {
     constexpr size_t identifier =
       utils::hash::field_hash<NAMESPACE, NAME, VERSION>();
 
-    field_id_t fid = execution::context_t::instance().
-      get_field_info_store(flecsi_internal_hash(global_topology_t),
-        flecsi::data::storage_label_t::global).
-      get_field_info<identifier>().fid;
+    field_id_t fid =
+      execution::context_t::instance()
+        .get_field_info_store(flecsi_internal_hash(global_topology_t),
+          flecsi::data::storage_label_t::global)
+        .get_field_info<identifier>()
+        .fid;
 
     field_reference_t ref(fid, identifier, topology.identifier());
     return ref;
@@ -102,8 +104,7 @@ namespace color_topology {
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor_u : public field_reference_t {
 
-  accessor_u(field_reference_t const & ref)
-    : field_reference_t(ref) {}
+  accessor_u(field_reference_t const & ref) : field_reference_t(ref) {}
 
   /*!
     Return a raw reference to the data of this accessor.
@@ -138,7 +139,8 @@ struct storage_class_u<color, flecsi::topology::color_topology_t> {
   using topology_reference_t = topology_reference_u<color_topology_t>;
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
-  static field_reference_t get_reference(topology_reference_t const & topology) {
+  static field_reference_t get_reference(
+    topology_reference_t const & topology) {
     field_id_t fid;
     size_t identifier;
     field_reference_t ref(fid, identifier, topology.identifier());
