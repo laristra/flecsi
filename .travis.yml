@@ -68,6 +68,8 @@ env:
 before_install:
   - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
   - git fetch --unshallow && git fetch --tags #for versioning
+  
+before_script:
   - if [[ ${TRAVIS_PULL_REQUEST} != false ]]; then
       git fetch origin pull/${TRAVIS_PULL_REQUEST}/head;
       git checkout -b PR_${TRAVIS_PULL_REQUEST} FETCH_HEAD;
@@ -102,6 +104,12 @@ script:
     rm -rf ${HOME}/.ccache &&
     CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG} /bin/bash) &&
     docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
+
+after_script:
+  - if [[ ${TRAVIS_PULL_REQUEST} != false ]]; then
+      git push --delete origin PR_${TRAVIS_PULL_REQUEST};
+      git branch -d PR_${TRAVIS_PULL_REQUEST};
+    fi
 
 after_success:
   - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable) ]] && DEPLOY=yes
