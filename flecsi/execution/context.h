@@ -93,14 +93,14 @@ struct context_u : public CONTEXT_POLICY {
   using set_instance_t = topology_instance_u<set_topology_base_t>;
   using set_instance_map_t = std::unordered_map<size_t, set_instance_t>;
 
-  using field_info_vector_t = std::vector<data::field_info_t>;
-
   /*!
     This type allows the storage of field information per storage class. The
     size_t key is the storage class.
    */
 
-  using field_info_map_t = std::unordered_map<size_t, field_info_vector_t>;
+  using field_info_store_t = data::field_info_store_t;
+  using field_info_map_t =
+    std::unordered_map<size_t, field_info_store_t>;
 
   /*!
    this types allows storing launch_domains, key is a hash from the domain
@@ -385,33 +385,6 @@ struct context_u : public CONTEXT_POLICY {
    *--------------------------------------------------------------------------*/
 
   /*!
-    Register a topology with the runtime.
-
-    @param topology_identifier The topology type indentifier.
-    @param instance_identifier The topology instance identifier.
-    @param callback            The registration call back function.
-   */
-
-  bool register_topology(size_t topology_identifier,
-    size_t instance_identifier,
-    const topology_registration_function_t & callback) {
-#if 0
-    if(topology_callback_registry_.find(topology_identifier) !=
-       topology_callback_registry_.end()) {
-      flog_assert(topology_callback_registry_[topology_identifier].find(
-                    instance_identifier) ==
-                    topology_callback_registry_[topology_identifier].end(),
-        "topology key already exists");
-    } // if
-
-    topology_callback_registry_[topology_identifier][instance_identifier] =
-      std::make_pair(unique_fid_t::instance().next(), callback);
-
-#endif
-    return true;
-  } // register_topology
-
-  /*!
     Return the topology registry.
    */
 
@@ -544,8 +517,25 @@ struct context_u : public CONTEXT_POLICY {
     size_t storage_class,
     const data::field_info_t & fi) {
     topology_field_info_map_[topology_type_identifier][storage_class]
-      .emplace_back(fi);
+      .register_field_info(fi);
   } // register_field_information
+
+  field_info_store_t const & get_field_info_store(
+    size_t topology_type_identifier,
+    size_t storage_class) const {
+
+    auto const & tita =
+      topology_field_info_map_.find(topology_type_identifier);
+    flog_assert(tita != topology_field_info_map_.end(),
+      "topology lookup failed for " << topology_type_identifier);
+
+    auto const & sita = tita->second.find(storage_class);
+    flog_assert(sita != tita->second.end(),
+      "storage class lookup failed for " << storage_class);
+
+    //FIXME check
+    return sita->second;
+  } // get_field_info_store
 
   /*!
     Return the field info map.

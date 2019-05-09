@@ -20,6 +20,7 @@
 #else
 #include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/legion/topologies.h>
+#include <flecsi/execution/context.h>
 #include <flecsi/topology/internal/color.h>
 #include <flecsi/topology/internal/global.h>
 #endif
@@ -78,8 +79,14 @@ struct storage_class_u<global, flecsi::topology::global_topology_t> {
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
   static field_reference_t get_reference(topology_reference_t const & topology) {
-    field_id_t fid;
-    size_t identifier;
+    constexpr size_t identifier =
+      utils::hash::field_hash<NAMESPACE, NAME, VERSION>();
+
+    field_id_t fid = execution::context_t::instance().
+      get_field_info_store(flecsi_internal_hash(global_topology_t),
+        flecsi::data::storage_label_t::global).
+      get_field_info<identifier>().fid;
+
     field_reference_t ref(fid, identifier, topology.identifier());
     return ref;
   } // get_reference

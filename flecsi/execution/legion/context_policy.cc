@@ -272,13 +272,11 @@ legion_context_policy_t::initialize_global_topology() {
   FieldAllocator allocator = legion_runtime_->create_field_allocator(
     legion_context_, global_runtime_data_.field_space);
 
-  using field_info_vector_t = context_t::field_info_vector_t;
-  auto & field_vector =
-    context_t::instance()
-      .topology_field_info_map()[flecsi_global_topology_hash]
-                                [flecsi::data::storage_label_t::global];
+  auto const & field_store =
+    context_t::instance().get_field_info_store(flecsi_global_topology_hash,
+      flecsi::data::storage_label_t::global);
 
-  for(const data::field_info_t & fi : field_vector) {
+  for(auto const & fi : field_store.data()) {
     allocator.allocate_field(fi.type_size, fi.fid);
   } // for
 
