@@ -105,12 +105,6 @@ script:
     CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG} /bin/bash) &&
     docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
 
-after_script:
-  - if [[ ${TRAVIS_PULL_REQUEST} != false ]]; then
-      git push --delete origin PR_${TRAVIS_PULL_REQUEST};
-      git branch -d PR_${TRAVIS_PULL_REQUEST};
-    fi
-
 after_success:
   - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable) ]] && DEPLOY=yes
   - if [[ ${TRAVIS_BUILD_STAGE_NAME} = Test && ${DEPLOY} = yes && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false ]]; then
