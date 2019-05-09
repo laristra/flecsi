@@ -19,9 +19,34 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cinch/cmake)
 # C++
 # fixme Replace hardcoded flags with something better
 set(CMAKE_CXX_STANDARD 17)
-if (NOT CMAKE_CXX_FLAGS)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -O2 -s")
+
+# compiler flags should be set via command line, but if one must
+# override them, make sure they actually work
+include(CheckCXXCompilerFlag)
+
+check_cxx_compiler_flag("-pedantic" _pedantic)
+if (_pedantic)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
+endif()
+
+check_cxx_compiler_flag("-Wall" _Wall)
+if (_Wall)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+endif()
+
+check_cxx_compiler_flag("-fno-rtti" _fno_rtti)
+if (_fno_rtti)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
+endif()
+
+check_cxx_compiler_flag("-s" _s)
+if (_s)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s")
+endif()
+
+check_cxx_compiler_flag("-O2" _Otwo)
+if (_Otwo)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 endif()
 
 # Packages
