@@ -12,10 +12,33 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -O2 -s")
 
 # Packages
-find_package(Clang REQUIRED COMPONENTS Tooling)
+find_package(Clang CONFIG COMPONENTS Tooling QUIET)
+if (NOT Clang_FOUND)
+  find_package(Clang 7 MODULE REQUIRED COMPONENTS
+    Tooling
+    ASTMatchers
+    Format
+    ToolingInclusions
+    Frontend
+    Driver
+    Parse
+    Serialization
+    Sema
+    Edit
+    Analysis
+    ToolingCore
+    AST
+    Rewrite
+    Lex
+    Basic)
+else()
+  # not set by config, but set by module mode
+  set(CLANG_LIBRARIES clangTooling)
+endif()
+
 
 # Include directories
-include_directories(src ${CLANG_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
+include_directories(src ${CLANG_INCLUDE_DIRS})
 
 # Source files
 set(flecstan_SOURCES
@@ -36,6 +59,5 @@ add_executable(flecstan ${flecstan_SOURCES})
 
 # Libraries
 target_link_libraries(
-   flecstan clangTooling
-   ${CLANG_LIBRARIES}
+  flecstan ${CLANG_LIBRARIES}
 )
