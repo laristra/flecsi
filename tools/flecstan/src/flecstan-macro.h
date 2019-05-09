@@ -14,8 +14,7 @@
    All rights reserved.
 ----------------------------------------------------------------------------- */
 
-#ifndef flecstan_macro
-#define flecstan_macro
+#pragma once
 
 #include "flecstan-yaml.h"
 
@@ -912,5 +911,3 @@ public:
 #undef flecstan_maptraits
 #undef flecstan_map
 #undef flecstan_maptraits_done
-
-#endif

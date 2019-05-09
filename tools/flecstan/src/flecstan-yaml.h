@@ -14,8 +14,7 @@
    All rights reserved.
 ----------------------------------------------------------------------------- */
 
-#ifndef flecstan_yaml
-#define flecstan_yaml
+#pragma once
 
 #include "flecstan-misc.h"
 
@@ -192,5 +191,3 @@ void getVarArgsTemplate(
 );
 
 } // namespace flecstan
-
-#endif

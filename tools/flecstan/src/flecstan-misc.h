@@ -14,8 +14,7 @@
    All rights reserved.
 ----------------------------------------------------------------------------- */
 
-#ifndef flecstan_misc
-#define flecstan_misc
+#pragma once
 
 #include "flecstan-config.h"
 #include "clang/Sema/Sema.h"
@@ -778,5 +777,3 @@ public:
 
 } // namespace yaml
 } // namespace llvm
-
-#endif

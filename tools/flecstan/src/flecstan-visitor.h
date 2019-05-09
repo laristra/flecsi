@@ -14,8 +14,7 @@
    All rights reserved.
 ----------------------------------------------------------------------------- */
 
-#ifndef flecstan_visitor
-#define flecstan_visitor
+#pragma once
 
 #include "flecstan-prep.h"
 #include "clang/AST/RecursiveASTVisitor.h"
@@ -57,5 +56,3 @@ public:
 };
 
 } // namespace flecstan
-
-#endif

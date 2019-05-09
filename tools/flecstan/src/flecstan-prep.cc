@@ -42,7 +42,7 @@ const std::set<std::string> Preprocessor::macros {
 
 // constructor
 Preprocessor::Preprocessor(
-   const std::string &u, 
+   const std::string &u,
    clang::CompilerInstance &c,
    Yaml &y
 )

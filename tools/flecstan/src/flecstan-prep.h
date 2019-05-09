@@ -14,8 +14,7 @@
    All rights reserved.
 ----------------------------------------------------------------------------- */
 
-#ifndef flecstan_prep
-#define flecstan_prep
+#pragma once
 
 #include "flecstan-macro.h"
 #include "clang/Frontend/CompilerInstance.h"
@@ -82,5 +81,3 @@ public:
 };
 
 } // namespace flecstan
-
-#endif

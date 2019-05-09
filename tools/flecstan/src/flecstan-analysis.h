@@ -14,8 +14,7 @@
    All rights reserved.
 ----------------------------------------------------------------------------- */
 
-#ifndef flecstan_analysis
-#define flecstan_analysis
+#pragma once
 
 #include "flecstan-macro.h"
 
@@ -193,5 +192,3 @@ public:
 exit_status_t analysis(const flecstan::Yaml &);
 
 } // namespace flecstan
-
-#endif

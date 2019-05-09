@@ -14,8 +14,7 @@
    All rights reserved.
 ----------------------------------------------------------------------------- */
 
-#ifndef flecstan_utility
-#define flecstan_utility
+#pragma once
 
 #include "flecstan-misc.h"
 
@@ -55,5 +54,3 @@ const clang::CallExpr
    );
 
 } // namespace flecstan
-
-#endif

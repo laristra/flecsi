@@ -14,8 +14,7 @@
    All rights reserved.
 ----------------------------------------------------------------------------- */
 
-#ifndef flecstan_diagnostic
-#define flecstan_diagnostic
+#pragma once
 
 #include "flecstan-misc.h"
 #include "clang/Tooling/Tooling.h"
@@ -47,5 +46,3 @@ public:
 };
 
 } // namespace flecstan
-
-#endif

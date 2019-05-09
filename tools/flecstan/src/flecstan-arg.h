@@ -14,8 +14,7 @@
    All rights reserved.
 ----------------------------------------------------------------------------- */
 
-#ifndef flecstan_arg
-#define flecstan_arg
+#pragma once
 
 #include "flecstan-misc.h"
 #include "clang/Tooling/CommonOptionsParser.h"
@@ -94,5 +93,3 @@ exit_status_t arguments
    (std::size_t &, const int, const char *const *const, CmdArgs &);
 
 } // namespace flecstan
-
-#endif

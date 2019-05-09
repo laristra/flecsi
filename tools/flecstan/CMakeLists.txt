@@ -23,8 +23,8 @@ set(flecstan_VERSION_MAJOR 0)
 set(flecstan_VERSION_MINOR 0)
 set(flecstan_VERSION_PATCH 0)
 configure_file (
-  "src/flecstan-config.h.in"
-  "src/flecstan-config.h"
+  "${PROJECT_SOURCE_DIR}/src/flecstan-config.h.in"
+  "${PROJECT_BINARY_DIR}/flecstan-config.h"
 )
 
 # Use cmake modules from cinch
@@ -94,14 +94,17 @@ else()
 endif()
 
 # Include directories
-include_directories(src ${CLANG_INCLUDE_DIRS})
+include_directories(
+   ${PROJECT_SOURCE_DIR}/src
+   ${PROJECT_BINARY_DIR}
+   ${CLANG_INCLUDE_DIRS}
+)
 
 # Source files
 set(flecstan_SOURCES
    src/flecstan-analysis.cc
    src/flecstan-arg.cc
    src/flecstan-diagnostic.cc
-   src/flecstan-macro.cc
    src/flecstan-main.cc
    src/flecstan-misc.cc
    src/flecstan-prep.cc
