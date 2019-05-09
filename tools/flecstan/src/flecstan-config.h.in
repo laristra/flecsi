@@ -1,0 +1,4 @@
+
+#define flecstan_VERSION_MAJOR @flecstan_VERSION_MAJOR@
+#define flecstan_VERSION_MINOR @flecstan_VERSION_MINOR@
+#define flecstan_VERSION_PATCH @flecstan_VERSION_PATCH@

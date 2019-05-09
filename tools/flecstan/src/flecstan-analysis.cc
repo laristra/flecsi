@@ -45,10 +45,6 @@ vector<macro>: matched
    exit_status_t status = exit_clean; \
    status = std::max(status, called_matched(call, mat, #field))
 
-// stringify
-#define _stringify(macro) #macro
-#define  stringify(macro) _stringify(macro)
-
 
 
 // uflcs

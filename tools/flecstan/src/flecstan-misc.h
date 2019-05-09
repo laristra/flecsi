@@ -3,6 +3,7 @@
 #ifndef flecstan_misc
 #define flecstan_misc
 
+#include "flecstan-config.h"
 #include "clang/Sema/Sema.h"
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/YAMLTraits.h"
@@ -36,9 +37,17 @@ inline const exit_status_t exit_fatal = 2;
    #define flecstan_assert(x)
 #endif
 
+// stringify
+#define _stringify(macro) #macro
+#define  stringify(macro) _stringify(macro)
+
 // version
 namespace flecstan {
-   inline const std::string version = "0.0.0";
+   inline const std::string version =
+      stringify(flecstan_VERSION_MAJOR) "."
+      stringify(flecstan_VERSION_MINOR) "."
+      stringify(flecstan_VERSION_PATCH)
+   ;
 }
 
 // unnamed namespace
