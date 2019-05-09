@@ -43,29 +43,17 @@ namespace legion {
   Global Topology.
  *----------------------------------------------------------------------------*/
 
-namespace global_topology {
-
-using topology_t = flecsi::data::global_topology_t;
-using topology_reference_t = flecsi::data::topology_reference_u<topology_t>;
-
-template<size_t PRIVILEGES>
-struct topology_accessor_t : public topology_reference_t {
-
-  topology_accessor_t(topology_reference_t const & ref)
-    : topology_reference_t(ref) {}
-
-private:
-
-}; // struct topology_accessor_t
-
-} // namespace global_topology
-
 template<>
 struct topology_u<topology::global_topology_t> {
 
+  using global_topology_t = topology::global_topology_t;
+  using topology_reference_t = topology_reference_u<global_topology_t>;
+
   template<size_t NAMESPACE, size_t NAME>
   static topology_reference_t get_reference() {
-    topology_reference_t ref;
+    field_id_t fid;
+    size_t identifier;
+    topology_reference_t ref(fid, identifier);
     return ref;
   } // get_reference
 
@@ -75,23 +63,18 @@ struct topology_u<topology::global_topology_t> {
   Color Topology.
  *----------------------------------------------------------------------------*/
 
-namespace color_topology {
-
-struct topology_handle_t {
-  using topology_type_t = topology::color_topology_t;
-}; // struct topology_handle_t
-
-} // namespace color_topology
-
 template<>
 struct topology_u<topology::color_topology_t> {
 
-  using topology_handle_t = color_topology::topology_handle_t;
+  using color_topology_t = topology::color_topology_t;
+  using topology_reference_t = topology_reference_u<color_topology_t>;
 
   template<size_t NAMESPACE, size_t NAME>
-  static topology_handle_t get_reference() {
-    topology_handle_t h;
-    return h;
+  static topology_reference_t get_reference() {
+    field_id_t fid;
+    size_t identifier;
+    topology_reference_t ref(fid, identifier);
+    return ref;
   } // get_reference
 
 }; // topology_u<topology::color_topology_t>

@@ -78,7 +78,9 @@ struct storage_class_u<global, flecsi::topology::global_topology_t> {
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
   static field_reference_t get_reference(topology_reference_t const & topology) {
-    field_reference_t ref(topology.identifier());
+    field_id_t fid;
+    size_t identifier;
+    field_reference_t ref(fid, identifier, topology.identifier());
     return ref;
   } // get_reference
 
@@ -89,9 +91,6 @@ struct storage_class_u<global, flecsi::topology::global_topology_t> {
  *----------------------------------------------------------------------------*/
 
 namespace color_topology {
-
-using color_topology_t = flecsi::topology::global_topology_t;
-using field_reference_t = field_reference_u<color_topology_t>;
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor_u : public field_reference_t {
@@ -129,11 +128,13 @@ template<>
 struct storage_class_u<color, flecsi::topology::color_topology_t> {
 
   using color_topology_t = flecsi::topology::color_topology_t;
-  using field_reference_t = field_reference_u<color_topology_t>;
+  using topology_reference_t = topology_reference_u<color_topology_t>;
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
-  static field_reference_t get_reference(const topology_reference_t & topology) {
-    field_reference_t ref(topology.identifier());
+  static field_reference_t get_reference(topology_reference_t const & topology) {
+    field_id_t fid;
+    size_t identifier;
+    field_reference_t ref(fid, identifier, topology.identifier());
     return ref;
   } // get_reference
 

@@ -64,6 +64,13 @@ private:
 template<typename TOPOLOGY_TYPE>
 struct topology_reference_u : public data_reference_base_t {
   using topology_t = TOPOLOGY_TYPE;
+
+  topology_reference_u(field_id_t fid, size_t identifier)
+    : data_reference_base_t(fid, identifier) {}
+
+  topology_reference_u(topology_reference_u const & ref)
+    : data_reference_base_t(ref) {}
+
 }; // struct topology_reference_u
 
 /*!
