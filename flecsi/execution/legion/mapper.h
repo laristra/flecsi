@@ -220,7 +220,7 @@ public:
     using namespace Legion::Mapping;
     const std::pair<Legion::LogicalRegion, Legion::Memory> key1(
       task.regions[indx].region, target_mem);
-    auto &key2 = task.regions[indx].privilege_fields;
+    auto & key2 = task.regions[indx].privilege_fields;
     instance_map_t::const_iterator finder1 = local_instances_.find(key1);
     if(finder1 != local_instances_.end()) {
       const field_instance_map_t & innerMap = finder1->second;
@@ -346,6 +346,7 @@ public:
     const Legion::Mapping::Mapper::MapTaskInput & input,
     Legion::Mapping::Mapper::MapTaskOutput & output) {
 
+#ifdef MAPPER_COMPACTION
     using namespace Legion;
     using namespace Legion::Mapping;
 
@@ -404,6 +405,9 @@ public:
     } // end if
 
     runtime->acquire_instances(ctx, output.chosen_instances);
+#else
+    DefaultMapper::map_task(ctx, task, input, output);
+#endif
 
   } // map_task
 
@@ -472,7 +476,8 @@ private:
     field_instance_map_t;
 
   typedef std::map<std::pair<Legion::LogicalRegion, Legion::Memory>,
-    field_instance_map_t> instance_map_t;
+    field_instance_map_t>
+    instance_map_t;
 
   instance_map_t local_instances_;
 
