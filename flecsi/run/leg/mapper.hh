@@ -224,7 +224,7 @@ public:
     using namespace Legion::Mapping;
     const std::pair<Legion::LogicalRegion, Legion::Memory> key1(
       task.regions[indx].region, target_mem);
-    const size_t key2 = *task.regions[indx].privilege_fields.begin();
+    auto & key2 = task.regions[indx].privilege_fields;
     instance_map_t::const_iterator finder1 = local_instances_.find(key1);
     if(finder1 != local_instances_.end()) {
       const field_instance_map_t & innerMap = finder1->second;
@@ -301,7 +301,7 @@ public:
     using namespace Legion::Mapping;
     const std::pair<Legion::LogicalRegion, Legion::Memory> key1(
       task.regions[indx].region, target_mem);
-    const size_t key2 = *task.regions[indx].privilege_fields.begin();
+    auto key2 = task.regions[indx].privilege_fields;
     instance_map_t::const_iterator finder1 = local_instances_.find(key1);
     if(finder1 != local_instances_.end()) {
       const field_instance_map_t & innerMap = finder1->second;
@@ -489,7 +489,7 @@ private:
   // the map of the locac intances that have been already created
   // the first key is the pair of Logical region and Memory that is
   // used as an identifier for the instance, second key is fid
-  typedef std::map<size_t, Legion::Mapping::PhysicalInstance>
+  typedef std::map<std::set<Legion::FieldID>, Legion::Mapping::PhysicalInstance>
     field_instance_map_t;
 
   typedef std::map<std::pair<Legion::LogicalRegion, Legion::Memory>,
