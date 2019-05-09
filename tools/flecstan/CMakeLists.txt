@@ -27,7 +27,7 @@ endif()
 # Packages
 find_package(Clang CONFIG COMPONENTS Tooling QUIET)
 if (NOT Clang_FOUND)
-  find_package(Clang 7 MODULE REQUIRED COMPONENTS
+  find_package(Clang MODULE REQUIRED COMPONENTS
     Tooling
     ASTMatchers
     Format
@@ -48,7 +48,6 @@ else()
   # not set by config, but set by module mode
   set(CLANG_LIBRARIES clangTooling)
 endif()
-find_package(LLVM REQUIRED)
 
 # Include directories
 include_directories(src ${CLANG_INCLUDE_DIRS})
