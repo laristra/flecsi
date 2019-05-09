@@ -22,6 +22,7 @@
   policy that is selected at compile time.
  */
 
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/common/storage_class_registration.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/common.h>
@@ -142,7 +143,7 @@ struct field_interface_u {
     size_t NAME,
     size_t VERSION = 0>
   static decltype(auto) get_field(
-    const topology_handle_u<TOPOLOGY_TYPE> & topology) {
+    topology_reference_u<TOPOLOGY_TYPE> const & topology_reference) {
 
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
@@ -151,8 +152,7 @@ struct field_interface_u {
       typename DATA_POLICY::template storage_class_u<STORAGE_CLASS,
         TOPOLOGY_TYPE>;
 
-    return storage_class_t::
-      template get_handle<DATA_TYPE, NAMESPACE, NAME, VERSION>(topology);
+    return storage_class_t:: template get_reference<DATA_TYPE, NAMESPACE, NAME, VERSION>(topology_reference);
   } // get_field
 
 #if 0

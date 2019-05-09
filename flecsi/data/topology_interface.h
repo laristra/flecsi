@@ -94,7 +94,7 @@ struct topology_interface_u {
 
     using topology_t = typename DATA_POLICY::template topology_u<TOPOLOGY_TYPE>;
 
-    return topology_t::template get_handle<NAMESPACE, NAME>();
+    return topology_t::template get_reference<NAMESPACE, NAME>();
   } // get_topology
 
   /*!

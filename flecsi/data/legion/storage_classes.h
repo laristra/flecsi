@@ -38,22 +38,11 @@ namespace legion {
 
 namespace global_topology {
 
-struct handle_t {
-
-  handle_t() {}
-  ~handle_t() {}
-
-  //  size_t name;
-  //  size_t name_space;
-  //  size_t topology_name;
-  //  size_t topology_name_space;
-
-}; // struct handle_t
-
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor_u : public data_reference_base_t {
+struct accessor_u : public field_reference_t {
 
-  accessor_u(const handle_t & handle) : handle_(handle) {}
+  accessor_u(field_reference_t const & ref)
+    : field_reference_t(ref) {}
 
   /*!
     Return a raw reference to the data of this accessor.
@@ -62,24 +51,6 @@ struct accessor_u : public data_reference_base_t {
   DATA_TYPE * data() {
     return data_;
   } // data
-
-  /*!
-    Provide logical array-based access to the data referenced by this
-    accessor. \em Const version.
-
-    @param index The index of the logical array to access.
-   */
-
-  const DATA_TYPE & operator()(size_t index) const {} // operator()
-
-  /*!
-    Provide logical array-based access to the data referenced by this
-    accessor.
-
-    @param index The index of the logical array to access.
-   */
-
-  DATA_TYPE & operator()(size_t index) {} // operator()
 
   /*!
     Assignment operator.
@@ -93,7 +64,6 @@ struct accessor_u : public data_reference_base_t {
   } // operator=
 
 private:
-  handle_t handle_;
   DATA_TYPE * data_;
 
 }; // struct accessor_u
@@ -103,14 +73,14 @@ private:
 template<>
 struct storage_class_u<global, flecsi::topology::global_topology_t> {
 
-  using topology_handle_t = global_topology::topology_handle_t;
-  using handle_t = global_topology::handle_t;
+  using global_topology_t = flecsi::topology::global_topology_t;
+  using topology_reference_t = topology_reference_u<global_topology_t>;
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
-  static handle_t get_handle(const topology_handle_t & topology) {
-    handle_t h;
-    return h;
-  } // get_handle
+  static field_reference_t get_reference(topology_reference_t const & topology) {
+    field_reference_t ref(topology.identifier());
+    return ref;
+  } // get_reference
 
 }; // struct storage_class_u
 
@@ -120,38 +90,36 @@ struct storage_class_u<global, flecsi::topology::global_topology_t> {
 
 namespace color_topology {
 
-struct handle_t {
-
-  handle_t() {}
-  ~handle_t() {}
-
-}; // struct handle_t
+using color_topology_t = flecsi::topology::global_topology_t;
+using field_reference_t = field_reference_u<color_topology_t>;
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor_u : public data_reference_base_t {
+struct accessor_u : public field_reference_t {
 
-  accessor_u(const handle_t & handle) : handle_(handle) {}
-
-  /*!
-    Provide logical array-based access to the data referenced by this
-    accessor. \em Const version.
-
-    @param index The index of the logical array to access.
-   */
-
-  const DATA_TYPE & operator()(size_t index) const {} // operator()
+  accessor_u(field_reference_t const & ref)
+    : field_reference_t(ref) {}
 
   /*!
-    Provide logical array-based access to the data referenced by this
-    accessor.
-
-    @param index The index of the logical array to access.
+    Return a raw reference to the data of this accessor.
    */
 
-  DATA_TYPE & operator()(size_t index) {} // operator()
+  DATA_TYPE * data() {
+    return data_;
+  } // data
+
+  /*!
+    Assignment operator.
+
+    @param value The value to assign to this accessor.
+   */
+
+  accessor_u & operator=(const DATA_TYPE & value) {
+    *data_ = value;
+    return *this;
+  } // operator=
 
 private:
-  handle_t handle_;
+  DATA_TYPE * data_;
 
 }; // struct accessor_u
 
@@ -160,14 +128,14 @@ private:
 template<>
 struct storage_class_u<color, flecsi::topology::color_topology_t> {
 
-  using topology_handle_t = color_topology::topology_handle_t;
-  using handle_t = color_topology::handle_t;
+  using color_topology_t = flecsi::topology::color_topology_t;
+  using field_reference_t = field_reference_u<color_topology_t>;
 
   template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
-  static handle_t get_handle(const topology_handle_t & topology) {
-    handle_t h;
-    return h;
-  } // get_handle
+  static field_reference_t get_reference(const topology_reference_t & topology) {
+    field_reference_t ref(topology.identifier());
+    return ref;
+  } // get_reference
 
 }; // struct storage_class_u
 
@@ -175,6 +143,7 @@ struct storage_class_u<color, flecsi::topology::color_topology_t> {
   Unstructured Mesh Topology.
  *----------------------------------------------------------------------------*/
 
+#if 0
 namespace unstructured_mesh_topology {
 
 struct dense_handle_t {
@@ -185,7 +154,7 @@ struct dense_handle_t {
 }; // struct dense_handle_t
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct dense_accessor_u : public data_reference_base_t {
+struct dense_accessor_u : public data_reference_t {
 
   dense_accessor_u(const dense_handle_t & handle) : handle_(handle) {}
 
@@ -220,7 +189,7 @@ struct sparse_handle_t {
 }; // struct sparse_handle_t
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct sparse_accessor_u : public data_reference_base_t {
+struct sparse_accessor_u : public data_reference_t {
 
   sparse_accessor_u(const sparse_handle_t & handle) : handle_(handle) {}
 
@@ -230,7 +199,7 @@ private:
 }; // struct sparse_accessor_u
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct sparse_mutator_u : public data_reference_base_t {
+struct sparse_mutator_u : public data_reference_t {
 
   sparse_mutator_u(const sparse_handle_t & handle) : handle_(handle) {}
 
@@ -240,6 +209,7 @@ private:
 }; // struct sparse_mutator_u
 
 } // namespace unstructured_mesh_topology
+#endif
 
 #if 0
 template<typename POLICY_TYPE>
@@ -253,9 +223,9 @@ struct storage_class_u<dense, flecsi::topology::mesh_topology_u<POLICY_TYPE>> {
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION>
-  static unstructured_mesh_topology::handle_t<DATA_TYPE, 0> get_handle(
+  static unstructured_mesh_topology::handle_t<DATA_TYPE, 0> get_reference(
     const client_handle_u<client_t, 0> & client_handle) {
-  } // get_handle
+  } // get_reference
 
 }; // struct storage_class_u
 #endif

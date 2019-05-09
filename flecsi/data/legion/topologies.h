@@ -16,6 +16,7 @@
 /*! @file */
 
 #define POLICY_NAMESPACE legion
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/common/topology.h>
 #undef POLICY_NAMESPACE
 
@@ -44,18 +45,16 @@ namespace legion {
 
 namespace global_topology {
 
-struct topology_handle_t {
-
-  using topology_type_t = topology::global_topology_t;
-
-}; // struct topology_handle_t
+using topology_t = flecsi::data::global_topology_t;
+using topology_reference_t = flecsi::data::topology_reference_u<topology_t>;
 
 template<size_t PRIVILEGES>
-struct topology_accessor_t {
-  topology_accessor_t(topology_handle_t & handle) : handle_(handle) {}
+struct topology_accessor_t : public topology_reference_t {
+
+  topology_accessor_t(topology_reference_t const & ref)
+    : topology_reference_t(ref) {}
 
 private:
-  topology_handle_t & handle_;
 
 }; // struct topology_accessor_t
 
@@ -64,13 +63,11 @@ private:
 template<>
 struct topology_u<topology::global_topology_t> {
 
-  using topology_handle_t = global_topology::topology_handle_t;
-
   template<size_t NAMESPACE, size_t NAME>
-  static topology_handle_t get_handle() {
-    topology_handle_t h;
-    return h;
-  } // get_handle
+  static topology_reference_t get_reference() {
+    topology_reference_t ref;
+    return ref;
+  } // get_reference
 
 }; // topology_u<topology::global_topology_t>
 
@@ -92,10 +89,10 @@ struct topology_u<topology::color_topology_t> {
   using topology_handle_t = color_topology::topology_handle_t;
 
   template<size_t NAMESPACE, size_t NAME>
-  static topology_handle_t get_handle() {
+  static topology_handle_t get_reference() {
     topology_handle_t h;
     return h;
-  } // get_handle
+  } // get_reference
 
 }; // topology_u<topology::color_topology_t>
 
