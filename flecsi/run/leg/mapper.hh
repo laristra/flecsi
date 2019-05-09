@@ -222,17 +222,21 @@ public:
     const size_t & indx) {
     using namespace Legion;
     using namespace Legion::Mapping;
-    const std::pair<Legion::LogicalRegion, Legion::Memory> key(
+    const std::pair<Legion::LogicalRegion, Legion::Memory> key1(
       task.regions[indx].region, target_mem);
-    std::map<std::pair<LogicalRegion, Memory>, PhysicalInstance>::const_iterator
-      finder = local_instances_.find(key);
-    if(finder != local_instances_.end()) {
-      for(size_t j = 0; j < 3; j++) {
-        output.chosen_instances[indx + j].clear();
-        output.chosen_instances[indx + j].push_back(finder->second);
-      } // for
-      return;
-    } // if instance already created in this memory
+    const size_t key2 = *task.regions[indx].privilege_fields.begin();
+    instance_map_t::const_iterator finder1 = local_instances_.find(key1);
+    if(finder1 != local_instances_.end()) {
+      const field_instance_map_t & innerMap = finder1->second;
+      field_instance_map_t::const_iterator finder2 = innerMap.find(key2);
+      if(finder2 != innerMap.end()) {
+        for(size_t j = 0; j < 3; j++) {
+          output.chosen_instances[indx + j].clear();
+          output.chosen_instances[indx + j].push_back(finder2->second);
+        } // for
+        return;
+      } // if
+    } // if
 
     Legion::Mapping::PhysicalInstance result;
     std::vector<Legion::LogicalRegion> regions;
@@ -284,7 +288,7 @@ public:
       output.chosen_instances[indx + j].clear();
       output.chosen_instances[indx + j].push_back(result);
     } // for
-    local_instances_[key] = result;
+    local_instances_[key1][key2] = result;
   } // create_compacted_instance
 
   void create_instance(const Legion::Mapping::MapperContext ctx,
@@ -295,15 +299,20 @@ public:
     const size_t & indx) {
     using namespace Legion;
     using namespace Legion::Mapping;
-    const std::pair<Legion::LogicalRegion, Legion::Memory> key(
+    const std::pair<Legion::LogicalRegion, Legion::Memory> key1(
       task.regions[indx].region, target_mem);
-    std::map<std::pair<LogicalRegion, Memory>, PhysicalInstance>::const_iterator
-      finder = local_instances_.find(key);
-    if(finder != local_instances_.end()) {
-      output.chosen_instances[indx].clear();
-      output.chosen_instances[indx].push_back(finder->second);
-      return;
-    }
+    const size_t key2 = *task.regions[indx].privilege_fields.begin();
+    instance_map_t::const_iterator finder1 = local_instances_.find(key1);
+    if(finder1 != local_instances_.end()) {
+      const field_instance_map_t & innerMap = finder1->second;
+      field_instance_map_t::const_iterator finder2 = innerMap.find(key2);
+      if(finder2 != innerMap.end()) {
+        output.chosen_instances[indx].clear();
+        output.chosen_instances[indx].push_back(finder2->second);
+        return;
+      } // if
+    } // if
+
     Legion::Mapping::PhysicalInstance result;
     std::vector<Legion::LogicalRegion> regions;
     bool created;
@@ -337,7 +346,7 @@ public:
     } // if
 
     output.chosen_instances[indx].push_back(result);
-    local_instances_[key] = result;
+    local_instances_[key1][key2] = result;
   } // create_instance
 
   /*!
@@ -396,9 +405,6 @@ public:
         } // for
         layout_constraints.add_constraint(
           Legion::FieldConstraint(all_fields, true));
-
-        Legion::Mapping::PhysicalInstance result;
-        std::vector<Legion::LogicalRegion> regions;
 
         // creating physical instance for the reduction task
         if(task.regions[indx].privilege == REDUCE) {
@@ -482,10 +488,15 @@ private:
 
   // the map of the locac intances that have been already created
   // the first key is the pair of Logical region and Memory that is
-  // used as an identifier for the instance
-  std::map<std::pair<Legion::LogicalRegion, Legion::Memory>,
-    Legion::Mapping::PhysicalInstance>
-    local_instances_;
+  // used as an identifier for the instance, second key is fid
+  typedef std::map<size_t, Legion::Mapping::PhysicalInstance>
+    field_instance_map_t;
+
+  typedef std::map<std::pair<Legion::LogicalRegion, Legion::Memory>,
+    field_instance_map_t>
+    instance_map_t;
+
+  instance_map_t local_instances_;
 
 protected:
   std::map<Legion::TaskID, Legion::VariantID> cpu_variants;
