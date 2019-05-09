@@ -25,7 +25,6 @@ if (NOT CMAKE_CXX_FLAGS)
 endif()
 
 # Packages
-find_package(LLVM REQUIRED)
 find_package(Clang CONFIG COMPONENTS Tooling QUIET)
 if (NOT Clang_FOUND)
   find_package(Clang 7 MODULE REQUIRED COMPONENTS
@@ -49,9 +48,10 @@ else()
   # not set by config, but set by module mode
   set(CLANG_LIBRARIES clangTooling)
 endif()
+find_package(LLVM REQUIRED)
 
 # Include directories
-include_directories(src ${CLANG_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
+include_directories(src ${CLANG_INCLUDE_DIRS})
 
 # Source files
 set(flecstan_SOURCES
