@@ -97,7 +97,11 @@ else()
   set(CLANG_LIBRARIES)
   foreach(_library ${_clang_components}) 
     list(APPEND CLANG_LIBRARIES clang${_library})
+    #get_target_property(_imported_targets clang${_library} INTERFACE_LINK_LIBRARIES)
+    #MESSAGE( STATUS "${_library} links to ${_imported_targets}" )
   endforeach()
+  # also need LLVM
+  list(APPEND CLANG_LIBRARIES LLVM)
   # some debug
   MESSAGE( STATUS "Imported cmake config from: ${CLANG_CMAKE_DIR}")
 endif()
