@@ -524,6 +524,7 @@ struct context_u : public CONTEXT_POLICY {
     size_t topology_type_identifier,
     size_t storage_class) const {
 
+    flog(internal) << "Type identifier: " << topology_type_identifier << std::endl;
     auto const & tita =
       topology_field_info_map_.find(topology_type_identifier);
     flog_assert(tita != topology_field_info_map_.end(),
