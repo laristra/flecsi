@@ -67,7 +67,7 @@ endif()
 
 # need clang/llvm 7
 # specifying the versioning in config mode does not work
-find_package(Clang CONFIG COMPONENTS Tooling AST QUIET)
+find_package(Clang CONFIG COMPONENTS Tooling QUIET)
 
 if (NOT Clang_FOUND)
   # specifying the version here works
@@ -90,7 +90,14 @@ if (NOT Clang_FOUND)
     Basic)
 else()
   # not set by config, but set by module mode
-  set(CLANG_LIBRARIES clangTooling clangAST)
+  set(CLANG_LIBRARIES clangTooling)
+  # some debug
+  MESSAGE( STATUS "Imported cmake config from: ${CLANG_CMAKE_DIR}")
+  MESSAGE( STATUS "CMAKE_IMPORT_FILE_VERSION=${CMAKE_IMPORT_FILE_VERSION}")
+  foreach(_library ${CLANG_LIBRARIES}) 
+    get_target_property(_imported_targets ${_library} INTERFACE_LINK_LIBRARIES)
+    MESSAGE( STATUS "${_library} links to ${_imported_targets}" )
+  endforeach()
 endif()
 
 # Include directories
