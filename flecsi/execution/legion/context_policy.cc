@@ -246,8 +246,9 @@ legion_context_policy_t::connect_with_mpi(Legion::Context & ctx,
 // Implementation of initialize_global_topology.
 //----------------------------------------------------------------------------//
 
-constexpr size_t flecsi_global_topology_hash =
-  flecsi_internal_hash(global_topology_t);
+const size_t flecsi_global_topology_hash =
+  typeid(global_topology_t).hash_code();
+  //flecsi_internal_hash(global_topology_t);
 
 void
 legion_context_policy_t::initialize_global_topology() {
