@@ -67,7 +67,7 @@ endif()
 
 # need clang/llvm 7
 # specifying the versioning in config mode does not work
-find_package(Clang CONFIG COMPONENTS Tooling QUIET)
+find_package(Clang CONFIG COMPONENTS Tooling AST QUIET)
 
 if (NOT Clang_FOUND)
   # specifying the version here works
@@ -90,7 +90,7 @@ if (NOT Clang_FOUND)
     Basic)
 else()
   # not set by config, but set by module mode
-  set(CLANG_LIBRARIES clangTooling)
+  set(CLANG_LIBRARIES clangTooling clangAST)
 endif()
 
 # Include directories
