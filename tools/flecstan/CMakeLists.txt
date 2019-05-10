@@ -66,12 +66,7 @@ endif()
 # Packages
 
 # need clang/llvm 7
-# specifying the versioning in config mode does not work
-find_package(Clang CONFIG COMPONENTS Tooling QUIET)
-
-if (NOT Clang_FOUND)
-  # specifying the version here works
-  find_package(Clang 7 MODULE REQUIRED COMPONENTS
+set( _clang_components
     Tooling
     ASTMatchers
     Format
@@ -88,16 +83,23 @@ if (NOT Clang_FOUND)
     Rewrite
     Lex
     Basic)
+
+
+# specifying the versioning in config mode does not work
+find_package(Clang CONFIG COMPONENTS ${_clang_components} QUIET)
+
+if (NOT Clang_FOUND)
+  # specifying the version here works
+  find_package(Clang 7 MODULE REQUIRED
+    COMPONENTS ${_clang_components} )
 else()
   # not set by config, but set by module mode
-  set(CLANG_LIBRARIES clangTooling)
+  set(CLANG_LIBRARIES)
+  foreach(_library ${_clang_components}) 
+    list(APPEND CLANG_LIBRARIES clang${_library})
+  endforeach()
   # some debug
   MESSAGE( STATUS "Imported cmake config from: ${CLANG_CMAKE_DIR}")
-  MESSAGE( STATUS "CMAKE_IMPORT_FILE_VERSION=${CMAKE_IMPORT_FILE_VERSION}")
-  foreach(_library ${CLANG_LIBRARIES}) 
-    get_target_property(_imported_targets ${_library} INTERFACE_LINK_LIBRARIES)
-    MESSAGE( STATUS "${_library} links to ${_imported_targets}" )
-  endforeach()
 endif()
 
 # Include directories
