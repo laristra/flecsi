@@ -285,8 +285,8 @@ struct context_u : public CONTEXT_POLICY {
   OBJECT_TYPE * add_global_object(size_t index, ARGS &&... args) {
     size_t KEY = NAMESPACE ^ index;
 
-    flog_assert(
-      task_depth() == 0, "you cannot add global objects from within a task");
+    flog_assert(task_depth() == 0,
+      "you cannot add global objects from within a task");
 
     flog_assert(
       global_object_registry_.find(KEY) == global_object_registry_.end(),
@@ -509,15 +509,22 @@ struct context_u : public CONTEXT_POLICY {
 
     @param topology_type_identifier Topology type identifier.
     @param storage_class            Storage class identifier.
-    @param fi                       Field information.
+    @param field_info               Field information.
    */
 
   void register_field_info(size_t topology_type_identifier,
     size_t storage_class,
-    const data::field_info_t & fi) {
+    const data::field_info_t & field_info) {
     topology_field_info_map_[topology_type_identifier][storage_class]
-      .register_field_info(fi);
+      .register_field_info(field_info);
   } // register_field_information
+
+  /*!
+    Return the stored field info for the given topology type and storage class.
+
+    @param topology_type_identifier Topology type identifier.
+    @param storage_class            Storage class identifier.
+   */
 
   field_info_store_t const & get_field_info_store(
     size_t topology_type_identifier,
@@ -531,17 +538,8 @@ struct context_u : public CONTEXT_POLICY {
     flog_assert(sita != tita->second.end(),
       "storage class lookup failed for " << storage_class);
 
-    // FIXME check
     return sita->second;
   } // get_field_info_store
-
-  /*!
-    Return the field info map.
-   */
-
-  std::unordered_map<size_t, field_info_map_t> & topology_field_info_map() {
-    return topology_field_info_map_;
-  } // field_info_map
 
   /*--------------------------------------------------------------------------*
     Task Launch iterface.
