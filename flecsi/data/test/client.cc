@@ -21,6 +21,7 @@
 using namespace flecsi;
 
 flecsi_register_global("test", "global", double, 2);
+inline auto th = flecsi_get_global("test", "global", double, 0);
 
 template<size_t PRIVILEGES>
 using global_accessor_u =
@@ -42,7 +43,7 @@ global(int argc, char ** argv) {
 
   FTEST();
 
-  auto th = flecsi_get_global("test", "global", double, 0);
+  // auto th = flecsi_get_global("test", "global", double, 0);
   double value{10.0};
 
   flecsi_execute_task(global_task, global_test, single, th, value);

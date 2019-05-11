@@ -51,9 +51,8 @@ struct topology_u<topology::global_topology_t> {
 
   template<size_t NAMESPACE, size_t NAME>
   static topology_reference_t get_reference() {
-    field_id_t fid;
-    size_t identifier;
-    topology_reference_t ref(fid, identifier);
+    constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
+    topology_reference_t ref(identifier);
     return ref;
   } // get_reference
 
@@ -71,9 +70,8 @@ struct topology_u<topology::color_topology_t> {
 
   template<size_t NAMESPACE, size_t NAME>
   static topology_reference_t get_reference() {
-    field_id_t fid;
-    size_t identifier;
-    topology_reference_t ref(fid, identifier);
+    constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
+    topology_reference_t ref(identifier);
     return ref;
   } // get_reference
 

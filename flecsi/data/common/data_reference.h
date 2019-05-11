@@ -36,22 +36,16 @@ namespace data {
 
 struct data_reference_base_t {
 
-  data_reference_base_t(field_id_t fid, size_t identifier)
-    : fid_(fid), identifier_(identifier) {}
+  data_reference_base_t(size_t identifier) : identifier_(identifier) {}
 
   data_reference_base_t(data_reference_base_t const & ref)
-    : fid_(ref.fid_), identifier_(ref.identifier_) {}
-
-  field_id_t fid() const {
-    return fid_;
-  } // fid
+    : identifier_(ref.identifier_) {}
 
   size_t identifier() const {
     return identifier_;
   } // identifier
 
 private:
-  field_id_t fid_;
   size_t identifier_;
 
 }; // struct data_reference_base_t
@@ -65,8 +59,7 @@ template<typename TOPOLOGY_TYPE>
 struct topology_reference_u : public data_reference_base_t {
   using topology_t = TOPOLOGY_TYPE;
 
-  topology_reference_u(field_id_t fid, size_t identifier)
-    : data_reference_base_t(fid, identifier) {}
+  topology_reference_u(size_t identifier) : data_reference_base_t(identifier) {}
 
   topology_reference_u(topology_reference_u const & ref)
     : data_reference_base_t(ref) {}
@@ -81,10 +74,8 @@ struct topology_reference_u : public data_reference_base_t {
 
 struct field_reference_t : public data_reference_base_t {
 
-  field_reference_t(field_id_t fid,
-    size_t identifier,
-    size_t topology_identifier)
-    : data_reference_base_t(fid, identifier),
+  field_reference_t(size_t identifier, size_t topology_identifier)
+    : data_reference_base_t(identifier),
       topology_identifier_(topology_identifier) {}
 
   size_t topology_identifier() const {

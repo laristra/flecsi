@@ -246,10 +246,6 @@ legion_context_policy_t::connect_with_mpi(Legion::Context & ctx,
 // Implementation of initialize_global_topology.
 //----------------------------------------------------------------------------//
 
-const size_t flecsi_global_topology_hash =
-  typeid(global_topology_t).hash_code();
-  //flecsi_internal_hash(global_topology_t);
-
 void
 legion_context_policy_t::initialize_global_topology() {
   using namespace Legion;
@@ -274,7 +270,8 @@ legion_context_policy_t::initialize_global_topology() {
     legion_context_, global_runtime_data_.field_space);
 
   auto const & field_store = context_t::instance().get_field_info_store(
-    flecsi_global_topology_hash, flecsi::data::storage_label_t::global);
+    flecsi_internal_type_hash(global_topology_t),
+    flecsi::data::storage_label_t::global);
 
   for(auto const & fi : field_store.data()) {
     allocator.allocate_field(fi.type_size, fi.fid);

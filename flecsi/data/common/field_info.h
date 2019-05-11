@@ -18,6 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include <flecsi/runtime/types.h>
 #include <flecsi/utils/flog.h>
 #include <flecsi/utils/hash.h>
 #endif
@@ -38,12 +39,21 @@ namespace data {
 struct field_info_t {
   size_t namespace_hash = std::numeric_limits<size_t>::max();
   size_t name_hash = std::numeric_limits<size_t>::max();
-  size_t type_size = std::numeric_limits<size_t>::max();
-  size_t versions = std::numeric_limits<size_t>::max();
-  size_t fid = std::numeric_limits<size_t>::max();
-  size_t index_space = std::numeric_limits<size_t>::max();
   size_t key = std::numeric_limits<size_t>::max();
+  field_id_t fid = FIELD_ID_MAX;
+  size_t index_space = std::numeric_limits<size_t>::max();
+  size_t versions = std::numeric_limits<size_t>::max();
+  size_t type_size = std::numeric_limits<size_t>::max();
 }; // struct field_info_t
+
+/*!
+  The field_info_store_t type provides storage for field_info_t instances with
+  an interface to lookup the field information for a particular field in a
+  variety of ways, e.g., using a hash key, or the field id (fid).
+
+  This type replaces the ad-hoc methods that were being used before the 2019
+  refactor.
+ */
 
 struct field_info_store_t {
 
@@ -60,7 +70,7 @@ struct field_info_store_t {
     @param fid The field id.
    */
 
-  field_info_t const & get_field_info(size_t fid) const {
+  field_info_t const & get_field_info(field_id_t fid) const {
 
     const auto ita = fid_lookup_.find(fid);
     flog_assert(ita != fid_lookup_.end(), "fid lookup failed for " << fid);
@@ -69,10 +79,45 @@ struct field_info_store_t {
   } // get_field_info
 
   /*!
-    Lookup field info using the namespace and name.
+    Lookup field info using a hash key.
+
+    @param KEY The hash key that uniquely identifies this field.
+   */
+
+  template<size_t KEY>
+  field_info_t const & get_field_info() const {
+
+    const auto ita = key_lookup_.find(KEY);
+    flog_assert(
+      ita != key_lookup_.end(), "identifier lookup failed for " << KEY);
+
+    return data_[ita->second];
+  } // get_field_info
+
+  std::vector<field_info_t> const & data() const {
+    return data_;
+  } // data
+
+  /*!
+    Lookup field info using a hash key.
+
+    @param key The hash key that uniquely identifies this field.
+   */
+
+  field_info_t const & get_field_info(size_t key) const {
+
+    const auto ita = key_lookup_.find(key);
+    flog_assert(ita != key_lookup_.end(), "fid lookup failed for " << key);
+
+    return data_[ita->second];
+  } // get_field_info
+
+  /*!
+    Lookup field info using the namespace, name, and version.
 
     @tparam NAMESPACE The namespace of the field.
     @tparam NAME      The name of the field.
+    @tparam VERSION   The version of the field.
    */
 
   template<size_t NAMESPACE, size_t NAME, size_t VERSION>
@@ -85,27 +130,6 @@ struct field_info_store_t {
 
     return data_[ita->second];
   } // get_field_info
-
-  /*!
-    Lookup field info using a hash key.
-
-    @tparam NAMESPACE The namespace of the field.
-    @tparam NAME      The name of the field.
-   */
-
-  template<size_t IDENTIFIER>
-  field_info_t const & get_field_info() const {
-
-    const auto ita = key_lookup_.find(IDENTIFIER);
-    flog_assert(
-      ita != key_lookup_.end(), "identifier lookup failed for " << IDENTIFIER);
-
-    return data_[ita->second];
-  } // get_field_info
-
-  std::vector<field_info_t> const & data() const {
-    return data_;
-  } // data
 
 private:
   std::vector<field_info_t> data_;

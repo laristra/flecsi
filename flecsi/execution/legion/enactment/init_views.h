@@ -53,16 +53,16 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
   /*!
     Construct an init_views_t instance.
 
-    @param runtime The Legion task runtime.
-    @param context The Legion task runtime context.
+    @param legion_runtime The Legion task runtime.
+    @param legion_context The Legion task runtime context.
    */
 
-  init_views_t(Legion::Runtime * runtime,
-    Legion::Context & context,
+  init_views_t(Legion::Runtime * legion_runtime,
+    Legion::Context & legion_context,
     std::vector<Legion::PhysicalRegion> const & regions,
     std::vector<Legion::Future> const & futures)
-    : runtime_(runtime), context_(context), regions_(regions),
-      futures_(futures) {}
+    : legion_runtime_(legion_runtime), legion_context_(legion_context),
+      regions_(regions), futures_(futures) {}
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
     The following methods are specializations on storage class and client
@@ -75,6 +75,14 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+
+    const auto fid =
+      context_t::instance()
+        .get_field_info_store(flecsi_internal_type_hash(global_topology_t),
+          data::storage_label_t::global)
+        .get_field_info(accessor.identifier())
+        .fid;
+
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -93,9 +101,11 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
   } // visit
 
 private:
-  Legion::Runtime * runtime_;
-  Legion::Context & context_;
+  Legion::Runtime * legion_runtime_;
+  Legion::Context & legion_context_;
+  size_t region = 0;
   const std::vector<Legion::PhysicalRegion> & regions_;
+  size_t future = 0;
   const std::vector<Legion::Future> & futures_;
 
 }; // struct init_views_t

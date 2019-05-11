@@ -154,7 +154,7 @@
 namespace flecsi {
 namespace topology {
 
-flecsi_register_topology(global_topology_t, "global_client", "global_client");
+flecsi_register_topology(global_topology_t, "internal", "global_topology");
 
 } // namespace topology
 } // namespace flecsi
@@ -214,7 +214,7 @@ flecsi_register_topology(global_topology_t, "global_client", "global_client");
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_field(                                                            \
     flecsi_get_topology(                                                       \
-      flecsi::topology::global_topology_t, "global_client", "global_client"),  \
+      flecsi::topology::global_topology_t, "internal", "global_topology"),     \
     nspace,                                                                    \
     name,                                                                      \
     data_type,                                                                 \
@@ -228,7 +228,7 @@ flecsi_register_topology(global_topology_t, "global_client", "global_client");
 namespace flecsi {
 namespace topology {
 
-flecsi_register_topology(color_topology_t, "color_client", "color_client");
+flecsi_register_topology(color_topology_t, "internal", "color_topology");
 
 } // namespace topology
 } // namespace flecsi
@@ -287,7 +287,7 @@ flecsi_register_topology(color_topology_t, "color_client", "color_client");
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_field(                                                            \
     flecsi_get_topology(                                                       \
-      flecsi::topology::color_topology_t, "color_client", "color_client"),     \
+      flecsi::topology::color_topology_t, "internal", "color_topology"),       \
     nspace,                                                                    \
     name,                                                                      \
     data_type,                                                                 \
