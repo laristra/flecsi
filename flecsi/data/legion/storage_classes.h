@@ -92,23 +92,6 @@ private:
 
 } // namespace global_topology
 
-template<>
-struct storage_class_u<global, flecsi::topology::global_topology_t> {
-
-  using global_topology_t = flecsi::topology::global_topology_t;
-  using topology_reference_t = topology_reference_u<global_topology_t>;
-
-  template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
-  static field_reference_t get_reference(
-    topology_reference_t const & topology) {
-    constexpr size_t identifier =
-      utils::hash::field_hash<NAMESPACE, NAME, VERSION>();
-    field_reference_t ref(identifier, topology.identifier());
-    return ref;
-  } // get_reference
-
-}; // struct storage_class_u
-
 /*----------------------------------------------------------------------------*
   Color Topology.
  *----------------------------------------------------------------------------*/
@@ -145,23 +128,6 @@ private:
 }; // struct accessor_u
 
 } // namespace color_topology
-
-template<>
-struct storage_class_u<color, flecsi::topology::color_topology_t> {
-
-  using color_topology_t = flecsi::topology::color_topology_t;
-  using topology_reference_t = topology_reference_u<color_topology_t>;
-
-  template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
-  static field_reference_t get_reference(
-    topology_reference_t const & topology) {
-    constexpr size_t identifier =
-      utils::hash::field_hash<NAMESPACE, NAME, VERSION>();
-    field_reference_t ref(identifier, topology.identifier());
-    return ref;
-  } // get_reference
-
-}; // struct storage_class_u
 
 /*----------------------------------------------------------------------------*
   Unstructured Mesh Topology.

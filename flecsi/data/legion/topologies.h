@@ -39,6 +39,7 @@ class mesh_topology_u;
 namespace data {
 namespace legion {
 
+#if 0
 /*----------------------------------------------------------------------------*
   Global Topology.
  *----------------------------------------------------------------------------*/
@@ -76,6 +77,7 @@ struct topology_u<topology::color_topology_t> {
   } // get_reference
 
 }; // topology_u<topology::color_topology_t>
+#endif
 
 /*----------------------------------------------------------------------------*
   Mesh Topology.

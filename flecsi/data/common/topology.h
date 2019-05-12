@@ -38,7 +38,17 @@ namespace POLICY_NAMESPACE {
  */
 
 template<typename TOPOLOGY_TYPE>
-struct topology_u {};
+struct topology_u {
+
+  using topology_reference_t = topology_reference_u<TOPOLOGY_TYPE>;
+
+  template<size_t NAMESPACE, size_t NAME>
+  static topology_reference_t get_reference() {
+    constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
+    return { identifier };
+  } // get_reference
+  
+};
 
 } // namespace POLICY_NAMESPACE
 } // namespace data

@@ -56,8 +56,20 @@ namespace POLICY_NAMESPACE {
   a topology reference.
  */
 
-template<size_t STORAGE_CLASS, typename CLIENT_TYPE>
-struct storage_class_u {};
+template<size_t STORAGE_CLASS, typename TOPOLOGY_TYPE>
+struct storage_class_u {
+
+  using topology_reference_t = topology_reference_u<TOPOLOGY_TYPE>;
+
+  template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
+  static field_reference_t get_reference(
+    topology_reference_t const & topology) {
+    constexpr size_t identifier =
+      utils::hash::field_hash<NAMESPACE, NAME, VERSION>();
+    return { identifier, topology.identifier() };
+  } // get_reference
+
+}; // struct storage_class_u
 
 } // namespace POLICY_NAMESPACE
 } // namespace data
