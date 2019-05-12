@@ -269,7 +269,14 @@ legion_context_policy_t::initialize_global_topology() {
   FieldAllocator allocator = legion_runtime_->create_field_allocator(
     legion_context_, global_runtime_data_.field_space);
 
-  auto const & field_store = context_t::instance().get_field_info_store(
+  /*
+    Note: This call to get_field_info_store uses the non-const version
+    so that this call works if no fields have been registered. In other parts
+    of the code that occur after initialization, the const version of this call
+    should be used.
+   */
+
+  auto & field_store = context_t::instance().get_field_info_store(
     flecsi_internal_type_hash(global_topology_t),
     flecsi::data::storage_label_t::global);
 

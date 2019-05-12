@@ -527,11 +527,25 @@ struct context_u : public CONTEXT_POLICY {
    */
 
   field_info_store_t const & get_field_info_store(
+    size_t topology_type_identifier, size_t storage_class) {
+    return topology_field_info_map_[topology_type_identifier][storage_class];
+  } // get_field_info_store
+
+  /*!
+    Return the stored field info for the given topology type and storage class.
+    Const version.
+
+    @param topology_type_identifier Topology type identifier.
+    @param storage_class            Storage class identifier.
+   */
+
+  field_info_store_t const & get_field_info_store(
     size_t topology_type_identifier,
     size_t storage_class) const {
 
     flog(internal) << "Type identifier: " << topology_type_identifier
                    << std::endl;
+
     auto const & tita = topology_field_info_map_.find(topology_type_identifier);
     flog_assert(tita != topology_field_info_map_.end(),
       "topology lookup failed for " << topology_type_identifier);
