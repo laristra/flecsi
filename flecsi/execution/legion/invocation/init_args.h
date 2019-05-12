@@ -112,6 +112,15 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
         privilege_mode(get_privilege<0, PRIVILEGES>()),
         EXCLUSIVE,
         region);
+
+      const auto fid =
+        context_t::instance()
+          .get_field_info_store(flecsi_internal_type_hash(global_topology_t),
+            data::storage_label_t::global)
+          .get_field_info(accessor.identifier())
+          .fid;
+
+      rr.add_field(fid);
       region_reqs_.push_back(rr);
     }
     else {

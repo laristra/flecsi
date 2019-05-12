@@ -39,8 +39,12 @@ namespace legion {
 
 namespace global_topology {
 
+template<typename DATA_TYPE, size_t PRIVILEGES> struct data_binder_u;
+
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor_u : public field_reference_t {
+
+  friend data_binder_u<DATA_TYPE, PRIVILEGES>;
 
   accessor_u(field_reference_t const & ref) : field_reference_t(ref) {}
 
@@ -67,6 +71,15 @@ private:
   DATA_TYPE * data_;
 
 }; // struct accessor_u
+
+template<typename DATA_TYPE, size_t PRIVILEGES>
+struct data_binder_u {
+
+  static void bind(accessor_u<DATA_TYPE, PRIVILEGES> & a, DATA_TYPE * data) {
+    a.data_ = data;
+  } // bind
+
+}; // data_binder_u
 
 } // namespace global_topology
 
