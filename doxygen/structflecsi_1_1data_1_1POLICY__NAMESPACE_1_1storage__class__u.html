@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>Interface Documentation: flecsi::data::POLICY_NAMESPACE::storage_class_u&lt; STORAGE_CLASS, CLIENT_TYPE &gt; Struct Template Reference</title>
+<title>Interface Documentation: flecsi::data::POLICY_NAMESPACE::storage_class_u&lt; STORAGE_CLASS, TOPOLOGY_TYPE &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -65,15 +65,33 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="structflecsi_1_1data_1_1POLICY__NAMESPACE_1_1storage__class__u-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::data::POLICY_NAMESPACE::storage_class_u&lt; STORAGE_CLASS, CLIENT_TYPE &gt; Struct Template Reference</div>  </div>
+<div class="title">flecsi::data::POLICY_NAMESPACE::storage_class_u&lt; STORAGE_CLASS, TOPOLOGY_TYPE &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="storage__class_8h_source.html">storage_class.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:ab830578016e8163bf4796ca1d722a7b6"><td class="memItemLeft" align="right" valign="top"><a id="ab830578016e8163bf4796ca1d722a7b6"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>topology_reference_t</b> = <a class="el" href="structflecsi_1_1data_1_1topology__reference__u.html">topology_reference_u</a>&lt; TOPOLOGY_TYPE &gt;</td></tr>
+<tr class="separator:ab830578016e8163bf4796ca1d722a7b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a009b2f778dbc41ba586a07f31ac38b5f"><td class="memTemplParams" colspan="2"><a id="a009b2f778dbc41ba586a07f31ac38b5f"></a>
+template&lt;typename DATA_TYPE , size_t NAMESPACE, size_t NAME, size_t VERSION&gt; </td></tr>
+<tr class="memitem:a009b2f778dbc41ba586a07f31ac38b5f"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1field__reference__t.html">field_reference_t</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_reference</b> (<a class="el" href="structflecsi_1_1data_1_1topology__reference__u.html">topology_reference_t</a> const &amp;topology)</td></tr>
+<tr class="separator:a009b2f778dbc41ba586a07f31ac38b5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;size_t STORAGE_CLASS, typename CLIENT_TYPE&gt;<br />
-struct flecsi::data::POLICY_NAMESPACE::storage_class_u&lt; STORAGE_CLASS, CLIENT_TYPE &gt;</h3>
+<div class="textblock"><h3>template&lt;size_t STORAGE_CLASS, typename TOPOLOGY_TYPE&gt;<br />
+struct flecsi::data::POLICY_NAMESPACE::storage_class_u&lt; STORAGE_CLASS, TOPOLOGY_TYPE &gt;</h3>
 
 <p>Base storage class type for topology-specific specializations. Specializations of this type must implement a get_reference method that takes a topology reference. </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>

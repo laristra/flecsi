@@ -34,8 +34,6 @@ var searchData=
   ['storage_5fclass_5fregistration_2eh',['storage_class_registration.h',['../storage__class__registration_8h.html',1,'']]],
   ['storage_5fclass_5fregistration_5fu',['storage_class_registration_u',['../structflecsi_1_1data_1_1storage__class__registration__u.html',1,'flecsi::data']]],
   ['storage_5fclass_5fu',['storage_class_u',['../structflecsi_1_1data_1_1POLICY__NAMESPACE_1_1storage__class__u.html',1,'flecsi::data::POLICY_NAMESPACE']]],
-  ['storage_5fclass_5fu_3c_20color_2c_20flecsi_3a_3atopology_3a_3acolor_5ftopology_5ft_20_3e',['storage_class_u&lt; color, flecsi::topology::color_topology_t &gt;',['../structflecsi_1_1data_1_1legion_1_1storage__class__u_3_01color_00_01flecsi_1_1topology_1_1color__topology__t_01_4.html',1,'flecsi::data::legion']]],
-  ['storage_5fclass_5fu_3c_20global_2c_20flecsi_3a_3atopology_3a_3aglobal_5ftopology_5ft_20_3e',['storage_class_u&lt; global, flecsi::topology::global_topology_t &gt;',['../structflecsi_1_1data_1_1legion_1_1storage__class__u_3_01global_00_01flecsi_1_1topology_1_1global__topology__t_01_4.html',1,'flecsi::data::legion']]],
   ['storage_5fclasses_2eh',['storage_classes.h',['../legion_2storage__classes_8h.html',1,'(Global Namespace)'],['../mpi_2storage__classes_8h.html',1,'(Global Namespace)']]],
   ['storage_5flabel_5ft',['storage_label_t',['../storage__class_8h.html#ac662c6859d456a6c33810e5226abbdeb',1,'flecsi::data']]],
   ['stream',['stream',['../structflecsi_1_1utils_1_1flog_1_1log__message__t.html#ab8eb3f5ef0516a49e31a5dcf3e576fda',1,'flecsi::utils::flog::log_message_t::stream()'],['../classflecsi_1_1utils_1_1flog_1_1flog__t.html#a2a30c10be4e8bd10d35cd8b1fe023cea',1,'flecsi::utils::flog::flog_t::stream()']]],
