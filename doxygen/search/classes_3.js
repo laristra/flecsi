@@ -6,6 +6,6 @@ var searchData=
   ['debruijn32_5ft',['debruijn32_t',['../classflecsi_1_1utils_1_1debruijn32__t.html',1,'flecsi::utils']]],
   ['debruijn_5ft',['debruijn_t',['../classdebruijn__t.html',1,'']]],
   ['default_5fnode_5ft',['default_node_t',['../structflecsi_1_1control_1_1default__node__t.html',1,'flecsi::control']]],
-  ['dense_5faccessor_5fu',['dense_accessor_u',['../structflecsi_1_1data_1_1legion_1_1unstructured__mesh__topology_1_1dense__accessor__u.html',1,'flecsi::data::legion::unstructured_mesh_topology']]],
-  ['dense_5fhandle_5ft',['dense_handle_t',['../structflecsi_1_1data_1_1legion_1_1unstructured__mesh__topology_1_1dense__handle__t.html',1,'flecsi::data::legion::unstructured_mesh_topology']]]
+  ['domain_5fconnectivity_5fu',['domain_connectivity_u',['../classflecsi_1_1topology_1_1domain__connectivity__u.html',1,'flecsi::topology']]],
+  ['domain_5fentity_5fu',['domain_entity_u',['../classflecsi_1_1topology_1_1domain__entity__u.html',1,'flecsi::topology']]]
 ];

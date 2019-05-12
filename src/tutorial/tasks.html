@@ -195,28 +195,26 @@ file must either be inline or static. As you can see below, this
 example defines a task called “simple_task”, and registers it with the
 runtime. The arguments to the task registration interface are:</p>
 <ol class="arabic">
-<li><p class="first">The task name. This must be the actual name of the C/C++
-function. In this example, the task name is “simple_task”.</p>
-</li>
-<li><p class="first">The namespace of the task. This must be the actual namespace in
-which the task is defined. In this example, the namespace is “example”.</p>
-</li>
-<li><p class="first">The processor type on which the task should be executed.
+<li><p>The task name. This must be the actual name of the C/C++
+function. In this example, the task name is “simple_task”.</p></li>
+<li><p>The namespace of the task. This must be the actual namespace in
+which the task is defined. In this example, the namespace is “example”.</p></li>
+<li><p>The processor type on which the task should be executed.
 Currently, FleCSI has support for:</p>
 <ul class="simple">
-<li>loc - Latency-optimized core</li>
-<li>toc - Throughput-optimized core</li>
-<li>mpi - An MPI task</li>
+<li><p>loc - Latency-optimized core</p></li>
+<li><p>toc - Throughput-optimized core</p></li>
+<li><p>mpi - An MPI task</p></li>
 </ul>
 <p>In this example, the processor type is “loc”.</p>
 </li>
-<li><p class="first">The launch type. This tells the runtime whether the task should
+<li><p>The launch type. This tells the runtime whether the task should
 be launched as a member of a group of executing tasks (SPMD), or
 as a single conventional task (MPMD). These launch types
 correspond to the arguments, respectively:</p>
 <ul class="simple">
-<li>index  - Launch the task as part of a group</li>
-<li>single - Launch the task as a single, independent thread of execution</li>
+<li><p>index  - Launch the task as part of a group</p></li>
+<li><p>single - Launch the task as a single, independent thread of execution</p></li>
 </ul>
 <p>This nomenclature was adopted from the Legion programming
 system, and was originally developed by Nvidia. Future versions
@@ -229,20 +227,20 @@ documentation.</p>
 <p>The driver in this example executes the task by invoking the execution
 interface. The arguments to the execution interface are:</p>
 <ol class="arabic simple">
-<li>The task name. This has the same caveats of the registration
-interface. In this example, the task name is “simple_task”.</li>
-<li>The namespace of the task. This also has the same caveats of the
+<li><p>The task name. This has the same caveats of the registration
+interface. In this example, the task name is “simple_task”.</p></li>
+<li><p>The namespace of the task. This also has the same caveats of the
 registration interface. In this example, the namespace is
-“example”.</li>
-<li>The launch type. In this example, the launch type is “single”.</li>
+“example”.</p></li>
+<li><p>The launch type. In this example, the launch type is “single”.</p></li>
 </ol>
 <p>NOTES:</p>
 <ul class="simple">
-<li>Tasks must be defined in a C++ namespace, and this namespace must
+<li><p>Tasks must be defined in a C++ namespace, and this namespace must
 be repeated in the registration call. This is tedious. However, it
 is a limitation of the current mechanism we have chosen to
 implement the task interface. Future versions of FleCSI will
-likely employ a DSL, which will be cleaner than the current interface.</li>
+likely employ a DSL, which will be cleaner than the current interface.</p></li>
 </ul>
 <p>The code for this example can be found in <em>tasks.cc</em>:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>

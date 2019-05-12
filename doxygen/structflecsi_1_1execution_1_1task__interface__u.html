@@ -77,10 +77,13 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a32fb4a4374739ce3da5f4575c60d722c"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) DELEGATE&gt; </td></tr>
-<tr class="memitem:a32fb4a4374739ce3da5f4575c60d722c"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task__interface__u.html#a32fb4a4374739ce3da5f4575c60d722c">register_task</a> (<a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a> launch, std::string name)</td></tr>
-<tr class="separator:a32fb4a4374739ce3da5f4575c60d722c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e799a9ec0c8d740075099536193ac6c"><td class="memTemplParams" colspan="2">template&lt;launch_type_t LAUNCH, size_t TASK, size_t REDUCTION, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </td></tr>
+<tr class="memitem:accc4cf52f7736ea31312ce1f4724cb29"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) DELEGATE&gt; </td></tr>
+<tr class="memitem:accc4cf52f7736ea31312ce1f4724cb29"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task__interface__u.html#accc4cf52f7736ea31312ce1f4724cb29">register_task</a> (<a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor, <a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">task_execution_type_t</a> execution, std::string name)</td></tr>
+<tr class="separator:accc4cf52f7736ea31312ce1f4724cb29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a770f9e1cfcc311acd902f3f82229bd"><td class="memTemplParams" colspan="2">template&lt;size_t KEY, size_t SIZE&gt; </td></tr>
+<tr class="memitem:a4a770f9e1cfcc311acd902f3f82229bd"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task__interface__u.html#a4a770f9e1cfcc311acd902f3f82229bd">register_domain</a> ()</td></tr>
+<tr class="separator:a4a770f9e1cfcc311acd902f3f82229bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e799a9ec0c8d740075099536193ac6c"><td class="memTemplParams" colspan="2">template&lt;size_t TASK, size_t LAUNCH_DOMAIN, size_t REDUCTION, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </td></tr>
 <tr class="memitem:a9e799a9ec0c8d740075099536193ac6c"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task__interface__u.html#a9e799a9ec0c8d740075099536193ac6c">execute_task</a> (ARGS &amp;&amp;... args)</td></tr>
 <tr class="separator:a9e799a9ec0c8d740075099536193ac6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeaf202aa44f15e71954297061bfdef36"><td class="memTemplParams" colspan="2">template&lt;size_t HASH, typename TYPE &gt; </td></tr>
@@ -107,7 +110,7 @@ struct flecsi::execution::task_interface_u&lt; EXECUTION_POLICY &gt;</h3>
 <div class="memtemplate">
 template&lt;typename EXECUTION_POLICY &gt; </div>
 <div class="memtemplate">
-template&lt;launch_type_t LAUNCH, size_t TASK, size_t REDUCTION, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </div>
+template&lt;size_t TASK, size_t LAUNCH_DOMAIN, size_t REDUCTION, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -140,7 +143,45 @@ template&lt;launch_type_t LAUNCH, size_t TASK, size_t REDUCTION, typename RETURN
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">domain_key</td><td>A hash from the domain name </td></tr>
     <tr><td class="paramname">args</td><td>The arguments to pass to the user task during execution. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4a770f9e1cfcc311acd902f3f82229bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a770f9e1cfcc311acd902f3f82229bd">&#9670;&nbsp;</a></span>register_domain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename EXECUTION_POLICY &gt; </div>
+<div class="memtemplate">
+template&lt;size_t KEY, size_t SIZE&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static decltype(auto) <a class="el" href="structflecsi_1_1execution_1_1task__interface__u.html">flecsi::execution::task_interface_u</a>&lt; EXECUTION_POLICY &gt;::register_domain </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Register a launch domain with the FleCSI runtime.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">KEY</td><td>A hash key identifying the domain. </td></tr>
+    <tr><td class="paramname">SIZE</td><td>A domain size </td></tr>
   </table>
   </dd>
 </dl>
@@ -184,8 +225,8 @@ template&lt;size_t HASH, typename TYPE &gt; </div>
 
 </div>
 </div>
-<a id="a32fb4a4374739ce3da5f4575c60d722c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a32fb4a4374739ce3da5f4575c60d722c">&#9670;&nbsp;</a></span>register_task()</h2>
+<a id="accc4cf52f7736ea31312ce1f4724cb29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accc4cf52f7736ea31312ce1f4724cb29">&#9670;&nbsp;</a></span>register_task()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -206,8 +247,8 @@ template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUP
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>&#160;</td>
-          <td class="paramname"><em>launch</em>, </td>
+          <td class="paramtype"><a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">task_execution_type_t</a>&#160;</td>
+          <td class="paramname"><em>execution</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -240,7 +281,7 @@ template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUP
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">processor</td><td>The processor type. </td></tr>
-    <tr><td class="paramname">launch</td><td>The launch flags. </td></tr>
+    <tr><td class="paramname">execution</td><td>The task execution type flags. </td></tr>
     <tr><td class="paramname">name</td><td>The string identifier of the task.</td></tr>
   </table>
   </dd>

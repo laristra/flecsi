@@ -90,11 +90,43 @@ Macros</h2></td></tr>
 <tr class="separator:gad28a551ef10a4eb6a922156a903f2832"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga121ac03b7bc5e3870ffe7290e9d0d3be"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#ga121ac03b7bc5e3870ffe7290e9d0d3be">flecsi_get_global_object</a>(index,  scope,  type)</td></tr>
 <tr class="separator:ga121ac03b7bc5e3870ffe7290e9d0d3be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4dcd75ac370388c816b99672d589c4bc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#ga4dcd75ac370388c816b99672d589c4bc">flecsi_register_task</a>(task,  nspace,  processor,  launch)</td></tr>
-<tr class="separator:ga4dcd75ac370388c816b99672d589c4bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gafca967e833f6d2dffd7d326c5993964f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#gafca967e833f6d2dffd7d326c5993964f">flecsi_execute_task</a>(task,  nspace,  launch, ...)</td></tr>
-<tr class="separator:gafca967e833f6d2dffd7d326c5993964f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0f367e22a08a6b4c99f7201aace9bd57"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#ga0f367e22a08a6b4c99f7201aace9bd57">flecsi_register_task</a>(task,  nspace,  processor,  task_execution_type)</td></tr>
+<tr class="separator:ga0f367e22a08a6b4c99f7201aace9bd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed622fd2d445792f86bbaf010f2d5eab"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_register_launch_domain</b>(name,  size)</td></tr>
+<tr class="separator:aed622fd2d445792f86bbaf010f2d5eab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga034d082d7f80c8a66e9fa0ee9ed00608"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__execution.html#ga034d082d7f80c8a66e9fa0ee9ed00608">flecsi_execute_task</a>(task,  nspace,  domain, ...)</td></tr>
+<tr class="separator:ga034d082d7f80c8a66e9fa0ee9ed00608"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="aed622fd2d445792f86bbaf010f2d5eab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed622fd2d445792f86bbaf010f2d5eab">&#9670;&nbsp;</a></span>flecsi_register_launch_domain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define flecsi_register_launch_domain</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">size&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the task interface to register the domain */</span>                         \</div><div class="line">  inline <span class="keywordtype">bool</span> flecsi_internal_unique_name(domain_registration_) =              <a class="code" href="group__execution.html#gac362b44a01f3599ee099e6949a516d88">\</a></div><div class="line"><a class="code" href="group__execution.html#gac362b44a01f3599ee099e6949a516d88">    flecsi::execution::task_interface_t</a>::                                      \</div><div class="line">      register_domain&lt;flecsi_internal_hash(name), size&gt;()</div><div class="ttc" id="group__execution_html_gac362b44a01f3599ee099e6949a516d88"><div class="ttname"><a href="group__execution.html#gac362b44a01f3599ee099e6949a516d88">flecsi::execution::task_interface_t</a></div><div class="ttdeci">task_interface_u&lt; FLECSI_RUNTIME_EXECUTION_POLICY &gt; task_interface_t</div><div class="ttdef"><b>Definition:</b> task.h:147</div></div>
+</div><!-- fragment -->
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

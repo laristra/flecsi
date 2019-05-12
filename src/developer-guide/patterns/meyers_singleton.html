@@ -213,14 +213,14 @@ object in the system:</p>
 <p>Attributed to Scott Meyers, this singleton pattern exploits three
 important properties:</p>
 <ul class="simple">
-<li>Static function objects are initialized when control flow hits the
-function for the first time.</li>
-<li>The lifetime of function static variables begins the first time the
+<li><p>Static function objects are initialized when control flow hits the
+function for the first time.</p></li>
+<li><p>The lifetime of function static variables begins the first time the
 program flow encounters the declaration and ends at program
-termination.</li>
-<li>If control enters the declaration concurrently while the variable is
+termination.</p></li>
+<li><p>If control enters the declaration concurrently while the variable is
 being initialized, the concurrent execution shall wait for completion
-of the initialization.</li>
+of the initialization.</p></li>
 </ul>
 <p><strong>Note:</strong> It is important to disable both the copy constructor and
 assignment operator. The constructor and destructor are not exposed

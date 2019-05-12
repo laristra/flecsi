@@ -83,8 +83,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a0fbbe50b20dbc2a686db6cd5e2e65be3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1pure__task__wrapper__u.html#a0fbbe50b20dbc2a686db6cd5e2e65be3">registration_callback</a> (<a class="el" href="structflecsi_1_1execution_1_1legion_1_1pure__task__wrapper__u.html#aa8c84732e4459f26201029a044ba7a77">task_id_t</a> tid, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor_type, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a> launch, std::string &amp;name)</td></tr>
-<tr class="separator:a0fbbe50b20dbc2a686db6cd5e2e65be3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a406f8c5d4a20355155295951cec769ae"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1pure__task__wrapper__u.html#a406f8c5d4a20355155295951cec769ae">registration_callback</a> (<a class="el" href="structflecsi_1_1execution_1_1legion_1_1pure__task__wrapper__u.html#aa8c84732e4459f26201029a044ba7a77">task_id_t</a> tid, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor_type, <a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">task_execution_type_t</a> execution, std::string &amp;name)</td></tr>
+<tr class="separator:a406f8c5d4a20355155295951cec769ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename RETURN, RETURN(*)(const Legion::Task *, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;, Legion::Context, Legion::Runtime *) TASK&gt;<br />
@@ -117,8 +117,8 @@ template&lt;typename RETURN , RETURN(*)(const Legion::Task *, const std::vector&
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0fbbe50b20dbc2a686db6cd5e2e65be3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0fbbe50b20dbc2a686db6cd5e2e65be3">&#9670;&nbsp;</a></span>registration_callback()</h2>
+<a id="a406f8c5d4a20355155295951cec769ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a406f8c5d4a20355155295951cec769ae">&#9670;&nbsp;</a></span>registration_callback()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -143,8 +143,8 @@ template&lt;typename RETURN , RETURN(*)(const Legion::Task *, const std::vector&
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>&#160;</td>
-          <td class="paramname"><em>launch</em>, </td>
+          <td class="paramtype"><a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">task_execution_type_t</a>&#160;</td>
+          <td class="paramname"><em>execution</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -169,7 +169,7 @@ template&lt;typename RETURN , RETURN(*)(const Legion::Task *, const std::vector&
   <table class="params">
     <tr><td class="paramname">tid</td><td>The task id to assign to the task. </td></tr>
     <tr><td class="paramname">processor_type</td><td>A valid Legion processor type. </td></tr>
-    <tr><td class="paramname">launch</td><td>A launch_t with the launch parameters. </td></tr>
+    <tr><td class="paramname">execution</td><td>A task_execution_type_t with the task execution type parameters. </td></tr>
     <tr><td class="paramname">A</td><td>std::string containing the task name. </td></tr>
   </table>
   </dd>
@@ -178,7 +178,7 @@ template&lt;typename RETURN , RETURN(*)(const Legion::Task *, const std::vector&
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/flecsi/flecsi/flecsi/execution/legion/execution/<a class="el" href="task__wrapper_8h_source.html">task_wrapper.h</a></li>
+<li>/home/flecsi/flecsi/flecsi/execution/legion/enactment/<a class="el" href="task__wrapper_8h_source.html">task_wrapper.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

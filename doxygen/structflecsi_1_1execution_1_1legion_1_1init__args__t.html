@@ -87,8 +87,11 @@ Inheritance diagram for flecsi::execution::legion::init_args_t:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4b97d1487922bd6d7882172e2bfc0299"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1init__args__t.html#a4b97d1487922bd6d7882172e2bfc0299">init_args_t</a> (Legion::Runtime *runtime, Legion::Context &amp;context, const <a class="el" href="launch_8h.html#a962b06e2aac495f8f819f65bdd10d9fd">launch_type_t</a> &amp;launch)</td></tr>
-<tr class="separator:a4b97d1487922bd6d7882172e2bfc0299"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c8cd368745e1490c6e936bc6b56dfb3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1init__args__t.html#a5c8cd368745e1490c6e936bc6b56dfb3">init_args_t</a> (Legion::Runtime *runtime, Legion::Context &amp;context, const size_t &amp;domain)</td></tr>
+<tr class="separator:a5c8cd368745e1490c6e936bc6b56dfb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad1d28a84858b2399ae8babb1fae2c7f"><td class="memItemLeft" align="right" valign="top"><a id="aad1d28a84858b2399ae8babb1fae2c7f"></a>
+std::vector&lt; Legion::RegionRequirement &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>region_requirements</b> ()</td></tr>
+<tr class="separator:aad1d28a84858b2399ae8babb1fae2c7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a291253a0bb33f4bdefe79970d38db9bc"><td class="memTemplParams" colspan="2"><a id="a291253a0bb33f4bdefe79970d38db9bc"></a>
 template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
 <tr class="memitem:a291253a0bb33f4bdefe79970d38db9bc"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (<a class="el" href="structflecsi_1_1data_1_1legion_1_1global__topology_1_1accessor__u.html">global_topology::accessor_u</a>&lt; DATA_TYPE, PRIVILEGES &gt; &amp;accessor)</td></tr>
@@ -111,8 +114,8 @@ template&lt;typename DATA_TYPE &gt; </td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="structflecsi_1_1execution_1_1legion_1_1init__args__t.html">init_args_t</a> type can be called to walk task args before the task launcher is created. This allows us to gather region requirements and to set state on the associated data handles <em>before</em> Legion gets the task arguments tuple. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a4b97d1487922bd6d7882172e2bfc0299"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4b97d1487922bd6d7882172e2bfc0299">&#9670;&nbsp;</a></span>init_args_t()</h2>
+<a id="a5c8cd368745e1490c6e936bc6b56dfb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c8cd368745e1490c6e936bc6b56dfb3">&#9670;&nbsp;</a></span>init_args_t()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -135,8 +138,8 @@ template&lt;typename DATA_TYPE &gt; </td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="launch_8h.html#a962b06e2aac495f8f819f65bdd10d9fd">launch_type_t</a> &amp;&#160;</td>
-          <td class="paramname"><em>launch</em>&#160;</td>
+          <td class="paramtype">const size_t &amp;&#160;</td>
+          <td class="paramname"><em>domain</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

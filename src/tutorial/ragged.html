@@ -200,14 +200,14 @@ sort of state representation.</p>
 <p>The ragged storage interface uses similar semantics to sparse storage
 with a few differences:</p>
 <ol class="arabic simple">
-<li>Like the sparse storage class, ragged storage uses mutators to modify
+<li><p>Like the sparse storage class, ragged storage uses mutators to modify
 the structure of the <em>raggedness</em>. Mutators can also modify existing
 data values. The size of the ragged data at an index is changed by
-calling the <em>resize</em> method.</li>
-<li>As stated above, ragged data do not have indexed entries, i.e., there
+calling the <em>resize</em> method.</p></li>
+<li><p>As stated above, ragged data do not have indexed entries, i.e., there
 is no implied position within the ragged array data for a given entry.
 The ragged array at each index is simply an array of the specified
-data type with a particular size.</li>
+data type with a particular size.</p></li>
 </ol>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;cstdlib&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>

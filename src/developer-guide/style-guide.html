@@ -181,22 +181,22 @@
 C++ Style Guide.</p>
 <p>Notable exceptions include:</p>
 <ul class="simple">
-<li>C++ Exception Handling</li>
-<li>Type Names</li>
-<li>Function Names</li>
-<li>Variable Names (in some cases)</li>
-<li>Structs vs. Classes</li>
-<li>Formatting</li>
+<li><p>C++ Exception Handling</p></li>
+<li><p>Type Names</p></li>
+<li><p>Function Names</p></li>
+<li><p>Variable Names (in some cases)</p></li>
+<li><p>Structs vs. Classes</p></li>
+<li><p>Formatting</p></li>
 </ul>
 <p>The exceptions are covered in the following sections.</p>
 <p>## Guiding Principles</p>
 <ul class="simple">
-<li>No line in a file shall exceed 80 characters!</li>
-<li>If you are editing a file, maintain the original formatting unless it
-violates our style guide. If it does, fix it!</li>
-<li>For the most part, all names are lowercase and follow the conventions
-of the C++ Standard Template Library.</li>
-<li>All delimiters should be terminated with a C++-style comment:</li>
+<li><p>No line in a file shall exceed 80 characters!</p></li>
+<li><p>If you are editing a file, maintain the original formatting unless it
+violates our style guide. If it does, fix it!</p></li>
+<li><p>For the most part, all names are lowercase and follow the conventions
+of the C++ Standard Template Library.</p></li>
+<li><p>All delimiters should be terminated with a C++-style comment:</p></li>
 </ul>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">trivial_t</span> <span class="p">{</span>
   <span class="kt">double</span> <span class="n">value</span><span class="p">;</span>
@@ -204,7 +204,7 @@ of the C++ Standard Template Library.</li>
 </pre></div>
 </div>
 <ul class="simple">
-<li>Conditional and loop logic should use explicit delimiters:</li>
+<li><p>Conditional and loop logic should use explicit delimiters:</p></li>
 </ul>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">do_it</span><span class="p">(</span><span class="n">i</span><span class="p">);</span> <span class="c1">// WRONG!</span>
 </pre></div>
@@ -216,8 +216,8 @@ of the C++ Standard Template Library.</li>
 </pre></div>
 </div>
 <ul class="simple">
-<li>FleCSI header includes should use the full relative path from the
-top-level FleCSI source directory, e.g.:</li>
+<li><p>FleCSI header includes should use the full relative path from the
+top-level FleCSI source directory, e.g.:</p></li>
 </ul>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;../mesh_topology.h&quot; // WRONG!</span><span class="cp"></span>
 </pre></div>
@@ -227,11 +227,11 @@ top-level FleCSI source directory, e.g.:</li>
 </pre></div>
 </div>
 <ul class="simple">
-<li>FleCSI header guard names should use the partial relative path. They
+<li><p>FleCSI header guard names should use the partial relative path. They
 should be lower case, and they should be appended with an underscore
 h (_h). The endif statement should be appended with a C++-style
 comment repeating the guard name. As an example, if the header file is
-in <strong>‘flecsi/partition/dcrs.h’</strong>, its guard entry should look like:</li>
+in <strong>‘flecsi/partition/dcrs.h’</strong>, its guard entry should look like:</p></li>
 </ul>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef HEADER_HH </span><span class="c1">// WRONG!</span>
 </pre></div>

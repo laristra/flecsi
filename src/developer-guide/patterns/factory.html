@@ -214,12 +214,12 @@ image formats:</p>
 </div>
 <p>This code is tedious to maintain for at least two reasons:</p>
 <ul class="simple">
-<li>It explicitly collects all of the types that can be handled by the
+<li><p>It explicitly collects all of the types that can be handled by the
 program into a single logic block. This means that every time a new
-format is added, we must go back to this code and add a case for it.</li>
-<li>The composing object must include all of the type information for the
+format is added, we must go back to this code and add a case for it.</p></li>
+<li><p>The composing object must include all of the type information for the
 various handlers. This may not be desirable or possible in all cases,
-or may simply violate the project’s design.</li>
+or may simply violate the project’s design.</p></li>
 </ul>
 <p>A much better mechanism is to use an object factory:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
@@ -235,16 +235,16 @@ or may simply violate the project’s design.</li>
 There are three primary properties of the factory type that are
 important to this design pattern:</p>
 <ol class="arabic simple">
-<li>The factory is a singleton, and can be called from external scope to
+<li><p>The factory is a singleton, and can be called from external scope to
 register the various handler types. In this example, we are using the
-Meyer’s singleton discussed elsewhere in this document.</li>
-<li>The factory exposes an interface to register a callback function for
+Meyer’s singleton discussed elsewhere in this document.</p></li>
+<li><p>The factory exposes an interface to register a callback function for
 each suffix type. We will see how this can be called from each
 handler type’s implementation to avoid having to collect all of the
-handlers together in one place.</li>
-<li>The factory exposes a creation method that uses the filename’s suffix
+handlers together in one place.</p></li>
+<li><p>The factory exposes a creation method that uses the filename’s suffix
 to lookup the correct callback function to create a handler of the
-appropriate type.</li>
+appropriate type.</p></li>
 </ol>
 <p>These are enumerated in the code comments in the following section:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">factory_t</span>

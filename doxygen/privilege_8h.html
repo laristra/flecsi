@@ -66,6 +66,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
@@ -73,34 +74,40 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;tuple&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
 </div>
 <p><a href="privilege_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1privilege__pack__u.html">flecsi::privilege_pack_u&lt; PRIVILEGES &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a283345ffc8feea6af77f385d4a5f645f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="privilege_8h.html#a283345ffc8feea6af77f385d4a5f645f">flecsi::privilege_t</a> : size_t { <b>nu</b> = 0, 
+<tr class="memitem:abdc40397e828dacc40f25869b1911773"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="privilege_8h.html#abdc40397e828dacc40f25869b1911773">flecsi::partition_privilege_t</a> : size_t { <b>nu</b> = 0, 
 <b>ro</b> = 1, 
 <b>wo</b> = 2, 
 <b>rw</b> = 3
  }</td></tr>
-<tr class="separator:a283345ffc8feea6af77f385d4a5f645f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:abdc40397e828dacc40f25869b1911773"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:af769b135d3d292f84be5dac6bf015a3f"><td class="memTemplParams" colspan="2"><a id="af769b135d3d292f84be5dac6bf015a3f"></a>
-template&lt;size_t PRIVILEGES&gt; </td></tr>
-<tr class="memitem:af769b135d3d292f84be5dac6bf015a3f"><td class="memTemplItemLeft" align="right" valign="top">constexpr privilege_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::to_global</b> ()</td></tr>
-<tr class="separator:af769b135d3d292f84be5dac6bf015a3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae899bc2ba031b820aef5305969ab786d"><td class="memTemplParams" colspan="2">template&lt;size_t INDEX, size_t PACK&gt; </td></tr>
+<tr class="memitem:ae899bc2ba031b820aef5305969ab786d"><td class="memTemplItemLeft" align="right" valign="top">constexpr partition_privilege_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="privilege_8h.html#ae899bc2ba031b820aef5305969ab786d">flecsi::get_privilege</a> ()</td></tr>
+<tr class="separator:ae899bc2ba031b820aef5305969ab786d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="file_a283345ffc8feea6af77f385d4a5f645f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a283345ffc8feea6af77f385d4a5f645f">&#9670;&nbsp;</a></span>privilege_t</h2>
+<a id="file_abdc40397e828dacc40f25869b1911773"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_abdc40397e828dacc40f25869b1911773">&#9670;&nbsp;</a></span>partition_privilege_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="privilege_8h.html#a283345ffc8feea6af77f385d4a5f645f">flecsi::privilege_t</a> : size_t</td>
+          <td class="memname">enum <a class="el" href="privilege_8h.html#abdc40397e828dacc40f25869b1911773">flecsi::partition_privilege_t</a> : size_t</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -111,6 +118,34 @@ template&lt;size_t PRIVILEGES&gt; </td></tr>
     <tr><td class="paramname">ro</td><td>Read-Only access: data are mapped, updates are performed for consistency, but the data are read-only. </td></tr>
     <tr><td class="paramname">wo</td><td>Write-Only access: data are mapped, no updates are done to the state, and the data can be written. </td></tr>
     <tr><td class="paramname">rw</td><td>Read-Write access: data are mapped, updated are performend for consistency, and the data are read-write. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="file_ae899bc2ba031b820aef5305969ab786d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_ae899bc2ba031b820aef5305969ab786d">&#9670;&nbsp;</a></span>get_privilege()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t INDEX, size_t PACK&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr partition_privilege_t flecsi::get_privilege </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get a privilege out of a pack for the specified id.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">INDEX</td><td>The index of the privilege to get. </td></tr>
+    <tr><td class="paramname">PACK</td><td>A valid size_t from a privilege_pack_u type. </td></tr>
   </table>
   </dd>
 </dl>

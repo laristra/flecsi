@@ -86,6 +86,8 @@ Classes</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:gac96b31c3919e7cd7c2bcdc964ffdfb12"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gac96b31c3919e7cd7c2bcdc964ffdfb12">flecsi_internal_string_hash</a>(name)&#160;&#160;&#160;<a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">flecsi::utils::const_string_t</a>{name}.hash()</td></tr>
 <tr class="separator:gac96b31c3919e7cd7c2bcdc964ffdfb12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8269473949b5e2e655ec49a2c037d7a9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga8269473949b5e2e655ec49a2c037d7a9">flecsi_internal_type_hash</a>(type)&#160;&#160;&#160;typeid(type).hash_code()</td></tr>
+<tr class="separator:ga8269473949b5e2e655ec49a2c037d7a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga41398506ffdcc9ef7ef1aae859a3c4f8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga41398506ffdcc9ef7ef1aae859a3c4f8">flecsi_internal_hash</a>(name)&#160;&#160;&#160;<a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">flecsi::utils::const_string_t</a>{flecsi_internal_stringify(name)}.hash()</td></tr>
 <tr class="separator:ga41398506ffdcc9ef7ef1aae859a3c4f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -104,9 +106,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga2ab767c88195928b60205b73f317f188"><td class="memTemplParams" colspan="2">template&lt;size_t NAMESPACE, size_t NAME&gt; </td></tr>
 <tr class="memitem:ga2ab767c88195928b60205b73f317f188"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#ga2ab767c88195928b60205b73f317f188">flecsi::utils::hash::topology_hash</a> ()</td></tr>
 <tr class="separator:ga2ab767c88195928b60205b73f317f188"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8fbf65d876e0d153e5e6045d77634c2e"><td class="memTemplParams" colspan="2">template&lt;size_t NAMESPACE, size_t NAME&gt; </td></tr>
-<tr class="memitem:ga8fbf65d876e0d153e5e6045d77634c2e"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#ga8fbf65d876e0d153e5e6045d77634c2e">flecsi::utils::hash::field_hash</a> (size_t version)</td></tr>
-<tr class="separator:ga8fbf65d876e0d153e5e6045d77634c2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3f6efbb1a90048e7da6c39add7a45f5a"><td class="memTemplParams" colspan="2">template&lt;size_t NAMESPACE, size_t NAME, size_t VERSION&gt; </td></tr>
+<tr class="memitem:ga3f6efbb1a90048e7da6c39add7a45f5a"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#ga3f6efbb1a90048e7da6c39add7a45f5a">flecsi::utils::hash::field_hash</a> ()</td></tr>
+<tr class="separator:ga3f6efbb1a90048e7da6c39add7a45f5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga301d42b491476084ca9cf41c7b8a52f5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga301d42b491476084ca9cf41c7b8a52f5">flecsi::utils::hash::is_internal</a> (size_t key)</td></tr>
 <tr class="separator:ga301d42b491476084ca9cf41c7b8a52f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga67b0d3e3d9f936c8198c2f49f9844341"><td class="memTemplParams" colspan="2">template&lt;size_t NAMESPACE, size_t NAME, size_t INDEX, size_t DOMAIN_, size_t DIMENSION&gt; </td></tr>
@@ -206,6 +208,31 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ga8269473949b5e2e655ec49a2c037d7a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8269473949b5e2e655ec49a2c037d7a9">&#9670;&nbsp;</a></span>flecsi_internal_type_hash</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define flecsi_internal_type_hash</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">type</td><td>)</td>
+          <td>&#160;&#160;&#160;typeid(type).hash_code()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>This macro returns the hash of the given type using typeid (rtti). It is provided for consistency.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The type to hash. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="gab2a7b452e19b5f67a27d9a129f44b805"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gab2a7b452e19b5f67a27d9a129f44b805">&#9670;&nbsp;</a></span>checksum()</h2>
@@ -291,13 +318,13 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="ga8fbf65d876e0d153e5e6045d77634c2e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga8fbf65d876e0d153e5e6045d77634c2e">&#9670;&nbsp;</a></span>field_hash()</h2>
+<a id="ga3f6efbb1a90048e7da6c39add7a45f5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3f6efbb1a90048e7da6c39add7a45f5a">&#9670;&nbsp;</a></span>field_hash()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;size_t NAMESPACE, size_t NAME&gt; </div>
+template&lt;size_t NAMESPACE, size_t NAME, size_t VERSION&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -305,8 +332,7 @@ template&lt;size_t NAMESPACE, size_t NAME&gt; </div>
         <tr>
           <td class="memname">constexpr size_t flecsi::utils::hash::field_hash </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>version</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>

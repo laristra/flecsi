@@ -204,9 +204,9 @@ operations that mutate the sparsity pattern from those that only modify
 the data (without changing the sparsity pattern). Access to these is
 defined using separate types:</p>
 <ol class="arabic simple">
-<li>A mutator allows <em>both</em> modification of the sparsity structure and
-of the data values.</li>
-<li>A handle only allows modification to the data values.</li>
+<li><p>A mutator allows <em>both</em> modification of the sparsity structure and
+of the data values.</p></li>
+<li><p>A handle only allows modification to the data values.</p></li>
 </ol>
 <p>The data handle interface is the same as for <em>dense</em> data. For the
 mutator, the user must specify an additional argument that declares how
@@ -223,11 +223,11 @@ will still operate correctly. (FleCSI uses an overflow buffer to manage
 additional entries that exceed the slot allocation.)</p>
 <p>NOTES:</p>
 <ul class="simple">
-<li>Tasks that do not need to mutate the sparsity structure should always
-use an <em>handle</em> rather than a <em>mutator</em> for efficiency.</li>
-<li>We are investigating design changes that will allow specialization
+<li><p>Tasks that do not need to mutate the sparsity structure should always
+use an <em>handle</em> rather than a <em>mutator</em> for efficiency.</p></li>
+<li><p>We are investigating design changes that will allow specialization
 developers to add new storage classes and storage class
-implementations.</li>
+implementations.</p></li>
 </ul>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;cstdlib&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>

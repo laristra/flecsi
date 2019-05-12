@@ -66,6 +66,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
@@ -79,6 +80,11 @@ $(function() {
 </div>
 <p><a href="launch_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1launch__domain__t.html">flecsi::execution::launch_domain_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a57b47537b3c20d331f43000e55cef27d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="launch_8h.html#a57b47537b3c20d331f43000e55cef27d">test_boolean_interface</a>(name)</td></tr>
@@ -86,42 +92,36 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:afc12302e1cb706fdc8da55a8be7df04a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">flecsi::execution::launch_t</a> = std::bitset&lt; launch_bits &gt;</td></tr>
-<tr class="separator:afc12302e1cb706fdc8da55a8be7df04a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dcd3c855f48a701e03219e9634155a3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">flecsi::execution::task_execution_type_t</a> = std::bitset&lt; task_execution_type_bits &gt;</td></tr>
+<tr class="separator:a2dcd3c855f48a701e03219e9634155a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:ac6ddfc0512bde3ea4b5f14bbbe30cf0a"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="launch_8h.html#ac6ddfc0512bde3ea4b5f14bbbe30cf0a">flecsi::launch_mask_t</a> : size_t { <br />
-&#160;&#160;<b>single</b> = 1 &lt;&lt; 0, 
-<b>index</b> = 1 &lt;&lt; 1, 
-<b>leaf</b> = 1 &lt;&lt; 2, 
-<b>inner</b> = 1 &lt;&lt; 3, 
-<br />
-&#160;&#160;<b>idempotent</b> = 1 &lt;&lt; 4
-<br />
+<tr class="memitem:a67f6040c1d5c332fc26a284074192d35"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="launch_8h.html#a67f6040c1d5c332fc26a284074192d35">flecsi::task_execution_type_mask_t</a> : size_t { <b>leaf</b> = 1 &lt;&lt; 0, 
+<b>inner</b> = 1 &lt;&lt; 1, 
+<b>idempotent</b> = 1 &lt;&lt; 2
  }</td></tr>
-<tr class="separator:ac6ddfc0512bde3ea4b5f14bbbe30cf0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a962b06e2aac495f8f819f65bdd10d9fd"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="launch_8h.html#a962b06e2aac495f8f819f65bdd10d9fd">flecsi::execution::launch_type_t</a> : size_t { <br />
-&#160;&#160;<b>single</b>, 
-<b>index</b>, 
-<b>leaf</b>, 
+<tr class="separator:a67f6040c1d5c332fc26a284074192d35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac57ebfe6da25b264c4c2026af946db1e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="launch_8h.html#ac57ebfe6da25b264c4c2026af946db1e">flecsi::launch_type_t</a> : size_t { <b>single</b>, 
+<b>index</b>
+ }</td></tr>
+<tr class="separator:ac57ebfe6da25b264c4c2026af946db1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af254e5d472479b98831c92f0ab89f246"><td class="memItemLeft" align="right" valign="top"><a id="af254e5d472479b98831c92f0ab89f246"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>execution_type_t</b> : size_t { <b>leaf</b>, 
 <b>inner</b>, 
-<br />
-&#160;&#160;<b>idempotent</b>
-<br />
+<b>idempotent</b>
  }</td></tr>
-<tr class="separator:a962b06e2aac495f8f819f65bdd10d9fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:af254e5d472479b98831c92f0ab89f246"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a486eab13b901985cbc8a7f14a5114b43"><td class="memItemLeft" align="right" valign="top">launch_type_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="launch_8h.html#a486eab13b901985cbc8a7f14a5114b43">flecsi::execution::mask_to_type</a> (launch_mask_t m)</td></tr>
-<tr class="separator:a486eab13b901985cbc8a7f14a5114b43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fa62572848ef3e14b63de5dab61c707"><td class="memItemLeft" align="right" valign="top">execution_type_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="launch_8h.html#a2fa62572848ef3e14b63de5dab61c707">flecsi::execution::mask_to_type</a> (execution_type_t m)</td></tr>
+<tr class="separator:a2fa62572848ef3e14b63de5dab61c707"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a13a4b1d192d9e05f4fd41e78f61db8c7"><td class="memItemLeft" align="right" valign="top"><a id="a13a4b1d192d9e05f4fd41e78f61db8c7"></a>
-constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::execution::launch_bits</b> = 5</td></tr>
-<tr class="separator:a13a4b1d192d9e05f4fd41e78f61db8c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70703cb2c91574b31ae34a54576bf48a"><td class="memItemLeft" align="right" valign="top"><a id="a70703cb2c91574b31ae34a54576bf48a"></a>
+constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::execution::task_execution_type_bits</b> = 3</td></tr>
+<tr class="separator:a70703cb2c91574b31ae34a54576bf48a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a57b47537b3c20d331f43000e55cef27d"></a>
@@ -139,70 +139,63 @@ constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::e
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">inline</span> <span class="keywordtype">bool</span> launch_##name(<span class="keyword">const</span> launch_t &amp; l) {                              \</div><div class="line">    return l.test(static_cast&lt;size_t&gt;(launch_type_t::name));                   \</div><div class="line">  }</div></div><!-- fragment --><p>Macro to create repetitive interfaces. </p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">inline</span> <span class="keywordtype">bool</span> task_##name(<span class="keyword">const</span> task_execution_type_t &amp; l) {                   \</div><div class="line">    return l.test(static_cast&lt;size_t&gt;(execution_type_t::name));                \</div><div class="line">  }</div></div><!-- fragment --><p>Macro to create repetitive interfaces. </p>
 
 </div>
 </div>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a id="file_afc12302e1cb706fdc8da55a8be7df04a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_afc12302e1cb706fdc8da55a8be7df04a">&#9670;&nbsp;</a></span>launch_t</h2>
+<a id="file_a2dcd3c855f48a701e03219e9634155a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a2dcd3c855f48a701e03219e9634155a3">&#9670;&nbsp;</a></span>task_execution_type_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">flecsi::execution::launch_t</a> = typedef std::bitset&lt;launch_bits&gt;</td>
+          <td class="memname">using <a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">flecsi::execution::task_execution_type_t</a> = typedef std::bitset&lt;task_execution_type_bits&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Use a std::bitset to store launch information.</p>
-<dl class="section note"><dt>Note</dt><dd>This will most likely use 4 bytes of data for efficiency. </dd></dl>
+<p>Use a std::bitset to store task_type information.</p>
+<dl class="section note"><dt>Note</dt><dd>This will most likely use 3 bytes of data for efficiency. </dd></dl>
 
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="file_ac6ddfc0512bde3ea4b5f14bbbe30cf0a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_ac6ddfc0512bde3ea4b5f14bbbe30cf0a">&#9670;&nbsp;</a></span>launch_mask_t</h2>
+<a id="file_ac57ebfe6da25b264c4c2026af946db1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_ac57ebfe6da25b264c4c2026af946db1e">&#9670;&nbsp;</a></span>launch_type_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="launch_8h.html#ac6ddfc0512bde3ea4b5f14bbbe30cf0a">flecsi::launch_mask_t</a> : size_t</td>
+          <td class="memname">enum <a class="el" href="launch_8h.html#ac57ebfe6da25b264c4c2026af946db1e">flecsi::launch_type_t</a> : size_t</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Bitmasks for launch types.</p>
-<dl class="section note"><dt>Note</dt><dd>This enumeration is not scoped so that users can do things like: <div class="fragment"><div class="line"><a class="code" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a> l(single | leaf);</div></div><!-- fragment --> </dd></dl>
+<p>Enumeration for launch types.</p>
+<dl class="section note"><dt>Note</dt><dd>This enumeration difines 2 different lounch types for the task: single and index </dd></dl>
 
 </div>
 </div>
-<a id="file_a962b06e2aac495f8f819f65bdd10d9fd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a962b06e2aac495f8f819f65bdd10d9fd">&#9670;&nbsp;</a></span>launch_type_t</h2>
+<a id="file_a67f6040c1d5c332fc26a284074192d35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a67f6040c1d5c332fc26a284074192d35">&#9670;&nbsp;</a></span>task_execution_type_mask_t</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="launch_8h.html#a962b06e2aac495f8f819f65bdd10d9fd">flecsi::execution::launch_type_t</a> : size_t</td>
+          <td class="memname">enum <a class="el" href="launch_8h.html#a67f6040c1d5c332fc26a284074192d35">flecsi::task_execution_type_mask_t</a> : size_t</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
-<p>Enumeration of various task launch types. Not all of these may be supported by all runtimes. Unsupported launch information will be ignored. </p>
+<p>Bitmasks for task types.</p>
+<dl class="section note"><dt>Note</dt><dd>This enumeration is not scoped so that users can do things like: <div class="fragment"><div class="line">task_type_t l(inner | idempotent);</div></div><!-- fragment --> </dd></dl>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="file_a486eab13b901985cbc8a7f14a5114b43"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a486eab13b901985cbc8a7f14a5114b43">&#9670;&nbsp;</a></span>mask_to_type()</h2>
+<a id="file_a2fa62572848ef3e14b63de5dab61c707"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a2fa62572848ef3e14b63de5dab61c707">&#9670;&nbsp;</a></span>mask_to_type()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -211,9 +204,9 @@ constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::e
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">launch_type_t flecsi::execution::mask_to_type </td>
+          <td class="memname">execution_type_t flecsi::execution::mask_to_type </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="launch_8h.html#ac6ddfc0512bde3ea4b5f14bbbe30cf0a">launch_mask_t</a>&#160;</td>
+          <td class="paramtype">execution_type_t&#160;</td>
           <td class="paramname"><em>m</em></td><td>)</td>
           <td></td>
         </tr>

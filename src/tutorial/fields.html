@@ -202,34 +202,34 @@ i.e., outside of any executable code sections, and must specify a
 compile-time type and index space. The arguments to the field
 registration interface are:</p>
 <ol class="arabic simple">
-<li>The data client type. This must be a valid FleCSI data client (These
+<li><p>The data client type. This must be a valid FleCSI data client (These
 are defined by the specialization layer.) In this example, the data
-client is <em>mesh_t</em>.</li>
-<li>The namespace of the field. This does not need to be an actual C++
+client is <em>mesh_t</em>.</p></li>
+<li><p>The namespace of the field. This does not need to be an actual C++
 namespace. This parameter is used to avoid naming collisions. In this
-example, the namespace is <em>example</em>.</li>
-<li>The field name. This is an arbitrary name created by the user to
+example, the namespace is <em>example</em>.</p></li>
+<li><p>The field name. This is an arbitrary name created by the user to
 identify the field. It can be any legal C++ variable name. In this
-example, the field name is <em>field</em>.</li>
-<li>The data type. As stated above, this can be a P.O.D. or user-defined
+example, the field name is <em>field</em>.</p></li>
+<li><p>The data type. As stated above, this can be a P.O.D. or user-defined
 type. The restrictions on this type are listed in the <em>NOTES</em> section
-below. In this example, the data type is <em>double</em>.</li>
-<li>The storage class of the field. Storage class identifiers give the
+below. In this example, the data type is <em>double</em>.</p></li>
+<li><p>The storage class of the field. Storage class identifiers give the
 FleCSI runtime additional information about the logical structure of a
 field. They also define the interface that is available to the user for
 accessing the field data. Storage classes are covered in additional
 detail in a later example. In this example, the storage class is
 <em>dense</em>. The dense storage class is logically a contiguous array with
-one entry per index in the associated index space.</li>
-<li>The number of versions to register. FleCSI field data support
+one entry per index in the associated index space.</p></li>
+<li><p>The number of versions to register. FleCSI field data support
 multiple versions of the data that are registered with a given
 namespace and name. This is useful for multi-step methods that
 require storage of multiple previous states, as well as other methods
 where it makes sense to store multiple copies of an array under a single
-name.</li>
-<li>The index space. This must be a valid index space that is exposed by
+name.</p></li>
+<li><p>The index space. This must be a valid index space that is exposed by
 the data client type passed in argument 1. In this example, the index
-space is <em>cells</em>.</li>
+space is <em>cells</em>.</p></li>
 </ol>
 <p>Users reference fields using a handle and an iterator of the
 corresponding index space on which the field was registered. The current
@@ -254,7 +254,7 @@ type by the runtime, such that, from the point of view of the executing
 task, the parameter is an accessor.</p>
 <p>The handle interface takes the following arguments:</p>
 <ol class="arabic simple">
-<li>An instance of the data client against which the field was
+<li><p>An instance of the data client against which the field was
 registered. Recall that registering a field is logically similar to
 adding a data member to a type. Passing a data client instance tells
 the runtime for which type instance the field should be returned.
@@ -262,24 +262,24 @@ Because fields are stateful, there must be one field instance for
 each data client instance of the associated client type. Nominally,
 allocation of field data is lazy, such that a client instance for
 which a particular field is never accessed, never allocates the
-field. In this example, the data client instance is <em>m</em>.</li>
-<li>The namespace of the field. In this example, the namespace is <em>example</em>.</li>
-<li>The field name. In this example, the field name is <em>field</em>.</li>
-<li>The data type. In this example, the data type is <em>double</em>.</li>
-<li>The storage class of the field. In this example, the storage class is
-<em>dense</em>.</li>
-<li>The version number of the field. This index is <em>zero-based</em>. In this
-example, the version is <em>0</em>.</li>
+field. In this example, the data client instance is <em>m</em>.</p></li>
+<li><p>The namespace of the field. In this example, the namespace is <em>example</em>.</p></li>
+<li><p>The field name. In this example, the field name is <em>field</em>.</p></li>
+<li><p>The data type. In this example, the data type is <em>double</em>.</p></li>
+<li><p>The storage class of the field. In this example, the storage class is
+<em>dense</em>.</p></li>
+<li><p>The version number of the field. This index is <em>zero-based</em>. In this
+example, the version is <em>0</em>.</p></li>
 </ol>
 <p>NOTES:</p>
 <ul class="simple">
-<li>Field types may not reference arbitrary data, i.e., they cannot
+<li><p>Field types may not reference arbitrary data, i.e., they cannot
 contain pointers to other data. Another way of saying this, is that
 all subtypes of a field must have a size that can be statically
-determined.</li>
-<li>The data client handle <em>m</em> and the field handle <em>f</em> are passed to the
+determined.</p></li>
+<li><p>The data client handle <em>m</em> and the field handle <em>f</em> are passed to the
 execution interface in the same order that they appear in the task
-definition.</li>
+definition.</p></li>
 </ul>
 <p>The code for this example can be found in <em>fields.cc</em>:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>

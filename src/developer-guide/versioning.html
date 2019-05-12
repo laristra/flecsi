@@ -194,50 +194,50 @@ proejct. Commits to master require that continuous integration tests
 pass before they may be merged.</p>
 <p>Please use the following naming conventions when creating branches:</p>
 <ul>
-<li><p class="first"><strong>release</strong>/<em>major.minor</em> <br />
+<li><p><strong>release</strong>/<em>major.minor</em> <br />
 The <em>release</em> prefix is reserved for supported release
 branches. Actual releases and pre-releases will be identified using
 tags.</p>
 <p>Tagging conventions for the release branch:</p>
 <ul class="simple">
-<li>Patch numbers for a release will be specified in the tag, such
-that a given release will have the form <em>major.minor.patch</em>.</li>
-<li>Alpha, Beta, or Release Candidates <br />
+<li><p>Patch numbers for a release will be specified in the tag, such
+that a given release will have the form <em>major.minor.patch</em>.</p></li>
+<li><p>Alpha, Beta, or Release Candidates <br />
 Any pre-release version should include the name of the pre-release,
 e.g., alpha, beta or rc, and the version of the pre-release at the
-end of the normal release version. Here are some examples:<ul>
-<li>Release candidate 2 of release 1.0.0 would be <em>1.0.0-rc.2</em>.</li>
-<li>Alpha release 1 of release 1.0.0 would be <em>1.0.0-alpha.1</em>.</li>
+end of the normal release version. Here are some examples:</p>
+<ul>
+<li><p>Release candidate 2 of release 1.0.0 would be <em>1.0.0-rc.2</em>.</p></li>
+<li><p>Alpha release 1 of release 1.0.0 would be <em>1.0.0-alpha.1</em>.</p></li>
 </ul>
 </li>
-<li>Must branch from: <strong>master</strong></li>
+<li><p>Must branch from: <strong>master</strong></p></li>
 </ul>
 </li>
-<li><p class="first"><strong>stable</strong>/<em>branch_name</em> <br />
+<li><p><strong>stable</strong>/<em>branch_name</em> <br />
 A <em>stable</em> branch is a development or feature branch that is
 guaranteed to build and pass the FleCSI continuous integration test
 suite, but one which incorporates new features or capabilities that
 are not available in a release branch. This label should not be used
 for a branch that is intended to become a release candidate (Use
-<em>release</em> instead.)</p>
-</li>
-<li><p class="first"><strong>feature/username</strong>/<em>branch_name</em> or <strong>feature</strong>/<em>branch_name</em> <br />
+<em>release</em> instead.)</p></li>
+<li><p><strong>feature/username</strong>/<em>branch_name</em> or <strong>feature</strong>/<em>branch_name</em> <br />
 A <em>feature</em> branch is where new development is done. However, master
 should be merged periodically into a feature branch. If the branch is
 to primarily be developed by an individual, it should include the
 <em>username</em> as part of the branch.</p>
 <ul class="simple">
-<li>Must branch from: <strong>master</strong></li>
-<li>Must merge to: <strong>master</strong></li>
+<li><p>Must branch from: <strong>master</strong></p></li>
+<li><p>Must merge to: <strong>master</strong></p></li>
 </ul>
 </li>
-<li><p class="first"><strong>fix</strong>/<em>reference</em> <br />
+<li><p><strong>fix</strong>/<em>reference</em> <br />
 Bug-fix branches should use the <em>fix</em> prefix, and should include
 a reference number or name, e.g., issue number or the related release
 tag.</p>
 <ul class="simple">
-<li>Must branch from: <strong>release branch</strong></li>
-<li>Must merge to: <strong>master *and* release branch</strong></li>
+<li><p>Must branch from: <strong>release branch</strong></p></li>
+<li><p>Must merge to: <strong>master *and* release branch</strong></p></li>
 </ul>
 </li>
 </ul>
@@ -340,9 +340,9 @@ need to create an annotated tag with the release version:</p>
 name. The patch level should be sequential, and should use the next
 integer value from the last tag on the branch, e.g.:</p>
 <ul class="simple">
-<li>1.0: Initial release tag</li>
-<li>1.0.1: First patch tag</li>
-<li>1.0.2: Second patch tag</li>
+<li><p>1.0: Initial release tag</p></li>
+<li><p>1.0.1: First patch tag</p></li>
+<li><p>1.0.2: Second patch tag</p></li>
 </ul>
 <p><em>Tags should be consistent with the branch name, but they are unrelated
 to the number of commits on the branch.</em></p>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['handoff_5fto_5fmpi_5ftask',['handoff_to_mpi_task',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a15aa374005a11974e3aec997c1e3a636',1,'flecsi::execution::legion_context_policy_t']]]
+  ['bind',['bind',['../structflecsi_1_1data_1_1legion_1_1global__topology_1_1accessor__u.html#a365258fba568ebc7f52fe66018ed77b5',1,'flecsi::data::legion::global_topology::accessor_u']]]
 ];

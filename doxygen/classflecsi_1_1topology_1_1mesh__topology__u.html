@@ -82,16 +82,18 @@ Inheritance diagram for flecsi::topology::mesh_topology_u&lt; MESH_TYPE &gt;:</d
  <div class="center">
   <img src="classflecsi_1_1topology_1_1mesh__topology__u.png" usemap="#flecsi::topology::mesh_5Ftopology_5Fu_3C_20MESH_5FTYPE_20_3E_map" alt=""/>
   <map id="flecsi::topology::mesh_5Ftopology_5Fu_3C_20MESH_5FTYPE_20_3E_map" name="flecsi::topology::mesh_5Ftopology_5Fu_3C_20MESH_5FTYPE_20_3E_map">
+<area href="classflecsi_1_1topology_1_1mesh__topology__base__u.html" alt="flecsi::topology::mesh_topology_base_u&lt; mesh_storage_u&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; &gt;" shape="rect" coords="504,56,1503,80"/>
+<area href="classflecsi_1_1topology_1_1mesh__topology__base__t.html" alt="flecsi::topology::mesh_topology_base_t" shape="rect" coords="1009,0,2008,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:af2b8dac51c64a40e8fe55c7f1e9a00e1"><td class="memItemLeft" align="right" valign="top"><a id="af2b8dac51c64a40e8fe55c7f1e9a00e1"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>storage_t</b> = mesh_storage_u&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt;</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>storage_t</b> = <a class="el" href="classflecsi_1_1topology_1_1mesh__storage__u.html">mesh_storage_u</a>&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt;</td></tr>
 <tr class="separator:af2b8dac51c64a40e8fe55c7f1e9a00e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6cc95e195b58c89c2f3819c42835688"><td class="memItemLeft" align="right" valign="top"><a id="aa6cc95e195b58c89c2f3819c42835688"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>base_t</b> = mesh_topology_base_u&lt; storage_t &gt;</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>base_t</b> = <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html">mesh_topology_base_u</a>&lt; <a class="el" href="classflecsi_1_1topology_1_1mesh__storage__u.html">storage_t</a> &gt;</td></tr>
 <tr class="separator:aa6cc95e195b58c89c2f3819c42835688"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bd510ce3dba673673d90b4c7e1cf9ef"><td class="memItemLeft" align="right" valign="top"><a id="a0bd510ce3dba673673d90b4c7e1cf9ef"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>id_t</b> = <a class="el" href="classflecsi_1_1utils_1_1id__.html">utils::id_t</a></td></tr>
@@ -106,6 +108,10 @@ template&lt;size_t DIM, size_t DOM = 0&gt; </td></tr>
 <tr class="memitem:a763e034b18cf323432556d30603cc1c3"><td class="memItemLeft" align="right" valign="top"><a id="a763e034b18cf323432556d30603cc1c3"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>type_identifier_t</b> = <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html">mesh_topology_u</a></td></tr>
 <tr class="separator:a763e034b18cf323432556d30603cc1c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_types_classflecsi_1_1topology_1_1mesh__topology__base__u"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classflecsi_1_1topology_1_1mesh__topology__base__u')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html">flecsi::topology::mesh_topology_base_u&lt; mesh_storage_u&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; &gt;</a></td></tr>
+<tr class="memitem:a9d9e6e4c1eb57a3396d43417b9e1b5ed inherit pub_types_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memItemLeft" align="right" valign="top"><a id="a9d9e6e4c1eb57a3396d43417b9e1b5ed"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>id_t</b> = <a class="el" href="classflecsi_1_1utils_1_1id__.html">utils::id_t</a></td></tr>
+<tr class="separator:a9d9e6e4c1eb57a3396d43417b9e1b5ed inherit pub_types_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -122,7 +128,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a81f82a9957f5d1198aaf9cbfaeb8398c"><td class="mdescLeft">&#160;</td><td class="mdescRight">override default move assignement <br /></td></tr>
 <tr class="separator:a81f82a9957f5d1198aaf9cbfaeb8398c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad78c750c163aad9e5926f51dfd0bb27c"><td class="memItemLeft" align="right" valign="top"><a id="ad78c750c163aad9e5926f51dfd0bb27c"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#ad78c750c163aad9e5926f51dfd0bb27c">mesh_topology_u</a> (storage_t *ms=nullptr)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#ad78c750c163aad9e5926f51dfd0bb27c">mesh_topology_u</a> (<a class="el" href="classflecsi_1_1topology_1_1mesh__storage__u.html">storage_t</a> *ms=nullptr)</td></tr>
 <tr class="memdesc:ad78c750c163aad9e5926f51dfd0bb27c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor, takes as input a mesh storage or storage can later be set. <br /></td></tr>
 <tr class="separator:ad78c750c163aad9e5926f51dfd0bb27c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac14c3f452cf2a14ac01a840ea2b9a836"><td class="memItemLeft" align="right" valign="top"><a id="ac14c3f452cf2a14ac01a840ea2b9a836"></a>
@@ -200,10 +206,10 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <tr class="memitem:acdf61f8737e2e5c62cc45ba74ac6349b"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#acdf61f8737e2e5c62cc45ba74ac6349b">entities</a> (ENT_TYPE *e)</td></tr>
 <tr class="separator:acdf61f8737e2e5c62cc45ba74ac6349b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cf30a5962f3f504478fb59bd34b6adf"><td class="memTemplParams" colspan="2">template&lt;size_t DIM, size_t FROM_DOM = 0, size_t TO_DOM = FROM_DOM, class ENT_TYPE &gt; </td></tr>
-<tr class="memitem:a0cf30a5962f3f504478fb59bd34b6adf"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#a0cf30a5962f3f504478fb59bd34b6adf">entities</a> (domain_entity_u&lt; FROM_DOM, ENT_TYPE &gt; &amp;e) const</td></tr>
+<tr class="memitem:a0cf30a5962f3f504478fb59bd34b6adf"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#a0cf30a5962f3f504478fb59bd34b6adf">entities</a> (<a class="el" href="classflecsi_1_1topology_1_1domain__entity__u.html">domain_entity_u</a>&lt; FROM_DOM, ENT_TYPE &gt; &amp;e) const</td></tr>
 <tr class="separator:a0cf30a5962f3f504478fb59bd34b6adf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0df765506b53fa6b2f892a826c7a889"><td class="memTemplParams" colspan="2">template&lt;size_t DIM, size_t FROM_DOM = 0, size_t TO_DOM = FROM_DOM, class ENT_TYPE &gt; </td></tr>
-<tr class="memitem:af0df765506b53fa6b2f892a826c7a889"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#af0df765506b53fa6b2f892a826c7a889">entities</a> (domain_entity_u&lt; FROM_DOM, ENT_TYPE &gt; &amp;e)</td></tr>
+<tr class="memitem:af0df765506b53fa6b2f892a826c7a889"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#af0df765506b53fa6b2f892a826c7a889">entities</a> (<a class="el" href="classflecsi_1_1topology_1_1domain__entity__u.html">domain_entity_u</a>&lt; FROM_DOM, ENT_TYPE &gt; &amp;e)</td></tr>
 <tr class="separator:af0df765506b53fa6b2f892a826c7a889"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f676760a30698970459383e64e7ef9e"><td class="memTemplParams" colspan="2">template&lt;size_t DIM, size_t DOM = 0&gt; </td></tr>
 <tr class="memitem:a6f676760a30698970459383e64e7ef9e"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#a6f676760a30698970459383e64e7ef9e">entities</a> () const</td></tr>
@@ -218,7 +224,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <tr class="memitem:ab05e34587d0ecf9d3e9ff19673b8c6ea"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#ab05e34587d0ecf9d3e9ff19673b8c6ea">entity_ids</a> (partition_t partition) const</td></tr>
 <tr class="separator:ab05e34587d0ecf9d3e9ff19673b8c6ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aafd0c1ba4bb2fe00ad99733711598196"><td class="memTemplParams" colspan="2">template&lt;size_t DIM, size_t FROM_DOM = 0, size_t TO_DOM = FROM_DOM, class ENT_TYPE &gt; </td></tr>
-<tr class="memitem:aafd0c1ba4bb2fe00ad99733711598196"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#aafd0c1ba4bb2fe00ad99733711598196">entity_ids</a> (domain_entity_u&lt; FROM_DOM, ENT_TYPE &gt; &amp;e)</td></tr>
+<tr class="memitem:aafd0c1ba4bb2fe00ad99733711598196"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#aafd0c1ba4bb2fe00ad99733711598196">entity_ids</a> (<a class="el" href="classflecsi_1_1topology_1_1domain__entity__u.html">domain_entity_u</a>&lt; FROM_DOM, ENT_TYPE &gt; &amp;e)</td></tr>
 <tr class="separator:aafd0c1ba4bb2fe00ad99733711598196"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a463f3c801d6bfe6c2da5dfb5f048a56e"><td class="memTemplParams" colspan="2">template&lt;size_t DIM, size_t FROM_DOM = 0, size_t TO_DOM = FROM_DOM, class ENT_TYPE &gt; </td></tr>
 <tr class="memitem:a463f3c801d6bfe6c2da5dfb5f048a56e"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#a463f3c801d6bfe6c2da5dfb5f048a56e">entity_ids</a> (const ENT_TYPE *e) const</td></tr>
@@ -227,13 +233,13 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <tr class="memitem:abdb2bbffe8ecb1a55ff8d342d6da89a4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#abdb2bbffe8ecb1a55ff8d342d6da89a4">reverse_entities</a> (ENT_TYPE *e)</td></tr>
 <tr class="separator:abdb2bbffe8ecb1a55ff8d342d6da89a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67d2444ec6adca49c5c8fd851c95b62d"><td class="memTemplParams" colspan="2">template&lt;size_t DIM, size_t FROM_DOM = 0, size_t TO_DOM = FROM_DOM, class ENT_TYPE &gt; </td></tr>
-<tr class="memitem:a67d2444ec6adca49c5c8fd851c95b62d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#a67d2444ec6adca49c5c8fd851c95b62d">reverse_entities</a> (domain_entity_u&lt; FROM_DOM, ENT_TYPE &gt; &amp;e)</td></tr>
+<tr class="memitem:a67d2444ec6adca49c5c8fd851c95b62d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#a67d2444ec6adca49c5c8fd851c95b62d">reverse_entities</a> (<a class="el" href="classflecsi_1_1topology_1_1domain__entity__u.html">domain_entity_u</a>&lt; FROM_DOM, ENT_TYPE &gt; &amp;e)</td></tr>
 <tr class="separator:a67d2444ec6adca49c5c8fd851c95b62d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75ca33814446fabc2f0fb7ba54fcdf57"><td class="memTemplParams" colspan="2">template&lt;size_t DIM, size_t FROM_DOM, size_t TO_DOM = FROM_DOM, class ENT_TYPE , class U &gt; </td></tr>
 <tr class="memitem:a75ca33814446fabc2f0fb7ba54fcdf57"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#a75ca33814446fabc2f0fb7ba54fcdf57">reorder_entities</a> (ENT_TYPE *e, U &amp;&amp;order)</td></tr>
 <tr class="separator:a75ca33814446fabc2f0fb7ba54fcdf57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7aa15e477c30da78835a0ef08d8b3b2"><td class="memTemplParams" colspan="2">template&lt;size_t DIM, size_t FROM_DOM = 0, size_t TO_DOM = FROM_DOM, class ENT_TYPE , class U &gt; </td></tr>
-<tr class="memitem:ab7aa15e477c30da78835a0ef08d8b3b2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#ab7aa15e477c30da78835a0ef08d8b3b2">reverse_entities</a> (domain_entity_u&lt; FROM_DOM, ENT_TYPE &gt; &amp;e, U &amp;&amp;order)</td></tr>
+<tr class="memitem:ab7aa15e477c30da78835a0ef08d8b3b2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#ab7aa15e477c30da78835a0ef08d8b3b2">reverse_entities</a> (<a class="el" href="classflecsi_1_1topology_1_1domain__entity__u.html">domain_entity_u</a>&lt; FROM_DOM, ENT_TYPE &gt; &amp;e, U &amp;&amp;order)</td></tr>
 <tr class="separator:ab7aa15e477c30da78835a0ef08d8b3b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94f69d289319b8b73d80ea1b1013d54a"><td class="memTemplParams" colspan="2">template&lt;size_t INDEX_SUBSPACE&gt; </td></tr>
 <tr class="memitem:a94f69d289319b8b73d80ea1b1013d54a"><td class="memTemplItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html#a94f69d289319b8b73d80ea1b1013d54a">subentities</a> ()</td></tr>
@@ -279,8 +285,40 @@ template&lt;size_t INDEX_SUBSPACE&gt; </td></tr>
 <tr class="memitem:abeb66b247a29f9868ebc6122880e46cb"><td class="memTemplItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_index_subspace</b> () const</td></tr>
 <tr class="separator:abeb66b247a29f9868ebc6122880e46cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af415acf34a061ac805fe82154ebcdcfa"><td class="memItemLeft" align="right" valign="top"><a id="af415acf34a061ac805fe82154ebcdcfa"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_index_subspace_size_</b> (size_t index_subspace)</td></tr>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_index_subspace_size_</b> (size_t <a class="el" href="utility__types_8h.html#a71ab471efdf3a8c8ae9066f381a87f9b">index_subspace</a>)</td></tr>
 <tr class="separator:af415acf34a061ac805fe82154ebcdcfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html">flecsi::topology::mesh_topology_base_u&lt; mesh_storage_u&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; &gt;</a></td></tr>
+<tr class="memitem:ae7d0ebc3a63fdd48f8bad8a92feffaf4 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memItemLeft" align="right" valign="top"><a id="ae7d0ebc3a63fdd48f8bad8a92feffaf4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>mesh_topology_base_u</b> (<a class="el" href="classflecsi_1_1topology_1_1mesh__storage__u.html">mesh_storage_u</a>&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; *ms=nullptr)</td></tr>
+<tr class="separator:ae7d0ebc3a63fdd48f8bad8a92feffaf4 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab1a34191e37490d382cf9c3e554ea67 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memItemLeft" align="right" valign="top"><a id="aab1a34191e37490d382cf9c3e554ea67"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>mesh_topology_base_u</b> (const <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html">mesh_topology_base_u</a> &amp;m)</td></tr>
+<tr class="separator:aab1a34191e37490d382cf9c3e554ea67 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f80fb17002f205f7005d7e6a25084e8 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memItemLeft" align="right" valign="top"><a id="a5f80fb17002f205f7005d7e6a25084e8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html#a5f80fb17002f205f7005d7e6a25084e8">mesh_topology_base_u</a> (<a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html">mesh_topology_base_u</a> &amp;&amp;)=default</td></tr>
+<tr class="memdesc:a5f80fb17002f205f7005d7e6a25084e8 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allow move operations. <br /></td></tr>
+<tr class="separator:a5f80fb17002f205f7005d7e6a25084e8 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6f8c3840e0f9ee8101f39f5c8044f16 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memItemLeft" align="right" valign="top"><a id="ad6f8c3840e0f9ee8101f39f5c8044f16"></a>
+<a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html">mesh_topology_base_u</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html">mesh_topology_base_u</a> &amp;)=delete</td></tr>
+<tr class="separator:ad6f8c3840e0f9ee8101f39f5c8044f16 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c99794fb7a369c0056d6a5ec114e01a inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memItemLeft" align="right" valign="top"><a id="a3c99794fb7a369c0056d6a5ec114e01a"></a>
+<a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html">mesh_topology_base_u</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html#a3c99794fb7a369c0056d6a5ec114e01a">operator=</a> (<a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html">mesh_topology_base_u</a> &amp;&amp;o)</td></tr>
+<tr class="memdesc:a3c99794fb7a369c0056d6a5ec114e01a inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="mdescLeft">&#160;</td><td class="mdescRight">override default move assignement <br /></td></tr>
+<tr class="separator:a3c99794fb7a369c0056d6a5ec114e01a inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4e779f3539e70b83f384a2f55fef573 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memItemLeft" align="right" valign="top"><a id="aa4e779f3539e70b83f384a2f55fef573"></a>
+<a class="el" href="classflecsi_1_1topology_1_1mesh__storage__u.html">mesh_storage_u</a>&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; *&#160;</td><td class="memItemRight" valign="bottom"><b>set_storage</b> (<a class="el" href="classflecsi_1_1topology_1_1mesh__storage__u.html">mesh_storage_u</a>&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; *ms)</td></tr>
+<tr class="separator:aa4e779f3539e70b83f384a2f55fef573 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab36479094e798da5958eb18048214ed8 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memItemLeft" align="right" valign="top"><a id="ab36479094e798da5958eb18048214ed8"></a>
+<a class="el" href="classflecsi_1_1topology_1_1mesh__storage__u.html">mesh_storage_u</a>&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; *&#160;</td><td class="memItemRight" valign="bottom"><b>storage</b> ()</td></tr>
+<tr class="separator:ab36479094e798da5958eb18048214ed8 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a318cd263856bbdd75134bc4b30ce2081 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memItemLeft" align="right" valign="top"><a id="a318cd263856bbdd75134bc4b30ce2081"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear_storage</b> ()</td></tr>
+<tr class="separator:a318cd263856bbdd75134bc4b30ce2081 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5e9ce6c8e008f713ce57b41d9340fed inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memItemLeft" align="right" valign="top"><a id="af5e9ce6c8e008f713ce57b41d9340fed"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>delete_storage</b> ()</td></tr>
+<tr class="separator:af5e9ce6c8e008f713ce57b41d9340fed inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6872b155c333eb782c7c352dbaaf8037 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memItemLeft" align="right" valign="top">T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html#a6872b155c333eb782c7c352dbaaf8037">make</a> (S &amp;&amp;... args)</td></tr>
+<tr class="separator:a6872b155c333eb782c7c352dbaaf8037 inherit pub_methods_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -292,6 +330,13 @@ template&lt;size_t , size_t , class &gt; </td></tr>
 template&lt;size_t , size_t , class &gt; </td></tr>
 <tr class="memitem:a1e318ae623394ccbded64f1f11a7f43e"><td class="memTemplItemLeft" align="right" valign="top">struct&#160;</td><td class="memTemplItemRight" valign="bottom"><b>compute_bindings_u</b></td></tr>
 <tr class="separator:a1e318ae623394ccbded64f1f11a7f43e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_attribs_classflecsi_1_1topology_1_1mesh__topology__base__u"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classflecsi_1_1topology_1_1mesh__topology__base__u')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html">flecsi::topology::mesh_topology_base_u&lt; mesh_storage_u&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; &gt;</a></td></tr>
+<tr class="memitem:a25940b85f15f5bee0d3a3fe718e576ff inherit pro_attribs_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memItemLeft" align="right" valign="top"><a id="a25940b85f15f5bee0d3a3fe718e576ff"></a>
+<a class="el" href="classflecsi_1_1topology_1_1mesh__storage__u.html">mesh_storage_u</a>&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; *&#160;</td><td class="memItemRight" valign="bottom"><b>ms_</b></td></tr>
+<tr class="separator:a25940b85f15f5bee0d3a3fe718e576ff inherit pro_attribs_classflecsi_1_1topology_1_1mesh__topology__base__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;class MESH_TYPE&gt;<br />
@@ -486,7 +531,7 @@ template&lt;size_t DIM, size_t FROM_DOM = 0, size_t TO_DOM = FROM_DOM, class ENT
         <tr>
           <td class="memname">decltype(auto) <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html">flecsi::topology::mesh_topology_u</a>&lt; MESH_TYPE &gt;::entities </td>
           <td>(</td>
-          <td class="paramtype">domain_entity_u&lt; FROM_DOM, ENT_TYPE &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1topology_1_1domain__entity__u.html">domain_entity_u</a>&lt; FROM_DOM, ENT_TYPE &gt; &amp;&#160;</td>
           <td class="paramname"><em>e</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -532,7 +577,7 @@ template&lt;size_t DIM, size_t FROM_DOM = 0, size_t TO_DOM = FROM_DOM, class ENT
         <tr>
           <td class="memname">decltype(auto) <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html">flecsi::topology::mesh_topology_u</a>&lt; MESH_TYPE &gt;::entities </td>
           <td>(</td>
-          <td class="paramtype">domain_entity_u&lt; FROM_DOM, ENT_TYPE &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1topology_1_1domain__entity__u.html">domain_entity_u</a>&lt; FROM_DOM, ENT_TYPE &gt; &amp;&#160;</td>
           <td class="paramname"><em>e</em></td><td>)</td>
           <td></td>
         </tr>
@@ -741,7 +786,7 @@ template&lt;size_t DIM, size_t FROM_DOM = 0, size_t TO_DOM = FROM_DOM, class ENT
         <tr>
           <td class="memname">decltype(auto) <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html">flecsi::topology::mesh_topology_u</a>&lt; MESH_TYPE &gt;::entity_ids </td>
           <td>(</td>
-          <td class="paramtype">domain_entity_u&lt; FROM_DOM, ENT_TYPE &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1topology_1_1domain__entity__u.html">domain_entity_u</a>&lt; FROM_DOM, ENT_TYPE &gt; &amp;&#160;</td>
           <td class="paramname"><em>e</em></td><td>)</td>
           <td></td>
         </tr>
@@ -860,11 +905,13 @@ template&lt;class MESH_TYPE &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 <p>Get the connectivity of the specified from/to domain and from/to topological dimensions. </p>
+
+<p>Implements <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html#ab1b3f7674a3666b830acb3f013f85215">flecsi::topology::mesh_topology_base_u&lt; mesh_storage_u&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; &gt;</a>.</p>
 
 </div>
 </div>
@@ -911,11 +958,13 @@ template&lt;class MESH_TYPE &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 <p>Get the connectivity of the specified from/to domain and from/to topological dimensions. </p>
+
+<p>Implements <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html#afa7ea3605c1dc93a6124e8db7f8399f7">flecsi::topology::mesh_topology_base_u&lt; mesh_storage_u&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; &gt;</a>.</p>
 
 </div>
 </div>
@@ -956,11 +1005,13 @@ template&lt;class MESH_TYPE &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 <p>Get the connectivity of the specified domain and from/to topological dimensions. </p>
+
+<p>Implements <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html#ac299610e358c03fcda5ddc9d919920d2">flecsi::topology::mesh_topology_base_u&lt; mesh_storage_u&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; &gt;</a>.</p>
 
 </div>
 </div>
@@ -1001,11 +1052,13 @@ template&lt;class MESH_TYPE &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 <p>Get the connectivity of the specified domain and from/to topological dimensions. </p>
+
+<p>Implements <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html#a68dea918625f8100a3f170956319c936">flecsi::topology::mesh_topology_base_u&lt; mesh_storage_u&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; &gt;</a>.</p>
 
 </div>
 </div>
@@ -1757,7 +1810,7 @@ template&lt;class MESH_TYPE &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -1769,6 +1822,8 @@ template&lt;class MESH_TYPE &gt; </div>
   </table>
   </dd>
 </dl>
+
+<p>Implements <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__u.html#ab61bcd70794c456b5bea88cc2819ac86">flecsi::topology::mesh_topology_base_u&lt; mesh_storage_u&lt; MESH_TYPE::num_dimensions, MESH_TYPE::num_domains, num_index_subspaces_u&lt; MESH_TYPE &gt;::value &gt; &gt;</a>.</p>
 
 </div>
 </div>
@@ -2008,7 +2063,7 @@ template&lt;size_t DIM, size_t FROM_DOM = 0, size_t TO_DOM = FROM_DOM, class ENT
         <tr>
           <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html">flecsi::topology::mesh_topology_u</a>&lt; MESH_TYPE &gt;::reverse_entities </td>
           <td>(</td>
-          <td class="paramtype">domain_entity_u&lt; FROM_DOM, ENT_TYPE &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1topology_1_1domain__entity__u.html">domain_entity_u</a>&lt; FROM_DOM, ENT_TYPE &gt; &amp;&#160;</td>
           <td class="paramname"><em>e</em></td><td>)</td>
           <td></td>
         </tr>
@@ -2054,7 +2109,7 @@ template&lt;size_t DIM, size_t FROM_DOM = 0, size_t TO_DOM = FROM_DOM, class ENT
         <tr>
           <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__u.html">flecsi::topology::mesh_topology_u</a>&lt; MESH_TYPE &gt;::reverse_entities </td>
           <td>(</td>
-          <td class="paramtype">domain_entity_u&lt; FROM_DOM, ENT_TYPE &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1topology_1_1domain__entity__u.html">domain_entity_u</a>&lt; FROM_DOM, ENT_TYPE &gt; &amp;&#160;</td>
           <td class="paramname"><em>e</em>, </td>
         </tr>
         <tr>

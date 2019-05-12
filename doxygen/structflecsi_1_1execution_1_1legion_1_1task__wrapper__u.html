@@ -83,8 +83,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a6c6eaf05fb0b2221d5a7d512b07c2aee"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1task__wrapper__u.html#a6c6eaf05fb0b2221d5a7d512b07c2aee">registration_callback</a> (<a class="el" href="structflecsi_1_1execution_1_1legion_1_1task__wrapper__u.html#a673bd5852bd735c12dacb661c19525db">task_id_t</a> tid, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor_type, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a> launch, std::string &amp;name)</td></tr>
-<tr class="separator:a6c6eaf05fb0b2221d5a7d512b07c2aee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada5350ead6e33084979e702cf5ac2aa3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1task__wrapper__u.html#ada5350ead6e33084979e702cf5ac2aa3">registration_callback</a> (<a class="el" href="structflecsi_1_1execution_1_1legion_1_1task__wrapper__u.html#a673bd5852bd735c12dacb661c19525db">task_id_t</a> tid, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor_type, <a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">task_execution_type_t</a> execution, std::string &amp;name)</td></tr>
+<tr class="separator:ada5350ead6e33084979e702cf5ac2aa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebf9b6053429e823c9efc984d265b8f8"><td class="memItemLeft" align="right" valign="top">static RETURN&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1task__wrapper__u.html#aebf9b6053429e823c9efc984d265b8f8">execute_user_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context context, Legion::Runtime *runtime)</td></tr>
 <tr class="separator:aebf9b6053429e823c9efc984d265b8f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4d16627a4086738e49882a77ba250c7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1task__wrapper__u.html#ad4d16627a4086738e49882a77ba250c7">execute_mpi_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context context, Legion::Runtime *runtime)</td></tr>
@@ -225,8 +225,8 @@ template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUP
 
 </div>
 </div>
-<a id="a6c6eaf05fb0b2221d5a7d512b07c2aee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6c6eaf05fb0b2221d5a7d512b07c2aee">&#9670;&nbsp;</a></span>registration_callback()</h2>
+<a id="ada5350ead6e33084979e702cf5ac2aa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada5350ead6e33084979e702cf5ac2aa3">&#9670;&nbsp;</a></span>registration_callback()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -251,8 +251,8 @@ template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUP
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>&#160;</td>
-          <td class="paramname"><em>launch</em>, </td>
+          <td class="paramtype"><a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">task_execution_type_t</a>&#160;</td>
+          <td class="paramname"><em>execution</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -277,7 +277,7 @@ template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUP
   <table class="params">
     <tr><td class="paramname">tid</td><td>The task id to assign to the task. </td></tr>
     <tr><td class="paramname">processor_type</td><td>A processor_type_t with the processor type. </td></tr>
-    <tr><td class="paramname">launch</td><td>A launch_t with the launch parameters. </td></tr>
+    <tr><td class="paramname">execution</td><td>A task_executin_type_t with the task execution type parameters. </td></tr>
     <tr><td class="paramname">name</td><td>A std::string containing the task name. </td></tr>
   </table>
   </dd>
@@ -286,7 +286,7 @@ template&lt;size_t KEY, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUP
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/flecsi/flecsi/flecsi/execution/legion/execution/<a class="el" href="task__wrapper_8h_source.html">task_wrapper.h</a></li>
+<li>/home/flecsi/flecsi/flecsi/execution/legion/enactment/<a class="el" href="task__wrapper_8h_source.html">task_wrapper.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

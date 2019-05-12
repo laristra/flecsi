@@ -85,23 +85,23 @@ template&lt;size_t HASH, typename TYPE &gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:add29e134e1d6a5e3114a46fc4c340e6a"><td class="memTemplParams" colspan="2">template&lt;size_t TASK, typename RETURN , RETURN(*)(const Legion::Task *, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;, Legion::Context, Legion::Runtime *) DELEGATE&gt; </td></tr>
-<tr class="memitem:add29e134e1d6a5e3114a46fc4c340e6a"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html#add29e134e1d6a5e3114a46fc4c340e6a">register_legion_task</a> (<a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a> launch, std::string name)</td></tr>
-<tr class="separator:add29e134e1d6a5e3114a46fc4c340e6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7216df2a86c72c2a37d42aae70ebcc5"><td class="memTemplParams" colspan="2"><a id="ae7216df2a86c72c2a37d42aae70ebcc5"></a>
+<tr class="memitem:a225f19efeb09482c21101ff4d3186a3c"><td class="memTemplParams" colspan="2">template&lt;size_t TASK, typename RETURN , RETURN(*)(const Legion::Task *, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;, Legion::Context, Legion::Runtime *) DELEGATE&gt; </td></tr>
+<tr class="memitem:a225f19efeb09482c21101ff4d3186a3c"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html#a225f19efeb09482c21101ff4d3186a3c">register_legion_task</a> (<a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor, <a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">task_execution_type_t</a> execution, std::string name)</td></tr>
+<tr class="separator:a225f19efeb09482c21101ff4d3186a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a567893fd466cf5223755e085c338b804"><td class="memTemplParams" colspan="2"><a id="a567893fd466cf5223755e085c338b804"></a>
 template&lt;size_t TASK, typename RETURN , typename ARG_TUPLE , RETURN(*)(ARG_TUPLE) DELEGATE&gt; </td></tr>
-<tr class="memitem:ae7216df2a86c72c2a37d42aae70ebcc5"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_task</b> (<a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor, <a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a> launch, std::string name)</td></tr>
-<tr class="separator:ae7216df2a86c72c2a37d42aae70ebcc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a567893fd466cf5223755e085c338b804"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_task</b> (<a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a> processor, <a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">task_execution_type_t</a> execution, std::string name)</td></tr>
+<tr class="separator:a567893fd466cf5223755e085c338b804"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26446b5a52898a591a4a8fbd6d87347e"><td class="memTemplParams" colspan="2"><a id="a26446b5a52898a591a4a8fbd6d87347e"></a>
-template&lt;launch_type_t LAUNCH, size_t TASK, size_t REDUCTION, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </td></tr>
+template&lt;size_t TASK, size_t LAUNCH_DOMAIN, size_t REDUCTION, typename RETURN , typename ARG_TUPLE , typename... ARGS&gt; </td></tr>
 <tr class="memitem:a26446b5a52898a591a4a8fbd6d87347e"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>execute_task</b> (ARGS &amp;&amp;... args)</td></tr>
 <tr class="separator:a26446b5a52898a591a4a8fbd6d87347e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html">legion_execution_policy_t</a> is the backend runtime execution policy for Legion. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="add29e134e1d6a5e3114a46fc4c340e6a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#add29e134e1d6a5e3114a46fc4c340e6a">&#9670;&nbsp;</a></span>register_legion_task()</h2>
+<a id="a225f19efeb09482c21101ff4d3186a3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a225f19efeb09482c21101ff4d3186a3c">&#9670;&nbsp;</a></span>register_legion_task()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -120,8 +120,8 @@ template&lt;size_t TASK, typename RETURN , RETURN(*)(const Legion::Task *, const
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="launch_8h.html#afc12302e1cb706fdc8da55a8be7df04a">launch_t</a>&#160;</td>
-          <td class="paramname"><em>launch</em>, </td>
+          <td class="paramtype"><a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">task_execution_type_t</a>&#160;</td>
+          <td class="paramname"><em>execution</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

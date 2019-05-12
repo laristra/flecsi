@@ -189,32 +189,32 @@ that can be taken to tailor FleCSI to a given system and architecture.</p>
 <p>The following list of requirements provides a complete set of build
 options, but is not necessary for a particular build:</p>
 <ul class="simple">
-<li><strong>C++17 compliant compiler</strong> <br />
+<li><p><strong>C++17 compliant compiler</strong> <br />
 At the current time, FleCSI has been tested with GNU, Clang, and Intel
-C++ compilers.</li>
-<li><strong>MPI</strong> <br />
+C++ compilers.</p></li>
+<li><p><strong>MPI</strong> <br />
 If Legion support is enabled, the MPI implementation must have support
-for <em>MPI_THREAD_MULTIPLE</em>.</li>
-<li><strong>Legion</strong> <br />
+for <em>MPI_THREAD_MULTIPLE</em>.</p></li>
+<li><p><strong>Legion</strong> <br />
 We are currently using the most up-to-date version of the master
-branch.</li>
-<li><strong>GASNet</strong> <br />
-GASNet is only required if Legion support is enabled.</li>
-<li><strong>CMake</strong> <br />
-We currently require CMake version 3.9 or greater.</li>
-<li><strong>Boost</strong> <br />
+branch.</p></li>
+<li><p><strong>GASNet</strong> <br />
+GASNet is only required if Legion support is enabled.</p></li>
+<li><p><strong>CMake</strong> <br />
+We currently require CMake version 3.9 or greater.</p></li>
+<li><p><strong>Boost</strong> <br />
 Boost is only required if you wish to enable program options support
 in the FleCSI unit test and tutorial executables. Please read this
-explanation for more information.</li>
-<li><strong>Doxygen</strong> <br />
-Doxygen is only required to build the interface documentation.</li>
-<li><strong>Sphinx</strong> <br />
+explanation for more information.</p></li>
+<li><p><strong>Doxygen</strong> <br />
+Doxygen is only required to build the interface documentation.</p></li>
+<li><p><strong>Sphinx</strong> <br />
 Sphinx only required to build the web-based documentation. We are
 currently using Sphinx 1.1.0. We also require the Sphinx RTD Theme
 (using version 0.4.2). These can be installed on most Linux systems
-using pip.</li>
-<li><strong>Python</strong> <br />
-We currently require Python 2.7 or greater.</li>
+using pip.</p></li>
+<li><p><strong>Python</strong> <br />
+We currently require Python 2.7 or greater.</p></li>
 </ul>
 </div>
 <div class="section" id="flecsi-third-party-libraries-project">
@@ -288,14 +288,14 @@ that will be used by the FleCSI programming model abstraction to invoke
 tasks and kernels. There are currently two supported distributed-memory
 runtimes, a serial runtime, and one supported node-level runtime:</p>
 <ul class="simple">
-<li><strong>Distributed-Memory</strong> <br />
-Legion or MPI</li>
-<li><strong>Serial [supported thorugh MPI runtime]</strong> <br />
+<li><p><strong>Distributed-Memory</strong> <br />
+Legion or MPI</p></li>
+<li><p><strong>Serial [supported thorugh MPI runtime]</strong> <br />
 <strong>The serial build is no longer supported.</strong> Users wishing to emulate
 this build mode should select the MPI runtime and run executables with
-a single-rank.</li>
-<li><strong>Node-Level</strong> <br />
-OpenMP</li>
+a single-rank.</p></li>
+<li><p><strong>Node-Level</strong> <br />
+OpenMP</p></li>
 </ul>
 <p>Example configuration: <strong>MPI</strong></p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> cmake -DFLECSI_RUNTIME_MODEL<span class="o">=</span>mpi ..

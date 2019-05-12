@@ -274,26 +274,26 @@ computing architectures in the future.</p>
 </td></tr></table></div>
 <p>This code defines three functions:</p>
 <ul class="simple">
-<li><strong>custom_add_options</strong> <br />
+<li><p><strong>custom_add_options</strong> <br />
 This function provides a mechanism to add additional command-line
 options to the main Boost options descriptor. The interface for the
-options_descriptions type is documented <a class="reference external" href="https://www.boost.org/doc/libs/1_69_0/doc/html/program_options.html">here</a>.</li>
-<li><strong>custom_initialization</strong> <br />
+options_descriptions type is documented <a class="reference external" href="https://www.boost.org/doc/libs/1_69_0/doc/html/program_options.html">here</a>.</p></li>
+<li><p><strong>custom_initialization</strong> <br />
 This function will be invoked during the initialization phase of the
 Cinch runtime <em>main</em> function (The full code of runtime.cc is included
 below.) Users can test command-line options or invoke initialization
 of additional low-level runtime systems here. Non-zero returns from
-this function will cause the top-level execution to exit.</li>
-<li><strong>custom_finalization</strong> <br />
+this function will cause the top-level execution to exit.</p></li>
+<li><p><strong>custom_finalization</strong> <br />
 This function will be invoked during the shutdown phase of the Cinch
 runtime <em>main</em> function. The exit mode of the top-level runtime is
 passed into this function through the <em>mode</em> argument. Users can adapt
 shutdown of additional low-level runtime systems based on the exit
-status of the top-level execution.</li>
+status of the top-level execution.</p></li>
 </ul>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The names of the custom handler functions are arbitrary, and should
+<p class="admonition-title">Note</p>
+<p>The names of the custom handler functions are arbitrary, and should
 reflect the user’s requirements.</p>
 </div>
 <p>After defining add_options, initialization, and finalization functions,
