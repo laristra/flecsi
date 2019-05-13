@@ -49,7 +49,8 @@ namespace flecsi::run {
 const size_t FLECSI_TOP_LEVEL_TASK_ID = 0;
 namespace mapper {
 constexpr size_t force_rank_match = 0x00001000, compacted_storage = 0x00002000,
-                 subrank_launch = 0x00003000, exclusive_lr = 0x00004000;
+                 subrank_launch = 0x00003000, exclusive_lr = 0x00004000,
+                 prefer_gpu = 0x11000001, prefer_omp = 0x11000002;
 }
 
 namespace leg {

@@ -434,11 +434,12 @@ public:
 
   } // map_task
 
-  virtual void slice_task(const Legion::Mapping::MapperContext ctx,
+  virtual void slice_task(const Legion::Mapping::MapperContext,
     const Legion::Task & task,
     const Legion::Mapping::Mapper::SliceTaskInput & input,
     Legion::Mapping::Mapper::SliceTaskOutput & output) {
 
+    using namespace Legion;
     using namespace mapper;
 
     switch(task.tag) {
@@ -484,9 +485,51 @@ public:
       }
 
       default:
-        DefaultMapper::slice_task(ctx, task, input, output);
+        // We've already been control replicated, so just divide our points
+        // over the local processors, depending on which kind we prefer
+        if(task.tag == prefer_gpu && !local_gpus.empty()) {
+          unsigned local_gpu_index = 0;
+          for(Domain::DomainPointIterator itr(input.domain); itr; itr++) {
+            TaskSlice slice;
+            slice.domain = Domain(itr.p, itr.p);
+            slice.proc = local_gpus[local_gpu_index++];
+            if(local_gpu_index == local_gpus.size())
+              local_gpu_index = 0;
+            slice.recurse = false;
+            slice.stealable = false;
+            output.slices.push_back(slice);
+          }
+        }
+        else if(task.tag == prefer_omp && !local_omps.empty()) {
+          unsigned local_omp_index = 0;
+          for(Domain::DomainPointIterator itr(input.domain); itr; itr++) {
+            TaskSlice slice;
+            slice.domain = Domain(itr.p, itr.p);
+            slice.proc = local_omps[local_omp_index++];
+            if(local_omp_index == local_omps.size())
+              local_omp_index = 0;
+            slice.recurse = false;
+            slice.stealable = false;
+            output.slices.push_back(slice);
+          }
+        }
+        else {
+          // Opt for our cpus instead of our openmap processors
+          unsigned local_cpu_index = 0;
+          for(Domain::DomainPointIterator itr(input.domain); itr; itr++) {
+            TaskSlice slice;
+            slice.domain = Domain(itr.p, itr.p);
+            slice.proc = local_cpus[local_cpu_index++];
+            if(local_cpu_index == local_cpus.size())
+              local_cpu_index = 0;
+            slice.recurse = false;
+            slice.stealable = false;
+            output.slices.push_back(slice);
+          }
+        }
     }
-  }
+
+  } // slice_task
 
 private:
   std::map<Legion::Processor, std::map<Realm::Memory::Kind, Realm::Memory>>
