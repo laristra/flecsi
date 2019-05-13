@@ -66,23 +66,17 @@ struct accessor_u : public field_reference_t {
 
   accessor_u(field_reference_t const & ref) : field_reference_t(ref) {}
 
-  DATA_TYPE & value() {
+  operator DATA_TYPE & () {
     return *data_;
   } // value
 
-  /*!
-    Return a raw reference to the data of this accessor.
-   */
+  operator DATA_TYPE const & () const {
+    return *data_;
+  } // value
 
   DATA_TYPE * data() {
     return data_;
   } // data
-
-  /*!
-    Assignment operator.
-
-    @param value The value to assign to this accessor.
-   */
 
   accessor_u & operator=(const DATA_TYPE & value) {
     *data_ = value;

@@ -38,7 +38,7 @@ flecsi_register_task(global_task, global_test, loc, single);
 
 void
 print(global_accessor_u<ro> ga) {
-  flog(info) << "Value: " << ga.value() << std::endl;
+  flog(info) << "Value: " << ga << std::endl;
 } // print
 
 flecsi_register_task(print, global_test, loc, single);
