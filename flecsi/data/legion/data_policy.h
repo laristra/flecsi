@@ -21,7 +21,6 @@
  */
 
 #include <flecsi/data/legion/storage_classes.h>
-#include <flecsi/data/legion/topologies.h>
 
 namespace flecsi {
 namespace data {

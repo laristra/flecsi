@@ -19,7 +19,6 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/data_reference.h>
-#include <flecsi/data/legion/topologies.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/topology/internal/color.h>
 #include <flecsi/topology/internal/global.h>
@@ -27,6 +26,7 @@
 
 #define POLICY_NAMESPACE legion
 #include <flecsi/data/common/storage_class.h>
+#include <flecsi/data/common/topology.h>
 #undef POLICY_NAMESPACE
 
 namespace flecsi {
@@ -65,6 +65,10 @@ struct accessor_u : public field_reference_t {
   friend void bind<DATA_TYPE, PRIVILEGES>(accessor_u & a, DATA_TYPE * data);
 
   accessor_u(field_reference_t const & ref) : field_reference_t(ref) {}
+
+  DATA_TYPE & value() {
+    return *data_;
+  } // value
 
   /*!
     Return a raw reference to the data of this accessor.

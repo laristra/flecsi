@@ -102,31 +102,32 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+    const auto fid =
+      context_t::instance()
+        .get_field_info_store(flecsi_internal_type_hash(global_topology_t),
+          data::storage_label_t::global)
+        .get_field_info(accessor.identifier())
+        .fid;
+
+    Legion::LogicalRegion region =
+      context_t::instance().global_runtime_data().logical_region;
+
     if constexpr(get_privilege<0, PRIVILEGES>() > partition_privilege_t::ro) {
       flog_assert(flecsi_internal_hash(single) == domain_,
         "global can only be modified from within single launch task");
 
-      Legion::LogicalRegion region =
-        context_t::instance().global_runtime_data().logical_region;
       Legion::RegionRequirement rr(region,
         privilege_mode(get_privilege<0, PRIVILEGES>()),
         EXCLUSIVE,
         region);
 
-      const auto fid =
-        context_t::instance()
-          .get_field_info_store(flecsi_internal_type_hash(global_topology_t),
-            data::storage_label_t::global)
-          .get_field_info(accessor.identifier())
-          .fid;
-
       rr.add_field(fid);
       region_reqs_.push_back(rr);
     }
     else {
-      Legion::LogicalRegion region =
-        context_t::instance().global_runtime_data().logical_region;
       Legion::RegionRequirement rr(region, READ_ONLY, EXCLUSIVE, region);
+
+      rr.add_field(fid);
       region_reqs_.push_back(rr);
     } // if
   } // visit

@@ -39,7 +39,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/data_policy.h
     legion/runtime_data_types.h
     legion/storage_classes.h
-    legion/topologies.h
     ${data_HEADERS}
   )
 
@@ -52,7 +51,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(data_HEADERS
     mpi/data_policy.h
     mpi/storage_classes.h
-    mpi/topologies.h
     ${data_HEADERS}
   )
 
