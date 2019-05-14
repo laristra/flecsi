@@ -29,6 +29,9 @@ before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
+  - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
+  - spack load -r flecsi%gcc@7.3.0 || /bin/true
+  - spack unload flecsi%gcc@7.3.0 || /bin/true
 
 ###################
 ###################
@@ -84,11 +87,9 @@ before_script:
         git -c ${SPACK_ROOT} pull https://github.com/spack/spack v0.12.1;
       fi
     - source ${SPACK_ROOT}/share/spack/setup-env.sh
-    - spack concretize -f
-    - spack install
+    - spack repo add ${SPACK_ROOT}/var/spack/repos/builtin/ || /bin/true
+    - spack install flecsi%gcc@7.3.0
     - flock -u "${lock_fd}"
-    - export BOOST_ROOT=`spack find -p boost`
-
 
 ################
 # Canary Stage #
@@ -246,14 +247,13 @@ canary:fedora_legion:
     DISTRO: "fedora"
     RUNTIME: "legion"
 
-canary:fedora_shell:
+canary:gnuLinux_mpi:
   extends: .canary
   tags:
     - shell
-  dependencies: 
-    - env
+  image: 
   variables:
-    DISTRO: "shell"
+    DISTRO: "gnuLinux"
     RUNTIME: "mpi"
 
 ##############
