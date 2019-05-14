@@ -177,6 +177,34 @@ public:
     return variants[0];
   }
 
+  Legion::VariantID find_omp_variant(const Legion::Mapping::MapperContext ctx,
+    Legion::TaskID task_id) {
+    using namespace Legion;
+    std::map<TaskID, VariantID>::const_iterator finder =
+      omp_variants.find(task_id);
+    if(finder != omp_variants.end())
+      return finder->second;
+    std::vector<VariantID> variants;
+    runtime->find_valid_variants(ctx, task_id, variants, Processor::OMP_PROC);
+    assert(variants.size() == 1); // should be exactly one for pennant
+    omp_variants[task_id] = variants[0];
+    return variants[0];
+  }
+
+  Legion::VariantID find_gpu_variant(const Legion::Mapping::MapperContext ctx,
+    Legion::TaskID task_id) {
+    using namespace Legion;
+    std::map<TaskID, VariantID>::const_iterator finder =
+      gpu_variants.find(task_id);
+    if(finder != gpu_variants.end())
+      return finder->second;
+    std::vector<VariantID> variants;
+    runtime->find_valid_variants(ctx, task_id, variants, Processor::TOC_PROC);
+    assert(variants.size() == 1); // should be exactly one for pennant
+    gpu_variants[task_id] = variants[0];
+    return variants[0];
+  }
+
   void creade_reduction_instance(const Legion::Mapping::MapperContext ctx,
     const Legion::Task & task,
     Legion::Mapping::Mapper::MapTaskOutput & output,
@@ -372,9 +400,21 @@ public:
 
     using namespace Legion;
     using namespace Legion::Mapping;
+    using namespace mapper;
 
-    output.chosen_variant = find_cpu_variant(ctx, task.task_id);
-    output.target_procs = local_cpus;
+    if(task.tag & prefer_gpu && !local_gpus.empty()) {
+      output.chosen_variant = find_gpu_variant(ctx, task.task_id);
+      output.target_procs.push_back(task.target_proc);
+    }
+    else if(task.tag & prefer_omp && !local_omps.empty()) {
+      output.chosen_variant = find_omp_variant(ctx, task.task_id);
+      output.target_procs = local_omps;
+    }
+    else {
+      output.chosen_variant = find_cpu_variant(ctx, task.task_id);
+      output.target_procs = local_cpus;
+    }
+
     output.chosen_instances.resize(task.regions.size());
 
     if(task.regions.size() > 0) {
@@ -551,6 +591,8 @@ private:
 
 protected:
   std::map<Legion::TaskID, Legion::VariantID> cpu_variants;
+  std::map<Legion::TaskID, Legion::VariantID> gpu_variants;
+  std::map<Legion::TaskID, Legion::VariantID> omp_variants;
 };
 
 /*!
