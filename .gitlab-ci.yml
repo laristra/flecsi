@@ -29,6 +29,7 @@ before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
+  - module load gcc/7.3.0
   - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
   - spack load -r flecsi%gcc@7.3.0 || /bin/true
   - spack unload flecsi%gcc@7.3.0 || /bin/true
