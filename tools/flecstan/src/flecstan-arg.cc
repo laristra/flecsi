@@ -658,10 +658,10 @@ process_yaml(const int argc,
   std::size_t & i,
   const std::string & opt,
   CmdArgs & com) {
-   (void)argc;
-   (void)argv;
-   (void)i;
-   (void)com;
+  (void)argc;
+  (void)argv;
+  (void)i;
+  (void)com;
   debug("process_yaml()");
   error("Unfortunately, " + opt + " isn't implemented yet. Sorry.");
   return exit_fatal;
