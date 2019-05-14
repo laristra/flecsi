@@ -351,6 +351,8 @@ process_flags(const int argc,
   CmdArgs & com) {
   debug("process_flags()");
 
+  (void)opt;
+
   // Bookkeeping
   const bool already = com.flags.set(); // previously set?
   com.flags.value().clear(); // clear
@@ -656,6 +658,10 @@ process_yaml(const int argc,
   std::size_t & i,
   const std::string & opt,
   CmdArgs & com) {
+   (void)argc;
+   (void)argv;
+   (void)i;
+   (void)com;
   debug("process_yaml()");
   error("Unfortunately, " + opt + " isn't implemented yet. Sorry.");
   return exit_fatal;

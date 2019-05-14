@@ -127,8 +127,8 @@ static std::map<std::string, std::queue<std::string>> nested_macros{
 
 void
 Preprocessor::MacroExpands(const clang::Token & token,
-  const clang::MacroDefinition & def,
-  const clang::SourceRange range,
+  const clang::MacroDefinition &,
+  const clang::SourceRange,
   const clang::MacroArgs * const macroargs) /* override */ {
   debug("Preprocessor::MacroExpands()");
 
@@ -208,7 +208,7 @@ Preprocessor::MacroExpands(const clang::Token & token,
 
   // OK, a user called a FleCSI macro.
   // Create a MacroCall object for this call.
-  MacroCall mc(unit, token, range, sman, macname);
+  MacroCall mc(unit, token, sman, macname);
 
   // Number of arguments to the macro
   const std::size_t narg = macroargs->getNumMacroArguments();

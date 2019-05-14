@@ -554,7 +554,6 @@ public:
 
   MacroCall(const std::string & _unit,
     const clang::Token & token,
-    const clang::SourceRange & range,
     const clang::SourceManager & sman,
     const std::string & _macname)
     : unit(_unit), macname(_macname), ast(false) {

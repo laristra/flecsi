@@ -189,6 +189,7 @@ public:
   std::vector<clang::tooling::CompileCommand> getCompileCommands(
     const llvm::StringRef file) const override {
     debug("Database::getCompileCommands()");
+    (void)file;
     return std::vector<clang::tooling::CompileCommand>(1, cc);
   }
 };
