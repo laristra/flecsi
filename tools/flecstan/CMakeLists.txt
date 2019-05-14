@@ -38,29 +38,9 @@ set(CMAKE_CXX_STANDARD 17)
 # override them, make sure they actually work
 include(CheckCXXCompilerFlag)
 
-check_cxx_compiler_flag("-pedantic" _pedantic)
-if (_pedantic)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
-endif()
-
-check_cxx_compiler_flag("-Wall" _Wall)
-if (_Wall)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-endif()
-
 check_cxx_compiler_flag("-fno-rtti" _fno_rtti)
 if (_fno_rtti)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
-endif()
-
-check_cxx_compiler_flag("-s" _s)
-if (_s)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s")
-endif()
-
-check_cxx_compiler_flag("-O2" _Otwo)
-if (_Otwo)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 endif()
 
 # Packages
