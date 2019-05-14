@@ -146,7 +146,6 @@ before_script:
           -DENABLE_COVERAGE_BUILD=ON \
           ..;
         make -k VERBOSE=1 -j2 -l80;
-        make doxygen;
         mkdir -p install;
         make install DESTDIR=install;
         sudo make install;
