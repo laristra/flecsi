@@ -28,6 +28,7 @@
 
 #include "../context.hh"
 
+#include <boost/program_options.hpp>
 #include <mpi.h>
 
 #include <map>
@@ -40,7 +41,7 @@ struct context_t : context<context_t> {
     Documnetation for this interface is in the top-level context type.
    */
 
-  int start(int argc, char ** argv);
+  int start(int, char **, boost::program_options::variables_map &);
 
   /*
     Documnetation for this interface is in the top-level context type.

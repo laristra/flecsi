@@ -98,8 +98,8 @@ runtime_handler_t flecsi_mpi_handler{flecsi_mpi_initialize,
 flecsi_append_runtime_handler(flecsi_mpi_handler);
 
 int
-flecsi_mpi_runtime_driver(int argc, char ** argv) {
-  return flecsi::runtime::context_t::instance().start(argc, argv);
+flecsi_mpi_runtime_driver(int argc, char ** argv, variables_map & vm) {
+  return flecsi::runtime::context_t::instance().start(argc, argv, vm);
 } // runtime_driver
 
 flecsi_register_runtime_driver(flecsi_mpi_runtime_driver);

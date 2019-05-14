@@ -17,10 +17,12 @@
 
 #include "context.hh"
 
+using namespace boost::program_options;
+
 namespace flecsi::runtime {
 
 int
-context_t::start(int argc, char ** argv) {
+context_t::start(int argc, char ** argv, variables_map &) {
 
   context_t & context_ = context_t::instance();
 
