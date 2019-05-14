@@ -189,9 +189,12 @@ struct legion_execution_policy_t {
     //------------------------------------------------------------------------//
 
     if constexpr(LAUNCH == launch_type_t::single) {
+      TaskLauncher launcher(
+        context_.task_id<TASK>(), TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
       switch(processor_type) {
-
+        case processor_type_t::toc:
+          launcher.tag = PREFER_GPU;
         case processor_type_t::loc: {
           clog(info) << "Executing single task: " << TASK << std::endl;
 
@@ -205,7 +208,7 @@ struct legion_execution_policy_t {
             TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
 #ifdef MAPPER_COMPACTION
-          launcher.tag = MAPPER_COMPACTED_STORAGE;
+//          launcher.tag = MAPPER_COMPACTED_STORAGE;
 #endif
 
           // Add region requirements and future dependencies to the
@@ -255,9 +258,6 @@ struct legion_execution_policy_t {
           return legion_future_u<RETURN, launch_type_t::single>(future);
         } // scope
 
-        case processor_type_t::toc:
-          clog_fatal("Invalid processor type (toc is un-implemented)");
-
         case processor_type_t::mpi:
           clog_fatal("Invalid launch type!"
                      << std::endl
@@ -276,7 +276,7 @@ struct legion_execution_policy_t {
     else {
 
       switch(processor_type) {
-
+        case processor_type_t::toc:
         case processor_type_t::loc: {
           clog(info) << "Executing index task: " << TASK << std::endl;
 

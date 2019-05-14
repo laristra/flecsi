@@ -181,6 +181,34 @@ public:
     return variants[0];
   }
 
+  Legion::VariantID find_omp_variant(const Legion::Mapping::MapperContext ctx,
+    Legion::TaskID task_id) {
+    using namespace Legion;
+    std::map<TaskID, VariantID>::const_iterator finder =
+      omp_variants.find(task_id);
+    if(finder != omp_variants.end())
+      return finder->second;
+    std::vector<VariantID> variants;
+    runtime->find_valid_variants(ctx, task_id, variants, Processor::OMP_PROC);
+    assert(variants.size() == 1); // should be exactly one for pennant
+    omp_variants[task_id] = variants[0];
+    return variants[0];
+  }
+
+  Legion::VariantID find_gpu_variant(const Legion::Mapping::MapperContext ctx,
+    Legion::TaskID task_id) {
+    using namespace Legion;
+    std::map<TaskID, VariantID>::const_iterator finder =
+      gpu_variants.find(task_id);
+    if(finder != gpu_variants.end())
+      return finder->second;
+    std::vector<VariantID> variants;
+    runtime->find_valid_variants(ctx, task_id, variants, Processor::TOC_PROC);
+    assert(variants.size() == 1); // should be exactly one for pennant
+    gpu_variants[task_id] = variants[0];
+    return variants[0];
+  }
+
   void creade_reduction_instance(const Legion::Mapping::MapperContext ctx,
     const Legion::Task & task,
     Legion::Mapping::Mapper::MapTaskOutput & output,
@@ -332,7 +360,7 @@ public:
    Specialization of the map_task funtion for FLeCSI
    By default, map_task will execute Legions map_task from DefaultMapper.
    In the case the launcher has been tagged with the
-   "MAPPER_COMPACTED_STORAGE" tag, mapper will create single physical
+     "MAPPER_COMPACTED_STORAGE" tag, mapper will create single physical
    instance for exclusive, shared and ghost partitions for each data handle
 
     @param ctx Mapper Context
@@ -350,8 +378,19 @@ public:
     using namespace Legion;
     using namespace Legion::Mapping;
 
-    output.chosen_variant = find_cpu_variant(ctx, task.task_id);
-    output.target_procs = local_cpus;
+    if((task.tag & PREFER_GPU) && !local_gpus.empty()) {
+      output.chosen_variant = find_gpu_variant(ctx, task.task_id);
+      output.target_procs.push_back(task.target_proc);
+    }
+    else if((task.tag & PREFER_OMP) && !local_omps.empty()) {
+      output.chosen_variant = find_omp_variant(ctx, task.task_id);
+      output.target_procs = local_omps;
+    }
+    else {
+      output.chosen_variant = find_cpu_variant(ctx, task.task_id);
+      output.target_procs = local_cpus;
+    }
+
     output.chosen_instances.resize(task.regions.size());
 
     if(task.regions.size() > 0) {
@@ -464,41 +503,40 @@ public:
 
     // We've already been control replicated, so just divide our points
     // over the local processors, depending on which kind we prefer
-    if ((task.tag == PREFER_GPU) && !local_gpus.empty()) {
+    if((task.tag == PREFER_GPU) && !local_gpus.empty()) {
       unsigned local_gpu_index = 0;
-      for (Domain::DomainPointIterator itr(input.domain); itr; itr++)
-      {
+      for(Domain::DomainPointIterator itr(input.domain); itr; itr++) {
         TaskSlice slice;
         slice.domain = Domain(itr.p, itr.p);
         slice.proc = local_gpus[local_gpu_index++];
-        if (local_gpu_index == local_gpus.size())
+        if(local_gpu_index == local_gpus.size())
           local_gpu_index = 0;
         slice.recurse = false;
         slice.stealable = false;
         output.slices.push_back(slice);
       }
-    } else if ((task.tag == PREFER_OMP) && !local_omps.empty()) {
+    }
+    else if((task.tag == PREFER_OMP) && !local_omps.empty()) {
       unsigned local_omp_index = 0;
-      for (Domain::DomainPointIterator itr(input.domain); itr; itr++)
-      {
+      for(Domain::DomainPointIterator itr(input.domain); itr; itr++) {
         TaskSlice slice;
         slice.domain = Domain(itr.p, itr.p);
         slice.proc = local_omps[local_omp_index++];
-        if (local_omp_index == local_omps.size())
+        if(local_omp_index == local_omps.size())
           local_omp_index = 0;
         slice.recurse = false;
         slice.stealable = false;
         output.slices.push_back(slice);
       }
-    } else {
-    // Opt for our cpus instead of our openmap processors
+    }
+    else {
+      // Opt for our cpus instead of our openmap processors
       unsigned local_cpu_index = 0;
-      for (Domain::DomainPointIterator itr(input.domain); itr; itr++)
-      {
+      for(Domain::DomainPointIterator itr(input.domain); itr; itr++) {
         TaskSlice slice;
         slice.domain = Domain(itr.p, itr.p);
         slice.proc = local_cpus[local_cpu_index++];
-        if (local_cpu_index == local_cpus.size())
+        if(local_cpu_index == local_cpus.size())
           local_cpu_index = 0;
         slice.recurse = false;
         slice.stealable = false;
@@ -506,7 +544,7 @@ public:
       }
     }
 
-  }//slice_task
+  } // slice_task
 
 private:
   std::map<Legion::Processor, std::map<Realm::Memory::Kind, Realm::Memory>>
@@ -528,6 +566,8 @@ private:
 
 protected:
   std::map<Legion::TaskID, Legion::VariantID> cpu_variants;
+  std::map<Legion::TaskID, Legion::VariantID> gpu_variants;
+  std::map<Legion::TaskID, Legion::VariantID> omp_variants;
 };
 
 /*!
