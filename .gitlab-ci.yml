@@ -2,6 +2,7 @@
 # Global Settings #
 ###################
 
+
 stages:
   - Canary
   - Build
