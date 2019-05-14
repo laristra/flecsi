@@ -32,6 +32,7 @@ before_script:
   - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
   - spack load -r flecsi%gcc@7.3.0 || /bin/true
   - spack unload flecsi%gcc@7.3.0 || /bin/true
+  - module list
 
 ###################
 ###################
