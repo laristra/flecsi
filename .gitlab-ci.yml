@@ -148,7 +148,10 @@ before_script:
         make -k VERBOSE=1 -j2 -l80;
         mkdir -p install;
         make install DESTDIR=install;
-        sudo make install;
+        if [[ ${CI_RUNNER_TAGS} = "docker" ]];
+        then
+          sudo make install;
+        fi;
         ccache -s;
       fi;
     - |
