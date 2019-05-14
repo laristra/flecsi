@@ -247,13 +247,13 @@ canary:fedora_legion:
     DISTRO: "fedora"
     RUNTIME: "legion"
 
-canary:gnuLinux_mpi:
+canary:centOS_mpi:
   extends: .canary
   tags:
     - shell
   image: 
   variables:
-    DISTRO: "gnuLinux"
+    DISTRO: "centOS"
     RUNTIME: "mpi"
 
 ##############
