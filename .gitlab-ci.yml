@@ -145,7 +145,7 @@ before_script:
           -DENABLE_UNIT_TESTS=ON \
           -DENABLE_PARMETIS=ON \
           -DENABLE_COLORING=ON \
-          -DENABLE_DOXYGEN=ON \
+          -DENABLE_DOXYGEN=OFF \
           -DENABLE_DOCUMENTATION=OFF \
           -DENABLE_COVERAGE_BUILD=ON \
           ..;
