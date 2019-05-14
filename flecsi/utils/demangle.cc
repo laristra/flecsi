@@ -16,6 +16,8 @@
 
 #include <memory>
 
+#include"demangle.h"
+
 #if defined(__GNUG__)
 #include <cxxabi.h>
 #endif

@@ -15,6 +15,9 @@
 
 /*! @file */
 
+#include<string>
+#include<typeinfo>              // typeid()
+
 namespace flecsi {
 namespace utils {
 
