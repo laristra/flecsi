@@ -14,6 +14,7 @@ cache:
 stages:
   - name: canary
   - name: coverage
+    if: type = pull_request
   - name: test
     if: type != pull_request
 
@@ -102,30 +103,6 @@ after_success:
   - if [[ ${TRAVIS_BUILD_STAGE_NAME} = Test && ${DEPLOY} = yes && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false ]]; then
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}";
-    fi
-  - if [[ ${TRAVIS_BRANCH} = master && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_JOB_NUMBER} = *.1 ]]; then
-      cd $HOME/docker/flecsi;
-      rm -rf cinch;
-      git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
-      mkdir -p assets;
-      rm -rf assets/doxygen doc;
-      CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
-      mv doc/doxygen/html assets/doxygen;
-      for i in doc/*.pdf; do mv ${i} ${i%-0.1*}.pdf; done;
-      mv doc/*.pdf assets;
-      rm -rf doc;
-      git add --all assets/doxygen assets/*.pdf;
-      if [[ ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} ]]; then
-        git config --global user.name "Automatic Deployment (Travis CI)";
-        git config --global user.email "flecsi-commit@lanl.gov";
-        git commit -m "Documentation Update";
-        openssl aes-256-cbc -K $encrypted_5669a181ba27_key -iv $encrypted_5669a181ba27_iv -in deploy.enc -out ~/.ssh/id_rsa -d;
-        chmod 600 ~/.ssh/id_rsa;
-        git push git@github.com:${TRAVIS_REPO_SLUG} gh-pages:gh-pages;
-      else
-        git status;
-        git diff --cached --no-color | head -n 500;
-      fi;
     fi
 
 notifications:
