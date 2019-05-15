@@ -36,8 +36,6 @@ template<std::size_t PBITS,
 class id_
 {
 public:
-  static constexpr std::size_t FLAGS_UNMASK =
-    ~(((std::size_t(1) << FBITS) - std::size_t(1)) << 59);
 
   static_assert(PBITS + EBITS + FBITS + GBITS + 4 == 128,
     "invalid id bit configuration");
@@ -46,12 +44,14 @@ public:
   static_assert(sizeof(std::size_t) * CHAR_BIT >= 64,
     "need std::size_t >= 64 bit");
 
+  // FLAGS_UNMASK
+  // 1000011111111111 1111111111111111 1111111111111111 1111111111111111
+  static constexpr std::size_t FLAGS_UNMASK =
+    ~(((std::size_t(1) << FBITS) - std::size_t(1)) << 59);
+
   id_() = default;
   id_(id_ &&) = default;
-
-  id_(const id_ & id)
-    : dimension_(id.dimension_), domain_(id.domain_), partition_(id.partition_),
-      entity_(id.entity_), flags_(id.flags_), global_(id.global_) {}
+  id_(const id_ &) = default;
 
   explicit id_(const std::size_t local_id)
     : dimension_(0), domain_(0), partition_(0), entity_(local_id), flags_(0),
@@ -73,6 +73,8 @@ public:
     return global_id;
   }
 
+  /*
+  // appears to be unused anywhere in FleCSI
   template<std::size_t M>
   static id_ make(const std::size_t dim,
     const std::size_t local_id,
@@ -89,7 +91,10 @@ public:
 
     return global_id;
   }
+  */
 
+  /*
+  // appears to be unused anywhere in FleCSI
   static id_ make(const std::size_t dim,
     const std::size_t local_id,
     const std::size_t partition_id = 0,
@@ -106,7 +111,17 @@ public:
 
     return global_id;
   }
+  */
 
+  // [entity][partition][domain][dimension]
+  //
+  // As id_ is used in FleCSI, local_id() takes this id_, which is:
+  //    dd mm pppppppppppppppppppp eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+  //    ffff gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg
+  // and produces:
+  //    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee pppppppppppppppppppp mm dd
+  // as the return value. In short, it tosses flags and global, and reverses
+  // the order of dimension, domain, partition, and entity.
   local_id_t local_id() const {
     local_id_t r = dimension_;
     r |= local_id_t(domain_) << 2;
@@ -115,10 +130,13 @@ public:
     return r;
   }
 
+  /*
+  // appears to be unused anywhere in FleCSI
   std::size_t global_id() const {
     constexpr std::size_t unmask = ~((std::size_t(1) << EBITS) - 1);
     return static_cast<std::size_t>((local_id() & unmask) | global_);
   }
+  */
 
   void set_global(const std::size_t global) {
     global_ = global;
@@ -133,17 +151,7 @@ public:
   }
 
   id_ & operator=(id_ &&) = default;
-
-  id_ & operator=(const id_ & id) {
-    dimension_ = id.dimension_;
-    domain_ = id.domain_;
-    partition_ = id.partition_;
-    entity_ = id.entity_;
-    global_ = id.global_;
-    flags_ = id.flags_;
-
-    return *this;
-  }
+  id_ & operator=(const id_ & id) = default;
 
   std::size_t dimension() const {
     return dimension_;
@@ -170,7 +178,7 @@ public:
   }
 
   void set_flags(const std::size_t flags) {
-    assert(flags < 1 << FBITS && "flag bits exceeded");
+    assert(flags < (1 << FBITS) && "flag bits exceeded");
     flags_ = flags;
   }
 
@@ -179,14 +187,30 @@ public:
   }
 
   bool operator==(const id_ & id) const {
+    // Each side of the below comparison amounts to:
+    //    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee pppppppppppppppppppp mm dd
+    //    &
+    //    1000011111111111111111111111111111111111 11111111111111111111 11 11
+    // I haven't yet determined if/why that makes sense. -Martin
+
     return (local_id() & FLAGS_UNMASK) == (id.local_id() & FLAGS_UNMASK);
   }
 
+  // As written, the following makes more sense than == does.
+  // However, != != !(==), which is very strange, and possibly unintentional.
   bool operator!=(const id_ & id) const {
     return !(local_id() == id.local_id());
   }
 
 private:
+
+  // As used elsewhere in FleCSI, this class amounts to:
+  //    [dimension:2][domain:2][partition:20][entity:40][flags:4][global:60]
+  // Or:
+  //    dd mm pppppppppppppppppppp eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+  //    ffff gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg
+  // where "m" is domain.
+
   std::size_t dimension_ : 2;
   std::size_t domain_ : 2;
   std::size_t partition_ : PBITS;

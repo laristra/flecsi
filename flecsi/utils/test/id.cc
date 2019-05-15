@@ -143,6 +143,7 @@ TEST(id, all) {
     print(c);
     print(d);
 
+    /*
     // make<DOMAIN>
     // Arguments: (dimension, local_id [,partition_id [,flags [,global]]])
     const id e = id::make<2>(1, 3);
@@ -158,11 +159,11 @@ TEST(id, all) {
     EXPECT_TRUE(identical(b, f));
     EXPECT_TRUE(identical(c, g));
     EXPECT_TRUE(identical(d, h));
+    */
   }
 
   // ------------------------
   // local_id
-  // global_id
   // ------------------------
 
   {
@@ -181,7 +182,6 @@ TEST(id, all) {
 
     CINCH_CAPTURE() << std::endl;
     CINCH_CAPTURE() << "local_id()  == " << a.local_id() << std::endl;
-    CINCH_CAPTURE() << "global_id() == " << a.global_id() << std::endl;
     CINCH_CAPTURE() << std::endl;
   }
 

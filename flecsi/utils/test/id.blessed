@@ -50,34 +50,6 @@ global    == 6
 
 dimension == 1
 domain    == 2
-partition == 0
-entity    == 3
-flags     == 0
-global    == 0
-
-dimension == 1
-domain    == 2
-partition == 4
-entity    == 3
-flags     == 0
-global    == 0
-
-dimension == 1
-domain    == 2
-partition == 4
-entity    == 3
-flags     == 5
-global    == 0
-
-dimension == 1
-domain    == 2
-partition == 4
-entity    == 3
-flags     == 5
-global    == 6
-
-dimension == 1
-domain    == 2
 partition == 4
 entity    == 3
 flags     == 5
@@ -91,7 +63,6 @@ dimension : 01
 local_id(): 0000000000000000000000000000000000000011000000000000000001001001
 
 local_id()  == 0:50331721
-global_id() == 6
 
 
 dimension == 1
