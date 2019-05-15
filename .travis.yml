@@ -107,7 +107,7 @@ after_success:
 
 after_script:
   - for k in $(git branch | sed /\*/d); do 
-      if [ -n "$(git log -1 --since='1 year ago' -s $k)" ]; then
+      if [ -z "$(git log -1 --since='1 year ago' -s $k)" ]; then
         if [ ${k%_*} == "PR" ]; then
           git push --delete origin $k;
           git branch -d $k;
