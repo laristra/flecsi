@@ -27,6 +27,7 @@
 #include <legion.h>
 #include <legion/arrays.h>
 
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
@@ -650,7 +651,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 #ifndef MAPPER_COMPACTION
     value_t * entries = new value_t[h.entries_size];
 
-    size_t pos = 0;
+    pos = 0;
 
     for(size_t r{0}; r < num_regions; ++r) {
       std::memcpy(
@@ -821,7 +822,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     std::memcpy(
       entries, entries_data[0], md->num_exclusive_filled * sizeof(value_t));
 
-    size_t pos = entries_sizes[0];
+    pos = entries_sizes[0];
 
     for(size_t r{1}; r < num_regions; ++r) {
       std::memcpy(
@@ -844,6 +845,20 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
   void handle(sparse_mutator<T> & m) {
     using base_t = typename sparse_mutator<T>::base_t;
     handle(static_cast<base_t &>(m));
+  }
+
+  /*!
+   Handle individual list items
+   */
+  template<typename T,
+    std::size_t N,
+    template<typename, std::size_t>
+    typename Container,
+    typename =
+      std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
+  void handle(Container<T, N> & list) {
+    for(auto & item : list)
+      handle(item);
   }
 
   Legion::Runtime * runtime;

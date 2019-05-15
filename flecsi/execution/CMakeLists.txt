@@ -153,7 +153,6 @@ cinch_add_unit(simple_function
     ${UNIT_POLICY}
   LIBRARIES
     FleCSI
-  NOCI
 )
 
 #
@@ -173,7 +172,6 @@ cinch_add_unit(simple_task
   LIBRARIES
     FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
-  NOCI
 )
 
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
@@ -194,7 +192,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       FleCSI
       ${CINCH_RUNTIME_LIBRARIES}
     THREADS 2
-    NOCI
     )
 
   if(ENABLE_PARMETIS)
@@ -326,7 +323,29 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     #   NOCI
     # )
 
-    cinch_add_unit(data_handle_task
+    cinch_add_unit(handle_list
+      SOURCES
+        test/handle_list.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+      LIBRARIES
+        FleCSI
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        -DFLECSI_16_16_MESH
+      POLICY ${UNIT_POLICY}
+      THREADS 2
+    )
+    
+  cinch_add_unit(data_handle_task
       SOURCES
         test/data_handle_task.cc
         ../supplemental/coloring/add_colorings.cc
@@ -344,7 +363,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
       POLICY ${UNIT_POLICY}
       THREADS 2
-      NOCI
     )
 
     cinch_add_unit(handle_accessor
@@ -365,7 +383,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
       POLICY ${UNIT_POLICY}
       THREADS 2
-      NOCI
     )
 
     cinch_add_unit(ghost_access
@@ -386,7 +403,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
       POLICY ${UNIT_POLICY}
       THREADS 2
-      NOCI
     )
 
     cinch_add_unit(unordered_ispaces
@@ -405,7 +421,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
       POLICY ${UNIT_POLICY}
-      NOCI
     )
 
     cinch_add_unit(data_client_handle
@@ -429,7 +444,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DFLECSI_8_8_MESH
       POLICY ${UNIT_POLICY}
       THREADS 2
-      NOCI
     )
 
     cinch_add_unit(dense_data
@@ -453,7 +467,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DFLECSI_8_8_MESH
       POLICY ${UNIT_POLICY}
       THREADS 2
-      NOCI
     )
 
     cinch_add_unit(finite_difference_dense
@@ -476,7 +489,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DFLECSI_16_16_MESH
       POLICY ${UNIT_POLICY}
       THREADS 5
-      NOCI
   )
 
     cinch_add_unit(global_data
@@ -495,7 +507,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
       POLICY ${UNIT_POLICY}
       THREADS 2
-      NOCI
     )
 
     cinch_add_unit(sparse_data
@@ -519,7 +530,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DFLECSI_8_8_MESH
       POLICY ${UNIT_POLICY}
       THREADS 4
-      NOCI
     )
 
     cinch_add_unit(finite_difference_sparse
@@ -542,7 +552,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DFLECSI_16_16_MESH
       POLICY ${UNIT_POLICY}
       THREADS 5
-      NOCI
     )
 
     cinch_add_unit(ragged_data
@@ -566,7 +575,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DFLECSI_8_8_MESH
       POLICY ${UNIT_POLICY}
       THREADS 4
-      NOCI
     )
 
     if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
@@ -585,7 +593,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
           -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         POLICY ${UNIT_POLICY}
         THREADS 2
-        NOCI
       )
 
       # cinch_add_unit(particles
@@ -626,7 +633,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
       THREADS 2
-      NOCI
     )
 
     cinch_add_unit(mapper_compaction_task
@@ -642,7 +648,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
       THREADS 1
-      NOCI
     )
 
     if(ENABLE_PARMETIS)
@@ -665,7 +670,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
           -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         POLICY LEGION
         THREADS 2
-        NOCI
       )
 
       cinch_add_unit(gid_to_lid_map

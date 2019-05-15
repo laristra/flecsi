@@ -104,6 +104,12 @@ public:
   virtual std::unordered_map<size_t, std::set<size_t>> get_entity_reduction(
     const std::set<size_t> & local_indices) = 0;
 
+  /*!
+   Set a barrier.
+   */
+
+  virtual void barrier() const = 0;
+
   //--------------------------------------------------------------------------//
   // Same admonishment as for get_primary_info...
   //

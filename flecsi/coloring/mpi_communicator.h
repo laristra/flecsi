@@ -74,6 +74,14 @@ public:
   }
 
   /*!
+   Set a barrier.
+   */
+
+  void barrier() const override {
+    auto ret = MPI_Barrier(MPI_COMM_WORLD);
+  };
+
+  /*!
    Reduces info_indices from all MPI ranks
 
    @param request_indices  std::set of shared, ghost etc

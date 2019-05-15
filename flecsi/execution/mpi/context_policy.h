@@ -77,10 +77,8 @@ struct mpi_context_policy_t {
           reserve + i * max_entries_per_index);
       }
 
-      size_t entry_value_size = sizeof(size_t) + type_size;
-
-      entries.resize(entry_value_size * (reserve + ((num_shared + num_ghost) *
-                                                     max_entries_per_index)));
+      entries.resize(type_size * (reserve + ((num_shared + num_ghost) *
+                                              max_entries_per_index)));
     }
 
     size_t type_size;

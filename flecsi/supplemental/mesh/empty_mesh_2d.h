@@ -24,10 +24,6 @@ namespace supplemental {
 class vertex : public topology::mesh_entity_u<0, 1>
 {
 public:
-  template<size_t M>
-  uint64_t precedence() const {
-    return 0;
-  }
   vertex() = default;
 };
 
@@ -63,17 +59,7 @@ public:
   static topology::mesh_entity_base_u<num_domains> * create_entity(
     topology::mesh_topology_base_u<ST> * mesh,
     size_t num_vertices) {
-    switch(M) {
-      case 0: {
-        switch(D) {
-          default:
-            assert(false && "invalid topological dimension");
-        }
-        break;
-      }
-      default:
-        assert(false && "invalid domain");
-    }
+    clog_fatal("Should not get here!");
     return nullptr;
   }
 };
