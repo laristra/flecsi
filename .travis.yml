@@ -68,13 +68,6 @@ env:
 before_install:
   - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
   - git fetch --unshallow && git fetch --tags #for versioning
-  
-before_script:
-  - if [[ ${VALID_USER} && ${TRAVIS_PULL_REQUEST} != false ]]; then
-      git fetch origin pull/${TRAVIS_PULL_REQUEST}/head;
-      git checkout -b PR_${TRAVIS_PULL_REQUEST} FETCH_HEAD;
-      git push origin PR_${TRAVIS_PULL_REQUEST};
-    fi
 
 script:
   - cp -vr docker ${HOME}/docker
