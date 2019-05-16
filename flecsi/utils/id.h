@@ -36,7 +36,6 @@ template<std::size_t PBITS,
 class id_
 {
 public:
-
   static_assert(PBITS + EBITS + FBITS + GBITS + 4 == 128,
     "invalid id bit configuration");
 
@@ -203,7 +202,6 @@ public:
   }
 
 private:
-
   // As used elsewhere in FleCSI, this class amounts to:
   //    [dimension:2][domain:2][partition:20][entity:40][flags:4][global:60]
   // Or:
