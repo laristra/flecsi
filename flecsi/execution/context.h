@@ -77,6 +77,11 @@ struct context_u : public CONTEXT_POLICY {
   using field_registration_map_t =
     std::unordered_map<size_t, field_registration_entry_t>;
 
+  using color_topology_instance_t =
+    topology_instance_u<color_topology_t>;
+  using color_topology_instance_map_t =
+    std::unordered_map<size_t, color_topology_instance_t>;
+
   using unstructured_mesh_instance_t =
     topology_instance_u<unstructured_mesh_topology_base_t>;
   using unstructured_mesh_instance_map_t =
@@ -409,25 +414,55 @@ struct context_u : public CONTEXT_POLICY {
   } // topology_fields_registered
 
   /*!
-    Add a coloring to the FleCSI runtime.
+    Add a color topology coloring to the FleCSI runtime.
 
-    @tparam TOPOLOGY_TYPE       The topology type, which must be derived from
-                                one of the FleCSI core topology types, e.g.,
-                                unstructure_mesh_topology_base_t,
-                                structured_topology_base_t,
-                                ntree_topology_base_t, or set_topology_base_t.
     @tparam TOPOLOGY_IDENTIFIER The namespace of the topology instance for which
                                 to add a coloring.
     @tparam COLORING_NAME       The name of the coloring to add.
 
-    @param coloring A valid coloring instance for the given topology type.
+    @param coloring A color_topology_t::coloring_t instance.
    */
 
+  template<size_t TOPOLOGY_IDENTIFIER, size_t COLORING_NAME>
+  void add_coloring(color_topology_t::coloring_t & coloring) {
+
+      flog_assert(color_topology_instances_.find(TOPOLOGY_IDENTIFIER) !=
+        color_topology_instances_.end(),
+        "topology " << TOPOLOGY_IDENTIFIER << " not registered");
+
+      color_topology_instances_[TOPOLOGY_IDENTIFIER]
+        .add_coloring<COLORING_NAME>(coloring);
+  } // add_coloring
+
+  /*!
+    Add an unstructured mesh coloring to the FleCSI runtime.
+
+    @tparam TOPOLOGY_IDENTIFIER The namespace of the topology instance for
+                                which to add a coloring.
+    @tparam COLORING_NAME       The name of the coloring to add.
+
+    @param coloring A color_topology_t::coloring_t instance.
+   */
+
+  template<size_t TOPOLOGY_IDENTIFIER, size_t COLORING_NAME>
+  void add_coloring(unstructured_mesh_topology_base_t::coloring_t & coloring) {
+
+      flog_assert(unstructured_mesh_instances_.find(TOPOLOGY_IDENTIFIER) !=
+                    unstructured_mesh_instances_.end(),
+        "topology " << TOPOLOGY_IDENTIFIER << " not registered");
+
+      unstructured_mesh_instances_[TOPOLOGY_IDENTIFIER]
+        .add_coloring<COLORING_NAME>(coloring);
+  } // add_coloring
+
+#if 0
   template<typename TOPOLOGY_TYPE,
     size_t TOPOLOGY_IDENTIFIER,
     size_t COLORING_NAME>
   void add_coloring(typename TOPOLOGY_TYPE::coloring_t & coloring) {
 
+//    constexpr bool color_topology =
+//      std::is_same<color_topology_t, TOPOLOGY_TYPE>::value;
     constexpr bool unstructured_mesh =
       std::is_base_of<unstructured_mesh_topology_base_t, TOPOLOGY_TYPE>::value;
     constexpr bool structured_mesh =
@@ -437,9 +472,17 @@ struct context_u : public CONTEXT_POLICY {
     constexpr bool set =
       std::is_base_of<set_topology_base_t, TOPOLOGY_TYPE>::value;
 
+//    if constexpr(color_topology) {
+
+//      flog_assert(color_topology_instances_.find(TOPOLOGY_IDENTIFIER) !=
+//        color_topology_instances_.end(),
+//        "topology " << TOPOLOGY_IDENTIFIER << " not registered");
+
+//      color_topology_instances_[TOPOLOGY_IDENTIFIER]
+//        .add_coloring<COLORING_NAME>(coloring);
+//    }
     if constexpr(unstructured_mesh) {
 
-      // Check to make sure that the instance exists
       flog_assert(unstructured_mesh_instances_.find(TOPOLOGY_IDENTIFIER) !=
                     unstructured_mesh_instances_.end(),
         "topology " << TOPOLOGY_IDENTIFIER << " not registered");
@@ -449,7 +492,6 @@ struct context_u : public CONTEXT_POLICY {
     }
     else if(structured_mesh) {
 
-      // Check to make sure that the instance exists
       flog_assert(structured_mesh_instances_.find(TOPOLOGY_IDENTIFIER) !=
                     structured_mesh_instances_.end(),
         "topology " << TOPOLOGY_IDENTIFIER << " not registered");
@@ -462,6 +504,7 @@ struct context_u : public CONTEXT_POLICY {
     else if(set) {
     } // if
   } // add_coloring
+#endif
 
   /*!
     Remove a coloring from the FleCSI runtime.
@@ -632,6 +675,7 @@ private:
   std::unordered_map<size_t, topology_registration_map_t>
     topology_callback_registry_;
 
+  color_topology_instance_map_t color_topology_instances_;
   unstructured_mesh_instance_map_t unstructured_mesh_instances_;
   structured_mesh_instance_map_t structured_mesh_instances_;
 
