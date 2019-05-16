@@ -406,7 +406,6 @@ struct legion_execution_policy_t {
           // that are passed to the task
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
->>>>>>> 9d11a93fa1f6f89b764f53e89fd5b11f577c811f
 
           // FIXME: This will need to change with the new control model
           //         if(context_.execution_state() == SPECIALIZATION_TLT_INIT) {
