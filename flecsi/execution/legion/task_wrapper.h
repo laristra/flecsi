@@ -226,14 +226,14 @@ struct task_wrapper_u {
 
     #ifdef ENABLE_CALIPER
       CALI_MARK_END("FleCSI_Execution init_handles");
-      CALI_MARK_BEGIN("FleCSI_Execution wrapper.execute");
+      CALI_MARK_BEGIN("FleCSI_Execution context");
     #endif // ENABLE_CALIPER
 
     context_t & context_ = context_t::instance();
     context_.set_color(task->index_point.point_data[0]);
 
     #ifdef ENABLE_CALIPER
-      CALI_MARK_END("FleCSI_Execution wrapper.execute");
+      CALI_MARK_END("FleCSI_Execution context");
       CALI_MARK_BEGIN("FleCSI_Execution finalize_handles");
     #endif // ENABLE_CALIPER
 
