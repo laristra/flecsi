@@ -444,7 +444,8 @@ struct topology_registration_u<
 //----------------------------------------------------------------------------//
 
 /*!
-
+  The global topology doesn't need to register an additional meta data, so this
+  type is essentially empty.
  */
 
 template<size_t NAMESPACE, size_t NAME>
@@ -455,10 +456,6 @@ struct topology_registration_u<flecsi::topology::global_topology_t,
   using TOPOLOGY_TYPE = flecsi::topology::global_topology_t;
 
   static bool register_fields() {
-    const size_t type_key =
-      typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
-    const size_t key = utils::hash::topology_hash<NAMESPACE, NAME>();
-
     return true;
   } // register_fields
 
@@ -480,10 +477,6 @@ struct topology_registration_u<flecsi::topology::color_topology_t,
   using TOPOLOGY_TYPE = flecsi::topology::color_topology_t;
 
   static bool register_fields() {
-    const size_t type_key =
-      typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
-    const size_t key = utils::hash::topology_hash<NAMESPACE, NAME>();
-
     return true;
   } // register_fields
 

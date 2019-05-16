@@ -22,8 +22,8 @@ set(data_HEADERS
   common/field_info.h
   common/privilege.h
   common/storage_class.h
-  common/storage_class_registration.h
   common/topology.h
+  common/topology_accessor.h
   common/topology_registration.h
   data.h
   field_interface.h

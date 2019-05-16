@@ -282,7 +282,7 @@ legion_context_policy_t::initialize_global_topology() {
    */
 
   auto & field_store = context_t::instance().get_field_info_store(
-    flecsi_internal_type_hash(global_topology_t),
+    global_topology_t::type_identifier_hash,
     flecsi::data::storage_label_t::global);
 
   for(auto const & fi : field_store.data()) {

@@ -138,19 +138,6 @@ struct const_string_hasher_t {
   flecsi::utils::const_string_t{name}.hash()
 
 /*!
-  @def flecsi_internal_type_hash
-
-  This macro returns the hash of the given type using typeid (rtti). It is
-  provided for consistency.
-
-  @param name The type to hash.
-
-  @ingroup utils
- */
-
-#define flecsi_internal_type_hash(type) typeid(type).hash_code()
-
-/*!
   @def flecsi_internal_hash
 
   This macro returns the hash of constant string version of the given name.

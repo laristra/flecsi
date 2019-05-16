@@ -23,7 +23,6 @@
  */
 
 #include <flecsi/data/common/data_reference.h>
-#include <flecsi/data/common/storage_class_registration.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
@@ -91,9 +90,6 @@ struct field_interface_u {
     using unique_fid_t =
       utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
 
-    const size_t topology_type_key =
-      typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
-
     field_info_t fi;
 
     fi.namespace_hash = NAMESPACE;
@@ -112,7 +108,7 @@ struct field_interface_u {
       fi.key = utils::hash::field_hash<NAMESPACE, NAME>(version);
 
       execution::context_t::instance().register_field_info(
-        topology_type_key, STORAGE_CLASS, fi);
+        TOPOLOGY_TYPE::type_identifier_hash, STORAGE_CLASS, fi);
     } // for
 
     return true;
