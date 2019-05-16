@@ -58,6 +58,14 @@ struct field_info_t {
 struct field_info_store_t {
 
   void register_field_info(field_info_t const & fi) {
+    flog(internal) << "Registering field info" << std::endl
+                   << "\tnamespace_hash: " << fi.namespace_hash << std::endl
+                   << "\tname_hash: " << fi.name_hash << std::endl
+                   << "\tkey: " << fi.key << std::endl
+                   << "\tfid: " << fi.fid << std::endl
+                   << "\tindex_space: " << fi.index_space << std::endl
+                   << "\tversions: " << fi.versions << std::endl
+                   << "\ttype_size: " << fi.type_size << std::endl;
     data_.emplace_back(fi);
     const size_t offset = data_.size() - 1;
     fid_lookup_[fi.fid] = offset;

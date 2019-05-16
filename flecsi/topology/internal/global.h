@@ -15,6 +15,12 @@
 
 /*! @file */
 
+#if !defined(__FLECSI_PRIVATE__)
+#error Do not include this file directly!
+#else
+#include <flecsi/utils/const_string.h>
+#endif
+
 namespace flecsi {
 namespace topology {
 
@@ -31,6 +37,8 @@ constexpr size_t global_index_space = 4096;
 
 struct global_topology_t {
   using type_identifier_t = global_topology_t;
+  static constexpr size_t type_identifier_hash =
+    flecsi_internal_hash(global_topology_t);
 }; // struct global_topology_u
 
 } // namespace topology

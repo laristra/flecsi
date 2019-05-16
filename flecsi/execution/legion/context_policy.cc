@@ -50,6 +50,11 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
     Register tasks.
    */
 
+  {
+    flog_tag_guard(context);
+    flog(internal) << "Invoking task registration callbacks" << std::endl;
+  }
+
   // clang-format off
   for(auto & t : task_registry_) {
     std::get<4>(t.second)(
@@ -116,12 +121,12 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
     Start Legion runtime.
    */
 
-  Runtime::start(largv.size(), largv.data(), true);
-
   {
     flog_tag_guard(context);
-    flog(internal) << "Legion runtime started" << std::endl;
+    flog(internal) << "Starting Legion runtime" << std::endl;
   }
+
+  Runtime::start(largv.size(), largv.data(), true);
 
   handoff_to_legion();
   wait_on_legion();

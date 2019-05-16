@@ -213,7 +213,8 @@ like:
 .. code-block:: console
 
   $ sudo apt install doxygen
-  $ sudo apt install pip3
+  $ sudo apt install python3-pip
+  $ sudo apt install python3-breathe
   $ pip3 install Sphinx
   $ pip3 install recommonmark
   $ pip3 install sphinx_rtd_theme
