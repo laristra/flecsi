@@ -42,8 +42,8 @@
 #include <flecsi/execution/legion/task_wrapper.h>
 
 #if defined(ENABLE_CALIPER)
-  // Caliper include
-  #include <caliper/cali.h>
+// Caliper include
+#include <caliper/cali.h>
 #endif // ENABLE_CALIPER
 
 namespace flecsi {
@@ -315,12 +315,12 @@ struct legion_execution_policy_t {
             launcher.add_future(future);
           } // for
 
-          #if defined(ENABLE_CALIPER)
-            // [Caliper] Mark this function
-            CALI_CXX_MARK_FUNCTION;
+#if defined(ENABLE_CALIPER)
+          // [Caliper] Mark this function
+          CALI_CXX_MARK_FUNCTION;
 
-            CALI_MARK_BEGIN("FleCSI_Invocation task_prolog");
-          #endif // ENABLE_CALIPER
+          CALI_MARK_BEGIN("FleCSI_Invocation task_prolog");
+#endif // ENABLE_CALIPER
 
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
@@ -332,10 +332,10 @@ struct legion_execution_policy_t {
             task_prolog.launch_copies();
           } // scope
 
-          #ifdef ENABLE_CALIPER
-            CALI_MARK_END("FleCSI_Invocation task_prolog");
-            CALI_MARK_BEGIN("FleCSI_Invocation task_prolog_sparse");
-          #endif // ENABLE_CALIPER
+#ifdef ENABLE_CALIPER
+          CALI_MARK_END("FleCSI_Invocation task_prolog");
+          CALI_MARK_BEGIN("FleCSI_Invocation task_prolog_sparse");
+#endif // ENABLE_CALIPER
 
           {
             task_prolog_t task_prolog(
@@ -345,9 +345,9 @@ struct legion_execution_policy_t {
             task_prolog.launch_copies();
           } // scope
 
-          #ifdef ENABLE_CALIPER
-            CALI_MARK_END("FleCSI_Invocation task_prolog_sparse");
-          #endif // ENABLE_CALIPER
+#ifdef ENABLE_CALIPER
+          CALI_MARK_END("FleCSI_Invocation task_prolog_sparse");
+#endif // ENABLE_CALIPER
 
           if constexpr(REDUCTION != ZERO) {
             clog(info) << "executing reduction logic for " << REDUCTION
@@ -363,17 +363,17 @@ struct legion_execution_policy_t {
             future = legion_runtime->execute_index_space(
               legion_context, launcher, reduction_id);
 
-            #ifdef ENABLE_CALIPER
-              CALI_MARK_BEGIN("FleCSI_Invocation task_epilog");
-            #endif // ENABLE_CALIPER
+#ifdef ENABLE_CALIPER
+            CALI_MARK_BEGIN("FleCSI_Invocation task_epilog");
+#endif // ENABLE_CALIPER
 
             // Enqueue the epilog.
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
 
-            #ifdef ENABLE_CALIPER
-              CALI_MARK_END("FleCSI_Invocation task_epilog");
-            #endif // ENABLE_CALIPER
+#ifdef ENABLE_CALIPER
+            CALI_MARK_END("FleCSI_Invocation task_epilog");
+#endif // ENABLE_CALIPER
 
             return legion_future_u<RETURN, launch_type_t::single>(future);
           }
@@ -382,18 +382,18 @@ struct legion_execution_policy_t {
             Legion::FutureMap future_map =
               legion_runtime->execute_index_space(legion_context, launcher);
 
-            #ifdef ENABLE_CALIPER
-              CALI_MARK_BEGIN("FleCSI_Invocation task_epilog");
-            #endif // ENABLE_CALIPER
+#ifdef ENABLE_CALIPER
+            CALI_MARK_BEGIN("FleCSI_Invocation task_epilog");
+#endif // ENABLE_CALIPER
 
             // Execute a tuple walker that applies the task epilog operations
             // on the mapped handles
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
 
-            #ifdef ENABLE_CALIPER
-              CALI_MARK_END("FleCSI_Invocation task_epilog");
-            #endif // ENABLE_CALIPER
+#ifdef ENABLE_CALIPER
+            CALI_MARK_END("FleCSI_Invocation task_epilog");
+#endif // ENABLE_CALIPER
 
             return legion_future_u<RETURN, launch_type_t::index>(future_map);
           } // else
