@@ -49,6 +49,7 @@ if(ENABLE_FLOG)
 
   set(FLOG_STRIP_LEVEL ${FLOG_STRIP_LEVEL} CACHE STRING
     "Set the flog strip level (0-4)")
+  mark_as_advanced(FLOG_STRIP_LEVEL)
 
   set_property(CACHE FLOG_STRIP_LEVEL PROPERTY STRINGS ${FLOG_STRIP_LEVELS})
 endif()
