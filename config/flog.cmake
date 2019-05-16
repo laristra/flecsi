@@ -33,7 +33,7 @@ cmake_dependent_option(FLOG_ENABLE_DEBUG "Enable flog debug mode" OFF
 mark_as_advanced(FLOG_ENABLE_DEBUG)
 
 cmake_dependent_option(FLOG_ENABLE_EXTERNAL
-  "Enable messages that are defined at file scope" OFF "ENABLE_FLOG" OFF)
+  "Enable messages that are defined at namespace scope" OFF "ENABLE_FLOG" ON)
 mark_as_advanced(FLOG_ENABLE_EXTERNAL)
 
 set(FLOG_TAG_BITS "64" CACHE STRING

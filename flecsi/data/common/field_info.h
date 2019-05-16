@@ -49,7 +49,7 @@ struct field_info_t {
 /*!
   The field_info_store_t type provides storage for field_info_t instances with
   an interface to lookup the field information for a particular field in a
-  variety of ways, e.g., using a hash key, or the field id (fid).
+  variety of ways.
 
   This type replaces the ad-hoc methods that were being used before the 2019
   refactor.
@@ -71,20 +71,6 @@ struct field_info_store_t {
     fid_lookup_[fi.fid] = offset;
     key_lookup_[fi.key] = offset;
   } // register_field_info
-
-  /*!
-    Lookup field info using the field id.
-
-    @param fid The field id.
-   */
-
-  field_info_t const & get_field_info(field_id_t fid) const {
-
-    const auto ita = fid_lookup_.find(fid);
-    flog_assert(ita != fid_lookup_.end(), "fid lookup failed for " << fid);
-
-    return data_[ita->second];
-  } // get_field_info
 
   /*!
     Lookup field info using a hash key.
